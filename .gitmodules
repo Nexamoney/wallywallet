@@ -1,0 +1,3 @@
+[submodule "app/src/main/java/libbitcoincash"]
+	path = app/src/main/java/libbitcoincash
+	url = git@gitlab.com:wallywallet/libbitcoincashkotlin.git
