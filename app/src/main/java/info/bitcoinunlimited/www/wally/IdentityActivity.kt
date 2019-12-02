@@ -1,0 +1,177 @@
+// Copyright (c) 2019 Andrew Stone Consulting (qq9wwnuw4eukyh5g34ckg5vk4aaxnvr04vkspyv850)
+// Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
+package info.bitcoinunlimited.www.wally
+
+import android.content.Intent
+import android.graphics.drawable.ColorDrawable
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.appcompat.app.AppCompatActivity
+import android.widget.TextView
+import androidx.annotation.LayoutRes
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import bitcoinunlimited.libbitcoincash.*
+import kotlinx.android.synthetic.main.activity_identity.*
+import kotlinx.android.synthetic.main.identity_list_item.view.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import java.io.FileNotFoundException
+import java.lang.Exception
+import java.net.HttpURLConnection
+import java.net.URL
+import java.net.URLEncoder
+import java.util.logging.Logger
+
+private val LogIt = Logger.getLogger("bitcoinunlimited.IdentityActivity")
+
+open class IdentityException(msg: String, shortMsg: String? = null, severity: ErrorSeverity = ErrorSeverity.Abnormal) : BUException(msg, shortMsg, severity)
+
+fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): View {
+    return LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)
+}
+
+
+class RecyclerAdapter(private val domains: ArrayList<IdentityDomain>) : RecyclerView.Adapter<RecyclerAdapter.IdentityDomainHolder>()
+{
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerAdapter.IdentityDomainHolder
+    {
+        val inflatedView = parent.inflate(R.layout.identity_list_item, false)
+        return IdentityDomainHolder(inflatedView)
+    }
+
+    override fun getItemCount(): Int = domains.size
+
+
+    override fun onBindViewHolder(holder: RecyclerAdapter.IdentityDomainHolder, position: Int)
+    {
+        val item = domains[position]
+        holder.bind(item, position)
+    }
+
+
+    class IdentityDomainHolder(v: View) : RecyclerView.ViewHolder(v), View.OnClickListener
+    {
+        private var view: View = v
+        private var id: IdentityDomain? = null
+
+        init
+        {
+            v.setOnClickListener(this)
+        }
+
+        override fun onClick(v: View)
+        {
+            var intent = Intent(v.context, DomainIdentitySettings::class.java)
+            intent.putExtra("domainName", this.id?.domain )
+            v.context.startActivity(intent)
+        }
+
+        fun bind(obj: IdentityDomain, pos: Int)
+        {
+            this.id = obj
+            view.domainNameText.text = obj.domain
+
+            // Alternate colors for each row in the list
+            val Acol:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowA) } ?: 0xFFEEFFEE.toInt()
+            val Bcol:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowB) } ?: 0xFFBBDDBB.toInt()
+
+            if ((pos and 1)==0)
+            {
+                view.background = ColorDrawable(Acol)
+            }
+            else
+            {
+                view.background = ColorDrawable(Bcol)
+            }
+
+        }
+    }
+
+}
+
+class IdentityActivity : CommonActivity()
+{
+    private lateinit var linearLayoutManager: LinearLayoutManager
+    private lateinit var adapter: RecyclerAdapter
+
+    override var navActivityId = R.id.navigation_identity
+
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        navActivityId = R.id.navigation_identity
+
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_identity)
+
+        linearLayoutManager = LinearLayoutManager(this)
+        identityList.layoutManager = linearLayoutManager
+        laterUI {
+            val wallet = (application as WallyApp).primaryWallet
+            val identities: ArrayList<IdentityDomain> = ArrayList(wallet.allIdentityDomains())
+            LogIt.info("identity domain count:" + identities.size.toString())
+            LogIt.info(wallet.allIdentityDomains().map { it.domain }.toString())
+            adapter = RecyclerAdapter(identities)
+            identityList.adapter = adapter
+
+            val dest = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
+            commonIdentityAddress.text = dest.address.toString()
+        }
+
+
+        // adapter.notifyItemInserted( index of item)
+    }
+
+    override fun onStart()
+    {
+        super.onStart()
+    }
+
+    override fun onResume()
+    {
+        super.onResume()
+
+        // Process the intent that caused this activity to resume
+        if (intent.scheme != null)  // its null if normal app startup
+        {
+            handleNewIntent(intent)
+        }
+    }
+
+    //? A new intent to pay someone could come from either startup (onResume) or just on it own (onNewIntent) so create a single function to deal with both
+    fun handleNewIntent(receivedIntent: Intent)
+    {
+        val iuri = receivedIntent.toUri(0).toUrl()  // URI_ANDROID_APP_SCHEME | URI_INTENT_SCHEME
+        LogIt.info("Identity new Intent: " + iuri)
+        try
+        {
+            if (receivedIntent.scheme == IDENTITY_URI_SCHEME)
+            {
+                val host = iuri.getHost()
+                val path = iuri.getPath()
+            }
+            else  // This should never happen because the AndroidManifest.xml Intent filter should match the URIs that we handle
+            {
+                displayError("bad link " + receivedIntent.scheme)
+            }
+        }
+        catch (e: Exception)
+        {
+            displayException(e)
+        }
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    fun onCommonIdentityAddrTextClicked(v: View)
+    {
+        copyTextToClipboard(commonIdentityAddress)
+    }
+};

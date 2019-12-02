@@ -1,0 +1,6 @@
+/home/stone/AndroidStudioProjects/Wally/app/src/main/cpp/CMakeFiles/rebuild_cache.dir
+/home/stone/AndroidStudioProjects/Wally/app/src/main/cpp/CMakeFiles/native-lib.dir
+/home/stone/AndroidStudioProjects/Wally/app/src/main/cpp/CMakeFiles/edit_cache.dir
+/home/stone/AndroidStudioProjects/Wally/app/src/main/cpp/obj/CMakeFiles/rebuild_cache.dir
+/home/stone/AndroidStudioProjects/Wally/app/src/main/cpp/obj/CMakeFiles/bitcoincashandroid.dir
+/home/stone/AndroidStudioProjects/Wally/app/src/main/cpp/obj/CMakeFiles/edit_cache.dir

@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC   -shared -Wl,-soname,libnative-lib.so -o libnative-lib.so CMakeFiles/native-lib.dir/native-lib.cpp.o -Wl,-rpath,../../../../build/intermediates/cmake/debug/obj ../../../../build/intermediates/cmake/debug/obj//libbitcoincashandroid.so 

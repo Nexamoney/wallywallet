@@ -1,0 +1,175 @@
+<resources>
+    <string name="app_name">Wally</string>
+    <string-array name="CurrencyTypes">
+        <item>mBCH</item>
+        <item>USD</item>
+    </string-array>
+    <string-array name="FiatCurrencyTypes">
+        <item>BRL</item>
+        <item>CAD</item>
+        <item>CNY</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>JPY</item>
+        <item>RUB</item>
+        <item>USD</item>
+        <item>XAU</item>
+    </string-array>
+
+    <string name="mBCH">mBCH</string>
+
+    <string-array name="OneToTen">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="tipPercentage">
+        <item>--</item>
+        <item>0%</item>
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+        <item>50%</item>
+    </string-array>
+
+    <!-- General -->
+    <string name="yes">yes</string>
+    <string name="no">no</string>
+    <string name="or">or</string>
+
+    <!-- Settings -->
+    <string name="rediscoverWalletTx">rediscover</string>
+    <string name="logDebugData">Log Debug Data</string>
+    <string name="rediscoverTooltip">Delete blockchain state and search anew for all transactions relevant to the wallet</string>
+    <string name="wordSeed">Wallet Backup Secrets</string>
+    <!-- Split bill -->
+    <string name="Total">Total</string>
+    <string name="Ways">Ways</string>
+    <string name="Tip">Tip</string>
+    <string name="Amount">Amount</string>
+    <!-- Home Page -->
+    <string name="Send">Send</string>
+    <string name="Receive">Receive</string>
+    <string name="Balance">Balance</string>
+    <string name="Address">Address</string>
+    <string name="settings">settings</string>
+    <string name="help">help</string>
+    <string name="invalidQuantity">invalid quantity</string>
+    <string name="purchase">purchase</string>
+    <string name="scanPaymentQRcode">Scan payment address QR code</string>
+    <string name="pasteIsEmpty">paste empty</string>
+    <string name="pasteIgnored">paste ignored</string>
+    <string name="pasteUnintelligible">paste not understood</string>
+    <string name="chainIncompatibleWithAddress">address incompatible</string>
+
+    <string name="approximatelyT">approximately %qty %fiat</string>
+    <string name="moreThanAvailable">"(more than available)"</string>
+    <string name="moreThanConfirmedAvailable">"(more than confirmed)"</string>
+    <string name="actuallySendingT">actually sending %qty %crypto</string>
+    <string name="copied">...copied to clipboard...</string>
+    <string name="scanFailed">scan failed</string>
+    <string name="sendSuccess">send successful</string>
+
+    <string name="retrievingExchangeRate">still retrieving exchange rate</string>
+
+    <!-- Identity -->
+
+    <string name="newDomainRequestingIdentity">New Domain Requesting Identity</string>
+    <string name="useUniqueIdentityToolTip">Turn on to keep your identity here separate from other sites.</string>
+    <string name="provideRealName">provide your real name?</string>
+    <string name="provideRealNameToolTip">Selecting this option will provide your real name (as configured in settings) to this web site, if requested</string>
+    <string name="provideAddress">provide your address?</string>
+    <string name="provideAddressToolTip">Selecting this option will provide your address (as configured in settings) to this web site, if requested</string>
+
+    <string name="provideLoginQuestion">Login to this site?</string>
+
+    <string name="FirstNameOrAliasText">First Name Or Alias</string>
+    <string name="LastNameText">Last Name</string>
+    <string name="HomeAddressText">Home Address</string>
+    <string name="EmailText">Email Address</string>
+    <string name="TwitterText">Twitter</string>
+    <string name="TelegramText">Telegram</string>
+    <string name="KeybaseText">Keybase</string>
+    <string name="IdentityAssociatedWith">Associated Identity Info</string>
+
+    <string name="firstName">first name</string>
+    <string name="lastName">last name</string>
+
+    <!-- Error strings -->
+    <string name="unknownError">error</string>
+    <string name="insufficentBalance">insufficient balance</string>
+    <string name="notSupported">not supported</string>
+    <string name="dataMissing">missing data</string>
+    <string name="headersNotForthcoming">headers are not being provided</string>
+    <string name="cantConvert">conversion temporarily unavailable</string>
+
+    <string name="badTransaction">bad transaction</string>
+    <string name="badAddress">invalid address</string>
+    <string name="badAmount">invalid amount</string>
+    <string name="badCryptoCode">not crypto</string>
+    <string name="badCurrencyUnit">not currency</string>
+    <string name="detailsOfBadAmountFromIntent">The calling program supplied badly formatted number when providing the
+        quantity to send. You will need to enter the quantity yourself
+    </string>
+    <string name="blankAddress">blank address</string>
+    <string name="unavailable">unavailable</string>
+    <string name="blockNotForthcoming">block unavailable</string>
+    <string name="receiveAddressUnavailable">A new receive address is in the process of being calculated. Please
+        wait...
+    </string>
+
+    <!-- Error long strings -->
+    <string name="sendMoreThanBalance">You are attempting to send more coins than you have available right now. If you
+        think you are not spending more than your balance, you may have forgotten that transactions have a small
+        additional fee, or if you see all of your balance as unconfirmed you may have made too many transactions in a
+        row. There is a limit to how far you can "get ahead" of the blockchain. Let your unconfirmed balance confirm and
+        try again.
+    </string>
+
+    <string name="badWalletImplementation">Incorrect wallet implementation.  Report this bug!</string>
+
+    <!-- TITLES -->
+    <string name="title_split_bill">Split a bill</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_exchange">Exchange</string>
+    <string name="title_activity_trickle_pay">Trickle Pay</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_activity_invoices">Invoices</string>
+    <string name="title_activity_identity">Identity</string>
+    <string name="title_activity_identity_op">Identity</string>
+
+    <!-- Not part of the UI -->
+    <string name="preferenceFileName">bitcoinunlimited.wally.prefs</string>
+    <string name="localCurrency">localCurrency</string>
+    <string name="title_activity_domain_identity_settings">Domain Identity Settings</string>
+
+    <!-- Domain Identity Settings -->
+    <string name="useUniqueIdentity">Use a unique identity</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails</string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+
+</resources>

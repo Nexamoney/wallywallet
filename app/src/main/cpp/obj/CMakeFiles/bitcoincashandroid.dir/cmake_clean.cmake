@@ -1,0 +1,24 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/bitcoincashandroid.dir/cashlib.cpp.o"
+  "CMakeFiles/bitcoincashandroid.dir/fast/bitcoin/bucashlib/src/primitives/transaction.cpp.o"
+  "CMakeFiles/bitcoincashandroid.dir/fast/bitcoin/bucashlib/src/support/pagelocker.cpp.o"
+  "CMakeFiles/bitcoincashandroid.dir/fast/bitcoin/bucashlib/src/support/cleanse.cpp.o"
+  "CMakeFiles/bitcoincashandroid.dir/fast/bitcoin/bucashlib/src/script/sigcommon.cpp.o"
+  "CMakeFiles/bitcoincashandroid.dir/fast/bitcoin/bucashlib/src/crypto/sha256.cpp.o"
+  "CMakeFiles/bitcoincashandroid.dir/fast/bitcoin/bucashlib/src/crypto/hmac_sha512.cpp.o"
+  "CMakeFiles/bitcoincashandroid.dir/fast/bitcoin/bucashlib/src/crypto/sha512.cpp.o"
+  "CMakeFiles/bitcoincashandroid.dir/fast/bitcoin/bucashlib/src/crypto/ripemd160.cpp.o"
+  "CMakeFiles/bitcoincashandroid.dir/fast/bitcoin/bucashlib/src/hash.cpp.o"
+  "CMakeFiles/bitcoincashandroid.dir/fast/bitcoin/bucashlib/src/key.cpp.o"
+  "CMakeFiles/bitcoincashandroid.dir/fast/bitcoin/bucashlib/src/uint256.cpp.o"
+  "CMakeFiles/bitcoincashandroid.dir/fast/bitcoin/bucashlib/src/utilstrencodings.cpp.o"
+  "CMakeFiles/bitcoincashandroid.dir/fast/bitcoin/bucashlib/src/pubkey.cpp.o"
+  "CMakeFiles/bitcoincashandroid.dir/fast/bitcoin/bucashlib/src/secp256k1/src/secp256k1.c.o"
+  "libbitcoincashandroid.pdb"
+  "libbitcoincashandroid.so"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang C CXX)
+  include(CMakeFiles/bitcoincashandroid.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

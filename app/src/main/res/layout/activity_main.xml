@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/nav_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/windowBackground"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:menu="@menu/bottom_nav_menu" android:layout_marginBottom="4dp"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:labelVisibilityMode="labeled"
+    />
+
+    <TextView
+            android:text="@string/Receive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/ReceiveTitle" android:textSize="24sp"
+            app:layout_constraintTop_toBottomOf="@+id/divider"
+            app:layout_constraintStart_toStartOf="@+id/sendButton"/>
+
+    <TextView
+        android:id="@+id/balanceTicker"
+        android:layout_width="80dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="8dp"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@+id/balanceValue"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/balanceTitle" />
+
+    <TextView
+        android:id="@+id/balanceTicker2"
+        android:layout_width="80dp"
+        android:layout_height="36dp"
+        android:gravity="center"
+        android:text=""
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/WalletChainInfo" />
+
+    <TextView
+        android:id="@+id/balanceTicker3"
+        android:layout_width="80dp"
+        android:layout_height="36dp"
+        android:gravity="center"
+        android:text=""
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/WalletChainInfo2" />
+
+    <TextView
+            android:text="@string/Balance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/balanceTitle" android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="@+id/ReceiveTitle"
+            app:layout_constraintTop_toBottomOf="@+id/divider2"/>
+
+    <TextView
+        android:id="@+id/balanceUnconfirmedValue"
+        android:layout_width="160dp"
+        android:layout_height="36dp"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textColor="#FF9800"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/balanceValue"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/balanceValue"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/balanceUnconfirmedValue2"
+        android:layout_width="160dp"
+        android:layout_height="36dp"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textColor="#FF9800"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/balanceTicker2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/balanceValue2" />
+
+    <TextView
+        android:id="@+id/balanceUnconfirmedValue3"
+        android:layout_width="160dp"
+        android:layout_height="36dp"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textColor="#FF9800"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/balanceTicker3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/balanceValue3" />
+
+    <TextView
+        android:id="@+id/balanceValue"
+        android:layout_width="160dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="8dp"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textColor="@android:color/holo_green_light"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/balanceTicker"
+        app:layout_constraintEnd_toStartOf="@+id/balanceUnconfirmedValue"
+        app:layout_constraintTop_toTopOf="@+id/balanceTicker"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/balanceValue2"
+        android:layout_width="160dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="8dp"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textColor="@android:color/holo_green_light"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/balanceTicker2"
+        app:layout_constraintEnd_toStartOf="@+id/balanceUnconfirmedValue2"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/balanceTicker2" />
+
+    <TextView
+            android:id="@+id/balanceValue3"
+            android:layout_width="160dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="8dp"
+            android:gravity="center"
+            android:textAlignment="center"
+            android:textColor="@android:color/holo_green_light"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@+id/balanceTicker3"
+            app:layout_constraintEnd_toStartOf="@+id/balanceUnconfirmedValue3"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/balanceTicker3" />
+
+    <TextView
+            android:id="@+id/HomeAddressText"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="@string/Address"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="@+id/sendButton"
+            app:layout_constraintStart_toEndOf="@+id/sendCoinType"
+            app:layout_constraintTop_toTopOf="@+id/sendButton"
+            app:layout_constraintVertical_bias="0.631" />
+
+    <TextView
+            android:id="@+id/amountText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="Amount"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="@+id/sendQuantity"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/sendQuantity"
+            app:layout_constraintVertical_bias="0.565" />
+
+    <TextView
+            android:text="approximately N USD"
+            android:layout_width="390dp"
+            android:layout_height="32dp"
+            android:id="@+id/approximatelyText" android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@+id/sendQuantity"
+            android:layout_marginStart="12dp" app:layout_constraintStart_toStartOf="parent"
+            android:textAlignment="center"/>
+
+    <EditText
+            android:id="@+id/sendQuantity"
+            android:layout_width="140dp"
+            android:layout_height="55dp"
+            android:layout_marginStart="8dp"
+            android:ems="10"
+            android:imeOptions="actionDone"
+            android:inputType="numberDecimal"
+            app:layout_constraintStart_toEndOf="@+id/amountText"
+            app:layout_constraintTop_toBottomOf="@+id/sendToAddress" />
+
+    <TextView
+            android:id="@+id/receiveAddress"
+            android:layout_width="408dp"
+            android:layout_height="33dp"
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:onClick="onReceiveAddrTextClicked"
+            android:text="receive address here"
+            android:textAlignment="center"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/ReceiveTitle"
+            app:layout_constraintTop_toBottomOf="@+id/ReceiveTitle" />
+
+    <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="130dp"
+            android:layout_height="128dp"
+            android:padding="0px"
+            android:paddingStart="0px"
+            android:paddingLeft="0px"
+            android:paddingTop="0px"
+            android:paddingEnd="0px"
+            android:paddingRight="0px"
+            android:paddingBottom="0px"
+            android:scaleType="fitXY"
+            android:scrollbars="none"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.81"
+            app:layout_constraintStart_toEndOf="@+id/splitBillButton"
+            app:layout_constraintTop_toBottomOf="@+id/receiveAddress"
+            app:srcCompat="@drawable/ic_launcher_background" />
+
+    <Spinner
+            android:id="@+id/sendCurrencyType"
+            android:layout_width="150dp"
+            android:layout_height="43dp"
+            android:layout_marginStart="12dp"
+            android:spinnerMode="dialog"
+            app:layout_constraintBottom_toBottomOf="@+id/sendQuantity"
+            app:layout_constraintStart_toEndOf="@+id/sendQuantity"
+            app:layout_constraintTop_toTopOf="@+id/sendQuantity" />
+    <Spinner
+            android:layout_width="129dp"
+            android:layout_height="40dp"
+            android:id="@+id/sendCoinType"
+            android:spinnerMode="dropdown"
+            app:layout_constraintStart_toEndOf="@+id/sendButton"
+            app:layout_constraintBottom_toBottomOf="@+id/sendButton"/>
+    <Spinner
+            android:layout_width="126dp"
+            android:layout_height="34dp"
+            android:id="@+id/recvCoinType"
+            android:spinnerMode="dropdown"
+            app:layout_constraintBottom_toBottomOf="@+id/ReceiveTitle"
+            app:layout_constraintStart_toEndOf="@+id/ReceiveTitle" android:layout_marginStart="8dp"/>
+
+    <EditText
+            android:id="@+id/sendToAddress"
+            android:layout_width="408dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="destination address here"
+            android:textAlignment="center"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sendButton" />
+
+    <ImageButton
+        android:id="@+id/readQRCodeButton"
+        android:layout_width="66dp"
+        android:layout_height="66dp"
+        app:layout_constraintBottom_toTopOf="@+id/nav_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/balanceValue3"
+        app:layout_constraintVertical_bias="0.844"
+        app:srcCompat="@drawable/ic_scanqricon" />
+
+    <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp" app:srcCompat="?attr/actionModePasteDrawable"
+            android:id="@+id/destAddrPasteButton"
+            app:layout_constraintStart_toEndOf="@+id/HomeAddressText" android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/HomeAddressText"
+            app:layout_constraintTop_toTopOf="@+id/HomeAddressText" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp"/>
+    <View
+            android:id="@+id/divider"
+            android:layout_width="395dp"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintHorizontal_bias="0.0" app:layout_constraintTop_toBottomOf="@+id/approximatelyText"
+    />
+    <View
+            android:id="@+id/divider2"
+            android:layout_width="395dp"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+            app:layout_constraintHorizontal_bias="1.0" app:layout_constraintTop_toBottomOf="@+id/imageView"
+            android:layout_marginTop="8dp"/>
+    <Button
+            android:text="@string/Send"
+            android:layout_width="92dp"
+            android:layout_height="45dp"
+            android:id="@+id/sendButton" android:textSize="20sp"
+            app:layout_constraintTop_toTopOf="parent"
+            android:onClick="onSendButtonClicked"
+            android:textAlignment="center" tools:layout_editor_absoluteX="8dp"/>
+
+    <Button
+            android:id="@+id/purchaseButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:onClick="onPurchaseButton"
+            android:text="@string/purchase"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/splitBillButton" />
+    <Button
+            android:text="@string/title_split_bill"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/splitBillButton"
+            app:layout_constraintTop_toBottomOf="@+id/ReceiveTitle" android:layout_marginTop="48dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="12dp"
+            android:onClick="onSplitBill"/>
+
+    <TextView
+            android:id="@+id/WalletChainInfo"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:gravity="center"
+            android:text=""
+            android:textAlignment="center"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/balanceTicker" />
+
+    <TextView
+            android:id="@+id/WalletChainInfo2"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:text=""
+            android:textAlignment="center"
+            app:layout_constraintTop_toBottomOf="@+id/balanceTicker2"
+            />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
