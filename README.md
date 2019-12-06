@@ -9,9 +9,33 @@ Use `git clone https://gitlab.com/wallywallet/android.git --recursive` or `git c
 
 ## Building
 
+### Tools
+
+#### Android Studio
+
+ * Download and install Android Studio
+
+https://developer.android.com/studio
+
+ * Install the Android NDK and CMake
+
+At the welcome screen, click "Configure" (bottom right) and choose "SDK Manager".  Next, Select "Android SDK" on the left and the "SDK Tools" tab.  Change your SDK location (if desired), check "NDK" and "CMake" and then click "Apply" or "OK" to make it happen.
+
+ * Enable phone emulation on your desktop
+
+Make sure that CPU virtualization is enabled in your BIOS (you'll get an error when you try to start a phone if it is not).
+
+ * If using Ubuntu Linux (or other Debian distribution): Add yourself to the /dev/kvm group, and logout or restart.
+
+```
+sudo adduser $USER kvm
+```
+Note the above **should** work but did not.  Another option on a single-user machine is to have your user own /dev/kvm:
+```
+sudo chown $USER /dev/kvm
+```
 
 ### Dependencies
-
 
 #### Bitcoin Cash Kotlin Library
 
@@ -30,7 +54,16 @@ This software uses the "libbitcoincash" library produced by Bitcoin Unlimited, v
 git clone git@github.com:BitcoinUnlimited/BitcoinUnlimited.git BUDIR
 ```
 
-Next, tell this project where libbitcoincash lis located.  Load the file .../android/app/src/main/cpp/CMakeLists.txt into an editor and change the cashlib_src_DIR variable:
+Next prepare BU for the libbitcoincash compilation:
+
+```bash
+cd BUDIR
+./autogen.sh
+```
+
+**Note, do NOT run ./configure.sh**. If you want to do a separate (non-Android) build, then do an out-of-source-tree build.  It is necessary for the Android build to pick up the _libsecp256k1-config.h_ file located in src/cashlib.  If you have run ./configure.sh, the Android build will pick up the _libsecp256k1-config.h_ file created during configure (which will result in a configuration optimized for your host machine), rather than a configuration compatible with Android devices.
+
+Next, tell this project where libbitcoincash is located.  Load the file .../android/app/src/main/cpp/CMakeLists.txt into an editor and change the cashlib_src_DIR variable:
 
 ```
 set( cashlib_src_DIR /fast/bitcoin/budev/src/cashlib )
@@ -40,10 +73,30 @@ to:
 set( cashlib_src_DIR BUDIR/src/cashlib )
 ```
 
+#### Boost
+
+The Android build expects that the boost source code is located in src/cashlib/boost.
+
+BitcoinUnlimited comes with a script to download and compile boost for Android.  Execute buildBoostAndroid.sh in the src/cashlib directory and create a symbolic link from the specific boost versioned directory (created by buildBoostAndroid.sh) to the name "boost" i.e:
+```bash
+ln -s boost_1_70_0 boost
+```
+
 ### Run a Build
 
-Start Android Studio and use the Build menu items to start a build.
+Start Android Studio and use the _Build_ menu to start a build.
 
+
+### Troubleshooting
+
+#### Error running src/cashlib/buildBoostAndroid.sh
+
+Don't worry about it.  We only use boost headers right now.
+
+#### Error compiling under Android Studio: missing int128 type
+
+You are including the host's version of libsecp256k1-config.h.
+Search the Bitcoin Unlimited source tree for this file and remove any copies except for the one located in src/cashlib.
 
 ## Localization
 
