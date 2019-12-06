@@ -66,6 +66,31 @@ class Coin(
     var balance: BigDecimal = 0.toBigDecimal(currencyMath).setScale(mBchDecimals)
     var unconfirmedBalance: BigDecimal = 0.toBigDecimal(currencyMath).setScale(mBchDecimals)
 
+    //? Completely delete this wallet, losing any money you may have in it
+    fun delete()
+    {
+        currentReceive = null
+        currentReceiveQR = null
+        wallet.delete()
+        balance = BigDecimal.ZERO
+        unconfirmedBalance = BigDecimal.ZERO
+    }
+
+    //? Disconnect from the UI and clear the UI
+    fun detachUI()
+    {
+        dbgAssertGuiThread()
+        tickerUI?.text = ""
+        balanceUI?.text = ""
+        unconfirmedBalanceUI?.text = ""
+        infoUI?.text = ""
+
+        tickerUI = null
+        balanceUI = null
+        unconfirmedBalanceUI = null
+        infoUI = null
+
+    }
 
     fun RegtestIP(): String
         {
@@ -84,6 +109,7 @@ class Coin(
         "mBR1" -> RegTestCnxnMgr("BR1", SimulationHostIP, BCHregtestPort)
         "mBR2" -> RegTestCnxnMgr("BR2", SimulationHostIP, BCHregtest2Port)
         "mTBCH" -> MultiNodeCnxnMgr("mTBCH", ChainSelector.BCHTESTNET, "testnet-seed.bitcoinabc.org") // "testnet-seed.bitcoinunlimited.info") //SimulationHostIP + ":" + BCHtestnetPort.toString())
+        "mBCH" -> MultiNodeCnxnMgr("mBCH", ChainSelector.BCHMAINNET, "seed.bitcoinunlimited.net") // "testnet-seed.bitcoinunlimited.info") //SimulationHostIP + ":" + BCHtestnetPort.toString())
         //"mBCH" -> "btccash-seeder.bitcoinunlimited.info"
         "mRBCH" -> RegTestCnxnMgr("mRBCH", RegtestIP(), mRBCHPort)
         else -> throw BadCryptoException()
@@ -99,6 +125,9 @@ class Coin(
 
         // Regtest for use alongside testnet
         "mRBCH" -> Blockchain(ChainSelector.BCHREGTEST, "mRBCH", cnxnMgr, Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"), Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"), Hash256("2a11fa1399e126cf549b9b9118436d4c39a95897933705c38e9cd706ef1f24dd"), 1, 4.toBigInteger(), context)
+
+        // Bitcoin Cash mainnet chain
+        "mBCH" -> Blockchain(ChainSelector.BCHMAINNET, "mBCH", cnxnMgr, Hash256("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"), Hash256("0000000000000000005801cf3a80ff69ab01b42ecdb5dffaa26a6e1f19614725"), Hash256("000000000000000002163ff4a3610362d607ae8d9b5bd5885f6a7b986810ce94"), 612068, "10cdd8c78f0daf0be6c2f2e".toBigInteger(16), context)
 
         else -> throw BadCryptoException()
     }
@@ -304,15 +333,22 @@ class WallyApp: Application()
                 //coins.getOrPut("mBR1", { val c = Coin("mBR1", ctxt); c.getReceiveInfo(1); c })
                 //coins.getOrPut("mBR2", { val c = Coin("mBR2", ctxt); c.getReceiveInfo(1); c })
 
-                coins.getOrPut("mTBCH") {
-                    val c = Coin("mTBCH", ChainSelector.BCHTESTNET, ctxt);
+                coins.getOrPut("mBCH") {
+                    val c = Coin("mBCH", ChainSelector.BCHMAINNET, ctxt);
                     c
                 }
 
+
+                coins.getOrPut("mTBCH") {
+                        val c = Coin("mTBCH", ChainSelector.BCHTESTNET, ctxt);
+                        c
+                    }
+
                 coins.getOrPut("mRBCH") {
-                    val c = Coin("mRBCH", ChainSelector.BCHREGTEST, ctxt);
-                    c
-                }
+                        val c = Coin("mRBCH", ChainSelector.BCHREGTEST, ctxt);
+                        c
+                    }
+
 
 
 

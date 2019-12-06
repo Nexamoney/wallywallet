@@ -8,7 +8,10 @@ import android.view.View
 import android.content.Context
 import android.widget.Adapter
 import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Spinner
+import bitcoinunlimited.libbitcoincash.dbgAssertGuiThread
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_settings.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -80,6 +83,12 @@ class settings : AppCompatActivity()
            wordSeeds = wordSeeds + c.value.wallet.name + ":" + c.value.wallet.secretWords + "\n"
         }
         wordSeed.text = wordSeeds
+
+        dbgAssertGuiThread()
+        // Set up the crypto spinners to contain all the cryptos this wallet supports
+        val coinSpinData = coins.keys.toTypedArray()
+        val coinAa = ArrayAdapter(this, android.R.layout.simple_spinner_item, coinSpinData)
+        deleteWalletAccountChoice?.setAdapter(coinAa)
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -110,4 +119,22 @@ class settings : AppCompatActivity()
             }
         }
     }
+
+    @Suppress("UNUSED_PARAMETER")
+    /** Delete a wallet account */
+    public fun onDeleteAccountButton(v: View)
+    {
+        // TODO add a big warning and confirmation dialog
+        val accountName = deleteWalletAccountChoice.selectedItem.toString()
+        val coin = coins[accountName]
+        if (coin == null) return
+        coin.detachUI()
+        coins.remove(accountName)  // remove this coin from any global access before we delete it
+
+        GlobalScope.launch { // cannot access db in UI thread
+            coins.remove(accountName)  // remove this coin from any global access before we delete it
+            coin.delete()
+            }
+    }
+
 }

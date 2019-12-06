@@ -52,6 +52,7 @@
     <string name="logDebugData">Log Debug Data</string>
     <string name="rediscoverTooltip">Delete blockchain state and search anew for all transactions relevant to the wallet</string>
     <string name="wordSeed">Wallet Backup Secrets</string>
+    <string name="deleteWalletAccount">Delete Account</string>
     <!-- Split bill -->
     <string name="Total">Total</string>
     <string name="Ways">Ways</string>

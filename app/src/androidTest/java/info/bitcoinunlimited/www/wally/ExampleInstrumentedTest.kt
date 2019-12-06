@@ -502,7 +502,7 @@ class AndroidTest
             val b = tv[0].FromHex()
             val words = GenerateBip39SecretWords(b)
             check(words == tv[1])
-            val seed = GenerateBip39Seed(words,"TREZOR")
+            val seed = GenerateBip39Seed(words,"TREZOR", 32)
             check(seed.ToHex() == tv[2])
             //LogIt.info(seed.ToHex())
         }

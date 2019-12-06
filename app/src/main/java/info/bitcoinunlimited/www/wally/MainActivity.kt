@@ -382,15 +382,13 @@ class MainActivity : CommonActivity()
     fun updateGUI()
     {
         dbgAssertGuiThread()
-        var c1:Coin? = coins["mTBCH"] // coins["mBR1"]
+        var c1:Coin? = coins["mBCH"] // coins["mBR1"]
         c1?.setUI(balanceTicker, balanceValue, balanceUnconfirmedValue, WalletChainInfo)
-
-        var c2:Coin? = coins["mRBCH"] // regtest
+        var c2:Coin? = coins["mTBCH"] // coins["mBR1"]
         c2?.setUI(balanceTicker2, balanceValue2, balanceUnconfirmedValue2, WalletChainInfo2)
 
-        // Turn off 2nd coin for now
-        //var d:Coin? = coins["mBR2"]
-        //d?.setUI(balanceTicker2, balanceValue2, balanceUnconfirmedValue2)
+        var c3:Coin? = coins["mRBCH"] // regtest
+        c3?.setUI(balanceTicker3, balanceValue3, balanceUnconfirmedValue3, null)
 
         for (c in coins.values)
         {
