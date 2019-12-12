@@ -31,195 +31,188 @@
     <TextView
         android:id="@+id/balanceTicker"
         android:layout_width="80dp"
-        android:layout_height="36dp"
-        android:layout_marginEnd="8dp"
+        android:layout_height="32dp"
         android:gravity="center"
         android:textAlignment="center"
         android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/balanceValue"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/balanceTitle" />
 
     <TextView
         android:id="@+id/balanceTicker2"
         android:layout_width="80dp"
-        android:layout_height="36dp"
+        android:layout_height="32dp"
         android:gravity="center"
         android:text=""
         android:textAlignment="center"
         android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/WalletChainInfo" />
 
     <TextView
         android:id="@+id/balanceTicker3"
         android:layout_width="80dp"
-        android:layout_height="36dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="32dp"
         android:gravity="center"
         android:text=""
         android:textAlignment="center"
         android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/WalletChainInfo2" />
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="@+id/balanceTicker2" />
 
     <TextView
         android:id="@+id/balanceTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
         android:text="@string/Balance"
         android:textSize="24sp"
-        app:layout_constraintStart_toStartOf="@+id/ReceiveTitle"
-        app:layout_constraintTop_toBottomOf="@+id/divider2" />
+        app:layout_constraintStart_toStartOf="@+id/balanceTicker"
+        app:layout_constraintTop_toBottomOf="@+id/receiveAddress" />
 
     <TextView
         android:id="@+id/balanceUnconfirmedValue"
-        android:layout_width="160dp"
-        android:layout_height="36dp"
+        android:layout_width="111dp"
+        android:layout_height="32dp"
         android:gravity="center"
         android:textAlignment="center"
         android:textColor="#FF9800"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/balanceValue"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/balanceValue"
         app:layout_constraintTop_toTopOf="@+id/balanceValue"
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/balanceUnconfirmedValue2"
-        android:layout_width="160dp"
-        android:layout_height="36dp"
+        android:layout_width="111dp"
+        android:layout_height="32dp"
         android:gravity="center"
         android:textAlignment="center"
         android:textColor="#FF9800"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/balanceTicker2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/balanceValue2" />
+        app:layout_constraintStart_toEndOf="@+id/balanceValue2"
+        app:layout_constraintTop_toBottomOf="@+id/balanceUnconfirmedValue" />
 
     <TextView
         android:id="@+id/balanceUnconfirmedValue3"
-        android:layout_width="160dp"
-        android:layout_height="36dp"
+        android:layout_width="111dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="4dp"
         android:gravity="center"
         android:textAlignment="center"
         android:textColor="#FF9800"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/balanceTicker3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/balanceValue3" />
+        app:layout_constraintStart_toEndOf="@+id/balanceValue3"
+        app:layout_constraintTop_toBottomOf="@+id/balanceUnconfirmedValue2"
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/balanceValue"
-        android:layout_width="160dp"
-        android:layout_height="36dp"
-        android:layout_marginEnd="8dp"
+        android:layout_width="132dp"
+        android:layout_height="32dp"
         android:gravity="center"
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_light"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/balanceTicker"
-        app:layout_constraintEnd_toStartOf="@+id/balanceUnconfirmedValue"
+        app:layout_constraintStart_toEndOf="@+id/balanceTicker"
         app:layout_constraintTop_toTopOf="@+id/balanceTicker"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/balanceValue2"
-        android:layout_width="160dp"
-        android:layout_height="36dp"
-        android:layout_marginStart="8dp"
+        android:layout_width="132dp"
+        android:layout_height="32dp"
         android:gravity="center"
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_light"
         android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/balanceTicker2"
-        app:layout_constraintEnd_toStartOf="@+id/balanceUnconfirmedValue2"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/balanceTicker2" />
+        app:layout_constraintStart_toEndOf="@+id/balanceTicker2"
+        app:layout_constraintTop_toBottomOf="@+id/balanceValue" />
 
     <TextView
         android:id="@+id/balanceValue3"
-        android:layout_width="160dp"
-        android:layout_height="36dp"
-        android:layout_marginStart="8dp"
+        android:layout_width="132dp"
+        android:layout_height="32dp"
         android:gravity="center"
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_light"
         android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/balanceTicker3"
-        app:layout_constraintEnd_toStartOf="@+id/balanceUnconfirmedValue3"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/balanceTicker3" />
+        app:layout_constraintStart_toEndOf="@+id/balanceTicker3"
+        app:layout_constraintTop_toBottomOf="@+id/balanceValue2" />
 
     <TextView
         android:id="@+id/HomeAddressText"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="28dp"
         android:text="@string/Address"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="@+id/sendButton"
         app:layout_constraintStart_toEndOf="@+id/sendCoinType"
         app:layout_constraintTop_toTopOf="@+id/sendButton"
-        app:layout_constraintVertical_bias="0.631" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/amountText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:text="@string/Amount"
-        android:textSize="24sp"
+        android:layout_marginStart="8dp"
+        android:text="Amount"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/sendQuantity"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/sendQuantity"
-        app:layout_constraintVertical_bias="0.565" />
+        app:layout_constraintVertical_bias="0.384" />
 
     <TextView
         android:id="@+id/approximatelyText"
-        android:layout_width="match_parent"
+        android:layout_width="278dp"
         android:layout_height="32dp"
-        android:layout_marginStart="4dp"
+        android:layout_marginTop="12dp"
+        android:autoSizeMaxTextSize="18sp"
+        android:autoSizeMinTextSize="10sp"
+        android:autoSizeStepGranularity="1sp"
+        android:autoSizeTextType="uniform"
         android:text="approximately N USD"
         android:textAlignment="center"
-        android:autoSizeTextType="uniform"
-        android:autoSizeMinTextSize="10sp"
-        android:autoSizeMaxTextSize="18sp"
-        android:autoSizeStepGranularity="1sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sendQuantity" />
+        app:layout_constraintStart_toEndOf="@+id/sendCurrencyType"
+        app:layout_constraintTop_toBottomOf="@+id/sendToAddress" />
 
     <EditText
         android:id="@+id/sendQuantity"
-        android:layout_width="140dp"
-        android:layout_height="55dp"
-        android:layout_marginStart="8dp"
+        android:layout_width="127dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="20dp"
         android:ems="10"
         android:imeOptions="actionDone"
         android:inputType="numberDecimal"
         app:layout_constraintStart_toEndOf="@+id/amountText"
-        app:layout_constraintTop_toBottomOf="@+id/sendToAddress" />
+        app:layout_constraintTop_toBottomOf="@+id/sendCoinType" />
 
     <TextView
         android:id="@+id/receiveAddress"
-        android:layout_width="408dp"
-        android:layout_height="33dp"
-        android:layout_marginEnd="8dp"
+        android:layout_width="384dp"
+        android:layout_height="31dp"
+        android:autoSizeMaxTextSize="20sp"
+        android:autoSizeMinTextSize="8sp"
+        android:autoSizeStepGranularity="1sp"
+        android:autoSizeTextType="uniform"
         android:clickable="true"
         android:onClick="onReceiveAddrTextClicked"
-        android:text="receive address here"
         android:textAlignment="center"
-        android:textSize="13sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/ReceiveTitle"
-        app:layout_constraintTop_toBottomOf="@+id/ReceiveTitle" />
+        app:layout_constraintEnd_toStartOf="@+id/readQRCodeButton"
+        app:layout_constraintStart_toEndOf="@+id/recvCoinType"
+        app:layout_constraintTop_toBottomOf="@+id/divider" />
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="130dp"
-        android:layout_height="128dp"
+        android:layout_width="137dp"
+        android:layout_height="131dp"
         android:padding="0px"
         android:paddingStart="0px"
         android:paddingLeft="0px"
@@ -230,15 +223,15 @@
         android:scaleType="fitXY"
         android:scrollbars="none"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.81"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/splitBillButton"
-        app:layout_constraintTop_toBottomOf="@+id/receiveAddress"
+        app:layout_constraintTop_toBottomOf="@+id/recvCoinType"
         app:srcCompat="@drawable/ic_launcher_background" />
 
     <Spinner
         android:id="@+id/sendCurrencyType"
-        android:layout_width="150dp"
-        android:layout_height="43dp"
+        android:layout_width="117dp"
+        android:layout_height="38dp"
         android:layout_marginStart="12dp"
         android:spinnerMode="dialog"
         app:layout_constraintBottom_toBottomOf="@+id/sendQuantity"
@@ -248,7 +241,7 @@
     <Spinner
         android:id="@+id/sendCoinType"
         android:layout_width="129dp"
-        android:layout_height="40dp"
+        android:layout_height="45dp"
         android:spinnerMode="dropdown"
         app:layout_constraintBottom_toBottomOf="@+id/sendButton"
         app:layout_constraintStart_toEndOf="@+id/sendButton" />
@@ -264,44 +257,40 @@
 
     <EditText
         android:id="@+id/sendToAddress"
-        android:layout_width="408dp"
-        android:layout_height="36dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_width="284dp"
+        android:layout_height="34dp"
+        android:layout_marginTop="4dp"
+        android:autoSizeMaxTextSize="20sp"
+        android:autoSizeMinTextSize="8sp"
+        android:autoSizeStepGranularity="1sp"
+        android:autoSizeTextType="uniform"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text=""
+        android:text="destination address here"
         android:textAlignment="center"
-        android:autoSizeTextType="uniform"
-        android:autoSizeMinTextSize="8sp"
-        android:autoSizeMaxTextSize="20sp"
-        android:autoSizeStepGranularity="1sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sendButton" />
+        app:layout_constraintStart_toEndOf="@+id/HomeAddressText"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/readQRCodeButton"
         android:layout_width="66dp"
         android:layout_height="66dp"
-        app:layout_constraintBottom_toTopOf="@+id/divider2"
-        app:layout_constraintEnd_toStartOf="@+id/imageView"
-        app:layout_constraintStart_toEndOf="@+id/splitBillButton"
-        app:layout_constraintTop_toBottomOf="@+id/receiveAddress"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.36"
+        app:layout_constraintStart_toEndOf="@+id/approximatelyText"
+        app:layout_constraintTop_toBottomOf="@+id/destAddrPasteButton"
         app:srcCompat="@drawable/ic_scanqricon" />
 
     <ImageButton
         android:id="@+id/destAddrPasteButton"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/HomeAddressText"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/HomeAddressText"
+        app:layout_constraintStart_toEndOf="@+id/sendToAddress"
         app:layout_constraintTop_toTopOf="@+id/HomeAddressText"
+        app:layout_constraintVertical_bias="0.75"
         app:srcCompat="?attr/actionModePasteDrawable" />
 
     <View
@@ -309,29 +298,28 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/readQRCodeButton"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/approximatelyText" />
 
     <View
         android:id="@+id/divider2"
-        android:layout_width="395dp"
+        android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <Button
         android:id="@+id/sendButton"
-        android:layout_width="92dp"
+        android:layout_width="wrap_content"
         android:layout_height="45dp"
         android:onClick="onSendButtonClicked"
         android:text="@string/Send"
@@ -344,8 +332,7 @@
         android:id="@+id/purchaseButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginStart="8dp"
         android:onClick="onPurchaseButton"
         android:text="@string/purchase"
         app:layout_constraintStart_toStartOf="parent"
@@ -355,8 +342,7 @@
         android:id="@+id/splitBillButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginStart="4dp"
         android:onClick="onSplitBill"
         android:text="@string/title_split_bill"
         app:layout_constraintStart_toStartOf="parent"
@@ -364,23 +350,24 @@
 
     <TextView
         android:id="@+id/WalletChainInfo"
-        android:layout_width="match_parent"
+        android:layout_width="140dp"
         android:layout_height="32dp"
         android:gravity="center"
         android:text=""
         android:textAlignment="center"
         android:textSize="12sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/balanceTicker" />
+        app:layout_constraintStart_toEndOf="@+id/balanceUnconfirmedValue"
+        app:layout_constraintTop_toBottomOf="@+id/balanceTitle" />
 
     <TextView
         android:id="@+id/WalletChainInfo2"
-        android:layout_width="match_parent"
+        android:layout_width="140dp"
         android:layout_height="32dp"
         android:gravity="center"
         android:text=""
         android:textAlignment="center"
         android:textSize="12sp"
-        app:layout_constraintTop_toBottomOf="@+id/balanceTicker2" />
+        app:layout_constraintStart_toEndOf="@+id/balanceUnconfirmedValue2"
+        app:layout_constraintTop_toBottomOf="@+id/WalletChainInfo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

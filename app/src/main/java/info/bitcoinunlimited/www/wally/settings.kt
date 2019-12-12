@@ -44,7 +44,7 @@ class settings : AppCompatActivity()
         get() = (getApplication() as WallyApp).coins
 
     @Suppress("UNUSED_PARAMETER")
-    fun onFiatChange(guiElem: View): Boolean
+    fun onFiatChange(guiElem: View?): Boolean
     {
         val preferenceDB = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
         with (preferenceDB.edit())
@@ -66,7 +66,7 @@ class settings : AppCompatActivity()
 
         fiatCurrencySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
         {
-            override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long)
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long)
             {
                 this@settings.onFiatChange(view)
             }

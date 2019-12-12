@@ -30,7 +30,7 @@
       </configuration>
     </facet>
     <facet type="kotlin-language" name="Kotlin">
-      <configuration version="3" platform="JVM 1.8" allPlatforms="JVM [1.8]" useProjectSettings="false" pureKotlinSourceFolders="$MODULE_DIR$/src/debug/kotlin;/fast/bitcoin/wally/android/app/src/debug/java;/fast/bitcoin/wally/android/app/src/release/kotlin;/fast/bitcoin/wally/android/app/src/release/java;/fast/bitcoin/wally/android/app/src/debugAndroidTest/kotlin;/fast/bitcoin/wally/android/app/src/debugUnitTest/kotlin;/fast/bitcoin/wally/android/app/src/releaseUnitTest/kotlin">
+      <configuration version="3" platform="JVM 1.8" allPlatforms="JVM [1.8]" useProjectSettings="false">
         <compilerSettings>
           <option name="additionalArguments" value="-Xallow-no-source-files" />
         </compilerSettings>

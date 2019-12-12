@@ -27,6 +27,8 @@ val RblankAddress = R.string.blankAddress
 val RblockNotForthcoming = R.string.blockNotForthcoming
 val RheadersNotForthcoming = R.string.headersNotForthcoming
 val RbadTransaction = R.string.badTransaction
+val RfeeExceedsFlatMax = R.string.feeExceedsFlatMax
+var RexcessiveFee = R.string.excessiveFee
 
 open class AssertException(why: String): BUException(why, "Assertion", ErrorSeverity.Abnormal)
 

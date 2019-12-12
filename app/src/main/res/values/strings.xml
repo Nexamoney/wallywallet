@@ -55,7 +55,9 @@
     <string name="deleteWalletAccount">Delete Account</string>
     <!-- Split bill -->
     <string name="Total">Total</string>
+    <!-- Ways refers to how many equal portions a bill is being split into -->
     <string name="Ways">Ways</string>
+    <!-- Tip (gratuity) is how much more money you want to pay above the value of the bill -->
     <string name="Tip">Tip</string>
     <string name="Amount">Amount</string>
     <!-- Home Page -->
@@ -68,13 +70,22 @@
     <string name="invalidQuantity">invalid quantity</string>
     <string name="purchase">purchase</string>
     <string name="scanPaymentQRcode">Scan payment address QR code</string>
+    <!-- You clicked the paste button (in a copy/paste operation), but nothing was copied -->
     <string name="pasteIsEmpty">paste empty</string>
+    <!-- Informational: The contents of the copy/paste buffer didn't make any sense to me, but you didn't explicitly tell me to paste so maybe that's ok.
+     The app did not use this paste information.  This error happens when the app checks for implicit pastes.  For example, when wally wallet
+     starts up it guesses that it might have been started to make a payment so checks the paste buffer for a destination address.
+     -->
     <string name="pasteIgnored">paste ignored</string>
+    <!-- Error: The information in the copy/paste buffer didn't make any sense to me (not a crypto address, for example), and you explicitly asked me to paste.
+     The app refuses to fill the field with this information because it doesn't make sense to do so. -->
     <string name="pasteUnintelligible">paste not understood</string>
     <string name="chainIncompatibleWithAddress">address incompatible</string>
 
     <string name="approximatelyT">approximately %qty %fiat</string>
+    <!-- user is attempting to send more cryptocurrency than the wallet contains.  The payment can't happen -->
     <string name="moreThanAvailable">"(more than available)"</string>
+    <!-- This is a warning or informational message.  It says that the user is sending recently received coins, which is perfectly OK but slightly increases the chance of payment failure -->
     <string name="moreThanConfirmedAvailable">"(more than confirmed)"</string>
     <string name="actuallySendingT">actually sending %qty %crypto</string>
     <string name="copied">...copied to clipboard...</string>
@@ -85,6 +96,8 @@
 
     <!-- Identity -->
 
+    <!-- Some web site or company that you've never contacted before is requesting that you set up an account and authenticate a log-in.  This is an informational message
+     that happens whenever the user first sets up a relationship between the web site/company and their wallet -->
     <string name="newDomainRequestingIdentity">New Domain Requesting Identity</string>
     <string name="useUniqueIdentityToolTip">Turn on to keep your identity here separate from other sites.</string>
     <string name="provideRealName">provide your real name?</string>
@@ -109,6 +122,8 @@
     <!-- Error strings -->
     <string name="unknownError">error</string>
     <string name="insufficentBalance">insufficient balance</string>
+    <string name="excessiveFee">excessive fee</string>
+    <string name="feeExceedsFlatMax">fee exceeds configured maximum allowed flat fee</string>
     <string name="notSupported">not supported</string>
     <string name="dataMissing">missing data</string>
     <string name="headersNotForthcoming">headers are not being provided</string>
@@ -117,7 +132,13 @@
     <string name="badTransaction">bad transaction</string>
     <string name="badAddress">invalid address</string>
     <string name="badAmount">invalid amount</string>
+    <!-- The crypto currency code (e.g BTC, mBCH, etc) is not understood or handled by this wallet.  This message will be very hard to actually see because the UI
+    protects against entering unknown crypto codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
+     -->
     <string name="badCryptoCode">not crypto</string>
+    <!-- The fiat currency code (e.g USD, EUR, JPY etc) is not understood or handled by this wallet.  This message will be very hard to actually see because the UI
+      protects against entering unknown fiat codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
+    -->
     <string name="badCurrencyUnit">not currency</string>
     <string name="detailsOfBadAmountFromIntent">The calling program supplied badly formatted number when providing the
         quantity to send. You will need to enter the quantity yourself
