@@ -19,16 +19,24 @@
             android:layout_marginTop="20dp"
             app:layout_constraintStart_toStartOf="parent" android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toEndOf="parent"/>
+
     <TextView
-            android:layout_width="408dp"
-            android:layout_height="35dp"
-            android:id="@+id/commonIdentityAddress"
-            android:text="common identity address here"
-            android:textAlignment="center" android:textStyle="bold"
-            android:clickable="true" android:onClick="onCommonIdentityAddrTextClicked"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="@+id/ReceiveTitle"
-            app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="16dp"/>
+        android:id="@+id/commonIdentityAddress"
+        android:layout_width="0dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="16dp"
+        android:clickable="true"
+        android:onClick="onCommonIdentityAddrTextClicked"
+        android:text="common identity address here"
+        android:textAlignment="center"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="8sp"
+        android:autoSizeMaxTextSize="26sp"
+        android:autoSizeStepGranularity="1sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
     <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/nav_view"
             android:layout_width="0dp"

@@ -69,6 +69,15 @@
                     android:value="info.bitcoinunlimited.www.wally.MainActivity"/>
         </activity>
         <activity
+            android:name=".TxHistoryActivity"
+            android:label="@string/title_activity_tx_history"
+            android:launchMode="singleTask"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="info.bitcoinunlimited.www.wally.MainActivity"/>
+        </activity>
+        <activity
                 android:name=".ExchangeActivity"
                 android:label="@string/title_activity_exchange"
                 android:launchMode="singleTask"

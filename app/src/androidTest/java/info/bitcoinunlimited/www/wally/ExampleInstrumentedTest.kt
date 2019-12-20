@@ -1,5 +1,6 @@
 package bitcoinunlimited.wally
 
+import android.util.Log
 import androidx.test.InstrumentationRegistry
 import androidx.test.filters.SmallTest
 import androidx.test.runner.AndroidJUnit4
@@ -17,10 +18,13 @@ import kotlinx.coroutines.*
 import kotlinx.serialization.Serializable
 import java.lang.AssertionError
 import java.lang.Exception
+import java.math.BigDecimal
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.logging.Logger
 import java.util.Random
+import java.util.concurrent.Executors
+import kotlin.coroutines.CoroutineContext
 
 // The IP address of the host machine: Android sets up a fake network with the host hardcoded to this IP
 val EMULATOR_HOST_IP = "192.168.1.100"
@@ -190,8 +194,11 @@ class AndroidTest
     @Test
     fun testCoCond()
     {
+        val coCtxt: CoroutineContext = Executors.newFixedThreadPool(2).asCoroutineDispatcher()
+        val coScope: CoroutineScope = kotlinx.coroutines.CoroutineScope(coCtxt)
+
         runBlocking {
-            var c1 = CoCond<Nothing?>()
+            var c1 = CoCond<Nothing?>(coScope)
             var v = 1;
             val cor = GlobalScope.launch { c1.yield(); v = 3 }
             v = 2
@@ -202,7 +209,7 @@ class AndroidTest
 
         runBlocking {
 
-            var c1 = CoCond<Int>()
+            var c1 = CoCond<Int>(coScope)
             var v = 1;
             val cor = GlobalScope.launch { v = c1.yield()!!; }
             //val cor2 = GlobalScope.launch { v = c1.yield()!!; }
@@ -244,8 +251,11 @@ class AndroidTest
     @Test
     fun testCodec()
     {
+        Log.e("testCodec", "testCodec start")
         var data = byteArrayOf(1,2,3,4,5,6,7,8,9,10, 0, -1, 127, -127 )
         var str = Codec.encode64(data)
+        LogIt.info(str)
+        Log.e("testCodec", str)
         var data2 = Codec.decode64(str)
         check(data contentEquals data2)
     }
@@ -267,6 +277,8 @@ class AndroidTest
         sp.spentHeight = 5739243
         sp.spentBlockHash = Guid()
 
+        val rawAddr = (sp.addr as PayAddress).data
+        check(rawAddr.size == 20)
 
         val serScr = sp.priorOutScript.BCHserialize(SerializationType.DISK).flatten()
         val scr2 = BCHscript(chain)
@@ -297,8 +309,39 @@ class AndroidTest
     {
         val secret = ByteArray(32, {_ -> 1})
         val index = 0
-        val newSecret = Key.Hd44DeriveChildKey(secret, 27, Key.ANY, 0, 1, index.toInt())
+        val newSecret = AddressDerivationKey.Hd44DeriveChildKey(secret, 27, AddressDerivationKey.ANY, 0, 1, index.toInt())
         LogIt.info("HD key: " + newSecret.toHex())
+        assertEquals(newSecret.toHex(), "9c219cb84e3199b076aaa0f954418407b1e8d54f79103612fbaf04598bc8be55")
+
+        // Test vector for wallet derivation path
+        val wal = Bip44Wallet("mBCH", ChainSelector.BCHMAINNET,"night wing zebra gate juice absorb student disease gospel maple depth trap")
+        val knownAddrs = mutableListOf(
+        "bitcoincash:qpwxcdytyswysm7qmvlnmu7pw4zhdgtzrctr5plkfn",
+        "bitcoincash:qpxzpeh39jhduns9srpjc5jzhsmx9x95rsqeeyfask",
+        "bitcoincash:qqauxecsjlk2y23ssnvljgpdd60p53sfkgear23ct3",
+        "bitcoincash:qrs0muk7f48tzj8fkn5qze62vd6jad80fs6rwvsrs2",
+        "bitcoincash:qply459hr7q2x9yxg7k53ge3hxykyvq635t4ahaj27",
+        "bitcoincash:qqqxnsm3ku23nhhv353kzatrdqqq3pzfaqn3am8m9x",
+        "bitcoincash:qqqxqj7wvyhgewqrxvc86k70tm4er83pxsn979qhe2",
+        "bitcoincash:qztmzqp70fv69nuc2axvxq0fzjv8rpq0nyh8qglnax",
+        "bitcoincash:qqhv59yk4dg25mmr7ntantdge97gw9lgwgzk7yu44v",
+        "bitcoincash:qqhz9jpyqh386lqm2k0hunraxlpvf3w25sqt5qnmp4",
+        "bitcoincash:qzmkzaau9c2qsh6nnch9n80re265f3x4cc4zcq4hkp",
+        "bitcoincash:qr2f65qgg6pjqjd3e6r0gmu5xvjrtwpfdcvcremzgr",
+        "bitcoincash:qz8zvka9vjdygyargww8w7ax6h55u5uzag9v4jrva9",
+        "bitcoincash:qz2057l2t9mu97mv7xl28s2xv7xkjh5xwsylgaz0x2",
+        "bitcoincash:qqfh83y0ynkgg893gvctjh4kfr03ew72vqef6npejl",
+        "bitcoincash:qz0qkex8r0jcz5zx3s67fpeme26esfrm8yy0axhxm7",
+        "bitcoincash:qpggr3sjzkm44xmktzdsjkjg7yapqtntj5jyt0cwm8",
+        "bitcoincash:qr2v54yh7qehgl79y7lvmfc5248q6x7dsq5rqxhh29",
+        "bitcoincash:qrja9sckkrckptkckpk6p0pwsuarm5qyr5w4fwvtn8",
+        "bitcoincash:qq406tnvlgl52f93ruu9l7uqqu0gnxmk9u02kk28py")
+        for (addr in knownAddrs)
+        {
+            val d = wal.generateDestination()
+            assertEquals(d.address.toString(), addr)
+        }
+
     }
 
     @Test
@@ -365,13 +408,13 @@ class AndroidTest
         tx.inputs.add(BCHinput(ChainSelector.BCHREGTEST, in1, BCHscript(ChainSelector.BCHREGTEST), 0xffffffff))
         var out1 = BCHoutput(ChainSelector.BCHREGTEST,10001, BCHscript(ChainSelector.BCHREGTEST, "76a914431ecec94e0a920a7972b084dcfabbd69f61691288ac"))
         tx.outputs.add(out1)
-        var ser = tx.BCHserialize()
+        var ser = tx.BCHserialize(SerializationType.NETWORK)
         LogIt.info("tx: " + ser.ToHex())
         assertEquals(4, 2 + 2)
 
         ser.flatten()
         var tx2 = BCHtransaction(ChainSelector.BCHREGTEST, ser)
-        var ser2 = tx2.BCHserialize()
+        var ser2 = tx2.BCHserialize(SerializationType.NETWORK)
         ser2.flatten()
         LogIt.info("tx: " + ser2.ToHex())
 
@@ -385,6 +428,21 @@ class AndroidTest
     @Test
     fun testKeys()
     {
+        // Test that BCHoutpoint is a proper map key
+        val paymentHistory: MutableMap<BCHoutpoint, Int> = mutableMapOf()
+        val testOutpoint = BCHoutpoint(Hash256("00112233445566778899aabbccddeeff000102030405060708090a0b0c0d0e0f"), 0)
+        paymentHistory[testOutpoint] = 1
+        check(paymentHistory[testOutpoint] == 1)
+
+        val testOutpoint2 = BCHoutpoint(Hash256("00112233445566778899aabbccddeeff000102030405060708090a0b0c0d0e0f"), 0)
+        check(paymentHistory[testOutpoint2] != null)
+        val testOutpoint3 = BCHoutpoint(Hash256("00112233445566778899aabbccddeeff000102030405060708090a0b0c0d0e0f"), 1)
+        check(paymentHistory[testOutpoint3] == null)
+        val testOutpoint4 = BCHoutpoint(Hash256("00112233445566778899aabbccddeeff000102030405060708090a0b0c0d0e00"), 0)
+        check(paymentHistory[testOutpoint4] == null)
+
+
+        // Test that PayAddress is a proper map key
         var receiving: MutableMap<PayAddress, Int> = mutableMapOf()
 
         val inserted = PayAddress(ChainSelector.BCHREGTEST, PayAddressType.P2PKH,"0123456789abcdef01230123456789abcdef0123".FromHex())
@@ -495,6 +553,7 @@ class AndroidTest
     @Test
     fun testBip39()
     {
+        LogIt.info("testBip39")
         val result = GenerateEntropy(128)
 
         for (tv in bip39TestVector)
@@ -502,11 +561,19 @@ class AndroidTest
             val b = tv[0].FromHex()
             val words = GenerateBip39SecretWords(b)
             check(words == tv[1])
-            val seed = GenerateBip39Seed(words,"TREZOR", 32)
+            val seed = GenerateBip39Seed(words,"TREZOR", 64)
+            LogIt.info(seed.ToHex())
             check(seed.ToHex() == tv[2])
-            //LogIt.info(seed.ToHex())
         }
 
+    }
+
+    @Test
+    fun testBitcoinComPrices()
+    {
+        val result = historicalMbchInFiat("USD", 1576616203)
+        LogIt.info(result.toPlainString())
+        check(result == BigDecimal(".18293").setScale(16))
     }
 
     companion object

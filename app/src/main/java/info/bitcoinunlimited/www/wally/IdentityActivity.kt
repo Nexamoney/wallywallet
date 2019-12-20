@@ -115,15 +115,22 @@ class IdentityActivity : CommonActivity()
         linearLayoutManager = LinearLayoutManager(this)
         identityList.layoutManager = linearLayoutManager
         laterUI {
-            val wallet = (application as WallyApp).primaryWallet
-            val identities: ArrayList<IdentityDomain> = ArrayList(wallet.allIdentityDomains())
-            LogIt.info("identity domain count:" + identities.size.toString())
-            LogIt.info(wallet.allIdentityDomains().map { it.domain }.toString())
-            adapter = RecyclerAdapter(identities)
-            identityList.adapter = adapter
+            try
+            {
+                val wallet = (application as WallyApp).primaryWallet
+                val identities: ArrayList<IdentityDomain> = ArrayList(wallet.allIdentityDomains())
+                LogIt.info("identity domain count:" + identities.size.toString())
+                LogIt.info(wallet.allIdentityDomains().map { it.domain }.toString())
+                adapter = RecyclerAdapter(identities)
+                identityList.adapter = adapter
 
-            val dest = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
-            commonIdentityAddress.text = dest.address.toString()
+                val dest = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
+                commonIdentityAddress.text = dest.address.toString()
+            }
+            catch(e: PrimaryWalletInvalidException)
+            {
+                displayError(R.string.NoAccounts)
+            }
         }
 
 

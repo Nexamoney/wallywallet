@@ -150,7 +150,6 @@
 
     <!-- Not part of the UI -->
     <string name="preferenceFileName">bitcoinunlimited.wally.prefs</string>
-    <string name="localCurrency">localCurrency</string>
     <string name="title_activity_domain_identity_settings">Domain Identity Settings</string>
 
     <!-- Domain Identity Settings -->
@@ -169,5 +168,6 @@
     <string name="attachment_title">Last ned innkommende vedlegg</string>
     <string name="attachment_summary_on">Last ned e-postvedlegg automatisk</string>
     <string name="attachment_summary_off">Bare last ned vedlegg ved forespørsel</string>
+    <string name="localCurrency">Lokal valuta</string>
 
 </resources>

@@ -34,6 +34,8 @@
         android:layout_height="36dp"
         android:layout_marginEnd="8dp"
         android:gravity="center"
+        android:clickable="true"
+        android:onClick="onBalanceTickerClicked"
         android:textAlignment="center"
         android:textSize="20sp"
         app:layout_constraintEnd_toStartOf="@+id/balanceValue"
@@ -48,6 +50,8 @@
         android:gravity="center"
         android:text=""
         android:textAlignment="center"
+        android:clickable="true"
+        android:onClick="onBalanceTickerClicked"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/WalletChainInfo" />
@@ -60,6 +64,8 @@
         android:text=""
         android:textAlignment="center"
         android:textSize="20sp"
+        android:clickable="true"
+        android:onClick="onBalanceTickerClicked"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/WalletChainInfo2" />
 
@@ -210,7 +216,7 @@
         android:onClick="onReceiveAddrTextClicked"
         android:text="receive address here"
         android:textAlignment="center"
-        android:textSize="13sp"
+        android:textSize="12sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/ReceiveTitle"
@@ -264,21 +270,15 @@
 
     <EditText
         android:id="@+id/sendToAddress"
-        android:layout_width="408dp"
-        android:layout_height="36dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:ems="10"
+        android:layout_width="391dp"
+        android:layout_height="45dp"
+        android:textSize="12sp"
+        android:textStyle="bold"
         android:inputType="textPersonName"
         android:text=""
         android:textAlignment="center"
-        android:autoSizeTextType="uniform"
-        android:autoSizeMinTextSize="8sp"
-        android:autoSizeMaxTextSize="20sp"
-        android:autoSizeStepGranularity="1sp"
-        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sendButton" />
 

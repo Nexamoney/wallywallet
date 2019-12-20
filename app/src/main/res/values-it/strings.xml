@@ -1,0 +1,174 @@
+<resources>
+    <string name="app_name">Wally</string>
+    <string-array name="CurrencyTypes">
+        <item>mBCH</item>
+        <item>USD</item>
+    </string-array>
+    <string-array name="FiatCurrencyTypes">
+        <item>BRL</item>
+        <item>CAD</item>
+        <item>CNY</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>JPY</item>
+        <item>RUB</item>
+        <item>USD</item>
+        <item>XAU</item>
+    </string-array>
+
+    <string name="mBCH">mBCH</string>
+
+    <string-array name="OneToTen">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="tipPercentage">
+        <item>--</item>
+        <item>0%</item>
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+        <item>50%</item>
+    </string-array>
+
+    <!-- General -->
+    <string name="yes">sì</string>
+    <string name="no">no</string>
+    <string name="or">o</string>
+
+    <!-- Settings -->
+    <string name="rediscoverWalletTx">riscopri</string>
+    <string name="logDebugData">Logga i dati di debug</string>
+    <string name="rediscoverTooltip">Cancella lo stato della blockchain e comincia da capo la ricerca per tutte le transazioni del tuo wallet</string>
+    <string name="wordSeed">Backup delle parole segrete del wallet</string>
+    <string name="deleteWalletAccount">Elimina Account</string>
+    <!-- Split bill -->
+    <string name="Total">Totale</string>
+    <string name="Ways">Porzioni equivalenti</string>
+    <string name="Tip">Mancia</string>
+    <string name="Amount">Ammontare</string>
+    <!-- Home Page -->
+    <string name="Send">Spedisci</string>
+    <string name="Receive">Ricevi</string>
+    <string name="Balance">Saldo</string>
+    <string name="Address">Indirizzo</string>
+    <string name="settings">configurazioni</string>
+    <string name="help">aiuto</string>
+    <string name="invalidQuantity">quantità errata</string>
+    <string name="purchase">compra</string>
+    <string name="scanPaymentQRcode">Leggi il QR code dell\'indirizzo di pagamento</string>
+    <string name="pasteIsEmpty">Niente da incollare</string>
+    <string name="pasteIgnored">Contenuto da incollare non considerato</string>
+    <string name="pasteUnintelligible">Contenunto da incollare invalido</string>
+    <string name="chainIncompatibleWithAddress">Indirizzo incompatibile</string>
+
+    <string name="approximatelyT">circa %qty %fiat</string>
+    <string name="moreThanAvailable">"(ammontare non disponibile)"</string>
+    <string name="moreThanConfirmedAvailable">"(ammontare non spendibile)"</string>
+    <string name="actuallySendingT">effettivamente spendendo %qty %crypto</string>
+    <string name="copied">...copiata nell\'area appunti...</string>
+    <string name="scanFailed">lettura fallita</string>
+    <string name="sendSuccess">spedito con successo</string>
+
+    <string name="retrievingExchangeRate">sto ancora recuperando il tasso di cambio</string>
+
+    <!-- Identity -->
+
+    <string name="newDomainRequestingIdentity">Richiesta una nuova identità</string>
+    <string name="useUniqueIdentityToolTip">Attiva per usare questa identità solo per questo sito.</string>
+    <string name="provideRealName">Fornisci il tuo vero nome?</string>
+    <string name="provideRealNameToolTip">Seleziona questa opzione se vuoi che il tuo vero nome (come definito nelle configurazioni) sia trasmesso a questo sito web, se richiesto</string>
+    <string name="provideAddress">Fornisci il tuo indirizzo?</string>
+    <string name="provideAddressToolTip">Seleziona questa opzione se vuoi che il tuo indirizzo (come definito nelle configurazioni) sia trasmesso a questo sito web, se richiesto</string>
+
+    <string name="provideLoginQuestion">Accedi a questo sito?</string>
+
+    <string name="FirstNameOrAliasText">Nome o alias</string>
+    <string name="LastNameText">Cognome</string>
+    <string name="HomeAddressText">Indirizzo di residenza</string>
+    <string name="EmailText">Indirizzo Email</string>
+    <string name="TwitterText">Twitter</string>
+    <string name="TelegramText">Telegram</string>
+    <string name="KeybaseText">Keybase</string>
+    <string name="IdentityAssociatedWith">Informazioni associate alla tua identità</string>
+
+    <string name="firstName">Nome</string>
+    <string name="lastName">Cognole</string>
+
+    <!-- Error strings -->
+    <string name="unknownError">errore</string>
+    <string name="insufficentBalance">saldo insufficente</string>
+    <string name="excessiveFee">fee eccessiva</string>
+    <string name="feeExceedsFlatMax">fee superiore alla massimo configurato</string>
+    <string name="notSupported">non supportato</string>
+    <string name="dataMissing">dati mancanti</string>
+    <string name="headersNotForthcoming">intestazioni non fornite</string>
+    <string name="cantConvert">conversione temporaneamente non disponibile</string>
+
+    <string name="badTransaction">transazione errata</string>
+    <string name="badAddress">indirizzo invalida</string>
+    <string name="badAmount">importo invalido</string>
+    <string name="badCurrencyUnit">ticker fiat non valido</string>
+    <string name="detailsOfBadAmountFromIntent">Il programma ha fornito un valore invalido per l\'ammontare da spedire. Dovrai inserire un valore valido manualmente</string>
+    <string name="blankAddress">blank address</string>
+    <string name="unavailable">non disponibile</string>
+    <string name="blockNotForthcoming">blocco non disponibile</string>
+    <string name="receiveAddressUnavailable">Stiamo calcolando un nuovo indirizzo per la ricezione. Si prega di aspettare... </string>
+
+    <!-- Error long strings -->
+    <string name="sendMoreThanBalance"> Stai tentando di spedire più denaro di quello che possiedi. Se credi 
+        di stare spendendo un ammontare valido tieni presente che le transazioni hanno anche una piccola fee aggiuntiva,
+        o se vedi che l\'intero ammonatere del tuo saldo è non comfermato potresti aver fatto troppe transazioni consecutive
+        in un intervallo di tempo troppo breve. C\'è un limite a quante transazioni non confermate si possono fare. Aspetta
+        che una parte del tuo saldo venga confermato e riprova di nuovo. 
+
+    </string>
+
+    <string name="badWalletImplementation">Implementazione errata del wall. Segnala l\'errore!</string>
+
+    <!-- TITLES -->
+    <string name="title_split_bill">Dividi il conto</string>
+    <string name="title_activity_settings">Configurazioni</string>
+    <string name="title_activity_exchange">Exchange</string>
+    <string name="title_activity_trickle_pay">Trickle Pay</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifiche</string>
+    <string name="title_activity_invoices">Fatture</string>
+    <string name="title_activity_identity">Identità</string>
+    <string name="title_activity_identity_op">Identità</string>
+
+    <!-- Not part of the UI -->
+    <string name="preferenceFileName">bitcoinunlimited.wally.prefs</string>
+    <string name="title_activity_domain_identity_settings">Domain Identity Settings</string>
+
+    <!-- Domain Identity Settings -->
+    <string name="useUniqueIdentity">Usa un\'indentità univoca</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messaggi</string>
+    <string name="sync_header">Scarica le headers dei blocchi più recenti</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails</string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="localCurrency">Valuta locale</string>
+
+</resources>

@@ -92,21 +92,6 @@ class settings : AppCompatActivity()
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun onRediscoverBlockchain(v: View?)
-    {
-        GlobalScope.launch {
-            val coins: MutableMap<String, Coin> = (getApplication() as WallyApp).coins
-
-            for (c in coins)
-            {
-                // If you reset the wallet first, it'll start rediscovering the existing blockchain before it gets reset.
-                c.value.wallet.blockchain.rediscover()
-                c.value.wallet.rediscover()
-            }
-        }
-    }
-
-    @Suppress("UNUSED_PARAMETER")
     fun onLogDebugData(v: View?)
     {
         GlobalScope.launch {
@@ -117,6 +102,19 @@ class settings : AppCompatActivity()
             {
                 c.value.wallet.debugDump()
             }
+        }
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    fun onRediscoverBlockchain(v: View?)
+    {
+        val accountName = deleteWalletAccountChoice.selectedItem.toString()
+        val coin = coins[accountName]
+        if (coin == null) return
+        GlobalScope.launch {
+            // If you reset the wallet first, it'll start rediscovering the existing blockchain before it gets reset.
+            coin.wallet.blockchain.rediscover()
+            coin.wallet.rediscover()
         }
     }
 

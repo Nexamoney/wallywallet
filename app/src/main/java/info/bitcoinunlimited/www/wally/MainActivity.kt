@@ -59,14 +59,12 @@ import kotlin.concurrent.thread
 
 private val LogIt = Logger.getLogger("bitcoinunlimited.mainActivity")
 
-
-val SATinMBCH = 1000*100
 val uriToMbch = 1000.toBigDecimal()  // Todo allow other currencies supported by this wallet
 
 val ERROR_DISPLAY_TIME = 6000.toLong()
 val NOTICE_DISPLAY_TIME = 4000.toLong()
 
-open class PasteUnintelligibleException(): BUException("", i18n(R.string.pasteUnintelligible), ErrorSeverity.Abnormal)
+open class PasteUnintelligibleException(): BUException("", i18n(R.string.pasteUnintelligible), ErrorSeverity.Expected)
 open class PasteEmptyException(): BUException("", i18n(R.string.pasteIsEmpty), ErrorSeverity.Abnormal)
 open class BadAmountException(msg: Int): BUException(i18n(msg), i18n(R.string.badAmount))
 open class BadCryptoException(msg: Int=-1): BUException(i18n(msg), i18n(R.string.badCryptoCode))
@@ -93,9 +91,6 @@ var mainActivityModel = MainActivityModel()
 class MainActivity : CommonActivity()
 {
     override var navActivityId = R.id.navigation_home
-
-    //? Currently selected fiat currency code
-    var fiatCurrencyCode: String = "USD"
 
     var app: WallyApp? = null
 
@@ -304,15 +299,19 @@ class MainActivity : CommonActivity()
                 mainActivityModel.lastSendCoinType?.let { sendCoinType.setSelection(it) }
                 mainActivityModel.lastSendCurrencyType?.let { sendCurrencyType.setSelection(it) }
 
-                val c = coins[recvCoinType.selectedItem.toString()]
+
 
                 // Set the send currency type spinner options to your default fiat currency or your currently selected crypto
                 updateSendCurrencyType()
 
-                c?.onUpdatedReceiveInfo(minOf(imageView.layoutParams.width, imageView.layoutParams.height, 1024) ) { recvAddrStr, recvAddrQR ->
-                    this@MainActivity.updateReceiveAddressUI(
-                        recvAddrStr,
-                        recvAddrQR)
+                recvCoinType.selectedItem?.let {
+                    val c = coins[it.toString()]
+                    c?.onUpdatedReceiveInfo(minOf(imageView.layoutParams.width, imageView.layoutParams.height, 1024)) { recvAddrStr, recvAddrQR ->
+                        this@MainActivity.updateReceiveAddressUI(
+                            recvAddrStr,
+                            recvAddrQR
+                        )
+                    }
                 }
 
                 // Periodically updating GUI stuff
@@ -370,12 +369,14 @@ class MainActivity : CommonActivity()
     fun updateSendCurrencyType()
     {
         dbgAssertGuiThread()
-        val ccAmountCode = sendCoinType.selectedItem.toString()
-        val curIdx = sendCurrencyType.selectedItemPosition  // We know that this field will be [fiat, crypto] but not which exact choices.  So save the slot and restore it after resetting the values so the UX persists by class
-        val spinData = arrayOf(fiatCurrencyCode, ccAmountCode)
-        val aa = ArrayAdapter(this, android.R.layout.simple_spinner_item, spinData)
-        sendCurrencyType.setAdapter(aa)
-        sendCurrencyType.setSelection(curIdx)
+        sendCoinType.selectedItem?.let {
+            val ccAmountCode = it.toString()
+            val curIdx = sendCurrencyType.selectedItemPosition  // We know that this field will be [fiat, crypto] but not which exact choices.  So save the slot and restore it after resetting the values so the UX persists by class
+            val spinData = arrayOf(ccAmountCode,fiatCurrencyCode)
+            val aa = ArrayAdapter(this, android.R.layout.simple_spinner_item, spinData)
+            sendCurrencyType.setAdapter(aa)
+            sendCurrencyType.setSelection(curIdx)
+        }
     }
 
     /** Updates all GUI fields that can be changed/updated */
@@ -388,7 +389,14 @@ class MainActivity : CommonActivity()
         c2?.setUI(balanceTicker2, balanceValue2, balanceUnconfirmedValue2, WalletChainInfo2)
 
         var c3:Coin? = coins["mRBCH"] // regtest
-        c3?.setUI(balanceTicker3, balanceValue3, balanceUnconfirmedValue3, null)
+        if (REG_TEST_ONLY)
+        {
+            c3?.setUI(balanceTicker, balanceValue, balanceUnconfirmedValue, WalletChainInfo)
+        }
+        else
+        {
+            c3?.setUI(balanceTicker3, balanceValue3, balanceUnconfirmedValue3, null)
+        }
 
         for (c in coins.values)
         {
@@ -829,7 +837,20 @@ class MainActivity : CommonActivity()
         return true
     }
 
-    @Suppress("UNUSED_PARAMETER")
+
+    /** Create and post a transaction when the send button is pressed */
+    fun onBalanceTickerClicked(view: View)
+    {
+        dbgAssertGuiThread()
+        val ticker = (view as TextView).text
+        LogIt.info("balance ticker clicked: " + ticker)
+        val intent = Intent(this@MainActivity, TxHistoryActivity::class.java)
+        intent.putExtra("WalletName", ticker)
+        startActivity(intent)
+
+    }
+
+        @Suppress("UNUSED_PARAMETER")
     /** Start the purchase activity when the purchase button is pressed */
     public fun onPurchaseButton(v: View): Boolean
     {

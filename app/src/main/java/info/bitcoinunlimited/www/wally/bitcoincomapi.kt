@@ -22,6 +22,12 @@ val POLL_INTERVAL = 30000
 @Serializable
 data class BchUsdBitcoinCom(val price: Int, val stamp: Long)
 
+
+@Serializable
+data class HistItemBitcoinCom(val price: Int)
+@Serializable
+data class HistBitcoinCom(val lookup: HistItemBitcoinCom)
+
 @UseExperimental(ExperimentalTime::class)
 val lastPoll = mutableMapOf<String, Pair<ClockMark,BigDecimal>>()
 
@@ -54,4 +60,26 @@ fun MbchInFiat(fiat: String, setter: (BigDecimal)-> Unit)
         setter(v)
     }
 
+}
+
+/** Return the approximate price of mBCH at the time provided in seconds since the epoch */
+fun historicalMbchInFiat(fiat: String, timeStamp: Long): BigDecimal
+{
+    // see https://index.bitcoin.com/
+    val spec = "https://index-api.bitcoin.com/api/v0/cash/lookup?time=" + timeStamp.toString()
+    val data = try { URL(spec).readText() }
+    catch(e: java.io.FileNotFoundException)
+    {
+        return BigDecimal(-1)
+    }
+    val parser: Json = Json(JsonConfiguration(strictMode = false))  // nonstrict mode ignores extra fields
+
+    LogIt.info(sourceLoc() + " " + data)
+
+    val obj = parser.parse(HistBitcoinCom.serializer(), data)
+    LogIt.info(sourceLoc() + " " + obj.toString())
+
+    // TODO verify timestamp
+    val v = obj.lookup.price.toBigDecimal().setScale(16) / 100000.toBigDecimal().setScale(16) // bitcoin.com price is in cents per BCH.  We want "dollars" per MBCH (thousandth of a BCH)
+    return v
 }

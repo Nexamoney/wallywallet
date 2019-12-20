@@ -16,7 +16,7 @@ import android.provider.SyncStateContract.Helpers.update
 import info.bitcoinunlimited.www.wally.R
 
 
-open class DataMissingException(): BUException("", i18n(R.string.dataMissing))
+open class DataMissingException(msg:String): BUException(msg, i18n(R.string.dataMissing))
 
 
 private val LogIt = Logger.getLogger("bitcoinunlimited.blockchain.persist")
@@ -80,13 +80,13 @@ abstract class KvpDatabase : RoomDatabase()
         try
         {
             val kvp = dao().get(key)
-            if (kvp == null) throw DataMissingException()
+            if (kvp == null) throw DataMissingException("Missing key: " + String(key))
             return kvp.value
         }
         catch (e: SQLiteBlobTooBigException)
         {
             LogIt.info("Stored data is corrupt, rediscovering: ${e.toString()}")
-            throw DataMissingException()
+            throw DataMissingException("Blob too big: " + String(key))
         }
     }
     /** look up the passed key, returning the value or null if it does not exist */

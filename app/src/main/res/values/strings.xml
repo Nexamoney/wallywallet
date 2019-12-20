@@ -53,6 +53,7 @@
     <string name="rediscoverTooltip">Delete blockchain state and search anew for all transactions relevant to the wallet</string>
     <string name="wordSeed">Wallet Backup Secrets</string>
     <string name="deleteWalletAccount">Delete Account</string>
+    <string name="localCurrency">Local currency</string>
     <!-- Split bill -->
     <string name="Total">Total</string>
     <!-- Ways refers to how many equal portions a bill is being split into -->
@@ -119,6 +120,13 @@
     <string name="firstName">first name</string>
     <string name="lastName">last name</string>
 
+    <!-- Transaction history activity -->
+    <string name="HintAdjustCostBasis">basis or cap gain</string>
+    <string name="CostBasis">cost basis</string>
+    <string name="CapitalLoss">capital loss</string>
+    <string name="CapitalGain">capital gain</string>
+    <string name="OverrideSalesPrice">enter price when sold</string>
+
     <!-- Error strings -->
     <string name="unknownError">error</string>
     <string name="insufficentBalance">insufficient balance</string>
@@ -132,6 +140,8 @@
     <string name="badTransaction">bad transaction</string>
     <string name="badAddress">invalid address</string>
     <string name="badAmount">invalid amount</string>
+    <!-- No accounts have been created yet -->
+    <string name="NoAccounts">no accounts</string>
     <!-- The crypto currency code (e.g BTC, mBCH, etc) is not understood or handled by this wallet.  This message will be very hard to actually see because the UI
     protects against entering unknown crypto codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
      -->
@@ -171,11 +181,11 @@
     <string name="title_activity_invoices">Invoices</string>
     <string name="title_activity_identity">Identity</string>
     <string name="title_activity_identity_op">Identity</string>
+    <string name="title_activity_domain_identity_settings">Domain Identity Settings</string>
+    <string name="title_activity_tx_history">Wallet History</string>
 
     <!-- Not part of the UI -->
     <string name="preferenceFileName">bitcoinunlimited.wally.prefs</string>
-    <string name="localCurrency">localCurrency</string>
-    <string name="title_activity_domain_identity_settings">Domain Identity Settings</string>
 
     <!-- Domain Identity Settings -->
     <string name="useUniqueIdentity">Use a unique identity</string>

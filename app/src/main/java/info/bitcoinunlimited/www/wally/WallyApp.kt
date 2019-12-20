@@ -27,18 +27,23 @@ open class PrimaryWalletInvalidException(): BUException("Primary wallet not defi
 
 var coinsCreated = false
 
+//? Currently selected fiat currency code
+var fiatCurrencyCode:String = "USD"
+
 
 // What is the default wallet and blockchain to use for most functions (like identity)
-val PRIMARY_WALLET = "mTBCH"
+val PRIMARY_WALLET = if (REG_TEST_ONLY) "mRBCH" else "mBCH"
 
 fun MakeNewWallet(currencyCode: String, chain: ChainSelector): Bip44Wallet
 {
     if (currencyCode == "mRBCH")
         return Bip44Wallet(currencyCode, chain, "trade box today light need route design birth turn insane oxygen sense")
     if (currencyCode == "mTBCH")
-        return Bip44Wallet(currencyCode, chain, "axis argue this tiny stand fluid dwarf special bubble glimpse glance pumpkin")
+        return Bip44Wallet(currencyCode, chain, NEW_WALLET)
+        //return Bip44Wallet(currencyCode, chain, "")
 
     return Bip44Wallet(currencyCode, chain, NEW_WALLET)
+    //return Bip44Wallet(currencyCode, chain, "")
 }
 
 
@@ -55,7 +60,12 @@ class Coin(
 
     // Create our wallet
     //var wallet: RamWallet = RamWallet(currencyCode)  // TODO RAM wallet just for testing
-    var wallet: Bip44Wallet = try { Bip44Wallet(currencyCode, chainSelector, LOAD_WALLET) } catch (_:DataMissingException) { MakeNewWallet(currencyCode, chainSelector) }
+    var wallet: Bip44Wallet = try { Bip44Wallet(currencyCode, chainSelector, LOAD_WALLET) }
+    catch (_:WalletKeyDataMissingException)
+    {
+        MakeNewWallet(currencyCode, chainSelector)
+    }
+
     var currentReceive: PayDestination? = null //? This receive address appears on the main screen for quickly receiving coins
     var currentReceiveQR: Bitmap? = null
 
@@ -65,6 +75,9 @@ class Coin(
     //? Current bch balance (cached from accessing the wallet), in the display units
     var balance: BigDecimal = 0.toBigDecimal(currencyMath).setScale(mBchDecimals)
     var unconfirmedBalance: BigDecimal = 0.toBigDecimal(currencyMath).setScale(mBchDecimals)
+
+    //? specify how quantities should be formatted for display
+    val cryptoFormat = mBchFormat
 
     //? Completely delete this wallet, losing any money you may have in it
     fun delete()
@@ -108,10 +121,11 @@ class Coin(
     {
         "mBR1" -> RegTestCnxnMgr("BR1", SimulationHostIP, BCHregtestPort)
         "mBR2" -> RegTestCnxnMgr("BR2", SimulationHostIP, BCHregtest2Port)
-        "mTBCH" -> MultiNodeCnxnMgr("mTBCH", ChainSelector.BCHTESTNET, "testnet-seed.bitcoinabc.org") // "testnet-seed.bitcoinunlimited.info") //SimulationHostIP + ":" + BCHtestnetPort.toString())
-        "mBCH" -> MultiNodeCnxnMgr("mBCH", ChainSelector.BCHMAINNET, "seed.bitcoinunlimited.net") // "testnet-seed.bitcoinunlimited.info") //SimulationHostIP + ":" + BCHtestnetPort.toString())
-        //"mBCH" -> "btccash-seeder.bitcoinunlimited.info"
-        "mRBCH" -> RegTestCnxnMgr("mRBCH", RegtestIP(), mRBCHPort)
+        "mTBCH" -> MultiNodeCnxnMgr("mTBCH", ChainSelector.BCHTESTNET, arrayOf("testnet-seed.bitcoinabc.org"))
+        "mBCH" -> MultiNodeCnxnMgr("mBCH", ChainSelector.BCHMAINNET, arrayOf("seed.bitcoinunlimited.net", "btccash-seeder.bitcoinunlimited.info"))
+        //"mRBCH" -> RegTestCnxnMgr("mRBCH", RegtestIP(), mRBCHPort)
+        "mRBCH" -> MultiNodeCnxnMgr("mRBCH", ChainSelector.BCHREGTEST, arrayOf("regtest"))
+
         else -> throw BadCryptoException()
     }
 
@@ -120,21 +134,25 @@ class Coin(
         // Blockchain(val chainId: ChainSelector, val name: String, net: CnxnMgr, val genesisBlockHash: Hash256, var checkpointPriorBlockId: Hash256, var checkpointId: Hash256, var checkpointHeight: Long, var checkpointWork: BigInteger, val context: PlatformContext)
         "mBR1" -> Blockchain(ChainSelector.BCHREGTEST, "BR1", cnxnMgr, Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"), Hash256(), Hash256(), -1, -1.toBigInteger(), context)
         "mBR2" -> Blockchain(ChainSelector.BCHREGTEST, "BR2", cnxnMgr, Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"), Hash256(), Hash256(), -1, -1.toBigInteger(), context)
-        // testnet fork: "mTBCH" -> Blockchain(ChainSelector.BCHTESTNET, "mTBCH", cnxnMgr, Hash256("000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"), Hash256("000000000003fc38f4aec4add515e800fd63c626ab025159c24ba474211883da"), Hash256("00000000566f3f20c1d6b0970b7c53bc2db993b0ec6439cee846fe42be0e2284"), 1331690, "52601d82ad7c388de2".toBigInteger(16), context)
-        "mTBCH" -> Blockchain(ChainSelector.BCHTESTNET, "mTBCH", cnxnMgr, Hash256("000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"), Hash256("00000000000486c1ffaeae65361ee9ad67435f0f85eb0d4d80aaa93614760ab1"), Hash256("000000000004743cb213b6d956eecc1a301401cc305a20d9e723d37a69f9f247"), 1331680, "52601c9fa624e422a6".toBigInteger(16), context)
+        // testnet fork: "mTBCH"
+        "mTBCH" -> Blockchain(ChainSelector.BCHTESTNET, "mTBCH", cnxnMgr, Hash256("000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"), Hash256("000000000003cab8d8465f4ea4efcb15c28e5eed8e514967883c085351c5b134"), Hash256("000000000005ae0f3013e89ce47b6f949ae489d90baf6621e10017490f0a1a50"), 1348366, "52bbf4d7f1bcb197f2".toBigInteger(16), context)
 
         // Regtest for use alongside testnet
         "mRBCH" -> Blockchain(ChainSelector.BCHREGTEST, "mRBCH", cnxnMgr, Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"), Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"), Hash256("2a11fa1399e126cf549b9b9118436d4c39a95897933705c38e9cd706ef1f24dd"), 1, 4.toBigInteger(), context)
 
         // Bitcoin Cash mainnet chain
-        "mBCH" -> Blockchain(ChainSelector.BCHMAINNET, "mBCH", cnxnMgr, Hash256("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"), Hash256("0000000000000000005801cf3a80ff69ab01b42ecdb5dffaa26a6e1f19614725"), Hash256("000000000000000002163ff4a3610362d607ae8d9b5bd5885f6a7b986810ce94"), 612068, "10cdd8c78f0daf0be6c2f2e".toBigInteger(16), context)
+        "mBCH" -> Blockchain(ChainSelector.BCHMAINNET, "mBCH", cnxnMgr, Hash256("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"), Hash256("000000000000000002cba5eaabc2293a3f5b89396258654fa456c29dbcca7b77"), Hash256("0000000000000000029f7923ddb3937d3993a59f3bcc2efbfb7de4eb9e5df276"), 614195, "10f8ce72b89feefe6f294c5".toBigInteger(16), context)
 
         else -> throw BadCryptoException()
     }
 
     init
     {
+        val hundredThousand = CurrencyDecimal(SATinMBCH)
+        wallet.prepareDestinations(2, 2)  // Make sure that there is at least a few addresses before we hook into the network
         wallet.addBlockchain(chain, chain.nearTip, chain.checkpointHeight) // Since this is a new ram wallet (new private keys), there cannot be any old blocks with transactions
+        wallet.spotPrice = { currencyCode -> assert(currencyCode == fiatCurrencyCode); fiatPerCoin/hundredThousand }
+        wallet.historicalPrice = { currencyCode: String, epochSec: Long -> historicalMbchInFiat(currencyCode,epochSec)/hundredThousand }
     }
 
     // If this coin's receive address is shown on-screen, this is not null
@@ -154,6 +172,13 @@ class Coin(
     {
         val ret = amount * SATinMBCH.toBigDecimal()
         return ret.toLong()
+    }
+
+    //? Convert the finest granularity of this currency to the default display unit.  For example, Satoshis to mBCH
+    fun fromFinestUnit(amount: Long):BigDecimal
+    {
+        val ret = BigDecimal(amount, currencyMath).setScale(currencyScale) / SATinMBCH.toBigDecimal()
+        return ret
     }
 
     //? Convert a value in this currency code unit into its primary unit
@@ -333,21 +358,26 @@ class WallyApp: Application()
                 //coins.getOrPut("mBR1", { val c = Coin("mBR1", ctxt); c.getReceiveInfo(1); c })
                 //coins.getOrPut("mBR2", { val c = Coin("mBR2", ctxt); c.getReceiveInfo(1); c })
 
-                coins.getOrPut("mBCH") {
-                    val c = Coin("mBCH", ChainSelector.BCHMAINNET, ctxt);
-                    c
+                if (REG_TEST_ONLY)
+                {
+
+                    coins.getOrPut("mRBCH") {
+                        val c = Coin("mRBCH", ChainSelector.BCHREGTEST, ctxt);
+                        c
+                    }
                 }
-
-
-                coins.getOrPut("mTBCH") {
+                else
+                {
+                    coins.getOrPut("mBCH") {
+                        val c = Coin("mBCH", ChainSelector.BCHMAINNET, ctxt);
+                        c
+                    }
+                    coins.getOrPut("mTBCH") {
                         val c = Coin("mTBCH", ChainSelector.BCHTESTNET, ctxt);
                         c
                     }
 
-                coins.getOrPut("mRBCH") {
-                        val c = Coin("mRBCH", ChainSelector.BCHREGTEST, ctxt);
-                        c
-                    }
+                }
 
 
 
