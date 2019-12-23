@@ -85,9 +85,9 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
 
-    def yajrpc_version = "v0.10.6"
-    implementation group: 'com.github.markaren.YAJ-RPC', name: 'yaj-rpc', version: yajrpc_version
-    implementation group: 'com.github.markaren.YAJ-RPC', name: 'yaj-rpc-tcp', version: yajrpc_version
+    //def yajrpc_version = "v0.10.6"
+    //implementation group: 'com.github.markaren.YAJ-RPC', name: 'yaj-rpc', version: yajrpc_version
+    //implementation group: 'com.github.markaren.YAJ-RPC', name: 'yaj-rpc-tcp', version: yajrpc_version
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

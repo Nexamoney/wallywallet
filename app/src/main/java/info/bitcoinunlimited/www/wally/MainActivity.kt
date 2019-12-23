@@ -51,6 +51,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult
 import java.lang.ArithmeticException
 import java.lang.Exception
+import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
 
@@ -272,9 +273,26 @@ class MainActivity : CommonActivity()
         super.onStart()
         dbgAssertGuiThread()
 
+
+
         thread(true, true, null, "startup") {
             // Wait until stuff comes up
             while (!coinsCreated) Thread.sleep(100)
+
+            var c1:Coin? = coins["mBCH"] // coins["mBR1"]
+            c1?.setUI(balanceTicker, balanceValue, balanceUnconfirmedValue, WalletChainInfo)
+            var c2:Coin? = coins["mTBCH"] // coins["mBR1"]
+            c2?.setUI(balanceTicker2, balanceValue2, balanceUnconfirmedValue2, WalletChainInfo2)
+
+            var c3:Coin? = coins["mRBCH"] // regtest
+            if (REG_TEST_ONLY)
+            {
+                c3?.setUI(balanceTicker, balanceValue, balanceUnconfirmedValue, WalletChainInfo)
+            }
+            else
+            {
+                c3?.setUI(balanceTicker3, balanceValue3, balanceUnconfirmedValue3, null)
+            }
 
             for (c in coins.values)
             {
@@ -383,25 +401,12 @@ class MainActivity : CommonActivity()
     fun updateGUI()
     {
         dbgAssertGuiThread()
-        var c1:Coin? = coins["mBCH"] // coins["mBR1"]
-        c1?.setUI(balanceTicker, balanceValue, balanceUnconfirmedValue, WalletChainInfo)
-        var c2:Coin? = coins["mTBCH"] // coins["mBR1"]
-        c2?.setUI(balanceTicker2, balanceValue2, balanceUnconfirmedValue2, WalletChainInfo2)
 
-        var c3:Coin? = coins["mRBCH"] // regtest
-        if (REG_TEST_ONLY)
-        {
-            c3?.setUI(balanceTicker, balanceValue, balanceUnconfirmedValue, WalletChainInfo)
-        }
-        else
-        {
-            c3?.setUI(balanceTicker3, balanceValue3, balanceUnconfirmedValue3, null)
-        }
-
-        for (c in coins.values)
-        {
-            c.getXchgRates(fiatCurrencyCode)
-            c.onWalletChange()  // The wallet hasn't really changed every time we call updateGUI, so this could be factored out and optimized
+        later {
+            for (c in coins.values)
+            {
+                c.getXchgRates(fiatCurrencyCode)
+            }
         }
 
         // Check consistency between sendToAddress and sendCoinType
@@ -480,21 +485,14 @@ class MainActivity : CommonActivity()
         if (text != "")
         {
             lastPaste = text
-            if (text.contains('?'))  // BIP21
+            if (text.contains('?'))  // BIP21 or BIP70
             {
                 for (c in coins.values)
                 {
                     if (text.contains(c.chain.uriScheme))  // TODO: prefix not contains
                     {
                         handleSendURI(text)
-                        try  // If handling the URI worked, it should be loaded into sendToAddress so let's break if that's any good
-                        {
-                            val a = PayAddress(sendToAddress.text.toString())
-                            laterUI { updateSendAddress(a) }
-                        }
-                        catch(e: Exception)  // Do nothing (try a different encoding)
-                        {
-                        }
+                        return
                     }
                 }
             }
@@ -587,8 +585,19 @@ class MainActivity : CommonActivity()
         LogIt.info(u.path)
         val sta = scheme + ":" + u.path
 
+        val bip72 = attribs["r"]
         val stramt = attribs["amount"]
         var amt:BigDecimal = BigDecimal(-1)
+        if (bip72 != null)
+        {
+            /*
+            later {
+                processBip70(bip72)
+            }
+             */
+            return
+        }
+
         if (stramt != null)
         {
             amt = try

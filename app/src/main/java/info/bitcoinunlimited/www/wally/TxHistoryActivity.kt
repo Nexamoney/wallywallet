@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,13 +24,13 @@ import kotlin.collections.ArrayList
 private val LogIt = Logger.getLogger("bitcoinunlimited.TxHistoryActivity")
 
 
-private class TxHistoryRecyclerAdapter(private val domains: ArrayList<PaymentHistory>, private val coin:Coin) : RecyclerView.Adapter<TxHistoryRecyclerAdapter.TxHistoryDomainHolder>()
+private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, private val domains: ArrayList<PaymentHistory>, private val coin:Coin) : RecyclerView.Adapter<TxHistoryRecyclerAdapter.TxHistoryDomainHolder>()
 {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TxHistoryRecyclerAdapter.TxHistoryDomainHolder
     {
         val inflatedView = parent.inflate(R.layout.tx_history_list_item, false)
-        return TxHistoryDomainHolder(inflatedView, coin)
+        return TxHistoryDomainHolder(activity, inflatedView, coin)
     }
 
     override fun getItemCount(): Int = domains.size
@@ -41,10 +42,13 @@ private class TxHistoryRecyclerAdapter(private val domains: ArrayList<PaymentHis
         holder.bind(item, position)
     }
 
-
-    class TxHistoryDomainHolder(private val view: View, private val coin: Coin) : RecyclerView.ViewHolder(view), View.OnClickListener
+    class TxHistoryDomainHolder(private val activity: TxHistoryActivity, private val view: View, private val coin: Coin) : RecyclerView.ViewHolder(view), View.OnClickListener
     {
         private var id: PaymentHistory? = null
+        val sendIm = appContext?.let { ContextCompat.getDrawable(it.context, R.drawable.ic_sendarrow) }
+        val recvIm = appContext?.let { ContextCompat.getDrawable(it.context, R.drawable.ic_receivearrow) }
+        var idx = 0
+        var txid: Hash256? = null
 
         init
         {
@@ -53,6 +57,16 @@ private class TxHistoryRecyclerAdapter(private val domains: ArrayList<PaymentHis
 
         override fun onClick(v: View)
         {
+            activity.linearLayoutManager.scrollToPositionWithOffset(idx, 0)
+            val itemHeight = v.height
+            val heightButOne = activity.GuiTxHistoryList.height - itemHeight
+
+            activity.GuiTxWebView.layoutParams.height = heightButOne
+            activity.GuiTxWebView.requestLayout()
+            activity.linearLayoutManager.requestLayout()
+            txid?.let {
+                activity.GuiTxWebView.loadUrl("http://testnet.imaginary.cash/tx/" + it.toHex()) // ("http://www.example.com")
+            }
             /*
             var intent = Intent(v.context, DomainIdentitySettings::class.java)
             intent.putExtra("domainName", this.id?.domain )
@@ -62,7 +76,9 @@ private class TxHistoryRecyclerAdapter(private val domains: ArrayList<PaymentHis
 
         fun bind(obj: PaymentHistory, pos: Int)
         {
-            this.id = obj
+            idx = pos
+            id = obj
+            txid = obj.txHash!!
             view.GuiTxId.text = obj.txHash!!.toHex()
             val fmt = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withZone(ZoneId.systemDefault())
             val epochSec = Instant.ofEpochSecond(obj.date/1000)
@@ -72,14 +88,17 @@ private class TxHistoryRecyclerAdapter(private val domains: ArrayList<PaymentHis
 
             view.GuiAddress.text = obj.address.toString()
 
-            if (obj.isInflow == false)
+            if (obj.isInflow)
             {
-                val sendIm = appContext?.let { ContextCompat.getDrawable(it.context, R.drawable.ic_sendarrow) }
-                if (sendIm != null)
-                {
-                    view.GuiSendRecvImage.setImageDrawable(sendIm)
-                }
+                if (recvIm != null)
+                    view.GuiSendRecvImage.setImageDrawable(recvIm)
             }
+            else
+            {
+                if (sendIm != null)
+                    view.GuiSendRecvImage.setImageDrawable(sendIm)
+            }
+
 
             if (obj.priceWhatFiat != "")
             {
@@ -135,7 +154,7 @@ private class TxHistoryRecyclerAdapter(private val domains: ArrayList<PaymentHis
 
 class TxHistoryActivity : CommonActivity()
 {
-    private lateinit var linearLayoutManager: LinearLayoutManager
+    lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var adapter: TxHistoryRecyclerAdapter
 
     override var navActivityId = R.id.home
@@ -150,7 +169,32 @@ class TxHistoryActivity : CommonActivity()
         linearLayoutManager = LinearLayoutManager(this)
         GuiTxHistoryList.layoutManager = linearLayoutManager
 
+        var activity = this
+
+        GuiTxHistoryList.addOnScrollListener(object: RecyclerView.OnScrollListener()
+        {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)
+            {
+                if (GuiTxWebView.layoutParams.height != 1)
+                {
+                    GuiTxWebView.layoutParams.height = 1
+                    //GuiTxWebView.forceLayout()
+                    //GuiTxWebView.requestLayout()
+                    //GuiTxHistoryList.requestLayout()
+                    activity.linearLayoutManager.requestLayout()
+                    //recyclerView.rootView.requestLayout()
+
+                    GuiTxWebView.loadUrl("about:blank")
+                }
+                super.onScrollStateChanged(recyclerView, newState)
+            }
+        }
+        )
+
         walletName = intent.getStringExtra("WalletName")
+
+        GuiTxWebView.settings.javaScriptEnabled = true
+
 
         laterUI {
             walletName?.let { walName ->
@@ -162,7 +206,7 @@ class TxHistoryActivity : CommonActivity()
                 val txhist: ArrayList<PaymentHistory> = ArrayList(historyList)
                 LogIt.info("tx history count:" + txhist.size.toString())
                 //LogIt.info(wallet.allIdentityDomains().map { it.domain }.toString())
-                adapter = TxHistoryRecyclerAdapter(txhist, coin)
+                adapter = TxHistoryRecyclerAdapter(this, txhist, coin)
                 GuiTxHistoryList.adapter = adapter
 
                 //val dest = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)

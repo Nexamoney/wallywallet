@@ -26,9 +26,17 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fadeScrollbars="true"
-        app:layout_constraintBottom_toTopOf="@+id/nav_view"
+        app:layout_constraintBottom_toTopOf="@+id/GuiTxWebView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <WebView
+        android:id="@+id/GuiTxWebView"
+        android:layout_width="0dp"
+        android:layout_height="1px"
+        app:layout_constraintBottom_toTopOf="@+id/nav_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

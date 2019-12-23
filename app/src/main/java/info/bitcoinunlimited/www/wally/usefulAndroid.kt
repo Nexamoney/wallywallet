@@ -7,7 +7,11 @@ import android.content.res.Resources
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
+import android.widget.TextView
 import info.bitcoinunlimited.www.wally.R
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import java.io.File
 import java.util.logging.Logger
 
@@ -29,9 +33,40 @@ val RheadersNotForthcoming = R.string.headersNotForthcoming
 val RbadTransaction = R.string.badTransaction
 val RfeeExceedsFlatMax = R.string.feeExceedsFlatMax
 var RexcessiveFee = R.string.excessiveFee
+var Rbip70NoAmount = R.string.badAmount
 
 open class AssertException(why: String): BUException(why, "Assertion", ErrorSeverity.Abnormal)
 
+/** Do whatever you pass within the user interface context, asynchronously */
+fun laterUI(fn: suspend () -> Unit): Unit
+{
+    MainScope().launch {
+        fn()
+    }
+}
+
+/** execute the passed code block directly if not in the UI thread, otherwise defer it */
+fun notInUI(fn: () -> Unit)
+{
+    val tname = Thread.currentThread().name
+    if (tname == "main")
+    {
+        GlobalScope.launch { fn() }
+    }
+    else fn()
+}
+
+class TextViewReactor<T>(val gui: TextView):Reactor<T>()
+{
+    override fun change(obj: Reactive<T>)
+    {
+        laterUI {
+            obj.access()?.let {
+                gui.text = it.first.toString()
+            }
+        }
+    }
+}
 
 fun RunningTheTests(): Boolean
 {
@@ -45,6 +80,8 @@ fun RunningTheTests(): Boolean
         return false
     }
 }
+
+
 
 fun dbgAssertGuiThread()
 {

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusableInTouchMode="true"
     tools:context=".MainActivity">
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -35,11 +36,11 @@
         android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:gravity="center"
+        android:clickable="true"
+        android:gravity="center|center_vertical"
+        android:onClick="onBalanceTickerClicked"
         android:textAlignment="center"
         android:textSize="36sp"
-        android:clickable="true"
-        android:onClick="onBalanceTickerClicked"
         app:layout_constraintStart_toEndOf="@+id/divider2"
         app:layout_constraintTop_toBottomOf="@+id/balanceTitle" />
 
@@ -48,11 +49,11 @@
         android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
-        android:gravity="center"
+        android:clickable="true"
+        android:gravity="center|center_vertical"
+        android:onClick="onBalanceTickerClicked"
         android:textAlignment="center"
         android:textSize="36sp"
-        android:clickable="true"
-        android:onClick="onBalanceTickerClicked"
         app:layout_constraintStart_toStartOf="@+id/balanceTicker"
         app:layout_constraintTop_toBottomOf="@+id/WalletChainInfo" />
 
@@ -61,11 +62,11 @@
         android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
-        android:gravity="center"
+        android:clickable="true"
+        android:gravity="center|center_vertical"
+        android:onClick="onBalanceTickerClicked"
         android:textAlignment="center"
         android:textSize="36sp"
-        android:clickable="true"
-        android:onClick="onBalanceTickerClicked"
         app:layout_constraintStart_toStartOf="@+id/balanceTicker2"
         app:layout_constraintTop_toBottomOf="@+id/WalletChainInfo2" />
 
@@ -82,48 +83,52 @@
     <TextView
         android:id="@+id/balanceUnconfirmedValue"
         android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:gravity="center|center_vertical"
         android:textAlignment="center"
         android:textColor="#FF9800"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/balanceTicker"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="@+id/balanceValue"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/balanceValue"
-        app:layout_constraintTop_toTopOf="@+id/balanceTicker"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="@+id/balanceValue"
+        app:layout_constraintVertical_bias="0.629" />
 
     <TextView
         android:id="@+id/balanceUnconfirmedValue2"
         android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:gravity="center|center_vertical"
         android:textAlignment="center"
         android:textColor="#FF9800"
-        android:textSize="16sp"
+        android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="@+id/balanceValue2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/balanceValue2" />
+        app:layout_constraintStart_toEndOf="@+id/balanceValue2"
+        app:layout_constraintTop_toTopOf="@+id/balanceValue2" />
 
     <TextView
         android:id="@+id/balanceUnconfirmedValue3"
         android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:gravity="center|center_vertical"
         android:textAlignment="center"
         android:textColor="#FF9800"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/balanceTicker3"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="@+id/balanceValue3"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/balanceValue3"
         app:layout_constraintTop_toTopOf="@+id/balanceValue3"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.424" />
 
     <TextView
         android:id="@+id/balanceValue"
         android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:gravity="center|center_vertical"
+        android:maxLines="1"
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_light"
         android:textSize="40sp"
@@ -135,8 +140,9 @@
     <TextView
         android:id="@+id/balanceValue2"
         android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:gravity="center|center_vertical"
+        android:maxLines="1"
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_light"
         android:textSize="40sp"
@@ -148,8 +154,9 @@
     <TextView
         android:id="@+id/balanceValue3"
         android:layout_width="200dp"
-        android:layout_height="50dp"
-        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:gravity="center|center_vertical"
+        android:maxLines="1"
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_light"
         android:textSize="40sp"
@@ -284,7 +291,6 @@
         android:autoSizeMinTextSize="8sp"
         android:autoSizeStepGranularity="1sp"
         android:autoSizeTextType="uniform"
-        android:ems="10"
         android:inputType="textPersonName"
         android:text="destination address here"
         android:textAlignment="center"

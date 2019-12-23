@@ -7,15 +7,12 @@ import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.net.wifi.WifiManager
-import android.provider.Settings
 import android.widget.TextView
 import bitcoinunlimited.libbitcoincash.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
-import java.math.BigInteger
 import java.util.logging.Logger
 
 val SimulationHostIP = "10.0.2.2"
@@ -53,10 +50,10 @@ class Coin(
     val context: PlatformContext
 )
 {
-    var tickerUI: TextView? = null // Where to show the crypto's ticker
-    var balanceUI: TextView? = null // The UI element that shows the current balance of this cryptocurrency
-    var unconfirmedBalanceUI: TextView? = null // The UI element that shows the current unconfirmed balance of this cryptocurrency
-    var infoUI: TextView? = null // The UI element that shows status info about this wallet and connected blockchain
+    val tickerGUI = Reactive<String>("") // Where to show the crypto's ticker
+    val balanceGUI = Reactive<String>("")
+    val unconfirmedBalanceGUI = Reactive<String>("")
+    val infoGUI = Reactive<String>("")
 
     // Create our wallet
     //var wallet: RamWallet = RamWallet(currencyCode)  // TODO RAM wallet just for testing
@@ -93,15 +90,15 @@ class Coin(
     fun detachUI()
     {
         dbgAssertGuiThread()
-        tickerUI?.text = ""
-        balanceUI?.text = ""
-        unconfirmedBalanceUI?.text = ""
-        infoUI?.text = ""
+        tickerGUI("")
+        balanceGUI("")
+        unconfirmedBalanceGUI("")
+        infoGUI("")
 
-        tickerUI = null
-        balanceUI = null
-        unconfirmedBalanceUI = null
-        infoUI = null
+        tickerGUI.reactor = null
+        balanceGUI.reactor = null
+        unconfirmedBalanceGUI.reactor = null
+        infoGUI.reactor = null
 
     }
 
@@ -159,12 +156,12 @@ class Coin(
     var updateReceiveAddressUI: ((Coin)->Unit)? = null
 
     //? Set the user interface elements for this cryptocurrency
-    fun setUI(ticker: TextView?, balance: TextView?, unconf: TextView?, info: TextView?)
+    fun setUI(ticker: TextView?, balance: TextView?, unconf: TextView?, infoView: TextView?)
     {
-        tickerUI = ticker
-        balanceUI = balance
-        unconfirmedBalanceUI = unconf
-        infoUI = info
+        if (ticker != null) tickerGUI.reactor = TextViewReactor<String>(ticker)
+        if (balance != null) balanceGUI.reactor = TextViewReactor<String>(balance)
+        if (unconf != null) unconfirmedBalanceGUI.reactor = TextViewReactor<String>(unconf)
+        if (infoView != null) infoGUI.reactor = TextViewReactor<String>(infoView)
     }
 
     //? Convert the default display units to the finest granularity of this currency.  For example, mBCH to Satoshis
@@ -251,34 +248,34 @@ class Coin(
         wallet.restart()
         wallet.chainstate?.chain?.restart()
         wallet.chainstate?.chain?.net?.restart()
+        onWalletChange(true)
     }
 
-    fun onWalletChange()
+    fun onWalletChange(force: Boolean = false)
     {
-        // Update our cache of the balances
-        balance = wallet.balance.toBigDecimal(currencyMath).setScale(currencyScale) / SATinMBCH.toBigDecimal()
-        unconfirmedBalance = wallet.balanceUnconfirmed.toBigDecimal(currencyMath).setScale(currencyScale) / SATinMBCH.toBigDecimal()
+        notInUI {
+            // Update our cache of the balances
+            balance = wallet.balance.toBigDecimal(currencyMath).setScale(currencyScale) / SATinMBCH.toBigDecimal()
+            unconfirmedBalance = wallet.balanceUnconfirmed.toBigDecimal(currencyMath).setScale(currencyScale) / SATinMBCH.toBigDecimal()
 
-        // Update the receive address if we got something
+            balanceGUI(mBchFormat.format(balance.setScale(mBchDecimals)), force)
 
+            val unconfBalStr =
+                if (0.toBigDecimal(currencyMath).setScale(currencyScale) == unconfirmedBalance)
+                    ""
+                else
+                    "(" + mBchFormat.format(unconfirmedBalance.setScale(mBchDecimals)) + ")"
 
-        // If we got something in a receive address, then show a new one
-        updateReceiveAddressUI?.invoke(this)
+            unconfirmedBalanceGUI(unconfBalStr, force)
 
-        asyncUI {
-            tickerUI?.text = currencyCode
-            balanceUI?.text = mBchFormat.format(balance.setScale(mBchDecimals))
-
-            if (0.toBigDecimal(currencyMath).setScale(currencyScale) == unconfirmedBalance)
-                unconfirmedBalanceUI?.text = ""
-            else
-                unconfirmedBalanceUI?.text = "(" + mBchFormat.format(unconfirmedBalance.setScale(mBchDecimals)) + ")"
+            // If we got something in a receive address, then show a new one
+            updateReceiveAddressUI?.invoke(this)
 
             val cnxnLst = wallet.chainstate?.chain?.net?.mapConnections() { it.name }
             val peers = cnxnLst?.joinToString(", ")
+            infoGUI("at " + (wallet.chainstate?.syncedHash?.toHex()?.takeLast(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight ?:"") + " of " + (wallet.chainstate?.chain?.curHeight?:"") + " blocks, " + (wallet.chainstate?.chain?.net?.numPeers()?:"") + " peers\n" + peers, force)
 
-
-            infoUI?.text = "at " + (wallet.chainstate?.syncedHash?.toHex()?.takeLast(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight ?:"") + " of " + (wallet.chainstate?.chain?.curHeight?:"") + " blocks, " + (wallet.chainstate?.chain?.net?.numPeers()?:"") + " peers\n" + peers
+            tickerGUI(currencyCode, force)
         }
     }
 
