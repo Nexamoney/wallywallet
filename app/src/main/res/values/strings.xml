@@ -71,6 +71,7 @@
     <string name="invalidQuantity">invalid quantity</string>
     <string name="purchase">purchase</string>
     <string name="scanPaymentQRcode">Scan payment address QR code</string>
+    <string name="paymentProposal">as per received payment proposal</string>
     <!-- You clicked the paste button (in a copy/paste operation), but nothing was copied -->
     <string name="pasteIsEmpty">paste empty</string>
     <!-- Informational: The contents of the copy/paste buffer didn't make any sense to me, but you didn't explicitly tell me to paste so maybe that's ok.
@@ -133,9 +134,13 @@
     <string name="excessiveFee">excessive fee</string>
     <string name="feeExceedsFlatMax">fee exceeds configured maximum allowed flat fee</string>
     <string name="notSupported">not supported</string>
+    <!-- A temporal offer is not longer available.  For example, a payment via the BIP70 payment protocol is no longer available -->
+    <string name="expired">expired</string>
     <string name="dataMissing">missing data</string>
     <string name="headersNotForthcoming">headers are not being provided</string>
     <string name="cantConvert">conversion temporarily unavailable</string>
+
+    <string name="walletDisconnectedFromBlockchain">wallet disconnected</string>
 
     <string name="badTransaction">bad transaction</string>
     <string name="badAddress">invalid address</string>
@@ -150,6 +155,8 @@
       protects against entering unknown fiat codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
     -->
     <string name="badCurrencyUnit">not currency</string>
+    <!-- The account contains the wrong currency for this use -->
+    <string name="incompatibleAccount">incorrect currency</string>
     <string name="detailsOfBadAmountFromIntent">The calling program supplied badly formatted number when providing the
         quantity to send. You will need to enter the quantity yourself
     </string>

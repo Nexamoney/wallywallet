@@ -24,7 +24,8 @@ public var appResources: Resources? = null
 val RinsufficentBalance = R.string.insufficentBalance
 val RbadWalletImplementation = R.string.badWalletImplementation
 val RwalletAndAddressIncompatible = R.string.chainIncompatibleWithAddress
-val RnotSupported = R.string.insufficentBalance
+val RnotSupported = R.string.notSupported
+val Rexpired = R.string.expired
 val RsendMoreThanBalance = R.string.sendMoreThanBalance
 val RbadAddress = R.string.badAddress
 val RblankAddress = R.string.blankAddress
@@ -34,6 +35,8 @@ val RbadTransaction = R.string.badTransaction
 val RfeeExceedsFlatMax = R.string.feeExceedsFlatMax
 var RexcessiveFee = R.string.excessiveFee
 var Rbip70NoAmount = R.string.badAmount
+
+var RwalletDisconnectedFromBlockchain = R.string.walletDisconnectedFromBlockchain
 
 open class AssertException(why: String): BUException(why, "Assertion", ErrorSeverity.Abnormal)
 

@@ -103,6 +103,12 @@ class MainActivity : CommonActivity()
 
     private var shareActionProvider: ShareActionProvider? = null
 
+    /** If there's a payment proposal that this app has seen, information about it is located here */
+    var paymentInProgress: ProspectivePayment? = null
+
+    /** If this program is changing the GUI, rather then the user, then there are some logic differences */
+    var machineChangingGUI: Boolean = false
+
     fun onBlockchainChange(blockchain: Blockchain)
     {
         for ((_,c) in coins)
@@ -180,6 +186,11 @@ class MainActivity : CommonActivity()
         sendQuantity.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
                 dbgAssertGuiThread()
+                if(!machineChangingGUI)
+                {
+                    paymentInProgress = null
+                    updateSendBasedOnPaymentInProgress()
+                }
                 val sendQty = sendQuantity?.text?.toString()
                 if (sendQty != null) this@MainActivity.checkSendQuantity(sendQty)
                 }
@@ -484,6 +495,10 @@ class MainActivity : CommonActivity()
 
         if (text != "")
         {
+            // Clean out an old payment protocol if you are pasting a new send in
+            paymentInProgress = null
+            updateSendBasedOnPaymentInProgress()
+
             lastPaste = text
             if (text.contains('?'))  // BIP21 or BIP70
             {
@@ -511,21 +526,27 @@ class MainActivity : CommonActivity()
 
     }
 
-    fun updateSendCoinType(pa: PayAddress)
+    fun updateSendCoinType(chainSelector: ChainSelector)
     {
-        if (pa.type == PayAddressType.NONE) return  // nothing to update
         dbgAssertGuiThread()
 
-        // First see if the current selection is compatible with the pasted data
+        // First see if the current selection is compatible with what we want.
+        // This keeps the user's selection if multiple accounts are compatible
         val sc = sendCoinType.selectedItem
         var curCoin = coins[sc]
-        if (curCoin?.chainSelector != pa.blockchain)  // Its not so find one that is
+        if (curCoin?.chainSelector != chainSelector)  // Its not so find one that is
         {
-            curCoin = app!!.coinFor(pa.blockchain)
+            curCoin = app!!.coinFor(chainSelector)
             curCoin?.let {
                 sendCoinType.setSelection(it.currencyCode)
             }
         }
+    }
+
+    fun updateSendCoinType(pa: PayAddress)
+    {
+        if (pa.type == PayAddressType.NONE) return  // nothing to update
+        updateSendCoinType(pa.blockchain)
     }
 
     /** Update the GUI send address field, and all related GUI elements based on the provided payment address */
@@ -536,6 +557,9 @@ class MainActivity : CommonActivity()
 
         sendToAddress.text.clear()
         sendToAddress.text.append(pa.toString())
+
+        paymentInProgress = null
+        updateSendBasedOnPaymentInProgress()
 
         // Change the send currency type to reflect the pasted data if I need to
         updateSendCoinType(pa)
@@ -573,6 +597,88 @@ class MainActivity : CommonActivity()
         }
     }
 
+
+    fun updateSendBasedOnPaymentInProgress()
+    {
+        dbgAssertGuiThread()
+        try
+        {
+            machineChangingGUI = true
+            val pip = paymentInProgress
+            if (pip == null)
+            {
+                if (TopInformation != null)
+                {
+                    TopInformation.text = ""
+                    TopInformation.visibility = View.GONE
+                }
+            }
+            else
+            {
+                val chainSelector = pip.crypto
+                if (chainSelector == null)
+                {
+                    paymentInProgress = null
+                    displayError((R.string.badCryptoCode))
+                    return
+                }
+                val coin = app?.coinFor(chainSelector)
+                if (coin == null)
+                {
+                    paymentInProgress = null
+                    displayError((R.string.badCryptoCode))
+                }
+                else
+                {
+                    updateSendCoinType(pip.outputs[0].chainSelector)
+                    // Update the sendCurrencyType field to contain our coin selection
+                    updateSendCurrencyType()
+
+                    val amt = coin.fromFinestUnit(pip.totalSatoshis)
+                    sendQuantity.text.clear()
+                    sendQuantity.text.append(mBchFormat.format(amt))
+                    checkSendQuantity(sendQuantity.text.toString())
+
+                    if (pip.memo != null)
+                    {
+                        TopInformation.text = pip.memo
+                        TopInformation.visibility = View.VISIBLE
+                    }
+
+                    /*
+                        if (pip.outputs.size > 1)
+                        {
+                            sendToAddress.text.clear()
+                            sendToAddress.text.append(i18n(R.string.multiple))
+                        } */
+
+                    sendToAddress.text.clear()
+                    var count = 0
+                    for (out in pip.outputs)
+                    {
+                        val addr = out.script.address.toString()
+                        if (addr != null)
+                        {
+                            if (count > 0) sendToAddress.text.append(" ")
+                            sendToAddress.text.append(addr)
+                        }
+                        count += 1
+                        if (count > 4)
+                        {
+                            sendToAddress.text.append("...")
+                            break
+                        }
+                    }
+                }
+            }
+        }
+        finally
+        {
+            machineChangingGUI = false
+        }
+
+    }
+
     /** Process a BIP21 URI */
     fun handleSendURI(iuri: String)
     {
@@ -590,11 +696,12 @@ class MainActivity : CommonActivity()
         var amt:BigDecimal = BigDecimal(-1)
         if (bip72 != null)
         {
-            /*
             later {
-                processBip70(bip72)
+                paymentInProgress = processJsonPay(bip72)
+                laterUI {
+                    updateSendBasedOnPaymentInProgress()
+                }
             }
-             */
             return
         }
 
@@ -686,7 +793,7 @@ class MainActivity : CommonActivity()
         val coin = coins[coinType]
         if (coin == null)
         {
-            approximatelyText.text = "unknown currency type"
+            approximatelyText.text = i18n(R.string.badCurrencyUnit)
             return true // send quantity is valid or irrelevant since the currency type is unknown
         }
 
@@ -868,6 +975,54 @@ class MainActivity : CommonActivity()
         return true
     }
 
+    public fun paymentInProgressSend()
+    {
+        var tx:BCHtransaction? = null
+        try
+        {
+            val pip = paymentInProgress
+            if (pip == null) return
+
+            // Which crypto are we sending
+            var walletName = sendCoinType.selectedItem as String
+
+            val account = coins[walletName]
+            if (account == null)
+            {
+                displayError(R.string.badCryptoCode)
+                return
+            }
+            if (account.chainSelector != pip.crypto)
+            {
+                displayError(R.string.incompatibleAccount)
+                return
+            }
+
+            val tx = account.wallet.prepareSend(pip.outputs, 1)  // Bitpay does not allow zero-conf payments -- fix if other payment protocol servers support zero-conf
+            // If prepareSend succeeds, we must wrap all further logic in a try catch to ensure that the protocol succeeds or is aborted so that inputs are recovered
+            try
+            {
+                completeJsonPay(pip, tx)
+                account.wallet.send(tx)  // If the payment protocol completes, help the merchant by broadcasting the tx, and also mark the inputs as spent in my wallet
+            }
+            catch(e:Exception)
+            {
+                account.wallet.abortTransaction(tx)
+                throw e
+            }
+            displayNotice(R.string.sendSuccess)
+            paymentInProgress = null
+            laterUI {
+                sendToAddress.text.clear()
+                updateSendBasedOnPaymentInProgress()
+            }
+        }
+        catch(e:Exception)
+        {
+            displayException(e)
+        }
+    }
+
     @Suppress("UNUSED_PARAMETER")
     /** Create and post a transaction when the send button is pressed */
     public fun onSendButtonClicked(v: View): Boolean
@@ -876,6 +1031,14 @@ class MainActivity : CommonActivity()
         LogIt.info("send button clicked")
         hideKeyboard()
         sendQuantity.clearFocus()
+
+        if (paymentInProgress != null)
+        {
+            coMiscScope.launch {
+                paymentInProgressSend()
+            }
+            return true
+        }
 
         val destAddr = sendToAddress.text.toString()
         val amtstr: String = sendQuantity.text.toString()

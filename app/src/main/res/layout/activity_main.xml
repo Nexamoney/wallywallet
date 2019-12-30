@@ -185,14 +185,14 @@
     <TextView
         android:id="@+id/approximatelyText"
         android:layout_width="match_parent"
-        android:layout_height="32dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
+        android:autoSizeMaxTextSize="18sp"
+        android:autoSizeMinTextSize="10sp"
+        android:autoSizeStepGranularity="1px"
+        android:autoSizeTextType="uniform"
         android:text="approximately N USD"
         android:textAlignment="center"
-        android:autoSizeTextType="uniform"
-        android:autoSizeMinTextSize="10sp"
-        android:autoSizeMaxTextSize="18sp"
-        android:autoSizeStepGranularity="1sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sendQuantity" />
 
@@ -270,13 +270,13 @@
 
     <EditText
         android:id="@+id/sendToAddress"
-        android:layout_width="391dp"
-        android:layout_height="45dp"
-        android:textSize="12sp"
-        android:textStyle="bold"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:inputType="textPersonName"
         android:text=""
         android:textAlignment="center"
+        android:textSize="12sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -337,8 +337,8 @@
         android:text="@string/Send"
         android:textAlignment="center"
         android:textSize="20sp"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="8dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TopInformation" />
 
     <Button
         android:id="@+id/purchaseButton"
@@ -382,5 +382,18 @@
         android:textAlignment="center"
         android:textSize="12sp"
         app:layout_constraintTop_toBottomOf="@+id/balanceTicker2" />
+
+    <TextView
+        android:id="@+id/TopInformation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="14dp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
