@@ -44,7 +44,7 @@ fun MakeNewWallet(currencyCode: String, chain: ChainSelector): Bip44Wallet
 }
 
 
-class Coin(
+class Account(
     val currencyCode: String, //* The name and units of this crypto
     val chainSelector: ChainSelector, //* What blockchain this is
     val context: PlatformContext
@@ -75,6 +75,17 @@ class Coin(
 
     //? specify how quantities should be formatted for display
     val cryptoFormat = mBchFormat
+
+    /** Return a web URL that will provide more information about this transaction */
+    fun transactionInfoWebUrl(txHex: String?): String?
+    {
+        if (txHex == null) return null
+        if (currencyCode == "mBCH")
+            return "https://blockchair.com/bitcoin-cash/transaction/" + txHex
+        if (currencyCode == "mTBCH")
+            return "http://testnet.imaginary.cash/tx/" + txHex
+        return null
+    }
 
     //? Completely delete this wallet, losing any money you may have in it
     fun delete()
@@ -153,7 +164,7 @@ class Coin(
     }
 
     // If this coin's receive address is shown on-screen, this is not null
-    var updateReceiveAddressUI: ((Coin)->Unit)? = null
+    var updateReceiveAddressUI: ((Account)->Unit)? = null
 
     //? Set the user interface elements for this cryptocurrency
     fun setUI(ticker: TextView?, balance: TextView?, unconf: TextView?, infoView: TextView?)
@@ -310,25 +321,25 @@ class WallyApp: Application()
 
     val init = Initialize.LibBitcoinCash(ChainSelector.BCHTESTNET.v)  // Initialize the C library first
 
-    val coins:MutableMap<String,Coin> = mutableMapOf()
+    val accounts:MutableMap<String,Account> = mutableMapOf()
 
     val primaryWallet:Wallet
-        get() = coins[PRIMARY_WALLET]?.wallet ?: throw PrimaryWalletInvalidException()
+        get() = accounts[PRIMARY_WALLET]?.wallet ?: throw PrimaryWalletInvalidException()
 
-    fun coinFor(chain: ChainSelector): Coin?
+    fun coinFor(chain: ChainSelector): Account?
     {
         // Check to see if our preferred crypto matches first
-        for (coin in coins.values)
+        for (account in accounts.values)
         {
-            if ((coin.currencyCode == cryptoCurrencyCode)&&(chain == coin.chainSelector)) return coin
+            if ((account.currencyCode == cryptoCurrencyCode)&&(chain == account.chainSelector)) return account
         }
 
         // Look for any match
-        for (coin in coins.values)
+        for (account in accounts.values)
         {
-            if (chain == coin.chainSelector)
+            if (chain == account.chainSelector)
             {
-                return coin
+                return account
             }
         }
         return null
@@ -358,19 +369,19 @@ class WallyApp: Application()
                 if (REG_TEST_ONLY)
                 {
 
-                    coins.getOrPut("mRBCH") {
-                        val c = Coin("mRBCH", ChainSelector.BCHREGTEST, ctxt);
+                    accounts.getOrPut("mRBCH") {
+                        val c = Account("mRBCH", ChainSelector.BCHREGTEST, ctxt);
                         c
                     }
                 }
                 else
                 {
-                    coins.getOrPut("mBCH") {
-                        val c = Coin("mBCH", ChainSelector.BCHMAINNET, ctxt);
+                    accounts.getOrPut("mBCH") {
+                        val c = Account("mBCH", ChainSelector.BCHMAINNET, ctxt);
                         c
                     }
-                    coins.getOrPut("mTBCH") {
-                        val c = Coin("mTBCH", ChainSelector.BCHTESTNET, ctxt);
+                    accounts.getOrPut("mTBCH") {
+                        val c = Account("mTBCH", ChainSelector.BCHTESTNET, ctxt);
                         c
                     }
 
@@ -384,7 +395,7 @@ class WallyApp: Application()
                 // Wait for the blockchain to come up so the new wallets start near its tip
                 GlobalScope.launch {
                     delay(1000);
-                    for (c in coins.values)
+                    for (c in accounts.values)
                     {
                         //GlobalScope.launch { c.chain.deleteAllPersistentData() }
                         c.start(applicationContext)

@@ -9,7 +9,6 @@ import bitcoinunlimited.libbitcoincash.*
 
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.Context.WIFI_SERVICE
 import android.os.Bundle
 import android.content.Intent
 import android.view.View
@@ -23,37 +22,26 @@ import com.google.zxing.MultiFormatWriter
 import com.google.zxing.WriterException
 import com.google.zxing.common.BitMatrix
 import android.graphics.Bitmap
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
-import android.net.wifi.WifiManager
 import android.os.PersistableBundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
-import android.view.KeyCharacterMap
 import android.view.Menu
 import android.view.MenuInflater
 import android.widget.Adapter
 import android.widget.AdapterView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.ShareActionProvider
 import androidx.core.content.ContextCompat
 
 import androidx.core.view.MenuItemCompat
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.lang.NumberFormatException
 import java.math.BigDecimal
-import java.math.MathContext
-import java.math.RoundingMode
-import java.text.DecimalFormat
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult
 import java.lang.ArithmeticException
 import java.lang.Exception
-import java.net.HttpURLConnection
 import java.net.URL
-import java.util.*
 
 import java.util.logging.Logger
 import kotlin.concurrent.thread
@@ -95,8 +83,8 @@ class MainActivity : CommonActivity()
 
     var app: WallyApp? = null
 
-    val coins:MutableMap<String,Coin>
-        get() = app!!.coins
+    val accounts:MutableMap<String,Account>
+        get() = app!!.accounts
 
     //* last paste so we don't try to paste the same thing again
     var lastPaste: String = ""
@@ -111,7 +99,7 @@ class MainActivity : CommonActivity()
 
     fun onBlockchainChange(blockchain: Blockchain)
     {
-        for ((_,c) in coins)
+        for ((_,c) in accounts)
         {
             if (c.chain == blockchain)
                 c.onWalletChange()  // coin onWalletChange also updates the blockchain state GUI
@@ -120,7 +108,7 @@ class MainActivity : CommonActivity()
 
     fun onWalletChange(wallet: Wallet)  // callback provided to the wallet code
     {
-        for ((_,c) in coins)
+        for ((_,c) in accounts)
         {
             if (c.wallet == wallet)
             {
@@ -226,7 +214,7 @@ class MainActivity : CommonActivity()
             {
                 dbgAssertGuiThread()
                 val sct = sendCoinType.selectedItem.toString()
-                val c = coins[sct]
+                val c = accounts[sct]
                 if (c != null) try
                 {
                     mainActivityModel.lastSendCoinType = sct
@@ -257,11 +245,11 @@ class MainActivity : CommonActivity()
             {
                 dbgAssertGuiThread()
                 val sel = recvCoinType.selectedItem as? String
-                val c = coins[sel]
+                val c = accounts[sel]
                 if (c != null)
                 {
                     mainActivityModel.lastRecvCoinType = sel
-                    val oldc = coins[cryptoCurrencyCode]
+                    val oldc = accounts[cryptoCurrencyCode]
                     if (oldc != null)
                     {
                         oldc.updateReceiveAddressUI = null
@@ -290,12 +278,12 @@ class MainActivity : CommonActivity()
             // Wait until stuff comes up
             while (!coinsCreated) Thread.sleep(100)
 
-            var c1:Coin? = coins["mBCH"] // coins["mBR1"]
+            var c1:Account? = accounts["mBCH"] // coins["mBR1"]
             c1?.setUI(balanceTicker, balanceValue, balanceUnconfirmedValue, WalletChainInfo)
-            var c2:Coin? = coins["mTBCH"] // coins["mBR1"]
+            var c2:Account? = accounts["mTBCH"] // coins["mBR1"]
             c2?.setUI(balanceTicker2, balanceValue2, balanceUnconfirmedValue2, WalletChainInfo2)
 
-            var c3:Coin? = coins["mRBCH"] // regtest
+            var c3:Account? = accounts["mRBCH"] // regtest
             if (REG_TEST_ONLY)
             {
                 c3?.setUI(balanceTicker, balanceValue, balanceUnconfirmedValue, WalletChainInfo)
@@ -305,7 +293,7 @@ class MainActivity : CommonActivity()
                 c3?.setUI(balanceTicker3, balanceValue3, balanceUnconfirmedValue3, null)
             }
 
-            for (c in coins.values)
+            for (c in accounts.values)
             {
                 c.wallet.setOnWalletChange({ it -> onWalletChange(it) })
                 c.wallet.blockchain.onChange = {it -> onBlockchainChange(it)}
@@ -318,7 +306,7 @@ class MainActivity : CommonActivity()
                 // First time GUI setup stuff
 
                 // Set up the crypto spinners to contain all the cryptos this wallet supports
-                val coinSpinData = coins.keys.toTypedArray()
+                val coinSpinData = accounts.keys.toTypedArray()
                 val coinAa = ArrayAdapter(this, android.R.layout.simple_spinner_item, coinSpinData)
                 sendCoinType?.setAdapter(coinAa)
                 recvCoinType?.setAdapter(coinAa)
@@ -334,7 +322,7 @@ class MainActivity : CommonActivity()
                 updateSendCurrencyType()
 
                 recvCoinType.selectedItem?.let {
-                    val c = coins[it.toString()]
+                    val c = accounts[it.toString()]
                     c?.onUpdatedReceiveInfo(minOf(imageView.layoutParams.width, imageView.layoutParams.height, 1024)) { recvAddrStr, recvAddrQR ->
                         this@MainActivity.updateReceiveAddressUI(
                             recvAddrStr,
@@ -355,7 +343,7 @@ class MainActivity : CommonActivity()
     override fun onPause()
     {
         // remove GUI elements that are going to disappear because this activity is going down
-        for (c in coins.values)
+        for (c in accounts.values)
         {
             c.updateReceiveAddressUI = null
         }
@@ -373,7 +361,7 @@ class MainActivity : CommonActivity()
         mainActivityModel.lastRecvCoinType?.let { recvCoinType.setSelection(it) }
         mainActivityModel.lastSendCurrencyType?.let { sendCurrencyType.setSelection(it) }
 
-        for (c in coins.values)
+        for (c in accounts.values)
         {
             c.updateReceiveAddressUI = { it -> updateReceiveAddressUI(it) }
             c.onResume()
@@ -383,7 +371,7 @@ class MainActivity : CommonActivity()
     override fun onDestroy()
     {
         // remove GUI elements that are going to disappear because this activity is going down
-        for (c in coins.values)
+        for (c in accounts.values)
         {
             c.updateReceiveAddressUI = null
         }
@@ -414,7 +402,7 @@ class MainActivity : CommonActivity()
         dbgAssertGuiThread()
 
         later {
-            for (c in coins.values)
+            for (c in accounts.values)
             {
                 c.getXchgRates(fiatCurrencyCode)
             }
@@ -434,7 +422,7 @@ class MainActivity : CommonActivity()
 
         checkSendQuantity(sendQuantity.text.toString())
 
-        coins[cryptoCurrencyCode]?.let { updateReceiveAddressUI(it) }
+        accounts[cryptoCurrencyCode]?.let { updateReceiveAddressUI(it) }
 
         // Process the intent that caused this activity to resume
         if (intent.scheme != null)  // its null if normal app startup
@@ -471,7 +459,7 @@ class MainActivity : CommonActivity()
 
         }
 
-        for (c in coins)
+        for (c in accounts)
         {
             c.value.onWalletChange()
         }
@@ -502,7 +490,7 @@ class MainActivity : CommonActivity()
             lastPaste = text
             if (text.contains('?'))  // BIP21 or BIP70
             {
-                for (c in coins.values)
+                for (c in accounts.values)
                 {
                     if (text.contains(c.chain.uriScheme))  // TODO: prefix not contains
                     {
@@ -533,11 +521,11 @@ class MainActivity : CommonActivity()
         // First see if the current selection is compatible with what we want.
         // This keeps the user's selection if multiple accounts are compatible
         val sc = sendCoinType.selectedItem
-        var curCoin = coins[sc]
-        if (curCoin?.chainSelector != chainSelector)  // Its not so find one that is
+        var curAccount = accounts[sc]
+        if (curAccount?.chainSelector != chainSelector)  // Its not so find one that is
         {
-            curCoin = app!!.coinFor(chainSelector)
-            curCoin?.let {
+            curAccount = app!!.coinFor(chainSelector)
+            curAccount?.let {
                 sendCoinType.setSelection(it.currencyCode)
             }
         }
@@ -575,7 +563,7 @@ class MainActivity : CommonActivity()
         LogIt.info("on new Intent: " + iuri)
         try
         {
-            for (c in coins.values)
+            for (c in accounts.values)
             {
                 if (receivedIntent.scheme != null)  // its null if normal app startup
                 {
@@ -753,22 +741,22 @@ class MainActivity : CommonActivity()
     }
 
     /** actually update the UI elements based on the provided data.  Must be called in the GUI context */
-    fun updateReceiveAddressUI(coin: Coin)
+    fun updateReceiveAddressUI(account: Account)
     {
         laterUI {
-            if (recvCoinType?.selectedItem?.toString() == coin.currencyCode)  // Only update the UI if this coin is selected to be received
+            if (recvCoinType?.selectedItem?.toString() == account.currencyCode)  // Only update the UI if this coin is selected to be received
             {
-                coin.ifUpdatedReceiveInfo(minOf(imageView.layoutParams.width, imageView.layoutParams.height, 1024)) { recvAddrStr, recvAddrQR -> updateReceiveAddressUI(recvAddrStr, recvAddrQR) }
+                account.ifUpdatedReceiveInfo(minOf(imageView.layoutParams.width, imageView.layoutParams.height, 1024)) { recvAddrStr, recvAddrQR -> updateReceiveAddressUI(recvAddrStr, recvAddrQR) }
             }
         }
     }
 
 
     /** Calculate whether there is enough money available to make a payment and return an appropriate info string for the GUI. Does not need to be called within GUI context */
-    fun availabilityWarning(coin: Coin, qty:BigDecimal): String
+    fun availabilityWarning(account: Account, qty:BigDecimal): String
     {
-        val cbal = coin.balance
-        val ubal = coin.unconfirmedBalance
+        val cbal = account.balance
+        val ubal = account.unconfirmedBalance
         if (cbal + ubal < qty)
         {
             return " " + i18n(R.string.moreThanAvailable)
@@ -790,7 +778,7 @@ class MainActivity : CommonActivity()
         var currencyType: String? = sendCurrencyType.selectedItem as? String
         if (currencyType == null) return true
 
-        val coin = coins[coinType]
+        val coin = accounts[coinType]
         if (coin == null)
         {
             approximatelyText.text = i18n(R.string.badCurrencyUnit)
@@ -917,10 +905,10 @@ class MainActivity : CommonActivity()
             try
             {
                 var clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                val coin = coins[cryptoCurrencyCode]
-                if (coin == null) throw BadCryptoException(R.string.badCryptoCode)
+                val account = accounts[cryptoCurrencyCode]
+                if (account == null) throw BadCryptoException(R.string.badCryptoCode)
 
-                val recvAddrStr: String? = coin.currentReceive?.address?.toString()
+                val recvAddrStr: String? = account.currentReceive?.address?.toString()
 
                 if (recvAddrStr != null)
                 {
@@ -930,7 +918,7 @@ class MainActivity : CommonActivity()
                     // visual bling that indicates text copied
                     receiveAddress.text = i18n(R.string.copied)
                     laterUI {
-                        delay(3000); coins[cryptoCurrencyCode]?.let { updateReceiveAddressUI(it) }
+                        delay(3000); accounts[cryptoCurrencyCode]?.let { updateReceiveAddressUI(it) }
                     }
                 }
                 else throw UnavailableException(R.string.receiveAddressUnavailable)
@@ -986,7 +974,7 @@ class MainActivity : CommonActivity()
             // Which crypto are we sending
             var walletName = sendCoinType.selectedItem as String
 
-            val account = coins[walletName]
+            val account = accounts[walletName]
             if (account == null)
             {
                 displayError(R.string.badCryptoCode)
@@ -1056,10 +1044,10 @@ class MainActivity : CommonActivity()
         if (currencyType == null) throw BadCryptoException()
 
         // Which crypto are we sending
-        var cryptoCode = sendCoinType.selectedItem as String
+        val walletName = sendCoinType.selectedItem as String
 
-        val coin = coins[cryptoCode]
-        if (coin == null) throw BadCryptoException()
+        val account = accounts[walletName]
+        if (account == null) throw BadCryptoException()
 
         // Make sure the address is consistent with the selected coin to send
         val sendAddr = try { PayAddress(sendToAddress.text.toString()) }
@@ -1068,19 +1056,19 @@ class MainActivity : CommonActivity()
             displayError(R.string.badAddress)
             return false
         }
-        if (coin.chainSelector != sendAddr.blockchain)
+        if (account.chainSelector != sendAddr.blockchain)
         {
             displayError(R.string.chainIncompatibleWithAddress)
             return false
         }
 
-        if (currencyType == coin.currencyCode)
+        if (currencyType == account.currencyCode)
         {
         }
         else if (currencyType == fiatCurrencyCode)
         {
-            if (coin.fiatPerCoin != BigDecimal.ZERO)
-                amount = amount / coin.fiatPerCoin
+            if (account.fiatPerCoin != BigDecimal.ZERO)
+                amount = amount / account.fiatPerCoin
             else throw UnavailableException(R.string.retrievingExchangeRate)
         }
         else throw BadUnitException()
@@ -1090,8 +1078,8 @@ class MainActivity : CommonActivity()
         coMiscScope.launch {  // avoid network on main thread exception
             try
             {
-                val atomAmt = coin.toFinestUnit(amount)
-                coin.wallet.send(atomAmt, destAddr)
+                val atomAmt = account.toFinestUnit(amount)
+                account.wallet.send(atomAmt, destAddr)
                 onSendSuccess()
             }
             catch (e: Exception)  // We don't want to crash, we want to tell the user what went wrong

@@ -4,7 +4,6 @@ package info.bitcoinunlimited.www.wally
 
 import android.content.Context
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -194,7 +193,7 @@ class SplitBillActivity : CommonActivity()
         }
         else
         {
-            val coin = ((getApplication() as WallyApp).coins)[cryptoCurrencyCode]
+            val coin = ((getApplication() as WallyApp).accounts)[cryptoCurrencyCode]
             if (coin == null)
             {
                 return mBchFormat.format(qty) + currencyCodeStr
@@ -284,7 +283,7 @@ class SplitBillActivity : CommonActivity()
 
         if (ctype == fiatCurrencyCode)
         {
-            val coins:MutableMap<String,Coin> = (getApplication() as WallyApp).coins
+            val coins:MutableMap<String,Account> = (getApplication() as WallyApp).accounts
 
             val coin = coins[cryptoCurrencyCode]
             if (coin == null)
@@ -306,7 +305,7 @@ class SplitBillActivity : CommonActivity()
             splitBillTotal.text = formatAsInputCurrency(total, true)
             var qty = toCrypto(total)/splitWays
 
-            val coins:MutableMap<String,Coin> = (getApplication() as WallyApp).coins
+            val coins:MutableMap<String,Account> = (getApplication() as WallyApp).accounts
             val coin = coins[cryptoCurrencyCode]
             var fiatStr = ""
             if (coin != null)
@@ -328,7 +327,7 @@ class SplitBillActivity : CommonActivity()
         }
     }
 
-    fun updateQR(v: Coin.ReceiveInfoResult)
+    fun updateQR(v: Account.ReceiveInfoResult)
     {
         laterUI {
             if (v.qr != null)

@@ -11,7 +11,6 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import bitcoinunlimited.libbitcoincash.dbgAssertGuiThread
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_settings.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -40,8 +39,8 @@ class settings : AppCompatActivity()
 {
     // SharedPreferences is used to communicate settings from this activity to the rest of the program and to persist these choices between executions
 
-    val coins:MutableMap<String,Coin>
-        get() = (getApplication() as WallyApp).coins
+    val coins:MutableMap<String,Account>
+        get() = (getApplication() as WallyApp).accounts
 
     @Suppress("UNUSED_PARAMETER")
     fun onFiatChange(guiElem: View?): Boolean
@@ -95,7 +94,7 @@ class settings : AppCompatActivity()
     fun onLogDebugData(v: View?)
     {
         GlobalScope.launch {
-            val coins: MutableMap<String, Coin> = (getApplication() as WallyApp).coins
+            val coins: MutableMap<String, Account> = (getApplication() as WallyApp).accounts
 
             LogIt.info("LOG DEBUG BUTTON")
             for (c in coins)
