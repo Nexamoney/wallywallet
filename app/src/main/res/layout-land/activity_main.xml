@@ -115,6 +115,7 @@
         android:layout_width="132dp"
         android:layout_height="32dp"
         android:gravity="bottom"
+        android:onClick="onBalanceValueClicked"
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_light"
         android:textSize="20sp"
@@ -126,6 +127,7 @@
         android:layout_width="132dp"
         android:layout_height="32dp"
         android:gravity="bottom"
+        android:onClick="onBalanceValueClicked"
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_light"
         android:textSize="20sp"
@@ -137,6 +139,7 @@
         android:layout_width="132dp"
         android:layout_height="32dp"
         android:gravity="bottom"
+        android:onClick="onBalanceValueClicked"
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_light"
         android:textSize="20sp"
@@ -189,6 +192,7 @@
         android:ems="10"
         android:imeOptions="actionDone"
         android:inputType="numberDecimal"
+        android:digits="abcdefghijklmnopqrstuvwxyz0123456789.,"
         app:layout_constraintStart_toEndOf="@+id/amountText"
         app:layout_constraintTop_toBottomOf="@+id/sendCoinType" />
 

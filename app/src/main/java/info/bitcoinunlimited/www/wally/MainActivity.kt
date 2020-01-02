@@ -55,6 +55,9 @@ val NOTICE_DISPLAY_TIME = 4000.toLong()
 
 val MAX_ACCOUNTS = 3 // What are the maximum # of accounts this wallet GUI can show
 
+var SEND_ALL_TEXT = "all"  // Fixed up in onCreate when we have access to strings
+
+
 open class PasteUnintelligibleException(): BUException("", i18n(R.string.pasteUnintelligible), ErrorSeverity.Expected)
 open class PasteEmptyException(): BUException("", i18n(R.string.pasteIsEmpty), ErrorSeverity.Abnormal)
 open class BadAmountException(msg: Int): BUException(i18n(msg), i18n(R.string.badAmount))
@@ -131,6 +134,7 @@ class MainActivity : CommonActivity()
         appContext = ctxt
 
         appResources = getResources()
+        SEND_ALL_TEXT = i18n(R.string.sendAll)
 
         sendToAddress.text.clear()
         sendQuantity.text.clear()
@@ -794,6 +798,11 @@ class MainActivity : CommonActivity()
     fun checkSendQuantity(s: String): Boolean
     {
         dbgAssertGuiThread()
+        if (s=="")
+        {
+            approximatelyText.text = i18n(R.string.emptyQuantityField)
+            return false
+        }
         var coinType: String? = sendCoinType.selectedItem as? String
         var currencyType: String? = sendCurrencyType.selectedItem as? String
         if (currencyType == null) return true
@@ -808,8 +817,15 @@ class MainActivity : CommonActivity()
         // This sets the scale assuming mBch.  mBch will have more decimals (5) than fiat (2) so we are ok
         val qty = try { s.toBigDecimal(currencyMath).setScale(mBchDecimals) } catch(e:NumberFormatException)
         {
-            approximatelyText.text = i18n(R.string.invalidQuantity)
-            return false
+            if (s == SEND_ALL_TEXT)  // Special case transferring everything
+            {
+                coin.fromFinestUnit(coin.wallet.balance+coin.wallet.balanceUnconfirmed)
+            }
+            else
+            {
+                approximatelyText.text = i18n(R.string.invalidQuantity)
+                return false
+            }
         }
 
         if (currencyType == fiatCurrencyCode)
@@ -988,6 +1004,17 @@ class MainActivity : CommonActivity()
 
     }
 
+    fun onBalanceValueClicked(view: View)
+    {
+        val account = app?.accountFromGui(view)
+        if (account == null) return
+
+        sendQuantity.text.clear()
+        sendQuantity.text.append(SEND_ALL_TEXT.toString())
+
+        sendCoinType.setSelection(account.name)
+    }
+
         @Suppress("UNUSED_PARAMETER")
     /** Start the purchase activity when the purchase button is pressed */
     public fun onPurchaseButton(v: View): Boolean
@@ -1062,26 +1089,33 @@ class MainActivity : CommonActivity()
             return true
         }
 
-        val destAddr = sendToAddress.text.toString()
-        val amtstr: String = sendQuantity.text.toString()
-
-        var amount = try { amtstr.toBigDecimal(currencyMath).setScale(currencyScale)
-        }
-        catch (e: NumberFormatException)
-        {
-            displayError(R.string.badAmount)
-            return false
-        }
-
         var currencyType: String? = sendCurrencyType.selectedItem as String?
-
         if (currencyType == null) throw BadCryptoException()
 
         // Which crypto are we sending
         val walletName = sendCoinType.selectedItem as String
-
         val account = accounts[walletName]
         if (account == null) throw BadCryptoException()
+
+
+        val amtstr: String = sendQuantity.text.toString()
+
+        var deductFeeFromAmount = false
+        var amount = try { amtstr.toBigDecimal(currencyMath).setScale(currencyScale)
+        }
+        catch (e: NumberFormatException)
+        {
+            if (amtstr == SEND_ALL_TEXT)
+            {
+                deductFeeFromAmount = true
+                account.fromFinestUnit(account.wallet.balance+account.wallet.balanceUnconfirmed)
+            }
+            else
+            {
+                displayError(R.string.badAmount)
+                return false
+            }
+        }
 
         // Make sure the address is consistent with the selected coin to send
         val sendAddr = try { PayAddress(sendToAddress.text.toString()) }
@@ -1096,7 +1130,7 @@ class MainActivity : CommonActivity()
             return false
         }
 
-        if (currencyType == account.name)
+        if (currencyType == account.currencyCode)
         {
         }
         else if (currencyType == fiatCurrencyCode)
@@ -1113,7 +1147,7 @@ class MainActivity : CommonActivity()
             try
             {
                 val atomAmt = account.toFinestUnit(amount)
-                account.wallet.send(atomAmt, destAddr)
+                account.wallet.send(atomAmt, sendAddr, deductFeeFromAmount)
                 onSendSuccess()
             }
             catch (e: Exception)  // We don't want to crash, we want to tell the user what went wrong

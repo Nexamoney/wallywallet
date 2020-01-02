@@ -96,6 +96,7 @@
         android:id="@+id/GuiCreateAccountButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="108dp"
         android:onClick="onCreateAccount"
         android:text="@string/createAccount"
         app:layout_constraintEnd_toEndOf="parent"

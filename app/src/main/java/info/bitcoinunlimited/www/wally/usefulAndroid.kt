@@ -33,8 +33,9 @@ val RblockNotForthcoming = R.string.blockNotForthcoming
 val RheadersNotForthcoming = R.string.headersNotForthcoming
 val RbadTransaction = R.string.badTransaction
 val RfeeExceedsFlatMax = R.string.feeExceedsFlatMax
-var RexcessiveFee = R.string.excessiveFee
-var Rbip70NoAmount = R.string.badAmount
+val RexcessiveFee = R.string.excessiveFee
+val Rbip70NoAmount = R.string.badAmount
+val RdeductedFeeLargerThanSendAmount = R.string.deductedFeeLargerThanSendAmount
 
 var RwalletDisconnectedFromBlockchain = R.string.walletDisconnectedFromBlockchain
 
@@ -59,7 +60,7 @@ fun notInUI(fn: () -> Unit)
     else fn()
 }
 
-class TextViewReactor<T>(val gui: TextView):Reactor<T>()
+class TextViewReactor<T>(public val gui: TextView):Reactor<T>()
 {
     override fun change(obj: Reactive<T>)
     {
@@ -116,6 +117,7 @@ class PlatformContext(val context: Context)
 // Lookup strings in strings.xml
 fun i18n(id: Int):String
 {
+    if (id == -1) return ""
     val s = appResources?.getString(id)
     if (s != null) return s
 

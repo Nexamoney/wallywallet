@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.net.wifi.WifiManager
+import android.view.View
 import android.widget.TextView
 import bitcoinunlimited.libbitcoincash.*
 import kotlinx.coroutines.GlobalScope
@@ -390,6 +391,18 @@ class WallyApp: Application()
         return null
     }
 
+    /** Return what account a particular GUI element is bound to or null if its not bound */
+    fun accountFromGui(view: View): Account?
+    {
+        for ((name,a) in accounts)
+        {
+            if ((a.tickerGUI.reactor as TextViewReactor<String>).gui == view) return a
+            if ((a.balanceGUI.reactor as TextViewReactor<String>).gui == view) return a
+            if ((a.unconfirmedBalanceGUI.reactor as TextViewReactor<String>).gui == view) return a
+            if ((a.infoGUI.reactor as TextViewReactor<String>).gui == view) return a
+        }
+        return null
+    }
 
     fun saveActiveAccountList()
     {

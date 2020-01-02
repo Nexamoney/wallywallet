@@ -70,6 +70,8 @@
     <string name="settings">settings</string>
     <string name="help">help</string>
     <string name="invalidQuantity">invalid quantity</string>
+    <!-- Write this below the send quantity field when it is empty - you probably want to write nothing at all -->
+    <string name="emptyQuantityField"></string>
     <string name="purchase">purchase</string>
     <string name="scanPaymentQRcode">Scan payment address QR code</string>
     <string name="ScanQRCodeButton">Scan a QR code</string>
@@ -97,8 +99,9 @@
     <string name="copied">...copied to clipboard...</string>
     <string name="scanFailed">scan failed</string>
     <string name="sendSuccess">send successful</string>
-    <string name="sendQuantityHint">amount to send</string>
+    <string name="sendQuantityHint">send quantity</string>
     <string name="sendToAddressHint">destination address</string>
+    <string name="sendAll">all</string>
 
     <string name="retrievingExchangeRate">still retrieving exchange rate</string>
 
@@ -192,6 +195,7 @@
         row. There is a limit to how far you can "get ahead" of the blockchain. Let your unconfirmed balance confirm and
         try again.
     </string>
+    <string name="deductedFeeLargerThanSendAmount">Deducted fee is larger than the amount being sent</string>
 
     <string name="badWalletImplementation">Incorrect wallet implementation.  Report this bug!</string>
 

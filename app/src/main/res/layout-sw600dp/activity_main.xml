@@ -122,6 +122,7 @@
         android:layout_height="wrap_content"
         android:gravity="center|center_vertical"
         android:maxLines="1"
+        android:onClick="onBalanceValueClicked"
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_light"
         android:textSize="30sp"
@@ -136,6 +137,7 @@
         android:layout_height="wrap_content"
         android:gravity="center|center_vertical"
         android:maxLines="1"
+        android:onClick="onBalanceValueClicked"
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_light"
         android:textSize="30sp"
@@ -150,6 +152,7 @@
         android:layout_height="wrap_content"
         android:gravity="center|center_vertical"
         android:maxLines="1"
+        android:onClick="onBalanceValueClicked"
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_light"
         android:textSize="30sp"
@@ -201,6 +204,7 @@
         android:ems="10"
         android:imeOptions="actionDone"
         android:inputType="numberDecimal"
+        android:digits="abcdefghijklmnopqrstuvwxyz0123456789.,"
         app:layout_constraintStart_toEndOf="@+id/amountText"
         app:layout_constraintTop_toBottomOf="@+id/sendToAddress" />
 

@@ -117,10 +117,12 @@
         android:id="@+id/balanceValue"
         android:layout_width="wrap_content"
         android:layout_height="36dp"
+        android:clickable="true"
+        android:gravity="bottom"
+        android:onClick="onBalanceValueClicked"
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_light"
         android:textSize="20sp"
-        android:gravity="bottom"
         app:layout_constraintBottom_toBottomOf="@+id/balanceTicker"
         app:layout_constraintStart_toEndOf="@+id/balanceTicker"
         app:layout_constraintTop_toTopOf="@+id/balanceTicker"
@@ -130,10 +132,11 @@
         android:id="@+id/balanceValue2"
         android:layout_width="wrap_content"
         android:layout_height="36dp"
+        android:gravity="bottom"
+        android:onClick="onBalanceValueClicked"
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_light"
         android:textSize="20sp"
-        android:gravity="bottom"
         app:layout_constraintBottom_toBottomOf="@+id/balanceTicker2"
         app:layout_constraintStart_toEndOf="@+id/balanceTicker2" />
 
@@ -141,10 +144,11 @@
         android:id="@+id/balanceValue3"
         android:layout_width="wrap_content"
         android:layout_height="36dp"
+        android:gravity="bottom"
+        android:onClick="onBalanceValueClicked"
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_light"
         android:textSize="20sp"
-        android:gravity="bottom"
         app:layout_constraintBottom_toBottomOf="@+id/balanceTicker3"
         app:layout_constraintStart_toEndOf="@+id/balanceTicker3" />
 
@@ -186,14 +190,16 @@
 
     <EditText
         android:id="@+id/sendQuantity"
-        android:layout_width="140dp"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:autofillHints=""
+        android:digits="abcdefghijklmnopqrstuvwxyz0123456789.,"
         android:ems="10"
         android:hint="@string/sendQuantityHint"
         android:imeOptions="actionDone"
         android:inputType="numberDecimal"
+        android:textAlignment="center"
         app:layout_constraintStart_toEndOf="@+id/amountText"
         app:layout_constraintTop_toBottomOf="@+id/sendToAddress" />
 
