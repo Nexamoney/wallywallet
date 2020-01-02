@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".NewAccount">
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="0dp"
+        android:background="?android:attr/windowBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:menu="@menu/bottom_nav_menu"
+        app:labelVisibilityMode="labeled"/>
+
+    <TextView
+        android:id="@+id/GuiAccountNameText"
+        android:layout_width="132dp"
+        android:layout_height="26dp"
+        android:text="@string/AccountName"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/GuiAccountNameEntry"
+        app:layout_constraintStart_toEndOf="@+id/GuiAccountNameOk"
+        app:layout_constraintTop_toTopOf="@+id/GuiAccountNameEntry"
+        app:layout_constraintVertical_bias="0.526" />
+
+    <EditText
+        android:id="@+id/GuiAccountNameEntry"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/AccountNameHint"
+        android:inputType="textPersonName"
+        android:singleLine="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/GuiAccountNameText"
+        app:layout_constraintTop_toTopOf="parent"
+        android:importantForAutofill="no" />
+
+    <TextView
+        android:id="@+id/GuiBlockchainText"
+        android:layout_width="125dp"
+        android:layout_height="wrap_content"
+        android:text="@string/Blockchain"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/GuiBlockchainSelector"
+        app:layout_constraintStart_toEndOf="@+id/GuiBlockchainOk"
+        app:layout_constraintTop_toTopOf="@+id/GuiBlockchainSelector"
+        app:layout_constraintVertical_bias="0.473" />
+
+    <Spinner
+        android:id="@+id/GuiBlockchainSelector"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.238"
+        app:layout_constraintStart_toEndOf="@+id/GuiBlockchainText"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAccountNameEntry" />
+
+    <TextView
+        android:id="@+id/GuiRecoveryPhraseText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/AccountRecoveryPhrase"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/GuiBlockchainText"
+        app:layout_constraintTop_toBottomOf="@+id/GuiBlockchainSelector" />
+
+    <MultiAutoCompleteTextView
+        android:id="@+id/GuiAccountRecoveryPhraseEntry"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/LeaveEmptyNewWallet"
+        android:imeOptions="actionDone"
+        android:inputType="textLongMessage|textNoSuggestions"
+        android:maxLines="5"
+        android:minLines="2"
+        android:singleLine="false"
+        android:textSize="12sp"
+        android:textStyle="normal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiRecoveryPhraseText" />
+
+    <Button
+        android:id="@+id/GuiCreateAccountButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onCreateAccount"
+        android:text="@string/createAccount"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAccountRecoveryPhraseEntry" />
+
+    <ImageView
+        android:id="@+id/GuiAccountNameOk"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:contentDescription="@android:string/ok"
+        app:layout_constraintBottom_toBottomOf="@+id/GuiAccountNameText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/GuiAccountNameText"
+        app:srcCompat="@android:drawable/ic_delete" />
+
+    <ImageView
+        android:id="@+id/GuiBlockchainOk"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:contentDescription="@android:string/ok"
+        app:layout_constraintBottom_toBottomOf="@+id/GuiBlockchainText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/GuiBlockchainText"
+        app:srcCompat="@android:drawable/ic_delete" />
+
+    <ImageView
+        android:id="@+id/GuiRecoveryPhraseOk"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:contentDescription="@android:string/ok"
+        app:layout_constraintBottom_toBottomOf="@+id/GuiRecoveryPhraseText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/GuiRecoveryPhraseText"
+        app:srcCompat="@android:drawable/ic_delete" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

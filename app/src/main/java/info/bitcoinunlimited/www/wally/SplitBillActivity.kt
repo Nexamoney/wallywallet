@@ -193,7 +193,7 @@ class SplitBillActivity : CommonActivity()
         }
         else
         {
-            val coin = ((getApplication() as WallyApp).accounts)[cryptoCurrencyCode]
+            val coin = ((getApplication() as WallyApp).accounts)[defaultAccount]
             if (coin == null)
             {
                 return mBchFormat.format(qty) + currencyCodeStr
@@ -213,7 +213,7 @@ class SplitBillActivity : CommonActivity()
         fiatCurrencyCode = prefDb.getString(i18n(R.string.localCurrency), "USD") ?: "USD"
 
         // Set the send currency type spinner options to your default fiat currency or your currently selected crypto
-        val spinData = arrayOf(fiatCurrencyCode, cryptoCurrencyCode)
+        val spinData = arrayOf(fiatCurrencyCode, defaultAccount)
         val aa = ArrayAdapter(this, android.R.layout.simple_spinner_item, spinData)
         splitCurrencyType!!.setAdapter(aa)
 
@@ -285,7 +285,7 @@ class SplitBillActivity : CommonActivity()
         {
             val coins:MutableMap<String,Account> = (getApplication() as WallyApp).accounts
 
-            val coin = coins[cryptoCurrencyCode]
+            val coin = coins[defaultAccount]
             if (coin == null)
             {
                 // TODO better error report
@@ -306,7 +306,7 @@ class SplitBillActivity : CommonActivity()
             var qty = toCrypto(total)/splitWays
 
             val coins:MutableMap<String,Account> = (getApplication() as WallyApp).accounts
-            val coin = coins[cryptoCurrencyCode]
+            val coin = coins[defaultAccount]
             var fiatStr = ""
             if (coin != null)
             {
@@ -314,7 +314,7 @@ class SplitBillActivity : CommonActivity()
                 fiatStr = " " + i18n(R.string.or) + " " + fiatFormat.format(fiatQty) + " " + fiatCurrencyCode
                 coin.receiveInfoWithQuantity(qty, 200, { updateQR(it) } )
             }
-            perSplitAmount.text = mBchFormat.format(qty) + " " + cryptoCurrencyCode + fiatStr
+            perSplitAmount.text = mBchFormat.format(qty) + " " + defaultAccount + fiatStr
         }
         catch(e: java.lang.NumberFormatException)
         {

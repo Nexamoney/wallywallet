@@ -18,7 +18,7 @@ import java.util.logging.Logger
 
 val LOCAL_CURRENCY_PREF = "localCurrency"
 
-var cryptoCurrencyCode = "mTBCH"  // The default crypto I'm using
+var defaultAccount = "mTBCH"  // The default crypto I'm using
 
 private val LogIt = Logger.getLogger("bitcoinunlimited.settings")
 
@@ -35,12 +35,14 @@ fun Spinner.setSelection(v: String): Boolean
     return false
 }
 
-class settings : AppCompatActivity()
+// SharedPreferences is used to communicate settings from this activity to the rest of the program and to persist these choices between executions
+class Settings : AppCompatActivity()
 {
-    // SharedPreferences is used to communicate settings from this activity to the rest of the program and to persist these choices between executions
 
-    val coins:MutableMap<String,Account>
-        get() = (getApplication() as WallyApp).accounts
+    var app: WallyApp? = null
+
+    val accounts:MutableMap<String,Account>
+        get() = app!!.accounts
 
     @Suppress("UNUSED_PARAMETER")
     fun onFiatChange(guiElem: View?): Boolean
@@ -59,6 +61,8 @@ class settings : AppCompatActivity()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
+        app = (getApplication() as WallyApp)
+
         val preferenceDB = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
         val curCode: String = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"
         fiatCurrencySpinner.setSelection(curCode)
@@ -67,7 +71,7 @@ class settings : AppCompatActivity()
         {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long)
             {
-                this@settings.onFiatChange(view)
+                this@Settings.onFiatChange(view)
             }
 
             override fun onNothingSelected(parent: AdapterView<out Adapter>?)
@@ -77,7 +81,7 @@ class settings : AppCompatActivity()
         }
 
         var wordSeeds: String = ""
-        for (c in coins)
+        for (c in accounts)
         {
            wordSeeds = wordSeeds + c.value.wallet.name + ":" + c.value.wallet.secretWords + "\n"
         }
@@ -85,7 +89,7 @@ class settings : AppCompatActivity()
 
         dbgAssertGuiThread()
         // Set up the crypto spinners to contain all the cryptos this wallet supports
-        val coinSpinData = coins.keys.toTypedArray()
+        val coinSpinData = accounts.keys.toTypedArray()
         val coinAa = ArrayAdapter(this, android.R.layout.simple_spinner_item, coinSpinData)
         deleteWalletAccountChoice?.setAdapter(coinAa)
     }
@@ -108,7 +112,7 @@ class settings : AppCompatActivity()
     fun onRediscoverBlockchain(v: View?)
     {
         val accountName = deleteWalletAccountChoice.selectedItem.toString()
-        val coin = coins[accountName]
+        val coin = accounts[accountName]
         if (coin == null) return
         GlobalScope.launch {
             // If you reset the wallet first, it'll start rediscovering the existing blockchain before it gets reset.
@@ -123,14 +127,14 @@ class settings : AppCompatActivity()
     {
         // TODO add a big warning and confirmation dialog
         val accountName = deleteWalletAccountChoice.selectedItem.toString()
-        val coin = coins[accountName]
-        if (coin == null) return
-        coin.detachUI()
-        coins.remove(accountName)  // remove this coin from any global access before we delete it
+        val account = accounts[accountName]
+        if (account == null) return
+        account.detachUI()
 
         GlobalScope.launch { // cannot access db in UI thread
-            coins.remove(accountName)  // remove this coin from any global access before we delete it
-            coin.delete()
+            accounts.remove(accountName)  // remove this coin from any global access before we delete it
+            app?.saveActiveAccountList()
+            account.delete()
             }
     }
 

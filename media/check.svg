@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.0"
+   viewBox="0 0 101.97673 101.59499"
+   id="svg2"
+   sodipodi:docname="check.svg"
+   width="101.97673"
+   height="101.59499"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1183"
+     inkscape:window-height="909"
+     id="namedview9"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="1.4597884"
+     inkscape:cx="50.976485"
+     inkscape:cy="-58.956345"
+     inkscape:window-x="5924"
+     inkscape:window-y="30"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2" />
+  <defs
+     id="defs11" />
+  <title
+     id="title2">Check mark</title>
+  <metadata
+     id="metadata8">
+    <rdf:RDF>
+      <cc:Work>
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <cc:license
+           rdf:resource="http://creativecommons.org/publicdomain/zero/1.0/" />
+        <dc:publisher>
+          <cc:Agent
+             rdf:about="http://openclipart.org/">
+            <dc:title>Openclipart</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:title>Check mark</dc:title>
+        <dc:date>2009-06-12T15:32:30</dc:date>
+        <dc:description>An all-purpose check mark</dc:description>
+        <dc:source>https://openclipart.org/detail/26557/check-mark-by-raemi</dc:source>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>raemi</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>colour</rdf:li>
+            <rdf:li>correct</rdf:li>
+            <rdf:li>icon</rdf:li>
+            <rdf:li>mark</rdf:li>
+            <rdf:li>passed</rdf:li>
+            <rdf:li>sign</rdf:li>
+            <rdf:li>symbol</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/publicdomain/zero/1.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <path
+     inkscape:connector-curvature="0"
+     d="m 1.192803,60.718443 31.75913,39.683747 C 49.133943,64.886483 68.943113,32.213643 100.78392,1.192803 76.953543,15.671013 50.685923,43.163223 28.247453,77.182623 Z"
+     style="opacity:0.81999978;fill:#139d1c;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;fill-opacity:1"
+     id="path4068-3" />
+</svg>

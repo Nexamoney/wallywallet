@@ -200,17 +200,22 @@ class TxHistoryActivity : CommonActivity()
             walletName?.let { walName ->
                 val app = (application as WallyApp)
                 val coin = app.accounts[walName]
-                val wallet = coin!!.wallet
-                val history = wallet.paymentHistory.values
-                val historyList: List<PaymentHistory> = history.sortedBy { it.date }.filter { !it.isChange }.reversed()
-                val txhist: ArrayList<PaymentHistory> = ArrayList(historyList)
-                LogIt.info("tx history count:" + txhist.size.toString())
-                //LogIt.info(wallet.allIdentityDomains().map { it.domain }.toString())
-                adapter = TxHistoryRecyclerAdapter(this, txhist, coin)
-                GuiTxHistoryList.adapter = adapter
+                if (coin != null)
+                {
+                    val wallet = coin.wallet
+                    val history = wallet.paymentHistory.values
+                    val historyList: List<PaymentHistory> = history.sortedBy { it.date }.filter { !it.isChange }.reversed()
+                    val txhist: ArrayList<PaymentHistory> = ArrayList(historyList)
+                    LogIt.info("tx history count:" + txhist.size.toString())
+                    //LogIt.info(wallet.allIdentityDomains().map { it.domain }.toString())
+                    adapter = TxHistoryRecyclerAdapter(this, txhist, coin)
+                    GuiTxHistoryList.adapter = adapter
 
-                //val dest = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
-                //commonIdentityAddress.text = dest.address.toString()
+                    //val dest = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
+                    //commonIdentityAddress.text = dest.address.toString()
+                }
+                else  // coin disappeared out of under this activity
+                    finish()
             }
         }
     }

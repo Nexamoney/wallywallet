@@ -32,7 +32,7 @@
         android:id="@+id/balanceTicker"
         android:layout_width="80dp"
         android:layout_height="32dp"
-        android:gravity="center"
+        android:gravity="bottom"
         android:textAlignment="center"
         android:textSize="20sp"
         android:clickable="true"
@@ -44,7 +44,7 @@
         android:id="@+id/balanceTicker2"
         android:layout_width="80dp"
         android:layout_height="32dp"
-        android:gravity="center"
+        android:gravity="bottom"
         android:text=""
         android:textAlignment="center"
         android:textSize="20sp"
@@ -58,7 +58,7 @@
         android:layout_width="80dp"
         android:layout_height="32dp"
         android:layout_marginTop="32dp"
-        android:gravity="center"
+        android:gravity="bottom"
         android:text=""
         android:textAlignment="center"
         android:textSize="20sp"
@@ -81,74 +81,67 @@
         android:id="@+id/balanceUnconfirmedValue"
         android:layout_width="111dp"
         android:layout_height="32dp"
-        android:gravity="center"
+        android:gravity="bottom"
         android:textAlignment="center"
         android:textColor="#FF9800"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/balanceValue"
-        app:layout_constraintStart_toEndOf="@+id/balanceValue"
-        app:layout_constraintTop_toTopOf="@+id/balanceValue"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintStart_toEndOf="@+id/balanceUnits" />
 
     <TextView
         android:id="@+id/balanceUnconfirmedValue2"
         android:layout_width="111dp"
         android:layout_height="32dp"
-        android:gravity="center"
+        android:gravity="bottom"
         android:textAlignment="center"
         android:textColor="#FF9800"
         android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/balanceValue2"
-        app:layout_constraintTop_toBottomOf="@+id/balanceUnconfirmedValue" />
+        app:layout_constraintBottom_toBottomOf="@+id/balanceValue2"
+        app:layout_constraintStart_toEndOf="@+id/balanceUnits2" />
 
     <TextView
         android:id="@+id/balanceUnconfirmedValue3"
         android:layout_width="111dp"
         android:layout_height="32dp"
-        android:layout_marginTop="4dp"
-        android:gravity="center"
+        android:gravity="bottom"
         android:textAlignment="center"
         android:textColor="#FF9800"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/balanceTicker3"
-        app:layout_constraintStart_toEndOf="@+id/balanceValue3"
-        app:layout_constraintTop_toBottomOf="@+id/balanceUnconfirmedValue2"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintStart_toEndOf="@+id/balanceUnits3" />
 
     <TextView
         android:id="@+id/balanceValue"
         android:layout_width="132dp"
         android:layout_height="32dp"
-        android:gravity="center"
+        android:gravity="bottom"
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_light"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/balanceTicker"
-        app:layout_constraintStart_toEndOf="@+id/balanceTicker"
-        app:layout_constraintTop_toTopOf="@+id/balanceTicker"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintStart_toEndOf="@+id/balanceTicker" />
 
     <TextView
         android:id="@+id/balanceValue2"
         android:layout_width="132dp"
         android:layout_height="32dp"
-        android:gravity="center"
+        android:gravity="bottom"
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_light"
         android:textSize="20sp"
-        app:layout_constraintStart_toEndOf="@+id/balanceTicker2"
-        app:layout_constraintTop_toBottomOf="@+id/balanceValue" />
+        app:layout_constraintBottom_toBottomOf="@+id/balanceTicker2"
+        app:layout_constraintStart_toEndOf="@+id/balanceTicker2" />
 
     <TextView
         android:id="@+id/balanceValue3"
         android:layout_width="132dp"
         android:layout_height="32dp"
-        android:gravity="center"
+        android:gravity="bottom"
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_light"
         android:textSize="20sp"
-        app:layout_constraintStart_toEndOf="@+id/balanceTicker3"
-        app:layout_constraintTop_toBottomOf="@+id/balanceValue2" />
+        app:layout_constraintBottom_toBottomOf="@+id/balanceTicker3"
+        app:layout_constraintStart_toEndOf="@+id/balanceTicker3" />
 
     <TextView
         android:id="@+id/HomeAddressText"
@@ -356,24 +349,76 @@
 
     <TextView
         android:id="@+id/WalletChainInfo"
-        android:layout_width="140dp"
+        android:layout_width="0dp"
         android:layout_height="32dp"
         android:gravity="center"
         android:text=""
         android:textAlignment="center"
         android:textSize="12sp"
-        app:layout_constraintStart_toEndOf="@+id/balanceUnconfirmedValue"
-        app:layout_constraintTop_toBottomOf="@+id/balanceTitle" />
+        app:layout_constraintBottom_toBottomOf="@+id/balanceUnconfirmedValue"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/balanceUnconfirmedValue" />
 
     <TextView
         android:id="@+id/WalletChainInfo2"
-        android:layout_width="140dp"
+        android:layout_width="0dp"
         android:layout_height="32dp"
         android:gravity="center"
         android:text=""
         android:textAlignment="center"
         android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/balanceUnconfirmedValue2"
-        app:layout_constraintTop_toBottomOf="@+id/WalletChainInfo" />
+        tools:layout_editor_absoluteY="179dp" />
+
+    <TextView
+        android:id="@+id/WalletChainInfo3"
+        android:layout_width="0dp"
+        android:layout_height="32dp"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/balanceTicker3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/balanceUnconfirmedValue3" />
+
+    <TextView
+        android:id="@+id/balanceUnits"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="viewStart"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@+id/balanceTicker"
+        app:layout_constraintStart_toEndOf="@+id/balanceValue" />
+
+    <TextView
+        android:id="@+id/balanceUnits2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="viewStart"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@+id/balanceTicker2"
+        app:layout_constraintStart_toEndOf="@+id/balanceValue2" />
+
+    <TextView
+        android:id="@+id/balanceUnits3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="viewStart"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@+id/balanceTicker3"
+        app:layout_constraintStart_toEndOf="@+id/balanceValue3" />
+
+    <ImageView
+        android:id="@+id/GuiNewAccount"
+        android:layout_width="30dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:clickable="true"
+        android:contentDescription="@string/NewAccountButton"
+        android:onClick="onNewAccount"
+        app:layout_constraintBottom_toTopOf="@+id/balanceTicker"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/balanceTitle"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/ic_plus" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -53,6 +53,8 @@ val uriToMbch = 1000.toBigDecimal()  // Todo allow other currencies supported by
 val ERROR_DISPLAY_TIME = 6000.toLong()
 val NOTICE_DISPLAY_TIME = 4000.toLong()
 
+val MAX_ACCOUNTS = 3 // What are the maximum # of accounts this wallet GUI can show
+
 open class PasteUnintelligibleException(): BUException("", i18n(R.string.pasteUnintelligible), ErrorSeverity.Expected)
 open class PasteEmptyException(): BUException("", i18n(R.string.pasteIsEmpty), ErrorSeverity.Abnormal)
 open class BadAmountException(msg: Int): BUException(i18n(msg), i18n(R.string.badAmount))
@@ -138,15 +140,15 @@ class MainActivity : CommonActivity()
         {
             sendToAddress.text.append(savedInstanceState.getString("sendToAddress", "") ?: "")
             sendQuantity.text.append(savedInstanceState.getString("sendQuantity", "") ?: "")
-            mainActivityModel.lastSendCurrencyType = savedInstanceState.getString("sendCurrencyType", cryptoCurrencyCode)
-            mainActivityModel.lastRecvCoinType = savedInstanceState.getString("recvCoinType", cryptoCurrencyCode)
-            mainActivityModel.lastSendCoinType = savedInstanceState.getString("sendCoinType", cryptoCurrencyCode)
+            mainActivityModel.lastSendCurrencyType = savedInstanceState.getString("sendCurrencyType", defaultAccount)
+            mainActivityModel.lastRecvCoinType = savedInstanceState.getString("recvCoinType", defaultAccount)
+            mainActivityModel.lastSendCoinType = savedInstanceState.getString("sendCoinType", defaultAccount)
         }
         else
         {
-            mainActivityModel.lastSendCurrencyType = cryptoCurrencyCode
-            mainActivityModel.lastRecvCoinType = cryptoCurrencyCode
-            mainActivityModel.lastSendCoinType = cryptoCurrencyCode
+            mainActivityModel.lastSendCurrencyType = defaultAccount
+            mainActivityModel.lastRecvCoinType = defaultAccount
+            mainActivityModel.lastSendCoinType = defaultAccount
         }
 
         readQRCodeButton.setOnClickListener {
@@ -219,7 +221,7 @@ class MainActivity : CommonActivity()
                 {
                     mainActivityModel.lastSendCoinType = sct
                     val sendAddr = PayAddress(sendToAddress.text.toString())
-                    if (c.chainSelector != sendAddr.blockchain)
+                    if (c.wallet.chainSelector != sendAddr.blockchain)
                     {
                         displayError(R.string.chainIncompatibleWithAddress)
                         updateSendCoinType(sendAddr)
@@ -249,12 +251,12 @@ class MainActivity : CommonActivity()
                 if (c != null)
                 {
                     mainActivityModel.lastRecvCoinType = sel
-                    val oldc = accounts[cryptoCurrencyCode]
+                    val oldc = accounts[defaultAccount]
                     if (oldc != null)
                     {
                         oldc.updateReceiveAddressUI = null
                     }
-                    cryptoCurrencyCode = c.currencyCode
+                    defaultAccount = c.name
                     c.updateReceiveAddressUI = { it -> updateReceiveAddressUI(it) }
                     updateReceiveAddressUI(c)
                 }
@@ -272,25 +274,41 @@ class MainActivity : CommonActivity()
         super.onStart()
         dbgAssertGuiThread()
 
+        data class UI(val ticker: TextView, val balance: TextView, val units: TextView, val unconf: TextView, val info: TextView?)
+
+        val ui = listOf(UI(balanceTicker, balanceValue, balanceUnits, balanceUnconfirmedValue, WalletChainInfo),
+            UI(balanceTicker2, balanceValue2, balanceUnits2, balanceUnconfirmedValue2, WalletChainInfo2),
+            UI(balanceTicker3, balanceValue3, balanceUnits3, balanceUnconfirmedValue3, WalletChainInfo3))
+
+        // Clear all info in case we remap it
+        for (u in ui)
+        {
+            u.ticker.text = ""
+            u.balance.text = ""
+            u.units.text = ""
+            u.unconf.text = ""
+            u.info?.text = ""
+        }
 
 
-        thread(true, true, null, "startup") {
+        thread(true, true, null, "startup")
+        {
             // Wait until stuff comes up
             while (!coinsCreated) Thread.sleep(100)
 
-            var c1:Account? = accounts["mBCH"] // coins["mBR1"]
-            c1?.setUI(balanceTicker, balanceValue, balanceUnconfirmedValue, WalletChainInfo)
-            var c2:Account? = accounts["mTBCH"] // coins["mBR1"]
-            c2?.setUI(balanceTicker2, balanceValue2, balanceUnconfirmedValue2, WalletChainInfo2)
 
-            var c3:Account? = accounts["mRBCH"] // regtest
-            if (REG_TEST_ONLY)
+            var uiLoc = 1  // Start at 1 because spot 0 is reserved for the primary wallet
+
+            var foundAPrimary = false
+            for ((name,ac) in accounts)
             {
-                c3?.setUI(balanceTicker, balanceValue, balanceUnconfirmedValue, WalletChainInfo)
-            }
-            else
-            {
-                c3?.setUI(balanceTicker3, balanceValue3, balanceUnconfirmedValue3, null)
+                val curLoc = if (!foundAPrimary && (ac.currencyCode == PRIMARY_WALLET)) { foundAPrimary=true; 0 } else uiLoc
+                if (curLoc >= ui.size) continue
+                ui[curLoc].let {
+                    ac.setUI(it.ticker, it.balance, it.unconf, it.info)
+                    laterUI { ui[curLoc].units.text = ac.currencyCode }
+                }
+                if (curLoc != 0) uiLoc++
             }
 
             for (c in accounts.values)
@@ -387,12 +405,14 @@ class MainActivity : CommonActivity()
     {
         dbgAssertGuiThread()
         sendCoinType.selectedItem?.let {
-            val ccAmountCode = it.toString()
-            val curIdx = sendCurrencyType.selectedItemPosition  // We know that this field will be [fiat, crypto] but not which exact choices.  So save the slot and restore it after resetting the values so the UX persists by class
-            val spinData = arrayOf(ccAmountCode,fiatCurrencyCode)
-            val aa = ArrayAdapter(this, android.R.layout.simple_spinner_item, spinData)
-            sendCurrencyType.setAdapter(aa)
-            sendCurrencyType.setSelection(curIdx)
+            val account = accounts[it.toString()]
+            account?.let { account ->
+                val curIdx = sendCurrencyType.selectedItemPosition  // We know that this field will be [fiat, crypto] but not which exact choices.  So save the slot and restore it after resetting the values so the UX persists by class
+                val spinData = arrayOf(account.currencyCode, fiatCurrencyCode)
+                val aa = ArrayAdapter(this, android.R.layout.simple_spinner_item, spinData)
+                sendCurrencyType.setAdapter(aa)
+                sendCurrencyType.setSelection(curIdx)
+            }
         }
     }
 
@@ -422,7 +442,7 @@ class MainActivity : CommonActivity()
 
         checkSendQuantity(sendQuantity.text.toString())
 
-        accounts[cryptoCurrencyCode]?.let { updateReceiveAddressUI(it) }
+        accounts[defaultAccount]?.let { updateReceiveAddressUI(it) }
 
         // Process the intent that caused this activity to resume
         if (intent.scheme != null)  // its null if normal app startup
@@ -522,11 +542,11 @@ class MainActivity : CommonActivity()
         // This keeps the user's selection if multiple accounts are compatible
         val sc = sendCoinType.selectedItem
         var curAccount = accounts[sc]
-        if (curAccount?.chainSelector != chainSelector)  // Its not so find one that is
+        if (curAccount?.wallet?.chainSelector != chainSelector)  // Its not so find one that is
         {
             curAccount = app!!.coinFor(chainSelector)
             curAccount?.let {
-                sendCoinType.setSelection(it.currencyCode)
+                sendCoinType.setSelection(it.name)
             }
         }
     }
@@ -744,7 +764,7 @@ class MainActivity : CommonActivity()
     fun updateReceiveAddressUI(account: Account)
     {
         laterUI {
-            if (recvCoinType?.selectedItem?.toString() == account.currencyCode)  // Only update the UI if this coin is selected to be received
+            if (recvCoinType?.selectedItem?.toString() == account.name)  // Only update the UI if this coin is selected to be received
             {
                 account.ifUpdatedReceiveInfo(minOf(imageView.layoutParams.width, imageView.layoutParams.height, 1024)) { recvAddrStr, recvAddrQR -> updateReceiveAddressUI(recvAddrStr, recvAddrQR) }
             }
@@ -792,7 +812,22 @@ class MainActivity : CommonActivity()
             return false
         }
 
-        if (currencyType == coin.currencyCode)
+        if (currencyType == fiatCurrencyCode)
+        {
+            val fiatPerCoin = coin.fiatPerCoin
+            try
+            {
+                val mbchToSend = qty / fiatPerCoin
+                approximatelyText.text = i18n(R.string.actuallySendingT) % mapOf("qty" to mBchFormat.format(mbchToSend), "crypto" to coin.currencyCode) + availabilityWarning(coin, mbchToSend)
+                return true
+            }
+            catch(e: ArithmeticException)  // Division by zero
+            {
+                approximatelyText.text = i18n(R.string.retrievingExchangeRate)
+                return true
+            }
+        }
+        else
         {
             if (coin.fiatPerCoin != 0.toBigDecimal())
             {
@@ -806,21 +841,6 @@ class MainActivity : CommonActivity()
                 return true
             }
 
-        }
-        else
-        {
-            val fiatPerCoin = coin.fiatPerCoin
-            try
-            {
-                val mbchToSend = qty / fiatPerCoin
-                approximatelyText.text = i18n(R.string.actuallySendingT) % mapOf("qty" to mBchFormat.format(mbchToSend), "crypto" to coin.currencyCode) + availabilityWarning(coin, mbchToSend)
-                return true
-            }
-                catch(e: ArithmeticException)  // Division by zero
-            {
-                approximatelyText.text = i18n(R.string.retrievingExchangeRate)
-                return true
-            }
         }
     }
 
@@ -881,7 +901,7 @@ class MainActivity : CommonActivity()
 
         val item2 = menu.findItem(R.id.settings)
         LogIt.info(item2.toString())
-        item2.intent = Intent(this, settings::class.java).apply { putExtra(SETTINGS_MESSAGE, "") }
+        item2.intent = Intent(this, Settings::class.java).apply { putExtra(SETTINGS_MESSAGE, "") }
 
         return true
     }
@@ -899,13 +919,29 @@ class MainActivity : CommonActivity()
     }
 
     @Suppress("UNUSED_PARAMETER")
+        /** If user clicks on the receive address, copy it to the clipboard */
+    fun onNewAccount(view: View):  Boolean
+    {
+        LogIt.info("new account")
+        if (app?.accounts?.size ?: 1000 >= MAX_ACCOUNTS)
+        {
+            displayError(R.string.accountLimitReached)
+            return false
+        }
+
+        val intent = Intent(this@MainActivity, NewAccount::class.java)
+        startActivity(intent)
+        return true
+    }
+
+        @Suppress("UNUSED_PARAMETER")
     /** If user clicks on the receive address, copy it to the clipboard */
     fun onReceiveAddrTextClicked(view: View):  Boolean
     {
             try
             {
                 var clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                val account = accounts[cryptoCurrencyCode]
+                val account = accounts[defaultAccount]
                 if (account == null) throw BadCryptoException(R.string.badCryptoCode)
 
                 val recvAddrStr: String? = account.currentReceive?.address?.toString()
@@ -918,7 +954,7 @@ class MainActivity : CommonActivity()
                     // visual bling that indicates text copied
                     receiveAddress.text = i18n(R.string.copied)
                     laterUI {
-                        delay(3000); accounts[cryptoCurrencyCode]?.let { updateReceiveAddressUI(it) }
+                        delay(3000); accounts[defaultAccount]?.let { updateReceiveAddressUI(it) }
                     }
                 }
                 else throw UnavailableException(R.string.receiveAddressUnavailable)
@@ -927,9 +963,7 @@ class MainActivity : CommonActivity()
             {
                 displayException(e)
             }
-
         return true
-
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -980,7 +1014,7 @@ class MainActivity : CommonActivity()
                 displayError(R.string.badCryptoCode)
                 return
             }
-            if (account.chainSelector != pip.crypto)
+            if (account.wallet.chainSelector != pip.crypto)
             {
                 displayError(R.string.incompatibleAccount)
                 return
@@ -1056,13 +1090,13 @@ class MainActivity : CommonActivity()
             displayError(R.string.badAddress)
             return false
         }
-        if (account.chainSelector != sendAddr.blockchain)
+        if (account.wallet.chainSelector != sendAddr.blockchain)
         {
             displayError(R.string.chainIncompatibleWithAddress)
             return false
         }
 
-        if (currencyType == account.currencyCode)
+        if (currencyType == account.name)
         {
         }
         else if (currencyType == fiatCurrencyCode)

@@ -96,6 +96,15 @@ fun dbgAssertGuiThread()
     }
 }
 
+fun dbgAssertNotGuiThread()
+{
+    val tname = Thread.currentThread().name
+    if (tname == "main")
+    {
+        LogIt.warning("ASSERT blocking operations in GUI thread " + tname)
+        throw AssertException("Executing blocking operations in GUI thread " + tname)
+    }
+}
 // String translation and display
 
 class PlatformContext(val context: Context)

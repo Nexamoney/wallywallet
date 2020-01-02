@@ -1,72 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="info.bitcoinunlimited.www.wally">
+    package="info.bitcoinunlimited.www.wally">
 
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.hardware.camera"/>
-    <uses-permission android:name="android.hardware.camera.autofocus"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- only needed to determine whether a node is spawned in simulation or not during testing -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.hardware.camera" />
+    <uses-permission android:name="android.hardware.camera.autofocus" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
-            android:name=".WallyApp"
-            android:allowBackup="true"
-            android:hardwareAccelerated="true"
-            android:icon="@mipmap/wallycash1"
-            android:label="@string/app_name"
-            android:roundIcon="@mipmap/wallycash1_round"
-            android:supportsRtl="true"
-            android:theme="@style/AppTheme"
-            android:usesCleartextTraffic="true">
+        android:name=".WallyApp"
+        android:allowBackup="true"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/wallycash1"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/wallycash1_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
         <activity
-                android:name=".DomainIdentitySettings"
-                android:label="@string/title_activity_domain_identity_settings"
-                android:launchMode="singleTask"
-                android:parentActivityName=".IdentityActivity">
+            android:name=".NewAccount"
+            android:label="@string/title_activity_new_account"
+            android:launchMode="singleTask"
+            android:parentActivityName=".MainActivity">
             <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value="info.bitcoinunlimited.www.wally.IdentityActivity"/>
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="info.bitcoinunlimited.www.wally.MainActivity" />
         </activity>
         <activity
-                android:name=".IdentityOpActivity"
-                android:label="@string/title_activity_identity_op"
-                android:launchMode="singleTask"
-                android:parentActivityName=".MainActivity">
+            android:name=".DomainIdentitySettings"
+            android:label="@string/title_activity_domain_identity_settings"
+            android:launchMode="singleTask"
+            android:parentActivityName=".IdentityActivity">
             <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value="info.bitcoinunlimited.www.wally.MainActivity"/>
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="info.bitcoinunlimited.www.wally.IdentityActivity" />
+        </activity>
+        <activity
+            android:name=".IdentityOpActivity"
+            android:label="@string/title_activity_identity_op"
+            android:launchMode="singleTask"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="info.bitcoinunlimited.www.wally.MainActivity" />
 
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <action android:name="android.intent.action.EDIT"/>
-                <action android:name="android.intent.action.SEND"/>
-                <action android:name="android.intent.action.SENDTO"/>
-                <action android:name="android.intent.action.SEND_MULTIPLE"/>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="bchidentity"/> <!-- android:host="path" /> -->
+                <data android:scheme="bchidentity" /> <!-- android:host="path" /> -->
             </intent-filter>
         </activity> <!-- hardwareAccelerated supposedly needed for zxing -->
         <activity
-                android:name=".IdentityActivity"
-                android:label="@string/title_activity_identity"
-                android:launchMode="singleTask"
-                android:parentActivityName=".MainActivity">
+            android:name=".IdentityActivity"
+            android:label="@string/title_activity_identity"
+            android:launchMode="singleTask"
+            android:parentActivityName=".MainActivity">
             <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value="info.bitcoinunlimited.www.wally.MainActivity"/>
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="info.bitcoinunlimited.www.wally.MainActivity" />
         </activity>
         <activity
-                android:name=".InvoicesActivity"
-                android:label="@string/title_activity_invoices"
-                android:launchMode="singleTask"
-                android:parentActivityName=".MainActivity">
+            android:name=".InvoicesActivity"
+            android:label="@string/title_activity_invoices"
+            android:launchMode="singleTask"
+            android:parentActivityName=".MainActivity">
             <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value="info.bitcoinunlimited.www.wally.MainActivity"/>
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="info.bitcoinunlimited.www.wally.MainActivity" />
         </activity>
         <activity
             android:name=".TxHistoryActivity"
@@ -75,66 +84,63 @@
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="info.bitcoinunlimited.www.wally.MainActivity"/>
+                android:value="info.bitcoinunlimited.www.wally.MainActivity" />
         </activity>
         <activity
-                android:name=".ExchangeActivity"
-                android:label="@string/title_activity_exchange"
-                android:launchMode="singleTask"
-                android:parentActivityName=".MainActivity">
+            android:name=".ExchangeActivity"
+            android:label="@string/title_activity_exchange"
+            android:launchMode="singleTask"
+            android:parentActivityName=".MainActivity">
             <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value="info.bitcoinunlimited.www.wally.MainActivity"/>
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="info.bitcoinunlimited.www.wally.MainActivity" />
         </activity>
         <activity
-                android:name=".TricklePayActivity"
-                android:label="@string/title_activity_trickle_pay"
-                android:launchMode="singleTask"
-                android:parentActivityName=".MainActivity">
-        </activity>
+            android:name=".TricklePayActivity"
+            android:label="@string/title_activity_trickle_pay"
+            android:launchMode="singleTask"
+            android:parentActivityName=".MainActivity"></activity>
         <activity
-                android:name=".settings"
-                android:label="@string/title_activity_settings"
-                android:launchMode="singleTask"
-                android:parentActivityName=".MainActivity">
-        </activity>
+            android:name=".Settings"
+            android:label="@string/title_activity_settings"
+            android:launchMode="singleTask"
+            android:parentActivityName=".MainActivity"></activity>
         <activity
-                android:name=".SplitBillActivity"
-                android:label="@string/title_split_bill"
-                android:launchMode="singleTask"
-                android:parentActivityName=".MainActivity">
-        </activity>
+            android:name=".SplitBillActivity"
+            android:label="@string/title_split_bill"
+            android:launchMode="singleTask"
+            android:parentActivityName=".MainActivity"></activity>
         <activity
-                android:name=".MainActivity"
-                android:launchMode="singleTask">
+            android:name=".MainActivity"
+            android:launchMode="singleTask">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <action android:name="android.intent.action.EDIT"/>
-                <action android:name="android.intent.action.SEND"/>
-                <action android:name="android.intent.action.SENDTO"/>
-                <action android:name="android.intent.action.SEND_MULTIPLE"/>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="bitcoincash"/> <!-- android:host="path" /> -->
+                <data android:scheme="bitcoincash" /> <!-- android:host="path" /> -->
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <action android:name="android.intent.action.EDIT"/>
-                <action android:name="android.intent.action.SEND"/>
-                <action android:name="android.intent.action.SENDTO"/>
-                <action android:name="android.intent.action.SEND_MULTIPLE"/>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="bchreg"/> <!-- android:host="path" /> -->
+                <data android:scheme="bchreg" /> <!-- android:host="path" /> -->
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
     </application>

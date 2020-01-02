@@ -62,6 +62,7 @@
     <string name="Tip">Tip</string>
     <string name="Amount">Amount</string>
     <!-- Home Page -->
+    <string name="share">share</string>
     <string name="Send">Send</string>
     <string name="Receive">Receive</string>
     <string name="Balance">Balance</string>
@@ -71,6 +72,9 @@
     <string name="invalidQuantity">invalid quantity</string>
     <string name="purchase">purchase</string>
     <string name="scanPaymentQRcode">Scan payment address QR code</string>
+    <string name="ScanQRCodeButton">Scan a QR code</string>
+    <string name="PasteDestinationAddressButton">Paste</string>
+    <string name="NewAccountButton">New Account</string>
     <string name="paymentProposal">as per received payment proposal</string>
     <!-- You clicked the paste button (in a copy/paste operation), but nothing was copied -->
     <string name="pasteIsEmpty">paste empty</string>
@@ -93,6 +97,8 @@
     <string name="copied">...copied to clipboard...</string>
     <string name="scanFailed">scan failed</string>
     <string name="sendSuccess">send successful</string>
+    <string name="sendQuantityHint">amount to send</string>
+    <string name="sendToAddressHint">destination address</string>
 
     <string name="retrievingExchangeRate">still retrieving exchange rate</string>
 
@@ -127,6 +133,16 @@
     <string name="CapitalLoss">capital loss</string>
     <string name="CapitalGain">capital gain</string>
     <string name="OverrideSalesPrice">enter price when sold</string>
+
+    <!-- New Account activity -->
+    <string name="title_activity_new_account">New Account</string>
+    <string name="AccountName">Account Name</string>
+    <string name="AccountNameHint">1-8 letters</string>
+    <string name="Blockchain">Blockchain</string>
+    <string name="AccountRecoveryPhrase">Recovery Phrase</string>
+    <string name="LeaveEmptyNewWallet">Leave empty to create a new wallet</string>
+    <string name="createAccount">create account</string>
+    <string name="invalidRecoveryPhrase">bad recovery phrase</string>
 
     <!-- Error strings -->
     <string name="unknownError">error</string>
@@ -166,6 +182,8 @@
     <string name="receiveAddressUnavailable">A new receive address is in the process of being calculated. Please
         wait...
     </string>
+    <!-- The maximum number of accounts that this wallet can show has been reached -->
+    <string name="accountLimitReached">max accounts</string>
 
     <!-- Error long strings -->
     <string name="sendMoreThanBalance">You are attempting to send more coins than you have available right now. If you
