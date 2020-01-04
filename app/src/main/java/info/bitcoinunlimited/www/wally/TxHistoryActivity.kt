@@ -2,7 +2,10 @@
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.drawable.ColorDrawable
+import android.opengl.Visibility
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -48,9 +51,13 @@ private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, 
         val recvIm = appContext?.let { ContextCompat.getDrawable(it.context, R.drawable.ic_receivearrow) }
         var idx = 0
         var txid: Hash256? = null
+        var showDev:Boolean
 
         init
         {
+            val prefs: SharedPreferences = activity.getSharedPreferences(activity.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+            showDev = prefs.getBoolean(SHOW_DEV_INFO, false)
+
             view.setOnClickListener(this)
         }
 
@@ -80,6 +87,7 @@ private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, 
             id = obj
             txid = obj.txHash!!
             view.GuiTxId.text = obj.txHash!!.toHex()
+            view.GuiTxId.visibility = if (showDev) View.VISIBLE else View.GONE
             val fmt = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withZone(ZoneId.systemDefault())
             val epochSec = Instant.ofEpochSecond(obj.date/1000)
             view.GuiTxDate.text = fmt.format(epochSec)

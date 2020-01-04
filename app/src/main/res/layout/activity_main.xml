@@ -364,8 +364,9 @@
     <TextView
         android:id="@+id/WalletChainInfo"
         android:layout_width="match_parent"
-        android:layout_height="32dp"
+        android:layout_height="wrap_content"
         android:gravity="center"
+        android:maxLines="5"
         android:text=""
         android:textAlignment="center"
         android:textSize="12sp"
@@ -375,8 +376,9 @@
     <TextView
         android:id="@+id/WalletChainInfo2"
         android:layout_width="match_parent"
-        android:layout_height="32dp"
+        android:layout_height="wrap_content"
         android:gravity="center"
+        android:maxLines="5"
         android:text=""
         android:textAlignment="center"
         android:textSize="12sp"
@@ -439,7 +441,8 @@
     <TextView
         android:id="@+id/WalletChainInfo3"
         android:layout_width="0dp"
-        android:layout_height="32dp"
+        android:layout_height="wrap_content"
+        android:maxLines="5"
         android:textAlignment="center"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"

@@ -2,15 +2,12 @@
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
 
+import android.content.*
 import kotlinx.coroutines.*
 
-import android.content.ClipData
 import bitcoinunlimited.libbitcoincash.*
 
-import android.content.ClipboardManager
-import android.content.Context
 import android.os.Bundle
-import android.content.Intent
 import android.view.View
 import android.widget.ArrayAdapter
 
@@ -284,6 +281,9 @@ class MainActivity : CommonActivity()
             UI(balanceTicker2, balanceValue2, balanceUnits2, balanceUnconfirmedValue2, WalletChainInfo2),
             UI(balanceTicker3, balanceValue3, balanceUnits3, balanceUnconfirmedValue3, WalletChainInfo3))
 
+        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val showDev = prefs.getBoolean(SHOW_DEV_INFO, false)
+
         // Clear all info in case we remap it
         for (u in ui)
         {
@@ -292,6 +292,7 @@ class MainActivity : CommonActivity()
             u.units.text = ""
             u.unconf.text = ""
             u.info?.text = ""
+            u.info?.visibility = if (showDev) View.VISIBLE else View.GONE
         }
 
 

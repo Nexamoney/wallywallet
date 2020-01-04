@@ -2,21 +2,26 @@
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
-import android.content.Context
-import android.widget.Adapter
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
-import bitcoinunlimited.libbitcoincash.dbgAssertGuiThread
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import bitcoinunlimited.libbitcoincash.*
 import kotlinx.android.synthetic.main.activity_settings.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import java.util.logging.Logger
 
+
 val LOCAL_CURRENCY_PREF = "localCurrency"
+val SHOW_DEV_INFO = "devinfo"
+val BCH_EXCLUSIVE_NODE_SWITCH = "BCH.exclusiveNodeSwitch"
+val BCH_EXCLUSIVE_NODE = "BCH.exclusiveNode"
+val BCH_PREFER_NODE_SWITCH = "BCH.preferNodeSwitch"
+val BCH_PREFER_NODE = "BCH.preferNode"
 
 var defaultAccount = "mTBCH"  // The default crypto I'm using
 
@@ -63,7 +68,15 @@ class Settings : AppCompatActivity()
 
         app = (getApplication() as WallyApp)
 
-        val preferenceDB = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val preferenceDB:SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+
+        SetupBooleanPreferenceGui(SHOW_DEV_INFO, preferenceDB, GuiDeveloperView)
+        SetupBooleanPreferenceGui(BCH_EXCLUSIVE_NODE_SWITCH, preferenceDB, GuiBchExclusiveNodeSwitch)
+        SetupBooleanPreferenceGui(BCH_PREFER_NODE_SWITCH, preferenceDB, GuiBchPreferNodeSwitch)
+
+        SetupTextPreferenceGui(BCH_EXCLUSIVE_NODE,preferenceDB, GuiBchExclusiveNode)
+        SetupTextPreferenceGui(BCH_PREFER_NODE,preferenceDB, GuiBchPreferNode)
+
         val curCode: String = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"
         fiatCurrencySpinner.setSelection(curCode)
 
@@ -92,6 +105,65 @@ class Settings : AppCompatActivity()
         val coinSpinData = accounts.keys.toTypedArray()
         val coinAa = ArrayAdapter(this, android.R.layout.simple_spinner_item, coinSpinData)
         deleteWalletAccountChoice?.setAdapter(coinAa)
+    }
+
+    override fun onStop()
+    {
+        val prefs:SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+
+        var exclusiveNode:String? = null
+        var preferNode:String? = null
+
+        if (prefs.getBoolean(BCH_EXCLUSIVE_NODE_SWITCH, false) == true)
+        {
+            exclusiveNode = prefs.getString(BCH_EXCLUSIVE_NODE, null)
+            if (exclusiveNode?.length == 0) exclusiveNode = null
+        }
+
+        if (prefs.getBoolean(BCH_PREFER_NODE_SWITCH, false) == true)
+        {
+            preferNode = prefs.getString(BCH_PREFER_NODE, null)
+            if (preferNode?.length == 0) preferNode = null
+        }
+
+
+        val appv = app
+        if (appv != null)  // for every account on this blockchain, install the exclusive node or send a null saying not exclusive anymore
+            for ((n,account) in appv.accounts)
+            {
+                if (account.chain.chainSelector == ChainSelector.BCHMAINNET)
+                {
+                    val dport = BlockchainPort[account.chain.chainSelector]!!
+
+                    if (true)
+                    {
+                        val (ip, port) = try
+                        {
+                            if (exclusiveNode != null) SplitIpPort(exclusiveNode, dport) else Pair(null, dport)
+                        }
+                        catch (e: Exception)
+                        {
+                            Pair(null, dport)
+                        }
+                        account.cnxnMgr.exclusiveNode(ip, port)
+                    }
+
+                    if (true)
+                    {
+                        val (ip, port) = try
+                        {
+                            if (preferNode != null) SplitIpPort(preferNode, dport) else Pair(null, dport)
+                        }
+                        catch (e:Exception)
+                        {
+                            Pair(null, dport)
+                        }
+                        account.cnxnMgr.preferNode(ip, port)
+                    }
+                }
+            }
+
+        super.onStop()
     }
 
     @Suppress("UNUSED_PARAMETER")

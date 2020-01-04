@@ -4,6 +4,7 @@ package info.bitcoinunlimited.www.wally
 
 import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.net.wifi.WifiManager
@@ -13,6 +14,7 @@ import bitcoinunlimited.libbitcoincash.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import java.math.BigDecimal
 import java.util.logging.Logger
 
@@ -451,6 +453,11 @@ class WallyApp: Application()
 
         walletDb = OpenKvpDB(ctxt, "bip44walletdb")
 
+        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+
+        val BchExclusiveNode:String? = if (prefs.getBoolean(BCH_EXCLUSIVE_NODE_SWITCH, false)) prefs.getString(BCH_EXCLUSIVE_NODE, null) else null
+        val BchPreferredNode:String? = if (prefs.getBoolean(BCH_PREFER_NODE_SWITCH, false)) prefs.getString(BCH_PREFER_NODE, null) else null
+
         if (!RunningTheTests())  // If I'm running the unit tests, don't create any wallets since the tests will do so
         {
             // Initialize the currencies supported by this wallet
@@ -510,15 +517,31 @@ class WallyApp: Application()
 
                 coinsCreated = true
 
-                // Wait for the blockchain to come up so the new wallets start near its tip
-                GlobalScope.launch {
-                    delay(1000);
-                    for (c in accounts.values)
+                for (c in accounts.values)
+                {
+                    // If I prefer an exclusive connection, then start up that way
+                    if ((BchExclusiveNode != null) && (c.chain.chainSelector == ChainSelector.BCHMAINNET))
                     {
-                        //GlobalScope.launch { c.chain.deleteAllPersistentData() }
-                        c.start(applicationContext)
-                        c.onWalletChange()  // update all wallet UI fields since just starting up
+                        try
+                        {
+                            val split = SplitIpPort(BchExclusiveNode, BlockchainPort[ChainSelector.BCHMAINNET]!!)
+                            c.cnxnMgr.exclusiveNode(split.first, split.second)
+                        }
+                        catch(e: Exception) {} // bad IP:port data
                     }
+                    // If I have a preferred connection, then start up that way
+                    if ((BchPreferredNode != null) && (c.chain.chainSelector == ChainSelector.BCHMAINNET))
+                    {
+                        try
+                        {
+                            val split = SplitIpPort(BchPreferredNode, BlockchainPort[ChainSelector.BCHMAINNET]!!)
+                            c.cnxnMgr.preferNode(split.first, split.second)
+                        }
+                        catch(e: Exception) {} // bad IP:port data provided by user
+                    }
+
+                    c.start(applicationContext)
+                    c.onWalletChange()  // update all wallet UI fields since just starting up
                 }
             }
         }

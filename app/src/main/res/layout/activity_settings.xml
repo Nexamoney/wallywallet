@@ -9,6 +9,15 @@
         android:onClick="onRediscoverBlockchain">
 
     <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/enableDeveloperView"
+        app:layout_constraintBottom_toBottomOf="@+id/GuiDeveloperView"
+        app:layout_constraintStart_toEndOf="@+id/GuiDeveloperView"
+        app:layout_constraintTop_toTopOf="@+id/GuiDeveloperView" />
+
+    <TextView
         android:id="@+id/LocalCurrencyText"
         android:layout_width="179dp"
         android:layout_height="28dp"
@@ -44,8 +53,8 @@
 
     <TextView
         android:id="@+id/wordSeed"
-        android:layout_width="388dp"
-        android:layout_height="209dp"
+        android:layout_width="385dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:textIsSelectable="true"
         app:layout_constraintEnd_toEndOf="parent"
@@ -81,7 +90,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="12dp"
         android:onClick="onDeleteAccountButton"
         android:text="@string/deleteWalletAccount"
         app:layout_constraintStart_toStartOf="parent"
@@ -95,4 +104,71 @@
         app:layout_constraintBottom_toBottomOf="@+id/Rediscover"
         app:layout_constraintStart_toEndOf="@+id/DeleteWalletButton"
         app:layout_constraintTop_toTopOf="@+id/DeleteWalletButton" />
+
+    <Switch
+        android:id="@+id/GuiDeveloperView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiBchPreferNode" />
+
+    <Switch
+        android:id="@+id/GuiBchExclusiveNodeSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:gravity="bottom"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Rediscover" />
+
+    <EditText
+        android:id="@+id/GuiBchExclusiveNode"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:gravity="bottom"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toBottomOf="@+id/GuiBchExclusiveNodeSwitch"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView2"
+        app:layout_constraintTop_toTopOf="@+id/textView2" />
+
+    <EditText
+        android:id="@+id/GuiBchPreferNode"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:gravity="bottom"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView3"
+        app:layout_constraintTop_toBottomOf="@+id/GuiBchExclusiveNode" />
+
+    <Switch
+        android:id="@+id/GuiBchPreferNodeSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        app:layout_constraintBottom_toBottomOf="@+id/textView3"
+        app:layout_constraintTop_toTopOf="@+id/textView3"
+        tools:layout_editor_absoluteX="3dp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/exclusiveBchNode"
+        app:layout_constraintBottom_toBottomOf="@+id/GuiBchExclusiveNodeSwitch"
+        app:layout_constraintStart_toEndOf="@+id/GuiBchExclusiveNodeSwitch"
+        app:layout_constraintTop_toTopOf="@+id/GuiBchExclusiveNodeSwitch" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/preferBchNode"
+        app:layout_constraintBottom_toBottomOf="@+id/GuiBchPreferNode"
+        app:layout_constraintStart_toEndOf="@+id/GuiBchPreferNodeSwitch"
+        app:layout_constraintTop_toTopOf="@+id/GuiBchPreferNode" />
 </androidx.constraintlayout.widget.ConstraintLayout>

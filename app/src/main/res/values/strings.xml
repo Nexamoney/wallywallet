@@ -48,6 +48,9 @@
     <string name="or">or</string>
 
     <!-- Settings -->
+    <string name="enableDeveloperView">Show developer information</string>
+    <string name="exclusiveBchNode">Only use BCH node:</string>
+    <string name="preferBchNode">Prefer BCH node:</string>
     <string name="rediscoverWalletTx">rediscover</string>
     <string name="logDebugData">Log Debug Data</string>
     <string name="rediscoverTooltip">Delete blockchain state and search anew for all transactions relevant to the wallet</string>

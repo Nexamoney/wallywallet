@@ -3,12 +3,16 @@
 package bitcoinunlimited.libbitcoincash
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.res.Resources
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.CompoundButton
 import android.widget.EditText
 import android.widget.TextView
+import info.bitcoinunlimited.www.wally.BCH_PREFER_NODE_SWITCH
 import info.bitcoinunlimited.www.wally.R
+import kotlinx.android.synthetic.main.activity_settings.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -58,6 +62,50 @@ fun notInUI(fn: () -> Unit)
         GlobalScope.launch { fn() }
     }
     else fn()
+}
+
+/** Connects a gui switch to a preference DB item.  To be called in onCreate */
+fun SetupBooleanPreferenceGui(key: String, db: SharedPreferences, button: CompoundButton)
+{
+    button.setChecked(db.getBoolean(key, false))
+
+    button.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener
+    {
+        override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean)
+        {
+            with (db.edit())
+            {
+                putBoolean(key, isChecked)
+                commit()
+            }
+        }
+    })
+}
+
+/** Connects a gui text entry field to a preference DB item.  To be called in onCreate */
+fun SetupTextPreferenceGui(key: String, db: SharedPreferences, view: EditText)
+{
+    view.text.clear()
+    view.text.append(db.getString(key, ""))
+
+    view.addTextChangedListener(object : TextWatcher {
+        override fun afterTextChanged(p: Editable?) {
+            dbgAssertGuiThread()
+            if (p == null) return
+            val text = p.toString()
+            with (db.edit())
+            {
+                putString(key, text)
+                commit()
+            }
+        }
+
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        }
+
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        }
+    })
 }
 
 class TextViewReactor<T>(public val gui: TextView):Reactor<T>()
