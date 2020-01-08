@@ -164,6 +164,7 @@ class IdentityActivity : CommonActivity()
             {
                 val host = iuri.getHost()
                 val path = iuri.getPath()
+                LogIt.info("Identity intent host=${host} path=${path}")
             }
             else  // This should never happen because the AndroidManifest.xml Intent filter should match the URIs that we handle
             {

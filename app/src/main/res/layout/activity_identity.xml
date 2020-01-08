@@ -8,17 +8,26 @@
         tools:context=".IdentityActivity">
 
     <ImageView
-            android:layout_width="130dp"
-            android:layout_height="128dp" app:srcCompat="@drawable/ic_launcher_background"
-            android:id="@+id/commonIdentityQRCode"
-            android:scrollbars="none" android:padding="0px" android:paddingStart="0px" android:paddingLeft="0px"
-            android:paddingTop="0px" android:paddingEnd="0px" android:paddingRight="0px" android:paddingBottom="0px"
-            android:scaleType="fitXY"
-            app:layout_constraintTop_toBottomOf="@+id/commonIdentityAddress"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="20dp"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toEndOf="parent"/>
+        android:id="@+id/commonIdentityQRCode"
+        android:layout_width="130dp"
+        android:layout_height="128dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="8dp"
+        android:contentDescription="@string/commonIdentityQRCode"
+        android:padding="0px"
+        android:paddingStart="0px"
+        android:paddingLeft="0px"
+        android:paddingTop="0px"
+        android:paddingEnd="0px"
+        android:paddingRight="0px"
+        android:paddingBottom="0px"
+        android:scaleType="fitXY"
+        android:scrollbars="none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/commonIdentityAddress"
+        app:srcCompat="@drawable/ic_launcher_background" />
 
     <TextView
         android:id="@+id/commonIdentityAddress"

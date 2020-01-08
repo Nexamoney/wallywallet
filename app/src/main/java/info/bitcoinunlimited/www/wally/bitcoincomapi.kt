@@ -65,6 +65,8 @@ fun MbchInFiat(fiat: String, setter: (BigDecimal)-> Unit)
 /** Return the approximate price of mBCH at the time provided in seconds since the epoch */
 fun historicalMbchInFiat(fiat: String, timeStamp: Long): BigDecimal
 {
+    if (fiat != "USD") return BigDecimal.ZERO  // TODO get other fiat historical prices
+
     // see https://index.bitcoin.com/
     val spec = "https://index-api.bitcoin.com/api/v0/cash/lookup?time=" + timeStamp.toString()
     val data = try { URL(spec).readText() }

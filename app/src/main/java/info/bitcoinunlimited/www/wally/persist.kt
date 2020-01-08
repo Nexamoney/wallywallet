@@ -251,13 +251,13 @@ interface BlockHeaderDao
     fun loadAllByHeight(heights: IntArray): List<PBlockHeader>
 
     @Query("SELECT * FROM pblockHeader WHERE height = :height")
-    fun get(height: Long): PBlockHeader
+    fun get(height: Long): PBlockHeader?
 
     @Query("SELECT * FROM pblockHeader WHERE height = :height")
     fun getAtHeight(height: Long): List<PBlockHeader>
 
     @Query("SELECT * FROM pblockHeader WHERE id = :blockid")
-    abstract fun get(blockid: ByteArray): PBlockHeader
+    abstract fun get(blockid: ByteArray): PBlockHeader?
 
     //@Query("SELECT * FROM blockHeader x INNER JOIN (SELECT height, MAX(height) FROM blockHeader GROUP BY height) y ON x.height = y.height")
     @Query("SELECT a.* FROM pblockHeader a LEFT OUTER JOIN pblockHeader b ON a.height < b.height WHERE b.height IS NULL")
@@ -301,15 +301,6 @@ fun BlockHeaderDao.setCachedTip(header: BlockHeader)
 
 fun PersistInsert(dbdao: BlockHeaderDao, bh: BlockHeader)
 {
-    if (bh.hash.toHex() == "0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206")
-    {
-        LogIt.info("DBG: writing genesis block ${bh.cumulativeWork}")
-        if (bh.cumulativeWork > BigInteger("10"))
-        {
-            LogIt.warning("BUG!")
-        }
-    }
-
     while (true)
     {
         try

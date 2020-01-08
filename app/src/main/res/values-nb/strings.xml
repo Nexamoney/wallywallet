@@ -73,10 +73,10 @@
     <string name="pasteUnintelligible">forsto ikke innhold i utklippstavle</string>
     <string name="chainIncompatibleWithAddress">addressen er ikke kompatibel</string>
 
-    <string name="approximatelyT">omtrent %qty %fiat</string>
+    <string name="approximatelyT" formatted="false">omtrent %qty %fiat</string>
     <string name="moreThanAvailable">"(mer en det er tilgjengelig)"</string>
     <string name="moreThanConfirmedAvailable">"(mer en hva som er bekreftet)"</string>
-    <string name="actuallySendingT">sender faktisk %qty %crypto</string>
+    <string name="actuallySendingT" formatted="false">sender faktisk %qty %crypto</string>
     <string name="copied">...kopiert til utklippstavle...</string>
     <string name="scanFailed">fikk ikke til å skanne</string>
     <string name="sendSuccess">sending fullført</string>

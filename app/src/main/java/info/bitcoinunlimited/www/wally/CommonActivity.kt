@@ -2,6 +2,7 @@
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
 
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.graphics.drawable.ColorDrawable
@@ -28,6 +29,7 @@ import kotlin.coroutines.CoroutineContext
 
 private val LogIt = Logger.getLogger("bitcoinunlimited.commonActivity")
 
+@SuppressLint("Registered")
 open class CommonActivity : AppCompatActivity()
 {
     private val onNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item -> bottomNavSelectHandler(item, this) }
@@ -37,9 +39,11 @@ open class CommonActivity : AppCompatActivity()
 
     open var navActivityId = -1 //* Change this in derived classes to identify which navBar item this activity is
 
+    @kotlinx.coroutines.ExperimentalCoroutinesApi
     protected val coGuiScope = MainScope()
-
+    @kotlinx.coroutines.ExperimentalCoroutinesApi
     protected val coMiscCtxt: CoroutineContext = Executors.newFixedThreadPool(2).asCoroutineDispatcher()
+    @kotlinx.coroutines.ExperimentalCoroutinesApi
     protected val coMiscScope: CoroutineScope = kotlinx.coroutines.CoroutineScope(coMiscCtxt)
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -72,6 +76,7 @@ open class CommonActivity : AppCompatActivity()
 
     }
 
+    @kotlinx.coroutines.ExperimentalCoroutinesApi
     override fun onDestroy()
     {
         coMiscCtxt.cancel()
@@ -164,6 +169,7 @@ open class CommonActivity : AppCompatActivity()
 
 
     /** Do whatever you pass within the user interface context, asynchronously */
+    @kotlinx.coroutines.ExperimentalCoroutinesApi
     fun later(fn: suspend () -> Unit): Unit
     {
         coMiscScope.launch {
@@ -172,6 +178,7 @@ open class CommonActivity : AppCompatActivity()
     }
 
     /** Do whatever you pass within the user interface context, asynchronously */
+    @kotlinx.coroutines.ExperimentalCoroutinesApi
     fun laterUI(fn: suspend () -> Unit): Unit
     {
         coGuiScope.launch {

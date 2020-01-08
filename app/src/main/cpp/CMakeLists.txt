@@ -20,7 +20,13 @@ add_library( # Sets the name of the library.
              native-lib.cpp
              )
 
-set( cashlib_src_DIR /fast/bitcoin/budev/src/cashlib )
+
+if (DEFINED ENV{BU_REPO_DIR})
+    set( cashlib_src_DIR $ENV{BU_REPO_DIR}/src/cashlib )
+else()
+    set( cashlib_src_DIR /fast/bitcoin/budev/src/cashlib )
+endif()
+
 
 set( cashlib_build_DIR obj )
 # file(MAKE_DIRECTORY ${cashlib_build_DIR})

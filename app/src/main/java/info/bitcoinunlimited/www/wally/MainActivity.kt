@@ -78,7 +78,6 @@ class MainActivityModel
 
 var mainActivityModel = MainActivityModel()
 
-
 class MainActivity : CommonActivity()
 {
     override var navActivityId = R.id.navigation_home
@@ -305,7 +304,7 @@ class MainActivity : CommonActivity()
             var uiLoc = 1  // Start at 1 because spot 0 is reserved for the primary wallet
 
             var foundAPrimary = false
-            for ((name,ac) in accounts)
+            for (ac in accounts.values)
             {
                 val curLoc = if (!foundAPrimary && (ac.currencyCode == PRIMARY_WALLET)) { foundAPrimary=true; 0 } else uiLoc
                 if (curLoc >= ui.size) continue
@@ -411,9 +410,9 @@ class MainActivity : CommonActivity()
         dbgAssertGuiThread()
         sendCoinType.selectedItem?.let {
             val account = accounts[it.toString()]
-            account?.let { account ->
+            account?.let { acc ->
                 val curIdx = sendCurrencyType.selectedItemPosition  // We know that this field will be [fiat, crypto] but not which exact choices.  So save the slot and restore it after resetting the values so the UX persists by class
-                val spinData = arrayOf(account.currencyCode, fiatCurrencyCode)
+                val spinData = arrayOf(acc.currencyCode, fiatCurrencyCode)
                 val aa = ArrayAdapter(this, android.R.layout.simple_spinner_item, spinData)
                 sendCurrencyType.setAdapter(aa)
                 sendCurrencyType.setSelection(curIdx)
@@ -670,7 +669,7 @@ class MainActivity : CommonActivity()
                     for (out in pip.outputs)
                     {
                         val addr = out.script.address.toString()
-                        if (addr != null)
+                        if (true) // addr != null)
                         {
                             if (count > 0) sendToAddress.text.append(" ")
                             sendToAddress.text.append(addr)
@@ -1027,7 +1026,6 @@ class MainActivity : CommonActivity()
 
     public fun paymentInProgressSend()
     {
-        var tx:BCHtransaction? = null
         try
         {
             val pip = paymentInProgress
