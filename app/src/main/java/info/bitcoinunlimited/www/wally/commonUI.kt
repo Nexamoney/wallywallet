@@ -36,6 +36,7 @@ fun asyncUI(fn: suspend () -> Unit): Unit
 
 
 // note to stop multiple copies of activities from being launched, use android:launchMode="singleTask" in the activity definition in AndroidManifest.xml
+
 fun bottomNavSelectHandler(item: MenuItem, ths: Activity):Boolean
 {
     when (item.itemId)
@@ -47,7 +48,7 @@ fun bottomNavSelectHandler(item: MenuItem, ths: Activity):Boolean
                 putExtra(IDENTITY_MESSAGE, message)
             }
             ths.startActivity(intent)
-            return@bottomNavSelectHandler true
+            return true
         }
 
         R.id.navigation_trickle_pay ->
@@ -57,7 +58,7 @@ fun bottomNavSelectHandler(item: MenuItem, ths: Activity):Boolean
                 putExtra(TRICKLEPAY_MESSAGE, message)
             }
             ths.startActivity(intent)
-            return@bottomNavSelectHandler true
+            return true
         }
 
         R.id.navigation_exchange ->
@@ -67,7 +68,7 @@ fun bottomNavSelectHandler(item: MenuItem, ths: Activity):Boolean
                 putExtra(EXCHANGE_MESSAGE, message)
             }
             ths.startActivity(intent)
-            return@bottomNavSelectHandler true
+            return true
         }
 
         R.id.navigation_invoices ->
@@ -77,14 +78,14 @@ fun bottomNavSelectHandler(item: MenuItem, ths: Activity):Boolean
                 putExtra(INVOICES_MESSAGE, message)
             }
             ths.startActivity(intent)
-            return@bottomNavSelectHandler true
+            return true
         }
 
         R.id.navigation_home ->
         {
             val intent = Intent(ths, MainActivity::class.java)
             ths.startActivity(intent)
-            return@bottomNavSelectHandler true
+            return true
 
             /* This goes back */
             /*
@@ -96,18 +97,6 @@ fun bottomNavSelectHandler(item: MenuItem, ths: Activity):Boolean
             return false
             */
         }
-/*
-        R.id.navigation_identity ->
-        {
-            val message = "" // anything extra we want to send
-            val intent = Intent(ths, IdentityActivity::class.java).apply {
-                putExtra(IDENTITY_MESSAGE, message)
-            }
-            ths.startActivity(intent)
-            return@bottomNavSelectHandler true
-        }
-        */
-
     }
 
     return false

@@ -129,7 +129,7 @@ class Settings : AppCompatActivity()
 
         val appv = app
         if (appv != null)  // for every account on this blockchain, install the exclusive node or send a null saying not exclusive anymore
-            for ((n,account) in appv.accounts)
+            for (account in appv.accounts.values)
             {
                 if (account.chain.chainSelector == ChainSelector.BCHMAINNET)
                 {

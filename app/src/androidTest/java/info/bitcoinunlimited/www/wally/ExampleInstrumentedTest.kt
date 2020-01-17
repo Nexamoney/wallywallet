@@ -27,7 +27,7 @@ import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
 // The IP address of the host machine: Android sets up a fake network with the host hardcoded to this IP
-val EMULATOR_HOST_IP = "192.168.1.100"
+val EMULATOR_HOST_IP = SimulationHostIP //"192.168.1.100" //"10.0.2.2"
 
 val LogIt = Logger.getLogger("AndroidTest")
 
@@ -85,17 +85,37 @@ class AndroidTest
     @Test
     fun testelectrumclient()
     {
-        LogIt.info("This test requires an electrum cash server running at ${EMULATOR_HOST_IP}:40001")
-        val cnxn = ElectrumClient(ChainSelector.BCHREGTEST, EMULATOR_HOST_IP, 40001, "Electrum@${EMULATOR_HOST_IP}:40001")
+        LogIt.info("This test requires an electrum cash server running at ${EMULATOR_HOST_IP}:${DEFAULT_ELECTRUM_SERVER_PORT}")
+        val cnxn = ElectrumClient(ChainSelector.BCHREGTEST, EMULATOR_HOST_IP, DEFAULT_ELECTRUM_SERVER_PORT, "Electrum@${EMULATOR_HOST_IP}:${DEFAULT_ELECTRUM_SERVER_PORT}")
         cnxn.start()
 
         val ret = cnxn.call("server.version", listOf("4.0.1", "1.4"), 1000)
-        if (ret!=null) LogIt.info(ret)
+        if (ret!=null) LogIt.info(sourceLoc() + ": Server Version returned: " + ret)
+
+        val version = cnxn.version()
+        LogIt.info(sourceLoc() + ": Version API call returned: " + version.first + " " + version.second)
+
+        /* TODO enable when electrscash is updated
+        val features = cnxn.features()
+        LogIt.info(sourceLoc() + ": genesis block hash:" + features.genesis_hash)
+        check("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206" == features.genesis_hash)
+        check("sha256" == features.hash_function)
+        check(features.server_version.contains("ElectrsCash"))  // Clearly this may fail if you connect a different server to this regression test
+         */
 
         val ret2 = cnxn.call("blockchain.block.header", listOf(100, 102), 1000)
         LogIt.info(ret2)
 
-        cnxn.getTx("5a2e45c999509a3505cf543d462977b198957abefcc9c86f4a0ef59525363d0b", 1000)
+        try {
+            cnxn.getTx("5a2e45c999509a3505cf543d462977b198957abefcc9c86f4a0ef59525363d00", 1000)  // doesn't exist
+            assert(false)
+        }
+        catch(e:ElectrumIncorrectRequest)
+        {
+            assert(e.message!!.contains("not indexed tx"))
+        }
+
+        //cnxn.getTx("5a2e45c999509a3505cf543d462977b198957abefcc9c86f4a0ef59525363d0b", 1000)
 
         try
         {
@@ -138,9 +158,9 @@ class AndroidTest
         }
 
 
-        @UseExperimental(kotlinx.serialization.ImplicitReflectionSerializer::class)
-        val b:BannerReply? = cnxn.parse("server.banner", null, 1000)
-        LogIt.info(b?.result)
+        //@UseExperimental(kotlinx.serialization.ImplicitReflectionSerializer::class)
+        //val b:BannerReply? = cnxn.parse("server.banner", null, 1000)
+        //LogIt.info(b?.result)
 
         cnxn.subscribe("blockchain.headers.subscribe") {
             LogIt.info("Received blockchain header notification: ${it}")
@@ -151,7 +171,7 @@ class AndroidTest
 
         try
         {
-            val header2 = cnxn.getHeader(-1)  // beyond the tip
+            cnxn.getHeader(-1)  // beyond the tip
         }
         catch (e:ElectrumIncorrectRequest)
         {
@@ -164,10 +184,25 @@ class AndroidTest
         // blocks that generate to this same output.
         val txbytes = cnxn.getTxAt(1, 0)
         LogIt.info(txbytes.toHex())
+        val txBlkHeader = BlockHeader(BCHserialized(cnxn.getHeader(1), SerializationType.HASH))
 
         val tx = BCHtransaction(ChainSelector.BCHREGTEST)
         tx.BCHdeserialize(BCHserialized(txbytes, SerializationType.NETWORK))
         tx.debugDump()
+
+        /* TODO add in when get_first_use is committed to electrscash.  TODO: check server capabilities
+        val firstUse = cnxn.getFirstUse(tx.outputs[0].script)
+        LogIt.info("first use in block ${firstUse.block_hash}:${firstUse.block_height}, transaction ${firstUse.tx_hash}")
+        check(firstUse.tx_hash != null)
+        check(firstUse.block_height!! == 1)
+        check(tx.hash.toHex() == firstUse.tx_hash!![0])
+        check(txBlkHeader.hash.toHex() == firstUse.block_hash)
+
+        // doesn't exist
+        val firstUse2 = cnxn.getFirstUse("5a2e45c999509a3505cf543d462977b198957abefcc9c86f4a0ef59525363d00")
+        check(firstUse2.tx_hash == null)
+        check(firstUse2.block_hash == null)
+        */
 
         val uses = cnxn.getHistory(tx.outputs[0].script)
         for (use in uses)
@@ -177,13 +212,11 @@ class AndroidTest
 
         assert(uses.size >= 100)  // Might be wrong if the regtest chain startup is changed.
 
-
-
         val headers = cnxn.getHeaders(0, 1000, 10000)
         for (i in headers.indices)
         {
-            val header = cnxn.getHeader(i, 1000)
-            check(header contentEquals headers[i])
+            val hdr = cnxn.getHeader(i, 1000)
+            check(hdr contentEquals headers[i])
 
         }
 
@@ -201,7 +234,6 @@ class AndroidTest
             var c1 = CoCond<Nothing?>(coScope)
             var v = 1;
             val cor = GlobalScope.launch { c1.yield(); v = 3 }
-            v = 2
             c1.wake(null)
             cor.join()
             assertEquals(v,3)
@@ -210,10 +242,9 @@ class AndroidTest
         runBlocking {
 
             var c1 = CoCond<Int>(coScope)
-            var v = 1;
+            var v = 1
             val cor = GlobalScope.launch { v = c1.yield()!!; }
             //val cor2 = GlobalScope.launch { v = c1.yield()!!; }
-            v = 2
             c1.wake(3)
             //c1.wake(4)
             cor.join()
@@ -268,7 +299,7 @@ class AndroidTest
         var sp = BCHspendable(chain)
         sp.secret = byteArrayOf(1,2,3)
         sp.outpoint = outpoint
-        sp.priorOutScript = BCHscript(chain) + OP.DUP + OP.HASH160 + OP.push(ByteArray(20, { it -> 0})) + OP.EQUALVERIFY + OP.CHECKSIG
+        sp.priorOutScript = BCHscript(chain) + OP.DUP + OP.HASH160 + OP.push(ByteArray(20, { 0})) + OP.EQUALVERIFY + OP.CHECKSIG
         sp.addr = PayAddress("bchreg:qr4vefl3wu4q42etwy4w8884l5zpy23zpcwqf0amkv")
         sp.amount = 4567
         sp.redeemScript = BCHscript(chain) + OP.push(byteArrayOf(7,8))
@@ -377,8 +408,6 @@ class AndroidTest
         // Test big integer conversion
         val bic = BigIntegerConverters()
         val test = 12345678.toBigInteger()
-        val mid = bic.toByteArray(test)
-        val res = bic.fromByteArray(mid)
         assertEquals(bic.fromByteArray(bic.toByteArray(test)), test)
 
         val rnd = Random()
@@ -462,30 +491,40 @@ class AndroidTest
         // P2PKH
 
         // Basic match
-        val P2PKH1 = BCHscript(ch) + OP.DUP + OP.HASH160 + OP.push(ByteArray(20, { it -> 0})) + OP.EQUALVERIFY + OP.CHECKSIG
-        val m1 = P2PKH1.match()!!
+        val P2PKH1 = BCHscript(ch) + OP.DUP + OP.HASH160 + OP.push(ByteArray(20, { 0})) + OP.EQUALVERIFY + OP.CHECKSIG
+        check(P2PKH1.match() != null)
 
         // A few bad matches
-        val P2PKH2 = BCHscript(ch) + OP.DUP + OP.HASH160 + OP.push(ByteArray(20, { it -> 0})) + OP.EQUALVERIFY
+        val P2PKH2 = BCHscript(ch) + OP.DUP + OP.HASH160 + OP.push(ByteArray(20, { 0})) + OP.EQUALVERIFY
         check(P2PKH2.match() == null)
 
-        val P2PKH3 = BCHscript(ch) + OP.HASH160 + OP.push(ByteArray(20, { it -> 0})) + OP.EQUALVERIFY + OP.CHECKSIG
+        val P2PKH3 = BCHscript(ch) + OP.HASH160 + OP.push(ByteArray(20, { 0})) + OP.EQUALVERIFY + OP.CHECKSIG
         check(P2PKH3.match() == null)
 
-        val P2PKH4 = BCHscript(ch) + OP.DUP + OP.HASH160 + OP.push(ByteArray(21, { it -> 0})) + OP.EQUALVERIFY + OP.CHECKSIG
+        val P2PKH4 = BCHscript(ch) + OP.DUP + OP.HASH160 + OP.push(ByteArray(21, { 0})) + OP.EQUALVERIFY + OP.CHECKSIG
         check(P2PKH4.match() == null)
 
-        val P2PKH5 = BCHscript(ch) + OP.DUP + OP.HASH160 + OP.push(ByteArray(19, { it -> 0})) + OP.EQUALVERIFY + OP.CHECKSIG
+        val P2PKH5 = BCHscript(ch) + OP.DUP + OP.HASH160 + OP.push(ByteArray(19, { 0})) + OP.EQUALVERIFY + OP.CHECKSIG
         check(P2PKH5.match() == null)
 
 
-        val P2PKH6 = BCHscript(ch, OP.DUP, OP.HASH160, OP.push("0123456789abcdef01230123456789abcdef0123".FromHex()), OP.EQUALVERIFY, OP.CHECKSIG)
-
         // Test different constructions
+        val P2PKH6 = BCHscript(ch, OP.DUP, OP.HASH160, OP.push("0123456789abcdef01230123456789abcdef0123".FromHex()), OP.EQUALVERIFY, OP.CHECKSIG)
         val P2PKH7 = BCHscript(ch, OP.DUP, OP.HASH160, OP.PUSHDATA1, byteArrayOf(20), "0123456789abcdef01230123456789abcdef0123".FromHex(), OP.EQUALVERIFY, OP.CHECKSIG)
-        val (type, params) = P2PKH6.match() ?: throw AssertionError("should have matched P2PKH template")
-        assertEquals(type, PayAddressType.P2PKH)
-        check(params[0].contentEquals(fakepubkey))
+
+        if (true)
+        {
+            val (type, params) = P2PKH6.match() ?: throw AssertionError("should have matched P2PKH template")
+            assertEquals(type, PayAddressType.P2PKH)
+            check(params[0].contentEquals(fakepubkey))
+        }
+
+        if (true)
+        {
+            val (type, params) = P2PKH7.match() ?: throw AssertionError("should have matched P2PKH template")
+            assertEquals(type, PayAddressType.P2PKH)
+            check(params[0].contentEquals(fakepubkey))
+        }
 
         val P2PKH8 = BCHscript(ch) + OP.DUP + OP.HASH160 + OP.push("0123456789abcdef01230123456789abcdef0123".FromHex()) + OP.EQUALVERIFY + OP.CHECKSIG
         check(P2PKH6.contentEquals(P2PKH8))
@@ -497,7 +536,7 @@ class AndroidTest
         // P2SH
 
         val P2SH = BCHscript(ch) + OP.HASH160 + OP.push(fakepubkey) + OP.EQUAL
-        val m2 = P2SH.match()!!
+        check(P2SH.match() != null)
         val (type2, params2) = P2SH.match() ?: throw AssertionError("should have matched P2SH template")
 
         assertEquals(type2, PayAddressType.P2SH)
@@ -507,43 +546,42 @@ class AndroidTest
         val P2SH2 = BCHscript(ch) + OP.HASH160 + OP.push(fakepubkey)
         assertEquals(P2SH2.match(), null)
 
-        val P2SH3 = BCHscript(ch) + OP.HASH160 + OP.push(ByteArray(21, { it -> 0})) + OP.EQUAL
+        val P2SH3 = BCHscript(ch) + OP.HASH160 + OP.push(ByteArray(21, {0})) + OP.EQUAL
         assertEquals(P2SH3.match(), null)
 
-        val P2SH4 = BCHscript(ch) + OP.HASH160 + OP.push(ByteArray(21, { it -> 0})) + OP.EQUAL
+        val P2SH4 = BCHscript(ch) + OP.HASH160 + OP.push(ByteArray(21, {0})) + OP.EQUAL
         assertEquals(P2SH4.match(), null)
     }
 
     @Test
     fun connectToP2P()
     {
-        var cnxn = BCHp2pClient(ChainSelector.BCHREGTEST, "10.0.2.2", BCHregtestPort, "regtest@10.0.2.2").connect()
+        val coCtxt: CoroutineContext = Executors.newFixedThreadPool(2).asCoroutineDispatcher()
+        val coScope: CoroutineScope = kotlinx.coroutines.CoroutineScope(coCtxt)
+        val coCond = CoCond<Boolean>(coScope)
+
+        var cnxn = BCHp2pClient(ChainSelector.BCHREGTEST, EMULATOR_HOST_IP, BCHregtestPort, "regtest@${EMULATOR_HOST_IP}",coScope,coCond).connect()
         GlobalScope.launch { cnxn.processForever() }
 
-        runBlocking {
-            cnxn.waitForReady()
-        }
+        cnxn.waitForReady()
+
         cnxn.send(NetMsgType.PING, BCHserialized(SerializationType.NETWORK) + 1L)
 
         val loc = BlockLocator()
         loc.add(Hash256())  // This will ask for the genesis block because no hashes will match
         val stop = Hash256()
-        cnxn.sendGetHeaders(loc, stop)
-        //var peers = cnxn.queryPeers()
-        val msg = runBlocking {
-            cnxn.waitFor(NetMsgType.HEADERS)
-        }
+        var headers: MutableList<BlockHeader>? = null
+        val waiter = ThreadCond()
+        cnxn.getHeaders(loc, stop, { lst, _  -> headers = lst; waiter.wake(); true})
 
+        waiter.delay(5000)
+        check(headers != null)  // If its null we didn't get the headers
 
-        //val msg = cnxn.incoming[NetMsgType.HEADERS]?.get(0)
-        if (msg != null)
+        for (hdr in headers!!)
         {
-            var hdrs: MutableList<BlockHeader> = msg.delist({ strm -> BlockHeader(strm) });
-            for (hdr in hdrs)
-            {
-                LogIt.info(hdr.height.toString() + " hash: " + hdr.hash.toHex() + " prev: " + hdr.hashPrevBlock.toHex())
-            }
+            LogIt.info(hdr.height.toString() + " hash: " + hdr.hash.toHex() + " prev: " + hdr.hashPrevBlock.toHex())
         }
+
 
         LogIt.info("shutting down")
         cnxn.close()
@@ -555,6 +593,7 @@ class AndroidTest
     {
         LogIt.info("testBip39")
         val result = GenerateEntropy(128)
+        check(result.size == 128/8)
 
         for (tv in bip39TestVector)
         {

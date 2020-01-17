@@ -55,8 +55,19 @@ fun GetCnxnMgr(chain: ChainSelector): CnxnMgr
     {
     ChainSelector.BCHTESTNET      -> MultiNodeCnxnMgr("mTBCH", ChainSelector.BCHTESTNET, arrayOf("testnet-seed.bitcoinabc.org"))
     ChainSelector.BCHMAINNET      -> MultiNodeCnxnMgr("mBCH", ChainSelector.BCHMAINNET, arrayOf("seed.bitcoinunlimited.net", "btccash-seeder.bitcoinunlimited.info"))
-    ChainSelector.BCHREGTEST      -> MultiNodeCnxnMgr("mRBCH", ChainSelector.BCHREGTEST, arrayOf("regtest"))
+    ChainSelector.BCHREGTEST      -> MultiNodeCnxnMgr("mRBCH", ChainSelector.BCHREGTEST, arrayOf(SimulationHostIP))
     else                          -> throw BadCryptoException()
+    }
+}
+
+fun ElectrumServerOn(chain: ChainSelector): Pair<String,Int>
+{
+    return when(chain)
+    {
+        ChainSelector.BCHMAINNET -> Pair("electrumserver.seed.bitcoinunlimited.net", DEFAULT_ELECTRUM_SERVER_PORT)
+        ChainSelector.BCHTESTNET -> Pair("159.65.163.15", DEFAULT_ELECTRUM_SERVER_PORT)
+        ChainSelector.BCHREGTEST -> Pair(SimulationHostIP, DEFAULT_ELECTRUM_SERVER_PORT)
+        ChainSelector.BCHNOLNET -> throw BadCryptoException()
     }
 }
 
@@ -396,7 +407,7 @@ class WallyApp: Application()
     /** Return what account a particular GUI element is bound to or null if its not bound */
     fun accountFromGui(view: View): Account?
     {
-        for ((name,a) in accounts)
+        for (a in accounts.values)
         {
             if ((a.tickerGUI.reactor as TextViewReactor<String>).gui == view) return a
             if ((a.balanceGUI.reactor as TextViewReactor<String>).gui == view) return a
@@ -483,16 +494,18 @@ class WallyApp: Application()
                     }
                     catch(e: DataMissingException)
                     {
+                        /*
                         // Temporary: create what we used to do manually
                         accounts.getOrPut("mBCH") {
-                            val c = Account("mBCH", ctxt);
+                            val c = Account("mBCH", ctxt, ChainSelector.BCHMAINNET);
                             c
                         }
                         accounts.getOrPut("mTBCH") {
-                            val c = Account("mTBCH", ctxt);
+                            val c = Account("mTBCH", ctxt, ChainSelector.BCHTESTNET);
                             c
                         }
                         saveActiveAccountList()
+                        */
                         byteArrayOf()
                     }
 

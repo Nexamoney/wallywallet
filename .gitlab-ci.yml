@@ -1,0 +1,61 @@
+image: andrewstone/bchadkdev:latest
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+before_script:
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+  - export BU_REPO_DIR=/busrc
+  - export BU_HOME=/bu
+  - export ABC_HOME=/abc
+  - export ANDROID_HOME=/opt/adk
+  - export ANDROID_NDK_ROOT=/opt/adk/ndk-bundle
+  - export PATH=$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/ndk-bundle/build:$ANDROID_HOME/cmake/3.10.2.4988404/bin
+  - chmod +x ./gradlew
+  - '[ ! -d "/busrc" ] && git clone https://github.com/BitcoinUnlimited/BitcoinUnlimited.git $BU_REPO_DIR'
+  - (cd /busrc; git checkout dev)
+  - (cd /busrc/src/cashlib; tar xf /boost_*.tar.bz2)
+  - (cd /busrc; ./autogen.sh)
+  - cp /bitcoin-config.h /busrc/src/config
+
+
+# These "stages" are actually separately initiated VMs, so better used for different configurations, etc
+stages:
+  - buildTest
+
+#runlint:
+#  stage: lint
+#  script:
+#    - ./gradlew -Pci --console=plain :app:lintDebug -PbuildDir=lint
+
+buildIt:
+  stage: buildTest
+  script:
+    - echo -e "section_start:`date +%s`:BUILD\r\e[0K"
+    - ./gradlew build
+    - echo -e "section_end:`date +%s`:BUILD\r\e[0K"
+    - echo -e "section_start:`date +%s`:UNIT TEST\r\e[0K"
+    - ./gradlew -Pci --console=plain :app:testDebugUnitTest
+    - echo -e "section_end:`date +%s`:UNIT TEST\r\e[0K"
+    - /startAndroid.sh
+    - /bu/bin/bitcoind &
+    - sleep 5
+    - /bu/bin/bitcoin-cli generate 1
+    - sleep 20
+    - echo -e "section_start:`date +%s`:DEVICE TEST\r\e[0K"
+    - ./gradlew -Pci --console=plain :app:connectedAndroidTest
+    - echo -e "section_end:`date +%s`:DEVICE TEST\r\e[0K"    
+  artifacts:
+    paths:
+    - app/build/outputs/
+
+#unitTest:
+#  stage: unitTest
+#  script:
+#    - ./gradlew -Pci --console=plain :app:testDebugUnitTest
+
+#deviceTest:
+#  stage: deviceTest
+#  script:
+#    - ./gradlew -Pci --console=plain :app:connectedAndroidTest
+

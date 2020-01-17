@@ -37,17 +37,17 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="@string/AccountNameHint"
+        android:importantForAutofill="no"
         android:inputType="textPersonName"
         android:singleLine="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/GuiAccountNameText"
-        app:layout_constraintTop_toTopOf="parent"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toBottomOf="@+id/GuiNewAccountError" />
 
     <TextView
         android:id="@+id/GuiBlockchainText"
-        android:layout_width="125dp"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="21dp"
         android:text="@string/Blockchain"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -60,6 +60,7 @@
         android:id="@+id/GuiBlockchainSelector"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.238"
         app:layout_constraintStart_toEndOf="@+id/GuiBlockchainText"
@@ -86,7 +87,8 @@
         android:maxLines="5"
         android:minLines="2"
         android:singleLine="false"
-        android:textSize="12sp"
+        android:textAlignment="center"
+        android:textSize="11sp"
         android:textStyle="normal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -96,12 +98,15 @@
         android:id="@+id/GuiCreateAccountButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="108dp"
+        android:layout_marginTop="20dp"
         android:onClick="onCreateAccount"
         android:text="@string/createAccount"
+        app:layout_constraintBottom_toTopOf="@+id/nav_view"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GuiAccountRecoveryPhraseEntry" />
+        app:layout_constraintTop_toBottomOf="@+id/GuiNewAccountStatus"
+        app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
         android:id="@+id/GuiAccountNameOk"
@@ -131,6 +136,63 @@
         app:layout_constraintBottom_toBottomOf="@+id/GuiRecoveryPhraseText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/GuiRecoveryPhraseText"
+        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@android:drawable/ic_delete" />
+
+    <ImageView
+        android:id="@+id/guiPassPhraseOk"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:contentDescription="@android:string/ok"
+        app:layout_constraintBottom_toTopOf="@+id/GuiPassPhraseEntry"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/ic_check" />
+
+    <TextView
+        android:id="@+id/GuiPassphraseText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/PassPhrase"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/guiPassPhraseOk"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAccountRecoveryPhraseEntry" />
+
+    <EditText
+        android:id="@+id/GuiPassPhraseEntry"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ems="12"
+        android:inputType="textPassword"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiPassphraseText" />
+
+    <TextView
+        android:id="@+id/GuiNewAccountStatus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:maxLines="5"
+        android:minLines="1"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiPassPhraseEntry" />
+
+    <TextView
+        android:id="@+id/GuiNewAccountError"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textColor="#F44336"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

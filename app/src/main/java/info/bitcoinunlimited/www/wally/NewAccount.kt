@@ -123,26 +123,48 @@ class NewAccount : CommonActivity()
                 recoveryChange++
                 // TODO: explain the problem
                 dbgAssertGuiThread()
+
+                // clear the status for regeneration if the phrase is ok
+                GuiNewAccountStatus.text = ""
+                GuiNewAccountError.text = ""
+
+                // If Recovery phrase is blank we'll generate one so that's OK
                 if (p.isNullOrBlank())
                 {
                     GuiRecoveryPhraseOk.setImageResource(R.drawable.ic_check)
                     return
                 }
 
+                // Check recovery phrase validity and be unhappy if its not good
                 val txt:String = p.toString()
                 val words = txt.split(' ')
-                if (words.size != 12)  // TODO support other size recovery keys
+                if (words.size < 12)  // TODO support other size recovery keys
                 {
                     GuiRecoveryPhraseOk.setImageResource(android.R.drawable.ic_delete)
+                    GuiNewAccountError.text = i18n(R.string.NotEnoughRecoveryWords)
+                    return
+                }
+                if (words.size > 12)  // TODO support other size recovery keys
+                {
+                    GuiRecoveryPhraseOk.setImageResource(android.R.drawable.ic_delete)
+                    GuiNewAccountError.text = i18n(R.string.TooManyRecoveryWords)
                     return
                 }
                 val incorrectWords = Bip39InvalidWords(words)
                 if (incorrectWords.size > 0)
                 {
                     GuiRecoveryPhraseOk.setImageResource(android.R.drawable.ic_delete)
+                    GuiNewAccountError.text = i18n(R.string.IncorrectRecoveryWords) % mapOf("words" to incorrectWords.joinToString(","))
                     return
                 }
                 GuiRecoveryPhraseOk.setImageResource(R.drawable.ic_check)
+
+                // If the recovery phrase is good, let's peek at the blockchain to see if there's activity
+                thread(true, true, null, "peekWallet")
+                {
+                  peekActivity(words.joinToString(" "), SupportedBlockchains[GuiBlockchainSelector.selectedItem]!!)
+                }
+
             }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -154,10 +176,73 @@ class NewAccount : CommonActivity()
 
     }
 
+    fun peekActivity(secretWords:String, chainSelector: ChainSelector)
+    {
+        val (svr, port) = try
+        {
+            ElectrumServerOn(chainSelector)
+        }
+        catch (e:BadCryptoException)
+        {
+            LogIt.info ("peek not supported for this blockchain")
+            return
+        }
+
+        val ec = try {
+            ElectrumClient(chainSelector, svr, port)
+        }
+        catch(e:java.net.ConnectException)
+        {
+            laterUI {
+                GuiNewAccountStatus.text = i18n(R.string.ElectrumNetworkUnavailable)
+            }
+            return
+        }
+        ec.start()
+
+        val features = ec.features()
+
+        val passphrase = "" // TODO: support a passphrase
+        val secret = GenerateBip39Seed(secretWords, passphrase)
+
+        var index = 0
+        val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
+        val newSecret = AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, addressDerivationCoin, 0, 0, index)
+
+        val dest = Pay2PubKeyHashDestination(chainSelector, newSecret)  // Note, if multiple destination types are allowed, the wallet load/save routines must be updated
+        //LogIt.info(sourceLoc() + " " + name + ": New Destination " + tmp.toString() + ": " + dest.address.toString())
+
+        val use = ec.getFirstUse(dest.outputScript(), 10000)
+        if (use.block_hash != null)
+        {
+            var dateInfo:String = ""
+            if (use.block_height != null)
+            {
+                val headerBin = ec.getHeader(use.block_height!!)
+                val blkHeader = BlockHeader(BCHserialized(headerBin, SerializationType.HASH))
+                dateInfo = i18n(R.string.FirstUseDateHeightInfo) % mapOf("date" to epochToDate(blkHeader.time), "height" to use.block_height!!.toString())
+            }
+            laterUI {
+                GuiNewAccountStatus.text = i18n(R.string.Bip44ActivityNotice) + " " + dateInfo
+            }
+            LogIt.info("found activity")
+        }
+        else
+        {
+            laterUI {
+                GuiNewAccountStatus.text = i18n(R.string.NoBip44ActivityNotice)
+            }
+            LogIt.info("didn't find activity")
+        }
+
+        //LogIt.info(hist.size.toString())
+
+    }
+
     fun recoverAccountPhase2(name: String, secretWords: String, chainSelector: ChainSelector)
     {
         val passphrase = ""  // TODO
-        val secretSize = 64
+        // val secretSize = 64
         if (secretWords.length > 0)
         {
             val words = secretWords.split(' ')
@@ -175,32 +260,14 @@ class NewAccount : CommonActivity()
                 return
             }
 
-            //val wallet = Bip44Wallet(GuiAccountNameEntry.text.toString(), SupportedBlockchains[chainName]!!, secret)
-
-            /*
-            // TODO seed only works for mainnet
-            val ec = ElectrumClient(chainSelector, "electrumserver.seed.bitcoinunlimited.net")
-
-            //val dest = runBlocking { wallet.newDestination() }
-
-            val secret = GenerateBip39Seed(words.joinToString(" ") { it }, passphrase, secretSize)
-
-            var index = 0
-            val addressSecret = AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, AddressDerivationKey.ANY, AddressDerivationKey.hardened(0), 0, index)
-            val dest = Pay2PubKeyHashDestination(chainSelector, addressSecret)
-
-            val hist = ec.getHistory(dest.outputScript(), 30000)
-
-            LogIt.info(hist.size.toString())
-             */
-
             app!!.recoverAccount(name, secretWords, chainSelector )
             finish()
         }
 
     }
 
-    fun onCreateAccount(v: View?)
+
+    fun onCreateAccount(@Suppress("UNUSED_PARAMETER") v: View?)
     {
         LogIt.info("Create account button")
         val secretWords = GuiAccountRecoveryPhraseEntry.text.toString()

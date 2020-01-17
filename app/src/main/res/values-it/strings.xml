@@ -73,10 +73,10 @@
     <string name="pasteUnintelligible">Contenunto da incollare invalido</string>
     <string name="chainIncompatibleWithAddress">Indirizzo incompatibile</string>
 
-    <string name="approximatelyT">circa %qty %fiat</string>
+    <string name="approximatelyT" formatted="false">circa %qty %fiat</string>
     <string name="moreThanAvailable">"(ammontare non disponibile)"</string>
     <string name="moreThanConfirmedAvailable">"(ammontare non spendibile)"</string>
-    <string name="actuallySendingT">effettivamente spendendo %qty %crypto</string>
+    <string name="actuallySendingT" formatted="false">effettivamente spendendo %qty %crypto</string>
     <string name="copied">...copiata nell\'area appunti...</string>
     <string name="scanFailed">lettura fallita</string>
     <string name="sendSuccess">spedito con successo</string>

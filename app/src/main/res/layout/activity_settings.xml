@@ -151,8 +151,8 @@
         android:layout_height="wrap_content"
         android:gravity="bottom"
         app:layout_constraintBottom_toBottomOf="@+id/textView3"
-        app:layout_constraintTop_toTopOf="@+id/textView3"
-        tools:layout_editor_absoluteX="3dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView3" />
 
     <TextView
         android:id="@+id/textView2"

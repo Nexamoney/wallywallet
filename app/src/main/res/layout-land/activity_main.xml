@@ -20,6 +20,19 @@
         app:menu="@menu/bottom_nav_menu" />
 
     <TextView
+        android:id="@+id/TopInformation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/ReceiveTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -225,6 +238,7 @@
         android:paddingBottom="0px"
         android:scaleType="fitXY"
         android:scrollbars="none"
+        android:contentDescription="@string/receiveAddressQRCode"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/splitBillButton"
@@ -328,8 +342,8 @@
         android:text="@string/Send"
         android:textAlignment="center"
         android:textSize="20sp"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="8dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/purchaseButton"
@@ -371,9 +385,9 @@
         android:text=""
         android:textAlignment="center"
         android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/balanceTicker2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/balanceUnconfirmedValue2"
-        tools:layout_editor_absoluteY="179dp" />
+        app:layout_constraintStart_toEndOf="@+id/balanceUnconfirmedValue2" />
 
     <TextView
         android:id="@+id/WalletChainInfo3"

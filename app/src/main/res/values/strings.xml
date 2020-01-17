@@ -80,6 +80,7 @@
     <string name="ScanQRCodeButton">Scan a QR code</string>
     <string name="PasteDestinationAddressButton">Paste</string>
     <string name="NewAccountButton">New Account</string>
+    <string name="receiveAddressQRCode">receive QR code</string>
     <string name="paymentProposal">as per received payment proposal</string>
     <!-- You clicked the paste button (in a copy/paste operation), but nothing was copied -->
     <string name="pasteIsEmpty">paste empty</string>
@@ -93,12 +94,12 @@
     <string name="pasteUnintelligible">paste not understood</string>
     <string name="chainIncompatibleWithAddress">address incompatible</string>
 
-    <string name="approximatelyT">approximately %qty %fiat</string>
+    <string name="approximatelyT" formatted="false">approximately %qty %fiat</string>
     <!-- user is attempting to send more cryptocurrency than the wallet contains.  The payment can't happen -->
     <string name="moreThanAvailable">"(more than available)"</string>
     <!-- This is a warning or informational message.  It says that the user is sending recently received coins, which is perfectly OK but slightly increases the chance of payment failure -->
     <string name="moreThanConfirmedAvailable">"(more than confirmed)"</string>
-    <string name="actuallySendingT">actually sending %qty %crypto</string>
+    <string name="actuallySendingT" formatted="false">actually sending %qty %crypto</string>
     <string name="copied">...copied to clipboard...</string>
     <string name="scanFailed">scan failed</string>
     <string name="sendSuccess">send successful</string>
@@ -118,12 +119,14 @@
     <string name="provideRealNameToolTip">Selecting this option will provide your real name (as configured in settings) to this web site, if requested</string>
     <string name="provideAddress">provide your address?</string>
     <string name="provideAddressToolTip">Selecting this option will provide your address (as configured in settings) to this web site, if requested</string>
+    <string name="commonIdentityQRCode">QR code</string>
 
     <string name="provideLoginQuestion">Login to this site?</string>
 
-    <string name="FirstNameOrAliasText">First Name Or Alias</string>
-    <string name="LastNameText">Last Name</string>
-    <string name="HomeAddressText">Home Address</string>
+    <string name="UsernameOrAliasText">Preferred Username or Alias</string>
+    <string name="NameText">Full Name</string>
+    <string name="PostalAddressText">Postal Address</string>
+    <string name="PostalCodeText">Zip Code</string>
     <string name="EmailText">Email Address</string>
     <string name="TwitterText">Twitter</string>
     <string name="TelegramText">Telegram</string>
@@ -149,7 +152,14 @@
     <string name="LeaveEmptyNewWallet">Leave empty to create a new wallet</string>
     <string name="createAccount">create account</string>
     <string name="invalidRecoveryPhrase">bad recovery phrase</string>
-
+    <string name="PassPhrase">Passphrase (optional)</string>
+    <string name="Bip44ActivityNotice">Found BIP44 activity</string>
+    <string name="FirstUseDateHeightInfo">starting at %date (block %height)</string>
+    <string name="NoBip44ActivityNotice">Warning, No BIP44 transactions found!</string>
+    <string name="NotEnoughRecoveryWords">More recovery words needed</string>
+    <string name="TooManyRecoveryWords">Too many recovery words</string>
+    <string name="IncorrectRecoveryWords">Invalid words: %words</string>
+    <string name="ElectrumNetworkUnavailable">Network unavailable</string>
     <!-- Error strings -->
     <string name="unknownError">error</string>
     <string name="insufficentBalance">insufficient balance</string>
