@@ -269,19 +269,17 @@ class MainActivity : CommonActivity()
         }
     }
 
-    override fun onStart()
+    fun assignWalletsGuiSlots()
     {
-        super.onStart()
         dbgAssertGuiThread()
+        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val showDev = prefs.getBoolean(SHOW_DEV_INFO, false)
 
         data class UI(val ticker: TextView, val balance: TextView, val units: TextView, val unconf: TextView, val info: TextView?)
 
         val ui = listOf(UI(balanceTicker, balanceValue, balanceUnits, balanceUnconfirmedValue, WalletChainInfo),
             UI(balanceTicker2, balanceValue2, balanceUnits2, balanceUnconfirmedValue2, WalletChainInfo2),
             UI(balanceTicker3, balanceValue3, balanceUnits3, balanceUnconfirmedValue3, WalletChainInfo3))
-
-        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
-        val showDev = prefs.getBoolean(SHOW_DEV_INFO, false)
 
         // Clear all info in case we remap it
         for (u in ui)
@@ -294,45 +292,59 @@ class MainActivity : CommonActivity()
             u.info?.visibility = if (showDev) View.VISIBLE else View.GONE
         }
 
+        var uiLoc = 1  // Start at 1 because spot 0 is reserved for the primary wallet
+
+        var foundAPrimary = false
+        for (ac in accounts.values)
+        {
+            val curLoc = if (!foundAPrimary && (ac.currencyCode == PRIMARY_WALLET)) { foundAPrimary=true; 0 } else uiLoc
+            if (curLoc >= ui.size) continue
+            ui[curLoc].let {
+                ac.setUI(it.ticker, it.balance, it.unconf, it.info)
+                laterUI { ui[curLoc].units.text = ac.currencyCode }
+            }
+            if (curLoc != 0) uiLoc++
+        }
+
+        for (c in accounts.values)
+        {
+            c.wallet.setOnWalletChange({ it -> onWalletChange(it) })
+            c.wallet.blockchain.onChange = {it -> onBlockchainChange(it)}
+            c.wallet.blockchain.net.changeCallback = { _,_ -> onWalletChange(c.wallet) }  // right now the wallet GUI update function also updates the cnxn mgr GUI display
+            c.onWalletChange()  // update all wallet UI fields since just starting up
+        }
+    }
+
+
+    fun assignCryptoSpinnerValues()
+    {
+        // Set up the crypto spinners to contain all the cryptos this wallet supports
+        val coinSpinData = accounts.keys.toTypedArray()
+        val coinAa = ArrayAdapter(this, android.R.layout.simple_spinner_item, coinSpinData)
+        sendCoinType?.setAdapter(coinAa)
+        recvCoinType?.setAdapter(coinAa)
+    }
+
+    override fun onStart()
+    {
+        super.onStart()
+        dbgAssertGuiThread()
+
+
+        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
 
         thread(true, true, null, "startup")
         {
             // Wait until stuff comes up
             while (!coinsCreated) Thread.sleep(100)
-
-
-            var uiLoc = 1  // Start at 1 because spot 0 is reserved for the primary wallet
-
-            var foundAPrimary = false
-            for (ac in accounts.values)
-            {
-                val curLoc = if (!foundAPrimary && (ac.currencyCode == PRIMARY_WALLET)) { foundAPrimary=true; 0 } else uiLoc
-                if (curLoc >= ui.size) continue
-                ui[curLoc].let {
-                    ac.setUI(it.ticker, it.balance, it.unconf, it.info)
-                    laterUI { ui[curLoc].units.text = ac.currencyCode }
-                }
-                if (curLoc != 0) uiLoc++
-            }
-
-            for (c in accounts.values)
-            {
-                c.wallet.setOnWalletChange({ it -> onWalletChange(it) })
-                c.wallet.blockchain.onChange = {it -> onBlockchainChange(it)}
-                c.wallet.blockchain.net.changeCallback = { _,_ -> onWalletChange(c.wallet) }  // right now the wallet GUI update function also updates the cnxn mgr GUI display
-                c.onWalletChange()  // update all wallet UI fields since just starting up
-            }
+            Thread.sleep(100)
 
             laterUI {
                 dbgAssertGuiThread()
                 // First time GUI setup stuff
 
-                // Set up the crypto spinners to contain all the cryptos this wallet supports
-                val coinSpinData = accounts.keys.toTypedArray()
-                val coinAa = ArrayAdapter(this, android.R.layout.simple_spinner_item, coinSpinData)
-                sendCoinType?.setAdapter(coinAa)
-                recvCoinType?.setAdapter(coinAa)
-
+                assignWalletsGuiSlots()
+                assignCryptoSpinnerValues()
                 // Restore GUI elements to their prior values
                 mainActivityModel.lastRecvCoinType?.let { recvCoinType.setSelection(it) }
                 mainActivityModel.lastSendCoinType?.let { sendCoinType.setSelection(it) }
@@ -383,10 +395,17 @@ class MainActivity : CommonActivity()
         mainActivityModel.lastRecvCoinType?.let { recvCoinType.setSelection(it) }
         mainActivityModel.lastSendCurrencyType?.let { sendCurrencyType.setSelection(it) }
 
-        for (c in accounts.values)
-        {
-            c.updateReceiveAddressUI = { it -> updateReceiveAddressUI(it) }
-            c.onResume()
+        later {
+            Thread.sleep(200)  // Wait for accounts to be loaded
+            laterUI {
+                assignWalletsGuiSlots()
+                assignCryptoSpinnerValues()
+
+                for (c in accounts.values) {
+                    c.updateReceiveAddressUI = { it -> updateReceiveAddressUI(it) }
+                    c.onResume()
+                }
+            }
         }
     }
 
@@ -1089,12 +1108,29 @@ class MainActivity : CommonActivity()
         }
 
         var currencyType: String? = sendCurrencyType.selectedItem as String?
-        if (currencyType == null) throw BadCryptoException()
-
         // Which crypto are we sending
-        val walletName = sendCoinType.selectedItem as String
+        val walletName = try {
+            sendCoinType.selectedItem as String
+        }
+        catch(e:TypeCastException)  // No wallets are defined so no sendCoinType is possible
+        {
+            displayError(R.string.badCryptoCode)
+            return false
+        }
         val account = accounts[walletName]
-        if (account == null) throw BadCryptoException()
+
+
+        if (currencyType == null)
+        {
+            displayError(R.string.badCryptoCode)
+            return false
+        }
+
+        if (account == null)
+        {
+            displayError(R.string.badCryptoCode)
+            return false
+        }
 
 
         val amtstr: String = sendQuantity.text.toString()

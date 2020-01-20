@@ -163,13 +163,12 @@
         android:id="@+id/HomeAddressText"
         android:layout_width="wrap_content"
         android:layout_height="36dp"
-        android:layout_marginStart="28dp"
         android:text="@string/Address"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="@+id/sendButton"
         app:layout_constraintStart_toEndOf="@+id/sendCoinType"
         app:layout_constraintTop_toTopOf="@+id/sendButton"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/amountText"
@@ -274,18 +273,21 @@
 
     <EditText
         android:id="@+id/sendToAddress"
-        android:layout_width="284dp"
-        android:layout_height="34dp"
-        android:layout_marginTop="4dp"
-        android:autoSizeMaxTextSize="20sp"
-        android:autoSizeMinTextSize="8sp"
-        android:autoSizeStepGranularity="1sp"
-        android:autoSizeTextType="uniform"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="destination address here"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:autofillHints="@string/sendToAddressHint"
+        android:inputType="text"
+        android:lines="1"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:text=""
         android:textAlignment="center"
+        android:textSize="12sp"
         android:textStyle="bold"
+        android:imeOptions="actionDone"
+        app:layout_constraintEnd_toStartOf="@+id/destAddrPasteButton"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/HomeAddressText"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -294,20 +296,18 @@
         android:layout_width="66dp"
         android:layout_height="66dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.36"
         app:layout_constraintStart_toEndOf="@+id/approximatelyText"
-        app:layout_constraintTop_toBottomOf="@+id/destAddrPasteButton"
+        app:layout_constraintTop_toBottomOf="@+id/sendToAddress"
         app:srcCompat="@drawable/ic_scanqricon" />
 
     <ImageButton
         android:id="@+id/destAddrPasteButton"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        app:layout_constraintBottom_toBottomOf="@+id/HomeAddressText"
+        app:layout_constraintBottom_toBottomOf="@+id/sendToAddress"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/sendToAddress"
         app:layout_constraintTop_toTopOf="@+id/HomeAddressText"
-        app:layout_constraintVertical_bias="0.75"
+        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="?attr/actionModePasteDrawable" />
 
     <View
@@ -394,6 +394,7 @@
         android:layout_width="0dp"
         android:layout_height="32dp"
         android:textAlignment="center"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/balanceTicker3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/balanceUnconfirmedValue3" />
