@@ -124,7 +124,10 @@ fun RunningTheTests(): Boolean
 {
     try
     {
-        Class.forName("bitcoinunlimited.wally.AndroidTest")
+        /* I can search for either UnitTest or GuiTest here because both are included in the
+        test image.
+         */
+        Class.forName("bitcoinunlimited.wally.androidTestImplementation.UnitTest")
         return true
     }
     catch (e: ClassNotFoundException)
@@ -132,7 +135,6 @@ fun RunningTheTests(): Boolean
         return false
     }
 }
-
 
 
 fun dbgAssertGuiThread()

@@ -29,6 +29,8 @@ import kotlin.coroutines.CoroutineContext
 
 private val LogIt = Logger.getLogger("bitcoinunlimited.commonActivity")
 
+var currentActivity: CommonActivity? = null
+
 @SuppressLint("Registered")
 open class CommonActivity : AppCompatActivity()
 {
@@ -45,6 +47,10 @@ open class CommonActivity : AppCompatActivity()
     protected val coMiscCtxt: CoroutineContext = Executors.newFixedThreadPool(2).asCoroutineDispatcher()
     @kotlinx.coroutines.ExperimentalCoroutinesApi
     protected val coMiscScope: CoroutineScope = kotlinx.coroutines.CoroutineScope(coMiscCtxt)
+
+    // for GUI automated testing
+    var lastErrorId = 0
+    var lastErrorString = ""
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -65,6 +71,7 @@ open class CommonActivity : AppCompatActivity()
 
     override fun onStart()
     {
+        currentActivity = this
         super.onStart()
 
         // Finding a UI element has to happen after the derived class has inflated the view, so it cannot be in onCreate.
@@ -114,11 +121,16 @@ open class CommonActivity : AppCompatActivity()
     }
 
     /** Display an short error string on the title bar, and then clear it after a bit */
-    fun displayError(resource: Int) = displayError(getString(resource))
+    fun displayError(resource: Int)
+    {
+        lastErrorId = resource
+        displayError(getString(resource))
+    }
 
     /** Display an short error string on the title bar, and then clear it after a bit */
     fun displayError(err: String, then: (()->Unit)? = null)
     {
+        lastErrorString = err
         laterUI {
             // This coroutine has to be limited to this thread because only the main thread can touch UI views
             // Display the error by changing the title and title bar color temporarily

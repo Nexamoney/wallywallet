@@ -12,7 +12,6 @@ import android.view.View
 import android.widget.TextView
 import bitcoinunlimited.libbitcoincash.*
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.math.BigDecimal
@@ -27,10 +26,14 @@ open class PrimaryWalletInvalidException(): BUException("Primary wallet not defi
 
 var coinsCreated = false
 
-//? Currently selected fiat currency code
+/** Currently selected fiat currency code */
 var fiatCurrencyCode:String = "USD"
 
+/** Database name prefix, empty string for mainnet, set for testing */
+var dbPrefix = if (RunningTheTests()) "guitest_" else ""
+
 val SupportedBlockchains = mapOf("BCH (Bitcoin Cash)" to ChainSelector.BCHMAINNET, "TBCH (Testnet Bitcoin Cash)" to ChainSelector.BCHTESTNET, "RBCH (Regtest Bitcoin Cash)" to ChainSelector.BCHREGTEST)
+val ChainSelectorToSupportedBlockchains = SupportedBlockchains.entries.associate{(k,v)-> v to k}
 
 // What is the default wallet and blockchain to use for most functions (like identity)
 val PRIMARY_WALLET = if (REG_TEST_ONLY) "mRBCH" else "mBCH"
@@ -89,7 +92,7 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
             Hash256("000000000005ae0f3013e89ce47b6f949ae489d90baf6621e10017490f0a1a50"),
             1348366,
             "52bbf4d7f1bcb197f2".toBigInteger(16),
-            context
+            context, dbPrefix
         )
 
         // Regtest for use alongside testnet
@@ -102,7 +105,7 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
             Hash256("2a11fa1399e126cf549b9b9118436d4c39a95897933705c38e9cd706ef1f24dd"),
             1,
             4.toBigInteger(),
-            context
+            context, dbPrefix
         )
         // Bitcoin Cash mainnet chain
         ChainSelector.BCHMAINNET -> Blockchain(
@@ -114,7 +117,7 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
             Hash256("0000000000000000029f7923ddb3937d3993a59f3bcc2efbfb7de4eb9e5df276"),
             614195,
             "10f8ce72b89feefe6f294c5".toBigInteger(16),
-            context
+            context, dbPrefix
         )
         else                     -> throw BadCryptoException()
     }
@@ -462,12 +465,13 @@ class WallyApp: Application()
 
         val ctxt = PlatformContext(applicationContext)
 
-        walletDb = OpenKvpDB(ctxt, "bip44walletdb")
+        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
 
         val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
 
         val BchExclusiveNode:String? = if (prefs.getBoolean(BCH_EXCLUSIVE_NODE_SWITCH, false)) prefs.getString(BCH_EXCLUSIVE_NODE, null) else null
         val BchPreferredNode:String? = if (prefs.getBoolean(BCH_PREFER_NODE_SWITCH, false)) prefs.getString(BCH_PREFER_NODE, null) else null
+
 
         if (!RunningTheTests())  // If I'm running the unit tests, don't create any wallets since the tests will do so
         {

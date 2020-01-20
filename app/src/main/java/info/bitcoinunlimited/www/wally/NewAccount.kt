@@ -65,6 +65,8 @@ class NewAccount : CommonActivity()
     var processingThread: Thread? = null
     var lock = ThreadCond()
 
+    var nameOk = false
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         app = (getApplication() as WallyApp)
@@ -90,12 +92,14 @@ class NewAccount : CommonActivity()
                 if (p0.isNullOrBlank())
                 {
                     GuiAccountNameOk.setImageResource(android.R.drawable.ic_delete)
+                    nameOk = false
                     return
                 }
 
                 if (p0.length > 8)
                 {
                     GuiAccountNameOk.setImageResource(android.R.drawable.ic_delete)
+                    nameOk = false
                     return
                 }
 
@@ -103,10 +107,12 @@ class NewAccount : CommonActivity()
                 if (app?.accounts?.contains(proposedName) ?: false == true)
                 {
                     GuiAccountNameOk.setImageResource(android.R.drawable.ic_delete)
+                    nameOk = false
                     return
 
                 }
                 GuiAccountNameOk.setImageResource(R.drawable.ic_check)
+                nameOk = true
             }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -274,9 +280,14 @@ class NewAccount : CommonActivity()
         val chainName: String = GuiBlockchainSelector.selectedItem.toString()
         val chainSelector = SupportedBlockchains[chainName]!!  // !! must work because I made the spinner from this map
         val name = GuiAccountNameEntry.text.toString()
+        if (nameOk == false)
+        {
+            displayError(R.string.invalidAccountName)
+            return
+        }
+
         if (secretWords.length > 0)
         {
-
             processingThread = thread(true, true, null, "newAccount") { recoverAccountPhase2(name, secretWords, chainSelector ) }
         }
         else

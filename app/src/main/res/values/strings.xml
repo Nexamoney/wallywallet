@@ -152,6 +152,7 @@
     <string name="LeaveEmptyNewWallet">Leave empty to create a new wallet</string>
     <string name="createAccount">create account</string>
     <string name="invalidRecoveryPhrase">bad recovery phrase</string>
+    <string name="invalidAccountName">invalid name</string>
     <string name="PassPhrase">Passphrase (optional)</string>
     <string name="Bip44ActivityNotice">Found BIP44 activity</string>
     <string name="FirstUseDateHeightInfo">starting at %date (block %height)</string>

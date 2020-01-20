@@ -1,4 +1,4 @@
-package bitcoinunlimited.wally
+package bitcoinunlimited.wally.androidTestImplementation
 
 import android.util.Log
 import androidx.test.InstrumentationRegistry
@@ -13,6 +13,7 @@ import org.junit.runner.RunWith
 import org.junit.Assert.*
 
 import info.bitcoinunlimited.www.wally.*
+import bitcoinunlimited.wally.*
 import bitcoinunlimited.libbitcoincash.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.Serializable
@@ -70,7 +71,7 @@ val bip39TestVector = listOf(listOf("00000000000000000000000000000000","abandon 
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @RunWith(AndroidJUnit4::class)
-class AndroidTest
+class UnitTest
 {
     @Test
     fun testTest()
