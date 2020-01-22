@@ -39,7 +39,7 @@ class KvpData()
 interface KvpDao
 {
     @Query("SELECT * FROM KvpData WHERE id = :key")
-    abstract fun get(key: ByteArray): KvpData
+    abstract fun get(key: ByteArray): KvpData?
 
     @Insert
     fun insert(bh: KvpData)

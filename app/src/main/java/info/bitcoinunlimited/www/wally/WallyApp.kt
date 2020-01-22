@@ -30,7 +30,7 @@ var coinsCreated = false
 var fiatCurrencyCode:String = "USD"
 
 /** Database name prefix, empty string for mainnet, set for testing */
-var dbPrefix = if (RunningTheTests()) "guitest_" else ""
+var dbPrefix = if (RunningTheTests()) "guitest_" else if (REG_TEST_ONLY==true) "regtest_" else ""
 
 val SupportedBlockchains = mapOf("BCH (Bitcoin Cash)" to ChainSelector.BCHMAINNET, "TBCH (Testnet Bitcoin Cash)" to ChainSelector.BCHTESTNET, "RBCH (Regtest Bitcoin Cash)" to ChainSelector.BCHREGTEST)
 val ChainSelectorToSupportedBlockchains = SupportedBlockchains.entries.associate{(k,v)-> v to k}
@@ -482,10 +482,14 @@ class WallyApp: Application()
 
                 if (REG_TEST_ONLY)  // If I want a regtest only wallet for manual debugging, just create it directly
                 {
-
                     accounts.getOrPut("mRBCH") {
-                        val c = Account("mRBCH", ctxt);
-                        c
+                        try {
+                            val c = Account("mRBCH", ctxt);
+                            c
+                        } catch (e: DataMissingException) {
+                            val c = Account("mRBCH", ctxt, ChainSelector.BCHREGTEST)
+                            c
+                        }
                     }
                 }
                 else  // OK, recreate the wallets saved on this phone

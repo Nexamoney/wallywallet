@@ -113,8 +113,14 @@ class TextViewReactor<T>(public val gui: TextView):Reactor<T>()
     override fun change(obj: Reactive<T>)
     {
         laterUI {
-            obj.access()?.let {
-                gui.text = it.first.toString()
+            val v = obj.access()
+            if (v != null)
+            {
+                gui.text = v.first.toString()
+            }
+            else
+            {
+                LogIt.info("Set before GUI element is ready")
             }
         }
     }
