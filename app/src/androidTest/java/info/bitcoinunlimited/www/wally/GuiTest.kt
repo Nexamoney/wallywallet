@@ -141,6 +141,16 @@ class GuiTest
         var peerInfo = rpc.peerInfo
         check(peerInfo.size == 0)  // Nothing should be connected
 
+        // Generate blocks until we get coins to spend. This is needed inside the ci testing.
+        // But the code checks first so that lots of extra blocks aren't created during dev testing
+        var rpcBalance = rpc.getBalance()
+        LogIt.info(rpcBalance.toPlainString())
+        while (rpcBalance < BigDecimal(50))
+        {
+            rpc.generate(1)
+            rpcBalance = rpc.getBalance()
+        }
+
         //val scenario = launchActivity<IdentityActivity>()
         onView(withId(GuiId.sendButton)).perform(click())
         activityScenario.onActivity { check(it.lastErrorId == R.string.badCryptoCode) }
@@ -196,7 +206,9 @@ class GuiTest
             activityScenario.onActivity { recvAddr = it.receiveAddress.text.toString() }
             if (recvAddr.contentEquals(i18n(R.string.copied))) Thread.sleep(200)
         } while(recvAddr.contentEquals(i18n(R.string.copied)))
-        rpc.sendToAddress(recvAddr, BigDecimal.ONE)
+
+        var rpcResult = rpc.sendToAddress(recvAddr, BigDecimal.ONE)
+        LogIt.info("RPC result:" + rpcResult.toString())
 
         activityScenario.onActivity {
             waitFor(10000) {
