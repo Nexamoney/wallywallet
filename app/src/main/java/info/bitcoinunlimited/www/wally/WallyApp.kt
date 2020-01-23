@@ -52,13 +52,13 @@ fun MakeNewWallet(name: String, chain: ChainSelector): Bip44Wallet
 }
 
 // TODO: Right now we create new ones, but in the future reuse an existing
-fun GetCnxnMgr(chain: ChainSelector): CnxnMgr
+fun GetCnxnMgr(chain: ChainSelector, name:String?=null): CnxnMgr
 {
     return when(chain)
     {
-    ChainSelector.BCHTESTNET      -> MultiNodeCnxnMgr("mTBCH", ChainSelector.BCHTESTNET, arrayOf("testnet-seed.bitcoinabc.org"))
-    ChainSelector.BCHMAINNET      -> MultiNodeCnxnMgr("mBCH", ChainSelector.BCHMAINNET, arrayOf("seed.bitcoinunlimited.net", "btccash-seeder.bitcoinunlimited.info"))
-    ChainSelector.BCHREGTEST      -> MultiNodeCnxnMgr("mRBCH", ChainSelector.BCHREGTEST, arrayOf(SimulationHostIP))
+    ChainSelector.BCHTESTNET      -> MultiNodeCnxnMgr(name ?: "mTBCH", ChainSelector.BCHTESTNET, arrayOf("testnet-seed.bitcoinabc.org"))
+    ChainSelector.BCHMAINNET      -> MultiNodeCnxnMgr(name ?: "mBCH", ChainSelector.BCHMAINNET, arrayOf("seed.bitcoinunlimited.net", "btccash-seeder.bitcoinunlimited.info"))
+    ChainSelector.BCHREGTEST      -> MultiNodeCnxnMgr(name ?: "mRBCH", ChainSelector.BCHREGTEST, arrayOf(SimulationHostIP))
     else                          -> throw BadCryptoException()
     }
 }
@@ -75,7 +75,7 @@ fun ElectrumServerOn(chain: ChainSelector): Pair<String,Int>
 }
 
 // TODO: Right now we create new ones, but in the future reuse an existing
-fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: PlatformContext): Blockchain
+fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: PlatformContext, name:String?=null): Blockchain
 {
     // Blockchain(val chainId: ChainSelector, val name: String, net: CnxnMgr, val genesisBlockHash: Hash256, var checkpointPriorBlockId: Hash256, var checkpointId: Hash256, var checkpointHeight: Long, var checkpointWork: BigInteger, val context: PlatformContext)
     //"mBR1" -> Blockchain(ChainSelector.BCHREGTEST, "BR1", cnxnMgr, Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"), Hash256(), Hash256(), -1, -1.toBigInteger(), context)
@@ -85,7 +85,7 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
     {
         ChainSelector.BCHTESTNET -> Blockchain(
             ChainSelector.BCHTESTNET,
-            "mTBCH",
+            name ?: "mTBCH",
             cnxnMgr,
             Hash256("000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"),
             Hash256("000000000003cab8d8465f4ea4efcb15c28e5eed8e514967883c085351c5b134"),
@@ -98,7 +98,7 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
         // Regtest for use alongside testnet
         ChainSelector.BCHREGTEST -> Blockchain(
             ChainSelector.BCHREGTEST,
-            "mRBCH",
+            name ?: "mRBCH",
             cnxnMgr,
             Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
             Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
@@ -110,7 +110,7 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
         // Bitcoin Cash mainnet chain
         ChainSelector.BCHMAINNET -> Blockchain(
             ChainSelector.BCHMAINNET,
-            "mBCH",
+            name ?:"mBCH",
             cnxnMgr,
             Hash256("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"),
             Hash256("000000000000000002cba5eaabc2293a3f5b89396258654fa456c29dbcca7b77"),
@@ -159,9 +159,9 @@ class Account(val name: String, //* The name of this account
     //? specify how quantities should be formatted for display
     val cryptoFormat = mBchFormat
 
-    val cnxnMgr: CnxnMgr = GetCnxnMgr(wallet.chainSelector)
+    val cnxnMgr: CnxnMgr = GetCnxnMgr(wallet.chainSelector, name)
 
-    val chain: Blockchain = GetBlockchain(wallet.chainSelector, cnxnMgr, context)
+    val chain: Blockchain = GetBlockchain(wallet.chainSelector, cnxnMgr, context, name)
 
     val currencyCode: String = chainToMilliCurrencyCode[wallet.chainSelector]!!
 

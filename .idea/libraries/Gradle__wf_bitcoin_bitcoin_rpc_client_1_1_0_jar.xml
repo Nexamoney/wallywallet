@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: wf.bitcoin:bitcoin-rpc-client:1.1.0@jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/wf.bitcoin/bitcoin-rpc-client/1.1.0/38fc905a05bad1364e1766225a9a5580e744f93/bitcoin-rpc-client-1.1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/wf.bitcoin/bitcoin-rpc-client/1.1.0/59d08bdcc8a93901286ce96d1741f494ba551db7/bitcoin-rpc-client-1.1.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/wf.bitcoin/bitcoin-rpc-client/1.1.0/9b56c0db19f5015d64c3649e4beb0a9281a28d5d/bitcoin-rpc-client-1.1.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -13,9 +13,7 @@ import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers.withText
 
 import androidx.test.runner.AndroidJUnit4
-import bitcoinunlimited.libbitcoincash.ChainSelector
-import bitcoinunlimited.libbitcoincash.ElectrumRequestTimeout
-import bitcoinunlimited.libbitcoincash.i18n
+import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.*
 import kotlinx.android.synthetic.main.activity_main.*
 import org.hamcrest.CoreMatchers.`is`
@@ -29,13 +27,18 @@ import info.bitcoinunlimited.www.wally.R.id as GuiId
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.*
+import wf.bitcoin.javabitcoindrpcclient.BitcoinJSONRPCClient
 import java.lang.Exception
+import java.math.BigDecimal
 
 
 val LogIt = Logger.getLogger("GuiTest")
 
 class TestTimeoutException(what: String): Exception(what)
 
+val REGTEST_RPC_USER="z"
+val REGTEST_RPC_PASSWORD="z"
+val REGTEST_RPC_PORT=18332
 
 @RunWith(AndroidJUnit4::class)
 class GuiTest
@@ -122,12 +125,21 @@ class GuiTest
 
     @Test fun testHomeActivity()
     {
+        // Clean up any prior run
+        deleteWallet("mRbch1", ChainSelector.BCHREGTEST)
+        deleteWallet("mRbch2", ChainSelector.BCHREGTEST)
 
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED)
         var app: WallyApp? = null
         activityScenario.onActivity { app = (it.application as WallyApp) }
 
+        // supply this wallet with coins
+        val rpcConnection = "http://" + REGTEST_RPC_USER + ":" + REGTEST_RPC_PASSWORD + "@" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        LogIt.info("Connecting to: " + rpcConnection)
+        var rpc = BitcoinJSONRPCClient(rpcConnection)
+        var peerInfo = rpc.peerInfo
+        check(peerInfo.size == 0)  // Nothing should be connected
 
         //val scenario = launchActivity<IdentityActivity>()
         onView(withId(GuiId.sendButton)).perform(click())
@@ -138,6 +150,9 @@ class GuiTest
         activityScenario.onActivity { currentActivity == it }  // Clicking should bring us back to main screen
         createNewAccount("mRbch2", ChainSelector.BCHREGTEST)
         activityScenario.onActivity { currentActivity == it }  // Clicking should bring us back to main screen
+
+        peerInfo = rpc.peerInfo
+        check(peerInfo.size > 0)  // My accounts should be connected
 
         /* Send negative tests */
         retryUntilLayoutCan(){
@@ -175,7 +190,59 @@ class GuiTest
         onView(withId(GuiId.sendButton)).perform(click())
         activityScenario.onActivity { waitFor(1000000) { it.lastErrorString == i18n(R.string.insufficentBalance) } }
 
+        // Load coins
+        clickSpinnerItem(GuiId.recvCoinType, "mRbch1")
+        do {
+            activityScenario.onActivity { recvAddr = it.receiveAddress.text.toString() }
+            if (recvAddr.contentEquals(i18n(R.string.copied))) Thread.sleep(200)
+        } while(recvAddr.contentEquals(i18n(R.string.copied)))
+        rpc.sendToAddress(recvAddr, BigDecimal.ONE)
 
+        activityScenario.onActivity {
+            waitFor(10000) {
+                it.balanceUnconfirmedValue2.text == "(1,000)"
+            }
+        }
+
+        // once we've received anything on an address, it should change to the next one
+        activityScenario.onActivity { check(recvAddr != it.receiveAddress.text.toString()) }
+
+        // confirm it
+        rpc.generate(1)
+
+        // See confirmation flow in the UX
+        waitFor(10000) {
+                var v = false
+                activityScenario.onActivity {
+                    v = (it.balanceUnconfirmedValue2.text == "") && (it.balanceValue2.text == "1,000")
+                }
+                v
+            }
+        /*
+            catch(e: TestTimeoutException)
+            {
+                activityScenario.onActivity {
+                    LogIt.info(it.balanceUnconfirmedValue2.text.toString())
+                    LogIt.info(it.balanceValue2.text.toString())
+                }
+            }
+         */
+
+        // Now send from 1 to 2
+        clickSpinnerItem(GuiId.sendCoinType, "mRbch1")  // Choose the account
+        clickSpinnerItem(GuiId.recvCoinType, "mRbch2")  // Read the receive address
+        activityScenario.onActivity { recvAddr = it.receiveAddress.text.toString() }
+        // Write the receive address in
+        onView(withId(GuiId.sendToAddress)).perform(clearText(), typeText(recvAddr), pressImeActionButton())
+        onView(withId(GuiId.sendQuantity)).perform(clearText(),typeText("500"), pressImeActionButton())
+        // Send the coins
+        onView(withId(GuiId.sendButton)).perform(click())
+
+        activityScenario.onActivity {
+            waitFor(10000) {
+                it.balanceUnconfirmedValue3.text == "(500)"
+            }
+        }
 
         LogIt.info("Completed!")
     }
