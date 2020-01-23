@@ -35,6 +35,7 @@ buildIt:
     - ./gradlew build
     - echo -e "section_end:`date +%s`:BUILD\r\e[0K"
     - echo -e "section_start:`date +%s`:UNIT TEST\r\e[0K"
+    - /opt/adk/platform-tools/adb logcat BU:V GuiTest:V ActivityManager:I mited.www.wall:I ViewInteraction:I &
     - ./gradlew -Pci --console=plain :app:testDebugUnitTest
     - echo -e "section_end:`date +%s`:UNIT TEST\r\e[0K"
     - /startAndroid.sh
