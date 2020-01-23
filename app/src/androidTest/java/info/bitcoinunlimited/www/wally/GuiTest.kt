@@ -1,5 +1,6 @@
 package bitcoinunlimited.wally.guiTestImplementation
 
+import android.app.Activity
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onData
@@ -82,6 +83,17 @@ class GuiTest
             Thread.sleep(100)
             count-=100
             if (count < 0 ) throw TestTimeoutException("Timout waiting for predicate")
+        }
+    }
+
+    fun<T:Activity> waitForActivity(timeout: Int = 10000, activityScenario: ActivityScenario<T>, checkIt: (act: T)->Boolean)
+    {
+
+        waitFor(timeout)
+        {
+            var result = false
+            activityScenario.onActivity { result = checkIt(it) }
+            result
         }
     }
 
@@ -198,7 +210,8 @@ class GuiTest
 
         onView(withId(GuiId.sendQuantity)).perform(clearText(),typeText("100000000"), pressImeActionButton())
         onView(withId(GuiId.sendButton)).perform(click())
-        activityScenario.onActivity { waitFor(1000000) { it.lastErrorString == i18n(R.string.insufficentBalance) } }
+        //activityScenario.onActivity { waitFor(1000000) { it.lastErrorString == i18n(R.string.insufficentBalance) } }
+        waitForActivity(10000, activityScenario) { it.lastErrorString == i18n(R.string.insufficentBalance) }
 
         // Load coins
         clickSpinnerItem(GuiId.recvCoinType, "mRbch1")
@@ -208,37 +221,31 @@ class GuiTest
         } while(recvAddr.contentEquals(i18n(R.string.copied)))
 
         var rpcResult = rpc.sendToAddress(recvAddr, BigDecimal.ONE)
-        LogIt.info("RPC result:" + rpcResult.toString())
+        var txHash = Hash256(rpcResult)
+        LogIt.info("SendToAddress RPC result: " + txHash.toString())
 
-        activityScenario.onActivity {
-            waitFor(10000) {
-                it.balanceUnconfirmedValue2.text == "(1,000)"
-            }
+        waitForActivity(30000, activityScenario)
+        {
+            it.balanceUnconfirmedValue2.text == "(1,000)"
         }
+
 
         // once we've received anything on an address, it should change to the next one
         activityScenario.onActivity { check(recvAddr != it.receiveAddress.text.toString()) }
 
         // confirm it
-        rpc.generate(1)
+        val blockHash = rpc.generate(1)
+        txHash = Hash256(blockHash[0])
+        LogIt.info("Generate RPC result: " + txHash.toString())
 
         // See confirmation flow in the UX
-        waitFor(10000) {
-                var v = false
-                activityScenario.onActivity {
-                    v = (it.balanceUnconfirmedValue2.text == "") && (it.balanceValue2.text == "1,000")
-                }
-                v
-            }
-        /*
-            catch(e: TestTimeoutException)
-            {
-                activityScenario.onActivity {
-                    LogIt.info(it.balanceUnconfirmedValue2.text.toString())
-                    LogIt.info(it.balanceValue2.text.toString())
-                }
-            }
-         */
+        waitForActivity(60000, activityScenario)
+        {
+            val v = (it.balanceUnconfirmedValue2.text == "") && (it.balanceValue2.text == "1,000")
+            LogIt.info("unconf2: " + it.balanceUnconfirmedValue2.text)
+            LogIt.info("conf2: " + it.balanceValue2.text)
+            v
+        }
 
         // Now send from 1 to 2
         clickSpinnerItem(GuiId.sendCoinType, "mRbch1")  // Choose the account
@@ -251,7 +258,7 @@ class GuiTest
         onView(withId(GuiId.sendButton)).perform(click())
 
         activityScenario.onActivity {
-            waitFor(10000) {
+            waitFor(30000) {
                 it.balanceUnconfirmedValue3.text == "(500)"
             }
         }

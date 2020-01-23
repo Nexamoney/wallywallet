@@ -100,11 +100,12 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
             ChainSelector.BCHREGTEST,
             name ?: "mRBCH",
             cnxnMgr,
+            // If checkpointing the genesis block, set the prior block id to the genesis block as well
             Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
             Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
-            Hash256("2a11fa1399e126cf549b9b9118436d4c39a95897933705c38e9cd706ef1f24dd"),
-            1,
-            4.toBigInteger(),
+            Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
+            0,
+            0.toBigInteger(),
             context, dbPrefix
         )
         // Bitcoin Cash mainnet chain
