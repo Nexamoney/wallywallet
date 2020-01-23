@@ -115,6 +115,9 @@ dependencies {
     // for ActivityScenario
     androidTestImplementation "androidx.test:core-ktx:$ax_test_version"
 
+    // For test code that interfaces with a local bitcoind running json-rpc:
+    androidTestImplementation "wf.bitcoin:bitcoin-rpc-client:1.1.0"
+
     // implementation project(':libbitcoincash')
 
 }

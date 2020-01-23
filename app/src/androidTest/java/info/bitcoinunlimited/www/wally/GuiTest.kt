@@ -1,5 +1,6 @@
 package bitcoinunlimited.wally.guiTestImplementation
 
+import android.app.Activity
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onData
@@ -13,9 +14,7 @@ import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers.withText
 
 import androidx.test.runner.AndroidJUnit4
-import bitcoinunlimited.libbitcoincash.ChainSelector
-import bitcoinunlimited.libbitcoincash.ElectrumRequestTimeout
-import bitcoinunlimited.libbitcoincash.i18n
+import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.*
 import kotlinx.android.synthetic.main.activity_main.*
 import org.hamcrest.CoreMatchers.`is`
@@ -29,13 +28,18 @@ import info.bitcoinunlimited.www.wally.R.id as GuiId
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.*
+import wf.bitcoin.javabitcoindrpcclient.BitcoinJSONRPCClient
 import java.lang.Exception
+import java.math.BigDecimal
 
 
 val LogIt = Logger.getLogger("GuiTest")
 
 class TestTimeoutException(what: String): Exception(what)
 
+val REGTEST_RPC_USER="z"
+val REGTEST_RPC_PASSWORD="z"
+val REGTEST_RPC_PORT=18332
 
 @RunWith(AndroidJUnit4::class)
 class GuiTest
@@ -79,6 +83,17 @@ class GuiTest
             Thread.sleep(100)
             count-=100
             if (count < 0 ) throw TestTimeoutException("Timout waiting for predicate")
+        }
+    }
+
+    fun<T:Activity> waitForActivity(timeout: Int = 10000, activityScenario: ActivityScenario<T>, checkIt: (act: T)->Boolean)
+    {
+
+        waitFor(timeout)
+        {
+            var result = false
+            activityScenario.onActivity { result = checkIt(it) }
+            result
         }
     }
 
@@ -128,6 +143,30 @@ class GuiTest
         var app: WallyApp? = null
         activityScenario.onActivity { app = (it.application as WallyApp) }
 
+        // Clean up any prior run
+        deleteWallet("mRbch1", ChainSelector.BCHREGTEST)
+        deleteWallet("mRbch2", ChainSelector.BCHREGTEST)
+
+        // Clean up old headers  ONLY NEEDED IF YOU RECREATE REGTEST NETWORK but reuse an emulator
+        //deleteBlockHeaders("mRbch1", dbPrefix, appContext!!)
+        //deleteBlockHeaders("mRbch2", dbPrefix, appContext!!)
+        
+        // supply this wallet with coins
+        val rpcConnection = "http://" + REGTEST_RPC_USER + ":" + REGTEST_RPC_PASSWORD + "@" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        LogIt.info("Connecting to: " + rpcConnection)
+        var rpc = BitcoinJSONRPCClient(rpcConnection)
+        var peerInfo = rpc.peerInfo
+        check(peerInfo.size == 0)  // Nothing should be connected
+
+        // Generate blocks until we get coins to spend. This is needed inside the ci testing.
+        // But the code checks first so that lots of extra blocks aren't created during dev testing
+        var rpcBalance = rpc.getBalance()
+        LogIt.info(rpcBalance.toPlainString())
+        while (rpcBalance < BigDecimal(50))
+        {
+            rpc.generate(1)
+            rpcBalance = rpc.getBalance()
+        }
 
         //val scenario = launchActivity<IdentityActivity>()
         onView(withId(GuiId.sendButton)).perform(click())
@@ -138,6 +177,9 @@ class GuiTest
         activityScenario.onActivity { currentActivity == it }  // Clicking should bring us back to main screen
         createNewAccount("mRbch2", ChainSelector.BCHREGTEST)
         activityScenario.onActivity { currentActivity == it }  // Clicking should bring us back to main screen
+
+        peerInfo = rpc.peerInfo
+        check(peerInfo.size > 0)  // My accounts should be connected
 
         /* Send negative tests */
         retryUntilLayoutCan(){
@@ -173,9 +215,54 @@ class GuiTest
 
         onView(withId(GuiId.sendQuantity)).perform(clearText(),typeText("100000000"), pressImeActionButton())
         onView(withId(GuiId.sendButton)).perform(click())
-        activityScenario.onActivity { waitFor(1000000) { it.lastErrorString == i18n(R.string.insufficentBalance) } }
+        //activityScenario.onActivity { waitFor(1000000) { it.lastErrorString == i18n(R.string.insufficentBalance) } }
+        waitForActivity(10000, activityScenario) { it.lastErrorString == i18n(R.string.insufficentBalance) }
+
+        // Load coins
+        clickSpinnerItem(GuiId.recvCoinType, "mRbch1")
+        do {
+            activityScenario.onActivity { recvAddr = it.receiveAddress.text.toString() }
+            if (recvAddr.contentEquals(i18n(R.string.copied))) Thread.sleep(200)
+        } while(recvAddr.contentEquals(i18n(R.string.copied)))
+
+        var rpcResult = rpc.sendToAddress(recvAddr, BigDecimal.ONE)
+        var txHash = Hash256(rpcResult)
+        LogIt.info("SendToAddress RPC result: " + txHash.toString())
+
+        waitForActivity(30000, activityScenario)
+        {
+            it.balanceUnconfirmedValue2.text == "(1,000)"
+        }
 
 
+        // once we've received anything on an address, it should change to the next one
+        activityScenario.onActivity { check(recvAddr != it.receiveAddress.text.toString()) }
+
+        // confirm it
+        val blockHash = rpc.generate(1)
+        txHash = Hash256(blockHash[0])
+        LogIt.info("Generate RPC result: " + txHash.toString())
+
+        // See confirmation flow in the UX
+        waitForActivity(30000, activityScenario)
+        {
+            (it.balanceUnconfirmedValue2.text == "") && (it.balanceValue2.text == "1,000")
+        }
+
+        // Now send from 1 to 2
+        clickSpinnerItem(GuiId.sendCoinType, "mRbch1")  // Choose the account
+        clickSpinnerItem(GuiId.recvCoinType, "mRbch2")  // Read the receive address
+        activityScenario.onActivity { recvAddr = it.receiveAddress.text.toString() }
+        // Write the receive address in
+        onView(withId(GuiId.sendToAddress)).perform(clearText(), typeText(recvAddr), pressImeActionButton())
+        onView(withId(GuiId.sendQuantity)).perform(clearText(),typeText("500"), pressImeActionButton())
+        // Send the coins
+        onView(withId(GuiId.sendButton)).perform(click())
+
+        waitForActivity(30000, activityScenario)
+        {
+            it.balanceUnconfirmedValue3.text == "(500)"
+        }
 
         LogIt.info("Completed!")
     }
