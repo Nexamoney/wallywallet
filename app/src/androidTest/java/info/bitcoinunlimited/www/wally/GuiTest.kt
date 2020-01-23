@@ -137,15 +137,20 @@ class GuiTest
 
     @Test fun testHomeActivity()
     {
-        // Clean up any prior run
-        deleteWallet("mRbch1", ChainSelector.BCHREGTEST)
-        deleteWallet("mRbch2", ChainSelector.BCHREGTEST)
 
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED)
         var app: WallyApp? = null
         activityScenario.onActivity { app = (it.application as WallyApp) }
 
+        // Clean up any prior run
+        deleteWallet("mRbch1", ChainSelector.BCHREGTEST)
+        deleteWallet("mRbch2", ChainSelector.BCHREGTEST)
+
+        // Clean up old headers  ONLY NEEDED IF YOU RECREATE REGTEST NETWORK but reuse an emulator
+        //deleteBlockHeaders("mRbch1", dbPrefix, appContext!!)
+        //deleteBlockHeaders("mRbch2", dbPrefix, appContext!!)
+        
         // supply this wallet with coins
         val rpcConnection = "http://" + REGTEST_RPC_USER + ":" + REGTEST_RPC_PASSWORD + "@" + SimulationHostIP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
@@ -239,12 +244,9 @@ class GuiTest
         LogIt.info("Generate RPC result: " + txHash.toString())
 
         // See confirmation flow in the UX
-        waitForActivity(60000, activityScenario)
+        waitForActivity(30000, activityScenario)
         {
-            val v = (it.balanceUnconfirmedValue2.text == "") && (it.balanceValue2.text == "1,000")
-            LogIt.info("unconf2: " + it.balanceUnconfirmedValue2.text)
-            LogIt.info("conf2: " + it.balanceValue2.text)
-            v
+            (it.balanceUnconfirmedValue2.text == "") && (it.balanceValue2.text == "1,000")
         }
 
         // Now send from 1 to 2
@@ -257,10 +259,9 @@ class GuiTest
         // Send the coins
         onView(withId(GuiId.sendButton)).perform(click())
 
-        activityScenario.onActivity {
-            waitFor(30000) {
-                it.balanceUnconfirmedValue3.text == "(500)"
-            }
+        waitForActivity(30000, activityScenario)
+        {
+            it.balanceUnconfirmedValue3.text == "(500)"
         }
 
         LogIt.info("Completed!")
