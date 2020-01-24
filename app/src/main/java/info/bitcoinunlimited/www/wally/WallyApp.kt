@@ -185,7 +185,7 @@ class Account(val name: String, //* The name of this account
     {
         if (txHex == null) return null
         if (wallet.chainSelector == ChainSelector.BCHMAINNET)
-            return "https://blockchair.com/bitcoin-cash/transaction/" + txHex
+            return "https://explorer.bitcoinunlimited.info/tx/" + txHex //"https://blockchair.com/bitcoin-cash/transaction/" + txHex
         if (wallet.chainSelector == ChainSelector.BCHTESTNET)
             return "http://testnet.imaginary.cash/tx/" + txHex
         return null

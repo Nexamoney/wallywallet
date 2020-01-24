@@ -150,7 +150,7 @@ class GuiTest
         // Clean up old headers  ONLY NEEDED IF YOU RECREATE REGTEST NETWORK but reuse an emulator
         //deleteBlockHeaders("mRbch1", dbPrefix, appContext!!)
         //deleteBlockHeaders("mRbch2", dbPrefix, appContext!!)
-        
+
         // supply this wallet with coins
         val rpcConnection = "http://" + REGTEST_RPC_USER + ":" + REGTEST_RPC_PASSWORD + "@" + SimulationHostIP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)

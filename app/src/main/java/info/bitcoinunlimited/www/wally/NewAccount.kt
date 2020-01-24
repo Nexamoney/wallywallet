@@ -17,6 +17,9 @@ import kotlin.concurrent.thread
 
 private val LogIt = Logger.getLogger("bitcoinunlimited.NewAccount")
 
+//* how many addresses to search in a particular derivation path
+val DERIVATION_PATH_SEARCH_DEPTH = 10
+
 class CharTokenizer(val separator:Char):Tokenizer
 {
 
@@ -142,7 +145,7 @@ class NewAccount : CommonActivity()
                 }
 
                 // Check recovery phrase validity and be unhappy if its not good
-                val txt:String = p.toString()
+                val txt:String = p.toString().trim()
                 val words = txt.split(' ')
                 if (words.size < 12)  // TODO support other size recovery keys
                 {
@@ -182,6 +185,43 @@ class NewAccount : CommonActivity()
 
     }
 
+
+    fun searchActivity(ec: ElectrumClient, chainSelector: ChainSelector, count:Int, secretDerivation: (Int)->ByteArray): Pair<Long, Int>?
+    {
+        var index = 0
+        while (index<count)
+        {
+            val newSecret = secretDerivation(index)
+
+            val dest = Pay2PubKeyHashDestination(chainSelector, newSecret)  // Note, if multiple destination types are allowed, the wallet load/save routines must be updated
+            //LogIt.info(sourceLoc() + " " + name + ": New Destination " + tmp.toString() + ": " + dest.address.toString())
+
+            try
+            {
+                val use = ec.getFirstUse(dest.outputScript(), 10000)
+                if (use.block_hash != null)
+                {
+                    if (use.block_height != null)
+                    {
+                        val headerBin = ec.getHeader(use.block_height!!)
+                        val blkHeader = BlockHeader(BCHserialized(headerBin, SerializationType.HASH))
+                        return Pair(blkHeader.time, use.block_height!!)
+                    }
+                }
+                else
+                {
+                    LogIt.info("didn't find activity")
+                }
+            }
+            catch (e: ElectrumNotFound)
+            {
+                LogIt.info("didn't find activity")
+            }
+            index++
+        }
+        return null
+    }
+
     fun peekActivity(secretWords:String, chainSelector: ChainSelector)
     {
         val (svr, port) = try
@@ -213,36 +253,26 @@ class NewAccount : CommonActivity()
 
         var index = 0
         val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
-        val newSecret = AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, addressDerivationCoin, 0, 0, index)
 
-        val dest = Pay2PubKeyHashDestination(chainSelector, newSecret)  // Note, if multiple destination types are allowed, the wallet load/save routines must be updated
-        //LogIt.info(sourceLoc() + " " + name + ": New Destination " + tmp.toString() + ": " + dest.address.toString())
-
-        val use = ec.getFirstUse(dest.outputScript(), 10000)
-        if (use.block_hash != null)
+        var earliestActivity = searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, addressDerivationCoin, 0, 0, it) })
+        val Bip44Msg = if (earliestActivity != null)
         {
-            var dateInfo:String = ""
-            if (use.block_height != null)
-            {
-                val headerBin = ec.getHeader(use.block_height!!)
-                val blkHeader = BlockHeader(BCHserialized(headerBin, SerializationType.HASH))
-                dateInfo = i18n(R.string.FirstUseDateHeightInfo) % mapOf("date" to epochToDate(blkHeader.time), "height" to use.block_height!!.toString())
-            }
-            laterUI {
-                GuiNewAccountStatus.text = i18n(R.string.Bip44ActivityNotice) + " " + dateInfo
-            }
-            LogIt.info("found activity")
+            i18n(R.string.Bip44ActivityNotice) + " " + i18n(R.string.FirstUseDateHeightInfo) % mapOf(
+                "date" to epochToDate(earliestActivity.first),
+                "height" to earliestActivity.second.toString())
         }
-        else
+        else i18n(R.string.NoBip44ActivityNotice)
+
+        earliestActivity = searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, AddressDerivationKey.BTC, 0, 0, it) })
+        var Bip44BTCMsg = if (earliestActivity != null)
         {
-            laterUI {
-                GuiNewAccountStatus.text = i18n(R.string.NoBip44ActivityNotice)
-            }
-            LogIt.info("didn't find activity")
+            i18n(R.string.Bip44BtcActivityNotice) + " " + i18n(R.string.FirstUseDateHeightInfo) % mapOf(
+                "date" to epochToDate(earliestActivity.first),
+                "height" to earliestActivity.second.toString())
         }
+        else i18n(R.string.NoBip44BtcActivityNotice)
 
-        //LogIt.info(hist.size.toString())
-
+        laterUI {GuiNewAccountStatus.text = Bip44Msg + "\n" + Bip44BTCMsg }
     }
 
     fun recoverAccountPhase2(name: String, secretWords: String, chainSelector: ChainSelector)
@@ -276,7 +306,7 @@ class NewAccount : CommonActivity()
     fun onCreateAccount(@Suppress("UNUSED_PARAMETER") v: View?)
     {
         LogIt.info("Create account button")
-        val secretWords = GuiAccountRecoveryPhraseEntry.text.toString()
+        val secretWords = GuiAccountRecoveryPhraseEntry.text.toString().trim()
         val chainName: String = GuiBlockchainSelector.selectedItem.toString()
         val chainSelector = SupportedBlockchains[chainName]!!  // !! must work because I made the spinner from this map
         val name = GuiAccountNameEntry.text.toString()

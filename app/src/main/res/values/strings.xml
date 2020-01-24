@@ -155,8 +155,10 @@
     <string name="invalidAccountName">invalid name</string>
     <string name="PassPhrase">Passphrase (optional)</string>
     <string name="Bip44ActivityNotice">Found BIP44 activity</string>
-    <string name="FirstUseDateHeightInfo">starting at %date (block %height)</string>
     <string name="NoBip44ActivityNotice">Warning, No BIP44 transactions found!</string>
+    <string name="Bip44BtcActivityNotice">Found pre-fork activity</string>
+    <string name="NoBip44BtcActivityNotice">No pre-fork transactions found</string>
+    <string name="FirstUseDateHeightInfo">starting %date (block %height)</string>
     <string name="NotEnoughRecoveryWords">More recovery words needed</string>
     <string name="TooManyRecoveryWords">Too many recovery words</string>
     <string name="IncorrectRecoveryWords">Invalid words: %words</string>
