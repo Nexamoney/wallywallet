@@ -20,7 +20,7 @@ import java.io.File
 import java.util.logging.Logger
 
 
-private val LogIt = Logger.getLogger("bitcoinunlimited.useful")
+private val LogIt = Logger.getLogger("BU.usefulAndroid")
 
 public var appResources: Resources? = null
 
@@ -177,7 +177,7 @@ fun i18n(id: Int):String
     val s = appResources?.getString(id)
     if (s != null) return s
 
-    LogIt.severe("Missing strings.xml translation for " + id.toString())
+    LogIt.severe("Missing strings.xml translation for " + id.toString() + "(0x" + id.toString(16));
     return "STR" + id.toString()
 }
 

@@ -52,12 +52,13 @@ android {
 
     kotlinOptions {  // Needed for potassium-nitrate database
         jvmTarget = '1.8'
-        freeCompilerArgs=["-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi","-Xuse-experimental=kotlin.ExperimentalUnsignedTypes", "-Xuse-experimental=kotlin.Experimental", "-Xuse-experimental=kotlinx.serializaion.UnstableDefault"]
+        freeCompilerArgs = ["-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi", "-Xuse-experimental=kotlin.ExperimentalUnsignedTypes", "-Xuse-experimental=kotlin.Experimental", "-Xuse-experimental=kotlinx.serializaion.UnstableDefault"]
     }
 
     lintOptions {
         abortOnError false
     }
+    ndkVersion = '21.0.6113669'
 }
 
 allprojects {

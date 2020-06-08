@@ -277,7 +277,7 @@ class Account(val name: String, //* The name of this account
                 currentReceiveQR = null
 
                 val ret = wallet.newDestination()
-                val qr2 = TextToImageEncode(ret.address.toString(), sz + 200)
+                val qr2 = textToQREncode(ret.address.toString(), sz + 200)
                 currentReceive = ret
                 currentReceiveQR = qr2
                 if (qr2 != null) refresh.invoke(ret.address.toString(), qr2)
@@ -297,7 +297,7 @@ class Account(val name: String, //* The name of this account
         GlobalScope.launch {
             val addr = currentReceive?.address
             val uri = addr.toString() + "?amount=" + bchFormat.format(toPrimaryUnit(qty))
-            val qr = TextToImageEncode(uri, sz)
+            val qr = textToQREncode(uri, sz)
             refresh(ReceiveInfoResult(uri, qr))
         }
     }
@@ -309,7 +309,7 @@ class Account(val name: String, //* The name of this account
         val cr = currentReceive
         if ((im == null)&&(cr != null))
         {
-            im = TextToImageEncode(cr.address.toString(), sz + 200)
+            im = textToQREncode(cr.address.toString(), sz + 200)
             currentReceiveQR = im
         }
 
@@ -378,7 +378,8 @@ class WallyApp: Application()
     {
         // Used to load the 'native-lib' library on application startup.
         init {
-            System.loadLibrary("native-lib")
+            //System.loadLibrary("native-lib")
+            System.loadLibrary("bitcoincashandroid")
         }
     }
 
