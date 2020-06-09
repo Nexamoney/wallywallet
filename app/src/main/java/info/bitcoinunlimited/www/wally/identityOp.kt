@@ -15,6 +15,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
+import java.io.IOException
 import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.URL
@@ -205,14 +206,17 @@ class IdentityOpActivity : CommonActivity()
                     else
                         displayError(resp, { clearIntentAndFinish() })
                 }
+                catch (e: IOException)
+                {
+                    displayError(i18n(R.string.connectionAborted), { clearIntentAndFinish() })
+                }
                 catch (e: FileNotFoundException)
                 {
-                    LogIt.info("cannot contact server")
-                    displayError("link bad", { clearIntentAndFinish() })
+                    displayError(i18n(R.string.badLink), { clearIntentAndFinish() })
                 }
                 catch (e: java.net.ConnectException)
                 {
-                    displayError("cannot connect", { clearIntentAndFinish() })
+                    displayError(i18n(R.string.connectionException), { clearIntentAndFinish() })
                 }
             }
             else

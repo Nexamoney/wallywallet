@@ -115,15 +115,19 @@
      that happens whenever the user first sets up a relationship between the web site/company and their wallet -->
     <string name="newDomainRequestingIdentity">New Domain Requesting Identity</string>
     <string name="useUniqueIdentityToolTip">Turn on to keep your identity here separate from other sites.</string>
-    <string name="provideRealName">provide your real name?</string>
-    <string name="provideRealNameToolTip">Selecting this option will provide your real name (as configured in settings) to this web site, if requested</string>
+    <string name="provideNameAlias">provide your name or alias?</string>
+    <string name="provideNameAliasToolTip">Selecting this option will provide your name or alias (as configured in settings) to this web site, if requested</string>
+    <string name="provideSocialMedia">provide your social media information?</string>
+    <string name="provideSocialMediaToolTip">Selecting this option will provide your social media information (as configured in settings) to this web site, if requested</string>
     <string name="provideAddress">provide your address?</string>
     <string name="provideAddressToolTip">Selecting this option will provide your address (as configured in settings) to this web site, if requested</string>
     <string name="commonIdentityQRCode">QR code</string>
 
     <string name="provideLoginQuestion">Login to this site?</string>
 
-    <string name="UsernameOrAliasText">Preferred Username or Alias</string>
+    <string name="SocialMediaText">Social Media</string>
+    <string name="SocialMediaSummary">Enter as list of service:handle, E.g. twitter:janeDoe, keybase:janieD</string>
+    <string name="UsernameOrAliasText">Name or Alias</string>
     <string name="NameText">Full Name</string>
     <string name="PostalAddressText">Postal Address</string>
     <string name="PostalCodeText">Zip Code</string>
@@ -136,6 +140,9 @@
     <string name="firstName">first name</string>
     <string name="lastName">last name</string>
 
+    <string name="connectionException">cannot connect to site</string>
+    <string name="badLink">bad link</string>
+    <string name="connectionAborted">site aborted login</string>
     <!-- Transaction history activity -->
     <string name="HintAdjustCostBasis">basis or cap gain</string>
     <string name="CostBasis">cost basis</string>
@@ -248,5 +255,6 @@
     <string name="attachment_title">Download incoming attachments</string>
     <string name="attachment_summary_on">Automatically download attachments for incoming emails</string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="title_activity_identity_settings">Identity Settings</string>
 
 </resources>

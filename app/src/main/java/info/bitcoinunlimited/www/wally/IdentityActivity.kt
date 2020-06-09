@@ -3,21 +3,24 @@
 package info.bitcoinunlimited.www.wally
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.TextView
 import androidx.annotation.LayoutRes
+import androidx.appcompat.widget.ShareActionProvider
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
+import androidx.core.view.MenuItemCompat
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import bitcoinunlimited.libbitcoincash.*
 import kotlinx.android.synthetic.main.activity_identity.*
+import kotlinx.android.synthetic.main.activity_identity_yourdata.*
 import kotlinx.android.synthetic.main.identity_list_item.view.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -117,6 +120,9 @@ class IdentityActivity : CommonActivity()
         laterUI {
             try
             {
+                //val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+                val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+
                 val wallet = (application as WallyApp).primaryWallet
                 val identities: ArrayList<IdentityDomain> = ArrayList(wallet.allIdentityDomains())
                 LogIt.info("identity domain count:" + identities.size.toString())
@@ -124,8 +130,34 @@ class IdentityActivity : CommonActivity()
                 adapter = RecyclerAdapter(identities)
                 identityList.adapter = adapter
 
+                val name: String? = prefs.getString("name", null)
+                val email: String? = prefs.getString("email", null)
+                val socialmedia: String? = prefs.getString("socialmedia", null)
+
+                if (name != null) nameOrAliasInfo.text = name
+                if (email != null) emailInfo.text = email
+                if (socialmedia != null)
+                {
+                    val t = socialmedia!!.split(" ", ",").filter({ it -> it != "" })
+                    socialMediaInfo.text = t.joinToString("\n")
+                }
+
                 val dest = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
-                commonIdentityAddress.text = dest.address.toString()
+                val destStr = dest.address.toString()
+                commonIdentityAddress.text = destStr
+
+                LogIt.info("name: " + name)
+                // bchidentity://p2p?op=share&addr=<addr>&na=<name>&em=<email>&sm=<social media>
+
+                var uri = "bchidentity://p2p?op=share&addr=" + destStr;
+                if (name != null && name != "") uri = uri + "&name=" + URLEncoder.encode(name,"utf-8")
+                if (email != null && email != "") uri = uri + "&em=" + URLEncoder.encode(email,"utf-8")
+                if (socialmedia != null && socialmedia != "") uri = uri + "&sm=" + URLEncoder.encode(socialmedia, "utf-8")
+                LogIt.info("encoded URI: " + uri)
+
+                val sz = min(commonIdentityQRCode.getWidth().toLong(), commonIdentityQRCode.getHeight().toLong())
+                val qr = textToQREncode(uri, sz.toInt())
+                commonIdentityQRCode.setImageBitmap(qr)
             }
             catch(e: PrimaryWalletInvalidException)
             {
@@ -175,6 +207,19 @@ class IdentityActivity : CommonActivity()
         {
             displayException(e)
         }
+    }
+
+    /** Inflate the options menu */
+    override fun onCreateOptionsMenu(menu: Menu): Boolean
+    {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.identity_options, menu);
+
+        val item2 = menu.findItem(R.id.settings)
+        LogIt.info(item2.toString())
+        item2.intent = Intent(this, IdentitySettings::class.java)
+
+        return true
     }
 
     @Suppress("UNUSED_PARAMETER")

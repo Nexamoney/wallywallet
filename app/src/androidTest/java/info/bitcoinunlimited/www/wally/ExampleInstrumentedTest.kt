@@ -620,7 +620,7 @@ class UnitTest
     {
         // Used to load the 'native-lib' library on application startup.
         init {
-            System.loadLibrary("native-lib")
+            System.loadLibrary("bitcoincashandroid")
             Initialize.LibBitcoinCash(ChainSelector.BCHREGTEST.v)
         }
     }

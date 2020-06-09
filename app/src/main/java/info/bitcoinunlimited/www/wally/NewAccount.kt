@@ -203,9 +203,9 @@ class NewAccount : CommonActivity()
                 {
                     if (use.block_height != null)
                     {
-                        val headerBin = ec.getHeader(use.block_height!!)
+                        val headerBin = ec.getHeader(use.block_height)
                         val blkHeader = BlockHeader(BCHserialized(headerBin, SerializationType.HASH))
-                        return Pair(blkHeader.time, use.block_height!!)
+                        return Pair(blkHeader.time, use.block_height)
                     }
                 }
                 else
@@ -246,12 +246,11 @@ class NewAccount : CommonActivity()
         }
         ec.start()
 
-        val features = ec.features()
+        // val features = ec.features()
 
         val passphrase = "" // TODO: support a passphrase
         val secret = GenerateBip39Seed(secretWords, passphrase)
 
-        var index = 0
         val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
 
         var earliestActivity = searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, addressDerivationCoin, 0, 0, it) })

@@ -330,13 +330,11 @@ class MainActivity : CommonActivity()
         super.onStart()
         dbgAssertGuiThread()
 
-
-        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
-
         thread(true, true, null, "startup")
         {
             // Wait until stuff comes up
             while (!coinsCreated) Thread.sleep(100)
+            LogIt.info("coins created")
             Thread.sleep(100)
 
             laterUI {
@@ -751,7 +749,15 @@ class MainActivity : CommonActivity()
 
         laterUI {
             // TODO label and message
-            updateSendAddress(PayAddress(sta))
+            try
+            {
+                updateSendAddress(PayAddress(sta))
+            }
+            catch(e: UnknownBlockchainException)
+            {
+                displayError(R.string.badAddress)
+                return@laterUI
+            }
 
             if (amt >= BigDecimal.ZERO)
             {
@@ -905,7 +911,16 @@ class MainActivity : CommonActivity()
                 }
                 else
                 {
-                    handleSendURI(result.contents)
+                    try
+                    {
+                        handleSendURI(result.contents)
+                    }
+                    catch(e:UnknownBlockchainException)
+                    {
+                        LogIt.info("QR contents invalid: " + QRstring)
+                        displayError(R.string.badAddress)
+                        return
+                    }
                 }
 
             }
@@ -935,7 +950,6 @@ class MainActivity : CommonActivity()
         shareActionProvider = MenuItemCompat.getActionProvider(item) as? ShareActionProvider
 
         val item2 = menu.findItem(R.id.settings)
-        LogIt.info(item2.toString())
         item2.intent = Intent(this, Settings::class.java).apply { putExtra(SETTINGS_MESSAGE, "") }
 
         return true
@@ -1209,57 +1223,3 @@ class MainActivity : CommonActivity()
     external fun stringFromJNI(): String
 }
 
-
-@Throws(WriterException::class)
-fun TextToImageEncode(value: String, size: Int): Bitmap?
-{
-    val bitMatrix: BitMatrix
-
-    val hintsMap = mapOf<EncodeHintType, Any>(
-        EncodeHintType.CHARACTER_SET to "utf-8",
-        EncodeHintType.MARGIN to 1)
-    // //hintsMap.put(EncodeHintType.ERROR_CORRECTION, mErrorCorrectionLevel);
-    try
-    {
-        bitMatrix = MultiFormatWriter().encode(value, BarcodeFormat.QR_CODE, size, size, hintsMap)
-    }
-    catch (e: IllegalArgumentException)
-    {
-
-        return null
-    }
-
-
-    val bitMatrixWidth = bitMatrix.getWidth()
-
-    val bitMatrixHeight = bitMatrix.getHeight()
-
-    val pixels = IntArray(bitMatrixWidth * bitMatrixHeight)
-
-
-    val white:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.white) } ?: 0xFFFFFFFF.toInt();
-    val black:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.black) } ?: 0xFF000000.toInt();
-
-    var offset = 0
-    for (y in 0 until bitMatrixHeight)
-    {
-        for (x in 0 until bitMatrixWidth)
-        {
-            pixels[offset] = if (bitMatrix.get(x, y))
-                black
-            else
-                white
-            offset += 1
-        }
-    }
-
-    LogIt.info("Encode image for $value")
-    if (value.contains("Pay2"))
-    {
-        LogIt.info("Bad image string")
-    }
-    val bitmap = Bitmap.createBitmap(pixels, bitMatrixWidth, bitMatrixHeight, Bitmap.Config.RGB_565)
-
-    //bitmap.setPixels(pixels, 0, bitMatrixWidth, 0, 0, bitMatrixWidth, bitMatrixHeight)
-    return bitmap
-}
