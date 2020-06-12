@@ -25,6 +25,9 @@ const val SETTINGS_MESSAGE = "info.bitcoinunlimited.www.wally.settings"
 const val INVOICES_MESSAGE = "info.bitcoinunlimited.www.wally.exchange"
 const val IDENTITY_MESSAGE = "info.bitcoinunlimited.www.wally.settings"
 
+val IDENTITY_OP_RESULT = 27720;
+val IDENTITY_SETTINGS_RESULT = 27721;
+
 private val LogIt = Logger.getLogger("bitcoinunlimited.commonUI")
 
 

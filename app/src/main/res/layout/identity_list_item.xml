@@ -7,24 +7,25 @@
 
     <TextView
         android:id="@+id/domainNameText"
-        android:layout_width="328dp"
+        android:layout_width="0dp"
         android:layout_height="45dp"
-        android:text="Domain name here"
-        android:textAlignment="center"
         android:autoSizeMaxTextSize="26sp"
         android:autoSizeMinTextSize="10sp"
         android:autoSizeStepGranularity="1sp"
         android:autoSizeTextType="uniform"
-
         android:gravity="center_vertical"
+        android:text="Domain name here"
+
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/domainThumbnail"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/domainThumbnail"
-        android:layout_width="42dp"
-        android:layout_height="42dp"
-        android:layout_marginStart="16dp"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="4dp"
         app:layout_constraintBottom_toBottomOf="@+id/domainNameText"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintStart_toStartOf="parent"

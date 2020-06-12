@@ -46,6 +46,10 @@
     <string name="yes">yes</string>
     <string name="no">no</string>
     <string name="or">or</string>
+    <!-- The user chose not to proceed with some operation -->
+    <string name="cancelled">cancelled</string>
+    <!-- Issued if initialization isn't yet complete, but user tries to access the services -->
+    <string name="pleaseWait">please wait</string>
 
     <!-- Settings -->
     <string name="enableDeveloperView">Show developer information</string>
@@ -53,6 +57,7 @@
     <string name="preferBchNode">Prefer BCH node:</string>
     <string name="rediscoverWalletTx">rediscover</string>
     <string name="logDebugData">Log Debug Data</string>
+    <string name="clearIdentityDomains">Clear Identity Domains</string>
     <string name="rediscoverTooltip">Delete blockchain state and search anew for all transactions relevant to the wallet</string>
     <string name="wordSeed">Wallet Backup Secrets</string>
     <string name="deleteWalletAccount">Delete Account</string>
@@ -115,13 +120,28 @@
      that happens whenever the user first sets up a relationship between the web site/company and their wallet -->
     <string name="newDomainRequestingIdentity">New Domain Requesting Identity</string>
     <string name="useUniqueIdentityToolTip">Turn on to keep your identity here separate from other sites.</string>
-    <string name="provideNameAlias">provide your name or alias?</string>
-    <string name="provideNameAliasToolTip">Selecting this option will provide your name or alias (as configured in settings) to this web site, if requested</string>
-    <string name="provideSocialMedia">provide your social media information?</string>
+    <string name="provideAlias">Provide your username or alias?</string>
+    <string name="provideAliasToolTip">Selecting this option will provide your name or alias (as configured in settings) to this web site, if requested</string>
+    <string name="provideSocialMedia">Provide your social media information?</string>
     <string name="provideSocialMediaToolTip">Selecting this option will provide your social media information (as configured in settings) to this web site, if requested</string>
-    <string name="provideAddress">provide your address?</string>
-    <string name="provideAddressToolTip">Selecting this option will provide your address (as configured in settings) to this web site, if requested</string>
+    <string name="providePostalAddress">Provide your postal address?</string>
+    <string name="providePostalAddressToolTip">Selecting this option will provide your address (as configured in settings) to this web site, if requested</string>
+    <string name="provideBillingAddress">Provide your billing address?</string>
+    <string name="provideBillingAddressToolTip">Selecting this option will provide your billing address (as configured in settings) to this web site, if requested</string>
+    <string name="provideEmail">Provide your email address?</string>
+    <string name="provideAvatar">Provide your avatar image?</string>
+    <string name="provideRealName">Provide your real name?</string>
+    <string name="provideRealNameToolTip">Selecting this option will give your real name (as configured in settings) to this web site</string>
+    <string name="provideBirthday">Provide your birthday?</string>
+    <string name="providePhone">Provide your phone number?</string>
+    <string name="provideAttestations">Provide attestations?</string>
+    <string name="provideAttestationsToolTip">Attestations are 3rd party signatures that confirm the data you supply</string>
+
     <string name="commonIdentityQRCode">QR code</string>
+    <!-- An intent (aka link) specified an action that I don't know about -->
+    <string name="unknownOperation" formatted="false">operation %op unknown</string>
+    <!-- This wallet already has a registration for this site, so registration is not needed (informational notice) -->
+    <string name="alreadyRegistered">already registered</string>
 
     <string name="provideLoginQuestion">Login to this site?</string>
 
@@ -165,10 +185,10 @@
     <string name="NoBip44ActivityNotice">Warning, No BIP44 transactions found!</string>
     <string name="Bip44BtcActivityNotice">Found pre-fork activity</string>
     <string name="NoBip44BtcActivityNotice">No pre-fork transactions found</string>
-    <string name="FirstUseDateHeightInfo">starting %date (block %height)</string>
+    <string name="FirstUseDateHeightInfo" formatted="false">starting %date (block %height)</string>
     <string name="NotEnoughRecoveryWords">More recovery words needed</string>
     <string name="TooManyRecoveryWords">Too many recovery words</string>
-    <string name="IncorrectRecoveryWords">Invalid words: %words</string>
+    <string name="IncorrectRecoveryWords" formatted="false">Invalid words: %words</string>
     <string name="ElectrumNetworkUnavailable">Network unavailable</string>
     <!-- Error strings -->
     <string name="unknownError">error</string>

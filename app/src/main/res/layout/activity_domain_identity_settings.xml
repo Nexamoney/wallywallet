@@ -17,53 +17,215 @@
             app:layout_constraintRight_toRightOf="parent"
             app:menu="@menu/bottom_nav_menu" android:layout_marginBottom="4dp"
             app:layout_constraintHorizontal_bias="0.0"
-            app:labelVisibilityMode="labeled"/>
-    <Switch
-            android:text="@string/useUniqueIdentity"
-            android:layout_width="339dp"
-            android:layout_height="45dp"
-            android:tooltipText="@string/useUniqueIdentityToolTip"
-            android:id="@+id/uniqueIdentitySwitch" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="8dp"
-            app:layout_constraintHorizontal_bias="0.437" app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="28dp" app:layout_constraintTop_toBottomOf="@+id/domainName"
-            android:textSize="18sp"/>
+            app:labelVisibilityMode="labeled">
+    </com.google.android.material.bottomnavigation.BottomNavigationView>
 
-    <Switch
-        android:id="@+id/provideSocialMedia"
-        android:layout_width="339dp"
-        android:layout_height="45dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:checked="true"
-        android:text="@string/provideSocialMedia"
-        android:textSize="18sp"
-        android:tooltipText="@string/provideSocialMediaToolTip"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.437"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/provideNameAlias" />
-
-    <Switch
-        android:id="@+id/provideNameAlias"
-        android:layout_width="339dp"
-        android:layout_height="45dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:checked="true"
-        android:text="@string/provideNameAlias"
-        android:textSize="18sp"
-        android:tooltipText="@string/provideNameAliasToolTip"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.437"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/uniqueIdentitySwitch" />
     <TextView
-            android:layout_width="387dp"
-            android:layout_height="60dp"
-            android:id="@+id/domainName" android:layout_marginTop="16dp"
-            app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            app:layout_constraintHorizontal_bias="1.0" android:textSize="24sp" android:textAlignment="center"
-            android:textStyle="bold"/>
+        android:id="@+id/domainName"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/sw"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/nav_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/domainName"
+        tools:context=".DomainIdentitySettings">
+
+        <Switch
+            android:id="@+id/uniqueIdentitySwitch"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:autoSizeMaxTextSize="20sp"
+            android:autoSizeMinTextSize="14sp"
+            android:switchMinWidth="64dp"
+            android:text="@string/useUniqueIdentity"
+            android:textSize="18sp"
+            android:tooltipText="@string/useUniqueIdentityToolTip"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/divider3"
+            android:layout_width="100dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/uniqueIdentitySwitch" />
+
+        <Switch
+            android:id="@+id/provideSocialMedia"
+            android:switchPadding = "20dp"
+            android:switchMinWidth="64dp"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:checked="false"
+            android:text="@string/provideSocialMedia"
+            android:textSize="18sp"
+            android:tooltipText="@string/provideSocialMediaToolTip"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/provideEmail" />
+
+        <Switch
+            android:id="@+id/provideEmail"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:checked="true"
+            android:switchMinWidth="64dp"
+            android:text="@string/provideEmail"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/provideNameAlias" />
+
+        <Switch
+            android:id="@+id/provideBirthday"
+            android:switchMinWidth="64dp"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:checked="false"
+            android:text="@string/provideBirthday"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/provideRealName" />
+
+        <Switch
+            android:id="@+id/provideRealName"
+            android:switchMinWidth="64dp"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="8dp"
+            android:checked="false"
+            android:text="@string/provideRealName"
+            android:textSize="18sp"
+            android:tooltipText="@string/provideRealNameToolTip"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/divider4" />
+
+        <Switch
+            android:id="@+id/providePhone"
+            android:switchMinWidth="64dp"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:checked="false"
+            android:text="@string/providePhone"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.437"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/provideBirthday" />
+
+        <Switch
+            android:id="@+id/providePostalAddress"
+            android:switchMinWidth="64dp"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="44dp"
+            android:checked="false"
+            android:text="@string/providePostalAddress"
+            android:textSize="18sp"
+            android:tooltipText="@string/providePostalAddressToolTip"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/provideBirthday" />
+
+        <Switch
+            android:id="@+id/provideBillingAddress"
+            android:switchMinWidth="64dp"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:checked="false"
+            android:text="@string/provideBillingAddress"
+            android:textSize="18sp"
+            android:tooltipText="@string/provideBillingAddressToolTip"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/providePostalAddress" />
+
+        <View
+            android:id="@+id/divider5"
+            android:layout_width="100dp"
+            android:layout_height="2dp"
+            android:layout_marginTop="8dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/provideBillingAddress" />
+
+        <Switch
+            android:id="@+id/provideAvatar"
+            android:switchMinWidth="64dp"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="0dp"
+            android:checked="true"
+            android:text="@string/provideAvatar"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/provideSocialMedia" />
+
+        <View
+            android:id="@+id/divider4"
+            android:layout_width="100dp"
+            android:layout_height="2dp"
+            android:layout_marginTop="8dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/provideAvatar" />
+
+        <Switch
+            android:id="@+id/provideNameAlias"
+            android:switchMinWidth="64dp"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="8dp"
+            android:checked="true"
+            android:text="@string/provideAlias"
+            android:textSize="18sp"
+            android:tooltipText="@string/provideAliasToolTip"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/divider3" />
+
+        <Switch
+            android:id="@+id/provideAttestations"
+            android:switchMinWidth="64dp"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="12dp"
+            android:checked="false"
+            android:text="@string/provideAttestations"
+            android:textSize="18sp"
+            android:tooltipText="@string/provideAttestationsToolTip"
+            app:layout_constraintTop_toBottomOf="@+id/divider5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

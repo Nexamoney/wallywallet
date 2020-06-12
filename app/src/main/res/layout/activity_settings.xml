@@ -93,15 +93,26 @@
         app:layout_constraintTop_toBottomOf="@+id/LocalCurrencyText" />
 
     <Button
-        android:id="@+id/DumpInterestingData"
+        android:id="@+id/clearIdentityDomains"
         android:layout_width="141dp"
         android:layout_height="40dp"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="16dp"
+        android:onClick="onClearIdentityDomains"
+        android:text="@string/clearIdentityDomains"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/dumpInterestingData"
+        android:layout_width="141dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="16dp"
         android:onClick="onLogDebugData"
         android:text="@string/logDebugData"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/clearIdentityDomains" />
 
     <Spinner
         android:id="@+id/deleteWalletAccountChoice"
