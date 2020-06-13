@@ -174,7 +174,9 @@ class Account(val name: String, //* The name of this account
     {
         val hundredThousand = CurrencyDecimal(SATinMBCH)
         wallet.prepareDestinations(2, 2)  // Make sure that there is at least a few addresses before we hook into the network
+        LogIt.info("wallet add blockchain")
         wallet.addBlockchain(chain, chain.nearTip, chain.checkpointHeight) // Since this is a new ram wallet (new private keys), there cannot be any old blocks with transactions
+        LogIt.info("wallet add blockchain done")
         wallet.spotPrice = { currencyCode -> assert(currencyCode == fiatCurrencyCode); fiatPerCoin/hundredThousand }
         wallet.historicalPrice = { currencyCode: String, epochSec: Long -> historicalMbchInFiat(currencyCode,epochSec)/hundredThousand }
 
@@ -388,7 +390,18 @@ class WallyApp: Application()
     val accounts:MutableMap<String,Account> = mutableMapOf()
 
     val primaryWallet:Wallet
-        get() = accounts[PRIMARY_WALLET]?.wallet ?: throw PrimaryWalletInvalidException()
+        get()
+        {
+            // return the wallet named "mBCH"
+            val prim = accounts[PRIMARY_WALLET]?.wallet
+            if (prim != null) return prim
+            // return the first BCH wallet
+            for (i in accounts.values)
+            {
+                if (i.wallet.chainSelector == ChainSelector.BCHMAINNET) return i.wallet
+            }
+            throw PrimaryWalletInvalidException()
+        }
 
     fun coinFor(chain: ChainSelector): Account?
     {
@@ -480,8 +493,6 @@ class WallyApp: Application()
             // Initialize the currencies supported by this wallet
             GlobalScope.launch {
 
-                // Actually choose which of several configured coins to create
-
                 if (REG_TEST_ONLY)  // If I want a regtest only wallet for manual debugging, just create it directly
                 {
                     accounts.getOrPut("mRBCH") {
@@ -498,30 +509,20 @@ class WallyApp: Application()
                 {
                     val db = walletDb!!
 
+                    LogIt.info("loading account names")
                     val accountNames = try
                     {
                         db.get("activeAccountNames")
                     }
                     catch(e: DataMissingException)
                     {
-                        /*
-                        // Temporary: create what we used to do manually
-                        accounts.getOrPut("mBCH") {
-                            val c = Account("mBCH", ctxt, ChainSelector.BCHMAINNET);
-                            c
-                        }
-                        accounts.getOrPut("mTBCH") {
-                            val c = Account("mTBCH", ctxt, ChainSelector.BCHTESTNET);
-                            c
-                        }
-                        saveActiveAccountList()
-                        */
                         byteArrayOf()
                     }
 
                     val accountNameList = String(accountNames).split(",")
                     for (name in accountNameList)
                     {
+                        LogIt.info("Loading account " + name)
                         try
                         {
                             val ac = Account(name, ctxt)
@@ -532,10 +533,8 @@ class WallyApp: Application()
                             LogIt.warning(sourceLoc() + ": Active account $name was not found in the database")
                             // Nothing to really do but ignore the missing account
                         }
-
+                        LogIt.info("Loaded account " + name)
                     }
-
-
                 }
 
                 coinsCreated = true

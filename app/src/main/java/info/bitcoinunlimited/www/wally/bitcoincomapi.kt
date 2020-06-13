@@ -31,7 +31,7 @@ data class HistBitcoinCom(val lookup: HistItemBitcoinCom)
 @UseExperimental(ExperimentalTime::class)
 val lastPoll = mutableMapOf<String, Pair<ClockMark,BigDecimal>>()
 
-@UseExperimental(ExperimentalTime::class)
+@UseExperimental(ExperimentalTime::class, kotlinx.serialization.UnstableDefault::class)
 fun MbchInFiat(fiat: String, setter: (BigDecimal)-> Unit)
 {
     val prior = lastPoll[fiat]
@@ -63,6 +63,7 @@ fun MbchInFiat(fiat: String, setter: (BigDecimal)-> Unit)
 }
 
 /** Return the approximate price of mBCH at the time provided in seconds since the epoch */
+@UseExperimental(kotlinx.serialization.UnstableDefault::class)
 fun historicalMbchInFiat(fiat: String, timeStamp: Long): BigDecimal
 {
     if (fiat != "USD") return BigDecimal.ZERO  // TODO get other fiat historical prices

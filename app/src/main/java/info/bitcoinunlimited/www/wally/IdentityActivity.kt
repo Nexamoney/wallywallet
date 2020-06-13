@@ -2,34 +2,22 @@
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
 
+import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.*
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import androidx.appcompat.app.AppCompatActivity
-import android.widget.TextView
 import androidx.annotation.LayoutRes
-import androidx.appcompat.widget.ShareActionProvider
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
-import androidx.core.view.MenuItemCompat
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import bitcoinunlimited.libbitcoincash.*
 import kotlinx.android.synthetic.main.activity_identity.*
-import kotlinx.android.synthetic.main.activity_identity_yourdata.*
 import kotlinx.android.synthetic.main.identity_list_item.view.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import java.io.FileNotFoundException
 import java.lang.Exception
-import java.net.HttpURLConnection
-import java.net.URL
 import java.net.URLEncoder
 import java.util.logging.Logger
 
@@ -37,7 +25,8 @@ private val LogIt = Logger.getLogger("bitcoinunlimited.IdentityActivity")
 
 open class IdentityException(msg: String, shortMsg: String? = null, severity: ErrorSeverity = ErrorSeverity.Abnormal) : BUException(msg, shortMsg, severity)
 
-fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): View {
+fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): View
+{
     return LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)
 }
 
@@ -73,9 +62,16 @@ class RecyclerAdapter(private val domains: ArrayList<IdentityDomain>) : Recycler
 
         override fun onClick(v: View)
         {
+            var reqs = mutableMapOf<String, String>()
+            id?.getReqs(reqs)
+            var perms = mutableMapOf<String, Boolean>()
+            id?.getPerms(perms)
+
             var intent = Intent(v.context, DomainIdentitySettings::class.java)
-            intent.putExtra("domainName", this.id?.domain )
-            v.context.startActivity(intent)
+            BCHidentityUpdateIntentFromPerms(intent, perms)
+            BCHidentityUpdateIntentFromReqs(intent, reqs)
+            intent.putExtra("domainName", this.id?.domain)
+            (v.context as Activity).startActivityForResult(intent, IDENTITY_SETTINGS_RESULT)
         }
 
         fun bind(obj: IdentityDomain, pos: Int)
@@ -84,10 +80,10 @@ class RecyclerAdapter(private val domains: ArrayList<IdentityDomain>) : Recycler
             view.domainNameText.text = obj.domain
 
             // Alternate colors for each row in the list
-            val Acol:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowA) } ?: 0xFFEEFFEE.toInt()
-            val Bcol:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowB) } ?: 0xFFBBDDBB.toInt()
+            val Acol: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowA) } ?: 0xFFEEFFEE.toInt()
+            val Bcol: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowB) } ?: 0xFFBBDDBB.toInt()
 
-            if ((pos and 1)==0)
+            if ((pos and 1) == 0)
             {
                 view.background = ColorDrawable(Acol)
             }
@@ -134,14 +130,16 @@ class IdentityActivity : CommonActivity()
                 val email: String? = prefs.getString("email", null)
                 val socialmedia: String? = prefs.getString("socialmedia", null)
 
-                if (name != null) nameOrAliasInfo.text = name
+                // Show these common fields for the "common identity" on the front screen
+                if (name != null) aliasInfo.text = name
                 if (email != null) emailInfo.text = email
                 if (socialmedia != null)
                 {
-                    val t = socialmedia!!.split(" ", ",").filter({ it -> it != "" })
+                    val t = socialmedia.split(" ", ",").filter({ it -> it != "" })
                     socialMediaInfo.text = t.joinToString("\n")
                 }
 
+                // Show a share identity link on the front screen
                 val dest = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
                 val destStr = dest.address.toString()
                 commonIdentityAddress.text = destStr
@@ -150,8 +148,8 @@ class IdentityActivity : CommonActivity()
                 // bchidentity://p2p?op=share&addr=<addr>&na=<name>&em=<email>&sm=<social media>
 
                 var uri = "bchidentity://p2p?op=share&addr=" + destStr;
-                if (name != null && name != "") uri = uri + "&name=" + URLEncoder.encode(name,"utf-8")
-                if (email != null && email != "") uri = uri + "&em=" + URLEncoder.encode(email,"utf-8")
+                if (name != null && name != "") uri = uri + "&name=" + URLEncoder.encode(name, "utf-8")
+                if (email != null && email != "") uri = uri + "&em=" + URLEncoder.encode(email, "utf-8")
                 if (socialmedia != null && socialmedia != "") uri = uri + "&sm=" + URLEncoder.encode(socialmedia, "utf-8")
                 LogIt.info("encoded URI: " + uri)
 
@@ -159,7 +157,7 @@ class IdentityActivity : CommonActivity()
                 val qr = textToQREncode(uri, sz.toInt())
                 commonIdentityQRCode.setImageBitmap(qr)
             }
-            catch(e: PrimaryWalletInvalidException)
+            catch (e: PrimaryWalletInvalidException)
             {
                 displayError(R.string.NoAccounts)
             }
@@ -209,22 +207,29 @@ class IdentityActivity : CommonActivity()
         }
     }
 
-    /** Inflate the options menu */
-    override fun onCreateOptionsMenu(menu: Menu): Boolean
+    /** this handles the result of the new domain request, since no other child activities are possible */
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
     {
-        val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.identity_options, menu);
-
-        val item2 = menu.findItem(R.id.settings)
-        LogIt.info(item2.toString())
-        item2.intent = Intent(this, IdentitySettings::class.java)
-
-        return true
+        LogIt.info(sourceLoc() + " activity completed $requestCode $resultCode")
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
-    @Suppress("UNUSED_PARAMETER")
-    fun onCommonIdentityAddrTextClicked(v: View)
-    {
-        copyTextToClipboard(commonIdentityAddress)
-    }
-};
+        /** Inflate the options menu */
+        override fun onCreateOptionsMenu(menu: Menu): Boolean
+        {
+            val inflater: MenuInflater = menuInflater
+            inflater.inflate(R.menu.identity_options, menu);
+
+            val item2 = menu.findItem(R.id.settings)
+            LogIt.info(item2.toString())
+            item2.intent = Intent(this, IdentitySettings::class.java)
+
+            return true
+        }
+
+        @Suppress("UNUSED_PARAMETER")
+        fun onCommonIdentityAddrTextClicked(v: View)
+        {
+            copyTextToClipboard(commonIdentityAddress)
+        }
+    };

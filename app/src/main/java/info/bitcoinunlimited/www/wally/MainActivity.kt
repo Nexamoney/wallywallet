@@ -888,13 +888,27 @@ class MainActivity : CommonActivity()
     /** this handles the result of a QR code scan.  We want to accept QR codes of any different format and "do what I mean" based on the QR code's contents */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
     {
-        LogIt.info("activity completed $requestCode $resultCode")
+        LogIt.info(sourceLoc() + " activity completed $requestCode $resultCode")
 
+        // Handle my sub-activity results
+        if (requestCode == IDENTITY_OP_RESULT)
+        {
+            if (data != null)
+            {
+                val err = data.getStringExtra("error")
+                if (err != null) displayError(err)
+            }
+        return;
+        }
+
+        // Handle external activity results
+
+        // QR code scanning
         val result: IntentResult? = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
 
-        if(result != null)
+        if (result != null)
         {
-            if(result.contents != null)
+            if (result.contents != null)
             {
                 val QRstring = result.contents.toString()
                 // TODO parse other QR code formats
@@ -906,7 +920,7 @@ class MainActivity : CommonActivity()
                     LogIt.info("starting identity operation activity")
                     var intent = Intent(this, IdentityOpActivity::class.java)
                     intent.data = Uri.parse(QRstring)
-                    startActivity(intent)
+                    startActivityForResult(intent, IDENTITY_OP_RESULT)
                     return
                 }
                 else

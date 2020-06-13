@@ -181,6 +181,23 @@ class Settings : AppCompatActivity()
     }
 
     @Suppress("UNUSED_PARAMETER")
+    fun onClearIdentityDomains(v: View?)
+    {
+        GlobalScope.launch {
+            val wallet:CommonWallet = try
+                {
+                    ((application as WallyApp).primaryWallet as CommonWallet)
+                }
+                catch (e: PrimaryWalletInvalidException)
+                {
+                    //displayError(R.string.pleaseWait)
+                    return@launch
+                }
+            wallet.identityDomain.clear()
+        }
+    }
+
+    @Suppress("UNUSED_PARAMETER")
     fun onRediscoverBlockchain(v: View?)
     {
         val accountName = deleteWalletAccountChoice.selectedItem.toString()
