@@ -4,12 +4,14 @@ package info.bitcoinunlimited.www.wally
 
 import android.app.Activity
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import android.widget.ActionMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.TextView
+import androidx.preference.PreferenceManager
 import kotlinx.android.synthetic.main.activity_identity_op.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -23,6 +25,7 @@ import java.net.URL
 import java.net.URLEncoder
 import java.util.logging.Logger
 import bitcoinunlimited.libbitcoincash.*
+import kotlinx.android.synthetic.main.activity_identity.*
 import java.io.DataOutputStream
 
 private val LogIt = Logger.getLogger("bitcoinunlimited.IdentityOp")
@@ -213,6 +216,7 @@ class IdentityOpActivity : CommonActivity()
             if (iuri != null)
             {
                 host = iuri.getHost()
+                val h = host!!
                 val port = iuri.getPort()
                 val path = iuri.getPath()
                 val attribs = iuri.queryMap()
@@ -221,7 +225,7 @@ class IdentityOpActivity : CommonActivity()
                 val op = attribs["op"]
 
                 val portStr = if ((port > 0) && (port != 80) && (port != 443)) ":" + port.toString() else ""
-                val chalToSign = host + portStr + "_bchidentity_" + op + "_" + challenge
+                val chalToSign = h + portStr + "_bchidentity_" + op + "_" + challenge
                 LogIt.info("challenge: " + chalToSign + " cookie: " + cookie)
 
                 if (challenge == null) // intent was previously cleared by someone throw IdentityException("challenge string was not provided", "no challenge")
@@ -239,7 +243,7 @@ class IdentityOpActivity : CommonActivity()
                     displayError(R.string.pleaseWait); return@launch
                 }
 
-                val identityDest: PayDestination = wallet.destinationFor(host + path)
+                val identityDest: PayDestination = wallet.destinationFor(h + path)
 
                 // This is a coding bug in the wallet
                 val secret = identityDest.secret ?: throw IdentityException("Wallet failed to provide an identity with a secret", "bad wallet", ErrorSeverity.Severe)
@@ -255,7 +259,7 @@ class IdentityOpActivity : CommonActivity()
                 if (op == "login")
                 {
                     // TODO use https for addtl security
-                    val loginReq = "http://" + host + portStr + path + "?op=login&addr=" + address.toString() + "&sig=" + URLEncoder.encode(sigStr, "UTF-8") + "&cookie=" + URLEncoder.encode(
+                    val loginReq = "http://" + h + portStr + path + "?op=login&addr=" + address.toString() + "&sig=" + URLEncoder.encode(sigStr, "UTF-8") + "&cookie=" + URLEncoder.encode(
                         cookie, "UTF-8")
 
                     LogIt.info("login reply: " + loginReq)
@@ -285,13 +289,44 @@ class IdentityOpActivity : CommonActivity()
                 else if (op == "reg")
                 {
                     // TODO use https for addtl security
-                    val loginReq = "http://" + host + portStr + path
+                    val loginReq = "http://" + h + portStr + path
 
                     val params = mutableMapOf<String,String>()
                     params["op"] = "reg"
                     params["addr"] = address.toString()
                     params["sig"] = sigStr
                     params["cookie"] = cookie.toString()
+
+                    // Supply additional requested data
+                    if (true)
+                    {
+                        val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+
+                        val idData = wallet.lookupIdentityDomain(h)
+                        if (idData != null)
+                        {
+                            val perms = mutableMapOf<String, Boolean>()
+                            idData.getPerms(perms)
+                            for (i in BCHidentityParams)
+                            {
+                                if (attribs.containsKey(i))
+                                {
+                                    val req = attribs[i]
+
+                                    if (perms[i] == true) prefs.getString(i, null)?.let { params[i] = it }
+                                    else
+                                    {
+                                        if (req=="m")  // mandatory, so this login won't work
+                                        {
+                                            displayError(i18n(R.string.connectionException))
+                                            // Start DomainIdentitySettings dialog, instead of
+                                            clearIntentAndFinish()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
 
                     val jsonBody = StringBuilder("{")
                     var firstTime = true

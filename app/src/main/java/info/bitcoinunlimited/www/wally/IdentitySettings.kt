@@ -34,7 +34,7 @@ class IdentitySettings : AppCompatActivity()
         {
             setPreferencesFromResource(R.xml.identity_preferences, rootKey)
 
-            val p: EditTextPreference? = findPreference("socialmedia")
+            val p: EditTextPreference? = findPreference("sm")
 
             p?.setOnBindEditTextListener { editText ->
                 //editText.inputType = InputType.TYPE_CLASS_NUMBER

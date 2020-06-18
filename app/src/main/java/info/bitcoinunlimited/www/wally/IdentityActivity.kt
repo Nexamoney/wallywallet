@@ -126,9 +126,9 @@ class IdentityActivity : CommonActivity()
                 adapter = RecyclerAdapter(identities)
                 identityList.adapter = adapter
 
-                val name: String? = prefs.getString("name", null)
+                val name: String? = prefs.getString("hdl", null)
                 val email: String? = prefs.getString("email", null)
-                val socialmedia: String? = prefs.getString("socialmedia", null)
+                val socialmedia: String? = prefs.getString("sm", null)
 
                 // Show these common fields for the "common identity" on the front screen
                 if (name != null) aliasInfo.text = name

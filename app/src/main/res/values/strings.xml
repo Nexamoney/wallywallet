@@ -120,8 +120,8 @@
      that happens whenever the user first sets up a relationship between the web site/company and their wallet -->
     <string name="newDomainRequestingIdentity">New Domain Requesting Identity</string>
     <string name="useUniqueIdentityToolTip">Turn on to keep your identity here separate from other sites.</string>
-    <string name="provideAlias">Provide your username or alias?</string>
-    <string name="provideAliasToolTip">Selecting this option will provide your name or alias (as configured in settings) to this web site, if requested</string>
+    <string name="provideAlias">Provide your username/handle/alias?</string>
+    <string name="provideAliasToolTip">Selecting this option will provide your alias (as configured in settings, NOT your real name) to this web site, if requested</string>
     <string name="provideSocialMedia">Provide your social media information?</string>
     <string name="provideSocialMediaToolTip">Selecting this option will provide your social media information (as configured in settings) to this web site, if requested</string>
     <string name="providePostalAddress">Provide your postal address?</string>
@@ -147,7 +147,7 @@
 
     <string name="SocialMediaText">Social Media</string>
     <string name="SocialMediaSummary">Enter as list of service:handle, E.g. twitter:janeDoe, keybase:janieD</string>
-    <string name="UsernameOrAliasText">Name or Alias</string>
+    <string name="UsernameOrAliasText">Username/handle/alias</string>
     <string name="NameText">Full Name</string>
     <string name="PostalAddressText">Postal Address</string>
     <string name="PostalCodeText">Zip Code</string>

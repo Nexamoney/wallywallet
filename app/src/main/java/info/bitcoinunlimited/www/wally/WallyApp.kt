@@ -54,6 +54,7 @@ fun MakeNewWallet(name: String, chain: ChainSelector): Bip44Wallet
 // TODO: Right now we create new ones, but in the future reuse an existing
 fun GetCnxnMgr(chain: ChainSelector, name:String?=null): CnxnMgr
 {
+    LogIt.info(sourceLoc() + " " + "Get Cnxn Manager")
     return when(chain)
     {
     ChainSelector.BCHTESTNET      -> MultiNodeCnxnMgr(name ?: "mTBCH", ChainSelector.BCHTESTNET, arrayOf("testnet-seed.bitcoinabc.org"))
@@ -81,6 +82,7 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
     //"mBR1" -> Blockchain(ChainSelector.BCHREGTEST, "BR1", cnxnMgr, Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"), Hash256(), Hash256(), -1, -1.toBigInteger(), context)
     //"mBR2" -> Blockchain(ChainSelector.BCHREGTEST, "BR2", cnxnMgr, Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"), Hash256(), Hash256(), -1, -1.toBigInteger(), context)
     // testnet fork: "mTBCH"
+    LogIt.info(sourceLoc() + " " + "Get Blockchain")
     return when(chainSelector)
     {
         ChainSelector.BCHTESTNET -> Blockchain(
@@ -137,7 +139,10 @@ class Account(val name: String, //* The name of this account
 
     var wallet: Bip44Wallet = if (chainSelector == null)
     {
-        Bip44Wallet(name)  // Load a saved wallet
+        LogIt.info(sourceLoc() + " " + ": Loading wallet " + name)
+        val t = Bip44Wallet(name)  // Load a saved wallet
+        LogIt.info(sourceLoc() + " " + ": Loaded wallet " + name)
+        t
     }
     else
     {
@@ -477,6 +482,7 @@ class WallyApp: Application()
     override fun onCreate()
     {
         super.onCreate()
+        LogIt.info(sourceLoc() + " Wally Wallet App Started")
 
         val ctxt = PlatformContext(applicationContext)
 
@@ -509,7 +515,7 @@ class WallyApp: Application()
                 {
                     val db = walletDb!!
 
-                    LogIt.info("loading account names")
+                    LogIt.info("Loading account names")
                     val accountNames = try
                     {
                         db.get("activeAccountNames")
@@ -522,7 +528,7 @@ class WallyApp: Application()
                     val accountNameList = String(accountNames).split(",")
                     for (name in accountNameList)
                     {
-                        LogIt.info("Loading account " + name)
+                        LogIt.info(sourceLoc() + " " + name + ": Loading account " + name)
                         try
                         {
                             val ac = Account(name, ctxt)
@@ -530,7 +536,7 @@ class WallyApp: Application()
                         }
                         catch(e:DataMissingException)
                         {
-                            LogIt.warning(sourceLoc() + ": Active account $name was not found in the database")
+                            LogIt.warning(sourceLoc() + " " + name + ": Active account $name was not found in the database")
                             // Nothing to really do but ignore the missing account
                         }
                         LogIt.info("Loaded account " + name)
