@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import bitcoinunlimited.libbitcoincash.BCHidentityParams
 import bitcoinunlimited.libbitcoincash.CommonWallet
 import bitcoinunlimited.libbitcoincash.IdentityDomain
-import bitcoinunlimited.libbitcoincash.walletDb
 
 import kotlinx.android.synthetic.main.activity_domain_identity_settings.*
 import kotlinx.coroutines.GlobalScope

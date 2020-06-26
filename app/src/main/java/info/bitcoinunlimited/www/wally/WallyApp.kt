@@ -43,15 +43,17 @@ val ChainSelectorToSupportedBlockchains = SupportedBlockchains.entries.associate
 // What is the default wallet and blockchain to use for most functions (like identity)
 val PRIMARY_WALLET = if (REG_TEST_ONLY) "mRBCH" else "mBCH"
 
+var walletDb: KvpDatabase? = null
+
 fun MakeNewWallet(name: String, chain: ChainSelector): Bip44Wallet
 {
     if (chain == ChainSelector.BCHREGTEST)
-        return Bip44Wallet(name, chain, "trade box today light need route design birth turn insane oxygen sense")
+        return Bip44Wallet(walletDb!!, name, chain, "trade box today light need route design birth turn insane oxygen sense")
     if (chain == ChainSelector.BCHTESTNET)
-        return Bip44Wallet(name, chain, NEW_WALLET)
+        return Bip44Wallet(walletDb!!, name, chain, NEW_WALLET)
         //return Bip44Wallet(currencyCode, chain, "")
     if (chain == ChainSelector.BCHMAINNET)
-        return Bip44Wallet(name, chain, NEW_WALLET)
+        return Bip44Wallet(walletDb!!, name, chain, NEW_WALLET)
     //return Bip44Wallet(currencyCode, chain, "")
     throw BUException("invalid chain selected")
 }
@@ -159,16 +161,16 @@ class Account(val name: String, //* The name of this account
     var wallet: Bip44Wallet = if (chainSelector == null)
     {
         LogIt.info(sourceLoc() + " " + ": Loading wallet " + name)
-        val t = Bip44Wallet(name)  // Load a saved wallet
+        val t = Bip44Wallet(walletDb!!, name)  // Load a saved wallet
         LogIt.info(sourceLoc() + " " + ": Loaded wallet " + name)
         t
     }
     else
     {
         if (secretWords == null)
-            Bip44Wallet(name, chainSelector, NEW_WALLET)   // New wallet
+            Bip44Wallet(walletDb!!, name, chainSelector, NEW_WALLET)   // New wallet
         else
-            Bip44Wallet(name, chainSelector, secretWords)  // Wallet recovery
+            Bip44Wallet(walletDb!!, name, chainSelector, secretWords)  // Wallet recovery
     }
 
     var currentReceive: PayDestination? = null //? This receive address appears on the main screen for quickly receiving coins
