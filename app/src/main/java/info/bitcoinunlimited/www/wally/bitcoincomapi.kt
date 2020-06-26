@@ -28,10 +28,10 @@ data class HistItemBitcoinCom(val price: Int)
 @Serializable
 data class HistBitcoinCom(val lookup: HistItemBitcoinCom)
 
-@UseExperimental(ExperimentalTime::class)
+@OptIn(ExperimentalTime::class)
 val lastPoll = mutableMapOf<String, Pair<ClockMark,BigDecimal>>()
 
-@UseExperimental(ExperimentalTime::class, kotlinx.serialization.UnstableDefault::class)
+@OptIn(ExperimentalTime::class, kotlinx.serialization.UnstableDefault::class)
 fun MbchInFiat(fiat: String, setter: (BigDecimal)-> Unit)
 {
     val prior = lastPoll[fiat]
@@ -51,7 +51,7 @@ fun MbchInFiat(fiat: String, setter: (BigDecimal)-> Unit)
             return@launch
         }
         LogIt.info(sourceLoc() + " " + data)
-        val parser: Json = Json(JsonConfiguration(strictMode = false))  // nonstrict mode ignores extra fields
+        val parser: Json = Json(JsonConfiguration(isLenient = true))  // nonstrict mode ignores extra fields
         val obj = parser.parse(BchUsdBitcoinCom.serializer(), data)
         LogIt.info(sourceLoc() + " " + obj.toString())
         // TODO verify recent timestamp
@@ -63,7 +63,7 @@ fun MbchInFiat(fiat: String, setter: (BigDecimal)-> Unit)
 }
 
 /** Return the approximate price of mBCH at the time provided in seconds since the epoch */
-@UseExperimental(kotlinx.serialization.UnstableDefault::class)
+@OptIn(kotlinx.serialization.UnstableDefault::class)
 fun historicalMbchInFiat(fiat: String, timeStamp: Long): BigDecimal
 {
     if (fiat != "USD") return BigDecimal.ZERO  // TODO get other fiat historical prices
@@ -75,7 +75,7 @@ fun historicalMbchInFiat(fiat: String, timeStamp: Long): BigDecimal
     {
         return BigDecimal(-1)
     }
-    val parser: Json = Json(JsonConfiguration(strictMode = false))  // nonstrict mode ignores extra fields
+    val parser: Json = Json(JsonConfiguration(isLenient = true))  // nonstrict mode ignores extra fields
 
     LogIt.info(sourceLoc() + " " + data)
 

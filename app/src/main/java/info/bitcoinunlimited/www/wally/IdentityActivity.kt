@@ -30,6 +30,22 @@ fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false):
     return LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)
 }
 
+fun BCHidentityUpdateIntentFromPerms(intent: Intent, perms: MutableMap<String, Boolean>)
+    {
+        for(k in BCHidentityParams)  // Update new perms
+        {
+            intent.putExtra(k + "P", perms[k])
+        }
+    }
+
+fun BCHidentityUpdateIntentFromReqs(intent: Intent, reqs: MutableMap<String, String>)
+{
+    for(k in BCHidentityParams)  // Update new perms
+    {
+        intent.putExtra(k, reqs[k])
+    }
+}
+
 
 class RecyclerAdapter(private val domains: ArrayList<IdentityDomain>) : RecyclerView.Adapter<RecyclerAdapter.IdentityDomainHolder>()
 {

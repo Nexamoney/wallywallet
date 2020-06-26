@@ -14,6 +14,7 @@ import bitcoinunlimited.libbitcoincash.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.lang.Exception
+import java.lang.IllegalStateException
 import java.math.BigDecimal
 import java.util.logging.Logger
 
@@ -32,7 +33,11 @@ var fiatCurrencyCode:String = "USD"
 /** Database name prefix, empty string for mainnet, set for testing */
 var dbPrefix = if (RunningTheTests()) "guitest_" else if (REG_TEST_ONLY==true) "regtest_" else ""
 
-val SupportedBlockchains = mapOf("BCH (Bitcoin Cash)" to ChainSelector.BCHMAINNET, "TBCH (Testnet Bitcoin Cash)" to ChainSelector.BCHTESTNET, "RBCH (Regtest Bitcoin Cash)" to ChainSelector.BCHREGTEST)
+val SupportedBlockchains = if (INCLUDE_NEXTCHAIN)
+    mapOf("BCH (Bitcoin Cash)" to ChainSelector.BCHMAINNET, "NXC (NextChain)" to ChainSelector.NEXTCHAIN, "TBCH (Testnet Bitcoin Cash)" to ChainSelector.BCHTESTNET, "RBCH (Regtest Bitcoin Cash)" to ChainSelector.BCHREGTEST)
+  else
+    mapOf("BCH (Bitcoin Cash)" to ChainSelector.BCHMAINNET, "TBCH (Testnet Bitcoin Cash)" to ChainSelector.BCHTESTNET, "RBCH (Regtest Bitcoin Cash)" to ChainSelector.BCHREGTEST)
+
 val ChainSelectorToSupportedBlockchains = SupportedBlockchains.entries.associate{(k,v)-> v to k}
 
 // What is the default wallet and blockchain to use for most functions (like identity)
@@ -60,6 +65,7 @@ fun GetCnxnMgr(chain: ChainSelector, name:String?=null): CnxnMgr
     ChainSelector.BCHTESTNET      -> MultiNodeCnxnMgr(name ?: "mTBCH", ChainSelector.BCHTESTNET, arrayOf("testnet-seed.bitcoinabc.org"))
     ChainSelector.BCHMAINNET      -> MultiNodeCnxnMgr(name ?: "mBCH", ChainSelector.BCHMAINNET, arrayOf("seed.bitcoinunlimited.net", "btccash-seeder.bitcoinunlimited.info"))
     ChainSelector.BCHREGTEST      -> MultiNodeCnxnMgr(name ?: "mRBCH", ChainSelector.BCHREGTEST, arrayOf(SimulationHostIP))
+    ChainSelector.NEXTCHAIN       -> MultiNodeCnxnMgr(name ?: "mNXC", ChainSelector.NEXTCHAIN, arrayOf("node1.nextchain.cash:7228"))
     else                          -> throw BadCryptoException()
     }
 }
@@ -71,6 +77,7 @@ fun ElectrumServerOn(chain: ChainSelector): Pair<String,Int>
         ChainSelector.BCHMAINNET -> Pair("electrumserver.seed.bitcoinunlimited.net", DEFAULT_ELECTRUM_SERVER_PORT)
         ChainSelector.BCHTESTNET -> Pair("159.65.163.15", DEFAULT_ELECTRUM_SERVER_PORT)
         ChainSelector.BCHREGTEST -> Pair(SimulationHostIP, DEFAULT_ELECTRUM_SERVER_PORT)
+        ChainSelector.NEXTCHAIN -> Pair("electrumserver.seed.nextchain.cash", 7229)
         ChainSelector.BCHNOLNET -> throw BadCryptoException()
     }
 }
@@ -120,6 +127,18 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
             Hash256("0000000000000000029f7923ddb3937d3993a59f3bcc2efbfb7de4eb9e5df276"),
             614195,
             "10f8ce72b89feefe6f294c5".toBigInteger(16),
+            context, dbPrefix
+        )
+        // Bitcoin Cash mainnet chain
+        ChainSelector.NEXTCHAIN -> Blockchain(
+            ChainSelector.NEXTCHAIN,
+            name ?:"mNXC",
+            cnxnMgr,
+            Hash256("9623194f62f31f7a7065467c38e83cf060a2b866190204f3dd16f6587d8d9374"),
+            Hash256("9623194f62f31f7a7065467c38e83cf060a2b866190204f3dd16f6587d8d9374"),
+            Hash256("4db8c91181548fb427e1e8c6faa822ed4586263f0698b1357a8f7ee78004a924"),
+            1,
+            0x100101.toBigInteger(),
             context, dbPrefix
         )
         else                     -> throw BadCryptoException()
@@ -182,8 +201,11 @@ class Account(val name: String, //* The name of this account
         LogIt.info("wallet add blockchain")
         wallet.addBlockchain(chain, chain.nearTip, chain.checkpointHeight) // Since this is a new ram wallet (new private keys), there cannot be any old blocks with transactions
         LogIt.info("wallet add blockchain done")
-        wallet.spotPrice = { currencyCode -> assert(currencyCode == fiatCurrencyCode); fiatPerCoin/hundredThousand }
-        wallet.historicalPrice = { currencyCode: String, epochSec: Long -> historicalMbchInFiat(currencyCode,epochSec)/hundredThousand }
+        if (chainSelector != ChainSelector.NEXTCHAIN)  // no fiat price for nextchain
+        {
+            wallet.spotPrice = { currencyCode -> assert(currencyCode == fiatCurrencyCode); fiatPerCoin / hundredThousand }
+            wallet.historicalPrice = { currencyCode: String, epochSec: Long -> historicalMbchInFiat(currencyCode, epochSec) / hundredThousand }
+        }
 
     }
 
@@ -453,14 +475,22 @@ class WallyApp: Application()
     {
         dbgAssertNotGuiThread()
         val ctxt = PlatformContext(applicationContext)
-        val ac = Account(name, ctxt, chainSelector)
+        val ac = try
+        {
+            Account(name, ctxt, chainSelector)
+        }
+        catch (e: IllegalStateException)
+        {
+            LogIt.warning("Error creating account: ${e.message}")
+            return
+        }
+
         ac.start(applicationContext)
         ac.onWalletChange()
 
         accounts[name] = ac
         saveActiveAccountList()
         // wallet is saved in wallet constructor so no need to: ac.wallet.SaveBip44Wallet()
-
     }
 
     fun recoverAccount(name: String, secretWords: String, chainSelector: ChainSelector)

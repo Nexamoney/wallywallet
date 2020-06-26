@@ -24,7 +24,7 @@ add_library( # Sets the name of the library.
 if (DEFINED ENV{BU_REPO_DIR})
     set( cashlib_src_DIR $ENV{BU_REPO_DIR}/src/cashlib )
 else()
-    set( cashlib_src_DIR /fast/bitcoin/budev/src/cashlib )
+    set( cashlib_src_DIR /fast/bitcoin/nxc/src/cashlib )
 endif()
 
 
