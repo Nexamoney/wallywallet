@@ -207,11 +207,16 @@
         android:id="@+id/receiveAddress"
         android:layout_width="408dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
+        android:autoSizeMaxTextSize="20sp"
+        android:autoSizeMinTextSize="6sp"
+        android:autoSizeStepGranularity="1sp"
+        android:autoSizeTextType="uniform"
         android:clickable="true"
+        android:lines="1"
         android:onClick="onReceiveAddrTextClicked"
         android:textAlignment="center"
-        android:textSize="12sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/ReceiveTitle"
@@ -234,8 +239,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.81"
         app:layout_constraintStart_toEndOf="@+id/splitBillButton"
-        app:layout_constraintTop_toBottomOf="@+id/receiveAddress"
-        app:srcCompat="@drawable/ic_launcher_background" />
+        app:layout_constraintTop_toBottomOf="@+id/receiveAddress" />
 
     <Spinner
         android:id="@+id/sendCurrencyType"
@@ -271,9 +275,10 @@
         android:hint="@string/sendToAddressHint"
         android:importantForAutofill="no"
         android:inputType="textPersonName"
+        android:lines="1"
         android:text=""
         android:textAlignment="center"
-        android:textSize="12sp"
+        android:textSize="13sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -344,7 +349,7 @@
         android:id="@+id/purchaseButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="12dp"
         android:onClick="onPurchaseButton"
         android:text="@string/purchase"
@@ -355,12 +360,12 @@
         android:id="@+id/splitBillButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="12dp"
         android:onClick="onSplitBill"
         android:text="@string/title_split_bill"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ReceiveTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/receiveAddress" />
 
     <TextView
         android:id="@+id/WalletChainInfo"

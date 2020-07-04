@@ -112,16 +112,19 @@ class TextViewReactor<T>(public val gui: TextView):Reactor<T>()
 {
     override fun change(obj: Reactive<T>)
     {
-        laterUI {
-            val v = obj.access()
-            if (v != null)
-            {
-                gui.text = v.first.toString()
+        val v = obj.access()
+        if (v != null)
+        {
+            val vstr = v.first.toString()
+            laterUI {
+                if (vstr != gui.text)
+                    gui.text = v.first.toString()
             }
-            else
-            {
-                LogIt.info("Set before GUI element is ready")
-            }
+        }
+        else
+        {
+            // We already saw this change
+            // LogIt.info(sourceLoc() +": Rewrite GUI change skipped")
         }
     }
 }

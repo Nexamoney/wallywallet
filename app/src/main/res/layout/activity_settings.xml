@@ -12,7 +12,7 @@
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="16dp"
         android:text="@string/enableDeveloperView"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/GuiDeveloperView"
@@ -24,7 +24,6 @@
         android:id="@+id/LocalCurrencyText"
         android:layout_width="213dp"
         android:layout_height="32dp"
-        android:layout_marginTop="40dp"
         android:text="@string/localCurrency"
         android:textAlignment="center"
         android:textSize="18sp"
@@ -36,7 +35,7 @@
     <Spinner
         android:id="@+id/fiatCurrencySpinner"
         android:layout_width="113dp"
-        android:layout_height="30dp"
+        android:layout_height="32dp"
         android:layout_marginStart="8dp"
         android:entries="@array/FiatCurrencyTypes"
         app:layout_constraintBottom_toBottomOf="@+id/LocalCurrencyText"
@@ -46,33 +45,13 @@
         app:layout_constraintTop_toTopOf="@+id/LocalCurrencyText"
         app:layout_constraintVertical_bias="0.0" />
 
-    <Button
-        android:id="@+id/DeleteWalletButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="20dp"
-        android:onClick="onDeleteAccountButton"
-        android:text="@string/deleteWalletAccount"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/wordSeed" />
-
-    <Button
-        android:id="@+id/Rediscover"
-        android:layout_width="139dp"
-        android:layout_height="41dp"
-        android:layout_marginTop="20dp"
-        android:onClick="onRediscoverBlockchain"
-        android:text="@string/rediscoverWalletTx"
-        app:layout_constraintEnd_toEndOf="@+id/DeleteWalletButton"
-        app:layout_constraintStart_toStartOf="@+id/DeleteWalletButton"
-        app:layout_constraintTop_toBottomOf="@+id/DeleteWalletButton" />
-
     <TextView
         android:id="@+id/wordSeed"
-        android:layout_width="385dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="4dp"
         android:textIsSelectable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/wordSeedTitle"
@@ -82,7 +61,7 @@
         android:id="@+id/wordSeedTitle"
         android:layout_width="0dp"
         android:layout_height="34dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:text="@string/wordSeed"
         android:textAlignment="center"
         android:textSize="18sp"
@@ -94,7 +73,7 @@
 
     <Button
         android:id="@+id/clearIdentityDomains"
-        android:layout_width="141dp"
+        android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="16dp"
@@ -105,7 +84,7 @@
 
     <Button
         android:id="@+id/dumpInterestingData"
-        android:layout_width="141dp"
+        android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:layout_marginBottom="16dp"
         android:onClick="onLogDebugData"
@@ -116,53 +95,57 @@
 
     <Spinner
         android:id="@+id/deleteWalletAccountChoice"
-        android:layout_width="wrap_content"
-        android:layout_height="42dp"
-        android:layout_marginStart="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/Rediscover"
-        app:layout_constraintStart_toEndOf="@+id/DeleteWalletButton"
-        app:layout_constraintTop_toTopOf="@+id/DeleteWalletButton" />
+        android:layout_width="116dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="50dp"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toStartOf="@+id/AssessUnconfirmedButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiBchPreferNode" />
 
     <Switch
         android:id="@+id/GuiDeveloperView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
         android:gravity="bottom"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GuiBchPreferNode" />
+        app:layout_constraintBottom_toTopOf="@+id/clearIdentityDomains"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Switch
         android:id="@+id/GuiBchExclusiveNodeSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        android:layout_marginTop="36dp"
         android:gravity="bottom"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Rediscover" />
+        app:layout_constraintTop_toBottomOf="@+id/wordSeed" />
 
     <EditText
         android:id="@+id/GuiBchExclusiveNode"
-        android:layout_width="370dp"
-        android:layout_height="43dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:ems="10"
         android:gravity="bottom"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/GuiBchExclusiveNodeSwitch"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/GuiBchExclusiveNodeSwitch" />
 
     <EditText
         android:id="@+id/GuiBchPreferNode"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:ems="10"
         android:gravity="bottom"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/GuiBchPreferNodeSwitch"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/GuiBchPreferNodeSwitch" />
 
     <Switch
@@ -170,7 +153,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:gravity="bottom"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/GuiBchExclusiveNode" />
@@ -197,4 +180,36 @@
         app:layout_constraintBottom_toBottomOf="@+id/GuiBchPreferNodeSwitch"
         app:layout_constraintStart_toEndOf="@+id/GuiBchPreferNodeSwitch"
         app:layout_constraintTop_toTopOf="@+id/GuiBchPreferNodeSwitch" />
+
+    <Button
+        android:id="@+id/AssessUnconfirmedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:onClick="onAssessUnconfirmedButton"
+        android:text="@string/assessUnconfirmed"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Rediscover" />
+
+    <Button
+        android:id="@+id/DeleteWalletButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="28dp"
+        android:onClick="onDeleteAccountButton"
+        android:text="@string/deleteWalletAccount"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.045"
+        app:layout_constraintStart_toStartOf="@+id/AssessUnconfirmedButton"
+        app:layout_constraintTop_toBottomOf="@+id/AssessUnconfirmedButton" />
+
+    <Button
+        android:id="@+id/Rediscover"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:onClick="onRediscoverBlockchain"
+        android:text="@string/rediscoverWalletTx"
+        app:layout_constraintStart_toStartOf="@+id/AssessUnconfirmedButton"
+        app:layout_constraintTop_toBottomOf="@+id/GuiBchPreferNode" />
 </androidx.constraintlayout.widget.ConstraintLayout>

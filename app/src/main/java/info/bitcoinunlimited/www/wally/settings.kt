@@ -4,13 +4,16 @@ package info.bitcoinunlimited.www.wally
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import bitcoinunlimited.libbitcoincash.*
 import kotlinx.android.synthetic.main.activity_settings.*
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.util.logging.Logger
@@ -49,6 +52,31 @@ class Settings : AppCompatActivity()
     val accounts:MutableMap<String,Account>
         get() = app!!.accounts
 
+    var origTitle = String()
+    var origTitleBackground: ColorDrawable? = null  //* The app's title background color (I will sometimes overwrite it with a temporary error message)
+
+    /** Display an short notification string on the title bar, and then clear it after a bit */
+    fun displayNotice(resource: Int) = displayNotice(getString(resource))
+
+    /** Display an short notification string on the title bar, and then clear it after a bit */
+    fun displayNotice(msg: String, then: (()->Unit)? = null, time: Long = NOTICE_DISPLAY_TIME)
+    {
+        laterUI {
+            // This coroutine has to be limited to this thread because only the main thread can touch UI views
+            // Display the error by changing the title and title bar color temporarily
+            setTitle(msg);
+
+            var titlebar: View = findViewById(R.id.action_bar)
+            val errorColor = ContextCompat.getColor(applicationContext, R.color.notice)
+            titlebar.background = ColorDrawable(errorColor)
+
+            delay(time)
+            setTitle(origTitle)
+            origTitleBackground?.let { titlebar.background = it }
+            if (then != null) then()
+        }
+    }
+
     @Suppress("UNUSED_PARAMETER")
     fun onFiatChange(guiElem: View?): Boolean
     {
@@ -67,6 +95,12 @@ class Settings : AppCompatActivity()
         setContentView(R.layout.activity_settings)
 
         app = (getApplication() as WallyApp)
+
+        origTitle = title.toString()
+        var titlebar: View = findViewById(R.id.action_bar)
+        origTitleBackground = ColorDrawable(ContextCompat.getColor(applicationContext, R.color.titleBackground))
+
+        origTitleBackground?.let { titlebar.background = it }  // Set the title background color here, so we don't need to match the background defined in some resource file
 
         val preferenceDB:SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
 
@@ -205,9 +239,23 @@ class Settings : AppCompatActivity()
         if (coin == null) return
         GlobalScope.launch {
             // If you reset the wallet first, it'll start rediscovering the existing blockchain before it gets reset.
-            coin.wallet.blockchain.rediscover()
+            // coin.wallet.blockchain.rediscover()
             coin.wallet.rediscover()
         }
+        displayNotice(i18n(R.string.rediscoverNotice))
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    /** Reassess unconfirmed transactions */
+    public fun onAssessUnconfirmedButton(v: View)
+    {
+        val accountName = deleteWalletAccountChoice.selectedItem.toString()
+        val coin = accounts[accountName]
+        if (coin == null) return
+        GlobalScope.launch {
+            coin.wallet.reassessUnconfirmedTx()
+        }
+        displayNotice(i18n(R.string.unconfAssessmentNotice))
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -225,6 +273,7 @@ class Settings : AppCompatActivity()
             app?.saveActiveAccountList()
             account.delete()
             }
+        displayNotice(i18n(R.string.accountDeleteNotice))
     }
 
 }

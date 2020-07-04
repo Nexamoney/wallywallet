@@ -256,6 +256,9 @@ interface BlockHeaderDao
     @Query("SELECT * FROM pblockHeader WHERE height = :height")
     fun getAtHeight(height: Long): List<PBlockHeader>
 
+    // @Query("SELECT 1 FROM pblockHeader WHERE time < :epochTime ORDER BY time")
+    // fun getBefore(epochTime: Long): List<PBlockHeader>
+
     @Query("SELECT * FROM pblockHeader WHERE id = :blockid")
     abstract fun get(blockid: ByteArray): PBlockHeader?
 

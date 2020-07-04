@@ -129,7 +129,6 @@ class MainActivity : CommonActivity()
         val ctxt = PlatformContext(applicationContext)
         appContext = ctxt
 
-        appResources = getResources()
         SEND_ALL_TEXT = i18n(R.string.sendAll)
 
         sendToAddress.text.clear()
@@ -775,17 +774,20 @@ class MainActivity : CommonActivity()
     fun updateReceiveAddressUI(recvAddrStr: String, recvAddrQR: Bitmap)
     {
         dbgAssertGuiThread()
-        imageView.setImageBitmap(recvAddrQR)
-        receiveAddress.text = recvAddrStr
+        if (recvAddrStr != receiveAddress.text)  // Only update if something has changed
+        {
+            imageView.setImageBitmap(recvAddrQR)
+            receiveAddress.text = recvAddrStr
 
-        val receiveAddrSendIntent: Intent = Intent().apply {
+            val receiveAddrSendIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_TEXT, recvAddrStr)
                 type = "text/plain"
             }
 
-        laterUI {// somehow this code can cause the GUI to lock up for awhile
-            shareActionProvider?.setShareIntent(receiveAddrSendIntent)
+            laterUI {// somehow this code can cause the GUI to lock up for awhile
+                shareActionProvider?.setShareIntent(receiveAddrSendIntent)
+            }
         }
     }
 

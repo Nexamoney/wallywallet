@@ -29,6 +29,5 @@
         app:layout_constraintBottom_toBottomOf="@+id/domainNameText"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/domainNameText"
-        app:srcCompat="@color/colorPrimary" />
+        app:layout_constraintTop_toTopOf="@+id/domainNameText" />
 </androidx.constraintlayout.widget.ConstraintLayout>

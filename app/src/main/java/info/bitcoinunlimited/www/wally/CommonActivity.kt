@@ -226,7 +226,7 @@ open class CommonActivity : AppCompatActivity()
                 // visual bling that indicates text copied
                 v.text = i18n(R.string.copied)
                 // Set it back to the address after awhile
-                GlobalScope.launch {
+                asyncUI {
                     delay(3000);
                     v.text = addr
                 }

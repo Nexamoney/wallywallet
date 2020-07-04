@@ -62,6 +62,11 @@
     <string name="wordSeed">Wallet Backup Secrets</string>
     <string name="deleteWalletAccount">Delete Account</string>
     <string name="localCurrency">Local currency</string>
+    <string name="assessUnconfirmed">Assess Unconfirmed</string>
+    <string name="rediscoverNotice">Account rediscover started</string>
+    <string name="unconfAssessmentNotice">Unconfirmed assessment started</string>
+    <string name="accountDeleteNotice">Account deleted</string>
+
     <!-- Split bill -->
     <string name="Total">Total</string>
     <!-- Ways refers to how many equal portions a bill is being split into -->

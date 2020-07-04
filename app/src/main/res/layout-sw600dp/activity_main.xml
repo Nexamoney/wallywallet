@@ -36,7 +36,7 @@
     <TextView
         android:id="@+id/ReceiveTitle"
         android:layout_width="wrap_content"
-        android:layout_height="44dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginTop="12dp"
         android:text="@string/Receive"
@@ -48,7 +48,7 @@
         android:id="@+id/balanceTicker"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="10dp"
         android:clickable="true"
         android:gravity="center|center_vertical"
         android:onClick="onBalanceTickerClicked"
@@ -61,7 +61,7 @@
         android:id="@+id/balanceTicker2"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="20dp"
         android:clickable="true"
         android:gravity="center|center_vertical"
         android:onClick="onBalanceTickerClicked"
@@ -74,7 +74,7 @@
         android:id="@+id/balanceTicker3"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="20dp"
         android:clickable="true"
         android:gravity="center|center_vertical"
         android:onClick="onBalanceTickerClicked"
@@ -211,13 +211,15 @@
 
     <EditText
         android:id="@+id/sendQuantity"
-        android:layout_width="127dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:digits="abcdefghijklmnopqrstuvwxyz0123456789.,"
         android:ems="10"
         android:imeOptions="actionDone"
         android:inputType="numberDecimal"
-        android:digits="abcdefghijklmnopqrstuvwxyz0123456789.,"
+        app:layout_constraintEnd_toStartOf="@+id/sendCurrencyType"
         app:layout_constraintStart_toEndOf="@+id/amountText"
         app:layout_constraintTop_toBottomOf="@+id/sendToAddress" />
 
@@ -242,9 +244,13 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="264dp"
-        android:layout_height="252dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="4dp"
+        android:adjustViewBounds="false"
+        android:contentDescription="@string/receiveAddressQRCode"
         android:padding="0px"
         android:paddingStart="0px"
         android:paddingLeft="0px"
@@ -252,25 +258,24 @@
         android:paddingEnd="0px"
         android:paddingRight="0px"
         android:paddingBottom="0px"
-        android:scaleType="fitXY"
+        android:scaleType="fitCenter"
         android:scrollbars="none"
-        android:contentDescription="@string/receiveAddressQRCode"
         app:layout_constraintBottom_toTopOf="@+id/nav_view"
         app:layout_constraintEnd_toStartOf="@+id/divider2"
+        app:layout_constraintStart_toEndOf="@+id/purchaseButton"
         app:layout_constraintTop_toBottomOf="@+id/receiveAddress"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/ic_launcher_background" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <Spinner
         android:id="@+id/sendCurrencyType"
-        android:layout_width="85dp"
-        android:layout_height="34dp"
-        android:layout_marginStart="12dp"
+        android:layout_width="126dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="16dp"
         android:spinnerMode="dialog"
         app:layout_constraintBottom_toBottomOf="@+id/sendQuantity"
         app:layout_constraintEnd_toStartOf="@+id/divider2"
-        app:layout_constraintStart_toEndOf="@+id/sendQuantity"
-        app:layout_constraintTop_toTopOf="@+id/sendQuantity" />
+        app:layout_constraintTop_toTopOf="@+id/sendQuantity"
+        app:layout_constraintVertical_bias="0.357" />
 
     <Spinner
         android:id="@+id/sendCoinType"
@@ -296,13 +301,10 @@
         android:id="@+id/sendToAddress"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:autoSizeMaxTextSize="20sp"
-        android:autoSizeMinTextSize="8sp"
-        android:autoSizeStepGranularity="1sp"
-        android:autoSizeTextType="uniform"
         android:inputType="textPersonName"
-        android:text="destination address here"
+        android:text=""
         android:textAlignment="center"
+        android:textSize="13sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/divider2"
         app:layout_constraintHorizontal_bias="0.0"
@@ -313,9 +315,10 @@
         android:id="@+id/readQRCodeButton"
         android:layout_width="66dp"
         android:layout_height="66dp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView"
-        app:layout_constraintEnd_toStartOf="@+id/imageView"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/purchaseButton"
+        app:layout_constraintStart_toStartOf="@+id/purchaseButton"
+        app:layout_constraintTop_toBottomOf="@+id/purchaseButton"
         app:srcCompat="@drawable/ic_scanqricon" />
 
     <ImageButton
@@ -354,22 +357,20 @@
         android:id="@+id/purchaseButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
         android:layout_marginTop="16dp"
         android:onClick="onPurchaseButton"
         android:text="@string/purchase"
-        app:layout_constraintEnd_toStartOf="@+id/imageView"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/splitBillButton"
+        app:layout_constraintStart_toStartOf="@+id/splitBillButton"
         app:layout_constraintTop_toBottomOf="@+id/splitBillButton" />
 
     <Button
         android:id="@+id/splitBillButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="20dp"
         android:onClick="onSplitBill"
         android:text="@string/title_split_bill"
-        app:layout_constraintEnd_toStartOf="@+id/imageView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/imageView" />
 

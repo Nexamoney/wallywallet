@@ -23,22 +23,25 @@ val LanHostIP = "192.168.1.100"
 
 private val LogIt = Logger.getLogger("bitcoinunlimited.app")
 
-open class PrimaryWalletInvalidException(): BUException("Primary wallet not defined or currently unavailable", "not ready", ErrorSeverity.Abnormal)
+open class PrimaryWalletInvalidException() : BUException("Primary wallet not defined or currently unavailable", "not ready", ErrorSeverity.Abnormal)
 
 var coinsCreated = false
 
 /** Currently selected fiat currency code */
-var fiatCurrencyCode:String = "USD"
+var fiatCurrencyCode: String = "USD"
 
 /** Database name prefix, empty string for mainnet, set for testing */
-var dbPrefix = if (RunningTheTests()) "guitest_" else if (REG_TEST_ONLY==true) "regtest_" else ""
+var dbPrefix = if (RunningTheTests()) "guitest_" else if (REG_TEST_ONLY == true) "regtest_" else ""
 
 val SupportedBlockchains = if (INCLUDE_NEXTCHAIN)
-    mapOf("BCH (Bitcoin Cash)" to ChainSelector.BCHMAINNET, "NXC (NextChain)" to ChainSelector.NEXTCHAIN, "TBCH (Testnet Bitcoin Cash)" to ChainSelector.BCHTESTNET, "RBCH (Regtest Bitcoin Cash)" to ChainSelector.BCHREGTEST)
-  else
+    mapOf("BCH (Bitcoin Cash)" to ChainSelector.BCHMAINNET,
+        "NXC (NextChain)" to ChainSelector.NEXTCHAIN,
+        "TBCH (Testnet Bitcoin Cash)" to ChainSelector.BCHTESTNET,
+        "RBCH (Regtest Bitcoin Cash)" to ChainSelector.BCHREGTEST)
+else
     mapOf("BCH (Bitcoin Cash)" to ChainSelector.BCHMAINNET, "TBCH (Testnet Bitcoin Cash)" to ChainSelector.BCHTESTNET, "RBCH (Regtest Bitcoin Cash)" to ChainSelector.BCHREGTEST)
 
-val ChainSelectorToSupportedBlockchains = SupportedBlockchains.entries.associate{(k,v)-> v to k}
+val ChainSelectorToSupportedBlockchains = SupportedBlockchains.entries.associate { (k, v) -> v to k }
 
 // What is the default wallet and blockchain to use for most functions (like identity)
 val PRIMARY_WALLET = if (REG_TEST_ONLY) "mRBCH" else "mBCH"
@@ -51,106 +54,120 @@ fun MakeNewWallet(name: String, chain: ChainSelector): Bip44Wallet
         return Bip44Wallet(walletDb!!, name, chain, "trade box today light need route design birth turn insane oxygen sense")
     if (chain == ChainSelector.BCHTESTNET)
         return Bip44Wallet(walletDb!!, name, chain, NEW_WALLET)
-        //return Bip44Wallet(currencyCode, chain, "")
+    //return Bip44Wallet(currencyCode, chain, "")
     if (chain == ChainSelector.BCHMAINNET)
         return Bip44Wallet(walletDb!!, name, chain, NEW_WALLET)
     //return Bip44Wallet(currencyCode, chain, "")
     throw BUException("invalid chain selected")
 }
 
-// TODO: Right now we create new ones, but in the future reuse an existing
-fun GetCnxnMgr(chain: ChainSelector, name:String?=null): CnxnMgr
+
+var cnxnMgrs: MutableMap<ChainSelector, CnxnMgr> = mutableMapOf()
+fun GetCnxnMgr(chain: ChainSelector, name: String? = null): CnxnMgr
 {
-    LogIt.info(sourceLoc() + " " + "Get Cnxn Manager")
-    return when(chain)
+    synchronized(cnxnMgrs)
     {
-    ChainSelector.BCHTESTNET      -> MultiNodeCnxnMgr(name ?: "mTBCH", ChainSelector.BCHTESTNET, arrayOf("testnet-seed.bitcoinabc.org"))
-    ChainSelector.BCHMAINNET      -> MultiNodeCnxnMgr(name ?: "mBCH", ChainSelector.BCHMAINNET, arrayOf("seed.bitcoinunlimited.net", "btccash-seeder.bitcoinunlimited.info"))
-    ChainSelector.BCHREGTEST      -> MultiNodeCnxnMgr(name ?: "mRBCH", ChainSelector.BCHREGTEST, arrayOf(SimulationHostIP))
-    ChainSelector.NEXTCHAIN       -> MultiNodeCnxnMgr(name ?: "mNXC", ChainSelector.NEXTCHAIN, arrayOf("node1.nextchain.cash:7228"))
-    else                          -> throw BadCryptoException()
+        LogIt.info(sourceLoc() + " " + "Get Cnxn Manager")
+        val existing = cnxnMgrs[chain]
+        if (existing != null) return existing
+
+        val result = when (chain)
+        {
+            ChainSelector.BCHTESTNET -> MultiNodeCnxnMgr(name ?: "TBCH", ChainSelector.BCHTESTNET, arrayOf("testnet-seed.bitcoinabc.org"))
+            ChainSelector.BCHMAINNET -> MultiNodeCnxnMgr(name ?: "BCH", ChainSelector.BCHMAINNET, arrayOf("seed.bitcoinunlimited.net", "btccash-seeder.bitcoinunlimited.info"))
+            ChainSelector.BCHREGTEST -> MultiNodeCnxnMgr(name ?: "RBCH", ChainSelector.BCHREGTEST, arrayOf(SimulationHostIP))
+            ChainSelector.NEXTCHAIN  -> MultiNodeCnxnMgr(name ?: "NXC", ChainSelector.NEXTCHAIN, arrayOf("node1.nextchain.cash:7228"))
+            else                     -> throw BadCryptoException()
+        }
+        cnxnMgrs[chain] = result
+        return result
     }
 }
 
-fun ElectrumServerOn(chain: ChainSelector): Pair<String,Int>
+fun ElectrumServerOn(chain: ChainSelector): Pair<String, Int>
 {
-    return when(chain)
+    return when (chain)
     {
         ChainSelector.BCHMAINNET -> Pair("electrumserver.seed.bitcoinunlimited.net", DEFAULT_ELECTRUM_SERVER_PORT)
         ChainSelector.BCHTESTNET -> Pair("159.65.163.15", DEFAULT_ELECTRUM_SERVER_PORT)
         ChainSelector.BCHREGTEST -> Pair(SimulationHostIP, DEFAULT_ELECTRUM_SERVER_PORT)
-        ChainSelector.NEXTCHAIN -> Pair("electrumserver.seed.nextchain.cash", 7229)
-        ChainSelector.BCHNOLNET -> throw BadCryptoException()
+        ChainSelector.NEXTCHAIN  -> Pair("electrumserver.seed.nextchain.cash", 7229)
+        ChainSelector.BCHNOLNET  -> throw BadCryptoException()
     }
 }
 
-// TODO: Right now we create new ones, but in the future reuse an existing
-fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: PlatformContext, name:String?=null): Blockchain
+var blockchains: MutableMap<ChainSelector, Blockchain> = mutableMapOf()
+fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: PlatformContext, name: String? = null): Blockchain
 {
-    // Blockchain(val chainId: ChainSelector, val name: String, net: CnxnMgr, val genesisBlockHash: Hash256, var checkpointPriorBlockId: Hash256, var checkpointId: Hash256, var checkpointHeight: Long, var checkpointWork: BigInteger, val context: PlatformContext)
-    //"mBR1" -> Blockchain(ChainSelector.BCHREGTEST, "BR1", cnxnMgr, Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"), Hash256(), Hash256(), -1, -1.toBigInteger(), context)
-    //"mBR2" -> Blockchain(ChainSelector.BCHREGTEST, "BR2", cnxnMgr, Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"), Hash256(), Hash256(), -1, -1.toBigInteger(), context)
-    // testnet fork: "mTBCH"
-    LogIt.info(sourceLoc() + " " + "Get Blockchain")
-    return when(chainSelector)
-    {
-        ChainSelector.BCHTESTNET -> Blockchain(
-            ChainSelector.BCHTESTNET,
-            name ?: "mTBCH",
-            cnxnMgr,
-            Hash256("000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"),
-            Hash256("000000000003cab8d8465f4ea4efcb15c28e5eed8e514967883c085351c5b134"),
-            Hash256("000000000005ae0f3013e89ce47b6f949ae489d90baf6621e10017490f0a1a50"),
-            1348366,
-            "52bbf4d7f1bcb197f2".toBigInteger(16),
-            context, dbPrefix
-        )
 
-        // Regtest for use alongside testnet
-        ChainSelector.BCHREGTEST -> Blockchain(
-            ChainSelector.BCHREGTEST,
-            name ?: "mRBCH",
-            cnxnMgr,
-            // If checkpointing the genesis block, set the prior block id to the genesis block as well
-            Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
-            Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
-            Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
-            0,
-            0.toBigInteger(),
-            context, dbPrefix
-        )
-        // Bitcoin Cash mainnet chain
-        ChainSelector.BCHMAINNET -> Blockchain(
-            ChainSelector.BCHMAINNET,
-            name ?:"mBCH",
-            cnxnMgr,
-            Hash256("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"),
-            Hash256("000000000000000002cba5eaabc2293a3f5b89396258654fa456c29dbcca7b77"),
-            Hash256("0000000000000000029f7923ddb3937d3993a59f3bcc2efbfb7de4eb9e5df276"),
-            614195,
-            "10f8ce72b89feefe6f294c5".toBigInteger(16),
-            context, dbPrefix
-        )
-        // Bitcoin Cash mainnet chain
-        ChainSelector.NEXTCHAIN -> Blockchain(
-            ChainSelector.NEXTCHAIN,
-            name ?:"mNXC",
-            cnxnMgr,
-            Hash256("9623194f62f31f7a7065467c38e83cf060a2b866190204f3dd16f6587d8d9374"),
-            Hash256("9623194f62f31f7a7065467c38e83cf060a2b866190204f3dd16f6587d8d9374"),
-            Hash256("4db8c91181548fb427e1e8c6faa822ed4586263f0698b1357a8f7ee78004a924"),
-            1,
-            0x100101.toBigInteger(),
-            context, dbPrefix
-        )
-        else                     -> throw BadCryptoException()
+    synchronized(blockchains)
+    {
+        LogIt.info(sourceLoc() + " " + "Get Blockchain")
+        val existing = blockchains[chainSelector]
+        if (existing != null) return existing
+        val result = when (chainSelector)
+        {
+            ChainSelector.BCHTESTNET -> Blockchain(
+                ChainSelector.BCHTESTNET,
+                name ?: "TBCH",
+                cnxnMgr,
+                Hash256("000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"),
+                Hash256("000000000003cab8d8465f4ea4efcb15c28e5eed8e514967883c085351c5b134"),
+                Hash256("000000000005ae0f3013e89ce47b6f949ae489d90baf6621e10017490f0a1a50"),
+                1348366,
+                "52bbf4d7f1bcb197f2".toBigInteger(16),
+                context, dbPrefix
+            )
+
+            // Regtest for use alongside testnet
+            ChainSelector.BCHREGTEST -> Blockchain(
+                ChainSelector.BCHREGTEST,
+                name ?: "RBCH",
+                cnxnMgr,
+                // If checkpointing the genesis block, set the prior block id to the genesis block as well
+                Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
+                Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
+                Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
+                0,
+                0.toBigInteger(),
+                context, dbPrefix
+            )
+            // Bitcoin Cash mainnet chain
+            ChainSelector.BCHMAINNET -> Blockchain(
+                ChainSelector.BCHMAINNET,
+                name ?: "BCH",
+                cnxnMgr,
+                genesisBlockHash = Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
+                checkpointPriorBlockId = Hash256("000000000000000000cc4d859bd0a2c2cf46aa6cf821986c9895b78d65162bbb"),
+                checkpointId = Hash256("000000000000000002c310db434163004e28d7cb25dcfb45a90653f179519336"),
+                checkpointHeight = 642337,
+                checkpointWork = "13a2a5fc1efbc0514731aa5".toBigInteger(16),
+                context = context, dbPrefix = dbPrefix
+            )
+            // Bitcoin Cash mainnet chain
+            ChainSelector.NEXTCHAIN  -> Blockchain(
+                ChainSelector.NEXTCHAIN,
+                name ?: "NXC",
+                cnxnMgr,
+                Hash256("9623194f62f31f7a7065467c38e83cf060a2b866190204f3dd16f6587d8d9374"),
+                Hash256("9623194f62f31f7a7065467c38e83cf060a2b866190204f3dd16f6587d8d9374"),
+                Hash256("4db8c91181548fb427e1e8c6faa822ed4586263f0698b1357a8f7ee78004a924"),
+                1,
+                0x100101.toBigInteger(),
+                context, dbPrefix
+            )
+            else                     -> throw BadCryptoException()
+        }
+        blockchains[chainSelector] = result
+        return result
     }
 }
 
-class Account(val name: String, //* The name of this account
-              val context: PlatformContext,
-              chainSelector: ChainSelector? = null,
-              secretWords: String? = null
+class Account(
+    val name: String, //* The name of this account
+    val context: PlatformContext,
+    chainSelector: ChainSelector? = null,
+    secretWords: String? = null
 )
 {
     val tickerGUI = Reactive<String>("") // Where to show the crypto's ticker
@@ -193,7 +210,7 @@ class Account(val name: String, //* The name of this account
     val currencyCode: String = chainToMilliCurrencyCode[wallet.chainSelector]!!
 
     // If this coin's receive address is shown on-screen, this is not null
-    var updateReceiveAddressUI: ((Account)->Unit)? = null
+    var updateReceiveAddressUI: ((Account) -> Unit)? = null
 
     /** loading existing wallet */
     init
@@ -201,7 +218,7 @@ class Account(val name: String, //* The name of this account
         val hundredThousand = CurrencyDecimal(SATinMBCH)
         wallet.prepareDestinations(2, 2)  // Make sure that there is at least a few addresses before we hook into the network
         LogIt.info("wallet add blockchain")
-        wallet.addBlockchain(chain, chain.nearTip, chain.checkpointHeight) // Since this is a new ram wallet (new private keys), there cannot be any old blocks with transactions
+        wallet.addBlockchain(chain, chain.checkpointHeight)
         LogIt.info("wallet add blockchain done")
         if (chainSelector != ChainSelector.NEXTCHAIN)  // no fiat price for nextchain
         {
@@ -219,10 +236,12 @@ class Account(val name: String, //* The name of this account
             return "https://explorer.bitcoinunlimited.info/tx/" + txHex //"https://blockchair.com/bitcoin-cash/transaction/" + txHex
         if (wallet.chainSelector == ChainSelector.BCHTESTNET)
             return "http://testnet.imaginary.cash/tx/" + txHex
+        if (wallet.chainSelector == ChainSelector.NEXTCHAIN)
+            return "http://explorer.nextchain.cash/tx/" + txHex
         return null
     }
 
-    //? Completely delete this wallet, losing any money you may have in it
+    //? Completely delete this wallet, rendering any money you may have in it inaccessible unless the wallet is restored from backup words
     fun delete()
     {
         currentReceive = null
@@ -249,16 +268,16 @@ class Account(val name: String, //* The name of this account
     }
 
     fun RegtestIP(): String
+    {
+        val wm = context.context.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        val ip = wm.connectionInfo.ipAddress
+        LogIt.info("My IP" + ip.toString())
+        if ((ip and 255) == 192)
         {
-            val wm = context.context.getSystemService(Context.WIFI_SERVICE) as WifiManager
-            val ip = wm.connectionInfo.ipAddress
-            LogIt.info("My IP" + ip.toString())
-            if ((ip and 255) == 192)
-            {
-                return LanHostIP
-            }
-            else return SimulationHostIP
+            return LanHostIP
         }
+        else return SimulationHostIP
+    }
 
     //? Set the user interface elements for this cryptocurrency
     fun setUI(ticker: TextView?, balance: TextView?, unconf: TextView?, infoView: TextView?)
@@ -270,23 +289,23 @@ class Account(val name: String, //* The name of this account
     }
 
     //? Convert the default display units to the finest granularity of this currency.  For example, mBCH to Satoshis
-    fun toFinestUnit(amount: BigDecimal):Long
+    fun toFinestUnit(amount: BigDecimal): Long
     {
         val ret = amount * SATinMBCH.toBigDecimal()
         return ret.toLong()
     }
 
     //? Convert the finest granularity of this currency to the default display unit.  For example, Satoshis to mBCH
-    fun fromFinestUnit(amount: Long):BigDecimal
+    fun fromFinestUnit(amount: Long): BigDecimal
     {
         val ret = BigDecimal(amount, currencyMath).setScale(currencyScale) / SATinMBCH.toBigDecimal()
         return ret
     }
 
     //? Convert a value in this currency code unit into its primary unit
-    fun toPrimaryUnit(qty: BigDecimal):BigDecimal
+    fun toPrimaryUnit(qty: BigDecimal): BigDecimal
     {
-        return qty/(1000.toBigDecimal())
+        return qty / (1000.toBigDecimal())
     }
 
     //? Convert the passed quantity to a string in the decimal format suitable for this currency
@@ -295,9 +314,9 @@ class Account(val name: String, //* The name of this account
 
     data class ReceiveInfoResult(val addrString: String?, val qr: Bitmap?)
 
-    suspend fun ifUpdatedReceiveInfo(sz: Int, refresh:(String,Bitmap) -> Unit) = onUpdatedReceiveInfo(sz, refresh)
+    suspend fun ifUpdatedReceiveInfo(sz: Int, refresh: (String, Bitmap) -> Unit) = onUpdatedReceiveInfo(sz, refresh)
 
-    suspend fun onUpdatedReceiveInfo(sz: Int, refresh:((String,Bitmap) -> Unit)): Unit
+    suspend fun onUpdatedReceiveInfo(sz: Int, refresh: ((String, Bitmap) -> Unit)): Unit
     {
         currentReceive.let {
             val addr: PayAddress? = it?.address
@@ -323,7 +342,7 @@ class Account(val name: String, //* The name of this account
 
     //? Return a string and bitmap that corresponds to the current receive address, with a suggested quantity specified in the URI's standard units, i.e BCH.
     //? Provide qty in this currency code's units (i.e. mBCH)
-    fun receiveInfoWithQuantity(qty: BigDecimal, sz:Int, refresh:((ReceiveInfoResult) -> Unit))
+    fun receiveInfoWithQuantity(qty: BigDecimal, sz: Int, refresh: ((ReceiveInfoResult) -> Unit))
     {
         GlobalScope.launch {
             val addr = currentReceive?.address
@@ -338,7 +357,7 @@ class Account(val name: String, //* The name of this account
     {
         var im = currentReceiveQR
         val cr = currentReceive
-        if ((im == null)&&(cr != null))
+        if ((im == null) && (cr != null))
         {
             im = textToQREncode(cr.address.toString(), sz + 200)
             currentReceiveQR = im
@@ -378,7 +397,11 @@ class Account(val name: String, //* The name of this account
 
             val cnxnLst = wallet.chainstate?.chain?.net?.mapConnections() { it.name }
             val peers = cnxnLst?.joinToString(", ")
-            infoGUI("at " + (wallet.chainstate?.syncedHash?.toHex()?.takeLast(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight ?:"") + " of " + (wallet.chainstate?.chain?.curHeight?:"") + " blocks, " + (wallet.chainstate?.chain?.net?.numPeers()?:"") + " peers\n" + peers, force)
+            infoGUI(force,
+                {
+                    "at " + (wallet.chainstate?.syncedHash?.toHex()?.takeLast(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight ?: "") + " of " + (wallet.chainstate?.chain?.curHeight
+                        ?: "") + " blocks, " + (wallet.chainstate?.chain?.net?.numPeers() ?: "") + " peers\n" + peers
+                })
 
             tickerGUI(name, force)
         }
@@ -403,12 +426,13 @@ class Account(val name: String, //* The name of this account
 }
 
 
-class WallyApp: Application()
+class WallyApp : Application()
 {
     companion object
     {
         // Used to load the 'native-lib' library on application startup.
-        init {
+        init
+        {
             //System.loadLibrary("native-lib")
             System.loadLibrary("bitcoincashandroid")
         }
@@ -416,9 +440,9 @@ class WallyApp: Application()
 
     val init = Initialize.LibBitcoinCash(ChainSelector.BCHTESTNET.v)  // Initialize the C library first
 
-    val accounts:MutableMap<String,Account> = mutableMapOf()
+    val accounts: MutableMap<String, Account> = mutableMapOf()
 
-    val primaryWallet:Wallet
+    val primaryWallet: Wallet
         get()
         {
             // return the wallet named "mBCH"
@@ -437,7 +461,7 @@ class WallyApp: Application()
         // Check to see if our preferred crypto matches first
         for (account in accounts.values)
         {
-            if ((account.name == defaultAccount)&&(chain == account.wallet.chainSelector)) return account
+            if ((account.name == defaultAccount) && (chain == account.wallet.chainSelector)) return account
         }
 
         // Look for any match
@@ -466,7 +490,7 @@ class WallyApp: Application()
 
     fun saveActiveAccountList()
     {
-        val s:String = accounts.keys.joinToString(",")
+        val s: String = accounts.keys.joinToString(",")
 
         val db = walletDb!!
 
@@ -519,11 +543,11 @@ class WallyApp: Application()
         val ctxt = PlatformContext(applicationContext)
 
         walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-
+        appResources = getResources()
         val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
 
-        val BchExclusiveNode:String? = if (prefs.getBoolean(BCH_EXCLUSIVE_NODE_SWITCH, false)) prefs.getString(BCH_EXCLUSIVE_NODE, null) else null
-        val BchPreferredNode:String? = if (prefs.getBoolean(BCH_PREFER_NODE_SWITCH, false)) prefs.getString(BCH_PREFER_NODE, null) else null
+        val BchExclusiveNode: String? = if (prefs.getBoolean(BCH_EXCLUSIVE_NODE_SWITCH, false)) prefs.getString(BCH_EXCLUSIVE_NODE, null) else null
+        val BchPreferredNode: String? = if (prefs.getBoolean(BCH_PREFER_NODE_SWITCH, false)) prefs.getString(BCH_PREFER_NODE, null) else null
 
 
         if (!RunningTheTests())  // If I'm running the unit tests, don't create any wallets since the tests will do so
@@ -534,10 +558,13 @@ class WallyApp: Application()
                 if (REG_TEST_ONLY)  // If I want a regtest only wallet for manual debugging, just create it directly
                 {
                     accounts.getOrPut("mRBCH") {
-                        try {
+                        try
+                        {
                             val c = Account("mRBCH", ctxt);
                             c
-                        } catch (e: DataMissingException) {
+                        }
+                        catch (e: DataMissingException)
+                        {
                             val c = Account("mRBCH", ctxt, ChainSelector.BCHREGTEST)
                             c
                         }
@@ -552,7 +579,7 @@ class WallyApp: Application()
                     {
                         db.get("activeAccountNames")
                     }
-                    catch(e: DataMissingException)
+                    catch (e: DataMissingException)
                     {
                         byteArrayOf()
                     }
@@ -566,7 +593,7 @@ class WallyApp: Application()
                             val ac = Account(name, ctxt)
                             accounts[ac.name] = ac
                         }
-                        catch(e:DataMissingException)
+                        catch (e: DataMissingException)
                         {
                             LogIt.warning(sourceLoc() + " " + name + ": Active account $name was not found in the database")
                             // Nothing to really do but ignore the missing account
@@ -587,7 +614,9 @@ class WallyApp: Application()
                             val split = SplitIpPort(BchExclusiveNode, BlockchainPort[ChainSelector.BCHMAINNET]!!)
                             c.cnxnMgr.exclusiveNode(split.first, split.second)
                         }
-                        catch(e: Exception) {} // bad IP:port data
+                        catch (e: Exception)
+                        {
+                        } // bad IP:port data
                     }
                     // If I have a preferred connection, then start up that way
                     if ((BchPreferredNode != null) && (c.chain.chainSelector == ChainSelector.BCHMAINNET))
@@ -597,7 +626,9 @@ class WallyApp: Application()
                             val split = SplitIpPort(BchPreferredNode, BlockchainPort[ChainSelector.BCHMAINNET]!!)
                             c.cnxnMgr.preferNode(split.first, split.second)
                         }
-                        catch(e: Exception) {} // bad IP:port data provided by user
+                        catch (e: Exception)
+                        {
+                        } // bad IP:port data provided by user
                     }
 
                     c.start(applicationContext)
@@ -610,7 +641,7 @@ class WallyApp: Application()
 
     // Called by the system when the device configuration changes while your component is running.
     // Overriding this method is totally optional!
-    override fun onConfigurationChanged ( newConfig : Configuration)
+    override fun onConfigurationChanged(newConfig: Configuration)
     {
         super.onConfigurationChanged(newConfig)
     }
