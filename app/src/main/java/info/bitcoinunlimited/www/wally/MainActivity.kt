@@ -365,8 +365,13 @@ class MainActivity : CommonActivity()
                 // Periodically updating GUI stuff
                 updateGUI()
             }
+        }
 
-
+        if (app?.firstRun == true)
+        {
+            LogIt.info("starting welcome activity")
+            var intent = Intent(this, Welcome::class.java)
+            startActivity(intent)
         }
 
     }

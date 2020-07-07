@@ -20,10 +20,19 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".Welcome"
+            android:label="@string/title_activity_welcome"
+            android:launchMode="singleTask"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="info.bitcoinunlimited.www.wally.MainActivity" />
+        </activity>
+        <activity
             android:name=".IdentitySettings"
             android:label="@string/title_activity_identity_settings"
             android:launchMode="singleTask"
-            android:parentActivityName=".IdentityActivity"></activity>
+            android:parentActivityName=".IdentityActivity" />
         <activity
             android:name=".NewAccount"
             android:label="@string/title_activity_new_account"

@@ -428,6 +428,8 @@ class Account(
 
 class WallyApp : Application()
 {
+    var firstRun = false
+
     companion object
     {
         // Used to load the 'native-lib' library on application startup.
@@ -581,8 +583,10 @@ class WallyApp : Application()
                     }
                     catch (e: DataMissingException)
                     {
+                        firstRun = true
                         byteArrayOf()
                     }
+                    if (accountNames.size == 0) firstRun = true // Ok maybe not first run but no wallets
 
                     val accountNameList = String(accountNames).split(",")
                     for (name in accountNameList)
