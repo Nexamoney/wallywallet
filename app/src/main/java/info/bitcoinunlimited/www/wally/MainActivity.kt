@@ -917,40 +917,41 @@ class MainActivity : CommonActivity()
         {
             if (result.contents != null)
             {
-                val QRstring = result.contents.toString()
-                // TODO parse other QR code formats
-                LogIt.info("QR result: " + QRstring)
+                laterUI {
+                    displayNotice(R.string.scanSuccess)
+                    delay(2000)
+                    val QRstring = result.contents.toString()
+                    // TODO parse other QR code formats
+                    LogIt.info("QR result: " + QRstring)
 
-                val uri = QRstring.split(":")[0]
-                if (uri == IDENTITY_URI_SCHEME)
-                {
-                    LogIt.info("starting identity operation activity")
-                    var intent = Intent(this, IdentityOpActivity::class.java)
-                    intent.data = Uri.parse(QRstring)
-                    startActivityForResult(intent, IDENTITY_OP_RESULT)
-                    return
-                }
-                else
-                {
-                    try
+                    val uri = QRstring.split(":")[0]
+                    if (uri == IDENTITY_URI_SCHEME)
                     {
-                        handleSendURI(result.contents)
-                    }
-                    catch(e:UnknownBlockchainException)
-                    {
-                        LogIt.info("QR contents invalid: " + QRstring)
-                        displayError(R.string.badAddress)
-                        return
-                    }
-                }
+                        LogIt.info("starting identity operation activity")
+                        var intent = Intent(this, IdentityOpActivity::class.java)
+                        intent.data = Uri.parse(QRstring)
+                        startActivityForResult(intent, IDENTITY_OP_RESULT)
 
+                    }
+                    else
+                    {
+                        try
+                        {
+                            handleSendURI(result.contents)
+                        }
+                        catch (e: UnknownBlockchainException)
+                        {
+                            LogIt.info("QR contents invalid: " + QRstring)
+                            displayError(R.string.badAddress)
+                        }
+                    }
+                }
+                return
             }
             else
             {
-                laterUI {
-                    sendToAddress.text.clear()
-                    sendToAddress.text.append(i18n(R.string.scanFailed))
-                }
+                displayError(R.string.scanFailed)
+
             }
         }
         else
@@ -1024,7 +1025,7 @@ class MainActivity : CommonActivity()
                     // visual bling that indicates text copied
                     receiveAddress.text = i18n(R.string.copied)
                     laterUI {
-                        delay(3000); accounts[defaultAccount]?.let { updateReceiveAddressUI(it) }
+                        delay(5000); accounts[defaultAccount]?.let { updateReceiveAddressUI(it) }
                     }
                 }
                 else throw UnavailableException(R.string.receiveAddressUnavailable)
@@ -1044,7 +1045,6 @@ class MainActivity : CommonActivity()
         startActivity(intent)
         return true
     }
-
 
     /** Create and post a transaction when the send button is pressed */
     fun onBalanceTickerClicked(view: View)

@@ -164,4 +164,12 @@ class DomainIdentitySettings : CommonActivity()
         setResult(Activity.RESULT_OK, intent)
         super.onBackPressed()
     }
+
+    fun onNextButton(view: View)
+    {
+        upsertDomainIdentity()
+        intent.putExtra("repeat", "true") // Tell identityOp not to come back here
+        setResult(Activity.RESULT_OK, intent)
+        finish()
+    }
 }

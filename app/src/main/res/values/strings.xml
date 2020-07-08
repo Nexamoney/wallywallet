@@ -89,7 +89,7 @@
     <string name="scanPaymentQRcode">Scan payment address QR code</string>
     <string name="ScanQRCodeButton">Scan a QR code</string>
     <string name="PasteDestinationAddressButton">Paste</string>
-    <string name="NewAccountButton">New Account</string>
+    <string name="NewAccountButton">New Account Setup</string>
     <string name="receiveAddressQRCode">receive QR code</string>
     <string name="paymentProposal">as per received payment proposal</string>
     <!-- You clicked the paste button (in a copy/paste operation), but nothing was copied -->
@@ -112,6 +112,7 @@
     <string name="actuallySendingT" formatted="false">actually sending %qty %crypto</string>
     <string name="copied">...copied to clipboard...</string>
     <string name="scanFailed">scan failed</string>
+    <string name="scanSuccess">scan succeeded</string>
     <string name="sendSuccess">send successful</string>
     <string name="sendQuantityHint">send quantity</string>
     <string name="sendToAddressHint">destination address</string>
@@ -181,7 +182,7 @@
     <string name="AccountNameHint">1-8 letters</string>
     <string name="Blockchain">Blockchain</string>
     <string name="AccountRecoveryPhrase">Recovery Phrase</string>
-    <string name="LeaveEmptyNewWallet">Leave empty to create a new wallet</string>
+    <string name="LeaveEmptyNewWallet">Leave empty when first creating a new wallet</string>
     <string name="createAccount">create account</string>
     <string name="invalidRecoveryPhrase">bad recovery phrase</string>
     <string name="invalidAccountName">invalid name</string>
@@ -289,7 +290,7 @@
     <string name="welcome1Label">Welcome</string>
     <string name="welcome1">Welcome to Wally, a Bitcoin Cash wallet!\n\nIn the following screens you will set up your first BCH (Bitcoin Cash) account and set up other services such as password management.\n\nOr you can hit the back arrow to skip this guided setup.</string>
     <string name="welcome2_title">BCH Account Setup</string>
-    <string name="welcome2">In the next screen, you will set up your first Bitcoin Cash account.\n\nThis account contains your BCH money, password manager passwords, and any other secrets needed by other services.</string>
+    <string name="welcome2">In the next screen, you will set up your first Bitcoin Cash account.\n\nThis account contains your BCH money and password manager passwords.</string>
     <string name="welcome3_title">BCH Account Secret</string>
     <string name="welcome3">This account can be restored or moved to another device via a secret phrase displayed below.  Write this phrase down and keep it somewhere secure right now.\n\nIn Bitcoin, YOU must take responsibility!\n\nIf you lose this phrase it is absolutely impossible to recover your account.  If it is stolen from you, the thief can take all your funds and impersonate you to any connected services.\nThis may sound scary, but it has a big advantage: your money is on this phone and in your backup and nowhere else.\n\nSo it is yours and only yours.  No one can hack some corporate database and steal your money and no one can interfere with you spending your money.\n\nJust like money in your physical wallet.\n\nIf this responsibility is scary to you, treat this wallet like you would your physical wallet -- don\'t keep much money in it.</string>
     <string name="welcome4_title">Identity</string>

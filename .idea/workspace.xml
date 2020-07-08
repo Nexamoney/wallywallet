@@ -11,56 +11,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="93b3f44b-6791-4520-ad38-6da4e0a30d33" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_activity_activity_1_0_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_activity_activity_ktx_1_0_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_annotation_annotation_1_1_0_jar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_collection_collection_1_1_0_jar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_fragment_fragment_1_1_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_fragment_fragment_ktx_1_1_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_lifecycle_lifecycle_viewmodel_ktx_2_1_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_navigation_navigation_common_2_1_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_navigation_navigation_common_ktx_2_1_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_navigation_navigation_fragment_2_1_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_navigation_navigation_fragment_ktx_2_1_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_navigation_navigation_runtime_2_1_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_navigation_navigation_runtime_ktx_2_1_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_navigation_navigation_ui_2_1_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_navigation_navigation_ui_ktx_2_1_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_savedstate_savedstate_1_0_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/navEditor.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/Welcome.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_welcome.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/content_welcome.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/welcomef1.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/welcomef3.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/welcomef4.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/navigation/nav_graph.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_activity_activity_1_0_0_beta01_aar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_annotation_annotation_1_1_0_rc01_jar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_collection_collection_1_1_0_rc01_jar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_core_core_1_1_0_rc01_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_core_core_1_1_0_aar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_fragment_fragment_1_1_0_beta01_aar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_savedstate_savedstate_1_0_0_beta01_aar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_transition_transition_1_0_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_transition_transition_1_0_1_aar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_versionedparcelable_versionedparcelable_1_1_0_rc01_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_versionedparcelable_versionedparcelable_1_1_0_aar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/app/app.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/DomainIdentitySettings.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/DomainIdentitySettings.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/MainActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/WallyApp.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/WallyApp.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_domain_identity_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_domain_identity_settings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_new_account.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_new_account.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/styles.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/styles.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gasAndroid.iml" beforeDir="false" afterPath="$PROJECT_DIR$/gasAndroid.iml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="Pixel_3_API_28" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="252bc16cb90d7ece" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -531,45 +494,45 @@
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state x="3280" y="691" width="883" height="740" key="FileChooserDialogImpl/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1593562964517" />
-    <state width="1882" height="658" key="GridCell.Tab.0.bottom" timestamp="1594158802829">
+    <state width="1882" height="658" key="GridCell.Tab.0.bottom" timestamp="1594244185876">
       <screen x="0" y="26" width="3840" height="2110" />
     </state>
-    <state width="1882" height="658" key="GridCell.Tab.0.bottom/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594158802829" />
+    <state width="1882" height="658" key="GridCell.Tab.0.bottom/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
     <state width="1868" height="370" key="GridCell.Tab.0.bottom/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1594086545252" />
-    <state width="1882" height="658" key="GridCell.Tab.0.center" timestamp="1594158802829">
+    <state width="1882" height="658" key="GridCell.Tab.0.center" timestamp="1594244185876">
       <screen x="0" y="26" width="3840" height="2110" />
     </state>
-    <state width="1882" height="658" key="GridCell.Tab.0.center/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594158802829" />
+    <state width="1882" height="658" key="GridCell.Tab.0.center/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
     <state width="1868" height="370" key="GridCell.Tab.0.center/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1594086545251" />
-    <state width="1882" height="658" key="GridCell.Tab.0.left" timestamp="1594158802829">
+    <state width="1882" height="658" key="GridCell.Tab.0.left" timestamp="1594244185876">
       <screen x="0" y="26" width="3840" height="2110" />
     </state>
-    <state width="1882" height="658" key="GridCell.Tab.0.left/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594158802829" />
+    <state width="1882" height="658" key="GridCell.Tab.0.left/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
     <state width="1868" height="370" key="GridCell.Tab.0.left/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1594086545251" />
-    <state width="1882" height="658" key="GridCell.Tab.0.right" timestamp="1594158802829">
+    <state width="1882" height="658" key="GridCell.Tab.0.right" timestamp="1594244185876">
       <screen x="0" y="26" width="3840" height="2110" />
     </state>
-    <state width="1882" height="658" key="GridCell.Tab.0.right/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594158802829" />
+    <state width="1882" height="658" key="GridCell.Tab.0.right/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
     <state width="1868" height="370" key="GridCell.Tab.0.right/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1594086545251" />
-    <state width="1882" height="658" key="GridCell.Tab.1.bottom" timestamp="1594158802829">
+    <state width="1882" height="658" key="GridCell.Tab.1.bottom" timestamp="1594244185877">
       <screen x="0" y="26" width="3840" height="2110" />
     </state>
-    <state width="1882" height="658" key="GridCell.Tab.1.bottom/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594158802829" />
+    <state width="1882" height="658" key="GridCell.Tab.1.bottom/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185877" />
     <state width="1868" height="370" key="GridCell.Tab.1.bottom/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1594086545252" />
-    <state width="1882" height="658" key="GridCell.Tab.1.center" timestamp="1594158802829">
+    <state width="1882" height="658" key="GridCell.Tab.1.center" timestamp="1594244185876">
       <screen x="0" y="26" width="3840" height="2110" />
     </state>
-    <state width="1882" height="658" key="GridCell.Tab.1.center/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594158802829" />
+    <state width="1882" height="658" key="GridCell.Tab.1.center/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
     <state width="1868" height="370" key="GridCell.Tab.1.center/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1594086545252" />
-    <state width="1882" height="658" key="GridCell.Tab.1.left" timestamp="1594158802829">
+    <state width="1882" height="658" key="GridCell.Tab.1.left" timestamp="1594244185876">
       <screen x="0" y="26" width="3840" height="2110" />
     </state>
-    <state width="1882" height="658" key="GridCell.Tab.1.left/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594158802829" />
+    <state width="1882" height="658" key="GridCell.Tab.1.left/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
     <state width="1868" height="370" key="GridCell.Tab.1.left/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1594086545252" />
-    <state width="1882" height="658" key="GridCell.Tab.1.right" timestamp="1594158802829">
+    <state width="1882" height="658" key="GridCell.Tab.1.right" timestamp="1594244185876">
       <screen x="0" y="26" width="3840" height="2110" />
     </state>
-    <state width="1882" height="658" key="GridCell.Tab.1.right/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594158802829" />
+    <state width="1882" height="658" key="GridCell.Tab.1.right/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
     <state width="1868" height="370" key="GridCell.Tab.1.right/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1594086545252" />
     <state width="1788" height="760" key="GridCell.Tab.2.bottom" timestamp="1593816263725">
       <screen x="1680" y="0" width="3840" height="2160" />
@@ -657,10 +620,10 @@
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state x="3147" y="742" width="939" height="700" key="find.popup/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1593182772909" />
-    <state width="662" height="241" key="javadoc.popup.new" timestamp="1594163402041">
+    <state width="662" height="241" key="javadoc.popup.new" timestamp="1594244002607">
       <screen x="0" y="26" width="3840" height="2110" />
     </state>
-    <state width="662" height="241" key="javadoc.popup.new/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594163402041" />
+    <state width="662" height="241" key="javadoc.popup.new/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244002607" />
     <state width="662" height="246" key="javadoc.popup.new/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1594084961105" />
     <state x="3419" y="510" width="840" height="1034" key="search.everywhere.popup" timestamp="1594153313987">
       <screen x="0" y="26" width="3840" height="2110" />
