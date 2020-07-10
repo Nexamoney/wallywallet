@@ -867,11 +867,13 @@ class MainActivity : CommonActivity()
             {
                 val mbchToSend = qty / fiatPerCoin
                 approximatelyText.text = i18n(R.string.actuallySendingT) % mapOf("qty" to mBchFormat.format(mbchToSend), "crypto" to coin.currencyCode) + availabilityWarning(coin, mbchToSend)
+                xchgRateText.text = i18n(R.string.exchangeRate) % mapOf("amt" to fiatFormat.format(fiatPerCoin), "crypto" to coin.currencyCode, "fiat" to fiatCurrencyCode)
                 return true
             }
             catch(e: ArithmeticException)  // Division by zero
             {
                 approximatelyText.text = i18n(R.string.retrievingExchangeRate)
+                xchgRateText.text = ""
                 return true
             }
         }
@@ -881,11 +883,13 @@ class MainActivity : CommonActivity()
             {
                 var fiatDisplay = qty * coin.fiatPerCoin
                 approximatelyText.text = i18n(R.string.approximatelyT) % mapOf("qty" to fiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode) + availabilityWarning(coin, qty)
+                xchgRateText.text = i18n(R.string.exchangeRate) % mapOf("amt" to fiatFormat.format(coin.fiatPerCoin), "crypto" to coin.currencyCode, "fiat" to fiatCurrencyCode)
                 return true
             }
             else
             {
                 approximatelyText.text = i18n(R.string.retrievingExchangeRate)
+                xchgRateText.text = ""
                 return true
             }
 

@@ -77,7 +77,9 @@
     <!-- Home Page -->
     <string name="share">share</string>
     <string name="Send">Send</string>
-    <string name="Receive">Receive</string>
+    <!-- As in "Send from" -->
+    <string name="from">from</string>
+    <string name="Receive">Receive into</string>
     <string name="Balance">Balance</string>
     <string name="Address">Address</string>
     <string name="settings">settings</string>
@@ -105,6 +107,7 @@
     <string name="chainIncompatibleWithAddress">address incompatible</string>
 
     <string name="approximatelyT" formatted="false">approximately %qty %fiat</string>
+    <string name="exchangeRate" formatted="false">(exchange rate: 1 %crypto is worth %amt %fiat)</string>
     <!-- user is attempting to send more cryptocurrency than the wallet contains.  The payment can't happen -->
     <string name="moreThanAvailable">"(more than available)"</string>
     <!-- This is a warning or informational message.  It says that the user is sending recently received coins, which is perfectly OK but slightly increases the chance of payment failure -->

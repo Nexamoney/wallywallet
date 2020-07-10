@@ -268,7 +268,7 @@ class IdentityOpActivity : CommonActivity()
                         val req: HttpURLConnection = URL(loginReq).openConnection() as HttpURLConnection
                         val resp = req.inputStream.bufferedReader().readText()
                         LogIt.info("login response code:" + req.responseCode.toString() + " response: " + resp)
-                        if ((req.responseCode >= 200) and (req.responseCode < 300))
+                        if ((req.responseCode >= 200) and (req.responseCode < 250))
                             displayNotice(resp, { clearIntentAndFinish() }, 1000)
                         else
                             displayError(resp, { clearIntentAndFinish() })

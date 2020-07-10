@@ -156,12 +156,13 @@
         android:id="@+id/HomeAddressText"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
+        android:layout_marginStart="15dp"
         android:text="@string/Address"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="@+id/sendButton"
         app:layout_constraintStart_toEndOf="@+id/sendCoinType"
         app:layout_constraintTop_toTopOf="@+id/sendButton"
-        app:layout_constraintVertical_bias="0.631" />
+        app:layout_constraintVertical_bias="0.6" />
 
     <TextView
         android:id="@+id/amountText"
@@ -180,13 +181,30 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
         android:autoSizeMaxTextSize="18sp"
         android:autoSizeMinTextSize="10sp"
         android:autoSizeStepGranularity="1px"
         android:autoSizeTextType="uniform"
         android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sendQuantity" />
+
+    <TextView
+        android:id="@+id/xchgRateText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:autoSizeMaxTextSize="18sp"
+        android:autoSizeMinTextSize="10sp"
+        android:autoSizeStepGranularity="1px"
+        android:autoSizeTextType="uniform"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/approximatelyText" />
 
     <EditText
         android:id="@+id/sendQuantity"
@@ -253,11 +271,12 @@
 
     <Spinner
         android:id="@+id/sendCoinType"
-        android:layout_width="129dp"
-        android:layout_height="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_marginStart="2dp"
         android:spinnerMode="dropdown"
         app:layout_constraintBottom_toBottomOf="@+id/sendButton"
-        app:layout_constraintStart_toEndOf="@+id/sendButton" />
+        app:layout_constraintStart_toEndOf="@+id/textView" />
 
     <Spinner
         android:id="@+id/recvCoinType"
@@ -266,12 +285,15 @@
         android:layout_marginStart="8dp"
         android:spinnerMode="dropdown"
         app:layout_constraintBottom_toBottomOf="@+id/ReceiveTitle"
-        app:layout_constraintStart_toEndOf="@+id/ReceiveTitle" />
+        app:layout_constraintStart_toEndOf="@+id/ReceiveTitle"
+        app:layout_constraintTop_toTopOf="@+id/ReceiveTitle" />
 
     <EditText
         android:id="@+id/sendToAddress"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
         android:hint="@string/sendToAddressHint"
         android:importantForAutofill="no"
         android:inputType="textPersonName"
@@ -300,8 +322,6 @@
         android:id="@+id/destAddrPasteButton"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         android:contentDescription="@string/PasteDestinationAddressButton"
         app:layout_constraintBottom_toBottomOf="@+id/HomeAddressText"
         app:layout_constraintEnd_toEndOf="parent"
@@ -319,7 +339,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/approximatelyText" />
+        app:layout_constraintTop_toBottomOf="@+id/xchgRateText" />
 
     <View
         android:id="@+id/divider2"
@@ -454,5 +474,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/balanceUnconfirmedValue3" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/from"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/sendButton"
+        app:layout_constraintStart_toEndOf="@+id/sendButton"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
