@@ -26,7 +26,7 @@ val BCH_EXCLUSIVE_NODE = "BCH.exclusiveNode"
 val BCH_PREFER_NODE_SWITCH = "BCH.preferNodeSwitch"
 val BCH_PREFER_NODE = "BCH.preferNode"
 
-var defaultAccount = "mTBCH"  // The default crypto I'm using
+var defaultAccount = "BCH"  // The default crypto I'm using
 
 private val LogIt = Logger.getLogger("bitcoinunlimited.settings")
 

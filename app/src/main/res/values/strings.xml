@@ -46,6 +46,7 @@
     <string name="yes">yes</string>
     <string name="no">no</string>
     <string name="or">or</string>
+    <string name="NotImplemented">Not Implemented</string>
     <!-- The user chose not to proceed with some operation -->
     <string name="cancelled">cancelled</string>
     <!-- Issued if initialization isn't yet complete, but user tries to access the services -->
