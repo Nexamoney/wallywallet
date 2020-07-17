@@ -7,6 +7,8 @@ import android.content.SharedPreferences
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -43,6 +45,11 @@ fun Spinner.setSelection(v: String): Boolean
     return false
 }
 
+enum class ConfirmationFor
+{
+    Delete, Rediscover, Reassess
+}
+
 // SharedPreferences is used to communicate settings from this activity to the rest of the program and to persist these choices between executions
 class Settings : AppCompatActivity()
 {
@@ -54,6 +61,7 @@ class Settings : AppCompatActivity()
 
     var origTitle = String()
     var origTitleBackground: ColorDrawable? = null  //* The app's title background color (I will sometimes overwrite it with a temporary error message)
+    var askingAbout:ConfirmationFor? = null
 
     /** Display an short notification string on the title bar, and then clear it after a bit */
     fun displayNotice(resource: Int) = displayNotice(getString(resource))
@@ -232,48 +240,85 @@ class Settings : AppCompatActivity()
     }
 
     @Suppress("UNUSED_PARAMETER")
+    fun onYes(v: View?)
+    {
+        askingAbout = null
+        ConfirmationConstraint.visibility = INVISIBLE
+        
+        val a = askingAbout
+        if (a==null) return
+        when(a)
+        {
+            ConfirmationFor.Rediscover ->
+            {
+                val accountName = deleteWalletAccountChoice.selectedItem.toString()
+                val coin = accounts[accountName]
+                if (coin == null) return
+                GlobalScope.launch {
+                    // If you reset the wallet first, it'll start rediscovering the existing blockchain before it gets reset.
+                    // coin.wallet.blockchain.rediscover()
+                    coin.wallet.rediscover()
+                }
+                displayNotice(i18n(R.string.rediscoverNotice))
+            }
+            ConfirmationFor.Reassess ->
+            {
+                val accountName = deleteWalletAccountChoice.selectedItem.toString()
+                val coin = accounts[accountName]
+                if (coin == null) return
+                GlobalScope.launch {
+                    coin.wallet.reassessUnconfirmedTx()
+                }
+                displayNotice(i18n(R.string.unconfAssessmentNotice))
+            }
+            ConfirmationFor.Delete ->
+            {
+                val accountName = deleteWalletAccountChoice.selectedItem.toString()
+                val account = accounts[accountName]
+                if (account == null) return
+                account.detachUI()
+
+                GlobalScope.launch { // cannot access db in UI thread
+                    accounts.remove(accountName)  // remove this coin from any global access before we delete it
+                    app?.saveActiveAccountList()
+                    account.delete()
+                }
+                displayNotice(i18n(R.string.accountDeleteNotice))
+            }
+        }
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    fun onNo(v: View?)
+    {
+        askingAbout = null
+        ConfirmationConstraint.visibility = INVISIBLE
+    }
+
+    @Suppress("UNUSED_PARAMETER")
     fun onRediscoverBlockchain(v: View?)
     {
-        val accountName = deleteWalletAccountChoice.selectedItem.toString()
-        val coin = accounts[accountName]
-        if (coin == null) return
-        GlobalScope.launch {
-            // If you reset the wallet first, it'll start rediscovering the existing blockchain before it gets reset.
-            // coin.wallet.blockchain.rediscover()
-            coin.wallet.rediscover()
-        }
-        displayNotice(i18n(R.string.rediscoverNotice))
+        askingAbout = ConfirmationFor.Rediscover
+        ConfirmationConstraint.visibility = VISIBLE
+        confirmationText.text = i18n(R.string.rediscoverConfirmation)
     }
 
     @Suppress("UNUSED_PARAMETER")
     /** Reassess unconfirmed transactions */
     public fun onAssessUnconfirmedButton(v: View)
     {
-        val accountName = deleteWalletAccountChoice.selectedItem.toString()
-        val coin = accounts[accountName]
-        if (coin == null) return
-        GlobalScope.launch {
-            coin.wallet.reassessUnconfirmedTx()
-        }
-        displayNotice(i18n(R.string.unconfAssessmentNotice))
+        askingAbout = ConfirmationFor.Reassess
+        ConfirmationConstraint.visibility = VISIBLE
+        confirmationText.text = i18n(R.string.reassessConfirmation)
     }
 
     @Suppress("UNUSED_PARAMETER")
     /** Delete a wallet account */
     public fun onDeleteAccountButton(v: View)
     {
-        // TODO add a big warning and confirmation dialog
-        val accountName = deleteWalletAccountChoice.selectedItem.toString()
-        val account = accounts[accountName]
-        if (account == null) return
-        account.detachUI()
-
-        GlobalScope.launch { // cannot access db in UI thread
-            accounts.remove(accountName)  // remove this coin from any global access before we delete it
-            app?.saveActiveAccountList()
-            account.delete()
-            }
-        displayNotice(i18n(R.string.accountDeleteNotice))
+        askingAbout = ConfirmationFor.Delete
+        ConfirmationConstraint.visibility = VISIBLE
+        confirmationText.text = i18n(R.string.deleteConfirmation)
     }
 
 }

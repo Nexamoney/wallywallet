@@ -60,13 +60,16 @@
     <string name="logDebugData">Log Debug Data</string>
     <string name="clearIdentityDomains">Clear Identity Domains</string>
     <string name="rediscoverTooltip">Delete blockchain state and search anew for all transactions relevant to the wallet</string>
-    <string name="wordSeed">Account Backup Secrets</string>
+    <string name="wordSeed">Account Recovery Secret Phrase</string>
     <string name="deleteWalletAccount">Delete Account</string>
     <string name="localCurrency">Local currency</string>
     <string name="assessUnconfirmed">Assess Unconfirmed</string>
     <string name="rediscoverNotice">Account rediscover started</string>
     <string name="unconfAssessmentNotice">Unconfirmed assessment started</string>
     <string name="accountDeleteNotice">Account deleted</string>
+    <string name="rediscoverConfirmation">Rediscovering an account will search the blockchain since this wallet was created for missing payments.  This process can take a long time.  Only use if you are sure that a payment is missing!</string>
+    <string name="deleteConfirmation">Deleting an account will make all balances, identities, and history unavailable unless the account is recovered via the account recovery secret phrase!  Only do this if you are ABSOLUTELY SURE!  </string>
+    <string name="reassessConfirmation">This operation will check the blockchain for recent transactions you have sent.  Based on their presence or absence, it will either confirm or erase them.  Do not use if you have recently issued a transaction, since that transaction may be latent in the network, waiting for confirmation.</string>
 
     <!-- Split bill -->
     <string name="Total">Total</string>
