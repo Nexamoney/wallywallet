@@ -8,6 +8,7 @@ import kotlinx.serialization.json.Json
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonConfiguration
+import java.lang.Exception
 import java.math.BigDecimal
 
 import java.net.URL
@@ -48,6 +49,11 @@ fun MbchInFiat(fiat: String, setter: (BigDecimal)-> Unit)
         val data = try { URL("https://index-api.bitcoin.com/api/v0/cash/price/" + fiat).readText() }
         catch(e: java.io.FileNotFoundException)
         {
+            return@launch
+        }
+        catch(e: Exception)
+        {
+            LogIt.info("Error retrieving price: " + e.message)
             return@launch
         }
         LogIt.info(sourceLoc() + " " + data)

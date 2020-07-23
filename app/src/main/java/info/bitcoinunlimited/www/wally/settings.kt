@@ -7,9 +7,12 @@ import android.content.SharedPreferences
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
-import android.view.View.INVISIBLE
-import android.view.View.VISIBLE
-import android.widget.*
+import android.view.View.*
+import android.widget.Adapter
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.CompoundButton
+import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import bitcoinunlimited.libbitcoincash.*
@@ -17,7 +20,6 @@ import kotlinx.android.synthetic.main.activity_settings.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import java.util.logging.Logger
 
 
@@ -47,7 +49,7 @@ fun Spinner.setSelection(v: String): Boolean
 
 enum class ConfirmationFor
 {
-    Delete, Rediscover, Reassess
+    Delete, Rediscover, Reassess, RecoveryPhrase
 }
 
 // SharedPreferences is used to communicate settings from this activity to the rest of the program and to persist these choices between executions
@@ -91,7 +93,7 @@ class Settings : AppCompatActivity()
         val preferenceDB = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
         with (preferenceDB.edit())
         {
-            putString(LOCAL_CURRENCY_PREF, fiatCurrencySpinner.selectedItem as String)
+            putString(LOCAL_CURRENCY_PREF, GuiFiatCurrencySpinner.selectedItem as String)
             commit()
         }
         return true
@@ -112,7 +114,23 @@ class Settings : AppCompatActivity()
 
         val preferenceDB:SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
 
-        SetupBooleanPreferenceGui(SHOW_DEV_INFO, preferenceDB, GuiDeveloperView)
+        if(SetupBooleanPreferenceGui(SHOW_DEV_INFO, preferenceDB, GuiDeveloperInfoSwitch) { button, isChecked ->
+            if (isChecked)
+            {
+                GuiClearIdentityDomains.visibility = VISIBLE
+                GuiLogInterestingData.visibility = VISIBLE
+            }
+            else
+            {
+                GuiClearIdentityDomains.visibility = GONE
+                GuiLogInterestingData.visibility = GONE
+            }
+        })
+        {
+            GuiClearIdentityDomains.visibility = VISIBLE
+            GuiLogInterestingData.visibility = VISIBLE
+        }
+
         SetupBooleanPreferenceGui(BCH_EXCLUSIVE_NODE_SWITCH, preferenceDB, GuiBchExclusiveNodeSwitch)
         SetupBooleanPreferenceGui(BCH_PREFER_NODE_SWITCH, preferenceDB, GuiBchPreferNodeSwitch)
 
@@ -120,9 +138,9 @@ class Settings : AppCompatActivity()
         SetupTextPreferenceGui(BCH_PREFER_NODE,preferenceDB, GuiBchPreferNode)
 
         val curCode: String = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"
-        fiatCurrencySpinner.setSelection(curCode)
+        GuiFiatCurrencySpinner.setSelection(curCode)
 
-        fiatCurrencySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
+        GuiFiatCurrencySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
         {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long)
             {
@@ -131,22 +149,53 @@ class Settings : AppCompatActivity()
 
             override fun onNothingSelected(parent: AdapterView<out Adapter>?)
             {
-
             }
         }
 
-        var wordSeeds: String = ""
-        for (c in accounts)
+        GuiSettingsAccountChoice.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
         {
-           wordSeeds = wordSeeds + c.value.wallet.name + ":" + c.value.wallet.secretWords + "\n"
-        }
-        wordSeed.text = wordSeeds
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long)
+            {
+                val accountName = GuiSettingsAccountChoice.selectedItem.toString()
+                val coin = accounts[accountName]
+                if (coin == null) return onNothingSelected(parent)
 
+                GuiPINInvisibility.setEnabled(true)
+                GuiPINInvisibility.setChecked(coin.flags and ACCOUNT_FLAG_HIDE_UNTIL_PIN > 0UL)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<out Adapter>?)
+            {
+                GuiPINInvisibility.setChecked(false)
+                GuiPINInvisibility.setEnabled(false)
+            }
+        }
+
+        GuiPINInvisibility.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+            val accountName = GuiSettingsAccountChoice.selectedItem.toString()
+                val coin = accounts[accountName]
+                if (coin != null)
+                {
+                    if (isChecked)
+                        coin.flags = coin.flags or ACCOUNT_FLAG_HIDE_UNTIL_PIN
+                    else
+                        coin.flags = coin.flags and ACCOUNT_FLAG_HIDE_UNTIL_PIN.inv()
+                    GlobalScope.launch {  // Can't be in UI thread
+                        coin.saveAccountFlags()
+                    }
+                }
+        })
+
+        setupAccountSelection()
+    }
+
+    fun setupAccountSelection()
+    {
         dbgAssertGuiThread()
         // Set up the crypto spinners to contain all the cryptos this wallet supports
-        val coinSpinData = accounts.keys.toTypedArray()
+        val coinSpinData = app?.visibleAccountNames()
         val coinAa = ArrayAdapter(this, android.R.layout.simple_spinner_item, coinSpinData)
-        deleteWalletAccountChoice?.setAdapter(coinAa)
+        GuiSettingsAccountChoice?.setAdapter(coinAa)
     }
 
     override fun onStop()
@@ -228,7 +277,7 @@ class Settings : AppCompatActivity()
         GlobalScope.launch {
             val wallet:CommonWallet = try
                 {
-                    ((application as WallyApp).primaryWallet as CommonWallet)
+                    ((application as WallyApp).primaryAccount.wallet as CommonWallet)
                 }
                 catch (e: PrimaryWalletInvalidException)
                 {
@@ -242,16 +291,17 @@ class Settings : AppCompatActivity()
     @Suppress("UNUSED_PARAMETER")
     fun onYes(v: View?)
     {
-        askingAbout = null
-        ConfirmationConstraint.visibility = INVISIBLE
+        ConfirmationConstraint.visibility = GONE
+        confirmationOps.visibility = VISIBLE
         
         val a = askingAbout
         if (a==null) return
+        askingAbout = null
         when(a)
         {
             ConfirmationFor.Rediscover ->
             {
-                val accountName = deleteWalletAccountChoice.selectedItem.toString()
+                val accountName = GuiSettingsAccountChoice.selectedItem.toString()
                 val coin = accounts[accountName]
                 if (coin == null) return
                 GlobalScope.launch {
@@ -263,7 +313,7 @@ class Settings : AppCompatActivity()
             }
             ConfirmationFor.Reassess ->
             {
-                val accountName = deleteWalletAccountChoice.selectedItem.toString()
+                val accountName = GuiSettingsAccountChoice.selectedItem.toString()
                 val coin = accounts[accountName]
                 if (coin == null) return
                 GlobalScope.launch {
@@ -273,17 +323,23 @@ class Settings : AppCompatActivity()
             }
             ConfirmationFor.Delete ->
             {
-                val accountName = deleteWalletAccountChoice.selectedItem.toString()
+                val accountName = GuiSettingsAccountChoice.selectedItem.toString()
                 val account = accounts[accountName]
                 if (account == null) return
                 account.detachUI()
+                accounts.remove(accountName)  // remove this coin from any global access before we delete it
 
                 GlobalScope.launch { // cannot access db in UI thread
-                    accounts.remove(accountName)  // remove this coin from any global access before we delete it
                     app?.saveActiveAccountList()
                     account.delete()
                 }
                 displayNotice(i18n(R.string.accountDeleteNotice))
+                setupAccountSelection()  // reload this spinner since an account was removed
+            }
+            ConfirmationFor.RecoveryPhrase ->
+            {
+                buttonNo.visibility = VISIBLE
+                buttonYes.text = i18n(R.string.yes)
             }
         }
     }
@@ -292,15 +348,44 @@ class Settings : AppCompatActivity()
     fun onNo(v: View?)
     {
         askingAbout = null
-        ConfirmationConstraint.visibility = INVISIBLE
+        ConfirmationConstraint.visibility = GONE
+        confirmationOps.visibility = VISIBLE
+    }
+
+    fun showConfirmation()
+    {
+        confirmationOps.visibility = GONE
+        ConfirmationConstraint.visibility = VISIBLE
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun onRediscoverBlockchain(v: View?)
+    fun onConfirmationOps(v: View?):Boolean
     {
+        return true
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    fun onRediscoverBlockchain(v: View?): Boolean
+    {
+        // Strangely, if the contraint layout is touched, it calls this function
+        if (v != GuiRediscoverButton) return false
+
         askingAbout = ConfirmationFor.Rediscover
-        ConfirmationConstraint.visibility = VISIBLE
-        confirmationText.text = i18n(R.string.rediscoverConfirmation)
+        GuiConfirmationText.text = i18n(R.string.rediscoverConfirmation)
+        showConfirmation()
+        return true
+    }
+    @Suppress("UNUSED_PARAMETER")
+    fun onViewRecoveryPhrase(v: View?)
+    {
+        askingAbout = ConfirmationFor.RecoveryPhrase
+        val accountName = GuiSettingsAccountChoice.selectedItem.toString()
+        val coin = accounts[accountName]
+        if (coin == null) return
+        GuiConfirmationText.text = i18n(R.string.recoveryPhrase) + "\n\n" + coin.wallet.secretWords
+        showConfirmation()
+        buttonNo.visibility = GONE
+        buttonYes.text = i18n(R.string.done)
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -308,8 +393,8 @@ class Settings : AppCompatActivity()
     public fun onAssessUnconfirmedButton(v: View)
     {
         askingAbout = ConfirmationFor.Reassess
-        ConfirmationConstraint.visibility = VISIBLE
-        confirmationText.text = i18n(R.string.reassessConfirmation)
+        GuiConfirmationText.text = i18n(R.string.reassessConfirmation)
+        showConfirmation()
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -317,8 +402,8 @@ class Settings : AppCompatActivity()
     public fun onDeleteAccountButton(v: View)
     {
         askingAbout = ConfirmationFor.Delete
-        ConfirmationConstraint.visibility = VISIBLE
-        confirmationText.text = i18n(R.string.deleteConfirmation)
+        GuiConfirmationText.text = i18n(R.string.deleteConfirmation)
+        showConfirmation()
     }
 
 }

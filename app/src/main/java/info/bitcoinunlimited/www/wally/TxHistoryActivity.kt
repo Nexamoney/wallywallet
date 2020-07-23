@@ -143,8 +143,10 @@ private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, 
             }
 
             // Alternate colors for each row in the list
-            val Acol:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowA) } ?: 0xFFEEFFEE.toInt()
-            val Bcol:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowB) } ?: 0xFFBBDDBB.toInt()
+            //val Acol:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowA) } ?: 0xFFEEFFEE.toInt()
+            //val Bcol:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowB) } ?: 0xFFBBDDBB.toInt()
+            val Acol = 0xFFEEFFEE.toInt()
+            val Bcol = 0xFFBBDDBB.toInt()
 
             if ((pos and 1)==0)
             {

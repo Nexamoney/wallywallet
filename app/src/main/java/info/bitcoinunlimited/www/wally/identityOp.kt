@@ -46,16 +46,17 @@ class IdentityOpActivity : CommonActivity()
 
     var host: String? = null
     var triggeredNewDomain = false
-    var wallet: Wallet? = null
+    var account: Account? = null
+    var pinTries = 0
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_identity_op)
 
-        updatePermsFromIntent(intent)
         if (intent.scheme != null)  // its null if normal app startup
         {
+            updatePermsFromIntent(intent)
             checkIntentNewDomain(intent)
         }
     }
@@ -76,6 +77,14 @@ class IdentityOpActivity : CommonActivity()
         }
     }
 
+    fun blankActivity()
+    {
+        displayLoginRecipient.visibility = View.INVISIBLE
+        provideIdentityNoButton.visibility = View.INVISIBLE
+        provideIdentityYesButton.visibility = View.INVISIBLE
+        ProvideLoginInfoText.visibility = View.INVISIBLE
+    }
+
     /** Check whether this domain has ever been seen before, and if it hasn't pop up the new domain configuration activity */
     fun checkIntentNewDomain(receivedIntent: Intent)
     {
@@ -92,11 +101,11 @@ class IdentityOpActivity : CommonActivity()
 
             val context = this
 
-            runBlocking {
+            if (true) {
                 // Run blocking so the IdentityOp activity does not momentarily appear
-                val w = wallet ?: try
+                val act = account ?: try
                     {
-                        (application as WallyApp).primaryWallet
+                        (application as WallyApp).primaryAccount
                     }
                     catch (e: PrimaryWalletInvalidException)
                     {
@@ -104,11 +113,29 @@ class IdentityOpActivity : CommonActivity()
                         null
                     }
 
+                // If the primary account is locked do not proceed
+                if (act?.locked ?: false)
+                {
+                    // TODO
+                    //displayError(R.string.NoAccounts)
+                    //finish()
+                    return
+                }
+
+                val w = act?.wallet
+
                 if (w != null)
                 {
                     val idData = w.lookupIdentityDomain(h) // + path)
                     if (idData == null)
                     {
+                        val queries = iuri.queryMap()
+                        if (queries["op"]?.toLowerCase() != "reg")
+                        {
+                            blankActivity()
+                            displayError(i18n(R.string.UnknownDomainRegisterFirst), { finish() })
+                            return
+                        }
                         if (triggeredNewDomain == false)  // I only want to drop into the new domain settings once
                         {
                             triggeredNewDomain = true
@@ -162,7 +189,7 @@ class IdentityOpActivity : CommonActivity()
              val h = host
              if (h != null)
              {
-                 val idData = wallet?.lookupIdentityDomain(h)
+                 val idData = account?.wallet?.lookupIdentityDomain(h)
                  idData?.getPerms(perms)
                  idData?.getReqs(reqs)
              }
@@ -195,6 +222,38 @@ class IdentityOpActivity : CommonActivity()
         {
             clearIntentAndFinish()
             return
+        }
+
+        if (account == null)
+            try
+            {
+                account = (application as WallyApp).primaryAccount
+            }
+            catch (e: PrimaryWalletInvalidException)
+            {
+            }
+        val acc = account
+        if (acc == null)
+        {
+            displayError(R.string.pleaseWait)
+            return
+        }
+
+        if (acc.locked)
+        {
+            if (pinTries == 0)
+            {
+                val intent = Intent(this, UnlockActivity::class.java)
+                pinTries += 1
+                startActivity(intent)
+                return
+            }
+            else
+            {
+                blankActivity()
+                displayError(i18n(R.string.NoAccounts), { finish() })
+                return
+            }
         }
 
         host = iuri.getHost()
@@ -234,15 +293,22 @@ class IdentityOpActivity : CommonActivity()
                     return@launch
                 }
 
-                val wallet = try
+                val act = account ?: try
                 {
-                    (application as WallyApp).primaryWallet
+                    (application as WallyApp).primaryAccount
                 }
                 catch (e: PrimaryWalletInvalidException)
                 {
-                    displayError(R.string.pleaseWait); return@launch
+                    displayError(R.string.pleaseWait)
+                    return@launch
+                }
+                if (act.locked)
+                {
+                    displayError(R.string.NoAccounts)
+                    return@launch
                 }
 
+                val wallet = act.wallet
                 val identityDest: PayDestination = wallet.destinationFor(h + path)
 
                 // This is a coding bug in the wallet

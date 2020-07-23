@@ -45,6 +45,9 @@
     <!-- General -->
     <string name="yes">yes</string>
     <string name="no">no</string>
+    <!-- done is like "yes" but more means "go to the next thing" rather than acceptance of something -->
+    <string name="done">done</string>
+    <string name="empty"></string>
     <string name="or">or</string>
     <string name="NotImplemented">Not Implemented</string>
     <!-- The user chose not to proceed with some operation -->
@@ -56,20 +59,24 @@
     <string name="enableDeveloperView">Show developer information</string>
     <string name="exclusiveBchNode">Only use BCH node:</string>
     <string name="preferBchNode">Prefer BCH node:</string>
-    <string name="rediscoverWalletTx">rediscover</string>
+    <string name="rediscoverWalletTx">rediscover all transactions</string>
     <string name="logDebugData">Log Debug Data</string>
     <string name="clearIdentityDomains">Clear Identity Domains</string>
     <string name="rediscoverTooltip">Delete blockchain state and search anew for all transactions relevant to the wallet</string>
     <string name="wordSeed">Account Recovery Secret Phrase</string>
     <string name="deleteWalletAccount">Delete Account</string>
+    <string name="ViewRecoveryPhrase">View Account Recovery Secret Phrase</string>
     <string name="localCurrency">Local currency</string>
-    <string name="assessUnconfirmed">Assess Unconfirmed</string>
+    <string name="assessUnconfirmed">Assess Unconfirmed Transactions</string>
     <string name="rediscoverNotice">Account rediscover started</string>
     <string name="unconfAssessmentNotice">Unconfirmed assessment started</string>
     <string name="accountDeleteNotice">Account deleted</string>
     <string name="rediscoverConfirmation">Rediscovering an account will search the blockchain since this wallet was created for missing payments.  This process can take a long time.  Only use if you are sure that a payment is missing!</string>
     <string name="deleteConfirmation">Deleting an account will make all balances, identities, and history unavailable unless the account is recovered via the account recovery secret phrase!  Only do this if you are ABSOLUTELY SURE!  </string>
     <string name="reassessConfirmation">This operation will check the blockchain for recent transactions you have sent.  Based on their presence or absence, it will either confirm or erase them.  Do not use if you have recently issued a transaction, since that transaction may be latent in the network, waiting for confirmation.</string>
+    <string name="recoveryPhrase">This 12 word phrase can be used to restore your wallet if your phone is damaged or lost.  This means that whoever possesses this phrase can spend your money.  Write it down on paper and store it securely!\nRecovery Phrase:</string>
+    <string name="AccountSettings">Account Settings</string>
+    <string name="GeneralSettings">General Settings</string>
 
     <!-- Split bill -->
     <string name="Total">Total</string>
@@ -79,6 +86,7 @@
     <string name="Tip">Tip</string>
     <string name="Amount">Amount</string>
     <!-- Home Page -->
+    <string name="unlock">unlock</string>
     <string name="share">share</string>
     <string name="Send">Send</string>
     <!-- As in "Send from" -->
@@ -108,7 +116,7 @@
     <!-- Error: The information in the copy/paste buffer didn't make any sense to me (not a crypto address, for example), and you explicitly asked me to paste.
      The app refuses to fill the field with this information because it doesn't make sense to do so. -->
     <string name="pasteUnintelligible">paste not understood</string>
-    <string name="chainIncompatibleWithAddress">address incompatible</string>
+    <string name="chainIncompatibleWithAddress">address incompatible with account</string>
 
     <string name="approximatelyT" formatted="false">approximately %qty %fiat</string>
     <string name="exchangeRate" formatted="false">(exchange rate: 1 %crypto is worth %amt %fiat)</string>
@@ -149,6 +157,7 @@
     <string name="providePhone">Provide your phone number?</string>
     <string name="provideAttestations">Provide attestations?</string>
     <string name="provideAttestationsToolTip">Attestations are 3rd party signatures that confirm the data you supply</string>
+    <string name="UnknownDomainRegisterFirst">Unknown domain, register first</string>
 
     <string name="commonIdentityQRCode">QR code</string>
     <!-- An intent (aka link) specified an action that I don't know about -->
@@ -203,7 +212,13 @@
     <string name="TooManyRecoveryWords">Too many recovery words</string>
     <string name="IncorrectRecoveryWords" formatted="false">Invalid words: %words</string>
     <string name="ElectrumNetworkUnavailable">Network unavailable</string>
+    <string name="PinHidesAccount">Hide account until PIN is entered?</string>
+    <string name="CreatePIN">PIN (optional)</string>
+    <string name="PinSpendingUnprotected">Spending without a PIN is enabled (no PIN entered)</string>
+    <string name="PinSpendingProtected">Spending requires a PIN</string>
+    <string name="InvalidPIN">Invalid PIN</string>
     <!-- Error strings -->
+    <string name="accountLocked">account locked</string>
     <string name="unknownError">error</string>
     <string name="insufficentBalance">insufficient balance</string>
     <string name="excessiveFee">excessive fee</string>
@@ -221,7 +236,7 @@
     <string name="badAddress">invalid address</string>
     <string name="badAmount">invalid amount</string>
     <!-- No accounts have been created yet -->
-    <string name="NoAccounts">no accounts</string>
+    <string name="NoAccounts">No accessible accounts</string>
     <!-- The crypto currency code (e.g BTC, mBCH, etc) is not understood or handled by this wallet.  This message will be very hard to actually see because the UI
     protects against entering unknown crypto codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
      -->
@@ -303,4 +318,6 @@
     <string name="welcome4_title">Identity</string>
     <string name="welcome4">In the next screen, you may enter identity information.  This information is used when you use Wally as an identity and login manager (to automatically log into various web sites, or supply information when making a purchase).\n\nWally is extremely privacy focused!\n\nThis information will not be shared with any site without your express permission.  You can also choose to leave any fields blank.</string>
     <string name="welcomeComplete">This completes the setup.  If you did not complete any of the steps in this welcome, all of the fields are available from within the app itself.\n\nThank you and enjoy your new wallet!</string>
+    <!-- PIN Entry -->
+    <string name="EnterPIN">Enter PIN</string>
 </resources>

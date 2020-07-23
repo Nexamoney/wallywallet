@@ -64,10 +64,14 @@ fun notInUI(fn: () -> Unit)
     else fn()
 }
 
-/** Connects a gui switch to a preference DB item.  To be called in onCreate */
-fun SetupBooleanPreferenceGui(key: String, db: SharedPreferences, button: CompoundButton)
+/** Connects a gui switch to a preference DB item.  To be called in onCreate.
+ * Returns the current state of the preference item.
+ * Uses setOnCheckedChangeListener, so you cannot call that yourself.  Instead pass your listener into this function
+ * */
+fun SetupBooleanPreferenceGui(key: String, db: SharedPreferences, button: CompoundButton, onChecked: ((CompoundButton?, Boolean) -> Unit)? = null): Boolean
 {
-    button.setChecked(db.getBoolean(key, false))
+    val ret = db.getBoolean(key, false)
+    button.setChecked(ret)
 
     button.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener
     {
@@ -78,8 +82,10 @@ fun SetupBooleanPreferenceGui(key: String, db: SharedPreferences, button: Compou
                 putBoolean(key, isChecked)
                 commit()
             }
+            if (onChecked != null) onChecked(buttonView, isChecked)
         }
     })
+    return ret
 }
 
 /** Connects a gui text entry field to a preference DB item.  To be called in onCreate */

@@ -3,43 +3,31 @@
 package info.bitcoinunlimited.www.wally
 
 import android.content.*
-import kotlinx.coroutines.*
-
-import bitcoinunlimited.libbitcoincash.*
-
-import android.os.Bundle
-import android.view.View
-import android.widget.ArrayAdapter
-
-import kotlinx.android.synthetic.main.activity_main.*
-
-import com.google.zxing.EncodeHintType
-import com.google.zxing.BarcodeFormat
-import com.google.zxing.MultiFormatWriter
-import com.google.zxing.WriterException
-import com.google.zxing.common.BitMatrix
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Bundle
 import android.os.PersistableBundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Adapter
 import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.appcompat.widget.ShareActionProvider
-import androidx.core.content.ContextCompat
-
 import androidx.core.view.MenuItemCompat
-import java.lang.NumberFormatException
-import java.math.BigDecimal
-import com.google.zxing.integration.android.IntentIntegrator;
+import bitcoinunlimited.libbitcoincash.*
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
-import java.lang.ArithmeticException
-import java.lang.Exception
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import java.net.URL
-
 import java.util.logging.Logger
 import kotlin.concurrent.thread
 
@@ -47,8 +35,11 @@ private val LogIt = Logger.getLogger("bitcoinunlimited.mainActivity")
 
 val uriToMbch = 1000.toBigDecimal()  // Todo allow other currencies supported by this wallet
 
-val ERROR_DISPLAY_TIME = 6000.toLong()
-val NOTICE_DISPLAY_TIME = 4000.toLong()
+val ERROR_DISPLAY_TIME = 6000L
+val NOTICE_DISPLAY_TIME = 4000L
+
+/** if phone is asleep for this time, lock wallets */
+val RELOCK_TIME = 5000L
 
 val MAX_ACCOUNTS = 3 // What are the maximum # of accounts this wallet GUI can show
 
@@ -78,6 +69,46 @@ class MainActivityModel
 
 var mainActivityModel = MainActivityModel()
 
+class SleepMonitor(val activity: MainActivity) : BroadcastReceiver()
+{
+    var screenOn = true
+    var sleepStarted = 0L
+    var sleepDuration = 0L
+
+    init
+    {
+        val filter = IntentFilter(Intent.ACTION_SCREEN_ON)
+        filter.addAction(Intent.ACTION_SCREEN_OFF)
+        activity.registerReceiver(this, filter)
+    }
+
+    override fun onReceive(context: Context?, intent: Intent)
+    {
+        if (intent.action.equals(Intent.ACTION_SCREEN_OFF))
+        {
+            LogIt.info("Phone Sleep")
+            sleepStarted = System.nanoTime()
+            screenOn = false
+        }
+        else if (intent.action.equals(Intent.ACTION_SCREEN_ON))
+        {
+            LogIt.info("Phone Wake")
+            sleepDuration = (System.nanoTime() - sleepStarted)/1000000  // get duration in milliseconds
+            screenOn = true
+            if (sleepDuration >= RELOCK_TIME)
+            {
+                activity.app?.lockAccounts()
+                activity.laterUI {
+                    activity.assignWalletsGuiSlots()
+                    activity.assignCryptoSpinnerValues()
+                }
+            }
+        }
+    }
+
+}
+
+
 class MainActivity : CommonActivity()
 {
     override var navActivityId = R.id.navigation_home
@@ -97,6 +128,8 @@ class MainActivity : CommonActivity()
 
     /** If this program is changing the GUI, rather then the user, then there are some logic differences */
     var machineChangingGUI: Boolean = false
+
+    var sleepMonitor: SleepMonitor? = null
 
     fun onBlockchainChange(blockchain: Blockchain)
     {
@@ -128,6 +161,8 @@ class MainActivity : CommonActivity()
 
         val ctxt = PlatformContext(applicationContext)
         appContext = ctxt
+
+        sleepMonitor = SleepMonitor(this)
 
         SEND_ALL_TEXT = i18n(R.string.sendAll)
 
@@ -222,7 +257,7 @@ class MainActivity : CommonActivity()
                     val sendAddr = PayAddress(sendToAddress.text.toString())
                     if (c.wallet.chainSelector != sendAddr.blockchain)
                     {
-                        displayError(R.string.chainIncompatibleWithAddress)
+                        // This is a possibly useful notice, but is distracting to show in every case: displayError(R.string.chainIncompatibleWithAddress)
                         updateSendCoinType(sendAddr)
                     }
                 }
@@ -268,9 +303,8 @@ class MainActivity : CommonActivity()
         }
     }
 
-    fun assignWalletsGuiSlots()
+    fun clearAccountUI()
     {
-        dbgAssertGuiThread()
         val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
         val showDev = prefs.getBoolean(SHOW_DEV_INFO, false)
 
@@ -289,36 +323,70 @@ class MainActivity : CommonActivity()
             u.unconf.text = ""
             u.info?.text = ""
             u.info?.visibility = if (showDev) View.VISIBLE else View.GONE
+
+            // Invalidate so that the image gets cleared to keep accounts hidden during unlock
+            u.ticker.invalidate()
+            u.balance.invalidate()
+            u.units.invalidate()
+            u.unconf.invalidate()
+            u.info?.invalidate()
         }
+    }
+
+    fun assignWalletsGuiSlots()
+    {
+        dbgAssertGuiThread()
+        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val showDev = prefs.getBoolean(SHOW_DEV_INFO, false)
+
+        data class UI(val ticker: TextView, val balance: TextView, val units: TextView, val unconf: TextView, val info: TextView?)
+
+        val ui = listOf(UI(balanceTicker, balanceValue, balanceUnits, balanceUnconfirmedValue, WalletChainInfo),
+            UI(balanceTicker2, balanceValue2, balanceUnits2, balanceUnconfirmedValue2, WalletChainInfo2),
+            UI(balanceTicker3, balanceValue3, balanceUnits3, balanceUnconfirmedValue3, WalletChainInfo3))
+
+        clearAccountUI()
 
         var uiLoc = 1  // Start at 1 because spot 0 is reserved for the primary wallet
 
         var foundAPrimary = false
         for (ac in accounts.values)
         {
-            val curLoc = if (!foundAPrimary && (ac.currencyCode == PRIMARY_WALLET)) { foundAPrimary=true; 0 } else uiLoc
-            if (curLoc >= ui.size) continue
-            ui[curLoc].let {
-                ac.setUI(it.ticker, it.balance, it.unconf, it.info)
-                laterUI { ui[curLoc].units.text = ac.currencyCode }
+            var uiSet = false
+            if (ac.visible)
+            {
+                val curLoc = if (!foundAPrimary && (ac.currencyCode == PRIMARY_WALLET))
+                {
+                    foundAPrimary = true; 0
+                }
+                else uiLoc
+                if (curLoc >= ui.size) continue
+                ui[curLoc].let {
+                    ac.setUI(it.ticker, it.balance, it.unconf, it.info)
+                    uiSet = true
+                    laterUI { ui[curLoc].units.text = ac.currencyCode }
+                }
+                if (curLoc != 0) uiLoc++
             }
-            if (curLoc != 0) uiLoc++
+            if (!uiSet)
+            {
+                ac.setUI(null,null,null,null)
+            }
         }
 
         for (c in accounts.values)
         {
             c.wallet.setOnWalletChange({ it -> onWalletChange(it) })
-            c.wallet.blockchain.onChange = {it -> onBlockchainChange(it)}
-            c.wallet.blockchain.net.changeCallback = { _,_ -> onWalletChange(c.wallet) }  // right now the wallet GUI update function also updates the cnxn mgr GUI display
+            c.wallet.blockchain.onChange = { it -> onBlockchainChange(it) }
+            c.wallet.blockchain.net.changeCallback = { _, _ -> onWalletChange(c.wallet) }  // right now the wallet GUI update function also updates the cnxn mgr GUI display
             c.onWalletChange()  // update all wallet UI fields since just starting up
         }
     }
 
-
     fun assignCryptoSpinnerValues()
     {
         // Set up the crypto spinners to contain all the cryptos this wallet supports
-        val coinSpinData = accounts.keys.toTypedArray()
+        val coinSpinData = app?.visibleAccountNames()
         val coinAa = ArrayAdapter(this, android.R.layout.simple_spinner_item, coinSpinData)
         sendCoinType?.setAdapter(coinAa)
         recvCoinType?.setAdapter(coinAa)
@@ -328,13 +396,14 @@ class MainActivity : CommonActivity()
     {
         super.onStart()
         dbgAssertGuiThread()
+        appContext = PlatformContext(applicationContext)
 
         thread(true, true, null, "startup")
         {
             // Wait until stuff comes up
-            while (!coinsCreated) Thread.sleep(100)
+            while (!coinsCreated) Thread.sleep(50)
             LogIt.info("coins created")
-            Thread.sleep(100)
+            Thread.sleep(50)
 
             laterUI {
                 dbgAssertGuiThread()
@@ -346,8 +415,6 @@ class MainActivity : CommonActivity()
                 mainActivityModel.lastRecvCoinType?.let { recvCoinType.setSelection(it) }
                 mainActivityModel.lastSendCoinType?.let { sendCoinType.setSelection(it) }
                 mainActivityModel.lastSendCurrencyType?.let { sendCurrencyType.setSelection(it) }
-
-
 
                 // Set the send currency type spinner options to your default fiat currency or your currently selected crypto
                 updateSendCurrencyType()
@@ -378,18 +445,24 @@ class MainActivity : CommonActivity()
 
     override fun onPause()
     {
+        LogIt.info("Wally is pausing")
+
         // remove GUI elements that are going to disappear because this activity is going down
         for (c in accounts.values)
         {
             c.updateReceiveAddressUI = null
         }
+        clearAccountUI()
         super.onPause()
     }
 
     override fun onResume()
     {
+        LogIt.info("Wally is resuming")
         dbgAssertGuiThread()
+        clearAccountUI()
         super.onResume()
+        appContext = PlatformContext(applicationContext)
         val preferenceDB = getSharedPreferences(i18n(R.string.preferenceFileName), Context.MODE_PRIVATE)
         fiatCurrencyCode = preferenceDB.getString(i18n(R.string.localCurrency), "USD") ?: "USD"
 
@@ -398,7 +471,7 @@ class MainActivity : CommonActivity()
         mainActivityModel.lastSendCurrencyType?.let { sendCurrencyType.setSelection(it) }
 
         later {
-            Thread.sleep(200)  // Wait for accounts to be loaded
+            // Thread.sleep(100)  // Wait for accounts to be loaded
             laterUI {
                 assignWalletsGuiSlots()
                 assignCryptoSpinnerValues()
@@ -559,6 +632,7 @@ class MainActivity : CommonActivity()
 
     }
 
+    /** Find an account that can send to this blockchain and switch the send account to it */
     fun updateSendCoinType(chainSelector: ChainSelector)
     {
         dbgAssertGuiThread()
@@ -978,7 +1052,10 @@ class MainActivity : CommonActivity()
         val item2 = menu.findItem(R.id.settings)
         item2.intent = Intent(this, Settings::class.java).apply { putExtra(SETTINGS_MESSAGE, "") }
 
-        return true
+        val item3 = menu.findItem(R.id.unlock)
+        item3.intent = Intent(this, UnlockActivity::class.java)
+
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?)
@@ -1164,13 +1241,16 @@ class MainActivity : CommonActivity()
             displayError(R.string.badCryptoCode)
             return false
         }
-
         if (account == null)
         {
             displayError(R.string.badCryptoCode)
             return false
         }
-
+        if (account.locked)
+        {
+            displayError(R.string.accountLocked)
+            return false
+        }
 
         val amtstr: String = sendQuantity.text.toString()
 

@@ -79,7 +79,7 @@ class DomainIdentitySettings : CommonActivity()
     fun upsertDomainIdentity()
     {
         var changed = false
-        val wallet = (application as WallyApp).primaryWallet
+        val wallet = (application as WallyApp).primaryAccount.wallet
 
         val id: Long = if (uniqueIdentitySwitch.isChecked) IdentityDomain.IDENTITY_BY_HASH else IdentityDomain.COMMON_IDENTITY
 

@@ -16,7 +16,10 @@ import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.lang.IllegalStateException
 import java.math.BigDecimal
+import java.security.spec.InvalidKeySpecException
 import java.util.logging.Logger
+import javax.crypto.SecretKeyFactory
+import javax.crypto.spec.PBEKeySpec
 
 val SimulationHostIP = "10.0.2.2"
 val LanHostIP = "192.168.1.100"
@@ -46,7 +49,14 @@ val ChainSelectorToSupportedBlockchains = SupportedBlockchains.entries.associate
 // What is the default wallet and blockchain to use for most functions (like identity)
 val PRIMARY_WALLET = if (REG_TEST_ONLY) "mRBCH" else "mBCH"
 
+/** incompatible changes, extra fields added, fields and field sizes are the same, but content may be extended (that is, addtl bits in enums) */
+val WALLY_DATA_VERSION = byteArrayOf(1,0,0)
+
 var walletDb: KvpDatabase? = null
+
+const val ACCOUNT_FLAG_NONE = 0UL
+const val ACCOUNT_FLAG_HIDE_UNTIL_PIN = 1UL
+
 
 fun MakeNewWallet(name: String, chain: ChainSelector): Bip44Wallet
 {
@@ -61,6 +71,15 @@ fun MakeNewWallet(name: String, chain: ChainSelector): Bip44Wallet
     throw BUException("invalid chain selected")
 }
 
+/** Store the PIN encoded.  However, note that for short PINs a dictionary attack is very feasible */
+fun EncodePIN(actName: String, pin:String, size:Int=64):ByteArray
+{
+    val salt = "wally pin " + actName
+    val skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512")
+    val secretkey = PBEKeySpec(pin.toCharArray(), salt.toByteArray(), 2048, 512)
+    val seed = skf.generateSecret(secretkey)
+    return seed.encoded.slice(IntRange(0,size-1)).toByteArray()
+}
 
 var cnxnMgrs: MutableMap<ChainSelector, CnxnMgr> = mutableMapOf()
 fun GetCnxnMgr(chain: ChainSelector, name: String? = null): CnxnMgr
@@ -151,7 +170,7 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
                 cnxnMgr,
                 Hash256("9623194f62f31f7a7065467c38e83cf060a2b866190204f3dd16f6587d8d9374"),
                 Hash256("9623194f62f31f7a7065467c38e83cf060a2b866190204f3dd16f6587d8d9374"),
-                Hash256("4db8c91181548fb427e1e8c6faa822ed4586263f0698b1357a8f7ee78004a924"),
+                Hash256("83f09ccd686052095cf6c3a24a0561752eb4b270a8c6841f9519b30ca7b3071f"),
                 1,
                 0x100101.toBigInteger(),
                 context, dbPrefix
@@ -163,9 +182,11 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
     }
 }
 
+
 class Account(
     val name: String, //* The name of this account
     val context: PlatformContext,
+    var flags: ULong = ACCOUNT_FLAG_NONE,
     chainSelector: ChainSelector? = null,
     secretWords: String? = null
 )
@@ -175,20 +196,34 @@ class Account(
     val unconfirmedBalanceGUI = Reactive<String>("")
     val infoGUI = Reactive<String>("")
 
-    var wallet: Bip44Wallet = if (chainSelector == null)
+    val encodedPin: ByteArray? = loadEncodedPin()
+
+    var wallet: Bip44Wallet = if (chainSelector == null)  // Load existing account
     {
+        try
+        {
+            loadAccountFlags()
+        }
+        catch (e:DataMissingException)
+        {
+            // support older wallets by allowing empty account flags
+        }
         LogIt.info(sourceLoc() + " " + ": Loading wallet " + name)
         val t = Bip44Wallet(walletDb!!, name)  // Load a saved wallet
         LogIt.info(sourceLoc() + " " + ": Loaded wallet " + name)
         t
     }
-    else
+    else  // New account
     {
+        saveAccountFlags()
         if (secretWords == null)
             Bip44Wallet(walletDb!!, name, chainSelector, NEW_WALLET)   // New wallet
         else
             Bip44Wallet(walletDb!!, name, chainSelector, secretWords)  // Wallet recovery
     }
+
+    //? Was the PIN entered properly since the last 15 second sleep?
+    var pinEntered = false
 
     var currentReceive: PayDestination? = null //? This receive address appears on the main screen for quickly receiving coins
     var currentReceiveQR: Bitmap? = null
@@ -227,6 +262,75 @@ class Account(
         }
 
     }
+
+    val visible: Boolean
+    get()
+    {
+        if (((flags and ACCOUNT_FLAG_HIDE_UNTIL_PIN) > 0UL) && !pinEntered) return false
+        return true
+    }
+
+    val locked: Boolean
+    get()
+    {
+        if (encodedPin == null) return false  // Is never locked if there is no PIN
+        return(!pinEntered)
+    }
+
+    fun loadEncodedPin(): ByteArray?
+    {
+        val db = walletDb!!
+        try
+        {
+            val storedEpin = db.get("accountPin_" + name)
+            if (storedEpin.size>0) return storedEpin
+            return null
+        }
+        catch(e:Exception)
+        {
+            LogIt.info("DB missing PIN for: " + name + ". " + e.message)
+        }
+        return null
+    }
+
+    /** Save the PIN of an account to the database, return 1 if account unlocked else 0 */
+    fun submitAccountPin(pin: String): Int
+    {
+        if (encodedPin == null) return 0
+        val epin = try
+        {
+            EncodePIN(name, pin)
+        }
+        catch(e: InvalidKeySpecException)  // ignore invalid PIN, it can't unlock any wallets
+        {
+            LogIt.info("user entered invalid PIN")
+            return 0
+        }
+
+        if (epin.contentEquals(encodedPin))
+        {
+            LogIt.info("PIN unlocked " + name)
+            pinEntered = true
+            return 1
+        }
+
+        // If its the wrong PIN, don't set pinEntered to false, because the correct PIN might have been entered previously.
+        // (This PIN entry might be for a different account)
+        return 0
+    }
+
+    fun saveAccountFlags()
+    {
+        walletDb!!.set("accountFlags_" + name, BCHserialized.uint32(flags.toLong()).flatten())
+    }
+
+    fun loadAccountFlags()
+    {
+        val serFlags = walletDb!!.get("accountFlags_" + name)
+        val ser = BCHserialized(serFlags, SerializationType.NETWORK)
+        flags = ser.deuint32().toULong()
+    }
+
 
     /** Return a web URL that will provide more information about this transaction */
     fun transactionInfoWebUrl(txHex: String?): String?
@@ -283,9 +387,13 @@ class Account(
     fun setUI(ticker: TextView?, balance: TextView?, unconf: TextView?, infoView: TextView?)
     {
         if (ticker != null) tickerGUI.reactor = TextViewReactor<String>(ticker)
+        else tickerGUI.reactor = null
         if (balance != null) balanceGUI.reactor = TextViewReactor<String>(balance)
+        else balanceGUI.reactor = null
         if (unconf != null) unconfirmedBalanceGUI.reactor = TextViewReactor<String>(unconf)
+        else unconfirmedBalanceGUI.reactor = null
         if (infoView != null) infoGUI.reactor = TextViewReactor<String>(infoView)
+        else infoGUI.reactor = null
     }
 
     //? Convert the default display units to the finest granularity of this currency.  For example, mBCH to Satoshis
@@ -310,7 +418,6 @@ class Account(
 
     //? Convert the passed quantity to a string in the decimal format suitable for this currency
     fun format(qty: BigDecimal): String = mBchFormat.format(qty)
-
 
     data class ReceiveInfoResult(val addrString: String?, val qr: Bitmap?)
 
@@ -444,32 +551,68 @@ class WallyApp : Application()
 
     val accounts: MutableMap<String, Account> = mutableMapOf()
 
-    val primaryWallet: Wallet
+    val primaryAccount: Account
         get()
         {
             // return the wallet named "mBCH"
-            val prim = accounts[PRIMARY_WALLET]?.wallet
+            val prim = accounts[PRIMARY_WALLET]
             if (prim != null) return prim
             // return the first BCH wallet
             for (i in accounts.values)
             {
-                if (i.wallet.chainSelector == ChainSelector.BCHMAINNET) return i.wallet
+                if (i.wallet.chainSelector == ChainSelector.BCHMAINNET) return i
             }
             throw PrimaryWalletInvalidException()
         }
+
+    /** lock all previously unlocked accounts */
+    fun lockAccounts()
+    {
+        for (account in accounts.values)
+        {
+            account.pinEntered = false
+        }
+    }
+
+    /** Submit this PIN to all accounts, unlocking any that match */
+    fun unlockAccounts(pin: String)
+    {
+        var unlocked=0
+        for (account in accounts.values)
+        {
+            if (!account.pinEntered) unlocked += account.submitAccountPin(pin)
+        }
+        if (unlocked > 0) notifyAccountUnlocked()
+    }
+
+    val interestedInAccountUnlock = mutableListOf<()->Unit>()
+    fun notifyAccountUnlocked()
+    {
+        for (f in interestedInAccountUnlock) f()
+    }
+
+    fun visibleAccountNames(): Array<String>
+    {
+        val ret = mutableListOf<String>()
+        for (ac in accounts)
+        {
+            if (ac.value.visible) ret.add(ac.key)
+        }
+        return ret.toTypedArray()
+    }
 
     fun coinFor(chain: ChainSelector): Account?
     {
         // Check to see if our preferred crypto matches first
         for (account in accounts.values)
         {
-            if ((account.name == defaultAccount) && (chain == account.wallet.chainSelector)) return account
+            if ((account.name == defaultAccount) && (account.visible) && (chain == account.wallet.chainSelector)) return account
         }
 
         // Look for any match
         for (account in accounts.values)
         {
-            if (chain == account.wallet.chainSelector)
+            if (account.visible && (chain == account.wallet.chainSelector))
             {
                 return account
             }
@@ -490,6 +633,14 @@ class WallyApp : Application()
         return null
     }
 
+    /** Save the PIN of an account to the database */
+    fun saveAccountPin(actName: String, epin: ByteArray)
+    {
+        val db = walletDb!!
+        db.set("accountPin_" + actName, epin)
+    }
+
+    /** Save the account list to the database */
     fun saveActiveAccountList()
     {
         val s: String = accounts.keys.joinToString(",")
@@ -497,15 +648,22 @@ class WallyApp : Application()
         val db = walletDb!!
 
         db.set("activeAccountNames", s.toByteArray())
+        db.set("wallyDataVersion", WALLY_DATA_VERSION)
     }
 
-    fun newAccount(name: String, chainSelector: ChainSelector)
+    fun newAccount(name: String, flags: ULong, pin: String, secretWords: String?, chainSelector: ChainSelector)
     {
         dbgAssertNotGuiThread()
         val ctxt = PlatformContext(applicationContext)
+
+        // I only want to write the PIN once when the account is first created
+
+        val epin = if (pin.length > 0) EncodePIN(name, pin) else byteArrayOf()
+        saveAccountPin(name, epin)
+
         val ac = try
         {
-            Account(name, ctxt, chainSelector)
+            Account(name, ctxt, flags, chainSelector)
         }
         catch (e: IllegalStateException)
         {
@@ -513,26 +671,34 @@ class WallyApp : Application()
             return
         }
 
+        ac.pinEntered = true  // for convenience, new accounts begin as if the pin has been entered
         ac.start(applicationContext)
         ac.onWalletChange()
 
         accounts[name] = ac
+        // Write the list of existing accounts, so we know what to load
         saveActiveAccountList()
         // wallet is saved in wallet constructor so no need to: ac.wallet.SaveBip44Wallet()
     }
 
-    fun recoverAccount(name: String, secretWords: String, chainSelector: ChainSelector)
+    fun recoverAccount(name: String, flags: ULong, pin: String, secretWords: String, chainSelector: ChainSelector)
     {
         dbgAssertNotGuiThread()
         val ctxt = PlatformContext(applicationContext)
-        val ac = Account(name, ctxt, chainSelector, secretWords)
+
+        // I only want to write the PIN once when the account is first created
+        val epin = EncodePIN(name, pin)
+        saveAccountPin(name, epin)
+
+        val ac = Account(name, ctxt, flags, chainSelector, secretWords)
+        ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
         ac.start(applicationContext)
         ac.onWalletChange()
 
         accounts[name] = ac
+        // Write the list of existing accounts, so we know what to load
         saveActiveAccountList()
         // wallet is saved in wallet constructor so no need to: ac.wallet.SaveBip44Wallet()
-
     }
 
     // Called when the application is starting, before any other application objects have been created.
@@ -567,7 +733,7 @@ class WallyApp : Application()
                         }
                         catch (e: DataMissingException)
                         {
-                            val c = Account("mRBCH", ctxt, ChainSelector.BCHREGTEST)
+                            val c = Account("mRBCH", ctxt, ACCOUNT_FLAG_NONE, ChainSelector.BCHREGTEST)
                             c
                         }
                     }

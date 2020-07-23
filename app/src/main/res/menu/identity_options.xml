@@ -7,4 +7,9 @@ android:layout_height="match_parent">
     android:icon="@drawable/ic_gear"
     android:title="@string/settings"
     app:showAsAction="always" />
+    <item
+        android:id="@+id/unlock"
+        android:icon="@android:drawable/ic_secure"
+        android:title="@string/unlock"
+        app:showAsAction="always" />
 </menu>

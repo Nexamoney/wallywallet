@@ -6,6 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".NewAccount">
 
+    <ImageView
+        android:id="@+id/guiPassPhraseOk2"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:contentDescription="@android:string/ok"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/GuiPassPhraseEntry"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/ic_check" />
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view"
         android:layout_width="0dp"
@@ -147,8 +157,18 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:contentDescription="@android:string/ok"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/GuiPassPhraseEntry"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/guiPINText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/ic_check" />
+
+    <ImageView
+        android:id="@+id/GuiPINOk"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:contentDescription="@android:string/ok"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/guiPINText"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/ic_check" />
 
@@ -159,11 +179,23 @@
         android:layout_marginTop="12dp"
         android:text="@string/PassPhrase"
         android:textSize="18sp"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/guiPassPhraseOk"
         app:layout_constraintTop_toBottomOf="@+id/GuiAccountRecoveryPhraseEntry" />
+
+    <TextView
+        android:id="@+id/guiPINText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/CreatePIN"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/GuiPINOk"
+        app:layout_constraintTop_toBottomOf="@+id/GuiPassPhraseEntry" />
 
     <EditText
         android:id="@+id/GuiPassPhraseEntry"
@@ -172,23 +204,39 @@
         android:ems="12"
         android:inputType="textPassword"
         android:textAlignment="center"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/GuiPassphraseText" />
+
+    <EditText
+        android:id="@+id/GuiPINEntry"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:ems="12"
+        android:inputType="number"
+        android:textAlignment="center"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/guiPINText" />
 
     <TextView
         android:id="@+id/GuiNewAccountStatus"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:maxLines="5"
         android:minLines="1"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GuiPassPhraseEntry" />
+        app:layout_constraintTop_toBottomOf="@+id/PinHidesAccount" />
 
     <TextView
         android:id="@+id/GuiNewAccountError"
@@ -200,5 +248,27 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Switch
+        android:id="@+id/PinHidesAccount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:editable="false"
+        android:text="@string/PinHidesAccount"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/PinProtectsSpending" />
+
+    <TextView
+        android:id="@+id/PinProtectsSpending"
+        android:layout_width="0dp"
+        android:layout_height="26dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/PinSpendingUnprotected"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiPINEntry" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

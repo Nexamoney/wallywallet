@@ -96,8 +96,10 @@ class RecyclerAdapter(private val domains: ArrayList<IdentityDomain>) : Recycler
             view.domainNameText.text = obj.domain
 
             // Alternate colors for each row in the list
-            val Acol: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowA) } ?: 0xFFEEFFEE.toInt()
-            val Bcol: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowB) } ?: 0xFFBBDDBB.toInt()
+            //val Acol: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowA) } ?: 0xFFEEFFEE.toInt()
+            //val Bcol: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowB) } ?: 0xFFBBDDBB.toInt()
+            val Acol = 0xFFEEFFEE.toInt()
+            val Bcol = 0xFFBBDDBB.toInt()
 
             if ((pos and 1) == 0)
             {
@@ -120,6 +122,8 @@ class IdentityActivity : CommonActivity()
 
     override var navActivityId = R.id.navigation_identity
 
+    var actUnlockCb = {populate()}
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         navActivityId = R.id.navigation_identity
@@ -129,13 +133,34 @@ class IdentityActivity : CommonActivity()
 
         linearLayoutManager = LinearLayoutManager(this)
         identityList.layoutManager = linearLayoutManager
+        // adapter.notifyItemInserted( index of item)
+
+        val app = (getApplication() as WallyApp)
+        app.interestedInAccountUnlock.add(actUnlockCb)
+    }
+
+    override fun onDestroy()
+    {
+        val app = (getApplication() as WallyApp)
+        app.interestedInAccountUnlock.remove(actUnlockCb)
+        super.onDestroy()
+    }
+
+    /** Fill all the fields with data */
+    fun populate()
+    {
         laterUI {
             try
             {
                 //val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
                 val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
 
-                val wallet = (application as WallyApp).primaryWallet
+                val account = (application as WallyApp).primaryAccount
+                if (!account.visible)
+                {
+                    throw PrimaryWalletInvalidException()
+                }
+                val wallet = account.wallet
                 val identities: ArrayList<IdentityDomain> = ArrayList(wallet.allIdentityDomains())
                 LogIt.info("identity domain count:" + identities.size.toString())
                 LogIt.info(wallet.allIdentityDomains().map { it.domain }.toString())
@@ -161,7 +186,6 @@ class IdentityActivity : CommonActivity()
                 commonIdentityAddress.text = destStr
 
                 LogIt.info("name: " + name)
-                // bchidentity://p2p?op=share&addr=<addr>&na=<name>&em=<email>&sm=<social media>
 
                 var uri = "bchidentity://p2p?op=share&addr=" + destStr;
                 if (name != null && name != "") uri = uri + "&name=" + URLEncoder.encode(name, "utf-8")
@@ -175,12 +199,9 @@ class IdentityActivity : CommonActivity()
             }
             catch (e: PrimaryWalletInvalidException)
             {
-                displayError(R.string.NoAccounts)
+                commonIdentityAddress.text = i18n(R.string.NoAccounts)
             }
         }
-
-
-        // adapter.notifyItemInserted( index of item)
     }
 
     override fun onStart()
@@ -191,7 +212,7 @@ class IdentityActivity : CommonActivity()
     override fun onResume()
     {
         super.onResume()
-
+        populate()
         // Process the intent that caused this activity to resume
         if (intent.scheme != null)  // its null if normal app startup
         {
@@ -230,22 +251,25 @@ class IdentityActivity : CommonActivity()
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-        /** Inflate the options menu */
-        override fun onCreateOptionsMenu(menu: Menu): Boolean
-        {
-            val inflater: MenuInflater = menuInflater
-            inflater.inflate(R.menu.identity_options, menu);
+    /** Inflate the options menu */
+    override fun onCreateOptionsMenu(menu: Menu): Boolean
+    {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.identity_options, menu);
 
-            val item2 = menu.findItem(R.id.settings)
-            LogIt.info(item2.toString())
-            item2.intent = Intent(this, IdentitySettings::class.java)
+        val item2 = menu.findItem(R.id.settings)
+        LogIt.info(item2.toString())
+        item2.intent = Intent(this, IdentitySettings::class.java)
 
-            return true
-        }
+        val item3 = menu.findItem(R.id.unlock)
+        item3.intent = Intent(this, UnlockActivity::class.java)
 
-        @Suppress("UNUSED_PARAMETER")
-        fun onCommonIdentityAddrTextClicked(v: View)
-        {
-            copyTextToClipboard(commonIdentityAddress)
-        }
-    };
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    fun onCommonIdentityAddrTextClicked(v: View)
+    {
+        copyTextToClipboard(commonIdentityAddress)
+    }
+};

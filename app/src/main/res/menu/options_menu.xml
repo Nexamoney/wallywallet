@@ -10,4 +10,9 @@
         android:icon="@drawable/ic_gear"
         android:title="@string/settings"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/unlock"
+        android:icon="@drawable/ic_lock"
+        android:title="@string/unlock"
+        app:showAsAction="always" />
 </menu>

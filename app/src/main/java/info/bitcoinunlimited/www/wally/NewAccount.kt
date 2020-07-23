@@ -69,6 +69,7 @@ class NewAccount : CommonActivity()
     var lock = ThreadCond()
 
     var nameOk = false
+    var pinOk = true
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -125,6 +126,39 @@ class NewAccount : CommonActivity()
             }
         })
 
+        GuiPINEntry.addTextChangedListener(object : TextWatcher
+        {
+            override fun afterTextChanged(p0: Editable?)
+            {
+                dbgAssertGuiThread()
+                if (p0.isNullOrBlank())
+                {
+                    GuiPINOk.setImageResource(R.drawable.ic_check)
+                    PinProtectsSpending.text = i18n(R.string.PinSpendingUnprotected)
+                    pinOk = true
+                    return
+                }
+
+                PinProtectsSpending.text = i18n(R.string.PinSpendingProtected)
+                if (p0.length < 4)
+                {
+                    GuiPINOk.setImageResource(android.R.drawable.ic_delete)
+                    pinOk = false
+                    return
+                }
+
+                GuiPINOk.setImageResource(R.drawable.ic_check)
+                pinOk = true
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+        })
+
+
         GuiAccountRecoveryPhraseEntry.addTextChangedListener(object : TextWatcher
         {
             override fun afterTextChanged(p: Editable?)
@@ -171,7 +205,14 @@ class NewAccount : CommonActivity()
                 // If the recovery phrase is good, let's peek at the blockchain to see if there's activity
                 thread(true, true, null, "peekWallet")
                 {
-                  peekActivity(words.joinToString(" "), SupportedBlockchains[GuiBlockchainSelector.selectedItem]!!)
+                    try
+                    {
+                        peekActivity(words.joinToString(" "), SupportedBlockchains[GuiBlockchainSelector.selectedItem]!!)
+                    }
+                    catch(e: Exception)
+                    {
+                        LogIt.severe("wallet peek error: " + e.message)
+                    }
                 }
 
             }
@@ -274,7 +315,7 @@ class NewAccount : CommonActivity()
         laterUI {GuiNewAccountStatus.text = Bip44Msg + "\n" + Bip44BTCMsg }
     }
 
-    fun recoverAccountPhase2(name: String, secretWords: String, chainSelector: ChainSelector)
+    fun recoverAccountPhase2(name: String, flags:ULong, pin: String, secretWords: String, chainSelector: ChainSelector)
     {
         val passphrase = ""  // TODO
         // val secretSize = 64
@@ -295,7 +336,7 @@ class NewAccount : CommonActivity()
                 return
             }
 
-            app!!.recoverAccount(name, secretWords, chainSelector )
+            app!!.recoverAccount(name, flags, pin, secretWords, chainSelector )
             finish()
         }
 
@@ -309,20 +350,29 @@ class NewAccount : CommonActivity()
         val chainName: String = GuiBlockchainSelector.selectedItem.toString()
         val chainSelector = SupportedBlockchains[chainName]!!  // !! must work because I made the spinner from this map
         val name = GuiAccountNameEntry.text.toString()
+        val pin: String = GuiPINEntry.text.toString()
         if (nameOk == false)
         {
             displayError(R.string.invalidAccountName)
             return
         }
+        if (pinOk == false)
+        {
+            displayError(R.string.InvalidPIN)
+            return
+        }
 
+        val flags: ULong = if (PinHidesAccount.isChecked()) ACCOUNT_FLAG_HIDE_UNTIL_PIN else ACCOUNT_FLAG_NONE
         if (secretWords.length > 0)
         {
-            processingThread = thread(true, true, null, "newAccount") { recoverAccountPhase2(name, secretWords, chainSelector ) }
+            processingThread = thread(true, true, null, "newAccount") { recoverAccountPhase2(name, flags, pin, secretWords, chainSelector ) }
         }
         else
         {
-
-            later { app!!.newAccount(name, chainSelector); finish() }  // Can't happen in GUI thread
+            later {
+                app!!.newAccount(name, flags, pin, secretWords, chainSelector)
+                finish()
+            }  // Can't happen in GUI thread
             // TODO some OK feedback
 
         }

@@ -23,6 +23,7 @@ import android.app.Activity
 import androidx.core.app.ComponentActivity.ExtraData
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.view.Menu
 import android.view.inputmethod.InputMethodManager
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
@@ -127,6 +128,17 @@ open class CommonActivity : AppCompatActivity()
         displayError(getString(resource))
     }
 
+    var menuHidden = 0
+    override fun onCreateOptionsMenu(menu: Menu): Boolean
+    {
+        var ret = super.onCreateOptionsMenu(menu)
+
+        for (i in 0 until menu.size())
+            menu.getItem(i).setVisible(menuHidden==0)
+
+        return ret
+    }
+
     /** Display an short error string on the title bar, and then clear it after a bit */
     fun displayError(err: String, then: (()->Unit)? = null)
     {
@@ -136,11 +148,15 @@ open class CommonActivity : AppCompatActivity()
             // Display the error by changing the title and title bar color temporarily
             setTitle(err);
 
-            var titlebar: View = findViewById(R.id.action_bar)
+            val titlebar: View = findViewById(R.id.action_bar)
+            menuHidden+=1
+            invalidateOptionsMenu()
             val errorColor = ContextCompat.getColor(applicationContext, R.color.error)
             titlebar.background = ColorDrawable(errorColor)
 
             delay(ERROR_DISPLAY_TIME)
+            menuHidden-=1
+            invalidateOptionsMenu()
             setTitle(origTitle)
             origTitleBackground?.let { titlebar.background = it }
             if (then != null) then()
