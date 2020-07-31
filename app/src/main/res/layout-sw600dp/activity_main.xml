@@ -243,7 +243,7 @@
         app:layout_constraintTop_toBottomOf="@+id/ReceiveTitle" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/GuiReceiveQRCode"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="4dp"
@@ -372,7 +372,7 @@
         android:onClick="onSplitBill"
         android:text="@string/title_split_bill"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imageView" />
+        app:layout_constraintTop_toTopOf="@+id/GuiReceiveQRCode" />
 
     <TextView
         android:id="@+id/WalletChainInfo"

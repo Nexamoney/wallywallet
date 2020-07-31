@@ -15,6 +15,7 @@ import java.net.URL
 
 import java.util.logging.Logger
 import kotlin.time.*
+import kotlin.time.TimeSource.Monotonic
 
 private val LogIt = Logger.getLogger("bitcoinunlimited.bitcoincom")
 
@@ -30,7 +31,7 @@ data class HistItemBitcoinCom(val price: Int)
 data class HistBitcoinCom(val lookup: HistItemBitcoinCom)
 
 @OptIn(ExperimentalTime::class)
-val lastPoll = mutableMapOf<String, Pair<ClockMark,BigDecimal>>()
+val lastPoll = mutableMapOf<String, Pair<TimeMark,BigDecimal>>()
 
 @OptIn(ExperimentalTime::class, kotlinx.serialization.UnstableDefault::class)
 fun MbchInFiat(fiat: String, setter: (BigDecimal)-> Unit)
@@ -62,7 +63,7 @@ fun MbchInFiat(fiat: String, setter: (BigDecimal)-> Unit)
         LogIt.info(sourceLoc() + " " + obj.toString())
         // TODO verify recent timestamp
         val v = obj.price.toBigDecimal().setScale(16) / 100000.toBigDecimal().setScale(16) // bitcoin.com price is in cents per BCH.  We want "dollars" per MBCH (thousandth of a BCH)
-        lastPoll[fiat] = Pair(MonoClock.markNow(),v)
+        lastPoll[fiat] = Pair(Monotonic.markNow(),v)
         setter(v)
     }
 

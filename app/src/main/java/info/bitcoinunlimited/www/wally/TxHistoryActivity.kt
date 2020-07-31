@@ -86,7 +86,7 @@ private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, 
             idx = pos
             id = obj
             txid = obj.txHash!!
-            view.GuiTxId.text = obj.txHash!!.toHex()
+            view.GuiTxId.text = obj.txHash?.toHex() ?: ""
             view.GuiTxId.visibility = if (showDev) View.VISIBLE else View.GONE
             val fmt = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withZone(ZoneId.systemDefault())
             val epochSec = Instant.ofEpochSecond(obj.date/1000)
@@ -143,10 +143,10 @@ private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, 
             }
 
             // Alternate colors for each row in the list
-            //val Acol:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowA) } ?: 0xFFEEFFEE.toInt()
-            //val Bcol:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowB) } ?: 0xFFBBDDBB.toInt()
-            val Acol = 0xFFEEFFEE.toInt()
-            val Bcol = 0xFFBBDDBB.toInt()
+            val Acol:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowA) } ?: 0xFFEEFFEE.toInt()
+            val Bcol:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowB) } ?: 0xFFBBDDBB.toInt()
+            //val Acol = 0xFFEEFFEE.toInt()
+            //val Bcol = 0xFFBBDDBB.toInt()
 
             if ((pos and 1)==0)
             {
@@ -212,6 +212,7 @@ class TxHistoryActivity : CommonActivity()
                 val coin = app.accounts[walName]
                 if (coin != null)
                 {
+                    setTitle(i18n(R.string.title_activity_tx_history) % mapOf("walname" to walName));
                     val wallet = coin.wallet
                     val history = wallet.paymentHistory.values
                     val historyList: List<PaymentHistory> = history.sortedBy { it.date }.filter { !it.isChange }.reversed()

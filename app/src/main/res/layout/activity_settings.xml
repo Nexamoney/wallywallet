@@ -232,10 +232,19 @@
             android:id="@+id/GuiRediscoverButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="onRediscoverBlockchain"
+            android:onClick="onRediscoverWallet"
             android:text="@string/rediscoverWalletTx"
             app:layout_constraintStart_toStartOf="@+id/GuiDeleteAccountButton"
             app:layout_constraintTop_toBottomOf="@+id/GuiAssessUnconfirmedButton" />
+
+        <Button
+            android:id="@+id/GuiRediscoverBlockchainButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onRediscoverBlockchain"
+            android:text="@string/rediscoverBlockchain"
+            app:layout_constraintStart_toStartOf="@+id/GuiDeleteAccountButton"
+            app:layout_constraintTop_toBottomOf="@+id/GuiRediscoverButton" />
 
         <Button
             android:id="@+id/GuiDeleteAccountButton"
@@ -244,7 +253,7 @@
             android:onClick="onDeleteAccountButton"
             android:text="@string/deleteWalletAccount"
             app:layout_constraintStart_toStartOf="@+id/GuiViewRecoveryPhraseButton"
-            app:layout_constraintTop_toBottomOf="@+id/GuiRediscoverButton" />
+            app:layout_constraintTop_toBottomOf="@+id/GuiRediscoverBlockchainButton" />
 
         <Button
             android:id="@+id/GuiViewRecoveryPhraseButton"
@@ -281,6 +290,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/GuiClearIdentityDomains" />
+
+    <View
+        android:id="@+id/divider7"
+        android:layout_width="409dp"
+        android:layout_height="3dp"
+        android:background="?android:attr/listDivider"
+        android:foreground="#40b040"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/GuiGeneralSettingsHeader"

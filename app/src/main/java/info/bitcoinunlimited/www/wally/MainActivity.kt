@@ -12,7 +12,6 @@ import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Adapter
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -84,13 +83,15 @@ class SleepMonitor(val activity: MainActivity) : BroadcastReceiver()
 
     override fun onReceive(context: Context?, intent: Intent)
     {
-        if (intent.action.equals(Intent.ACTION_SCREEN_OFF))
+        val action = intent.action
+        if (action == null) return
+        if (action.equals(Intent.ACTION_SCREEN_OFF))
         {
             LogIt.info("Phone Sleep")
             sleepStarted = System.nanoTime()
             screenOn = false
         }
-        else if (intent.action.equals(Intent.ACTION_SCREEN_ON))
+        else if (action.equals(Intent.ACTION_SCREEN_ON))
         {
             LogIt.info("Phone Wake")
             sleepDuration = (System.nanoTime() - sleepStarted)/1000000  // get duration in milliseconds
@@ -421,7 +422,7 @@ class MainActivity : CommonActivity()
 
                 recvCoinType.selectedItem?.let {
                     val c = accounts[it.toString()]
-                    c?.onUpdatedReceiveInfo(minOf(imageView.layoutParams.width, imageView.layoutParams.height, 1024)) { recvAddrStr, recvAddrQR ->
+                    c?.onUpdatedReceiveInfo(minOf(GuiReceiveQRCode.layoutParams.width, GuiReceiveQRCode.layoutParams.height, 1024)) { recvAddrStr, recvAddrQR ->
                         this@MainActivity.updateReceiveAddressUI(
                             recvAddrStr,
                             recvAddrQR
@@ -855,7 +856,7 @@ class MainActivity : CommonActivity()
         dbgAssertGuiThread()
         if (recvAddrStr != receiveAddress.text)  // Only update if something has changed
         {
-            imageView.setImageBitmap(recvAddrQR)
+            GuiReceiveQRCode.setImageBitmap(recvAddrQR)
             receiveAddress.text = recvAddrStr
 
             val receiveAddrSendIntent: Intent = Intent().apply {
@@ -876,7 +877,7 @@ class MainActivity : CommonActivity()
         laterUI {
             if (recvCoinType?.selectedItem?.toString() == account.name)  // Only update the UI if this coin is selected to be received
             {
-                account.ifUpdatedReceiveInfo(minOf(imageView.layoutParams.width, imageView.layoutParams.height, 1024)) { recvAddrStr, recvAddrQR -> updateReceiveAddressUI(recvAddrStr, recvAddrQR) }
+                account.ifUpdatedReceiveInfo(minOf(GuiReceiveQRCode.layoutParams.width, GuiReceiveQRCode.layoutParams.height, 1024)) { recvAddrStr, recvAddrQR -> updateReceiveAddressUI(recvAddrStr, recvAddrQR) }
             }
         }
     }
@@ -941,13 +942,13 @@ class MainActivity : CommonActivity()
             {
                 val mbchToSend = qty / fiatPerCoin
                 approximatelyText.text = i18n(R.string.actuallySendingT) % mapOf("qty" to mBchFormat.format(mbchToSend), "crypto" to coin.currencyCode) + availabilityWarning(coin, mbchToSend)
-                xchgRateText.text = i18n(R.string.exchangeRate) % mapOf("amt" to fiatFormat.format(fiatPerCoin), "crypto" to coin.currencyCode, "fiat" to fiatCurrencyCode)
+                xchgRateText?.text = i18n(R.string.exchangeRate) % mapOf("amt" to fiatFormat.format(fiatPerCoin), "crypto" to coin.currencyCode, "fiat" to fiatCurrencyCode)
                 return true
             }
             catch(e: ArithmeticException)  // Division by zero
             {
                 approximatelyText.text = i18n(R.string.retrievingExchangeRate)
-                xchgRateText.text = ""
+                xchgRateText?.text = ""
                 return true
             }
         }
@@ -957,13 +958,13 @@ class MainActivity : CommonActivity()
             {
                 var fiatDisplay = qty * coin.fiatPerCoin
                 approximatelyText.text = i18n(R.string.approximatelyT) % mapOf("qty" to fiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode) + availabilityWarning(coin, qty)
-                xchgRateText.text = i18n(R.string.exchangeRate) % mapOf("amt" to fiatFormat.format(coin.fiatPerCoin), "crypto" to coin.currencyCode, "fiat" to fiatCurrencyCode)
+                xchgRateText?.text = i18n(R.string.exchangeRate) % mapOf("amt" to fiatFormat.format(coin.fiatPerCoin), "crypto" to coin.currencyCode, "fiat" to fiatCurrencyCode)
                 return true
             }
             else
             {
                 approximatelyText.text = i18n(R.string.retrievingExchangeRate)
-                xchgRateText.text = ""
+                xchgRateText?.text = ""
                 return true
             }
 

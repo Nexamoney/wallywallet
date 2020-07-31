@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="info.bitcoinunlimited.www.wally">
 
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.hardware.camera" />
     <uses-permission android:name="android.hardware.camera.autofocus" />
@@ -19,7 +20,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".UnlockActivity"></activity>
+        <activity android:name=".ShoppingSettingsActivity"
+            android:label="@string/title_activity_shopping_settings"
+            android:launchMode="singleTask"
+            android:parentActivityName=".ShoppingActivity">
+        </activity>
+        <activity
+            android:name=".ShoppingActivity"
+            android:label="@string/title_activity_shopping"
+            android:launchMode="singleTask"
+            android:parentActivityName=".MainActivity"
+            />
+        <activity android:name=".UnlockActivity" />
         <activity
             android:name=".Welcome"
             android:label="@string/title_activity_welcome"

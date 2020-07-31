@@ -49,7 +49,7 @@
         android:textSize="20sp"
         android:clickable="true"
         android:onClick="onBalanceTickerClicked"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/GuiReceiveQRCode"
         app:layout_constraintTop_toBottomOf="@+id/balanceTitle" />
 
     <TextView
@@ -62,7 +62,7 @@
         android:textSize="20sp"
         android:clickable="true"
         android:onClick="onBalanceTickerClicked"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/GuiReceiveQRCode"
         app:layout_constraintTop_toBottomOf="@+id/WalletChainInfo" />
 
     <TextView
@@ -76,7 +76,7 @@
         android:textSize="20sp"
         android:clickable="true"
         android:onClick="onBalanceTickerClicked"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/GuiReceiveQRCode"
         app:layout_constraintTop_toTopOf="@+id/balanceTicker2" />
 
     <TextView
@@ -224,7 +224,7 @@
         app:layout_constraintTop_toBottomOf="@+id/divider" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/GuiReceiveQRCode"
         android:layout_width="137dp"
         android:layout_height="131dp"
         android:contentDescription="@string/receiveAddressQRCode"

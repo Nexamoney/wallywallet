@@ -49,7 +49,7 @@ fun Spinner.setSelection(v: String): Boolean
 
 enum class ConfirmationFor
 {
-    Delete, Rediscover, Reassess, RecoveryPhrase
+    Delete, Rediscover, RediscoverBlockchain, Reassess, RecoveryPhrase
 }
 
 // SharedPreferences is used to communicate settings from this activity to the rest of the program and to persist these choices between executions
@@ -299,14 +299,24 @@ class Settings : AppCompatActivity()
         askingAbout = null
         when(a)
         {
-            ConfirmationFor.Rediscover ->
+            ConfirmationFor.RediscoverBlockchain ->
             {
                 val accountName = GuiSettingsAccountChoice.selectedItem.toString()
                 val coin = accounts[accountName]
                 if (coin == null) return
                 GlobalScope.launch {
                     // If you reset the wallet first, it'll start rediscovering the existing blockchain before it gets reset.
-                    // coin.wallet.blockchain.rediscover()
+                    coin.wallet.blockchain.rediscover()
+                    coin.wallet.rediscover()
+                }
+                displayNotice(i18n(R.string.rediscoverNotice))
+            }
+            ConfirmationFor.Rediscover ->
+            {
+                val accountName = GuiSettingsAccountChoice.selectedItem.toString()
+                val coin = accounts[accountName]
+                if (coin == null) return
+                GlobalScope.launch {
                     coin.wallet.rediscover()
                 }
                 displayNotice(i18n(R.string.rediscoverNotice))
@@ -368,8 +378,18 @@ class Settings : AppCompatActivity()
     fun onRediscoverBlockchain(v: View?): Boolean
     {
         // Strangely, if the contraint layout is touched, it calls this function
-        if (v != GuiRediscoverButton) return false
+        if (v != GuiRediscoverBlockchainButton) return false
 
+        askingAbout = ConfirmationFor.RediscoverBlockchain
+        GuiConfirmationText.text = i18n(R.string.rediscoverConfirmation)
+        showConfirmation()
+        return true
+    }
+    @Suppress("UNUSED_PARAMETER")
+    fun onRediscoverWallet(v: View?): Boolean
+    {
+        // Strangely, if the contraint layout is touched, it calls this function
+        if (v != GuiRediscoverButton) return false
         askingAbout = ConfirmationFor.Rediscover
         GuiConfirmationText.text = i18n(R.string.rediscoverConfirmation)
         showConfirmation()
@@ -402,7 +422,12 @@ class Settings : AppCompatActivity()
     public fun onDeleteAccountButton(v: View)
     {
         askingAbout = ConfirmationFor.Delete
-        GuiConfirmationText.text = i18n(R.string.deleteConfirmation)
+
+        val accountName = GuiSettingsAccountChoice.selectedItem.toString()
+        val coin:Account? = accounts[accountName]
+        if (coin == null) return
+
+        GuiConfirmationText.text = i18n(R.string.deleteConfirmation) % mapOf("accountName" to coin.name, "blockchain" to coin.currencyCode)
         showConfirmation()
     }
 

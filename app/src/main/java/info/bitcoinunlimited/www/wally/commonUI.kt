@@ -3,9 +3,14 @@
 package info.bitcoinunlimited.www.wally
 
 import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.MenuItem
+import android.view.View
 import androidx.core.content.ContextCompat
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
@@ -47,6 +52,31 @@ fun asyncUI(fn: suspend () -> Unit): Unit
     }
 }
 
+// see https://stackoverflow.com/questions/8276634/how-to-get-hosting-activity-from-a-view
+fun getActivity(view: View): Activity?
+{
+    var context: Context = view.getContext();
+    while (context is ContextWrapper)
+    {
+        if (context is Activity) return context as Activity
+        context = context.getBaseContext()
+    }
+    return null
+}
+
+fun textChanged(cb:()->Unit): TextWatcher
+{
+    return object : TextWatcher
+            {
+                override fun afterTextChanged(p0: Editable?) {
+                    cb()
+                }
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                }
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                }
+            }
+}
 
 // note to stop multiple copies of activities from being launched, use android:launchMode="singleTask" in the activity definition in AndroidManifest.xml
 
@@ -73,7 +103,7 @@ fun bottomNavSelectHandler(item: MenuItem, ths: Activity):Boolean
             ths.startActivity(intent)
             return true
         }
-
+/*
         R.id.navigation_exchange ->
         {
             val message = "" // anything extra we want to send
@@ -83,6 +113,7 @@ fun bottomNavSelectHandler(item: MenuItem, ths: Activity):Boolean
             ths.startActivity(intent)
             return true
         }
+ */
 
         R.id.navigation_invoices ->
         {
@@ -109,6 +140,13 @@ fun bottomNavSelectHandler(item: MenuItem, ths: Activity):Boolean
             }
             return false
             */
+        }
+
+        R.id.navigation_shopping ->
+        {
+            val intent = Intent(ths, ShoppingActivity::class.java)
+            ths.startActivity(intent)
+            return true
         }
     }
 

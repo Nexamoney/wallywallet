@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--part of the rodentia icon theme by sixsixfive released under CC0 (https://creativecommons.org/publicdomain/zero/1.0/) on openclipart-->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   viewBox="0 0 87.33802 127.85482"
+   version="1.1"
+   id="svg42"
+   sodipodi:docname="person.svg"
+   width="87.33802"
+   height="127.85483"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)">
+  <metadata
+     id="metadata46">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Andrew Stone</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:date>July 30, 2020</dc:date>
+        <cc:license
+           rdf:resource="http://creativecommons.org/publicdomain/zero/1.0/" />
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/publicdomain/zero/1.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1277"
+     inkscape:window-height="998"
+     id="namedview44"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="3.3073074"
+     inkscape:cx="19.851499"
+     inkscape:cy="85.034015"
+     inkscape:window-x="5801"
+     inkscape:window-y="23"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg42" />
+  <defs
+     id="0" />
+  <ellipse
+     style="opacity:0.8;fill:#c8c8c8;fill-opacity:1;stroke:#404040;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:67.99999237;stroke-opacity:1"
+     id="path2876"
+     cx="43.591579"
+     cy="23.504818"
+     rx="21.803497"
+     ry="21.504818"
+     inkscape:label="p1" />
+  <path
+     style="opacity:0.8;fill:#c8c8c8;fill-opacity:1;fill-rule:evenodd;stroke:#404040;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="m 16.10537,44.524995 c -14.1734919,11.51829 -14.3582657,5.36834 -14.0281955,20.48249 0.4223958,19.3417 9.7686715,14.29386 15.2062025,49.597585 0.648322,4.20928 -1.256594,11.67049 33.724798,11.2299 28.854644,-0.36344 33.575588,-6.26784 34.219837,-18.50603 0.64425,-12.238175 -1.297194,-53.044815 -14.361412,-58.515575 -12.866567,-5.38799 -2.577007,-0.91865 -8.375254,-3.79822 -5.798247,-2.87958 2.986781,18.08921 -16.340709,12.33006 C 26.82315,51.586055 16.10537,44.524995 16.10537,44.524995 Z"
+     id="path2878"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="csssssssc"
+     inkscape:label="p0" />
+</svg>

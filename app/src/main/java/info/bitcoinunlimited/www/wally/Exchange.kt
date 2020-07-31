@@ -3,13 +3,10 @@
 package info.bitcoinunlimited.www.wally
 
 import android.os.Bundle
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import androidx.appcompat.app.AppCompatActivity
-import android.widget.TextView
 
 class ExchangeActivity : CommonActivity()
 {
-    override var navActivityId = R.id.navigation_exchange
+    override var navActivityId = R.id.navigation_shopping
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
