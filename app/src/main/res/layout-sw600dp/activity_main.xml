@@ -85,11 +85,18 @@
 
     <TextView
         android:id="@+id/balanceTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="50sp"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="2dp"
+        android:autoSizeMaxTextSize="50sp"
+        android:autoSizeMinTextSize="30sp"
+        android:autoSizeStepGranularity="2sp"
+        android:autoSizeTextType="uniform"
         android:text="@string/Balance"
-        android:textSize="48sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toStartOf="@+id/GuiNewAccount"
         app:layout_constraintStart_toEndOf="@+id/divider2"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -258,7 +265,7 @@
         android:paddingEnd="0px"
         android:paddingRight="0px"
         android:paddingBottom="0px"
-        android:scaleType="fitCenter"
+        android:scaleType="fitStart"
         android:scrollbars="none"
         app:layout_constraintBottom_toTopOf="@+id/nav_view"
         app:layout_constraintEnd_toStartOf="@+id/divider2"
@@ -316,10 +323,11 @@
         android:layout_width="66dp"
         android:layout_height="66dp"
         android:layout_marginTop="8dp"
+        android:scaleType="centerInside"
         app:layout_constraintEnd_toEndOf="@+id/purchaseButton"
         app:layout_constraintStart_toStartOf="@+id/purchaseButton"
         app:layout_constraintTop_toBottomOf="@+id/purchaseButton"
-        app:srcCompat="@drawable/ic_scanqricon" />
+        app:srcCompat="@drawable/ic_scanqricon2" />
 
     <ImageButton
         android:id="@+id/destAddrPasteButton"
@@ -451,15 +459,13 @@
         android:id="@+id/GuiNewAccount"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginEnd="28dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
         android:clickable="true"
         android:contentDescription="@string/NewAccountButton"
         android:onClick="onNewAccount"
-        app:layout_constraintBottom_toBottomOf="@+id/balanceTitle"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.875"
-        app:layout_constraintStart_toEndOf="@+id/balanceTitle"
-        app:layout_constraintTop_toTopOf="@+id/balanceTitle"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_plus" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

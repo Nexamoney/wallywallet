@@ -65,6 +65,8 @@ class NewAccount : CommonActivity()
     var app: WallyApp? = null
     var recoveryChange = 0
 
+    var earliestActivity: Long? = 1577836800 // TODO support entry of recovery date
+
     var processingThread: Thread? = null
     var lock = ThreadCond()
 
@@ -294,21 +296,26 @@ class NewAccount : CommonActivity()
 
         val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
 
-        var earliestActivity = searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, addressDerivationCoin, 0, 0, it) })
-        val Bip44Msg = if (earliestActivity != null)
+        var earliestActivityP =
+                searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, addressDerivationCoin, 0, 0, it) })
+
+        val Bip44Msg = if (earliestActivityP != null)
         {
+            earliestActivity = earliestActivityP.first-1 // -1 so earliest activity is just before the activity
             i18n(R.string.Bip44ActivityNotice) + " " + i18n(R.string.FirstUseDateHeightInfo) % mapOf(
-                "date" to epochToDate(earliestActivity.first),
-                "height" to earliestActivity.second.toString())
+                "date" to epochToDate(earliestActivityP.first),
+                "height" to earliestActivityP.second.toString())
         }
         else i18n(R.string.NoBip44ActivityNotice)
 
-        earliestActivity = searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, AddressDerivationKey.BTC, 0, 0, it) })
-        var Bip44BTCMsg = if (earliestActivity != null)
+
+        earliestActivityP = searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, AddressDerivationKey.BTC, 0, 0, it) })
+        var Bip44BTCMsg = if (earliestActivityP != null)
         {
+            earliestActivity = earliestActivityP.first-1 // -1 so earliest activity is just before the activity
             i18n(R.string.Bip44BtcActivityNotice) + " " + i18n(R.string.FirstUseDateHeightInfo) % mapOf(
-                "date" to epochToDate(earliestActivity.first),
-                "height" to earliestActivity.second.toString())
+                "date" to epochToDate(earliestActivityP.first),
+                "height" to earliestActivityP.second.toString())
         }
         else i18n(R.string.NoBip44BtcActivityNotice)
 
@@ -336,7 +343,7 @@ class NewAccount : CommonActivity()
                 return
             }
 
-            app!!.recoverAccount(name, flags, pin, secretWords, chainSelector )
+            app!!.recoverAccount(name, flags, pin, secretWords, chainSelector, earliestActivity)
             finish()
         }
 

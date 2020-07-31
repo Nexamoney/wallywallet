@@ -156,7 +156,10 @@ class Settings : AppCompatActivity()
         {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long)
             {
-                val accountName = GuiSettingsAccountChoice.selectedItem.toString()
+                val item = GuiSettingsAccountChoice.selectedItem
+                if (item == null) return
+                val accountName = item.toString()
+
                 val coin = accounts[accountName]
                 if (coin == null) return onNothingSelected(parent)
 
@@ -172,8 +175,13 @@ class Settings : AppCompatActivity()
         }
 
         GuiPINInvisibility.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
-            val accountName = GuiSettingsAccountChoice.selectedItem.toString()
+            val item = GuiSettingsAccountChoice.selectedItem
+            if (item != null)
+            {
+                val accountName = item.toString()
+
                 val coin = accounts[accountName]
+
                 if (coin != null)
                 {
                     if (isChecked)
@@ -184,6 +192,7 @@ class Settings : AppCompatActivity()
                         coin.saveAccountFlags()
                     }
                 }
+            }
         })
 
         setupAccountSelection()
@@ -296,12 +305,16 @@ class Settings : AppCompatActivity()
         
         val a = askingAbout
         if (a==null) return
+
+        val item = GuiSettingsAccountChoice.selectedItem
+        if (item == null) return
+        val accountName = item.toString()
+
         askingAbout = null
         when(a)
         {
             ConfirmationFor.RediscoverBlockchain ->
             {
-                val accountName = GuiSettingsAccountChoice.selectedItem.toString()
                 val coin = accounts[accountName]
                 if (coin == null) return
                 GlobalScope.launch {
@@ -313,7 +326,6 @@ class Settings : AppCompatActivity()
             }
             ConfirmationFor.Rediscover ->
             {
-                val accountName = GuiSettingsAccountChoice.selectedItem.toString()
                 val coin = accounts[accountName]
                 if (coin == null) return
                 GlobalScope.launch {
@@ -323,7 +335,6 @@ class Settings : AppCompatActivity()
             }
             ConfirmationFor.Reassess ->
             {
-                val accountName = GuiSettingsAccountChoice.selectedItem.toString()
                 val coin = accounts[accountName]
                 if (coin == null) return
                 GlobalScope.launch {
@@ -333,7 +344,6 @@ class Settings : AppCompatActivity()
             }
             ConfirmationFor.Delete ->
             {
-                val accountName = GuiSettingsAccountChoice.selectedItem.toString()
                 val account = accounts[accountName]
                 if (account == null) return
                 account.detachUI()
@@ -399,7 +409,11 @@ class Settings : AppCompatActivity()
     fun onViewRecoveryPhrase(v: View?)
     {
         askingAbout = ConfirmationFor.RecoveryPhrase
-        val accountName = GuiSettingsAccountChoice.selectedItem.toString()
+
+        val item = GuiSettingsAccountChoice.selectedItem
+        if (item == null) return
+        val accountName = item.toString()
+
         val coin = accounts[accountName]
         if (coin == null) return
         GuiConfirmationText.text = i18n(R.string.recoveryPhrase) + "\n\n" + coin.wallet.secretWords
@@ -423,7 +437,10 @@ class Settings : AppCompatActivity()
     {
         askingAbout = ConfirmationFor.Delete
 
-        val accountName = GuiSettingsAccountChoice.selectedItem.toString()
+        val item = GuiSettingsAccountChoice.selectedItem
+        if (item == null) return
+        val accountName = item.toString()
+
         val coin:Account? = accounts[accountName]
         if (coin == null) return
 

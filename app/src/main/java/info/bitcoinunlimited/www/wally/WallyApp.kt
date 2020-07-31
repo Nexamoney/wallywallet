@@ -188,7 +188,8 @@ class Account(
     val context: PlatformContext,
     var flags: ULong = ACCOUNT_FLAG_NONE,
     chainSelector: ChainSelector? = null,
-    secretWords: String? = null
+    secretWords: String? = null,
+    startPlace: Long? = null //* Where to start looking for transactions
 )
 {
     val tickerGUI = Reactive<String>("") // Where to show the crypto's ticker
@@ -253,7 +254,7 @@ class Account(
         val hundredThousand = CurrencyDecimal(SATinMBCH)
         wallet.prepareDestinations(2, 2)  // Make sure that there is at least a few addresses before we hook into the network
         LogIt.info("wallet add blockchain")
-        wallet.addBlockchain(chain, chain.checkpointHeight)
+        wallet.addBlockchain(chain, chain.checkpointHeight, startPlace)
         LogIt.info("wallet add blockchain done")
         if (chainSelector != ChainSelector.NEXTCHAIN)  // no fiat price for nextchain
         {
@@ -266,7 +267,7 @@ class Account(
     val visible: Boolean
     get()
     {
-        if (((flags and ACCOUNT_FLAG_HIDE_UNTIL_PIN) > 0UL) && !pinEntered) return false
+        if ((encodedPin != null) && ((flags and ACCOUNT_FLAG_HIDE_UNTIL_PIN) > 0UL) && !pinEntered) return false
         return true
     }
 
@@ -681,16 +682,23 @@ class WallyApp : Application()
         // wallet is saved in wallet constructor so no need to: ac.wallet.SaveBip44Wallet()
     }
 
-    fun recoverAccount(name: String, flags: ULong, pin: String, secretWords: String, chainSelector: ChainSelector)
+    fun recoverAccount(name: String, flags: ULong, pin: String, secretWords: String, chainSelector: ChainSelector, earliestActivity: Long?)
     {
         dbgAssertNotGuiThread()
         val ctxt = PlatformContext(applicationContext)
 
         // I only want to write the PIN once when the account is first created
-        val epin = EncodePIN(name, pin)
+        val epin = try
+        {
+            EncodePIN(name, pin.trim())
+        }
+        catch(e: InvalidKeySpecException)  // If the pin is bad (generally whitespace or null) ignore it
+        {
+            byteArrayOf()
+        }
         saveAccountPin(name, epin)
 
-        val ac = Account(name, ctxt, flags, chainSelector, secretWords)
+        val ac = Account(name, ctxt, flags, chainSelector, secretWords, earliestActivity)
         ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
         ac.start(applicationContext)
         ac.onWalletChange()

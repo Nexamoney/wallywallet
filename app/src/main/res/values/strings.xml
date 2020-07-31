@@ -214,7 +214,7 @@
     <string name="NotEnoughRecoveryWords">More recovery words needed</string>
     <string name="TooManyRecoveryWords">Too many recovery words</string>
     <string name="IncorrectRecoveryWords" formatted="false">Invalid words: %words</string>
-    <string name="ElectrumNetworkUnavailable">Network unavailable</string>
+    <string name="ElectrumNetworkUnavailable">Electrum network unavailable.  Wallet recovery will be slow, and will not discover transactions prior to Jan 1, 2020</string>
     <string name="PinHidesAccount">Hide account until PIN is entered?</string>
     <string name="CreatePIN">PIN (optional)</string>
     <string name="PinSpendingUnprotected">Spending without a PIN is enabled (no PIN entered)</string>

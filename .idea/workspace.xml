@@ -11,84 +11,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="93b3f44b-6791-4520-ad38-6da4e0a30d33" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_wear_wear_1_0_0_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_google_android_wearable_wearable_2_5_0_jar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/ic_gyft-playstore.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/ic_menufy-playstore.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/ShoppingActivity.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/ShoppingSettingsActivity.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_faucet_drip.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_gyft_background.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_home.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_invoice.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_person.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_scanqricon2.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_shopping.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_shopping.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_shopping_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/shopping_list_item.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/shopping_settings_list_item.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/menu/shopping_options.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-anydpi-v26/ic_gyft.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-anydpi-v26/ic_gyft_round.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-anydpi-v26/ic_menufy.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-anydpi-v26/ic_menufy_round.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/ic_gyft.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/ic_gyft_foreground.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/ic_gyft_round.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/ic_menufy.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/ic_menufy_foreground.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/ic_menufy_round.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-mdpi/ic_gyft.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-mdpi/ic_gyft_foreground.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-mdpi/ic_gyft_round.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-mdpi/ic_menufy.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-mdpi/ic_menufy_foreground.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-mdpi/ic_menufy_round.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-xhdpi/ic_gyft.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-xhdpi/ic_gyft_foreground.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-xhdpi/ic_gyft_round.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-xhdpi/ic_menufy.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-xhdpi/ic_menufy_foreground.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-xhdpi/ic_menufy_round.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/ic_gyft.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/ic_gyft_foreground.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/ic_gyft_round.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/ic_menufy.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/ic_menufy_foreground.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/ic_menufy_round.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-xxxhdpi/ic_gyft.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-xxxhdpi/ic_gyft_foreground.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-xxxhdpi/ic_gyft_round.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-xxxhdpi/ic_menufy.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-xxxhdpi/ic_menufy_foreground.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/mipmap-xxxhdpi/ic_menufy_round.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/values-round/strings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/values/ic_menufy_background.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/assetWizardSettings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/assetWizardSettings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/app/app.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/Exchange.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/Exchange.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/MainActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/TxHistoryActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/TxHistoryActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/bitcoincomapi.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/bitcoincomapi.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/commonUI.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/commonUI.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/NewAccount.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/NewAccount.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/WallyApp.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/WallyApp.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/settings.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/settings.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/libbitcoincash" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/libbitcoincash" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/Wallet.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/Wallet.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/blockchain.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/blockchain.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/ic_home_black_24dp.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout-land/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout-land/activity_main.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/res/layout-sw600dp/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout-sw600dp/activity_main.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_settings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_trickle_pay.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_trickle_pay.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_tx_history.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_tx_history.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/menu/bottom_nav_menu.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/menu/bottom_nav_menu.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/dimens.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/dimens.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -96,7 +26,7 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="252bc16cb90d7ece" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="10.1_WXGA_Tablet_API_28" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -146,7 +76,7 @@
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="ApkExportedModule" value="app" />
-    <property name="DEBUGGABLE_DEVICE" value="samsung-sm_n960u1-252bc16cb90d7ece" />
+    <property name="DEBUGGABLE_DEVICE" value="samsung-sm_t825-16494e20" />
     <property name="DEBUGGABLE_PROCESS" value="info.bitcoinunlimited.www.wally" />
     <property name="DEBUGGER_ID" value="Auto" />
     <property name="DeviceAndSnapshotComboBoxAction.selectedDevice" value="252bc16cb90d7ece" />
@@ -562,15 +492,15 @@
     </state>
     <state x="3181" y="772" width="651" height="617" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594154250277" />
     <state x="4861" y="764" width="651" height="617" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596199573452" />
-    <state x="3317" y="1350" width="2076" height="586" key="#xdebugger.evaluate" timestamp="1596073856601">
+    <state x="3317" y="1350" width="2076" height="586" key="#xdebugger.evaluate" timestamp="1596225525854">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
-    <state x="3317" y="1350" width="2076" height="586" key="#xdebugger.evaluate/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596073856601" />
-    <state x="3407" y="834" width="385" height="494" key="AndroidProcessChooserDialog" timestamp="1595448473317">
+    <state x="3317" y="1350" width="2076" height="586" key="#xdebugger.evaluate/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596225525854" />
+    <state x="3407" y="834" width="385" height="494" key="AndroidProcessChooserDialog" timestamp="1596225950425">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state x="1727" y="841" key="AndroidProcessChooserDialog/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594153929024" />
-    <state x="3407" y="834" width="385" height="494" key="AndroidProcessChooserDialog/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1595448473317" />
+    <state x="3407" y="834" width="385" height="494" key="AndroidProcessChooserDialog/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596225950425" />
     <state width="499" height="643" key="DebuggerActiveHint" timestamp="1593797977105">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
@@ -579,62 +509,62 @@
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state x="3280" y="691" width="883" height="740" key="FileChooserDialogImpl/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596202222014" />
-    <state width="3612" height="195" key="GridCell.Tab.0.bottom" timestamp="1596199573490">
+    <state width="3612" height="833" key="GridCell.Tab.0.bottom" timestamp="1596228298888">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.0.bottom/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
-    <state width="3612" height="195" key="GridCell.Tab.0.bottom/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596199573490" />
-    <state width="3612" height="195" key="GridCell.Tab.0.center" timestamp="1596199573490">
+    <state width="3612" height="833" key="GridCell.Tab.0.bottom/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596228298888" />
+    <state width="3612" height="833" key="GridCell.Tab.0.center" timestamp="1596228298888">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.0.center/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
-    <state width="3612" height="195" key="GridCell.Tab.0.center/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596199573490" />
-    <state width="3612" height="195" key="GridCell.Tab.0.left" timestamp="1596199573490">
+    <state width="3612" height="833" key="GridCell.Tab.0.center/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596228298888" />
+    <state width="3612" height="833" key="GridCell.Tab.0.left" timestamp="1596228298888">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.0.left/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
-    <state width="3612" height="195" key="GridCell.Tab.0.left/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596199573490" />
-    <state width="3612" height="195" key="GridCell.Tab.0.right" timestamp="1596199573490">
+    <state width="3612" height="833" key="GridCell.Tab.0.left/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596228298888" />
+    <state width="3612" height="833" key="GridCell.Tab.0.right" timestamp="1596228298888">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.0.right/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
-    <state width="3612" height="195" key="GridCell.Tab.0.right/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596199573490" />
-    <state width="3612" height="613" key="GridCell.Tab.1.bottom" timestamp="1596076685050">
+    <state width="3612" height="833" key="GridCell.Tab.0.right/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596228298888" />
+    <state width="3612" height="571" key="GridCell.Tab.1.bottom" timestamp="1596228298886">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.1.bottom/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185877" />
-    <state width="3612" height="613" key="GridCell.Tab.1.bottom/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596076685050" />
-    <state width="3612" height="613" key="GridCell.Tab.1.center" timestamp="1596076685050">
+    <state width="3612" height="571" key="GridCell.Tab.1.bottom/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596228298886" />
+    <state width="3612" height="571" key="GridCell.Tab.1.center" timestamp="1596228298886">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.1.center/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
-    <state width="3612" height="613" key="GridCell.Tab.1.center/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596076685050" />
-    <state width="3612" height="613" key="GridCell.Tab.1.left" timestamp="1596076685050">
+    <state width="3612" height="571" key="GridCell.Tab.1.center/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596228298886" />
+    <state width="3612" height="571" key="GridCell.Tab.1.left" timestamp="1596228298886">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.1.left/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
-    <state width="3612" height="613" key="GridCell.Tab.1.left/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596076685050" />
-    <state width="3612" height="613" key="GridCell.Tab.1.right" timestamp="1596076685050">
+    <state width="3612" height="571" key="GridCell.Tab.1.left/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596228298886" />
+    <state width="3612" height="571" key="GridCell.Tab.1.right" timestamp="1596228298886">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.1.right/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
-    <state width="3612" height="613" key="GridCell.Tab.1.right/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596076685050" />
-    <state width="1788" height="760" key="GridCell.Tab.2.bottom" timestamp="1593816263725">
+    <state width="3612" height="571" key="GridCell.Tab.1.right/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596228298886" />
+    <state width="3612" height="571" key="GridCell.Tab.2.bottom" timestamp="1596214256997">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
-    <state width="1788" height="760" key="GridCell.Tab.2.bottom/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1593816263725" />
-    <state width="1788" height="760" key="GridCell.Tab.2.center" timestamp="1593816263725">
+    <state width="3612" height="571" key="GridCell.Tab.2.bottom/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596214256997" />
+    <state width="3612" height="571" key="GridCell.Tab.2.center" timestamp="1596214256997">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
-    <state width="1788" height="760" key="GridCell.Tab.2.center/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1593816263725" />
-    <state width="1788" height="760" key="GridCell.Tab.2.left" timestamp="1593816263725">
+    <state width="3612" height="571" key="GridCell.Tab.2.center/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596214256997" />
+    <state width="3612" height="571" key="GridCell.Tab.2.left" timestamp="1596214256997">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
-    <state width="1788" height="760" key="GridCell.Tab.2.left/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1593816263725" />
-    <state width="1788" height="760" key="GridCell.Tab.2.right" timestamp="1593816263725">
+    <state width="3612" height="571" key="GridCell.Tab.2.left/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596214256997" />
+    <state width="3612" height="571" key="GridCell.Tab.2.right" timestamp="1596214256997">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
-    <state width="1788" height="760" key="GridCell.Tab.2.right/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1593816263725" />
+    <state width="3612" height="571" key="GridCell.Tab.2.right/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596214256997" />
     <state width="1788" height="760" key="GridCell.Tab.3.bottom" timestamp="1593816263725">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
@@ -705,11 +635,11 @@
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state x="3147" y="742" width="939" height="700" key="find.popup/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1593182772909" />
-    <state width="662" height="246" key="javadoc.popup.new" timestamp="1596156292829">
+    <state width="662" height="246" key="javadoc.popup.new" timestamp="1596227858855">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="662" height="241" key="javadoc.popup.new/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244002607" />
-    <state width="662" height="246" key="javadoc.popup.new/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596156292829" />
+    <state width="662" height="246" key="javadoc.popup.new/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596227858855" />
     <state x="3214" y="516" key="run.anything.popup" timestamp="1595533848906">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
@@ -750,7 +680,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/WallyApp.kt</url>
-          <line>735</line>
+          <line>743</line>
           <option name="timeStamp" value="147" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
@@ -795,12 +725,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/NewAccount.kt</url>
-          <line>213</line>
+          <line>215</line>
           <option name="timeStamp" value="445" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/NewAccount.kt</url>
-          <line>338</line>
+          <line>345</line>
           <option name="timeStamp" value="449" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
@@ -824,14 +754,54 @@
           <option name="timeStamp" value="459" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/blockchain.kt</url>
-          <line>1170</line>
-          <option name="timeStamp" value="475" />
+          <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/settings.kt</url>
+          <line>390</line>
+          <option name="timeStamp" value="477" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/WallyApp.kt</url>
+          <line>256</line>
+          <option name="timeStamp" value="480" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/settings.kt</url>
-          <line>380</line>
-          <option name="timeStamp" value="477" />
+          <line>331</line>
+          <option name="timeStamp" value="483" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/NewAccount.kt</url>
+          <line>269</line>
+          <option name="timeStamp" value="489" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/NewAccount.kt</url>
+          <line>280</line>
+          <option name="timeStamp" value="490" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/electrumclient.kt</url>
+          <line>318</line>
+          <option name="timeStamp" value="491" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/NewAccount.kt</url>
+          <line>379</line>
+          <option name="timeStamp" value="493" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/Wallet.kt</url>
+          <line>2303</line>
+          <option name="timeStamp" value="494" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/Wallet.kt</url>
+          <line>2118</line>
+          <option name="timeStamp" value="495" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/Wallet.kt</url>
+          <line>2124</line>
+          <option name="timeStamp" value="496" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

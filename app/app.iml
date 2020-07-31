@@ -166,7 +166,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/shaders" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/kapt/release" isTestSource="false" generated="true" />
       <excludeFolder url="file://$MODULE_DIR$/.cxx" />
       <excludeFolder url="file://$MODULE_DIR$/.externalNativeBuild" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
@@ -176,10 +175,10 @@
     <orderEntry type="module-library">
       <library name="Gradle: kaptGeneratedClasses">
         <CLASSES>
-          <root url="file://$MODULE_DIR$/build/tmp/kapt3/classes/debugUnitTest" />
-          <root url="file://$MODULE_DIR$/build/tmp/kapt3/classes/releaseUnitTest" />
-          <root url="file://$MODULE_DIR$/build/tmp/kapt3/classes/debug" />
           <root url="file://$MODULE_DIR$/build/tmp/kapt3/classes/release" />
+          <root url="file://$MODULE_DIR$/build/tmp/kapt3/classes/debugUnitTest" />
+          <root url="file://$MODULE_DIR$/build/tmp/kapt3/classes/debug" />
+          <root url="file://$MODULE_DIR$/build/tmp/kapt3/classes/releaseUnitTest" />
           <root url="file://$MODULE_DIR$/build/tmp/kapt3/classes/debugAndroidTest" />
         </CLASSES>
         <JAVADOC />
