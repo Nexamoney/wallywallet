@@ -95,7 +95,12 @@ fun GetCnxnMgr(chain: ChainSelector, name: String? = null): CnxnMgr
             ChainSelector.BCHTESTNET -> MultiNodeCnxnMgr(name ?: "TBCH", ChainSelector.BCHTESTNET, arrayOf("testnet-seed.bitcoinabc.org"))
             ChainSelector.BCHMAINNET -> MultiNodeCnxnMgr(name ?: "BCH", ChainSelector.BCHMAINNET, arrayOf("seed.bitcoinunlimited.net", "btccash-seeder.bitcoinunlimited.info"))
             ChainSelector.BCHREGTEST -> MultiNodeCnxnMgr(name ?: "RBCH", ChainSelector.BCHREGTEST, arrayOf(SimulationHostIP))
-            ChainSelector.NEXTCHAIN  -> MultiNodeCnxnMgr(name ?: "NXC", ChainSelector.NEXTCHAIN, arrayOf("seed.nextchain.cash", "node1.nextchain.cash:7228","node2.nextchain.cash:7228"))
+            ChainSelector.NEXTCHAIN  ->
+            {
+                val cmgr = MultiNodeCnxnMgr(name ?: "NXC", ChainSelector.NEXTCHAIN, arrayOf("seed.nextchain.cash", "node1.nextchain.cash", "node2.nextchain.cash"))
+                cmgr.desiredConnectionCount = 2  // NXC chain doesn't have many nodes so reduce the desired connection count or there may be more desired nodes than exist in the nxc chain
+                cmgr
+            }
             else                     -> throw BadCryptoException()
         }
         result.getElectrumServerCandidate = { chain -> ElectrumServerOn(chain) }
