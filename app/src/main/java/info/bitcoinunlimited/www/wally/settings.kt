@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.activity_settings.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import java.util.logging.Logger
 
 
@@ -95,6 +96,17 @@ class Settings : AppCompatActivity()
         {
             putString(LOCAL_CURRENCY_PREF, GuiFiatCurrencySpinner.selectedItem as String)
             commit()
+        }
+
+        // wipe out all the exchange rate info, so we know that new info needs to be loaded for the new fiat currency
+        val a = app
+        if (a != null)
+        {
+            for (i in a.accounts)
+            {
+                i.value.fiatPerCoin = BigDecimal.ZERO
+
+            }
         }
         return true
     }
@@ -338,7 +350,15 @@ class Settings : AppCompatActivity()
                 val coin = accounts[accountName]
                 if (coin == null) return
                 GlobalScope.launch {
-                    coin.wallet.reassessUnconfirmedTx()
+                    try
+                    {
+                        if (coin.wallet != null)
+                            coin.wallet.reassessUnconfirmedTx()
+                    }
+                    catch(e: Exception)
+                    {
+                        displayNotice(e.message?: e.toString())
+                    }
                 }
                 displayNotice(i18n(R.string.unconfAssessmentNotice))
             }

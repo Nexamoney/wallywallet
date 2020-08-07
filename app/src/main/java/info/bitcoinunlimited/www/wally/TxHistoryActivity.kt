@@ -53,6 +53,8 @@ private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, 
         var txid: Hash256? = null
         var showDev:Boolean
 
+        var priorHeight: Int = 0
+
         init
         {
             val prefs: SharedPreferences = activity.getSharedPreferences(activity.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
@@ -61,20 +63,50 @@ private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, 
             view.setOnClickListener(this)
         }
 
+        /** Click on the history, show web details */
         override fun onClick(v: View)
         {
-            activity.linearLayoutManager.scrollToPositionWithOffset(idx, 0)
-            val itemHeight = v.height
-            val heightButOne = activity.GuiTxHistoryList.height - itemHeight
+            synchronized(activity.viewSync)
+            {
+                LogIt.info("onclick: " + idx + " " + activity.showingDetails)
+                if (!activity.showingDetails)
+                {
+                    LogIt.info("set showingDetails")
+                    activity.showingDetails = true
+                    val itemHeight = v.height
+                    val heightButOne = activity.GuiTxHistoryList.height - itemHeight
 
-            activity.GuiTxWebView.layoutParams.height = heightButOne
-            activity.GuiTxWebView.requestLayout()
-            activity.linearLayoutManager.requestLayout()
-            val url = account.transactionInfoWebUrl(txid?.toHex())
-            url?.let {
-                activity.GuiTxWebView.loadUrl(url)
+                    activity.linearLayoutManager.scrollToPositionWithOffset(idx, 0)
+                    activity.GuiTxHistoryList.layoutParams.height = itemHeight
+                    activity.GuiTxHistoryList.requestLayout()
+                    activity.GuiTxHistoryList.invalidate()
+                    activity.GuiTxWebView.layoutParams.height = heightButOne
+                    activity.GuiTxWebView.requestLayout()
+                    activity.container.requestLayout()
+                    
+
+                    val url = account.transactionInfoWebUrl(txid?.toHex())
+                    url?.let {
+                        activity.GuiTxWebView.loadUrl(url)
+                    }
+                }
+                else
+                {
+                    LogIt.info("clear showingDetails")
+                    activity.showingDetails = false
+                    activity.container.requestLayout()
+                    activity.GuiTxHistoryList.layoutParams.height = activity.listHeight
+                    activity.GuiTxHistoryList.invalidate()
+                    activity.GuiTxHistoryList.requestLayout()
+
+                    activity.GuiTxWebView.layoutParams.height = 1
+                    activity.GuiTxWebView.requestLayout()
+                    activity.GuiTxWebView.loadUrl("about:blank")
+                }
+                activity.linearLayoutManager.requestLayout()
             }
-            /*
+
+            /* kicks you to the browser
             var intent = Intent(v.context, DomainIdentitySettings::class.java)
             intent.putExtra("domainName", this.id?.domain )
             v.context.startActivity(intent)
@@ -166,9 +198,12 @@ class TxHistoryActivity : CommonActivity()
 {
     lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var adapter: TxHistoryRecyclerAdapter
+    var listHeight: Int = 0
 
     override var navActivityId = R.id.home
 
+    val viewSync = ThreadCond()
+    var showingDetails = false
     var walletName:String? = null
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -179,23 +214,32 @@ class TxHistoryActivity : CommonActivity()
         linearLayoutManager = LinearLayoutManager(this)
         GuiTxHistoryList.layoutManager = linearLayoutManager
 
+        // Remember the original height so that it can be restored when we move it
+        listHeight = GuiTxHistoryList.layoutParams.height
+
         var activity = this
 
         GuiTxHistoryList.addOnScrollListener(object: RecyclerView.OnScrollListener()
         {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)
             {
+                /*
                 if (GuiTxWebView.layoutParams.height != 1)
                 {
                     GuiTxWebView.layoutParams.height = 1
+
+                    GuiTxHistoryList.layoutParams.height = listHeight
+                    GuiTxHistoryList.requestLayout()
+
                     //GuiTxWebView.forceLayout()
-                    //GuiTxWebView.requestLayout()
+                    GuiTxWebView.requestLayout()
                     //GuiTxHistoryList.requestLayout()
-                    activity.linearLayoutManager.requestLayout()
+                    linearLayoutManager.requestLayout()
                     //recyclerView.rootView.requestLayout()
 
                     GuiTxWebView.loadUrl("about:blank")
                 }
+*/
                 super.onScrollStateChanged(recyclerView, newState)
             }
         }

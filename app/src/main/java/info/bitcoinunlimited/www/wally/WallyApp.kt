@@ -95,22 +95,23 @@ fun GetCnxnMgr(chain: ChainSelector, name: String? = null): CnxnMgr
             ChainSelector.BCHTESTNET -> MultiNodeCnxnMgr(name ?: "TBCH", ChainSelector.BCHTESTNET, arrayOf("testnet-seed.bitcoinabc.org"))
             ChainSelector.BCHMAINNET -> MultiNodeCnxnMgr(name ?: "BCH", ChainSelector.BCHMAINNET, arrayOf("seed.bitcoinunlimited.net", "btccash-seeder.bitcoinunlimited.info"))
             ChainSelector.BCHREGTEST -> MultiNodeCnxnMgr(name ?: "RBCH", ChainSelector.BCHREGTEST, arrayOf(SimulationHostIP))
-            ChainSelector.NEXTCHAIN  -> MultiNodeCnxnMgr(name ?: "NXC", ChainSelector.NEXTCHAIN, arrayOf("node1.nextchain.cash:7228"))
+            ChainSelector.NEXTCHAIN  -> MultiNodeCnxnMgr(name ?: "NXC", ChainSelector.NEXTCHAIN, arrayOf("seed.nextchain.cash", "node1.nextchain.cash:7228","node2.nextchain.cash:7228"))
             else                     -> throw BadCryptoException()
         }
+        result.getElectrumServerCandidate = { chain -> ElectrumServerOn(chain) }
         cnxnMgrs[chain] = result
         return result
     }
 }
 
-fun ElectrumServerOn(chain: ChainSelector): Pair<String, Int>
+fun ElectrumServerOn(chain: ChainSelector): IpPort
 {
     return when (chain)
     {
-        ChainSelector.BCHMAINNET -> Pair("electrumserver.seed.bitcoinunlimited.net", DEFAULT_ELECTRUM_SERVER_PORT)
-        ChainSelector.BCHTESTNET -> Pair("159.65.163.15", DEFAULT_ELECTRUM_SERVER_PORT)
-        ChainSelector.BCHREGTEST -> Pair(SimulationHostIP, DEFAULT_ELECTRUM_SERVER_PORT)
-        ChainSelector.NEXTCHAIN  -> Pair("electrumserver.seed.nextchain.cash", 7229)
+        ChainSelector.BCHMAINNET -> IpPort("electrumserver.seed.bitcoinunlimited.net", DEFAULT_ELECTRUM_SERVER_PORT)
+        ChainSelector.BCHTESTNET -> IpPort("159.65.163.15", DEFAULT_ELECTRUM_SERVER_PORT)
+        ChainSelector.BCHREGTEST -> IpPort(SimulationHostIP, DEFAULT_ELECTRUM_SERVER_PORT)
+        ChainSelector.NEXTCHAIN  -> IpPort("electrumserver.seed.nextchain.cash", 7229)
         ChainSelector.BCHNOLNET  -> throw BadCryptoException()
     }
 }
@@ -518,10 +519,15 @@ class Account(
     // Load the exchange rate
     fun getXchgRates(fiatCurrencyCode: String)
     {
-        // TODO: only good for BCH
+        if (chain.chainSelector != ChainSelector.BCHMAINNET)
+        {
+            fiatPerCoin = -1.toBigDecimal()  // Indicates that the exchange rate is unavailable
+            return
+        }
+
+        // Only for BCH
         MbchInFiat(fiatCurrencyCode) { v: BigDecimal ->
             fiatPerCoin = v;
-            // TODO: checkSendQuantity(sendQuantity.text.toString())
         }
     }
 

@@ -27,8 +27,8 @@ const val SPLITBILL_MESSAGE = "info.bitcoinunlimited.www.wally.splitbill"
 const val TRICKLEPAY_MESSAGE = "info.bitcoinunlimited.www.wally.tricklepay"
 const val EXCHANGE_MESSAGE = "info.bitcoinunlimited.www.wally.exchange"
 const val SETTINGS_MESSAGE = "info.bitcoinunlimited.www.wally.settings"
-const val INVOICES_MESSAGE = "info.bitcoinunlimited.www.wally.exchange"
-const val IDENTITY_MESSAGE = "info.bitcoinunlimited.www.wally.settings"
+const val INVOICES_MESSAGE = "info.bitcoinunlimited.www.wally.invoices"
+const val IDENTITY_MESSAGE = "info.bitcoinunlimited.www.wally.identity"
 
 val IDENTITY_OP_RESULT = 27720
 val IDENTITY_SETTINGS_RESULT = 27721

@@ -258,7 +258,7 @@ class MainActivity : CommonActivity()
                     val sendAddr = PayAddress(sendToAddress.text.toString())
                     if (c.wallet.chainSelector != sendAddr.blockchain)
                     {
-                        // This is a possibly useful notice, but is distracting to show in every case: displayError(R.string.chainIncompatibleWithAddress)
+                        displayError(R.string.chainIncompatibleWithAddress)
                         updateSendCoinType(sendAddr)
                     }
                 }
@@ -465,7 +465,8 @@ class MainActivity : CommonActivity()
         super.onResume()
         appContext = PlatformContext(applicationContext)
         val preferenceDB = getSharedPreferences(i18n(R.string.preferenceFileName), Context.MODE_PRIVATE)
-        fiatCurrencyCode = preferenceDB.getString(i18n(R.string.localCurrency), "USD") ?: "USD"
+        fiatCurrencyCode = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"
+        xchgRateText?.text = ""
 
         mainActivityModel.lastSendCoinType?.let { sendCoinType.setSelection(it) }
         mainActivityModel.lastRecvCoinType?.let { recvCoinType.setSelection(it) }
@@ -938,23 +939,38 @@ class MainActivity : CommonActivity()
         if (currencyType == fiatCurrencyCode)
         {
             val fiatPerCoin = coin.fiatPerCoin
-            try
+            if (coin.fiatPerCoin == -1.toBigDecimal())
             {
-                val mbchToSend = qty / fiatPerCoin
-                approximatelyText.text = i18n(R.string.actuallySendingT) % mapOf("qty" to mBchFormat.format(mbchToSend), "crypto" to coin.currencyCode) + availabilityWarning(coin, mbchToSend)
-                xchgRateText?.text = i18n(R.string.exchangeRate) % mapOf("amt" to fiatFormat.format(fiatPerCoin), "crypto" to coin.currencyCode, "fiat" to fiatCurrencyCode)
-                return true
-            }
-            catch(e: ArithmeticException)  // Division by zero
-            {
-                approximatelyText.text = i18n(R.string.retrievingExchangeRate)
+                approximatelyText.text = i18n(R.string.unavailableExchangeRate)
                 xchgRateText?.text = ""
                 return true
+            }
+            else
+            {
+                try
+                {
+                    val mbchToSend = qty / fiatPerCoin
+                    approximatelyText.text = i18n(R.string.actuallySendingT) % mapOf("qty" to mBchFormat.format(mbchToSend), "crypto" to coin.currencyCode) + availabilityWarning(coin, mbchToSend)
+                    xchgRateText?.text = i18n(R.string.exchangeRate) % mapOf("amt" to fiatFormat.format(fiatPerCoin), "crypto" to coin.currencyCode, "fiat" to fiatCurrencyCode)
+                    return true
+                }
+                catch (e: ArithmeticException)  // Division by zero
+                {
+                    approximatelyText.text = i18n(R.string.retrievingExchangeRate)
+                    xchgRateText?.text = ""
+                    return true
+                }
             }
         }
         else
         {
-            if (coin.fiatPerCoin != 0.toBigDecimal())
+            if (coin.fiatPerCoin == -1.toBigDecimal())
+            {
+                approximatelyText.text = i18n(R.string.unavailableExchangeRate)
+                xchgRateText?.text = ""
+                return true
+            }
+            else if (coin.fiatPerCoin != BigDecimal.ZERO)
             {
                 var fiatDisplay = qty * coin.fiatPerCoin
                 approximatelyText.text = i18n(R.string.approximatelyT) % mapOf("qty" to fiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode) + availabilityWarning(coin, qty)
@@ -1043,6 +1059,7 @@ class MainActivity : CommonActivity()
     override fun onCreateOptionsMenu(menu: Menu): Boolean
     {
         val inflater: MenuInflater = menuInflater
+        menu
         inflater.inflate(R.menu.options_menu, menu);
 
          // Locate MenuItem with ShareActionProvider
@@ -1051,10 +1068,14 @@ class MainActivity : CommonActivity()
         shareActionProvider = MenuItemCompat.getActionProvider(item) as? ShareActionProvider
 
         val item2 = menu.findItem(R.id.settings)
-        item2.intent = Intent(this, Settings::class.java).apply { putExtra(SETTINGS_MESSAGE, "") }
+        item2.intent = Intent(this, Settings::class.java)  // .apply { putExtra(SETTINGS_MESSAGE, "") }
 
         val item3 = menu.findItem(R.id.unlock)
         item3.intent = Intent(this, UnlockActivity::class.java)
+
+        val item4 = menu.findItem(R.id.help)
+        item4.intent = Intent(Intent.ACTION_VIEW)
+        item4.intent.setData(Uri.parse("http://www.bitcoinunlimited.net/wally/faq"))
 
         return super.onCreateOptionsMenu(menu)
     }

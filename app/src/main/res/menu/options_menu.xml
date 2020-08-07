@@ -4,15 +4,20 @@
         android:id="@+id/menu_item_share"
         android:title="@string/share"
         app:actionProviderClass="androidx.appcompat.widget.ShareActionProvider"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
     <item
         android:id="@+id/settings"
         android:icon="@drawable/ic_gear"
         android:title="@string/settings"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/unlock"
         android:icon="@drawable/ic_lock"
         android:title="@string/unlock"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/help"
+        android:icon="@drawable/ic_help"
+        android:title="@string/help"
+        app:showAsAction="ifRoom" />
 </menu>

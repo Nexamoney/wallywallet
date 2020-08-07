@@ -184,8 +184,8 @@
     <TextView
         android:id="@+id/approximatelyText"
         android:layout_width="278dp"
-        android:layout_height="32dp"
-        android:layout_marginTop="12dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:autoSizeMaxTextSize="18sp"
         android:autoSizeMinTextSize="10sp"
         android:autoSizeStepGranularity="1sp"
@@ -198,24 +198,27 @@
     <EditText
         android:id="@+id/sendQuantity"
         android:layout_width="127dp"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
+        android:digits="abcdefghijklmnopqrstuvwxyz0123456789.,"
         android:ems="10"
         android:imeOptions="actionDone"
         android:inputType="numberDecimal"
-        android:digits="abcdefghijklmnopqrstuvwxyz0123456789.,"
         app:layout_constraintStart_toEndOf="@+id/amountText"
         app:layout_constraintTop_toBottomOf="@+id/sendCoinType" />
 
     <TextView
         android:id="@+id/receiveAddress"
         android:layout_width="384dp"
-        android:layout_height="31dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:autoSizeMaxTextSize="20sp"
-        android:autoSizeMinTextSize="8sp"
+        android:autoSizeMinTextSize="6sp"
         android:autoSizeStepGranularity="1sp"
         android:autoSizeTextType="uniform"
         android:clickable="true"
+        android:lines="1"
+        android:maxLines="1"
         android:onClick="onReceiveAddrTextClicked"
         android:textAlignment="center"
         android:textStyle="bold"
@@ -244,8 +247,8 @@
 
     <Spinner
         android:id="@+id/sendCurrencyType"
-        android:layout_width="117dp"
-        android:layout_height="38dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:spinnerMode="dialog"
         app:layout_constraintBottom_toBottomOf="@+id/sendQuantity"
@@ -263,7 +266,7 @@
     <Spinner
         android:id="@+id/recvCoinType"
         android:layout_width="126dp"
-        android:layout_height="34dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:spinnerMode="dropdown"
         app:layout_constraintBottom_toBottomOf="@+id/ReceiveTitle"
@@ -293,10 +296,12 @@
         android:id="@+id/readQRCodeButton"
         android:layout_width="66dp"
         android:layout_height="66dp"
+        android:scaleType="centerInside"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.9"
         app:layout_constraintStart_toEndOf="@+id/approximatelyText"
         app:layout_constraintTop_toBottomOf="@+id/sendToAddress"
-        app:srcCompat="@drawable/ic_scanqricon" />
+        app:srcCompat="@drawable/ic_scanqricon2" />
 
     <ImageButton
         android:id="@+id/destAddrPasteButton"
@@ -318,7 +323,7 @@
         app:layout_constraintEnd_toStartOf="@+id/readQRCodeButton"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/approximatelyText" />
+        app:layout_constraintTop_toBottomOf="@+id/sendQuantity" />
 
     <View
         android:id="@+id/divider2"
@@ -436,5 +441,14 @@
         app:layout_constraintTop_toTopOf="@+id/balanceTitle"
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/ic_plus" />
+
+    <TextView
+        android:id="@+id/xchgRateText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="@+id/approximatelyText"
+        app:layout_constraintStart_toStartOf="@+id/approximatelyText"
+        app:layout_constraintTop_toBottomOf="@+id/approximatelyText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

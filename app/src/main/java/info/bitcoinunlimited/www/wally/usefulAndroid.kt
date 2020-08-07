@@ -29,6 +29,7 @@ val RinsufficentBalance = R.string.insufficentBalance
 val RbadWalletImplementation = R.string.badWalletImplementation
 val RwalletAndAddressIncompatible = R.string.chainIncompatibleWithAddress
 val RnotSupported = R.string.notSupported
+val RnoNodes = R.string.NoNodes
 val Rexpired = R.string.expired
 val RsendMoreThanBalance = R.string.sendMoreThanBalance
 val RbadAddress = R.string.badAddress
