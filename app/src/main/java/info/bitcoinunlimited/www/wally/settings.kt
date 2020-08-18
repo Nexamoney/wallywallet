@@ -411,7 +411,7 @@ class Settings : AppCompatActivity()
         if (v != GuiRediscoverBlockchainButton) return false
 
         askingAbout = ConfirmationFor.RediscoverBlockchain
-        GuiConfirmationText.text = i18n(R.string.rediscoverConfirmation)
+        GuiConfirmationText.text = i18n(R.string.rediscoverBlockchainConfirmation)
         showConfirmation()
         return true
     }

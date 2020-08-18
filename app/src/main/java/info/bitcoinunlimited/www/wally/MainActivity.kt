@@ -806,9 +806,24 @@ class MainActivity : CommonActivity()
         if (bip72 != null)
         {
             later {
-                paymentInProgress = processJsonPay(bip72)
-                laterUI {
-                    updateSendBasedOnPaymentInProgress()
+                try
+                {
+                    paymentInProgress = processJsonPay(bip72)
+                    laterUI {
+                        updateSendBasedOnPaymentInProgress()
+                    }
+                }
+                catch (e: Bip70Exception)
+                {
+                    e.message?.let {
+                        displayError(it)
+                    }
+                }
+                catch (e: java.lang.Exception)
+                {
+                    e.message?.let {
+                        displayError(it)
+                    }
                 }
             }
             return
@@ -949,38 +964,46 @@ class MainActivity : CommonActivity()
             {
                 try
                 {
+                    approximatelyText.text = ""
                     val mbchToSend = qty / fiatPerCoin
-                    approximatelyText.text = i18n(R.string.actuallySendingT) % mapOf("qty" to mBchFormat.format(mbchToSend), "crypto" to coin.currencyCode) + availabilityWarning(coin, mbchToSend)
+                    val sats = coin.toFinestUnit(mbchToSend)
+                    if (sats <= Dust(coin.chain.chainSelector))
+                        approximatelyText.text = i18n(R.string.sendingDustWarning)
+                    else
+                        approximatelyText.text = i18n(R.string.actuallySendingT) % mapOf("qty" to mBchFormat.format(mbchToSend), "crypto" to coin.currencyCode) + availabilityWarning(coin, mbchToSend)
                     xchgRateText?.text = i18n(R.string.exchangeRate) % mapOf("amt" to fiatFormat.format(fiatPerCoin), "crypto" to coin.currencyCode, "fiat" to fiatCurrencyCode)
                     return true
                 }
                 catch (e: ArithmeticException)  // Division by zero
                 {
-                    approximatelyText.text = i18n(R.string.retrievingExchangeRate)
-                    xchgRateText?.text = ""
+                    xchgRateText?.text = i18n(R.string.retrievingExchangeRate)
                     return true
                 }
             }
         }
         else
         {
+            if (qty <= coin.fromFinestUnit(Dust(coin.chain.chainSelector)))
+                approximatelyText.text = i18n(R.string.sendingDustWarning)
+            else
+                approximatelyText.text = ""
+
             if (coin.fiatPerCoin == -1.toBigDecimal())
             {
-                approximatelyText.text = i18n(R.string.unavailableExchangeRate)
-                xchgRateText?.text = ""
+                xchgRateText?.text = i18n(R.string.unavailableExchangeRate)
                 return true
             }
             else if (coin.fiatPerCoin != BigDecimal.ZERO)
             {
                 var fiatDisplay = qty * coin.fiatPerCoin
-                approximatelyText.text = i18n(R.string.approximatelyT) % mapOf("qty" to fiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode) + availabilityWarning(coin, qty)
+                if (approximatelyText.text == "")
+                    approximatelyText.text = i18n(R.string.approximatelyT) % mapOf("qty" to fiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode) + availabilityWarning(coin, qty)
                 xchgRateText?.text = i18n(R.string.exchangeRate) % mapOf("amt" to fiatFormat.format(coin.fiatPerCoin), "crypto" to coin.currencyCode, "fiat" to fiatCurrencyCode)
                 return true
             }
             else
             {
-                approximatelyText.text = i18n(R.string.retrievingExchangeRate)
-                xchgRateText?.text = ""
+                xchgRateText?.text = i18n(R.string.retrievingExchangeRate)
                 return true
             }
 

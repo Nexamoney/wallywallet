@@ -49,7 +49,7 @@
     <string name="done">done</string>
     <string name="empty"></string>
     <string name="or">or</string>
-    <string name="NotImplemented">Not Implemented</string>
+    <string name="NotImplemented">Coming Soon</string>
     <string name="NoNodes">No blockchain access</string>
     <!-- The user chose not to proceed with some operation -->
     <string name="cancelled">cancelled</string>
@@ -74,8 +74,9 @@
     <string name="unconfAssessmentNotice">Unconfirmed assessment started</string>
     <string name="accountDeleteNotice">Account deleted</string>
     <string name="rediscoverConfirmation">Rediscovering an account will search the blockchain since this wallet was created for missing payments.  This process can take a long time.  Only use if you are sure that a payment is missing!</string>
+    <string name="rediscoverBlockchainConfirmation">Rediscovering a blockchain will delete all blockchain header data from this wallet and re-download it from full nodes.  This process can take a long time.  Only use if you are sure that there is a blockchain header problem.</string>
     <string name="deleteConfirmation" formatted="false">Deleting an account will make all balances, identities, and history unavailable unless the account is recovered via the account recovery secret phrase!  Only do this if you are ABSOLUTELY SURE!\n\nDelete account "%accountName" (on %blockchain)?</string>
-    <string name="reassessConfirmation">This operation will check the blockchain for recent transactions you have sent.  Based on their presence or absence, it will either confirm or erase them.  Do not use if you have recently issued a transaction, since that transaction may be latent in the network, waiting for confirmation.</string>
+    <string name="reassessConfirmation">This operation will check the blockchain for recent transactions you have sent.  Based on their presence or absence, it will either confirm or erase them.  If transactions are erased, the money will seem to disappear.  You will need to "rediscover" to regain the spent balance.  Do not use if you have recently issued a transaction, since that transaction may be latent in the network, waiting for confirmation.</string>
     <string name="recoveryPhrase">This 12 word phrase can be used to restore your wallet if your phone is damaged or lost.  This means that whoever possesses this phrase can spend your money.  Write it down on paper and store it securely!\nRecovery Phrase:</string>
     <string name="AccountSettings">Account Settings</string>
     <string name="GeneralSettings">General Settings</string>
@@ -227,11 +228,13 @@
     <string name="unknownError">error</string>
     <string name="insufficentBalance">insufficient balance</string>
     <string name="excessiveFee">excessive fee</string>
+    <string name="sendDustError">amount below minimum</string>
+    <string name="sendingDustWarning">amount is below network minimum</string>
     <string name="feeExceedsFlatMax">fee exceeds configured maximum allowed flat fee</string>
     <string name="notSupported">not supported</string>
     <!-- A temporal offer is not longer available.  For example, a payment via the BIP70 payment protocol is no longer available -->
-    <string name="expired">expired</string>
-    <string name="dataMissing">missing data</string>
+    <string name="expired">payment expired</string>
+    <string name="dataMissing">payment missing data</string>
     <string name="headersNotForthcoming">headers are not being provided</string>
     <string name="cantConvert">conversion temporarily unavailable</string>
 
@@ -321,7 +324,7 @@
     <string name="welcome2_title">BCH Account Setup</string>
     <string name="welcome2">In the next screen, you will set up your first Bitcoin Cash account.\n\nThis account will contain your BCH money and identities.  Identities is a new feature of Wally Wallet that allows you to automatically log into supported web sites.\n\nYou can choose to protect access to this account with a Personal Identification Number (PIN), which you will enter in the next screen.</string>
     <string name="welcome3_title">BCH Account Recovery Secret Phrase</string>
-    <string name="welcome3">This account can be restored or moved to another device via the secret phrase displayed below.  Unlike many services, a bitcoin wallet does not need a periodic "backup".  The data in the public blockchain, combined with this secret phrase is enough to recover all your funds and your account history.    Write this phrase down and keep it somewhere secure right now.\n\nIn Bitcoin, YOU must take responsibility!\n\nIf you lose this phrase it is absolutely impossible to recover your account.  If it is stolen from you, the thief can take all your funds and impersonate you to any connected services.\nThis may sound scary, but it has a big advantage: your money is on this phone and in your backup and nowhere else.\n\nSo it is yours and only yours.  No one can hack some corporate database and steal your money and no one can interfere with you spending your money.\n\nJust like money in your physical wallet.\n\nIf this responsibility is scary to you, treat this wallet like you would your physical wallet -- don\'t keep much money in it.</string>
+    <string name="welcome3">This account can be restored or moved to another device via the secret phrase displayed below.  Unlike many services, a bitcoin wallet does not need a periodic "backup".  The data in the public blockchain, combined with this secret phrase is enough to recover all your funds and your account history.    Write this phrase down and keep it somewhere secure right now.\n\nIn Bitcoin, YOU must take responsibility!\n\nIf you lose this phrase it is absolutely impossible to recover your account.  If your secret phrase is stolen from you, the thief can take all your funds and impersonate you to any connected services.\nThis may sound scary, but it has a big advantage: your money is on this phone and in your backup and nowhere else.\n\nSo it is yours and only yours.  No one can hack some corporate database and steal your money and no one can interfere with you spending your money.\n\nJust like money in your physical wallet.\n\nIf this responsibility is scary to you, treat this wallet like you would your physical wallet -- don\'t keep much money in it.</string>
     <string name="welcome4_title">Identity</string>
     <string name="welcome4">In the next screen, you may enter identity information.  This information is used when you use Wally as an identity and login manager (to automatically log into various web sites, or supply information when making a purchase).\n\nWally is extremely privacy focused!\n\nThis information will not be shared with any site without your express permission, and NO information from this wallet is ever sent to the authors of this app.  You can also choose to leave any fields blank.</string>
     <string name="welcomeComplete">This completes the setup.  If you did not complete any of the steps in this welcome, all of the fields are available from within the app itself.\n\nThank you and enjoy your new wallet!</string>

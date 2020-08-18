@@ -92,7 +92,6 @@ private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, 
                 }
                 else
                 {
-                    LogIt.info("clear showingDetails")
                     activity.showingDetails = false
                     activity.container.requestLayout()
                     activity.GuiTxHistoryList.layoutParams.height = activity.listHeight
@@ -117,8 +116,8 @@ private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, 
         {
             idx = pos
             id = obj
-            txid = obj.txHash!!
-            view.GuiTxId.text = obj.txHash?.toHex() ?: ""
+            txid = obj.txHash
+            view.GuiTxId.text = txid?.toHex() ?: ""
             view.GuiTxId.visibility = if (showDev) View.VISIBLE else View.GONE
             val fmt = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withZone(ZoneId.systemDefault())
             val epochSec = Instant.ofEpochSecond(obj.date/1000)
@@ -223,54 +222,49 @@ class TxHistoryActivity : CommonActivity()
         {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)
             {
-                /*
-                if (GuiTxWebView.layoutParams.height != 1)
-                {
-                    GuiTxWebView.layoutParams.height = 1
-
-                    GuiTxHistoryList.layoutParams.height = listHeight
-                    GuiTxHistoryList.requestLayout()
-
-                    //GuiTxWebView.forceLayout()
-                    GuiTxWebView.requestLayout()
-                    //GuiTxHistoryList.requestLayout()
-                    linearLayoutManager.requestLayout()
-                    //recyclerView.rootView.requestLayout()
-
-                    GuiTxWebView.loadUrl("about:blank")
-                }
-*/
                 super.onScrollStateChanged(recyclerView, newState)
             }
         }
         )
 
         walletName = intent.getStringExtra("WalletName")
+        if (walletName == null)  // Don't know what to show
+        {
+            finish()
+            return
+        }
 
         GuiTxWebView.settings.javaScriptEnabled = true
 
 
         laterUI {
             walletName?.let { walName ->
-                val app = (application as WallyApp)
-                val coin = app.accounts[walName]
-                if (coin != null)
+                if (application !is WallyApp)
                 {
-                    setTitle(i18n(R.string.title_activity_tx_history) % mapOf("walname" to walName));
-                    val wallet = coin.wallet
-                    val history = wallet.paymentHistory.values
-                    val historyList: List<PaymentHistory> = history.sortedBy { it.date }.filter { !it.isChange }.reversed()
-                    val txhist: ArrayList<PaymentHistory> = ArrayList(historyList)
-                    LogIt.info("tx history count:" + txhist.size.toString())
-                    //LogIt.info(wallet.allIdentityDomains().map { it.domain }.toString())
-                    adapter = TxHistoryRecyclerAdapter(this, txhist, coin)
-                    GuiTxHistoryList.adapter = adapter
-
-                    //val dest = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
-                    //commonIdentityAddress.text = dest.address.toString()
-                }
-                else  // coin disappeared out of under this activity
                     finish()
+                }
+                else
+                {
+                    val app = (application as WallyApp)
+                    val coin = app.accounts[walName]
+                    if (coin != null)
+                    {
+                        setTitle(i18n(R.string.title_activity_tx_history) % mapOf("walname" to walName));
+                        val wallet = coin.wallet
+                        val history = wallet.paymentHistory.values
+                        val historyList: List<PaymentHistory> = history.sortedBy { it.date }.filter { !it.isChange }.reversed()
+                        val txhist: ArrayList<PaymentHistory> = ArrayList(historyList)
+                        LogIt.info("tx history count:" + txhist.size.toString())
+                        //LogIt.info(wallet.allIdentityDomains().map { it.domain }.toString())
+                        adapter = TxHistoryRecyclerAdapter(this, txhist, coin)
+                        GuiTxHistoryList.adapter = adapter
+
+                        //val dest = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
+                        //commonIdentityAddress.text = dest.address.toString()
+                    }
+                    else  // coin disappeared out of under this activity
+                        finish()
+                }
             }
         }
     }

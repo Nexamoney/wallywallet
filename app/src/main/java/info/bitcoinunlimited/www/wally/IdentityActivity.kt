@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.net.Uri
 import android.view.*
 import androidx.annotation.LayoutRes
 import androidx.core.app.ActivityCompat.startActivityForResult
@@ -263,6 +264,10 @@ class IdentityActivity : CommonActivity()
 
         val item3 = menu.findItem(R.id.unlock)
         item3.intent = Intent(this, UnlockActivity::class.java)
+
+        val item4 = menu.findItem(R.id.help)
+        item4.intent = Intent(Intent.ACTION_VIEW)
+        item4.intent.setData(Uri.parse("http://www.bitcoinunlimited.net/wally/faq"))
 
         return super.onCreateOptionsMenu(menu)
     }

@@ -5,13 +5,16 @@ package bitcoinunlimited.libbitcoincash
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
+import android.net.ConnectivityManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.CompoundButton
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import info.bitcoinunlimited.www.wally.BCH_PREFER_NODE_SWITCH
 import info.bitcoinunlimited.www.wally.R
+import info.bitcoinunlimited.www.wally.appContext
 import kotlinx.android.synthetic.main.activity_settings.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
@@ -39,6 +42,7 @@ val RheadersNotForthcoming = R.string.headersNotForthcoming
 val RbadTransaction = R.string.badTransaction
 val RfeeExceedsFlatMax = R.string.feeExceedsFlatMax
 val RexcessiveFee = R.string.excessiveFee
+val RsendDust = R.string.sendDustError
 val Rbip70NoAmount = R.string.badAmount
 val RdeductedFeeLargerThanSendAmount = R.string.deductedFeeLargerThanSendAmount
 
@@ -46,11 +50,25 @@ var RwalletDisconnectedFromBlockchain = R.string.walletDisconnectedFromBlockchai
 
 open class AssertException(why: String): BUException(why, "Assertion", ErrorSeverity.Abnormal)
 
+fun iHaveInternet():Boolean
+{
+    val ctxt = appContext?.context ?: return true
+    val connectivityManager = ctxt.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    return connectivityManager.activeNetwork != null
+}
+
 /** Do whatever you pass within the user interface context, asynchronously */
 fun laterUI(fn: suspend () -> Unit): Unit
 {
     MainScope().launch {
-        fn()
+        try
+        {
+            fn()
+        }
+        catch(e:Exception)
+        {
+            LogIt.warning("Exception in laterUI: " + e.toString())
+        }
     }
 }
 
@@ -60,9 +78,28 @@ fun notInUI(fn: () -> Unit)
     val tname = Thread.currentThread().name
     if (tname == "main")
     {
-        GlobalScope.launch { fn() }
+        GlobalScope.launch{
+            try
+            {
+                fn()
+            }
+            catch(e:Exception)
+            {
+                LogIt.warning("Exception in laterUI: " + e.toString())
+            }
+        }
     }
-    else fn()
+    else
+    {
+        try
+        {
+            fn()
+        }
+        catch(e:Exception)
+        {
+            LogIt.warning("Exception in laterUI: " + e.toString())
+        }
+    }
 }
 
 /** Connects a gui switch to a preference DB item.  To be called in onCreate.

@@ -201,7 +201,14 @@ open class CommonActivity : AppCompatActivity()
     fun later(fn: suspend () -> Unit): Unit
     {
         coMiscScope.launch {
-            fn()
+            try
+            {
+                fn()
+            }
+            catch(e:Exception) // Uncaught exceptions will end the app
+            {
+                LogIt.warning("Exception in later: " + e.toString())
+            }
         }
     }
 
@@ -210,7 +217,14 @@ open class CommonActivity : AppCompatActivity()
     fun laterUI(fn: suspend () -> Unit): Unit
     {
         coGuiScope.launch {
-            fn()
+            try
+            {
+                fn()
+            }
+            catch(e:Exception)  // Uncaught exceptions will end the app
+            {
+                LogIt.warning("Exception in later: " + e.toString())
+            }
         }
     }
 

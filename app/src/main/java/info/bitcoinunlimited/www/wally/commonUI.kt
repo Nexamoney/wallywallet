@@ -21,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.lang.Exception
 import java.util.logging.Logger
 
 const val SPLITBILL_MESSAGE = "info.bitcoinunlimited.www.wally.splitbill"
@@ -48,7 +49,15 @@ fun <RET> doUI(fn: suspend () -> RET): RET
 fun asyncUI(fn: suspend () -> Unit): Unit
 {
     GlobalScope.launch(Dispatchers.Main) {
-        fn()
+        try
+        {
+            fn()
+        }
+        catch(e:Exception)
+        {
+            LogIt.warning("Exception in laterUI: " + e.toString())
+        }
+
     }
 }
 
