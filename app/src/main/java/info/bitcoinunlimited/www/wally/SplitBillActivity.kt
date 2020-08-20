@@ -318,7 +318,12 @@ class SplitBillActivity : CommonActivity()
                 // TODO better error report
                 return 0.toBigDecimal()
             }
-            amt = amt / acct!!.fiatPerCoin
+            val fpc = acct!!.fiatPerCoin
+            if (fpc == -1.toBigDecimal())  // No conversion
+            {
+                amt = BigDecimal.ZERO
+            }
+            else amt = amt / acct!!.fiatPerCoin
         }
         return amt
     }
@@ -335,9 +340,17 @@ class SplitBillActivity : CommonActivity()
             var fiatStr = ""
             if (acct != null)
             {
-                val fiatQty: BigDecimal = qty * acct!!.fiatPerCoin
-                fiatStr = " " + i18n(R.string.or) + " " + fiatFormat.format(fiatQty) + " " + fiatCurrencyCode
-                acct!!.receiveInfoWithQuantity(qty, 200, { updateQR(it) })
+                val fpc = acct!!.fiatPerCoin
+                if (fpc == -1.toBigDecimal())
+                {
+                    fiatStr = " (" + i18n(R.string.unavailableExchangeRate) + ")"
+                }
+                else
+                {
+                    val fiatQty: BigDecimal = qty * fpc
+                    fiatStr = " " + i18n(R.string.or) + " " + fiatFormat.format(fiatQty) + " " + fiatCurrencyCode
+                    acct!!.receiveInfoWithQuantity(qty, 200, { updateQR(it) })
+                }
             }
 
             perSplitAmount.text =  (acct?.format(qty) ?: mBchFormat.format(qty)) + " " + cryptoCurrencyCode + fiatStr

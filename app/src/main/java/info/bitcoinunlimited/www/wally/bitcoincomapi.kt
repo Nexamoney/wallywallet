@@ -1,6 +1,7 @@
 // Copyright (c) 2019 Andrew Stone Consulting (qq9wwnuw4eukyh5g34ckg5vk4aaxnvr04vkspyv850)
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
+import bitcoinunlimited.libbitcoincash.launch
 import bitcoinunlimited.libbitcoincash.sourceLoc
 import kotlinx.coroutines.*
 import kotlinx.serialization.*
@@ -46,7 +47,7 @@ fun MbchInFiat(fiat: String, setter: (BigDecimal)-> Unit)
         }
     }
     // TODO periodic update
-    GlobalScope.launch {
+    launch {
         val data = try { URL("https://index-api.bitcoin.com/api/v0/cash/price/" + fiat).readText() }
         catch(e: java.io.FileNotFoundException)
         {

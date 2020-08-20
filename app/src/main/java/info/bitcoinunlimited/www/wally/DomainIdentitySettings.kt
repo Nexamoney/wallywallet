@@ -13,10 +13,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import bitcoinunlimited.libbitcoincash.BCHidentityParams
 import bitcoinunlimited.libbitcoincash.CommonWallet
 import bitcoinunlimited.libbitcoincash.IdentityDomain
+import bitcoinunlimited.libbitcoincash.launch
 
 import kotlinx.android.synthetic.main.activity_domain_identity_settings.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.logging.Logger
 
@@ -111,7 +110,7 @@ class DomainIdentitySettings : CommonActivity()
         changed = (idData?.setReqs(reqs) ?: false) or changed
 
         // Save the wallet if something has changed
-        if (changed) GlobalScope.launch { (wallet.save()) }  // do this out-of-band so UI response is quicker
+        if (changed) launch { (wallet.save()) }  // do this out-of-band so UI response is quicker
     }
 
     fun setOptionState(ui: Switch, value: Boolean?, setting: String?)

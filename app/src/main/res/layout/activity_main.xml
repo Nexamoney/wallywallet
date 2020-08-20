@@ -49,24 +49,28 @@
     <TextView
         android:id="@+id/balanceTicker"
         android:layout_width="100sp"
-        android:layout_height="36dp"
+        android:layout_height="30dp"
+        android:autoSizeMaxTextSize="20sp"
+        android:autoSizeMinTextSize="8sp"
+        android:autoSizeStepGranularity="1sp"
+        android:autoSizeTextType="uniform"
         android:clickable="true"
         android:gravity="bottom"
         android:maxLines="1"
         android:minLines="1"
         android:onClick="onBalanceTickerClicked"
         android:textAlignment="center"
-        android:autoSizeMaxTextSize="20sp"
-        android:autoSizeMinTextSize="8sp"
-        android:autoSizeStepGranularity="1sp"
-        android:autoSizeTextType="uniform"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/balanceTitle" />
 
     <TextView
         android:id="@+id/balanceTicker2"
         android:layout_width="100sp"
-        android:layout_height="36dp"
+        android:layout_height="30dp"
+        android:autoSizeMaxTextSize="20sp"
+        android:autoSizeMinTextSize="8sp"
+        android:autoSizeStepGranularity="1sp"
+        android:autoSizeTextType="uniform"
         android:clickable="true"
         android:gravity="bottom"
         android:maxLines="1"
@@ -74,17 +78,17 @@
         android:onClick="onBalanceTickerClicked"
         android:text=""
         android:textAlignment="center"
-        android:autoSizeMaxTextSize="20sp"
-        android:autoSizeMinTextSize="8sp"
-        android:autoSizeStepGranularity="1sp"
-        android:autoSizeTextType="uniform"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/WalletChainInfo" />
 
     <TextView
         android:id="@+id/balanceTicker3"
         android:layout_width="100sp"
-        android:layout_height="36dp"
+        android:layout_height="30dp"
+        android:autoSizeMaxTextSize="20sp"
+        android:autoSizeMinTextSize="8sp"
+        android:autoSizeStepGranularity="1sp"
+        android:autoSizeTextType="uniform"
         android:clickable="true"
         android:gravity="bottom"
         android:maxLines="1"
@@ -92,10 +96,6 @@
         android:onClick="onBalanceTickerClicked"
         android:text=""
         android:textAlignment="center"
-        android:autoSizeMaxTextSize="20sp"
-        android:autoSizeMinTextSize="8sp"
-        android:autoSizeStepGranularity="1sp"
-        android:autoSizeTextType="uniform"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/WalletChainInfo2" />
 
@@ -103,15 +103,16 @@
         android:id="@+id/balanceTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
         android:text="@string/Balance"
         android:textSize="24sp"
-        app:layout_constraintStart_toStartOf="@+id/ReceiveTitle"
+        app:layout_constraintStart_toEndOf="@+id/syncingIcon"
         app:layout_constraintTop_toBottomOf="@+id/divider2" />
 
     <TextView
         android:id="@+id/balanceUnconfirmedValue"
         android:layout_width="0dp"
-        android:layout_height="36dp"
+        android:layout_height="30dp"
         android:layout_marginStart="4dp"
         android:gravity="bottom"
         android:textAlignment="center"
@@ -126,7 +127,7 @@
     <TextView
         android:id="@+id/balanceUnconfirmedValue2"
         android:layout_width="0dp"
-        android:layout_height="36dp"
+        android:layout_height="30dp"
         android:layout_marginStart="4dp"
         android:gravity="bottom"
         android:textAlignment="center"
@@ -139,7 +140,7 @@
     <TextView
         android:id="@+id/balanceUnconfirmedValue3"
         android:layout_width="0dp"
-        android:layout_height="36dp"
+        android:layout_height="30dp"
         android:layout_marginStart="4dp"
         android:gravity="bottom"
         android:textAlignment="center"
@@ -383,7 +384,7 @@
         android:layout_width="395dp"
         android:layout_height="3dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
         android:background="?android:attr/listDivider"
         android:foreground="#40b040"
@@ -422,6 +423,7 @@
         android:layout_marginTop="12dp"
         android:onClick="onPurchaseButton"
         android:text="@string/purchase"
+        android:visibility="invisible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/splitBillButton" />
 
@@ -472,20 +474,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/GuiNewAccount"
-        android:layout_width="30dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="8dp"
-        android:clickable="true"
-        android:contentDescription="@string/NewAccountButton"
-        android:onClick="onNewAccount"
-        app:layout_constraintBottom_toTopOf="@+id/balanceTicker"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/balanceTitle"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/ic_plus" />
-
     <TextView
         android:id="@+id/balanceUnits"
         android:layout_width="wrap_content"
@@ -534,5 +522,25 @@
         app:layout_constraintBottom_toBottomOf="@+id/sendButton"
         app:layout_constraintStart_toEndOf="@+id/sendButton"
         app:layout_constraintTop_toTopOf="@+id/sendButton" />
+
+    <ImageView
+        android:id="@+id/syncingIcon"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider2"
+        app:srcCompat="@drawable/ani_syncing" />
+
+    <ImageButton
+        android:id="@+id/GuiNewAccount"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="4dp"
+        android:onClick="onNewAccount"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider2"
+        app:srcCompat="@drawable/ic_plus" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

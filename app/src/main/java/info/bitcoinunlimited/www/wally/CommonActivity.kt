@@ -25,6 +25,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.view.Menu
 import android.view.inputmethod.InputMethodManager
+import bitcoinunlimited.libbitcoincash.handleThreadException
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
@@ -207,7 +208,7 @@ open class CommonActivity : AppCompatActivity()
             }
             catch(e:Exception) // Uncaught exceptions will end the app
             {
-                LogIt.warning("Exception in later: " + e.toString())
+                handleThreadException(e)
             }
         }
     }
@@ -223,7 +224,7 @@ open class CommonActivity : AppCompatActivity()
             }
             catch(e:Exception)  // Uncaught exceptions will end the app
             {
-                LogIt.warning("Exception in later: " + e.toString())
+                handleThreadException(e)
             }
         }
     }

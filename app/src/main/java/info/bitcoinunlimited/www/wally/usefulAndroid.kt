@@ -16,9 +16,7 @@ import info.bitcoinunlimited.www.wally.BCH_PREFER_NODE_SWITCH
 import info.bitcoinunlimited.www.wally.R
 import info.bitcoinunlimited.www.wally.appContext
 import kotlinx.android.synthetic.main.activity_settings.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.io.File
 import java.util.logging.Logger
 
@@ -99,6 +97,22 @@ fun notInUI(fn: () -> Unit)
         {
             LogIt.warning("Exception in laterUI: " + e.toString())
         }
+    }
+}
+
+fun<RET> syncNotInUI(fn: () -> RET): RET
+{
+    val tname = Thread.currentThread().name
+    if (tname == "main")
+    {
+        val ret = runBlocking(Dispatchers.IO) {
+            fn()
+        }
+        return ret
+    }
+    else
+    {
+        return fn()
     }
 }
 

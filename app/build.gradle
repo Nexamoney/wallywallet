@@ -11,7 +11,7 @@ android {
         applicationId "info.bitcoinunlimited.www.wally"
         ndkVersion "21.2.6472646"
         minSdkVersion 26
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         testApplicationId "bitcoinunlimited.wally"

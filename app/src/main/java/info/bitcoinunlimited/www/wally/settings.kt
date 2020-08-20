@@ -17,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import bitcoinunlimited.libbitcoincash.*
 import kotlinx.android.synthetic.main.activity_settings.*
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -200,7 +199,7 @@ class Settings : AppCompatActivity()
                         coin.flags = coin.flags or ACCOUNT_FLAG_HIDE_UNTIL_PIN
                     else
                         coin.flags = coin.flags and ACCOUNT_FLAG_HIDE_UNTIL_PIN.inv()
-                    GlobalScope.launch {  // Can't be in UI thread
+                   launch {  // Can't be in UI thread
                         coin.saveAccountFlags()
                     }
                 }
@@ -281,7 +280,7 @@ class Settings : AppCompatActivity()
     @Suppress("UNUSED_PARAMETER")
     fun onLogDebugData(v: View?)
     {
-        GlobalScope.launch {
+        launch {
             val coins: MutableMap<String, Account> = (getApplication() as WallyApp).accounts
 
             LogIt.info("LOG DEBUG BUTTON")
@@ -295,7 +294,7 @@ class Settings : AppCompatActivity()
     @Suppress("UNUSED_PARAMETER")
     fun onClearIdentityDomains(v: View?)
     {
-        GlobalScope.launch {
+        launch {
             val wallet:CommonWallet = try
                 {
                     ((application as WallyApp).primaryAccount.wallet as CommonWallet)
@@ -329,7 +328,7 @@ class Settings : AppCompatActivity()
             {
                 val coin = accounts[accountName]
                 if (coin == null) return
-                GlobalScope.launch {
+                launch {
                     // If you reset the wallet first, it'll start rediscovering the existing blockchain before it gets reset.
                     coin.wallet.blockchain.rediscover()
                     coin.wallet.rediscover()
@@ -340,7 +339,7 @@ class Settings : AppCompatActivity()
             {
                 val coin = accounts[accountName]
                 if (coin == null) return
-                GlobalScope.launch {
+                launch {
                     coin.wallet.rediscover()
                 }
                 displayNotice(i18n(R.string.rediscoverNotice))
@@ -349,7 +348,7 @@ class Settings : AppCompatActivity()
             {
                 val coin = accounts[accountName]
                 if (coin == null) return
-                GlobalScope.launch {
+                launch {
                     try
                     {
                         if (coin.wallet != null)
@@ -369,7 +368,7 @@ class Settings : AppCompatActivity()
                 account.detachUI()
                 accounts.remove(accountName)  // remove this coin from any global access before we delete it
 
-                GlobalScope.launch { // cannot access db in UI thread
+                launch { // cannot access db in UI thread
                     app?.saveActiveAccountList()
                     account.delete()
                 }

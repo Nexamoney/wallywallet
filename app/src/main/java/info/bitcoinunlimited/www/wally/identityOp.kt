@@ -13,9 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.widget.TextView
 import androidx.preference.PreferenceManager
 import kotlinx.android.synthetic.main.activity_identity_op.*
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -271,7 +269,7 @@ class IdentityOpActivity : CommonActivity()
     fun onProvideIdentity(v: View)
     {
         val iuri = displayedLoginRequest
-        GlobalScope.launch {
+        launch {
             if (iuri != null)
             {
                 host = iuri.getHost()

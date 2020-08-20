@@ -11,22 +11,30 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="93b3f44b-6791-4520-ad38-6da4e0a30d33" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/assetWizardSettings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/assetWizardSettings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/app/app.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/CommonActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/CommonActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/IdentityActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/IdentityActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/DomainIdentitySettings.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/DomainIdentitySettings.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/MainActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/TxHistoryActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/TxHistoryActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/commonUI.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/commonUI.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/SplitBillActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/SplitBillActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/WallyApp.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/WallyApp.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/bitcoincomapi.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/bitcoincomapi.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/identityOp.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/identityOp.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/settings.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/settings.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/usefulAndroid.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/usefulAndroid.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/libbitcoincash" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/libbitcoincash" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/Wallet.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/Wallet.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/blockchain.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/blockchain.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/electrumclient.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/electrumclient.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/p2p.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/p2p.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/useful.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/useful.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout-land/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout-land/activity_main.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout-sw600dp/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout-sw600dp/activity_main.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_split_bill.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_split_bill.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -34,7 +42,7 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="10.1_WXGA_Tablet_API_28" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="252bc16cb90d7ece" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -61,6 +69,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Kotlin File" />
+        <option value="resourceFile" />
       </list>
     </option>
   </component>
@@ -71,7 +80,7 @@
     <option name="BUILD_TARGET_KEY" value="apk" />
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/app/src/main/java/libbitcoincash" />
     <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
   <component name="ProjectId" id="1agERTG9ejfQODY31OsrqD6kHZp" />
@@ -93,6 +102,7 @@
     <property name="ExportApk.BuildVariants" value="release" />
     <property name="ExportApk.SignV1" value="true" />
     <property name="ExportApk.SignV2" value="true" />
+    <property name="KotlinFunctionFindUsagesOptions.isImplementingMethods" value="true" />
     <property name="ResourceManagerPrefKey.ResourceType" value="MIPMAP" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="SHOW_ALL_PROCESSES" value="false" />
@@ -500,15 +510,23 @@
     </state>
     <state x="3181" y="772" width="651" height="617" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594154250277" />
     <state x="4861" y="764" width="651" height="617" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596199573452" />
-    <state x="3317" y="1350" width="2076" height="586" key="#xdebugger.evaluate" timestamp="1597110349490">
+    <state x="3317" y="1350" width="2076" height="586" key="#xdebugger.evaluate" timestamp="1597896356502">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
-    <state x="3317" y="1350" width="2076" height="586" key="#xdebugger.evaluate/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597110349490" />
-    <state x="3407" y="834" width="385" height="494" key="AndroidProcessChooserDialog" timestamp="1597109661209">
+    <state x="3317" y="1350" width="2076" height="586" key="#xdebugger.evaluate/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597896356502" />
+    <state x="3210" y="838" width="826" height="493" key="AndroidCreateResourceFileDialog" timestamp="1597867335412">
+      <screen x="1680" y="0" width="3840" height="2160" />
+    </state>
+    <state x="3210" y="838" width="826" height="493" key="AndroidCreateResourceFileDialog/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597867335412" />
+    <state x="3382" y="859" width="481" height="452" key="AndroidCreateXmlResourceDialog" timestamp="1597843521475">
+      <screen x="1680" y="0" width="3840" height="2160" />
+    </state>
+    <state x="3382" y="859" width="481" height="452" key="AndroidCreateXmlResourceDialog/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597843521475" />
+    <state x="3407" y="834" width="385" height="494" key="AndroidProcessChooserDialog" timestamp="1597841370068">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state x="1727" y="841" key="AndroidProcessChooserDialog/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594153929024" />
-    <state x="3407" y="834" width="385" height="494" key="AndroidProcessChooserDialog/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597109661209" />
+    <state x="3407" y="834" width="385" height="494" key="AndroidProcessChooserDialog/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597841370068" />
     <state width="499" height="643" key="DebuggerActiveHint" timestamp="1593797977105">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
@@ -517,46 +535,46 @@
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state x="3280" y="691" width="883" height="740" key="FileChooserDialogImpl/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596202222014" />
-    <state width="3624" height="806" key="GridCell.Tab.0.bottom" timestamp="1597111154262">
+    <state width="2257" height="538" key="GridCell.Tab.0.bottom" timestamp="1597896480481">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.0.bottom/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
-    <state width="3624" height="806" key="GridCell.Tab.0.bottom/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597111154262" />
-    <state width="3624" height="806" key="GridCell.Tab.0.center" timestamp="1597111154261">
+    <state width="2257" height="538" key="GridCell.Tab.0.bottom/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597896480481" />
+    <state width="2257" height="538" key="GridCell.Tab.0.center" timestamp="1597896480481">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.0.center/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
-    <state width="3624" height="806" key="GridCell.Tab.0.center/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597111154261" />
-    <state width="3624" height="806" key="GridCell.Tab.0.left" timestamp="1597111154261">
+    <state width="2257" height="538" key="GridCell.Tab.0.center/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597896480481" />
+    <state width="2257" height="538" key="GridCell.Tab.0.left" timestamp="1597896480481">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.0.left/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
-    <state width="3624" height="806" key="GridCell.Tab.0.left/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597111154261" />
-    <state width="3624" height="806" key="GridCell.Tab.0.right" timestamp="1597111154261">
+    <state width="2257" height="538" key="GridCell.Tab.0.left/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597896480481" />
+    <state width="2257" height="538" key="GridCell.Tab.0.right" timestamp="1597896480481">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.0.right/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
-    <state width="3624" height="806" key="GridCell.Tab.0.right/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597111154261" />
-    <state width="3624" height="806" key="GridCell.Tab.1.bottom" timestamp="1597111154262">
+    <state width="2257" height="538" key="GridCell.Tab.0.right/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597896480481" />
+    <state width="2257" height="538" key="GridCell.Tab.1.bottom" timestamp="1597896480481">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.1.bottom/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185877" />
-    <state width="3624" height="806" key="GridCell.Tab.1.bottom/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597111154262" />
-    <state width="3624" height="806" key="GridCell.Tab.1.center" timestamp="1597111154262">
+    <state width="2257" height="538" key="GridCell.Tab.1.bottom/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597896480481" />
+    <state width="2257" height="538" key="GridCell.Tab.1.center" timestamp="1597896480481">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.1.center/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
-    <state width="3624" height="806" key="GridCell.Tab.1.center/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597111154262" />
-    <state width="3624" height="806" key="GridCell.Tab.1.left" timestamp="1597111154262">
+    <state width="2257" height="538" key="GridCell.Tab.1.center/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597896480481" />
+    <state width="2257" height="538" key="GridCell.Tab.1.left" timestamp="1597896480481">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.1.left/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
-    <state width="3624" height="806" key="GridCell.Tab.1.left/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597111154262" />
-    <state width="3624" height="806" key="GridCell.Tab.1.right" timestamp="1597111154262">
+    <state width="2257" height="538" key="GridCell.Tab.1.left/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597896480481" />
+    <state width="2257" height="538" key="GridCell.Tab.1.right" timestamp="1597896480481">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.1.right/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
-    <state width="3624" height="806" key="GridCell.Tab.1.right/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597111154262" />
+    <state width="2257" height="538" key="GridCell.Tab.1.right/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597896480481" />
     <state width="3624" height="806" key="GridCell.Tab.2.bottom" timestamp="1597111154262">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
@@ -643,11 +661,11 @@
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state x="3147" y="742" width="939" height="700" key="find.popup/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1593182772909" />
-    <state width="662" height="224" key="javadoc.popup.new" timestamp="1597760679554">
+    <state width="662" height="224" key="javadoc.popup.new" timestamp="1597896477261">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="662" height="241" key="javadoc.popup.new/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244002607" />
-    <state width="662" height="224" key="javadoc.popup.new/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597760679554" />
+    <state width="662" height="224" key="javadoc.popup.new/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597896477261" />
     <state x="3214" y="516" key="run.anything.popup" timestamp="1595533848906">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
@@ -688,7 +706,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/WallyApp.kt</url>
-          <line>754</line>
+          <line>759</line>
           <option name="timeStamp" value="147" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
@@ -698,7 +716,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/Wallet.kt</url>
-          <line>404</line>
+          <line>405</line>
           <option name="timeStamp" value="330" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
@@ -708,22 +726,22 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/usefulAndroid.kt</url>
-          <line>226</line>
+          <line>240</line>
           <option name="timeStamp" value="344" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/identityOp.kt</url>
-          <line>333</line>
+          <line>331</line>
           <option name="timeStamp" value="386" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/MainActivity.kt</url>
-          <line>631</line>
+          <line>703</line>
           <option name="timeStamp" value="402" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/MainActivity.kt</url>
-          <line>634</line>
+          <line>706</line>
           <option name="timeStamp" value="403" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
@@ -738,32 +756,32 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/identityOp.kt</url>
-          <line>304</line>
+          <line>302</line>
           <option name="timeStamp" value="453" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/identityOp.kt</url>
-          <line>306</line>
+          <line>304</line>
           <option name="timeStamp" value="455" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/identityOp.kt</url>
-          <line>241</line>
+          <line>239</line>
           <option name="timeStamp" value="458" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/CommonActivity.kt</url>
-          <line>144</line>
+          <line>145</line>
           <option name="timeStamp" value="459" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/settings.kt</url>
-          <line>410</line>
+          <line>409</line>
           <option name="timeStamp" value="477" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/settings.kt</url>
-          <line>343</line>
+          <line>342</line>
           <option name="timeStamp" value="483" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
@@ -783,21 +801,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/p2p.kt</url>
-          <line>2054</line>
+          <line>2055</line>
           <option name="timeStamp" value="506" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/p2p.kt</url>
-          <line>2062</line>
+          <line>2063</line>
           <option name="timeStamp" value="507" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/p2p.kt</url>
-          <line>2219</line>
-          <properties>
-            <option name="lambda-ordinal" value="0" />
-          </properties>
-          <option name="timeStamp" value="520" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/p2p.kt</url>
@@ -806,28 +816,18 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/settings.kt</url>
-          <line>354</line>
+          <line>353</line>
           <option name="timeStamp" value="529" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/p2p.kt</url>
-          <line>2315</line>
-          <option name="timeStamp" value="538" />
+          <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/SplitBillActivity.kt</url>
+          <line>349</line>
+          <option name="timeStamp" value="544" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/p2p.kt</url>
-          <line>2171</line>
-          <option name="timeStamp" value="539" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/p2p.kt</url>
-          <line>2203</line>
-          <option name="timeStamp" value="540" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/p2p.kt</url>
-          <line>2254</line>
-          <option name="timeStamp" value="541" />
+          <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/MainActivity.kt</url>
+          <line>1286</line>
+          <option name="timeStamp" value="554" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

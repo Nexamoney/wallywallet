@@ -166,6 +166,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/kapt/release" isTestSource="false" generated="true" />
       <excludeFolder url="file://$MODULE_DIR$/.cxx" />
       <excludeFolder url="file://$MODULE_DIR$/.externalNativeBuild" />
       <excludeFolder url="file://$MODULE_DIR$/build" />

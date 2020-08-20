@@ -45,6 +45,8 @@
     <!-- General -->
     <string name="yes">yes</string>
     <string name="no">no</string>
+    <string name="at">at</string>
+    <string name="of">of</string>
     <!-- done is like "yes" but more means "go to the next thing" rather than acceptance of something -->
     <string name="done">done</string>
     <string name="empty"></string>
@@ -359,4 +361,5 @@
     values-round/strings.xml for round devices.
     -->
     <string name="hello_world">Hello Square World!</string>
+    <string name="asciiArrow"><![CDATA[=>]]></string>
 </resources>

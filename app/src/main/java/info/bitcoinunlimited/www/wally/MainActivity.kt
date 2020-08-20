@@ -4,6 +4,7 @@ package info.bitcoinunlimited.www.wally
 
 import android.content.*
 import android.graphics.Bitmap
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.PersistableBundle
@@ -45,14 +46,14 @@ val MAX_ACCOUNTS = 3 // What are the maximum # of accounts this wallet GUI can s
 var SEND_ALL_TEXT = "all"  // Fixed up in onCreate when we have access to strings
 
 
-open class PasteUnintelligibleException(): BUException("", i18n(R.string.pasteUnintelligible), ErrorSeverity.Expected)
-open class PasteEmptyException(): BUException("", i18n(R.string.pasteIsEmpty), ErrorSeverity.Abnormal)
-open class BadAmountException(msg: Int): BUException(i18n(msg), i18n(R.string.badAmount))
-open class BadCryptoException(msg: Int=-1): BUException(i18n(msg), i18n(R.string.badCryptoCode))
-open class BadUnitException(msg: Int=-1): BUException(i18n(msg), i18n(R.string.badCurrencyUnit))
-open class UnavailableException(msg: Int=-1): BUException(i18n(msg), i18n(R.string.unavailable))
+open class PasteUnintelligibleException() : BUException("", i18n(R.string.pasteUnintelligible), ErrorSeverity.Expected)
+open class PasteEmptyException() : BUException("", i18n(R.string.pasteIsEmpty), ErrorSeverity.Abnormal)
+open class BadAmountException(msg: Int) : BUException(i18n(msg), i18n(R.string.badAmount))
+open class BadCryptoException(msg: Int = -1) : BUException(i18n(msg), i18n(R.string.badCryptoCode))
+open class BadUnitException(msg: Int = -1) : BUException(i18n(msg), i18n(R.string.badCurrencyUnit))
+open class UnavailableException(msg: Int = -1) : BUException(i18n(msg), i18n(R.string.unavailable))
 
-var appContext:PlatformContext? = null
+var appContext: PlatformContext? = null
 
 class MainActivityModel
 {
@@ -94,7 +95,7 @@ class SleepMonitor(val activity: MainActivity) : BroadcastReceiver()
         else if (action.equals(Intent.ACTION_SCREEN_ON))
         {
             LogIt.info("Phone Wake")
-            sleepDuration = (System.nanoTime() - sleepStarted)/1000000  // get duration in milliseconds
+            sleepDuration = (System.nanoTime() - sleepStarted) / 1000000  // get duration in milliseconds
             screenOn = true
             if (sleepDuration >= RELOCK_TIME)
             {
@@ -116,7 +117,7 @@ class MainActivity : CommonActivity()
 
     var app: WallyApp? = null
 
-    val accounts:MutableMap<String,Account>
+    val accounts: MutableMap<String, Account>
         get() = app!!.accounts
 
     //* last paste so we don't try to paste the same thing again
@@ -132,9 +133,14 @@ class MainActivity : CommonActivity()
 
     var sleepMonitor: SleepMonitor? = null
 
+    var curWalletsSynced: Boolean? = null
+
+    /** If we've already put up an error for this address, don't do it again */
+    var alreadyErroredAddress: PayAddress? = null
+
     fun onBlockchainChange(blockchain: Blockchain)
     {
-        for ((_,c) in accounts)
+        for ((_, c) in accounts)
         {
             if (c.chain == blockchain)
                 c.onWalletChange()  // coin onWalletChange also updates the blockchain state GUI
@@ -143,7 +149,7 @@ class MainActivity : CommonActivity()
 
     fun onWalletChange(wallet: Wallet)  // callback provided to the wallet code
     {
-        for ((_,c) in accounts)
+        for ((_, c) in accounts)
         {
             if (c.wallet == wallet)
             {
@@ -202,30 +208,34 @@ class MainActivity : CommonActivity()
                 lastPaste = ""  // We never want to completely ignore an explicit paste
                 handlePastedData()
             }
-            catch(e: Exception)
+            catch (e: Exception)
             {
                 displayException(e)
             }
         }
 
-        sendQuantity.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
+        sendQuantity.addTextChangedListener(object : TextWatcher
+        {
+            override fun afterTextChanged(p0: Editable?)
+            {
                 dbgAssertGuiThread()
-                if(!machineChangingGUI)
+                if (!machineChangingGUI)
                 {
                     paymentInProgress = null
                     updateSendBasedOnPaymentInProgress()
                 }
                 val sendQty = sendQuantity?.text?.toString()
                 if (sendQty != null) this@MainActivity.checkSendQuantity(sendQty)
-                }
+            }
 
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
+            {
+            }
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                }
-            })
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
+            {
+            }
+        })
 
         // When the send currency type is updated, we need to also update the "approximately" line
         sendCurrencyType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
@@ -258,13 +268,24 @@ class MainActivity : CommonActivity()
                     val sendAddr = PayAddress(sendToAddress.text.toString())
                     if (c.wallet.chainSelector != sendAddr.blockchain)
                     {
-                        displayError(R.string.chainIncompatibleWithAddress)
+                        if (sendAddr != alreadyErroredAddress)
+                        {
+                            displayError(R.string.chainIncompatibleWithAddress)
+                            alreadyErroredAddress = sendAddr
+                        }
                         updateSendCoinType(sendAddr)
                     }
                 }
-                catch(e: PayAddressBlankException) {}  // nothing to update if its blank
-                catch(e: UnknownBlockchainException) {}
-                catch(e: Exception) { if (DEBUG) throw e} // ignore all problems from user input, unless in debug mode when we should analyze them
+                catch (e: PayAddressBlankException)
+                {
+                }  // nothing to update if its blank
+                catch (e: UnknownBlockchainException)
+                {
+                }
+                catch (e: Exception)
+                {
+                    if (DEBUG) throw e
+                } // ignore all problems from user input, unless in debug mode when we should analyze them
                 updateSendCurrencyType()
             }
 
@@ -276,7 +297,7 @@ class MainActivity : CommonActivity()
 
 
         // When the receive coin type spinner is changed, update the receive address and picture with and address from the relevant coin
-        recvCoinType.onItemSelectedListener = object: AdapterView.OnItemSelectedListener
+        recvCoinType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
         {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long)
             {
@@ -371,7 +392,7 @@ class MainActivity : CommonActivity()
             }
             if (!uiSet)
             {
-                ac.setUI(null,null,null,null)
+                ac.setUI(null, null, null, null)
             }
         }
 
@@ -478,10 +499,19 @@ class MainActivity : CommonActivity()
                 assignWalletsGuiSlots()
                 assignCryptoSpinnerValues()
 
-                for (c in accounts.values) {
+                for (c in accounts.values)
+                {
                     c.updateReceiveAddressUI = { it -> updateReceiveAddressUI(it) }
                     c.onResume()
                 }
+            }
+        }
+        // Poll the syncing icon update because it doesn't matter how long it takes
+        laterUI {
+            while(true)
+            {
+                updateSyncingIcon()
+                delay(7000)
             }
         }
     }
@@ -500,14 +530,15 @@ class MainActivity : CommonActivity()
 
 
     /** Set the send currency type spinner options to your default fiat currency or your currently selected crypto
-        Might change if the user changes the default fiat or crypto */
+    Might change if the user changes the default fiat or crypto */
     fun updateSendCurrencyType()
     {
         dbgAssertGuiThread()
         sendCoinType.selectedItem?.let {
             val account = accounts[it.toString()]
             account?.let { acc ->
-                val curIdx = sendCurrencyType.selectedItemPosition  // We know that this field will be [fiat, crypto] but not which exact choices.  So save the slot and restore it after resetting the values so the UX persists by class
+                val curIdx =
+                    sendCurrencyType.selectedItemPosition  // We know that this field will be [fiat, crypto] but not which exact choices.  So save the slot and restore it after resetting the values so the UX persists by class
                 val spinData = arrayOf(acc.currencyCode, fiatCurrencyCode)
                 val aa = ArrayAdapter(this, android.R.layout.simple_spinner_item, spinData)
                 sendCurrencyType.setAdapter(aa)
@@ -534,9 +565,16 @@ class MainActivity : CommonActivity()
             val sta = sendToAddress.text.toString()
             updateSendCoinType(PayAddress(sta))
         }
-        catch(e: PayAddressBlankException) {}  // nothing to update if its blank
-        catch(e: UnknownBlockchainException) {}
-        catch(e: Exception) { if (DEBUG) throw e} // ignore all problems from user input, unless in debug mode when we should analyze them
+        catch (e: PayAddressBlankException)
+        {
+        }  // nothing to update if its blank
+        catch (e: UnknownBlockchainException)
+        {
+        }
+        catch (e: Exception)
+        {
+            if (DEBUG) throw e
+        } // ignore all problems from user input, unless in debug mode when we should analyze them
 
         updateSendCurrencyType()
 
@@ -557,18 +595,18 @@ class MainActivity : CommonActivity()
             {
                 handlePastedData()
             }
-            catch(e: PasteEmptyException)  // nothing to do, having pasted data is optional on startup
+            catch (e: PasteEmptyException)  // nothing to do, having pasted data is optional on startup
             {
 
             }
-            catch(e: PayAddressBlankException)  // nothing to do, having pasted data is optional on startup
+            catch (e: PayAddressBlankException)  // nothing to do, having pasted data is optional on startup
             {
 
             }
-            catch(e: PayAddressDecodeException)  // nothing to do, having pasted data is optional on startup
+            catch (e: PayAddressDecodeException)  // nothing to do, having pasted data is optional on startup
             {
             }
-            catch(e: Exception)
+            catch (e: Exception)
             {
                 //LogIt.info(sourceLoc() +" paste exception:")  // there could be random data in the paste, so be tolerant of whatever garbage might be in there but log it
                 //LogIt.info(sourceLoc() + Log.getStackTraceString(e))
@@ -583,12 +621,46 @@ class MainActivity : CommonActivity()
         {
             c.value.onWalletChange()
         }
+
+        updateSyncingIcon()
+    }
+
+    fun updateSyncingIcon()
+    {
+        dbgAssertGuiThread()
+        val walletsSynced = syncNotInUI {
+            var walletsSynced = true
+            for (c in accounts)
+            {
+                if (c.value.visible && !c.value.wallet.synced()) walletsSynced = false
+            }
+            return@syncNotInUI walletsSynced
+        }
+
+        if (!walletsSynced)
+        {
+            if (curWalletsSynced != false)
+            {
+                val d: AnimatedVectorDrawable = getDrawable(R.drawable.ani_syncing) as AnimatedVectorDrawable // Insert your AnimatedVectorDrawable resource identifier
+                syncingIcon.setImageDrawable(d)
+                d.start()
+            }
+
+        }
+        else
+        {
+            if (curWalletsSynced != true)
+            {
+                syncingIcon.setImageDrawable(getDrawable(R.drawable.ic_check))
+            }
+        }
+        curWalletsSynced = walletsSynced
     }
 
     override fun onNewIntent(intent: Intent?)
     {
         super.onNewIntent(intent)
-        intent?.let {handleNewIntent(it) }
+        intent?.let { handleNewIntent(it) }
     }
 
     //? This function grabs data from the clipboard and puts it into the appropriate fields (sendToAddress and sendQuantity)
@@ -700,7 +772,7 @@ class MainActivity : CommonActivity()
                 }
             }
         }
-        catch(e: Exception)
+        catch (e: Exception)
         {
             displayException(e)
         }
@@ -802,7 +874,7 @@ class MainActivity : CommonActivity()
 
         val bip72 = attribs["r"]
         val stramt = attribs["amount"]
-        var amt:BigDecimal = BigDecimal(-1)
+        var amt: BigDecimal = BigDecimal(-1)
         if (bip72 != null)
         {
             later {
@@ -848,7 +920,7 @@ class MainActivity : CommonActivity()
             {
                 updateSendAddress(PayAddress(sta))
             }
-            catch(e: UnknownBlockchainException)
+            catch (e: UnknownBlockchainException)
             {
                 displayError(R.string.badAddress)
                 return@laterUI
@@ -893,14 +965,17 @@ class MainActivity : CommonActivity()
         laterUI {
             if (recvCoinType?.selectedItem?.toString() == account.name)  // Only update the UI if this coin is selected to be received
             {
-                account.ifUpdatedReceiveInfo(minOf(GuiReceiveQRCode.layoutParams.width, GuiReceiveQRCode.layoutParams.height, 1024)) { recvAddrStr, recvAddrQR -> updateReceiveAddressUI(recvAddrStr, recvAddrQR) }
+                account.ifUpdatedReceiveInfo(minOf(GuiReceiveQRCode.layoutParams.width, GuiReceiveQRCode.layoutParams.height, 1024)) { recvAddrStr, recvAddrQR ->
+                    updateReceiveAddressUI(recvAddrStr,
+                        recvAddrQR)
+                }
             }
         }
     }
 
 
     /** Calculate whether there is enough money available to make a payment and return an appropriate info string for the GUI. Does not need to be called within GUI context */
-    fun availabilityWarning(account: Account, qty:BigDecimal): String
+    fun availabilityWarning(account: Account, qty: BigDecimal): String
     {
         val cbal = account.balance
         val ubal = account.unconfirmedBalance
@@ -916,12 +991,12 @@ class MainActivity : CommonActivity()
     }
 
     /** This function both validates the quantity in the send field (return true/false) and updates the "approximately..." text
-        It is therefore called both as an onchange validator and directly (when the local currency changes, for example).
-    */
+    It is therefore called both as an onchange validator and directly (when the local currency changes, for example).
+     */
     fun checkSendQuantity(s: String): Boolean
     {
         dbgAssertGuiThread()
-        if (s=="")
+        if (s == "")
         {
             approximatelyText.text = i18n(R.string.emptyQuantityField)
             return false
@@ -938,11 +1013,15 @@ class MainActivity : CommonActivity()
         }
 
         // This sets the scale assuming mBch.  mBch will have more decimals (5) than fiat (2) so we are ok
-        val qty = try { s.toBigDecimal(currencyMath).setScale(mBchDecimals) } catch(e:NumberFormatException)
+        val qty = try
+        {
+            s.toBigDecimal(currencyMath).setScale(mBchDecimals)
+        }
+        catch (e: NumberFormatException)
         {
             if (s == SEND_ALL_TEXT)  // Special case transferring everything
             {
-                coin.fromFinestUnit(coin.wallet.balance+coin.wallet.balanceUnconfirmed)
+                coin.fromFinestUnit(coin.wallet.balance + coin.wallet.balanceUnconfirmed)
             }
             else
             {
@@ -1023,7 +1102,7 @@ class MainActivity : CommonActivity()
                 val err = data.getStringExtra("error")
                 if (err != null) displayError(err)
             }
-        return;
+            return;
         }
 
         // Handle external activity results
@@ -1037,7 +1116,7 @@ class MainActivity : CommonActivity()
             {
                 laterUI {
                     displayNotice(R.string.scanSuccess)
-                    delay(2000)
+                    delay(2000)  // So that the notice is visible
                     val QRstring = result.contents.toString()
                     // TODO parse other QR code formats
                     LogIt.info("QR result: " + QRstring)
@@ -1082,10 +1161,10 @@ class MainActivity : CommonActivity()
     override fun onCreateOptionsMenu(menu: Menu): Boolean
     {
         val inflater: MenuInflater = menuInflater
-        menu
+
         inflater.inflate(R.menu.options_menu, menu);
 
-         // Locate MenuItem with ShareActionProvider
+        // Locate MenuItem with ShareActionProvider
         val item = menu.findItem(R.id.menu_item_share)
         // Fetch and store ShareActionProvider
         shareActionProvider = MenuItemCompat.getActionProvider(item) as? ShareActionProvider
@@ -1111,13 +1190,13 @@ class MainActivity : CommonActivity()
             outState.putString("sendToAddress", sendToAddress.text.toString())
             outState.putString("sendQuantity", sendQuantity.text.toString())
             outState.putString("sendCurrencyType", sendCurrencyType.selectedItem as String)
-            outState.putString("recvCoinType", recvCoinType.selectedItem as String )
+            outState.putString("recvCoinType", recvCoinType.selectedItem as String)
         }
     }
 
     @Suppress("UNUSED_PARAMETER")
         /** If user clicks on the receive address, copy it to the clipboard */
-    fun onNewAccount(view: View):  Boolean
+    fun onNewAccount(view: View): Boolean
     {
         LogIt.info("new account")
         if (app?.accounts?.size ?: 1000 >= MAX_ACCOUNTS)
@@ -1131,35 +1210,35 @@ class MainActivity : CommonActivity()
         return true
     }
 
-        @Suppress("UNUSED_PARAMETER")
-    /** If user clicks on the receive address, copy it to the clipboard */
-    fun onReceiveAddrTextClicked(view: View):  Boolean
+    @Suppress("UNUSED_PARAMETER")
+        /** If user clicks on the receive address, copy it to the clipboard */
+    fun onReceiveAddrTextClicked(view: View): Boolean
     {
-            try
+        try
+        {
+            var clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+            val account = accounts[defaultAccount]
+            if (account == null) throw BadCryptoException(R.string.badCryptoCode)
+
+            val recvAddrStr: String? = account.currentReceive?.address?.toString()
+
+            if (recvAddrStr != null)
             {
-                var clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                val account = accounts[defaultAccount]
-                if (account == null) throw BadCryptoException(R.string.badCryptoCode)
+                var clip = ClipData.newPlainText("text", recvAddrStr)
+                clipboard.primaryClip = clip
 
-                val recvAddrStr: String? = account.currentReceive?.address?.toString()
-
-                if (recvAddrStr != null)
-                {
-                    var clip = ClipData.newPlainText("text", recvAddrStr)
-                    clipboard.primaryClip = clip
-
-                    // visual bling that indicates text copied
-                    receiveAddress.text = i18n(R.string.copied)
-                    laterUI {
-                        delay(5000); accounts[defaultAccount]?.let { updateReceiveAddressUI(it) }
-                    }
+                // visual bling that indicates text copied
+                receiveAddress.text = i18n(R.string.copied)
+                laterUI {
+                    delay(5000); accounts[defaultAccount]?.let { updateReceiveAddressUI(it) }
                 }
-                else throw UnavailableException(R.string.receiveAddressUnavailable)
             }
-            catch (e: Exception)
-            {
-                displayException(e)
-            }
+            else throw UnavailableException(R.string.receiveAddressUnavailable)
+        }
+        catch (e: Exception)
+        {
+            displayException(e)
+        }
         return true
     }
 
@@ -1175,27 +1254,42 @@ class MainActivity : CommonActivity()
     /** Create and post a transaction when the send button is pressed */
     fun onBalanceTickerClicked(view: View)
     {
-        dbgAssertGuiThread()
-        val ticker = (view as TextView).text
-        LogIt.info("balance ticker clicked: " + ticker)
-        val intent = Intent(this@MainActivity, TxHistoryActivity::class.java)
-        intent.putExtra("WalletName", ticker)
-        startActivity(intent)
-
+        try
+        {
+            dbgAssertGuiThread()
+            val ticker = (view as TextView).text
+            LogIt.info("balance ticker clicked: " + ticker)
+            val intent = Intent(this@MainActivity, TxHistoryActivity::class.java)
+            intent.putExtra("WalletName", ticker)
+            startActivity(intent)
+        }
+        catch (e: Exception)
+        {
+            LogIt.warning("Exception clicking on ticker name: " + e.toString())
+        }
     }
 
     fun onBalanceValueClicked(view: View)
     {
-        val account = app?.accountFromGui(view)
-        if (account == null) return
+        try
+        {
+            dbgAssertGuiThread()
+            val account = app?.accountFromGui(view)
+            if (account == null) return
 
-        sendQuantity.text.clear()
-        sendQuantity.text.append(SEND_ALL_TEXT.toString())
+            sendQuantity.text.clear()
+            sendQuantity.text.append(SEND_ALL_TEXT.toString())
 
-        sendCoinType.setSelection(account.name)
+            sendCoinType.setSelection(account.name)
+        }
+        catch (e: Exception)
+        {
+            LogIt.warning("Exception clicking on balance: " + e.toString())
+            handleThreadException(e)
+        }
     }
 
-        @Suppress("UNUSED_PARAMETER")
+    @Suppress("UNUSED_PARAMETER")
     /** Start the purchase activity when the purchase button is pressed */
     public fun onPurchaseButton(v: View): Boolean
     {
@@ -1233,7 +1327,7 @@ class MainActivity : CommonActivity()
                 completeJsonPay(pip, tx)
                 account.wallet.send(tx)  // If the payment protocol completes, help the merchant by broadcasting the tx, and also mark the inputs as spent in my wallet
             }
-            catch(e:Exception)
+            catch (e: Exception)
             {
                 account.wallet.abortTransaction(tx)
                 throw e
@@ -1245,7 +1339,7 @@ class MainActivity : CommonActivity()
                 updateSendBasedOnPaymentInProgress()
             }
         }
-        catch(e:Exception)
+        catch (e: Exception)
         {
             displayException(e)
         }
@@ -1270,10 +1364,11 @@ class MainActivity : CommonActivity()
 
         var currencyType: String? = sendCurrencyType.selectedItem as String?
         // Which crypto are we sending
-        val walletName = try {
+        val walletName = try
+        {
             sendCoinType.selectedItem as String
         }
-        catch(e:TypeCastException)  // No wallets are defined so no sendCoinType is possible
+        catch (e: TypeCastException)  // No wallets are defined so no sendCoinType is possible
         {
             displayError(R.string.badCryptoCode)
             return false
@@ -1300,14 +1395,16 @@ class MainActivity : CommonActivity()
         val amtstr: String = sendQuantity.text.toString()
 
         var deductFeeFromAmount = false
-        var amount = try { amtstr.toBigDecimal(currencyMath).setScale(currencyScale)
+        var amount = try
+        {
+            amtstr.toBigDecimal(currencyMath).setScale(currencyScale)
         }
         catch (e: NumberFormatException)
         {
             if (amtstr == SEND_ALL_TEXT)
             {
                 deductFeeFromAmount = true
-                account.fromFinestUnit(account.wallet.balance+account.wallet.balanceUnconfirmed)
+                account.fromFinestUnit(account.wallet.balance + account.wallet.balanceUnconfirmed)
             }
             else
             {
@@ -1317,8 +1414,11 @@ class MainActivity : CommonActivity()
         }
 
         // Make sure the address is consistent with the selected coin to send
-        val sendAddr = try { PayAddress(sendToAddress.text.toString()) }
-        catch(e:UnknownBlockchainException)
+        val sendAddr = try
+        {
+            PayAddress(sendToAddress.text.toString())
+        }
+        catch (e: UnknownBlockchainException)
         {
             displayError(R.string.badAddress)
             return false
@@ -1366,6 +1466,7 @@ class MainActivity : CommonActivity()
             sendToAddress.text.clear()
         }
     }
+
     /**
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.

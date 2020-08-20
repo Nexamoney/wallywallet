@@ -83,10 +83,10 @@
         android:id="@+id/balanceTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
+        android:layout_marginStart="10dp"
         android:text="@string/Balance"
         android:textSize="24sp"
-        app:layout_constraintStart_toStartOf="@+id/balanceTicker"
+        app:layout_constraintStart_toEndOf="@+id/syncingIcon"
         app:layout_constraintTop_toBottomOf="@+id/receiveAddress" />
 
     <TextView
@@ -157,6 +157,15 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/balanceTicker3"
         app:layout_constraintStart_toEndOf="@+id/balanceTicker3" />
+
+    <ImageView
+        android:id="@+id/syncingIcon"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="20dp"
+        app:layout_constraintStart_toEndOf="@+id/GuiReceiveQRCode"
+        app:layout_constraintTop_toBottomOf="@+id/receiveAddress"
+        app:srcCompat="@drawable/ani_syncing" />
 
     <TextView
         android:id="@+id/HomeAddressText"

@@ -11,8 +11,6 @@ import android.net.wifi.WifiManager
 import android.view.View
 import android.widget.TextView
 import bitcoinunlimited.libbitcoincash.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.lang.IllegalStateException
 import java.math.BigDecimal
@@ -458,7 +456,7 @@ class Account(
     //? Provide qty in this currency code's units (i.e. mBCH)
     fun receiveInfoWithQuantity(qty: BigDecimal, sz: Int, refresh: ((ReceiveInfoResult) -> Unit))
     {
-        GlobalScope.launch {
+        launch {
             val addr = currentReceive?.address
             val uri = addr.toString() + "?amount=" + bchFormat.format(toPrimaryUnit(qty))
             val qr = textToQREncode(uri, sz)
@@ -513,7 +511,7 @@ class Account(
             val peers = cnxnLst?.joinToString(", ")
             infoGUI(force,
                 {
-                    "at " + (wallet.chainstate?.syncedHash?.toHex()?.takeLast(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight ?: "") + " of " + (wallet.chainstate?.chain?.curHeight
+                    i18n(R.string.at) + " " + (wallet.chainstate?.syncedHash?.toHex()?.takeLast(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight ?: "") + " " + i18n(R.string.of) + " " + (wallet.chainstate?.chain?.curHeight
                         ?: "") + " blocks, " + (wallet.chainstate?.chain?.net?.numPeers() ?: "") + " peers\n" + peers
                 })
 
@@ -635,12 +633,20 @@ class WallyApp : Application()
     /** Return what account a particular GUI element is bound to or null if its not bound */
     fun accountFromGui(view: View): Account?
     {
-        for (a in accounts.values)
+        try
         {
-            if ((a.tickerGUI.reactor as TextViewReactor<String>).gui == view) return a
-            if ((a.balanceGUI.reactor as TextViewReactor<String>).gui == view) return a
-            if ((a.unconfirmedBalanceGUI.reactor as TextViewReactor<String>).gui == view) return a
-            if ((a.infoGUI.reactor as TextViewReactor<String>).gui == view) return a
+            for (a in accounts.values)
+            {
+                if ((a.tickerGUI.reactor is TextViewReactor<String>) && (a.tickerGUI.reactor as TextViewReactor<String>).gui == view) return a
+                if ((a.balanceGUI.reactor is TextViewReactor<String>) && (a.balanceGUI.reactor as TextViewReactor<String>).gui == view) return a
+                if ((a.unconfirmedBalanceGUI.reactor is TextViewReactor<String>) && (a.unconfirmedBalanceGUI.reactor as TextViewReactor<String>).gui == view) return a
+                if ((a.infoGUI.reactor is TextViewReactor<String>) && (a.infoGUI.reactor as TextViewReactor<String>).gui == view) return a
+            }
+        }
+        catch(e: Exception)
+        {
+            LogIt.warning("Exception in accountFromGui: " + e.toString())
+            handleThreadException(e)
         }
         return null
     }
@@ -740,8 +746,7 @@ class WallyApp : Application()
         if (!RunningTheTests())  // If I'm running the unit tests, don't create any wallets since the tests will do so
         {
             // Initialize the currencies supported by this wallet
-            GlobalScope.launch {
-
+            launch {
                 if (REG_TEST_ONLY)  // If I want a regtest only wallet for manual debugging, just create it directly
                 {
                     accounts.getOrPut("mRBCH") {
