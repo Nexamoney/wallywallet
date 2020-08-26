@@ -22,6 +22,7 @@
         android:id="@+id/ReceiveTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
         android:text="@string/Receive"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="@+id/sendButton"
@@ -38,7 +39,7 @@
         app:layout_constraintStart_toEndOf="@+id/recvCoinType" />
 
     <TextView
-        android:id="@+id/receiveTitle2"
+        android:id="@+id/receiveColon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=":"
@@ -197,7 +198,7 @@
         android:text="@string/toColon"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="@+id/sendButton"
-        app:layout_constraintStart_toEndOf="@+id/sendCoinType"
+        app:layout_constraintStart_toEndOf="@+id/sendAccount"
         app:layout_constraintTop_toTopOf="@+id/sendButton" />
 
     <TextView
@@ -306,7 +307,7 @@
         app:layout_constraintTop_toTopOf="@+id/sendQuantity" />
 
     <Spinner
-        android:id="@+id/sendCoinType"
+        android:id="@+id/sendAccount"
         android:layout_width="wrap_content"
         android:layout_height="45dp"
         android:layout_marginStart="2dp"
@@ -408,6 +409,7 @@
         android:id="@+id/sendButton"
         android:layout_width="92dp"
         android:layout_height="45dp"
+        android:layout_marginStart="4dp"
         android:onClick="onSendButtonClicked"
         android:text="@string/Send"
         android:textAlignment="center"
@@ -419,7 +421,7 @@
         android:id="@+id/purchaseButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="4dp"
         android:layout_marginTop="12dp"
         android:onClick="onPurchaseButton"
         android:text="@string/purchase"
@@ -431,7 +433,7 @@
         android:id="@+id/splitBillButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="4dp"
         android:layout_marginTop="12dp"
         android:onClick="onSplitBill"
         android:text="@string/title_split_bill"
@@ -534,8 +536,8 @@
 
     <ImageButton
         android:id="@+id/GuiNewAccount"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginEnd="4dp"
         android:onClick="onNewAccount"
         android:scaleType="centerCrop"

@@ -611,23 +611,26 @@ class WallyApp : Application()
         return ret.toTypedArray()
     }
 
-    fun coinFor(chain: ChainSelector): Account?
+    fun accountsFor(chain: ChainSelector): MutableList<Account>
     {
+        val ret = mutableListOf<Account>()
+        /*
         // Check to see if our preferred crypto matches first
         for (account in accounts.values)
         {
-            if ((account.name == defaultAccount) && (account.visible) && (chain == account.wallet.chainSelector)) return account
+            if ((account.name == defaultAccount) && (account.visible) && (chain == account.wallet.chainSelector)) return mutableListOf(account)
         }
+         */
 
         // Look for any match
         for (account in accounts.values)
         {
             if (account.visible && (chain == account.wallet.chainSelector))
             {
-                return account
+                ret.add(account)
             }
         }
-        return null
+        return ret
     }
 
     /** Return what account a particular GUI element is bound to or null if its not bound */

@@ -47,6 +47,7 @@
     <string name="no">no</string>
     <string name="at">at</string>
     <string name="of">of</string>
+    <string name="choose">choose</string>
     <!-- done is like "yes" but more means "go to the next thing" rather than acceptance of something -->
     <string name="done">done</string>
     <string name="empty"></string>
@@ -250,7 +251,7 @@
     <!-- The crypto currency code (e.g BTC, mBCH, etc) is not understood or handled by this wallet.  This message will be very hard to actually see because the UI
     protects against entering unknown crypto codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
      -->
-    <string name="badCryptoCode">not crypto</string>
+    <string name="badCryptoCode">no account for this currency</string>
     <!-- The fiat currency code (e.g USD, EUR, JPY etc) is not understood or handled by this wallet.  This message will be very hard to actually see because the UI
       protects against entering unknown fiat codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
     -->
@@ -341,9 +342,14 @@
     <!-- All items are specified here so the service itself can be localized if your country does work with the default service. Use empty strings to disable -->
     <string name="BadLink">Invalid web link</string>
     <string name="ExplainGiftCards">Purchasing gift cards gives you access to 100s of stores that do not directly accept cryptocurrency.</string>
+    <string name="GiftCardButton">eGifter gift cards</string>
+    <string name="GiftCardUrl">https://www.egifter.com</string>
+    <string name="GiftCardAppPackage">com.groupgifting.android</string>
+    <!--
     <string name="GiftCardButton">Gyft gift cards</string>
     <string name="GiftCardUrl">https://www.gyft.com</string>
     <string name="GiftCardAppPackage">com.gyft.android</string>
+    -->
 
     <string name="ExplainRestaurant">Online restaurant ordering services (for delivery or pickup) may accept cryptocurrency even if the physical location does not.</string>
     <string name="RestaurantButton">Menufy restaurant ordering</string>

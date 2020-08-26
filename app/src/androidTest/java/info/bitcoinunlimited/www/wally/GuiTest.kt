@@ -8,25 +8,19 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.NoMatchingViewException
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers.withText
 
 import androidx.test.runner.AndroidJUnit4
 import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.*
 import kotlinx.android.synthetic.main.activity_main.*
-import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.instanceOf
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.EnumSet.allOf
 import java.util.logging.Logger
 import info.bitcoinunlimited.www.wally.R.id as GuiId
 
-import org.hamcrest.Description
-import org.hamcrest.Matcher
 import org.hamcrest.Matchers.*
 import wf.bitcoin.javabitcoindrpcclient.BitcoinJSONRPCClient
 import java.lang.Exception
@@ -250,7 +244,7 @@ class GuiTest
         }
 
         // Now send from 1 to 2
-        clickSpinnerItem(GuiId.sendCoinType, "mRbch1")  // Choose the account
+        clickSpinnerItem(GuiId.sendAccount, "mRbch1")  // Choose the account
         clickSpinnerItem(GuiId.recvCoinType, "mRbch2")  // Read the receive address
         activityScenario.onActivity { recvAddr = it.receiveAddress.text.toString() }
         // Write the receive address in

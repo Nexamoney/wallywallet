@@ -255,12 +255,12 @@ class MainActivity : CommonActivity()
         }
 
         // When the send coin type is updated, we need to make sure any destination address is valid for that blockchain
-        sendCoinType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
+        sendAccount.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
         {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long)
             {
                 dbgAssertGuiThread()
-                val sct = sendCoinType.selectedItem.toString()
+                val sct = sendAccount.selectedItem.toString()
                 val c = accounts[sct]
                 if (c != null) try
                 {
@@ -273,7 +273,7 @@ class MainActivity : CommonActivity()
                             displayError(R.string.chainIncompatibleWithAddress)
                             alreadyErroredAddress = sendAddr
                         }
-                        updateSendCoinType(sendAddr)
+                        updateSendAccount(sendAddr)
                     }
                 }
                 catch (e: PayAddressBlankException)
@@ -408,10 +408,17 @@ class MainActivity : CommonActivity()
     fun assignCryptoSpinnerValues()
     {
         // Set up the crypto spinners to contain all the cryptos this wallet supports
-        val coinSpinData = app?.visibleAccountNames()
-        val coinAa = ArrayAdapter(this, android.R.layout.simple_spinner_item, coinSpinData)
-        sendCoinType?.setAdapter(coinAa)
-        recvCoinType?.setAdapter(coinAa)
+        val a = app
+        if (a != null)
+        {
+            val coinSpinData = a.visibleAccountNames()
+            val sendSpinData = coinSpinData.toMutableList()
+            sendSpinData.add(i18n(R.string.choose))
+            val coinAa = ArrayAdapter(this, android.R.layout.simple_spinner_item, sendSpinData)
+            sendAccount?.setAdapter(coinAa)
+            val coinRecvAa = ArrayAdapter(this, android.R.layout.simple_spinner_item, coinSpinData)
+            recvCoinType?.setAdapter(coinRecvAa)
+        }
     }
 
     override fun onStart()
@@ -435,7 +442,7 @@ class MainActivity : CommonActivity()
                 assignCryptoSpinnerValues()
                 // Restore GUI elements to their prior values
                 mainActivityModel.lastRecvCoinType?.let { recvCoinType.setSelection(it) }
-                mainActivityModel.lastSendCoinType?.let { sendCoinType.setSelection(it) }
+                mainActivityModel.lastSendCoinType?.let { sendAccount.setSelection(it) }
                 mainActivityModel.lastSendCurrencyType?.let { sendCurrencyType.setSelection(it) }
 
                 // Set the send currency type spinner options to your default fiat currency or your currently selected crypto
@@ -489,9 +496,37 @@ class MainActivity : CommonActivity()
         fiatCurrencyCode = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"
         xchgRateText?.text = ""
 
-        mainActivityModel.lastSendCoinType?.let { sendCoinType.setSelection(it) }
+        mainActivityModel.lastSendCoinType?.let { sendAccount.setSelection(it) }
         mainActivityModel.lastRecvCoinType?.let { recvCoinType.setSelection(it) }
         mainActivityModel.lastSendCurrencyType?.let { sendCurrencyType.setSelection(it) }
+
+                // Look in the paste buffer
+        if (sendToAddress.text.toString() == "")  // App started or resumed with nothing in the send field -- let's see if there's something in the paste buffer we can auto-populate
+        {
+            try
+            {
+                handlePastedData()
+            }
+            catch (e: PasteEmptyException)  // nothing to do, having pasted data is optional on startup
+            {
+
+            }
+            catch (e: PayAddressBlankException)  // nothing to do, having pasted data is optional on startup
+            {
+
+            }
+            catch (e: PayAddressDecodeException)  // nothing to do, having pasted data is optional on startup
+            {
+            }
+            catch (e: Exception)
+            {
+                //LogIt.info(sourceLoc() +" paste exception:")  // there could be random data in the paste, so be tolerant of whatever garbage might be in there but log it
+                //LogIt.info(sourceLoc() + Log.getStackTraceString(e))
+
+                displayNotice(R.string.pasteIgnored)  // TODO: we don't want to display an exception for any random data, just for stuff that looks a bit like a crypto destination
+                sendToAddress.text.clear()
+            }
+        }
 
         later {
             // Thread.sleep(100)  // Wait for accounts to be loaded
@@ -534,7 +569,7 @@ class MainActivity : CommonActivity()
     fun updateSendCurrencyType()
     {
         dbgAssertGuiThread()
-        sendCoinType.selectedItem?.let {
+        sendAccount.selectedItem?.let {
             val account = accounts[it.toString()]
             account?.let { acc ->
                 val curIdx =
@@ -563,7 +598,7 @@ class MainActivity : CommonActivity()
         try
         {
             val sta = sendToAddress.text.toString()
-            updateSendCoinType(PayAddress(sta))
+            updateSendAccount(PayAddress(sta))
         }
         catch (e: PayAddressBlankException)
         {
@@ -586,35 +621,6 @@ class MainActivity : CommonActivity()
         if (intent.scheme != null)  // its null if normal app startup
         {
             handleNewIntent(intent)
-        }
-
-        // Look in the paste buffer
-        if (sendToAddress.text.toString() == "")  // App started or resumed with nothing in the send field -- let's see if there's something in the paste buffer we can auto-populate
-        {
-            try
-            {
-                handlePastedData()
-            }
-            catch (e: PasteEmptyException)  // nothing to do, having pasted data is optional on startup
-            {
-
-            }
-            catch (e: PayAddressBlankException)  // nothing to do, having pasted data is optional on startup
-            {
-
-            }
-            catch (e: PayAddressDecodeException)  // nothing to do, having pasted data is optional on startup
-            {
-            }
-            catch (e: Exception)
-            {
-                //LogIt.info(sourceLoc() +" paste exception:")  // there could be random data in the paste, so be tolerant of whatever garbage might be in there but log it
-                //LogIt.info(sourceLoc() + Log.getStackTraceString(e))
-
-                displayNotice(R.string.pasteIgnored)  // TODO: we don't want to display an exception for any random data, just for stuff that looks a bit like a crypto destination
-                sendToAddress.text.clear()
-            }
-
         }
 
         for (c in accounts)
@@ -707,27 +713,28 @@ class MainActivity : CommonActivity()
     }
 
     /** Find an account that can send to this blockchain and switch the send account to it */
-    fun updateSendCoinType(chainSelector: ChainSelector)
+    fun updateSendAccount(chainSelector: ChainSelector)
     {
         dbgAssertGuiThread()
 
         // First see if the current selection is compatible with what we want.
         // This keeps the user's selection if multiple accounts are compatible
-        val sc = sendCoinType.selectedItem
-        var curAccount = accounts[sc]
+        val sc = sendAccount.selectedItem
+        val curAccount = accounts[sc]
         if (curAccount?.wallet?.chainSelector != chainSelector)  // Its not so find one that is
         {
-            curAccount = app!!.coinFor(chainSelector)
-            curAccount?.let {
-                sendCoinType.setSelection(it.name)
-            }
+            val matches = app!!.accountsFor(chainSelector)
+            if (matches.size > 1)
+                sendAccount.setSelection(i18n(R.string.choose))
+            else if (matches.size == 1)
+                sendAccount.setSelection(matches[0].name)
         }
     }
 
-    fun updateSendCoinType(pa: PayAddress)
+    fun updateSendAccount(pa: PayAddress)
     {
         if (pa.type == PayAddressType.NONE) return  // nothing to update
-        updateSendCoinType(pa.blockchain)
+        updateSendAccount(pa.blockchain)
     }
 
     /** Update the GUI send address field, and all related GUI elements based on the provided payment address */
@@ -743,7 +750,7 @@ class MainActivity : CommonActivity()
         updateSendBasedOnPaymentInProgress()
 
         // Change the send currency type to reflect the pasted data if I need to
-        updateSendCoinType(pa)
+        updateSendAccount(pa)
 
         // Update the sendCurrencyType field to contain our coin selection
         updateSendCurrencyType()
@@ -803,19 +810,36 @@ class MainActivity : CommonActivity()
                     displayError((R.string.badCryptoCode))
                     return
                 }
-                val coin = app?.coinFor(chainSelector)
-                if (coin == null)
+                val a = app
+                if (a == null) return
+                val acts = a.accountsFor(chainSelector)
+
+                var amt: BigDecimal = BigDecimal.ZERO
+                val coin = if (acts.size == 0)
                 {
                     paymentInProgress = null
-                    displayError((R.string.badCryptoCode))
+                    displayNotice((R.string.badCryptoCode))
+                    amt = a.primaryAccount?.fromFinestUnit(pip.totalSatoshis)
+                    null
+                }
+                else if (acts.size > 1)
+                {
+                    sendAccount.setSelection(i18n(R.string.choose))
+                    amt = acts[0].fromFinestUnit(pip.totalSatoshis)
+                    acts[0]  //
                 }
                 else
                 {
-                    updateSendCoinType(pip.outputs[0].chainSelector)
+                    amt = acts[0].fromFinestUnit(pip.totalSatoshis)
+                    acts[0]
+                }
+
+                if (true)
+                {
+                    updateSendAccount(pip.outputs[0].chainSelector)
                     // Update the sendCurrencyType field to contain our coin selection
                     updateSendCurrencyType()
 
-                    val amt = coin.fromFinestUnit(pip.totalSatoshis)
                     sendQuantity.text.clear()
                     sendQuantity.text.append(mBchFormat.format(amt))
                     checkSendQuantity(sendQuantity.text.toString())
@@ -1001,7 +1025,7 @@ class MainActivity : CommonActivity()
             approximatelyText.text = i18n(R.string.emptyQuantityField)
             return false
         }
-        var coinType: String? = sendCoinType.selectedItem as? String
+        var coinType: String? = sendAccount.selectedItem as? String
         var currencyType: String? = sendCurrencyType.selectedItem as? String
         if (currencyType == null) return true
 
@@ -1280,7 +1304,7 @@ class MainActivity : CommonActivity()
             sendQuantity.text.clear()
             sendQuantity.text.append(SEND_ALL_TEXT.toString())
 
-            sendCoinType.setSelection(account.name)
+            sendAccount.setSelection(account.name)
         }
         catch (e: Exception)
         {
@@ -1306,7 +1330,7 @@ class MainActivity : CommonActivity()
             if (pip == null) return
 
             // Which crypto are we sending
-            var walletName = sendCoinType.selectedItem as String
+            var walletName = sendAccount.selectedItem as String
 
             val account = accounts[walletName]
             if (account == null)
@@ -1366,7 +1390,7 @@ class MainActivity : CommonActivity()
         // Which crypto are we sending
         val walletName = try
         {
-            sendCoinType.selectedItem as String
+            sendAccount.selectedItem as String
         }
         catch (e: TypeCastException)  // No wallets are defined so no sendCoinType is possible
         {
@@ -1418,6 +1442,11 @@ class MainActivity : CommonActivity()
         {
             PayAddress(sendToAddress.text.toString())
         }
+        catch (e: WalletNotSupportedException)
+        {
+            displayError(R.string.badAddress)
+            return false
+        }
         catch (e: UnknownBlockchainException)
         {
             displayError(R.string.badAddress)
@@ -1426,6 +1455,11 @@ class MainActivity : CommonActivity()
         if (account.wallet.chainSelector != sendAddr.blockchain)
         {
             displayError(R.string.chainIncompatibleWithAddress)
+            return false
+        }
+        if (sendAddr.type == PayAddressType.NONE)
+        {
+            displayError(R.string.badAddress)
             return false
         }
 

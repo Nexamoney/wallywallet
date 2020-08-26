@@ -20,9 +20,6 @@ import kotlinx.coroutines.*
 import java.lang.Exception
 import java.util.logging.Logger
 import android.app.Activity
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.view.Menu
 import android.view.inputmethod.InputMethodManager
 import bitcoinunlimited.libbitcoincash.handleThreadException
@@ -59,7 +56,7 @@ open class CommonActivity : AppCompatActivity()
         super.onCreate(savedInstanceState)
 
         origTitle = title.toString()
-        var titlebar: View = findViewById(R.id.action_bar)
+        val titlebar: View = findViewById(R.id.action_bar)
         origTitleBackground = ColorDrawable(ContextCompat.getColor(applicationContext, R.color.titleBackground))
 
         origTitleBackground?.let { titlebar.background = it }  // Set the title background color here, so we don't need to match the background defined in some resource file

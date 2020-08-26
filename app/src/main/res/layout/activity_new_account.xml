@@ -46,11 +46,12 @@
         android:id="@+id/GuiAccountNameEntry"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:ems="10"
+        android:ems="16"
         android:hint="@string/AccountNameHint"
         android:importantForAutofill="no"
         android:inputType="textPersonName"
         android:singleLine="true"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/GuiAccountNameText"
         app:layout_constraintTop_toBottomOf="@+id/GuiNewAccountError" />

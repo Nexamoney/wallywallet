@@ -79,7 +79,7 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
-                                                <entry key="imagePath" value="$PROJECT_DIR$/media/menufy_icon.png" />
+                                                <entry key="imagePath" value="$PROJECT_DIR$/media/eGifter.png" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -113,7 +113,7 @@
                                     <map>
                                       <entry key="backgroundAssetType" value="COLOR" />
                                       <entry key="backgroundColor" value="ffffff" />
-                                      <entry key="outputName" value="ic_menufy" />
+                                      <entry key="outputName" value="ic_egifter" />
                                     </map>
                                   </option>
                                 </PersistentState>

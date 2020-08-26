@@ -17,8 +17,11 @@ import bitcoinunlimited.libbitcoincash.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_shopping_settings.*
 import kotlinx.android.synthetic.main.shopping_settings_list_item.view.*
+import java.lang.Exception
 import java.net.URI
+import java.util.logging.Logger
 
+private val LogIt = Logger.getLogger("bu.shoppingSettingsActivity")
 
 val SHOPPING_DEST_ITEMS:String = "wally."
 
@@ -35,8 +38,15 @@ fun loadShoppingFromPreferences(prefs: SharedPreferences, shopping: MutableList<
             {
                 var url = butUrl[1]
                 if (!url.startsWith("http")) url = "http://" + url
-                val uri = URI(url)
-                shopping.add(ShoppingDestination(butUrl[0], i18n(R.string.OpenWebsite) % mapOf("siteName" to uri.host), url))
+                try
+                {
+                    val uri = URI(url)
+                    shopping.add(ShoppingDestination(butUrl[0], i18n(R.string.OpenWebsite) % mapOf("siteName" to uri.host), url))
+                }
+                catch(e:Exception)
+                {
+                    LogIt.info("Bad URI read from preferences")
+                }
             }
         }
     }

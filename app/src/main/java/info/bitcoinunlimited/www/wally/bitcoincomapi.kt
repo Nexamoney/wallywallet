@@ -8,7 +8,9 @@ import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonBuilder
 import kotlinx.serialization.json.JsonConfiguration
+import kotlinx.serialization.json.json
 import java.lang.Exception
 import java.math.BigDecimal
 
@@ -34,7 +36,7 @@ data class HistBitcoinCom(val lookup: HistItemBitcoinCom)
 @OptIn(ExperimentalTime::class)
 val lastPoll = mutableMapOf<String, Pair<TimeMark,BigDecimal>>()
 
-@OptIn(ExperimentalTime::class, kotlinx.serialization.UnstableDefault::class)
+@OptIn(ExperimentalTime::class)
 fun MbchInFiat(fiat: String, setter: (BigDecimal)-> Unit)
 {
     val prior = lastPoll[fiat]
@@ -59,8 +61,8 @@ fun MbchInFiat(fiat: String, setter: (BigDecimal)-> Unit)
             return@launch
         }
         LogIt.info(sourceLoc() + " " + data)
-        val parser: Json = Json(JsonConfiguration(isLenient = true))  // nonstrict mode ignores extra fields
-        val obj = parser.parse(BchUsdBitcoinCom.serializer(), data)
+        val parser: Json = Json { isLenient = true }  // nonstrict mode ignores extra fields
+        val obj = parser.decodeFromString(BchUsdBitcoinCom.serializer(), data)
         LogIt.info(sourceLoc() + " " + obj.toString())
         // TODO verify recent timestamp
         val v = obj.price.toBigDecimal().setScale(16) / 100000.toBigDecimal().setScale(16) // bitcoin.com price is in cents per BCH.  We want "dollars" per MBCH (thousandth of a BCH)
@@ -71,7 +73,6 @@ fun MbchInFiat(fiat: String, setter: (BigDecimal)-> Unit)
 }
 
 /** Return the approximate price of mBCH at the time provided in seconds since the epoch */
-@OptIn(kotlinx.serialization.UnstableDefault::class)
 fun historicalMbchInFiat(fiat: String, timeStamp: Long): BigDecimal
 {
     if (fiat != "USD") return BigDecimal.ZERO  // TODO get other fiat historical prices
@@ -83,11 +84,11 @@ fun historicalMbchInFiat(fiat: String, timeStamp: Long): BigDecimal
     {
         return BigDecimal(-1)
     }
-    val parser: Json = Json(JsonConfiguration(isLenient = true))  // nonstrict mode ignores extra fields
+    val parser: Json = Json { isLenient = true }  // nonstrict mode ignores extra fields
 
     LogIt.info(sourceLoc() + " " + data)
 
-    val obj = parser.parse(HistBitcoinCom.serializer(), data)
+    val obj = parser.decodeFromString(HistBitcoinCom.serializer(), data)
     LogIt.info(sourceLoc() + " " + obj.toString())
 
     // TODO verify timestamp

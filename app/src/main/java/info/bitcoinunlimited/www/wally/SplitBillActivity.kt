@@ -48,8 +48,11 @@ class SplitBillActivity : CommonActivity()
         if (true)
         {
             val acts = ((getApplication() as WallyApp).accounts)
-            acct = acts[defaultAccount] ?: acts.values.first()
-            cryptoCurrencyCode = acct?.currencyCode ?: ""
+            if (!acts.isEmpty())
+            {
+                acct = acts[defaultAccount] ?: acts.values.first()
+                cryptoCurrencyCode = acct?.currencyCode ?: ""
+            }
         }
 
         splitCount.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
