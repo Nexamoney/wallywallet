@@ -99,7 +99,8 @@ class IdentityOpActivity : CommonActivity()
 
             val context = this
 
-            if (true) {
+            if (true)
+            {
                 // Run blocking so the IdentityOp activity does not momentarily appear
                 val act = account ?: try
                     {

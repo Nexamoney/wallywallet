@@ -506,6 +506,7 @@ class MainActivity : CommonActivity()
             try
             {
                 handlePastedData()
+
             }
             catch (e: PasteEmptyException)  // nothing to do, having pasted data is optional on startup
             {
@@ -523,7 +524,7 @@ class MainActivity : CommonActivity()
                 //LogIt.info(sourceLoc() +" paste exception:")  // there could be random data in the paste, so be tolerant of whatever garbage might be in there but log it
                 //LogIt.info(sourceLoc() + Log.getStackTraceString(e))
 
-                displayNotice(R.string.pasteIgnored)  // TODO: we don't want to display an exception for any random data, just for stuff that looks a bit like a crypto destination
+                // displayNotice(R.string.pasteIgnored)  // TODO: we don't want to display an exception for any random data, just for stuff that looks a bit like a crypto destination
                 sendToAddress.text.clear()
             }
         }

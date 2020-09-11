@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TricklePayRegFragment">
+
+    <TextView
+        android:id="@+id/GuiAcceptQ"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/AcceptTpRegistration"
+        android:textAlignment="center"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/GuiTricklePayEntity"
+        android:autoSizeMaxTextSize="32sp"
+        android:autoSizeMinTextSize="16sp"
+        android:autoSizeStepGranularity="1sp"
+        android:autoSizeTextType="uniform"
+        android:textAlignment="center"
+        android:layout_width="0dp"
+        android:layout_height="32sp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAcceptQ" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/TpMaxHeading"
+        android:textAlignment="center"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkBox" />
+
+    <TextView
+        android:id="@+id/GuiAutoSpendLimitName0"
+        android:layout_width="150dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/TpMaxPer"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/GuiAutospendLimitEntry0"
+        app:layout_constraintEnd_toStartOf="@+id/GuiAutospendLimitEntry0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/GuiAutospendLimitEntry0"
+        app:layout_constraintVertical_bias="0.65" />
+
+    <EditText
+        android:id="@+id/GuiAutospendLimitEntry0"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:ems="10"
+        android:hint="@string/TpMaxSpendHint"
+        android:importantForAutofill="no"
+        android:inputType="number|numberDecimal"
+        android:maxLines="1"
+        android:minLines="1"
+        android:singleLine="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+    <TextView
+        android:id="@+id/GuiAutospendLimitDescription0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="3"
+        android:minLines="0"
+        app:layout_constraintEnd_toEndOf="@+id/GuiAutospendLimitEntry0"
+        app:layout_constraintStart_toStartOf="@+id/GuiAutoSpendLimitName0"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAutospendLimitEntry0" />
+
+    <TextView
+        android:id="@+id/GuiAutoSpendLimitName1"
+        android:layout_width="@dimen/TpAutospendName"
+        android:layout_height="25dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/TpMaxPerDay"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/GuiAutospendLimitEntry1"
+        app:layout_constraintEnd_toStartOf="@+id/GuiAutospendLimitEntry1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/GuiAutospendLimitEntry1"
+        app:layout_constraintVertical_bias="0.65" />
+
+    <EditText
+        android:id="@+id/GuiAutospendLimitEntry1"
+        android:layout_width="@dimen/TpAutospendEntry"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="16dp"
+        android:ems="10"
+        android:hint="@string/TpMaxSpendHint"
+        android:importantForAutofill="no"
+        android:inputType="number|numberDecimal"
+        android:maxLines="1"
+        android:minLines="1"
+        android:singleLine="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAutospendLimitDescription0" />
+
+    <TextView
+        android:id="@+id/GuiAutospendLimitDescription1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="3"
+        android:minLines="0"
+        app:layout_constraintEnd_toEndOf="@+id/GuiAutospendLimitEntry1"
+        app:layout_constraintStart_toStartOf="@+id/GuiAutoSpendLimitName1"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAutospendLimitEntry1" />
+
+    <TextView
+        android:id="@+id/GuiAutoSpendLimitName2"
+        android:layout_width="@dimen/TpAutospendName"
+        android:layout_height="25dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/TpMaxPerWeek"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/GuiAutospendLimitEntry2"
+        app:layout_constraintEnd_toStartOf="@+id/GuiAutospendLimitEntry2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/GuiAutospendLimitEntry2"
+        app:layout_constraintVertical_bias="0.65" />
+
+    <EditText
+        android:id="@+id/GuiAutospendLimitEntry2"
+        android:layout_width="@dimen/TpAutospendEntry"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="16dp"
+        android:ems="10"
+        android:hint="@string/TpMaxSpendHint"
+        android:importantForAutofill="no"
+        android:inputType="number|numberDecimal"
+        android:maxLines="1"
+        android:minLines="1"
+        android:singleLine="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAutospendLimitDescription1" />
+
+    <TextView
+        android:id="@+id/GuiAutospendLimitDescription2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="3"
+        android:minLines="0"
+        app:layout_constraintEnd_toEndOf="@+id/GuiAutospendLimitEntry2"
+        app:layout_constraintStart_toStartOf="@+id/GuiAutoSpendLimitName2"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAutospendLimitEntry2" />
+
+    <TextView
+        android:id="@+id/GuiAutoSpendLimitName3"
+        android:layout_width="@dimen/TpAutospendName"
+        android:layout_height="25dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/TpMaxPerMonth"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/GuiAutospendLimitEntry3"
+        app:layout_constraintEnd_toStartOf="@+id/GuiAutospendLimitEntry3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/GuiAutospendLimitEntry3"
+        app:layout_constraintVertical_bias="0.65" />
+
+    <EditText
+        android:id="@+id/GuiAutospendLimitEntry3"
+        android:layout_width="@dimen/TpAutospendEntry"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="16dp"
+        android:ems="10"
+        android:hint="@string/TpMaxSpendHint"
+        android:importantForAutofill="no"
+        android:inputType="number|numberDecimal"
+        android:maxLines="1"
+        android:minLines="1"
+        android:singleLine="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAutospendLimitDescription2" />
+
+    <TextView
+        android:id="@+id/GuiAutospendLimitDescription3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="3"
+        android:minLines="0"
+        app:layout_constraintEnd_toEndOf="@+id/GuiAutospendLimitEntry3"
+        app:layout_constraintStart_toStartOf="@+id/GuiAutoSpendLimitName3"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAutospendLimitEntry3" />
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="0dp"
+        android:layout_height="3dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="8dp"
+        android:background="?android:attr/listDivider"
+        android:foreground="#40b040"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAutospendLimitDescription3" />
+
+    <Button
+        android:id="@+id/GuiTpSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="@string/accept"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/DeleteButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/DeleteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="@string/deny"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/GuiTpSave" />
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/TpEnableAutopay"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiTricklePayEntity" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

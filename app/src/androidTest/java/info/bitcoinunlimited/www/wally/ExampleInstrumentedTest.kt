@@ -1,7 +1,9 @@
 package bitcoinunlimited.wally.androidTestImplementation
 
+import android.content.Context
 import android.util.Log
 import androidx.test.InstrumentationRegistry
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.filters.SmallTest
 import androidx.test.runner.AndroidJUnit4
 import bitcoinunlimited.libbitcoincash.ChainSelector
@@ -73,11 +75,13 @@ val bip39TestVector = listOf(listOf("00000000000000000000000000000000","abandon 
 @RunWith(AndroidJUnit4::class)
 class UnitTest
 {
+    var applicationContext = ApplicationProvider.getApplicationContext<Context>()
+
     @Test
     fun testTest()
     {
         // Context of the app under test.
-        val appContext = InstrumentationRegistry.getTargetContext()
+        val appContext = ApplicationProvider.getApplicationContext<Context>()
         assertEquals("info.bitcoinunlimited.www.wally", appContext.packageName)
         //assertEquals(1, 0)
         LogIt.info("test")
@@ -345,8 +349,10 @@ class UnitTest
         LogIt.info("HD key: " + newSecret.toHex())
         assertEquals(newSecret.toHex(), "9c219cb84e3199b076aaa0f954418407b1e8d54f79103612fbaf04598bc8be55")
 
+        val ctxt = PlatformContext(applicationContext)
+        val wdb = OpenKvpDB(ctxt, dbPrefix + "testHDerivationWallet")!!
         // Test vector for wallet derivation path
-        val wal = Bip44Wallet("mBCH", ChainSelector.BCHMAINNET,"night wing zebra gate juice absorb student disease gospel maple depth trap")
+        val wal = Bip44Wallet(wdb,"mBCH", ChainSelector.BCHMAINNET,"night wing zebra gate juice absorb student disease gospel maple depth trap")
         val knownAddrs = mutableListOf(
         "bitcoincash:qpwxcdytyswysm7qmvlnmu7pw4zhdgtzrctr5plkfn",
         "bitcoincash:qpxzpeh39jhduns9srpjc5jzhsmx9x95rsqeeyfask",
@@ -482,6 +488,64 @@ class UnitTest
         check(receiving.containsKey(PayAddress(ChainSelector.BCHREGTEST, PayAddressType.P2PKH,"0123456789abcdef01230123456789abcdef0123".FromHex())))
     }
 
+    @Test
+    fun testSignVerifyMessage()
+    {
+        val testMessage = "This is a test"
+
+        val sbytes = ByteArray(32, {_ -> 2})
+
+        val identityDest = Pay2PubKeyHashDestination(ChainSelector.BCHREGTEST, sbytes)
+
+        val secret = identityDest.secret ?: throw IdentityException("Wallet failed to provide an identity with a secret", "bad wallet", ErrorSeverity.Severe)
+        val address = identityDest.address ?: throw IdentityException("Wallet failed to provide an identity with an address", "bad wallet", ErrorSeverity.Severe)
+
+        val sig = Wallet.signMessage(testMessage.toByteArray(), secret)
+
+        val verify = Wallet.verifyMessage(testMessage.toByteArray(),address.data, sig)
+        check(verify!=null)
+        check(verify!!.size != 0)
+        check(verify!! contentEquals identityDest.pubkey)
+
+        // Try bad verifications
+
+        if (true)
+        {
+            val badaddr = ByteArray(10, { _ -> 3 })
+            val badVerify = Wallet.verifyMessage(testMessage.toByteArray(), badaddr, sig)
+            check(badVerify == null)
+        }
+
+        if (true)
+        {
+            val badaddr = ByteArray(20, { _ -> 3 })
+            val badVerify = Wallet.verifyMessage(testMessage.toByteArray(), badaddr, sig)
+            check(badVerify == null)
+        }
+
+        if (true)
+        {
+            val badaddr = address.data.copyOf()
+            badaddr[0] = (badaddr[0].toByte() + 1.toByte()).toByte()  // Change the address a little
+            val badVerify = Wallet.verifyMessage(testMessage.toByteArray(), badaddr, sig)
+            check(badVerify == null)
+        }
+
+        if (true)
+        {
+            val differentMessage = "This is another test"
+            val badVerify = Wallet.verifyMessage(differentMessage.toByteArray(), address.data, sig)
+            check(badVerify == null)
+        }
+
+        if (true)
+        {
+            val badSig = sig.copyOf()
+            badSig[0] = (badSig[0] + 1.toByte()).toByte()
+            val badVerify = Wallet.verifyMessage(testMessage.toByteArray(), address.data, badSig)
+            check(badVerify == null)
+        }
+    }
 
     @Test
     fun testScript()

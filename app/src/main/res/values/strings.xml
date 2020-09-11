@@ -48,6 +48,10 @@
     <string name="at">at</string>
     <string name="of">of</string>
     <string name="choose">choose</string>
+    <string name="accept">accept</string>
+    <string name="deny">deny</string>
+    <string name="badSignature">bad signature</string>
+
     <!-- done is like "yes" but more means "go to the next thing" rather than acceptance of something -->
     <string name="done">done</string>
     <string name="empty"></string>
@@ -112,6 +116,7 @@
     <string name="ScanQRCodeButton">Scan a QR code</string>
     <string name="PasteDestinationAddressButton">Paste</string>
     <string name="NewAccountButton">New Account Setup</string>
+    <string name="NewAccountSearchingForTransactions">...searching for transactions...</string>
     <string name="receiveAddressQRCode">receive QR code</string>
     <string name="paymentProposal">as per received payment proposal</string>
     <!-- You clicked the paste button (in a copy/paste operation), but nothing was copied -->
@@ -214,9 +219,9 @@
     <string name="PassPhrase">Passphrase (optional)</string>
     <string name="Bip44ActivityNotice">Found BIP44 activity</string>
     <string name="NoBip44ActivityNotice">Warning, No BIP44 transactions found!</string>
-    <string name="Bip44BtcActivityNotice">Found pre-fork activity</string>
+    <string name="Bip44BtcActivityNotice">Found nonstandard or pre-fork wallet activity</string>
     <string name="NoBip44BtcActivityNotice">No pre-fork transactions found</string>
-    <string name="FirstUseDateHeightInfo" formatted="false">starting %date (block %height)</string>
+    <string name="FirstUseDateHeightInfo" formatted="false">starting at %date (block %height)</string>
     <string name="NotEnoughRecoveryWords">More recovery words needed</string>
     <string name="TooManyRecoveryWords">Too many recovery words</string>
     <string name="IncorrectRecoveryWords" formatted="false">Invalid words: %words</string>
@@ -325,9 +330,9 @@
     <string name="welcome1Label">Welcome</string>
     <string name="welcome1">Welcome to Wally, a Bitcoin Cash wallet!\n\nIn the following screens you will set up your first BCH (Bitcoin Cash) account and set up other services such as password management.\n\nOr you can hit the back arrow to skip this guided setup.</string>
     <string name="welcome2_title">BCH Account Setup</string>
-    <string name="welcome2">In the next screen, you will set up your first Bitcoin Cash account.\n\nThis account will contain your BCH money and identities.  Identities is a new feature of Wally Wallet that allows you to automatically log into supported web sites.\n\nYou can choose to protect access to this account with a Personal Identification Number (PIN), which you will enter in the next screen.</string>
+    <string name="welcome2">In the next screen, you will set up your first Bitcoin Cash account.\n\nThis account will contain your BCH money and identities.  Identities is a new feature of Wally Wallet that allows you to automatically log into supported web sites.\n\nYou can choose to protect access accounts with a Personal Identification Number (PIN), however we recommend that new users do not use a PIN (and keep a low balance) for their first account.  For users protection, accounts protected by PINs can be completely invisible until you have entered the correct PIN (and no indication is given that you have entered an incorrect one).\n\nAlso, if you wish to recover an existing BCH account, put the Account Recovery Secret Phrase where indicated.  If this space is left blank, a new account is created.</string>
     <string name="welcome3_title">BCH Account Recovery Secret Phrase</string>
-    <string name="welcome3">This account can be restored or moved to another device via the secret phrase displayed below.  Unlike many services, a bitcoin wallet does not need a periodic "backup".  The data in the public blockchain, combined with this secret phrase is enough to recover all your funds and your account history.    Write this phrase down and keep it somewhere secure right now.\n\nIn Bitcoin, YOU must take responsibility!\n\nIf you lose this phrase it is absolutely impossible to recover your account.  If your secret phrase is stolen from you, the thief can take all your funds and impersonate you to any connected services.\nThis may sound scary, but it has a big advantage: your money is on this phone and in your backup and nowhere else.\n\nSo it is yours and only yours.  No one can hack some corporate database and steal your money and no one can interfere with you spending your money.\n\nJust like money in your physical wallet.\n\nIf this responsibility is scary to you, treat this wallet like you would your physical wallet -- don\'t keep much money in it.</string>
+    <string name="welcome3">This account can be restored or moved to another device via the secret phrase displayed below.  Unlike many services, a bitcoin wallet does not need a periodic "backup".  The data in the public blockchain, combined with this secret phrase is enough to recover all your funds and your account history.    Write this phrase down and keep it somewhere secure right now.\n\nIn Bitcoin, YOU must take responsibility!\n\nIf you lose this phrase it is absolutely impossible to recover your account.  If your secret phrase is stolen from you, the thief can take all your funds and log in to sites as you that you have set up with Wally\'s identity feature.\nThis may sound scary, but it has a big advantage: your money is on this phone and in your backup and nowhere else.\n\nSo it is yours and only yours.  No one can hack some corporate database and steal your money and no one can interfere with you spending your money.\n\nJust like money in your physical wallet.\n\nIf this responsibility is scary to you, treat this wallet like you would your physical wallet -- don\'t keep much money in it.</string>
     <string name="welcome4_title">Identity</string>
     <string name="welcome4">In the next screen, you may enter identity information.  This information is used when you use Wally as an identity and login manager (to automatically log into various web sites, or supply information when making a purchase).\n\nWally is extremely privacy focused!\n\nThis information will not be shared with any site without your express permission, and NO information from this wallet is ever sent to the authors of this app.  You can also choose to leave any fields blank.</string>
     <string name="welcomeComplete">This completes the setup.  If you did not complete any of the steps in this welcome, all of the fields are available from within the app itself.\n\nThank you and enjoy your new wallet!</string>
@@ -362,10 +367,16 @@
     <string name="StoreMapAppPackage"></string>
     <string name="OpenWebsite" formatted="false">Access %siteName</string>
 
-    <!--
-    This string is used for square devices and overridden by hello_world in
-    values-round/strings.xml for round devices.
-    -->
-    <string name="hello_world">Hello Square World!</string>
+    <string name="AcceptTpRegistration">Accept Registration From:</string>
+    <string name="TpMaxSpendHint">enter max auto-spend</string>
+
+    <string name="TpMaxHeading">Autopay Limits</string>
+    <string name="TpMaxPer">Each request</string>
+    <string name="TpMaxPerDay">Per day</string>
+    <string name="TpMaxPerWeek">Per week</string>
+    <string name="TpMaxPerMonth">Per month</string>
+
+    <string name="TpEnableAutopay">Enable autopay (if unchecked, all payments ask for user authorization)</string>
+
     <string name="asciiArrow"><![CDATA[=>]]></string>
 </resources>

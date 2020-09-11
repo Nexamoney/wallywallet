@@ -211,9 +211,9 @@ class NewAccount : CommonActivity()
                     {
                         peekActivity(words.joinToString(" "), SupportedBlockchains[GuiBlockchainSelector.selectedItem]!!)
                     }
-                    catch(e: Exception)
+                    catch (e: Exception)
                     {
-                        LogIt.severe("wallet peek error: " + e.message)
+                        LogIt.severe("wallet peek error: " + e.toString())
                     }
                 }
 
@@ -267,6 +267,10 @@ class NewAccount : CommonActivity()
 
     fun peekActivity(secretWords:String, chainSelector: ChainSelector)
     {
+        laterUI {
+            GuiNewAccountStatus.text = i18n(R.string.NewAccountSearchingForTransactions)
+        }
+
         val (svr, port) = try
         {
             ElectrumServerOn(chainSelector)
@@ -280,12 +284,21 @@ class NewAccount : CommonActivity()
         val ec = try {
             ElectrumClient(chainSelector, svr, port)
         }
-        catch(e:java.net.ConnectException)
+        catch(e:java.io.IOException) // covers java.net.ConnectException, UnknownHostException and a few others that could trigger
         {
-            laterUI {
-                GuiNewAccountStatus.text = i18n(R.string.ElectrumNetworkUnavailable)
+            try
+            {
+                if (chainSelector==ChainSelector.BCHMAINNET)
+                    ElectrumClient(chainSelector, LAST_RESORT_BCH_ELECTRS)
+                else throw e
             }
-            return
+            catch (e: java.io.IOException)
+            {
+                laterUI {
+                    GuiNewAccountStatus.text = i18n(R.string.ElectrumNetworkUnavailable)
+                }
+                return
+            }
         }
         ec.start()
 

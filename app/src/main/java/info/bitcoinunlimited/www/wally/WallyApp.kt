@@ -22,6 +22,8 @@ import javax.crypto.spec.PBEKeySpec
 val SimulationHostIP = "10.0.2.2"
 val LanHostIP = "192.168.1.100"
 
+val LAST_RESORT_BCH_ELECTRS = "bch2.bitcoinunlimited.net" // "electrs.bitcoinunlimited.info"
+
 private val LogIt = Logger.getLogger("bitcoinunlimited.app")
 
 open class PrimaryWalletInvalidException() : BUException("Primary wallet not defined or currently unavailable", "not ready", ErrorSeverity.Abnormal)
@@ -111,7 +113,7 @@ fun ElectrumServerOn(chain: ChainSelector): IpPort
 {
     return when (chain)
     {
-        ChainSelector.BCHMAINNET -> IpPort("electrumserver.seed.bitcoinunlimited.net", DEFAULT_ELECTRUM_SERVER_PORT)
+        ChainSelector.BCHMAINNET -> IpPort("electrum.seed.bitcoinunlimited.net", DEFAULT_ELECTRUM_SERVER_PORT)
         ChainSelector.BCHTESTNET -> IpPort("159.65.163.15", DEFAULT_ELECTRUM_SERVER_PORT)
         ChainSelector.BCHREGTEST -> IpPort(SimulationHostIP, DEFAULT_ELECTRUM_SERVER_PORT)
         ChainSelector.NEXTCHAIN  -> IpPort("electrumserver.seed.nextchain.cash", 7229)

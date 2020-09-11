@@ -82,8 +82,8 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="bchidentity" /> <!-- android:host="path" /> -->
+                <data android:label="identity"/>
+                <data android:scheme="bchidentity" />
             </intent-filter>
         </activity> <!-- hardwareAccelerated supposedly needed for zxing -->
         <activity
@@ -126,7 +126,20 @@
             android:name=".TricklePayActivity"
             android:label="@string/title_activity_trickle_pay"
             android:launchMode="singleTask"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:label="tricklepay"/>
+                <data android:scheme="tdpp" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".Settings"
             android:label="@string/title_activity_settings"
@@ -150,7 +163,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="bitcoincash" /> <!-- android:host="path" /> -->
+                <data android:scheme="bitcoincash" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -162,11 +175,23 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="bchreg" /> <!-- android:host="path" /> -->
+                <data android:scheme="bchreg" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
 
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="nxc" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

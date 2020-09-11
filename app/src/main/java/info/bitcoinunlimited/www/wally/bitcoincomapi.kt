@@ -61,7 +61,7 @@ fun MbchInFiat(fiat: String, setter: (BigDecimal)-> Unit)
             return@launch
         }
         LogIt.info(sourceLoc() + " " + data)
-        val parser: Json = Json { isLenient = true }  // nonstrict mode ignores extra fields
+        val parser: Json = Json { isLenient = true; ignoreUnknownKeys = true}  // nonstrict mode ignores extra fields
         val obj = parser.decodeFromString(BchUsdBitcoinCom.serializer(), data)
         LogIt.info(sourceLoc() + " " + obj.toString())
         // TODO verify recent timestamp
@@ -84,7 +84,7 @@ fun historicalMbchInFiat(fiat: String, timeStamp: Long): BigDecimal
     {
         return BigDecimal(-1)
     }
-    val parser: Json = Json { isLenient = true }  // nonstrict mode ignores extra fields
+    val parser: Json = Json { isLenient = true; ignoreUnknownKeys = true }  // nonstrict mode and ignore extra fields
 
     LogIt.info(sourceLoc() + " " + data)
 

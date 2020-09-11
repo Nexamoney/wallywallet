@@ -138,8 +138,8 @@ class GuiTest
         activityScenario.onActivity { app = (it.application as WallyApp) }
 
         // Clean up any prior run
-        deleteWallet("mRbch1", ChainSelector.BCHREGTEST)
-        deleteWallet("mRbch2", ChainSelector.BCHREGTEST)
+        deleteWallet(walletDb!!, "mRbch1", ChainSelector.BCHREGTEST)
+        deleteWallet(walletDb!!, "mRbch2", ChainSelector.BCHREGTEST)
 
         // Clean up old headers  ONLY NEEDED IF YOU RECREATE REGTEST NETWORK but reuse an emulator
         //deleteBlockHeaders("mRbch1", dbPrefix, appContext!!)
