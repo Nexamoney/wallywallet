@@ -110,7 +110,11 @@ class DomainIdentitySettings : CommonActivity()
         changed = (idData?.setReqs(reqs) ?: false) or changed
 
         // Save the wallet if something has changed
-        if (changed) launch { (wallet.save()) }  // do this out-of-band so UI response is quicker
+        if (changed)
+        {
+            wallet.identityDomainChanged = true
+            launch { wallet.save() } // do this out-of-band so UI response is quicker
+        }
     }
 
     fun setOptionState(ui: Switch, value: Boolean?, setting: String?)

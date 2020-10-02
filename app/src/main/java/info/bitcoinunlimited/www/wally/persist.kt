@@ -192,6 +192,7 @@ open class PBlockHeader():BlockHeader()
         blockSize = b.blockSize
         cumulativeWork = b.cumulativeWork
         height = b.height
+        hashAncestor = b.hashAncestor
     }
 }
 
@@ -326,7 +327,7 @@ fun PersistInsert(dbdao: BlockHeaderDao, bh: BlockHeader)
     }
 }
 
-@Database(entities = arrayOf(PBlockHeader::class), version = 1)
+@Database(entities = arrayOf(PBlockHeader::class), version = 2)
 @TypeConverters(Hash256Converters::class, BigIntegerConverters::class)
 abstract class BlockHeaderDatabase : RoomDatabase() {
     abstract fun blockHeaderDao(): BlockHeaderDao
@@ -334,6 +335,6 @@ abstract class BlockHeaderDatabase : RoomDatabase() {
 
 fun OpenBlockHeaderDB(context: PlatformContext, name: String): BlockHeaderDatabase?
 {
-    val db = Room.databaseBuilder(context.context, BlockHeaderDatabase::class.java, name).build()
+    val db = Room.databaseBuilder(context.context, BlockHeaderDatabase::class.java, name).fallbackToDestructiveMigration().build()
     return db
 }

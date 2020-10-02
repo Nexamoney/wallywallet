@@ -67,6 +67,8 @@ class NewAccount : CommonActivity()
 
     var earliestActivity: Long? = 1577836800 // TODO support entry of recovery date
 
+    val nonstandardActivity = mutableListOf<Pair<Bip44Wallet.HdDerivationPath, HDActivityBracket>>()
+
     var processingThread: Thread? = null
     var lock = ThreadCond()
 
@@ -265,6 +267,67 @@ class NewAccount : CommonActivity()
         return null
     }
 
+    // Note that this returns the last time and block when a new address was FIRST USED, so this may not be what you wanted
+    data class HDActivityBracket(val startTime:Long, val startBlockHeight:Int, val lastTime:Long, val lastBlockHeight:Int, val lastAddressIndex:Int)
+    fun bracketActivity(ec: ElectrumClient, chainSelector: ChainSelector, giveUpGap:Int, secretDerivation: (Int)->ByteArray): HDActivityBracket?
+    {
+        var index = 0
+        var lastFoundIndex = 0
+        var startTime = 0L
+        var startBlock = 0
+        var lastTime = 0L
+        var lastBlock = 0
+
+        while (index < lastFoundIndex + giveUpGap)
+        {
+            val newSecret = secretDerivation(index)
+
+            val dest = Pay2PubKeyHashDestination(chainSelector, newSecret)  // Note, if multiple destination types are allowed, the wallet load/save routines must be updated
+            //LogIt.info(sourceLoc() + " " + name + ": New Destination " + tmp.toString() + ": " + dest.address.toString())
+
+            try
+            {
+                val use = ec.getFirstUse(dest.outputScript(), 10000)
+                if (use.block_hash != null)
+                {
+                    if (use.block_height != null)
+                    {
+                        lastFoundIndex = index
+                        lastBlock = use.block_height
+                        if (startBlock == 0) startBlock = use.block_height
+                    }
+                }
+                else
+                {
+                    LogIt.info("didn't find activity")
+                }
+            }
+            catch (e: ElectrumNotFound)
+            {
+                LogIt.info("didn't find activity")
+            }
+            index++
+        }
+
+        if (startBlock==0) return null  // Safe to use 0 because no spendable tx in genesis block
+
+        if (true)
+        {
+            val headerBin = ec.getHeader(startBlock)
+            val blkHeader = BlockHeader(BCHserialized(headerBin, SerializationType.HASH))
+            startTime = blkHeader.time
+        }
+        if (true)
+        {
+            val headerBin = ec.getHeader(lastBlock)
+            val blkHeader = BlockHeader(BCHserialized(headerBin, SerializationType.HASH))
+            lastTime = blkHeader.time
+        }
+
+        return HDActivityBracket(startTime, startBlock, lastTime, lastBlock, lastFoundIndex)
+    }
+
+
     fun peekActivity(secretWords:String, chainSelector: ChainSelector)
     {
         laterUI {
@@ -321,7 +384,25 @@ class NewAccount : CommonActivity()
         }
         else i18n(R.string.NoBip44ActivityNotice)
 
+        // Look in non-standard places for activity
+        val BTCactivity = bracketActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, AddressDerivationKey.BTC, 0, 0, it) })
+        var BTCchangeActivity: HDActivityBracket? = null
+        var Bip44BTCMsg = if (BTCactivity != null)
+        {
+            BTCchangeActivity = bracketActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, AddressDerivationKey.BTC, 0, 1, it) })
+            nonstandardActivity.clear()  // clear because peek can be called multiple times if the user changes the secret
+            nonstandardActivity.add(Pair(Bip44Wallet.HdDerivationPath(null, AddressDerivationKey.BIP43, AddressDerivationKey.BTC, 0, 0, BTCactivity.lastAddressIndex), BTCactivity  ))
+            if (BTCchangeActivity != null)
+            {
+                nonstandardActivity.add(Pair(Bip44Wallet.HdDerivationPath(null, AddressDerivationKey.BIP43, AddressDerivationKey.BTC, 0, 1, BTCchangeActivity.lastAddressIndex), BTCchangeActivity))
+            }
 
+            i18n(R.string.Bip44BtcActivityNotice) + " " + i18n(R.string.FirstUseDateHeightInfo) % mapOf(
+                "date" to epochToDate(BTCactivity.startTime),
+                "height" to BTCactivity.startBlockHeight.toString())
+        }
+        else i18n(R.string.NoBip44BtcActivityNotice)
+        /*
         earliestActivityP = searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, AddressDerivationKey.BTC, 0, 0, it) })
         var Bip44BTCMsg = if (earliestActivityP != null)
         {
@@ -331,6 +412,7 @@ class NewAccount : CommonActivity()
                 "height" to earliestActivityP.second.toString())
         }
         else i18n(R.string.NoBip44BtcActivityNotice)
+         */
 
         laterUI {GuiNewAccountStatus.text = Bip44Msg + "\n" + Bip44BTCMsg }
     }
@@ -356,7 +438,7 @@ class NewAccount : CommonActivity()
                 return
             }
 
-            app!!.recoverAccount(name, flags, pin, secretWords, chainSelector, earliestActivity)
+            app!!.recoverAccount(name, flags, pin, secretWords, chainSelector, earliestActivity, nonstandardActivity)
             finish()
         }
 

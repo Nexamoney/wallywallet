@@ -38,7 +38,7 @@ var dbPrefix = if (RunningTheTests()) "guitest_" else if (REG_TEST_ONLY == true)
 
 val SupportedBlockchains = if (INCLUDE_NEXTCHAIN)
     mapOf("BCH (Bitcoin Cash)" to ChainSelector.BCHMAINNET,
-        "NXC (NextChain)" to ChainSelector.NEXTCHAIN,
+        "XNEX (NextChain)" to ChainSelector.NEXTCHAIN,
         "TBCH (Testnet Bitcoin Cash)" to ChainSelector.BCHTESTNET,
         "RBCH (Regtest Bitcoin Cash)" to ChainSelector.BCHREGTEST)
 else
@@ -56,7 +56,7 @@ var walletDb: KvpDatabase? = null
 
 const val ACCOUNT_FLAG_NONE = 0UL
 const val ACCOUNT_FLAG_HIDE_UNTIL_PIN = 1UL
-
+const val RETRIEVE_ONLY_ADDITIONAL_ADDRESSES = 10  /** If a wallet imports a nonstandard derivation path, include this many addresses past the last used address in the wallet's monitoring */
 
 fun MakeNewWallet(name: String, chain: ChainSelector): Bip44Wallet
 {
@@ -97,8 +97,8 @@ fun GetCnxnMgr(chain: ChainSelector, name: String? = null): CnxnMgr
             ChainSelector.BCHREGTEST -> MultiNodeCnxnMgr(name ?: "RBCH", ChainSelector.BCHREGTEST, arrayOf(SimulationHostIP))
             ChainSelector.NEXTCHAIN  ->
             {
-                val cmgr = MultiNodeCnxnMgr(name ?: "NXC", ChainSelector.NEXTCHAIN, arrayOf("seed.nextchain.cash", "node1.nextchain.cash", "node2.nextchain.cash"))
-                cmgr.desiredConnectionCount = 2  // NXC chain doesn't have many nodes so reduce the desired connection count or there may be more desired nodes than exist in the nxc chain
+                val cmgr = MultiNodeCnxnMgr(name ?: "XNEX", ChainSelector.NEXTCHAIN, arrayOf("seed.nextchain.cash", "node1.nextchain.cash", "node2.nextchain.cash"))
+                cmgr.desiredConnectionCount = 2  // XNEX chain doesn't have many nodes so reduce the desired connection count or there may be more desired nodes than exist in the chain
                 cmgr
             }
             else                     -> throw BadCryptoException()
@@ -157,6 +157,7 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
                 0.toBigInteger(),
                 context, dbPrefix
             )
+            /*
             // Bitcoin Cash mainnet chain
             ChainSelector.BCHMAINNET -> Blockchain(
                 ChainSelector.BCHMAINNET,
@@ -168,18 +169,32 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
                 checkpointHeight = 642337,
                 checkpointWork = "13a2a5fc1efbc0514731aa5".toBigInteger(16),
                 context = context, dbPrefix = dbPrefix
+            ) */
+            // Bitcoin Cash mainnet chain
+            ChainSelector.BCHMAINNET -> Blockchain(
+                ChainSelector.BCHMAINNET,
+                name ?: "BCH",
+                cnxnMgr,
+                genesisBlockHash = Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
+                checkpointPriorBlockId = Hash256("000000000000000001704aaa253740b7bb897b58378413c84f98066ca2f6bcc7"),
+                checkpointId = Hash256("0000000000000000011fa4bf373415871bd227f03c3ef00ae541d36ce0bdf0dd"),
+                checkpointHeight = 615608,
+                checkpointWork = "11141541c85853109ca94e6".toBigInteger(16),
+                context = context, dbPrefix = dbPrefix
             )
+
             // Bitcoin Cash mainnet chain
             ChainSelector.NEXTCHAIN  -> Blockchain(
                 ChainSelector.NEXTCHAIN,
-                name ?: "NXC",
+                name ?: "XNEX",
                 cnxnMgr,
-                Hash256("9623194f62f31f7a7065467c38e83cf060a2b866190204f3dd16f6587d8d9374"),
-                Hash256("9623194f62f31f7a7065467c38e83cf060a2b866190204f3dd16f6587d8d9374"),
-                Hash256("83f09ccd686052095cf6c3a24a0561752eb4b270a8c6841f9519b30ca7b3071f"),
-                1,
-                0x100101.toBigInteger(),
-                context, dbPrefix
+                genesisBlockHash = Hash256("78d2ee9c298e8a112e9e8e7ea1d878033e308494ccea107127413ede4f227cc5"),
+                checkpointPriorBlockId = Hash256("78d2ee9c298e8a112e9e8e7ea1d878033e308494ccea107127413ede4f227cc5"),
+                checkpointId = Hash256("0b64c9e1c30378582ba1e36a05a74a3c8fc016a1bbc9217950d8527e39403a5f"),
+                checkpointHeight = 1,
+                checkpointWork = 0x200101.toBigInteger(),
+                context = context,
+                dbPrefix = dbPrefix
             )
             else                     -> throw BadCryptoException()
         }
@@ -195,7 +210,8 @@ class Account(
     var flags: ULong = ACCOUNT_FLAG_NONE,
     chainSelector: ChainSelector? = null,
     secretWords: String? = null,
-    startPlace: Long? = null //* Where to start looking for transactions
+    startPlace: Long? = null, //* Where to start looking for transactions
+    retrieveOnlyActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, NewAccount.HDActivityBracket>>? = null  //* jam in other derivation paths to grab coins from (but use addresses of) (if new account)
 )
 {
     val tickerGUI = Reactive<String>("") // Where to show the crypto's ticker
@@ -259,6 +275,20 @@ class Account(
     {
         val hundredThousand = CurrencyDecimal(SATinMBCH)
         wallet.prepareDestinations(2, 2)  // Make sure that there is at least a few addresses before we hook into the network
+
+        if (retrieveOnlyActivity != null)  // push in nonstandard addresses before we connect to the blockchain.
+        {
+            for (r in retrieveOnlyActivity)
+            {
+                assert(r.first.index == r.second.lastAddressIndex) // Caller should have properly set this.  Doublecheck.
+                var tmp = r.first
+                tmp.index += RETRIEVE_ONLY_ADDITIONAL_ADDRESSES
+                wallet.retrieveOnlyDerivationPaths.add(tmp)
+            }
+        }
+
+        wallet.fillReceivingWithRetrieveOnly()
+
         LogIt.info("wallet add blockchain")
         wallet.addBlockchain(chain, chain.checkpointHeight, startPlace)
         LogIt.info("wallet add blockchain done")
@@ -697,6 +727,7 @@ class WallyApp : Application()
         ac.pinEntered = true  // for convenience, new accounts begin as if the pin has been entered
         ac.start(applicationContext)
         ac.onWalletChange()
+        ac.wallet.save(true)
 
         accounts[name] = ac
         // Write the list of existing accounts, so we know what to load
@@ -704,7 +735,7 @@ class WallyApp : Application()
         // wallet is saved in wallet constructor so no need to: ac.wallet.SaveBip44Wallet()
     }
 
-    fun recoverAccount(name: String, flags: ULong, pin: String, secretWords: String, chainSelector: ChainSelector, earliestActivity: Long?)
+    fun recoverAccount(name: String, flags: ULong, pin: String, secretWords: String, chainSelector: ChainSelector, earliestActivity: Long?, nonstandardActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, NewAccount.HDActivityBracket>>?)
     {
         dbgAssertNotGuiThread()
         val ctxt = PlatformContext(applicationContext)
@@ -720,7 +751,17 @@ class WallyApp : Application()
         }
         saveAccountPin(name, epin)
 
-        val ac = Account(name, ctxt, flags, chainSelector, secretWords, earliestActivity)
+        var veryEarly = earliestActivity
+        if (nonstandardActivity != null)
+        {
+            for (n in nonstandardActivity)
+            {
+                veryEarly = min(n.second.startTime, veryEarly ?: n.second.startTime)
+            }
+        }
+        if (veryEarly != null) veryEarly = veryEarly - 1  // Must be earlier than the first activity
+
+        val ac = Account(name, ctxt, flags, chainSelector, secretWords, veryEarly, nonstandardActivity)
         ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
         ac.start(applicationContext)
         ac.onWalletChange()

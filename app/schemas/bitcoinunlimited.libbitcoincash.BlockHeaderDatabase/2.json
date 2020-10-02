@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "8027629cfdbf95a3fb7e3ad21699dffb",
+    "identityHash": "dc798b2eef749df91386c0a58eeec45e",
     "entities": [
       {
         "tableName": "PBlockHeader",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` BLOB NOT NULL, `hexHash` TEXT NOT NULL, `hashData` BLOB NOT NULL, `version` INTEGER NOT NULL, `hashPrevBlock` BLOB NOT NULL, `hashMerkleRoot` BLOB NOT NULL, `time` INTEGER NOT NULL, `diffBits` INTEGER NOT NULL, `nonce` INTEGER NOT NULL, `numTx` INTEGER NOT NULL, `blockSize` INTEGER NOT NULL, `cumulativeWork` BLOB NOT NULL, `height` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` BLOB NOT NULL, `hexHash` TEXT NOT NULL, `hashData` BLOB NOT NULL, `version` INTEGER NOT NULL, `hashPrevBlock` BLOB NOT NULL, `hashMerkleRoot` BLOB NOT NULL, `time` INTEGER NOT NULL, `diffBits` INTEGER NOT NULL, `nonce` INTEGER NOT NULL, `numTx` INTEGER NOT NULL, `blockSize` INTEGER NOT NULL, `cumulativeWork` BLOB NOT NULL, `height` INTEGER NOT NULL, `hashAncestor` BLOB NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "dbkey",
@@ -85,6 +85,12 @@
             "columnName": "height",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "hashAncestor",
+            "columnName": "hashAncestor",
+            "affinity": "BLOB",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -100,7 +106,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"8027629cfdbf95a3fb7e3ad21699dffb\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'dc798b2eef749df91386c0a58eeec45e')"
     ]
   }
 }

@@ -187,7 +187,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="nxc" />
+                <data android:scheme="xnex" />
             </intent-filter>
 
             <intent-filter>

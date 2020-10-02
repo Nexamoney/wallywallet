@@ -11,33 +11,29 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="93b3f44b-6791-4520-ad38-6da4e0a30d33" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/trickle_pay_reg.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_espresso_idling_idling_concurrent_3_3_0_aar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__androidx_test_espresso_idling_idling_concurrent_3_3_0_aar.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/app/app.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/androidTest/java/info/bitcoinunlimited/www/wally/ExampleInstrumentedTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/androidTest/java/info/bitcoinunlimited/www/wally/ExampleInstrumentedTest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/androidTest/java/info/bitcoinunlimited/www/wally/GuiTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/androidTest/java/info/bitcoinunlimited/www/wally/GuiTest.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/schemas/bitcoinunlimited.libbitcoincash.BlockHeaderDatabase/1.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/bitcoinunlimited.libbitcoincash.BlockHeaderDatabase/1.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/schemas/bitcoinunlimited.libbitcoincash.BlockHeaderDatabase/2.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/bitcoinunlimited.libbitcoincash.BlockHeaderDatabase/2.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/IdentityActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/IdentityActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/DomainIdentitySettings.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/DomainIdentitySettings.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/NewAccount.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/NewAccount.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/TricklePay.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/TricklePay.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/WallyApp.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/WallyApp.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/bitcoincomapi.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/bitcoincomapi.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/identityOp.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/identityOp.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/persist.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/persist.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/libbitcoincash" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/libbitcoincash" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/Wallet.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/Wallet.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/electrumclient.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/electrumclient.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_trickle_pay.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_trickle_pay.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/dimens.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/dimens.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/contrib/testpaylinks.html" beforeDir="false" afterPath="$PROJECT_DIR$/contrib/testpaylinks.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/block.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/block.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/blockchain.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/blockchain.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/useful.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/libbitcoincash/useful.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="Pixel_3_API_28" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="10.1_WXGA_Tablet_API_28" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -76,7 +72,7 @@
     <option name="BUILD_TARGET_KEY" value="apk" />
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/app/src/main/java/libbitcoincash" />
     <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
   <component name="ProjectId" id="1agERTG9ejfQODY31OsrqD6kHZp" />
@@ -92,8 +88,8 @@
     <property name="DEBUGGABLE_DEVICE" value="samsung-sm_n960u1-252bc16cb90d7ece" />
     <property name="DEBUGGABLE_PROCESS" value="info.bitcoinunlimited.www.wally" />
     <property name="DEBUGGER_ID" value="Auto" />
-    <property name="DeviceAndSnapshotComboBoxAction.selectedDevice" value="Pixel_3_API_28" />
-    <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2020-08-25T21:45:09.239Z" />
+    <property name="DeviceAndSnapshotComboBoxAction.selectedDevice" value="252bc16cb90d7ece" />
+    <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2020-10-01T12:34:00.664Z" />
     <property name="ExportApk.ApkPath" value="$PROJECT_DIR$/app" />
     <property name="ExportApk.BuildVariants" value="release" />
     <property name="ExportApk.SignV1" value="true" />
@@ -103,7 +99,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="SHOW_ALL_PROCESSES" value="false" />
     <property name="editor.config.ad.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/app/src/main/res/layout" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/app/src/main/java/libbitcoincash" />
     <property name="not.eligible.for.single.variant.sync" value="true" />
     <property name="project.structure.last.edited" value="Suggestions" />
     <property name="project.structure.proportion" value="0.17" />
@@ -129,6 +125,7 @@
       <recent name="$PROJECT_DIR$/app/src/main/res/menu" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/src/main/java/libbitcoincash" />
       <recent name="$PROJECT_DIR$/app/src/main/res/layout" />
       <recent name="$PROJECT_DIR$/app/src/main/res/menu" />
       <recent name="$PROJECT_DIR$/app/src/main/res/xml" />
@@ -140,7 +137,7 @@
       <recent name="info.bitcoinunlimited.www.wally" />
     </key>
   </component>
-  <component name="RunManager" selected="Android Instrumented Tests.UnitTest">
+  <component name="RunManager" selected="Android App.app">
     <configuration default="true" type="AndroidJUnit" factoryName="Android JUnit">
       <option name="TEST_OBJECT" value="class" />
       <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
@@ -492,10 +489,6 @@
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state x="3395" y="909" width="401" height="343" key="#com.intellij.debugger.actions.ViewTextAction/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599181580478" />
-    <state x="3357" y="782" width="626" height="571" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1591756062008">
-      <screen x="1680" y="0" width="3840" height="2160" />
-    </state>
-    <state x="3357" y="782" width="626" height="571" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1591756062008" />
     <state x="1680" y="26" width="2800" height="2110" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1598373216766">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
@@ -505,10 +498,10 @@
     </state>
     <state x="3181" y="772" width="651" height="617" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594154250277" />
     <state x="4861" y="764" width="651" height="617" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596199573452" />
-    <state x="3317" y="1350" width="2076" height="586" key="#xdebugger.evaluate" timestamp="1599181482578">
+    <state x="3365" y="1427" width="2076" height="586" key="#xdebugger.evaluate" timestamp="1601558620452">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
-    <state x="3317" y="1350" width="2076" height="586" key="#xdebugger.evaluate/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599181482578" />
+    <state x="3365" y="1427" width="2076" height="586" key="#xdebugger.evaluate/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1601558620452" />
     <state x="3275" y="953" width="641" height="257" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1598397191466">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
@@ -521,11 +514,11 @@
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state x="3382" y="859" width="481" height="452" key="AndroidCreateXmlResourceDialog/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597843521475" />
-    <state x="3407" y="834" width="385" height="494" key="AndroidProcessChooserDialog" timestamp="1598391116163">
+    <state x="3407" y="834" width="385" height="494" key="AndroidProcessChooserDialog" timestamp="1601501509319">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state x="1727" y="841" key="AndroidProcessChooserDialog/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594153929024" />
-    <state x="3407" y="834" width="385" height="494" key="AndroidProcessChooserDialog/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1598391116163" />
+    <state x="3407" y="834" width="385" height="494" key="AndroidProcessChooserDialog/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1601501509319" />
     <state width="499" height="643" key="DebuggerActiveHint" timestamp="1593797977105">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
@@ -534,94 +527,94 @@
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state x="3280" y="691" width="883" height="740" key="FileChooserDialogImpl/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1596202222014" />
-    <state width="1886" height="532" key="GridCell.Tab.0.bottom" timestamp="1599614954871">
+    <state width="3557" height="376" key="GridCell.Tab.0.bottom" timestamp="1601561729949">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.0.bottom/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
-    <state width="1886" height="532" key="GridCell.Tab.0.bottom/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599614954871" />
-    <state width="1886" height="532" key="GridCell.Tab.0.center" timestamp="1599614954871">
+    <state width="3557" height="376" key="GridCell.Tab.0.bottom/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1601561729949" />
+    <state width="3557" height="376" key="GridCell.Tab.0.center" timestamp="1601561729949">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.0.center/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
-    <state width="1886" height="532" key="GridCell.Tab.0.center/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599614954871" />
-    <state width="1886" height="532" key="GridCell.Tab.0.left" timestamp="1599614954871">
+    <state width="3557" height="376" key="GridCell.Tab.0.center/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1601561729949" />
+    <state width="3557" height="376" key="GridCell.Tab.0.left" timestamp="1601561729949">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.0.left/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
-    <state width="1886" height="532" key="GridCell.Tab.0.left/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599614954871" />
-    <state width="1886" height="532" key="GridCell.Tab.0.right" timestamp="1599614954871">
+    <state width="3557" height="376" key="GridCell.Tab.0.left/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1601561729949" />
+    <state width="3557" height="376" key="GridCell.Tab.0.right" timestamp="1601561729949">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.0.right/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
-    <state width="1886" height="532" key="GridCell.Tab.0.right/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599614954871" />
-    <state width="3020" height="510" key="GridCell.Tab.1.bottom" timestamp="1599614928916">
+    <state width="3557" height="376" key="GridCell.Tab.0.right/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1601561729949" />
+    <state width="3557" height="376" key="GridCell.Tab.1.bottom" timestamp="1601561729949">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.1.bottom/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185877" />
-    <state width="3020" height="510" key="GridCell.Tab.1.bottom/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599614928916" />
-    <state width="3020" height="510" key="GridCell.Tab.1.center" timestamp="1599614928916">
+    <state width="3557" height="376" key="GridCell.Tab.1.bottom/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1601561729949" />
+    <state width="3557" height="376" key="GridCell.Tab.1.center" timestamp="1601561729949">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.1.center/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
-    <state width="3020" height="510" key="GridCell.Tab.1.center/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599614928916" />
-    <state width="3020" height="510" key="GridCell.Tab.1.left" timestamp="1599614928916">
+    <state width="3557" height="376" key="GridCell.Tab.1.center/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1601561729949" />
+    <state width="3557" height="376" key="GridCell.Tab.1.left" timestamp="1601561729949">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.1.left/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
-    <state width="3020" height="510" key="GridCell.Tab.1.left/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599614928916" />
-    <state width="3020" height="510" key="GridCell.Tab.1.right" timestamp="1599614928916">
+    <state width="3557" height="376" key="GridCell.Tab.1.left/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1601561729949" />
+    <state width="3557" height="376" key="GridCell.Tab.1.right" timestamp="1601561729949">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="1882" height="658" key="GridCell.Tab.1.right/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244185876" />
-    <state width="3020" height="510" key="GridCell.Tab.1.right/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599614928916" />
-    <state width="3624" height="806" key="GridCell.Tab.2.bottom" timestamp="1597111154262">
+    <state width="3557" height="376" key="GridCell.Tab.1.right/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1601561729949" />
+    <state width="3780" height="370" key="GridCell.Tab.2.bottom" timestamp="1599871378902">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
-    <state width="3624" height="806" key="GridCell.Tab.2.bottom/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597111154262" />
-    <state width="3624" height="806" key="GridCell.Tab.2.center" timestamp="1597111154262">
+    <state width="3780" height="370" key="GridCell.Tab.2.bottom/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599871378902" />
+    <state width="3780" height="370" key="GridCell.Tab.2.center" timestamp="1599871378902">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
-    <state width="3624" height="806" key="GridCell.Tab.2.center/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597111154262" />
-    <state width="3624" height="806" key="GridCell.Tab.2.left" timestamp="1597111154262">
+    <state width="3780" height="370" key="GridCell.Tab.2.center/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599871378902" />
+    <state width="3780" height="370" key="GridCell.Tab.2.left" timestamp="1599871378902">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
-    <state width="3624" height="806" key="GridCell.Tab.2.left/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597111154262" />
-    <state width="3624" height="806" key="GridCell.Tab.2.right" timestamp="1597111154262">
+    <state width="3780" height="370" key="GridCell.Tab.2.left/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599871378902" />
+    <state width="3780" height="370" key="GridCell.Tab.2.right" timestamp="1599871378902">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
-    <state width="3624" height="806" key="GridCell.Tab.2.right/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597111154262" />
-    <state width="1788" height="760" key="GridCell.Tab.3.bottom" timestamp="1593816263725">
+    <state width="3780" height="370" key="GridCell.Tab.2.right/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599871378902" />
+    <state width="3780" height="607" key="GridCell.Tab.3.bottom" timestamp="1599856485935">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
-    <state width="1788" height="760" key="GridCell.Tab.3.bottom/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1593816263725" />
-    <state width="1788" height="760" key="GridCell.Tab.3.center" timestamp="1593816263725">
+    <state width="3780" height="607" key="GridCell.Tab.3.bottom/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599856485935" />
+    <state width="3780" height="607" key="GridCell.Tab.3.center" timestamp="1599856485935">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
-    <state width="1788" height="760" key="GridCell.Tab.3.center/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1593816263725" />
-    <state width="1788" height="760" key="GridCell.Tab.3.left" timestamp="1593816263725">
+    <state width="3780" height="607" key="GridCell.Tab.3.center/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599856485935" />
+    <state width="3780" height="607" key="GridCell.Tab.3.left" timestamp="1599856485935">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
-    <state width="1788" height="760" key="GridCell.Tab.3.left/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1593816263725" />
-    <state width="1788" height="760" key="GridCell.Tab.3.right" timestamp="1593816263725">
+    <state width="3780" height="607" key="GridCell.Tab.3.left/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599856485935" />
+    <state width="3780" height="607" key="GridCell.Tab.3.right" timestamp="1599856485935">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
-    <state width="1788" height="760" key="GridCell.Tab.3.right/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1593816263725" />
-    <state width="1788" height="760" key="GridCell.Tab.4.bottom" timestamp="1593816263725">
+    <state width="3780" height="607" key="GridCell.Tab.3.right/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599856485935" />
+    <state width="3780" height="607" key="GridCell.Tab.4.bottom" timestamp="1599856485935">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
-    <state width="1788" height="760" key="GridCell.Tab.4.bottom/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1593816263725" />
-    <state width="1788" height="760" key="GridCell.Tab.4.center" timestamp="1593816263725">
+    <state width="3780" height="607" key="GridCell.Tab.4.bottom/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599856485935" />
+    <state width="3780" height="607" key="GridCell.Tab.4.center" timestamp="1599856485935">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
-    <state width="1788" height="760" key="GridCell.Tab.4.center/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1593816263725" />
-    <state width="1788" height="760" key="GridCell.Tab.4.left" timestamp="1593816263725">
+    <state width="3780" height="607" key="GridCell.Tab.4.center/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599856485935" />
+    <state width="3780" height="607" key="GridCell.Tab.4.left" timestamp="1599856485935">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
-    <state width="1788" height="760" key="GridCell.Tab.4.left/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1593816263725" />
-    <state width="1788" height="760" key="GridCell.Tab.4.right" timestamp="1593816263725">
+    <state width="3780" height="607" key="GridCell.Tab.4.left/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599856485935" />
+    <state width="3780" height="607" key="GridCell.Tab.4.right" timestamp="1599856485935">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
-    <state width="1788" height="760" key="GridCell.Tab.4.right/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1593816263725" />
+    <state width="3780" height="607" key="GridCell.Tab.4.right/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599856485935" />
     <state width="1788" height="721" key="GridCell.Tab.5.bottom" timestamp="1593787364279">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
@@ -641,34 +634,33 @@
     <state x="3115" y="501" width="1570" height="968" key="SettingsEditor" timestamp="1593608890326">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
-    <state x="5605" y="41" width="1570" height="968" key="SettingsEditor/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@0.26.1680.1024" timestamp="1591760441256" />
     <state x="3115" y="501" width="1906" height="1240" key="SettingsEditor/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1593608890326" />
-    <state x="1891" y="157" width="3451" height="1871" key="com.android.tools.idea.avdmanager.AvdListDialog" timestamp="1595351146330">
+    <state x="1891" y="157" width="3451" height="1871" key="com.android.tools.idea.avdmanager.AvdListDialog" timestamp="1599871068862">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state x="1680" y="179" width="3451" height="1828" key="com.android.tools.idea.avdmanager.AvdListDialog/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594156626065" />
-    <state x="1891" y="157" width="3451" height="1871" key="com.android.tools.idea.avdmanager.AvdListDialog/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1595351146330" />
-    <state x="3314" y="995" width="597" height="194" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1592510104514">
-      <screen x="1680" y="0" width="3840" height="2160" />
-    </state>
-    <state x="3314" y="995" width="597" height="194" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1592510104514" />
-    <state x="258" y="181" width="1218" height="724" maximized="true" key="dock-window-1" timestamp="1597101226223">
+    <state x="1891" y="157" width="3451" height="1871" key="com.android.tools.idea.avdmanager.AvdListDialog/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599871068862" />
+    <state x="0" y="0" width="1680" height="1050" key="dock-window-1" timestamp="1599836120501">
       <screen x="0" y="26" width="1680" height="1024" />
     </state>
-    <state x="258" y="181" width="1218" height="724" maximized="true" key="dock-window-1/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1597101226223" />
-    <state x="3147" y="742" width="939" height="700" key="find.popup" timestamp="1593182772909">
+    <state x="0" y="0" width="1680" height="1050" key="dock-window-1/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599836120501" />
+    <state x="0" y="0" width="1680" height="1050" key="dock-window-2" timestamp="1599845803011">
+      <screen x="0" y="26" width="1680" height="1024" />
+    </state>
+    <state x="0" y="0" width="1680" height="1050" key="dock-window-2/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599845803011" />
+    <state x="2731" y="369" width="2127" height="1181" key="find.popup" timestamp="1601497891067">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
-    <state x="3147" y="742" width="939" height="700" key="find.popup/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1593182772909" />
-    <state width="662" height="224" key="javadoc.popup.new" timestamp="1599614877616">
+    <state x="2731" y="369" width="2127" height="1181" key="find.popup/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1601497891067" />
+    <state width="662" height="224" key="javadoc.popup.new" timestamp="1601561393925">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
     <state width="662" height="241" key="javadoc.popup.new/0.26.3840.2110/3840.0.1024.768/4864.0.1680.1050@0.26.3840.2110" timestamp="1594244002607" />
-    <state width="662" height="224" key="javadoc.popup.new/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1599614877616" />
-    <state x="3214" y="516" key="run.anything.popup" timestamp="1595533848906">
+    <state width="662" height="224" key="javadoc.popup.new/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1601561393925" />
+    <state x="3214" y="516" key="run.anything.popup" timestamp="1601552792066">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
-    <state x="3214" y="516" key="run.anything.popup/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1595533848906" />
+    <state x="3214" y="516" key="run.anything.popup/1680.0.3840.2160/0.26.1680.1024/5520.0.1680.1050@1680.0.3840.2160" timestamp="1601552792066" />
     <state x="5099" y="495" width="840" height="1059" key="search.everywhere.popup" timestamp="1599573458949">
       <screen x="1680" y="0" width="3840" height="2160" />
     </state>
@@ -705,18 +697,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/WallyApp.kt</url>
-          <line>764</line>
+          <line>805</line>
           <option name="timeStamp" value="147" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/androidTest/java/info/bitcoinunlimited/www/wally/GuiTest.kt</url>
           <line>260</line>
           <option name="timeStamp" value="195" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/Wallet.kt</url>
-          <line>406</line>
-          <option name="timeStamp" value="330" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/transaction.kt</url>
@@ -745,13 +732,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/NewAccount.kt</url>
-          <line>215</line>
+          <line>217</line>
           <option name="timeStamp" value="445" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/NewAccount.kt</url>
-          <line>358</line>
-          <option name="timeStamp" value="449" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/identityOp.kt</url>
@@ -769,31 +751,6 @@
           <option name="timeStamp" value="458" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/settings.kt</url>
-          <line>409</line>
-          <option name="timeStamp" value="477" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/settings.kt</url>
-          <line>342</line>
-          <option name="timeStamp" value="483" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/NewAccount.kt</url>
-          <line>273</line>
-          <option name="timeStamp" value="489" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/NewAccount.kt</url>
-          <line>284</line>
-          <option name="timeStamp" value="490" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/NewAccount.kt</url>
-          <line>392</line>
-          <option name="timeStamp" value="493" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/p2p.kt</url>
           <line>2055</line>
           <option name="timeStamp" value="506" />
@@ -809,11 +766,6 @@
           <option name="timeStamp" value="521" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/settings.kt</url>
-          <line>353</line>
-          <option name="timeStamp" value="529" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/SplitBillActivity.kt</url>
           <line>352</line>
           <option name="timeStamp" value="544" />
@@ -822,16 +774,6 @@
           <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/MainActivity.kt</url>
           <line>1311</line>
           <option name="timeStamp" value="554" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/MainActivity.kt</url>
-          <line>1376</line>
-          <option name="timeStamp" value="555" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/MainActivity.kt</url>
-          <line>849</line>
-          <option name="timeStamp" value="565" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/jsonPayProtocol.kt</url>
@@ -869,35 +811,66 @@
           <option name="timeStamp" value="646" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/NewAccount.kt</url>
-          <line>297</line>
-          <option name="timeStamp" value="649" />
+          <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/MainActivity.kt</url>
+          <line>1384</line>
+          <option name="timeStamp" value="687" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/MainActivity.kt</url>
+          <line>1347</line>
+          <option name="timeStamp" value="688" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/Wallet.kt</url>
+          <line>1602</line>
+          <option name="timeStamp" value="690" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/Wallet.kt</url>
+          <line>1777</line>
+          <option name="timeStamp" value="693" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/Wallet.kt</url>
+          <line>1967</line>
+          <option name="timeStamp" value="694" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/Wallet.kt</url>
+          <line>1975</line>
+          <option name="timeStamp" value="695" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/useful.kt</url>
+          <line>88</line>
+          <option name="timeStamp" value="700" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/useful.kt</url>
+          <line>68</line>
+          <option name="timeStamp" value="701" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
           <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/NewAccount.kt</url>
-          <line>306</line>
-          <option name="timeStamp" value="650" />
+          <line>474</line>
+          <option name="timeStamp" value="704" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/NewAccount.kt</url>
-          <line>279</line>
-          <option name="timeStamp" value="651" />
+          <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/Wallet.kt</url>
+          <line>2122</line>
+          <option name="timeStamp" value="710" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/app/src/main/java/info/bitcoinunlimited/www/wally/NewAccount.kt</url>
-          <line>291</line>
-          <option name="timeStamp" value="654" />
+          <url>file://$PROJECT_DIR$/app/src/main/java/libbitcoincash/Wallet.kt</url>
+          <line>2448</line>
+          <option name="timeStamp" value="721" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
     <watches-manager>
       <configuration name="app-java">
-        <watch expression="host" language="kotlin" />
-        <watch expression="path" language="kotlin" />
-        <watch expression="attribs" language="kotlin" />
-        <watch expression="iuri.query" language="kotlin" />
-        <watch expression="coinsCreated" language="kotlin" />
-        <watch expression="reqs" language="kotlin" />
+        <watch expression="hdr.height" language="kotlin" />
+        <watch expression="fn" language="kotlin" />
       </configuration>
     </watches-manager>
   </component>
