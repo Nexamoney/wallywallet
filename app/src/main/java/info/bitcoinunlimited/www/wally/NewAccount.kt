@@ -248,9 +248,9 @@ class NewAccount : CommonActivity()
                 {
                     if (use.block_height != null)
                     {
-                        val headerBin = ec.getHeader(use.block_height)
+                        val headerBin = ec.getHeader(use.block_height!!)
                         val blkHeader = BlockHeader(BCHserialized(headerBin, SerializationType.HASH))
-                        return Pair(blkHeader.time, use.block_height)
+                        return Pair(blkHeader.time, use.block_height!!)
                     }
                 }
                 else
@@ -293,8 +293,8 @@ class NewAccount : CommonActivity()
                     if (use.block_height != null)
                     {
                         lastFoundIndex = index
-                        lastBlock = use.block_height
-                        if (startBlock == 0) startBlock = use.block_height
+                        lastBlock = use.block_height!!
+                        if (startBlock == 0) startBlock = use.block_height!!
                     }
                 }
                 else

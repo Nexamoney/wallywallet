@@ -113,9 +113,9 @@ fun ElectrumServerOn(chain: ChainSelector): IpPort
 {
     return when (chain)
     {
-        ChainSelector.BCHMAINNET -> IpPort("electrum.seed.bitcoinunlimited.net", DEFAULT_ELECTRUM_SERVER_PORT)
-        ChainSelector.BCHTESTNET -> IpPort("159.65.163.15", DEFAULT_ELECTRUM_SERVER_PORT)
-        ChainSelector.BCHREGTEST -> IpPort(SimulationHostIP, DEFAULT_ELECTRUM_SERVER_PORT)
+        ChainSelector.BCHMAINNET -> IpPort("electrum.seed.bitcoinunlimited.net", DEFAULT_TCP_ELECTRUM_PORT)
+        ChainSelector.BCHTESTNET -> IpPort("159.65.163.15", DEFAULT_TCP_ELECTRUM_PORT)
+        ChainSelector.BCHREGTEST -> IpPort(SimulationHostIP, DEFAULT_TCP_ELECTRUM_PORT)
         ChainSelector.NEXTCHAIN  -> IpPort("electrumserver.seed.nextchain.cash", 7229)
         ChainSelector.BCHNOLNET  -> throw BadCryptoException()
     }

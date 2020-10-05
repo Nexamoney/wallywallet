@@ -6,32 +6,14 @@ apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 28
-    ndkVersion "21.2.6472646"
     defaultConfig {
         applicationId "info.bitcoinunlimited.www.wally"
-        ndkVersion "21.2.6472646"
         minSdkVersion 26
         targetSdkVersion 29
         versionCode 103
         versionName "1.03"
         testApplicationId "bitcoinunlimited.wally"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        externalNativeBuild {
-            cmake {
-                cppFlags "-std=c++14"
-                // abiFilters 'x86_64', 'armeabi-v7a', 'arm64-v8a'
-                arguments "-DCMAKE_VERBOSE_MAKEFILE=ON"
-            }
-            ndkBuild {
-                arguments "V=1"
-            }
-        }
-
-        ndk {
-            // Specifies the ABI configurations of your native
-            // libraries Gradle should build and package with your APK.
-            abiFilters 'x86_64', 'armeabi-v7a', 'arm64-v8a', 'x86'
-        }
 
         kapt {
             arguments {
@@ -45,12 +27,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    externalNativeBuild {
-        cmake {
-            path "src/main/cpp/CMakeLists.txt"
-            version "3.10.2"
-        }
-    }
 
     kotlinOptions {  // Needed for potassium-nitrate database
         jvmTarget = '1.8'
@@ -60,7 +36,6 @@ android {
     lintOptions {
         abortOnError false
     }
-    ndkVersion = '21.0.6113669'
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -82,6 +57,7 @@ dependencies {
     def room_version = "2.2.5"
     def ax_test_version = '1.3.0'
 
+    implementation "info.bitcoinunlimited:libbitcoincash:0.2.1"
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.0'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.0'
     implementation 'androidx.wear:wear:1.0.0'
@@ -121,5 +97,4 @@ dependencies {
 
     // For test code that interfaces with a local bitcoind running json-rpc:
     androidTestImplementation 'wf.bitcoin:bitcoin-rpc-client:1.1.1'
-    // implementation project(':libbitcoincash')
 }

@@ -225,12 +225,6 @@ fun dbgAssertNotGuiThread()
 }
 // String translation and display
 
-class PlatformContext(val context: Context)
-{
-    val filesDir: File?
-    get() = context.filesDir
-}
-
 // Lookup strings in strings.xml
 fun i18n(id: Int):String
 {
