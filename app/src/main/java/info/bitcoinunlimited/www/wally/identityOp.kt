@@ -281,6 +281,8 @@ class IdentityOpActivity : CommonActivity()
                 val challenge = attribs["chal"]
                 val cookie = attribs["cookie"]
                 val op = attribs["op"]
+                val responseProtocol = attribs["proto"]
+                val protocol = responseProtocol ?: iuri.protocol  // Prefer the protocol requested by the other side, otherwise use the same protocol we got the request from
 
                 val portStr = if ((port > 0) && (port != 80) && (port != 443)) ":" + port.toString() else ""
                 val chalToSign = h + portStr + "_bchidentity_" + op + "_" + challenge
@@ -323,47 +325,63 @@ class IdentityOpActivity : CommonActivity()
 
                 if (op == "login")
                 {
-                    // TODO use https for addtl security
-                    val loginReq = "http://" + h + portStr + path + "?op=login&addr=" + address.toString() + "&sig=" + URLEncoder.encode(sigStr, "UTF-8") + "&cookie=" + URLEncoder.encode(
-                        cookie, "UTF-8")
+                    var loginReq = protocol + "://" + h + portStr + path
+                    loginReq += "?op=login&addr=" + address.toString() + "&sig=" + URLEncoder.encode(sigStr, "UTF-8") + "&cookie=" + URLEncoder.encode(cookie, "UTF-8")
 
-                    LogIt.info("login reply: " + loginReq)
-                    try
+                    var forwarded = 0;
+                    getloop@while (forwarded < 3)
                     {
-                        val req: HttpURLConnection = URL(loginReq).openConnection() as HttpURLConnection
-                        val resp = req.inputStream.bufferedReader().readText()
-                        LogIt.info("login response code:" + req.responseCode.toString() + " response: " + resp)
-                        if ((req.responseCode >= 200) and (req.responseCode < 250))
-                            displayNotice(resp, { clearIntentAndFinish() }, 1000)
-                        else
-                            displayError(resp, { clearIntentAndFinish() })
-                    }
-                    catch (e: IOException)
-                    {
-                        displayError(i18n(R.string.connectionAborted), { clearIntentAndFinish() })
-                    }
-                    catch (e: FileNotFoundException)
-                    {
-                        displayError(i18n(R.string.badLink), { clearIntentAndFinish() })
-                    }
-                    catch (e: java.net.ConnectException)
-                    {
-                        displayError(i18n(R.string.connectionException), { clearIntentAndFinish() })
+                        LogIt.info("login reply: " + loginReq)
+                        try
+                        {
+                            val req: HttpURLConnection = URL(loginReq).openConnection() as HttpURLConnection
+                            val resp = req.inputStream.bufferedReader().readText()
+                            LogIt.info("login response code:" + req.responseCode.toString() + " response: " + resp)
+                            if ((req.responseCode >= 200) and (req.responseCode < 250))
+                            {
+                                displayNotice(resp, { clearIntentAndFinish() }, 1000)
+                            }
+                            else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding (often switching from http to https)
+                            {
+                                loginReq = req.getHeaderField("Location")
+                                forwarded += 1
+                                continue@getloop
+                            }
+                            else
+                            {
+                                displayError(resp, { clearIntentAndFinish() })
+                            }
+                        }
+                        catch (e: IOException)
+                        {
+                            displayError(i18n(R.string.connectionAborted), { clearIntentAndFinish() })
+                        }
+                        catch (e: FileNotFoundException)
+                        {
+                            displayError(i18n(R.string.badLink), { clearIntentAndFinish() })
+                        }
+                        catch (e: java.net.ConnectException)
+                        {
+                            displayError(i18n(R.string.connectionException), { clearIntentAndFinish() })
+                        }
+
+                        break@getloop  // only way to actually loop is to hit a 301 or 302
                     }
                 }
                 else if (op == "reg")
                 {
-                    // TODO use https for addtl security
-                    val loginReq = "http://" + h + portStr + path
+                    var forwarded = 0
 
-                    val params = mutableMapOf<String,String>()
+                    var loginReq = protocol + "://" + h + portStr + path
+
+                    val params = mutableMapOf<String, String>()
                     params["op"] = "reg"
                     params["addr"] = address.toString()
                     params["sig"] = sigStr
                     params["cookie"] = cookie.toString()
 
                     // Supply additional requested data
-                    if (true)
+                    postloop@while (forwarded < 3)
                     {
                         val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
 
@@ -381,7 +399,7 @@ class IdentityOpActivity : CommonActivity()
                                     if (perms[i] == true) prefs.getString(i, null)?.let { params[i] = it }
                                     else
                                     {
-                                        if (req=="m")  // mandatory, so this login won't work
+                                        if (req == "m")  // mandatory, so this login won't work
                                         {
                                             displayError(i18n(R.string.connectionException))
                                             // Start DomainIdentitySettings dialog, instead of
@@ -391,57 +409,68 @@ class IdentityOpActivity : CommonActivity()
                                 }
                             }
                         }
-                    }
 
-                    val jsonBody = StringBuilder("{")
-                    var firstTime = true
-                    for ((k,value) in params)
-                    {
-                        if (!firstTime) jsonBody.append(',')
-                        else firstTime = false
-                        jsonBody.append('"')
-                        jsonBody.append(k)
-                        jsonBody.append("""":"""")
-                        jsonBody.append(value)
-                        jsonBody.append('"')
-                    }
-                    jsonBody.append('}')
+                        val jsonBody = StringBuilder("{")
+                        var firstTime = true
+                        for ((k, value) in params)
+                        {
+                            if (!firstTime) jsonBody.append(',')
+                            else firstTime = false
+                            jsonBody.append('"')
+                            jsonBody.append(k)
+                            jsonBody.append("""":"""")
+                            jsonBody.append(value)
+                            jsonBody.append('"')
+                        }
+                        jsonBody.append('}')
 
-                    LogIt.info("registration reply: " + loginReq)
-                    try
-                    {
-                        //val body = """[1,2,3]"""  // URLEncoder.encode("""[1,2,3]""","UTF-8")
-                        val req: HttpURLConnection = URL(loginReq).openConnection() as HttpURLConnection
-                        req.requestMethod = "POST"
-                        req.setRequestProperty("Content-Type", "application/json")
-                        //req.setRequestProperty("charset", "utf-8")
-                        req.setRequestProperty("Accept", "*/*")
-                        req.setRequestProperty("Content-Length", jsonBody.length.toString())
-                        req.doOutput = true
-                        req.useCaches = false
-                        val os = DataOutputStream(req.outputStream)
-                        //os.write(jsonBody.toByteArray())
-                        os.writeBytes(jsonBody.toString())
-                        os.flush()
-                        os.close()
-                        val resp = req.inputStream.bufferedReader().readText()
-                        LogIt.info("reg response code:" + req.responseCode.toString() + " response: " + resp)
-                        if ((req.responseCode >= 200) and (req.responseCode < 300))
-                            displayNotice(resp, { clearIntentAndFinish() }, 1000)
-                        else
-                            displayError(resp, { clearIntentAndFinish() })
-                    }
-                    catch (e: IOException)
-                    {
-                        displayError(i18n(R.string.connectionAborted), { clearIntentAndFinish() })
-                    }
-                    catch (e: FileNotFoundException)
-                    {
-                        displayError(i18n(R.string.badLink), { clearIntentAndFinish() })
-                    }
-                    catch (e: java.net.ConnectException)
-                    {
-                        displayError(i18n(R.string.connectionException), { clearIntentAndFinish() })
+                        LogIt.info("registration reply: " + loginReq)
+                        try
+                        {
+                            //val body = """[1,2,3]"""  // URLEncoder.encode("""[1,2,3]""","UTF-8")
+                            val req: HttpURLConnection = URL(loginReq).openConnection() as HttpURLConnection
+                            req.requestMethod = "POST"
+                            req.setRequestProperty("Content-Type", "application/json")
+                            //req.setRequestProperty("charset", "utf-8")
+                            req.setRequestProperty("Accept", "*/*")
+                            req.setRequestProperty("Content-Length", jsonBody.length.toString())
+                            req.doOutput = true
+                            req.useCaches = false
+                            val os = DataOutputStream(req.outputStream)
+                            //os.write(jsonBody.toByteArray())
+                            os.writeBytes(jsonBody.toString())
+                            os.flush()
+                            os.close()
+                            val resp = req.inputStream.bufferedReader().readText()
+                            LogIt.info("reg response code:" + req.responseCode.toString() + " response: " + resp)
+                            if ((req.responseCode >= 200) and (req.responseCode < 300))
+                            {
+                                displayNotice(resp, { clearIntentAndFinish() }, 1000)
+                            }
+                            else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding
+                            {
+                                loginReq = req.getHeaderField("Location")
+                                forwarded += 1
+                                continue@postloop
+                            }
+                            else
+                            {
+                                displayError(resp, { clearIntentAndFinish() })
+                            }
+                        }
+                        catch (e: IOException)
+                        {
+                            displayError(i18n(R.string.connectionAborted), { clearIntentAndFinish() })
+                        }
+                        catch (e: FileNotFoundException)
+                        {
+                            displayError(i18n(R.string.badLink), { clearIntentAndFinish() })
+                        }
+                        catch (e: java.net.ConnectException)
+                        {
+                            displayError(i18n(R.string.connectionException), { clearIntentAndFinish() })
+                        }
+                        break@postloop  // Only way to actually loop is to get a http 301 or 302
                     }
                 }
             }
