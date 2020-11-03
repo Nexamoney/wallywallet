@@ -367,7 +367,9 @@
     <string name="StoreMapAppPackage"></string>
     <string name="OpenWebsite" formatted="false">Access %siteName</string>
 
+    <!-- Trickle Pay -->
     <string name="AcceptTpRegistration">Accept Registration From:</string>
+    <string name="AcceptTpRegistrationTopic">Purpose:</string>
     <string name="TpMaxSpendHint">enter max auto-spend</string>
 
     <string name="TpMaxHeading">Autopay Limits</string>
@@ -379,4 +381,7 @@
     <string name="TpEnableAutopay">Enable autopay (if unchecked, all payments ask for user authorization)</string>
 
     <string name="asciiArrow"><![CDATA[=>]]></string>
+
+    <string name="TpRegDenied">Denied registration</string>
+    <string name="TpRegAccepted">Accepted registration</string>
 </resources>

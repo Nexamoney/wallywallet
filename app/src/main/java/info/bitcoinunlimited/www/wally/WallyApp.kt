@@ -620,13 +620,22 @@ class WallyApp : Application()
             // return the wallet named "mBCH"
             val prim = accounts[PRIMARY_WALLET]
             if (prim != null) return prim
+            LogIt.info("Num accounts: " + accounts.size)
+
             // return the first BCH wallet
             for (i in accounts.values)
             {
+                LogIt.info("looking for primary at wallet " + i.name + "blockchain: " + i.chain.name)
                 if (i.wallet.chainSelector == ChainSelector.BCHMAINNET) return i
             }
             throw PrimaryWalletInvalidException()
         }
+
+    /** Activity stacks don't quite work.  If task A uses an implicit intent launches a child wally activity, then finish() returns to A
+     * if wally wasn't previously running.  But if wally was currently running, it returns to wally's Main activity.
+     * Since the implicit activity wasn't launched for result, we can't return an indicator that wally main should finish().
+     * Whenever wally resumes, if finishParent > 0, it will immediately finish. */
+    var finishParent = 0
 
     /** lock all previously unlocked accounts */
     fun lockAccounts()

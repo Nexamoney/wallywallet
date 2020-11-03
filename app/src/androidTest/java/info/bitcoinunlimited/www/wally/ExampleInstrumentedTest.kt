@@ -338,6 +338,13 @@ class UnitTest
         check(sp.spentBlockHash == sp2.spentBlockHash)
         check(sp.spentUnconfirmed == sp2.spentUnconfirmed)
         check(sp.spendableUnconfirmed == sp2.spendableUnconfirmed)
+
+        val td = TdppDomain("domain", "topic", "addr", "currency", -1,2,3,4, "per", "day", "perweek", "permonth", false)
+
+        var ser3 = BCHserialized(td.BCHserialize(SerializationType.DISK).flatten(), SerializationType.DISK)
+        var tdc = TdppDomain(ser3)
+        check(td.equals(tdc))
+
     }
 
     @Test

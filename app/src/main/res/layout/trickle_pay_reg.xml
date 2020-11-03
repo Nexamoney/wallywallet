@@ -18,6 +18,18 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/GuiTopicHeading"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/AcceptTpRegistrationTopic"
+        android:textAlignment="center"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiTricklePayEntity" />
+
+    <TextView
         android:id="@+id/GuiTricklePayEntity"
         android:autoSizeMaxTextSize="32sp"
         android:autoSizeMinTextSize="16sp"
@@ -34,6 +46,22 @@
         app:layout_constraintTop_toBottomOf="@+id/GuiAcceptQ" />
 
     <TextView
+        android:id="@+id/GuiTricklePayTopic"
+        android:layout_width="0dp"
+        android:layout_height="32sp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:autoSizeMaxTextSize="32sp"
+        android:autoSizeMinTextSize="16sp"
+        android:autoSizeStepGranularity="1sp"
+        android:autoSizeTextType="uniform"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiTopicHeading" />
+
+    <TextView
         android:id="@+id/textView4"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -44,7 +72,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/checkBox" />
+        app:layout_constraintTop_toBottomOf="@+id/GuiEnableAutopay" />
 
     <TextView
         android:id="@+id/GuiAutoSpendLimitName0"
@@ -220,6 +248,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
+        android:onClick="onAcceptTpReg"
         android:text="@string/accept"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/DeleteButton"
@@ -231,6 +260,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
+        android:onClick="onDenyTpReg"
         android:text="@string/deny"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -238,14 +268,15 @@
         app:layout_constraintStart_toEndOf="@+id/GuiTpSave" />
 
     <CheckBox
-        android:id="@+id/checkBox"
+        android:id="@+id/GuiEnableAutopay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="8dp"
         android:text="@string/TpEnableAutopay"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GuiTricklePayEntity" />
+        app:layout_constraintTop_toBottomOf="@+id/GuiTricklePayTopic" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

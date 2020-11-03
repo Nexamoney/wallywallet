@@ -491,6 +491,19 @@ class MainActivity : CommonActivity()
         dbgAssertGuiThread()
         clearAccountUI()
         super.onResume()
+
+        // This code pops out of the main activity is the child requests it.  This is needed when an external intent directly
+        // spawns a child activity of wally's main activity, but upon completion of that child we want to drop back to the
+        // spawner not to wally's main screen
+        wallyApp?.let {
+            if (it.finishParent > 0)
+            {
+                it.finishParent = 0
+                finish()
+                return
+            }
+        }
+
         appContext = PlatformContext(applicationContext)
         val preferenceDB = getSharedPreferences(i18n(R.string.preferenceFileName), Context.MODE_PRIVATE)
         fiatCurrencyCode = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"

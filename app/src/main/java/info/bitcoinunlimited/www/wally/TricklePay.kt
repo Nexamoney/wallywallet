@@ -2,6 +2,7 @@
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
 
+import android.app.Activity
 import android.app.Application
 import android.content.Intent
 import android.net.Uri
@@ -27,16 +28,67 @@ import java.net.URL
 import java.util.logging.Logger
 
 val TDPP_URI_SCHEME = "tdpp"
+val TDPP_DEFAULT_UOA = "BCH"
 
 private val LogIt = Logger.getLogger("bu.TricklePay")
+
+/* Information about payment delegations that have been accepted by the user
+* To be stored/retrieved */
+data class TdppDomain(
+    @cli(Display.Simple, "Address of entity") var domain: String,
+    @cli(Display.Simple, "Topic") var topic: String,
+    @cli(Display.Simple, "Signing address") var addr: String,
+    @cli(Display.Simple, "Currency") var uoa: String,
+    // These are stored in the finest unit of the unit of account of the currency, i.e. Satoshis or cents.
+    // But OFC they should be displayed in a more reasonable unit
+    @cli(Display.Simple, "Maximum automatic payment") var maxper: Long,
+    @cli(Display.Simple, "Maximum automatic per day") var maxday: Long,
+    @cli(Display.Simple, "Maximum automatic per week") var maxweek: Long,
+    @cli(Display.Simple, "Maximum automatic per month") var maxmonth: Long,
+    var descper: String,
+    var descday: String,
+    var descweek: String,
+    var descmonth: String,
+    @cli(Display.Simple, "enable/disable all automatic payments to this entity") var automaticEnabled: Boolean
+) : BCHserializable()
+{
+    constructor(stream: BCHserialized) : this("", "", "", "", -1, -1, -1, -1, "", "", "", "", false)
+    {
+        BCHdeserialize(stream)
+    }
+
+    override fun BCHserialize(format: SerializationType): BCHserialized //!< Serializer
+    {
+        return BCHserialized(format) + domain + topic + addr + uoa + maxper + maxday + maxweek + maxmonth + descper + descday + descweek + descmonth + automaticEnabled
+    }
+
+    override fun BCHdeserialize(stream: BCHserialized): BCHserialized //!< Deserializer
+    {
+        domain = stream.deString()
+        topic = stream.deString()
+        addr = stream.deString()
+        uoa = stream.deString()
+        maxper = stream.deint64()
+        maxday = stream.deint64()
+        maxweek = stream.deint64()
+        maxmonth = stream.deint64()
+        descper = stream.deString()
+        descday = stream.deString()
+        descweek = stream.deString()
+        descmonth = stream.deString()
+        automaticEnabled = stream.deboolean()
+        return stream
+    }
+
+}
+
 
 class TricklePayEmptyFragment : Fragment()
 {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        val ret = View(appContext?.context)
-            // inflater.inflate(R.layout.welcomef1, container, false)
+        val ret = View(this.context)
         return ret
     }
 
@@ -47,7 +99,7 @@ class TricklePayEmptyFragment : Fragment()
 }
 
 
-
+/* Handle a trickle pay Registration */
 class TricklePayRegFragment : Fragment()
 {
     var uri: Uri? = null
@@ -72,7 +124,7 @@ class TricklePayRegFragment : Fragment()
         //}
     }
 
-    data class Data2Widgets(val amtParam:String, val descParam:String, val entry: EditText, val desc: TextView)
+    data class Data2Widgets(val amtParam: String, val descParam: String, val entry: EditText, val desc: TextView)
 
     fun populate(puri: Uri)
     {
@@ -82,18 +134,18 @@ class TricklePayRegFragment : Fragment()
 
     fun updateUI()
     {
-        val u:Uri = uri ?: return
+        val u: Uri = uri ?: return
 
         val topic = u.getQueryParameter("topic").let {
-            if (it==null) ""
+            if (it == null) ""
             else ":" + it
         }
         GuiTricklePayEntity.text = u.authority + topic
 
-        val d2w = listOf(Data2Widgets("maxper","descper", GuiAutospendLimitEntry0, GuiAutospendLimitDescription0),
-            Data2Widgets("maxday","descday", GuiAutospendLimitEntry1, GuiAutospendLimitDescription1),
-            Data2Widgets("maxweek","descweek", GuiAutospendLimitEntry2, GuiAutospendLimitDescription2),
-            Data2Widgets("maxmonth","descmonth", GuiAutospendLimitEntry3, GuiAutospendLimitDescription3)
+        val d2w = listOf(Data2Widgets("maxper", "descper", GuiAutospendLimitEntry0, GuiAutospendLimitDescription0),
+            Data2Widgets("maxday", "descday", GuiAutospendLimitEntry1, GuiAutospendLimitDescription1),
+            Data2Widgets("maxweek", "descweek", GuiAutospendLimitEntry2, GuiAutospendLimitDescription2),
+            Data2Widgets("maxmonth", "descmonth", GuiAutospendLimitEntry3, GuiAutospendLimitDescription3)
         )
 
         for (d in d2w)
@@ -115,7 +167,7 @@ class TricklePayRegFragment : Fragment()
     }
 }
 
-fun ConstructTricklePayRequest(entity: String, topic: String?, operation: String, signWith: PayDestination, uoa: String?, maxPer : ULong?, maxDay : ULong?, maxWeek : ULong?, maxMonth: ULong?): Uri
+fun ConstructTricklePayRequest(entity: String, topic: String?, operation: String, signWith: PayDestination, uoa: String?, maxPer: ULong?, maxDay: ULong?, maxWeek: ULong?, maxMonth: ULong?): Uri
 {
     val uri = Uri.Builder()
 
@@ -127,7 +179,7 @@ fun ConstructTricklePayRequest(entity: String, topic: String?, operation: String
     val address = signWith.address ?: throw IdentityException("Wallet failed to provide an identity with an address", "bad wallet", ErrorSeverity.Severe)
 
     // NOTE, append query parameters in sorted order so that the signature string is correct!
-    uri.appendQueryParameter("addr", address.toString() )
+    uri.appendQueryParameter("addr", address.toString())
     if (maxDay != null) uri.appendQueryParameter("maxday", maxDay.toString())
     if (maxMonth != null) uri.appendQueryParameter("maxmonth", maxMonth.toString())
     if (maxPer != null) uri.appendQueryParameter("maxper", maxPer.toString())
@@ -141,11 +193,11 @@ fun ConstructTricklePayRequest(entity: String, topic: String?, operation: String
     val sig = Wallet.signMessage(signThis.toByteArray(), secret)
     if (sig.size == 0) throw IdentityException("Wallet failed to provide a signable identity", "bad wallet", ErrorSeverity.Severe)
     val sigStr = Codec.encode64(sig)
-    uri.appendQueryParameter("sig",sigStr)
+    uri.appendQueryParameter("sig", sigStr)
     return uri.build()
 }
 
-fun VerifyTdppSignature(uri: Uri):Boolean?
+fun VerifyTdppSignature(uri: Uri): Boolean?
 {
     val addressStr = uri.getQueryParameter("addr")
     if (addressStr == null) return null
@@ -160,7 +212,7 @@ fun VerifyTdppSignature(uri: Uri):Boolean?
     val orderedParams = uri.queryParameterNames.toList().sorted()
     for (p in orderedParams)
     {
-        if (p=="sig") continue
+        if (p == "sig") continue
         suri.appendQueryParameter(p, uri.getQueryParameter(p))
     }
 
@@ -218,16 +270,59 @@ class TricklePayActivity : CommonActivity()
 {
     override var navActivityId = R.id.navigation_trickle_pay
 
+    var db: KvpDatabase? = null
+
+    var domains: MutableMap<String, TdppDomain> = mutableMapOf()
+
+    val SER_VERSION: Byte = 1.toByte()
+
+    /** The currency selected as the unit of account during registration/configuration */
+    var regCurrency: String = ""
+    var regAddress: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_trickle_pay)
+        if (wallyApp == null) wallyApp = (getApplication() as WallyApp)
+
+        if (db == null)
+        {
+            val ctxt = PlatformContext(applicationContext)
+            db = OpenKvpDB(ctxt, "wallyData")
+        }
+
+        load()
+    }
+
+    fun load()
+    {
+        notInUI {
+            db?.let {
+                val ser = it.get("tdppDomains")
+                if (ser.size != 0) // No data saved
+                {
+                    val bchser = BCHserialized(ser, SerializationType.DISK)
+                    val ver = bchser.debytes(1)[0]
+                    if (ver == SER_VERSION)
+                        domains = bchser.demap({ it.deString() }, { TdppDomain(it) })
+                }
+            }
+        }
+    }
+
+    fun save()
+    {
+        val ser = BCHserialized.uint8(SER_VERSION)
+        ser.add(BCHserialized.map(domains, { BCHserialized(SerializationType.DISK).add(it) }, { it.BCHserialize() }, SerializationType.DISK))
+        db?.let {
+            it.set("tdppDomains", ser.flatten())
+        }
     }
 
     override fun onResume()
     {
         super.onResume()
-        generateAndLogSomeTricklePayRequests(getApplication() as WallyApp)
         // Process the intent that caused this activity to resume
         if (intent.scheme != null)  // its null if normal app startup
         {
@@ -260,6 +355,11 @@ class TricklePayActivity : CommonActivity()
         {
             //var intent = Intent(this, TricklePayRegistrationActivity::class.java)
             //startActivityForResult(intent, TRICKLE_PAY_REG_OP_RESULT)
+
+            regAddress = address
+            // TODO allow currency UOA to be changed during registration
+            regCurrency = uri.getQueryParameter("uoa") ?: TDPP_DEFAULT_UOA
+
             (GuiTricklePayReg as TricklePayRegFragment).populate(uri)
         }
         else
@@ -316,4 +416,49 @@ class TricklePayActivity : CommonActivity()
         }
     }
 
+    fun clearIntentAndFinish(error: String? = null, notice: String? = null)
+    {
+        if (error != null) intent.putExtra("error", error)
+        if (error != null) intent.putExtra("notice", notice)
+        setResult(Activity.RESULT_OK, intent)
+        finish()
+    }
+
+    // Move the Ux data into the map
+    fun RegUxToMap()
+    {
+        val domain = TdppDomain(GuiTricklePayEntity.toString(), GuiTricklePayTopic.toString(), regCurrency, regAddress,
+            GuiAutospendLimitEntry0.text.toString().toLong(), GuiAutospendLimitEntry1.text.toString().toLong(),
+            GuiAutospendLimitEntry2.text.toString().toLong(), GuiAutospendLimitEntry3.text.toString().toLong(),
+            GuiAutospendLimitDescription0.toString(),
+            GuiAutospendLimitDescription1.toString(),
+            GuiAutospendLimitDescription2.toString(),
+            GuiAutospendLimitDescription3.toString(),
+            GuiEnableAutopay.isChecked)
+    }
+
+    // Trickle pay registration handlers
+    fun onAcceptTpReg(view: View?)
+    {
+        LogIt.info("accept trickle pay registration")
+        displayFragment(GuiTricklePayMain)
+        wallyApp?.let {
+            it.finishParent += 1
+        }
+        RegUxToMap()
+        later {
+            save()  // can't save in UI thread
+            clearIntentAndFinish(notice = i18n(R.string.TpRegAccepted))
+        }
+    }
+
+    fun onDenyTpReg(view: View?)
+    {
+        LogIt.info("deny trickle pay registration")
+        displayFragment(GuiTricklePayMain)
+        wallyApp?.let {
+            it.finishParent += 1
+        }
+        clearIntentAndFinish(notice = i18n(R.string.TpRegDenied))
+    }
 }
