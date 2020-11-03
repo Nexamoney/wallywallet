@@ -11,6 +11,7 @@ import android.net.wifi.WifiManager
 import android.view.View
 import android.widget.TextView
 import bitcoinunlimited.libbitcoincash.*
+import bitcoinunlimited.libbitcoincash.appI18n
 import java.lang.Exception
 import java.lang.IllegalStateException
 import java.math.BigDecimal
@@ -574,6 +575,25 @@ class Account(
     }
 }
 
+val i18nLbc = mapOf(RinsufficentBalance to R.string.insufficentBalance,
+RbadWalletImplementation to R.string.badWalletImplementation,
+RdataMissing to R.string.dataMissing,
+RwalletAndAddressIncompatible to R.string.chainIncompatibleWithAddress,
+RnotSupported to  R.string.notSupported,
+Rexpired to R.string.expired,
+RsendMoreThanBalance to  R.string.sendMoreThanBalance,
+RbadAddress to  R.string.badAddress,
+RblankAddress to  R.string.blankAddress,
+RblockNotForthcoming to R.string.blockNotForthcoming,
+RheadersNotForthcoming to  R.string.headersNotForthcoming,
+RbadTransaction to  R.string.badTransaction,
+RfeeExceedsFlatMax to  R.string.feeExceedsFlatMax,
+RexcessiveFee to   R.string.excessiveFee,
+Rbip70NoAmount to R.string.badAmount,
+RdeductedFeeLargerThanSendAmount to   R.string.deductedFeeLargerThanSendAmount,
+RwalletDisconnectedFromBlockchain to  R.string.walletDisconnectedFromBlockchain,
+RsendDust to  R.string.sendDustError,
+RnoNodes to R.string.NoNodes)
 
 class WallyApp : Application()
 {
@@ -586,6 +606,7 @@ class WallyApp : Application()
         {
             //System.loadLibrary("native-lib")
             System.loadLibrary("bitcoincashandroid")
+            appI18n = { libErr:Int -> i18n(i18nLbc[libErr] ?: libErr)}
         }
     }
 

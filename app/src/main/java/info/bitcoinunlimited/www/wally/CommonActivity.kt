@@ -12,14 +12,14 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import bitcoinunlimited.libbitcoincash.BUException
+import bitcoinunlimited.libbitcoincash.*
 import bitcoinunlimited.libbitcoincash.ErrorSeverity
-import bitcoinunlimited.libbitcoincash.i18n
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.*
 import java.lang.Exception
 import java.util.logging.Logger
 import android.app.Activity
+import android.content.res.Resources
 import android.view.Menu
 import android.view.inputmethod.InputMethodManager
 import bitcoinunlimited.libbitcoincash.handleThreadException
@@ -29,6 +29,26 @@ import kotlin.coroutines.CoroutineContext
 private val LogIt = Logger.getLogger("bitcoinunlimited.commonActivity")
 
 var currentActivity: CommonActivity? = null
+public var appResources: Resources? = null
+// TODO translate libbitcoincash error codes to our i18n strings
+val lbcMap = mapOf<Int,Int>(RinsufficentBalance to R.string.insufficentBalance)
+
+// Lookup strings in strings.xml
+fun i18n(id: Int):String
+{
+    if (id == -1) return ""
+    try
+    {
+        val s = appResources?.getString(id)
+        if (s != null) return s
+    }
+    catch(e: Resources.NotFoundException)
+    {}
+
+    LogIt.severe("Missing strings.xml translation for " + id.toString() + "(0x" + id.toString(16));
+    return "STR" + id.toString()
+}
+
 
 @SuppressLint("Registered")
 open class CommonActivity : AppCompatActivity()

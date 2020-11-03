@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import bitcoinunlimited.libbitcoincash.i18n
 import kotlinx.android.synthetic.main.welcomef3.*
 
 var wallyApp: WallyApp? = null

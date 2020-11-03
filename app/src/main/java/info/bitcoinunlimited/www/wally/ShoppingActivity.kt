@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import bitcoinunlimited.libbitcoincash.Hash256
 import bitcoinunlimited.libbitcoincash.PaymentHistory
-import bitcoinunlimited.libbitcoincash.i18n
 import kotlinx.android.synthetic.main.activity_shopping.*
 import kotlinx.android.synthetic.main.shopping_list_item.view.*
 import java.lang.Exception

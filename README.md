@@ -1,4 +1,4 @@
-# Wally Wallet Bitcoin Cash Android Wallet
+do# Wally Wallet Bitcoin Cash Android Wallet
 
 This is a non-custodial SPV wallet that gathers its information from "normal" Bitcoin Cash nodes via the Bitcoin P2P and ElectrumX protocols.
 

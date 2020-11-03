@@ -21,9 +21,9 @@ allprojects {
     repositories {
         google()
         jcenter()
-        maven {
-            url 'https://nerdekollektivet.gitlab.io/libbitcoincashkotlin/repos/'
-        }
+        // maven {
+        // url 'https://nerdekollektivet.gitlab.io/libbitcoincashkotlin/repos/'
+        // }
 
     }
 }
