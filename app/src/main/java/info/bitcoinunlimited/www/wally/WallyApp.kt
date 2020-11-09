@@ -542,11 +542,9 @@ class Account(
 
             val cnxnLst = wallet.chainstate?.chain?.net?.mapConnections() { it.name }
             val peers = cnxnLst?.joinToString(", ")
-            infoGUI(force,
-                {
-                    i18n(R.string.at) + " " + (wallet.chainstate?.syncedHash?.toHex()?.takeLast(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight ?: "") + " " + i18n(R.string.of) + " " + (wallet.chainstate?.chain?.curHeight
-                        ?: "") + " blocks, " + (wallet.chainstate?.chain?.net?.numPeers() ?: "") + " peers\n" + peers
-                })
+            val infoStr = i18n(R.string.at) + " " + (wallet.chainstate?.syncedHash?.toHex()?.takeLast(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight ?: "") + " " + i18n(R.string.of) + " " + (wallet.chainstate?.chain?.curHeight
+                ?: "") + " blocks, " + (wallet.chainstate?.chain?.net?.numPeers() ?: "") + " peers\n" + peers
+            infoGUI(force, { infoStr })  // since numPeers takes cnxnLock
 
             tickerGUI(name, force)
         }
