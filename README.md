@@ -5,7 +5,7 @@ This is a non-custodial SPV wallet that gathers its information from "normal" Bi
 
 ## Cloning
 
-Use `git clone https://gitlab.com/wallywallet/android.git --recursive` or `git clone git@gitlab.com:wallywallet/android.git --recursive` to clone this repository and its submodules.
+Use `git clone https://gitlab.com/wallywallet/android.git` or `git clone git@gitlab.com:wallywallet/android.git` to clone this repository.
 
 ## Building
 
@@ -39,48 +39,23 @@ sudo chown $USER /dev/kvm
 
 #### Bitcoin Cash Kotlin Library
 
-This project has a submodule "android/app/src/main/java/libbitcoincash" which must be the libbitcoincashkotlin project which is another project under the "WallyWallet" group.
+This software uses the "libbitcoincash" library produced by Bitcoin Unlimited, via the libbitcoincashkotlin project.  This project is located under the "WallyWallet" group, as a sibling to this project.
 
-If you did not clone this repo using the --recursive flag, you can check out this submodule by running:
-
-```bash
-git submodule update --init --recursive
-```
-#### Bitcoin Unlimited
-
-This software uses the "libbitcoincash" library produced by Bitcoin Unlimited, via the libbitcoincashkotlin proejct.  This requires that libbitcoincash be built by Android Studio for Android.  To accomplish this check out Bitcoin Unlimited in a separate directory.  Let us imagine that you check BU out in the directory named "BUDIR":
-
-```bash
-git clone git@github.com:BitcoinUnlimited/BitcoinUnlimited.git BUDIR
-```
-
-Next prepare BU for the libbitcoincash compilation:
-
-```bash
-cd BUDIR
-./autogen.sh
-```
-
-**Note, do NOT run ./configure.sh**. If you want to do a separate (non-Android) build, then do an out-of-source-tree build.  It is necessary for the Android build to pick up the _libsecp256k1-config.h_ file located in src/cashlib.  If you have run ./configure.sh, the Android build will pick up the _libsecp256k1-config.h_ file created during configure (which will result in a configuration optimized for your host machine), rather than a configuration compatible with Android devices.
-
-Next, tell this project where libbitcoincash is located.  Load the file .../android/app/src/main/cpp/CMakeLists.txt into an editor and change the cashlib_src_DIR variable:
+If you cloned this repository, this project's app/build.gradle file most likely points to a locally built libbitcoincash library:
 
 ```
-set( cashlib_src_DIR /fast/bitcoin/budev/src/cashlib )
+implementation files('aars/libbitcoincash-debug.aar')  // locate this directory at: <repo_home>/app/aars/
 ```
-to:
+To actually use this locally built version, you need to clone libbitcoincashkotlin, build it, and copy (or symlink) the resulting aar file to "src/aars/".
+
+If you do not plan to modify the libbitcoincash library, you can use the released version by commenting out the above line and uncommenting the line that is similar to:
 ```
-set( cashlib_src_DIR BUDIR/src/cashlib )
+//implementation "info.bitcoinunlimited:libbitcoincash:0.2.1"
 ```
 
-#### Boost
+##### Bitcoin Unlimited
 
-The Android build expects that the boost source code is located in src/cashlib/boost.
-
-BitcoinUnlimited comes with a script to download and compile boost for Android.  Execute buildBoostAndroid.sh in the src/cashlib directory and create a symbolic link from the specific boost versioned directory (created by buildBoostAndroid.sh) to the name "boost" i.e:
-```bash
-ln -s boost_1_70_0 boost
-```
+Libbitcoincashkotlin uses the libbitcoincash shared library that is build as part of the BCH Unlimited full node project.  That project in turn required C++ boost header files.  Your build of libbitcoincashkotlin should have automatically cloned BCH Unlimited and boost underneath libbitcoincashkotlin.  For more information about troubleshooting the process or about setting up a full stack (from libbitcoincash to the wallet) development environment see the libbitcoincashkotlin project.
 
 ### Run a Build
 
