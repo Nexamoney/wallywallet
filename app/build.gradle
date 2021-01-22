@@ -60,7 +60,7 @@ dependencies {
 
     // implementation fileTree(dir: 'aars', include: ['*.aar'])
     // implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation files('aars/libbitcoincash-release.aar')  // locate this directory at: <repo_home>/app/aars/
+    implementation files('aars/libbitcoincash-debug.aar')  // locate this directory at: <repo_home>/app/aars/
     //implementation files('aars/libbitcoincash-debug.aar')  // locate this directory at: <repo_home>/app/aars/
     //implementation "info.bitcoinunlimited:libbitcoincash:0.2.1"
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.0'

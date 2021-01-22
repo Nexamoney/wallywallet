@@ -27,6 +27,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
+import java.math.MathContext
+import java.math.RoundingMode
 import java.net.URL
 import java.util.logging.Logger
 import kotlin.concurrent.thread
@@ -949,6 +951,12 @@ class MainActivity : CommonActivity()
             {
                 throw BadAmountException(R.string.detailsOfBadAmountFromIntent)
             }
+            catch (e: ArithmeticException)  // Rounding error
+            {
+                // If someone is asking for sub-satoshi quantities, round up and overpay them
+                LogIt.warning("Sub-satoshi quantity ${stramt} requested.  Rounding up")
+                stramt.toBigDecimal().setScale(bchDecimals, RoundingMode.UP)
+            }
             amt *= uriToMbch  // convert from bch to mBch
         }
 
@@ -956,7 +964,24 @@ class MainActivity : CommonActivity()
             // TODO label and message
             try
             {
-                updateSendAddress(PayAddress(sta))
+                if (isCashAddrScheme(scheme))  // Handle cashaddr upper/lowercase stuff
+                {
+                    val lc = sta.toLowerCase()
+                    val uc = sta.toUpperCase()
+                    if (uc.contentEquals(sta) || lc.contentEquals(sta))  // Its all uppercase or all uppercase
+                    {
+                        updateSendAddress(PayAddress(lc))
+                    }
+                    else  // Mixed upper/lower case not allowed
+                    {
+                        displayError(R.string.badAddress)
+                        return@laterUI
+                    }
+                }
+                else
+                {
+                    updateSendAddress(PayAddress(sta))
+                }
             }
             catch (e: UnknownBlockchainException)
             {
@@ -1066,6 +1091,11 @@ class MainActivity : CommonActivity()
                 approximatelyText.text = i18n(R.string.invalidQuantity)
                 return false
             }
+        }
+        catch (e: ArithmeticException)
+        {
+            approximatelyText.text = i18n(R.string.invalidQuantityTooManyDecimalDigits)
+            return false
         }
 
         if (currencyType == fiatCurrencyCode)
@@ -1435,7 +1465,7 @@ class MainActivity : CommonActivity()
         var deductFeeFromAmount = false
         var amount = try
         {
-            amtstr.toBigDecimal(currencyMath).setScale(currencyScale)
+            amtstr.toBigDecimal(currencyMath).setScale(mBchDecimals)
         }
         catch (e: NumberFormatException)
         {
@@ -1449,6 +1479,15 @@ class MainActivity : CommonActivity()
                 displayError(R.string.badAmount)
                 return false
             }
+        }
+        catch (e: ArithmeticException)  // Rounding error
+        {
+            // If someone is asking to send sub-satoshi quantities, round up and ask them to click send again.
+            sendQuantity.text.clear()
+            sendQuantity.text.append(amtstr.toBigDecimal().setScale(mBchDecimals, RoundingMode.UP).toString())
+            displayError(R.string.badAmount)
+            approximatelyText.text = i18n(R.string.roundedUpClickSendAgain)
+            return false
         }
 
         // Make sure the address is consistent with the selected coin to send

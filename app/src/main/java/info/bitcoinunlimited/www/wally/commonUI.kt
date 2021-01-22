@@ -36,6 +36,10 @@ val IDENTITY_SETTINGS_RESULT = 27721
 
 private val LogIt = Logger.getLogger("bitcoinunlimited.commonUI")
 
+fun isCashAddrScheme(s: String): Boolean
+{
+    return (s=="BITCOINCASH") || (s=="bitcoincash") || (s=="bchtest") || (s=="BCHTEST") || (s=="bchreg") || (s=="BCHREG") || (s=="XNEX") || (s=="xnex")
+}
 
 /** Do whatever you pass within the user interface context, synchronously */
 fun <RET> doUI(fn: suspend () -> RET): RET
