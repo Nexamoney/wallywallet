@@ -3,11 +3,8 @@
 package info.bitcoinunlimited.www.wally
 
 import android.app.Activity
-import android.app.Application
 import android.content.Intent
 import android.net.Uri
-import android.net.Uri.fromParts
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,21 +13,46 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
+import androidx.annotation.Keep
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import bitcoinunlimited.libbitcoincash.*
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import bitcoinunlimited.libbitcoincash.rem
+import io.ktor.client.*
+import io.ktor.client.engine.android.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.features.*
+import io.ktor.client.features.json.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlinx.android.synthetic.main.activity_trickle_pay.*
+import kotlinx.android.synthetic.main.trickle_pay_custom_tx.*
 import kotlinx.android.synthetic.main.trickle_pay_reg.*
+import kotlinx.android.synthetic.main.trickle_pay_reg.GuiCustomTxCost
+import kotlinx.android.synthetic.main.trickle_pay_reg.GuiTricklePayEntity
 import java.lang.Exception
-import java.net.URI
+import java.net.SocketTimeoutException
 import java.net.URL
 import java.util.logging.Logger
 
 val TDPP_URI_SCHEME = "tdpp"
 val TDPP_DEFAULT_UOA = "BCH"
+val TDPP_DEFAULT_PROTOCOL = "http:"
 
 private val LogIt = Logger.getLogger("bu.TricklePay")
+
+// Must be top level for the serializer to handle it
+@Keep
+@kotlinx.serialization.Serializable
+data class TricklePayAssetInfo(val script: String, val txid: String, val idx: Int)
+
+@Keep
+@kotlinx.serialization.Serializable
+data class TricklePayAssetList(val assets: List<TricklePayAssetInfo>)
+
+// Structured data type to make it cleaner to return tx analysis data from the analysis function.
+// otherInputSatoshis: BCH being brought into this transaction by other participants
+data class TxAnalysisResults(val receivingSats: Long, val sendingSats: Long, val receivingTokenTypes: Long, val sendingTokenTypes: Long, val otherInputSatoshis: Long, val myInputSatoshis: Long, val ttInfo: Map<GroupId, Long>)
 
 /* Information about payment delegations that have been accepted by the user
 * To be stored/retrieved */
@@ -167,6 +189,162 @@ class TricklePayRegFragment : Fragment()
     }
 }
 
+/* Handle a trickle pay Registration */
+class TricklePayCustomTxFragment : Fragment()
+{
+    var uri: Uri? = null
+    var tx: BCHtransaction? = null
+    var analysis: TxAnalysisResults? = null
+    var tpActivity: TricklePayActivity? = null
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+    {
+        val ret = inflater.inflate(R.layout.trickle_pay_custom_tx, container, false)
+        return ret
+    }
+
+    override fun onResume()
+    {
+        updateUI()
+        super.onResume()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
+    {
+        super.onViewCreated(view, savedInstanceState)
+    }
+
+    fun populate(pactivity: TricklePayActivity, puri: Uri, ptx: BCHtransaction, panalysis: TxAnalysisResults)
+    {
+        uri = puri
+        tx = ptx
+        analysis = panalysis
+        tpActivity = pactivity
+        updateUI()
+    }
+
+    fun updateUI()
+    {
+        val u: Uri = uri ?: return
+
+        val chain = u.getQueryParameter("chain").let {
+            if (it == null) ""
+            // raise error, chain param is mandatory
+        }
+
+        val topic = u.getQueryParameter("topic").let {
+            if (it == null) ""
+            else ":" + it
+        }
+        GuiTricklePayEntity.text = u.authority + topic
+
+        val acc = tpActivity!!.getRelevantAccount()
+
+        val a = analysis
+        if (a != null)
+        {
+            // what's being paid to me - what I'm contributing.  So if I pay out then its a negative number
+            val netSats = a.receivingSats - a.myInputSatoshis
+
+            if (netSats > 0)
+            {
+                GuiCustomTxCost.text = (i18n(R.string.receiving) + " " + acc.cryptoFormat.format(acc.fromFinestUnit(netSats)) + " " + acc.currencyCode)
+            }
+            else if (netSats < 0)
+            {
+                val txt = i18n(R.string.sending) + " " + acc.cryptoFormat.format(acc.fromFinestUnit(-netSats)) + " " + acc.currencyCode
+                LogIt.info(txt)
+                GuiCustomTxCost.text = txt
+            }
+            else
+            {
+                GuiCustomTxCost.text = i18n(R.string.nothing)
+            }
+
+            val fee = (a.myInputSatoshis + a.otherInputSatoshis) - (a.receivingSats + a.sendingSats)
+            GuiCustomTxFee.text = (i18n(R.string.ForAFeeOf) % mapOf("fee" to acc.cryptoFormat.format(acc.fromFinestUnit(fee)), "units" to acc.currencyCode))
+
+            if (a.receivingTokenTypes > 0)
+            {
+                if (a.sendingTokenTypes > 0)
+                {
+                    // This is not strictly true.  The counterparty could hand you a transaction that both supplies a token and spends that token to themselves...
+                    GuiCustomTxTokenSummary.text = i18n(R.string.TpExchangingTokens)
+                }
+                else
+                {
+                    GuiCustomTxTokenSummary.text = i18n(R.string.TpReceivingTokens)
+                }
+            }
+            else
+            {
+                if (a.sendingTokenTypes > 0)
+                {
+                    GuiCustomTxTokenSummary.text = i18n(R.string.TpSendingTokens)
+                }
+            }
+
+        }
+    }
+}
+
+/* Handle a trickle pay Registration */
+class TricklePayAssetRequestFragment : Fragment()
+{
+    var uri: Uri? = null
+    var tpActivity: TricklePayActivity? = null
+    var assets: List<TricklePayAssetInfo>? = null
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+    {
+        val ret = inflater.inflate(R.layout.trickle_pay_asset_request, container, false)
+        return ret
+    }
+
+    override fun onResume()
+    {
+        updateUI()
+        super.onResume()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
+    {
+        super.onViewCreated(view, savedInstanceState)
+    }
+
+    fun selectedAssets(): TricklePayAssetList
+    {
+        return TricklePayAssetList(assets!!)
+    }
+
+    fun populate(pactivity: TricklePayActivity, puri: Uri, passets: List<TricklePayAssetInfo>)
+    {
+        uri = puri
+        tpActivity = pactivity
+        assets = passets
+        updateUI()
+    }
+
+    fun updateUI()
+    {
+        val u: Uri = uri ?: return
+
+        val chain = u.getQueryParameter("chain").let {
+            if (it == null) ""
+            // raise error, chain param is mandatory
+        }
+
+        val topic = u.getQueryParameter("topic").let {
+            if (it == null) ""
+            else ":" + it
+        }
+        GuiTricklePayEntity.text = u.authority + topic
+
+        val acc = tpActivity!!.getRelevantAccount()
+    }
+}
+
+
 fun ConstructTricklePayRequest(entity: String, topic: String?, operation: String, signWith: PayDestination, uoa: String?, maxPer: ULong?, maxDay: ULong?, maxWeek: ULong?, maxMonth: ULong?): Uri
 {
     val uri = Uri.Builder()
@@ -280,6 +458,18 @@ class TricklePayActivity : CommonActivity()
     var regCurrency: String = ""
     var regAddress: String = ""
 
+    var proposedTx: BCHtransaction? = null
+    var proposalUri: Uri? = null
+    var proposalCookie: String? = null
+    var host: String? = null
+    var port: Int = 80
+    var topic: String? = null
+    var sig: String? = null
+    var cookie: String? = null
+    var rproto: String? = null
+    var rpath: String? = null
+    var chainSelector: ChainSelector? = null
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -299,13 +489,20 @@ class TricklePayActivity : CommonActivity()
     {
         notInUI {
             db?.let {
-                val ser = it.get("tdppDomains")
-                if (ser.size != 0) // No data saved
+                try
                 {
-                    val bchser = BCHserialized(ser, SerializationType.DISK)
-                    val ver = bchser.debytes(1)[0]
-                    if (ver == SER_VERSION)
-                        domains = bchser.demap({ it.deString() }, { TdppDomain(it) })
+                    val ser = it.get("tdppDomains")
+                    if (ser.size != 0) // No data saved
+                    {
+                        val bchser = BCHserialized(ser, SerializationType.DISK)
+                        val ver = bchser.debytes(1)[0]
+                        if (ver == SER_VERSION)
+                            domains = bchser.demap({ it.deString() }, { TdppDomain(it) })
+                    }
+                }
+                catch (e: DataMissingException)
+                {
+                    LogIt.info("benign: no TDPP domains registered yet")
                 }
             }
         }
@@ -318,6 +515,26 @@ class TricklePayActivity : CommonActivity()
         db?.let {
             it.set("tdppDomains", ser.flatten())
         }
+    }
+
+    fun getRelevantWallet(): Wallet = getRelevantAccount().wallet
+
+
+    fun getRelevantAccount(): Account
+    {
+        // Get a handle on the relevant wallets
+        val walChoices = wallyApp!!.accountsFor(chainSelector!!)
+
+        if (walChoices.size == 0)
+        {
+            throw WalletInvalidException()
+        }
+
+        // TODO associate an account with a trickle pay
+        // For now, grab the first sorted
+        val walSorted = walChoices.toList().sortedBy { it.name }
+        val wal = walSorted[0]
+        return wal
     }
 
     override fun onResume()
@@ -333,18 +550,172 @@ class TricklePayActivity : CommonActivity()
 
     fun displayFragment(frag: Fragment)
     {
-        val fragments = listOf(GuiTricklePayMain, GuiTricklePayReg)
+        val fragments = listOf(GuiTricklePayMain, GuiTricklePayReg, GuiTricklePayAssetRequest, GuiTricklePayCustomTx, GuiTricklePayEmpty)
 
+        var showedSomething = false
         for (f in fragments)
         {
-            if (f == frag) f.view?.visibility = VISIBLE
-            else f.view?.visibility = GONE
+            val v = f.view
+            if (v == null)
+            {
+                LogIt.warning("NO VIEWS!!!")
+            }
+            else
+            {
+                if (f == frag)
+                {
+                    v.visibility = VISIBLE
+                    showedSomething = true
+                }
+                else v.visibility = GONE
+            }
         }
+        if (!showedSomething)
+        {
+            LogIt.warning("Desired fragment is not in display list")
+        }
+    }
+
+    fun analyzeCompleteAndSignTx(tx: BCHtransaction, inputSatoshis: Long): TxAnalysisResults
+    {
+        val wal = getRelevantWallet()
+
+        // Find out info about the outputs
+        var outputSatoshis: Long = 0
+        var receivingSats: Long = 0
+        var sendingSats: Long = 0
+        var receivingTokenTypes: Long = 0
+        var sendingTokenTypes: Long = 0
+        var iFunded: Long = 0
+        var ttInfo = mutableMapOf<GroupId, Long>()
+        // Someday the wallet might want to fund groups, etc but for now all it does is pay for txes because the wallet UX can only show that
+        wal.txCompleter(tx, 0, TxCompletionFlags.FUND_NATIVE or TxCompletionFlags.SIGN or TxCompletionFlags.BIND_OUTPUT_PARAMETERS, inputSatoshis)
+
+        // LogIt.info("Completed tx: " + tx.toHex())
+
+        for (inp in tx.inputs)
+        {
+            val address = inp.spendable.addr
+            if ((address != null) && (wal.isWalletAddress(address)))
+            {
+                assert(inp.spendable.amount != -1L)  // Its -1 if I don't know the amount (in which case it ought to NOT be one of my inputs so should never happen)
+                iFunded += inp.spendable.amount
+
+                val iSuppliedTokens = inp.spendable.priorOutScript.groupInfo(inp.spendable.amount)
+                if (iSuppliedTokens != null)
+                {
+                    // TODO track tokens that I provided.
+                }
+            }
+        }
+
+        for (out in tx.outputs)
+        {
+            outputSatoshis += out.amount
+            val address: PayAddress? = out.script.address
+            val groupInfo: GroupInfo? = out.script.groupInfo(out.amount)
+
+            if (address != null && wal.isWalletAddress(address))
+            {
+                receivingSats += out.amount
+                if ((groupInfo != null)&&(!groupInfo.isAuthority()))
+                {
+                    receivingTokenTypes++
+                    ttInfo[groupInfo.groupId] = (ttInfo[groupInfo.groupId] ?: 0) + groupInfo.tokenAmt
+                }
+            }
+            else
+            {
+                sendingSats += out.amount
+                if ((groupInfo != null)&&(!groupInfo.isAuthority()))
+                {
+                    sendingTokenTypes++
+                    ttInfo[groupInfo.groupId] = (ttInfo[groupInfo.groupId] ?: 0) + groupInfo.tokenAmt
+                }
+            }
+        }
+
+        return TxAnalysisResults(receivingSats, sendingSats, receivingTokenTypes, sendingTokenTypes, inputSatoshis, iFunded, ttInfo)
+    }
+
+    fun parseCommonFields(uri: Uri)
+    {
+        proposalUri = uri
+        host = uri.getHost()
+        port = uri.port
+        topic = uri.getQueryParameter("topic")
+        cookie = uri.getQueryParameter("cookie")
+
+        val chain = uri.getQueryParameter("chain")
+        chainSelector = uriToChain[chain]
+        if (chainSelector == null)
+        {
+            return displayError(R.string.badCryptoCode)
+        }
+
+    }
+
+    fun handleTxAutopay(uri: Uri)
+    {
+        proposalUri = uri
+
+        val txHex = uri.getQueryParameter("tx")
+        if (txHex == null)
+        {
+            return displayError(R.string.BadLink)
+        }
+
+        parseCommonFields(uri)
+
+        val inputSatoshis = uri.getQueryParameter("inamt")?.toLongOrNull() ?: return displayError(R.string.BadLink)
+
+        val tx = BCHtransaction(chainSelector!!, BCHserialized(txHex.fromHex(), SerializationType.NETWORK))
+        LogIt.info(sourceLoc() + ": Tx to autopay: " + tx.toHex())
+
+        // Analyze and sign transaction
+        val analysis = analyzeCompleteAndSignTx(tx, inputSatoshis)
+        LogIt.info(sourceLoc() + ": Completed tx: " + tx.toHex())
+
+        (GuiTricklePayCustomTx as TricklePayCustomTxFragment).populate(this, uri, tx, analysis)
+        displayFragment(GuiTricklePayCustomTx)
+
+        proposedTx = tx
+    }
+
+    fun handleAssetRequest(uri: Uri)
+    {
+        parseCommonFields(uri)
+
+        val scriptTemplateHex = uri.getQueryParameter("af")
+        if (scriptTemplateHex == null)
+        {
+            return displayError(R.string.BadLink)
+        }
+
+        val stemplate = BCHscript(chainSelector!!, scriptTemplateHex.fromHex())
+        LogIt.info(sourceLoc() + ": Asset filter: " + stemplate.toHex())
+
+        val wal = getRelevantWallet() as CommonWallet
+
+        var matches = mutableListOf<TricklePayAssetInfo>()
+        for ((outpoint, spendable) in wal.unspent)
+        {
+            val constraint = spendable.priorOutScript
+            if (constraint.matches(stemplate, true) != null)
+            {
+                matches.add(TricklePayAssetInfo(constraint.flatten().toHex(), outpoint.txid.hash.toHex(), outpoint.idx.toInt()))
+            }
+        }
+        val resp = TricklePayAssetList(matches)
+        (GuiTricklePayAssetRequest as TricklePayAssetRequestFragment).populate(this, uri, resp.assets)
+
+        // TODO, ask for confirmation
+        displayFragment(GuiTricklePayAssetRequest)
     }
 
     fun handleRegistration(uri: Uri)
     {
-        val host = uri.getHost()
+        parseCommonFields(uri)
         val address = uri.getQueryParameter("addr")
         if (address == null)
         {
@@ -376,7 +747,6 @@ class TricklePayActivity : CommonActivity()
     fun handleNewIntent(receivedIntent: Intent)
     {
         val iuri: Uri = receivedIntent.toUri(0).toUri()  // URI_ANDROID_APP_SCHEME | URI_INTENT_SCHEME
-        LogIt.info("Identity new Intent: " + iuri)
         try
         {
             if (receivedIntent.scheme == TDPP_URI_SCHEME)
@@ -384,25 +754,38 @@ class TricklePayActivity : CommonActivity()
                 val host = iuri.getHost()
                 val path = iuri.getPath()
                 LogIt.info("Trickle Pay Intent host=${host} path=${path}")
-                if (path == "/reg")  // Handle registration
+                if (path != null)
                 {
-                    handleRegistration(iuri)
-                }
-                else if (path == "/sendto")
-                {
-                    LogIt.info("address autopay")
-                }
-                else if (path == "/tx")
-                {
-                    LogIt.info("tx autopay")
-                }
-                else if (path == "/jsonpay")
-                {
-                    LogIt.info("json autopay")
+                    if (path == "/reg")  // Handle registration
+                    {
+                        handleRegistration(iuri)
+                    }
+                    else if (path == "/sendto")
+                    {
+                        LogIt.info("address autopay")
+                    }
+                    else if (path == "/tx")
+                    {
+                        LogIt.info("tx autopay")
+                        handleTxAutopay(iuri)
+                    }
+                    else if (path == "/assets")
+                    {
+                        LogIt.info("tx autopay")
+                        handleAssetRequest(iuri)
+                    }
+                    else if (path == "/jsonpay")
+                    {
+                        LogIt.info("json autopay")
+                    }
+                    else
+                    {
+                        displayError(i18n(R.string.unknownOperation) % mapOf("op" to path));
+                    }
                 }
                 else
                 {
-                    displayError(i18n(R.string.unknownOperation) % mapOf("op" to path));
+                    displayError(i18n(R.string.unknownOperation) % mapOf("op" to "no operation"));
                 }
             }
             else  // This should never happen because the AndroidManifest.xml Intent filter should match the URIs that we handle
@@ -442,9 +825,9 @@ class TricklePayActivity : CommonActivity()
     {
         LogIt.info("accept trickle pay registration")
         displayFragment(GuiTricklePayMain)
-        wallyApp?.let {
+        /* wallyApp?.let {
             it.finishParent += 1
-        }
+        } */
         RegUxToMap()
         later {
             save()  // can't save in UI thread
@@ -456,9 +839,114 @@ class TricklePayActivity : CommonActivity()
     {
         LogIt.info("deny trickle pay registration")
         displayFragment(GuiTricklePayMain)
-        wallyApp?.let {
+        /* wallyApp?.let {
             it.finishParent += 1
-        }
+        } */
         clearIntentAndFinish(notice = i18n(R.string.TpRegDenied))
     }
+
+    // Trickle pay transaction handlers
+    fun onSignSpecialTx(view: View?)
+    {
+        LogIt.info("accept trickle pay special transaction")
+        val pTx = proposedTx
+        if (pTx != null)
+        {
+            val pUri = proposalUri!!  // if proposedTx != null uri must have something
+            val pcookie = cookie
+            proposedTx = null
+            proposalUri = null
+            cookie = null
+            LogIt.info("sign trickle pay special transaction")
+            displayFragment(GuiTricklePayMain)
+            wallyApp?.let {
+                it.finishParent += 1
+            }
+            later {
+                val proto = "http:"
+                val host = pUri.host + ":" + pUri.port
+                val cookieString = if (pcookie != null) "&cookie=$pcookie" else ""
+                val req = URL(proto + "//" + host + "/tx?tx=${pTx.toHex()}${cookieString}")
+                val data = try
+                {
+                    req.readText()
+                }
+                catch (e: java.io.FileNotFoundException)
+                {
+                    LogIt.info("Error submitting transaction: " + e.message)
+                    displayError(i18n(R.string.WebsiteUnavailable))
+                    return@later
+                }
+                catch (e: Exception)
+                {
+                    LogIt.info("Error submitting transaction: " + e.message)
+                    displayError(i18n(R.string.WebsiteUnavailable))
+                    return@later
+                }
+                LogIt.info(sourceLoc() + " TP response to the response: " + data)
+
+                clearIntentAndFinish(notice = i18n(R.string.TpTxAccepted))
+            }
+        }
+    }
+
+    fun onDenySpecialTx(view: View?)
+    {
+        LogIt.info("deny trickle pay special transaction")
+        displayFragment(GuiTricklePayMain)
+        //wallyApp?.let {
+        //    it.finishParent += 1
+        //}
+        clearIntentAndFinish(notice = i18n(R.string.TpTxDenied))
+    }
+
+    fun onAcceptAssetRequest(view: View?)
+    {
+        LogIt.info("accepted asset request")
+        displayNotice(R.string.Processing, time=4900)
+
+        val proto = rproto ?: TDPP_DEFAULT_PROTOCOL
+        val host = host + ":" + port
+        val cookieString = if (cookie != null) "&cookie=$cookie" else ""
+        val assets = (GuiTricklePayAssetRequest as TricklePayAssetRequestFragment).selectedAssets()
+        val url = proto + "//" + host + "/assets?" + cookieString
+        later {
+            LogIt.info("responding to server")
+            val client = HttpClient(Android)
+            {
+                install(JsonFeature)
+                install(HttpTimeout) { requestTimeoutMillis = 5000 }
+            }
+            val json = io.ktor.client.features.json.defaultSerializer()
+
+            try
+            {
+
+                val response: HttpResponse = client.post(url) {
+                    val tmp = json.write(assets)
+                    LogIt.info("JSON response ${tmp.contentLength} : " + tmp.toString())
+                    body = json.write(assets)
+                }
+                val respText = response.readText()
+                clearIntentAndFinish(notice = respText)
+            }
+            catch (e: SocketTimeoutException)
+            {
+                displayError(R.string.connectionException)
+            }
+            client.close()
+        }
+
+        // A successful connection to the server will auto-close this activity
+    }
+
+    fun onDenyAssetRequest(view: View?)
+    {
+        LogIt.info("rejected asset request")
+        displayFragment(GuiTricklePayMain)
+
+        clearIntentAndFinish(notice = i18n(R.string.TpAssetRequestDenied))
+    }
+
+
 }

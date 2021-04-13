@@ -51,6 +51,13 @@
     <string name="accept">accept</string>
     <string name="deny">deny</string>
     <string name="badSignature">bad signature</string>
+    <!-- wallet is currently working on doing whatever your button click asked it to do -->
+    <string name="Processing">processing...</string>
+    <string name="receiving">receiving</string>
+    <string name="sending">sending</string>
+
+    <!-- Implication is "no charge" or "no cost" for a transaction -->
+    <string name="nothing">nothing</string>
 
     <!-- done is like "yes" but more means "go to the next thing" rather than acceptance of something -->
     <string name="done">done</string>
@@ -368,6 +375,7 @@
     <string name="StoreMapUrl">https://map.bitcoin.com</string>
     <string name="StoreMapAppPackage"></string>
     <string name="OpenWebsite" formatted="false">Access %siteName</string>
+    <string name="WebsiteUnavailable" formatted="false">Website unavailable</string>
 
     <!-- Trickle Pay -->
     <string name="AcceptTpRegistration">Accept Registration From:</string>
@@ -386,4 +394,18 @@
 
     <string name="TpRegDenied">Denied registration</string>
     <string name="TpRegAccepted">Accepted registration</string>
+
+    <string name="TpTxDenied">Denied transaction</string>
+    <string name="TpTxAccepted">Accepted transaction</string>
+    <string name="TpAssetRequestDenied">Not sending assets</string>
+    <string name="TpAssetRequestAccepted">Sending assets</string>
+
+    <string name="SpecialTpTransactionFrom">Incoming Special Transaction From</string>
+    <string name="TpEntails">Entails</string>
+    <string name="TpAssetRequestFrom">Incoming Asset Request From</string>
+    <string name="ForAFeeOf" formatted="false">for a fee of %fee %units</string>
+    <string name="TpExchangingTokens">and exchanging tokens.</string>
+    <string name="TpSendingTokens">and sending tokens.</string>
+    <string name="TpReceivingTokens">and receiving tokens.</string>
+
 </resources>

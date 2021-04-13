@@ -75,7 +75,7 @@
         app:layout_constraintTop_toBottomOf="@+id/GuiEnableAutopay" />
 
     <TextView
-        android:id="@+id/GuiAutoSpendLimitName0"
+        android:id="@+id/GuiCustomTxCost"
         android:layout_width="150dp"
         android:layout_height="25dp"
         android:layout_marginStart="8dp"
@@ -110,7 +110,7 @@
         android:maxLines="3"
         android:minLines="0"
         app:layout_constraintEnd_toEndOf="@+id/GuiAutospendLimitEntry0"
-        app:layout_constraintStart_toStartOf="@+id/GuiAutoSpendLimitName0"
+        app:layout_constraintStart_toStartOf="@+id/GuiCustomTxCost"
         app:layout_constraintTop_toBottomOf="@+id/GuiAutospendLimitEntry0" />
 
     <TextView
@@ -244,7 +244,7 @@
         app:layout_constraintTop_toBottomOf="@+id/GuiAutospendLimitDescription3" />
 
     <Button
-        android:id="@+id/GuiTpSave"
+        android:id="@+id/GuiTpAssetRequestAccept"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -265,7 +265,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/GuiTpSave" />
+        app:layout_constraintStart_toEndOf="@+id/GuiTpAssetRequestAccept" />
 
     <CheckBox
         android:id="@+id/GuiEnableAutopay"

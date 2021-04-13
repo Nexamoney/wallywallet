@@ -125,7 +125,7 @@ class Settings : AppCompatActivity()
 
         val preferenceDB:SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
 
-        if(SetupBooleanPreferenceGui(SHOW_DEV_INFO, preferenceDB, GuiDeveloperInfoSwitch) { button, isChecked ->
+        if(SetupBooleanPreferenceGui(SHOW_DEV_INFO, preferenceDB, GuiDeveloperInfoSwitch) { _, isChecked ->
             if (isChecked)
             {
                 GuiClearIdentityDomains.visibility = VISIBLE
@@ -185,7 +185,7 @@ class Settings : AppCompatActivity()
             }
         }
 
-        GuiPINInvisibility.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+        GuiPINInvisibility.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { _, isChecked ->
             val item = GuiSettingsAccountChoice.selectedItem
             if (item != null)
             {
@@ -213,7 +213,8 @@ class Settings : AppCompatActivity()
     {
         dbgAssertGuiThread()
         // Set up the crypto spinners to contain all the cryptos this wallet supports
-        val coinSpinData = app?.visibleAccountNames()
+        val coinSpinData = app!!.visibleAccountNames()
+
         val coinAa = ArrayAdapter(this, android.R.layout.simple_spinner_item, coinSpinData)
         GuiSettingsAccountChoice?.setAdapter(coinAa)
     }
@@ -297,7 +298,7 @@ class Settings : AppCompatActivity()
         launch {
             val wallet:CommonWallet = try
                 {
-                    ((application as WallyApp).primaryAccount.wallet as CommonWallet)
+                    (application as WallyApp).primaryAccount.wallet
                 }
                 catch (e: PrimaryWalletInvalidException)
                 {
@@ -351,8 +352,7 @@ class Settings : AppCompatActivity()
                 launch {
                     try
                     {
-                        if (coin.wallet != null)
-                            coin.wallet.reassessUnconfirmedTx()
+                        coin.wallet.reassessUnconfirmedTx()
                     }
                     catch(e: Exception)
                     {

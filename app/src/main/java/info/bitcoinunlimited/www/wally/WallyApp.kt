@@ -12,13 +12,18 @@ import android.view.View
 import android.widget.TextView
 import bitcoinunlimited.libbitcoincash.*
 import bitcoinunlimited.libbitcoincash.appI18n
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.lang.IllegalStateException
 import java.math.BigDecimal
 import java.security.spec.InvalidKeySpecException
+import java.util.concurrent.Executors
 import java.util.logging.Logger
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
+import kotlin.coroutines.CoroutineContext
 
 val SimulationHostIP = "10.0.2.2"
 val LanHostIP = "192.168.1.100"
@@ -28,6 +33,7 @@ val LAST_RESORT_BCH_ELECTRS = "bch2.bitcoinunlimited.net" // "electrs.bitcoinunl
 private val LogIt = Logger.getLogger("bitcoinunlimited.app")
 
 open class PrimaryWalletInvalidException() : BUException("Primary wallet not defined or currently unavailable", "not ready", ErrorSeverity.Abnormal)
+open class WalletInvalidException() : BUException("Wallet nonexistent or unavailable", "not ready", ErrorSeverity.Abnormal)
 
 var coinsCreated = false
 
@@ -189,9 +195,9 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
                 ChainSelector.NEXTCHAIN,
                 name ?: "XNEX",
                 cnxnMgr,
-                genesisBlockHash = Hash256("78d2ee9c298e8a112e9e8e7ea1d878033e308494ccea107127413ede4f227cc5"),
-                checkpointPriorBlockId = Hash256("78d2ee9c298e8a112e9e8e7ea1d878033e308494ccea107127413ede4f227cc5"),
-                checkpointId = Hash256("0b64c9e1c30378582ba1e36a05a74a3c8fc016a1bbc9217950d8527e39403a5f"),
+                genesisBlockHash = Hash256("a73e8992af2a3b498c5114a6144b03bc41de938b39643fd82030f9721c0f8f1e"),
+                checkpointPriorBlockId = Hash256("a73e8992af2a3b498c5114a6144b03bc41de938b39643fd82030f9721c0f8f1e"),
+                checkpointId = Hash256("c8e533e601d6fdbf248f8e145336b3ed94ca5a304965f67574e431faee2a9e2b"),
                 checkpointHeight = 1,
                 checkpointWork = 0x200101.toBigInteger(),
                 context = context,
@@ -448,7 +454,7 @@ class Account(
         return ret
     }
 
-    //? Convert a value in this currency code unit into its primary unit
+    //? Convert a value in this currency code unit into its primary unit. The "primary unit" is the generally accepted currency unit, AKA "BCH" or "BTC".
     fun toPrimaryUnit(qty: BigDecimal): BigDecimal
     {
         return qty / (1000.toBigDecimal())
@@ -597,6 +603,11 @@ class WallyApp : Application()
 {
     var firstRun = false
 
+    @kotlinx.coroutines.ExperimentalCoroutinesApi
+    protected val coMiscCtxt: CoroutineContext = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
+    @kotlinx.coroutines.ExperimentalCoroutinesApi
+    protected val coMiscScope: CoroutineScope = kotlinx.coroutines.CoroutineScope(coMiscCtxt)
+
     companion object
     {
         // Used to load the 'native-lib' library on application startup.
@@ -634,6 +645,23 @@ class WallyApp : Application()
      * Since the implicit activity wasn't launched for result, we can't return an indicator that wally main should finish().
      * Whenever wally resumes, if finishParent > 0, it will immediately finish. */
     var finishParent = 0
+
+    /** Do whatever you pass but not within the user interface context, asynchronously.
+     * Launching into these threads means your task will outlast the activity it was launched in */
+    @kotlinx.coroutines.ExperimentalCoroutinesApi
+    fun later(fn: suspend () -> Unit): Unit
+    {
+        coMiscScope.launch {
+            try
+            {
+                fn()
+            }
+            catch(e:Exception) // Uncaught exceptions will end the app
+            {
+                handleThreadException(e)
+            }
+        }
+    }
 
     /** lock all previously unlocked accounts */
     fun lockAccounts()

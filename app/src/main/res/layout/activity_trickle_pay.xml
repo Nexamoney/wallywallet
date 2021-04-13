@@ -42,10 +42,44 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
+        <fragment
+        android:id="@+id/GuiTricklePayEmpty"
+        android:name="info.bitcoinunlimited.www.wally.TricklePayEmptyFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/nav_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
 
     <fragment
         android:id="@+id/GuiTricklePayReg"
         android:name="info.bitcoinunlimited.www.wally.TricklePayRegFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/nav_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <fragment
+        android:id="@+id/GuiTricklePayCustomTx"
+        android:name="info.bitcoinunlimited.www.wally.TricklePayCustomTxFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/nav_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <fragment
+        android:id="@+id/GuiTricklePayAssetRequest"
+        android:name="info.bitcoinunlimited.www.wally.TricklePayAssetRequestFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="gone"

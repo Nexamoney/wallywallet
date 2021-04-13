@@ -361,7 +361,7 @@ class MainActivity : CommonActivity()
     {
         dbgAssertGuiThread()
         val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
-        val showDev = prefs.getBoolean(SHOW_DEV_INFO, false)
+        // val showDev = prefs.getBoolean(SHOW_DEV_INFO, false)
 
         data class UI(val ticker: TextView, val balance: TextView, val units: TextView, val unconf: TextView, val info: TextView?)
 
@@ -835,7 +835,7 @@ class MainActivity : CommonActivity()
                 {
                     paymentInProgress = null
                     displayNotice((R.string.badCryptoCode))
-                    amt = a.primaryAccount?.fromFinestUnit(pip.totalSatoshis)
+                    amt = a.primaryAccount.fromFinestUnit(pip.totalSatoshis)
                     null
                 }
                 else if (acts.size > 1)
@@ -1163,12 +1163,17 @@ class MainActivity : CommonActivity()
         LogIt.info(sourceLoc() + " activity completed $requestCode $resultCode")
 
         // Handle my sub-activity results
-        if (requestCode == IDENTITY_OP_RESULT)
+        if ((requestCode == IDENTITY_OP_RESULT) || (requestCode == TRICKLEPAY_RESULT))
         {
             if (data != null)
             {
                 val err = data.getStringExtra("error")
                 if (err != null) displayError(err)
+                else  // Don't display any notices if there's an error
+                {
+                    val note = data.getStringExtra("notice")
+                    if (note != null) displayNotice(note)
+                }
             }
             return;
         }
@@ -1187,7 +1192,7 @@ class MainActivity : CommonActivity()
                     delay(2000)  // So that the notice is visible
                     val QRstring = result.contents.toString()
                     // TODO parse other QR code formats
-                    LogIt.info("QR result: " + QRstring)
+                    LogIt.info(sourceLoc() + ": QR result: " + QRstring)
 
                     val uri = QRstring.split(":")[0]
                     if (uri == IDENTITY_URI_SCHEME)
@@ -1198,6 +1203,12 @@ class MainActivity : CommonActivity()
                         startActivityForResult(intent, IDENTITY_OP_RESULT)
 
                     }
+                    else if (uri == TDPP_URI_SCHEME)
+                    {
+                        var intent = Intent(this, TricklePayActivity::class.java)
+                        intent.data = Uri.parse(QRstring)
+                        startActivityForResult(intent, TRICKLEPAY_RESULT)
+                    }
                     else
                     {
                         try
@@ -1206,7 +1217,7 @@ class MainActivity : CommonActivity()
                         }
                         catch (e: UnknownBlockchainException)
                         {
-                            LogIt.info("QR contents invalid: " + QRstring)
+                            LogIt.info(sourceLoc() + ": QR contents invalid: " + QRstring)
                             displayError(R.string.badAddress)
                         }
                     }
@@ -1252,9 +1263,9 @@ class MainActivity : CommonActivity()
 
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?)
     {
-        super.onSaveInstanceState(outState, outPersistentState)
         if (outState != null)
         {
+            if (outPersistentState != null) super.onSaveInstanceState(outState, outPersistentState)
             outState.putString("sendToAddress", sendToAddress.text.toString())
             outState.putString("sendQuantity", sendQuantity.text.toString())
             outState.putString("sendCurrencyType", sendCurrencyType.selectedItem as String)
@@ -1293,7 +1304,7 @@ class MainActivity : CommonActivity()
             if (recvAddrStr != null)
             {
                 var clip = ClipData.newPlainText("text", recvAddrStr)
-                clipboard.primaryClip = clip
+                clipboard.setPrimaryClip(clip)
 
                 // visual bling that indicates text copied
                 receiveAddress.text = i18n(R.string.copied)
@@ -1419,6 +1430,7 @@ class MainActivity : CommonActivity()
     {
         dbgAssertGuiThread()
         LogIt.info("send button clicked")
+        displayNotice(R.string.Processing)
         hideKeyboard()
         sendQuantity.clearFocus()
 

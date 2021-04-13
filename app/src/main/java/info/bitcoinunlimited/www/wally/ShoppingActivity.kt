@@ -36,8 +36,9 @@ class ShoppingDestination(var buttonText:String = "",  var explain:String="", va
         if (androidPackage != "")
         {
             val launchIntent: Intent? = pm.getLaunchIntentForPackage(androidPackage)
-            launchIntent?.let { activity.startActivity(it)
-            return
+            launchIntent?.let {
+                activity.startActivity(it)
+                return
             }
         }
 
@@ -45,11 +46,8 @@ class ShoppingDestination(var buttonText:String = "",  var explain:String="", va
         {
             if (!url.startsWith("http")) url = "https://" + url
             val webIntent: Intent = Uri.parse(url).let { webpage -> Intent(Intent.ACTION_VIEW, webpage) }
-
-            webIntent?.let {
-                    activity.startActivity(it)
-                    return
-            }
+            activity.startActivity(webIntent)
+            return
         }
     }
 }
@@ -88,19 +86,22 @@ private class ShoppingRecyclerAdapter(private val activity: ShoppingActivity, pr
         {
             view.setOnClickListener(this)
             view.GuiShoppingButton.setOnClickListener(this)
-
         }
 
         override fun onClick(v: View)
         {
-            LogIt.info("clicked on " + item?.buttonText ?: "")
-            try
+            val i = item
+            if (i != null)
             {
-                item?.launch(view)
-            }
-            catch (e: ActivityNotFoundException)
-            {
-                activity.displayError(R.string.BadLink)
+                LogIt.info("clicked on " + i.buttonText)
+                try
+                {
+                    i.launch(view)
+                }
+                catch (e: ActivityNotFoundException)
+                {
+                    activity.displayError(R.string.BadLink)
+                }
             }
         }
 

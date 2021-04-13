@@ -33,6 +33,7 @@ const val IDENTITY_MESSAGE = "info.bitcoinunlimited.www.wally.identity"
 
 val IDENTITY_OP_RESULT = 27720
 val IDENTITY_SETTINGS_RESULT = 27721
+val TRICKLEPAY_RESULT = 27722
 
 private val LogIt = Logger.getLogger("bitcoinunlimited.commonUI")
 

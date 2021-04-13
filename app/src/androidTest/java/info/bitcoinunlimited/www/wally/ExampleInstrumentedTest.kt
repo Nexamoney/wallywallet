@@ -2,15 +2,16 @@ package bitcoinunlimited.wally.androidTestImplementation
 
 import android.content.Context
 import android.util.Log
-import androidx.test.InstrumentationRegistry
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.filters.SmallTest
-import androidx.test.runner.AndroidJUnit4
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import bitcoinunlimited.libbitcoincash.ChainSelector
 import bitcoinunlimited.libbitcoincash.Initialize
 
+
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.Before
 
 import org.junit.Assert.*
 
@@ -90,8 +91,25 @@ class UnitTest
     @Test
     fun testelectrumclient()
     {
-        LogIt.info("This test requires an electrum cash server running at ${EMULATOR_HOST_IP}:${DEFAULT_ELECTRUM_SERVER_PORT}")
-        val cnxn = ElectrumClient(ChainSelector.BCHREGTEST, EMULATOR_HOST_IP, DEFAULT_ELECTRUM_SERVER_PORT, "Electrum@${EMULATOR_HOST_IP}:${DEFAULT_ELECTRUM_SERVER_PORT}")
+        LogIt.info("This test requires an electrum cash server running at ${EMULATOR_HOST_IP}:${DEFAULT_TCP_ELECTRUM_PORT_REGTEST}")
+
+        val c = try
+        {
+            ElectrumClient(ChainSelector.BCHREGTEST, EMULATOR_HOST_IP, DEFAULT_TCP_ELECTRUM_PORT_REGTEST, "Electrum@${EMULATOR_HOST_IP}:${DEFAULT_TCP_ELECTRUM_PORT_REGTEST}")
+        }
+        catch (e: java.net.ConnectException)
+        {
+            LogIt.warning("Cannot connect: Skipping Electrum tests: ${e}")
+            null
+        }
+        catch (e:java.net.SocketTimeoutException)
+        {
+            LogIt.warning("Cannot connect: Skipping Electrum tests: ${e}")
+            null
+        }
+        org.junit.Assume.assumeTrue(c != null)
+        val cnxn = c!!
+
         cnxn.start()
 
         val ret = cnxn.call("server.version", listOf("4.0.1", "1.4"), 1000)
@@ -187,12 +205,9 @@ class UnitTest
 
         // This code gets the first coinbase transaction and then checks its history.  Based on the normal regtest generation setup, there should be at least 100
         // blocks that generate to this same output.
-        val txbytes = cnxn.getTxAt(1, 0)
-        LogIt.info(txbytes.toHex())
+        val tx = cnxn.getTxAt(1, 0)
+        LogIt.info(tx.toHex())
         val txBlkHeader = BlockHeader(BCHserialized(cnxn.getHeader(1), SerializationType.HASH))
-
-        val tx = BCHtransaction(ChainSelector.BCHREGTEST)
-        tx.BCHdeserialize(BCHserialized(txbytes, SerializationType.NETWORK))
         tx.debugDump()
 
         /* TODO add in when get_first_use is committed to electrscash.  TODO: check server capabilities
@@ -632,7 +647,16 @@ class UnitTest
         val coScope: CoroutineScope = kotlinx.coroutines.CoroutineScope(coCtxt)
         val coCond = CoCond<Boolean>(coScope)
 
-        var cnxn = BCHp2pClient(ChainSelector.BCHREGTEST, EMULATOR_HOST_IP, BCHregtestPort, "regtest@${EMULATOR_HOST_IP}",coScope,coCond).connect()
+        var cnxn:BCHp2pClient = (try
+        {
+            BCHp2pClient(ChainSelector.BCHREGTEST, EMULATOR_HOST_IP, BCHregtestPort, "regtest@${EMULATOR_HOST_IP}", coScope, coCond).connect(5000)
+        }
+        catch (e: java.net.SocketTimeoutException)
+        {
+            org.junit.Assume.assumeTrue(false)
+            null
+        })!!
+
         GlobalScope.launch { cnxn.processForever() }
 
         cnxn.waitForReady()

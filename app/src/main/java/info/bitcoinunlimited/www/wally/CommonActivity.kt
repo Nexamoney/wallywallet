@@ -63,7 +63,7 @@ open class CommonActivity : AppCompatActivity()
     @kotlinx.coroutines.ExperimentalCoroutinesApi
     protected val coGuiScope = MainScope()
     @kotlinx.coroutines.ExperimentalCoroutinesApi
-    protected val coMiscCtxt: CoroutineContext = Executors.newFixedThreadPool(2).asCoroutineDispatcher()
+    protected val coMiscCtxt: CoroutineContext = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
     @kotlinx.coroutines.ExperimentalCoroutinesApi
     protected val coMiscScope: CoroutineScope = kotlinx.coroutines.CoroutineScope(coMiscCtxt)
 
@@ -184,9 +184,11 @@ open class CommonActivity : AppCompatActivity()
 
     /** Display an short notification string on the title bar, and then clear it after a bit */
     fun displayNotice(resource: Int) = displayNotice(getString(resource))
+    /** Display an short notification string on the title bar, and then clear it after a bit */
+    fun displayNotice(resource: Int, time: Long = NOTICE_DISPLAY_TIME, then: (()->Unit)?=null) = displayNotice(getString(resource), time, then)
 
     /** Display an short notification string on the title bar, and then clear it after a bit */
-    fun displayNotice(msg: String, then: (()->Unit)? = null, time: Long = NOTICE_DISPLAY_TIME)
+    fun displayNotice(msg: String, time: Long = NOTICE_DISPLAY_TIME, then: (()->Unit)? = null)
     {
         laterUI {
             // This coroutine has to be limited to this thread because only the main thread can touch UI views
@@ -214,7 +216,7 @@ open class CommonActivity : AppCompatActivity()
     }
 
 
-    /** Do whatever you pass within the user interface context, asynchronously */
+    /** Do whatever you pass but not within the user interface context, asynchronously */
     @kotlinx.coroutines.ExperimentalCoroutinesApi
     fun later(fn: suspend () -> Unit): Unit
     {
@@ -268,8 +270,8 @@ open class CommonActivity : AppCompatActivity()
 
             if (addr != null)
             {
-                var clip = ClipData.newPlainText("text", addr)
-                clipboard.primaryClip = clip
+                val clip = ClipData.newPlainText("text", addr)
+                clipboard.setPrimaryClip(clip)
 
                 // visual bling that indicates text copied
                 v.text = i18n(R.string.copied)

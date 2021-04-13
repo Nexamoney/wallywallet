@@ -339,7 +339,7 @@ class IdentityOpActivity : CommonActivity()
                             LogIt.info("login response code:" + req.responseCode.toString() + " response: " + resp)
                             if ((req.responseCode >= 200) and (req.responseCode < 250))
                             {
-                                displayNotice(resp, { clearIntentAndFinish() }, 1000)
+                                displayNotice(resp, 1000) { clearIntentAndFinish() }
                             }
                             else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding (often switching from http to https)
                             {
@@ -445,7 +445,7 @@ class IdentityOpActivity : CommonActivity()
                             LogIt.info("reg response code:" + req.responseCode.toString() + " response: " + resp)
                             if ((req.responseCode >= 200) and (req.responseCode < 300))
                             {
-                                displayNotice(resp, { clearIntentAndFinish() }, 1000)
+                                displayNotice(resp, 1000) { clearIntentAndFinish() }
                             }
                             else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding
                             {
