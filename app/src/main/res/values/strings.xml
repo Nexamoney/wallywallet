@@ -205,6 +205,7 @@
     <string name="firstName">first name</string>
     <string name="lastName">last name</string>
 
+    <string name="connectionEstablished">connection established</string>
     <string name="connectionException">cannot connect to site</string>
     <string name="badLink">bad link</string>
     <string name="connectionAborted">site aborted login</string>

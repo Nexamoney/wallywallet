@@ -19,7 +19,9 @@ import kotlinx.coroutines.*
 import java.lang.Exception
 import java.util.logging.Logger
 import android.app.Activity
+import android.content.Intent
 import android.content.res.Resources
+import android.net.Uri
 import android.view.Menu
 import android.view.inputmethod.InputMethodManager
 import bitcoinunlimited.libbitcoincash.handleThreadException
@@ -215,6 +217,29 @@ open class CommonActivity : AppCompatActivity()
 
     }
 
+    fun handleAnyIntent(intentUri: String): Boolean
+    {
+        val uri = intentUri.split(":")[0]
+
+        if (uri == IDENTITY_URI_SCHEME)
+        {
+            LogIt.info("starting identity operation activity")
+            var intent = Intent(this, IdentityOpActivity::class.java)
+            intent.data = Uri.parse(intentUri)
+            startActivityForResult(intent, IDENTITY_OP_RESULT)
+        }
+        else if (uri == TDPP_URI_SCHEME)
+        {
+            var intent = Intent(this, TricklePayActivity::class.java)
+            intent.data = Uri.parse(intentUri)
+            startActivityForResult(intent, TRICKLEPAY_RESULT)
+        }
+        else
+        {
+            return false
+        }
+        return true
+    }
 
     /** Do whatever you pass but not within the user interface context, asynchronously */
     @kotlinx.coroutines.ExperimentalCoroutinesApi

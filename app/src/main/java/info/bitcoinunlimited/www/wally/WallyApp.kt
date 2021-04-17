@@ -2,18 +2,29 @@
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.net.Uri
+import android.net.http.HttpResponseCache.install
 import android.net.wifi.WifiManager
+import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import bitcoinunlimited.libbitcoincash.*
 import bitcoinunlimited.libbitcoincash.appI18n
+import io.ktor.client.*
+import io.ktor.client.engine.android.*
+import io.ktor.client.features.*
+import io.ktor.client.features.get
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.lang.IllegalStateException
@@ -57,13 +68,15 @@ val ChainSelectorToSupportedBlockchains = SupportedBlockchains.entries.associate
 val PRIMARY_WALLET = if (REG_TEST_ONLY) "mRBCH" else "mBCH"
 
 /** incompatible changes, extra fields added, fields and field sizes are the same, but content may be extended (that is, addtl bits in enums) */
-val WALLY_DATA_VERSION = byteArrayOf(1,0,0)
+val WALLY_DATA_VERSION = byteArrayOf(1, 0, 0)
 
 var walletDb: KvpDatabase? = null
 
 const val ACCOUNT_FLAG_NONE = 0UL
 const val ACCOUNT_FLAG_HIDE_UNTIL_PIN = 1UL
-const val RETRIEVE_ONLY_ADDITIONAL_ADDRESSES = 10  /** If a wallet imports a nonstandard derivation path, include this many addresses past the last used address in the wallet's monitoring */
+const val RETRIEVE_ONLY_ADDITIONAL_ADDRESSES = 10
+
+/** If a wallet imports a nonstandard derivation path, include this many addresses past the last used address in the wallet's monitoring */
 
 fun MakeNewWallet(name: String, chain: ChainSelector): Bip44Wallet
 {
@@ -79,13 +92,13 @@ fun MakeNewWallet(name: String, chain: ChainSelector): Bip44Wallet
 }
 
 /** Store the PIN encoded.  However, note that for short PINs a dictionary attack is very feasible */
-fun EncodePIN(actName: String, pin:String, size:Int=64):ByteArray
+fun EncodePIN(actName: String, pin: String, size: Int = 64): ByteArray
 {
     val salt = "wally pin " + actName
     val skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512")
     val secretkey = PBEKeySpec(pin.toCharArray(), salt.toByteArray(), 2048, 512)
     val seed = skf.generateSecret(secretkey)
-    return seed.encoded.slice(IntRange(0,size-1)).toByteArray()
+    return seed.encoded.slice(IntRange(0, size - 1)).toByteArray()
 }
 
 var cnxnMgrs: MutableMap<ChainSelector, CnxnMgr> = mutableMapOf()
@@ -102,7 +115,7 @@ fun GetCnxnMgr(chain: ChainSelector, name: String? = null): CnxnMgr
             ChainSelector.BCHTESTNET -> MultiNodeCnxnMgr(name ?: "TBCH", ChainSelector.BCHTESTNET, arrayOf("testnet-seed.bitcoinabc.org"))
             ChainSelector.BCHMAINNET -> MultiNodeCnxnMgr(name ?: "BCH", ChainSelector.BCHMAINNET, arrayOf("seed.bitcoinunlimited.net", "btccash-seeder.bitcoinunlimited.info"))
             ChainSelector.BCHREGTEST -> MultiNodeCnxnMgr(name ?: "RBCH", ChainSelector.BCHREGTEST, arrayOf(SimulationHostIP))
-            ChainSelector.NEXTCHAIN  ->
+            ChainSelector.NEXTCHAIN ->
             {
                 val cmgr = MultiNodeCnxnMgr(name ?: "XNEX", ChainSelector.NEXTCHAIN, arrayOf("seed.nextchain.cash", "node1.nextchain.cash", "node2.nextchain.cash"))
                 cmgr.desiredConnectionCount = 2  // XNEX chain doesn't have many nodes so reduce the desired connection count or there may be more desired nodes than exist in the chain
@@ -123,8 +136,8 @@ fun ElectrumServerOn(chain: ChainSelector): IpPort
         ChainSelector.BCHMAINNET -> IpPort("electrum.seed.bitcoinunlimited.net", DEFAULT_TCP_ELECTRUM_PORT)
         ChainSelector.BCHTESTNET -> IpPort("159.65.163.15", DEFAULT_TCP_ELECTRUM_PORT)
         ChainSelector.BCHREGTEST -> IpPort(SimulationHostIP, DEFAULT_TCP_ELECTRUM_PORT)
-        ChainSelector.NEXTCHAIN  -> IpPort("electrumserver.seed.nextchain.cash", 7229)
-        ChainSelector.BCHNOLNET  -> throw BadCryptoException()
+        ChainSelector.NEXTCHAIN -> IpPort("electrumserver.seed.nextchain.cash", 7229)
+        ChainSelector.BCHNOLNET -> throw BadCryptoException()
     }
 }
 
@@ -191,7 +204,7 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
             )
 
             // Bitcoin Cash mainnet chain
-            ChainSelector.NEXTCHAIN  -> Blockchain(
+            ChainSelector.NEXTCHAIN -> Blockchain(
                 ChainSelector.NEXTCHAIN,
                 name ?: "XNEX",
                 cnxnMgr,
@@ -210,6 +223,74 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
     }
 }
 
+
+//data class LongPollInfo(val proto: String, val hostPort: String, val cookie: String?)
+
+class AccessHandler(val app: WallyApp)
+{
+    var done: Boolean = false
+
+    /* How to know that the app is shutting down in android?
+    val longPollInfo = mutableSetOf<LongPollInfo>()
+
+    fun endAll()
+    {
+        for (lp in longPollInfo)
+        {
+            launch {
+                endLongPolling(lp.proto, lp.hostPort, lp.cookie)
+            }
+        }
+    }
+
+    suspend fun endLongPolling(proto: String, hostPort: String, cookie: String?)
+    {
+        val cookieString = if (cookie != null) "?cookie=$cookie" else ""
+        val url = proto + "//" + hostPort + "/_lpx" + cookieString
+        val client = HttpClient(Android)
+        {
+            install(HttpTimeout) { requestTimeoutMillis = 2000 } // Long timeout because we don't expect a response right away; its a long poll
+        }
+        val response: HttpResponse = client.get(url) {}
+    }
+    */
+
+    fun startLongPolling(proto: String, hostPort: String, cookie: String?)
+    {
+        app.later { longPolling(proto, hostPort, cookie) }
+    }
+
+    suspend fun longPolling(proto: String, hostPort: String, cookie: String?)
+    {
+        val cookieString = if (cookie != null) "?cookie=$cookie" else ""
+
+        val url = proto + "//" + hostPort + "/_lp" + cookieString
+        val client = HttpClient(Android)
+        {
+            install(HttpTimeout) { requestTimeoutMillis = 60000 } // Long timeout because we don't expect a response right away; its a long poll
+        }
+        while (!done)
+        {
+            try
+            {
+
+                val response: HttpResponse = client.get(url) {}
+                val respText = response.readText()
+
+                LogIt.info("Long Poll resp: $respText")
+                if (respText == "Q") return // Server tells us to quit long polling
+                val ci = app.currentActivity
+                if (ci!=null) ci.handleAnyIntent(respText)
+            }
+            catch (e: Throwable)  // network error?  TODO retry a few times
+            {
+                LogIt.info(e.toString())
+                return
+            }
+            delay(200) // limit runaway polling, if the server misbehaves by responding right away
+        }
+    }
+}
 
 class Account(
     val name: String, //* The name of this account
@@ -234,7 +315,7 @@ class Account(
         {
             loadAccountFlags()
         }
-        catch (e:DataMissingException)
+        catch (e: DataMissingException)
         {
             // support older wallets by allowing empty account flags
         }
@@ -308,18 +389,18 @@ class Account(
     }
 
     val visible: Boolean
-    get()
-    {
-        if ((encodedPin != null) && ((flags and ACCOUNT_FLAG_HIDE_UNTIL_PIN) > 0UL) && !pinEntered) return false
-        return true
-    }
+        get()
+        {
+            if ((encodedPin != null) && ((flags and ACCOUNT_FLAG_HIDE_UNTIL_PIN) > 0UL) && !pinEntered) return false
+            return true
+        }
 
     val locked: Boolean
-    get()
-    {
-        if (encodedPin == null) return false  // Is never locked if there is no PIN
-        return(!pinEntered)
-    }
+        get()
+        {
+            if (encodedPin == null) return false  // Is never locked if there is no PIN
+            return (!pinEntered)
+        }
 
     fun loadEncodedPin(): ByteArray?
     {
@@ -327,10 +408,10 @@ class Account(
         try
         {
             val storedEpin = db.get("accountPin_" + name)
-            if (storedEpin.size>0) return storedEpin
+            if (storedEpin.size > 0) return storedEpin
             return null
         }
-        catch(e:Exception)
+        catch (e: Exception)
         {
             LogIt.info("DB missing PIN for: " + name + ". " + e.message)
         }
@@ -345,7 +426,7 @@ class Account(
         {
             EncodePIN(name, pin)
         }
-        catch(e: InvalidKeySpecException)  // ignore invalid PIN, it can't unlock any wallets
+        catch (e: InvalidKeySpecException)  // ignore invalid PIN, it can't unlock any wallets
         {
             LogIt.info("user entered invalid PIN")
             return 0
@@ -548,7 +629,8 @@ class Account(
 
             val cnxnLst = wallet.chainstate?.chain?.net?.mapConnections() { it.name }
             val peers = cnxnLst?.joinToString(", ")
-            val infoStr = i18n(R.string.at) + " " + (wallet.chainstate?.syncedHash?.toHex()?.takeLast(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight ?: "") + " " + i18n(R.string.of) + " " + (wallet.chainstate?.chain?.curHeight
+            val infoStr = i18n(R.string.at) + " " + (wallet.chainstate?.syncedHash?.toHex()?.takeLast(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight
+                ?: "") + " " + i18n(R.string.of) + " " + (wallet.chainstate?.chain?.curHeight
                 ?: "") + " blocks, " + (wallet.chainstate?.chain?.net?.numPeers() ?: "") + " peers\n" + peers
             infoGUI(force, { infoStr })  // since numPeers takes cnxnLock
 
@@ -580,24 +662,72 @@ class Account(
 }
 
 val i18nLbc = mapOf(RinsufficentBalance to R.string.insufficentBalance,
-RbadWalletImplementation to R.string.badWalletImplementation,
-RdataMissing to R.string.dataMissing,
-RwalletAndAddressIncompatible to R.string.chainIncompatibleWithAddress,
-RnotSupported to  R.string.notSupported,
-Rexpired to R.string.expired,
-RsendMoreThanBalance to  R.string.sendMoreThanBalance,
-RbadAddress to  R.string.badAddress,
-RblankAddress to  R.string.blankAddress,
-RblockNotForthcoming to R.string.blockNotForthcoming,
-RheadersNotForthcoming to  R.string.headersNotForthcoming,
-RbadTransaction to  R.string.badTransaction,
-RfeeExceedsFlatMax to  R.string.feeExceedsFlatMax,
-RexcessiveFee to   R.string.excessiveFee,
-Rbip70NoAmount to R.string.badAmount,
-RdeductedFeeLargerThanSendAmount to   R.string.deductedFeeLargerThanSendAmount,
-RwalletDisconnectedFromBlockchain to  R.string.walletDisconnectedFromBlockchain,
-RsendDust to  R.string.sendDustError,
-RnoNodes to R.string.NoNodes)
+    RbadWalletImplementation to R.string.badWalletImplementation,
+    RdataMissing to R.string.dataMissing,
+    RwalletAndAddressIncompatible to R.string.chainIncompatibleWithAddress,
+    RnotSupported to R.string.notSupported,
+    Rexpired to R.string.expired,
+    RsendMoreThanBalance to R.string.sendMoreThanBalance,
+    RbadAddress to R.string.badAddress,
+    RblankAddress to R.string.blankAddress,
+    RblockNotForthcoming to R.string.blockNotForthcoming,
+    RheadersNotForthcoming to R.string.headersNotForthcoming,
+    RbadTransaction to R.string.badTransaction,
+    RfeeExceedsFlatMax to R.string.feeExceedsFlatMax,
+    RexcessiveFee to R.string.excessiveFee,
+    Rbip70NoAmount to R.string.badAmount,
+    RdeductedFeeLargerThanSendAmount to R.string.deductedFeeLargerThanSendAmount,
+    RwalletDisconnectedFromBlockchain to R.string.walletDisconnectedFromBlockchain,
+    RsendDust to R.string.sendDustError,
+    RnoNodes to R.string.NoNodes)
+
+class ActivityLifecycleHandler(private val app: WallyApp) : Application.ActivityLifecycleCallbacks
+{
+    override fun onActivityPaused(act: Activity)
+    {
+    }
+
+    override fun onActivityStarted(act: Activity)
+    {
+        //if (app.currentActivity is CommonActivity)
+        try
+        {
+            app.currentActivity = act as CommonActivity
+        }
+        catch(e: Throwable)  // Some other activity (QR scanner)
+        {
+        }
+    }
+
+    override fun onActivityDestroyed(act: Activity)
+    {
+    }
+
+    override fun onActivitySaveInstanceState(act: Activity, b: Bundle)
+    {
+
+    }
+
+    override fun onActivityStopped(act: Activity)
+    {
+    }
+
+    override fun onActivityCreated(act: Activity, b: Bundle?)
+    {
+    }
+
+    override fun onActivityResumed(act: Activity)
+    {
+        //if (app.currentActivity is CommonActivity)
+         try
+         {
+             app.currentActivity = act as CommonActivity
+         }
+         catch(e: Throwable)  // Some other activity (QR scanner)
+         {
+         }
+    }
+}
 
 class WallyApp : Application()
 {
@@ -605,6 +735,7 @@ class WallyApp : Application()
 
     @kotlinx.coroutines.ExperimentalCoroutinesApi
     protected val coMiscCtxt: CoroutineContext = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
+
     @kotlinx.coroutines.ExperimentalCoroutinesApi
     protected val coMiscScope: CoroutineScope = kotlinx.coroutines.CoroutineScope(coMiscCtxt)
 
@@ -615,13 +746,16 @@ class WallyApp : Application()
         {
             //System.loadLibrary("native-lib")
             System.loadLibrary("bitcoincashandroid")
-            appI18n = { libErr:Int -> i18n(i18nLbc[libErr] ?: libErr)}
+            appI18n = { libErr: Int -> i18n(i18nLbc[libErr] ?: libErr) }
         }
     }
 
     val init = Initialize.LibBitcoinCash(ChainSelector.BCHTESTNET.v)  // Initialize the C library first
 
     val accounts: MutableMap<String, Account> = mutableMapOf()
+    val accessHandler = AccessHandler(this)
+    var currentActivity: CommonActivity? = null
+
 
     val primaryAccount: Account
         get()
@@ -656,7 +790,7 @@ class WallyApp : Application()
             {
                 fn()
             }
-            catch(e:Exception) // Uncaught exceptions will end the app
+            catch (e: Exception) // Uncaught exceptions will end the app
             {
                 handleThreadException(e)
             }
@@ -675,7 +809,7 @@ class WallyApp : Application()
     /** Submit this PIN to all accounts, unlocking any that match */
     fun unlockAccounts(pin: String)
     {
-        var unlocked=0
+        var unlocked = 0
         for (account in accounts.values)
         {
             if (!account.pinEntered) unlocked += account.submitAccountPin(pin)
@@ -683,7 +817,7 @@ class WallyApp : Application()
         if (unlocked > 0) notifyAccountUnlocked()
     }
 
-    val interestedInAccountUnlock = mutableListOf<()->Unit>()
+    val interestedInAccountUnlock = mutableListOf<() -> Unit>()
     fun notifyAccountUnlocked()
     {
         for (f in interestedInAccountUnlock) f()
@@ -734,7 +868,7 @@ class WallyApp : Application()
                 if ((a.infoGUI.reactor is TextViewReactor<String>) && (a.infoGUI.reactor as TextViewReactor<String>).gui == view) return a
             }
         }
-        catch(e: Exception)
+        catch (e: Exception)
         {
             LogIt.warning("Exception in accountFromGui: " + e.toString())
             handleThreadException(e)
@@ -791,7 +925,15 @@ class WallyApp : Application()
         // wallet is saved in wallet constructor so no need to: ac.wallet.SaveBip44Wallet()
     }
 
-    fun recoverAccount(name: String, flags: ULong, pin: String, secretWords: String, chainSelector: ChainSelector, earliestActivity: Long?, nonstandardActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, NewAccount.HDActivityBracket>>?)
+    fun recoverAccount(
+        name: String,
+        flags: ULong,
+        pin: String,
+        secretWords: String,
+        chainSelector: ChainSelector,
+        earliestActivity: Long?,
+        nonstandardActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, NewAccount.HDActivityBracket>>?
+    )
     {
         dbgAssertNotGuiThread()
         val ctxt = PlatformContext(applicationContext)
@@ -801,7 +943,7 @@ class WallyApp : Application()
         {
             EncodePIN(name, pin.trim())
         }
-        catch(e: InvalidKeySpecException)  // If the pin is bad (generally whitespace or null) ignore it
+        catch (e: InvalidKeySpecException)  // If the pin is bad (generally whitespace or null) ignore it
         {
             byteArrayOf()
         }
@@ -836,6 +978,7 @@ class WallyApp : Application()
         LogIt.info(sourceLoc() + " Wally Wallet App Started")
 
         val ctxt = PlatformContext(applicationContext)
+        registerActivityLifecycleCallbacks(ActivityLifecycleHandler(this))  // track the current activity
 
         walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
         appResources = getResources()

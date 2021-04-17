@@ -52,7 +52,15 @@ data class TricklePayAssetList(val assets: List<TricklePayAssetInfo>)
 
 // Structured data type to make it cleaner to return tx analysis data from the analysis function.
 // otherInputSatoshis: BCH being brought into this transaction by other participants
-data class TxAnalysisResults(val receivingSats: Long, val sendingSats: Long, val receivingTokenTypes: Long, val sendingTokenTypes: Long, val otherInputSatoshis: Long, val myInputSatoshis: Long, val ttInfo: Map<GroupId, Long>)
+data class TxAnalysisResults(
+    val receivingSats: Long,
+    val sendingSats: Long,
+    val receivingTokenTypes: Long,
+    val sendingTokenTypes: Long,
+    val otherInputSatoshis: Long,
+    val myInputSatoshis: Long,
+    val ttInfo: Map<GroupId, Long>
+)
 
 /* Information about payment delegations that have been accepted by the user
 * To be stored/retrieved */
@@ -618,7 +626,7 @@ class TricklePayActivity : CommonActivity()
             if (address != null && wal.isWalletAddress(address))
             {
                 receivingSats += out.amount
-                if ((groupInfo != null)&&(!groupInfo.isAuthority()))
+                if ((groupInfo != null) && (!groupInfo.isAuthority()))
                 {
                     receivingTokenTypes++
                     ttInfo[groupInfo.groupId] = (ttInfo[groupInfo.groupId] ?: 0) + groupInfo.tokenAmt
@@ -627,7 +635,7 @@ class TricklePayActivity : CommonActivity()
             else
             {
                 sendingSats += out.amount
-                if ((groupInfo != null)&&(!groupInfo.isAuthority()))
+                if ((groupInfo != null) && (!groupInfo.isAuthority()))
                 {
                     sendingTokenTypes++
                     ttInfo[groupInfo.groupId] = (ttInfo[groupInfo.groupId] ?: 0) + groupInfo.tokenAmt
@@ -647,12 +655,14 @@ class TricklePayActivity : CommonActivity()
         cookie = uri.getQueryParameter("cookie")
 
         val chain = uri.getQueryParameter("chain")
-        chainSelector = uriToChain[chain]
-        if (chainSelector == null)
+        if (chain != null)
         {
-            return displayError(R.string.badCryptoCode)
+            chainSelector = uriToChain[chain]
+            if (chainSelector == null)
+            {
+                return displayError(R.string.badCryptoCode)
+            }
         }
-
     }
 
     fun handleTxAutopay(uri: Uri)
@@ -778,13 +788,24 @@ class TricklePayActivity : CommonActivity()
                     {
                         LogIt.info("json autopay")
                     }
+                    else if (path == "/lp")
+                    {
+                        LogIt.info("Long Poll to ${host}")
+                        parseCommonFields(iuri)
+                        val proto = rproto ?: TDPP_DEFAULT_PROTOCOL
+                        val hostStr = host + ":" + port
+                        wallyApp?.accessHandler?.startLongPolling(proto, hostStr, cookie)
+                        clearIntentAndFinish(null, i18n(R.string.connectionEstablished))
+                    }
                     else
                     {
+                        displayFragment(GuiTricklePayEmpty)
                         displayError(i18n(R.string.unknownOperation) % mapOf("op" to path));
                     }
                 }
                 else
                 {
+                    displayFragment(GuiTricklePayEmpty)
                     displayError(i18n(R.string.unknownOperation) % mapOf("op" to "no operation"));
                 }
             }
@@ -859,9 +880,7 @@ class TricklePayActivity : CommonActivity()
             cookie = null
             LogIt.info("sign trickle pay special transaction")
             displayFragment(GuiTricklePayMain)
-            wallyApp?.let {
-                it.finishParent += 1
-            }
+
             later {
                 val proto = "http:"
                 val host = pUri.host + ":" + pUri.port
@@ -903,7 +922,7 @@ class TricklePayActivity : CommonActivity()
     fun onAcceptAssetRequest(view: View?)
     {
         LogIt.info("accepted asset request")
-        displayNotice(R.string.Processing, time=4900)
+        displayNotice(R.string.Processing, time = 4900)
 
         val proto = rproto ?: TDPP_DEFAULT_PROTOCOL
         val host = host + ":" + port

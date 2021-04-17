@@ -1194,6 +1194,8 @@ class MainActivity : CommonActivity()
                     // TODO parse other QR code formats
                     LogIt.info(sourceLoc() + ": QR result: " + QRstring)
 
+                    if (!handleAnyIntent(QRstring))
+/*
                     val uri = QRstring.split(":")[0]
                     if (uri == IDENTITY_URI_SCHEME)
                     {
@@ -1210,6 +1212,7 @@ class MainActivity : CommonActivity()
                         startActivityForResult(intent, TRICKLEPAY_RESULT)
                     }
                     else
+ */
                     {
                         try
                         {
