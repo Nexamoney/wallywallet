@@ -39,6 +39,12 @@ val TDPP_URI_SCHEME = "tdpp"
 val TDPP_DEFAULT_UOA = "BCH"
 val TDPP_DEFAULT_PROTOCOL = "http:"
 
+// TODO: extract tdpp protocol stuff into a library
+const val TDPP_FLAG_NOFUND = 1
+const val TDPP_FLAG_NOPOST = 2
+const val TDPP_FLAG_NOSHUFFLE = 4
+const val TDPP_FLAG_PARTIAL = 8
+
 private val LogIt = Logger.getLogger("bu.TricklePay")
 
 // Must be top level for the serializer to handle it
@@ -57,7 +63,8 @@ data class TxAnalysisResults(
     val sendingSats: Long,
     val receivingTokenTypes: Long,
     val sendingTokenTypes: Long,
-    val otherInputSatoshis: Long,
+    val imSpendingTokenTypes: Long,  // The tx spends this number of token TYPES currently controlled by this wallet
+    val otherInputSatoshis: Long?,  // If this is null, I'm not funding this tx (its likely a partial tx)
     val myInputSatoshis: Long,
     val ttInfo: Map<GroupId, Long>
 )
@@ -269,8 +276,15 @@ class TricklePayCustomTxFragment : Fragment()
                 GuiCustomTxCost.text = i18n(R.string.nothing)
             }
 
-            val fee = (a.myInputSatoshis + a.otherInputSatoshis) - (a.receivingSats + a.sendingSats)
-            GuiCustomTxFee.text = (i18n(R.string.ForAFeeOf) % mapOf("fee" to acc.cryptoFormat.format(acc.fromFinestUnit(fee)), "units" to acc.currencyCode))
+            if (a.otherInputSatoshis != null)
+            {
+                val fee = (a.myInputSatoshis + a.otherInputSatoshis) - (a.receivingSats + a.sendingSats)
+                GuiCustomTxFee.text = (i18n(R.string.ForAFeeOf) % mapOf("fee" to acc.cryptoFormat.format(acc.fromFinestUnit(fee)), "units" to acc.currencyCode))
+            }
+            else
+            {
+                GuiCustomTxFee.text = ""
+            }
 
             if (a.receivingTokenTypes > 0)
             {
@@ -286,7 +300,7 @@ class TricklePayCustomTxFragment : Fragment()
             }
             else
             {
-                if (a.sendingTokenTypes > 0)
+                if ((a.sendingTokenTypes > 0)||(a.imSpendingTokenTypes>0))
                 {
                     GuiCustomTxTokenSummary.text = i18n(R.string.TpSendingTokens)
                 }
@@ -466,6 +480,7 @@ class TricklePayActivity : CommonActivity()
     var regCurrency: String = ""
     var regAddress: String = ""
 
+    var tflags: Int = 0
     var proposedTx: BCHtransaction? = null
     var proposalUri: Uri? = null
     var proposalCookie: String? = null
@@ -584,7 +599,7 @@ class TricklePayActivity : CommonActivity()
         }
     }
 
-    fun analyzeCompleteAndSignTx(tx: BCHtransaction, inputSatoshis: Long): TxAnalysisResults
+    fun analyzeCompleteAndSignTx(tx: BCHtransaction, inputSatoshis: Long?, flags: Int?): TxAnalysisResults
     {
         val wal = getRelevantWallet()
 
@@ -594,10 +609,32 @@ class TricklePayActivity : CommonActivity()
         var sendingSats: Long = 0
         var receivingTokenTypes: Long = 0
         var sendingTokenTypes: Long = 0
+        var imSpendingTokenTypes: Long = 0
         var iFunded: Long = 0
         var ttInfo = mutableMapOf<GroupId, Long>()
+
+        var cflags = TxCompletionFlags.FUND_NATIVE or TxCompletionFlags.SIGN or TxCompletionFlags.BIND_OUTPUT_PARAMETERS
+
+        if (tflags != null)
+        {
+            // If nofund flag is set turn off fund_native
+            if ((tflags and TDPP_FLAG_NOFUND) > 0) cflags = cflags and (TxCompletionFlags.FUND_NATIVE.inv())
+            if ((tflags and TDPP_FLAG_PARTIAL) > 0) cflags = cflags or TxCompletionFlags.PARTIAL
+        }
+
+        // Look at the inputs and match with UTXOs that I have, so I have the additional info required to sign this input
+        val unspent = wal.unspent
+        for ((idx,inp) in tx.inputs.withIndex())
+        {
+            val utxo = unspent[inp.spendable.outpoint]
+            if (utxo != null)
+            {
+                tx.inputs[idx].spendable = utxo
+            }
+        }
+
         // Someday the wallet might want to fund groups, etc but for now all it does is pay for txes because the wallet UX can only show that
-        wal.txCompleter(tx, 0, TxCompletionFlags.FUND_NATIVE or TxCompletionFlags.SIGN or TxCompletionFlags.BIND_OUTPUT_PARAMETERS, inputSatoshis)
+        wal.txCompleter(tx, 0, cflags, inputSatoshis)
 
         // LogIt.info("Completed tx: " + tx.toHex())
 
@@ -612,6 +649,7 @@ class TricklePayActivity : CommonActivity()
                 val iSuppliedTokens = inp.spendable.priorOutScript.groupInfo(inp.spendable.amount)
                 if (iSuppliedTokens != null)
                 {
+                    imSpendingTokenTypes++
                     // TODO track tokens that I provided.
                 }
             }
@@ -643,7 +681,7 @@ class TricklePayActivity : CommonActivity()
             }
         }
 
-        return TxAnalysisResults(receivingSats, sendingSats, receivingTokenTypes, sendingTokenTypes, inputSatoshis, iFunded, ttInfo)
+        return TxAnalysisResults(receivingSats, sendingSats, receivingTokenTypes, sendingTokenTypes, imSpendingTokenTypes, inputSatoshis, iFunded, ttInfo)
     }
 
     fun parseCommonFields(uri: Uri)
@@ -677,19 +715,28 @@ class TricklePayActivity : CommonActivity()
 
         parseCommonFields(uri)
 
-        val inputSatoshis = uri.getQueryParameter("inamt")?.toLongOrNull() ?: return displayError(R.string.BadLink)
+        tflags = uri.getQueryParameter("flags")?.toInt() ?: 0
+
+        val inputSatoshis = uri.getQueryParameter("inamt")?.toLongOrNull()  // ?: return displayError(R.string.BadLink)
+
+        // If we are funding then inputSatoshis must be provided
+        if ((inputSatoshis == null) && ((tflags and TDPP_FLAG_NOFUND) == 0))
+        {
+            return displayError(R.string.BadLink)
+        }
 
         val tx = BCHtransaction(chainSelector!!, BCHserialized(txHex.fromHex(), SerializationType.NETWORK))
         LogIt.info(sourceLoc() + ": Tx to autopay: " + tx.toHex())
 
         // Analyze and sign transaction
-        val analysis = analyzeCompleteAndSignTx(tx, inputSatoshis)
+        val analysis = analyzeCompleteAndSignTx(tx, inputSatoshis, tflags)
         LogIt.info(sourceLoc() + ": Completed tx: " + tx.toHex())
 
         (GuiTricklePayCustomTx as TricklePayCustomTxFragment).populate(this, uri, tx, analysis)
         displayFragment(GuiTricklePayCustomTx)
 
         proposedTx = tx
+
     }
 
     fun handleAssetRequest(uri: Uri)
@@ -816,6 +863,7 @@ class TricklePayActivity : CommonActivity()
         }
         catch (e: Exception)
         {
+            LogIt.warning(e.toString())
             displayException(e)
         }
     }
