@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.lang.IllegalStateException
 import java.math.BigDecimal
+import java.net.ConnectException
 import java.security.spec.InvalidKeySpecException
 import java.util.concurrent.Executors
 import java.util.logging.Logger
@@ -230,9 +231,9 @@ class AccessHandler(val app: WallyApp)
 {
     var done: Boolean = false
 
-    /* How to know that the app is shutting down in android?
-    val longPollInfo = mutableSetOf<LongPollInfo>()
+    val activeLongPolls = mutableSetOf<String>()
 
+/* How to know that the app is shutting down in android?
     fun endAll()
     {
         for (lp in longPollInfo)
@@ -260,11 +261,30 @@ class AccessHandler(val app: WallyApp)
         app.later { longPolling(proto, hostPort, cookie) }
     }
 
+    fun endLongPolling(url: String)
+    {
+        synchronized(activeLongPolls)
+        {
+            activeLongPolls.remove(url)
+        }
+    }
+
     suspend fun longPolling(proto: String, hostPort: String, cookie: String?)
     {
+        var connectProblems = 0
         val cookieString = if (cookie != null) "?cookie=$cookie" else ""
-
         val url = proto + "//" + hostPort + "/_lp" + cookieString
+
+        synchronized(activeLongPolls)
+        {
+            if (activeLongPolls.contains(url))
+            {
+                LogIt.info("Already long polling to $url")
+                return
+            }
+            activeLongPolls.add(url)
+        }
+
         val client = HttpClient(Android)
         {
             install(HttpTimeout) { requestTimeoutMillis = 60000 } // Long timeout because we don't expect a response right away; its a long poll
@@ -276,19 +296,40 @@ class AccessHandler(val app: WallyApp)
 
                 val response: HttpResponse = client.get(url) {}
                 val respText = response.readText()
+                connectProblems = 0
 
-                LogIt.info("Long Poll resp: $respText")
-                if (respText == "Q") return // Server tells us to quit long polling
+                LogIt.info("Long poll to $url resp: $respText")
+                if (respText == "Q")
+                {
+                    LogIt.info("Long poll to $url ended (server request).")
+                    endLongPolling(url)
+                    return // Server tells us to quit long polling
+                }
                 val ci = app.currentActivity
                 if (ci!=null) ci.handleAnyIntent(respText)
             }
+            catch (e: ConnectException)  // network error?  TODO retry a few times
+            {
+                if (connectProblems > 500)
+                {
+                    LogIt.info("Long poll to $url connection exception $e, stopping")
+                    endLongPolling(url)
+                    return
+                }
+                connectProblems+=1
+                delay(1000)
+            }
             catch (e: Throwable)  // network error?  TODO retry a few times
             {
+                LogIt.info("Long poll to $url error, stopping: ")
                 LogIt.info(e.toString())
+                endLongPolling(url)
                 return
             }
             delay(200) // limit runaway polling, if the server misbehaves by responding right away
         }
+        LogIt.info("Long poll to $url ended (done).")
+        endLongPolling(url)
     }
 }
 

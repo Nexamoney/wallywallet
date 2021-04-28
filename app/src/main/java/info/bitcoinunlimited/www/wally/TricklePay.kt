@@ -50,7 +50,7 @@ private val LogIt = Logger.getLogger("bu.TricklePay")
 // Must be top level for the serializer to handle it
 @Keep
 @kotlinx.serialization.Serializable
-data class TricklePayAssetInfo(val script: String, val txid: String, val idx: Int)
+data class TricklePayAssetInfo(val script: String, val txid: String, val idx: Int, val amt: Long)
 
 @Keep
 @kotlinx.serialization.Serializable
@@ -66,7 +66,8 @@ data class TxAnalysisResults(
     val imSpendingTokenTypes: Long,  // The tx spends this number of token TYPES currently controlled by this wallet
     val otherInputSatoshis: Long?,  // If this is null, I'm not funding this tx (its likely a partial tx)
     val myInputSatoshis: Long,
-    val ttInfo: Map<GroupId, Long>
+    val ttInfo: Map<GroupId, Long>,
+    val completionException: Exception?
 )
 
 /* Information about payment delegations that have been accepted by the user
@@ -633,8 +634,16 @@ class TricklePayActivity : CommonActivity()
             }
         }
 
-        // Someday the wallet might want to fund groups, etc but for now all it does is pay for txes because the wallet UX can only show that
-        wal.txCompleter(tx, 0, cflags, inputSatoshis)
+        var completionException: Exception? = null
+        try
+        {
+            // Someday the wallet might want to fund groups, etc but for now all it does is pay for txes because the wallet UX can only show that
+            wal.txCompleter(tx, 0, cflags, inputSatoshis)
+        }
+        catch(e: Exception)  // Try to report on the tx even if we can't complete it.
+        {
+            completionException = e
+        }
 
         // LogIt.info("Completed tx: " + tx.toHex())
 
@@ -681,7 +690,7 @@ class TricklePayActivity : CommonActivity()
             }
         }
 
-        return TxAnalysisResults(receivingSats, sendingSats, receivingTokenTypes, sendingTokenTypes, imSpendingTokenTypes, inputSatoshis, iFunded, ttInfo)
+        return TxAnalysisResults(receivingSats, sendingSats, receivingTokenTypes, sendingTokenTypes, imSpendingTokenTypes, inputSatoshis, iFunded, ttInfo, completionException)
     }
 
     fun parseCommonFields(uri: Uri)
@@ -735,8 +744,10 @@ class TricklePayActivity : CommonActivity()
         (GuiTricklePayCustomTx as TricklePayCustomTxFragment).populate(this, uri, tx, analysis)
         displayFragment(GuiTricklePayCustomTx)
 
+        // Ok now that we've displayed what we can, let's throw the problem.
+        if (analysis.completionException != null) throw analysis.completionException;
+        // Or remember the completed transaction for accept/deny user confirmation.
         proposedTx = tx
-
     }
 
     fun handleAssetRequest(uri: Uri)
@@ -760,7 +771,7 @@ class TricklePayActivity : CommonActivity()
             val constraint = spendable.priorOutScript
             if (constraint.matches(stemplate, true) != null)
             {
-                matches.add(TricklePayAssetInfo(constraint.flatten().toHex(), outpoint.txid.hash.toHex(), outpoint.idx.toInt()))
+                matches.add(TricklePayAssetInfo(constraint.flatten().toHex(), outpoint.txid.hash.toHex(), outpoint.idx.toInt(), spendable.amount))
             }
         }
         val resp = TricklePayAssetList(matches)
