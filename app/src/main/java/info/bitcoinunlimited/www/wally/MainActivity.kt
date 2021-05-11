@@ -27,7 +27,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
-import java.math.MathContext
 import java.math.RoundingMode
 import java.net.URL
 import java.util.logging.Logger
@@ -37,7 +36,7 @@ private val LogIt = Logger.getLogger("bitcoinunlimited.mainActivity")
 
 val uriToMbch = 1000.toBigDecimal()  // Todo allow other currencies supported by this wallet
 
-val ERROR_DISPLAY_TIME = 6000L
+val ERROR_DISPLAY_TIME = 10000L
 val NOTICE_DISPLAY_TIME = 4000L
 
 /** if phone is asleep for this time, lock wallets */
@@ -113,7 +112,7 @@ class SleepMonitor(val activity: MainActivity) : BroadcastReceiver()
 }
 
 
-class MainActivity : CommonActivity()
+class MainActivity : CommonNavActivity()
 {
     override var navActivityId = R.id.navigation_home
 
@@ -1167,12 +1166,13 @@ class MainActivity : CommonActivity()
         {
             if (data != null)
             {
+                val details = data.getStringExtra("details")
                 val err = data.getStringExtra("error")
-                if (err != null) displayError(err)
+                if (err != null) displayError(err, details)
                 else  // Don't display any notices if there's an error
                 {
                     val note = data.getStringExtra("notice")
-                    if (note != null) displayNotice(note)
+                    if (note != null) displayNotice(note, details)
                 }
             }
             return;

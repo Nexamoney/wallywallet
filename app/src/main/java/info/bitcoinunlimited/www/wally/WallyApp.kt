@@ -8,8 +8,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.graphics.Bitmap
-import android.net.Uri
-import android.net.http.HttpResponseCache.install
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.view.View
@@ -19,7 +17,6 @@ import bitcoinunlimited.libbitcoincash.appI18n
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.features.*
-import io.ktor.client.features.get
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.coroutines.CoroutineScope
@@ -225,13 +222,13 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
 }
 
 
-//data class LongPollInfo(val proto: String, val hostPort: String, val cookie: String?)
+data class LongPollInfo(val proto: String, val hostPort: String, val cookie: String?, var active:Boolean=true)
 
 class AccessHandler(val app: WallyApp)
 {
     var done: Boolean = false
 
-    val activeLongPolls = mutableSetOf<String>()
+    val activeLongPolls = mutableMapOf<String,LongPollInfo>()
 
 /* How to know that the app is shutting down in android?
     fun endAll()
@@ -275,21 +272,24 @@ class AccessHandler(val app: WallyApp)
         val cookieString = if (cookie != null) "?cookie=$cookie" else ""
         val url = proto + "//" + hostPort + "/_lp" + cookieString
 
-        synchronized(activeLongPolls)
+        val lpInfo = synchronized(activeLongPolls)
         {
             if (activeLongPolls.contains(url))
             {
-                LogIt.info("Already long polling to $url")
-                return
+                LogIt.info("Already long polling to $url, replacing it.")
+                activeLongPolls[url]?.active = false
             }
-            activeLongPolls.add(url)
+            activeLongPolls.put(url, LongPollInfo(proto, hostPort, cookie))
+            activeLongPolls[url]!!
         }
 
         val client = HttpClient(Android)
         {
             install(HttpTimeout) { requestTimeoutMillis = 60000 } // Long timeout because we don't expect a response right away; its a long poll
         }
-        while (!done)
+        
+        
+        while (!done && lpInfo.active)
         {
             try
             {
@@ -319,7 +319,7 @@ class AccessHandler(val app: WallyApp)
                 connectProblems+=1
                 delay(1000)
             }
-            catch (e: Throwable)  // network error?  TODO retry a few times
+            catch (e: Throwable)
             {
                 LogIt.info("Long poll to $url error, stopping: ")
                 LogIt.info(e.toString())
@@ -733,7 +733,7 @@ class ActivityLifecycleHandler(private val app: WallyApp) : Application.Activity
         //if (app.currentActivity is CommonActivity)
         try
         {
-            app.currentActivity = act as CommonActivity
+            app.currentActivity = act as CommonNavActivity
         }
         catch(e: Throwable)  // Some other activity (QR scanner)
         {
@@ -762,7 +762,7 @@ class ActivityLifecycleHandler(private val app: WallyApp) : Application.Activity
         //if (app.currentActivity is CommonActivity)
          try
          {
-             app.currentActivity = act as CommonActivity
+             app.currentActivity = act as CommonNavActivity
          }
          catch(e: Throwable)  // Some other activity (QR scanner)
          {
@@ -795,7 +795,7 @@ class WallyApp : Application()
 
     val accounts: MutableMap<String, Account> = mutableMapOf()
     val accessHandler = AccessHandler(this)
-    var currentActivity: CommonActivity? = null
+    var currentActivity: CommonNavActivity? = null
 
 
     val primaryAccount: Account

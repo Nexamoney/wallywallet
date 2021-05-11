@@ -10,8 +10,6 @@ import android.os.Bundle
 import android.net.Uri
 import android.view.*
 import androidx.annotation.LayoutRes
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -116,7 +114,7 @@ class RecyclerAdapter(private val domains: ArrayList<IdentityDomain>) : Recycler
 
 }
 
-class IdentityActivity : CommonActivity()
+class IdentityActivity : CommonNavActivity()
 {
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var adapter: RecyclerAdapter

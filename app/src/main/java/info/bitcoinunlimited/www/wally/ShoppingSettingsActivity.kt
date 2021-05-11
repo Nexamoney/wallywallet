@@ -4,17 +4,13 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.ActionBar
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import bitcoinunlimited.libbitcoincash.*
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_shopping_settings.*
 import kotlinx.android.synthetic.main.shopping_settings_list_item.view.*
 import java.lang.Exception
@@ -140,7 +136,7 @@ private class ShoppingEditRecyclerAdapter(private val activity: ShoppingSettings
 
 
 
-class ShoppingSettingsActivity : CommonActivity()
+class ShoppingSettingsActivity : CommonNavActivity()
 {
     override var navActivityId = R.id.navigation_shopping
 

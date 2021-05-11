@@ -5,7 +5,6 @@ package info.bitcoinunlimited.www.wally
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.drawable.ColorDrawable
-import android.opengl.Visibility
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -193,7 +192,7 @@ private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, 
 
 }
 
-class TxHistoryActivity : CommonActivity()
+class TxHistoryActivity : CommonNavActivity()
 {
     lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var adapter: TxHistoryRecyclerAdapter

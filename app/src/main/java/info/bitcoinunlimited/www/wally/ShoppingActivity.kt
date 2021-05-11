@@ -13,15 +13,11 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import bitcoinunlimited.libbitcoincash.Hash256
-import bitcoinunlimited.libbitcoincash.PaymentHistory
 import kotlinx.android.synthetic.main.activity_shopping.*
 import kotlinx.android.synthetic.main.shopping_list_item.view.*
-import java.lang.Exception
 import java.util.logging.Logger
 
 private val LogIt = Logger.getLogger("bitcoinunlimited.shoppingActivity")
@@ -134,7 +130,7 @@ private class ShoppingRecyclerAdapter(private val activity: ShoppingActivity, pr
 }
 
 
-class ShoppingActivity : CommonActivity()
+class ShoppingActivity : CommonNavActivity()
 {
     override var navActivityId = R.id.navigation_shopping
     lateinit var linearLayoutManager: LinearLayoutManager

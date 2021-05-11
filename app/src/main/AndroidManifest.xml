@@ -146,6 +146,11 @@
             android:launchMode="singleTask"
             android:parentActivityName=".MainActivity" />
         <activity
+            android:name=".AlertActivity"
+            android:label="@string/title_activity_alert_history"
+            android:launchMode="standard"
+            />
+        <activity
             android:name=".SplitBillActivity"
             android:label="@string/title_split_bill"
             android:launchMode="singleTask"

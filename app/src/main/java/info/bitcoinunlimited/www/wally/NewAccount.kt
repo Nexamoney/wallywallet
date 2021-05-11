@@ -8,10 +8,8 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.MultiAutoCompleteTextView
 import android.widget.MultiAutoCompleteTextView.Tokenizer
-import android.widget.MultiAutoCompleteTextView.CommaTokenizer
 import bitcoinunlimited.libbitcoincash.*
 import kotlinx.android.synthetic.main.activity_new_account.*
-import kotlinx.coroutines.runBlocking
 import java.util.logging.Logger
 import kotlin.concurrent.thread
 
@@ -58,7 +56,7 @@ class CharTokenizer(val separator:Char):Tokenizer
     }
 }
 
-class NewAccount : CommonActivity()
+class NewAccount : CommonNavActivity()
 {
     override var navActivityId = R.id.navigation_home
 

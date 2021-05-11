@@ -467,7 +467,7 @@ fun generateAndLogSomeTricklePayRequests(application: WallyApp)
 }
 
 
-class TricklePayActivity : CommonActivity()
+class TricklePayActivity : CommonNavActivity()
 {
     override var navActivityId = R.id.navigation_trickle_pay
 
@@ -616,11 +616,11 @@ class TricklePayActivity : CommonActivity()
 
         var cflags = TxCompletionFlags.FUND_NATIVE or TxCompletionFlags.SIGN or TxCompletionFlags.BIND_OUTPUT_PARAMETERS
 
-        if (tflags != null)
+        if (flags != null)
         {
             // If nofund flag is set turn off fund_native
-            if ((tflags and TDPP_FLAG_NOFUND) > 0) cflags = cflags and (TxCompletionFlags.FUND_NATIVE.inv())
-            if ((tflags and TDPP_FLAG_PARTIAL) > 0) cflags = cflags or TxCompletionFlags.PARTIAL
+            if ((flags and TDPP_FLAG_NOFUND) > 0) cflags = cflags and (TxCompletionFlags.FUND_NATIVE.inv())
+            if ((flags and TDPP_FLAG_PARTIAL) > 0) cflags = cflags or TxCompletionFlags.PARTIAL
         }
 
         // Look at the inputs and match with UTXOs that I have, so I have the additional info required to sign this input
@@ -638,6 +638,7 @@ class TricklePayActivity : CommonActivity()
         try
         {
             // Someday the wallet might want to fund groups, etc but for now all it does is pay for txes because the wallet UX can only show that
+            //(wal as CommonWallet).txCompleter2(tx, 0, cflags, inputSatoshis)
             wal.txCompleter(tx, 0, cflags, inputSatoshis)
         }
         catch(e: Exception)  // Try to report on the tx even if we can't complete it.
@@ -742,6 +743,10 @@ class TricklePayActivity : CommonActivity()
         LogIt.info(sourceLoc() + ": Completed tx: " + tx.toHex())
 
         (GuiTricklePayCustomTx as TricklePayCustomTxFragment).populate(this, uri, tx, analysis)
+        if ((tflags and TDPP_FLAG_PARTIAL) != 0)  // Change the title if the request is for a partial transaction
+        {
+            (GuiTricklePayCustomTx as TricklePayCustomTxFragment).GuiSpecialTxTitle.text = i18n(R.string.IncompleteTpTransactionFrom)
+        }
         displayFragment(GuiTricklePayCustomTx)
 
         // Ok now that we've displayed what we can, let's throw the problem.
@@ -768,10 +773,13 @@ class TricklePayActivity : CommonActivity()
         var matches = mutableListOf<TricklePayAssetInfo>()
         for ((outpoint, spendable) in wal.unspent)
         {
-            val constraint = spendable.priorOutScript
-            if (constraint.matches(stemplate, true) != null)
+            if (spendable.spentHeight < 0)  // unspent
             {
-                matches.add(TricklePayAssetInfo(constraint.flatten().toHex(), outpoint.txid.hash.toHex(), outpoint.idx.toInt(), spendable.amount))
+                val constraint = spendable.priorOutScript
+                if (constraint.matches(stemplate, true) != null)
+                {
+                    matches.add(TricklePayAssetInfo(constraint.flatten().toHex(), outpoint.txid.hash.toHex(), outpoint.idx.toInt(), spendable.amount))
+                }
             }
         }
         val resp = TricklePayAssetList(matches)
@@ -822,6 +830,7 @@ class TricklePayActivity : CommonActivity()
                 val host = iuri.getHost()
                 val path = iuri.getPath()
                 LogIt.info("Trickle Pay Intent host=${host} path=${path}")
+                LogIt.info("Full Intent=${iuri.toString()}")
                 if (path != null)
                 {
                     if (path == "/reg")  // Handle registration

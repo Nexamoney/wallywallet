@@ -55,6 +55,7 @@
     <string name="Processing">processing...</string>
     <string name="receiving">receiving</string>
     <string name="sending">sending</string>
+    <string name="noAdditionalDetails">no additional details</string>
 
     <!-- Implication is "no charge" or "no cost" for a transaction -->
     <string name="nothing">nothing</string>
@@ -180,6 +181,8 @@
     <string name="providePhone">Provide your phone number?</string>
     <string name="provideAttestations">Provide attestations?</string>
     <string name="provideAttestationsToolTip">Attestations are 3rd party signatures that confirm the data you supply</string>
+    <string name="primaryAccountRequired" formatted="false">A %primCurrency account is needed to use this feature</string>
+    <string name="primaryAccountRequiredDetails" formatted="false">Some features are linked to certain cryptocurrencies.  You must create or unlock an account on that cryptocurrency before using the feature.</string>
     <string name="UnknownDomainRegisterFirst">Unknown domain, register first</string>
 
     <string name="commonIdentityQRCode">QR code</string>
@@ -402,11 +405,13 @@
     <string name="TpAssetRequestAccepted">Sending assets</string>
 
     <string name="SpecialTpTransactionFrom">Incoming Special Transaction From</string>
+    <string name="IncompleteTpTransactionFrom">Incoming Firm Offer Request From</string>
     <string name="TpEntails">Entails</string>
     <string name="TpAssetRequestFrom">Incoming Asset Request From</string>
-    <string name="ForAFeeOf" formatted="false">for a fee of %fee %units</string>
+    <string name="ForAFeeOf" formatted="false">including a fee of %fee %units</string>
     <string name="TpExchangingTokens">and exchanging tokens.</string>
     <string name="TpSendingTokens">and sending tokens.</string>
     <string name="TpReceivingTokens">and receiving tokens.</string>
 
+    <string name="title_activity_alert_history">Recent Messages</string>
 </resources>

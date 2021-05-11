@@ -21,7 +21,7 @@ private val LogIt = Logger.getLogger("bitcoinunlimited.splitBillActivity")
 
 // TODO: allow a bill split to be shared via various means like SM or email
 
-class SplitBillActivity : CommonActivity()
+class SplitBillActivity : CommonNavActivity()
 {
     override var navActivityId = -1
 

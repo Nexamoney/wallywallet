@@ -53,39 +53,14 @@ enum class ConfirmationFor
 }
 
 // SharedPreferences is used to communicate settings from this activity to the rest of the program and to persist these choices between executions
-class Settings : AppCompatActivity()
+class Settings : CommonActivity()
 {
-
     var app: WallyApp? = null
 
     val accounts:MutableMap<String,Account>
         get() = app!!.accounts
 
-    var origTitle = String()
-    var origTitleBackground: ColorDrawable? = null  //* The app's title background color (I will sometimes overwrite it with a temporary error message)
     var askingAbout:ConfirmationFor? = null
-
-    /** Display an short notification string on the title bar, and then clear it after a bit */
-    fun displayNotice(resource: Int) = displayNotice(getString(resource))
-
-    /** Display an short notification string on the title bar, and then clear it after a bit */
-    fun displayNotice(msg: String, then: (()->Unit)? = null, time: Long = NOTICE_DISPLAY_TIME)
-    {
-        laterUI {
-            // This coroutine has to be limited to this thread because only the main thread can touch UI views
-            // Display the error by changing the title and title bar color temporarily
-            setTitle(msg);
-
-            var titlebar: View = findViewById(R.id.action_bar)
-            val errorColor = ContextCompat.getColor(applicationContext, R.color.notice)
-            titlebar.background = ColorDrawable(errorColor)
-
-            delay(time)
-            setTitle(origTitle)
-            origTitleBackground?.let { titlebar.background = it }
-            if (then != null) then()
-        }
-    }
 
     @Suppress("UNUSED_PARAMETER")
     fun onFiatChange(guiElem: View?): Boolean

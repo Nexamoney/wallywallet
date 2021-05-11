@@ -3,11 +3,8 @@
 package info.bitcoinunlimited.www.wally
 
 import android.os.Bundle
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import androidx.appcompat.app.AppCompatActivity
-import android.widget.TextView
 
-class InvoicesActivity : CommonActivity()
+class InvoicesActivity : CommonNavActivity()
 {
     override var navActivityId = R.id.navigation_invoices
 

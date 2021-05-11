@@ -7,17 +7,10 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
-import android.widget.ActionMenuView
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import androidx.appcompat.app.AppCompatActivity
-import android.widget.TextView
 import androidx.preference.PreferenceManager
 import kotlinx.android.synthetic.main.activity_identity_op.*
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import java.io.FileNotFoundException
 import java.io.IOException
-import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
@@ -32,7 +25,7 @@ val IDENTITY_URI_SCHEME = "bchidentity"
 
 open class IdentityOpException(msg: String, shortMsg: String? = null, severity: ErrorSeverity = ErrorSeverity.Abnormal) : BUException(msg, shortMsg, severity)
 
-class IdentityOpActivity : CommonActivity()
+class IdentityOpActivity : CommonNavActivity()
 {
     override var navActivityId = -1
 
@@ -108,8 +101,9 @@ class IdentityOpActivity : CommonActivity()
                     }
                     catch (e: PrimaryWalletInvalidException)
                     {
-                        displayError(R.string.pleaseWait)
-                        null
+                        //displayError(R.string.pleaseWait)
+                        clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to PRIMARY_WALLET), i18n(R.string.primaryAccountRequiredDetails))
+                        return
                     }
 
                 // If the primary account is locked do not proceed
@@ -132,7 +126,7 @@ class IdentityOpActivity : CommonActivity()
                         if (queries["op"]?.toLowerCase() != "reg")
                         {
                             blankActivity()
-                            displayError(i18n(R.string.UnknownDomainRegisterFirst), { finish() })
+                            displayError(R.string.UnknownDomainRegisterFirst, null, { finish() })
                             return
                         }
                         if (triggeredNewDomain == false)  // I only want to drop into the new domain settings once
@@ -234,7 +228,7 @@ class IdentityOpActivity : CommonActivity()
         val acc = account
         if (acc == null)
         {
-            displayError(R.string.pleaseWait)
+            clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to PRIMARY_WALLET), i18n(R.string.primaryAccountRequiredDetails))
             return
         }
 
@@ -250,7 +244,7 @@ class IdentityOpActivity : CommonActivity()
             else
             {
                 blankActivity()
-                displayError(i18n(R.string.NoAccounts), { finish() })
+                displayError(R.string.NoAccounts, null, { finish() })
                 return
             }
         }
@@ -300,7 +294,7 @@ class IdentityOpActivity : CommonActivity()
                 }
                 catch (e: PrimaryWalletInvalidException)
                 {
-                    displayError(R.string.pleaseWait)
+                    clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to PRIMARY_WALLET), i18n(R.string.primaryAccountRequiredDetails))
                     return@launch
                 }
                 if (act.locked)
@@ -339,7 +333,7 @@ class IdentityOpActivity : CommonActivity()
                             LogIt.info("login response code:" + req.responseCode.toString() + " response: " + resp)
                             if ((req.responseCode >= 200) and (req.responseCode < 250))
                             {
-                                displayNotice(resp, 1000) { clearIntentAndFinish() }
+                                displayNotice(resp, null, 1000) { clearIntentAndFinish() }
                             }
                             else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding (often switching from http to https)
                             {
@@ -349,20 +343,20 @@ class IdentityOpActivity : CommonActivity()
                             }
                             else
                             {
-                                displayError(resp, { clearIntentAndFinish() })
+                                displayError(resp, null, { clearIntentAndFinish() })
                             }
                         }
                         catch (e: IOException)
                         {
-                            displayError(i18n(R.string.connectionAborted), { clearIntentAndFinish() })
+                            displayError(R.string.connectionAborted, null, { clearIntentAndFinish() })
                         }
                         catch (e: FileNotFoundException)
                         {
-                            displayError(i18n(R.string.badLink), { clearIntentAndFinish() })
+                            displayError(R.string.badLink, null, { clearIntentAndFinish() })
                         }
                         catch (e: java.net.ConnectException)
                         {
-                            displayError(i18n(R.string.connectionException), { clearIntentAndFinish() })
+                            displayError(R.string.connectionException, null, { clearIntentAndFinish() })
                         }
 
                         break@getloop  // only way to actually loop is to hit a 301 or 302
@@ -445,7 +439,7 @@ class IdentityOpActivity : CommonActivity()
                             LogIt.info("reg response code:" + req.responseCode.toString() + " response: " + resp)
                             if ((req.responseCode >= 200) and (req.responseCode < 300))
                             {
-                                displayNotice(resp, 1000) { clearIntentAndFinish() }
+                                displayNotice(resp, null, 1000) { clearIntentAndFinish() }
                             }
                             else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding
                             {
@@ -455,20 +449,20 @@ class IdentityOpActivity : CommonActivity()
                             }
                             else
                             {
-                                displayError(resp, { clearIntentAndFinish() })
+                                displayError(resp, null, { clearIntentAndFinish() })
                             }
                         }
                         catch (e: IOException)
                         {
-                            displayError(i18n(R.string.connectionAborted), { clearIntentAndFinish() })
+                            displayError(R.string.connectionAborted, null, { clearIntentAndFinish() })
                         }
                         catch (e: FileNotFoundException)
                         {
-                            displayError(i18n(R.string.badLink), { clearIntentAndFinish() })
+                            displayError(R.string.badLink, null, { clearIntentAndFinish() })
                         }
                         catch (e: java.net.ConnectException)
                         {
-                            displayError(i18n(R.string.connectionException), { clearIntentAndFinish() })
+                            displayError(R.string.connectionException, null,{ clearIntentAndFinish() })
                         }
                         break@postloop  // Only way to actually loop is to get a http 301 or 302
                     }
@@ -497,10 +491,11 @@ class IdentityOpActivity : CommonActivity()
         clearIntentAndFinish()
     }
 
-    fun clearIntentAndFinish(error: String? = null)
+    fun clearIntentAndFinish(error: String? = null, details: String? = null)
     {
         intent.putExtra("repeat", "true")
         if (error != null) intent.putExtra("error", error)
+        if (details != null) intent.putExtra("details", details)
         setResult(Activity.RESULT_OK, intent)
         finish()
     }

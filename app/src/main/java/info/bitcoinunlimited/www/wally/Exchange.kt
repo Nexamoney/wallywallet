@@ -4,7 +4,7 @@ package info.bitcoinunlimited.www.wally
 
 import android.os.Bundle
 
-class ExchangeActivity : CommonActivity()
+class ExchangeActivity : CommonNavActivity()
 {
     override var navActivityId = R.id.navigation_shopping
 

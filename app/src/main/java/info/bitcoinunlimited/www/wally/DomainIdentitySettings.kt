@@ -3,15 +3,11 @@
 package info.bitcoinunlimited.www.wally
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.Switch
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity;
 import bitcoinunlimited.libbitcoincash.BCHidentityParams
-import bitcoinunlimited.libbitcoincash.CommonWallet
 import bitcoinunlimited.libbitcoincash.IdentityDomain
 import bitcoinunlimited.libbitcoincash.launch
 
@@ -23,7 +19,7 @@ private val LogIt = Logger.getLogger("bu.domainidentitysettings")
 
 
 @kotlinx.coroutines.ExperimentalCoroutinesApi
-class DomainIdentitySettings : CommonActivity()
+class DomainIdentitySettings : CommonNavActivity()
 {
     var ui4params = arrayOf<Switch>()
     val reqs = mutableMapOf<String, String>()

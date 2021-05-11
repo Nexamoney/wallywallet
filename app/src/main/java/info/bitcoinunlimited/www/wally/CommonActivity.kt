@@ -25,6 +25,7 @@ import android.net.Uri
 import android.view.Menu
 import android.view.inputmethod.InputMethodManager
 import bitcoinunlimited.libbitcoincash.handleThreadException
+import java.time.Instant
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
@@ -32,20 +33,28 @@ private val LogIt = Logger.getLogger("bitcoinunlimited.commonActivity")
 
 var currentActivity: CommonActivity? = null
 public var appResources: Resources? = null
+
 // TODO translate libbitcoincash error codes to our i18n strings
-val lbcMap = mapOf<Int,Int>(RinsufficentBalance to R.string.insufficentBalance)
+val lbcMap = mapOf<Int, Int>(RinsufficentBalance to R.string.insufficentBalance)
+
+const val EXCEPTION_LEVEL = 200
+const val ERROR_LEVEL = 100
+const val NOTICE_LEVEL = 50
+data class Alert(val msg: String, val details: String?, val level: Int, val date: Instant = Instant.now())
+
+val alerts = arrayListOf<Alert>()
 
 // Lookup strings in strings.xml
-fun i18n(id: Int):String
+fun i18n(id: Int): String
 {
     if (id == -1) return ""
     try
     {
         val s = appResources?.getString(id)
         if (s != null) return s
+    } catch (e: Resources.NotFoundException)
+    {
     }
-    catch(e: Resources.NotFoundException)
-    {}
 
     LogIt.severe("Missing strings.xml translation for " + id.toString() + "(0x" + id.toString(16));
     return "STR" + id.toString()
@@ -53,19 +62,37 @@ fun i18n(id: Int):String
 
 
 @SuppressLint("Registered")
-open class CommonActivity : AppCompatActivity()
+open class CommonNavActivity : CommonActivity()
 {
     private val onNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item -> bottomNavSelectHandler(item, this) }
+    open var navActivityId = -1 //* Change this in derived classes to identify which navBar item this activity is
 
+    override fun onStart()
+    {
+        super.onStart()
+
+        // Finding a UI element has to happen after the derived class has inflated the view, so it cannot be in onCreate.
+        val navView: BottomNavigationView = findViewById(R.id.nav_view)
+        navView.setOnNavigationItemSelectedListener(null)
+        if (navActivityId >= 0)  // This will both change the selection AND switch to that activity if it is different than the current one!
+            navView.selectedItemId = navActivityId
+        navView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
+    }
+}
+
+@SuppressLint("Registered")
+open class CommonActivity : AppCompatActivity()
+{
     var origTitle = String()  //* The app's actual title (I will sometimes overwrite it with a temporary error message)
     var origTitleBackground: ColorDrawable? = null  //* The app's title background color (I will sometimes overwrite it with a temporary error message)
-
-    open var navActivityId = -1 //* Change this in derived classes to identify which navBar item this activity is
+    var errorCount = 0 // Used to make sure one error's clear doesn't prematurely clear out a different problem
 
     @kotlinx.coroutines.ExperimentalCoroutinesApi
     protected val coGuiScope = MainScope()
+
     @kotlinx.coroutines.ExperimentalCoroutinesApi
     protected val coMiscCtxt: CoroutineContext = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
+
     @kotlinx.coroutines.ExperimentalCoroutinesApi
     protected val coMiscScope: CoroutineScope = kotlinx.coroutines.CoroutineScope(coMiscCtxt)
 
@@ -85,7 +112,15 @@ open class CommonActivity : AppCompatActivity()
 
         titlebar.setOnClickListener {
             LogIt.info("title button pressed")
-            // TODO connect to a popup window that shows recent errors
+            if (this is AlertActivity)
+            {
+                finish()  // If you click the header bar when looking at the error messages, then go back
+            }
+            else
+            {
+                var intent = Intent(this, AlertActivity::class.java)  // Otherwise start up the alert activity
+                startActivity(intent)
+            }
         }
 
     }
@@ -94,14 +129,6 @@ open class CommonActivity : AppCompatActivity()
     {
         currentActivity = this
         super.onStart()
-
-        // Finding a UI element has to happen after the derived class has inflated the view, so it cannot be in onCreate.
-        val navView: BottomNavigationView = findViewById(R.id.nav_view)
-        navView.setOnNavigationItemSelectedListener(null)
-        if (navActivityId >= 0)  // This will both change the selection AND switch to that activity if it is different than the current one!
-            navView.selectedItemId = navActivityId
-        navView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
-
     }
 
     @kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -118,6 +145,7 @@ open class CommonActivity : AppCompatActivity()
     {
         var displayString: String
         val buExc = exc as? BUException
+        var stack: String? = null
         if (buExc != null)
         {
             if (buExc.severity != ErrorSeverity.Expected)
@@ -131,14 +159,14 @@ open class CommonActivity : AppCompatActivity()
         else
         {
             // Log all non-BU exceptions because we don't know if they are expected
-            val stack = Log.getStackTraceString(exc)
+            stack = Log.getStackTraceString(exc)
             LogIt.severe(exc.toString())
             LogIt.severe(stack)
 
             displayString = exc.message ?: getString(R.string.unknownError)
         }
 
-        displayError(displayString)
+        displayError(displayString, stack)
     }
 
     /** Display an short error string on the title bar, and then clear it after a bit */
@@ -148,62 +176,97 @@ open class CommonActivity : AppCompatActivity()
         displayError(getString(resource))
     }
 
+    /** Display an short error string on the title bar, and then clear it after a bit */
+    fun displayError(resource: Int, details: Int? = null, then: (() -> Unit)? = null)
+    {
+        lastErrorId = resource
+        if (details == null)
+            displayError(i18n(resource), null, then)
+        else
+            displayError(i18n(resource), i18n(details), then)
+    }
+
     var menuHidden = 0
     override fun onCreateOptionsMenu(menu: Menu): Boolean
     {
         var ret = super.onCreateOptionsMenu(menu)
 
         for (i in 0 until menu.size())
-            menu.getItem(i).setVisible(menuHidden==0)
+            menu.getItem(i).setVisible(menuHidden == 0)
 
         return ret
     }
 
     /** Display an short error string on the title bar, and then clear it after a bit */
-    fun displayError(err: String, then: (()->Unit)? = null)
+    fun displayError(err: String, details:String? = null, then: (() -> Unit)? = null)
     {
-        lastErrorString = err
         laterUI {
             // This coroutine has to be limited to this thread because only the main thread can touch UI views
             // Display the error by changing the title and title bar color temporarily
-            setTitle(err);
-
             val titlebar: View = findViewById(R.id.action_bar)
-            menuHidden+=1
-            invalidateOptionsMenu()
-            val errorColor = ContextCompat.getColor(applicationContext, R.color.error)
-            titlebar.background = ColorDrawable(errorColor)
-
+            val myError = synchronized(errorCount)
+            {
+                setTitle(err)
+                lastErrorString = err
+                errorCount += 1
+                menuHidden += 1
+                alerts.add(Alert(err, details, ERROR_LEVEL))
+                invalidateOptionsMenu()
+                val errorColor = ContextCompat.getColor(applicationContext, R.color.error)
+                titlebar.background = ColorDrawable(errorColor)
+                errorCount
+            }
             delay(ERROR_DISPLAY_TIME)
-            menuHidden-=1
-            invalidateOptionsMenu()
-            setTitle(origTitle)
-            origTitleBackground?.let { titlebar.background = it }
+            synchronized(errorCount)
+            {
+                menuHidden -= 1
+                invalidateOptionsMenu()
+                if (errorCount == myError)
+                {
+                    setTitle(origTitle)
+                    origTitleBackground?.let { titlebar.background = it }
+                }
+            }
             if (then != null) then()
         }
 
     }
 
     /** Display an short notification string on the title bar, and then clear it after a bit */
-    fun displayNotice(resource: Int) = displayNotice(getString(resource))
-    /** Display an short notification string on the title bar, and then clear it after a bit */
-    fun displayNotice(resource: Int, time: Long = NOTICE_DISPLAY_TIME, then: (()->Unit)?=null) = displayNotice(getString(resource), time, then)
+    fun displayNotice(resource: Int, details: Int? = null)
+    {
+        if (details == null) displayNotice(i18n(resource), null)
+        else displayNotice(i18n(resource), i18n(details))
+    }
 
     /** Display an short notification string on the title bar, and then clear it after a bit */
-    fun displayNotice(msg: String, time: Long = NOTICE_DISPLAY_TIME, then: (()->Unit)? = null)
+    fun displayNotice(resource: Int, time: Long = NOTICE_DISPLAY_TIME, then: (() -> Unit)? = null) = displayNotice(i18n(resource), null, time, then)
+
+    /** Display an short notification string on the title bar, and then clear it after a bit */
+    fun displayNotice(msg: String, details: String? = null, time: Long = NOTICE_DISPLAY_TIME, then: (() -> Unit)? = null)
     {
         laterUI {
             // This coroutine has to be limited to this thread because only the main thread can touch UI views
             // Display the error by changing the title and title bar color temporarily
-            setTitle(msg);
-
             var titlebar: View = findViewById(R.id.action_bar)
             val errorColor = ContextCompat.getColor(applicationContext, R.color.notice)
-            titlebar.background = ColorDrawable(errorColor)
-
+            val myError = synchronized(errorCount)
+            {
+                setTitle(msg);
+                alerts.add(Alert(msg, details, NOTICE_LEVEL))
+                titlebar.background = ColorDrawable(errorColor)
+                errorCount +=1
+                errorCount
+            }
             delay(time)
-            setTitle(origTitle)
-            origTitleBackground?.let { titlebar.background = it }
+            synchronized(errorCount)
+            {
+                if (myError == errorCount)
+                {
+                    setTitle(origTitle)
+                    origTitleBackground?.let { titlebar.background = it }
+                }
+            }
             if (then != null) then()
         }
     }
@@ -249,8 +312,7 @@ open class CommonActivity : AppCompatActivity()
             try
             {
                 fn()
-            }
-            catch(e:Exception) // Uncaught exceptions will end the app
+            } catch (e: Exception) // Uncaught exceptions will end the app
             {
                 handleThreadException(e)
             }
@@ -265,8 +327,7 @@ open class CommonActivity : AppCompatActivity()
             try
             {
                 fn()
-            }
-            catch(e:Exception)  // Uncaught exceptions will end the app
+            } catch (e: Exception)  // Uncaught exceptions will end the app
             {
                 handleThreadException(e)
             }
@@ -307,8 +368,7 @@ open class CommonActivity : AppCompatActivity()
                 }
             }
             else throw UnavailableException(R.string.receiveAddressUnavailable)
-        }
-        catch (e: Exception)
+        } catch (e: Exception)
         {
             displayException(e)
         }

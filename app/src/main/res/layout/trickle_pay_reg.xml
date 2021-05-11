@@ -7,7 +7,7 @@
     tools:context=".TricklePayRegFragment">
 
     <TextView
-        android:id="@+id/GuiAcceptQ"
+        android:id="@+id/GuiAcceptRegTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/AcceptTpRegistration"
@@ -43,7 +43,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GuiAcceptQ" />
+        app:layout_constraintTop_toBottomOf="@+id/GuiAcceptRegTitle" />
 
     <TextView
         android:id="@+id/GuiTricklePayTopic"

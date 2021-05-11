@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.welcomef3.*
 
 var wallyApp: WallyApp? = null
 
-class Welcome : CommonActivity()
+class Welcome : CommonNavActivity()
 {
     var walletCreated=false
     var enteredIdentity = false
