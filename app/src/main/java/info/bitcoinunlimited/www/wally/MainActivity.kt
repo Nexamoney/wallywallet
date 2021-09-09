@@ -1264,11 +1264,11 @@ class MainActivity : CommonNavActivity()
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?)
+    override fun onSaveInstanceState(outState: Bundle)
     {
         if (outState != null)
         {
-            if (outPersistentState != null) super.onSaveInstanceState(outState, outPersistentState)
+            super.onSaveInstanceState(outState)
             outState.putString("sendToAddress", sendToAddress.text.toString())
             outState.putString("sendQuantity", sendQuantity.text.toString())
             outState.putString("sendCurrencyType", sendCurrencyType.selectedItem as String)
