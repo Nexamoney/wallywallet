@@ -54,7 +54,7 @@ var dbPrefix = if (RunningTheTests()) "guitest_" else if (REG_TEST_ONLY == true)
 
 val SupportedBlockchains = if (INCLUDE_NEXTCHAIN)
     mapOf("BCH (Bitcoin Cash)" to ChainSelector.BCHMAINNET,
-        "XNEX (NextChain)" to ChainSelector.NEXTCHAIN,
+        "NEX (NextChain)" to ChainSelector.NEXTCHAIN,
         "TBCH (Testnet Bitcoin Cash)" to ChainSelector.BCHTESTNET,
         "RBCH (Regtest Bitcoin Cash)" to ChainSelector.BCHREGTEST)
 else
@@ -115,7 +115,7 @@ fun GetCnxnMgr(chain: ChainSelector, name: String? = null): CnxnMgr
             ChainSelector.BCHREGTEST -> MultiNodeCnxnMgr(name ?: "RBCH", ChainSelector.BCHREGTEST, arrayOf(SimulationHostIP))
             ChainSelector.NEXTCHAIN ->
             {
-                val cmgr = MultiNodeCnxnMgr(name ?: "XNEX", ChainSelector.NEXTCHAIN, arrayOf("seed.nextchain.cash", "node1.nextchain.cash", "node2.nextchain.cash"))
+                val cmgr = MultiNodeCnxnMgr(name ?: "NEX", ChainSelector.NEXTCHAIN, arrayOf("seed.nextchain.cash", "node1.nextchain.cash", "node2.nextchain.cash"))
                 cmgr.desiredConnectionCount = 2  // XNEX chain doesn't have many nodes so reduce the desired connection count or there may be more desired nodes than exist in the chain
                 cmgr
             }
@@ -204,7 +204,7 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
             // Bitcoin Cash mainnet chain
             ChainSelector.NEXTCHAIN -> Blockchain(
                 ChainSelector.NEXTCHAIN,
-                name ?: "XNEX",
+                name ?: "NEX",
                 cnxnMgr,
                 genesisBlockHash = Hash256("a73e8992af2a3b498c5114a6144b03bc41de938b39643fd82030f9721c0f8f1e"),
                 checkpointPriorBlockId = Hash256("a73e8992af2a3b498c5114a6144b03bc41de938b39643fd82030f9721c0f8f1e"),

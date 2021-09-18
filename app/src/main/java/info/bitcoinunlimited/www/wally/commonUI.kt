@@ -39,7 +39,7 @@ private val LogIt = Logger.getLogger("bitcoinunlimited.commonUI")
 
 fun isCashAddrScheme(s: String): Boolean
 {
-    return (s=="BITCOINCASH") || (s=="bitcoincash") || (s=="bchtest") || (s=="BCHTEST") || (s=="bchreg") || (s=="BCHREG") || (s=="XNEX") || (s=="xnex")
+    return (s=="BITCOINCASH") || (s=="bitcoincash") || (s=="bchtest") || (s=="BCHTEST") || (s=="bchreg") || (s=="BCHREG") || (s=="NEX") || (s=="nex")
 }
 
 /** Do whatever you pass within the user interface context, synchronously */
