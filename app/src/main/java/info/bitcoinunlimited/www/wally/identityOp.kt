@@ -123,7 +123,7 @@ class IdentityOpActivity : CommonNavActivity()
                     if (idData == null)
                     {
                         val queries = iuri.queryMap()
-                        if (queries["op"]?.toLowerCase() != "reg")
+                        if (queries["op"]?.lowercase() != "reg")
                         {
                             blankActivity()
                             displayError(R.string.UnknownDomainRegisterFirst, null, { finish() })
