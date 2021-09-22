@@ -310,7 +310,7 @@ class IdentityOpActivity : CommonNavActivity()
                 val secret = identityDest.secret ?: throw IdentityException("Wallet failed to provide an identity with a secret", "bad wallet", ErrorSeverity.Severe)
                 val address = identityDest.address ?: throw IdentityException("Wallet failed to provide an identity with an address", "bad wallet", ErrorSeverity.Severe)
 
-                val sig = Wallet.signMessage(chalToSign.toByteArray(), secret)
+                val sig = Wallet.signMessage(chalToSign.toByteArray(), secret.getSecret())
 
                 if (sig.size == 0) throw IdentityException("Wallet failed to provide a signable identity", "bad wallet", ErrorSeverity.Severe)
 

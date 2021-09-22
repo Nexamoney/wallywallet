@@ -236,7 +236,7 @@ class NewAccount : CommonNavActivity()
         {
             val newSecret = secretDerivation(index)
 
-            val dest = Pay2PubKeyHashDestination(chainSelector, newSecret)  // Note, if multiple destination types are allowed, the wallet load/save routines must be updated
+            val dest = Pay2PubKeyHashDestination(chainSelector, UnsecuredSecret(newSecret))  // Note, if multiple destination types are allowed, the wallet load/save routines must be updated
             //LogIt.info(sourceLoc() + " " + name + ": New Destination " + tmp.toString() + ": " + dest.address.toString())
 
             try
@@ -280,7 +280,7 @@ class NewAccount : CommonNavActivity()
         {
             val newSecret = secretDerivation(index)
 
-            val dest = Pay2PubKeyHashDestination(chainSelector, newSecret)  // Note, if multiple destination types are allowed, the wallet load/save routines must be updated
+            val dest = Pay2PubKeyHashDestination(chainSelector, UnsecuredSecret(newSecret))  // Note, if multiple destination types are allowed, the wallet load/save routines must be updated
             //LogIt.info(sourceLoc() + " " + name + ": New Destination " + tmp.toString() + ": " + dest.address.toString())
 
             try

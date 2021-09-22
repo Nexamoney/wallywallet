@@ -48,6 +48,7 @@ var SEND_ALL_TEXT = "all"  // Fixed up in onCreate when we have access to string
 
 
 open class PasteUnintelligibleException() : BUException("", i18n(R.string.pasteUnintelligible), ErrorSeverity.Expected)
+open class NotUriException() : PasteUnintelligibleException()
 open class PasteEmptyException() : BUException("", i18n(R.string.pasteIsEmpty), ErrorSeverity.Abnormal)
 open class BadAmountException(msg: Int) : BUException(i18n(msg), i18n(R.string.badAmount))
 open class BadCryptoException(msg: Int = -1) : BUException(i18n(msg), i18n(R.string.badCryptoCode))
@@ -694,6 +695,13 @@ class MainActivity : CommonNavActivity()
         val text = item.text.toString().trim()
         if (text == lastPaste) return  // Already handled it
 
+        handleInputedText(text)
+    }
+
+    /** If some unknown text comes from the UX, maybe QR code, maybe clipboard this function handles it by trying to figure out what it is and
+        then updating the appropriate fields in the UX */
+    fun handleInputedText(text: String)
+    {
         if (text != "")
         {
             // Clean out an old payment protocol if you are pasting a new send in
@@ -746,6 +754,7 @@ class MainActivity : CommonNavActivity()
         }
     }
 
+    /** Find an account that can send to this PayAddress and switch the send account to it */
     fun updateSendAccount(pa: PayAddress)
     {
         if (pa.type == PayAddressType.NONE) return  // nothing to update
@@ -904,6 +913,7 @@ class MainActivity : CommonNavActivity()
     {
         // replace the scheme with http so we can use URL to parse it
         val index = iuri.indexOf(':')
+        if (index == -1) throw NotUriException() // Can't be a URI if no colon
         val scheme = iuri.take(index)
         // TODO, discover the coin from the scheme
         val u = URL("http" + iuri.drop(index))
@@ -1195,33 +1205,22 @@ class MainActivity : CommonNavActivity()
                     LogIt.info(sourceLoc() + ": QR result: " + QRstring)
 
                     if (!handleAnyIntent(QRstring))
-/*
-                    val uri = QRstring.split(":")[0]
-                    if (uri == IDENTITY_URI_SCHEME)
-                    {
-                        LogIt.info("starting identity operation activity")
-                        var intent = Intent(this, IdentityOpActivity::class.java)
-                        intent.data = Uri.parse(QRstring)
-                        startActivityForResult(intent, IDENTITY_OP_RESULT)
-
-                    }
-                    else if (uri == TDPP_URI_SCHEME)
-                    {
-                        var intent = Intent(this, TricklePayActivity::class.java)
-                        intent.data = Uri.parse(QRstring)
-                        startActivityForResult(intent, TRICKLEPAY_RESULT)
-                    }
-                    else
- */
                     {
                         try
                         {
                             handleSendURI(result.contents)
                         }
-                        catch (e: UnknownBlockchainException)
+                        catch (e: Exception)
                         {
-                            LogIt.info(sourceLoc() + ": QR contents invalid: " + QRstring)
-                            displayError(R.string.badAddress)
+                            try
+                            {
+                            handleInputedText(QRstring)
+                            }
+                            catch(e: Exception)  // I can't handle it as plain text
+                            {
+                                LogIt.info(sourceLoc() + ": QR contents invalid: " + QRstring)
+                                displayError(R.string.badAddress)
+                            }
                         }
                     }
                 }
@@ -1230,7 +1229,6 @@ class MainActivity : CommonNavActivity()
             else
             {
                 displayError(R.string.scanFailed)
-
             }
         }
         else

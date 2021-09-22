@@ -150,7 +150,7 @@ open class CommonActivity : AppCompatActivity()
         {
             if (buExc.severity != ErrorSeverity.Expected)
             {
-                val stack = Log.getStackTraceString(buExc)
+                stack = Log.getStackTraceString(buExc)
                 LogIt.severe(buExc.shortMsg + ":" + buExc.message)
                 LogIt.severe(stack)
             }

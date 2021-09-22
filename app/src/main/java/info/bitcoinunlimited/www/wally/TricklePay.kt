@@ -391,7 +391,7 @@ fun ConstructTricklePayRequest(entity: String, topic: String?, operation: String
 
     val signThis = uri.build().toString()
     LogIt.info(signThis)
-    val sig = Wallet.signMessage(signThis.toByteArray(), secret)
+    val sig = Wallet.signMessage(signThis.toByteArray(), secret.getSecret())
     if (sig.size == 0) throw IdentityException("Wallet failed to provide a signable identity", "bad wallet", ErrorSeverity.Severe)
     val sigStr = Codec.encode64(sig)
     uri.appendQueryParameter("sig", sigStr)
