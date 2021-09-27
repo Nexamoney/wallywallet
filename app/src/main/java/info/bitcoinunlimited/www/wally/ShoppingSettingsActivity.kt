@@ -19,7 +19,7 @@ import java.util.logging.Logger
 
 private val LogIt = Logger.getLogger("bu.shoppingSettingsActivity")
 
-val SHOPPING_DEST_ITEMS:String = "wally."
+val SHOPPING_DEST_ITEMS: String = "wally."
 
 fun loadShoppingFromPreferences(prefs: SharedPreferences, shopping: MutableList<ShoppingDestination>)
 {
@@ -38,8 +38,7 @@ fun loadShoppingFromPreferences(prefs: SharedPreferences, shopping: MutableList<
                 {
                     val uri = URI(url)
                     shopping.add(ShoppingDestination(butUrl[0], i18n(R.string.OpenWebsite) % mapOf("siteName" to uri.host), url))
-                }
-                catch(e:Exception)
+                } catch (e: Exception)
                 {
                     LogIt.info("Bad URI read from preferences")
                 }
@@ -65,7 +64,6 @@ fun saveShoppingFromPreferences(prefs: SharedPreferences.Editor, shopping: Mutab
     prefs.putString(SHOPPING_DEST_ITEMS, s.toString())
     prefs.commit()
 }
-
 
 
 private class ShoppingEditRecyclerAdapter(private val activity: ShoppingSettingsActivity, private val domains: Array<ShoppingDestination>) : RecyclerView.Adapter<ShoppingEditRecyclerAdapter.DomainHolder>()
@@ -108,20 +106,20 @@ private class ShoppingEditRecyclerAdapter(private val activity: ShoppingSettings
             view.GuiButtonText.setText(obj.buttonText)
             view.GuiButtonWebLink.setText(obj.url)
             view.GuiButtonText.addTextChangedListener(textChanged {
-                    item?.let { it.buttonText = view.GuiButtonText.text.toString() }
-                })
+                item?.let { it.buttonText = view.GuiButtonText.text.toString() }
+            })
 
             view.GuiButtonWebLink.addTextChangedListener(textChanged {
                 item?.let { it.url = view.GuiButtonWebLink.text.toString() }
             })
 
             // Alternate colors for each row in the list
-            val Acol:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowA) } ?: 0xFFEEFFEE.toInt()
-            val Bcol:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowB) } ?: 0xFFBBDDBB.toInt()
+            val Acol: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowA) } ?: 0xFFEEFFEE.toInt()
+            val Bcol: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowB) } ?: 0xFFBBDDBB.toInt()
             //val Acol = 0xFFEEFFEE.toInt()
             //val Bcol = 0xFFBBDDBB.toInt()
 
-            if ((pos and 1)==0)
+            if ((pos and 1) == 0)
             {
                 view.background = ColorDrawable(Acol)
             }
@@ -133,7 +131,6 @@ private class ShoppingEditRecyclerAdapter(private val activity: ShoppingSettings
         }
     }
 }
-
 
 
 class ShoppingSettingsActivity : CommonNavActivity()
@@ -150,7 +147,7 @@ class ShoppingSettingsActivity : CommonNavActivity()
         setTitle(R.string.title_activity_shopping_settings)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shopping_settings)
-        
+
         linearLayoutManager = LinearLayoutManager(this)
         GuiShoppingEditList.layoutManager = linearLayoutManager
 
@@ -160,7 +157,7 @@ class ShoppingSettingsActivity : CommonNavActivity()
         titlebar?.setDisplayShowHomeEnabled(true)
         */
 
-        GuiShoppingEditList.addOnScrollListener(object: RecyclerView.OnScrollListener()
+        GuiShoppingEditList.addOnScrollListener(object : RecyclerView.OnScrollListener()
         {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)
             {
@@ -171,8 +168,8 @@ class ShoppingSettingsActivity : CommonNavActivity()
 
         val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
         loadShoppingFromPreferences(prefs, shopping)
-        if ((shopping.size == 0)||(shopping[shopping.size-1].buttonText != ""))
-            shopping.add(ShoppingDestination("",""))  // Add a blank if there isn't one so a new button can be added by the user
+        if ((shopping.size == 0) || (shopping[shopping.size - 1].buttonText != ""))
+            shopping.add(ShoppingDestination("", ""))  // Add a blank if there isn't one so a new button can be added by the user
 
         adapter = ShoppingEditRecyclerAdapter(this, shopping.toTypedArray())
         GuiShoppingEditList.adapter = adapter

@@ -53,10 +53,12 @@ var fiatCurrencyCode: String = "USD"
 var dbPrefix = if (RunningTheTests()) "guitest_" else if (REG_TEST_ONLY == true) "regtest_" else ""
 
 val SupportedBlockchains = if (INCLUDE_NEXTCHAIN)
-    mapOf("BCH (Bitcoin Cash)" to ChainSelector.BCHMAINNET,
-        "NEX (NextChain)" to ChainSelector.NEXTCHAIN,
-        "TBCH (Testnet Bitcoin Cash)" to ChainSelector.BCHTESTNET,
-        "RBCH (Regtest Bitcoin Cash)" to ChainSelector.BCHREGTEST)
+    mapOf(
+      "BCH (Bitcoin Cash)" to ChainSelector.BCHMAINNET,
+      "NEX (NextChain)" to ChainSelector.NEXTCHAIN,
+      "TBCH (Testnet Bitcoin Cash)" to ChainSelector.BCHTESTNET,
+      "RBCH (Regtest Bitcoin Cash)" to ChainSelector.BCHREGTEST
+    )
 else
     mapOf("BCH (Bitcoin Cash)" to ChainSelector.BCHMAINNET, "TBCH (Testnet Bitcoin Cash)" to ChainSelector.BCHTESTNET, "RBCH (Regtest Bitcoin Cash)" to ChainSelector.BCHREGTEST)
 
@@ -119,7 +121,7 @@ fun GetCnxnMgr(chain: ChainSelector, name: String? = null): CnxnMgr
                 cmgr.desiredConnectionCount = 2  // XNEX chain doesn't have many nodes so reduce the desired connection count or there may be more desired nodes than exist in the chain
                 cmgr
             }
-            else                     -> throw BadCryptoException()
+            else -> throw BadCryptoException()
         }
         result.getElectrumServerCandidate = { chain -> ElectrumServerOn(chain) }
         cnxnMgrs[chain] = result
@@ -151,29 +153,29 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
         val result = when (chainSelector)
         {
             ChainSelector.BCHTESTNET -> Blockchain(
-                ChainSelector.BCHTESTNET,
-                name ?: "TBCH",
-                cnxnMgr,
-                Hash256("000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"),
-                Hash256("000000000003cab8d8465f4ea4efcb15c28e5eed8e514967883c085351c5b134"),
-                Hash256("000000000005ae0f3013e89ce47b6f949ae489d90baf6621e10017490f0a1a50"),
-                1348366,
-                "52bbf4d7f1bcb197f2".toBigInteger(16),
-                context, dbPrefix
+              ChainSelector.BCHTESTNET,
+              name ?: "TBCH",
+              cnxnMgr,
+              Hash256("000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"),
+              Hash256("000000000003cab8d8465f4ea4efcb15c28e5eed8e514967883c085351c5b134"),
+              Hash256("000000000005ae0f3013e89ce47b6f949ae489d90baf6621e10017490f0a1a50"),
+              1348366,
+              "52bbf4d7f1bcb197f2".toBigInteger(16),
+              context, dbPrefix
             )
 
             // Regtest for use alongside testnet
             ChainSelector.BCHREGTEST -> Blockchain(
-                ChainSelector.BCHREGTEST,
-                name ?: "RBCH",
-                cnxnMgr,
-                // If checkpointing the genesis block, set the prior block id to the genesis block as well
-                Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
-                Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
-                Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
-                0,
-                0.toBigInteger(),
-                context, dbPrefix
+              ChainSelector.BCHREGTEST,
+              name ?: "RBCH",
+              cnxnMgr,
+              // If checkpointing the genesis block, set the prior block id to the genesis block as well
+              Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
+              Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
+              Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
+              0,
+              0.toBigInteger(),
+              context, dbPrefix
             )
             /*
             // Bitcoin Cash mainnet chain
@@ -190,31 +192,31 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
             ) */
             // Bitcoin Cash mainnet chain
             ChainSelector.BCHMAINNET -> Blockchain(
-                ChainSelector.BCHMAINNET,
-                name ?: "BCH",
-                cnxnMgr,
-                genesisBlockHash = Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
-                checkpointPriorBlockId = Hash256("000000000000000001704aaa253740b7bb897b58378413c84f98066ca2f6bcc7"),
-                checkpointId = Hash256("0000000000000000011fa4bf373415871bd227f03c3ef00ae541d36ce0bdf0dd"),
-                checkpointHeight = 615608,
-                checkpointWork = "11141541c85853109ca94e6".toBigInteger(16),
-                context = context, dbPrefix = dbPrefix
+              ChainSelector.BCHMAINNET,
+              name ?: "BCH",
+              cnxnMgr,
+              genesisBlockHash = Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
+              checkpointPriorBlockId = Hash256("000000000000000001704aaa253740b7bb897b58378413c84f98066ca2f6bcc7"),
+              checkpointId = Hash256("0000000000000000011fa4bf373415871bd227f03c3ef00ae541d36ce0bdf0dd"),
+              checkpointHeight = 615608,
+              checkpointWork = "11141541c85853109ca94e6".toBigInteger(16),
+              context = context, dbPrefix = dbPrefix
             )
 
             // Bitcoin Cash mainnet chain
             ChainSelector.NEXTCHAIN -> Blockchain(
-                ChainSelector.NEXTCHAIN,
-                name ?: "NEX",
-                cnxnMgr,
-                genesisBlockHash = Hash256("a73e8992af2a3b498c5114a6144b03bc41de938b39643fd82030f9721c0f8f1e"),
-                checkpointPriorBlockId = Hash256("a73e8992af2a3b498c5114a6144b03bc41de938b39643fd82030f9721c0f8f1e"),
-                checkpointId = Hash256("c8e533e601d6fdbf248f8e145336b3ed94ca5a304965f67574e431faee2a9e2b"),
-                checkpointHeight = 1,
-                checkpointWork = 0x200101.toBigInteger(),
-                context = context,
-                dbPrefix = dbPrefix
+              ChainSelector.NEXTCHAIN,
+              name ?: "NEX",
+              cnxnMgr,
+              genesisBlockHash = Hash256("a73e8992af2a3b498c5114a6144b03bc41de938b39643fd82030f9721c0f8f1e"),
+              checkpointPriorBlockId = Hash256("a73e8992af2a3b498c5114a6144b03bc41de938b39643fd82030f9721c0f8f1e"),
+              checkpointId = Hash256("c8e533e601d6fdbf248f8e145336b3ed94ca5a304965f67574e431faee2a9e2b"),
+              checkpointHeight = 1,
+              checkpointWork = 0x200101.toBigInteger(),
+              context = context,
+              dbPrefix = dbPrefix
             )
-            else                     -> throw BadCryptoException()
+            else -> throw BadCryptoException()
         }
         blockchains[chainSelector] = result
         return result
@@ -222,13 +224,13 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
 }
 
 
-data class LongPollInfo(val proto: String, val hostPort: String, val cookie: String?, var active:Boolean=true)
+data class LongPollInfo(val proto: String, val hostPort: String, val cookie: String?, var active: Boolean = true)
 
 class AccessHandler(val app: WallyApp)
 {
     var done: Boolean = false
 
-    val activeLongPolls = mutableMapOf<String,LongPollInfo>()
+    val activeLongPolls = mutableMapOf<String, LongPollInfo>()
 
 /* How to know that the app is shutting down in android?
     fun endAll()
@@ -287,8 +289,8 @@ class AccessHandler(val app: WallyApp)
         {
             install(HttpTimeout) { requestTimeoutMillis = 60000 } // Long timeout because we don't expect a response right away; its a long poll
         }
-        
-        
+
+
         while (!done && lpInfo.active)
         {
             try
@@ -306,9 +308,8 @@ class AccessHandler(val app: WallyApp)
                     return // Server tells us to quit long polling
                 }
                 val ci = app.currentActivity
-                if (ci!=null) ci.handleAnyIntent(respText)
-            }
-            catch (e: ConnectException)  // network error?  TODO retry a few times
+                if (ci != null) ci.handleAnyIntent(respText)
+            } catch (e: ConnectException)  // network error?  TODO retry a few times
             {
                 if (connectProblems > 500)
                 {
@@ -316,10 +317,9 @@ class AccessHandler(val app: WallyApp)
                     endLongPolling(url)
                     return
                 }
-                connectProblems+=1
+                connectProblems += 1
                 delay(1000)
-            }
-            catch (e: Throwable)
+            } catch (e: Throwable)
             {
                 LogIt.info("Long poll to $url error, stopping: ")
                 LogIt.info(e.toString())
@@ -334,13 +334,13 @@ class AccessHandler(val app: WallyApp)
 }
 
 class Account(
-    val name: String, //* The name of this account
-    val context: PlatformContext,
-    var flags: ULong = ACCOUNT_FLAG_NONE,
-    chainSelector: ChainSelector? = null,
-    secretWords: String? = null,
-    startPlace: Long? = null, //* Where to start looking for transactions
-    retrieveOnlyActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, NewAccount.HDActivityBracket>>? = null  //* jam in other derivation paths to grab coins from (but use addresses of) (if new account)
+  val name: String, //* The name of this account
+  val context: PlatformContext,
+  var flags: ULong = ACCOUNT_FLAG_NONE,
+  chainSelector: ChainSelector? = null,
+  secretWords: String? = null,
+  startPlace: Long? = null, //* Where to start looking for transactions
+  retrieveOnlyActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, NewAccount.HDActivityBracket>>? = null  //* jam in other derivation paths to grab coins from (but use addresses of) (if new account)
 )
 {
     val tickerGUI = Reactive<String>("") // Where to show the crypto's ticker
@@ -355,8 +355,7 @@ class Account(
         try
         {
             loadAccountFlags()
-        }
-        catch (e: DataMissingException)
+        } catch (e: DataMissingException)
         {
             // support older wallets by allowing empty account flags
         }
@@ -451,8 +450,7 @@ class Account(
             val storedEpin = db.get("accountPin_" + name)
             if (storedEpin.size > 0) return storedEpin
             return null
-        }
-        catch (e: Exception)
+        } catch (e: Exception)
         {
             LogIt.info("DB missing PIN for: " + name + ". " + e.message)
         }
@@ -466,8 +464,7 @@ class Account(
         val epin = try
         {
             EncodePIN(name, pin)
-        }
-        catch (e: InvalidKeySpecException)  // ignore invalid PIN, it can't unlock any wallets
+        } catch (e: InvalidKeySpecException)  // ignore invalid PIN, it can't unlock any wallets
         {
             LogIt.info("user entered invalid PIN")
             return 0
@@ -658,10 +655,10 @@ class Account(
             balanceGUI(mBchFormat.format(balance.setScale(mBchDecimals)), force)
 
             val unconfBalStr =
-                if (0.toBigDecimal(currencyMath).setScale(currencyScale) == unconfirmedBalance)
-                    ""
-                else
-                    "(" + mBchFormat.format(unconfirmedBalance.setScale(mBchDecimals)) + ")"
+              if (0.toBigDecimal(currencyMath).setScale(currencyScale) == unconfirmedBalance)
+                  ""
+              else
+                  "(" + mBchFormat.format(unconfirmedBalance.setScale(mBchDecimals)) + ")"
 
             unconfirmedBalanceGUI(unconfBalStr, force)
 
@@ -671,8 +668,8 @@ class Account(
             val cnxnLst = wallet.chainstate?.chain?.net?.mapConnections() { it.name }
             val peers = cnxnLst?.joinToString(", ")
             val infoStr = i18n(R.string.at) + " " + (wallet.chainstate?.syncedHash?.toHex()?.takeLast(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight
-                ?: "") + " " + i18n(R.string.of) + " " + (wallet.chainstate?.chain?.curHeight
-                ?: "") + " blocks, " + (wallet.chainstate?.chain?.net?.numPeers() ?: "") + " peers\n" + peers
+              ?: "") + " " + i18n(R.string.of) + " " + (wallet.chainstate?.chain?.curHeight
+              ?: "") + " blocks, " + (wallet.chainstate?.chain?.net?.numPeers() ?: "") + " peers\n" + peers
             infoGUI(force, { infoStr })  // since numPeers takes cnxnLock
 
             tickerGUI(name, force)
@@ -702,25 +699,27 @@ class Account(
     }
 }
 
-val i18nLbc = mapOf(RinsufficentBalance to R.string.insufficentBalance,
-    RbadWalletImplementation to R.string.badWalletImplementation,
-    RdataMissing to R.string.dataMissing,
-    RwalletAndAddressIncompatible to R.string.chainIncompatibleWithAddress,
-    RnotSupported to R.string.notSupported,
-    Rexpired to R.string.expired,
-    RsendMoreThanBalance to R.string.sendMoreThanBalance,
-    RbadAddress to R.string.badAddress,
-    RblankAddress to R.string.blankAddress,
-    RblockNotForthcoming to R.string.blockNotForthcoming,
-    RheadersNotForthcoming to R.string.headersNotForthcoming,
-    RbadTransaction to R.string.badTransaction,
-    RfeeExceedsFlatMax to R.string.feeExceedsFlatMax,
-    RexcessiveFee to R.string.excessiveFee,
-    Rbip70NoAmount to R.string.badAmount,
-    RdeductedFeeLargerThanSendAmount to R.string.deductedFeeLargerThanSendAmount,
-    RwalletDisconnectedFromBlockchain to R.string.walletDisconnectedFromBlockchain,
-    RsendDust to R.string.sendDustError,
-    RnoNodes to R.string.NoNodes)
+val i18nLbc = mapOf(
+  RinsufficentBalance to R.string.insufficentBalance,
+  RbadWalletImplementation to R.string.badWalletImplementation,
+  RdataMissing to R.string.dataMissing,
+  RwalletAndAddressIncompatible to R.string.chainIncompatibleWithAddress,
+  RnotSupported to R.string.notSupported,
+  Rexpired to R.string.expired,
+  RsendMoreThanBalance to R.string.sendMoreThanBalance,
+  RbadAddress to R.string.badAddress,
+  RblankAddress to R.string.blankAddress,
+  RblockNotForthcoming to R.string.blockNotForthcoming,
+  RheadersNotForthcoming to R.string.headersNotForthcoming,
+  RbadTransaction to R.string.badTransaction,
+  RfeeExceedsFlatMax to R.string.feeExceedsFlatMax,
+  RexcessiveFee to R.string.excessiveFee,
+  Rbip70NoAmount to R.string.badAmount,
+  RdeductedFeeLargerThanSendAmount to R.string.deductedFeeLargerThanSendAmount,
+  RwalletDisconnectedFromBlockchain to R.string.walletDisconnectedFromBlockchain,
+  RsendDust to R.string.sendDustError,
+  RnoNodes to R.string.NoNodes
+)
 
 class ActivityLifecycleHandler(private val app: WallyApp) : Application.ActivityLifecycleCallbacks
 {
@@ -734,8 +733,7 @@ class ActivityLifecycleHandler(private val app: WallyApp) : Application.Activity
         try
         {
             app.currentActivity = act as CommonNavActivity
-        }
-        catch(e: Throwable)  // Some other activity (QR scanner)
+        } catch (e: Throwable)  // Some other activity (QR scanner)
         {
         }
     }
@@ -760,13 +758,12 @@ class ActivityLifecycleHandler(private val app: WallyApp) : Application.Activity
     override fun onActivityResumed(act: Activity)
     {
         //if (app.currentActivity is CommonActivity)
-         try
-         {
-             app.currentActivity = act as CommonNavActivity
-         }
-         catch(e: Throwable)  // Some other activity (QR scanner)
-         {
-         }
+        try
+        {
+            app.currentActivity = act as CommonNavActivity
+        } catch (e: Throwable)  // Some other activity (QR scanner)
+        {
+        }
     }
 }
 
@@ -830,8 +827,7 @@ class WallyApp : Application()
             try
             {
                 fn()
-            }
-            catch (e: Exception) // Uncaught exceptions will end the app
+            } catch (e: Exception) // Uncaught exceptions will end the app
             {
                 handleThreadException(e)
             }
@@ -908,8 +904,7 @@ class WallyApp : Application()
                 if ((a.unconfirmedBalanceGUI.reactor is TextViewReactor<String>) && (a.unconfirmedBalanceGUI.reactor as TextViewReactor<String>).gui == view) return a
                 if ((a.infoGUI.reactor is TextViewReactor<String>) && (a.infoGUI.reactor as TextViewReactor<String>).gui == view) return a
             }
-        }
-        catch (e: Exception)
+        } catch (e: Exception)
         {
             LogIt.warning("Exception in accountFromGui: " + e.toString())
             handleThreadException(e)
@@ -948,8 +943,7 @@ class WallyApp : Application()
         val ac = try
         {
             Account(name, ctxt, flags, chainSelector)
-        }
-        catch (e: IllegalStateException)
+        } catch (e: IllegalStateException)
         {
             LogIt.warning("Error creating account: ${e.message}")
             return
@@ -967,13 +961,13 @@ class WallyApp : Application()
     }
 
     fun recoverAccount(
-        name: String,
-        flags: ULong,
-        pin: String,
-        secretWords: String,
-        chainSelector: ChainSelector,
-        earliestActivity: Long?,
-        nonstandardActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, NewAccount.HDActivityBracket>>?
+      name: String,
+      flags: ULong,
+      pin: String,
+      secretWords: String,
+      chainSelector: ChainSelector,
+      earliestActivity: Long?,
+      nonstandardActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, NewAccount.HDActivityBracket>>?
     )
     {
         dbgAssertNotGuiThread()
@@ -983,8 +977,7 @@ class WallyApp : Application()
         val epin = try
         {
             EncodePIN(name, pin.trim())
-        }
-        catch (e: InvalidKeySpecException)  // If the pin is bad (generally whitespace or null) ignore it
+        } catch (e: InvalidKeySpecException)  // If the pin is bad (generally whitespace or null) ignore it
         {
             byteArrayOf()
         }
@@ -1040,8 +1033,7 @@ class WallyApp : Application()
                         {
                             val c = Account("mRBCH", ctxt);
                             c
-                        }
-                        catch (e: DataMissingException)
+                        } catch (e: DataMissingException)
                         {
                             val c = Account("mRBCH", ctxt, ACCOUNT_FLAG_NONE, ChainSelector.BCHREGTEST)
                             c
@@ -1056,8 +1048,7 @@ class WallyApp : Application()
                     val accountNames = try
                     {
                         db.get("activeAccountNames")
-                    }
-                    catch (e: DataMissingException)
+                    } catch (e: DataMissingException)
                     {
                         firstRun = true
                         byteArrayOf()
@@ -1072,8 +1063,7 @@ class WallyApp : Application()
                         {
                             val ac = Account(name, ctxt)
                             accounts[ac.name] = ac
-                        }
-                        catch (e: DataMissingException)
+                        } catch (e: DataMissingException)
                         {
                             LogIt.warning(sourceLoc() + " " + name + ": Active account $name was not found in the database")
                             // Nothing to really do but ignore the missing account
@@ -1093,8 +1083,7 @@ class WallyApp : Application()
                         {
                             val split = SplitIpPort(BchExclusiveNode, BlockchainPort[ChainSelector.BCHMAINNET]!!)
                             c.cnxnMgr.exclusiveNode(split.first, split.second)
-                        }
-                        catch (e: Exception)
+                        } catch (e: Exception)
                         {
                         } // bad IP:port data
                     }
@@ -1105,8 +1094,7 @@ class WallyApp : Application()
                         {
                             val split = SplitIpPort(BchPreferredNode, BlockchainPort[ChainSelector.BCHMAINNET]!!)
                             c.cnxnMgr.preferNode(split.first, split.second)
-                        }
-                        catch (e: Exception)
+                        } catch (e: Exception)
                         {
                         } // bad IP:port data provided by user
                     }

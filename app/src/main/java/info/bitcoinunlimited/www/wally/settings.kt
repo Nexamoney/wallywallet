@@ -57,16 +57,16 @@ class Settings : CommonActivity()
 {
     var app: WallyApp? = null
 
-    val accounts:MutableMap<String,Account>
+    val accounts: MutableMap<String, Account>
         get() = app!!.accounts
 
-    var askingAbout:ConfirmationFor? = null
+    var askingAbout: ConfirmationFor? = null
 
     @Suppress("UNUSED_PARAMETER")
     fun onFiatChange(guiElem: View?): Boolean
     {
         val preferenceDB = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
-        with (preferenceDB.edit())
+        with(preferenceDB.edit())
         {
             putString(LOCAL_CURRENCY_PREF, GuiFiatCurrencySpinner.selectedItem as String)
             commit()
@@ -98,20 +98,20 @@ class Settings : CommonActivity()
 
         origTitleBackground?.let { titlebar.background = it }  // Set the title background color here, so we don't need to match the background defined in some resource file
 
-        val preferenceDB:SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val preferenceDB: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
 
-        if(SetupBooleanPreferenceGui(SHOW_DEV_INFO, preferenceDB, GuiDeveloperInfoSwitch) { _, isChecked ->
-            if (isChecked)
-            {
-                GuiClearIdentityDomains.visibility = VISIBLE
-                GuiLogInterestingData.visibility = VISIBLE
-            }
-            else
-            {
-                GuiClearIdentityDomains.visibility = GONE
-                GuiLogInterestingData.visibility = GONE
-            }
-        })
+        if (SetupBooleanPreferenceGui(SHOW_DEV_INFO, preferenceDB, GuiDeveloperInfoSwitch) { _, isChecked ->
+              if (isChecked)
+              {
+                  GuiClearIdentityDomains.visibility = VISIBLE
+                  GuiLogInterestingData.visibility = VISIBLE
+              }
+              else
+              {
+                  GuiClearIdentityDomains.visibility = GONE
+                  GuiLogInterestingData.visibility = GONE
+              }
+          })
         {
             GuiClearIdentityDomains.visibility = VISIBLE
             GuiLogInterestingData.visibility = VISIBLE
@@ -120,8 +120,8 @@ class Settings : CommonActivity()
         SetupBooleanPreferenceGui(BCH_EXCLUSIVE_NODE_SWITCH, preferenceDB, GuiBchExclusiveNodeSwitch)
         SetupBooleanPreferenceGui(BCH_PREFER_NODE_SWITCH, preferenceDB, GuiBchPreferNodeSwitch)
 
-        SetupTextPreferenceGui(BCH_EXCLUSIVE_NODE,preferenceDB, GuiBchExclusiveNode)
-        SetupTextPreferenceGui(BCH_PREFER_NODE,preferenceDB, GuiBchPreferNode)
+        SetupTextPreferenceGui(BCH_EXCLUSIVE_NODE, preferenceDB, GuiBchExclusiveNode)
+        SetupTextPreferenceGui(BCH_PREFER_NODE, preferenceDB, GuiBchPreferNode)
 
         val curCode: String = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"
         GuiFiatCurrencySpinner.setSelection(curCode)
@@ -174,7 +174,7 @@ class Settings : CommonActivity()
                         coin.flags = coin.flags or ACCOUNT_FLAG_HIDE_UNTIL_PIN
                     else
                         coin.flags = coin.flags and ACCOUNT_FLAG_HIDE_UNTIL_PIN.inv()
-                   launch {  // Can't be in UI thread
+                    launch {  // Can't be in UI thread
                         coin.saveAccountFlags()
                     }
                 }
@@ -196,10 +196,10 @@ class Settings : CommonActivity()
 
     override fun onStop()
     {
-        val prefs:SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
 
-        var exclusiveNode:String? = null
-        var preferNode:String? = null
+        var exclusiveNode: String? = null
+        var preferNode: String? = null
 
         if (prefs.getBoolean(BCH_EXCLUSIVE_NODE_SWITCH, false) == true)
         {
@@ -227,8 +227,7 @@ class Settings : CommonActivity()
                         val (ip, port) = try
                         {
                             if (exclusiveNode != null) SplitIpPort(exclusiveNode, dport) else Pair(null, dport)
-                        }
-                        catch (e: Exception)
+                        } catch (e: Exception)
                         {
                             Pair(null, dport)
                         }
@@ -240,8 +239,7 @@ class Settings : CommonActivity()
                         val (ip, port) = try
                         {
                             if (preferNode != null) SplitIpPort(preferNode, dport) else Pair(null, dport)
-                        }
-                        catch (e:Exception)
+                        } catch (e: Exception)
                         {
                             Pair(null, dport)
                         }
@@ -271,15 +269,14 @@ class Settings : CommonActivity()
     fun onClearIdentityDomains(v: View?)
     {
         launch {
-            val wallet:CommonWallet = try
-                {
-                    (application as WallyApp).primaryAccount.wallet
-                }
-                catch (e: PrimaryWalletInvalidException)
-                {
-                    //displayError(R.string.pleaseWait)
-                    return@launch
-                }
+            val wallet: CommonWallet = try
+            {
+                (application as WallyApp).primaryAccount.wallet
+            } catch (e: PrimaryWalletInvalidException)
+            {
+                //displayError(R.string.pleaseWait)
+                return@launch
+            }
             wallet.identityDomain.clear()
         }
     }
@@ -289,16 +286,16 @@ class Settings : CommonActivity()
     {
         ConfirmationConstraint.visibility = GONE
         confirmationOps.visibility = VISIBLE
-        
+
         val a = askingAbout
-        if (a==null) return
+        if (a == null) return
 
         val item = GuiSettingsAccountChoice.selectedItem
         if (item == null) return
         val accountName = item.toString()
 
         askingAbout = null
-        when(a)
+        when (a)
         {
             ConfirmationFor.RediscoverBlockchain ->
             {
@@ -328,10 +325,9 @@ class Settings : CommonActivity()
                     try
                     {
                         coin.wallet.reassessUnconfirmedTx()
-                    }
-                    catch(e: Exception)
+                    } catch (e: Exception)
                     {
-                        displayNotice(e.message?: e.toString())
+                        displayNotice(e.message ?: e.toString())
                     }
                 }
                 displayNotice(i18n(R.string.unconfAssessmentNotice))
@@ -373,7 +369,7 @@ class Settings : CommonActivity()
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun onConfirmationOps(v: View?):Boolean
+    fun onConfirmationOps(v: View?): Boolean
     {
         return true
     }
@@ -389,6 +385,7 @@ class Settings : CommonActivity()
         showConfirmation()
         return true
     }
+
     @Suppress("UNUSED_PARAMETER")
     fun onRediscoverWallet(v: View?): Boolean
     {
@@ -399,6 +396,7 @@ class Settings : CommonActivity()
         showConfirmation()
         return true
     }
+
     @Suppress("UNUSED_PARAMETER")
     fun onViewRecoveryPhrase(v: View?)
     {
@@ -435,7 +433,7 @@ class Settings : CommonActivity()
         if (item == null) return
         val accountName = item.toString()
 
-        val coin:Account? = accounts[accountName]
+        val coin: Account? = accounts[accountName]
         if (coin == null) return
 
         GuiConfirmationText.text = i18n(R.string.deleteConfirmation) % mapOf("accountName" to coin.name, "blockchain" to coin.currencyCode)

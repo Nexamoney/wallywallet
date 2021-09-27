@@ -40,6 +40,7 @@ val lbcMap = mapOf<Int, Int>(RinsufficentBalance to R.string.insufficentBalance)
 const val EXCEPTION_LEVEL = 200
 const val ERROR_LEVEL = 100
 const val NOTICE_LEVEL = 50
+
 data class Alert(val msg: String, val details: String?, val level: Int, val date: Instant = Instant.now())
 
 val alerts = arrayListOf<Alert>()
@@ -198,7 +199,7 @@ open class CommonActivity : AppCompatActivity()
     }
 
     /** Display an short error string on the title bar, and then clear it after a bit */
-    fun displayError(err: String, details:String? = null, then: (() -> Unit)? = null)
+    fun displayError(err: String, details: String? = null, then: (() -> Unit)? = null)
     {
         laterUI {
             // This coroutine has to be limited to this thread because only the main thread can touch UI views
@@ -255,7 +256,7 @@ open class CommonActivity : AppCompatActivity()
                 setTitle(msg);
                 alerts.add(Alert(msg, details, NOTICE_LEVEL))
                 titlebar.background = ColorDrawable(errorColor)
-                errorCount +=1
+                errorCount += 1
                 errorCount
             }
             delay(time)

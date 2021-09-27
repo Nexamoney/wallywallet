@@ -209,8 +209,7 @@ class MainActivity : CommonNavActivity()
             {
                 lastPaste = ""  // We never want to completely ignore an explicit paste
                 handlePastedData()
-            }
-            catch (e: Exception)
+            } catch (e: Exception)
             {
                 displayException(e)
             }
@@ -277,14 +276,12 @@ class MainActivity : CommonNavActivity()
                         }
                         updateSendAccount(sendAddr)
                     }
-                }
-                catch (e: PayAddressBlankException)
+                } catch (e: PayAddressBlankException)
                 {
                 }  // nothing to update if its blank
                 catch (e: UnknownBlockchainException)
                 {
-                }
-                catch (e: Exception)
+                } catch (e: Exception)
                 {
                     if (DEBUG) throw e
                 } // ignore all problems from user input, unless in debug mode when we should analyze them
@@ -334,9 +331,11 @@ class MainActivity : CommonNavActivity()
 
         data class UI(val ticker: TextView, val balance: TextView, val units: TextView, val unconf: TextView, val info: TextView?)
 
-        val ui = listOf(UI(balanceTicker, balanceValue, balanceUnits, balanceUnconfirmedValue, WalletChainInfo),
-            UI(balanceTicker2, balanceValue2, balanceUnits2, balanceUnconfirmedValue2, WalletChainInfo2),
-            UI(balanceTicker3, balanceValue3, balanceUnits3, balanceUnconfirmedValue3, WalletChainInfo3))
+        val ui = listOf(
+          UI(balanceTicker, balanceValue, balanceUnits, balanceUnconfirmedValue, WalletChainInfo),
+          UI(balanceTicker2, balanceValue2, balanceUnits2, balanceUnconfirmedValue2, WalletChainInfo2),
+          UI(balanceTicker3, balanceValue3, balanceUnits3, balanceUnconfirmedValue3, WalletChainInfo3)
+        )
 
         // Clear all info in case we remap it
         for (u in ui)
@@ -365,9 +364,11 @@ class MainActivity : CommonNavActivity()
 
         data class UI(val ticker: TextView, val balance: TextView, val units: TextView, val unconf: TextView, val info: TextView?)
 
-        val ui = listOf(UI(balanceTicker, balanceValue, balanceUnits, balanceUnconfirmedValue, WalletChainInfo),
-            UI(balanceTicker2, balanceValue2, balanceUnits2, balanceUnconfirmedValue2, WalletChainInfo2),
-            UI(balanceTicker3, balanceValue3, balanceUnits3, balanceUnconfirmedValue3, WalletChainInfo3))
+        val ui = listOf(
+          UI(balanceTicker, balanceValue, balanceUnits, balanceUnconfirmedValue, WalletChainInfo),
+          UI(balanceTicker2, balanceValue2, balanceUnits2, balanceUnconfirmedValue2, WalletChainInfo2),
+          UI(balanceTicker3, balanceValue3, balanceUnits3, balanceUnconfirmedValue3, WalletChainInfo3)
+        )
 
         clearAccountUI()
 
@@ -454,8 +455,8 @@ class MainActivity : CommonNavActivity()
                     val c = accounts[it.toString()]
                     c?.onUpdatedReceiveInfo(minOf(GuiReceiveQRCode.layoutParams.width, GuiReceiveQRCode.layoutParams.height, 1024)) { recvAddrStr, recvAddrQR ->
                         this@MainActivity.updateReceiveAddressUI(
-                            recvAddrStr,
-                            recvAddrQR
+                          recvAddrStr,
+                          recvAddrQR
                         )
                     }
                 }
@@ -515,26 +516,22 @@ class MainActivity : CommonNavActivity()
         mainActivityModel.lastRecvCoinType?.let { recvCoinType.setSelection(it) }
         mainActivityModel.lastSendCurrencyType?.let { sendCurrencyType.setSelection(it) }
 
-                // Look in the paste buffer
+        // Look in the paste buffer
         if (sendToAddress.text.toString() == "")  // App started or resumed with nothing in the send field -- let's see if there's something in the paste buffer we can auto-populate
         {
             try
             {
                 handlePastedData()
 
-            }
-            catch (e: PasteEmptyException)  // nothing to do, having pasted data is optional on startup
+            } catch (e: PasteEmptyException)  // nothing to do, having pasted data is optional on startup
             {
 
-            }
-            catch (e: PayAddressBlankException)  // nothing to do, having pasted data is optional on startup
+            } catch (e: PayAddressBlankException)  // nothing to do, having pasted data is optional on startup
             {
 
-            }
-            catch (e: PayAddressDecodeException)  // nothing to do, having pasted data is optional on startup
+            } catch (e: PayAddressDecodeException)  // nothing to do, having pasted data is optional on startup
             {
-            }
-            catch (e: Exception)
+            } catch (e: Exception)
             {
                 //LogIt.info(sourceLoc() +" paste exception:")  // there could be random data in the paste, so be tolerant of whatever garbage might be in there but log it
                 //LogIt.info(sourceLoc() + Log.getStackTraceString(e))
@@ -559,7 +556,7 @@ class MainActivity : CommonNavActivity()
         }
         // Poll the syncing icon update because it doesn't matter how long it takes
         laterUI {
-            while(true)
+            while (true)
             {
                 updateSyncingIcon()
                 delay(7000)
@@ -589,7 +586,7 @@ class MainActivity : CommonNavActivity()
             val account = accounts[it.toString()]
             account?.let { acc ->
                 val curIdx =
-                    sendCurrencyType.selectedItemPosition  // We know that this field will be [fiat, crypto] but not which exact choices.  So save the slot and restore it after resetting the values so the UX persists by class
+                  sendCurrencyType.selectedItemPosition  // We know that this field will be [fiat, crypto] but not which exact choices.  So save the slot and restore it after resetting the values so the UX persists by class
                 val spinData = arrayOf(acc.currencyCode, fiatCurrencyCode)
                 val aa = ArrayAdapter(this, android.R.layout.simple_spinner_item, spinData)
                 sendCurrencyType.setAdapter(aa)
@@ -615,14 +612,12 @@ class MainActivity : CommonNavActivity()
         {
             val sta = sendToAddress.text.toString()
             updateSendAccount(PayAddress(sta))
-        }
-        catch (e: PayAddressBlankException)
+        } catch (e: PayAddressBlankException)
         {
         }  // nothing to update if its blank
         catch (e: UnknownBlockchainException)
         {
-        }
-        catch (e: Exception)
+        } catch (e: Exception)
         {
             if (DEBUG) throw e
         } // ignore all problems from user input, unless in debug mode when we should analyze them
@@ -699,7 +694,7 @@ class MainActivity : CommonNavActivity()
     }
 
     /** If some unknown text comes from the UX, maybe QR code, maybe clipboard this function handles it by trying to figure out what it is and
-        then updating the appropriate fields in the UX */
+    then updating the appropriate fields in the UX */
     fun handleInputedText(text: String)
     {
         if (text != "")
@@ -802,8 +797,7 @@ class MainActivity : CommonNavActivity()
                     }
                 }
             }
-        }
-        catch (e: Exception)
+        } catch (e: Exception)
         {
             displayException(e)
         }
@@ -933,14 +927,12 @@ class MainActivity : CommonNavActivity()
                     laterUI {
                         updateSendBasedOnPaymentInProgress()
                     }
-                }
-                catch (e: Bip70Exception)
+                } catch (e: Bip70Exception)
                 {
                     e.message?.let {
                         displayError(it)
                     }
-                }
-                catch (e: java.lang.Exception)
+                } catch (e: java.lang.Exception)
                 {
                     e.message?.let {
                         displayError(it)
@@ -955,12 +947,10 @@ class MainActivity : CommonNavActivity()
             amt = try
             {
                 stramt.toBigDecimal(currencyMath).setScale(currencyScale)  // currencyScale because BCH may have more decimals than mBCH
-            }
-            catch (e: NumberFormatException)
+            } catch (e: NumberFormatException)
             {
                 throw BadAmountException(R.string.detailsOfBadAmountFromIntent)
-            }
-            catch (e: ArithmeticException)  // Rounding error
+            } catch (e: ArithmeticException)  // Rounding error
             {
                 // If someone is asking for sub-satoshi quantities, round up and overpay them
                 LogIt.warning("Sub-satoshi quantity ${stramt} requested.  Rounding up")
@@ -991,8 +981,7 @@ class MainActivity : CommonNavActivity()
                 {
                     updateSendAddress(PayAddress(sta))
                 }
-            }
-            catch (e: UnknownBlockchainException)
+            } catch (e: UnknownBlockchainException)
             {
                 displayError(R.string.badAddress)
                 return@laterUI
@@ -1038,8 +1027,10 @@ class MainActivity : CommonNavActivity()
             if (recvCoinType?.selectedItem?.toString() == account.name)  // Only update the UI if this coin is selected to be received
             {
                 account.ifUpdatedReceiveInfo(minOf(GuiReceiveQRCode.layoutParams.width, GuiReceiveQRCode.layoutParams.height, 1024)) { recvAddrStr, recvAddrQR ->
-                    updateReceiveAddressUI(recvAddrStr,
-                        recvAddrQR)
+                    updateReceiveAddressUI(
+                      recvAddrStr,
+                      recvAddrQR
+                    )
                 }
             }
         }
@@ -1088,8 +1079,7 @@ class MainActivity : CommonNavActivity()
         val qty = try
         {
             s.toBigDecimal(currencyMath).setScale(mBchDecimals)
-        }
-        catch (e: NumberFormatException)
+        } catch (e: NumberFormatException)
         {
             if (s == SEND_ALL_TEXT)  // Special case transferring everything
             {
@@ -1100,8 +1090,7 @@ class MainActivity : CommonNavActivity()
                 approximatelyText.text = i18n(R.string.invalidQuantity)
                 return false
             }
-        }
-        catch (e: ArithmeticException)
+        } catch (e: ArithmeticException)
         {
             approximatelyText.text = i18n(R.string.invalidQuantityTooManyDecimalDigits)
             return false
@@ -1129,8 +1118,7 @@ class MainActivity : CommonNavActivity()
                         approximatelyText.text = i18n(R.string.actuallySendingT) % mapOf("qty" to mBchFormat.format(mbchToSend), "crypto" to coin.currencyCode) + availabilityWarning(coin, mbchToSend)
                     xchgRateText?.text = i18n(R.string.exchangeRate) % mapOf("amt" to fiatFormat.format(fiatPerCoin), "crypto" to coin.currencyCode, "fiat" to fiatCurrencyCode)
                     return true
-                }
-                catch (e: ArithmeticException)  // Division by zero
+                } catch (e: ArithmeticException)  // Division by zero
                 {
                     xchgRateText?.text = i18n(R.string.retrievingExchangeRate)
                     return true
@@ -1209,14 +1197,12 @@ class MainActivity : CommonNavActivity()
                         try
                         {
                             handleSendURI(result.contents)
-                        }
-                        catch (e: Exception)
+                        } catch (e: Exception)
                         {
                             try
                             {
-                            handleInputedText(QRstring)
-                            }
-                            catch(e: Exception)  // I can't handle it as plain text
+                                handleInputedText(QRstring)
+                            } catch (e: Exception)  // I can't handle it as plain text
                             {
                                 LogIt.info(sourceLoc() + ": QR contents invalid: " + QRstring)
                                 displayError(R.string.badAddress)
@@ -1275,7 +1261,7 @@ class MainActivity : CommonNavActivity()
     }
 
     @Suppress("UNUSED_PARAMETER")
-        /** If user clicks on the receive address, copy it to the clipboard */
+      /** If user clicks on the receive address, copy it to the clipboard */
     fun onNewAccount(view: View): Boolean
     {
         LogIt.info("new account")
@@ -1291,7 +1277,7 @@ class MainActivity : CommonNavActivity()
     }
 
     @Suppress("UNUSED_PARAMETER")
-        /** If user clicks on the receive address, copy it to the clipboard */
+      /** If user clicks on the receive address, copy it to the clipboard */
     fun onReceiveAddrTextClicked(view: View): Boolean
     {
         try
@@ -1314,8 +1300,7 @@ class MainActivity : CommonNavActivity()
                 }
             }
             else throw UnavailableException(R.string.receiveAddressUnavailable)
-        }
-        catch (e: Exception)
+        } catch (e: Exception)
         {
             displayException(e)
         }
@@ -1342,8 +1327,7 @@ class MainActivity : CommonNavActivity()
             val intent = Intent(this@MainActivity, TxHistoryActivity::class.java)
             intent.putExtra("WalletName", ticker)
             startActivity(intent)
-        }
-        catch (e: Exception)
+        } catch (e: Exception)
         {
             LogIt.warning("Exception clicking on ticker name: " + e.toString())
         }
@@ -1361,8 +1345,7 @@ class MainActivity : CommonNavActivity()
             sendQuantity.text.append(SEND_ALL_TEXT.toString())
 
             sendAccount.setSelection(account.name)
-        }
-        catch (e: Exception)
+        } catch (e: Exception)
         {
             LogIt.warning("Exception clicking on balance: " + e.toString())
             handleThreadException(e)
@@ -1406,8 +1389,7 @@ class MainActivity : CommonNavActivity()
             {
                 completeJsonPay(pip, tx)
                 account.wallet.send(tx)  // If the payment protocol completes, help the merchant by broadcasting the tx, and also mark the inputs as spent in my wallet
-            }
-            catch (e: Exception)
+            } catch (e: Exception)
             {
                 account.wallet.abortTransaction(tx)
                 throw e
@@ -1418,8 +1400,7 @@ class MainActivity : CommonNavActivity()
                 sendToAddress.text.clear()
                 updateSendBasedOnPaymentInProgress()
             }
-        }
-        catch (e: Exception)
+        } catch (e: Exception)
         {
             displayException(e)
         }
@@ -1448,8 +1429,7 @@ class MainActivity : CommonNavActivity()
         val walletName = try
         {
             sendAccount.selectedItem as String
-        }
-        catch (e: TypeCastException)  // No wallets are defined so no sendCoinType is possible
+        } catch (e: TypeCastException)  // No wallets are defined so no sendCoinType is possible
         {
             displayError(R.string.badCryptoCode)
             return false
@@ -1479,8 +1459,7 @@ class MainActivity : CommonNavActivity()
         var amount = try
         {
             amtstr.toBigDecimal(currencyMath).setScale(mBchDecimals)
-        }
-        catch (e: NumberFormatException)
+        } catch (e: NumberFormatException)
         {
             if (amtstr == SEND_ALL_TEXT)
             {
@@ -1492,8 +1471,7 @@ class MainActivity : CommonNavActivity()
                 displayError(R.string.badAmount)
                 return false
             }
-        }
-        catch (e: ArithmeticException)  // Rounding error
+        } catch (e: ArithmeticException)  // Rounding error
         {
             // If someone is asking to send sub-satoshi quantities, round up and ask them to click send again.
             sendQuantity.text.clear()
@@ -1507,13 +1485,11 @@ class MainActivity : CommonNavActivity()
         val sendAddr = try
         {
             PayAddress(sendToAddress.text.toString())
-        }
-        catch (e: WalletNotSupportedException)
+        } catch (e: WalletNotSupportedException)
         {
             displayError(R.string.badAddress)
             return false
-        }
-        catch (e: UnknownBlockchainException)
+        } catch (e: UnknownBlockchainException)
         {
             displayError(R.string.badAddress)
             return false
@@ -1548,8 +1524,7 @@ class MainActivity : CommonNavActivity()
                 val atomAmt = account.toFinestUnit(amount)
                 account.wallet.send(atomAmt, sendAddr, deductFeeFromAmount)
                 onSendSuccess()
-            }
-            catch (e: Exception)  // We don't want to crash, we want to tell the user what went wrong
+            } catch (e: Exception)  // We don't want to crash, we want to tell the user what went wrong
             {
                 displayException(e)
             }

@@ -156,8 +156,8 @@ class AlertActivity : CommonNavActivity()
     var listHeight: Int = 0
 
     val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
-        .withLocale(Locale.getDefault())
-        .withZone(ZoneId.systemDefault())
+      .withLocale(Locale.getDefault())
+      .withZone(ZoneId.systemDefault())
 
     override var navActivityId = R.id.home
 

@@ -59,35 +59,35 @@ data class TricklePayAssetList(val assets: List<TricklePayAssetInfo>)
 // Structured data type to make it cleaner to return tx analysis data from the analysis function.
 // otherInputSatoshis: BCH being brought into this transaction by other participants
 data class TxAnalysisResults(
-    val receivingSats: Long,
-    val sendingSats: Long,
-    val receivingTokenTypes: Long,
-    val sendingTokenTypes: Long,
-    val imSpendingTokenTypes: Long,  // The tx spends this number of token TYPES currently controlled by this wallet
-    val otherInputSatoshis: Long?,  // If this is null, I'm not funding this tx (its likely a partial tx)
-    val myInputSatoshis: Long,
-    val ttInfo: Map<GroupId, Long>,
-    val completionException: Exception?
+  val receivingSats: Long,
+  val sendingSats: Long,
+  val receivingTokenTypes: Long,
+  val sendingTokenTypes: Long,
+  val imSpendingTokenTypes: Long,  // The tx spends this number of token TYPES currently controlled by this wallet
+  val otherInputSatoshis: Long?,  // If this is null, I'm not funding this tx (its likely a partial tx)
+  val myInputSatoshis: Long,
+  val ttInfo: Map<GroupId, Long>,
+  val completionException: Exception?
 )
 
 /* Information about payment delegations that have been accepted by the user
 * To be stored/retrieved */
 data class TdppDomain(
-    @cli(Display.Simple, "Address of entity") var domain: String,
-    @cli(Display.Simple, "Topic") var topic: String,
-    @cli(Display.Simple, "Signing address") var addr: String,
-    @cli(Display.Simple, "Currency") var uoa: String,
-    // These are stored in the finest unit of the unit of account of the currency, i.e. Satoshis or cents.
-    // But OFC they should be displayed in a more reasonable unit
-    @cli(Display.Simple, "Maximum automatic payment") var maxper: Long,
-    @cli(Display.Simple, "Maximum automatic per day") var maxday: Long,
-    @cli(Display.Simple, "Maximum automatic per week") var maxweek: Long,
-    @cli(Display.Simple, "Maximum automatic per month") var maxmonth: Long,
-    var descper: String,
-    var descday: String,
-    var descweek: String,
-    var descmonth: String,
-    @cli(Display.Simple, "enable/disable all automatic payments to this entity") var automaticEnabled: Boolean
+  @cli(Display.Simple, "Address of entity") var domain: String,
+  @cli(Display.Simple, "Topic") var topic: String,
+  @cli(Display.Simple, "Signing address") var addr: String,
+  @cli(Display.Simple, "Currency") var uoa: String,
+  // These are stored in the finest unit of the unit of account of the currency, i.e. Satoshis or cents.
+  // But OFC they should be displayed in a more reasonable unit
+  @cli(Display.Simple, "Maximum automatic payment") var maxper: Long,
+  @cli(Display.Simple, "Maximum automatic per day") var maxday: Long,
+  @cli(Display.Simple, "Maximum automatic per week") var maxweek: Long,
+  @cli(Display.Simple, "Maximum automatic per month") var maxmonth: Long,
+  var descper: String,
+  var descday: String,
+  var descweek: String,
+  var descmonth: String,
+  @cli(Display.Simple, "enable/disable all automatic payments to this entity") var automaticEnabled: Boolean
 ) : BCHserializable()
 {
     constructor(stream: BCHserialized) : this("", "", "", "", -1, -1, -1, -1, "", "", "", "", false)
@@ -180,10 +180,11 @@ class TricklePayRegFragment : Fragment()
         }
         GuiTricklePayEntity.text = u.authority + topic
 
-        val d2w = listOf(Data2Widgets("maxper", "descper", GuiAutospendLimitEntry0, GuiAutospendLimitDescription0),
-            Data2Widgets("maxday", "descday", GuiAutospendLimitEntry1, GuiAutospendLimitDescription1),
-            Data2Widgets("maxweek", "descweek", GuiAutospendLimitEntry2, GuiAutospendLimitDescription2),
-            Data2Widgets("maxmonth", "descmonth", GuiAutospendLimitEntry3, GuiAutospendLimitDescription3)
+        val d2w = listOf(
+          Data2Widgets("maxper", "descper", GuiAutospendLimitEntry0, GuiAutospendLimitDescription0),
+          Data2Widgets("maxday", "descday", GuiAutospendLimitEntry1, GuiAutospendLimitDescription1),
+          Data2Widgets("maxweek", "descweek", GuiAutospendLimitEntry2, GuiAutospendLimitDescription2),
+          Data2Widgets("maxmonth", "descmonth", GuiAutospendLimitEntry3, GuiAutospendLimitDescription3)
         )
 
         for (d in d2w)
@@ -301,7 +302,7 @@ class TricklePayCustomTxFragment : Fragment()
             }
             else
             {
-                if ((a.sendingTokenTypes > 0)||(a.imSpendingTokenTypes>0))
+                if ((a.sendingTokenTypes > 0) || (a.imSpendingTokenTypes > 0))
                 {
                     GuiCustomTxTokenSummary.text = i18n(R.string.TpSendingTokens)
                 }
@@ -523,8 +524,7 @@ class TricklePayActivity : CommonNavActivity()
                         if (ver == SER_VERSION)
                             domains = bchser.demap({ it.deString() }, { TdppDomain(it) })
                     }
-                }
-                catch (e: DataMissingException)
+                } catch (e: DataMissingException)
                 {
                     LogIt.info("benign: no TDPP domains registered yet")
                 }
@@ -625,7 +625,7 @@ class TricklePayActivity : CommonNavActivity()
 
         // Look at the inputs and match with UTXOs that I have, so I have the additional info required to sign this input
         val unspent = wal.unspent
-        for ((idx,inp) in tx.inputs.withIndex())
+        for ((idx, inp) in tx.inputs.withIndex())
         {
             val utxo = unspent[inp.spendable.outpoint]
             if (utxo != null)
@@ -640,8 +640,7 @@ class TricklePayActivity : CommonNavActivity()
             // Someday the wallet might want to fund groups, etc but for now all it does is pay for txes because the wallet UX can only show that
             //(wal as CommonWallet).txCompleter2(tx, 0, cflags, inputSatoshis)
             wal.txCompleter(tx, 0, cflags, inputSatoshis)
-        }
-        catch(e: Exception)  // Try to report on the tx even if we can't complete it.
+        } catch (e: Exception)  // Try to report on the tx even if we can't complete it.
         {
             completionException = e
         }
@@ -880,8 +879,7 @@ class TricklePayActivity : CommonNavActivity()
             {
                 displayError("bad link " + receivedIntent.scheme)
             }
-        }
-        catch (e: Exception)
+        } catch (e: Exception)
         {
             LogIt.warning(e.toString())
             displayException(e)
@@ -899,14 +897,16 @@ class TricklePayActivity : CommonNavActivity()
     // Move the Ux data into the map
     fun RegUxToMap()
     {
-        val domain = TdppDomain(GuiTricklePayEntity.toString(), GuiTricklePayTopic.toString(), regCurrency, regAddress,
-            GuiAutospendLimitEntry0.text.toString().toLong(), GuiAutospendLimitEntry1.text.toString().toLong(),
-            GuiAutospendLimitEntry2.text.toString().toLong(), GuiAutospendLimitEntry3.text.toString().toLong(),
-            GuiAutospendLimitDescription0.toString(),
-            GuiAutospendLimitDescription1.toString(),
-            GuiAutospendLimitDescription2.toString(),
-            GuiAutospendLimitDescription3.toString(),
-            GuiEnableAutopay.isChecked)
+        val domain = TdppDomain(
+          GuiTricklePayEntity.toString(), GuiTricklePayTopic.toString(), regCurrency, regAddress,
+          GuiAutospendLimitEntry0.text.toString().toLong(), GuiAutospendLimitEntry1.text.toString().toLong(),
+          GuiAutospendLimitEntry2.text.toString().toLong(), GuiAutospendLimitEntry3.text.toString().toLong(),
+          GuiAutospendLimitDescription0.toString(),
+          GuiAutospendLimitDescription1.toString(),
+          GuiAutospendLimitDescription2.toString(),
+          GuiAutospendLimitDescription3.toString(),
+          GuiEnableAutopay.isChecked
+        )
     }
 
     // Trickle pay registration handlers
@@ -957,14 +957,12 @@ class TricklePayActivity : CommonNavActivity()
                 val data = try
                 {
                     req.readText()
-                }
-                catch (e: java.io.FileNotFoundException)
+                } catch (e: java.io.FileNotFoundException)
                 {
                     LogIt.info("Error submitting transaction: " + e.message)
                     displayError(i18n(R.string.WebsiteUnavailable))
                     return@later
-                }
-                catch (e: Exception)
+                } catch (e: Exception)
                 {
                     LogIt.info("Error submitting transaction: " + e.message)
                     displayError(i18n(R.string.WebsiteUnavailable))
@@ -1016,8 +1014,7 @@ class TricklePayActivity : CommonNavActivity()
                 }
                 val respText = response.readText()
                 clearIntentAndFinish(notice = respText)
-            }
-            catch (e: SocketTimeoutException)
+            } catch (e: SocketTimeoutException)
             {
                 displayError(R.string.connectionException)
             }

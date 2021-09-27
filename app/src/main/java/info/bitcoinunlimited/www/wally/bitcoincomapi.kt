@@ -1,6 +1,7 @@
 // Copyright (c) 2019 Andrew Stone Consulting (qq9wwnuw4eukyh5g34ckg5vk4aaxnvr04vkspyv850)
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
+
 import bitcoinunlimited.libbitcoincash.launch
 import bitcoinunlimited.libbitcoincash.sourceLoc
 import kotlinx.coroutines.*
@@ -27,14 +28,15 @@ data class BchUsdBitcoinCom(val price: Int, val stamp: Long)
 
 @Serializable
 data class HistItemBitcoinCom(val price: Int)
+
 @Serializable
 data class HistBitcoinCom(val lookup: HistItemBitcoinCom)
 
 @OptIn(ExperimentalTime::class)
-val lastPoll = mutableMapOf<String, Pair<TimeMark,BigDecimal>>()
+val lastPoll = mutableMapOf<String, Pair<TimeMark, BigDecimal>>()
 
 @OptIn(ExperimentalTime::class)
-fun MbchInFiat(fiat: String, setter: (BigDecimal)-> Unit)
+fun MbchInFiat(fiat: String, setter: (BigDecimal) -> Unit)
 {
     val prior = lastPoll[fiat]
     if (prior != null)
@@ -47,23 +49,24 @@ fun MbchInFiat(fiat: String, setter: (BigDecimal)-> Unit)
     }
     // TODO periodic update
     launch {
-        val data = try { URL("https://index-api.bitcoin.com/api/v0/cash/price/" + fiat).readText() }
-        catch(e: java.io.FileNotFoundException)
+        val data = try
+        {
+            URL("https://index-api.bitcoin.com/api/v0/cash/price/" + fiat).readText()
+        } catch (e: java.io.FileNotFoundException)
         {
             return@launch
-        }
-        catch(e: Exception)
+        } catch (e: Exception)
         {
             LogIt.info("Error retrieving price: " + e.message)
             return@launch
         }
         LogIt.info(sourceLoc() + " " + data)
-        val parser: Json = Json { isLenient = true; ignoreUnknownKeys = true}  // nonstrict mode ignores extra fields
+        val parser: Json = Json { isLenient = true; ignoreUnknownKeys = true }  // nonstrict mode ignores extra fields
         val obj = parser.decodeFromString(BchUsdBitcoinCom.serializer(), data)
         LogIt.info(sourceLoc() + " " + obj.toString())
         // TODO verify recent timestamp
         val v = obj.price.toBigDecimal().setScale(16) / 100000.toBigDecimal().setScale(16) // bitcoin.com price is in cents per BCH.  We want "dollars" per MBCH (thousandth of a BCH)
-        lastPoll[fiat] = Pair(Monotonic.markNow(),v)
+        lastPoll[fiat] = Pair(Monotonic.markNow(), v)
         setter(v)
     }
 
@@ -76,8 +79,10 @@ fun historicalMbchInFiat(fiat: String, timeStamp: Long): BigDecimal
 
     // see https://index.bitcoin.com/
     val spec = "https://index-api.bitcoin.com/api/v0/cash/lookup?time=" + timeStamp.toString()
-    val data = try { URL(spec).readText() }
-    catch(e: java.io.FileNotFoundException)
+    val data = try
+    {
+        URL(spec).readText()
+    } catch (e: java.io.FileNotFoundException)
     {
         return BigDecimal(-1)
     }

@@ -30,16 +30,16 @@ fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false):
 }
 
 fun BCHidentityUpdateIntentFromPerms(intent: Intent, perms: MutableMap<String, Boolean>)
+{
+    for (k in BCHidentityParams)  // Update new perms
     {
-        for(k in BCHidentityParams)  // Update new perms
-        {
-            intent.putExtra(k + "P", perms[k])
-        }
+        intent.putExtra(k + "P", perms[k])
     }
+}
 
 fun BCHidentityUpdateIntentFromReqs(intent: Intent, reqs: MutableMap<String, String>)
 {
-    for(k in BCHidentityParams)  // Update new perms
+    for (k in BCHidentityParams)  // Update new perms
     {
         intent.putExtra(k, reqs[k])
     }
@@ -121,7 +121,7 @@ class IdentityActivity : CommonNavActivity()
 
     override var navActivityId = R.id.navigation_identity
 
-    var actUnlockCb = {populate()}
+    var actUnlockCb = { populate() }
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -195,8 +195,7 @@ class IdentityActivity : CommonNavActivity()
                 val sz = min(commonIdentityQRCode.getWidth().toLong(), commonIdentityQRCode.getHeight().toLong())
                 val qr = textToQREncode(uri, sz.toInt())
                 commonIdentityQRCode.setImageBitmap(qr)
-            }
-            catch (e: PrimaryWalletInvalidException)
+            } catch (e: PrimaryWalletInvalidException)
             {
                 commonIdentityAddress.text = i18n(R.string.NoAccounts)
             }
@@ -236,8 +235,7 @@ class IdentityActivity : CommonNavActivity()
             {
                 displayError("bad link " + receivedIntent.scheme)
             }
-        }
-        catch (e: Exception)
+        } catch (e: Exception)
         {
             displayException(e)
         }

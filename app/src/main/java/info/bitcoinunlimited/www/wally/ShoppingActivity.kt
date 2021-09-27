@@ -22,7 +22,7 @@ import java.util.logging.Logger
 
 private val LogIt = Logger.getLogger("bitcoinunlimited.shoppingActivity")
 
-class ShoppingDestination(var buttonText:String = "",  var explain:String="", var url:String="", var androidPackage:String="", var icon:Int = 0)
+class ShoppingDestination(var buttonText: String = "", var explain: String = "", var url: String = "", var androidPackage: String = "", var icon: Int = 0)
 {
     fun launch(view: View)
     {
@@ -49,9 +49,10 @@ class ShoppingDestination(var buttonText:String = "",  var explain:String="", va
 }
 
 val initialShopping: ArrayList<ShoppingDestination> = arrayListOf(
-    ShoppingDestination(i18n(R.string.GiftCardButton), i18n(R.string.ExplainGiftCards), i18n(R.string.GiftCardUrl), i18n(R.string.GiftCardAppPackage), R.mipmap.ic_egifter),
-    ShoppingDestination(i18n(R.string.RestaurantButton), i18n(R.string.ExplainRestaurant), i18n(R.string.RestaurantUrl), i18n(R.string.RestaurantAppPackage), R.mipmap.ic_menufy),
-    ShoppingDestination(i18n(R.string.StoreMapButton), i18n(R.string.ExplainStoreMap),i18n(R.string.StoreMapUrl), i18n(R.string.StoreMapAppPackage)))
+  ShoppingDestination(i18n(R.string.GiftCardButton), i18n(R.string.ExplainGiftCards), i18n(R.string.GiftCardUrl), i18n(R.string.GiftCardAppPackage), R.mipmap.ic_egifter),
+  ShoppingDestination(i18n(R.string.RestaurantButton), i18n(R.string.ExplainRestaurant), i18n(R.string.RestaurantUrl), i18n(R.string.RestaurantAppPackage), R.mipmap.ic_menufy),
+  ShoppingDestination(i18n(R.string.StoreMapButton), i18n(R.string.ExplainStoreMap), i18n(R.string.StoreMapUrl), i18n(R.string.StoreMapAppPackage))
+)
 
 
 private class ShoppingRecyclerAdapter(private val activity: ShoppingActivity, private val domains: MutableList<ShoppingDestination>) : RecyclerView.Adapter<ShoppingRecyclerAdapter.DomainHolder>()
@@ -93,8 +94,7 @@ private class ShoppingRecyclerAdapter(private val activity: ShoppingActivity, pr
                 try
                 {
                     i.launch(view)
-                }
-                catch (e: ActivityNotFoundException)
+                } catch (e: ActivityNotFoundException)
                 {
                     activity.displayError(R.string.BadLink)
                 }
@@ -115,7 +115,7 @@ private class ShoppingRecyclerAdapter(private val activity: ShoppingActivity, pr
             val Acol = 0xFFF0FFF0.toInt()
             val Bcol = 0xFFD0E0D0.toInt()
 
-            if ((pos and 1)==0)
+            if ((pos and 1) == 0)
             {
                 view.background = ColorDrawable(Acol)
             }
@@ -167,7 +167,7 @@ class ShoppingActivity : CommonNavActivity()
         GuiShoppingList.adapter = adapter
     }
 
-        /** Inflate the options menu */
+    /** Inflate the options menu */
     override fun onCreateOptionsMenu(menu: Menu): Boolean
     {
         val inflater: MenuInflater = menuInflater

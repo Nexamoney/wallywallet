@@ -137,8 +137,7 @@ class SplitBillActivity : CommonNavActivity()
                     {
                         displayError(R.string.invalidQuantity)
                     }
-                }
-                catch (e: java.lang.NumberFormatException)
+                } catch (e: java.lang.NumberFormatException)
                 {
                     displayError(R.string.invalidQuantity)
                 }
@@ -299,8 +298,7 @@ class SplitBillActivity : CommonNavActivity()
         try
         {
             return splitQuantity.text.toString().toBigDecimal(currencyMath).setScale(currencyScale)
-        }
-        catch (e: Exception)  // If we can't parse the user's input for any reason, just make it 0
+        } catch (e: Exception)  // If we can't parse the user's input for any reason, just make it 0
         {
             return BigDecimal(0, currencyMath).setScale(currencyScale)
         }
@@ -356,13 +354,11 @@ class SplitBillActivity : CommonNavActivity()
                 }
             }
 
-            perSplitAmount.text =  (acct?.format(qty) ?: mBchFormat.format(qty)) + " " + cryptoCurrencyCode + fiatStr
-        }
-        catch (e: java.lang.NumberFormatException)
+            perSplitAmount.text = (acct?.format(qty) ?: mBchFormat.format(qty)) + " " + cryptoCurrencyCode + fiatStr
+        } catch (e: java.lang.NumberFormatException)
         {
             perSplitAmount.text = i18n(R.string.badAmount)
-        }
-        catch (e: java.lang.ArithmeticException)  // division by zero because coin.fiatPerCoin is not loaded yet
+        } catch (e: java.lang.ArithmeticException)  // division by zero because coin.fiatPerCoin is not loaded yet
         {
             displayNotice(i18n(R.string.cantConvert))
             perSplitAmount.text = i18n(R.string.cantConvert)

@@ -21,9 +21,9 @@ class IdentitySettings : AppCompatActivity()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.settings_blank_activity)
         supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.settings, SettingsFragment())
-            .commit()
+          .beginTransaction()
+          .replace(R.id.settings, SettingsFragment())
+          .commit()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
     }

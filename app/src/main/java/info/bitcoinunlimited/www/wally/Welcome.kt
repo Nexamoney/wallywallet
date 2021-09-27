@@ -14,7 +14,7 @@ var wallyApp: WallyApp? = null
 
 class Welcome : CommonNavActivity()
 {
-    var walletCreated=false
+    var walletCreated = false
     var enteredIdentity = false
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -74,16 +74,17 @@ class WelcomeFragment2 : Fragment()
     override fun onResume()
     {
         super.onResume()
-        if (wallyApp!!.accounts.size>0)
+        if (wallyApp!!.accounts.size > 0)
         {
             findNavController().navigate(R.id.action_NewAccount_to_Backup)
         }
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
         view.findViewById<Button>(R.id.button_first).setOnClickListener {
-            if (wallyApp!!.accounts.size==0)
+            if (wallyApp!!.accounts.size == 0)
             {
                 val intent = Intent(appContext!!.context, NewAccount::class.java)
                 startActivity(intent)

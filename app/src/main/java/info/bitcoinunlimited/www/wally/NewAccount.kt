@@ -18,7 +18,7 @@ private val LogIt = Logger.getLogger("bitcoinunlimited.NewAccount")
 //* how many addresses to search in a particular derivation path
 val DERIVATION_PATH_SEARCH_DEPTH = 10
 
-class CharTokenizer(val separator:Char):Tokenizer
+class CharTokenizer(val separator: Char) : Tokenizer
 {
 
     // Returns the end of the token (minus trailing punctuation) that begins at offset cursor within text.
@@ -26,22 +26,22 @@ class CharTokenizer(val separator:Char):Tokenizer
     {
         if (cs == null) return pos
         var curPos = pos
-        while(curPos<cs.length)
+        while (curPos < cs.length)
         {
-            if (cs[curPos] == separator) return curPos-1
+            if (cs[curPos] == separator) return curPos - 1
             curPos++
         }
-        return curPos-1
+        return curPos - 1
     }
 
     // Returns the start of the token that ends at offset cursor within text.
     override fun findTokenStart(cs: CharSequence?, pos: Int): Int
     {
-        if (cs==null) return pos
-        var curPos = pos-1
-        while(curPos>0)
+        if (cs == null) return pos
+        var curPos = pos - 1
+        while (curPos > 0)
         {
-            if (cs[curPos] == separator) return curPos+1
+            if (cs[curPos] == separator) return curPos + 1
             curPos--
         }
         return 0
@@ -121,10 +121,12 @@ class NewAccount : CommonNavActivity()
                 nameOk = true
             }
 
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
+            {
             }
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
+            {
             }
         })
 
@@ -153,10 +155,12 @@ class NewAccount : CommonNavActivity()
                 pinOk = true
             }
 
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
+            {
             }
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
+            {
             }
         })
 
@@ -181,7 +185,7 @@ class NewAccount : CommonNavActivity()
                 }
 
                 // Check recovery phrase validity and be unhappy if its not good
-                val txt:String = p.toString().trim()
+                val txt: String = p.toString().trim()
                 val words = txt.split(' ')
                 if (words.size < 12)  // TODO support other size recovery keys
                 {
@@ -210,8 +214,7 @@ class NewAccount : CommonNavActivity()
                     try
                     {
                         peekActivity(words.joinToString(" "), SupportedBlockchains[GuiBlockchainSelector.selectedItem]!!)
-                    }
-                    catch (e: Exception)
+                    } catch (e: Exception)
                     {
                         LogIt.severe("wallet peek error: " + e.toString())
                     }
@@ -219,20 +222,22 @@ class NewAccount : CommonNavActivity()
 
             }
 
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
+            {
             }
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
+            {
             }
         })
 
     }
 
 
-    fun searchActivity(ec: ElectrumClient, chainSelector: ChainSelector, count:Int, secretDerivation: (Int)->ByteArray): Pair<Long, Int>?
+    fun searchActivity(ec: ElectrumClient, chainSelector: ChainSelector, count: Int, secretDerivation: (Int) -> ByteArray): Pair<Long, Int>?
     {
         var index = 0
-        while (index<count)
+        while (index < count)
         {
             val newSecret = secretDerivation(index)
 
@@ -255,8 +260,7 @@ class NewAccount : CommonNavActivity()
                 {
                     LogIt.info("didn't find activity")
                 }
-            }
-            catch (e: ElectrumNotFound)
+            } catch (e: ElectrumNotFound)
             {
                 LogIt.info("didn't find activity")
             }
@@ -266,8 +270,9 @@ class NewAccount : CommonNavActivity()
     }
 
     // Note that this returns the last time and block when a new address was FIRST USED, so this may not be what you wanted
-    data class HDActivityBracket(val startTime:Long, val startBlockHeight:Int, val lastTime:Long, val lastBlockHeight:Int, val lastAddressIndex:Int)
-    fun bracketActivity(ec: ElectrumClient, chainSelector: ChainSelector, giveUpGap:Int, secretDerivation: (Int)->ByteArray): HDActivityBracket?
+    data class HDActivityBracket(val startTime: Long, val startBlockHeight: Int, val lastTime: Long, val lastBlockHeight: Int, val lastAddressIndex: Int)
+
+    fun bracketActivity(ec: ElectrumClient, chainSelector: ChainSelector, giveUpGap: Int, secretDerivation: (Int) -> ByteArray): HDActivityBracket?
     {
         var index = 0
         var lastFoundIndex = 0
@@ -299,15 +304,14 @@ class NewAccount : CommonNavActivity()
                 {
                     LogIt.info("didn't find activity")
                 }
-            }
-            catch (e: ElectrumNotFound)
+            } catch (e: ElectrumNotFound)
             {
                 LogIt.info("didn't find activity")
             }
             index++
         }
 
-        if (startBlock==0) return null  // Safe to use 0 because no spendable tx in genesis block
+        if (startBlock == 0) return null  // Safe to use 0 because no spendable tx in genesis block
 
         if (true)
         {
@@ -326,7 +330,7 @@ class NewAccount : CommonNavActivity()
     }
 
 
-    fun peekActivity(secretWords:String, chainSelector: ChainSelector)
+    fun peekActivity(secretWords: String, chainSelector: ChainSelector)
     {
         laterUI {
             GuiNewAccountStatus.text = i18n(R.string.NewAccountSearchingForTransactions)
@@ -335,25 +339,23 @@ class NewAccount : CommonNavActivity()
         val (svr, port) = try
         {
             ElectrumServerOn(chainSelector)
-        }
-        catch (e:BadCryptoException)
+        } catch (e: BadCryptoException)
         {
-            LogIt.info ("peek not supported for this blockchain")
+            LogIt.info("peek not supported for this blockchain")
             return
         }
 
-        val ec = try {
+        val ec = try
+        {
             ElectrumClient(chainSelector, svr, port)
-        }
-        catch(e:java.io.IOException) // covers java.net.ConnectException, UnknownHostException and a few others that could trigger
+        } catch (e: java.io.IOException) // covers java.net.ConnectException, UnknownHostException and a few others that could trigger
         {
             try
             {
-                if (chainSelector==ChainSelector.BCHMAINNET)
+                if (chainSelector == ChainSelector.BCHMAINNET)
                     ElectrumClient(chainSelector, LAST_RESORT_BCH_ELECTRS)
                 else throw e
-            }
-            catch (e: java.io.IOException)
+            } catch (e: java.io.IOException)
             {
                 laterUI {
                     GuiNewAccountStatus.text = i18n(R.string.ElectrumNetworkUnavailable)
@@ -371,33 +373,37 @@ class NewAccount : CommonNavActivity()
         val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
 
         var earliestActivityP =
-                searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, addressDerivationCoin, 0, 0, it) })
+          searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, addressDerivationCoin, 0, 0, it) })
 
         val Bip44Msg = if (earliestActivityP != null)
         {
-            earliestActivity = earliestActivityP.first-1 // -1 so earliest activity is just before the activity
+            earliestActivity = earliestActivityP.first - 1 // -1 so earliest activity is just before the activity
             i18n(R.string.Bip44ActivityNotice) + " " + i18n(R.string.FirstUseDateHeightInfo) % mapOf(
-                "date" to epochToDate(earliestActivityP.first),
-                "height" to earliestActivityP.second.toString())
+              "date" to epochToDate(earliestActivityP.first),
+              "height" to earliestActivityP.second.toString()
+            )
         }
         else i18n(R.string.NoBip44ActivityNotice)
 
         // Look in non-standard places for activity
-        val BTCactivity = bracketActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, AddressDerivationKey.BTC, 0, 0, it) })
+        val BTCactivity =
+          bracketActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, AddressDerivationKey.BTC, 0, 0, it) })
         var BTCchangeActivity: HDActivityBracket? = null
         var Bip44BTCMsg = if (BTCactivity != null)
         {
-            BTCchangeActivity = bracketActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, AddressDerivationKey.BTC, 0, 1, it) })
+            BTCchangeActivity =
+              bracketActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, AddressDerivationKey.BTC, 0, 1, it) })
             nonstandardActivity.clear()  // clear because peek can be called multiple times if the user changes the secret
-            nonstandardActivity.add(Pair(Bip44Wallet.HdDerivationPath(null, AddressDerivationKey.BIP43, AddressDerivationKey.BTC, 0, 0, BTCactivity.lastAddressIndex), BTCactivity  ))
+            nonstandardActivity.add(Pair(Bip44Wallet.HdDerivationPath(null, AddressDerivationKey.BIP43, AddressDerivationKey.BTC, 0, 0, BTCactivity.lastAddressIndex), BTCactivity))
             if (BTCchangeActivity != null)
             {
                 nonstandardActivity.add(Pair(Bip44Wallet.HdDerivationPath(null, AddressDerivationKey.BIP43, AddressDerivationKey.BTC, 0, 1, BTCchangeActivity.lastAddressIndex), BTCchangeActivity))
             }
 
             i18n(R.string.Bip44BtcActivityNotice) + " " + i18n(R.string.FirstUseDateHeightInfo) % mapOf(
-                "date" to epochToDate(BTCactivity.startTime),
-                "height" to BTCactivity.startBlockHeight.toString())
+              "date" to epochToDate(BTCactivity.startTime),
+              "height" to BTCactivity.startBlockHeight.toString()
+            )
         }
         else i18n(R.string.NoBip44BtcActivityNotice)
         /*
@@ -412,10 +418,10 @@ class NewAccount : CommonNavActivity()
         else i18n(R.string.NoBip44BtcActivityNotice)
          */
 
-        laterUI {GuiNewAccountStatus.text = Bip44Msg + "\n" + Bip44BTCMsg }
+        laterUI { GuiNewAccountStatus.text = Bip44Msg + "\n" + Bip44BTCMsg }
     }
 
-    fun recoverAccountPhase2(name: String, flags:ULong, pin: String, secretWords: String, chainSelector: ChainSelector)
+    fun recoverAccountPhase2(name: String, flags: ULong, pin: String, secretWords: String, chainSelector: ChainSelector)
     {
         val passphrase = ""  // TODO
         // val secretSize = 64
@@ -465,7 +471,7 @@ class NewAccount : CommonNavActivity()
         val flags: ULong = if (PinHidesAccount.isChecked()) ACCOUNT_FLAG_HIDE_UNTIL_PIN else ACCOUNT_FLAG_NONE
         if (secretWords.length > 0)
         {
-            processingThread = thread(true, true, null, "newAccount") { recoverAccountPhase2(name, flags, pin, secretWords, chainSelector ) }
+            processingThread = thread(true, true, null, "newAccount") { recoverAccountPhase2(name, flags, pin, secretWords, chainSelector) }
         }
         else
         {

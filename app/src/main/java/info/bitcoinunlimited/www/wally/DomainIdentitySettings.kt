@@ -28,7 +28,8 @@ class DomainIdentitySettings : CommonNavActivity()
     {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_domain_identity_settings)
-        ui4params = arrayOf(provideAttestations, provideAvatar, provideBillingAddress, provideBirthday, provideEmail, provideNameAlias, provideRealName, providePhone, providePostalAddress, provideSocialMedia)
+        ui4params =
+          arrayOf(provideAttestations, provideAvatar, provideBillingAddress, provideBirthday, provideEmail, provideNameAlias, provideRealName, providePhone, providePostalAddress, provideSocialMedia)
     }
 
     override fun onStart()
@@ -46,9 +47,9 @@ class DomainIdentitySettings : CommonNavActivity()
 
         for ((param, ui) in BCHidentityParams zip ui4params)
         {
-            var b:Boolean? = null
+            var b: Boolean? = null
             if (intent.hasExtra(param + "P")) b = intent.getBooleanExtra(param + "P", false)
-            var r:String? = null
+            var r: String? = null
             if (intent.hasExtra(param))
             {
                 r = intent.getStringExtra(param)

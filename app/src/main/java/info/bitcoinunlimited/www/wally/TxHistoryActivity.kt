@@ -25,7 +25,7 @@ import kotlin.collections.ArrayList
 private val LogIt = Logger.getLogger("bitcoinunlimited.TxHistoryActivity")
 
 
-private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, private val domains: ArrayList<PaymentHistory>, private val account:Account) : RecyclerView.Adapter<TxHistoryRecyclerAdapter.TxHistoryDomainHolder>()
+private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, private val domains: ArrayList<PaymentHistory>, private val account: Account) : RecyclerView.Adapter<TxHistoryRecyclerAdapter.TxHistoryDomainHolder>()
 {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TxHistoryRecyclerAdapter.TxHistoryDomainHolder
@@ -50,7 +50,7 @@ private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, 
         val recvIm = appContext?.let { ContextCompat.getDrawable(it.context, R.drawable.ic_receivearrow) }
         var idx = 0
         var txid: Hash256? = null
-        var showDev:Boolean
+        var showDev: Boolean
 
         var priorHeight: Int = 0
 
@@ -82,7 +82,7 @@ private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, 
                     activity.GuiTxWebView.layoutParams.height = heightButOne
                     activity.GuiTxWebView.requestLayout()
                     activity.container.requestLayout()
-                    
+
 
                     val url = account.transactionInfoWebUrl(txid?.toHex())
                     url?.let {
@@ -119,7 +119,7 @@ private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, 
             view.GuiTxId.text = txid?.toHex() ?: ""
             view.GuiTxId.visibility = if (showDev) View.VISIBLE else View.GONE
             val fmt = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withZone(ZoneId.systemDefault())
-            val epochSec = Instant.ofEpochSecond(obj.date/1000)
+            val epochSec = Instant.ofEpochSecond(obj.date / 1000)
             view.GuiTxDate.text = fmt.format(epochSec)
             val netAmt = account.fromFinestUnit(obj.amount)
             view.GuiValueCrypto.text = account.cryptoFormat.format(netAmt)
@@ -140,7 +140,7 @@ private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, 
 
             if (obj.priceWhatFiat != "")
             {
-                val netFiat = CurrencyDecimal(obj.amount)*obj.priceWhenIssued
+                val netFiat = CurrencyDecimal(obj.amount) * obj.priceWhenIssued
                 view.GuiValueFiat.text = fiatFormat.format(netFiat) + " " + obj.priceWhatFiat
 
                 view.GuiTxCostBasisOrProfitLoss.text.clear()
@@ -173,12 +173,12 @@ private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, 
             }
 
             // Alternate colors for each row in the list
-            val Acol:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowA) } ?: 0xFFEEFFEE.toInt()
-            val Bcol:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowB) } ?: 0xFFBBDDBB.toInt()
+            val Acol: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowA) } ?: 0xFFEEFFEE.toInt()
+            val Bcol: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowB) } ?: 0xFFBBDDBB.toInt()
             //val Acol = 0xFFEEFFEE.toInt()
             //val Bcol = 0xFFBBDDBB.toInt()
 
-            if ((pos and 1)==0)
+            if ((pos and 1) == 0)
             {
                 view.background = ColorDrawable(Acol)
             }
@@ -202,7 +202,7 @@ class TxHistoryActivity : CommonNavActivity()
 
     val viewSync = ThreadCond()
     var showingDetails = false
-    var walletName:String? = null
+    var walletName: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -217,7 +217,7 @@ class TxHistoryActivity : CommonNavActivity()
 
         var activity = this
 
-        GuiTxHistoryList.addOnScrollListener(object: RecyclerView.OnScrollListener()
+        GuiTxHistoryList.addOnScrollListener(object : RecyclerView.OnScrollListener()
         {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)
             {

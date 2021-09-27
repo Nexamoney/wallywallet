@@ -96,15 +96,14 @@ class IdentityOpActivity : CommonNavActivity()
             {
                 // Run blocking so the IdentityOp activity does not momentarily appear
                 val act = account ?: try
-                    {
-                        (application as WallyApp).primaryAccount
-                    }
-                    catch (e: PrimaryWalletInvalidException)
-                    {
-                        //displayError(R.string.pleaseWait)
-                        clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to PRIMARY_WALLET), i18n(R.string.primaryAccountRequiredDetails))
-                        return
-                    }
+                {
+                    (application as WallyApp).primaryAccount
+                } catch (e: PrimaryWalletInvalidException)
+                {
+                    //displayError(R.string.pleaseWait)
+                    clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to PRIMARY_WALLET), i18n(R.string.primaryAccountRequiredDetails))
+                    return
+                }
 
                 // If the primary account is locked do not proceed
                 if (act?.locked ?: false)
@@ -159,7 +158,7 @@ class IdentityOpActivity : CommonNavActivity()
 
     fun updatePermsFromIntent(intent: Intent)
     {
-        for(k in BCHidentityParams)  // Update new perms
+        for (k in BCHidentityParams)  // Update new perms
         {
             if (intent.hasExtra(k + "P"))
             {
@@ -173,33 +172,33 @@ class IdentityOpActivity : CommonNavActivity()
     /** this handles the result of the new domain request, since no other child activities are possible */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
     {
-         LogIt.info(sourceLoc() + " activity completed $requestCode $resultCode")
+        LogIt.info(sourceLoc() + " activity completed $requestCode $resultCode")
 
-         // Handle my sub-activity results
-         if (requestCode == IDENTITY_SETTINGS_RESULT)
-         {
-             // Load any changes the sub-activity may have made
-             val h = host
-             if (h != null)
-             {
-                 val idData = account?.wallet?.lookupIdentityDomain(h)
-                 idData?.getPerms(perms)
-                 idData?.getReqs(reqs)
-             }
+        // Handle my sub-activity results
+        if (requestCode == IDENTITY_SETTINGS_RESULT)
+        {
+            // Load any changes the sub-activity may have made
+            val h = host
+            if (h != null)
+            {
+                val idData = account?.wallet?.lookupIdentityDomain(h)
+                idData?.getPerms(perms)
+                idData?.getReqs(reqs)
+            }
 
-             if (resultCode == Activity.RESULT_OK)
-             {
-                 if (data != null)
-                 {
-                     val err = data.getStringExtra("error")
-                     if (err != null) displayError(err)
-                 }
-             }
-             else if (requestCode == Activity.RESULT_CANCELED)  // If the DomainIdentitySettings activity got cancelled, the user wants to cancel the whole thing
-             {
-                 clearIntentAndFinish(i18n(R.string.cancelled))
-             }
-         }
+            if (resultCode == Activity.RESULT_OK)
+            {
+                if (data != null)
+                {
+                    val err = data.getStringExtra("error")
+                    if (err != null) displayError(err)
+                }
+            }
+            else if (requestCode == Activity.RESULT_CANCELED)  // If the DomainIdentitySettings activity got cancelled, the user wants to cancel the whole thing
+            {
+                clearIntentAndFinish(i18n(R.string.cancelled))
+            }
+        }
 
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -221,8 +220,7 @@ class IdentityOpActivity : CommonNavActivity()
             try
             {
                 account = (application as WallyApp).primaryAccount
-            }
-            catch (e: PrimaryWalletInvalidException)
+            } catch (e: PrimaryWalletInvalidException)
             {
             }
         val acc = account
@@ -291,8 +289,7 @@ class IdentityOpActivity : CommonNavActivity()
                 val act = account ?: try
                 {
                     (application as WallyApp).primaryAccount
-                }
-                catch (e: PrimaryWalletInvalidException)
+                } catch (e: PrimaryWalletInvalidException)
                 {
                     clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to PRIMARY_WALLET), i18n(R.string.primaryAccountRequiredDetails))
                     return@launch
@@ -323,7 +320,7 @@ class IdentityOpActivity : CommonNavActivity()
                     loginReq += "?op=login&addr=" + address.toString() + "&sig=" + URLEncoder.encode(sigStr, "UTF-8") + "&cookie=" + URLEncoder.encode(cookie, "UTF-8")
 
                     var forwarded = 0;
-                    getloop@while (forwarded < 3)
+                    getloop@ while (forwarded < 3)
                     {
                         LogIt.info("login reply: " + loginReq)
                         try
@@ -345,16 +342,13 @@ class IdentityOpActivity : CommonNavActivity()
                             {
                                 displayError(resp, null, { clearIntentAndFinish() })
                             }
-                        }
-                        catch (e: IOException)
+                        } catch (e: IOException)
                         {
                             displayError(R.string.connectionAborted, null, { clearIntentAndFinish() })
-                        }
-                        catch (e: FileNotFoundException)
+                        } catch (e: FileNotFoundException)
                         {
                             displayError(R.string.badLink, null, { clearIntentAndFinish() })
-                        }
-                        catch (e: java.net.ConnectException)
+                        } catch (e: java.net.ConnectException)
                         {
                             displayError(R.string.connectionException, null, { clearIntentAndFinish() })
                         }
@@ -375,7 +369,7 @@ class IdentityOpActivity : CommonNavActivity()
                     params["cookie"] = cookie.toString()
 
                     // Supply additional requested data
-                    postloop@while (forwarded < 3)
+                    postloop@ while (forwarded < 3)
                     {
                         val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
 
@@ -451,18 +445,15 @@ class IdentityOpActivity : CommonNavActivity()
                             {
                                 displayError(resp, null, { clearIntentAndFinish() })
                             }
-                        }
-                        catch (e: IOException)
+                        } catch (e: IOException)
                         {
                             displayError(R.string.connectionAborted, null, { clearIntentAndFinish() })
-                        }
-                        catch (e: FileNotFoundException)
+                        } catch (e: FileNotFoundException)
                         {
                             displayError(R.string.badLink, null, { clearIntentAndFinish() })
-                        }
-                        catch (e: java.net.ConnectException)
+                        } catch (e: java.net.ConnectException)
                         {
-                            displayError(R.string.connectionException, null,{ clearIntentAndFinish() })
+                            displayError(R.string.connectionException, null, { clearIntentAndFinish() })
                         }
                         break@postloop  // Only way to actually loop is to get a http 301 or 302
                     }

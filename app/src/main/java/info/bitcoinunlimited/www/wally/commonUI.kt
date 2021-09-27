@@ -39,7 +39,7 @@ private val LogIt = Logger.getLogger("bitcoinunlimited.commonUI")
 
 fun isCashAddrScheme(s: String): Boolean
 {
-    return (s=="BITCOINCASH") || (s=="bitcoincash") || (s=="bchtest") || (s=="BCHTEST") || (s=="bchreg") || (s=="BCHREG") || (s=="NEX") || (s=="nex")
+    return (s == "BITCOINCASH") || (s == "bitcoincash") || (s == "bchtest") || (s == "BCHTEST") || (s == "bchreg") || (s == "BCHREG") || (s == "NEX") || (s == "nex")
 }
 
 /** Do whatever you pass within the user interface context, synchronously */
@@ -57,8 +57,7 @@ fun asyncUI(fn: suspend () -> Unit): Unit
         try
         {
             fn()
-        }
-        catch(e:Exception)
+        } catch (e: Exception)
         {
             LogIt.warning("Exception in laterUI: " + e.toString())
         }
@@ -78,23 +77,28 @@ fun getActivity(view: View): Activity?
     return null
 }
 
-fun textChanged(cb:()->Unit): TextWatcher
+fun textChanged(cb: () -> Unit): TextWatcher
 {
     return object : TextWatcher
-            {
-                override fun afterTextChanged(p0: Editable?) {
-                    cb()
-                }
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                }
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                }
-            }
+    {
+        override fun afterTextChanged(p0: Editable?)
+        {
+            cb()
+        }
+
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
+        {
+        }
+
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
+        {
+        }
+    }
 }
 
 // note to stop multiple copies of activities from being launched, use android:launchMode="singleTask" in the activity definition in AndroidManifest.xml
 
-fun bottomNavSelectHandler(item: MenuItem, ths: Activity):Boolean
+fun bottomNavSelectHandler(item: MenuItem, ths: Activity): Boolean
 {
     when (item.itemId)
     {
@@ -173,14 +177,14 @@ fun textToQREncode(value: String, size: Int): Bitmap?
     val bitMatrix: BitMatrix
 
     val hintsMap = mapOf<EncodeHintType, Any>(
-        EncodeHintType.CHARACTER_SET to "utf-8",
-        EncodeHintType.MARGIN to 1)
+      EncodeHintType.CHARACTER_SET to "utf-8",
+      EncodeHintType.MARGIN to 1
+    )
     // //hintsMap.put(EncodeHintType.ERROR_CORRECTION, mErrorCorrectionLevel);
     try
     {
         bitMatrix = MultiFormatWriter().encode(value, BarcodeFormat.QR_CODE, size, size, hintsMap)
-    }
-    catch (e: IllegalArgumentException)
+    } catch (e: IllegalArgumentException)
     {
 
         return null
@@ -196,8 +200,8 @@ fun textToQREncode(value: String, size: Int): Bitmap?
 
     //val white = 0xFFFFFFFF.toInt()
     //val black = 0xFF000000.toInt()
-    val white:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.white) } ?: 0xFFFFFFFF.toInt()
-    val black:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.black) } ?: 0xFF000000.toInt()
+    val white: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.white) } ?: 0xFFFFFFFF.toInt()
+    val black: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.black) } ?: 0xFF000000.toInt()
 
     var offset = 0
     for (y in 0 until bitMatrixHeight)
