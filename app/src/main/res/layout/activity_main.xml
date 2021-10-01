@@ -61,6 +61,7 @@
         android:minLines="1"
         android:onClick="onBalanceTickerClicked"
         android:textAlignment="center"
+        android:text=" "
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/balanceTitle" />
 
@@ -77,7 +78,7 @@
         android:maxLines="1"
         android:minLines="1"
         android:onClick="onBalanceTickerClicked"
-        android:text=""
+        android:text=" "
         android:textAlignment="center"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/WalletChainInfo" />
@@ -95,7 +96,7 @@
         android:maxLines="1"
         android:minLines="1"
         android:onClick="onBalanceTickerClicked"
-        android:text=""
+        android:text=" "
         android:textAlignment="center"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/WalletChainInfo2" />
@@ -119,6 +120,7 @@
         android:textAlignment="center"
         android:textColor="#FF9800"
         android:textSize="16sp"
+        android:text=""
         app:layout_constraintBottom_toBottomOf="@+id/balanceValue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/balanceUnits"
@@ -134,6 +136,7 @@
         android:textAlignment="center"
         android:textColor="#FF9800"
         android:textSize="16sp"
+        android:text=""
         app:layout_constraintBottom_toBottomOf="@+id/balanceTicker2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/balanceUnits2" />
@@ -147,6 +150,7 @@
         android:textAlignment="center"
         android:textColor="#FF9800"
         android:textSize="16sp"
+        android:text=""
         app:layout_constraintBottom_toBottomOf="@+id/balanceTicker3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/balanceUnits3" />
@@ -161,6 +165,7 @@
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_light"
         android:textSize="20sp"
+        android:text=""
         app:layout_constraintBottom_toBottomOf="@+id/balanceTicker"
         app:layout_constraintStart_toEndOf="@+id/balanceTicker"
         app:layout_constraintTop_toTopOf="@+id/balanceTicker"
@@ -175,6 +180,7 @@
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_light"
         android:textSize="20sp"
+        android:text=""
         app:layout_constraintBottom_toBottomOf="@+id/balanceTicker2"
         app:layout_constraintStart_toEndOf="@+id/balanceTicker2" />
 
@@ -187,6 +193,7 @@
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_light"
         android:textSize="20sp"
+        android:text=""
         app:layout_constraintBottom_toBottomOf="@+id/balanceTicker3"
         app:layout_constraintStart_toEndOf="@+id/balanceTicker3" />
 
@@ -224,6 +231,7 @@
         android:autoSizeStepGranularity="1px"
         android:autoSizeTextType="uniform"
         android:textAlignment="center"
+        android:text=""
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sendQuantity" />
@@ -239,6 +247,7 @@
         android:autoSizeStepGranularity="1px"
         android:autoSizeTextType="uniform"
         android:textAlignment="center"
+        android:text=""
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/approximatelyText" />
@@ -248,13 +257,13 @@
         android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:autofillHints=""
         android:digits="abcdefghijklmnopqrstuvwxyz0123456789.,"
         android:ems="10"
         android:hint="@string/sendQuantityHint"
         android:imeOptions="actionDone"
         android:inputType="numberDecimal"
         android:textAlignment="center"
+        android:text=" "
         app:layout_constraintStart_toEndOf="@+id/amountText"
         app:layout_constraintTop_toBottomOf="@+id/sendToAddress" />
 
@@ -273,6 +282,7 @@
         android:onClick="onReceiveAddrTextClicked"
         android:textAlignment="center"
         android:textStyle="bold"
+        android:text=""
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/ReceiveTitle"
         app:layout_constraintTop_toBottomOf="@+id/ReceiveTitle" />
@@ -335,7 +345,7 @@
         android:importantForAutofill="no"
         android:inputType="textPersonName"
         android:lines="1"
-        android:text=""
+        android:text=" "
         android:textAlignment="center"
         android:textSize="12sp"
         android:textStyle="bold"
@@ -471,6 +481,7 @@
         android:textSize="14sp"
         android:textStyle="bold"
         android:visibility="gone"
+        android:text=""
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -482,6 +493,7 @@
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:textSize="12sp"
+        android:text=""
         app:layout_constraintBottom_toBottomOf="@+id/balanceValue"
         app:layout_constraintStart_toEndOf="@+id/balanceValue" />
 
@@ -544,5 +556,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider2"
         app:srcCompat="@drawable/ic_plus" />
+
+    <ImageButton
+        android:id="@+id/qrFromGallery"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="5dp"
+        android:onClick="onQRfromGalleryClicked"
+        app:layout_constraintEnd_toStartOf="@+id/destAddrPasteButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_gallery" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

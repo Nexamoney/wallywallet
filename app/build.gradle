@@ -77,7 +77,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-cbor:$serializationVersion"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation 'com.android.support.constraint:constraint-layout:2.0.0'
-    implementation 'com.journeyapps:zxing-android-embedded:4.1.0'
+    implementation 'com.journeyapps:zxing-android-embedded:4.2.0'
 
     implementation "androidx.room:room-runtime:$room_version"
     implementation 'androidx.appcompat:appcompat:1.2.0'

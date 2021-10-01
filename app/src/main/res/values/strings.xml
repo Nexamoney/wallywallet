@@ -104,6 +104,8 @@
     <string name="Tip">Tip</string>
     <string name="Amount">Amount</string>
     <!-- Home Page -->
+    <string name="goodQR">QR readable</string>
+    <string name="badQR">QR unreadable</string>
     <string name="unlock">unlock</string>
     <string name="share">share</string>
     <string name="Send">Send</string>

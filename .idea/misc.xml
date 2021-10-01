@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="app/src/main/res/layout-land/activity_main.xml" value="0.6694395796847635" />
+        <entry key="app/src/main/res/layout-sw600dp/activity_main.xml" value="0.54474043715847" />
+        <entry key="app/src/main/res/layout/activity_alerts.xml" value="0.6100543478260869" />
+        <entry key="app/src/main/res/layout/activity_domain_identity_settings.xml" value="0.7223731884057971" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/activity_new_account.xml" value="0.7395833333333334" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

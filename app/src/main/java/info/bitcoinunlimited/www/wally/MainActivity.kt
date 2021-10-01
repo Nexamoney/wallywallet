@@ -2,10 +2,14 @@
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
 
+import android.Manifest
+import android.app.Activity
 import android.content.*
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.text.Editable
@@ -18,6 +22,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.appcompat.widget.ShareActionProvider
+import androidx.core.content.ContextCompat
 import androidx.core.view.MenuItemCompat
 import bitcoinunlimited.libbitcoincash.*
 import com.google.zxing.BarcodeFormat
@@ -139,6 +144,9 @@ class MainActivity : CommonNavActivity()
 
     /** If we've already put up an error for this address, don't do it again */
     var alreadyErroredAddress: PayAddress? = null
+
+    /** Do this once we get file read permissions */
+    var doOnFileReadPerms:(()->Unit)? = null
 
     fun onBlockchainChange(blockchain: Blockchain)
     {
@@ -322,6 +330,44 @@ class MainActivity : CommonNavActivity()
 
             }
         }
+    }
+
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray)
+    {
+        when (requestCode)
+        {
+            READ_FILES_PERMISSION_RESULT ->
+            {
+                // If request is cancelled, the result arrays are empty.
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED))
+                {
+                    doOnFileReadPerms?.invoke()
+                }
+                else
+                {
+                    // Explain to the user that the feature is unavailable because the features requires a permission that the user has denied.
+                }
+                return
+            }
+            // Add other 'when' lines to check for other permissions this app might request.
+            else ->
+            {
+                // Ignore all other requests.
+            }
+        }
+
+    }
+
+    // call this with a function to execute whenever that function needs file read permissions
+    fun onReadStoragePermissionGranted(doit:()->Unit): Boolean
+    {
+        if (ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+            doit()
+        else
+            doOnFileReadPerms = doit
+            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),READ_FILES_PERMISSION_RESULT)
+        return false
     }
 
     fun clearAccountUI()
@@ -1154,7 +1200,19 @@ class MainActivity : CommonNavActivity()
         }
     }
 
-    /** this handles the result of a QR code scan.  We want to accept QR codes of any different format and "do what I mean" based on the QR code's contents */
+    /** This triggers image selection (presumably a QR code) */
+    private fun openGalleryForImage()
+    {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, IMAGE_RESULT)
+    }
+
+    /** this handles the result of variety of launched subactivities including:
+     * a QR code scan.  We want to accept QR codes of any different format and "do what I mean" based on the QR code's contents
+     * an image selection (presumably its a QR code)
+     * an identity or trickle pay activity completion
+     * */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
     {
         LogIt.info(sourceLoc() + " activity completed $requestCode $resultCode")
@@ -1177,6 +1235,34 @@ class MainActivity : CommonNavActivity()
         }
 
         // Handle external activity results
+
+        // Gallery Image selection (presumably a QR code)
+        if (requestCode == IMAGE_RESULT)
+        {
+            if (resultCode == Activity.RESULT_OK)
+            {
+                var im = data?.data
+                LogIt.info(sourceLoc() + ": Parse QR from image: " + im)
+                if (im != null)
+                {
+                    val path = URIPathHelper().getPath(this, im)
+                    if (path != null)
+                    {
+                        val qrdata = readQRcode(path)
+                        if (qrdata != null)
+                        {
+                            LogIt.info(sourceLoc() + ": QR result: " + qrdata)
+                            displayNotice(R.string.goodQR)
+                            handleInputedText(qrdata)
+                        }
+                        else
+                        {
+                            displayError(R.string.badQR)
+                        }
+                    }
+                }
+            }
+        }
 
         // QR code scanning
         val result: IntentResult? = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
@@ -1255,8 +1341,8 @@ class MainActivity : CommonNavActivity()
             super.onSaveInstanceState(outState)
             outState.putString("sendToAddress", sendToAddress.text.toString())
             outState.putString("sendQuantity", sendQuantity.text.toString())
-            outState.putString("sendCurrencyType", sendCurrencyType.selectedItem as String)
-            outState.putString("recvCoinType", recvCoinType.selectedItem as String)
+            outState.putString("sendCurrencyType", (sendCurrencyType.selectedItem ?: defaultAccount) as String)
+            outState.putString("recvCoinType", (recvCoinType.selectedItem ?: defaultAccount) as String)
         }
     }
 
@@ -1314,6 +1400,11 @@ class MainActivity : CommonNavActivity()
         val intent = Intent(this@MainActivity, SplitBillActivity::class.java)
         startActivity(intent)
         return true
+    }
+
+    fun onQRfromGalleryClicked(view: View)
+    {
+        onReadStoragePermissionGranted { openGalleryForImage() }
     }
 
     /** Create and post a transaction when the send button is pressed */
