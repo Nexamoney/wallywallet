@@ -6,7 +6,7 @@ import android.os.Bundle
 
 class InvoicesActivity : CommonNavActivity()
 {
-    override var navActivityId = R.id.navigation_invoices
+    override var navActivityId = -1 // Invoices screen disabled R.id.navigation_invoices
 
     override fun onCreate(savedInstanceState: Bundle?)
     {

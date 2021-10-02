@@ -21,13 +21,19 @@ import java.util.logging.Logger
 import android.app.Activity
 import android.content.Intent
 import android.content.res.Resources
+import android.graphics.Rect
 import android.net.Uri
+import android.util.TypedValue
+import android.view.KeyEvent
 import android.view.Menu
+import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import bitcoinunlimited.libbitcoincash.handleThreadException
 import java.time.Instant
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
+import kotlin.math.roundToInt
 
 private val LogIt = Logger.getLogger("bitcoinunlimited.commonActivity")
 
@@ -61,12 +67,49 @@ fun i18n(id: Int): String
     return "STR" + id.toString()
 }
 
+fun isKeyboardShown(root: View): Boolean
+{
+    val rect = Rect()
+    root.getWindowVisibleDisplayFrame(rect)
+
+    val heightDiff = root.height - rect.bottom
+    val keyboardShown = heightDiff > root.dpToPx(200f)
+    return keyboardShown
+}
+
+open class KeyboardToggleListener(private val root: View, private val onKeyboardToggleAction: (shown: Boolean) -> Unit) : ViewTreeObserver.OnGlobalLayoutListener
+{
+    private var shown = isKeyboardShown(root)
+    override fun onGlobalLayout()
+    {
+        var rect = Rect()
+        root.getWindowVisibleDisplayFrame(rect)
+
+        val heightDiff = root.height - rect.bottom
+        val keyboardShown = heightDiff > root.dpToPx(200f)
+        if (shown != keyboardShown)
+        {
+            onKeyboardToggleAction.invoke(keyboardShown)
+            shown = keyboardShown
+        }
+    }
+
+    fun remove()
+    {
+        var iam = this
+        root?.viewTreeObserver?.run {
+            removeOnGlobalLayoutListener(iam)
+        }
+    }
+}
+
+fun View.dpToPx(dp: Float): Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, resources.displayMetrics).roundToInt()
 
 @SuppressLint("Registered")
 open class CommonNavActivity : CommonActivity()
 {
     private val onNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item -> bottomNavSelectHandler(item, this) }
-    open var navActivityId = -1 //* Change this in derived classes to identify which navBar item this activity is
+    open var navActivityId: Int = -1 //* Change this in derived classes to identify which navBar item this activity is
 
     override fun onStart()
     {
@@ -332,6 +375,46 @@ open class CommonActivity : AppCompatActivity()
             {
                 handleThreadException(e)
             }
+        }
+    }
+
+    fun onKeyboardToggle(v: EditText, onKeyboardToggleAction: (shown: Boolean) -> Unit): KeyboardToggleListener
+    {
+        val root = findViewById<View>(android.R.id.content)
+        val l = KeyboardToggleListener(root, onKeyboardToggleAction)
+        root?.viewTreeObserver?.run {
+            addOnGlobalLayoutListener(l)
+        }
+
+        v.setOnKeyListener( { v, keyCode, event ->
+        if(event.getAction() == KeyEvent.ACTION_DOWN)
+        {
+            if (keyCode == KeyEvent.KEYCODE_BACK)
+            {
+                onKeyboardToggleAction(false)
+            }
+            if (keyCode == KeyEvent.KEYCODE_ENTER)
+            {
+                onKeyboardToggleAction(false)
+            }
+        }
+        false
+    })
+        return l
+    }
+
+    fun isKeyboardShown(): Boolean
+    {
+        val root = (findViewById(android.R.id.content) as View).getRootView()
+        return isKeyboardShown(root)
+    }
+
+    fun showKeyboard()
+    {
+        if (!isKeyboardShown())
+        {
+            val imm: InputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager ?: return
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
         }
     }
 

@@ -15,7 +15,7 @@
         android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/GuiSendRecvImage"
-        app:layout_constraintTop_toBottomOf="@+id/GuiTxId"
+        app:layout_constraintTop_toBottomOf="@+id/GuiTxNote"
         app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
@@ -24,7 +24,7 @@
         android:layout_height="35dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GuiTxId"
+        app:layout_constraintTop_toBottomOf="@+id/GuiTxNote"
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/ic_receivearrow" />
 
@@ -45,6 +45,22 @@
         app:layout_constraintTop_toBottomOf="@+id/GuiAddress" />
 
     <TextView
+        android:id="@+id/GuiTxNote"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:autoSizeMaxTextSize="24sp"
+        android:autoSizeMinTextSize="10sp"
+        android:autoSizeStepGranularity="1sp"
+        android:autoSizeTextType="uniform"
+        android:maxLines="10"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiTxId" />
+
+    <TextView
         android:id="@+id/GuiTxDate"
         android:layout_width="103dp"
         android:layout_height="wrap_content"
@@ -54,7 +70,7 @@
         app:layout_constraintEnd_toStartOf="@+id/GuiTxCostBasisOrProfitLoss"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/GuiValueCrypto"
-        app:layout_constraintTop_toBottomOf="@+id/GuiTxId"
+        app:layout_constraintTop_toBottomOf="@+id/GuiTxNote"
         app:layout_constraintVertical_bias="0.0" />
 
     <EditText
@@ -68,7 +84,7 @@
         android:inputType="textShortMessage|numberSigned|numberDecimal"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GuiTxId" />
+        app:layout_constraintTop_toBottomOf="@+id/GuiTxNote" />
 
     <TextView
         android:id="@+id/GuiValueFiat"

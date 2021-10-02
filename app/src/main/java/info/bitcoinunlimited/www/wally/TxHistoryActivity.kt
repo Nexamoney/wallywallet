@@ -118,6 +118,8 @@ private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, 
             txid = obj.txHash
             view.GuiTxId.text = txid?.toHex() ?: ""
             view.GuiTxId.visibility = if (showDev) View.VISIBLE else View.GONE
+            view.GuiTxNote.text = obj.note
+            view.GuiTxNote.visibility = if (obj.note != "") View.VISIBLE else View.GONE
             val fmt = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withZone(ZoneId.systemDefault())
             val epochSec = Instant.ofEpochSecond(obj.date / 1000)
             view.GuiTxDate.text = fmt.format(epochSec)

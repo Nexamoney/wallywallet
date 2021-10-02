@@ -11,7 +11,9 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
@@ -79,6 +81,8 @@ fun getActivity(view: View): Activity?
     return null
 }
 
+
+
 fun textChanged(cb: () -> Unit): TextWatcher
 {
     return object : TextWatcher
@@ -133,12 +137,21 @@ fun bottomNavSelectHandler(item: MenuItem, ths: Activity): Boolean
             ths.startActivity(intent)
             return true
         }
- */
 
         R.id.navigation_invoices ->
         {
             val message = "" // anything extra we want to send
             val intent = Intent(ths, InvoicesActivity::class.java).apply {
+                putExtra(INVOICES_MESSAGE, message)
+            }
+            ths.startActivity(intent)
+            return true
+        }
+*/
+        R.id.navigation_assets ->
+        {
+            val message = "" // anything extra we want to send
+            val intent = Intent(ths, InvoicesActivity::class.java).apply {  // TODO create Assets Activity
                 putExtra(INVOICES_MESSAGE, message)
             }
             ths.startActivity(intent)

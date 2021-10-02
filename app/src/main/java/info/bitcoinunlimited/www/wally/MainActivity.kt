@@ -146,7 +146,7 @@ class MainActivity : CommonNavActivity()
     var alreadyErroredAddress: PayAddress? = null
 
     /** Do this once we get file read permissions */
-    var doOnFileReadPerms:(()->Unit)? = null
+    var doOnFileReadPerms: (() -> Unit)? = null
 
     fun onBlockchainChange(blockchain: Blockchain)
     {
@@ -360,13 +360,13 @@ class MainActivity : CommonNavActivity()
     }
 
     // call this with a function to execute whenever that function needs file read permissions
-    fun onReadStoragePermissionGranted(doit:()->Unit): Boolean
+    fun onReadStoragePermissionGranted(doit: () -> Unit): Boolean
     {
         if (ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
             doit()
         else
             doOnFileReadPerms = doit
-            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),READ_FILES_PERMISSION_RESULT)
+        requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), READ_FILES_PERMISSION_RESULT)
         return false
     }
 
@@ -1451,6 +1451,51 @@ class MainActivity : CommonNavActivity()
         //startActivity(intent)
         return true
     }
+    
+    /** Allow the user to add/edit the send note */
+    public fun onEditSendNoteButtonClicked(v: View): Boolean
+    {
+        sendNote.setVisibility(View.GONE)
+        editSendNote.setVisibility(View.VISIBLE)
+        v.getRootView().invalidate()
+
+        asyncUI {
+            delay(100)
+            editSendNote.requestFocus()
+            showKeyboard()
+            delay(300)  // Give time for the keyboard to be not shown as we move from some other focus and then be shown for us
+            var l: KeyboardToggleListener? = null
+            editSendNote.setOnFocusChangeListener(object: View.OnFocusChangeListener
+            {
+                override fun onFocusChange(p0: View?, hasFocus: Boolean)
+                {
+                    if (!hasFocus)
+                    {
+                        val tmp = editSendNote.text.toString()
+                        sendNote.text = tmp
+                        editSendNote.setVisibility(View.GONE)
+                        sendNote.setVisibility(if (tmp == "") View.GONE else View.VISIBLE)
+                        l?.remove()
+                    }
+                }
+            })
+            l = onKeyboardToggle(editSendNote, { shown: Boolean ->
+                if (shown == false)
+                {
+                    val tmp = editSendNote.text.toString()
+                    sendNote.text = tmp
+                    editSendNote.setVisibility(View.GONE)
+                    sendNote.setVisibility(if (tmp == "") View.GONE else View.VISIBLE)
+                    hideKeyboard()
+                    l?.remove()
+                }
+
+            }
+            )
+        }
+        return true
+    }
+
 
     public fun paymentInProgressSend()
     {
@@ -1506,6 +1551,7 @@ class MainActivity : CommonNavActivity()
         displayNotice(R.string.Processing)
         hideKeyboard()
         sendQuantity.clearFocus()
+        val note:String? = if (editSendNote.visibility == View.VISIBLE) editSendNote.text.toString() else if (sendNote.visibility == View.VISIBLE) sendNote.text.toString() else null
 
         if (paymentInProgress != null)
         {
@@ -1613,7 +1659,7 @@ class MainActivity : CommonNavActivity()
             try
             {
                 val atomAmt = account.toFinestUnit(amount)
-                account.wallet.send(atomAmt, sendAddr, deductFeeFromAmount)
+                account.wallet.send(atomAmt, sendAddr, deductFeeFromAmount, false, note = note)
                 onSendSuccess()
             } catch (e: Exception)  // We don't want to crash, we want to tell the user what went wrong
             {
@@ -1621,6 +1667,9 @@ class MainActivity : CommonNavActivity()
             }
         }
 
+        sendNote.text = ""
+        sendNote.visibility = View.GONE
+        editSendNote.visibility = View.GONE
         return true
     }
 

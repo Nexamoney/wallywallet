@@ -14,16 +14,20 @@
         android:id="@+id/navigation_trickle_pay"
         android:icon="@drawable/ic_faucet_drip"
         android:title="@string/title_activity_trickle_pay" />
+
+    <item
+        android:id="@+id/navigation_assets"
+        android:icon="@drawable/ic_invoice"
+        android:title="@string/title_activity_assets" />
     <item
         android:id="@+id/navigation_shopping"
         android:icon="@drawable/ic_shopping"
         android:title="@string/title_activity_shopping" />
-
+<!--
     <item
         android:id="@+id/navigation_invoices"
         android:icon="@drawable/ic_invoice"
         android:title="@string/title_activity_invoices" />
-    <!--
     <item
             android:id="@+id/navigation_identity"
             android:icon="@drawable/ic_dashboard_black_24dp"

@@ -221,17 +221,29 @@
         app:layout_constraintVertical_bias="0.565" />
 
     <TextView
-        android:id="@+id/approximatelyText"
+        android:id="@+id/sendNote"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="4dp"
         android:autoSizeMaxTextSize="18sp"
         android:autoSizeMinTextSize="10sp"
         android:autoSizeStepGranularity="1px"
         android:autoSizeTextType="uniform"
+        android:visibility="gone"
         android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editSendNote" />
+
+    <TextView
+        android:id="@+id/approximatelyText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autoSizeMaxTextSize="18sp"
+        android:autoSizeMinTextSize="10sp"
+        android:autoSizeStepGranularity="1px"
+        android:autoSizeTextType="uniform"
         android:text=""
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sendQuantity" />
@@ -240,32 +252,29 @@
         android:id="@+id/xchgRateText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="4dp"
         android:autoSizeMaxTextSize="18sp"
         android:autoSizeMinTextSize="10sp"
         android:autoSizeStepGranularity="1px"
         android:autoSizeTextType="uniform"
-        android:textAlignment="center"
         android:text=""
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/approximatelyText" />
 
     <EditText
         android:id="@+id/sendQuantity"
-        android:layout_width="170dp"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:digits="abcdefghijklmnopqrstuvwxyz0123456789.,"
         android:ems="10"
         android:hint="@string/sendQuantityHint"
         android:imeOptions="actionDone"
         android:inputType="numberDecimal"
-        android:textAlignment="center"
         android:text=" "
+        android:textAlignment="center"
         app:layout_constraintStart_toEndOf="@+id/amountText"
-        app:layout_constraintTop_toBottomOf="@+id/sendToAddress" />
+        app:layout_constraintTop_toBottomOf="@+id/sendNote" />
 
     <TextView
         android:id="@+id/receiveAddress"
@@ -291,6 +300,7 @@
         android:id="@+id/GuiReceiveQRCode"
         android:layout_width="130dp"
         android:layout_height="128dp"
+        android:layout_marginStart="10dp"
         android:contentDescription="@string/receiveAddressQRCode"
         android:padding="0px"
         android:paddingStart="0px"
@@ -301,8 +311,6 @@
         android:paddingBottom="0px"
         android:scaleType="fitXY"
         android:scrollbars="none"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.81"
         app:layout_constraintStart_toEndOf="@+id/splitBillButton"
         app:layout_constraintTop_toBottomOf="@+id/receiveAddress" />
 
@@ -310,7 +318,6 @@
         android:id="@+id/sendCurrencyType"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
         android:spinnerMode="dialog"
         app:layout_constraintBottom_toBottomOf="@+id/sendQuantity"
         app:layout_constraintStart_toEndOf="@+id/sendQuantity"
@@ -339,8 +346,6 @@
         android:id="@+id/sendToAddress"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
-        android:layout_marginEnd="2dp"
         android:hint="@string/sendToAddressHint"
         android:importantForAutofill="no"
         android:inputType="textPersonName"
@@ -354,16 +359,33 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sendButton" />
 
+    <EditText
+        android:id="@+id/editSendNote"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/editSendNoteHint"
+        android:importantForAutofill="no"
+        android:inputType="textPersonName"
+        android:lines="1"
+        android:text=" "
+        android:visibility="gone"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sendToAddress" />
+
     <ImageButton
         android:id="@+id/readQRCodeButton"
         android:layout_width="66dp"
         android:layout_height="66dp"
         android:contentDescription="@string/ScanQRCodeButton"
         android:scaleType="centerCrop"
-        app:layout_constraintBottom_toTopOf="@+id/nav_view"
+        app:layout_constraintBottom_toTopOf="@+id/balanceTitle"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/WalletChainInfo3"
+        app:layout_constraintStart_toEndOf="@+id/GuiReceiveQRCode"
+        app:layout_constraintTop_toTopOf="@+id/GuiReceiveQRCode"
         app:srcCompat="@drawable/ic_scanqricon2" />
 
     <ImageButton
@@ -567,5 +589,16 @@
         app:layout_constraintEnd_toStartOf="@+id/destAddrPasteButton"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_gallery" />
+
+    <ImageButton
+        android:id="@+id/editSendNodeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:onClick="onEditSendNoteButtonClicked"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/sendCurrencyType"
+        app:layout_constraintTop_toTopOf="@+id/sendQuantity"
+        app:srcCompat="@android:drawable/ic_menu_edit" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

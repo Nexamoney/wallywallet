@@ -201,6 +201,7 @@
         android:autoSizeTextType="uniform"
         android:text="approximately N USD"
         android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="@+id/sendToAddress"
         app:layout_constraintStart_toEndOf="@+id/sendCurrencyType"
         app:layout_constraintTop_toBottomOf="@+id/sendToAddress" />
 
@@ -284,9 +285,10 @@
     <EditText
         android:id="@+id/sendToAddress"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="29dp"
         android:layout_weight="1"
         android:autofillHints="@string/sendToAddressHint"
+        android:imeOptions="actionDone"
         android:inputType="text"
         android:lines="1"
         android:maxLines="1"
@@ -295,8 +297,7 @@
         android:textAlignment="center"
         android:textSize="12sp"
         android:textStyle="bold"
-        android:imeOptions="actionDone"
-        app:layout_constraintEnd_toStartOf="@+id/destAddrPasteButton"
+        app:layout_constraintEnd_toStartOf="@+id/qrFromGallery"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/HomeAddressText"
         app:layout_constraintTop_toTopOf="parent" />
@@ -309,17 +310,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.9"
         app:layout_constraintStart_toEndOf="@+id/approximatelyText"
-        app:layout_constraintTop_toBottomOf="@+id/sendToAddress"
+        app:layout_constraintTop_toBottomOf="@+id/qrFromGallery"
         app:srcCompat="@drawable/ic_scanqricon2" />
 
     <ImageButton
         android:id="@+id/destAddrPasteButton"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        app:layout_constraintBottom_toBottomOf="@+id/sendToAddress"
+        android:layout_marginEnd="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/HomeAddressText"
-        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="?attr/actionModePasteDrawable" />
 
     <View
@@ -459,5 +459,16 @@
         app:layout_constraintEnd_toEndOf="@+id/approximatelyText"
         app:layout_constraintStart_toStartOf="@+id/approximatelyText"
         app:layout_constraintTop_toBottomOf="@+id/approximatelyText" />
+
+    <ImageButton
+        android:id="@+id/qrFromGallery"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="5dp"
+        android:onClick="onQRfromGalleryClicked"
+        app:layout_constraintBottom_toBottomOf="@+id/destAddrPasteButton"
+        app:layout_constraintEnd_toStartOf="@+id/destAddrPasteButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_gallery" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

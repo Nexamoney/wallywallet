@@ -341,12 +341,10 @@
 
     <ImageButton
         android:id="@+id/destAddrPasteButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        app:layout_constraintBottom_toBottomOf="@+id/HomeAddressText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@+id/divider2"
-        app:layout_constraintHorizontal_bias="0.26"
-        app:layout_constraintStart_toEndOf="@+id/HomeAddressText"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="?attr/actionModePasteDrawable" />
 
     <View
@@ -464,6 +462,17 @@
         android:textSize="10sp"
         app:layout_constraintBottom_toBottomOf="@+id/balanceTicker3"
         app:layout_constraintStart_toEndOf="@+id/balanceValue3" />
+
+    <ImageButton
+        android:id="@+id/qrFromGallery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:onClick="onQRfromGalleryClicked"
+        app:layout_constraintBottom_toBottomOf="@+id/destAddrPasteButton"
+        app:layout_constraintEnd_toStartOf="@+id/destAddrPasteButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_gallery" />
 
     <ImageView
         android:id="@+id/GuiNewAccount"

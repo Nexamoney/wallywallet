@@ -314,8 +314,8 @@ class Settings : CommonActivity()
                 if (coin == null) return
                 launch {
                     coin.wallet.rediscover()
+                    displayNotice(i18n(R.string.rediscoverNotice))
                 }
-                displayNotice(i18n(R.string.rediscoverNotice))
             }
             ConfirmationFor.Reassess ->
             {
@@ -325,12 +325,12 @@ class Settings : CommonActivity()
                     try
                     {
                         coin.wallet.reassessUnconfirmedTx()
+                        displayNotice(i18n(R.string.unconfAssessmentNotice))
                     } catch (e: Exception)
                     {
                         displayNotice(e.message ?: e.toString())
                     }
                 }
-                displayNotice(i18n(R.string.unconfAssessmentNotice))
             }
             ConfirmationFor.Delete ->
             {
