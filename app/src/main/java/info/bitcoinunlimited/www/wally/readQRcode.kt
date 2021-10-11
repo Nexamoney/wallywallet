@@ -50,23 +50,17 @@ class BitmapLuminance(val bmp: Bitmap):LuminanceSource(bmp.width, bmp.height)
     }
 }
 
-fun readQRcode(imageName: String): String?
+fun readQRcode(imageName: String): String
 {
     val reader = MultiFormatReader()
     //reader.setHints(mapOf())
-    try
-    {
-        val bmp: Bitmap = BitmapFactory.decodeFile(imageName)
-        val lsource = BitmapLuminance(bmp)
-        val binarizer = HybridBinarizer(lsource)
-        val imbin = BinaryBitmap(binarizer)
-        val result = reader.decode(imbin)
-        return result.text
-    }
-    catch(e:Exception)
-    {
-        return null
-    }
+
+    val bmp: Bitmap = BitmapFactory.decodeFile(imageName)
+    val lsource = BitmapLuminance(bmp)
+    val binarizer = HybridBinarizer(lsource)
+    val imbin = BinaryBitmap(binarizer)
+    val result = reader.decode(imbin)
+    return result.text
 }
 
 // from: https://handyopinion.com/get-path-from-uri-in-kotlin-android/

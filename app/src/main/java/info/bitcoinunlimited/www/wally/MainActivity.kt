@@ -34,6 +34,7 @@ import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.net.URL
+import java.util.*
 import java.util.logging.Logger
 import kotlin.concurrent.thread
 
@@ -279,7 +280,9 @@ class MainActivity : CommonNavActivity()
                     {
                         if (sendAddr != alreadyErroredAddress)
                         {
-                            displayError(R.string.chainIncompatibleWithAddress)
+                            displayError(R.string.chainIncompatibleWithAddress,
+                              i18n(R.string.chainIncompatibleWithAddressDetails) % mapOf("walletCrypto" to (chainToCurrencyCode[c.wallet.chainSelector] ?: i18n(R.string.unknownCurrency)), "addressCrypto" to (chainToCurrencyCode[sendAddr.blockchain] ?: i18n(R.string.unknownCurrency))))
+
                             alreadyErroredAddress = sendAddr
                         }
                         updateSendAccount(sendAddr)
@@ -839,7 +842,7 @@ class MainActivity : CommonNavActivity()
                     }
                     else  // This should never happen because the AndroidManifest.xml Intent filter should match the URIs that we handle
                     {
-                        displayError("bad link " + receivedIntent.scheme)
+                        displayError(R.string.BadLink, receivedIntent.scheme.toString())
                     }
                 }
             }
@@ -867,11 +870,11 @@ class MainActivity : CommonNavActivity()
             }
             else
             {
-                val chainSelector = pip.crypto
+                val chainSelector = pip!!.crypto
                 if (chainSelector == null)
                 {
                     paymentInProgress = null
-                    displayError((R.string.badCryptoCode))
+                    displayError(R.string.badCryptoCode, pip!!.toString())
                     return
                 }
                 val a = app
@@ -882,7 +885,7 @@ class MainActivity : CommonNavActivity()
                 val coin = if (acts.size == 0)
                 {
                     paymentInProgress = null
-                    displayNotice((R.string.badCryptoCode))
+                    displayNotice(R.string.badCryptoCode, chainToCurrencyCode[chainSelector] ?: "unknown currency")
                     amt = a.primaryAccount.fromFinestUnit(pip.totalSatoshis)
                     null
                 }
@@ -973,16 +976,13 @@ class MainActivity : CommonNavActivity()
                     laterUI {
                         updateSendBasedOnPaymentInProgress()
                     }
-                } catch (e: Bip70Exception)
+                }
+                catch (e: Bip70Exception)
                 {
-                    e.message?.let {
-                        displayError(it)
-                    }
+                    displayException(e)
                 } catch (e: java.lang.Exception)
                 {
-                    e.message?.let {
-                        displayError(it)
-                    }
+                    displayException(e)
                 }
             }
             return
@@ -1011,15 +1011,15 @@ class MainActivity : CommonNavActivity()
             {
                 if (isCashAddrScheme(scheme))  // Handle cashaddr upper/lowercase stuff
                 {
-                    val lc = sta.toLowerCase()
-                    val uc = sta.toUpperCase()
+                    val lc = sta.lowercase(Locale.getDefault())
+                    val uc = sta.uppercase(Locale.getDefault())
                     if (uc.contentEquals(sta) || lc.contentEquals(sta))  // Its all uppercase or all uppercase
                     {
                         updateSendAddress(PayAddress(lc))
                     }
                     else  // Mixed upper/lower case not allowed
                     {
-                        displayError(R.string.badAddress)
+                        displayError(R.string.badAddress, "Mixed upper and lower case is not allowed in the CashAddr format")
                         return@laterUI
                     }
                 }
@@ -1027,9 +1027,10 @@ class MainActivity : CommonNavActivity()
                 {
                     updateSendAddress(PayAddress(sta))
                 }
-            } catch (e: UnknownBlockchainException)
+            }
+            catch (e: UnknownBlockchainException)
             {
-                displayError(R.string.badAddress)
+                displayError(R.string.badAddress, scheme)
                 return@laterUI
             }
 
@@ -1248,16 +1249,17 @@ class MainActivity : CommonNavActivity()
                     val path = URIPathHelper().getPath(this, im)
                     if (path != null)
                     {
-                        val qrdata = readQRcode(path)
-                        if (qrdata != null)
+                        try
                         {
+                            val qrdata = readQRcode(path)
+
                             LogIt.info(sourceLoc() + ": QR result: " + qrdata)
-                            displayNotice(R.string.goodQR)
+                            displayNotice(R.string.goodQR, qrdata)
                             handleInputedText(qrdata)
                         }
-                        else
+                        catch(e: Exception)
                         {
-                            displayError(R.string.badQR)
+                            displayException(R.string.badQR, e)
                         }
                     }
                 }
@@ -1272,9 +1274,9 @@ class MainActivity : CommonNavActivity()
             if (result.contents != null)
             {
                 laterUI {
-                    displayNotice(R.string.scanSuccess)
-                    delay(2000)  // So that the notice is visible
                     val QRstring = result.contents.toString()
+                    displayNotice(R.string.scanSuccess, "QR text: " + QRstring)
+                    delay(2000)  // So that the notice is visible
                     // TODO parse other QR code formats
                     LogIt.info(sourceLoc() + ": QR result: " + QRstring)
 
@@ -1291,7 +1293,7 @@ class MainActivity : CommonNavActivity()
                             } catch (e: Exception)  // I can't handle it as plain text
                             {
                                 LogIt.info(sourceLoc() + ": QR contents invalid: " + QRstring)
-                                displayError(R.string.badAddress)
+                                displayError(R.string.badAddress, QRstring)
                             }
                         }
                     }
@@ -1451,7 +1453,7 @@ class MainActivity : CommonNavActivity()
         //startActivity(intent)
         return true
     }
-    
+
     /** Allow the user to add/edit the send note */
     public fun onEditSendNoteButtonClicked(v: View): Boolean
     {
@@ -1510,12 +1512,13 @@ class MainActivity : CommonNavActivity()
             val account = accounts[walletName]
             if (account == null)
             {
-                displayError(R.string.badCryptoCode)
+                displayError(R.string.badCryptoCode, i18n(R.string.badCryptoCodeDetails) % mapOf("currency" to walletName))
                 return
             }
             if (account.wallet.chainSelector != pip.crypto)
             {
-                displayError(R.string.incompatibleAccount)
+                displayError(R.string.incompatibleAccount, i18n(R.string.incompatibleAccountDetails) %
+                  mapOf("cryptoAct" to (chainToCurrencyCode[account.wallet.chainSelector] ?: i18n(R.string.unknownCurrency)), "cryptoPay" to (chainToCurrencyCode[pip.crypto] ?: i18n(R.string.unknownCurrency))))
                 return
             }
 
@@ -1568,7 +1571,7 @@ class MainActivity : CommonNavActivity()
             sendAccount.selectedItem as String
         } catch (e: TypeCastException)  // No wallets are defined so no sendCoinType is possible
         {
-            displayError(R.string.badCryptoCode)
+            displayException(R.string.badCryptoCode, e)
             return false
         }
         val account = accounts[walletName]
@@ -1581,7 +1584,7 @@ class MainActivity : CommonNavActivity()
         }
         if (account == null)
         {
-            displayError(R.string.badCryptoCode)
+            displayError(R.string.badCryptoCode, i18n(R.string.badCryptoCodeDetails) % mapOf("currency" to currencyType) )
             return false
         }
         if (account.locked)
@@ -1596,7 +1599,8 @@ class MainActivity : CommonNavActivity()
         var amount = try
         {
             amtstr.toBigDecimal(currencyMath).setScale(mBchDecimals)
-        } catch (e: NumberFormatException)
+        }
+        catch (e: NumberFormatException)
         {
             if (amtstr == SEND_ALL_TEXT)
             {
@@ -1605,15 +1609,16 @@ class MainActivity : CommonNavActivity()
             }
             else
             {
-                displayError(R.string.badAmount)
+                displayException(R.string.badAmount, e)
                 return false
             }
-        } catch (e: ArithmeticException)  // Rounding error
+        }
+        catch (e: ArithmeticException)  // Rounding error
         {
             // If someone is asking to send sub-satoshi quantities, round up and ask them to click send again.
             sendQuantity.text.clear()
             sendQuantity.text.append(amtstr.toBigDecimal().setScale(mBchDecimals, RoundingMode.UP).toString())
-            displayError(R.string.badAmount)
+            displayError(R.string.badAmount, R.string.subSatoshiQuantities)
             approximatelyText.text = i18n(R.string.roundedUpClickSendAgain)
             return false
         }
@@ -1624,21 +1629,21 @@ class MainActivity : CommonNavActivity()
             PayAddress(sendToAddress.text.toString())
         } catch (e: WalletNotSupportedException)
         {
-            displayError(R.string.badAddress)
+            displayError(R.string.badAddress, sendToAddress.text.toString())
             return false
         } catch (e: UnknownBlockchainException)
         {
-            displayError(R.string.badAddress)
+            displayError(R.string.badAddress, sendToAddress.text.toString())
             return false
         }
         if (account.wallet.chainSelector != sendAddr.blockchain)
         {
-            displayError(R.string.chainIncompatibleWithAddress)
+            displayError(R.string.chainIncompatibleWithAddress, sendToAddress.text.toString())
             return false
         }
         if (sendAddr.type == PayAddressType.NONE)
         {
-            displayError(R.string.badAddress)
+            displayError(R.string.badAddress, sendToAddress.text.toString())
             return false
         }
 
@@ -1659,8 +1664,8 @@ class MainActivity : CommonNavActivity()
             try
             {
                 val atomAmt = account.toFinestUnit(amount)
-                account.wallet.send(atomAmt, sendAddr, deductFeeFromAmount, false, note = note)
-                onSendSuccess()
+                val tx = account.wallet.send(atomAmt, sendAddr, deductFeeFromAmount, false, note = note)
+                onSendSuccess(atomAmt, sendAddr, tx)
             } catch (e: Exception)  // We don't want to crash, we want to tell the user what went wrong
             {
                 displayException(e)
@@ -1673,10 +1678,10 @@ class MainActivity : CommonNavActivity()
         return true
     }
 
-    fun onSendSuccess()
+    fun onSendSuccess(amt: Long, addr: PayAddress, tx: BCHtransaction)
     {
         // TODO Some visual and audible bling
-        displayNotice(R.string.sendSuccess)
+        displayNotice(R.string.sendSuccess, "$amt -> $addr: ${tx.hash}")
         laterUI {
             sendToAddress.text.clear()
         }

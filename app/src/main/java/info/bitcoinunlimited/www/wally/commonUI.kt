@@ -41,6 +41,11 @@ val READ_FILES_PERMISSION_RESULT = 27724
 
 private val LogIt = Logger.getLogger("bitcoinunlimited.commonUI")
 
+fun String.toSet():Set<String>
+{
+    return split(","," ").map({it.trim()}).filter({it.length > 0}).toSet()
+}
+
 fun isCashAddrScheme(s: String): Boolean
 {
     return (s == "BITCOINCASH") || (s == "bitcoincash") || (s == "bchtest") || (s == "BCHTEST") || (s == "bchreg") || (s == "BCHREG") || (s == "NEX") || (s == "nex")

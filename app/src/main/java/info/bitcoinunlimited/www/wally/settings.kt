@@ -220,30 +220,24 @@ class Settings : CommonActivity()
             {
                 if (account.chain.chainSelector == ChainSelector.BCHMAINNET)
                 {
-                    val dport = BlockchainPort[account.chain.chainSelector]!!
-
                     if (true)
                     {
-                        val (ip, port) = try
+                        if (exclusiveNode == null || exclusiveNode == "") account.cnxnMgr.exclusiveNodes(null)
+                        else
                         {
-                            if (exclusiveNode != null) SplitIpPort(exclusiveNode, dport) else Pair(null, dport)
-                        } catch (e: Exception)
-                        {
-                            Pair(null, dport)
+                            val nodeSet:Set<String> = exclusiveNode.toSet()
+                            account.cnxnMgr.exclusiveNodes(nodeSet)
                         }
-                        account.cnxnMgr.exclusiveNode(ip, port)
                     }
 
                     if (true)
                     {
-                        val (ip, port) = try
+                        if (preferNode == null || preferNode == "") account.cnxnMgr.preferNodes(null)
+                        else
                         {
-                            if (preferNode != null) SplitIpPort(preferNode, dport) else Pair(null, dport)
-                        } catch (e: Exception)
-                        {
-                            Pair(null, dport)
+                            val nodeSet:Set<String> = preferNode.toSet()
+                            account.cnxnMgr.preferNodes(nodeSet)
                         }
-                        account.cnxnMgr.preferNode(ip, port)
                     }
                 }
             }

@@ -190,6 +190,7 @@ open class CommonActivity : AppCompatActivity()
         var displayString: String
         val buExc = exc as? BUException
         var stack: String? = null
+        var details: String = ""
         if (buExc != null)
         {
             if (buExc.severity != ErrorSeverity.Expected)
@@ -199,6 +200,7 @@ open class CommonActivity : AppCompatActivity()
                 LogIt.severe(stack)
             }
             displayString = buExc.shortMsg ?: buExc.message ?: getString(R.string.unknownError)
+            if (buExc.shortMsg != null) details = "Details: " + buExc.message + "\n"
         }
         else
         {
@@ -209,9 +211,39 @@ open class CommonActivity : AppCompatActivity()
 
             displayString = exc.message ?: getString(R.string.unknownError)
         }
-
-        displayError(displayString, stack)
+        displayError(displayString, details + i18n(R.string.devDebugInfoHeader) + ":\n" + stack)
     }
+
+    /** Display a specific error string rather than what the exception recommends, and offer the exception as details */
+    fun displayException(resource: Int, exc: Exception)
+    {
+        var displayString: String
+        val buExc = exc as? BUException
+        var stack: String? = null
+        var details: String = ""
+        if (buExc != null)
+        {
+            if (buExc.severity != ErrorSeverity.Expected)
+            {
+                stack = Log.getStackTraceString(buExc)
+                LogIt.severe(buExc.shortMsg + ":" + buExc.message)
+                LogIt.severe(stack)
+            }
+            displayString = buExc.shortMsg ?: buExc.message ?: getString(R.string.unknownError)
+            if (buExc.shortMsg != null) details = "Details: " + buExc.message + "\n"
+        }
+        else
+        {
+            // Log all non-BU exceptions because we don't know if they are expected
+            stack = Log.getStackTraceString(exc)
+            LogIt.severe(exc.toString())
+            LogIt.severe(stack)
+
+            displayString = exc.message ?: getString(R.string.unknownError)
+        }
+        displayError(resource, displayString + "\n" + details + i18n(R.string.devDebugInfoHeader) + ":\n" + stack)
+    }
+
 
     /** Display an short error string on the title bar, and then clear it after a bit */
     fun displayError(resource: Int)
@@ -228,6 +260,12 @@ open class CommonActivity : AppCompatActivity()
             displayError(i18n(resource), null, then)
         else
             displayError(i18n(resource), i18n(details), then)
+    }
+    /** Display an short error string on the title bar, and then clear it after a bit */
+    fun displayError(resource: Int, details: String, then: (() -> Unit)? = null)
+    {
+        lastErrorId = resource
+        displayError(i18n(resource), details, then)
     }
 
     var menuHidden = 0
@@ -282,6 +320,10 @@ open class CommonActivity : AppCompatActivity()
         if (details == null) displayNotice(i18n(resource), null)
         else displayNotice(i18n(resource), i18n(details))
     }
+
+    /** Display an short notification string on the title bar, and then clear it after a bit.
+     * This is a common variant because the notification string is "canned" but the details may not be (for example QR contents) */
+    fun displayNotice(resource: Int, details: String) = displayNotice(i18n(resource), details)
 
     /** Display an short notification string on the title bar, and then clear it after a bit */
     fun displayNotice(resource: Int, time: Long = NOTICE_DISPLAY_TIME, then: (() -> Unit)? = null) = displayNotice(i18n(resource), null, time, then)

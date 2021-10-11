@@ -113,7 +113,7 @@ fun GetCnxnMgr(chain: ChainSelector, name: String? = null): CnxnMgr
         val result = when (chain)
         {
             ChainSelector.BCHTESTNET -> MultiNodeCnxnMgr(name ?: "TBCH", ChainSelector.BCHTESTNET, arrayOf("testnet-seed.bitcoinabc.org"))
-            ChainSelector.BCHMAINNET -> MultiNodeCnxnMgr(name ?: "BCH", ChainSelector.BCHMAINNET, arrayOf("seed.bitcoinunlimited.net", "btccash-seeder.bitcoinunlimited.info"))
+            ChainSelector.BCHMAINNET -> MultiNodeCnxnMgr(name ?: "BCH", ChainSelector.BCHMAINNET, arrayOf("seed.bitcoinunlimited.net", "seed.bitcoinunlimited.info","seed.bchd.cash","bch.loping.net"))
             ChainSelector.BCHREGTEST -> MultiNodeCnxnMgr(name ?: "RBCH", ChainSelector.BCHREGTEST, arrayOf(SimulationHostIP))
             ChainSelector.NEXTCHAIN ->
             {
@@ -1081,8 +1081,8 @@ class WallyApp : Application()
                     {
                         try
                         {
-                            val split = SplitIpPort(BchExclusiveNode, BlockchainPort[ChainSelector.BCHMAINNET]!!)
-                            c.cnxnMgr.exclusiveNode(split.first, split.second)
+                            val nodeSet:Set<String> = BchExclusiveNode.toSet()
+                            c.cnxnMgr.exclusiveNodes(nodeSet)
                         } catch (e: Exception)
                         {
                         } // bad IP:port data
@@ -1092,8 +1092,8 @@ class WallyApp : Application()
                     {
                         try
                         {
-                            val split = SplitIpPort(BchPreferredNode, BlockchainPort[ChainSelector.BCHMAINNET]!!)
-                            c.cnxnMgr.preferNode(split.first, split.second)
+                            val nodeSet:Set<String> = BchPreferredNode.toSet()
+                            c.cnxnMgr.preferNodes(nodeSet)
                         } catch (e: Exception)
                         {
                         } // bad IP:port data provided by user

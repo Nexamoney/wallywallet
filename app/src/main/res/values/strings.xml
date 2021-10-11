@@ -51,11 +51,13 @@
     <string name="accept">accept</string>
     <string name="deny">deny</string>
     <string name="badSignature">bad signature</string>
+    <string name="unknownCurrency">unknown currency</string>
     <!-- wallet is currently working on doing whatever your button click asked it to do -->
     <string name="Processing">processing...</string>
     <string name="receiving">receiving</string>
     <string name="sending">sending</string>
     <string name="noAdditionalDetails">no additional details</string>
+    <string name="devDebugInfoHeader">Developer Information</string>
 
     <!-- Implication is "no charge" or "no cost" for a transaction -->
     <string name="nothing">nothing</string>
@@ -142,6 +144,7 @@
      The app refuses to fill the field with this information because it doesn't make sense to do so. -->
     <string name="pasteUnintelligible">paste not understood</string>
     <string name="chainIncompatibleWithAddress">address incompatible with account</string>
+    <string name="chainIncompatibleWithAddressDetails" formatted="false">Account currency is %walletCrypto, address is %addressCrypto.  Use the combo box to change the send from account to one that matches the address\'s blockchain.</string>
 
     <string name="approximatelyT" formatted="false">approximately %qty %fiat</string>
     <string name="exchangeRate" formatted="false">(exchange rate: 1 %crypto is worth %amt %fiat)</string>
@@ -158,6 +161,7 @@
     <string name="sendToAddressHint">destination address</string>
     <string name="sendAll">all</string>
     <string name="editSendNoteHint">enter notes about this recipient</string>
+    <string name="subSatoshiQuantities">Too many decimal places -- this currency does not divide that finely</string>
 
     <string name="retrievingExchangeRate">still retrieving exchange rate</string>
     <string name="unavailableExchangeRate">exchange rate unavailable</string>
@@ -279,12 +283,14 @@
     protects against entering unknown crypto codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
      -->
     <string name="badCryptoCode">no account for this currency</string>
+    <string name="badCryptoCodeDetails" format="false">Unknown or unavailable currency: %currency</string>
     <!-- The fiat currency code (e.g USD, EUR, JPY etc) is not understood or handled by this wallet.  This message will be very hard to actually see because the UI
       protects against entering unknown fiat codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
     -->
     <string name="badCurrencyUnit">not currency</string>
     <!-- The account contains the wrong currency for this use -->
     <string name="incompatibleAccount">incorrect currency</string>
+    <string name="incompatibleAccountDetails">You selected to pay from an account containing %cryptoAct but %cryptoPay is needed</string>
     <string name="detailsOfBadAmountFromIntent">The calling program supplied badly formatted number when providing the
         quantity to send. You will need to enter the quantity yourself
     </string>
