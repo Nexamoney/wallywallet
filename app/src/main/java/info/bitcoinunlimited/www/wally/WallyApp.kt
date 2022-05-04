@@ -16,7 +16,7 @@ import bitcoinunlimited.libbitcoincash.*
 import bitcoinunlimited.libbitcoincash.appI18n
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
-import io.ktor.client.features.*
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.coroutines.CoroutineScope
@@ -54,13 +54,13 @@ var dbPrefix = if (RunningTheTests()) "guitest_" else if (REG_TEST_ONLY == true)
 
 val SupportedBlockchains = if (INCLUDE_NEXTCHAIN)
     mapOf(
-      "BCH (Bitcoin Cash)" to ChainSelector.BCHMAINNET,
-      "NEX (NextChain)" to ChainSelector.NEXTCHAIN,
-      "TBCH (Testnet Bitcoin Cash)" to ChainSelector.BCHTESTNET,
-      "RBCH (Regtest Bitcoin Cash)" to ChainSelector.BCHREGTEST
+      "BCH (Bitcoin Cash)" to ChainSelector.BCH,
+      "NEXA" to ChainSelector.NEXA,
+      "TNEX (Testnet Nexa)" to ChainSelector.TESTNET,
+      "RNEX (Regtest Nexa)" to ChainSelector.REGTEST
     )
 else
-    mapOf("BCH (Bitcoin Cash)" to ChainSelector.BCHMAINNET, "TBCH (Testnet Bitcoin Cash)" to ChainSelector.BCHTESTNET, "RBCH (Regtest Bitcoin Cash)" to ChainSelector.BCHREGTEST)
+    mapOf("BCH (Bitcoin Cash)" to ChainSelector.BCH, "TNEX (Testnet Nexa)" to ChainSelector.TESTNET, "RNEX (Regtest Nexa)" to ChainSelector.REGTEST)
 
 val ChainSelectorToSupportedBlockchains = SupportedBlockchains.entries.associate { (k, v) -> v to k }
 
@@ -80,14 +80,14 @@ const val RETRIEVE_ONLY_ADDITIONAL_ADDRESSES = 10
 
 fun MakeNewWallet(name: String, chain: ChainSelector): Bip44Wallet
 {
-    if (chain == ChainSelector.BCHREGTEST)
+    if (chain == ChainSelector.REGTEST) // Hard code the regtest wallet secret key for repeatable results
         return Bip44Wallet(walletDb!!, name, chain, "trade box today light need route design birth turn insane oxygen sense")
-    if (chain == ChainSelector.BCHTESTNET)
+    if (chain == ChainSelector.TESTNET)
         return Bip44Wallet(walletDb!!, name, chain, NEW_WALLET)
-    //return Bip44Wallet(currencyCode, chain, "")
-    if (chain == ChainSelector.BCHMAINNET)
+    if (chain == ChainSelector.BCH)
         return Bip44Wallet(walletDb!!, name, chain, NEW_WALLET)
-    //return Bip44Wallet(currencyCode, chain, "")
+    if (chain == ChainSelector.NEXA)
+        return Bip44Wallet(walletDb!!, name, chain, NEW_WALLET)
     throw BUException("invalid chain selected")
 }
 
@@ -112,12 +112,12 @@ fun GetCnxnMgr(chain: ChainSelector, name: String? = null): CnxnMgr
 
         val result = when (chain)
         {
-            ChainSelector.BCHTESTNET -> MultiNodeCnxnMgr(name ?: "TBCH", ChainSelector.BCHTESTNET, arrayOf("testnet-seed.bitcoinabc.org"))
-            ChainSelector.BCHMAINNET -> MultiNodeCnxnMgr(name ?: "BCH", ChainSelector.BCHMAINNET, arrayOf("seed.bitcoinunlimited.net", "seed.bitcoinunlimited.info","seed.bchd.cash","bch.loping.net"))
-            ChainSelector.BCHREGTEST -> MultiNodeCnxnMgr(name ?: "RBCH", ChainSelector.BCHREGTEST, arrayOf(SimulationHostIP))
-            ChainSelector.NEXTCHAIN ->
+            ChainSelector.TESTNET -> MultiNodeCnxnMgr(name ?: "TBCH", ChainSelector.TESTNET, arrayOf("testnetseeder.nexa.org"))
+            ChainSelector.BCH -> MultiNodeCnxnMgr(name ?: "BCH", ChainSelector.BCH, arrayOf("seed.bitcoinunlimited.net", "seed.bitcoinunlimited.info","seed.bchd.cash","bch.loping.net"))
+            ChainSelector.REGTEST -> MultiNodeCnxnMgr(name ?: "RBCH", ChainSelector.REGTEST, arrayOf(SimulationHostIP))
+            ChainSelector.NEXA ->
             {
-                val cmgr = MultiNodeCnxnMgr(name ?: "NEX", ChainSelector.NEXTCHAIN, arrayOf("seed.nextchain.cash", "node1.nextchain.cash", "node2.nextchain.cash"))
+                val cmgr = MultiNodeCnxnMgr(name ?: "NEX", ChainSelector.NEXA, arrayOf("seed.nexa.org"))
                 cmgr.desiredConnectionCount = 2  // XNEX chain doesn't have many nodes so reduce the desired connection count or there may be more desired nodes than exist in the chain
                 cmgr
             }
@@ -133,11 +133,11 @@ fun ElectrumServerOn(chain: ChainSelector): IpPort
 {
     return when (chain)
     {
-        ChainSelector.BCHMAINNET -> IpPort("electrum.seed.bitcoinunlimited.net", DEFAULT_TCP_ELECTRUM_PORT)
-        ChainSelector.BCHTESTNET -> IpPort("159.65.163.15", DEFAULT_TCP_ELECTRUM_PORT)
-        ChainSelector.BCHREGTEST -> IpPort(SimulationHostIP, DEFAULT_TCP_ELECTRUM_PORT)
-        ChainSelector.NEXTCHAIN -> IpPort("electrumserver.seed.nextchain.cash", 7229)
-        ChainSelector.BCHNOLNET -> throw BadCryptoException()
+        ChainSelector.BCH -> IpPort("electrum.seed.bitcoinunlimited.net", DEFAULT_TCP_ELECTRUM_PORT)
+        //ChainSelector.TESTNET -> IpPort("159.65.163.15", DEFAULT_TCP_ELECTRUM_PORT)
+        //ChainSelector.REGTEST -> IpPort(SimulationHostIP, DEFAULT_TCP_ELECTRUM_PORT)
+        //ChainSelector.NEXA -> IpPort("electrumserver.seed.nextchain.cash", 7229)
+        else -> throw BadCryptoException()
     }
 }
 
@@ -150,8 +150,11 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
         LogIt.info(sourceLoc() + " " + "Get Blockchain")
         val existing = blockchains[chainSelector]
         if (existing != null) return existing
+        val nexaRegTestGb = Hash256("d71ee431e307d12dfef31a6b21e071f1d5652c0eb6155c04e3222612c9d0b371")
+        val nexaTestnetGb = Hash256("508c843a4b98fb25f57cf9ebafb245a5c16468f06519cdd467059a91e7b79d52")
         val result = when (chainSelector)
         {
+            /*
             ChainSelector.BCHTESTNET -> Blockchain(
               ChainSelector.BCHTESTNET,
               name ?: "TBCH",
@@ -177,22 +180,11 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
               0.toBigInteger(),
               context, dbPrefix
             )
-            /*
+            */
+
             // Bitcoin Cash mainnet chain
-            ChainSelector.BCHMAINNET -> Blockchain(
-                ChainSelector.BCHMAINNET,
-                name ?: "BCH",
-                cnxnMgr,
-                genesisBlockHash = Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
-                checkpointPriorBlockId = Hash256("000000000000000000cc4d859bd0a2c2cf46aa6cf821986c9895b78d65162bbb"),
-                checkpointId = Hash256("000000000000000002c310db434163004e28d7cb25dcfb45a90653f179519336"),
-                checkpointHeight = 642337,
-                checkpointWork = "13a2a5fc1efbc0514731aa5".toBigInteger(16),
-                context = context, dbPrefix = dbPrefix
-            ) */
-            // Bitcoin Cash mainnet chain
-            ChainSelector.BCHMAINNET -> Blockchain(
-              ChainSelector.BCHMAINNET,
+            ChainSelector.BCH -> Blockchain(
+              ChainSelector.BCH,
               name ?: "BCH",
               cnxnMgr,
               genesisBlockHash = Hash256("0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"),
@@ -203,9 +195,36 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
               context = context, dbPrefix = dbPrefix
             )
 
-            // Bitcoin Cash mainnet chain
-            ChainSelector.NEXTCHAIN -> Blockchain(
-              ChainSelector.NEXTCHAIN,
+            // Nexa regtest chain
+            ChainSelector.REGTEST -> Blockchain(
+              ChainSelector.REGTEST,
+              name ?: "RNEX",
+              cnxnMgr,
+              genesisBlockHash = nexaRegTestGb,
+              checkpointPriorBlockId = nexaRegTestGb,
+              checkpointId = nexaRegTestGb,
+              checkpointHeight = 0,
+              checkpointWork = 0.toBigInteger(),
+              context = context,
+              dbPrefix = dbPrefix
+            )
+            // Nexa testnet chain
+            ChainSelector.TESTNET -> Blockchain(
+              ChainSelector.TESTNET,
+              name ?: "TNEX",
+              cnxnMgr,
+              genesisBlockHash = nexaTestnetGb,
+              checkpointPriorBlockId = nexaTestnetGb,
+              checkpointId = nexaTestnetGb,
+              checkpointHeight = 0,
+              checkpointWork = 0.toBigInteger(),
+              context = context,
+              dbPrefix = dbPrefix
+            )
+            /*
+            // Nexa mainnet chain
+            ChainSelector.NEXA -> Blockchain(
+              ChainSelector.NEXA,
               name ?: "NEX",
               cnxnMgr,
               genesisBlockHash = Hash256("a73e8992af2a3b498c5114a6144b03bc41de938b39643fd82030f9721c0f8f1e"),
@@ -215,7 +234,7 @@ fun GetBlockchain(chainSelector: ChainSelector, cnxnMgr: CnxnMgr, context: Platf
               checkpointWork = 0x200101.toBigInteger(),
               context = context,
               dbPrefix = dbPrefix
-            )
+            ) */
             else -> throw BadCryptoException()
         }
         blockchains[chainSelector] = result
@@ -297,7 +316,7 @@ class AccessHandler(val app: WallyApp)
             {
 
                 val response: HttpResponse = client.get(url) {}
-                val respText = response.readText()
+                val respText = response.bodyAsText()
                 connectProblems = 0
 
                 LogIt.info("Long poll to $url resp: $respText")
@@ -420,7 +439,7 @@ class Account(
         LogIt.info("wallet add blockchain")
         wallet.addBlockchain(chain, chain.checkpointHeight, startPlace)
         LogIt.info("wallet add blockchain done")
-        if (chainSelector != ChainSelector.NEXTCHAIN)  // no fiat price for nextchain
+        if (chainSelector != ChainSelector.NEXA)  // no fiat price for nextchain
         {
             wallet.spotPrice = { currencyCode -> assert(currencyCode == fiatCurrencyCode); fiatPerCoin / hundredThousand }
             wallet.historicalPrice = { currencyCode: String, epochSec: Long -> historicalMbchInFiat(currencyCode, epochSec) / hundredThousand }
@@ -499,12 +518,12 @@ class Account(
     fun transactionInfoWebUrl(txHex: String?): String?
     {
         if (txHex == null) return null
-        if (wallet.chainSelector == ChainSelector.BCHMAINNET)
+        if (wallet.chainSelector == ChainSelector.BCH)
             return "https://explorer.bitcoinunlimited.info/tx/" + txHex //"https://blockchair.com/bitcoin-cash/transaction/" + txHex
-        if (wallet.chainSelector == ChainSelector.BCHTESTNET)
-            return "http://testnet.imaginary.cash/tx/" + txHex
-        if (wallet.chainSelector == ChainSelector.NEXTCHAIN)
-            return "http://explorer.nextchain.cash/tx/" + txHex
+        if (wallet.chainSelector == ChainSelector.TESTNET)
+            return "http://testnet.nexa.org/tx/" + txHex
+        if (wallet.chainSelector == ChainSelector.NEXA)
+            return "http://explorer.nexa.org/tx/" + txHex
         return null
     }
 
@@ -658,7 +677,7 @@ class Account(
               if (0.toBigDecimal(currencyMath).setScale(currencyScale) == unconfirmedBalance)
                   ""
               else
-                  "(" + mBchFormat.format(unconfirmedBalance.setScale(mBchDecimals)) + ")"
+                  "*" + mBchFormat.format(unconfirmedBalance.setScale(mBchDecimals)) + "*"
 
             unconfirmedBalanceGUI(unconfBalStr, force)
 
@@ -667,7 +686,7 @@ class Account(
 
             val cnxnLst = wallet.chainstate?.chain?.net?.mapConnections() { it.name }
             val peers = cnxnLst?.joinToString(", ")
-            val infoStr = i18n(R.string.at) + " " + (wallet.chainstate?.syncedHash?.toHex()?.takeLast(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight
+            val infoStr = i18n(R.string.at) + " " + (wallet.chainstate?.syncedHash?.toHex()?.take(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight
               ?: "") + " " + i18n(R.string.of) + " " + (wallet.chainstate?.chain?.curHeight
               ?: "") + " blocks, " + (wallet.chainstate?.chain?.net?.numPeers() ?: "") + " peers\n" + peers
             infoGUI(force, { infoStr })  // since numPeers takes cnxnLock
@@ -679,7 +698,7 @@ class Account(
     // Load the exchange rate
     fun getXchgRates(fiatCurrencyCode: String)
     {
-        if (chain.chainSelector != ChainSelector.BCHMAINNET)
+        if (chain.chainSelector != ChainSelector.BCH)
         {
             fiatPerCoin = -1.toBigDecimal()  // Indicates that the exchange rate is unavailable
             return
@@ -783,12 +802,12 @@ class WallyApp : Application()
         init
         {
             //System.loadLibrary("native-lib")
-            System.loadLibrary("bitcoincashandroid")
+            System.loadLibrary("nexandroid")
             appI18n = { libErr: Int -> i18n(i18nLbc[libErr] ?: libErr) }
         }
     }
 
-    val init = Initialize.LibBitcoinCash(ChainSelector.BCHTESTNET.v)  // Initialize the C library first
+    val init = Initialize.LibBitcoinCash(ChainSelector.TESTNET.v)  // Initialize the C library first
 
     val accounts: MutableMap<String, Account> = mutableMapOf()
     val accessHandler = AccessHandler(this)
@@ -798,16 +817,25 @@ class WallyApp : Application()
     val primaryAccount: Account
         get()
         {
-            // return the wallet named "mBCH"
             val prim = accounts[PRIMARY_WALLET]
             if (prim != null) return prim
             LogIt.info("Num accounts: " + accounts.size)
 
-            // return the first BCH wallet
+            // return the first Nexa wallet
             for (i in accounts.values)
             {
                 LogIt.info("looking for primary at wallet " + i.name + "blockchain: " + i.chain.name)
-                if (i.wallet.chainSelector == ChainSelector.BCHMAINNET) return i
+                if (i.wallet.chainSelector == ChainSelector.NEXA) return i
+            }
+            for (i in accounts.values)
+            {
+                LogIt.info("falling back to testnet")
+                if (i.wallet.chainSelector == ChainSelector.TESTNET) return i
+            }
+            for (i in accounts.values)
+            {
+                LogIt.info("falling back to regtest")
+                if (i.wallet.chainSelector == ChainSelector.REGTEST) return i
             }
             throw PrimaryWalletInvalidException()
         }
@@ -1018,8 +1046,8 @@ class WallyApp : Application()
         appResources = getResources()
         val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
 
-        val BchExclusiveNode: String? = if (prefs.getBoolean(BCH_EXCLUSIVE_NODE_SWITCH, false)) prefs.getString(BCH_EXCLUSIVE_NODE, null) else null
-        val BchPreferredNode: String? = if (prefs.getBoolean(BCH_PREFER_NODE_SWITCH, false)) prefs.getString(BCH_PREFER_NODE, null) else null
+        val NexaExclusiveNode: String? = if (prefs.getBoolean(BCH_EXCLUSIVE_NODE_SWITCH, false)) prefs.getString(BCH_EXCLUSIVE_NODE, null) else null
+        val NexaPreferredNode: String? = if (prefs.getBoolean(BCH_PREFER_NODE_SWITCH, false)) prefs.getString(BCH_PREFER_NODE, null) else null
 
 
         if (!RunningTheTests())  // If I'm running the unit tests, don't create any wallets since the tests will do so
@@ -1028,14 +1056,14 @@ class WallyApp : Application()
             launch {
                 if (REG_TEST_ONLY)  // If I want a regtest only wallet for manual debugging, just create it directly
                 {
-                    accounts.getOrPut("mRBCH") {
+                    accounts.getOrPut("RKEX") {
                         try
                         {
-                            val c = Account("mRBCH", ctxt);
+                            val c = Account("RKEX", ctxt);
                             c
                         } catch (e: DataMissingException)
                         {
-                            val c = Account("mRBCH", ctxt, ACCOUNT_FLAG_NONE, ChainSelector.BCHREGTEST)
+                            val c = Account("RKEX", ctxt, ACCOUNT_FLAG_NONE, ChainSelector.REGTEST)
                             c
                         }
                     }
@@ -1077,22 +1105,22 @@ class WallyApp : Application()
                 for (c in accounts.values)
                 {
                     // If I prefer an exclusive connection, then start up that way
-                    if ((BchExclusiveNode != null) && (c.chain.chainSelector == ChainSelector.BCHMAINNET))
+                    if ((NexaExclusiveNode != null) && (c.chain.chainSelector == ChainSelector.NEXA))
                     {
                         try
                         {
-                            val nodeSet:Set<String> = BchExclusiveNode.toSet()
+                            val nodeSet:Set<String> = NexaExclusiveNode.toSet()
                             c.cnxnMgr.exclusiveNodes(nodeSet)
                         } catch (e: Exception)
                         {
                         } // bad IP:port data
                     }
                     // If I have a preferred connection, then start up that way
-                    if ((BchPreferredNode != null) && (c.chain.chainSelector == ChainSelector.BCHMAINNET))
+                    if ((NexaPreferredNode != null) && (c.chain.chainSelector == ChainSelector.NEXA))
                     {
                         try
                         {
-                            val nodeSet:Set<String> = BchPreferredNode.toSet()
+                            val nodeSet:Set<String> = NexaPreferredNode.toSet()
                             c.cnxnMgr.preferNodes(nodeSet)
                         } catch (e: Exception)
                         {

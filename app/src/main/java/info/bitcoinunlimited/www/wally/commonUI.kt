@@ -80,7 +80,7 @@ fun getActivity(view: View): Activity?
     var context: Context = view.getContext();
     while (context is ContextWrapper)
     {
-        if (context is Activity) return context as Activity
+        if (context is Activity) return context
         context = context.getBaseContext()
     }
     return null

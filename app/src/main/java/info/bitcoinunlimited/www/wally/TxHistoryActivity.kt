@@ -115,7 +115,7 @@ private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, 
         {
             idx = pos
             id = obj
-            txid = obj.txHash
+            txid = obj.txIdem
             view.GuiTxId.text = txid?.toHex() ?: ""
             view.GuiTxId.visibility = if (showDev) View.VISIBLE else View.GONE
             view.GuiTxNote.text = obj.note

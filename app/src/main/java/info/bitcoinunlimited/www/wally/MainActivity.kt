@@ -1678,10 +1678,10 @@ class MainActivity : CommonNavActivity()
         return true
     }
 
-    fun onSendSuccess(amt: Long, addr: PayAddress, tx: BCHtransaction)
+    fun onSendSuccess(amt: Long, addr: PayAddress, tx: Transaction)
     {
         // TODO Some visual and audible bling
-        displayNotice(R.string.sendSuccess, "$amt -> $addr: ${tx.hash}")
+        displayNotice(R.string.sendSuccess, "$amt -> $addr: ${tx.idem}")
         laterUI {
             sendToAddress.text.clear()
         }

@@ -21,10 +21,11 @@ import bitcoinunlimited.libbitcoincash.rem
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.engine.cio.*
-import io.ktor.client.features.*
-import io.ktor.client.features.json.*
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.android.synthetic.main.activity_trickle_pay.*
 import kotlinx.android.synthetic.main.trickle_pay_custom_tx.*
 import kotlinx.android.synthetic.main.trickle_pay_reg.*
@@ -50,7 +51,7 @@ private val LogIt = Logger.getLogger("bu.TricklePay")
 // Must be top level for the serializer to handle it
 @Keep
 @kotlinx.serialization.Serializable
-data class TricklePayAssetInfo(val script: String, val txid: String, val idx: Int, val amt: Long)
+data class TricklePayAssetInfo(val script: String, val outpointHash: String, val amt: Long)
 
 @Keep
 @kotlinx.serialization.Serializable
@@ -210,7 +211,7 @@ class TricklePayRegFragment : Fragment()
 class TricklePayCustomTxFragment : Fragment()
 {
     var uri: Uri? = null
-    var tx: BCHtransaction? = null
+    var tx: Transaction? = null
     var analysis: TxAnalysisResults? = null
     var tpActivity: TricklePayActivity? = null
 
@@ -231,7 +232,7 @@ class TricklePayCustomTxFragment : Fragment()
         super.onViewCreated(view, savedInstanceState)
     }
 
-    fun populate(pactivity: TricklePayActivity, puri: Uri, ptx: BCHtransaction, panalysis: TxAnalysisResults)
+    fun populate(pactivity: TricklePayActivity, puri: Uri, ptx: Transaction, panalysis: TxAnalysisResults)
     {
         uri = puri
         tx = ptx
@@ -483,7 +484,7 @@ class TricklePayActivity : CommonNavActivity()
     var regAddress: String = ""
 
     var tflags: Int = 0
-    var proposedTx: BCHtransaction? = null
+    var proposedTx: Transaction? = null
     var proposalUri: Uri? = null
     var proposalCookie: String? = null
     var host: String? = null
@@ -600,7 +601,7 @@ class TricklePayActivity : CommonNavActivity()
         }
     }
 
-    fun analyzeCompleteAndSignTx(tx: BCHtransaction, inputSatoshis: Long?, flags: Int?): TxAnalysisResults
+    fun analyzeCompleteAndSignTx(tx: Transaction, inputSatoshis: Long?, flags: Int?): TxAnalysisResults
     {
         val wal = getRelevantWallet()
 
@@ -734,7 +735,7 @@ class TricklePayActivity : CommonNavActivity()
             return displayError(R.string.BadLink)
         }
 
-        val tx = BCHtransaction(chainSelector!!, BCHserialized(txHex.fromHex(), SerializationType.NETWORK))
+        val tx = Transaction(chainSelector!!, BCHserialized(txHex.fromHex(), SerializationType.NETWORK))
         LogIt.info(sourceLoc() + ": Tx to autopay: " + tx.toHex())
 
         // Analyze and sign transaction
@@ -764,7 +765,7 @@ class TricklePayActivity : CommonNavActivity()
             return displayError(R.string.BadLink)
         }
 
-        val stemplate = BCHscript(chainSelector!!, scriptTemplateHex.fromHex())
+        val stemplate = SatoshiScript(chainSelector!!, scriptTemplateHex.fromHex())
         LogIt.info(sourceLoc() + ": Asset filter: " + stemplate.toHex())
 
         val wal = getRelevantWallet() as CommonWallet
@@ -777,7 +778,7 @@ class TricklePayActivity : CommonNavActivity()
                 val constraint = spendable.priorOutScript
                 if (constraint.matches(stemplate, true) != null)
                 {
-                    matches.add(TricklePayAssetInfo(constraint.flatten().toHex(), outpoint.txid.hash.toHex(), outpoint.idx.toInt(), spendable.amount))
+                    matches.add(TricklePayAssetInfo(constraint.flatten().toHex(), outpoint.toHex(), spendable.amount))
                 }
             }
         }
@@ -999,10 +1000,12 @@ class TricklePayActivity : CommonNavActivity()
             LogIt.info("responding to server")
             val client = HttpClient(Android)
             {
-                install(JsonFeature)
+                install(ContentNegotiation) {
+                    json()
+                }
                 install(HttpTimeout) { requestTimeoutMillis = 5000 }
             }
-            val json = io.ktor.client.features.json.defaultSerializer()
+            val json = io.ktor.client.plugins.json.defaultSerializer()
 
             try
             {
@@ -1010,9 +1013,9 @@ class TricklePayActivity : CommonNavActivity()
                 val response: HttpResponse = client.post(url) {
                     val tmp = json.write(assets)
                     LogIt.info("JSON response ${tmp.contentLength} : " + tmp.toString())
-                    body = json.write(assets)
+                    setBody(json.write(assets))
                 }
-                val respText = response.readText()
+                val respText = response.bodyAsText()
                 clearIntentAndFinish(notice = respText)
             } catch (e: SocketTimeoutException)
             {

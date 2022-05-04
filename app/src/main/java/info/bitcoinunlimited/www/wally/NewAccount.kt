@@ -81,6 +81,7 @@ class NewAccount : CommonNavActivity()
 
         val blockchains = ArrayAdapter(this, android.R.layout.simple_spinner_item, SupportedBlockchains.keys.toTypedArray())
         GuiBlockchainSelector?.setAdapter(blockchains)
+        GuiBlockchainSelector?.setSelection("NEXA")
 
         val adapter: ArrayAdapter<String> = ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, englishWordList)
         val textView = findViewById<MultiAutoCompleteTextView>(R.id.GuiAccountRecoveryPhraseEntry)
@@ -352,7 +353,7 @@ class NewAccount : CommonNavActivity()
         {
             try
             {
-                if (chainSelector == ChainSelector.BCHMAINNET)
+                if (chainSelector == ChainSelector.BCH)
                     ElectrumClient(chainSelector, LAST_RESORT_BCH_ELECTRS)
                 else throw e
             } catch (e: java.io.IOException)

@@ -218,7 +218,7 @@ class Settings : CommonActivity()
         if (appv != null)  // for every account on this blockchain, install the exclusive node or send a null saying not exclusive anymore
             for (account in appv.accounts.values)
             {
-                if (account.chain.chainSelector == ChainSelector.BCHMAINNET)
+                if (account.chain.chainSelector == ChainSelector.NEXA)
                 {
                     if (true)
                     {

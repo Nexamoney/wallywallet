@@ -291,7 +291,7 @@ class UnitTest
         var hash4 = Hash256(Hash.hash256(data))
         assertEquals(hash4.toHex(), "1605af3f8beb87fa26fc12a45e52ce5e0e296d0da551c0775916634d451ca664")
 
-        val tx = BCHtransaction(ChainSelector.BCHTESTNET, data, SerializationType.NETWORK)
+        val tx = Transaction(ChainSelector.BCHTESTNET, data, SerializationType.NETWORK)
         assertEquals(tx.hash.toHex(), hash4.toHex())
 
         // testnet3 block 1
@@ -319,10 +319,10 @@ class UnitTest
         var sp = BCHspendable(chain)
         sp.secret = byteArrayOf(1,2,3)
         sp.outpoint = outpoint
-        sp.priorOutScript = BCHscript(chain) + OP.DUP + OP.HASH160 + OP.push(ByteArray(20, { 0})) + OP.EQUALVERIFY + OP.CHECKSIG
+        sp.priorOutScript = SatoshiScript(chain) + OP.DUP + OP.HASH160 + OP.push(ByteArray(20, { 0})) + OP.EQUALVERIFY + OP.CHECKSIG
         sp.addr = PayAddress("bchreg:qr4vefl3wu4q42etwy4w8884l5zpy23zpcwqf0amkv")
         sp.amount = 4567
-        sp.redeemScript = BCHscript(chain) + OP.push(byteArrayOf(7,8))
+        sp.redeemScript = SatoshiScript(chain) + OP.push(byteArrayOf(7,8))
         sp.commitHeight = 987654321
         sp.commitBlockHash = Guid(Hash256("1c2f4377f2222f167a9015c0ee2ca47200b368d5c17e3698962d0f307e565881"))
         sp.spentHeight = 5739243
@@ -332,7 +332,7 @@ class UnitTest
         check(rawAddr.size == 20)
 
         val serScr = sp.priorOutScript.BCHserialize(SerializationType.DISK).flatten()
-        val scr2 = BCHscript(chain)
+        val scr2 = SatoshiScript(chain)
         scr2.BCHdeserialize(BCHserialized(serScr, SerializationType.DISK))
         check(scr2.flatten().contentEquals(sp.priorOutScript.flatten()))
 
@@ -461,17 +461,17 @@ class UnitTest
     @Test
     fun testTransaction()
     {
-        var tx = BCHtransaction(ChainSelector.BCHREGTEST)
+        var tx = Transaction(ChainSelector.BCHREGTEST)
         var in1 = BCHspendable(ChainSelector.BCHREGTEST,"00112233445566778899aabbccddeeff000102030405060708090a0b0c0d0e0f", 2, 10001)
-        tx.inputs.add(BCHinput(ChainSelector.BCHREGTEST, in1, BCHscript(ChainSelector.BCHREGTEST), 0xffffffff))
-        var out1 = BCHoutput(ChainSelector.BCHREGTEST,10001, BCHscript(ChainSelector.BCHREGTEST, "76a914431ecec94e0a920a7972b084dcfabbd69f61691288ac"))
+        tx.inputs.add(BCHinput(ChainSelector.BCHREGTEST, in1, SatoshiScript(ChainSelector.BCHREGTEST), 0xffffffff))
+        var out1 = BCHoutput(ChainSelector.BCHREGTEST,10001, SatoshiScript(ChainSelector.BCHREGTEST, "76a914431ecec94e0a920a7972b084dcfabbd69f61691288ac"))
         tx.outputs.add(out1)
         var ser = tx.BCHserialize(SerializationType.NETWORK)
         LogIt.info("tx: " + ser.ToHex())
         assertEquals(4, 2 + 2)
 
         ser.flatten()
-        var tx2 = BCHtransaction(ChainSelector.BCHREGTEST, ser)
+        var tx2 = Transaction(ChainSelector.BCHREGTEST, ser)
         var ser2 = tx2.BCHserialize(SerializationType.NETWORK)
         ser2.flatten()
         LogIt.info("tx: " + ser2.ToHex())
@@ -578,26 +578,26 @@ class UnitTest
         // P2PKH
 
         // Basic match
-        val P2PKH1 = BCHscript(ch) + OP.DUP + OP.HASH160 + OP.push(ByteArray(20, { 0})) + OP.EQUALVERIFY + OP.CHECKSIG
+        val P2PKH1 = SatoshiScript(ch) + OP.DUP + OP.HASH160 + OP.push(ByteArray(20, { 0})) + OP.EQUALVERIFY + OP.CHECKSIG
         check(P2PKH1.match() != null)
 
         // A few bad matches
-        val P2PKH2 = BCHscript(ch) + OP.DUP + OP.HASH160 + OP.push(ByteArray(20, { 0})) + OP.EQUALVERIFY
+        val P2PKH2 = SatoshiScript(ch) + OP.DUP + OP.HASH160 + OP.push(ByteArray(20, { 0})) + OP.EQUALVERIFY
         check(P2PKH2.match() == null)
 
-        val P2PKH3 = BCHscript(ch) + OP.HASH160 + OP.push(ByteArray(20, { 0})) + OP.EQUALVERIFY + OP.CHECKSIG
+        val P2PKH3 = SatoshiScript(ch) + OP.HASH160 + OP.push(ByteArray(20, { 0})) + OP.EQUALVERIFY + OP.CHECKSIG
         check(P2PKH3.match() == null)
 
-        val P2PKH4 = BCHscript(ch) + OP.DUP + OP.HASH160 + OP.push(ByteArray(21, { 0})) + OP.EQUALVERIFY + OP.CHECKSIG
+        val P2PKH4 = SatoshiScript(ch) + OP.DUP + OP.HASH160 + OP.push(ByteArray(21, { 0})) + OP.EQUALVERIFY + OP.CHECKSIG
         check(P2PKH4.match() == null)
 
-        val P2PKH5 = BCHscript(ch) + OP.DUP + OP.HASH160 + OP.push(ByteArray(19, { 0})) + OP.EQUALVERIFY + OP.CHECKSIG
+        val P2PKH5 = SatoshiScript(ch) + OP.DUP + OP.HASH160 + OP.push(ByteArray(19, { 0})) + OP.EQUALVERIFY + OP.CHECKSIG
         check(P2PKH5.match() == null)
 
 
         // Test different constructions
-        val P2PKH6 = BCHscript(ch, OP.DUP, OP.HASH160, OP.push("0123456789abcdef01230123456789abcdef0123".FromHex()), OP.EQUALVERIFY, OP.CHECKSIG)
-        val P2PKH7 = BCHscript(ch, OP.DUP, OP.HASH160, OP.PUSHDATA1, byteArrayOf(20), "0123456789abcdef01230123456789abcdef0123".FromHex(), OP.EQUALVERIFY, OP.CHECKSIG)
+        val P2PKH6 = SatoshiScript(ch, OP.DUP, OP.HASH160, OP.push("0123456789abcdef01230123456789abcdef0123".FromHex()), OP.EQUALVERIFY, OP.CHECKSIG)
+        val P2PKH7 = SatoshiScript(ch, OP.DUP, OP.HASH160, OP.PUSHDATA1, byteArrayOf(20), "0123456789abcdef01230123456789abcdef0123".FromHex(), OP.EQUALVERIFY, OP.CHECKSIG)
 
         if (true)
         {
@@ -613,7 +613,7 @@ class UnitTest
             check(params[0].contentEquals(fakepubkey))
         }
 
-        val P2PKH8 = BCHscript(ch) + OP.DUP + OP.HASH160 + OP.push("0123456789abcdef01230123456789abcdef0123".FromHex()) + OP.EQUALVERIFY + OP.CHECKSIG
+        val P2PKH8 = SatoshiScript(ch) + OP.DUP + OP.HASH160 + OP.push("0123456789abcdef01230123456789abcdef0123".FromHex()) + OP.EQUALVERIFY + OP.CHECKSIG
         check(P2PKH6.contentEquals(P2PKH8))
 
         val (type1, params1) = P2PKH6.match() ?: throw AssertionError("should have matched P2PKH template")
@@ -622,7 +622,7 @@ class UnitTest
 
         // P2SH
 
-        val P2SH = BCHscript(ch) + OP.HASH160 + OP.push(fakepubkey) + OP.EQUAL
+        val P2SH = SatoshiScript(ch) + OP.HASH160 + OP.push(fakepubkey) + OP.EQUAL
         check(P2SH.match() != null)
         val (type2, params2) = P2SH.match() ?: throw AssertionError("should have matched P2SH template")
 
@@ -630,13 +630,13 @@ class UnitTest
         check(params2[0].contentEquals(fakepubkey))
 
         // bad matches
-        val P2SH2 = BCHscript(ch) + OP.HASH160 + OP.push(fakepubkey)
+        val P2SH2 = SatoshiScript(ch) + OP.HASH160 + OP.push(fakepubkey)
         assertEquals(P2SH2.match(), null)
 
-        val P2SH3 = BCHscript(ch) + OP.HASH160 + OP.push(ByteArray(21, {0})) + OP.EQUAL
+        val P2SH3 = SatoshiScript(ch) + OP.HASH160 + OP.push(ByteArray(21, {0})) + OP.EQUAL
         assertEquals(P2SH3.match(), null)
 
-        val P2SH4 = BCHscript(ch) + OP.HASH160 + OP.push(ByteArray(21, {0})) + OP.EQUAL
+        val P2SH4 = SatoshiScript(ch) + OP.HASH160 + OP.push(ByteArray(21, {0})) + OP.EQUAL
         assertEquals(P2SH4.match(), null)
     }
 
@@ -715,8 +715,8 @@ class UnitTest
     {
         // Used to load the 'native-lib' library on application startup.
         init {
-            System.loadLibrary("bitcoincashandroid")
-            Initialize.LibBitcoinCash(ChainSelector.BCHREGTEST.v)
+            System.loadLibrary("nexandroid")
+            Initialize.LibBitcoinCash(ChainSelector.REGTEST.v)
         }
     }
 }

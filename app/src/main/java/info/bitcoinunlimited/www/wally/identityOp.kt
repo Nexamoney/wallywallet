@@ -27,6 +27,7 @@ open class IdentityOpException(msg: String, shortMsg: String? = null, severity: 
 
 class IdentityOpActivity : CommonNavActivity()
 {
+    private val HTTP_REQ_TIMEOUT_MS: Int = 7000
     override var navActivityId = -1
 
     var displayedLoginRequest: URL? = null
@@ -106,7 +107,7 @@ class IdentityOpActivity : CommonNavActivity()
                 }
 
                 // If the primary account is locked do not proceed
-                if (act?.locked ?: false)
+                if (act.locked ?: false)
                 {
                     // TODO
                     //displayError(R.string.NoAccounts)
@@ -114,9 +115,9 @@ class IdentityOpActivity : CommonNavActivity()
                     return
                 }
 
-                val w = act?.wallet
+                val w = act.wallet
 
-                if (w != null)
+                if (true)
                 {
                     val idData = w.lookupIdentityDomain(h) // + path)
                     if (idData == null)
@@ -326,6 +327,7 @@ class IdentityOpActivity : CommonNavActivity()
                         try
                         {
                             val req: HttpURLConnection = URL(loginReq).openConnection() as HttpURLConnection
+                            req.setConnectTimeout(HTTP_REQ_TIMEOUT_MS)
                             val resp = req.inputStream.bufferedReader().readText()
                             LogIt.info("login response code:" + req.responseCode.toString() + " response: " + resp)
                             if ((req.responseCode >= 200) and (req.responseCode < 250))
@@ -412,7 +414,7 @@ class IdentityOpActivity : CommonNavActivity()
                         }
                         jsonBody.append('}')
 
-                        LogIt.info("registration reply: " + loginReq)
+                        LogIt.info("sending registration reply: " + loginReq)
                         try
                         {
                             //val body = """[1,2,3]"""  // URLEncoder.encode("""[1,2,3]""","UTF-8")
@@ -422,6 +424,7 @@ class IdentityOpActivity : CommonNavActivity()
                             //req.setRequestProperty("charset", "utf-8")
                             req.setRequestProperty("Accept", "*/*")
                             req.setRequestProperty("Content-Length", jsonBody.length.toString())
+                            req.setConnectTimeout(HTTP_REQ_TIMEOUT_MS)
                             req.doOutput = true
                             req.useCaches = false
                             val os = DataOutputStream(req.outputStream)
@@ -445,16 +448,31 @@ class IdentityOpActivity : CommonNavActivity()
                             {
                                 displayError(resp, null, { clearIntentAndFinish() })
                             }
-                        } catch (e: IOException)
+                        }
+                        catch (e: java.net.SocketTimeoutException)
                         {
+                            LogIt.info("SOCKET TIMEOUT:  If development, check phone's network.  Ensure you can route from phone to target!  " + e.toString())
+                            displayError(R.string.connectionException, null, { clearIntentAndFinish() })
+                        }
+                        catch (e: IOException)
+                        {
+                            LogIt.info("registration IOException: " + e.toString())
                             displayError(R.string.connectionAborted, null, { clearIntentAndFinish() })
-                        } catch (e: FileNotFoundException)
+                        }
+                        catch (e: FileNotFoundException)
                         {
+                            LogIt.info("registration FileNotFoundException: " + e.toString())
                             displayError(R.string.badLink, null, { clearIntentAndFinish() })
-                        } catch (e: java.net.ConnectException)
+                        }
+                        catch (e: java.net.ConnectException)
                         {
                             displayError(R.string.connectionException, null, { clearIntentAndFinish() })
                         }
+                        catch (e: Throwable)
+                        {
+                            displayError(R.string.unknownError, null, { clearIntentAndFinish() })
+                        }
+
                         break@postloop  // Only way to actually loop is to get a http 301 or 302
                     }
                 }
