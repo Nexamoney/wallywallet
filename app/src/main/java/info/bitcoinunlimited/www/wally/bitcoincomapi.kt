@@ -41,7 +41,7 @@ fun MbchInFiat(fiat: String, setter: (BigDecimal) -> Unit)
     val prior = lastPoll[fiat]
     if (prior != null)
     {
-        if (prior.first.elapsedNow().inMilliseconds < POLL_INTERVAL)
+        if (prior.first.elapsedNow().inWholeMilliseconds < POLL_INTERVAL)
         {
             setter(prior.second)
             return

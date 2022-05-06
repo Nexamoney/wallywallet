@@ -1,5 +1,6 @@
 // Copyright (c) 2019 Andrew Stone Consulting (qq9wwnuw4eukyh5g34ckg5vk4aaxnvr04vkspyv850)
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
 package info.bitcoinunlimited.www.wally
 
 import android.app.Activity
@@ -112,7 +113,7 @@ fun GetCnxnMgr(chain: ChainSelector, name: String? = null): CnxnMgr
 
         val result = when (chain)
         {
-            ChainSelector.TESTNET -> MultiNodeCnxnMgr(name ?: "TBCH", ChainSelector.TESTNET, arrayOf("testnetseeder.nexa.org"))
+            ChainSelector.TESTNET -> MultiNodeCnxnMgr(name ?: "TBCH", ChainSelector.TESTNET, arrayOf(SimulationHostIP, "testnetseeder.nexa.org"))
             ChainSelector.BCH -> MultiNodeCnxnMgr(name ?: "BCH", ChainSelector.BCH, arrayOf("seed.bitcoinunlimited.net", "seed.bitcoinunlimited.info","seed.bchd.cash","bch.loping.net"))
             ChainSelector.REGTEST -> MultiNodeCnxnMgr(name ?: "RBCH", ChainSelector.REGTEST, arrayOf(SimulationHostIP))
             ChainSelector.NEXA ->

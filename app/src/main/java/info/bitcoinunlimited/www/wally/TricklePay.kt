@@ -765,7 +765,8 @@ class TricklePayActivity : CommonNavActivity()
             return displayError(R.string.BadLink)
         }
 
-        val stemplate = SatoshiScript(chainSelector!!, scriptTemplateHex.fromHex())
+        // TODO: should pass the type of the prior output as part of the template
+        val stemplate = SatoshiScript(chainSelector!!, SatoshiScript.Type.SATOSCRIPT, scriptTemplateHex.fromHex())
         LogIt.info(sourceLoc() + ": Asset filter: " + stemplate.toHex())
 
         val wal = getRelevantWallet() as CommonWallet

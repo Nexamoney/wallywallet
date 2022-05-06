@@ -127,6 +127,7 @@ open class CommonNavActivity : CommonActivity()
 @SuppressLint("Registered")
 open class CommonActivity : AppCompatActivity()
 {
+    var errorSync = object {}
     var origTitle = String()  //* The app's actual title (I will sometimes overwrite it with a temporary error message)
     var origTitleBackground: ColorDrawable? = null  //* The app's title background color (I will sometimes overwrite it with a temporary error message)
     var errorCount = 0 // Used to make sure one error's clear doesn't prematurely clear out a different problem
@@ -286,7 +287,7 @@ open class CommonActivity : AppCompatActivity()
             // This coroutine has to be limited to this thread because only the main thread can touch UI views
             // Display the error by changing the title and title bar color temporarily
             val titlebar: View = findViewById(R.id.action_bar)
-            val myError = synchronized(errorCount)
+            val myError = synchronized(errorSync)
             {
                 setTitle(err)
                 lastErrorString = err
@@ -299,7 +300,7 @@ open class CommonActivity : AppCompatActivity()
                 errorCount
             }
             delay(ERROR_DISPLAY_TIME)
-            synchronized(errorCount)
+            synchronized(errorSync)
             {
                 menuHidden -= 1
                 invalidateOptionsMenu()
@@ -336,7 +337,7 @@ open class CommonActivity : AppCompatActivity()
             // Display the error by changing the title and title bar color temporarily
             var titlebar: View = findViewById(R.id.action_bar)
             val errorColor = ContextCompat.getColor(applicationContext, R.color.notice)
-            val myError = synchronized(errorCount)
+            val myError = synchronized(errorSync)
             {
                 setTitle(msg);
                 alerts.add(Alert(msg, details, NOTICE_LEVEL))
@@ -345,7 +346,7 @@ open class CommonActivity : AppCompatActivity()
                 errorCount
             }
             delay(time)
-            synchronized(errorCount)
+            synchronized(errorSync)
             {
                 if (myError == errorCount)
                 {
@@ -428,7 +429,7 @@ open class CommonActivity : AppCompatActivity()
             addOnGlobalLayoutListener(l)
         }
 
-        v.setOnKeyListener( { v, keyCode, event ->
+        v.setOnKeyListener( { _, keyCode, event ->
         if(event.getAction() == KeyEvent.ACTION_DOWN)
         {
             if (keyCode == KeyEvent.KEYCODE_BACK)
@@ -455,8 +456,14 @@ open class CommonActivity : AppCompatActivity()
     {
         if (!isKeyboardShown())
         {
-            val imm: InputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager ?: return
-            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+            var view = currentFocus
+            // If no view currently has focus, create a new one, just so we can grab a window token from it
+            if (view == null)
+            {
+                view = View(this)
+            }
+            val imm: InputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(view,0)
         }
     }
 

@@ -318,7 +318,9 @@ class Settings : CommonActivity()
                 launch {
                     try
                     {
-                        coin.wallet.reassessUnconfirmedTx()
+                        // TODO while we don't have Rostrum (electrum) we can't reassess, so just forget them under the assumption that they will be confirmed and accounted for, or are bad.
+                        // coin.wallet.reassessUnconfirmedTx()
+                        coin.wallet.cleanUnconfirmed()
                         displayNotice(i18n(R.string.unconfAssessmentNotice))
                     } catch (e: Exception)
                     {
