@@ -3,16 +3,38 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable/ic_help.xml" value="0.319" />
         <entry key="app/src/main/res/drawable/ic_invoice.xml" value="0.8166666666666667" />
         <entry key="app/src/main/res/layout-land/activity_main.xml" value="0.6694395796847635" />
         <entry key="app/src/main/res/layout-sw600dp/activity_main.xml" value="0.54474043715847" />
         <entry key="app/src/main/res/layout/activity_alerts.xml" value="0.6100543478260869" />
         <entry key="app/src/main/res/layout/activity_domain_identity_settings.xml" value="0.7223731884057971" />
+        <entry key="app/src/main/res/layout/activity_identity.xml" value="0.6328125" />
+        <entry key="app/src/main/res/layout/activity_invoices.xml" value="0.6328125" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.5" />
         <entry key="app/src/main/res/layout/activity_new_account.xml" value="0.7395833333333334" />
+        <entry key="app/src/main/res/layout/activity_settings.xml" value="0.447463768115942" />
+        <entry key="app/src/main/res/layout/activity_shopping.xml" value="0.447463768115942" />
+        <entry key="app/src/main/res/layout/activity_shopping_settings.xml" value="0.6328125" />
+        <entry key="app/src/main/res/layout/activity_split_bill.xml" value="0.6328125" />
+        <entry key="app/src/main/res/layout/activity_trickle_pay.xml" value="0.6328125" />
         <entry key="app/src/main/res/layout/activity_tx_history.xml" value="0.5802083333333333" />
+        <entry key="app/src/main/res/layout/activity_unlock.xml" value="0.6328125" />
+        <entry key="app/src/main/res/layout/activity_welcome.xml" value="0.6328125" />
         <entry key="app/src/main/res/layout/alert_list_item.xml" value="0.7305253623188406" />
+        <entry key="app/src/main/res/layout/content_domain_identity_settings.xml" value="0.6328125" />
+        <entry key="app/src/main/res/layout/content_welcome.xml" value="0.6328125" />
+        <entry key="app/src/main/res/layout/identity_list_item.xml" value="0.6328125" />
+        <entry key="app/src/main/res/layout/settings_blank_activity.xml" value="0.6328125" />
+        <entry key="app/src/main/res/layout/shopping_list_item.xml" value="0.6328125" />
+        <entry key="app/src/main/res/layout/shopping_settings_list_item.xml" value="0.6328125" />
+        <entry key="app/src/main/res/layout/trickle_pay_asset_request.xml" value="0.6328125" />
+        <entry key="app/src/main/res/layout/trickle_pay_custom_tx.xml" value="0.6328125" />
+        <entry key="app/src/main/res/layout/trickle_pay_empty.xml" value="0.6328125" />
+        <entry key="app/src/main/res/layout/trickle_pay_reg.xml" value="0.6328125" />
         <entry key="app/src/main/res/layout/tx_history_list_item.xml" value="0.5802083333333333" />
+        <entry key="app/src/main/res/layout/welcomef1.xml" value="0.6328125" />
+        <entry key="app/src/main/res/layout/welcomef2.xml" value="0.6328125" />
         <entry key="app/src/main/res/layout/welcomef3.xml" value="0.6825181159420289" />
         <entry key="app/src/main/res/layout/welcomef4.xml" value="0.6825181159420289" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.7963541666666667" />

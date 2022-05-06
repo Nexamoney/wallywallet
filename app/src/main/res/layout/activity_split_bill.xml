@@ -183,7 +183,7 @@
         android:layout_width="0dp"
         android:layout_height="3dp"
         android:background="?android:attr/listDivider"
-        android:foreground="#40b040"
+        android:foreground="@color/listDividerFg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"

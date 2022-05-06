@@ -324,7 +324,7 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
-    <string name="title_activity_invoices">Invoices</string>
+    <!-- string name="title_activity_invoices">Invoices</string> -->
     <string name="title_activity_identity">Identity</string>
     <string name="title_activity_identity_op">Identity</string>
     <string name="title_activity_domain_identity_settings">Domain Identity Settings</string>
@@ -362,7 +362,7 @@
     <string name="welcome3_title">NEXA Account Recovery Secret Phrase</string>
     <string name="welcome3">This account can be restored or moved to another device via the secret phrase displayed below.  Unlike many services, a this wallet does not need a periodic "backup".  The data in the public blockchain, combined with this secret phrase is enough to recover all your funds and your account history.    Write this phrase down and keep it somewhere secure right now.\n\nIn Bitcoin, YOU must take responsibility!\n\nIf you lose this phrase it is absolutely impossible to recover your account.  If your secret phrase is stolen from you, the thief can take all your funds and log in to sites as you that you have set up with Wally\'s identity feature.\nThis may sound scary, but it has a big advantage: your money is on this phone and in your backup and nowhere else.\n\nSo it is yours and only yours.  No one can hack some corporate database and steal your money and no one can interfere with you spending your money.\n\nJust like money in your physical wallet.\n\nIf this responsibility is scary to you, treat this wallet like you would your physical wallet -- don\'t keep much money in it.</string>
     <string name="welcome4_title">Identity</string>
-    <string name="welcome4">In the next screen, you may enter identity information.  This information is used when you use Wally as an identity and login manager (to automatically log into various web sites, or supply information when making a purchase).\n\nWally is extremely privacy focused!\n\nThis information will not be shared with any site without your express permission, and NO information from this wallet is ever sent to the authors of this app.  You can also choose to leave any fields blank.\n\nWhen complete, press the back arrow (in the upper left to continue).  But press "next" now!</string>
+    <string name="welcome4">Next you will be taken to the identity information screen.  This information is used when you use Wally as an identity and login manager (to automatically log into various web sites, or supply information when making a purchase).\n\nWally is extremely privacy focused!\n\nThis information will not be shared with any site without your express permission, and NO information from this wallet is ever sent to the authors of this app.  You can also choose to leave any fields blank.\nWhen complete, press the back arrow (in the upper left).</string>
     <string name="welcomeComplete">This completes the setup.  If you did not complete any of the steps in this welcome, all of the fields are available from within the app itself.\n\nThank you and enjoy your new wallet!</string>
     <!-- PIN Entry -->
     <string name="EnterPIN">Enter PIN</string>

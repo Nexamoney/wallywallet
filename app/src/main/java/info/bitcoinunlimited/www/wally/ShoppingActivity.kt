@@ -112,8 +112,8 @@ private class ShoppingRecyclerAdapter(private val activity: ShoppingActivity, pr
             // Alternate colors for each row in the list
             //val Acol:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowA) } ?: 0xFFEEFFEE.toInt()
             //val Bcol:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowB) } ?: 0xFFBBDDBB.toInt()
-            val Acol = 0xFFF0FFF0.toInt()
-            val Bcol = 0xFFD0E0D0.toInt()
+            val Acol = 0xFFF0EEFF.toInt()
+            val Bcol = 0xFFE0D0EF.toInt()
 
             if ((pos and 1) == 0)
             {

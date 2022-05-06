@@ -4,13 +4,13 @@ package info.bitcoinunlimited.www.wally
 
 import android.os.Bundle
 
-class InvoicesActivity : CommonNavActivity()
+class AssetsActivity : CommonNavActivity()
 {
     override var navActivityId = -1 // Invoices screen disabled R.id.navigation_invoices
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_invoices)
+        setContentView(R.layout.activity_assets)
     }
 }

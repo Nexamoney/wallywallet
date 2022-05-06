@@ -11,9 +11,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.MenuItem
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
@@ -30,7 +28,7 @@ const val SPLITBILL_MESSAGE = "info.bitcoinunlimited.www.wally.splitbill"
 const val TRICKLEPAY_MESSAGE = "info.bitcoinunlimited.www.wally.tricklepay"
 const val EXCHANGE_MESSAGE = "info.bitcoinunlimited.www.wally.exchange"
 const val SETTINGS_MESSAGE = "info.bitcoinunlimited.www.wally.settings"
-const val INVOICES_MESSAGE = "info.bitcoinunlimited.www.wally.invoices"
+const val ASSETS_MESSAGE = "info.bitcoinunlimited.www.wally.invoices"
 const val IDENTITY_MESSAGE = "info.bitcoinunlimited.www.wally.identity"
 
 val IDENTITY_OP_RESULT = 27720
@@ -156,8 +154,8 @@ fun bottomNavSelectHandler(item: MenuItem, ths: Activity): Boolean
         R.id.navigation_assets ->
         {
             val message = "" // anything extra we want to send
-            val intent = Intent(ths, InvoicesActivity::class.java).apply {  // TODO create Assets Activity
-                putExtra(INVOICES_MESSAGE, message)
+            val intent = Intent(ths, AssetsActivity::class.java).apply {  // TODO create Assets Activity
+                putExtra(ASSETS_MESSAGE, message)
             }
             ths.startActivity(intent)
             return true

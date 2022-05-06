@@ -42,7 +42,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="10dp"
         android:background="?android:attr/listDivider"
-        android:foreground="#40b040"
+        android:foreground="@color/listDividerFg"
         app:layout_constraintBottom_toTopOf="@+id/GuiTpAssetRequestAccept"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
