@@ -350,8 +350,8 @@ class SplitBillActivity : CommonNavActivity()
                 {
                     val fiatQty: BigDecimal = qty * fpc
                     fiatStr = " " + i18n(R.string.or) + " " + fiatFormat.format(fiatQty) + " " + fiatCurrencyCode
-                    acct!!.receiveInfoWithQuantity(qty, 200, { updateQR(it) })
                 }
+                acct!!.receiveInfoWithQuantity(qty, 200, { updateQR(it) })
             }
 
             perSplitAmount.text = (acct?.format(qty) ?: mBchFormat.format(qty)) + " " + cryptoCurrencyCode + fiatStr

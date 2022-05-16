@@ -57,11 +57,11 @@ val SupportedBlockchains = if (INCLUDE_NEXTCHAIN)
     mapOf(
       "BCH (Bitcoin Cash)" to ChainSelector.BCH,
       "NEXA" to ChainSelector.NEXA,
-      "TNEX (Testnet Nexa)" to ChainSelector.TESTNET,
+      "TNEX (Testnet Nexa)" to ChainSelector.NEXATESTNET,
       "RNEX (Regtest Nexa)" to ChainSelector.REGTEST
     )
 else
-    mapOf("BCH (Bitcoin Cash)" to ChainSelector.BCH, "TNEX (Testnet Nexa)" to ChainSelector.TESTNET, "RNEX (Regtest Nexa)" to ChainSelector.REGTEST)
+    mapOf("BCH (Bitcoin Cash)" to ChainSelector.BCH, "TNEX (Testnet Nexa)" to ChainSelector.NEXATESTNET, "RNEX (Regtest Nexa)" to ChainSelector.REGTEST)
 
 val ChainSelectorToSupportedBlockchains = SupportedBlockchains.entries.associate { (k, v) -> v to k }
 
@@ -83,7 +83,7 @@ fun MakeNewWallet(name: String, chain: ChainSelector): Bip44Wallet
 {
     if (chain == ChainSelector.REGTEST) // Hard code the regtest wallet secret key for repeatable results
         return Bip44Wallet(walletDb!!, name, chain, "trade box today light need route design birth turn insane oxygen sense")
-    if (chain == ChainSelector.TESTNET)
+    if (chain == ChainSelector.NEXATESTNET)
         return Bip44Wallet(walletDb!!, name, chain, NEW_WALLET)
     if (chain == ChainSelector.BCH)
         return Bip44Wallet(walletDb!!, name, chain, NEW_WALLET)
@@ -381,7 +381,7 @@ class Account(
         if (txHex == null) return null
         if (wallet.chainSelector == ChainSelector.BCH)
             return "https://explorer.bitcoinunlimited.info/tx/" + txHex //"https://blockchair.com/bitcoin-cash/transaction/" + txHex
-        if (wallet.chainSelector == ChainSelector.TESTNET)
+        if (wallet.chainSelector == ChainSelector.NEXATESTNET)
             return "http://testnet.nexa.org/tx/" + txHex
         if (wallet.chainSelector == ChainSelector.NEXA)
             return "http://explorer.nexa.org/tx/" + txHex
@@ -668,7 +668,7 @@ class WallyApp : Application()
         }
     }
 
-    val init = Initialize.LibBitcoinCash(ChainSelector.TESTNET.v)  // Initialize the C library first
+    val init = Initialize.LibBitcoinCash(ChainSelector.NEXATESTNET.v)  // Initialize the C library first
 
     val accounts: MutableMap<String, Account> = mutableMapOf()
     val accessHandler = AccessHandler(this)
@@ -691,7 +691,7 @@ class WallyApp : Application()
             for (i in accounts.values)
             {
                 LogIt.info("falling back to testnet")
-                if (i.wallet.chainSelector == ChainSelector.TESTNET) return i
+                if (i.wallet.chainSelector == ChainSelector.NEXATESTNET) return i
             }
             for (i in accounts.values)
             {
