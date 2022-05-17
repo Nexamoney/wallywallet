@@ -24,7 +24,7 @@ class Welcome : CommonNavActivity()
         val app = (getApplication() as WallyApp)
         app.firstRun = false  // Stops jumping back into the welcome if we've left it
 
-        wallyApp = (getApplication() as WallyApp)!!
+        wallyApp = (getApplication() as WallyApp)
         //loadFragment(WelcomeFragment1())
     }
 
@@ -59,7 +59,7 @@ class WelcomeFragment1 : Fragment()
     {
         super.onViewCreated(view, savedInstanceState)
         view.findViewById<Button>(R.id.button_first).setOnClickListener {
-            findNavController()?.navigate(R.id.action_Welcome1_to_Welcome2)
+            findNavController().navigate(R.id.action_Welcome1_to_Welcome2)
         }
     }
 }
@@ -118,7 +118,7 @@ class WelcomeFragment3 : Fragment()
                 break
             }
         }
-        if (wordSeeds == "") wordSeeds = accounts.values.first()?.wallet?.secretWords ?: ""
+        if (wordSeeds == "") wordSeeds = accounts.values.first().wallet.secretWords
         welcomeWalletBackupSecret.text = wordSeeds
 
         view.findViewById<Button>(R.id.button_first).setOnClickListener {

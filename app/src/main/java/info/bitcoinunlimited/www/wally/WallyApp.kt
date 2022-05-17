@@ -549,7 +549,7 @@ class Account(
             val peers = cnxnLst?.joinToString(", ")
             val infoStr = i18n(R.string.at) + " " + (wallet.chainstate?.syncedHash?.toHex()?.take(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight
               ?: "") + " " + i18n(R.string.of) + " " + (wallet.chainstate?.chain?.curHeight
-              ?: "") + " blocks, " + (wallet.chainstate?.chain?.net?.numPeers() ?: "") + " peers\n" + peers
+              ?: "") + " blocks, " + (wallet.chainstate?.chain?.net?.size ?: "") + " peers\n" + peers
             infoGUI(force, { infoStr })  // since numPeers takes cnxnLock
 
             tickerGUI(name, force)

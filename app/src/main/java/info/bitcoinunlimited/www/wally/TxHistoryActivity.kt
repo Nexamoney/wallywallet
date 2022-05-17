@@ -217,8 +217,6 @@ class TxHistoryActivity : CommonNavActivity()
         // Remember the original height so that it can be restored when we move it
         listHeight = GuiTxHistoryList.layoutParams.height
 
-        var activity = this
-
         GuiTxHistoryList.addOnScrollListener(object : RecyclerView.OnScrollListener()
         {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)

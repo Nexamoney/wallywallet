@@ -296,9 +296,15 @@ class Settings : CommonActivity()
                 val coin = accounts[accountName]
                 if (coin == null) return
                 launch {
+                    val bc = coin.wallet.blockchain
                     // If you reset the wallet first, it'll start rediscovering the existing blockchain before it gets reset.
-                    coin.wallet.blockchain.rediscover()
-                    coin.wallet.rediscover()
+                    bc.rediscover()
+                    for (c in accounts)  // Rediscover tx for EVERY wallet using this blockchain
+                    {
+                        if (c.value.wallet.blockchain == bc)
+                            c.value.wallet.rediscover()
+                    }
+
                 }
                 displayNotice(i18n(R.string.rediscoverNotice))
             }
