@@ -423,6 +423,7 @@
     <string name="IncompleteTpTransactionFrom">Incoming Firm Offer Request From</string>
     <string name="TpEntails">Entails</string>
     <string name="TpAssetRequestFrom">Incoming Asset Request From</string>
+    <string name="TpHandledByAccount">can be handled by your account</string>
     <string name="ForAFeeOf" formatted="false">including a fee of %fee %units</string>
     <string name="TpExchangingTokens">and exchanging tokens.</string>
     <string name="TpSendingTokens">and sending tokens.</string>

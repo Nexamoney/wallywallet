@@ -36,6 +36,7 @@
         android:id="@+id/GuiAlertView"
         android:layout_width="0dp"
         android:layout_height="1px"
+        android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/nav_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -45,7 +46,7 @@
         android:layout_width="0dp"
         android:layout_height="3dp"
         android:background="?android:attr/listDivider"
-        android:foreground="#40b040"
+        android:foreground="@color/listDividerFg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

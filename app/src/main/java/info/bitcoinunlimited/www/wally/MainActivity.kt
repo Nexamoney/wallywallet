@@ -1627,11 +1627,13 @@ class MainActivity : CommonNavActivity()
         val sendAddr = try
         {
             PayAddress(sendToAddress.text.toString())
-        } catch (e: WalletNotSupportedException)
+        }
+        catch (e: WalletNotSupportedException)
         {
             displayError(R.string.badAddress, sendToAddress.text.toString())
             return false
-        } catch (e: UnknownBlockchainException)
+        }
+        catch (e: UnknownBlockchainException)
         {
             displayError(R.string.badAddress, sendToAddress.text.toString())
             return false

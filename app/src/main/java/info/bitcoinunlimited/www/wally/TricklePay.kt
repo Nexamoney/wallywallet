@@ -27,6 +27,7 @@ import io.ktor.client.statement.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.android.synthetic.main.activity_trickle_pay.*
+import kotlinx.android.synthetic.main.trickle_pay_asset_request.*
 import kotlinx.android.synthetic.main.trickle_pay_custom_tx.*
 import kotlinx.android.synthetic.main.trickle_pay_reg.*
 import kotlinx.android.synthetic.main.trickle_pay_reg.GuiCustomTxCost
@@ -366,6 +367,7 @@ class TricklePayAssetRequestFragment : Fragment()
         GuiTricklePayEntity.text = u.authority + topic
 
         val acc = tpActivity!!.getRelevantAccount()
+        GuiAssetHandledByAccount.text = acc.name
     }
 }
 
@@ -883,6 +885,7 @@ class TricklePayActivity : CommonNavActivity()
             }
         } catch (e: Exception)
         {
+            displayFragment(GuiTricklePayEmpty)
             LogIt.warning(e.toString())
             displayException(e)
         }

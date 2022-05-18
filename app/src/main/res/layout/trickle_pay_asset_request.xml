@@ -21,8 +21,8 @@
         android:id="@+id/GuiTricklePayEntity"
         android:layout_width="0dp"
         android:layout_height="32sp"
-        android:layout_marginStart="4dp"
         android:layout_marginTop="20dp"
+        android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
         android:autoSizeMaxTextSize="32sp"
         android:autoSizeMinTextSize="16sp"
@@ -33,6 +33,33 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/GuiAssetAcceptQ" />
+
+    <TextView
+        android:id="@+id/GuiAssetAcceptQ2"
+        android:layout_width="0dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginTop="20dp"
+        android:layout_height="wrap_content"
+        android:text="@string/TpHandledByAccount"
+        android:textAlignment="center"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiTricklePayEntity"/>
+    <TextView
+        android:id="@+id/GuiAssetHandledByAccount"
+        android:layout_width="0dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginTop="20dp"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textAlignment="center"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAssetAcceptQ2"/>
 
     <View
         android:id="@+id/divider2"
