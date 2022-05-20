@@ -898,23 +898,22 @@ class WallyApp : Application()
     override fun onCreate()
     {
         super.onCreate()
-        LogIt.info(sourceLoc() + " Wally Wallet App Started")
-
-        val ctxt = PlatformContext(applicationContext)
+        notInUIscope = coMiscScope
         registerActivityLifecycleCallbacks(ActivityLifecycleHandler(this))  // track the current activity
-
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        appResources = getResources()
-        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
-
-        val NexaExclusiveNode: String? = if (prefs.getBoolean(BCH_EXCLUSIVE_NODE_SWITCH, false)) prefs.getString(BCH_EXCLUSIVE_NODE, null) else null
-        val NexaPreferredNode: String? = if (prefs.getBoolean(BCH_PREFER_NODE_SWITCH, false)) prefs.getString(BCH_PREFER_NODE, null) else null
-
 
         if (!RunningTheTests())  // If I'm running the unit tests, don't create any wallets since the tests will do so
         {
             // Initialize the currencies supported by this wallet
-            launch {
+            launch(coMiscScope) {
+                LogIt.info(sourceLoc() + " Wally Wallet App Started")
+                val ctxt = PlatformContext(applicationContext)
+                walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
+                appResources = getResources()
+                val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+
+                val NexaExclusiveNode: String? = if (prefs.getBoolean(BCH_EXCLUSIVE_NODE_SWITCH, false)) prefs.getString(BCH_EXCLUSIVE_NODE, null) else null
+                val NexaPreferredNode: String? = if (prefs.getBoolean(BCH_PREFER_NODE_SWITCH, false)) prefs.getString(BCH_PREFER_NODE, null) else null
+
                 if (REG_TEST_ONLY)  // If I want a regtest only wallet for manual debugging, just create it directly
                 {
                     accounts.getOrPut("RKEX") {

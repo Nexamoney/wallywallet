@@ -298,8 +298,8 @@
 
     <ImageView
         android:id="@+id/GuiReceiveQRCode"
-        android:layout_width="130dp"
-        android:layout_height="128dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_marginStart="10dp"
         android:contentDescription="@string/receiveAddressQRCode"
         android:padding="0px"
@@ -390,8 +390,8 @@
 
     <ImageButton
         android:id="@+id/destAddrPasteButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginEnd="4dp"
         android:contentDescription="@string/PasteDestinationAddressButton"
         app:layout_constraintBottom_toBottomOf="@+id/HomeAddressText"
@@ -439,8 +439,8 @@
 
     <Button
         android:id="@+id/sendButton"
-        android:layout_width="92dp"
-        android:layout_height="45dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:onClick="onSendButtonClicked"
         android:text="@string/Send"
@@ -570,8 +570,8 @@
 
     <ImageButton
         android:id="@+id/GuiNewAccount"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginEnd="4dp"
         android:onClick="onNewAccount"
         android:scaleType="centerCrop"
@@ -581,8 +581,8 @@
 
     <ImageButton
         android:id="@+id/qrFromGallery"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginTop="3dp"
         android:layout_marginEnd="5dp"
         android:onClick="onQRfromGalleryClicked"

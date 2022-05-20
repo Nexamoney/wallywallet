@@ -5,13 +5,12 @@ package info.bitcoinunlimited.www.wally
 import android.Manifest
 import android.app.Activity
 import android.content.*
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Menu
@@ -125,6 +124,8 @@ class MainActivity : CommonNavActivity()
 
     var app: WallyApp? = null
 
+    var dynOrStaticOrientation: Int = -1  // Used to remember the screen orientation when temporarily disabling int
+
     val accounts: MutableMap<String, Account>
         get() = app!!.accounts
 
@@ -207,13 +208,14 @@ class MainActivity : CommonNavActivity()
             dbgAssertGuiThread()
             LogIt.info("scanning for qr code")
             val v = IntentIntegrator(this)
+            dynOrStaticOrientation = requestedOrientation
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_NOSENSOR
             v.setPrompt(i18n(R.string.scanPaymentQRcode)).setBeepEnabled(false).setDesiredBarcodeFormats(BarcodeFormat.QR_CODE.name).setOrientationLocked(true).setCameraId(0).initiateScan()
-
         }
 
         destAddrPasteButton.setOnClickListener {
             dbgAssertGuiThread()
-            LogIt.info(sourceLoc() + ": paste button pressed")
+            //LogIt.info(sourceLoc() + ": paste button pressed")
             try
             {
                 lastPaste = ""  // We never want to completely ignore an explicit paste
@@ -540,6 +542,11 @@ class MainActivity : CommonNavActivity()
     override fun onResume()
     {
         LogIt.info("Wally is resuming")
+        if (dynOrStaticOrientation != -1)  // If we turned off dynamic screen orientation, set it back to whatever it was
+        {
+            requestedOrientation =  ActivityInfo.SCREEN_ORIENTATION_SENSOR //dynOrStaticOrientation  // Set it back after turning it off while scanning QR
+            dynOrStaticOrientation = -1
+        }
         dbgAssertGuiThread()
         clearAccountUI()
         super.onResume()
@@ -1275,11 +1282,9 @@ class MainActivity : CommonNavActivity()
             {
                 laterUI {
                     val QRstring = result.contents.toString()
-                    displayNotice(R.string.scanSuccess, "QR text: " + QRstring)
-                    delay(2000)  // So that the notice is visible
+                    displayNotice(i18n(R.string.scanSuccess), "QR text: " + QRstring, 2000)
                     // TODO parse other QR code formats
                     LogIt.info(sourceLoc() + ": QR result: " + QRstring)
-
                     if (!handleAnyIntent(QRstring))
                     {
                         try

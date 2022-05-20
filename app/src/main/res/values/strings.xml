@@ -282,7 +282,7 @@
     <!-- The crypto currency code (e.g NEX, BTC, BCH, etc) is not understood or handled by this wallet.  This message will be very hard to actually see because the UI
     protects against entering unknown crypto codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
      -->
-    <string name="badCryptoCode">no account for this currency</string>
+    <string name="badCryptoCode">no unlocked account exists for this currency or blockchain</string>
     <string name="badCryptoCodeDetails" format="false">Unknown or unavailable currency: %currency</string>
     <!-- The fiat currency code (e.g USD, EUR, JPY etc) is not understood or handled by this wallet.  This message will be very hard to actually see because the UI
       protects against entering unknown fiat codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
@@ -411,6 +411,7 @@
 
     <string name="asciiArrow"><![CDATA[=>]]></string>
 
+    <string name="TpNoRegistrations">No Trickle Pay registrations</string>
     <string name="TpRegDenied">Denied registration</string>
     <string name="TpRegAccepted">Accepted registration</string>
 

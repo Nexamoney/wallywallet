@@ -13,7 +13,7 @@
    sodipodi:docname="check.svg"
    width="101.97673"
    height="101.59499"
-   inkscape:version="0.92.3 (2405546, 2018-03-11)">
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -23,18 +23,18 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1183"
-     inkscape:window-height="909"
+     inkscape:window-width="2015"
+     inkscape:window-height="1425"
      id="namedview9"
      showgrid="false"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:zoom="1.4597884"
-     inkscape:cx="50.976485"
-     inkscape:cy="-58.956345"
-     inkscape:window-x="5924"
+     inkscape:zoom="8.2578102"
+     inkscape:cx="23.15979"
+     inkscape:cy="49.956029"
+     inkscape:window-x="5092"
      inkscape:window-y="30"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg2" />
@@ -92,6 +92,6 @@
   <path
      inkscape:connector-curvature="0"
      d="m 1.192803,60.718443 31.75913,39.683747 C 49.133943,64.886483 68.943113,32.213643 100.78392,1.192803 76.953543,15.671013 50.685923,43.163223 28.247453,77.182623 Z"
-     style="opacity:0.81999978;fill:#139d1c;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;fill-opacity:1"
+     style="opacity:0.81999978;fill:#139d1c;stroke:#592784;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;fill-opacity:1;stroke-opacity:1"
      id="path4068-3" />
 </svg>

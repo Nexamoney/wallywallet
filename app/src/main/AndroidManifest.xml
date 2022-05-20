@@ -15,9 +15,9 @@
         android:name=".WallyApp"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
-        android:icon="@mipmap/wallycash1"
+        android:icon="@mipmap/wallynexa"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/wallycash1_round"
+        android:roundIcon="@mipmap/wallynexa"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">

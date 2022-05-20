@@ -12,6 +12,7 @@ import android.text.TextWatcher
 import android.view.MenuItem
 import android.view.View
 import androidx.core.content.ContextCompat
+import bitcoinunlimited.libbitcoincash.uriToChain
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
@@ -46,7 +47,9 @@ fun String.toSet():Set<String>
 
 fun isCashAddrScheme(s: String): Boolean
 {
-    return (s == "BITCOINCASH") || (s == "bitcoincash") || (s == "bchtest") || (s == "BCHTEST") || (s == "bchreg") || (s == "BCHREG") || (s == "NEX") || (s == "nex")
+    val chain = uriToChain[s.lowercase()]
+    return chain != null
+    //return (s == "BITCOINCASH") || (s == "bitcoincash") || (s == "bchtest") || (s == "BCHTEST") || (s == "bchreg") || (s == "BCHREG") || (s == "NEX") || (s == "nex")
 }
 
 /** Do whatever you pass within the user interface context, synchronously */

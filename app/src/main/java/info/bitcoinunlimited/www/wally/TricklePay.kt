@@ -527,7 +527,8 @@ class TricklePayActivity : CommonNavActivity()
                         if (ver == SER_VERSION)
                             domains = bchser.demap({ it.deString() }, { TdppDomain(it) })
                     }
-                } catch (e: DataMissingException)
+                }
+                catch (e: DataMissingException)
                 {
                     LogIt.info("benign: no TDPP domains registered yet")
                 }
@@ -605,6 +606,10 @@ class TricklePayActivity : CommonNavActivity()
 
     fun analyzeCompleteAndSignTx(tx: Transaction, inputSatoshis: Long?, flags: Int?): TxAnalysisResults
     {
+        // Just explain why nothing will work
+        if (domains.size == 0)
+            displayError(R.string.TpNoRegistrations)
+
         val wal = getRelevantWallet()
 
         // Find out info about the outputs
@@ -637,6 +642,7 @@ class TricklePayActivity : CommonNavActivity()
             }
         }
 
+        // Complete and sign the transaction
         var completionException: Exception? = null
         try
         {
@@ -717,7 +723,12 @@ class TricklePayActivity : CommonNavActivity()
 
     fun handleTxAutopay(uri: Uri)
     {
+        // Just explain why nothing will work
+        if (domains.size == 0)
+            displayError(R.string.TpNoRegistrations)
+
         proposalUri = uri
+        proposedTx = null
 
         val txHex = uri.getQueryParameter("tx")
         if (txHex == null)
@@ -751,14 +762,18 @@ class TricklePayActivity : CommonNavActivity()
         }
         displayFragment(GuiTricklePayCustomTx)
 
-        // Ok now that we've displayed what we can, let's throw the problem.
-        if (analysis.completionException != null) throw analysis.completionException;
+        // Ok now that we've displayed what we can, let's show the problem.
+        if (analysis.completionException != null) displayException(analysis.completionException)
         // Or remember the completed transaction for accept/deny user confirmation.
-        proposedTx = tx
+        else proposedTx = tx
     }
 
     fun handleAssetRequest(uri: Uri)
     {
+        // Just explain why nothing will work
+        if (domains.size == 0)
+            displayError(R.string.TpNoRegistrations)
+
         parseCommonFields(uri)
 
         val scriptTemplateHex = uri.getQueryParameter("af")
@@ -933,9 +948,6 @@ class TricklePayActivity : CommonNavActivity()
     {
         LogIt.info("deny trickle pay registration")
         displayFragment(GuiTricklePayMain)
-        /* wallyApp?.let {
-            it.finishParent += 1
-        } */
         clearIntentAndFinish(notice = i18n(R.string.TpRegDenied))
     }
 
@@ -983,10 +995,12 @@ class TricklePayActivity : CommonNavActivity()
     fun onDenySpecialTx(view: View?)
     {
         LogIt.info("deny trickle pay special transaction")
+        // give back any inputs we grabbed to fulfill this tx
+        val wal = getRelevantWallet()
+        proposedTx?.let { wal.abortTransaction(it) }
+        proposedTx = null
+
         displayFragment(GuiTricklePayMain)
-        //wallyApp?.let {
-        //    it.finishParent += 1
-        //}
         clearIntentAndFinish(notice = i18n(R.string.TpTxDenied))
     }
 

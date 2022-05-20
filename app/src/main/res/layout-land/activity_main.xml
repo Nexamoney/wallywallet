@@ -267,7 +267,7 @@
 
     <Spinner
         android:id="@+id/sendAccount"
-        android:layout_width="129dp"
+        android:layout_width="105dp"
         android:layout_height="45dp"
         android:spinnerMode="dropdown"
         app:layout_constraintBottom_toBottomOf="@+id/sendButton"
@@ -285,7 +285,7 @@
     <EditText
         android:id="@+id/sendToAddress"
         android:layout_width="0dp"
-        android:layout_height="29dp"
+        android:layout_height="40dp"
         android:layout_weight="1"
         android:autofillHints="@string/sendToAddressHint"
         android:imeOptions="actionDone"
@@ -304,8 +304,8 @@
 
     <ImageButton
         android:id="@+id/readQRCodeButton"
-        android:layout_width="66dp"
-        android:layout_height="66dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:scaleType="centerInside"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.9"
@@ -315,8 +315,8 @@
 
     <ImageButton
         android:id="@+id/destAddrPasteButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginEnd="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/HomeAddressText"
@@ -348,7 +348,7 @@
     <Button
         android:id="@+id/sendButton"
         android:layout_width="wrap_content"
-        android:layout_height="45dp"
+        android:layout_height="wrap_content"
         android:onClick="onSendButtonClicked"
         android:text="@string/Send"
         android:textAlignment="center"
@@ -462,8 +462,8 @@
 
     <ImageButton
         android:id="@+id/qrFromGallery"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginEnd="5dp"
         android:onClick="onQRfromGalleryClicked"
         app:layout_constraintBottom_toBottomOf="@+id/destAddrPasteButton"

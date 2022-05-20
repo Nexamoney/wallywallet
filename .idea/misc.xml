@@ -3,8 +3,29 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.5975" />
+        <entry key="app/src/main/res/drawable/ani_syncing.xml" value="0.5725" />
+        <entry key="app/src/main/res/drawable/ic_check.xml" value="0.5975" />
+        <entry key="app/src/main/res/drawable/ic_dashboard_black_24dp.xml" value="0.5975" />
+        <entry key="app/src/main/res/drawable/ic_faucet_drip.xml" value="0.5975" />
+        <entry key="app/src/main/res/drawable/ic_gear.xml" value="0.5975" />
+        <entry key="app/src/main/res/drawable/ic_gyft_background.xml" value="0.5975" />
         <entry key="app/src/main/res/drawable/ic_help.xml" value="0.319" />
+        <entry key="app/src/main/res/drawable/ic_home.xml" value="0.5975" />
         <entry key="app/src/main/res/drawable/ic_invoice.xml" value="0.8166666666666667" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.5975" />
+        <entry key="app/src/main/res/drawable/ic_lock.xml" value="0.5975" />
+        <entry key="app/src/main/res/drawable/ic_notifications_black_24dp.xml" value="0.5975" />
+        <entry key="app/src/main/res/drawable/ic_person.xml" value="0.5975" />
+        <entry key="app/src/main/res/drawable/ic_plus.xml" value="0.5975" />
+        <entry key="app/src/main/res/drawable/ic_receivearrow.xml" value="0.5975" />
+        <entry key="app/src/main/res/drawable/ic_scanqricon.xml" value="0.5975" />
+        <entry key="app/src/main/res/drawable/ic_scanqricon2.xml" value="0.5975" />
+        <entry key="app/src/main/res/drawable/ic_sendarrow.xml" value="0.5975" />
+        <entry key="app/src/main/res/drawable/ic_shopping.xml" value="0.5975" />
+        <entry key="app/src/main/res/drawable/ic_syncing.xml" value="0.5975" />
+        <entry key="app/src/main/res/drawable/wallyNexa_background.xml" value="0.6" />
+        <entry key="app/src/main/res/drawable/wallyNexa_foreground.xml" value="0.6155" />
         <entry key="app/src/main/res/layout-land/activity_main.xml" value="0.6694395796847635" />
         <entry key="app/src/main/res/layout-sw600dp/activity_main.xml" value="0.54474043715847" />
         <entry key="app/src/main/res/layout/activity_alerts.xml" value="0.6100543478260869" />
@@ -38,6 +59,10 @@
         <entry key="app/src/main/res/layout/welcomef3.xml" value="0.6825181159420289" />
         <entry key="app/src/main/res/layout/welcomef4.xml" value="0.6825181159420289" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.7963541666666667" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/wallyNexa.xml" value="0.6005" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/wallyNexa_round.xml" value="0.6155" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/wallycash.xml" value="0.6" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/wallycash1_round.xml" value="0.6" />
         <entry key="app/src/main/res/xml/identity_preferences.xml" value="0.440625" />
       </map>
     </option>

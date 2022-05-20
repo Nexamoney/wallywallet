@@ -77,7 +77,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-cbor:$serializationVersion"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
-    implementation 'com.journeyapps:zxing-android-embedded:4.2.0'
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
 
     implementation "androidx.room:room-runtime:$room_version"
     implementation 'androidx.appcompat:appcompat:1.4.1'
@@ -110,7 +110,4 @@ dependencies {
 
     // for ActivityScenario
     androidTestImplementation "androidx.test:core-ktx:$ax_test_version"
-
-    // For test code that interfaces with a local bitcoind running json-rpc:
-    androidTestImplementation "wf.bitcoin:bitcoin-rpc-client:1.1.1"
 }
