@@ -18,7 +18,7 @@ import java.util.logging.Logger
 import kotlin.time.*
 import kotlin.time.TimeSource.Monotonic
 
-private val LogIt = Logger.getLogger("bitcoinunlimited.bitcoincom")
+private val LogIt = Logger.getLogger("BU.wally.bitcoincom")
 
 val POLL_INTERVAL = 30000
 

@@ -20,7 +20,7 @@ import kotlinx.android.synthetic.main.activity_shopping.*
 import kotlinx.android.synthetic.main.shopping_list_item.view.*
 import java.util.logging.Logger
 
-private val LogIt = Logger.getLogger("bitcoinunlimited.shoppingActivity")
+private val LogIt = Logger.getLogger("BU.wally.shoppingActivity")
 
 class ShoppingDestination(var buttonText: String = "", var explain: String = "", var url: String = "", var androidPackage: String = "", var icon: Int = 0)
 {

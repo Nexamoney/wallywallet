@@ -17,7 +17,7 @@ import java.math.BigDecimal
 
 import java.util.logging.Logger
 
-private val LogIt = Logger.getLogger("bitcoinunlimited.splitBillActivity")
+private val LogIt = Logger.getLogger("BU.wally.splitBillActivity")
 
 // TODO: allow a bill split to be shared via various means like SM or email
 

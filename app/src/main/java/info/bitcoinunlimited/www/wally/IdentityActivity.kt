@@ -20,7 +20,7 @@ import java.lang.Exception
 import java.net.URLEncoder
 import java.util.logging.Logger
 
-private val LogIt = Logger.getLogger("bu.IdentityActivity")
+private val LogIt = Logger.getLogger("BU.wally.IdentityActivity")
 
 open class IdentityException(msg: String, shortMsg: String? = null, severity: ErrorSeverity = ErrorSeverity.Abnormal) : BUException(msg, shortMsg, severity)
 

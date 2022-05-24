@@ -22,7 +22,7 @@ import java.time.format.FormatStyle
 import java.util.logging.Logger
 import kotlin.collections.ArrayList
 
-private val LogIt = Logger.getLogger("bitcoinunlimited.TxHistoryActivity")
+private val LogIt = Logger.getLogger("BU.wally.TxHistory")
 
 
 private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, private val domains: ArrayList<PaymentHistory>, private val account: Account) : RecyclerView.Adapter<TxHistoryRecyclerAdapter.TxHistoryDomainHolder>()

@@ -38,7 +38,7 @@ val TRICKLEPAY_RESULT = 27722
 val IMAGE_RESULT = 27723
 val READ_FILES_PERMISSION_RESULT = 27724
 
-private val LogIt = Logger.getLogger("bitcoinunlimited.commonUI")
+private val LogIt = Logger.getLogger("BU.wally.commonUI")
 
 fun String.toSet():Set<String>
 {

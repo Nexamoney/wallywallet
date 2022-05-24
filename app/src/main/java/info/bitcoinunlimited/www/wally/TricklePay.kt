@@ -47,7 +47,7 @@ const val TDPP_FLAG_NOPOST = 2
 const val TDPP_FLAG_NOSHUFFLE = 4
 const val TDPP_FLAG_PARTIAL = 8
 
-private val LogIt = Logger.getLogger("bu.TricklePay")
+private val LogIt = Logger.getLogger("BU.wally.TricklePay")
 
 // Must be top level for the serializer to handle it
 @Keep
@@ -770,10 +770,6 @@ class TricklePayActivity : CommonNavActivity()
 
     fun handleAssetRequest(uri: Uri)
     {
-        // Just explain why nothing will work
-        if (domains.size == 0)
-            displayError(R.string.TpNoRegistrations)
-
         parseCommonFields(uri)
 
         val scriptTemplateHex = uri.getQueryParameter("af")

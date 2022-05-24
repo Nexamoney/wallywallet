@@ -302,6 +302,8 @@
     </string>
     <!-- The maximum number of accounts that this wallet can show has been reached -->
     <string name="accountLimitReached">max accounts</string>
+    <string name="accountUnavailableDetails">Either no existing account matches this blockchain, or the account has not been unlocked.</string>
+    <string name="accountUnavailable">No unlocked compatible account</string>
 
     <!-- Error long strings -->
     <string name="sendMoreThanBalance">You are attempting to send more coins than you have available right now. If you

@@ -12,7 +12,7 @@ import androidx.preference.EditTextPreference
 import androidx.preference.PreferenceFragmentCompat
 import java.util.logging.Logger
 
-private val LogIt = Logger.getLogger("bitcoinunlimited.IdentityActivity")
+private val LogIt = Logger.getLogger("BU.wally.IdentityActivity")
 
 class IdentitySettings : AppCompatActivity()
 {

@@ -37,7 +37,7 @@ import java.util.*
 import java.util.logging.Logger
 import kotlin.concurrent.thread
 
-private val LogIt = Logger.getLogger("bitcoinunlimited.mainActivity")
+private val LogIt = Logger.getLogger("BU.wally.mainActivity")
 
 val uriToMbch = 1000.toBigDecimal()  // Todo allow other currencies supported by this wallet
 

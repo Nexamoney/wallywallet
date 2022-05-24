@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.activity_new_account.*
 import java.util.logging.Logger
 import kotlin.concurrent.thread
 
-private val LogIt = Logger.getLogger("bitcoinunlimited.NewAccount")
+private val LogIt = Logger.getLogger("BU.wally.NewAccount")
 
 //* how many addresses to search in a particular derivation path
 val DERIVATION_PATH_SEARCH_DEPTH = 10

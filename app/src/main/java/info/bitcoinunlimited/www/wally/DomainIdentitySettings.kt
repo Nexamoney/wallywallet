@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_domain_identity_settings.*
 import kotlinx.coroutines.runBlocking
 import java.util.logging.Logger
 
-private val LogIt = Logger.getLogger("bu.domainidentitysettings")
+private val LogIt = Logger.getLogger("BU.wally.domainidentitysettings")
 
 
 @kotlinx.coroutines.ExperimentalCoroutinesApi

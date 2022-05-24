@@ -17,7 +17,7 @@ import java.lang.Exception
 import java.net.URI
 import java.util.logging.Logger
 
-private val LogIt = Logger.getLogger("bu.shoppingSettingsActivity")
+private val LogIt = Logger.getLogger("BU.wally.shoppingSettingsActivity")
 
 val SHOPPING_DEST_ITEMS: String = "wally."
 

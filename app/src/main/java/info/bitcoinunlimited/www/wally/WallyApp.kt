@@ -3,16 +3,20 @@
 
 package info.bitcoinunlimited.www.wally
 
-import android.app.Activity
-import android.app.Application
+import android.app.*
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.net.wifi.WifiManager
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import bitcoinunlimited.libbitcoincash.*
 import bitcoinunlimited.libbitcoincash.appI18n
 import io.ktor.client.*
@@ -40,10 +44,12 @@ val LanHostIP = "192.168.1.100"
 
 val LAST_RESORT_BCH_ELECTRS = "bch2.bitcoinunlimited.net" // "electrs.bitcoinunlimited.info"
 
-private val LogIt = Logger.getLogger("bitcoinunlimited.app")
+const val NOTIFICATION_CHANNEL_ID = "n"
 
-open class PrimaryWalletInvalidException() : BUException("Primary wallet not defined or currently unavailable", "not ready", ErrorSeverity.Abnormal)
-open class WalletInvalidException() : BUException("Wallet nonexistent or unavailable", "not ready", ErrorSeverity.Abnormal)
+private val LogIt = Logger.getLogger("BU.wally.app")
+
+open class PrimaryWalletInvalidException() : BUException("Primary account not defined or currently unavailable", "No primary account", ErrorSeverity.Abnormal)
+open class WalletInvalidException() : BUException(i18n(R.string.accountUnavailableDetails), i18n(R.string.accountUnavailable), ErrorSeverity.Expected)
 
 var coinsCreated = false
 
@@ -101,8 +107,6 @@ fun EncodePIN(actName: String, pin: String, size: Int = 64): ByteArray
     val seed = skf.generateSecret(secretkey)
     return seed.encoded.slice(IntRange(0, size - 1)).toByteArray()
 }
-
-
 
 data class LongPollInfo(val proto: String, val hostPort: String, val cookie: String?, var active: Boolean = true)
 
@@ -170,13 +174,13 @@ class AccessHandler(val app: WallyApp)
             install(HttpTimeout) { requestTimeoutMillis = 60000 } // Long timeout because we don't expect a response right away; its a long poll
         }
 
-
+        var count = 0
         while (!done && lpInfo.active)
         {
             try
             {
 
-                val response: HttpResponse = client.get(url) {}
+                val response: HttpResponse = client.get(url + "&i=${count}") {}
                 val respText = response.bodyAsText()
                 connectProblems = 0
 
@@ -189,7 +193,10 @@ class AccessHandler(val app: WallyApp)
                 }
                 val ci = app.currentActivity
                 if (ci != null) ci.handleAnyIntent(respText)
-            } catch (e: ConnectException)  // network error?  TODO retry a few times
+                else LogIt.info("cannot handle long poll response, no current activity")
+                count += 1
+            }
+            catch (e: ConnectException)  // network error?  TODO retry a few times
             {
                 if (connectProblems > 500)
                 {
@@ -307,6 +314,7 @@ class Account(
         }
 
     }
+
 
     val visible: Boolean
         get()
@@ -650,6 +658,7 @@ class ActivityLifecycleHandler(private val app: WallyApp) : Application.Activity
 class WallyApp : Application()
 {
     var firstRun = false
+    var notifId = 0
 
     @kotlinx.coroutines.ExperimentalCoroutinesApi
     protected val coMiscCtxt: CoroutineContext = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
@@ -893,6 +902,25 @@ class WallyApp : Application()
         // wallet is saved in wallet constructor so no need to: ac.wallet.SaveBip44Wallet()
     }
 
+    private fun createNotificationChannel()
+    {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            val name = "Wally Wallet" //getString(R.string.channel_name)
+            val descriptionText = "Wally Wallet Notifications" // getString(R.string.channel_description)
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance).apply {
+                description = descriptionText
+            }
+            // Register the channel with the system
+            val notificationManager: NotificationManager =
+              applicationContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
     // Called when the application is starting, before any other application objects have been created.
     // Overriding this method is totally optional!
     override fun onCreate()
@@ -900,6 +928,7 @@ class WallyApp : Application()
         super.onCreate()
         notInUIscope = coMiscScope
         registerActivityLifecycleCallbacks(ActivityLifecycleHandler(this))  // track the current activity
+        createNotificationChannel()
 
         if (!RunningTheTests())  // If I'm running the unit tests, don't create any wallets since the tests will do so
         {
@@ -1010,4 +1039,22 @@ class WallyApp : Application()
         super.onLowMemory()
     }
 
+    fun notify(intent: Intent, content: String, activity: AppCompatActivity)
+    {
+        val pendingIntent = PendingIntent.getActivity(activity, 0, intent, 0)
+        var builder = NotificationCompat.Builder(activity, NOTIFICATION_CHANNEL_ID)
+          .setSmallIcon(R.drawable.ic_notifications_black_24dp)
+          .setContentTitle("Wally Wallet")
+          .setContentText(content)
+          .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+          .setContentIntent(pendingIntent)
+          .setAutoCancel(true)
+
+        with(NotificationManagerCompat.from(this))
+        {
+            val nid = notifId
+            notifId+=1
+            notify(nid, builder.build())
+        }
+    }
 }

@@ -32,7 +32,7 @@ val BCH_PREFER_NODE = "BCH.preferNode"
 
 var defaultAccount = "BCH"  // The default crypto I'm using
 
-private val LogIt = Logger.getLogger("bitcoinunlimited.settings")
+private val LogIt = Logger.getLogger("BU.wally.settings")
 
 fun Spinner.setSelection(v: String): Boolean
 {

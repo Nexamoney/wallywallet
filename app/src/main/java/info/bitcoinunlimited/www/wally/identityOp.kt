@@ -19,7 +19,7 @@ import bitcoinunlimited.libbitcoincash.*
 import kotlinx.android.synthetic.main.activity_identity.*
 import java.io.DataOutputStream
 
-private val LogIt = Logger.getLogger("bitcoinunlimited.IdentityOp")
+private val LogIt = Logger.getLogger("BU.wally.IdentityOp")
 
 val IDENTITY_URI_SCHEME = "bchidentity"
 

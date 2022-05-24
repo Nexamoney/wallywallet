@@ -24,7 +24,7 @@ import java.util.*
 import java.util.logging.Logger
 import kotlin.collections.ArrayList
 
-private val LogIt = Logger.getLogger("bitcoinunlimited.TxHistoryActivity")
+private val LogIt = Logger.getLogger("BU.wally.Alert")
 
 
 private class AlertRecyclerAdapter(private val activity: AlertActivity, private val alerts: ArrayList<Alert>) : RecyclerView.Adapter<AlertRecyclerAdapter.AlertDomainHolder>()
