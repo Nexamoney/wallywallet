@@ -1039,8 +1039,30 @@ class WallyApp : Application()
         super.onLowMemory()
     }
 
-    fun notify(intent: Intent, content: String, activity: AppCompatActivity)
+    /** Remove a notification that was installed using the notify() function */
+    fun denotify(intent: Intent)
     {
+        val nid = intent.getIntExtra("wallyNotificationId", -1)
+        if (nid != -1) denotify(nid)
+    }
+
+    /* Remove a notification */
+    fun denotify(id: Int)
+    {
+        with(NotificationManagerCompat.from(this))
+        {
+            cancel(id)
+        }
+    }
+
+    /** Create a notification of a pending intent */
+    fun notify(intent: Intent, content: String, activity: AppCompatActivity): Int
+    {
+        // Save the notification id into the Intent so we can remove it when needed
+        val nid = notifId
+        notifId+=1
+        intent.putExtra("wallyNotificationId", nid)
+
         val pendingIntent = PendingIntent.getActivity(activity, 0, intent, 0)
         var builder = NotificationCompat.Builder(activity, NOTIFICATION_CHANNEL_ID)
           .setSmallIcon(R.drawable.ic_notifications_black_24dp)
@@ -1052,9 +1074,8 @@ class WallyApp : Application()
 
         with(NotificationManagerCompat.from(this))
         {
-            val nid = notifId
-            notifId+=1
             notify(nid, builder.build())
+            return nid
         }
     }
 }

@@ -904,6 +904,7 @@ class TricklePayActivity : CommonNavActivity()
 
     fun clearIntentAndFinish(error: String? = null, notice: String? = null)
     {
+        wallyApp?.denotify(intent)
         if (error != null) intent.putExtra("error", error)
         if (error != null) intent.putExtra("notice", notice)
         setResult(Activity.RESULT_OK, intent)
