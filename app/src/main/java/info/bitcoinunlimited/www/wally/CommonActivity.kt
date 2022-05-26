@@ -19,13 +19,10 @@ import kotlinx.coroutines.*
 import java.lang.Exception
 import java.util.logging.Logger
 import android.app.Activity
-import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Rect
 import android.net.Uri
-import android.os.Build
 import android.util.TypedValue
 import android.view.KeyEvent
 import android.view.Menu
