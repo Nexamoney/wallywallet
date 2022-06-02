@@ -16,6 +16,7 @@ import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.widget.Adapter
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -28,6 +29,7 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -1462,6 +1464,7 @@ class MainActivity : CommonNavActivity()
     /** Allow the user to add/edit the send note */
     public fun onEditSendNoteButtonClicked(v: View): Boolean
     {
+        if (editSendNote == null) return false
         sendNote.setVisibility(View.GONE)
         editSendNote.setVisibility(View.VISIBLE)
         v.getRootView().invalidate()
@@ -1472,6 +1475,19 @@ class MainActivity : CommonNavActivity()
             showKeyboard()
             delay(300)  // Give time for the keyboard to be not shown as we move from some other focus and then be shown for us
             var l: KeyboardToggleListener? = null
+            editSendNote.setOnEditorActionListener { v, actionId, event ->
+             if (actionId == EditorInfo.IME_ACTION_DONE)
+             {
+                 val tmp = editSendNote.text.toString()
+                 sendNote.text = tmp
+                 editSendNote.setVisibility(View.GONE)
+                 sendNote.setVisibility(if (tmp == "") View.GONE else View.VISIBLE)
+                 l?.remove()
+                 hideKeyboard()
+                 false  // Sure I did something but I want the OS to do its thing as well (dispel the edit-only view if it put one up)
+             }
+                else false
+            }
             editSendNote.setOnFocusChangeListener(object: View.OnFocusChangeListener
             {
                 override fun onFocusChange(p0: View?, hasFocus: Boolean)

@@ -84,7 +84,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:label="identity"/>
-                <data android:scheme="bchidentity" />
+                <data android:scheme="nexid" />
             </intent-filter>
         </activity> <!-- hardwareAccelerated supposedly needed for zxing -->
         <activity

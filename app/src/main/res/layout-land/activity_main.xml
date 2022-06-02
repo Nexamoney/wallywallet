@@ -202,7 +202,7 @@
         android:text="approximately N USD"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="@+id/sendToAddress"
-        app:layout_constraintStart_toEndOf="@+id/sendCurrencyType"
+        app:layout_constraintStart_toEndOf="@+id/editSendNodeButton"
         app:layout_constraintTop_toBottomOf="@+id/sendToAddress" />
 
     <EditText
@@ -214,6 +214,8 @@
         android:ems="10"
         android:imeOptions="actionDone"
         android:inputType="numberDecimal"
+        android:text=" "
+        android:textAlignment="center"
         app:layout_constraintStart_toEndOf="@+id/amountText"
         app:layout_constraintTop_toBottomOf="@+id/sendAccount" />
 
@@ -470,5 +472,50 @@
         app:layout_constraintEnd_toStartOf="@+id/destAddrPasteButton"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_gallery" />
+
+    <ImageButton
+        android:id="@+id/editSendNodeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onEditSendNoteButtonClicked"
+        app:layout_constraintBottom_toTopOf="@+id/divider"
+        app:layout_constraintStart_toEndOf="@+id/sendCurrencyType"
+        app:layout_constraintTop_toTopOf="@+id/sendQuantity"
+        app:srcCompat="@android:drawable/ic_menu_edit" />
+
+    <EditText
+        android:id="@+id/editSendNote"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/editSendNoteHint"
+        android:importantForAutofill="no"
+        android:inputType="textPersonName"
+        android:lines="1"
+        android:text=""
+        android:textAlignment="center"
+        android:textSize="14sp"
+        android:visibility="gone"
+        android:imeOptions="actionDone"
+        app:layout_constraintBottom_toBottomOf="@+id/editSendNodeButton"
+        app:layout_constraintEnd_toStartOf="@+id/readQRCodeButton"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/editSendNodeButton"
+        app:layout_constraintTop_toBottomOf="@+id/approximatelyText" />
+
+    <TextView
+        android:id="@+id/sendNote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:autoSizeMaxTextSize="18sp"
+        android:autoSizeMinTextSize="10sp"
+        android:autoSizeStepGranularity="1px"
+        android:autoSizeTextType="uniform"
+        android:textAlignment="center"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@+id/readQRCodeButton"
+        app:layout_constraintHorizontal_bias="0.059"
+        app:layout_constraintStart_toEndOf="@+id/editSendNodeButton"
+        app:layout_constraintTop_toBottomOf="@+id/approximatelyText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

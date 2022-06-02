@@ -5,16 +5,6 @@ apply plugin: 'kotlinx-serialization'
 apply plugin: 'kotlin-kapt'
 
 android {
-    /*
-    signingConfigs {
-        debug {
-            storeFile file('/fast/bitcoin/wally/wally_android_cert.der')
-        }
-        release {
-            storeFile file('/fast/bitcoin/wally/wally_android_cert.der')
-        }
-    }
-     */
     compileSdkVersion 32
     defaultConfig {
         applicationId "info.bitcoinunlimited.www.wally"
@@ -76,7 +66,8 @@ dependencies {
     // implementation fileTree(dir: 'aars', include: ['*.aar'])
     // implementation fileTree(dir: 'libs', include: ['*.jar'])
     debugImplementation files('aars/libbitcoincash-debug.aar')  // locate this directory at: <repo_home>/app/aars/
-    releaseImplementation files('aars/libbitcoincash-release.aar')
+    //implementation files('aars/libbitcoincash-debug.aar')  // locate this directory at: <repo_home>/app/aars/
+    //releaseImplementation files('aars/libbitcoincash-release.aar')
     //implementation files('aars/libbitcoincash-debug.aar')  // locate this directory at: <repo_home>/app/aars/
     //implementation "info.bitcoinunlimited:libbitcoincash:0.2.1"
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.2'

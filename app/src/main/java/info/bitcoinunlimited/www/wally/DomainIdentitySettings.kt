@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.Switch
-import bitcoinunlimited.libbitcoincash.BCHidentityParams
+import bitcoinunlimited.libbitcoincash.nexidParams
 import bitcoinunlimited.libbitcoincash.IdentityDomain
 import bitcoinunlimited.libbitcoincash.launch
 
@@ -45,7 +45,7 @@ class DomainIdentitySettings : CommonNavActivity()
         }
         domainName.text = domain
 
-        for ((param, ui) in BCHidentityParams zip ui4params)
+        for ((param, ui) in nexidParams zip ui4params)
         {
             var b: Boolean? = null
             if (intent.hasExtra(param + "P")) b = intent.getBooleanExtra(param + "P", false)
@@ -98,7 +98,7 @@ class DomainIdentitySettings : CommonNavActivity()
         }
 
         val perms = mutableMapOf<String, Boolean>()
-        for ((param, ui) in BCHidentityParams zip ui4params)
+        for ((param, ui) in nexidParams zip ui4params)
         {
             perms[param] = ui.isChecked
         }

@@ -29,17 +29,17 @@ fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false):
     return LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)
 }
 
-fun BCHidentityUpdateIntentFromPerms(intent: Intent, perms: MutableMap<String, Boolean>)
+fun nexidUpdateIntentFromPerms(intent: Intent, perms: MutableMap<String, Boolean>)
 {
-    for (k in BCHidentityParams)  // Update new perms
+    for (k in nexidParams)  // Update new perms
     {
         intent.putExtra(k + "P", perms[k])
     }
 }
 
-fun BCHidentityUpdateIntentFromReqs(intent: Intent, reqs: MutableMap<String, String>)
+fun nexidUpdateIntentFromReqs(intent: Intent, reqs: MutableMap<String, String>)
 {
-    for (k in BCHidentityParams)  // Update new perms
+    for (k in nexidParams)  // Update new perms
     {
         intent.putExtra(k, reqs[k])
     }
@@ -83,8 +83,8 @@ class RecyclerAdapter(private val domains: ArrayList<IdentityDomain>) : Recycler
             id?.getPerms(perms)
 
             var intent = Intent(v.context, DomainIdentitySettings::class.java)
-            BCHidentityUpdateIntentFromPerms(intent, perms)
-            BCHidentityUpdateIntentFromReqs(intent, reqs)
+            nexidUpdateIntentFromPerms(intent, perms)
+            nexidUpdateIntentFromReqs(intent, reqs)
             intent.putExtra("domainName", this.id?.domain)
             (v.context as Activity).startActivityForResult(intent, IDENTITY_SETTINGS_RESULT)
         }
@@ -186,7 +186,7 @@ class IdentityActivity : CommonNavActivity()
 
                 LogIt.info("name: " + name)
 
-                var uri = "bchidentity://p2p?op=share&addr=" + destStr;
+                var uri = "nexid://p2p?op=share&addr=" + destStr;
                 if (name != null && name != "") uri = uri + "&name=" + URLEncoder.encode(name, "utf-8")
                 if (email != null && email != "") uri = uri + "&em=" + URLEncoder.encode(email, "utf-8")
                 if (socialmedia != null && socialmedia != "") uri = uri + "&sm=" + URLEncoder.encode(socialmedia, "utf-8")

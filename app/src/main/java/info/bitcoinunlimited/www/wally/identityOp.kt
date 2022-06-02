@@ -21,7 +21,7 @@ import java.io.DataOutputStream
 
 private val LogIt = Logger.getLogger("BU.wally.IdentityOp")
 
-val IDENTITY_URI_SCHEME = "bchidentity"
+val IDENTITY_URI_SCHEME = "nexid"
 
 open class IdentityOpException(msg: String, shortMsg: String? = null, severity: ErrorSeverity = ErrorSeverity.Abnormal) : BUException(msg, shortMsg, severity)
 
@@ -139,7 +139,7 @@ class IdentityOpActivity : CommonNavActivity()
                             {
                                 LogIt.info(k + " => " + v)
                                 intent.putExtra(k, v)
-                                if (k in BCHidentityParams)
+                                if (k in nexidParams)
                                     reqs[k] = v  // Set the information requirements coming from this domain
                             }
                             // Since the wallet has no info about this domain, assume all of the info permissions are false (or null) so no xxxP keys need to be put into the intent.
@@ -159,7 +159,7 @@ class IdentityOpActivity : CommonNavActivity()
 
     fun updatePermsFromIntent(intent: Intent)
     {
-        for (k in BCHidentityParams)  // Update new perms
+        for (k in nexidParams)  // Update new perms
         {
             if (intent.hasExtra(k + "P"))
             {
@@ -278,7 +278,7 @@ class IdentityOpActivity : CommonNavActivity()
                 val protocol = responseProtocol ?: iuri.protocol  // Prefer the protocol requested by the other side, otherwise use the same protocol we got the request from
 
                 val portStr = if ((port > 0) && (port != 80) && (port != 443)) ":" + port.toString() else ""
-                val chalToSign = h + portStr + "_bchidentity_" + op + "_" + challenge
+                val chalToSign = h + portStr + "_nexid_" + op + "_" + challenge
                 LogIt.info("challenge: " + chalToSign + " cookie: " + cookie)
 
                 if (challenge == null) // intent was previously cleared by someone throw IdentityException("challenge string was not provided", "no challenge")
@@ -380,7 +380,7 @@ class IdentityOpActivity : CommonNavActivity()
                         {
                             val perms = mutableMapOf<String, Boolean>()
                             idData.getPerms(perms)
-                            for (i in BCHidentityParams)
+                            for (i in nexidParams)
                             {
                                 if (attribs.containsKey(i))
                                 {
