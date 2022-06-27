@@ -107,7 +107,7 @@ class IdentityOpActivity : CommonNavActivity()
                 }
 
                 // If the primary account is locked do not proceed
-                if (act.locked ?: false)
+                if (act.locked)
                 {
                     // TODO
                     //displayError(R.string.NoAccounts)

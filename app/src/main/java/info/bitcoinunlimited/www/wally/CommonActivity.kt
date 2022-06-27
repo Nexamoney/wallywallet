@@ -97,7 +97,7 @@ open class KeyboardToggleListener(private val root: View, private val onKeyboard
     fun remove()
     {
         var iam = this
-        root?.viewTreeObserver?.run {
+        root.viewTreeObserver?.run {
             removeOnGlobalLayoutListener(iam)
         }
     }
@@ -176,7 +176,6 @@ open class CommonActivity : AppCompatActivity()
         super.onStart()
     }
 
-    @kotlinx.coroutines.ExperimentalCoroutinesApi
     override fun onDestroy()
     {
         coMiscCtxt.cancel()

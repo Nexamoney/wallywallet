@@ -61,6 +61,40 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/GuiAssetAcceptQ2"/>
 
+    <TextView
+        android:id="@+id/GuiAssetAcceptQ3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="4dp"
+        android:maxLines="5"
+        android:minLines="1"
+        android:singleLine="false"
+        android:text="@string/TpAssetMatches"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAssetHandledByAccount" />
+
+    <TextView
+        android:id="@+id/GuiAssetAcceptQ4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="4dp"
+        android:maxLines="5"
+        android:minLines="1"
+        android:singleLine="false"
+        android:text="@string/TpAssetInfoNotXfer"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAssetAcceptQ3" />
+
     <View
         android:id="@+id/divider2"
         android:layout_width="0dp"

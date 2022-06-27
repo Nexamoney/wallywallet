@@ -32,7 +32,7 @@
 
     <fragment
         android:id="@+id/GuiTricklePayMain"
-        android:name="info.bitcoinunlimited.www.wally.TricklePayEmptyFragment"
+        android:name="info.bitcoinunlimited.www.wally.TricklePayMainFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="gone"

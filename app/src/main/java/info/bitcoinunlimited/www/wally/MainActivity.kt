@@ -412,7 +412,7 @@ class MainActivity : CommonNavActivity()
     fun assignWalletsGuiSlots()
     {
         dbgAssertGuiThread()
-        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        // val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
         // val showDev = prefs.getBoolean(SHOW_DEV_INFO, false)
 
         data class UI(val ticker: TextView, val balance: TextView, val units: TextView, val unconf: TextView, val info: TextView?)
@@ -879,11 +879,11 @@ class MainActivity : CommonNavActivity()
             }
             else
             {
-                val chainSelector = pip!!.crypto
+                val chainSelector = pip.crypto
                 if (chainSelector == null)
                 {
                     paymentInProgress = null
-                    displayError(R.string.badCryptoCode, pip!!.toString())
+                    displayError(R.string.badCryptoCode, pip.toString())
                     return
                 }
                 val a = app
@@ -891,7 +891,7 @@ class MainActivity : CommonNavActivity()
                 val acts = a.accountsFor(chainSelector)
 
                 var amt: BigDecimal = BigDecimal.ZERO
-                val coin = if (acts.size == 0)
+                val coin: Account? = if (acts.size == 0)
                 {
                     paymentInProgress = null
                     displayNotice(R.string.badCryptoCode, chainToCurrencyCode[chainSelector] ?: "unknown currency")
@@ -1345,14 +1345,11 @@ class MainActivity : CommonNavActivity()
 
     override fun onSaveInstanceState(outState: Bundle)
     {
-        if (outState != null)
-        {
-            super.onSaveInstanceState(outState)
-            outState.putString("sendToAddress", sendToAddress.text.toString())
-            outState.putString("sendQuantity", sendQuantity.text.toString())
-            outState.putString("sendCurrencyType", (sendCurrencyType.selectedItem ?: defaultAccount) as String)
-            outState.putString("recvCoinType", (recvCoinType.selectedItem ?: defaultAccount) as String)
-        }
+        super.onSaveInstanceState(outState)
+        outState.putString("sendToAddress", sendToAddress.text.toString())
+        outState.putString("sendQuantity", sendQuantity.text.toString())
+        outState.putString("sendCurrencyType", (sendCurrencyType.selectedItem ?: defaultAccount) as String)
+        outState.putString("recvCoinType", (recvCoinType.selectedItem ?: defaultAccount) as String)
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -1411,6 +1408,7 @@ class MainActivity : CommonNavActivity()
         return true
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun onQRfromGalleryClicked(view: View)
     {
         onReadStoragePermissionGranted { openGalleryForImage() }
@@ -1465,56 +1463,67 @@ class MainActivity : CommonNavActivity()
     public fun onEditSendNoteButtonClicked(v: View): Boolean
     {
         if (editSendNote == null) return false
-        sendNote.setVisibility(View.GONE)
-        editSendNote.setVisibility(View.VISIBLE)
+        if (sendNote == null) return false
+        sendNote?.setVisibility(View.GONE)
+        editSendNote?.setVisibility(View.VISIBLE)
         v.getRootView().invalidate()
 
         asyncUI {
-            delay(100)
-            editSendNote.requestFocus()
-            showKeyboard()
-            delay(300)  // Give time for the keyboard to be not shown as we move from some other focus and then be shown for us
-            var l: KeyboardToggleListener? = null
-            editSendNote.setOnEditorActionListener { v, actionId, event ->
-             if (actionId == EditorInfo.IME_ACTION_DONE)
-             {
-                 val tmp = editSendNote.text.toString()
-                 sendNote.text = tmp
-                 editSendNote.setVisibility(View.GONE)
-                 sendNote.setVisibility(if (tmp == "") View.GONE else View.VISIBLE)
-                 l?.remove()
-                 hideKeyboard()
-                 false  // Sure I did something but I want the OS to do its thing as well (dispel the edit-only view if it put one up)
-             }
-                else false
-            }
-            editSendNote.setOnFocusChangeListener(object: View.OnFocusChangeListener
+            val esn = editSendNote
+            if (esn != null)
             {
-                override fun onFocusChange(p0: View?, hasFocus: Boolean)
-                {
-                    if (!hasFocus)
+                delay(100)
+                esn.requestFocus()
+                showKeyboard()
+                delay(300)  // Give time for the keyboard to be not shown as we move from some other focus and then be shown for us
+                var l: KeyboardToggleListener? = null
+                esn.setOnEditorActionListener { _, actionId, _ ->
+                    if (actionId == EditorInfo.IME_ACTION_DONE)
                     {
-                        val tmp = editSendNote.text.toString()
-                        sendNote.text = tmp
-                        editSendNote.setVisibility(View.GONE)
-                        sendNote.setVisibility(if (tmp == "") View.GONE else View.VISIBLE)
+                        val tmp = esn.text.toString()
+                        sendNote?.let {
+                            it.text = tmp
+                            it.setVisibility(if (tmp == "") View.GONE else View.VISIBLE)
+                        }
+                        esn.setVisibility(View.GONE)
+                        l?.remove()
+                        hideKeyboard()
+                        false  // Sure I did something but I want the OS to do its thing as well (dispel the edit-only view if it put one up)
+                    }
+                    else false
+                }
+                esn.setOnFocusChangeListener(object : View.OnFocusChangeListener
+                {
+                    override fun onFocusChange(p0: View?, hasFocus: Boolean)
+                    {
+                        if (!hasFocus)
+                        {
+                            val tmp = esn.text.toString()
+                            sendNote?.let {
+                                it.text = tmp
+                                it.setVisibility(if (tmp == "") View.GONE else View.VISIBLE)
+                            }
+                            esn.setVisibility(View.GONE)
+                            l?.remove()
+                        }
+                    }
+                })
+                l = onKeyboardToggle(esn, { shown: Boolean ->
+                    if (shown == false)
+                    {
+                        val tmp = esn.text.toString()
+                        sendNote?.let {
+                            it.text = tmp
+                            it.setVisibility(if (tmp == "") View.GONE else View.VISIBLE)
+                        }
+                        esn.setVisibility(View.GONE)
+                        hideKeyboard()
                         l?.remove()
                     }
-                }
-            })
-            l = onKeyboardToggle(editSendNote, { shown: Boolean ->
-                if (shown == false)
-                {
-                    val tmp = editSendNote.text.toString()
-                    sendNote.text = tmp
-                    editSendNote.setVisibility(View.GONE)
-                    sendNote.setVisibility(if (tmp == "") View.GONE else View.VISIBLE)
-                    hideKeyboard()
-                    l?.remove()
-                }
 
+                }
+                )
             }
-            )
         }
         return true
     }
@@ -1575,7 +1584,7 @@ class MainActivity : CommonNavActivity()
         displayNotice(R.string.Processing)
         hideKeyboard()
         sendQuantity.clearFocus()
-        val note:String? = if (editSendNote.visibility == View.VISIBLE) editSendNote.text.toString() else if (sendNote.visibility == View.VISIBLE) sendNote.text.toString() else null
+        val note:String? = if (editSendNote?.visibility == View.VISIBLE) editSendNote?.text.toString() else if (sendNote?.visibility == View.VISIBLE) sendNote?.text.toString() else null
 
         if (paymentInProgress != null)
         {
@@ -1695,9 +1704,13 @@ class MainActivity : CommonNavActivity()
             }
         }
 
-        sendNote.text = ""
-        sendNote.visibility = View.GONE
-        editSendNote.visibility = View.GONE
+        val sn = sendNote
+        if (sn != null)
+        {
+            sn.text = ""
+            sn.visibility = View.GONE
+        }
+        editSendNote?.let { it.visibility = View.GONE }
         return true
     }
 

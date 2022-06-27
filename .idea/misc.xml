@@ -15,6 +15,7 @@
         <entry key="app/src/main/res/drawable/ic_invoice.xml" value="0.8166666666666667" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.5975" />
         <entry key="app/src/main/res/drawable/ic_lock.xml" value="0.5975" />
+        <entry key="app/src/main/res/drawable/ic_niftyart_logo_plain.xml" value="0.5665" />
         <entry key="app/src/main/res/drawable/ic_notifications_black_24dp.xml" value="0.5975" />
         <entry key="app/src/main/res/drawable/ic_person.xml" value="0.5975" />
         <entry key="app/src/main/res/drawable/ic_plus.xml" value="0.5975" />
@@ -52,6 +53,7 @@
         <entry key="app/src/main/res/layout/trickle_pay_asset_request.xml" value="0.6328125" />
         <entry key="app/src/main/res/layout/trickle_pay_custom_tx.xml" value="0.6328125" />
         <entry key="app/src/main/res/layout/trickle_pay_empty.xml" value="0.6328125" />
+        <entry key="app/src/main/res/layout/trickle_pay_main.xml" value="0.7821557971014492" />
         <entry key="app/src/main/res/layout/trickle_pay_reg.xml" value="0.6328125" />
         <entry key="app/src/main/res/layout/tx_history_list_item.xml" value="0.5802083333333333" />
         <entry key="app/src/main/res/layout/welcomef1.xml" value="0.6328125" />

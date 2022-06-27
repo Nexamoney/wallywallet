@@ -165,7 +165,7 @@ class DomainIdentitySettings : CommonNavActivity()
         super.onBackPressed()
     }
 
-    fun onNextButton(view: View)
+    fun onNextButton(@Suppress("UNUSED_PARAMETER") view: View)
     {
         upsertDomainIdentity()
         intent.putExtra("repeat", "true") // Tell identityOp not to come back here

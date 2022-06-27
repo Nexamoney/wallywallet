@@ -128,7 +128,22 @@ class TricklePayEmptyFragment : Fragment()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        val ret = View(this.context)
+        val ret = inflater.inflate(R.layout.trickle_pay_empty, container, false)
+        return ret
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
+    {
+        super.onViewCreated(view, savedInstanceState)
+    }
+}
+
+class TricklePayMainFragment : Fragment()
+{
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+    {
+        val ret = inflater.inflate(R.layout.trickle_pay_empty, container, false)
         return ret
     }
 
@@ -246,11 +261,6 @@ class TricklePayCustomTxFragment : Fragment()
     {
         val u: Uri = uri ?: return
 
-        val chain = u.getQueryParameter("chain").let {
-            if (it == null) ""
-            // raise error, chain param is mandatory
-        }
-
         val topic = u.getQueryParameter("topic").let {
             if (it == null) ""
             else ":" + it
@@ -258,6 +268,8 @@ class TricklePayCustomTxFragment : Fragment()
         GuiTricklePayEntity.text = u.authority + topic
 
         val acc = tpActivity!!.getRelevantAccount()
+
+        GuiCustomTxBlockchain.text = chainToURI[acc.chain.chainSelector]
 
         val a = analysis
         if (a != null)
@@ -355,19 +367,15 @@ class TricklePayAssetRequestFragment : Fragment()
     {
         val u: Uri = uri ?: return
 
-        val chain = u.getQueryParameter("chain").let {
-            if (it == null) ""
-            // raise error, chain param is mandatory
-        }
-
         val topic = u.getQueryParameter("topic").let {
             if (it == null) ""
-            else ":" + it
+            else (":" + it)
         }
         GuiTricklePayEntity.text = u.authority + topic
 
         val acc = tpActivity!!.getRelevantAccount()
         GuiAssetHandledByAccount.text = acc.name
+        GuiAssetAcceptQ3.text = i18n(R.string.TpAssetMatches) % mapOf("num" to (assets?.size ?: 0).toString())
     }
 }
 
@@ -912,7 +920,7 @@ class TricklePayActivity : CommonNavActivity()
     }
 
     // Move the Ux data into the map
-    fun RegUxToMap()
+    fun regUxToMap()
     {
         val domain = TdppDomain(
           GuiTricklePayEntity.toString(), GuiTricklePayTopic.toString(), regCurrency, regAddress,
@@ -924,23 +932,23 @@ class TricklePayActivity : CommonNavActivity()
           GuiAutospendLimitDescription3.toString(),
           GuiEnableAutopay.isChecked
         )
+        domains[domain.domain + "/" + domain.topic] = domain
     }
 
     // Trickle pay registration handlers
+    @Suppress("UNUSED_PARAMETER")
     fun onAcceptTpReg(view: View?)
     {
         LogIt.info("accept trickle pay registration")
         displayFragment(GuiTricklePayMain)
-        /* wallyApp?.let {
-            it.finishParent += 1
-        } */
-        RegUxToMap()
+        regUxToMap()
         later {
             save()  // can't save in UI thread
             clearIntentAndFinish(notice = i18n(R.string.TpRegAccepted))
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun onDenyTpReg(view: View?)
     {
         LogIt.info("deny trickle pay registration")
@@ -949,6 +957,7 @@ class TricklePayActivity : CommonNavActivity()
     }
 
     // Trickle pay transaction handlers
+    @Suppress("UNUSED_PARAMETER")
     fun onSignSpecialTx(view: View?)
     {
         LogIt.info("accept trickle pay special transaction")
@@ -989,7 +998,7 @@ class TricklePayActivity : CommonNavActivity()
         }
     }
 
-    fun onDenySpecialTx(view: View?)
+    fun onDenySpecialTx(@Suppress("UNUSED_PARAMETER") view: View?)
     {
         LogIt.info("deny trickle pay special transaction")
         // give back any inputs we grabbed to fulfill this tx
@@ -1001,7 +1010,7 @@ class TricklePayActivity : CommonNavActivity()
         clearIntentAndFinish(notice = i18n(R.string.TpTxDenied))
     }
 
-    fun onAcceptAssetRequest(view: View?)
+    fun onAcceptAssetRequest(@Suppress("UNUSED_PARAMETER") view: View?)
     {
         LogIt.info("accepted asset request")
         displayNotice(R.string.Processing, time = 4900)
@@ -1042,7 +1051,7 @@ class TricklePayActivity : CommonNavActivity()
         // A successful connection to the server will auto-close this activity
     }
 
-    fun onDenyAssetRequest(view: View?)
+    fun onDenyAssetRequest(@Suppress("UNUSED_PARAMETER") view: View?)
     {
         LogIt.info("rejected asset request")
         displayFragment(GuiTricklePayMain)

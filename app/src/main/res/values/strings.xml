@@ -283,14 +283,14 @@
     protects against entering unknown crypto codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
      -->
     <string name="badCryptoCode">no unlocked account exists for this currency or blockchain</string>
-    <string name="badCryptoCodeDetails" format="false">Unknown or unavailable currency: %currency</string>
+    <string name="badCryptoCodeDetails" formatted="false">Unknown or unavailable currency: %currency</string>
     <!-- The fiat currency code (e.g USD, EUR, JPY etc) is not understood or handled by this wallet.  This message will be very hard to actually see because the UI
       protects against entering unknown fiat codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
     -->
     <string name="badCurrencyUnit">not currency</string>
     <!-- The account contains the wrong currency for this use -->
     <string name="incompatibleAccount">incorrect currency</string>
-    <string name="incompatibleAccountDetails">You selected to pay from an account containing %cryptoAct but %cryptoPay is needed</string>
+    <string name="incompatibleAccountDetails" formatted="false">You selected to pay from an account containing %cryptoAct but %cryptoPay is needed</string>
     <string name="detailsOfBadAmountFromIntent">The calling program supplied badly formatted number when providing the
         quantity to send. You will need to enter the quantity yourself
     </string>
@@ -380,6 +380,9 @@
     <string name="GiftCardButton">eGifter gift cards</string>
     <string name="GiftCardUrl">https://www.egifter.com</string>
     <string name="GiftCardAppPackage">com.groupgifting.android</string>
+    <string name="NFTs">Nonfungible Tokens (NFTs)</string>
+    <string name="ExplainNFTs">Create and trade unique images and digital representations of unique items</string>
+    <string name="NftUrl">http://niftyart.cash</string>
     <!--
     <string name="GiftCardButton">Gyft gift cards</string>
     <string name="GiftCardUrl">https://www.gyft.com</string>
@@ -399,6 +402,8 @@
     <string name="WebsiteUnavailable" formatted="false">Website unavailable</string>
 
     <!-- Trickle Pay -->
+    <string name="TpToBeDone">Your Trickle Pay connections will be displayed here</string>
+    <string name="TpHistoryTbd">Your Trickle Pay history will be displayed here</string>
     <string name="AcceptTpRegistration">Accept Registration From:</string>
     <string name="AcceptTpRegistrationTopic">Purpose:</string>
     <string name="TpMaxSpendHint">enter max auto-spend</string>
@@ -425,8 +430,11 @@
     <string name="SpecialTpTransactionFrom">Incoming Special Transaction From</string>
     <string name="IncompleteTpTransactionFrom">Incoming Firm Offer Request From</string>
     <string name="TpEntails">Entails</string>
-    <string name="TpAssetRequestFrom">Incoming Asset Request From</string>
+    <string name="TpOnBlockchain">On Blockchain</string>
+    <string name="TpAssetRequestFrom">Asset Information Request From</string>
     <string name="TpHandledByAccount">can be handled by your account</string>
+    <string name="TpAssetMatches" formatted="false">Information about %num assets that you own will be provided to this service.</string>
+    <string name="TpAssetInfoNotXfer">Accepting this request simply gives the service information about your ownership.  It does not authorize any transfers.</string>
     <string name="ForAFeeOf" formatted="false">including a fee of %fee %units</string>
     <string name="TpExchangingTokens">and exchanging tokens.</string>
     <string name="TpSendingTokens">and sending tokens.</string>

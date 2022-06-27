@@ -389,7 +389,7 @@ class NewAccount : CommonNavActivity()
         // Look in non-standard places for activity
         val BTCactivity =
           bracketActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.BTC, 0, 0, it) })
-        var BTCchangeActivity: HDActivityBracket? = null
+        var BTCchangeActivity: HDActivityBracket?
         var Bip44BTCMsg = if (BTCactivity != null)
         {
             BTCchangeActivity =
@@ -424,8 +424,7 @@ class NewAccount : CommonNavActivity()
 
     fun recoverAccountPhase2(name: String, flags: ULong, pin: String, secretWords: String, chainSelector: ChainSelector)
     {
-        val passphrase = ""  // TODO
-        // val secretSize = 64
+        // TODO Bip39 passphrase support
         if (secretWords.length > 0)
         {
             val words = secretWords.split(' ')
@@ -442,11 +441,9 @@ class NewAccount : CommonNavActivity()
                 displayError(R.string.invalidRecoveryPhrase)
                 return
             }
-
             app!!.recoverAccount(name, flags, pin, secretWords, chainSelector, earliestActivity, nonstandardActivity)
             finish()
         }
-
     }
 
 
