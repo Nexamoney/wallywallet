@@ -48,8 +48,6 @@ private class AlertRecyclerAdapter(private val activity: AlertActivity, private 
     class AlertDomainHolder(private val activity: AlertActivity, private val view: View) : RecyclerView.ViewHolder(view), View.OnClickListener
     {
         private var alert: Alert? = null
-        val sendIm = appContext?.let { ContextCompat.getDrawable(it.context, R.drawable.ic_sendarrow) }
-        val recvIm = appContext?.let { ContextCompat.getDrawable(it.context, R.drawable.ic_receivearrow) }
         var idx = 0
         var showDev: Boolean
 

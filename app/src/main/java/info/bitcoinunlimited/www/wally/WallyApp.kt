@@ -4,8 +4,6 @@
 package info.bitcoinunlimited.www.wally
 
 import android.app.*
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -17,8 +15,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import bitcoinunlimited.libbitcoincash.*
-import bitcoinunlimited.libbitcoincash.appI18n
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.*
@@ -28,8 +27,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.lang.Exception
-import java.lang.IllegalStateException
 import java.math.BigDecimal
 import java.net.ConnectException
 import java.security.spec.InvalidKeySpecException
@@ -39,6 +36,7 @@ import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 import kotlin.coroutines.CoroutineContext
 
+
 val SimulationHostIP = "10.0.2.2"
 val LanHostIP = "192.168.1.100"
 
@@ -47,9 +45,6 @@ val LAST_RESORT_BCH_ELECTRS = "bch2.bitcoinunlimited.net" // "electrs.bitcoinunl
 const val NOTIFICATION_CHANNEL_ID = "n"
 
 private val LogIt = Logger.getLogger("BU.wally.app")
-
-open class PrimaryWalletInvalidException() : BUException("Primary account not defined or currently unavailable", "No primary account", ErrorSeverity.Abnormal)
-open class WalletInvalidException() : BUException(i18n(R.string.accountUnavailableDetails), i18n(R.string.accountUnavailable), ErrorSeverity.Expected)
 
 var coinsCreated = false
 
@@ -683,6 +678,8 @@ class WallyApp : Application()
     val accessHandler = AccessHandler(this)
     var currentActivity: CommonNavActivity? = null
 
+    // Track notifications
+    val notifs: MutableList<Pair<Int, PendingIntent>> = mutableListOf()
 
     val primaryAccount: Account
         get()
@@ -767,6 +764,8 @@ class WallyApp : Application()
         }
         return ret.toTypedArray()
     }
+
+    fun accountsFor(currencyType: String) = accountsFor(currencyCodeToChain[currencyType]!!)
 
     fun accountsFor(chain: ChainSelector): MutableList<Account>
     {
@@ -1055,6 +1054,26 @@ class WallyApp : Application()
         }
     }
 
+    fun activeNotifications()
+    {
+        val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        nm.activeNotifications
+    }
+
+    fun getNotificationIntent()
+    {
+        val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        val notifs = nm.activeNotifications
+        if (notifs.size > 0)
+        {
+            val sbn = notifs[0]
+            val id = sbn.id
+            val n = sbn.notification
+            denotify(id)
+            n.contentIntent.send()
+        }
+    }
+
     /** Create a notification of a pending intent */
     fun notify(intent: Intent, content: String, activity: AppCompatActivity): Int
     {
@@ -1072,6 +1091,7 @@ class WallyApp : Application()
           .setContentIntent(pendingIntent)
           .setAutoCancel(true)
 
+        notifs.add(Pair(nid,pendingIntent))
         with(NotificationManagerCompat.from(this))
         {
             notify(nid, builder.build())

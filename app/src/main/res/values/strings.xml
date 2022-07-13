@@ -49,7 +49,17 @@
     <string name="of">of</string>
     <string name="choose">choose</string>
     <string name="accept">accept</string>
+    <string name="remove">remove</string>
+    <string name="confirm">confirm</string>
+    <string name="cancel">cancel</string>
+    <string name="removeAll">remove all</string>
+    <!-- done is like "yes" but more means "go to the next thing" rather than explicit acceptance of something.  The implication is that whatever is showing on the screen will be used.
+         Its modern UX philosophy of "why do we have to explicitly "save" everything on settings screens?  If you make a change, that change ought to be made, no additional button clicks needed."
+    -->
+    <string name="done">done</string>
     <string name="deny">deny</string>
+    <!-- Should the program ask the user before authorizing this, verses automatically accepting or automatically denying -->
+    <string name="ask">ask</string>
     <string name="badSignature">bad signature</string>
     <string name="unknownCurrency">unknown currency</string>
     <!-- wallet is currently working on doing whatever your button click asked it to do -->
@@ -58,12 +68,13 @@
     <string name="sending">sending</string>
     <string name="noAdditionalDetails">no additional details</string>
     <string name="devDebugInfoHeader">Developer Information</string>
+    <!-- User didn't enter any value into this field but that's ok -->
+    <string name="unspecified">unspecified</string>
+    <string name="removed">removed</string>
 
     <!-- Implication is "no charge" or "no cost" for a transaction -->
     <string name="nothing">nothing</string>
 
-    <!-- done is like "yes" but more means "go to the next thing" rather than acceptance of something -->
-    <string name="done">done</string>
     <string name="empty"></string>
     <string name="or">or</string>
     <string name="NotImplemented">Coming Soon</string>
@@ -108,6 +119,8 @@
     <!-- Home Page -->
     <string name="goodQR">QR readable</string>
     <string name="badQR">QR unreadable</string>
+    <string name="badImageQR">bad image QR. more...</string>
+    <string name="badImageQRhelp">Try taking a picture from farther away if you took a close up of the QR code.  The white border is part of the QR code, and you can get confusing moire patterns if photographing a screen up close.</string>
     <string name="unlock">unlock</string>
     <string name="share">share</string>
     <string name="Send">Send</string>
@@ -405,8 +418,10 @@
     <string name="TpToBeDone">Your Trickle Pay connections will be displayed here</string>
     <string name="TpHistoryTbd">Your Trickle Pay history will be displayed here</string>
     <string name="AcceptTpRegistration">Accept Registration From:</string>
+    <string name="EditTpRegistration">Settings for Entity:</string>
     <string name="AcceptTpRegistrationTopic">Purpose:</string>
     <string name="TpMaxSpendHint">enter max auto-spend</string>
+    <string name="TpAssetInfoRequest">asset information requests</string>
 
     <string name="TpMaxHeading">Autopay Limits</string>
     <string name="TpMaxPer">Each request</string>
@@ -421,7 +436,8 @@
     <string name="TpNoRegistrations">No Trickle Pay registrations</string>
     <string name="TpRegDenied">Denied registration</string>
     <string name="TpRegAccepted">Accepted registration</string>
-
+    <string name="TpRequestAutoDeny">Denied request (automatic)</string>
+    <string name="TpRequestAutoAccept">Accepted request (automatic)</string>
     <string name="TpTxDenied">Denied transaction</string>
     <string name="TpTxAccepted">Accepted transaction</string>
     <string name="TpAssetRequestDenied">Not sending assets</string>
@@ -436,9 +452,9 @@
     <string name="TpAssetMatches" formatted="false">Information about %num assets that you own will be provided to this service.</string>
     <string name="TpAssetInfoNotXfer">Accepting this request simply gives the service information about your ownership.  It does not authorize any transfers.</string>
     <string name="ForAFeeOf" formatted="false">including a fee of %fee %units</string>
-    <string name="TpExchangingTokens">and exchanging tokens.</string>
-    <string name="TpSendingTokens">and sending tokens.</string>
-    <string name="TpReceivingTokens">and receiving tokens.</string>
+    <string name="TpExchangingTokens" formatted="false">and exchanging tokens (sending %tokSnd, receiving %tokRcv).</string>
+    <string name="TpSendingTokens" formatted="false">and sending %tokSnd tokens.</string>
+    <string name="TpReceivingTokens" formatted="false">and receiving %tokRcv tokens.</string>
 
     <string name="title_activity_alert_history">Recent Messages</string>
 </resources>

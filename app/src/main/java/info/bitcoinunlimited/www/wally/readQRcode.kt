@@ -1,23 +1,41 @@
 package info.bitcoinunlimited.www.wally
 
-import com.google.zxing.*
-import com.google.zxing.common.BitMatrix
-import com.google.zxing.common.HybridBinarizer
-import com.google.zxing.client.*
-import com.google.zxing.client.android.*
-
-import android.graphics.BitmapFactory
-import android.graphics.Bitmap;
-import com.google.zxing.LuminanceSource;
-
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
+import android.graphics.*
+import android.graphics.Color.WHITE
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import com.google.zxing.*
+import com.google.zxing.common.HybridBinarizer
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.lang.Double.min
+import java.util.logging.Logger
+
+private val LogIt = Logger.getLogger("BU.wally.QR")
+
+
+// Modified from: https://stackoverflow.com/questions/4837715/how-to-resize-a-bitmap-in-android
+fun getResizedBitmap(bm: Bitmap, newWidth: Int, newHeight: Int): Bitmap?
+{
+    val width = bm.width
+    val height = bm.height
+    val scaleWidth = newWidth.toDouble() / width
+    val scaleHeight = newHeight.toDouble() / height
+    val scale = min(scaleWidth, scaleHeight).toFloat()
+    val matrix = Matrix()
+    matrix.postScale(scale, scale)
+    val resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false)
+    if (resizedBitmap != null) bm.recycle()
+    return resizedBitmap
+}
+
 
 class BitmapLuminance(val bmp: Bitmap):LuminanceSource(bmp.width, bmp.height)
 {
@@ -53,14 +71,68 @@ class BitmapLuminance(val bmp: Bitmap):LuminanceSource(bmp.width, bmp.height)
 fun readQRcode(imageName: String): String
 {
     val reader = MultiFormatReader()
-    //reader.setHints(mapOf())
+    reader.setHints(mapOf(DecodeHintType.POSSIBLE_FORMATS to listOf(BarcodeFormat.QR_CODE)))
 
-    val bmp: Bitmap = BitmapFactory.decodeFile(imageName)
+    var bmp: Bitmap = BitmapFactory.decodeFile(imageName)
+    if (bmp.height > 2000 || bmp.width > 2000)  // Keep things sane for the analysis code
+    {
+        bmp = getResizedBitmap(bmp, 2000, 2000) ?: bmp
+    }
     val lsource = BitmapLuminance(bmp)
     val binarizer = HybridBinarizer(lsource)
     val imbin = BinaryBitmap(binarizer)
     val result = reader.decode(imbin)
     return result.text
+
+    /* Attempt to wrap white around the image, but the moire is probably the real problem
+    try
+    {
+        val result = reader.decode(imbin)
+        return result.text
+    }
+    catch (e: com.google.zxing.NotFoundException)
+    {
+        // Its pretty common to forget that the white space around the QR code *IS* part of the QR code
+        // stick the bitmap in a field of white and try again
+        var bmp2 = Bitmap.createBitmap(bmp.width*3/2, bmp.height*3/2, bmp.config)
+        val cnvs = Canvas(bmp2)
+        cnvs.drawColor(WHITE)
+        cnvs.drawBitmap(bmp, (bmp.width / 4).toFloat(), (bmp.height / 4).toFloat(), Paint())
+
+        if (bmp2.height > 1000 || bmp2.width > 1000)  // Keep things sane for the analysis code
+        {
+            bmp2 = getResizedBitmap(bmp2, 1000, 1000) ?: bmp2
+        }
+
+        try
+        {
+            //val state = Environment.getExternalStorageState()
+            val file = File(appContext!!.context.getExternalFilesDirs(Environment.DIRECTORY_PICTURES)[0], "/testQRoutput.png")
+            //val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "/Camera/testQRoutput.png")
+            LogIt.info("Dumping file to: " + file.toString())
+
+            FileOutputStream(file).use { out ->
+                bmp2.compress(Bitmap.CompressFormat.PNG, 100, out) // bmp is your Bitmap instance
+                out.close()
+            }
+            val file2 = File(appContext!!.context.getExternalFilesDirs(Environment.DIRECTORY_PICTURES)[0], "/foo.txt")
+            FileOutputStream(file2).use { out ->
+                out.write("hello world".toByteArray())
+                out.close()
+            }
+        } catch (e: IOException)
+        {
+            e.printStackTrace()
+        }
+
+        val lsource = BitmapLuminance(bmp2)
+        val binarizer = HybridBinarizer(lsource)
+        val imbin = BinaryBitmap(binarizer)
+        val result = reader.decode(imbin)
+        return result.text
+    }
+
+     */
 }
 
 // from: https://handyopinion.com/get-path-from-uri-in-kotlin-android/

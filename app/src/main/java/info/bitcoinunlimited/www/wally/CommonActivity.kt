@@ -3,35 +3,29 @@
 package info.bitcoinunlimited.www.wally
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.Intent
+import android.content.res.Resources
+import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.View
+import android.util.TypedValue
+import android.view.*
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import bitcoinunlimited.libbitcoincash.*
-import bitcoinunlimited.libbitcoincash.ErrorSeverity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.*
-import java.lang.Exception
-import java.util.logging.Logger
-import android.app.Activity
-import android.content.Intent
-import android.content.res.Resources
-import android.graphics.Rect
-import android.net.Uri
-import android.util.TypedValue
-import android.view.KeyEvent
-import android.view.Menu
-import android.view.ViewTreeObserver
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import bitcoinunlimited.libbitcoincash.handleThreadException
 import java.time.Instant
 import java.util.concurrent.Executors
+import java.util.logging.Logger
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.roundToInt
 
@@ -167,8 +161,8 @@ open class CommonActivity : AppCompatActivity()
                 startActivity(intent)
             }
         }
-
     }
+
 
     override fun onStart()
     {
@@ -184,6 +178,20 @@ open class CommonActivity : AppCompatActivity()
         super.onDestroy()
 
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean
+    {
+        when (item.getItemId())
+        {
+            android.R.id.home ->
+            {
+                onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
 
     fun displayException(exc: Exception)
     {

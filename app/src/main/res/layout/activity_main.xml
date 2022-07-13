@@ -298,8 +298,8 @@
 
     <ImageView
         android:id="@+id/GuiReceiveQRCode"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
         android:layout_marginStart="10dp"
         android:contentDescription="@string/receiveAddressQRCode"
         android:padding="0px"
@@ -380,23 +380,24 @@
         android:id="@+id/readQRCodeButton"
         android:layout_width="66dp"
         android:layout_height="66dp"
+        android:layout_marginBottom="8dp"
         android:contentDescription="@string/ScanQRCodeButton"
         android:scaleType="centerCrop"
-        app:layout_constraintBottom_toTopOf="@+id/balanceTitle"
+        app:layout_constraintBottom_toTopOf="@+id/nav_view"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/GuiReceiveQRCode"
-        app:layout_constraintTop_toTopOf="@+id/GuiReceiveQRCode"
+        app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/ic_scanqricon2" />
 
     <ImageButton
         android:id="@+id/destAddrPasteButton"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
         android:layout_marginEnd="4dp"
         android:contentDescription="@string/PasteDestinationAddressButton"
-        app:layout_constraintBottom_toBottomOf="@+id/HomeAddressText"
+        app:layout_constraintBottom_toBottomOf="@+id/readQRCodeButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/HomeAddressText"
+        app:layout_constraintStart_toEndOf="@+id/readQRCodeButton"
+        app:layout_constraintTop_toTopOf="@+id/readQRCodeButton"
         app:srcCompat="?attr/actionModePasteDrawable" />
 
     <View
@@ -581,12 +582,13 @@
 
     <ImageButton
         android:id="@+id/qrFromGallery"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="4dp"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
         android:onClick="onQRfromGalleryClicked"
-        app:layout_constraintEnd_toStartOf="@+id/destAddrPasteButton"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/readQRCodeButton"
+        app:layout_constraintEnd_toStartOf="@+id/readQRCodeButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/readQRCodeButton"
         app:srcCompat="@android:drawable/ic_menu_gallery" />
 
     <ImageButton

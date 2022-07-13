@@ -53,15 +53,6 @@ val MAX_ACCOUNTS = 3 // What are the maximum # of accounts this wallet GUI can s
 
 var SEND_ALL_TEXT = "all"  // Fixed up in onCreate when we have access to strings
 
-
-open class PasteUnintelligibleException() : BUException("", i18n(R.string.pasteUnintelligible), ErrorSeverity.Expected)
-open class NotUriException() : PasteUnintelligibleException()
-open class PasteEmptyException() : BUException("", i18n(R.string.pasteIsEmpty), ErrorSeverity.Abnormal)
-open class BadAmountException(msg: Int) : BUException(i18n(msg), i18n(R.string.badAmount))
-open class BadCryptoException(msg: Int = -1) : BUException(i18n(msg), i18n(R.string.badCryptoCode))
-open class BadUnitException(msg: Int = -1) : BUException(i18n(msg), i18n(R.string.badCurrencyUnit))
-open class UnavailableException(msg: Int = -1) : BUException(i18n(msg), i18n(R.string.unavailable))
-
 var appContext: PlatformContext? = null
 
 class MainActivityModel
@@ -574,6 +565,11 @@ class MainActivity : CommonNavActivity()
         mainActivityModel.lastRecvCoinType?.let { recvCoinType.setSelection(it) }
         mainActivityModel.lastSendCurrencyType?.let { sendCurrencyType.setSelection(it) }
 
+        // If there are any notifications waiting we need to show them when the app resumes,
+        // but not if a different intent was launched (that's not just hey start the app)
+        val tnt = intent
+        if (tnt == null || tnt.action == Intent.ACTION_MAIN) wallyApp?.getNotificationIntent()
+
         // Look in the paste buffer
         if (sendToAddress.text.toString() == "")  // App started or resumed with nothing in the send field -- let's see if there's something in the paste buffer we can auto-populate
         {
@@ -747,7 +743,6 @@ class MainActivity : CommonNavActivity()
         val item = clip.getItemAt(0)
         val text = item.text.toString().trim()
         if (text == lastPaste) return  // Already handled it
-
         handleInputedText(text)
     }
 
@@ -757,29 +752,32 @@ class MainActivity : CommonNavActivity()
     {
         if (text != "")
         {
-            // Clean out an old payment protocol if you are pasting a new send in
-            paymentInProgress = null
-            updateSendBasedOnPaymentInProgress()
+            if (!handleAnyIntent(text))
+              {
+                  // Clean out an old payment protocol if you are pasting a new send in
+                  paymentInProgress = null
+                  updateSendBasedOnPaymentInProgress()
 
-            lastPaste = text
-            if (text.contains('?'))  // BIP21 or BIP70
-            {
-                for (c in accounts.values)
-                {
-                    if (text.contains(c.chain.uriScheme))  // TODO: prefix not contains
-                    {
-                        handleSendURI(text)
-                        return
-                    }
-                }
-            }
-            else
-            {
-                val a = PayAddress(text) // attempt to convert into an address to trigger an exception and a subsequent UI error if its bad
-                laterUI { updateSendAddress(a) }
-                return
-            }
-            throw PasteUnintelligibleException()
+                  lastPaste = text
+                  if (text.contains('?'))  // BIP21 or BIP70
+                  {
+                      for (c in accounts.values)
+                      {
+                          if (text.contains(c.chain.uriScheme))  // TODO: prefix not contains
+                          {
+                              handleSendURI(text)
+                              return
+                          }
+                      }
+                  }
+                  else
+                  {
+                      val a = PayAddress(text) // attempt to convert into an address to trigger an exception and a subsequent UI error if its bad
+                      laterUI { updateSendAddress(a) }
+                      return
+                  }
+                  throw PasteUnintelligibleException()
+              }
         }
         else
         {
@@ -1266,9 +1264,13 @@ class MainActivity : CommonNavActivity()
                             displayNotice(R.string.goodQR, qrdata)
                             handleInputedText(qrdata)
                         }
+                        catch (e: com.google.zxing.NotFoundException)
+                        {
+                            displayError(R.string.badImageQR, R.string.badImageQRhelp)
+                        }
                         catch(e: Exception)
                         {
-                            displayException(R.string.badQR, e)
+                            displayException(R.string.badImageQR, e)
                         }
                     }
                 }
@@ -1287,6 +1289,17 @@ class MainActivity : CommonNavActivity()
                     displayNotice(i18n(R.string.scanSuccess), "QR text: " + QRstring, 2000)
                     // TODO parse other QR code formats
                     LogIt.info(sourceLoc() + ": QR result: " + QRstring)
+                    try
+                    {
+                        handleInputedText(QRstring)
+                    }
+                    catch (e: Exception)  // I can't handle it as plain text
+                    {
+                        LogIt.info(sourceLoc() + ": QR contents invalid: " + QRstring)
+                        displayError(R.string.badAddress, QRstring)
+                    }
+
+                    /*  Replaced by just handleInputedText, kept for reference temporarily
                     if (!handleAnyIntent(QRstring))
                     {
                         try
@@ -1304,6 +1317,7 @@ class MainActivity : CommonNavActivity()
                             }
                         }
                     }
+                     */
                 }
                 return
             }

@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../layout/custom_preview.xml" value="0.2760791366906475" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.5975" />
         <entry key="app/src/main/res/drawable/ani_syncing.xml" value="0.5725" />
         <entry key="app/src/main/res/drawable/ic_check.xml" value="0.5975" />
@@ -50,10 +51,11 @@
         <entry key="app/src/main/res/layout/settings_blank_activity.xml" value="0.6328125" />
         <entry key="app/src/main/res/layout/shopping_list_item.xml" value="0.6328125" />
         <entry key="app/src/main/res/layout/shopping_settings_list_item.xml" value="0.6328125" />
+        <entry key="app/src/main/res/layout/tp_domain_list_item.xml" value="0.4817708333333333" />
         <entry key="app/src/main/res/layout/trickle_pay_asset_request.xml" value="0.6328125" />
         <entry key="app/src/main/res/layout/trickle_pay_custom_tx.xml" value="0.6328125" />
         <entry key="app/src/main/res/layout/trickle_pay_empty.xml" value="0.6328125" />
-        <entry key="app/src/main/res/layout/trickle_pay_main.xml" value="0.7821557971014492" />
+        <entry key="app/src/main/res/layout/trickle_pay_main.xml" value="0.34877384196185285" />
         <entry key="app/src/main/res/layout/trickle_pay_reg.xml" value="0.6328125" />
         <entry key="app/src/main/res/layout/tx_history_list_item.xml" value="0.5802083333333333" />
         <entry key="app/src/main/res/layout/welcomef1.xml" value="0.6328125" />

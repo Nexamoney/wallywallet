@@ -31,8 +31,8 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <fragment
-        android:id="@+id/GuiTricklePayMain"
-        android:name="info.bitcoinunlimited.www.wally.TricklePayMainFragment"
+        android:id="@+id/GuiTricklePayEmpty"
+        android:name="info.bitcoinunlimited.www.wally.TricklePayEmptyFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="gone"
@@ -42,9 +42,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
-        <fragment
-        android:id="@+id/GuiTricklePayEmpty"
-        android:name="info.bitcoinunlimited.www.wally.TricklePayEmptyFragment"
+    <fragment
+        android:id="@+id/GuiTricklePayMain"
+        android:name="info.bitcoinunlimited.www.wally.TricklePayMainFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="gone"

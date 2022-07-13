@@ -6,6 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".TricklePayRegFragment">
 
+    <Button
+        android:id="@+id/TpAssetInfoRequestHandlingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:onClick="onChangeTpAssetInfoHandling"
+        android:text="@string/accept"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiTricklePayTopic" />
+
     <TextView
         android:id="@+id/GuiAcceptRegTitle"
         android:layout_width="0dp"
@@ -31,15 +42,16 @@
 
     <TextView
         android:id="@+id/GuiTricklePayEntity"
+        android:layout_width="0dp"
+        android:layout_height="32sp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
         android:autoSizeMaxTextSize="32sp"
         android:autoSizeMinTextSize="16sp"
         android:autoSizeStepGranularity="1sp"
         android:autoSizeTextType="uniform"
         android:textAlignment="center"
-        android:layout_width="0dp"
-        android:layout_height="32sp"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="4dp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -61,6 +73,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/GuiTopicHeading" />
 
+    <CheckBox
+        android:id="@+id/GuiEnableAutopay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/TpEnableAutopay"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.75"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
     <TextView
         android:id="@+id/textView4"
         android:layout_width="0dp"
@@ -72,7 +96,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GuiEnableAutopay" />
+        app:layout_constraintTop_toBottomOf="@+id/TpAssetInfoRequestHandlingButton" />
 
     <TextView
         android:id="@+id/GuiCustomTxCost"
@@ -91,7 +115,6 @@
         android:id="@+id/GuiAutospendLimitEntry0"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
         android:ems="10"
         android:hint="@string/TpMaxSpendHint"
@@ -101,7 +124,7 @@
         android:minLines="1"
         android:singleLine="true"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/GuiEnableAutopay" />
 
     <TextView
         android:id="@+id/GuiAutospendLimitDescription0"
@@ -243,40 +266,73 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/GuiAutospendLimitDescription3" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="8dp"
+        >
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="0.1" >
+        </Space>
     <Button
-        android:id="@+id/GuiTpAssetRequestAccept"
+        android:id="@+id/GuiTpRegisterRequestAccept"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:onClick="onAcceptTpReg"
         android:text="@string/accept"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/DeleteButton"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
-
+        android:layout_weight="1"
+/>
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="0.25" >
+        </Space>
+        <Button
+            android:id="@+id/GuiTpOkRegisterRequest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:onClick="onDoneTp"
+            android:text="@string/done"
+            android:layout_weight="1"
+            />
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="0.25" >
+        </Space>
     <Button
-        android:id="@+id/DeleteButton"
+        android:id="@+id/GuiTpDenyRegisterRequest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:onClick="onDenyTpReg"
         android:text="@string/deny"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/GuiTpAssetRequestAccept" />
+        android:layout_weight="1"
+/>
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="0.1" >
+        </Space>
+    </LinearLayout>
 
-    <CheckBox
-        android:id="@+id/GuiEnableAutopay"
+    <TextView
+        android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/TpEnableAutopay"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GuiTricklePayTopic" />
+        android:text="@string/TpAssetInfoRequest"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/TpAssetInfoRequestHandlingButton"
+        app:layout_constraintStart_toEndOf="@+id/TpAssetInfoRequestHandlingButton"
+        app:layout_constraintTop_toTopOf="@+id/TpAssetInfoRequestHandlingButton" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
