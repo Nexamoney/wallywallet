@@ -10,8 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.welcomef3.*
 
-var wallyApp: WallyApp? = null
-
 class Welcome : CommonNavActivity()
 {
     var walletCreated = false
@@ -24,7 +22,6 @@ class Welcome : CommonNavActivity()
         val app = (getApplication() as WallyApp)
         app.firstRun = false  // Stops jumping back into the welcome if we've left it
 
-        wallyApp = (getApplication() as WallyApp)
         //loadFragment(WelcomeFragment1())
     }
 
@@ -112,7 +109,7 @@ class WelcomeFragment3 : Fragment()
         var wordSeeds: String = ""
         for (c in accounts)
         {
-            if ((c.value.currencyCode) == PRIMARY_WALLET)
+            if ((c.value.currencyCode) == PRIMARY_CRYPTO_CODE)
             {
                 wordSeeds = c.value.wallet.secretWords + "\n"
                 break

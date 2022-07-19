@@ -166,7 +166,7 @@
     <!-- This is a warning or informational message.  It says that the user is sending recently received coins, which is perfectly OK but slightly increases the chance of payment failure -->
     <string name="moreThanConfirmedAvailable">"(more than confirmed)"</string>
     <string name="actuallySendingT" formatted="false">actually sending %qty %crypto</string>
-    <string name="copied">...copied to clipboard...</string>
+    <string name="copiedToClipboard">...copied to clipboard...</string>
     <string name="scanFailed">scan failed</string>
     <string name="scanSuccess">scan succeeded</string>
     <string name="sendSuccess">send successful</string>

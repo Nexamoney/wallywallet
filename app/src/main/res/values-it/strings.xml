@@ -77,7 +77,7 @@
     <string name="moreThanAvailable">"(ammontare non disponibile)"</string>
     <string name="moreThanConfirmedAvailable">"(ammontare non spendibile)"</string>
     <string name="actuallySendingT" formatted="false">effettivamente spendendo %qty %crypto</string>
-    <string name="copied">...copiata nell\'area appunti...</string>
+    <string name="copiedToClipboard">...copiata nell\'area appunti...</string>
     <string name="scanFailed">lettura fallita</string>
     <string name="sendSuccess">spedito con successo</string>
 

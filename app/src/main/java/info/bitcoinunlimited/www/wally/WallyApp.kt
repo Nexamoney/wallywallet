@@ -36,8 +36,6 @@ import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 import kotlin.coroutines.CoroutineContext
 
-
-val SimulationHostIP = "10.0.2.2"
 val LanHostIP = "192.168.1.100"
 
 val LAST_RESORT_BCH_ELECTRS = "bch2.bitcoinunlimited.net" // "electrs.bitcoinunlimited.info"
@@ -67,12 +65,14 @@ else
 val ChainSelectorToSupportedBlockchains = SupportedBlockchains.entries.associate { (k, v) -> v to k }
 
 // What is the default wallet and blockchain to use for most functions (like identity)
-val PRIMARY_WALLET = if (REG_TEST_ONLY) "mRBCH" else "mBCH"
+val PRIMARY_CRYPTO_CODE = if (REG_TEST_ONLY) "RNEX" else "NEX"
 
 /** incompatible changes, extra fields added, fields and field sizes are the same, but content may be extended (that is, addtl bits in enums) */
 val WALLY_DATA_VERSION = byteArrayOf(1, 0, 0)
 
 var walletDb: KvpDatabase? = null
+var wallyApp: WallyApp? = null
+
 
 const val ACCOUNT_FLAG_NONE = 0UL
 const val ACCOUNT_FLAG_HIDE_UNTIL_PIN = 1UL
@@ -684,9 +684,10 @@ class WallyApp : Application()
     val primaryAccount: Account
         get()
         {
-            val prim = accounts[PRIMARY_WALLET]
+            // Look for an account that's just named the same as the cryptocurrency
+            val prim = accounts[PRIMARY_CRYPTO_CODE]
             if (prim != null) return prim
-            LogIt.info("Num accounts: " + accounts.size)
+            //LogIt.info("Num accounts: " + accounts.size)
 
             // return the first Nexa wallet
             for (i in accounts.values)
@@ -827,7 +828,7 @@ class WallyApp : Application()
         db.set("wallyDataVersion", WALLY_DATA_VERSION)
     }
 
-    fun newAccount(name: String, flags: ULong, pin: String, secretWords: String?, chainSelector: ChainSelector)
+    fun newAccount(name: String, flags: ULong, pin: String, chainSelector: ChainSelector)
     {
         dbgAssertNotGuiThread()
         val ctxt = PlatformContext(applicationContext)
@@ -926,6 +927,9 @@ class WallyApp : Application()
     {
         super.onCreate()
         notInUIscope = coMiscScope
+        appResources = getResources()
+        wallyApp = this
+
         registerActivityLifecycleCallbacks(ActivityLifecycleHandler(this))  // track the current activity
         createNotificationChannel()
 
@@ -936,11 +940,11 @@ class WallyApp : Application()
                 LogIt.info(sourceLoc() + " Wally Wallet App Started")
                 val ctxt = PlatformContext(applicationContext)
                 walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-                appResources = getResources()
+
                 val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
 
-                val NexaExclusiveNode: String? = if (prefs.getBoolean(BCH_EXCLUSIVE_NODE_SWITCH, false)) prefs.getString(BCH_EXCLUSIVE_NODE, null) else null
-                val NexaPreferredNode: String? = if (prefs.getBoolean(BCH_PREFER_NODE_SWITCH, false)) prefs.getString(BCH_PREFER_NODE, null) else null
+                val NexaExclusiveNode: String? = if (prefs.getBoolean(NEXA_EXCLUSIVE_NODE_SWITCH, false)) prefs.getString(NEXA_EXCLUSIVE_NODE, null) else null
+                val NexaPreferredNode: String? = if (prefs.getBoolean(NEXA_PREFER_NODE_SWITCH, false)) prefs.getString(NEXA_PREFER_NODE, null) else null
 
                 if (REG_TEST_ONLY)  // If I want a regtest only wallet for manual debugging, just create it directly
                 {

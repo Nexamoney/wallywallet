@@ -467,6 +467,8 @@ class NewAccount : CommonNavActivity()
         }
 
         val flags: ULong = if (PinHidesAccount.isChecked()) ACCOUNT_FLAG_HIDE_UNTIL_PIN else ACCOUNT_FLAG_NONE
+        // Any time secret words are given, this is an account recovery -- we need to check for prior activity.
+        // If there are no given secret words, this is a probabilistically completely new account
         if (secretWords.length > 0)
         {
             processingThread = thread(true, true, null, "newAccount") { recoverAccountPhase2(name, flags, pin, secretWords, chainSelector) }
@@ -474,7 +476,7 @@ class NewAccount : CommonNavActivity()
         else
         {
             later {
-                app!!.newAccount(name, flags, pin, secretWords, chainSelector)
+                app!!.newAccount(name, flags, pin, chainSelector)
                 finish()
             }  // Can't happen in GUI thread
             // TODO some OK feedback

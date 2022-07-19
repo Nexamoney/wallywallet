@@ -29,7 +29,6 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -424,7 +423,7 @@ class MainActivity : CommonNavActivity()
             var uiSet = false
             if (ac.visible)
             {
-                val curLoc = if (!foundAPrimary && (ac.currencyCode == PRIMARY_WALLET))
+                val curLoc = if (!foundAPrimary && (ac.currencyCode == PRIMARY_CRYPTO_CODE))
                 {
                     foundAPrimary = true; 0
                 }
@@ -465,6 +464,11 @@ class MainActivity : CommonNavActivity()
             sendAccount?.setAdapter(coinAa)
             val coinRecvAa = ArrayAdapter(this, android.R.layout.simple_spinner_item, coinSpinData)
             recvCoinType?.setAdapter(coinRecvAa)
+
+            // Restore GUI elements to their prior values
+            mainActivityModel.lastSendCoinType?.let { sendAccount.setSelection(it) }
+            mainActivityModel.lastRecvCoinType?.let { recvCoinType.setSelection(it) }
+            mainActivityModel.lastSendCurrencyType?.let { sendCurrencyType.setSelection(it) }
         }
     }
 
@@ -487,10 +491,6 @@ class MainActivity : CommonNavActivity()
 
                 assignWalletsGuiSlots()
                 assignCryptoSpinnerValues()
-                // Restore GUI elements to their prior values
-                mainActivityModel.lastRecvCoinType?.let { recvCoinType.setSelection(it) }
-                mainActivityModel.lastSendCoinType?.let { sendAccount.setSelection(it) }
-                mainActivityModel.lastSendCurrencyType?.let { sendCurrencyType.setSelection(it) }
 
                 // Set the send currency type spinner options to your default fiat currency or your currently selected crypto
                 updateSendCurrencyType()
@@ -560,10 +560,6 @@ class MainActivity : CommonNavActivity()
         val preferenceDB = getSharedPreferences(i18n(R.string.preferenceFileName), Context.MODE_PRIVATE)
         fiatCurrencyCode = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"
         xchgRateText?.text = ""
-
-        mainActivityModel.lastSendCoinType?.let { sendAccount.setSelection(it) }
-        mainActivityModel.lastRecvCoinType?.let { recvCoinType.setSelection(it) }
-        mainActivityModel.lastSendCurrencyType?.let { sendCurrencyType.setSelection(it) }
 
         // If there are any notifications waiting we need to show them when the app resumes,
         // but not if a different intent was launched (that's not just hey start the app)
@@ -1400,7 +1396,7 @@ class MainActivity : CommonNavActivity()
                 clipboard.setPrimaryClip(clip)
 
                 // visual bling that indicates text copied
-                receiveAddress.text = i18n(R.string.copied)
+                receiveAddress.text = i18n(R.string.copiedToClipboard)
                 laterUI {
                     delay(5000); accounts[defaultAccount]?.let { updateReceiveAddressUI(it) }
                 }
@@ -1653,7 +1649,7 @@ class MainActivity : CommonNavActivity()
             }
             else
             {
-                displayException(R.string.badAmount, e)
+                displayException(R.string.badAmount, e, true)
                 return false
             }
         }

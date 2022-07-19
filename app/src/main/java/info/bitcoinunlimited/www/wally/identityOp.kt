@@ -16,7 +16,6 @@ import java.net.URL
 import java.net.URLEncoder
 import java.util.logging.Logger
 import bitcoinunlimited.libbitcoincash.*
-import kotlinx.android.synthetic.main.activity_identity.*
 import java.io.DataOutputStream
 
 private val LogIt = Logger.getLogger("BU.wally.IdentityOp")
@@ -102,7 +101,7 @@ class IdentityOpActivity : CommonNavActivity()
                 } catch (e: PrimaryWalletInvalidException)
                 {
                     //displayError(R.string.pleaseWait)
-                    clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to PRIMARY_WALLET), i18n(R.string.primaryAccountRequiredDetails))
+                    clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to PRIMARY_CRYPTO_CODE), i18n(R.string.primaryAccountRequiredDetails))
                     return
                 }
 
@@ -227,7 +226,7 @@ class IdentityOpActivity : CommonNavActivity()
         val acc = account
         if (acc == null)
         {
-            clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to PRIMARY_WALLET), i18n(R.string.primaryAccountRequiredDetails))
+            clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to PRIMARY_CRYPTO_CODE), i18n(R.string.primaryAccountRequiredDetails))
             return
         }
 
@@ -292,7 +291,7 @@ class IdentityOpActivity : CommonNavActivity()
                     (application as WallyApp).primaryAccount
                 } catch (e: PrimaryWalletInvalidException)
                 {
-                    clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to PRIMARY_WALLET), i18n(R.string.primaryAccountRequiredDetails))
+                    clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to PRIMARY_CRYPTO_CODE), i18n(R.string.primaryAccountRequiredDetails))
                     return@launch
                 }
                 if (act.locked)

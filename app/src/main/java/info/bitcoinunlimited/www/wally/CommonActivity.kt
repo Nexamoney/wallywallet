@@ -51,13 +51,14 @@ fun i18n(id: Int): String
     if (id == -1) return ""
     try
     {
+        if (appResources == null) LogIt.severe("appResources not loaded")
         val s = appResources?.getString(id)
         if (s != null) return s
     } catch (e: Resources.NotFoundException)
     {
     }
 
-    LogIt.severe("Missing strings.xml translation for " + id.toString() + "(0x" + id.toString(16));
+    LogIt.severe("Missing strings.xml translation for " + id.toString() + "(0x" + id.toString(16))
     return "STR" + id.toString()
 }
 
@@ -223,7 +224,7 @@ open class CommonActivity : AppCompatActivity()
     }
 
     /** Display a specific error string rather than what the exception recommends, and offer the exception as details */
-    fun displayException(resource: Int, exc: Exception)
+    fun displayException(resource: Int, exc: Exception, expected: Boolean = false)
     {
         var displayString: String
         val buExc = exc as? BUException
@@ -231,7 +232,7 @@ open class CommonActivity : AppCompatActivity()
         var details: String = ""
         if (buExc != null)
         {
-            if (buExc.severity != ErrorSeverity.Expected)
+            if (!expected || buExc.severity != ErrorSeverity.Expected)
             {
                 stack = Log.getStackTraceString(buExc)
                 LogIt.severe(buExc.shortMsg + ":" + buExc.message)
@@ -242,11 +243,12 @@ open class CommonActivity : AppCompatActivity()
         }
         else
         {
-            // Log all non-BU exceptions because we don't know if they are expected
-            stack = Log.getStackTraceString(exc)
-            LogIt.severe(exc.toString())
-            LogIt.severe(stack)
-
+            if (!expected)
+            {
+                stack = Log.getStackTraceString(exc)
+                LogIt.severe(exc.toString())
+                LogIt.severe(stack)
+            }
             displayString = exc.message ?: getString(R.string.unknownError)
         }
         displayError(resource, displayString + "\n" + details + i18n(R.string.devDebugInfoHeader) + ":\n" + stack)
@@ -411,6 +413,7 @@ open class CommonActivity : AppCompatActivity()
                 fn()
             } catch (e: Exception) // Uncaught exceptions will end the app
             {
+                LogIt.info(sourceLoc() + ": General exception handler (should be caught earlier!)")
                 handleThreadException(e)
             }
         }
@@ -424,7 +427,11 @@ open class CommonActivity : AppCompatActivity()
             try
             {
                 fn()
-            } catch (e: Exception)  // Uncaught exceptions will end the app
+            }
+            catch (e: CancellationException)  // coroutine got cancelled -- I'm ok with that
+            {
+            }
+            catch (e: Exception)  // Uncaught exceptions will end the app
             {
                 handleThreadException(e)
             }
@@ -503,7 +510,7 @@ open class CommonActivity : AppCompatActivity()
                 clipboard.setPrimaryClip(clip)
 
                 // visual bling that indicates text copied
-                v.text = i18n(R.string.copied)
+                v.text = i18n(R.string.copiedToClipboard)
                 // Set it back to the address after awhile
                 asyncUI {
                     delay(3000);

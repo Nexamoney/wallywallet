@@ -91,11 +91,13 @@ class UnitTest
     @Test
     fun testelectrumclient()
     {
+        return // TODO: skipped until Nexa Rostrum is available
+
         LogIt.info("This test requires an electrum cash server running at ${EMULATOR_HOST_IP}:${DEFAULT_TCP_ELECTRUM_PORT_REGTEST}")
 
         val c = try
         {
-            ElectrumClient(ChainSelector.BCHREGTEST, EMULATOR_HOST_IP, DEFAULT_TCP_ELECTRUM_PORT_REGTEST, "Electrum@${EMULATOR_HOST_IP}:${DEFAULT_TCP_ELECTRUM_PORT_REGTEST}")
+            ElectrumClient(ChainSelector.REGTEST, EMULATOR_HOST_IP, DEFAULT_TCP_ELECTRUM_PORT_REGTEST, "Electrum@${EMULATOR_HOST_IP}:${DEFAULT_TCP_ELECTRUM_PORT_REGTEST}")
         }
         catch (e: java.net.ConnectException)
         {
@@ -281,22 +283,25 @@ class UnitTest
         // run against some test vectors...
 
         var hash1 = Hash.sha256(ByteArray(64, { _ -> 1 }))
-        assertEquals("7c8975e1e60a5c8337f28edf8c33c3b180360b7279644a9bc1af3c51e6220bf5", hash1.ToHex())
+        assertEquals("7c8975e1e60a5c8337f28edf8c33c3b180360b7279644a9bc1af3c51e6220bf5", hash1.toHex())
         var hash2 = Hash.hash256(ByteArray(64, { _ -> 1 }))
-        assertEquals("61a088b4cf1f244e52e5e88fcd91b3b7d6135ebff53476ecc8436e23b5e7f095", hash2.ToHex())
+        assertEquals("61a088b4cf1f244e52e5e88fcd91b3b7d6135ebff53476ecc8436e23b5e7f095", hash2.toHex())
         var hash3 = Hash.hash160(ByteArray(64, { _ -> 1 }))
-        assertEquals("171073b9bee66e89f657f50532412e3539bb1d6b", hash3.ToHex())
+        assertEquals("171073b9bee66e89f657f50532412e3539bb1d6b", hash3.toHex())
 
-        val data = "0100000001ef128218b638f8b34e125d3a87f074974522b07be629f84b72bba549d493abcb0000000049483045022100dbd9a860d31ef53b9ae12306f25a5f64ac732d5951e1d843314ced89d80c585b02202697cd52be31156a1c30f094aa388cb0d5e8e7f767472fd0b03cb1b7e666c23841feffffff0277800f04000000001976a9148132c3672810992a3c780772b980b1d690598af988ac80969800000000001976a914444b7eaa50459a727a4238778cde09a21f9b579a88ac81531400".FromHex()
+        val data = "0100000001ef128218b638f8b34e125d3a87f074974522b07be629f84b72bba549d493abcb0000000049483045022100dbd9a860d31ef53b9ae12306f25a5f64ac732d5951e1d843314ced89d80c585b02202697cd52be31156a1c30f094aa388cb0d5e8e7f767472fd0b03cb1b7e666c23841feffffff0277800f04000000001976a9148132c3672810992a3c780772b980b1d690598af988ac80969800000000001976a914444b7eaa50459a727a4238778cde09a21f9b579a88ac81531400".fromHex()
         var hash4 = Hash256(Hash.hash256(data))
         assertEquals(hash4.toHex(), "1605af3f8beb87fa26fc12a45e52ce5e0e296d0da551c0775916634d451ca664")
 
-        val tx = Transaction(ChainSelector.BCHTESTNET, data, SerializationType.NETWORK)
+        /*  TODO BCH
+        val tx = BCHTransaction(ChainSelector.BCHTESTNET, data, SerializationType.NETWORK)
         assertEquals(tx.hash.toHex(), hash4.toHex())
 
         // testnet3 block 1
         val blk = BCHblock(ChainSelector.BCHTESTNET, BCHserialized("0100000043497fd7f826957108f4a30fd9cec3aeba79972084e90ead01ea330900000000bac8b0fa927c0ac8234287e33c5f74d38d354820e24756ad709d7038fc5f31f020e7494dffff001d03e4b6720101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0e0420e7494d017f062f503253482fffffffff0100f2052a010000002321021aeaf2f8638a129a3156fbe7e5ef635226b0bafd495ff03afe2c843d7e3a4b51ac00000000".FromHex(), SerializationType.NETWORK))
         assertEquals(blk.hash.toHex(), "00000000b873e79784647a6c82962c70d228557d24a747ea4d1b8bbe878e1206")
+
+         */
     }
 
     @Test
@@ -314,6 +319,7 @@ class UnitTest
     @Test
     fun testSerialize()
     {
+        /* TODO BCH
         val chain = ChainSelector.BCHREGTEST
         val outpoint = BCHoutpoint(Hash256("1f443a6340d2f805e0046b3bcea0d93830844b356edd72da053044dd3fb09f54"), 32)
         var sp = BCHspendable(chain)
@@ -354,6 +360,8 @@ class UnitTest
         check(sp.spentUnconfirmed == sp2.spentUnconfirmed)
         check(sp.spendableUnconfirmed == sp2.spendableUnconfirmed)
 
+         */
+
         val td = TdppDomain("domain", "topic", "addr", "currency", -1,2,3,4, "per", "day", "perweek", "permonth", false)
 
         var ser3 = BCHserialized(td.BCHserialize(SerializationType.DISK).flatten(), SerializationType.DISK)
@@ -371,6 +379,7 @@ class UnitTest
         LogIt.info("HD key: " + newSecret.toHex())
         assertEquals(newSecret.toHex(), "9c219cb84e3199b076aaa0f954418407b1e8d54f79103612fbaf04598bc8be55")
 
+        /* TODO BCH
         val ctxt = PlatformContext(applicationContext)
         val wdb = OpenKvpDB(ctxt, dbPrefix + "testHDerivationWallet")!!
         // Test vector for wallet derivation path
@@ -401,6 +410,7 @@ class UnitTest
             val d = wal.generateDestination()
             assertEquals(d.address.toString(), addr)
         }
+         */
 
     }
 
@@ -415,6 +425,7 @@ class UnitTest
     @Test
     fun testAddressConversion()
     {
+        /* TODO BCH
         run {
             val p = PayAddress("bchreg:qr02hs6rq52uvkz7fkum28hd0zqewgzhlgjjedf05z")
             check(p.type == PayAddressType.P2PKH)
@@ -429,6 +440,8 @@ class UnitTest
             check (p.blockchain == ChainSelector.BCHTESTNET)
             check (p.data.ToHex() == "775ebf6694518d925139b2ae42147fc57539ca00")
         }
+
+         */
     }
 
     @Test
@@ -461,6 +474,7 @@ class UnitTest
     @Test
     fun testTransaction()
     {
+        /* TODO BCH
         var tx = Transaction(ChainSelector.BCHREGTEST)
         var in1 = BCHspendable(ChainSelector.BCHREGTEST,"00112233445566778899aabbccddeeff000102030405060708090a0b0c0d0e0f", 2, 10001)
         tx.inputs.add(BCHinput(ChainSelector.BCHREGTEST, in1, SatoshiScript(ChainSelector.BCHREGTEST), 0xffffffff))
@@ -481,11 +495,14 @@ class UnitTest
         assert(ser.ToHex() == ser2.ToHex())
 
         //var cnxn = BCHp2pClient("127.0.0.1", BCHtestnetPort)
+
+         */
     }
 
     @Test
     fun testKeys()
     {
+        /* TODO BCH
         // Test that BCHoutpoint is a proper map key
         val paymentHistory: MutableMap<BCHoutpoint, Int> = mutableMapOf()
         val testOutpoint = BCHoutpoint(Hash256("00112233445566778899aabbccddeeff000102030405060708090a0b0c0d0e0f"), 0)
@@ -508,6 +525,8 @@ class UnitTest
 
         check(receiving.contains(inserted))
         check(receiving.containsKey(PayAddress(ChainSelector.BCHREGTEST, PayAddressType.P2PKH,"0123456789abcdef01230123456789abcdef0123".FromHex())))
+
+         */
     }
 
     @Test
@@ -515,19 +534,19 @@ class UnitTest
     {
         val testMessage = "This is a test"
 
-        val sbytes = ByteArray(32, {_ -> 2})
+        val sbytes = UnsecuredSecret(ByteArray(32, {_ -> 2}))
 
-        val identityDest = Pay2PubKeyHashDestination(ChainSelector.BCHREGTEST, sbytes)
+        val identityDest = Pay2PubKeyHashDestination(ChainSelector.REGTEST, sbytes)
 
         val secret = identityDest.secret ?: throw IdentityException("Wallet failed to provide an identity with a secret", "bad wallet", ErrorSeverity.Severe)
         val address = identityDest.address ?: throw IdentityException("Wallet failed to provide an identity with an address", "bad wallet", ErrorSeverity.Severe)
 
-        val sig = Wallet.signMessage(testMessage.toByteArray(), secret)
+        val sig = Wallet.signMessage(testMessage.toByteArray(), secret.getSecret())
 
         val verify = Wallet.verifyMessage(testMessage.toByteArray(),address.data, sig)
         check(verify!=null)
         check(verify!!.size != 0)
-        check(verify!! contentEquals identityDest.pubkey)
+        check(verify contentEquals identityDest.pubkey)
 
         // Try bad verifications
 
@@ -572,8 +591,8 @@ class UnitTest
     @Test
     fun testScript()
     {
-        val ch = ChainSelector.BCHREGTEST
-        val fakepubkey = "0123456789abcdef01230123456789abcdef0123".FromHex()
+        val ch = ChainSelector.REGTEST
+        val fakepubkey = "0123456789abcdef01230123456789abcdef0123".fromHex()
 
         // P2PKH
 
@@ -596,8 +615,8 @@ class UnitTest
 
 
         // Test different constructions
-        val P2PKH6 = SatoshiScript(ch, OP.DUP, OP.HASH160, OP.push("0123456789abcdef01230123456789abcdef0123".FromHex()), OP.EQUALVERIFY, OP.CHECKSIG)
-        val P2PKH7 = SatoshiScript(ch, OP.DUP, OP.HASH160, OP.PUSHDATA1, byteArrayOf(20), "0123456789abcdef01230123456789abcdef0123".FromHex(), OP.EQUALVERIFY, OP.CHECKSIG)
+        val P2PKH6 = SatoshiScript(ch, SatoshiScript.Type.SATOSCRIPT, OP.DUP, OP.HASH160, OP.push("0123456789abcdef01230123456789abcdef0123".fromHex()), OP.EQUALVERIFY, OP.CHECKSIG)
+        val P2PKH7 = SatoshiScript(ch, SatoshiScript.Type.SATOSCRIPT, OP.DUP, OP.HASH160, OP.PUSHDATA1, byteArrayOf(20), "0123456789abcdef01230123456789abcdef0123".fromHex(), OP.EQUALVERIFY, OP.CHECKSIG)
 
         if (true)
         {
@@ -613,7 +632,7 @@ class UnitTest
             check(params[0].contentEquals(fakepubkey))
         }
 
-        val P2PKH8 = SatoshiScript(ch) + OP.DUP + OP.HASH160 + OP.push("0123456789abcdef01230123456789abcdef0123".FromHex()) + OP.EQUALVERIFY + OP.CHECKSIG
+        val P2PKH8 = SatoshiScript(ch) + OP.DUP + OP.HASH160 + OP.push("0123456789abcdef01230123456789abcdef0123".fromHex()) + OP.EQUALVERIFY + OP.CHECKSIG
         check(P2PKH6.contentEquals(P2PKH8))
 
         val (type1, params1) = P2PKH6.match() ?: throw AssertionError("should have matched P2PKH template")
@@ -649,7 +668,7 @@ class UnitTest
 
         var cnxn:BCHp2pClient = (try
         {
-            BCHp2pClient(ChainSelector.BCHREGTEST, EMULATOR_HOST_IP, BCHregtestPort, "regtest@${EMULATOR_HOST_IP}", coScope, coCond).connect(5000)
+            BCHp2pClient(ChainSelector.REGTEST, EMULATOR_HOST_IP, regtestPort, "regtest@${EMULATOR_HOST_IP}", coScope, coCond).connect(5000)
         }
         catch (e: java.net.SocketTimeoutException)
         {
@@ -693,12 +712,12 @@ class UnitTest
 
         for (tv in bip39TestVector)
         {
-            val b = tv[0].FromHex()
+            val b = tv[0].fromHex()
             val words = GenerateBip39SecretWords(b)
             check(words == tv[1])
             val seed = GenerateBip39Seed(words,"TREZOR", 64)
-            LogIt.info(seed.ToHex())
-            check(seed.ToHex() == tv[2])
+            LogIt.info(seed.toHex())
+            check(seed.toHex() == tv[2])
         }
 
     }

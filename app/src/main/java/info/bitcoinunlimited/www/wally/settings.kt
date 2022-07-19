@@ -30,7 +30,12 @@ val BCH_EXCLUSIVE_NODE = "BCH.exclusiveNode"
 val BCH_PREFER_NODE_SWITCH = "BCH.preferNodeSwitch"
 val BCH_PREFER_NODE = "BCH.preferNode"
 
-var defaultAccount = "BCH"  // The default crypto I'm using
+val NEXA_EXCLUSIVE_NODE_SWITCH = "NEX.exclusiveNodeSwitch"
+val NEXA_EXCLUSIVE_NODE = "NEX.exclusiveNode"
+val NEXA_PREFER_NODE_SWITCH = "NEX.preferNodeSwitch"
+val NEXA_PREFER_NODE = "NEX.preferNode"
+
+var defaultAccount = "NEX"  // The default crypto I'm using
 
 private val LogIt = Logger.getLogger("BU.wally.settings")
 

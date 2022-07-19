@@ -1,30 +1,37 @@
 package bitcoinunlimited.wally.guiTestImplementation
 
+import Nexa.NexaRpc.NexaRpc
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context.CLIPBOARD_SERVICE
+import android.content.Intent
+import android.content.res.Configuration
+import android.net.Uri
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.NoMatchingViewException
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
-
 import androidx.test.runner.AndroidJUnit4
 import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.*
+import kotlinx.android.synthetic.main.activity_identity.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.trickle_pay_reg.*
 import org.hamcrest.CoreMatchers.instanceOf
+import org.hamcrest.Matchers.*
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.lang.Thread.sleep
+import java.math.BigDecimal
+import java.util.*
 import java.util.logging.Logger
 import info.bitcoinunlimited.www.wally.R.id as GuiId
-
-import org.hamcrest.Matchers.*
-import wf.bitcoin.javabitcoindrpcclient.BitcoinJSONRPCClient
-import java.lang.Exception
-import java.math.BigDecimal
 
 
 val LogIt = Logger.getLogger("GuiTest")
@@ -38,6 +45,25 @@ val REGTEST_RPC_PORT=18332
 @RunWith(AndroidJUnit4::class)
 class GuiTest
 {
+    fun setLocale(locale: Locale, app: WallyApp)
+    {
+        Locale.setDefault(locale)
+        val res = app.getBaseContext().getResources()
+        val config: Configuration = res.getConfiguration()
+        config.locale = locale
+        res.updateConfiguration(config, res.getDisplayMetrics())
+    }
+
+    fun clipboardText(): String
+    {
+        val clipboard = wallyApp!!.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+        val clip: ClipData = clipboard.getPrimaryClip() ?: return ""
+        if (clip.itemCount == 0) return ""
+        val item = clip.getItemAt(0)
+        val text = item.text.toString().trim()
+        return text
+    }
+
     fun clickSpinnerItem(entity: Int, item: String)
     {
         onView(withId(entity)).perform(click())
@@ -129,17 +155,185 @@ class GuiTest
         onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
     }
 
-    @Test fun testHomeActivity()
+    @Test fun testBottomNavigation()
     {
-
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED)
         var app: WallyApp? = null
         activityScenario.onActivity { app = (it.application as WallyApp) }
+        assert(app != null)
+
+        val ctxt = PlatformContext(app!!.applicationContext)
+        walletDb = OpenKvpDB(ctxt, info.bitcoinunlimited.www.wally.dbPrefix + "TESTbip44walletdb")
+        val wdb = walletDb!!
+
+        onView(withId(R.id.navigation_home)).perform(click())
+        onView(withId(R.id.navigation_identity)).perform(click())
+        onView(withId(R.id.navigation_trickle_pay)).perform(click())
+        onView(withId(R.id.navigation_assets)).perform(click())
+        onView(withId(R.id.navigation_shopping)).perform(click())
+
+        onView(withId(R.id.navigation_home)).perform(click())
+
+        onView(withId(R.id.navigation_identity)).perform(click())
+        pressBack()
+        onView(withId(R.id.navigation_trickle_pay)).perform(click())
+        pressBack()
+        onView(withId(R.id.navigation_assets)).perform(click())
+        pressBack()
+        onView(withId(R.id.navigation_shopping)).perform(click())
+        pressBack()
+
+        onView(withId(R.id.navigation_trickle_pay)).perform(click())
+        pressBack()
+        onView(withId(R.id.navigation_trickle_pay)).perform(click())
+        pressBack()
+        onView(withId(R.id.navigation_trickle_pay)).perform(click())
+        pressBack()
+        onView(withId(R.id.navigation_trickle_pay)).perform(click())
+        pressBack()
+        onView(withId(R.id.navigation_home)).perform(click())
+        sleep(5000)
+        LogIt.info("Completed!")
+    }
+
+    @Test fun testTricklePayRegistration()
+    {
+        val activityScenarioM: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
+        activityScenarioM.moveToState(Lifecycle.State.RESUMED)
+        val app = wallyApp!!
+        val ctxt = PlatformContext(app.applicationContext)
+        walletDb = OpenKvpDB(ctxt, info.bitcoinunlimited.www.wally.dbPrefix + "TESTbip44walletdb")
+        val wdb = walletDb!!
+
+        val tw = Bip44Wallet(wdb,"testframework", ChainSelector.NEXA, "quantum curve elephant soccer faculty cheese merge medal vault damage sniff purpose")
+        val dest = tw.destinationFor("")
+        var uriStr:String = "tdpp://www.yoursite.com/reg?addr=" + Uri.encode(dest.address!!.toString()) + "&descday=" + Uri.encode("desc2 space test") + "&descper=desc1&descweek=week&maxday=10000&maxper=1000&maxweek=100000&topic=thisisatest&uoa=NEX"
+        val sig = Wallet.signMessage(uriStr.toByteArray(), dest.secret!!.getSecret())
+        val uriSig64=Uri.encode(Codec.encode64(sig))
+        uriStr = uriStr + "&sig=$uriSig64"
+
+        println("trickle pay example: " + uriStr)
+        val tent = Intent(Intent.ACTION_VIEW, Uri.parse(uriStr))
+        val activityScenario: ActivityScenario<TricklePayActivity> = ActivityScenario.launch(tent)
+        activityScenario.moveToState(Lifecycle.State.RESUMED)
+        // Wallet has no accounts
+        check(alerts[alerts.size-1].msg == i18n(R.string.NoAccounts))
+
+        // add an account and try again
+        app.newAccount("NEX1", ACCOUNT_FLAG_NONE, "", ChainSelector.NEXA)
+        val act = app.primaryAccount
+        activityScenario.recreate()
+
+        // push all the buttons
+        activityScenario.onActivity {
+            val s: String = it.GuiTricklePayEntity.text.toString()
+            check(s == "www.yoursite.com")
+            check(it.GuiTricklePayTopic.text.toString() == "thisisatest")
+            check(it.GuiAutospendLimitDescription0.text.toString() == "desc1")
+            check(it.GuiAutospendLimitDescription1.text.toString() == "desc2 space test")
+            check(it.GuiAutospendLimitDescription2.text.toString() == "week")
+        }
+
+        onView(withId(GuiId.TpAssetInfoRequestHandlingButton)).perform(click())
+        onView(withId(GuiId.TpAssetInfoRequestHandlingButton)).perform(click())
+        onView(withId(GuiId.TpAssetInfoRequestHandlingButton)).perform(click())
+
+        onView(withId(GuiId.GuiEnableAutopay)).perform(click())
+        onView(withId(GuiId.GuiEnableAutopay)).perform(click())
+
+        onView(withId(GuiId.GuiAutospendLimitEntry0)).perform(clearText(),typeText("123"), pressImeActionButton())
+        onView(withId(GuiId.GuiAutospendLimitEntry1)).perform(clearText(),typeText("234"), pressImeActionButton())
+        onView(withId(GuiId.GuiAutospendLimitEntry2)).perform(clearText(),typeText("345"), pressImeActionButton())
+        onView(withId(GuiId.GuiAutospendLimitEntry3)).perform(clearText(),typeText("456"), pressImeActionButton())
+
+        onView(withId(GuiId.GuiTpRegisterRequestAccept)).perform(click())  // this will close the activity
+
+        // Get back into it
+        val asc: ActivityScenario<TricklePayActivity> = ActivityScenario.launch(TricklePayActivity::class.java)
+        asc.moveToState(Lifecycle.State.RESUMED)
+
+        // Check that new registration was accepted
+        asc.onActivity {
+            check(it.domains.size > 0)
+        }
+
+        // OK get rid of what we created
+        onView(withId(GuiId.GuiTpDeleteAll)).perform(click())
+        activityScenario.close()
+        asc.close()
+        activityScenarioM.close()
+        println("worked!")
+    }
+
+    @Test fun testIdentityActivity()
+    {
+        val activityScenario: ActivityScenario<IdentityActivity> = ActivityScenario.launch(IdentityActivity::class.java)
+
+        // There will be no accounts, so check proper error
+        activityScenario.onActivity {
+            check(it.commonIdentityAddress.text == i18n(R.string.NoAccounts))
+        }
+
+        val app = {
+            var a: WallyApp? = null
+            activityScenario.onActivity { a = (it.application as WallyApp) }
+            assert(a != null)
+            a!!
+        }()
+
+        val ctxt = PlatformContext(app.applicationContext)
+        walletDb = OpenKvpDB(ctxt, info.bitcoinunlimited.www.wally.dbPrefix + "TESTbip44walletdb")
+        val wdb = walletDb!!
+
+        val act = try
+        {
+            app.primaryAccount
+        }
+        catch (e:PrimaryWalletInvalidException)
+        {
+            app.newAccount("NEX1", ACCOUNT_FLAG_NONE, "", ChainSelector.NEXA)
+            app.primaryAccount
+        }
+
+
+        // Setup is complete so now show the activity
+        activityScenario.recreate()
+        activityScenario.moveToState(Lifecycle.State.RESUMED)
+
+        var addr:String = ""
+        activityScenario.onActivity {
+            val s:String = it.commonIdentityAddress.text.toString()
+            check(s.startsWith("nexa:"))
+            addr = s
+        }
+
+        check(addr.startsWith("nexa:"))
+
+        onView(withId(GuiId.commonIdentityAddress)).perform(click())
+        activityScenario.onActivity {
+            val s:String = it.commonIdentityAddress.text.toString()
+            check(s == i18n(R.string.copiedToClipboard))
+        }
+        val cp = clipboardText()
+        check(cp == addr)
+    }
+
+    @Test fun testHomeActivity()
+    {
+        val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
+        activityScenario.moveToState(Lifecycle.State.RESUMED)
+        var app: WallyApp? = null
+        activityScenario.onActivity { app = (it.application as WallyApp) }
+        assert(app != null)
+
+        val ctxt = PlatformContext(app!!.applicationContext)
+        walletDb = OpenKvpDB(ctxt, info.bitcoinunlimited.www.wally.dbPrefix + "TESTbip44walletdb")
+        val wdb = walletDb!!
 
         // Clean up any prior run
-        deleteWallet(walletDb!!, "mRbch1", ChainSelector.BCHREGTEST)
-        deleteWallet(walletDb!!, "mRbch2", ChainSelector.BCHREGTEST)
+        deleteWallet(wdb, "rNEX1", ChainSelector.REGTEST)
+        deleteWallet(wdb, "rNEX2", ChainSelector.REGTEST)
 
         // Clean up old headers  ONLY NEEDED IF YOU RECREATE REGTEST NETWORK but reuse an emulator
         //deleteBlockHeaders("mRbch1", dbPrefix, appContext!!)
@@ -148,18 +342,18 @@ class GuiTest
         // supply this wallet with coins
         val rpcConnection = "http://" + REGTEST_RPC_USER + ":" + REGTEST_RPC_PASSWORD + "@" + SimulationHostIP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = BitcoinJSONRPCClient(rpcConnection)
+        var rpc = NexaRpc(rpcConnection)
         var peerInfo = rpc.peerInfo
         check(peerInfo.size == 0)  // Nothing should be connected
 
         // Generate blocks until we get coins to spend. This is needed inside the ci testing.
         // But the code checks first so that lots of extra blocks aren't created during dev testing
-        var rpcBalance = rpc.getBalance()
+        var rpcBalance = rpc.getbalance()
         LogIt.info(rpcBalance.toPlainString())
         while (rpcBalance < BigDecimal(50))
         {
             rpc.generate(1)
-            rpcBalance = rpc.getBalance()
+            rpcBalance = rpc.getbalance()
         }
 
         //val scenario = launchActivity<IdentityActivity>()
@@ -167,9 +361,9 @@ class GuiTest
         activityScenario.onActivity { check(it.lastErrorId == R.string.badCryptoCode) }
 
 
-        createNewAccount("mRbch1", ChainSelector.BCHREGTEST)
+        createNewAccount("rNEX1", ChainSelector.REGTEST)
         activityScenario.onActivity { currentActivity == it }  // Clicking should bring us back to main screen
-        createNewAccount("mRbch2", ChainSelector.BCHREGTEST)
+        createNewAccount("rNEX2", ChainSelector.REGTEST)
         activityScenario.onActivity { currentActivity == it }  // Clicking should bring us back to main screen
 
         peerInfo = rpc.peerInfo
@@ -198,7 +392,7 @@ class GuiTest
             pressImeActionButton()
         ).check(matches(withText("1")))
 
-        clickSpinnerItem(GuiId.recvCoinType, "mRbch1")
+        clickSpinnerItem(GuiId.recvCoinType, "rNEX1")
         var recvAddr: String = ""
         activityScenario.onActivity { recvAddr = it.receiveAddress.text.toString() }
 
@@ -213,19 +407,19 @@ class GuiTest
         waitForActivity(10000, activityScenario) { it.lastErrorString == i18n(R.string.insufficentBalance) }
 
         // Load coins
-        clickSpinnerItem(GuiId.recvCoinType, "mRbch1")
+        clickSpinnerItem(GuiId.recvCoinType, "rNEX1")
         do {
             activityScenario.onActivity { recvAddr = it.receiveAddress.text.toString() }
-            if (recvAddr.contentEquals(i18n(R.string.copied))) Thread.sleep(200)
-        } while(recvAddr.contentEquals(i18n(R.string.copied)))
+            if (recvAddr.contentEquals(i18n(R.string.copiedToClipboard))) Thread.sleep(200)
+        } while(recvAddr.contentEquals(i18n(R.string.copiedToClipboard)))
 
-        var rpcResult = rpc.sendToAddress(recvAddr, BigDecimal.ONE)
-        var txHash = Hash256(rpcResult)
+        // RPC specifies in NEX, wallet in KEX
+        var txHash = rpc.sendtoaddress(recvAddr, BigDecimal("1000000"))
         LogIt.info("SendToAddress RPC result: " + txHash.toString())
 
         waitForActivity(30000, activityScenario)
         {
-            it.balanceUnconfirmedValue2.text == "(1,000)"
+            it.balanceUnconfirmedValue2.text == "*1,000*"
         }
 
 
@@ -234,7 +428,7 @@ class GuiTest
 
         // confirm it
         val blockHash = rpc.generate(1)
-        txHash = Hash256(blockHash[0])
+        txHash = blockHash[0]
         LogIt.info("Generate RPC result: " + txHash.toString())
 
         // See confirmation flow in the UX
@@ -244,8 +438,8 @@ class GuiTest
         }
 
         // Now send from 1 to 2
-        clickSpinnerItem(GuiId.sendAccount, "mRbch1")  // Choose the account
-        clickSpinnerItem(GuiId.recvCoinType, "mRbch2")  // Read the receive address
+        clickSpinnerItem(GuiId.sendAccount, "rNEX1")  // Choose the account
+        clickSpinnerItem(GuiId.recvCoinType, "rNEX2")  // Read the receive address
         activityScenario.onActivity { recvAddr = it.receiveAddress.text.toString() }
         // Write the receive address in
         onView(withId(GuiId.sendToAddress)).perform(clearText(), typeText(recvAddr), pressImeActionButton())
@@ -255,7 +449,7 @@ class GuiTest
 
         waitForActivity(30000, activityScenario)
         {
-            it.balanceUnconfirmedValue3.text == "(500)"
+            it.balanceUnconfirmedValue3.text == "*500*"
         }
 
         LogIt.info("Completed!")

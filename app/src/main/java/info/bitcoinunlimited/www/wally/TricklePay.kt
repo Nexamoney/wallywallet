@@ -101,7 +101,7 @@ enum class TdppAction(val v: Byte)
         }
     }
 
-    operator fun inc():TdppAction
+    operator fun inc(): TdppAction
     {
         if (this == DENY) return ASK
         if (this == ASK) return ACCEPT
@@ -136,23 +136,30 @@ data class TdppDomain(
   @cli(Display.Simple, "enable/disable all automatic payments to this entity") var automaticEnabled: Boolean
 ) : BCHserializable()
 {
-    @cli(Display.Simple, "Maximum automatic payment exeeded action") var maxperExceeded: TdppAction = TdppAction.DENY
-    @cli(Display.Simple, "Maximum automatic payment per day exeeded action") var maxdayExceeded: TdppAction = TdppAction.DENY
-    @cli(Display.Simple, "Maximum automatic payment per week exeeded action") var maxweekExceeded: TdppAction = TdppAction.DENY
-    @cli(Display.Simple, "Maximum automatic payment per month exeeded action") var maxmonthExceeded: TdppAction = TdppAction.DENY
+    @cli(Display.Simple, "Maximum automatic payment exeeded action")
+    var maxperExceeded: TdppAction = TdppAction.DENY
+    @cli(Display.Simple, "Maximum automatic payment per day exeeded action")
+    var maxdayExceeded: TdppAction = TdppAction.DENY
+    @cli(Display.Simple, "Maximum automatic payment per week exeeded action")
+    var maxweekExceeded: TdppAction = TdppAction.DENY
+    @cli(Display.Simple, "Maximum automatic payment per month exeeded action")
+    var maxmonthExceeded: TdppAction = TdppAction.DENY
 
-    @cli(Display.Simple, "Asset information query") var assetInfo: TdppAction = TdppAction.ASK
-    @cli(Display.Simple, "Balance information query") var balanceInfo: TdppAction = TdppAction.DENY
+    @cli(Display.Simple, "Asset information query")
+    var assetInfo: TdppAction = TdppAction.ASK
+    @cli(Display.Simple, "Balance information query")
+    var balanceInfo: TdppAction = TdppAction.DENY
 
-    constructor(uri : Uri): this("", "", "", "", -1, -1, -1, -1, "", "", "", "", false)
+    constructor(uri: Uri) : this("", "", "", "", -1, -1, -1, -1, "", "", "", "", false)
     {
         load(uri)
     }
 
     // This is the implicit registration constructor -- it does not authorize any automatic payments.
-    constructor(_domain:String, _topic:String) : this(_domain, _topic, "", "", 0, 0, 0, 0, "", "", "", "", false)
+    constructor(_domain: String, _topic: String) : this(_domain, _topic, "", "", 0, 0, 0, 0, "", "", "", "", false)
     {
     }
+
     constructor(stream: BCHserialized) : this("", "", "", "", -1, -1, -1, -1, "", "", "", "", false)
     {
         BCHdeserialize(stream)
@@ -160,7 +167,7 @@ data class TdppDomain(
 
     override fun BCHserialize(format: SerializationType): BCHserialized //!< Serializer
     {
-        return BCHserialized(format) + domain + topic + addr + uoa + maxper + maxday + maxweek + maxmonth + descper + descday + descweek + descmonth + automaticEnabled +  maxperExceeded.v + maxdayExceeded.v + maxweekExceeded.v + maxmonthExceeded.v + assetInfo.v + balanceInfo.v
+        return BCHserialized(format) + domain + topic + addr + uoa + maxper + maxday + maxweek + maxmonth + descper + descday + descweek + descmonth + automaticEnabled + maxperExceeded.v + maxdayExceeded.v + maxweekExceeded.v + maxmonthExceeded.v + assetInfo.v + balanceInfo.v
     }
 
     override fun BCHdeserialize(stream: BCHserialized): BCHserialized //!< Deserializer
@@ -189,24 +196,21 @@ data class TdppDomain(
         return stream
     }
 
-    fun getParam(u:Uri, amtP: String, descP: String):Pair<Long,String>
+    fun getParam(u: Uri, amtP: String, descP: String): Pair<Long, String>
     {
         val amount: Long = u.getQueryParameter(amtP).let {
             if (it == null) -1
             else it.toLong()
         }
         val desc: String = u.getQueryParameter(descP) ?: ""
-        return Pair(amount,desc)
+        return Pair(amount, desc)
     }
 
 
-    fun load(uri:Uri)
+    fun load(uri: Uri)
     {
         domain = uri.authority ?: throw NotUriException()
-        topic = uri.getQueryParameter("topic").let {
-            if (it == null) ""
-            else ":" + it
-        }
+        topic = uri.getQueryParameter("topic") ?: ""
         getParam(uri, "maxper", "descper").let { maxper = it.first; descper = it.second }
         getParam(uri, "maxday", "descday").let { maxday = it.first; descday = it.second }
         getParam(uri, "maxweek", "descweek").let { maxweek = it.first; descweek = it.second }
@@ -298,7 +302,7 @@ class TricklePayRegFragment : Fragment()
         //}
     }
 
-   // data class Data2Widgets(val amtParam: String, val descParam: String, val entry: EditText, val desc: TextView)
+    // data class Data2Widgets(val amtParam: String, val descParam: String, val entry: EditText, val desc: TextView)
 
     /*
     fun populate(puri: Uri)
@@ -458,11 +462,11 @@ class TricklePayCustomTxFragment : Fragment()
     {
         val u: Uri = uri ?: return
 
-        val topic = u.getQueryParameter("topic").let {
+        val tpc = u.getQueryParameter("topic").let {
             if (it == null) ""
             else ":" + it
         }
-        GuiTricklePayEntity.text = u.authority + topic
+        GuiTricklePayEntity.text = u.authority + tpc
 
         val acc = tpActivity!!.getRelevantAccount()
 
@@ -508,7 +512,7 @@ class TricklePayCustomTxFragment : Fragment()
                 }
                 else
                 {
-                    GuiCustomTxTokenSummary.text = i18n(R.string.TpReceivingTokens)  % mapOf("tokRcv" to a.receivingTokenTypes.toString())
+                    GuiCustomTxTokenSummary.text = i18n(R.string.TpReceivingTokens) % mapOf("tokRcv" to a.receivingTokenTypes.toString())
                 }
             }
             else
@@ -564,11 +568,11 @@ class TricklePayAssetRequestFragment : Fragment()
     {
         val u: Uri = uri ?: return
 
-        val topic = u.getQueryParameter("topic").let {
+        val tpc = u.getQueryParameter("topic").let {
             if (it == null) ""
-            else (":" + it)
+            else ":" + it
         }
-        GuiTricklePayEntity.text = u.authority + topic
+        GuiTricklePayEntity.text = u.authority + tpc
 
         val acc = tpActivity!!.getRelevantAccount()
         GuiAssetHandledByAccount.text = acc.name
@@ -639,7 +643,6 @@ fun VerifyTdppSignature(uri: Uri): Boolean?
     if (result == null || result.size == 0)
     {
         LogIt.info("verification failed for: " + verifyThis + " Address: " + addressStr)
-        Wallet.verifyMessage(verifyThis.toByteArray(), pa.data, sigBytes)
         return false
     }
     LogIt.info("verification good for: " + verifyThis + " Address: " + addressStr)
@@ -678,7 +681,7 @@ private class TricklePayRecyclerAdapter(private val activity: TricklePayActivity
 {
     var domains = arrayListOf<TdppDomain>()
 
-    fun assignDomains(d:ArrayList<TdppDomain>)
+    fun assignDomains(d: ArrayList<TdppDomain>)
     {
         domains = d
     }
@@ -1145,7 +1148,16 @@ class TricklePayActivity : CommonNavActivity()
             regCurrency = uri.getQueryParameter("uoa") ?: TDPP_DEFAULT_UOA
 
             val d = TdppDomain(uri)
-            (GuiTricklePayReg as TricklePayRegFragment).populate(d, false)
+            try
+            {
+                (GuiTricklePayReg as TricklePayRegFragment).populate(d, false)
+            }
+            catch(e:WalletInvalidException)
+            {
+                displayFragment(GuiTricklePayMain)
+                displayError(R.string.NoAccounts)
+                return
+            }
         }
         else
         {
@@ -1253,12 +1265,20 @@ class TricklePayActivity : CommonNavActivity()
 
     override fun onBackPressed()
     {
-        if (GuiTricklePayReg.view?.visibility == VISIBLE)
+        try
         {
-            regUxToMap()
-            later {
-                save()  // can't save in UI thread
+            if (GuiTricklePayReg.view?.visibility == VISIBLE)
+            {
+                regUxToMap()
+                later {
+                    save()  // can't save in UI thread
+                }
             }
+        }
+        catch (e: Exception)
+        {
+            LogIt.warning(sourceLoc() + "Unexpected Exception")
+            displayException(e)
         }
         super.onBackPressed()
     }
@@ -1275,10 +1295,13 @@ class TricklePayActivity : CommonNavActivity()
     // Move the Ux data into the map
     fun regUxToMap()
     {
-        val d:TdppDomain = (GuiTricklePayReg as TricklePayRegFragment).domain ?: return
+        if (GuiTricklePayReg !is TricklePayRegFragment) return
+        val d: TdppDomain = (GuiTricklePayReg as TricklePayRegFragment).domain ?: return
+        val app = wallyApp
+        if (app == null) return
 
         // find a compatible account for conversion
-        val accountLst = wallyApp!!.accountsFor(d.uoa)
+        val accountLst = app.accountsFor(d.uoa)
         if (accountLst.size == 0)
         {
             throw WalletInvalidException()
@@ -1307,7 +1330,7 @@ class TricklePayActivity : CommonNavActivity()
 
         d.automaticEnabled = GuiEnableAutopay.isChecked
 
-        domains[domainKey(d.domain,d.topic)] = d
+        domains[domainKey(d.domain, d.topic)] = d
     }
 
     // Trickle pay registration handlers
@@ -1315,11 +1338,19 @@ class TricklePayActivity : CommonNavActivity()
     fun onAcceptTpReg(view: View?)
     {
         LogIt.info("accept trickle pay registration")
-        displayFragment(GuiTricklePayMain)
-        regUxToMap()
-        later {
-            save()  // can't save in UI thread
-            clearIntentAndFinish(notice = i18n(R.string.TpRegAccepted))
+        try
+        {
+            regUxToMap()
+            displayFragment(GuiTricklePayMain)
+
+            later {
+                save()  // can't save in UI thread
+                clearIntentAndFinish(notice = i18n(R.string.TpRegAccepted))
+            }
+        }
+        catch (e: NumberFormatException)
+        {
+            displayError(R.string.badAmount)
         }
     }
 
@@ -1423,7 +1454,7 @@ class TricklePayActivity : CommonNavActivity()
         acceptAssetRequest(assets)
     }
 
-    fun acceptAssetRequest(assets:TricklePayAssetList)
+    fun acceptAssetRequest(assets: TricklePayAssetList)
     {
         LogIt.info("accepted asset request")
         displayNotice(R.string.Processing, time = 4900)

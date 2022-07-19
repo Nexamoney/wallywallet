@@ -148,7 +148,8 @@ class IdentityActivity : CommonNavActivity()
     /** Fill all the fields with data */
     fun populate()
     {
-        laterUI {
+        laterUI()
+        {
             try
             {
                 //val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
@@ -195,7 +196,8 @@ class IdentityActivity : CommonNavActivity()
                 val sz = min(commonIdentityQRCode.getWidth().toLong(), commonIdentityQRCode.getHeight().toLong())
                 val qr = textToQREncode(uri, sz.toInt())
                 commonIdentityQRCode.setImageBitmap(qr)
-            } catch (e: PrimaryWalletInvalidException)
+            }
+            catch (e: PrimaryWalletInvalidException)
             {
                 commonIdentityAddress.text = i18n(R.string.NoAccounts)
             }

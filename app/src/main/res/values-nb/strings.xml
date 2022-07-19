@@ -77,7 +77,7 @@
     <string name="moreThanAvailable">"(mer en det er tilgjengelig)"</string>
     <string name="moreThanConfirmedAvailable">"(mer en hva som er bekreftet)"</string>
     <string name="actuallySendingT" formatted="false">sender faktisk %qty %crypto</string>
-    <string name="copied">...kopiert til utklippstavle...</string>
+    <string name="copiedToClipboard">...kopiert til utklippstavle...</string>
     <string name="scanFailed">fikk ikke til å skanne</string>
     <string name="sendSuccess">sending fullført</string>
 
