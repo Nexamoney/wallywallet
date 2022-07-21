@@ -13,6 +13,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.NoMatchingViewException
+import androidx.test.espresso.PerformException
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -131,6 +132,12 @@ class GuiTest
             count-=100
             if (count < 0 ) throw TestTimeoutException("Timout waiting for layout")
         }
+        catch (e: PerformException)
+        {
+            Thread.sleep(100)
+            count-=100
+            if (count < 0 ) throw TestTimeoutException("Timout waiting for Expresso perform")
+        }
     }
 
     fun createNewAccount(name: String, chainSelector: ChainSelector)
@@ -193,7 +200,8 @@ class GuiTest
         onView(withId(R.id.navigation_trickle_pay)).perform(click())
         pressBack()
         onView(withId(R.id.navigation_home)).perform(click())
-        sleep(5000)
+        sleep(1000)
+        activityScenario.close()
         LogIt.info("Completed!")
     }
 

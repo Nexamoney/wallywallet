@@ -209,7 +209,7 @@ class UnitTest
         // blocks that generate to this same output.
         val tx = cnxn.getTxAt(1, 0)
         LogIt.info(tx.toHex())
-        val txBlkHeader = BlockHeader(BCHserialized(cnxn.getHeader(1), SerializationType.HASH))
+        val txBlkHeader = blockHeaderFor(cnxn.chainSelector, BCHserialized(cnxn.getHeader(1), SerializationType.HASH))
         tx.debugDump()
 
         /* TODO add in when get_first_use is committed to electrscash.  TODO: check server capabilities
@@ -608,7 +608,8 @@ class UnitTest
         check(P2PKH3.match() == null)
 
         val P2PKH4 = SatoshiScript(ch) + OP.DUP + OP.HASH160 + OP.push(ByteArray(21, { 0})) + OP.EQUALVERIFY + OP.CHECKSIG
-        check(P2PKH4.match() == null)
+        val m = P2PKH4.match()
+        check(m == null)
 
         val P2PKH5 = SatoshiScript(ch) + OP.DUP + OP.HASH160 + OP.push(ByteArray(19, { 0})) + OP.EQUALVERIFY + OP.CHECKSIG
         check(P2PKH5.match() == null)
@@ -685,7 +686,7 @@ class UnitTest
         val loc = BlockLocator()
         loc.add(Hash256())  // This will ask for the genesis block because no hashes will match
         val stop = Hash256()
-        var headers: MutableList<BlockHeader>? = null
+        var headers: MutableList<out iBlockHeader>? = null
         val waiter = ThreadCond()
         cnxn.getHeaders(loc, stop, { lst, _  -> headers = lst; waiter.wake(); true})
 

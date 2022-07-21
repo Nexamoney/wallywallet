@@ -134,7 +134,7 @@ data class TdppDomain(
   var descweek: String,
   var descmonth: String,
   @cli(Display.Simple, "enable/disable all automatic payments to this entity") var automaticEnabled: Boolean
-) : BCHserializable()
+) : BCHserializable
 {
     @cli(Display.Simple, "Maximum automatic payment exeeded action")
     var maxperExceeded: TdppAction = TdppAction.DENY
@@ -428,7 +428,7 @@ class TricklePayRegFragment : Fragment()
 class TricklePayCustomTxFragment : Fragment()
 {
     var uri: Uri? = null
-    var tx: Transaction? = null
+    var tx: iTransaction? = null
     var analysis: TxAnalysisResults? = null
     var tpActivity: TricklePayActivity? = null
 
@@ -449,7 +449,7 @@ class TricklePayCustomTxFragment : Fragment()
         super.onViewCreated(view, savedInstanceState)
     }
 
-    fun populate(pactivity: TricklePayActivity, puri: Uri, ptx: Transaction, panalysis: TxAnalysisResults)
+    fun populate(pactivity: TricklePayActivity, puri: Uri, ptx: iTransaction, panalysis: TxAnalysisResults)
     {
         uri = puri
         tx = ptx
@@ -765,7 +765,7 @@ class TricklePayActivity : CommonNavActivity()
     var regAddress: String = ""
 
     var tflags: Int = 0
-    var proposedTx: Transaction? = null
+    var proposedTx: iTransaction? = null
     var proposalUri: Uri? = null
     var proposalCookie: String? = null
     var host: String? = null
@@ -915,7 +915,7 @@ class TricklePayActivity : CommonNavActivity()
         }
     }
 
-    fun analyzeCompleteAndSignTx(tx: Transaction, inputSatoshis: Long?, flags: Int?): TxAnalysisResults
+    fun analyzeCompleteAndSignTx(tx: iTransaction, inputSatoshis: Long?, flags: Int?): TxAnalysisResults
     {
         // Just explain why nothing will work
         //if (domains.size == 0)
@@ -1059,7 +1059,7 @@ class TricklePayActivity : CommonNavActivity()
             return displayError(R.string.BadLink)
         }
 
-        val tx = Transaction(chainSelector!!, BCHserialized(txHex.fromHex(), SerializationType.NETWORK))
+        val tx = txFor(chainSelector!!, BCHserialized(txHex.fromHex(), SerializationType.NETWORK))
         LogIt.info(sourceLoc() + ": Tx to autopay: " + tx.toHex())
 
         // Analyze and sign transaction

@@ -1724,7 +1724,7 @@ class MainActivity : CommonNavActivity()
         return true
     }
 
-    fun onSendSuccess(amt: Long, addr: PayAddress, tx: Transaction)
+    fun onSendSuccess(amt: Long, addr: PayAddress, tx: iTransaction)
     {
         // TODO Some visual and audible bling
         displayNotice(R.string.sendSuccess, "$amt -> $addr: ${tx.idem}")

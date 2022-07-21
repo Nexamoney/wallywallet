@@ -253,7 +253,7 @@ class NewAccount : CommonNavActivity()
                     if (use.block_height != null)
                     {
                         val headerBin = ec.getHeader(use.block_height!!)
-                        val blkHeader = BlockHeader(BCHserialized(headerBin, SerializationType.HASH))
+                        val blkHeader = blockHeaderFor(chainSelector, BCHserialized(headerBin, SerializationType.HASH))
                         return Pair(blkHeader.time, use.block_height!!)
                     }
                 }
@@ -317,13 +317,13 @@ class NewAccount : CommonNavActivity()
         if (true)
         {
             val headerBin = ec.getHeader(startBlock)
-            val blkHeader = BlockHeader(BCHserialized(headerBin, SerializationType.HASH))
+            val blkHeader = blockHeaderFor(chainSelector, BCHserialized(headerBin, SerializationType.HASH))
             startTime = blkHeader.time
         }
         if (true)
         {
             val headerBin = ec.getHeader(lastBlock)
-            val blkHeader = BlockHeader(BCHserialized(headerBin, SerializationType.HASH))
+            val blkHeader = blockHeaderFor(chainSelector, BCHserialized(headerBin, SerializationType.HASH))
             lastTime = blkHeader.time
         }
 
