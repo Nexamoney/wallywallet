@@ -423,7 +423,7 @@ class MainActivity : CommonNavActivity()
             var uiSet = false
             if (ac.visible)
             {
-                val curLoc = if (!foundAPrimary && (ac.currencyCode == PRIMARY_CRYPTO_CODE))
+                val curLoc = if (!foundAPrimary && ac.wallet.chainSelector == PRIMARY_CRYPTO)
                 {
                     foundAPrimary = true; 0
                 }

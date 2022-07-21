@@ -307,7 +307,7 @@ class Settings : CommonActivity()
                     for (c in accounts)  // Rediscover tx for EVERY wallet using this blockchain
                     {
                         if (c.value.wallet.blockchain == bc)
-                            c.value.wallet.rediscover()
+                            c.value.wallet.rediscover(false, true)
                     }
 
                 }

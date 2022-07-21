@@ -101,7 +101,8 @@ class IdentityOpActivity : CommonNavActivity()
                 } catch (e: PrimaryWalletInvalidException)
                 {
                     //displayError(R.string.pleaseWait)
-                    clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to PRIMARY_CRYPTO_CODE), i18n(R.string.primaryAccountRequiredDetails))
+                    val primName:String = chainToURI[PRIMARY_CRYPTO] ?: ""
+                    clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to primName), i18n(R.string.primaryAccountRequiredDetails))
                     return
                 }
 
@@ -226,7 +227,7 @@ class IdentityOpActivity : CommonNavActivity()
         val acc = account
         if (acc == null)
         {
-            clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to PRIMARY_CRYPTO_CODE), i18n(R.string.primaryAccountRequiredDetails))
+            clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to (chainToURI[PRIMARY_CRYPTO] ?: "")), i18n(R.string.primaryAccountRequiredDetails))
             return
         }
 
@@ -291,7 +292,7 @@ class IdentityOpActivity : CommonNavActivity()
                     (application as WallyApp).primaryAccount
                 } catch (e: PrimaryWalletInvalidException)
                 {
-                    clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to PRIMARY_CRYPTO_CODE), i18n(R.string.primaryAccountRequiredDetails))
+                    clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to (chainToURI[PRIMARY_CRYPTO] ?: "")), i18n(R.string.primaryAccountRequiredDetails))
                     return@launch
                 }
                 if (act.locked)

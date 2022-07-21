@@ -443,8 +443,8 @@
     <string name="TpAssetRequestDenied">Not sending assets</string>
     <string name="TpAssetRequestAccepted">Sending assets</string>
 
-    <string name="SpecialTpTransactionFrom">Incoming Special Transaction From</string>
-    <string name="IncompleteTpTransactionFrom">Incoming Firm Offer Request From</string>
+    <string name="SpecialTpTransactionFrom">Special Transaction From</string>
+    <string name="IncompleteTpTransactionFrom">Firm Offer Proposal From</string>
     <string name="TpEntails">Entails</string>
     <string name="TpOnBlockchain">On Blockchain</string>
     <string name="TpAssetRequestFrom">Asset Information Request From</string>

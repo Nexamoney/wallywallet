@@ -503,9 +503,11 @@ class TricklePayCustomTxFragment : Fragment()
                 GuiCustomTxFee.text = ""
             }
 
+            // Expand the text to handle proving ownership of (that is, sending token to yourself)
+
             if (a.receivingTokenTypes > 0)
             {
-                if (a.sendingTokenTypes > 0)
+                if (a.imSpendingTokenTypes > 0)
                 {
                     // This is not strictly true.  The counterparty could hand you a transaction that both supplies a token and spends that token to themselves...
                     GuiCustomTxTokenSummary.text = i18n(R.string.TpExchangingTokens) % mapOf("tokSnd" to a.sendingTokenTypes.toString(), "tokRcv" to a.receivingTokenTypes.toString())
@@ -517,7 +519,13 @@ class TricklePayCustomTxFragment : Fragment()
             }
             else
             {
-                if ((a.sendingTokenTypes > 0) || (a.imSpendingTokenTypes > 0))
+                // This needs more thought.  imSpendingTokenTypes are the tokens that are being input into the transaction
+                // sendingTokenTypes are those that are being output.
+                if (a.imSpendingTokenTypes > 0)
+                {
+                    GuiCustomTxTokenSummary.text = i18n(R.string.TpSendingTokens) % mapOf("tokSnd" to a.imSpendingTokenTypes.toString())
+                }
+                if (a.sendingTokenTypes > 0)
                 {
                     GuiCustomTxTokenSummary.text = i18n(R.string.TpSendingTokens) % mapOf("tokSnd" to a.sendingTokenTypes.toString())
                 }
@@ -1071,12 +1079,14 @@ class TricklePayActivity : CommonNavActivity()
         {
             (GuiTricklePayCustomTx as TricklePayCustomTxFragment).GuiSpecialTxTitle.text = i18n(R.string.IncompleteTpTransactionFrom)
         }
-        displayFragment(GuiTricklePayCustomTx)
 
-        // Ok now that we've displayed what we can, let's show the problem.
-        if (analysis.completionException != null) displayException(analysis.completionException)
-        // Or remember the completed transaction for accept/deny user confirmation.
-        else proposedTx = tx
+        if (analysis.completionException == null)  proposedTx = tx
+        laterUI {
+            displayFragment(GuiTricklePayCustomTx)
+            // Ok now that we've displayed what we can, let's show the problem.
+            if (analysis.completionException != null) displayException(analysis.completionException)
+        }
+
     }
 
     fun handleAssetRequest(uri: Uri, domain: TdppDomain)

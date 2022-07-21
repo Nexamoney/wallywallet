@@ -107,9 +107,9 @@ class WelcomeFragment3 : Fragment()
 
         val accounts = wallyApp!!.accounts
         var wordSeeds: String = ""
-        for (c in accounts)
+        for (c in accounts)  // grab the 1st primary account
         {
-            if ((c.value.currencyCode) == PRIMARY_CRYPTO_CODE)
+            if (c.value.wallet.chainSelector == PRIMARY_CRYPTO)
             {
                 wordSeeds = c.value.wallet.secretWords + "\n"
                 break

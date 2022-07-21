@@ -97,7 +97,7 @@ class UnitTest
 
         val c = try
         {
-            ElectrumClient(ChainSelector.REGTEST, EMULATOR_HOST_IP, DEFAULT_TCP_ELECTRUM_PORT_REGTEST, "Electrum@${EMULATOR_HOST_IP}:${DEFAULT_TCP_ELECTRUM_PORT_REGTEST}")
+            ElectrumClient(ChainSelector.BCHREGTEST, EMULATOR_HOST_IP, DEFAULT_TCP_ELECTRUM_PORT_REGTEST, "Electrum@${EMULATOR_HOST_IP}:${DEFAULT_TCP_ELECTRUM_PORT_REGTEST}")
         }
         catch (e: java.net.ConnectException)
         {
@@ -536,7 +536,7 @@ class UnitTest
 
         val sbytes = UnsecuredSecret(ByteArray(32, {_ -> 2}))
 
-        val identityDest = Pay2PubKeyHashDestination(ChainSelector.REGTEST, sbytes)
+        val identityDest = Pay2PubKeyHashDestination(ChainSelector.NEXAREGTEST, sbytes)
 
         val secret = identityDest.secret ?: throw IdentityException("Wallet failed to provide an identity with a secret", "bad wallet", ErrorSeverity.Severe)
         val address = identityDest.address ?: throw IdentityException("Wallet failed to provide an identity with an address", "bad wallet", ErrorSeverity.Severe)
@@ -591,7 +591,7 @@ class UnitTest
     @Test
     fun testScript()
     {
-        val ch = ChainSelector.REGTEST
+        val ch = ChainSelector.NEXAREGTEST
         val fakepubkey = "0123456789abcdef01230123456789abcdef0123".fromHex()
 
         // P2PKH
@@ -669,7 +669,7 @@ class UnitTest
 
         var cnxn:BCHp2pClient = (try
         {
-            BCHp2pClient(ChainSelector.REGTEST, EMULATOR_HOST_IP, regtestPort, "regtest@${EMULATOR_HOST_IP}", coScope, coCond).connect(5000)
+            BCHp2pClient(ChainSelector.NEXAREGTEST, EMULATOR_HOST_IP, NexaRegtestPort, "regtest@${EMULATOR_HOST_IP}", coScope, coCond).connect(5000)
         }
         catch (e: java.net.SocketTimeoutException)
         {
@@ -736,7 +736,7 @@ class UnitTest
         // Used to load the 'native-lib' library on application startup.
         init {
             System.loadLibrary("nexandroid")
-            Initialize.LibBitcoinCash(ChainSelector.REGTEST.v)
+            Initialize.LibBitcoinCash(ChainSelector.NEXAREGTEST.v)
         }
     }
 }

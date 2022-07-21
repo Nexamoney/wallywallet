@@ -329,6 +329,7 @@ class GuiTest
 
     @Test fun testHomeActivity()
     {
+        val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED)
         var app: WallyApp? = null
@@ -340,8 +341,8 @@ class GuiTest
         val wdb = walletDb!!
 
         // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", ChainSelector.REGTEST)
-        deleteWallet(wdb, "rNEX2", ChainSelector.REGTEST)
+        deleteWallet(wdb, "rNEX1", cs)
+        deleteWallet(wdb, "rNEX2", cs)
 
         // Clean up old headers  ONLY NEEDED IF YOU RECREATE REGTEST NETWORK but reuse an emulator
         //deleteBlockHeaders("mRbch1", dbPrefix, appContext!!)
@@ -369,9 +370,9 @@ class GuiTest
         activityScenario.onActivity { check(it.lastErrorId == R.string.badCryptoCode) }
 
 
-        createNewAccount("rNEX1", ChainSelector.REGTEST)
+        createNewAccount("rNEX1", cs)
         activityScenario.onActivity { currentActivity == it }  // Clicking should bring us back to main screen
-        createNewAccount("rNEX2", ChainSelector.REGTEST)
+        createNewAccount("rNEX2", cs)
         activityScenario.onActivity { currentActivity == it }  // Clicking should bring us back to main screen
 
         peerInfo = rpc.peerInfo

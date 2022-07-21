@@ -52,20 +52,20 @@ var fiatCurrencyCode: String = "USD"
 /** Database name prefix, empty string for mainnet, set for testing */
 var dbPrefix = if (RunningTheTests()) "guitest_" else if (REG_TEST_ONLY == true) "regtest_" else ""
 
-val SupportedBlockchains = if (INCLUDE_NEXTCHAIN)
+val SupportedBlockchains =
     mapOf(
-      "BCH (Bitcoin Cash)" to ChainSelector.BCH,
       "NEXA" to ChainSelector.NEXA,
+      "BCH (Bitcoin Cash)" to ChainSelector.BCH,
       "TNEX (Testnet Nexa)" to ChainSelector.NEXATESTNET,
-      "RNEX (Regtest Nexa)" to ChainSelector.REGTEST
+      "RNEX (Regtest Nexa)" to ChainSelector.NEXAREGTEST,
+      "TBCH (Bitcoin Cash)" to ChainSelector.BCHTESTNET,
+      "RBCH (Bitcoin Cash)" to ChainSelector.BCHREGTEST
     )
-else
-    mapOf("BCH (Bitcoin Cash)" to ChainSelector.BCH, "TNEX (Testnet Nexa)" to ChainSelector.NEXATESTNET, "RNEX (Regtest Nexa)" to ChainSelector.REGTEST)
 
 val ChainSelectorToSupportedBlockchains = SupportedBlockchains.entries.associate { (k, v) -> v to k }
 
 // What is the default wallet and blockchain to use for most functions (like identity)
-val PRIMARY_CRYPTO_CODE = if (REG_TEST_ONLY) "RNEX" else "NEX"
+val PRIMARY_CRYPTO = if (REG_TEST_ONLY) ChainSelector.NEXAREGTEST else ChainSelector.NEXA
 
 /** incompatible changes, extra fields added, fields and field sizes are the same, but content may be extended (that is, addtl bits in enums) */
 val WALLY_DATA_VERSION = byteArrayOf(1, 0, 0)
@@ -77,21 +77,6 @@ var wallyApp: WallyApp? = null
 const val ACCOUNT_FLAG_NONE = 0UL
 const val ACCOUNT_FLAG_HIDE_UNTIL_PIN = 1UL
 const val RETRIEVE_ONLY_ADDITIONAL_ADDRESSES = 10
-
-/** If a wallet imports a nonstandard derivation path, include this many addresses past the last used address in the wallet's monitoring */
-
-fun MakeNewWallet(name: String, chain: ChainSelector): Bip44Wallet
-{
-    if (chain == ChainSelector.REGTEST) // Hard code the regtest wallet secret key for repeatable results
-        return Bip44Wallet(walletDb!!, name, chain, "trade box today light need route design birth turn insane oxygen sense")
-    if (chain == ChainSelector.NEXATESTNET)
-        return Bip44Wallet(walletDb!!, name, chain, NEW_WALLET)
-    if (chain == ChainSelector.BCH)
-        return Bip44Wallet(walletDb!!, name, chain, NEW_WALLET)
-    if (chain == ChainSelector.NEXA)
-        return Bip44Wallet(walletDb!!, name, chain, NEW_WALLET)
-    throw BUException("invalid chain selected")
-}
 
 /** Store the PIN encoded.  However, note that for short PINs a dictionary attack is very feasible */
 fun EncodePIN(actName: String, pin: String, size: Int = 64): ByteArray
@@ -684,11 +669,6 @@ class WallyApp : Application()
     val primaryAccount: Account
         get()
         {
-            // Look for an account that's just named the same as the cryptocurrency
-            val prim = accounts[PRIMARY_CRYPTO_CODE]
-            if (prim != null) return prim
-            //LogIt.info("Num accounts: " + accounts.size)
-
             // return the first Nexa wallet
             for (i in accounts.values)
             {
@@ -703,7 +683,7 @@ class WallyApp : Application()
             for (i in accounts.values)
             {
                 LogIt.info("falling back to regtest")
-                if (i.wallet.chainSelector == ChainSelector.REGTEST) return i
+                if (i.wallet.chainSelector == ChainSelector.NEXAREGTEST) return i
             }
             throw PrimaryWalletInvalidException()
         }
@@ -955,7 +935,7 @@ class WallyApp : Application()
                             c
                         } catch (e: DataMissingException)
                         {
-                            val c = Account("RKEX", ctxt, ACCOUNT_FLAG_NONE, ChainSelector.REGTEST)
+                            val c = Account("RKEX", ctxt, ACCOUNT_FLAG_NONE, ChainSelector.NEXAREGTEST)
                             c
                         }
                     }
