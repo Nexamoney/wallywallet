@@ -49,9 +49,6 @@ var coinsCreated = false
 /** Currently selected fiat currency code */
 var fiatCurrencyCode: String = "USD"
 
-/** Database name prefix, empty string for mainnet, set for testing */
-var dbPrefix = if (RunningTheTests()) "guitest_" else if (REG_TEST_ONLY == true) "regtest_" else ""
-
 val SupportedBlockchains =
     mapOf(
       "NEXA" to ChainSelector.NEXA,

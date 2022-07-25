@@ -171,7 +171,7 @@ class GuiTest
         assert(app != null)
 
         val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, info.bitcoinunlimited.www.wally.dbPrefix + "TESTbip44walletdb")
+        walletDb = OpenKvpDB(ctxt, dbPrefix + "TESTbip44walletdb")
         val wdb = walletDb!!
 
         onView(withId(R.id.navigation_home)).perform(click())
@@ -211,7 +211,7 @@ class GuiTest
         activityScenarioM.moveToState(Lifecycle.State.RESUMED)
         val app = wallyApp!!
         val ctxt = PlatformContext(app.applicationContext)
-        walletDb = OpenKvpDB(ctxt, info.bitcoinunlimited.www.wally.dbPrefix + "TESTbip44walletdb")
+        walletDb = OpenKvpDB(ctxt, dbPrefix + "TESTbip44walletdb")
         val wdb = walletDb!!
 
         val tw = Bip44Wallet(wdb,"testframework", ChainSelector.NEXA, "quantum curve elephant soccer faculty cheese merge medal vault damage sniff purpose")
@@ -222,16 +222,26 @@ class GuiTest
         uriStr = uriStr + "&sig=$uriSig64"
 
         println("trickle pay example: " + uriStr)
+
         val tent = Intent(Intent.ACTION_VIEW, Uri.parse(uriStr))
         val activityScenario: ActivityScenario<TricklePayActivity> = ActivityScenario.launch(tent)
         activityScenario.moveToState(Lifecycle.State.RESUMED)
-        // Wallet has no accounts
-        check(alerts[alerts.size-1].msg == i18n(R.string.NoAccounts))
 
-        // add an account and try again
-        app.newAccount("NEX1", ACCOUNT_FLAG_NONE, "", ChainSelector.NEXA)
-        val act = app.primaryAccount
-        activityScenario.recreate()
+        try
+        {
+            app.primaryAccount
+        }
+        catch (e:PrimaryWalletInvalidException)
+        {
+            // Wallet has no accounts
+            check(alerts[alerts.size - 1].msg == i18n(R.string.NoAccounts))
+
+            // add an account and try again
+            app.newAccount("NEX1", ACCOUNT_FLAG_NONE, "", ChainSelector.NEXA)
+            val act = app.primaryAccount
+            activityScenario.recreate()
+        }
+
 
         // push all the buttons
         activityScenario.onActivity {
@@ -291,7 +301,7 @@ class GuiTest
         }()
 
         val ctxt = PlatformContext(app.applicationContext)
-        walletDb = OpenKvpDB(ctxt, info.bitcoinunlimited.www.wally.dbPrefix + "TESTbip44walletdb")
+        walletDb = OpenKvpDB(ctxt, dbPrefix + "TESTbip44walletdb")
         val wdb = walletDb!!
 
         val act = try
@@ -337,7 +347,7 @@ class GuiTest
         assert(app != null)
 
         val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, info.bitcoinunlimited.www.wally.dbPrefix + "TESTbip44walletdb")
+        walletDb = OpenKvpDB(ctxt, dbPrefix + "TESTbip44walletdb")
         val wdb = walletDb!!
 
         // Clean up any prior run
@@ -353,7 +363,7 @@ class GuiTest
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpc(rpcConnection)
         var peerInfo = rpc.peerInfo
-        check(peerInfo.size == 0)  // Nothing should be connected
+        check(peerInfo.size >= 0  && peerInfo.size <= 1)  // Nothing should be connected (unless you are connected with an instance of wally which is common enough to ignore)
 
         // Generate blocks until we get coins to spend. This is needed inside the ci testing.
         // But the code checks first so that lots of extra blocks aren't created during dev testing
@@ -365,9 +375,20 @@ class GuiTest
             rpcBalance = rpc.getbalance()
         }
 
-        //val scenario = launchActivity<IdentityActivity>()
+        // Clear because other tests might have left stuff in these (and check that sending is invalid when fields cleared)
+        activityScenario.onActivity { it.sendQuantity.text.clear() }
+        onView(withId(GuiId.sendButton)).perform(click())  // Note if your phone is in a uninterruptable mode (like settings or notifications) then you'll get a spurious exception here
+
+        // If you come in to this routine clean, you'll get badCryptoCode, but if you have accounts defined, you'll get badAmount
+        activityScenario.onActivity { check(it.lastErrorId == R.string.badAmount || it.lastErrorId == R.string.badCryptoCode) }
+
+        activityScenario.onActivity { it.sendQuantity.text.append("11") }
+        activityScenario.onActivity { it.sendToAddress.text.clear() }
         onView(withId(GuiId.sendButton)).perform(click())
-        activityScenario.onActivity { check(it.lastErrorId == R.string.badCryptoCode) }
+        // If you come in to this routine clean, you'll get badCryptoCode, but if you have accounts defined, you'll get badAddress
+        activityScenario.onActivity { check(it.lastErrorId == R.string.badAddress  || it.lastErrorId == R.string.badCryptoCode) }
+
+        activityScenario.onActivity { it.sendQuantity.text.clear() }
 
 
         createNewAccount("rNEX1", cs)
@@ -411,8 +432,8 @@ class GuiTest
         onView(withId(GuiId.sendToAddress)).check(matches(withText(recvAddr)))
 
         onView(withId(GuiId.sendQuantity)).perform(clearText(),typeText("100000000"), pressImeActionButton())
+        clickSpinnerItem(GuiId.sendAccount, "rNEX1")
         onView(withId(GuiId.sendButton)).perform(click())
-        //activityScenario.onActivity { waitFor(1000000) { it.lastErrorString == i18n(R.string.insufficentBalance) } }
         waitForActivity(10000, activityScenario) { it.lastErrorString == i18n(R.string.insufficentBalance) }
 
         // Load coins
