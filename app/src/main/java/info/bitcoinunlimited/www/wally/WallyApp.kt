@@ -30,6 +30,7 @@ import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.net.ConnectException
 import java.security.spec.InvalidKeySpecException
+import java.util.*
 import java.util.concurrent.Executors
 import java.util.logging.Logger
 import javax.crypto.SecretKeyFactory
@@ -817,7 +818,8 @@ class WallyApp : Application()
 
         val ac = try
         {
-            Account(name, ctxt, flags, chainSelector)
+            val prehistoryDate = (Date().time / 1000L) - PREHISTORY_SAFEFTY_FACTOR // Set prehistory to 2 hours ago to account for block timestamp variations
+            Account(name, ctxt, flags, chainSelector, startPlace=prehistoryDate)
         } catch (e: IllegalStateException)
         {
             LogIt.warning("Error creating account: ${e.message}")

@@ -1,6 +1,6 @@
 package bitcoinunlimited.wally.guiTestImplementation
 
-import Nexa.NexaRpc.NexaRpc
+import Nexa.NexaRpc.*
 import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -24,6 +24,8 @@ import info.bitcoinunlimited.www.wally.*
 import kotlinx.android.synthetic.main.activity_identity.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.trickle_pay_reg.*
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
 import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.Matchers.*
 import org.junit.Test
@@ -39,8 +41,6 @@ val LogIt = Logger.getLogger("GuiTest")
 
 class TestTimeoutException(what: String): Exception(what)
 
-val REGTEST_RPC_USER="z"
-val REGTEST_RPC_PASSWORD="z"
 val REGTEST_RPC_PORT=18332
 
 @RunWith(AndroidJUnit4::class)
@@ -160,6 +160,25 @@ class GuiTest
         clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[chainSelector]!!)
 
         onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
+    }
+
+    @Test fun testRpc()
+    {
+        LogIt.info("This test requires a full node running on regtest")
+
+        // Set up RPC connection
+        val rpcConnection = "http://" + SimulationHostIP + ":" + "18332"
+
+        val nexaRpc = NexaRpcFactory.create(rpcConnection)
+
+        // Try the hard way (manual parsing returned parameter)
+        val retje = nexaRpc.callje("listunspent")
+        val result = (retje as JsonObject)["result"] as JsonArray
+        check(result.size > 0)  // This could fail if you haven't created at least 101 blocks
+
+        // Try the easy way
+        val ret = nexaRpc.listunspent()
+        check(ret.size > 0)
     }
 
     @Test fun testBottomNavigation()
@@ -359,11 +378,11 @@ class GuiTest
         //deleteBlockHeaders("mRbch2", dbPrefix, appContext!!)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + REGTEST_RPC_USER + ":" + REGTEST_RPC_PASSWORD + "@" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpc(rpcConnection)
-        var peerInfo = rpc.peerInfo
-        check(peerInfo.size >= 0  && peerInfo.size <= 1)  // Nothing should be connected (unless you are connected with an instance of wally which is common enough to ignore)
+        var rpc = NexaRpcFactory.create(rpcConnection)
+        var peerInfo = rpc.getpeerinfo()
+        check(peerInfo.size >= 0  && peerInfo.size <= 10)  // Lots of stuff could be connected if you are actively working
 
         // Generate blocks until we get coins to spend. This is needed inside the ci testing.
         // But the code checks first so that lots of extra blocks aren't created during dev testing
@@ -396,7 +415,7 @@ class GuiTest
         createNewAccount("rNEX2", cs)
         activityScenario.onActivity { currentActivity == it }  // Clicking should bring us back to main screen
 
-        peerInfo = rpc.peerInfo
+        peerInfo = rpc.getpeerinfo()
         check(peerInfo.size > 0)  // My accounts should be connected
 
         /* Send negative tests */
