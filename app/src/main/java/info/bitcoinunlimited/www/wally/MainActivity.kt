@@ -906,7 +906,7 @@ class MainActivity : CommonNavActivity()
 
                 if (true)
                 {
-                    updateSendAccount(pip.outputs[0].chainSelector)
+                    updateSendAccount(chainSelector)
                     // Update the sendCurrencyType field to contain our coin selection
                     updateSendCurrencyType()
 
