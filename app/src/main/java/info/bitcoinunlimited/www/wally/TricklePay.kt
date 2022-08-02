@@ -42,6 +42,7 @@ import java.util.logging.Logger
 import kotlinx.android.synthetic.main.tp_domain_list_item.view.*
 import kotlinx.android.synthetic.main.trickle_pay_main.*
 import java.math.BigDecimal
+import kotlin.random.Random
 
 val TDPP_URI_SCHEME = "tdpp"
 val TDPP_DEFAULT_UOA = "NEX"
@@ -58,11 +59,31 @@ private val LogIt = Logger.getLogger("BU.wally.TricklePay")
 // Must be top level for the serializer to handle it
 @Keep
 @kotlinx.serialization.Serializable
-data class TricklePayAssetInfo(val script: String, val outpointHash: String, val amt: Long)
+data class TricklePayAssetInfo(val outpointHash: String, val amt: Long, val prevout:String, val proof: String?=null)
 
 @Keep
 @kotlinx.serialization.Serializable
 data class TricklePayAssetList(val assets: List<TricklePayAssetInfo>)
+
+fun makeChallengeTx(sp: Spendable, challengerId: ByteArray, chalby: ByteArray): iTransaction?
+{
+    if (chalby.size < 8 || chalby.size > 64) return null
+    var rg = Random.Default
+    val rb = Random.nextBytes(chalby.size)
+    val moddedChal = ByteArray(chalby.size*2)
+    for (i in 0 until chalby.size)
+    {
+        moddedChal[i*2] = rb[i]
+        moddedChal[(i*2)+1] = chalby[i]
+    }
+    val cs = sp.chainSelector
+    val tx = txFor(cs)
+    tx.add(txInputFor(sp))
+    tx.add(txOutputFor(cs, 0, SatoshiScript(cs, SatoshiScript.Type.SATOSCRIPT, OP.RETURN, OP.push(challengerId), OP.push(moddedChal))))
+    (tx as NexaTransaction).version = OWNERSHIP_CHALLENGE_VERSION_MASK
+    signTransaction(tx)
+    return tx
+}
 
 // Structured data type to make it cleaner to return tx analysis data from the analysis function.
 // otherInputSatoshis: BCH being brought into this transaction by other participants
@@ -1106,11 +1127,24 @@ class TricklePayActivity : CommonNavActivity()
             return displayError(R.string.BadLink)
         }
 
-        // TODO: should pass the type of the prior output as part of the template
+        val chalbyStr = uri.getQueryParameter("chalby")
+        val chalby = chalbyStr?.fromHex() ?: null
+
         val stemplate = SatoshiScript(chainSelector!!, SatoshiScript.Type.SATOSCRIPT, scriptTemplateHex.fromHex())
         LogIt.info(sourceLoc() + ": Asset filter: " + stemplate.toHex())
 
-        val wal = getRelevantWallet() as CommonWallet
+
+        val wal = try
+        {
+            getRelevantWallet() as CommonWallet
+        }
+        catch(e: WalletInvalidException)
+        {
+            clearIntentAndFinish(error = i18n(R.string.badCryptoCode))
+            return
+        }
+
+        val challengerId = host?.toByteArray()
 
         var matches = mutableListOf<TricklePayAssetInfo>()
         for ((outpoint, spendable) in wal.unspent)
@@ -1120,7 +1154,10 @@ class TricklePayActivity : CommonNavActivity()
                 val constraint = spendable.priorOutScript
                 if (constraint.matches(stemplate, true) != null)
                 {
-                    matches.add(TricklePayAssetInfo(constraint.flatten().toHex(), outpoint.toHex(), spendable.amount))
+                    val serPrevout = spendable.prevout.BCHserialize(SerializationType.NETWORK).toHex()
+                    matches.add(TricklePayAssetInfo(outpoint.toHex(), spendable.amount, serPrevout,
+                      if (chalby != null && challengerId != null) makeChallengeTx(spendable, challengerId, chalby)?.toHex() else null,
+                      ))
                 }
             }
         }
@@ -1145,7 +1182,8 @@ class TricklePayActivity : CommonNavActivity()
         val address = uri.getQueryParameter("addr")
         if (address == null)
         {
-            return displayError(R.string.BadLink)
+            clearIntentAndFinish(error = i18n(R.string.badLink))
+            return
         }
 
         if (VerifyTdppSignature(uri) == true)
@@ -1474,6 +1512,9 @@ class TricklePayActivity : CommonNavActivity()
         val cookieString = if (cookie != null) "&cookie=$cookie" else ""
 
         val url = proto + "//" + host + "/assets?" + cookieString
+
+        val wal = getRelevantWallet() as CommonWallet
+
         later {
             LogIt.info("responding to server")
             val client = HttpClient(Android)
