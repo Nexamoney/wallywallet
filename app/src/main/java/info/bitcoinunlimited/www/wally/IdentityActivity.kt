@@ -167,12 +167,21 @@ class IdentityActivity : CommonNavActivity()
                 adapter = RecyclerAdapter(identities)
                 identityList.adapter = adapter
 
-                val name: String? = prefs.getString("hdl", null)
-                val email: String? = prefs.getString("email", null)
-                val socialmedia: String? = prefs.getString("sm", null)
+                val commonIdDest = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
+                val commonIdAddress = commonIdDest.address ?: throw PrimaryWalletInvalidException()
+                val identityInfo: IdentityInfo = wallet.lookupIdentityInfo(commonIdAddress) ?: {
+                    val ii = IdentityInfo()
+                    ii.identity = commonIdAddress
+                    wallet.upsertIdentityInfo(ii)
+                    ii
+                }()
+
+                val hdl: String? = identityInfo.hdl
+                val email: String? = identityInfo.email
+                val socialmedia: String? = identityInfo.sm
 
                 // Show these common fields for the "common identity" on the front screen
-                if (name != null) aliasInfo.text = name
+                if (hdl != null) aliasInfo.text = hdl
                 if (email != null) emailInfo.text = email
                 if (socialmedia != null)
                 {
@@ -185,11 +194,9 @@ class IdentityActivity : CommonNavActivity()
                 val destStr = dest.address.toString()
                 commonIdentityAddress.text = destStr
 
-                LogIt.info("name: " + name)
-
                 var uri = "nexid://p2p?op=share&addr=" + destStr;
-                if (name != null && name != "") uri = uri + "&name=" + URLEncoder.encode(name, "utf-8")
-                if (email != null && email != "") uri = uri + "&em=" + URLEncoder.encode(email, "utf-8")
+                if (hdl != null && hdl != "") uri = uri + "&hdl=" + URLEncoder.encode(hdl, "utf-8")
+                if (email != null && email != "") uri = uri + "&email=" + URLEncoder.encode(email, "utf-8")
                 if (socialmedia != null && socialmedia != "") uri = uri + "&sm=" + URLEncoder.encode(socialmedia, "utf-8")
                 LogIt.info("encoded URI: " + uri)
 
@@ -268,6 +275,12 @@ class IdentityActivity : CommonNavActivity()
         item4.intent.setData(Uri.parse("http://www.bitcoinunlimited.net/wally/faq"))
 
         return super.onCreateOptionsMenu(menu)
+    }
+
+    fun onCommonIdentityWrapperClicked(v:View)
+    {
+        val tent = Intent(this, IdentitySettings::class.java)
+        startActivity(tent)
     }
 
     @Suppress("UNUSED_PARAMETER")

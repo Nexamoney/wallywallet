@@ -9,139 +9,6 @@
         tools:context=".IdentityActivity">
 
     <TextView
-        android:id="@+id/Twitter"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="@string/TwitterText"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/keybaseHandle" />
-
-    <TextView
-        android:id="@+id/FirstNameText"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/UsernameOrAliasText"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/IdentityAssociatedWith" />
-
-    <TextView
-        android:id="@+id/ProvideLoginInfoText"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="20dp"
-        android:text="@string/NameText"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GuiUsername" />
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/nav_view"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="0dp"
-            android:layout_marginStart="0dp"
-            android:background="?android:attr/windowBackground"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:menu="@menu/bottom_nav_menu"
-            app:labelVisibilityMode="labeled"/>
-
-    <EditText
-        android:id="@+id/GuiName"
-        android:layout_width="fill_parent"
-        android:layout_height="40dp"
-        android:layout_marginStart="4dp"
-        android:autofillHints="name"
-        android:ems="10"
-        android:hint="@string/NameText"
-        android:inputType="textPersonName"
-        android:text="@string/lastName"
-        android:textAlignment="center"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ProvideLoginInfoText" />
-
-    <EditText
-        android:id="@+id/GuiUsername"
-        android:layout_width="fill_parent"
-        android:layout_height="40dp"
-        android:autofillHints="username"
-        android:ems="10"
-        android:hint="@string/UsernameOrAliasText"
-        android:inputType="textPersonName"
-        android:textAlignment="center"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/FirstNameText" />
-
-    <TextView
-        android:id="@+id/EmailText"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="20dp"
-        android:text="@string/EmailText"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GuiName" />
-
-    <TextView
-        android:id="@+id/keybaseName"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/KeybaseText"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GuiZipCode" />
-
-    <TextView
-        android:id="@+id/PostalCodeText"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/PostalCodeText"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText" />
-
-    <EditText
-        android:id="@+id/keybaseHandle"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:autofillHints=""
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:textAlignment="center"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/keybaseName" />
-
-    <EditText
-        android:id="@+id/twitterHandle"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:autofillHints=""
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:textAlignment="center"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Twitter" />
-
-    <TextView
         android:id="@+id/IdentityAssociatedWith"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -152,51 +19,29 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/addressText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/PostalAddressText"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/emailAddress" />
 
-    <EditText
-        android:id="@+id/editText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:autofillHints="postalAddress"
-        android:ems="10"
-        android:inputType="textPostalAddress"
-        android:textAlignment="center"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/infoValueRecycler"
+        style="IdentityInfo"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/nav_view"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addressText" />
+        app:layout_constraintTop_toBottomOf="@+id/IdentityAssociatedWith" />
 
-    <EditText
-        android:id="@+id/emailAddress"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/nav_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:autofillHints="emailAddress"
-        android:ems="10"
-        android:inputType="textEmailAddress"
-        android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/EmailText" />
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="0dp"
+        android:background="?android:attr/windowBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:menu="@menu/bottom_nav_menu"
+        app:labelVisibilityMode="labeled"/>
 
-    <EditText
-        android:id="@+id/GuiZipCode"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="number|text"
-        android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/PostalCodeText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -72,13 +72,22 @@ class DomainIdentitySettings : CommonNavActivity()
         super.onStop()
     }
 
+    fun removeDomainIdentity()
+    {
+        val wallet = (application as WallyApp).primaryAccount.wallet
+        wallet.removeIdentityDomain(domainName.text.toString())
+        domainName.text = ""
+        launch { wallet.save() }
+    }
+
     fun upsertDomainIdentity()
     {
+        // No domain to save
+        if (domainName.text.toString().length == 0) return
+
         var changed = false
         val wallet = (application as WallyApp).primaryAccount.wallet
-
         val id: Long = if (uniqueIdentitySwitch.isChecked) IdentityDomain.IDENTITY_BY_HASH else IdentityDomain.COMMON_IDENTITY
-
         var idData = wallet.lookupIdentityDomain(domainName.text.toString())
 
         if (idData == null)
@@ -168,6 +177,14 @@ class DomainIdentitySettings : CommonNavActivity()
     fun onNextButton(@Suppress("UNUSED_PARAMETER") view: View)
     {
         upsertDomainIdentity()
+        intent.putExtra("repeat", "true") // Tell identityOp not to come back here
+        setResult(Activity.RESULT_OK, intent)
+        finish()
+    }
+
+    fun onRemoveButton(@Suppress("UNUSED_PARAMETER") view: View)
+    {
+        removeDomainIdentity()
         intent.putExtra("repeat", "true") // Tell identityOp not to come back here
         setResult(Activity.RESULT_OK, intent)
         finish()

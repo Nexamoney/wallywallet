@@ -10,11 +10,10 @@
         android:id="@+id/TpAssetInfoRequestHandlingButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
         android:onClick="onChangeTpAssetInfoHandling"
         android:text="@string/accept"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/GuiEnableAutopay"
         app:layout_constraintTop_toBottomOf="@+id/GuiTricklePayTopic" />
 
     <TextView
@@ -78,12 +77,9 @@
         android:id="@+id/GuiEnableAutopay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         android:text="@string/TpEnableAutopay"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.75"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/textView4"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     <TextView
@@ -103,12 +99,10 @@
         android:id="@+id/GuiCustomTxCost"
         android:layout_width="150dp"
         android:layout_height="25dp"
-        android:layout_marginStart="8dp"
         android:text="@string/TpMaxPer"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/GuiAutospendLimitEntry0"
-        app:layout_constraintEnd_toStartOf="@+id/GuiAutospendLimitEntry0"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/GuiEnableAutopay"
         app:layout_constraintTop_toTopOf="@+id/GuiAutospendLimitEntry0"
         app:layout_constraintVertical_bias="0.65" />
 
@@ -116,7 +110,7 @@
         android:id="@+id/GuiAutospendLimitEntry0"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
         android:ems="10"
         android:hint="@string/TpMaxSpendHint"
         android:importantForAutofill="no"
@@ -124,7 +118,7 @@
         android:maxLines="1"
         android:minLines="1"
         android:singleLine="true"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/GuiCustomTxCost"
         app:layout_constraintTop_toBottomOf="@+id/GuiEnableAutopay" />
 
     <TextView
@@ -141,12 +135,10 @@
         android:id="@+id/GuiAutoSpendLimitName1"
         android:layout_width="@dimen/TpAutospendName"
         android:layout_height="25dp"
-        android:layout_marginStart="8dp"
         android:text="@string/TpMaxPerDay"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/GuiAutospendLimitEntry1"
-        app:layout_constraintEnd_toStartOf="@+id/GuiAutospendLimitEntry1"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/GuiEnableAutopay"
         app:layout_constraintTop_toTopOf="@+id/GuiAutospendLimitEntry1"
         app:layout_constraintVertical_bias="0.65" />
 
@@ -154,8 +146,8 @@
         android:id="@+id/GuiAutospendLimitEntry1"
         android:layout_width="@dimen/TpAutospendEntry"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
-        android:layout_marginEnd="16dp"
         android:ems="10"
         android:hint="@string/TpMaxSpendHint"
         android:importantForAutofill="no"
@@ -163,7 +155,7 @@
         android:maxLines="1"
         android:minLines="1"
         android:singleLine="true"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/GuiAutoSpendLimitName1"
         app:layout_constraintTop_toBottomOf="@+id/GuiAutospendLimitDescription0" />
 
     <TextView
@@ -180,12 +172,10 @@
         android:id="@+id/GuiAutoSpendLimitName2"
         android:layout_width="@dimen/TpAutospendName"
         android:layout_height="25dp"
-        android:layout_marginStart="8dp"
         android:text="@string/TpMaxPerWeek"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/GuiAutospendLimitEntry2"
-        app:layout_constraintEnd_toStartOf="@+id/GuiAutospendLimitEntry2"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/GuiEnableAutopay"
         app:layout_constraintTop_toTopOf="@+id/GuiAutospendLimitEntry2"
         app:layout_constraintVertical_bias="0.65" />
 
@@ -193,8 +183,8 @@
         android:id="@+id/GuiAutospendLimitEntry2"
         android:layout_width="@dimen/TpAutospendEntry"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
-        android:layout_marginEnd="16dp"
         android:ems="10"
         android:hint="@string/TpMaxSpendHint"
         android:importantForAutofill="no"
@@ -202,7 +192,7 @@
         android:maxLines="1"
         android:minLines="1"
         android:singleLine="true"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/GuiAutoSpendLimitName2"
         app:layout_constraintTop_toBottomOf="@+id/GuiAutospendLimitDescription1" />
 
     <TextView
@@ -219,12 +209,10 @@
         android:id="@+id/GuiAutoSpendLimitName3"
         android:layout_width="@dimen/TpAutospendName"
         android:layout_height="25dp"
-        android:layout_marginStart="8dp"
         android:text="@string/TpMaxPerMonth"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/GuiAutospendLimitEntry3"
-        app:layout_constraintEnd_toStartOf="@+id/GuiAutospendLimitEntry3"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/GuiEnableAutopay"
         app:layout_constraintTop_toTopOf="@+id/GuiAutospendLimitEntry3"
         app:layout_constraintVertical_bias="0.65" />
 
@@ -232,8 +220,8 @@
         android:id="@+id/GuiAutospendLimitEntry3"
         android:layout_width="@dimen/TpAutospendEntry"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
-        android:layout_marginEnd="16dp"
         android:ems="10"
         android:hint="@string/TpMaxSpendHint"
         android:importantForAutofill="no"
@@ -241,7 +229,7 @@
         android:maxLines="1"
         android:minLines="1"
         android:singleLine="true"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/GuiAutoSpendLimitName3"
         app:layout_constraintTop_toBottomOf="@+id/GuiAutospendLimitDescription2" />
 
     <TextView
@@ -333,6 +321,46 @@
         app:layout_constraintBottom_toBottomOf="@+id/TpAssetInfoRequestHandlingButton"
         app:layout_constraintStart_toEndOf="@+id/TpAssetInfoRequestHandlingButton"
         app:layout_constraintTop_toTopOf="@+id/TpAssetInfoRequestHandlingButton" />
+
+    <TextView
+        android:id="@+id/currencyUnit1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:text="@string/KEX"
+        app:layout_constraintBottom_toBottomOf="@+id/GuiAutoSpendLimitName1"
+        app:layout_constraintStart_toEndOf="@+id/GuiAutospendLimitEntry1"
+        app:layout_constraintTop_toTopOf="@+id/GuiAutoSpendLimitName1" />
+
+    <TextView
+        android:id="@+id/currencyUnit0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:text="@string/KEX"
+        app:layout_constraintBottom_toBottomOf="@+id/GuiCustomTxCost"
+        app:layout_constraintStart_toEndOf="@+id/GuiAutospendLimitEntry0"
+        app:layout_constraintTop_toTopOf="@+id/GuiCustomTxCost" />
+
+    <TextView
+        android:id="@+id/currencyUnit3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:text="@string/KEX"
+        app:layout_constraintBottom_toBottomOf="@+id/GuiAutoSpendLimitName3"
+        app:layout_constraintStart_toEndOf="@+id/GuiAutospendLimitEntry3"
+        app:layout_constraintTop_toTopOf="@+id/GuiAutoSpendLimitName3" />
+
+    <TextView
+        android:id="@+id/currencyUnit2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:text="@string/KEX"
+        app:layout_constraintBottom_toBottomOf="@+id/GuiAutoSpendLimitName2"
+        app:layout_constraintStart_toEndOf="@+id/GuiAutospendLimitEntry2"
+        app:layout_constraintTop_toTopOf="@+id/GuiAutoSpendLimitName2" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

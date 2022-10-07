@@ -11,7 +11,9 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
 import bitcoinunlimited.libbitcoincash.uriToChain
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
@@ -246,4 +248,130 @@ fun textToQREncode(value: String, size: Int): Bitmap?
 
     //bitmap.setPixels(pixels, 0, bitMatrixWidth, 0, 0, bitMatrixWidth, bitMatrixHeight)
     return bitmap
+}
+
+// stores and recycles views as they are scrolled off screen
+open class GuiListItemBinder<DATA> (val view: View) : RecyclerView.ViewHolder(view), View.OnClickListener
+{
+    var pos: Int = -1
+    var data: DATA? = null
+
+    init
+    {
+        view.setOnClickListener(this)
+    }
+
+    // null is passed to d if and only if the position is beyond the end of the list because you have selected empty bottom lines
+    fun bind(position: Int, d: DATA?)
+    {
+        pos = position
+        data = d
+        populate()
+    }
+
+    fun unbind()
+    {
+        if (pos != -1)
+        {
+            unpopulate()
+            pos = -1
+            data = null
+        }
+    }
+
+    override fun onClick(v: View)
+    {
+        changed()
+    }
+
+    // Fill the view with this data
+    open fun populate()
+    {
+    }
+
+    open fun changed()
+    {
+    }
+
+    // Pull the data from the view
+    open fun unpopulate()
+    {
+        changed()
+    }
+}
+
+class GuiList<DATA, BINDER: GuiListItemBinder<DATA>> internal constructor(var data: List<DATA>, context: Context?, val factory: (ViewGroup) -> BINDER) : RecyclerView.Adapter<BINDER>()
+{
+    //private val inflater: LayoutInflater = LayoutInflater.from(context)
+    // private var mClickListener: ItemClickListener? = null
+
+    // Change (on init, before assignment to the RecyclerView) to have empty bottom lines (note your binder must be able to handle beyond-end-of-list bindings)
+    var emptyBottomLines = 0
+    // Set this to an array of colors to set the background colors of each row to alternate
+    var rowBackgroundColors: Array<Int>? = null
+
+
+    // inflates the row layout from xml when needed
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BINDER
+    {
+        //val view: View = inflater.inflate(R.layout.filterrow, parent, false)
+        //return factory(view)
+        return(factory(parent))
+    }
+
+    override fun onDetachedFromRecyclerView (rv: RecyclerView)
+    {
+        return
+    }
+
+    override fun onViewDetachedFromWindow(holder: BINDER)
+    {
+        holder.unpopulate()
+    }
+
+    override fun onFailedToRecycleView(holder: BINDER): Boolean
+    {
+        holder.unpopulate()
+        return true
+    }
+
+    override fun onViewRecycled(holder: BINDER)
+    {
+        holder.unbind()
+    }
+
+    // binds the data to the TextView in each row
+    override fun onBindViewHolder(holder: BINDER, position: Int)
+    {
+        holder.unbind()
+
+        val rbc = rowBackgroundColors
+        if (rbc != null)
+        {
+            val colIdx = position % rbc.size
+            holder.view.setBackgroundColor(rbc[colIdx])
+        }
+
+        if (position < data.size)
+        {
+            val d = data[position]
+            holder.bind(position, d)
+        }
+        else
+        {
+            holder.bind(position, null)
+        }
+    }
+
+    // total number of rows
+    override fun getItemCount(): Int
+    {
+        return data.size + emptyBottomLines
+    }
+
+    // convenience method for getting data at click position
+    fun getItem(id: Int): DATA
+    {
+        return data[id]
+    }
 }

@@ -7,6 +7,19 @@
         android:layout_height="match_parent"
         tools:context=".IdentityActivity">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/commonIdentityFieldsWrapper"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:onClick="onCommonIdentityWrapperClicked"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:context=".IdentityActivity">
+
     <ImageView
         android:id="@+id/commonIdentityQRCode"
         android:layout_width="160dp"
@@ -57,7 +70,7 @@
         android:autoSizeMinTextSize="8sp"
         android:autoSizeStepGranularity="1sp"
         android:autoSizeTextType="uniform"
-        android:clickable="true"
+        android:clickable="false"
         android:gravity="center"
         android:textAlignment="center"
         android:textStyle="bold"
@@ -76,7 +89,7 @@
         android:autoSizeMinTextSize="8sp"
         android:autoSizeStepGranularity="1sp"
         android:autoSizeTextType="uniform"
-        android:clickable="true"
+        android:clickable="false"
         android:gravity="center"
         android:textAlignment="center"
         android:textStyle="bold"
@@ -95,7 +108,7 @@
         android:autoSizeMinTextSize="10sp"
         android:autoSizeStepGranularity="1sp"
         android:autoSizeTextType="uniform"
-        android:clickable="true"
+        android:clickable="false"
         android:gravity="center"
         android:maxLines="6"
         android:minLines="1"
@@ -105,6 +118,20 @@
         app:layout_constraintHorizontal_bias="0.533"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/emailInfo" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/divider4"
+        android:layout_width="0dp"
+        android:layout_height="3dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="8dp"
+        android:background="?android:attr/listDivider"
+        android:foreground="@color/listDividerFg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/commonIdentityFieldsWrapper" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view"
@@ -130,18 +157,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider4" />
 
-    <View
-        android:id="@+id/divider4"
-        android:layout_width="0dp"
-        android:layout_height="3dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginEnd="8dp"
-        android:background="?android:attr/listDivider"
-        android:foreground="@color/listDividerFg"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/socialMediaInfo" />
 
     <View
         android:id="@+id/GuiGreenBottom"

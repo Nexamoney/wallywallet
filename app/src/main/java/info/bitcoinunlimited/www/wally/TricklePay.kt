@@ -41,7 +41,9 @@ import java.net.URL
 import java.util.logging.Logger
 import kotlinx.android.synthetic.main.tp_domain_list_item.view.*
 import kotlinx.android.synthetic.main.trickle_pay_main.*
+import kotlinx.android.synthetic.main.trickle_pay_send_to.*
 import java.math.BigDecimal
+import java.net.URLEncoder
 import kotlin.random.Random
 
 val TDPP_URI_SCHEME = "tdpp"
@@ -59,7 +61,7 @@ private val LogIt = Logger.getLogger("BU.wally.TricklePay")
 // Must be top level for the serializer to handle it
 @Keep
 @kotlinx.serialization.Serializable
-data class TricklePayAssetInfo(val outpointHash: String, val amt: Long, val prevout:String, val proof: String?=null)
+data class TricklePayAssetInfo(val outpointHash: String, val amt: Long, val prevout: String, val proof: String? = null)
 
 @Keep
 @kotlinx.serialization.Serializable
@@ -70,11 +72,11 @@ fun makeChallengeTx(sp: Spendable, challengerId: ByteArray, chalby: ByteArray): 
     if (chalby.size < 8 || chalby.size > 64) return null
     var rg = Random.Default
     val rb = Random.nextBytes(chalby.size)
-    val moddedChal = ByteArray(chalby.size*2)
+    val moddedChal = ByteArray(chalby.size * 2)
     for (i in 0 until chalby.size)
     {
-        moddedChal[i*2] = rb[i]
-        moddedChal[(i*2)+1] = chalby[i]
+        moddedChal[i * 2] = rb[i]
+        moddedChal[(i * 2) + 1] = chalby[i]
     }
     val cs = sp.chainSelector
     val tx = txFor(cs)
@@ -158,18 +160,22 @@ data class TdppDomain(
 ) : BCHserializable
 {
     @cli(Display.Simple, "Maximum automatic payment exeeded action")
-    var maxperExceeded: TdppAction = TdppAction.DENY
+    var maxperExceeded: TdppAction = TdppAction.ASK
+
     @cli(Display.Simple, "Maximum automatic payment per day exeeded action")
-    var maxdayExceeded: TdppAction = TdppAction.DENY
+    var maxdayExceeded: TdppAction = TdppAction.ASK
+
     @cli(Display.Simple, "Maximum automatic payment per week exeeded action")
-    var maxweekExceeded: TdppAction = TdppAction.DENY
+    var maxweekExceeded: TdppAction = TdppAction.ASK
+
     @cli(Display.Simple, "Maximum automatic payment per month exeeded action")
-    var maxmonthExceeded: TdppAction = TdppAction.DENY
+    var maxmonthExceeded: TdppAction = TdppAction.ASK
 
     @cli(Display.Simple, "Asset information query")
     var assetInfo: TdppAction = TdppAction.ASK
+
     @cli(Display.Simple, "Balance information query")
-    var balanceInfo: TdppAction = TdppAction.DENY
+    var balanceInfo: TdppAction = TdppAction.ASK
 
     constructor(uri: Uri) : this("", "", "", "", -1, -1, -1, -1, "", "", "", "", false)
     {
@@ -188,7 +194,12 @@ data class TdppDomain(
 
     override fun BCHserialize(format: SerializationType): BCHserialized //!< Serializer
     {
-        return BCHserialized(format) + domain + topic + addr + uoa + maxper + maxday + maxweek + maxmonth + descper + descday + descweek + descmonth + automaticEnabled + maxperExceeded.v + maxdayExceeded.v + maxweekExceeded.v + maxmonthExceeded.v + assetInfo.v + balanceInfo.v
+        return BCHserialized(format) + domain + topic + addr + uoa +
+          maxper + maxday + maxweek + maxmonth +
+          descper + descday + descweek + descmonth +
+          automaticEnabled +
+          maxperExceeded.v + maxdayExceeded.v + maxweekExceeded.v + maxmonthExceeded.v +
+          assetInfo.v + balanceInfo.v
     }
 
     override fun BCHdeserialize(stream: BCHserialized): BCHserialized //!< Deserializer
@@ -197,20 +208,24 @@ data class TdppDomain(
         topic = stream.deString()
         addr = stream.deString()
         uoa = stream.deString()
+
         maxper = stream.deint64()
         maxday = stream.deint64()
         maxweek = stream.deint64()
         maxmonth = stream.deint64()
+
         descper = stream.deString()
         descday = stream.deString()
         descweek = stream.deString()
         descmonth = stream.deString()
+
         automaticEnabled = stream.deboolean()
 
         maxperExceeded = TdppAction.of(stream.debyte())
         maxdayExceeded = TdppAction.of(stream.debyte())
         maxweekExceeded = TdppAction.of(stream.debyte())
         maxmonthExceeded = TdppAction.of(stream.debyte())
+
         assetInfo = TdppAction.of(stream.debyte())
         balanceInfo = TdppAction.of(stream.debyte())
 
@@ -230,8 +245,9 @@ data class TdppDomain(
 
     fun load(uri: Uri)
     {
-        domain = uri.authority ?: throw NotUriException()
+        domain = uri.getHost() ?: throw NotUriException()
         topic = uri.getQueryParameter("topic") ?: ""
+        addr = uri.getQueryParameter("addr") ?: ""
         getParam(uri, "maxper", "descper").let { maxper = it.first; descper = it.second }
         getParam(uri, "maxday", "descday").let { maxday = it.first; descday = it.second }
         getParam(uri, "maxweek", "descweek").let { maxweek = it.first; descweek = it.second }
@@ -295,7 +311,6 @@ class TricklePayMainFragment : Fragment()
 
 }
 
-
 /* Handle a trickle pay Registration */
 class TricklePayRegFragment : Fragment()
 {
@@ -318,22 +333,8 @@ class TricklePayRegFragment : Fragment()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
-        //view.findViewById<Button>(R.id.button_first).setOnClickListener {
-        //    findNavController()?.navigate(R.id.action_Welcome1_to_Welcome2)
-        //}
     }
 
-    // data class Data2Widgets(val amtParam: String, val descParam: String, val entry: EditText, val desc: TextView)
-
-    /*
-    fun populate(puri: Uri)
-    {
-        editingReg = true
-        domain = null
-        uri = puri
-        updateUI()
-    }
-     */
 
     fun populate(d: TdppDomain, editingRegistration: Boolean = true)
     {
@@ -393,40 +394,6 @@ class TricklePayRegFragment : Fragment()
                 GuiAutospendLimitEntry3.text.append(account.format(account.fromFinestUnit(d.maxmonth)))
             GuiAutospendLimitDescription3.text = d.descmonth
         }
-        /*
-        else if (u != null)
-        {
-            val topic = u.getQueryParameter("topic").let {
-                if (it == null) ""
-                else ":" + it
-            }
-            GuiTricklePayEntity.text = u.authority
-            GuiTricklePayTopic.text = topic
-
-            val d2w = listOf(
-              Data2Widgets("maxper", "descper", GuiAutospendLimitEntry0, GuiAutospendLimitDescription0),
-              Data2Widgets("maxday", "descday", GuiAutospendLimitEntry1, GuiAutospendLimitDescription1),
-              Data2Widgets("maxweek", "descweek", GuiAutospendLimitEntry2, GuiAutospendLimitDescription2),
-              Data2Widgets("maxmonth", "descmonth", GuiAutospendLimitEntry3, GuiAutospendLimitDescription3)
-            )
-
-            for (d in d2w)
-            {
-                val amount: ULong? = u.getQueryParameter(d.amtParam).let {
-                    if (it == null) null
-                    else it.toULong()
-                }
-                val desc: String = u.getQueryParameter(d.descParam) ?: ""
-                d.entry.text.clear()
-                if (amount != null)
-                {
-                    d.entry.text.append(amount.toString())
-                }
-                d.desc.text = desc
-            }
-        }
-
-         */
 
         if (editingReg)
         {
@@ -557,6 +524,72 @@ class TricklePayCustomTxFragment : Fragment()
 }
 
 /* Handle a trickle pay Registration */
+class TricklePaySendToFragment : Fragment()
+{
+    var uri: Uri? = null
+    var tpActivity: TricklePayActivity? = null
+    var askReasons: List<String>? = null
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+    {
+        val ret = inflater.inflate(R.layout.trickle_pay_send_to, container, false)
+        return ret
+    }
+
+    override fun onResume()
+    {
+        updateUI()
+        super.onResume()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
+    {
+        super.onViewCreated(view, savedInstanceState)
+    }
+
+    fun populate(pactivity: TricklePayActivity, puri: Uri, reasons: List<String>)
+    {
+        uri = puri
+        askReasons = reasons
+        tpActivity = pactivity
+        updateUI()
+    }
+
+    fun updateUI()
+    {
+        val act = tpActivity ?: return  // resumed but not populated with data yet
+        val u: Uri = uri ?: return
+        val sa: List<Pair<PayAddress, Long>> = act.proposedDestinations ?: return
+
+        val tpc = u.getQueryParameter("topic").let {
+            if (it == null) ""
+            else ":" + it
+        }
+
+        GuiSendToTricklePayEntity.text = u.authority + tpc
+
+        val acc = act.getRelevantAccount()
+        GuiSendToBlockchain.text = chainToURI[acc.chain.chainSelector]
+
+        var total = 0L
+        for (it in sa)
+        {
+            total += it.second
+        }
+        GuiSendToCost.text = acc.cryptoFormat.format(acc.fromFinestUnit(total)) + " " + acc.currencyCode
+
+        GuiSendToPurpose.text = tpActivity?.reason ?: ""
+
+        val ars = askReasons
+        if (ars != null && ars.size > 0)
+        {
+            GuiSendsToAskReasons.text = ars.joinToString("\n")
+        }
+    }
+}
+
+
+/* Handle a trickle pay Registration */
 class TricklePayAssetRequestFragment : Fragment()
 {
     var uri: Uri? = null
@@ -650,14 +683,20 @@ fun VerifyTdppSignature(uri: Uri): Boolean?
     // recast the URI into one with the parameters in the proper order, and no sig
     val suri = Uri.Builder()
     suri.scheme(uri.scheme)
-    suri.authority(uri.authority)
+    suri.encodedAuthority(uri.authority)
     suri.path(uri.path)
     val orderedParams = uri.queryParameterNames.toList().sorted()
+    val queryParam = mutableListOf<String>()
     for (p in orderedParams)
     {
         if (p == "sig") continue
-        suri.appendQueryParameter(p, uri.getQueryParameter(p))
+        val tmp = uri.getQueryParameter(p)
+        val tmp2 = URLEncoder.encode(tmp, "utf-8")
+        queryParam.add(p + "=" + tmp2)
+        // this does normal URL encoding (e.g. %20 for space) not form encoding (e.g. + for space).  But we need form encoding
+        //suri.appendQueryParameter(p, uri.getQueryParameter(p))
     }
+    suri.encodedQuery(queryParam.joinToString("&"))
 
     val verifyThis = suri.build().toString()
 
@@ -666,7 +705,14 @@ fun VerifyTdppSignature(uri: Uri): Boolean?
     LogIt.info("verification for: " + verifyThis + " Address: " + addressStr)
     LogIt.info("Message hex: " + verifyThis.toByteArray().toHex())
     LogIt.info("Raw Address: " + pa.data.toHex())
-    val sigBytes = Codec.decode64(sig)
+    val sigBytes = try
+    {
+        Codec.decode64(sig)
+    } catch (e: IllegalStateException)
+    {
+        LogIt.info("Verification failed for: " + verifyThis + " Address: " + addressStr + " Cannot decode64 sig.")
+        return false
+    }
     LogIt.info("Sig: " + sigBytes.toHex())
     val result = Wallet.verifyMessage(verifyThis.toByteArray(), pa.data, sigBytes)
     if (result == null || result.size == 0)
@@ -796,12 +842,14 @@ class TricklePayActivity : CommonNavActivity()
     var tflags: Int = 0
     var proposedTx: iTransaction? = null
     var proposalUri: Uri? = null
+    var proposedDestinations: List<Pair<PayAddress, Long>>? = null
     var proposalCookie: String? = null
     var host: String? = null
     var port: Int = 80
     var topic: String? = null
     var sig: String? = null
     var cookie: String? = null
+    var reason: String? = null
     var rproto: String? = null
     var rpath: String? = null
     var chainSelector: ChainSelector? = null
@@ -812,7 +860,6 @@ class TricklePayActivity : CommonNavActivity()
         topic = d.topic
         (GuiTricklePayReg as TricklePayRegFragment).populate(d)
     }
-
 
     val viewSync = ThreadCond()
     var showingDetails = false
@@ -858,7 +905,7 @@ class TricklePayActivity : CommonNavActivity()
                     } catch (e: Exception)
                     {
                         domainsLoaded = true  // well we tried anyway
-                        LogIt.info("TDPP domain data corruption (or updated)")
+                        logThreadException(e, "TDPP domain data corruption (or updated)", sourceLoc())
                     }
                 }
                 domainsLoaded = true
@@ -875,7 +922,13 @@ class TricklePayActivity : CommonNavActivity()
                 if (domainsLoaded)  // If we save the domains before we load them, we'll erase them!
                 {
                     val ser = BCHserialized.uint8(SER_VERSION)
-                    ser.add(BCHserialized.map(domains, { BCHserialized(SerializationType.DISK).add(it) }, { it.BCHserialize() }, SerializationType.DISK))
+                    ser.add(BCHserialized.map(domains,
+                      {
+                          BCHserialized(SerializationType.DISK).add(it)
+                      },
+                      {
+                          it.BCHserialize()
+                      }, SerializationType.DISK))
                     db?.let {
                         it.set("tdppDomains", ser.flatten())
                     }
@@ -918,7 +971,7 @@ class TricklePayActivity : CommonNavActivity()
 
     fun displayFragment(frag: Fragment)
     {
-        val fragments = listOf(GuiTricklePayMain, GuiTricklePayReg, GuiTricklePayAssetRequest, GuiTricklePayCustomTx, GuiTricklePayEmpty)
+        val fragments = listOf(GuiTricklePayMain, GuiTricklePayReg, GuiTricklePayAssetRequest, GuiTricklePayCustomTx, GuiTricklePaySendTo, GuiTricklePayEmpty)
 
         var showedSomething = false
         for (f in fragments)
@@ -1049,6 +1102,7 @@ class TricklePayActivity : CommonNavActivity()
         port = uri.port
         topic = uri.getQueryParameter("topic")
         cookie = uri.getQueryParameter("cookie")
+        reason = uri.getQueryParameter("reason")
 
         val chain = uri.getQueryParameter("chain")
         if (chain != null)
@@ -1069,14 +1123,17 @@ class TricklePayActivity : CommonNavActivity()
 
         proposalUri = uri
         proposedTx = null
+        proposedDestinations = null
 
         val txHex = uri.getQueryParameter("tx")
         if (txHex == null)
         {
-            return displayError(R.string.BadLink)
+            return displayError(R.string.BadLink, "missing tx parameter")
         }
 
         parseCommonFields(uri)
+        if (chainSelector == null) return displayError(R.string.badCryptoCode)  // Chain is a mandatory field
+
 
         tflags = uri.getQueryParameter("flags")?.toInt() ?: 0
 
@@ -1085,7 +1142,7 @@ class TricklePayActivity : CommonNavActivity()
         // If we are funding then inputSatoshis must be provided
         if ((inputSatoshis == null) && ((tflags and TDPP_FLAG_NOFUND) == 0))
         {
-            return displayError(R.string.BadLink)
+            return displayError(R.string.BadLink, "missing inamt parameter")
         }
 
         val tx = txFor(chainSelector!!, BCHserialized(txHex.fromHex(), SerializationType.NETWORK))
@@ -1101,13 +1158,86 @@ class TricklePayActivity : CommonNavActivity()
             (GuiTricklePayCustomTx as TricklePayCustomTxFragment).GuiSpecialTxTitle.text = i18n(R.string.IncompleteTpTransactionFrom)
         }
 
-        if (analysis.completionException == null)  proposedTx = tx
+        if (analysis.completionException == null) proposedTx = tx
         laterUI {
             displayFragment(GuiTricklePayCustomTx)
             // Ok now that we've displayed what we can, let's show the problem.
             if (analysis.completionException != null) displayException(analysis.completionException)
         }
+    }
 
+    fun handleSendToAutopay(uri: Uri, domain: TdppDomain)
+    {
+        // Just explain why nothing will work
+        if (domains.size == 0)
+        {
+            displayError(R.string.TpNoRegistrations)
+            return
+        }
+
+        proposalUri = uri
+        proposedTx = null
+        proposedDestinations = null
+
+        val addrAmt = mutableListOf<Pair<PayAddress, Long>>()
+        var count = 0
+        var total = 0L
+        while (true)
+        {
+            val amtS = uri.getQueryParameter("amt" + count.toString())
+            val addrS = uri.getQueryParameter("addr" + count.toString())
+
+            // if one exists but not the other, request is bad
+            if ((amtS != null) xor (addrS != null))
+            {
+                return displayError(R.string.BadLink, "missing parameter")
+            }
+            // if either do not exist, done
+            if ((amtS == null) || (addrS == null)) break
+
+            val amt = amtS.toLong()
+            if (amt <= 0) return displayError(R.string.BadLink, "bad amount")
+            addrAmt.add(Pair(PayAddress(addrS), amt.toLong()))
+            val priorTotal = total
+            total += amt
+            if (total < priorTotal) return displayError(R.string.BadLink, "bad amount")  // amounts wrapped around
+            count++
+        }
+
+        parseCommonFields(uri)
+        if (chainSelector == null) return displayError(R.string.badCryptoCode)  // Chain is a mandatory field
+
+        proposedDestinations = addrAmt
+
+        val askReasons = mutableListOf<String>()
+
+        if (total > domain.maxper)
+        {
+            if (domain.maxperExceeded == TdppAction.DENY)
+            {
+                laterUI { rejectSendToRequest(R.string.TpSendAutoReject) }
+                return
+            }
+            else askReasons.add(i18n(R.string.TpExceededMaxPer))
+        }
+
+        // TODO maxday, maxweek, maxmonth
+
+        if (!domain.automaticEnabled) askReasons.add(i18n(R.string.TpAutomaticDisabled))
+
+        if (askReasons.size == 0)
+        {
+            acceptSendToRequest()
+            return
+        }
+        else
+        {
+            // If it wasn't automatically accepted or rejected, ask
+            laterUI {
+                (GuiTricklePaySendTo as TricklePaySendToFragment).populate(this, uri, askReasons)
+                displayFragment(GuiTricklePaySendTo)
+            }
+        }
     }
 
     fun handleAssetRequest(uri: Uri, domain: TdppDomain)
@@ -1124,7 +1254,7 @@ class TricklePayActivity : CommonNavActivity()
         if (scriptTemplateHex == null)
         {
             displayFragment(GuiTricklePayMain)
-            return displayError(R.string.BadLink)
+            return displayError(R.string.BadLink, "missing 'af' parameter")
         }
 
         val chalbyStr = uri.getQueryParameter("chalby")
@@ -1137,8 +1267,7 @@ class TricklePayActivity : CommonNavActivity()
         val wal = try
         {
             getRelevantWallet() as CommonWallet
-        }
-        catch(e: WalletInvalidException)
+        } catch (e: WalletInvalidException)
         {
             clearIntentAndFinish(error = i18n(R.string.badCryptoCode))
             return
@@ -1155,9 +1284,12 @@ class TricklePayActivity : CommonNavActivity()
                 if (constraint.matches(stemplate, true) != null)
                 {
                     val serPrevout = spendable.prevout.BCHserialize(SerializationType.NETWORK).toHex()
-                    matches.add(TricklePayAssetInfo(outpoint.toHex(), spendable.amount, serPrevout,
-                      if (chalby != null && challengerId != null) makeChallengeTx(spendable, challengerId, chalby)?.toHex() else null,
-                      ))
+                    matches.add(
+                      TricklePayAssetInfo(
+                        outpoint.toHex(), spendable.amount, serPrevout,
+                        if (chalby != null && challengerId != null) makeChallengeTx(spendable, challengerId, chalby)?.toHex() else null,
+                      )
+                    )
                 }
             }
         }
@@ -1176,14 +1308,14 @@ class TricklePayActivity : CommonNavActivity()
         }
     }
 
-    fun handleRegistration(uri: Uri)
+    fun handleRegistration(uri: Uri): Boolean
     {
         parseCommonFields(uri)
         val address = uri.getQueryParameter("addr")
         if (address == null)
         {
             clearIntentAndFinish(error = i18n(R.string.badLink))
-            return
+            return false
         }
 
         if (VerifyTdppSignature(uri) == true)
@@ -1199,22 +1331,45 @@ class TricklePayActivity : CommonNavActivity()
             try
             {
                 (GuiTricklePayReg as TricklePayRegFragment).populate(d, false)
-            }
-            catch(e:WalletInvalidException)
+            } catch (e: WalletInvalidException)
             {
-                displayFragment(GuiTricklePayMain)
-                displayError(R.string.NoAccounts)
-                return
+                laterUI {
+                    displayFragment(GuiTricklePayMain)
+                    displayError(R.string.NoAccounts)
+                }
+                return false
             }
         }
         else
         {
-            displayFragment(GuiTricklePayMain)
-            displayError(R.string.badSignature)
-            return
+            laterUI {
+                displayFragment(GuiTricklePayMain)
+                displayError(R.string.badSignature)
+            }
+            return false
         }
 
-        displayFragment(GuiTricklePayReg)
+        laterUI {
+            displayFragment(GuiTricklePayReg)
+        }
+        return true
+    }
+
+    fun loadCreateDomain(host: String, topic:String): TdppDomain
+    {
+        return synchronized(domainsLoaded)
+        {
+            if (!domainsLoaded) load()
+            var d = domains[domainKey(host, topic)]
+            if (d == null)
+            {
+                // delay and try again because load() cannot happen in the gui thread
+                d = TdppDomain(host, topic ?: "")
+                domains[domainKey(host, topic)] = d
+                save()
+            }
+            d
+        }
     }
 
     //? Handle tdpp intents
@@ -1236,32 +1391,34 @@ class TricklePayActivity : CommonNavActivity()
                     displayError(R.string.BadLink, "no host provided")
                     return
                 }
-
-                later()  // Can't do in UI because domains MUST be loaded first
+                if (path == null)
                 {
-                    val domain = synchronized(domainsLoaded)
+                    displayError(i18n(R.string.unknownOperation) % mapOf("op" to "no operation"))
+                    return
+                }
+
+                later() later@ // Can't do in UI because domains MUST be loaded first
+                {
+                    if (!domainsLoaded) load()
+                    if (path == "/reg")  // Handle registration
                     {
-                        if (!domainsLoaded) load()
-                        var d = domains[domainKey(h, t)]
-                        if (d == null)
-                        {
-                            // delay and try again because load() cannot happen in the gui thread
-                            d = TdppDomain(h, t ?: "")
-                            domains[domainKey(h, t)] = d
-                            save()
-                        }
-                        d
+                        handleRegistration(iuri)
+                        return@later
                     }
+
+                    // For all other commands, if the domain is unregistered create an entry for it but with no permissions
+                    val domain = loadCreateDomain(h,t ?: "")
 
                     if (path != null)
                     {
-                        if (path == "/reg")  // Handle registration
+                        if (path == "/reg")
                         {
-                            handleRegistration(iuri)
+                            // already handled before domain saved
                         }
                         else if (path == "/sendto")
                         {
                             LogIt.info("address autopay")
+                            handleSendToAutopay(iuri, domain)
                         }
                         else if (path == "/tx")
                         {
@@ -1288,13 +1445,13 @@ class TricklePayActivity : CommonNavActivity()
                         }
                         else
                         {
-                            displayFragment(GuiTricklePayEmpty)
+                            displayFragment(GuiTricklePayMain)
                             displayError(i18n(R.string.unknownOperation) % mapOf("op" to path));
                         }
                     }
                     else
                     {
-                        displayFragment(GuiTricklePayEmpty)
+                        displayFragment(GuiTricklePayMain)
                         displayError(i18n(R.string.unknownOperation) % mapOf("op" to "no operation"));
                     }
                 }
@@ -1322,8 +1479,7 @@ class TricklePayActivity : CommonNavActivity()
                     save()  // can't save in UI thread
                 }
             }
-        }
-        catch (e: Exception)
+        } catch (e: Exception)
         {
             LogIt.warning(sourceLoc() + "Unexpected Exception")
             displayException(e)
@@ -1357,22 +1513,22 @@ class TricklePayActivity : CommonNavActivity()
         val account = accountLst[0]
 
         var s = GuiAutospendLimitEntry0.text.toString()
-        if (s == i18n(R.string.unspecified)) d.maxper = -1
+        if (s == i18n(R.string.unspecified) || s == "") d.maxper = -1
         else
             d.maxper = account.toFinestUnit(BigDecimal(s))
 
         s = GuiAutospendLimitEntry1.text.toString()
-        if (s == i18n(R.string.unspecified)) d.maxday = -1
+        if (s == i18n(R.string.unspecified) || s == "") d.maxday = -1
         else
             d.maxday = account.toFinestUnit(BigDecimal(s))
 
         s = GuiAutospendLimitEntry2.text.toString()
-        if (s == i18n(R.string.unspecified)) d.maxweek = -1
+        if (s == i18n(R.string.unspecified) || s == "") d.maxweek = -1
         else
             d.maxweek = account.toFinestUnit(BigDecimal(s))
 
         s = GuiAutospendLimitEntry3.text.toString()
-        if (s == i18n(R.string.unspecified)) d.maxmonth = -1
+        if (s == i18n(R.string.unspecified) || s == "") d.maxmonth = -1
         else
             d.maxmonth = account.toFinestUnit(BigDecimal(s))
 
@@ -1395,8 +1551,7 @@ class TricklePayActivity : CommonNavActivity()
                 save()  // can't save in UI thread
                 clearIntentAndFinish(notice = i18n(R.string.TpRegAccepted))
             }
-        }
-        catch (e: NumberFormatException)
+        } catch (e: NumberFormatException)
         {
             displayError(R.string.badAmount)
         }
@@ -1428,14 +1583,12 @@ class TricklePayActivity : CommonNavActivity()
     fun onDenyTpReg(view: View?)
     {
         LogIt.info("deny trickle pay registration")
-        displayFragment(GuiTricklePayMain)
         clearIntentAndFinish(notice = i18n(R.string.TpRegDenied))
     }
 
     @Suppress("UNUSED_PARAMETER")
     fun onDoneTp(view: View?)
     {
-        displayFragment(GuiTricklePayMain)
         regUxToMap()
         later {
             save()  // can't save in UI thread
@@ -1496,6 +1649,38 @@ class TricklePayActivity : CommonNavActivity()
         clearIntentAndFinish(notice = i18n(R.string.TpTxDenied))
     }
 
+    fun onAcceptSendToRequest(@Suppress("UNUSED_PARAMETER") view: View?)
+    {
+        acceptSendToRequest()
+    }
+
+    fun onRejectSendToRequest(@Suppress("UNUSED_PARAMETER") view: View?)
+    {
+        rejectSendToRequest()
+    }
+
+    fun acceptSendToRequest()
+    {
+        val wal = getRelevantWallet()
+        val p = proposedDestinations
+        if (p == null)
+        {
+            clearIntentAndFinish()  // should never happen because page will not show if no destinations
+            return
+        }
+        wal.send(p, false, reason)
+        proposedDestinations = null
+        clearIntentAndFinish(notice = i18n(R.string.TpSendRequestAccepted))
+    }
+
+    fun rejectSendToRequest(reason: Int = R.string.TpSendRequestDenied)
+    {
+        proposedDestinations = null
+        LogIt.info("rejected send request")
+        clearIntentAndFinish(notice = i18n(reason))
+    }
+
+
     fun onAcceptAssetRequest(@Suppress("UNUSED_PARAMETER") view: View?)
     {
         val assets = (GuiTricklePayAssetRequest as TricklePayAssetRequestFragment).selectedAssets()
@@ -1528,7 +1713,6 @@ class TricklePayActivity : CommonNavActivity()
 
             try
             {
-
                 val response: HttpResponse = client.post(url) {
                     val tmp = json.write(assets)
                     LogIt.info("JSON response ${tmp.contentLength} : " + tmp.toString())

@@ -17,6 +17,7 @@
     </string-array>
 
     <string name="mBCH">mBCH</string>
+    <string name="KEX">KEX</string>
 
     <string-array name="OneToTen">
         <item>1</item>
@@ -184,6 +185,7 @@
     <!-- Some web site or company that you've never contacted before is requesting that you set up an account and authenticate a log-in.  This is an informational message
      that happens whenever the user first sets up a relationship between the web site/company and their wallet -->
     <string name="newDomainRequestingIdentity">New Domain Requesting Identity</string>
+    <string name="domainRequestingAdditionalIdentityInfo">Additional Information Requested</string>
     <string name="useUniqueIdentityToolTip">Turn on to keep your identity here separate from other sites.</string>
     <string name="provideAlias">Provide your username/handle/alias?</string>
     <string name="provideAliasToolTip">Selecting this option will provide your alias (as configured in settings, NOT your real name) to this web site, if requested</string>
@@ -212,17 +214,23 @@
     <string name="alreadyRegistered">already registered</string>
 
     <string name="provideLoginQuestion">Login to this site?</string>
+    <string name="provideInfoQuestion">Identity Information Requested By</string>
+    <string name="signDataQuestion">Signature Requested From</string>
+    <string name="nothingToSign">No message provided</string>
+    <string name="binaryToSign">Sign this binary data?</string>
+    <string name="textToSign">Sign this message?</string>
+    <string name="sigInClipboard">Signature copied to clipboard</string>
 
     <string name="SocialMediaText">Social Media</string>
     <string name="SocialMediaSummary">Enter as list of service:handle, E.g. twitter:janeDoe, keybase:janieD</string>
     <string name="UsernameOrAliasText">Username/handle/alias</string>
     <string name="NameText">Full Name</string>
     <string name="PostalAddressText">Postal Address</string>
+    <string name="BillingAddressText">Billing Address</string>
     <string name="PostalCodeText">Zip Code</string>
     <string name="EmailText">Email Address</string>
     <string name="TwitterText">Twitter</string>
     <string name="TelegramText">Telegram</string>
-    <string name="KeybaseText">Keybase</string>
     <string name="IdentityAssociatedWith">Associated Identity Info</string>
 
     <string name="firstName">first name</string>
@@ -230,6 +238,7 @@
 
     <string name="connectionEstablished">connection established</string>
     <string name="connectionException">cannot connect to site</string>
+    <string name="withholdingMandatoryInfo">site requires info that you refuse to provide</string>
     <string name="badLink">bad link</string>
     <string name="connectionAborted">site aborted login</string>
     <!-- Transaction history activity -->
@@ -455,6 +464,18 @@
     <string name="TpExchangingTokens" formatted="false">and exchanging tokens (sending %tokSnd, receiving %tokRcv).</string>
     <string name="TpSendingTokens" formatted="false">and sending %tokSnd tokens.</string>
     <string name="TpReceivingTokens" formatted="false">and receiving %tokRcv tokens.</string>
+
+    <string name="TpSendToTitle">Payment Requested By</string>
+    <string name="TpSpends">Spends</string>
+    <string name="TpSendRequestDenied">Payment denied</string>
+    <string name="TpSendAutoReject">Payment automatically rejected</string>
+    <string name="TpSendRequestAccepted">Payment accepted</string>
+
+    <string name="TpAutomaticDisabled">Automatic payments disabled</string>
+    <string name="TpExceededMaxPer">Exceeds per request maximum</string>
+    <string name="TpExceededMaxDaily">Exceeds per day maximum</string>
+    <string name="TpExceededMaxWeekly">Exceeds per week maximum</string>
+    <string name="TpExceededMaxMonthly">Exceeds per month maximum</string>
 
     <string name="title_activity_alert_history">Recent Messages</string>
 </resources>

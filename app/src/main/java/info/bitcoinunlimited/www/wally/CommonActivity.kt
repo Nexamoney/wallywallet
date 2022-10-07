@@ -376,7 +376,10 @@ open class CommonActivity : AppCompatActivity()
 
     }
 
-    fun handleAnyIntent(intentUri: String): Boolean
+    // We wouldn't notify if this app produced the Intent from active user input (like QR scan)
+    // but if it came from a long poll, then notify.
+    // Notifying and startActivityForResult produces a double call to that intent
+    fun handleAnyIntent(intentUri: String, notify: Boolean = true): Boolean
     {
         val uri = intentUri.split(":")[0]
 
@@ -385,15 +388,21 @@ open class CommonActivity : AppCompatActivity()
             LogIt.info("starting identity operation activity")
             var intent = Intent(this, IdentityOpActivity::class.java)
             intent.data = Uri.parse(intentUri)
-            val nid = wallyApp?.notify(intent, "Identity Request", this)
-            intent.extras?.putIntegerArrayList("notificationId",arrayListOf(nid))
+            if (notify)
+            {
+                val nid = wallyApp?.notify(intent, "Identity Request", this)
+                intent.extras?.putIntegerArrayList("notificationId", arrayListOf(nid))
+            }
             startActivityForResult(intent, IDENTITY_OP_RESULT)
         }
         else if (uri == TDPP_URI_SCHEME)
         {
             var intent = Intent(this, TricklePayActivity::class.java)
             intent.data = Uri.parse(intentUri)
-            wallyApp?.notify(intent, "Trickle Pay Request", this)
+            if (notify)
+            {
+                wallyApp?.notify(intent, "Trickle Pay Request", this)
+            }
             startActivityForResult(intent, TRICKLEPAY_RESULT)
         }
         else

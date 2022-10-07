@@ -240,4 +240,14 @@
         app:layout_constraintBottom_toTopOf="@+id/nav_view"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <Button
+        android:id="@+id/RemoveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onRemoveButton"
+        android:text="@string/remove"
+        android:layout_marginStart="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/NextButton"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

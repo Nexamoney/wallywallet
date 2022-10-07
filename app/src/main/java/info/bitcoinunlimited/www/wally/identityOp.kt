@@ -3,8 +3,11 @@
 package info.bitcoinunlimited.www.wally
 
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri.decode
 import android.os.Bundle
 import android.view.View
 import androidx.preference.PreferenceManager
@@ -17,6 +20,7 @@ import java.net.URLEncoder
 import java.util.logging.Logger
 import bitcoinunlimited.libbitcoincash.*
 import java.io.DataOutputStream
+import java.net.URLDecoder
 
 private val LogIt = Logger.getLogger("BU.wally.IdentityOp")
 
@@ -39,6 +43,7 @@ class IdentityOpActivity : CommonNavActivity()
     var triggeredNewDomain = false
     var account: Account? = null
     var pinTries = 0
+    var msgToSign:ByteArray? = null
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -65,6 +70,10 @@ class IdentityOpActivity : CommonNavActivity()
         if (intent.scheme != null)  // its null if normal app startup
         {
             handleNewIntent(intent)
+        }
+        else if (displayedLoginRequest == null) // Huh?  This activity MUST have an intent describing what to ask the user
+        {
+            finish()
         }
     }
 
@@ -150,6 +159,30 @@ class IdentityOpActivity : CommonNavActivity()
                     {
                         idData.getPerms(perms)
                         idData.getReqs(reqs)
+                        var settingsNeedChanging = false
+                        for ((k, v) in attribs)
+                        {
+                            if (k in nexidParams)
+                            {
+                                if (reqs[k] != v)   // Change the information requirements coming from this domain: TODO, ignore looser requirements
+                                {
+                                    reqs[k] = v
+                                    settingsNeedChanging = true
+                                }
+                            }
+                        }
+                        if (settingsNeedChanging)
+                        {
+                            var intent = Intent(context, DomainIdentitySettings::class.java)
+                            intent.putExtra("domainName", h)
+                            intent.putExtra("title", getString(R.string.domainRequestingAdditionalIdentityInfo))
+                            for ((k, v) in attribs)
+                            {
+                                intent.putExtra(k, v)
+                            }
+
+                            startActivityForResult(intent, IDENTITY_SETTINGS_RESULT)
+                        }
                     }
                 }
             }
@@ -221,7 +254,8 @@ class IdentityOpActivity : CommonNavActivity()
             try
             {
                 account = (application as WallyApp).primaryAccount
-            } catch (e: PrimaryWalletInvalidException)
+            }
+            catch (e: PrimaryWalletInvalidException)
             {
             }
         val acc = account
@@ -249,7 +283,44 @@ class IdentityOpActivity : CommonNavActivity()
         }
 
         host = iuri.getHost()
-        // val path = iuri.getPath()
+        val attribs = iuri.queryMap()
+        val op = attribs["op"]
+        if (op == "info")
+        {
+            ProvideLoginInfoText.text = i18n(R.string.provideInfoQuestion)
+        }
+        else if (op == "reg")
+        {
+            identityInformation.visibility = View.INVISIBLE
+            // TODO check if we know about this site
+        }
+        else if (op == "sign")
+        {
+            ProvideLoginInfoText.text = i18n(R.string.signDataQuestion)
+            val signText = attribs["sign"]
+            if (signText != null)
+            {
+                identityOpDetailsHeader.text = i18n(R.string.textToSign)
+                val s = URLDecoder.decode(signText,"utf-8")
+                identityInformation.text = s
+                msgToSign = signText.toByteArray()
+            }
+            else
+            {
+                identityOpDetailsHeader.text = i18n(R.string.binaryToSign)
+                val signHex = attribs["signhex"]
+                if (signHex != null)
+                {
+                    identityInformation.text = signHex
+                    msgToSign = signHex.fromHex()
+                }
+                else
+                {
+                    clearIntentAndFinish(i18n(R.string.nothingToSign))
+                }
+            }
+        }
+
         displayLoginRecipient.visibility = View.VISIBLE
         provideIdentityNoButton.visibility = View.VISIBLE
         provideIdentityYesButton.visibility = View.VISIBLE
@@ -308,15 +379,13 @@ class IdentityOpActivity : CommonNavActivity()
                 val secret = identityDest.secret ?: throw IdentityException("Wallet failed to provide an identity with a secret", "bad wallet", ErrorSeverity.Severe)
                 val address = identityDest.address ?: throw IdentityException("Wallet failed to provide an identity with an address", "bad wallet", ErrorSeverity.Severe)
 
-                val sig = Wallet.signMessage(chalToSign.toByteArray(), secret.getSecret())
-
-                if (sig.size == 0) throw IdentityException("Wallet failed to provide a signable identity", "bad wallet", ErrorSeverity.Severe)
-
-                val sigStr = Codec.encode64(sig)
-                LogIt.info("signature is: " + sigStr)
-
                 if (op == "login")
                 {
+                    val sig = Wallet.signMessage(chalToSign.toByteArray(), secret.getSecret())
+                    if (sig.size == 0) throw IdentityException("Wallet failed to provide a signable identity", "bad wallet", ErrorSeverity.Severe)
+                    val sigStr = Codec.encode64(sig)
+                    LogIt.info("signature is: " + sigStr)
+
                     var loginReq = protocol + "://" + h + portStr + path
                     loginReq += "?op=login&addr=" + address.toString() + "&sig=" + URLEncoder.encode(sigStr, "UTF-8") + "&cookie=" + URLEncoder.encode(cookie, "UTF-8")
 
@@ -344,13 +413,16 @@ class IdentityOpActivity : CommonNavActivity()
                             {
                                 displayError(resp, null, { clearIntentAndFinish() })
                             }
-                        } catch (e: IOException)
+                        }
+                        catch (e: FileNotFoundException)
                         {
-                            displayError(R.string.connectionAborted, null, { clearIntentAndFinish() })
-                        } catch (e: FileNotFoundException)
+                            displayError(R.string.badLink, loginReq, { clearIntentAndFinish() })
+                        }
+                        catch (e: IOException)
                         {
-                            displayError(R.string.badLink, null, { clearIntentAndFinish() })
-                        } catch (e: java.net.ConnectException)
+                            displayError(R.string.connectionAborted, loginReq, { clearIntentAndFinish() })
+                        }
+                        catch (e: java.net.ConnectException)
                         {
                             displayError(R.string.connectionException, null, { clearIntentAndFinish() })
                         }
@@ -358,14 +430,25 @@ class IdentityOpActivity : CommonNavActivity()
                         break@getloop  // only way to actually loop is to hit a 301 or 302
                     }
                 }
-                else if (op == "reg")
+                else if ((op == "reg") || (op == "info"))
                 {
+                    val sig = Wallet.signMessage(chalToSign.toByteArray(), secret.getSecret())
+                    if (sig.size == 0) throw IdentityException("Wallet failed to provide a signable identity", "bad wallet", ErrorSeverity.Severe)
+                    val sigStr = Codec.encode64(sig)
+                    LogIt.info("signature is: " + sigStr)
+
                     var forwarded = 0
+
+                    val identityInfo = wallet.lookupIdentityInfo(address)
+                    if (identityInfo == null)
+                    {
+                        throw IdentityException("Wallet did not provide identity information", "bad wallet", ErrorSeverity.Severe)
+                    }
 
                     var loginReq = protocol + "://" + h + portStr + path
 
                     val params = mutableMapOf<String, String>()
-                    params["op"] = "reg"
+                    params["op"] = op
                     params["addr"] = address.toString()
                     params["sig"] = sigStr
                     params["cookie"] = cookie.toString()
@@ -386,12 +469,26 @@ class IdentityOpActivity : CommonNavActivity()
                                 {
                                     val req = attribs[i]
 
-                                    if (perms[i] == true) prefs.getString(i, null)?.let { params[i] = it }
+                                    if (perms[i] == true)
+                                    {
+                                        val info = identityInfo.getString(i, null)
+                                        if (info == null || info == "")  // missing some info that is needed
+                                        {
+                                            var intent = Intent(v.context, IdentitySettings::class.java)
+                                            nexidUpdateIntentFromReqs(intent, reqs)
+                                            intent.putExtra("domainName", idData.domain)
+                                            (v.context as Activity).startActivity(intent)
+                                        }
+                                        else
+                                        {
+                                            params[i] = info
+                                        }
+                                    }
                                     else
                                     {
                                         if (req == "m")  // mandatory, so this login won't work
                                         {
-                                            displayError(i18n(R.string.connectionException))
+                                            displayError(i18n(R.string.withholdingMandatoryInfo))
                                             // Start DomainIdentitySettings dialog, instead of
                                             clearIntentAndFinish()
                                         }
@@ -421,7 +518,6 @@ class IdentityOpActivity : CommonNavActivity()
                             val req: HttpURLConnection = URL(loginReq).openConnection() as HttpURLConnection
                             req.requestMethod = "POST"
                             req.setRequestProperty("Content-Type", "application/json")
-                            //req.setRequestProperty("charset", "utf-8")
                             req.setRequestProperty("Accept", "*/*")
                             req.setRequestProperty("Content-Length", jsonBody.length.toString())
                             req.setConnectTimeout(HTTP_REQ_TIMEOUT_MS)
@@ -476,27 +572,99 @@ class IdentityOpActivity : CommonNavActivity()
                         break@postloop  // Only way to actually loop is to get a http 301 or 302
                     }
                 }
+                else if (op == "sign")
+                {
+                    val msg = msgToSign
+                    if (msg == null)
+                    {
+                        displayError(R.string.nothingToSign, null, { clearIntentAndFinish() })
+                    }
+                    else
+                    {
+                        val msgSig = Wallet.signMessage(msg, secret.getSecret())
+                        val sigStr = Codec.encode64(msgSig)
+                        laterUI {
+                            var clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                            var clip = ClipData.newPlainText("text", address.toString() + " -> " + sigStr)
+                            clipboard.setPrimaryClip(clip)
+                        }
+                        displayNotice(R.string.sigInClipboard, NOTICE_DISPLAY_TIME, { clearIntentAndFinish() })
+
+                        val reply = attribs["reply"]
+                        if (reply == null || reply == "true")
+                        {
+                        var sigReq = protocol + "://" + h + portStr + path
+                        sigReq += "?op=sign&addr=" + address.toString() + "&sig=" + URLEncoder.encode(sigStr, "UTF-8") + "&cookie=" + URLEncoder.encode(cookie, "UTF-8")
+
+                        var forwarded = 0
+                        getloop@ while (forwarded < 3)
+                        {
+                            LogIt.info("signature reply: " + sigReq)
+                            try
+                            {
+                                val req: HttpURLConnection = URL(sigReq).openConnection() as HttpURLConnection
+                                req.setConnectTimeout(HTTP_REQ_TIMEOUT_MS)
+                                val resp = req.inputStream.bufferedReader().readText()
+                                LogIt.info("signature response code:" + req.responseCode.toString() + " response: " + resp)
+                                if ((req.responseCode >= 200) and (req.responseCode < 250))
+                                {
+                                    displayNotice(resp, null, 1000) { clearIntentAndFinish() }
+                                }
+                                else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding (often switching from http to https)
+                                {
+                                    sigReq = req.getHeaderField("Location")
+                                    forwarded += 1
+                                    continue@getloop
+                                }
+                                else
+                                {
+                                    displayError(resp, null, { clearIntentAndFinish() })
+                                }
+                            }
+                            catch (e: FileNotFoundException)
+                            {
+                                displayError(R.string.badLink, sigReq, { clearIntentAndFinish() })
+                            }
+                            catch (e: IOException)
+                            {
+                                displayError(R.string.connectionAborted, sigReq, { clearIntentAndFinish() })
+                            }
+                            catch (e: java.net.ConnectException)
+                            {
+                                displayError(R.string.connectionException, null, { clearIntentAndFinish() })
+                            }
+                            break@getloop  // only way to actually loop is to hit a 301 or 302
+                        }
+                        }
+                    }
+
+                }
             }
-            else
+            else  // uri was null
             {
-                // TODO shouldn't be visible if variable isn't set.
+                clearIntentAndFinish()
             }
         }
 
+        showUI(false)
+    }
 
-        ProvideLoginInfoText.visibility = View.INVISIBLE;
-        displayLoginRecipient.visibility = View.INVISIBLE;
-        provideIdentityNoButton.visibility = View.INVISIBLE;
-        provideIdentityYesButton.visibility = View.INVISIBLE;
+    fun showUI(show:Boolean)
+    {
+        val s = if (show) View.VISIBLE else View.INVISIBLE
+
+        identityInformation.visibility = s
+        identityOpDetailsHeader.visibility = s
+        ProvideLoginInfoText.visibility = s
+        displayLoginRecipient.visibility = s
+        provideIdentityNoButton.visibility = s
+        provideIdentityYesButton.visibility = s
     }
 
     @Suppress("UNUSED_PARAMETER")
     fun onDontProvideIdentity(v: View)
     {
-        ProvideLoginInfoText.visibility = View.INVISIBLE;
-        displayLoginRecipient.visibility = View.INVISIBLE;
-        provideIdentityNoButton.visibility = View.INVISIBLE;
-        provideIdentityYesButton.visibility = View.INVISIBLE;
+        showUI(false)
         clearIntentAndFinish()
     }
 
