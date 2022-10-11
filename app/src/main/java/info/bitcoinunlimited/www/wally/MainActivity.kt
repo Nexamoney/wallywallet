@@ -748,7 +748,7 @@ class MainActivity : CommonNavActivity()
     {
         if (text != "")
         {
-            if (!handleAnyIntent(text, false))
+            if (!handleAnyIntent(text))
               {
                   // Clean out an old payment protocol if you are pasting a new send in
                   paymentInProgress = null

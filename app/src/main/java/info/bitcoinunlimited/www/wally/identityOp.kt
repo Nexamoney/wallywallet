@@ -7,7 +7,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
 import android.content.SharedPreferences
-import android.net.Uri.decode
 import android.os.Bundle
 import android.view.View
 import androidx.preference.PreferenceManager
@@ -35,7 +34,7 @@ class IdentityOpActivity : CommonNavActivity()
 
     var displayedLoginRequest: URL? = null
 
-    var query: Map<String, String>? = null
+    var queries: Map<String, String> = mapOf()
     val perms = mutableMapOf<String, Boolean>()
     val reqs = mutableMapOf<String, String>()
 
@@ -66,6 +65,7 @@ class IdentityOpActivity : CommonNavActivity()
     {
         super.onResume()
         LogIt.info("Identity Operation")
+        identityInformation.visibility = View.INVISIBLE
         // Process the intent that caused this activity to resume
         if (intent.scheme != null)  // its null if normal app startup
         {
@@ -83,6 +83,7 @@ class IdentityOpActivity : CommonNavActivity()
         provideIdentityNoButton.visibility = View.INVISIBLE
         provideIdentityYesButton.visibility = View.INVISIBLE
         ProvideLoginInfoText.visibility = View.INVISIBLE
+        identityInformation.visibility = View.INVISIBLE
     }
 
     /** Check whether this domain has ever been seen before, and if it hasn't pop up the new domain configuration activity */
@@ -97,7 +98,7 @@ class IdentityOpActivity : CommonNavActivity()
 
             // val path = iuri.getPath()
             val attribs = iuri.queryMap()
-            query = iuri.queryMap()
+            queries = iuri.queryMap()
 
             val context = this
 
@@ -109,7 +110,6 @@ class IdentityOpActivity : CommonNavActivity()
                     (application as WallyApp).primaryAccount
                 } catch (e: PrimaryWalletInvalidException)
                 {
-                    //displayError(R.string.pleaseWait)
                     val primName:String = chainToURI[PRIMARY_CRYPTO] ?: ""
                     clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to primName), i18n(R.string.primaryAccountRequiredDetails))
                     return
@@ -125,14 +125,14 @@ class IdentityOpActivity : CommonNavActivity()
                 }
 
                 val w = act.wallet
+                val op = queries["op"]?.lowercase() ?: ""
 
-                if (true)
+                if (op != "sign")  // sign does not need a registered identity domain so skip all this checking for this op
                 {
                     val idData = w.lookupIdentityDomain(h) // + path)
                     if (idData == null)
                     {
-                        val queries = iuri.queryMap()
-                        if (queries["op"]?.lowercase() != "reg")
+                        if (op != "reg")
                         {
                             blankActivity()
                             displayError(R.string.UnknownDomainRegisterFirst, null, { finish() })
@@ -291,7 +291,6 @@ class IdentityOpActivity : CommonNavActivity()
         }
         else if (op == "reg")
         {
-            identityInformation.visibility = View.INVISIBLE
             // TODO check if we know about this site
         }
         else if (op == "sign")
@@ -319,7 +318,9 @@ class IdentityOpActivity : CommonNavActivity()
                     clearIntentAndFinish(i18n(R.string.nothingToSign))
                 }
             }
+            identityInformation.visibility = View.VISIBLE
         }
+
 
         displayLoginRecipient.visibility = View.VISIBLE
         provideIdentityNoButton.visibility = View.VISIBLE

@@ -140,6 +140,8 @@ open class CommonActivity : AppCompatActivity()
     var lastErrorId = 0
     var lastErrorString = ""
 
+    var isRunning = false
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -177,7 +179,18 @@ open class CommonActivity : AppCompatActivity()
         coGuiScope.cancel()
         coMiscScope.cancel()
         super.onDestroy()
+    }
 
+    override fun onResume()
+    {
+        super.onResume()
+        isRunning = true
+    }
+
+    override fun onPause()
+    {
+        super.onPause()
+        isRunning = false
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean
@@ -376,12 +389,20 @@ open class CommonActivity : AppCompatActivity()
 
     }
 
+    fun amIbackground(): Boolean
+    {
+        return isRunning==false
+    }
+
+
     // We wouldn't notify if this app produced the Intent from active user input (like QR scan)
     // but if it came from a long poll, then notify.
     // Notifying and startActivityForResult produces a double call to that intent
-    fun handleAnyIntent(intentUri: String, notify: Boolean = true): Boolean
+    fun handleAnyIntent(intentUri: String): Boolean
     {
         val uri = intentUri.split(":")[0]
+
+        val notify = amIbackground()
 
         if (uri == IDENTITY_URI_SCHEME)
         {
@@ -393,7 +414,7 @@ open class CommonActivity : AppCompatActivity()
                 val nid = wallyApp?.notify(intent, "Identity Request", this)
                 intent.extras?.putIntegerArrayList("notificationId", arrayListOf(nid))
             }
-            startActivityForResult(intent, IDENTITY_OP_RESULT)
+            else startActivityForResult(intent, IDENTITY_OP_RESULT)
         }
         else if (uri == TDPP_URI_SCHEME)
         {
@@ -403,7 +424,7 @@ open class CommonActivity : AppCompatActivity()
             {
                 wallyApp?.notify(intent, "Trickle Pay Request", this)
             }
-            startActivityForResult(intent, TRICKLEPAY_RESULT)
+            else startActivityForResult(intent, TRICKLEPAY_RESULT)
         }
         else
         {

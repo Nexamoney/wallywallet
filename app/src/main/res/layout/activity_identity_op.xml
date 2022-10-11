@@ -80,6 +80,7 @@
         android:layout_marginBottom="16dp"
         android:background="#F4E8C5"
         android:padding="8dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/provideIdentityNoButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -557,6 +557,8 @@ class TricklePaySendToFragment : Fragment()
 
     fun updateUI()
     {
+        try
+        {
         val act = tpActivity ?: return  // resumed but not populated with data yet
         val u: Uri = uri ?: return
         val sa: List<Pair<PayAddress, Long>> = act.proposedDestinations ?: return
@@ -584,6 +586,14 @@ class TricklePaySendToFragment : Fragment()
         if (ars != null && ars.size > 0)
         {
             GuiSendsToAskReasons.text = ars.joinToString("\n")
+        }
+        }
+        catch(e:WalletInvalidException)
+        {
+            laterUI {
+                tpActivity?.displayFragment(GuiTricklePayMain)
+                tpActivity?.displayError(R.string.NoAccounts)
+            }
         }
     }
 }
