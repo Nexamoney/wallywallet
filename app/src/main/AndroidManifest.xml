@@ -129,7 +129,7 @@
         <activity
             android:name=".TricklePayActivity"
             android:label="@string/title_activity_trickle_pay"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:parentActivityName=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

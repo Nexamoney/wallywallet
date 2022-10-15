@@ -193,6 +193,13 @@ open class CommonActivity : AppCompatActivity()
         isRunning = false
     }
 
+    // see https://stackoverflow.com/questions/13135545/android-activity-is-using-old-intent-if-launching-app-from-recent-task
+    fun launchedFromRecent(): Boolean
+    {
+        val flags: Int = intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY
+        return flags == Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
         when (item.getItemId())

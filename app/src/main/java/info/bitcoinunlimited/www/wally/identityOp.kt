@@ -457,8 +457,6 @@ class IdentityOpActivity : CommonNavActivity()
                     // Supply additional requested data
                     postloop@ while (forwarded < 3)
                     {
-                        val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-
                         val idData = wallet.lookupIdentityDomain(h)
                         if (idData != null)
                         {

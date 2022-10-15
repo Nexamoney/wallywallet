@@ -15,6 +15,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.annotation.Keep
+import androidx.core.app.NavUtils
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
@@ -362,6 +363,8 @@ class TricklePayRegFragment : Fragment()
             GuiTricklePayTopic.text = d.topic
             TpAssetInfoRequestHandlingButton.text = d.assetInfo.toString()
 
+            GuiEnableAutopay.setChecked(d.automaticEnabled)
+
             GuiAutospendLimitEntry0.text.clear()
             if (d.maxper == -1L)
             {
@@ -484,7 +487,14 @@ class TricklePayCustomTxFragment : Fragment()
             if (a.otherInputSatoshis != null)
             {
                 val fee = (a.myInputSatoshis + a.otherInputSatoshis) - (a.receivingSats + a.sendingSats)
-                GuiCustomTxFee.text = (i18n(R.string.ForAFeeOf) % mapOf("fee" to acc.cryptoFormat.format(acc.fromFinestUnit(fee)), "units" to acc.currencyCode))
+                if (fee > 0)
+                {
+                    GuiCustomTxFee.text = (i18n(R.string.ForAFeeOf) % mapOf("fee" to acc.cryptoFormat.format(acc.fromFinestUnit(fee)), "units" to acc.currencyCode))
+                }
+                else  // Almost certainly the requester is going to fill out more of this tx so the fee is kind of irrelevant.  TODO: only show the fee if this wallet is paying it (tx is complete)
+                {
+                    GuiCustomTxFee.text = ""
+                }
             }
             else
             {
@@ -836,7 +846,6 @@ private class TricklePayRecyclerAdapter(private val activity: TricklePayActivity
 class TricklePayActivity : CommonNavActivity()
 {
     override var navActivityId = R.id.navigation_trickle_pay
-
     var db: KvpDatabase? = null
 
     fun domainKey(host: String, topic: String? = null): String = host + "/" + (topic ?: "")
@@ -969,14 +978,15 @@ class TricklePayActivity : CommonNavActivity()
 
     override fun onResume()
     {
-        displayFragment(GuiTricklePayEmpty)
         super.onResume()
-        // Process the intent that caused this activity to resume
-        if (intent.scheme != null)  // its null if normal app startup
+        if (!launchedFromRecent() && (intent.scheme != null)) // its null if normal app startup
         {
             handleNewIntent(intent)
         }
-        else displayFragment(GuiTricklePayMain)
+        else
+        {
+            displayFragment(GuiTricklePayMain)
+        }
     }
 
     fun displayFragment(frag: Fragment)
@@ -1052,7 +1062,8 @@ class TricklePayActivity : CommonNavActivity()
             // Someday the wallet might want to fund groups, etc but for now all it does is pay for txes because the wallet UX can only show that
             //(wal as CommonWallet).txCompleter2(tx, 0, cflags, inputSatoshis)
             wal.txCompleter(tx, 0, cflags, inputSatoshis)
-        } catch (e: Exception)  // Try to report on the tx even if we can't complete it.
+        }
+        catch (e: Exception)  // Try to report on the tx even if we can't complete it.
         {
             completionException = e
         }
@@ -1142,7 +1153,11 @@ class TricklePayActivity : CommonNavActivity()
         }
 
         parseCommonFields(uri)
-        if (chainSelector == null) return displayError(R.string.badCryptoCode)  // Chain is a mandatory field
+        if (chainSelector == null)
+        {
+            displayFragment(GuiTricklePayMain)
+            return displayError(R.string.badCryptoCode)  // Chain is a mandatory field
+        }
 
 
         tflags = uri.getQueryParameter("flags")?.toInt() ?: 0
@@ -1152,6 +1167,7 @@ class TricklePayActivity : CommonNavActivity()
         // If we are funding then inputSatoshis must be provided
         if ((inputSatoshis == null) && ((tflags and TDPP_FLAG_NOFUND) == 0))
         {
+            displayFragment(GuiTricklePayMain)
             return displayError(R.string.BadLink, "missing inamt parameter")
         }
 
@@ -1159,11 +1175,20 @@ class TricklePayActivity : CommonNavActivity()
         LogIt.info(sourceLoc() + ": Tx to autopay: " + tx.toHex())
 
         // Analyze and sign transaction
-        val analysis = analyzeCompleteAndSignTx(tx, inputSatoshis, tflags)
+        val analysis = try
+        {
+            analyzeCompleteAndSignTx(tx, inputSatoshis, tflags)
+        }
+        catch (e: WalletInvalidException)  // probably don't have an account unlocked for this crypto
+        {
+            displayFragment(GuiTricklePayMain)
+            return displayException(e)
+        }
         LogIt.info(sourceLoc() + ": Completed tx: " + tx.toHex())
 
         (GuiTricklePayCustomTx as TricklePayCustomTxFragment).populate(this, uri, tx, analysis)
-        if ((tflags and TDPP_FLAG_PARTIAL) != 0)  // Change the title if the request is for a partial transaction
+        // Change the title if the request is for a partial transaction
+        if ((tflags and TDPP_FLAG_PARTIAL) != 0)
         {
             (GuiTricklePayCustomTx as TricklePayCustomTxFragment).GuiSpecialTxTitle.text = i18n(R.string.IncompleteTpTransactionFrom)
         }
@@ -1181,8 +1206,8 @@ class TricklePayActivity : CommonNavActivity()
         // Just explain why nothing will work
         if (domains.size == 0)
         {
-            displayError(R.string.TpNoRegistrations)
-            return
+            displayFragment(GuiTricklePayMain)
+            return displayError(R.string.TpNoRegistrations)
         }
 
         proposalUri = uri
@@ -1200,6 +1225,7 @@ class TricklePayActivity : CommonNavActivity()
             // if one exists but not the other, request is bad
             if ((amtS != null) xor (addrS != null))
             {
+                displayFragment(GuiTricklePayMain)
                 return displayError(R.string.BadLink, "missing parameter")
             }
             // if either do not exist, done
@@ -1215,7 +1241,11 @@ class TricklePayActivity : CommonNavActivity()
         }
 
         parseCommonFields(uri)
-        if (chainSelector == null) return displayError(R.string.badCryptoCode)  // Chain is a mandatory field
+        if (chainSelector == null)
+        {
+            displayFragment(GuiTricklePayMain)
+            return displayError(R.string.badCryptoCode)  // Chain is a mandatory field
+        }
 
         proposedDestinations = addrAmt
 
@@ -1225,6 +1255,7 @@ class TricklePayActivity : CommonNavActivity()
         {
             if (domain.maxperExceeded == TdppAction.DENY)
             {
+                displayFragment(GuiTricklePayMain)
                 laterUI { rejectSendToRequest(R.string.TpSendAutoReject) }
                 return
             }
@@ -1268,7 +1299,7 @@ class TricklePayActivity : CommonNavActivity()
         }
 
         val chalbyStr = uri.getQueryParameter("chalby")
-        val chalby = chalbyStr?.fromHex() ?: null
+        val chalby = chalbyStr?.fromHex()
 
         val stemplate = SatoshiScript(chainSelector!!, SatoshiScript.Type.SATOSCRIPT, scriptTemplateHex.fromHex())
         LogIt.info(sourceLoc() + ": Asset filter: " + stemplate.toHex())
@@ -1277,8 +1308,10 @@ class TricklePayActivity : CommonNavActivity()
         val wal = try
         {
             getRelevantWallet() as CommonWallet
-        } catch (e: WalletInvalidException)
+        }
+        catch (e: WalletInvalidException)
         {
+            displayFragment(GuiTricklePayMain)
             clearIntentAndFinish(error = i18n(R.string.badCryptoCode))
             return
         }
@@ -1324,7 +1357,10 @@ class TricklePayActivity : CommonNavActivity()
         val address = uri.getQueryParameter("addr")
         if (address == null)
         {
-            clearIntentAndFinish(error = i18n(R.string.badLink))
+            laterUI {
+                displayFragment(GuiTricklePayMain)
+                clearIntentAndFinish(error = i18n(R.string.badLink))
+            }
             return false
         }
 
@@ -1341,7 +1377,8 @@ class TricklePayActivity : CommonNavActivity()
             try
             {
                 (GuiTricklePayReg as TricklePayRegFragment).populate(d, false)
-            } catch (e: WalletInvalidException)
+            }
+            catch (e: WalletInvalidException)
             {
                 laterUI {
                     displayFragment(GuiTricklePayMain)
@@ -1374,7 +1411,7 @@ class TricklePayActivity : CommonNavActivity()
             if (d == null)
             {
                 // delay and try again because load() cannot happen in the gui thread
-                d = TdppDomain(host, topic ?: "")
+                d = TdppDomain(host, topic)
                 domains[domainKey(host, topic)] = d
                 save()
             }
@@ -1482,11 +1519,14 @@ class TricklePayActivity : CommonNavActivity()
     {
         try
         {
-            if (GuiTricklePayReg.view?.visibility == VISIBLE)
+            synchronized(domainsLoaded)
             {
-                regUxToMap()
-                later {
-                    save()  // can't save in UI thread
+                if (GuiTricklePayReg.view?.visibility == VISIBLE)
+                {
+                    regUxToMap()
+                    later {
+                        save()  // can't save in UI thread
+                    }
                 }
             }
         } catch (e: Exception)
@@ -1497,13 +1537,20 @@ class TricklePayActivity : CommonNavActivity()
         super.onBackPressed()
     }
 
-    fun clearIntentAndFinish(error: String? = null, notice: String? = null)
+    fun clearIntentAndFinish(error: String? = null, notice: String? = null, up: Boolean = false)
     {
         wallyApp?.denotify(intent)
         if (error != null) intent.putExtra("error", error)
         if (error != null) intent.putExtra("notice", notice)
         setResult(Activity.RESULT_OK, intent)
-        finish()
+        if (up)  // parent
+        {
+            NavUtils.navigateUpFromSameTask(this)
+        }
+        else  // back
+        {
+            finish()
+        }
     }
 
     // Move the Ux data into the map
@@ -1599,9 +1646,15 @@ class TricklePayActivity : CommonNavActivity()
     @Suppress("UNUSED_PARAMETER")
     fun onDoneTp(view: View?)
     {
-        regUxToMap()
-        later {
-            save()  // can't save in UI thread
+        synchronized(domainsLoaded)
+        {
+            regUxToMap()
+            later {
+                save()  // can't save in UI thread
+                laterUI {
+                    clearIntentAndFinish(up = true)
+                }
+            }
         }
     }
 

@@ -470,6 +470,7 @@
     <string name="TpSendRequestDenied">Payment denied</string>
     <string name="TpSendAutoReject">Payment automatically rejected</string>
     <string name="TpSendRequestAccepted">Payment accepted</string>
+    <string name="TpWhyNotAuto">Will Not Automatically Sign Because</string>
 
     <string name="TpAutomaticDisabled">Automatic payments disabled</string>
     <string name="TpExceededMaxPer">Exceeds per request maximum</string>
