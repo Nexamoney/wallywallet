@@ -42,7 +42,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GuiAddress" />
+        app:layout_constraintTop_toBottomOf="@+id/GuiAddress3" />
 
     <TextView
         android:id="@+id/GuiTxNote"
@@ -67,23 +67,23 @@
         android:text="date"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/GuiTxCostBasisOrProfitLoss"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/GuiValueCrypto"
         app:layout_constraintTop_toBottomOf="@+id/GuiTxNote"
         app:layout_constraintVertical_bias="0.0" />
 
     <EditText
         android:id="@+id/GuiTxCostBasisOrProfitLoss"
-        android:layout_width="147dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:maxLines="1"
         android:ems="10"
         android:gravity="top"
         android:hint="@string/HintAdjustCostBasis"
         android:inputType="textShortMessage|numberSigned|numberDecimal"
-        android:textAlignment="center"
+        android:maxLines="1"
+        android:textAlignment="textEnd"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/GuiTxDate"
         app:layout_constraintTop_toBottomOf="@+id/GuiTxNote" />
 
     <TextView
@@ -103,15 +103,62 @@
         android:id="@+id/GuiAddress"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:maxLines="1"
-        android:autoSizeTextType="uniform"
-        android:autoSizeMinTextSize="8sp"
         android:autoSizeMaxTextSize="18sp"
+        android:autoSizeMinTextSize="6sp"
         android:autoSizeStepGranularity="1px"
+        android:autoSizeTextType="uniform"
+        android:scrollHorizontally="true"
+        android:maxLines="1"
+        android:visibility="gone"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/GuiAddress1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:autoSizeMaxTextSize="18sp"
+        android:autoSizeMinTextSize="6sp"
+        android:autoSizeStepGranularity="1px"
+        android:autoSizeTextType="uniform"
+        android:scrollHorizontally="true"
+        android:maxLines="1"
+        android:visibility="gone"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAddress" />
+    <TextView
+        android:id="@+id/GuiAddress2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:autoSizeMaxTextSize="18sp"
+        android:autoSizeMinTextSize="6sp"
+        android:autoSizeStepGranularity="1px"
+        android:autoSizeTextType="uniform"
+        android:scrollHorizontally="true"
+        android:maxLines="1"
+        android:visibility="gone"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAddress1" />
+    <TextView
+        android:id="@+id/GuiAddress3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:autoSizeMaxTextSize="18sp"
+        android:autoSizeMinTextSize="6sp"
+        android:autoSizeStepGranularity="1px"
+        android:autoSizeTextType="uniform"
+        android:scrollHorizontally="true"
+        android:maxLines="1"
+        android:visibility="gone"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAddress2" />
 
     <TextView
         android:id="@+id/GuiBasisText"

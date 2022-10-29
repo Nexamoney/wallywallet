@@ -59,54 +59,6 @@ class TextDataPairBinder(view: View, val ii: IdentityInfo): GuiListItemBinder<Pa
 
 }
 
-/*
-class NoRefsSuck(val ii: IdentityInfo, val item:Int, val w: Wallet)
-{
-    fun ref(s:String?): String?
-    {
-        if (ii == null) return s
-        else
-        {
-            if (s == null)
-            {
-                when (item)
-                {
-                    1 -> return ii.attest
-                    2 -> return ii.ava
-                    3 -> return ii.billing
-                    4 -> return ii.dob.toString()
-                    5 -> return ii.email
-                    6 -> return ii.hdl
-                    7 -> return ii.phone
-                    8 -> return ii.postal
-                    9 -> return ii.realname
-                    10 -> return ii.sm
-                }
-            }
-            else
-            {
-                when(item)
-                {
-                    1 -> ii.attest = s
-                    2 -> ii.ava = s
-                    3 -> ii.billing = s
-                    4 -> ii.dob = Date(s)
-                    5 -> ii.email = s
-                    6 -> ii.hdl = s
-                    7 -> ii.phone = s
-                    8 -> ii.postal = s
-                    9 -> ii.realname = s
-                    10 -> ii.sm = s
-                }
-                w.upsertIdentityInfo(ii)
-            }
-        }
-        return s
-    }
-
-}
-*/
-
 
 class IdentitySettings(var address: PayAddress?=null) : CommonNavActivity()
 {

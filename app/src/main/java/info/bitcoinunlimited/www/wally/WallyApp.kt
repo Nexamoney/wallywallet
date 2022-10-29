@@ -400,6 +400,8 @@ class Account(
 
     }
 
+    //? If running in regtest mode determine whether we are running on a simulated or actual device (on the 192 network)
+    //  and return the corresponding hard-coded IP address of the regtest full node
     fun RegtestIP(): String
     {
         val wm = context.context.getSystemService(Context.WIFI_SERVICE) as WifiManager
@@ -922,8 +924,8 @@ class WallyApp : Application()
 
                 val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
 
-                val NexaExclusiveNode: String? = if (prefs.getBoolean(NEXA_EXCLUSIVE_NODE_SWITCH, false)) prefs.getString(NEXA_EXCLUSIVE_NODE, null) else null
-                val NexaPreferredNode: String? = if (prefs.getBoolean(NEXA_PREFER_NODE_SWITCH, false)) prefs.getString(NEXA_PREFER_NODE, null) else null
+                val NexaExclusiveNode: String? = if (prefs.getBoolean(defaultAccount + "." + EXCLUSIVE_NODE_SWITCH, false)) prefs.getString(defaultAccount + "." + EXCLUSIVE_NODE, null) else null
+                val NexaPreferredNode: String? = if (prefs.getBoolean(defaultAccount + "." + PREFER_NODE_SWITCH, false)) prefs.getString(defaultAccount + "." + PREFER_NODE, null) else null
 
                 if (REG_TEST_ONLY)  // If I want a regtest only wallet for manual debugging, just create it directly
                 {
@@ -943,7 +945,7 @@ class WallyApp : Application()
                 {
                     val db = walletDb!!
 
-                    LogIt.info("Loading account names")
+                    LogIt.info(sourceLoc() + " Loading account names")
                     val accountNames = try
                     {
                         db.get("activeAccountNames")
@@ -957,7 +959,7 @@ class WallyApp : Application()
                     val accountNameList = String(accountNames).split(",")
                     for (name in accountNameList)
                     {
-                        LogIt.info(sourceLoc() + " " + name + ": Loading account " + name)
+                        LogIt.info(sourceLoc() + " " + name + ": Loading account")
                         try
                         {
                             val ac = Account(name, ctxt)
@@ -967,7 +969,7 @@ class WallyApp : Application()
                             LogIt.warning(sourceLoc() + " " + name + ": Active account $name was not found in the database")
                             // Nothing to really do but ignore the missing account
                         }
-                        LogIt.info("Loaded account " + name)
+                        LogIt.info(sourceLoc() + " " + name + ": Loaded account")
                     }
                 }
 

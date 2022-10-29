@@ -884,24 +884,20 @@ class MainActivity : CommonNavActivity()
                 if (a == null) return
                 val acts = a.accountsFor(chainSelector)
 
-                var amt: BigDecimal = BigDecimal.ZERO
-                val coin: Account? = if (acts.size == 0)
+                var amt: BigDecimal = if (acts.size == 0)
                 {
                     paymentInProgress = null
                     displayNotice(R.string.badCryptoCode, chainToCurrencyCode[chainSelector] ?: "unknown currency")
-                    amt = a.primaryAccount.fromFinestUnit(pip.totalSatoshis)
-                    null
+                    a.primaryAccount.fromFinestUnit(pip.totalSatoshis)
                 }
                 else if (acts.size > 1)
                 {
                     sendAccount.setSelection(i18n(R.string.choose))
-                    amt = acts[0].fromFinestUnit(pip.totalSatoshis)
-                    acts[0]  //
+                    acts[0].fromFinestUnit(pip.totalSatoshis)
                 }
                 else
                 {
-                    amt = acts[0].fromFinestUnit(pip.totalSatoshis)
-                    acts[0]
+                    acts[0].fromFinestUnit(pip.totalSatoshis)
                 }
 
                 if (true)

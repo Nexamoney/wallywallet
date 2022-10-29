@@ -2,29 +2,32 @@
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
 
-import android.content.Context
-import android.content.SharedPreferences
+import android.content.*
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.appcompat.widget.ShareActionProvider
 import androidx.core.content.ContextCompat
+import androidx.core.view.MenuItemCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import bitcoinunlimited.libbitcoincash.*
 import kotlinx.android.synthetic.main.activity_tx_history.*
+import kotlinx.android.synthetic.main.infoeditrow.view.*
 import kotlinx.android.synthetic.main.tx_history_list_item.view.*
+import kotlinx.coroutines.delay
 import java.math.BigDecimal
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.logging.Logger
-import kotlin.collections.ArrayList
+
 
 private val LogIt = Logger.getLogger("BU.wally.TxHistory")
 
-
+/*
 private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, private val domains: ArrayList<PaymentHistory>, private val account: Account) : RecyclerView.Adapter<TxHistoryRecyclerAdapter.TxHistoryDomainHolder>()
 {
 
@@ -193,11 +196,226 @@ private class TxHistoryRecyclerAdapter(private val activity: TxHistoryActivity, 
     }
 
 }
+*/
+
+fun TransactionHistory.toCSV(): String
+{
+    val rcvWalletAddr = StringBuilder()
+    val rcvForeignAddr = StringBuilder()
+    for (i in 0 until tx.outputs.size)
+    {
+        val out = tx.outputs[i]
+        if (incomingIdxes.contains(i.toLong()))
+        {
+            rcvWalletAddr.append(" " + (out.script.address?.toString() ?: ""))
+        }
+        else
+        {
+            rcvForeignAddr.append(" " + (out.script.address?.toString() ?: ""))
+        }
+    }
+
+    val spentWalletAddr = StringBuilder()
+    val spentForeignAddr = StringBuilder()
+    for (i in 0L until tx.inputs.size)
+    {
+        val inp = tx.inputs[i.toInt()]
+        val idx = outgoingIdxes.find({ it == i })
+        if (idx != null)
+        {
+            rcvWalletAddr.append(" " + spentTxos[idx.toInt()].script.address?.toString() ?: "")
+        }
+        else
+        {
+            rcvForeignAddr.append(" " + inp)
+        }
+    }
+
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
+    val ldt = LocalDateTime.ofInstant(Instant.ofEpochMilli(date), ZoneId.systemDefault())
+    val fdate = ldt.format(formatter)
+    val ret = StringBuilder()
+    ret.append(fdate)
+    ret.append(",")
+    ret.append(incomingAmt - outgoingAmt)
+    ret.append(",")
+    ret.append(if (incomingAmt > outgoingAmt) "received" else "payment")
+    ret.append(",")
+    ret.append(tx.idem.toHex())
+    ret.append(",")
+    ret.append(basisOverride?.let { serializeFormat.format(it) } ?: "")
+    ret.append(",")
+    ret.append(saleOverride?.let { serializeFormat.format(it) } ?: "")
+    ret.append(",")
+    ret.append(priceWhenIssued?.let { serializeFormat.format(it) } ?: "")
+    ret.append(",")
+    ret.append(priceWhatFiat)
+    ret.append(",")
+    ret.append(spentWalletAddr.toString())
+    ret.append(",")
+    ret.append(spentForeignAddr.toString())
+    ret.append(",")
+    ret.append(rcvWalletAddr.toString())
+    ret.append(",")
+    ret.append(rcvForeignAddr.toString())
+    ret.append(",")
+    ret.append("\"" + note + "\"")
+    ret.append(",\n")
+    return ret.toString()
+}
+
+fun TransactionHistoryHeaderCSV(): String
+{
+    val ret = StringBuilder()
+    ret.append("date")
+    ret.append(",")
+    ret.append("amount (Satoshi NEX)")
+    ret.append(",")
+    ret.append("change")
+    ret.append(",")
+    ret.append("transaction and index")
+    ret.append(",")
+    ret.append("basis")
+    ret.append(",")
+    ret.append("sale")
+    ret.append(",")
+    ret.append("price")
+    ret.append(",")
+    ret.append("fiat currency")
+    ret.append(",")
+    ret.append("spent wallet addresses")
+    ret.append(",")
+    ret.append("spent foreign addresses")
+    ret.append(",")
+    ret.append("received addresses")
+    ret.append(",")
+    ret.append("sent to addresses")
+    ret.append(",")
+
+    ret.append("note")
+    ret.append(",\n")
+    return ret.toString()
+}
+
+
+
+class TxHistoryBinder(view: View): GuiListItemBinder<TransactionHistory>(view)
+{
+    // Fill the view with this data
+    override fun populate()
+    {
+        //val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
+        val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withZone(ZoneId.systemDefault())
+
+        val activity = (view.context as TxHistoryActivity)
+        val act = activity.account
+        if (act == null) return
+
+        data?.let()
+        { data ->
+            val amt = data.incomingAmt - data.outgoingAmt
+            val ldt = LocalDateTime.ofInstant(Instant.ofEpochMilli(data.date), ZoneId.systemDefault())
+            val fdate = ldt.format(formatter)
+            view.GuiTxDate.text = fdate
+            view.GuiValueCrypto.text = act.cryptoFormat.format(act.fromFinestUnit(amt))
+
+            val sendIm = appContext?.let { ContextCompat.getDrawable(it.context, R.drawable.ic_sendarrow) }
+            val recvIm = appContext?.let { ContextCompat.getDrawable(it.context, R.drawable.ic_receivearrow) }
+            view.GuiTxId.text = data.tx.idem.toHex()
+
+            val addrs = mutableListOf<String>()
+            if (data.incomingAmt > data.outgoingAmt)  // receive
+            {
+                if (recvIm != null) view.GuiSendRecvImage.setImageDrawable(recvIm)
+                for (i in data.incomingIdxes)
+                {
+                    if (i < data.tx.outputs.size)
+                    {
+                        val out = data.tx.outputs[i.toInt()]
+                        val tp = out.script.parseTemplate(out.amount)
+                        if (tp != null)
+                        {
+                            if (tp.groupInfo == null) addrs.add(out.script.address?.toString() ?: "")
+                            // TODO I received a token
+                        }
+                        else
+                            addrs.add(out.script.address?.toString() ?: "")
+                    }
+                }
+            }
+            else  // Send
+            {
+                if (sendIm != null) view.GuiSendRecvImage.setImageDrawable(sendIm)
+                // For a send, we want to show all the addresses we sent TO, so all the addresses that are NOT ours
+                for (i in 0L until data.tx.outputs.size)
+                {
+                    if (!data.incomingIdxes.contains(i))
+                    {
+                        addrs.add(data.tx.outputs[i.toInt()].script.address?.toString() ?: "")
+                    }
+                }
+            }
+
+            if (addrs.size > 0) {view.GuiAddress.text = addrs[0]; view.GuiAddress.visibility = View.VISIBLE}
+            if (addrs.size > 1) {view.GuiAddress1.text = addrs[1]; view.GuiAddress1.visibility = View.VISIBLE}
+            if (addrs.size > 2) {view.GuiAddress2.text = addrs[2]; view.GuiAddress2.visibility = View.VISIBLE}
+            if (addrs.size > 3) {view.GuiAddress3.text = addrs[3] + "..."; view.GuiAddress3.visibility = View.VISIBLE}
+            view.GuiTxNote.text = data.note
+            view.GuiTxNote.visibility = if (data.note != "") View.VISIBLE else View.GONE
+
+            val obj = data
+            if (obj.priceWhatFiat != "")
+            {
+                val netFiat = CurrencyDecimal(amt) * obj.priceWhenIssued
+                view.GuiValueFiat.text = fiatFormat.format(netFiat) + " " + obj.priceWhatFiat
+
+                view.GuiTxCostBasisOrProfitLoss.text.clear()
+                if (amt > 0)
+                {
+                    if (obj.basisOverride != null)
+                        view.GuiTxCostBasisOrProfitLoss.text.append(fiatFormat.format(obj.basisOverride))
+                    else
+                        view.GuiTxCostBasisOrProfitLoss.text.append(fiatFormat.format(netFiat))
+                    view.GuiBasisText.text = appResources?.getText(R.string.CostBasis)
+                }
+                else
+                {
+                    val capgain = obj.capGains()
+                    view.GuiTxCostBasisOrProfitLoss.text.append(fiatFormat.format(capgain))
+                    if (capgain >= BigDecimal.ZERO)
+                    {
+                        view.GuiBasisText.text = appResources?.getText(R.string.CapitalGain)
+                    }
+                    else
+                    {
+                        view.GuiBasisText.text = appResources?.getText(R.string.CapitalLoss)
+                    }
+
+                }
+            }
+            else
+            {
+                view.GuiValueFiat.text = ""
+            }
+
+        }
+
+        // Alternate colors for each row in the list
+        val Acol: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowA) } ?: 0xFFEEFFEE.toInt()
+        val Bcol: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowB) } ?: 0xFFBBDDBB.toInt()
+        if ((pos and 1) == 0)
+            view.background = ColorDrawable(Acol)
+        else
+            view.background = ColorDrawable(Bcol)
+    }
+}
 
 class TxHistoryActivity : CommonNavActivity()
 {
     lateinit var linearLayoutManager: LinearLayoutManager
-    private lateinit var adapter: TxHistoryRecyclerAdapter
+    //private lateinit var adapter: TxHistoryRecyclerAdapter
+    private lateinit var adapter: GuiList<TransactionHistory, TxHistoryBinder>
+    private var shareActionProvider: ShareActionProvider? = null
     var listHeight: Int = 0
 
     override var navActivityId = R.id.home
@@ -205,6 +423,9 @@ class TxHistoryActivity : CommonNavActivity()
     val viewSync = ThreadCond()
     var showingDetails = false
     var walletName: String? = null
+    var historyCSV: String = ""
+
+    var account: Account? = null
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -250,22 +471,79 @@ class TxHistoryActivity : CommonNavActivity()
                     {
                         setTitle(i18n(R.string.title_activity_tx_history) % mapOf("walname" to walName));
                         val wallet = coin.wallet
-                        val history = wallet.paymentHistory.values
-                        val historyList: List<PaymentHistory> = history.sortedBy { it.date }.filter { !it.isChange }.reversed()
-                        val txhist: ArrayList<PaymentHistory> = ArrayList(historyList)
-                        LogIt.info("tx history count:" + txhist.size.toString())
-                        //LogIt.info(wallet.allIdentityDomains().map { it.domain }.toString())
-                        adapter = TxHistoryRecyclerAdapter(this, txhist, coin)
+                        val historyList: List<TransactionHistory> = wallet.txHistory.values.sortedBy { it.date }.reversed()
+                        account = coin
+                        adapter = GuiList(historyList, this, {
+                        val view = layoutInflater.inflate(R.layout.tx_history_list_item, it, false)
+                        TxHistoryBinder(view)
+                    })
                         GuiTxHistoryList.adapter = adapter
 
-                        //val dest = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
-                        //commonIdentityAddress.text = dest.address.toString()
+                        val csv = StringBuilder()
+                        csv.append(TransactionHistoryHeaderCSV())
+                        for (h in historyList)
+                        {
+                            csv.append(h.toCSV())
+                        }
+
+                        // Set up the share intent
+                        historyCSV = csv.toString()
+                        val receiveAddrSendIntent: Intent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, historyCSV)
+                            type = "text/*"
+                        }
+
+                        // copy the info to the clipboard
+                        var clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                        var clip = ClipData.newPlainText("text", historyCSV)
+                        clipboard.setPrimaryClip(clip)
+
+                        // can't set this until the options menu is created, which happens sometime after onCreate
+                        while (shareActionProvider == null) delay(200)
+                        shareActionProvider?.setShareIntent(receiveAddrSendIntent)
                     }
                     else  // coin disappeared out of under this activity
                         finish()
                 }
             }
         }
+    }
+
+    // not being called! (except when the back button is pressed)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean
+    {
+        when (item.getItemId())
+        {
+            R.id.menu_item_share ->
+            {
+                var clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                var clip = ClipData.newPlainText("text", historyCSV)
+                clipboard.setPrimaryClip(clip)
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    /** Inflate the options menu */
+    override fun onCreateOptionsMenu(menu: Menu): Boolean
+    {
+        val inflater: MenuInflater = menuInflater
+
+        inflater.inflate(R.menu.options_menu, menu)
+
+        // Locate MenuItem with ShareActionProvider
+        val item = menu.findItem(R.id.menu_item_share)
+        // Fetch and store ShareActionProvider
+        shareActionProvider = MenuItemCompat.getActionProvider(item) as? ShareActionProvider
+        item.setVisible(true)
+        shareActionProvider
+
+        super.onCreateOptionsMenu(menu)
+        menu.findItem(R.id.settings)?.setVisible(false)
+        menu.findItem(R.id.help)?.setVisible(false)
+        menu.findItem(R.id.unlock)?.setVisible(false)
+        return true
     }
 
 }

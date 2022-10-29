@@ -350,14 +350,6 @@ class IdentityOpActivity : CommonNavActivity()
                 val protocol = responseProtocol ?: iuri.protocol  // Prefer the protocol requested by the other side, otherwise use the same protocol we got the request from
 
                 val portStr = if ((port > 0) && (port != 80) && (port != 443)) ":" + port.toString() else ""
-                val chalToSign = h + portStr + "_nexid_" + op + "_" + challenge
-                LogIt.info("challenge: " + chalToSign + " cookie: " + cookie)
-
-                if (challenge == null) // intent was previously cleared by someone throw IdentityException("challenge string was not provided", "no challenge")
-                {
-                    finish()
-                    return@launch
-                }
 
                 val act = account ?: try
                 {
@@ -382,6 +374,15 @@ class IdentityOpActivity : CommonNavActivity()
 
                 if (op == "login")
                 {
+                    val chalToSign = h + portStr + "_nexid_" + op + "_" + challenge
+                    LogIt.info("challenge: " + chalToSign + " cookie: " + cookie)
+
+                    if (challenge == null) // intent was previously cleared by someone throw IdentityException("challenge string was not provided", "no challenge")
+                    {
+                        finish()
+                        return@launch
+                    }
+
                     val sig = Wallet.signMessage(chalToSign.toByteArray(), secret.getSecret())
                     if (sig.size == 0) throw IdentityException("Wallet failed to provide a signable identity", "bad wallet", ErrorSeverity.Severe)
                     val sigStr = Codec.encode64(sig)
@@ -433,6 +434,15 @@ class IdentityOpActivity : CommonNavActivity()
                 }
                 else if ((op == "reg") || (op == "info"))
                 {
+                    val chalToSign = h + portStr + "_nexid_" + op + "_" + challenge
+                    LogIt.info("challenge: " + chalToSign + " cookie: " + cookie)
+
+                    if (challenge == null) // intent was previously cleared by someone throw IdentityException("challenge string was not provided", "no challenge")
+                    {
+                        finish()
+                        return@launch
+                    }
+
                     val sig = Wallet.signMessage(chalToSign.toByteArray(), secret.getSecret())
                     if (sig.size == 0) throw IdentityException("Wallet failed to provide a signable identity", "bad wallet", ErrorSeverity.Severe)
                     val sigStr = Codec.encode64(sig)

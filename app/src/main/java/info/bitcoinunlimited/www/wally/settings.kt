@@ -13,29 +13,26 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.CompoundButton
 import android.widget.Spinner
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import bitcoinunlimited.libbitcoincash.*
 import kotlinx.android.synthetic.main.activity_settings.*
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.util.logging.Logger
 
 
 val LOCAL_CURRENCY_PREF = "localCurrency"
 val SHOW_DEV_INFO = "devinfo"
-val BCH_EXCLUSIVE_NODE_SWITCH = "BCH.exclusiveNodeSwitch"
-val BCH_EXCLUSIVE_NODE = "BCH.exclusiveNode"
-val BCH_PREFER_NODE_SWITCH = "BCH.preferNodeSwitch"
-val BCH_PREFER_NODE = "BCH.preferNode"
+//val BCH_EXCLUSIVE_NODE_SWITCH = "BCH.exclusiveNodeSwitch"
+//val BCH_EXCLUSIVE_NODE = "BCH.exclusiveNode"
+//val BCH_PREFER_NODE_SWITCH = "BCH.preferNodeSwitch"
+//val BCH_PREFER_NODE = "BCH.preferNode"
 
-val NEXA_EXCLUSIVE_NODE_SWITCH = "NEX.exclusiveNodeSwitch"
-val NEXA_EXCLUSIVE_NODE = "NEX.exclusiveNode"
-val NEXA_PREFER_NODE_SWITCH = "NEX.preferNodeSwitch"
-val NEXA_PREFER_NODE = "NEX.preferNode"
+val EXCLUSIVE_NODE_SWITCH = "exclusiveNodeSwitch"
+val EXCLUSIVE_NODE = "exclusiveNode"
+val PREFER_NODE_SWITCH = "preferNodeSwitch"
+val PREFER_NODE = "preferNode"
 
-var defaultAccount = "NEX"  // The default crypto I'm using
+var defaultAccount = chainToURI[ChainSelector.NEXA]  // The default crypto I'm using
 
 private val LogIt = Logger.getLogger("BU.wally.settings")
 
@@ -122,11 +119,12 @@ class Settings : CommonActivity()
             GuiLogInterestingData.visibility = VISIBLE
         }
 
-        SetupBooleanPreferenceGui(BCH_EXCLUSIVE_NODE_SWITCH, preferenceDB, GuiBchExclusiveNodeSwitch)
-        SetupBooleanPreferenceGui(BCH_PREFER_NODE_SWITCH, preferenceDB, GuiBchPreferNodeSwitch)
 
-        SetupTextPreferenceGui(BCH_EXCLUSIVE_NODE, preferenceDB, GuiBchExclusiveNode)
-        SetupTextPreferenceGui(BCH_PREFER_NODE, preferenceDB, GuiBchPreferNode)
+        SetupBooleanPreferenceGui(defaultAccount + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, GuiBchExclusiveNodeSwitch)
+        SetupBooleanPreferenceGui(defaultAccount + "." + PREFER_NODE_SWITCH, preferenceDB, GuiBchPreferNodeSwitch)
+
+        SetupTextPreferenceGui(defaultAccount + "." + EXCLUSIVE_NODE, preferenceDB, GuiBchExclusiveNode)
+        SetupTextPreferenceGui(defaultAccount + "." + PREFER_NODE, preferenceDB, GuiBchPreferNode)
 
         val curCode: String = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"
         GuiFiatCurrencySpinner.setSelection(curCode)
@@ -206,15 +204,15 @@ class Settings : CommonActivity()
         var exclusiveNode: String? = null
         var preferNode: String? = null
 
-        if (prefs.getBoolean(BCH_EXCLUSIVE_NODE_SWITCH, false) == true)
+        if (prefs.getBoolean(defaultAccount + "." + EXCLUSIVE_NODE_SWITCH, false) == true)
         {
-            exclusiveNode = prefs.getString(BCH_EXCLUSIVE_NODE, null)
+            exclusiveNode = prefs.getString(defaultAccount + "." + EXCLUSIVE_NODE, null)
             if (exclusiveNode?.length == 0) exclusiveNode = null
         }
 
-        if (prefs.getBoolean(BCH_PREFER_NODE_SWITCH, false) == true)
+        if (prefs.getBoolean(defaultAccount + "." + PREFER_NODE_SWITCH, false) == true)
         {
-            preferNode = prefs.getString(BCH_PREFER_NODE, null)
+            preferNode = prefs.getString(defaultAccount + "." + PREFER_NODE, null)
             if (preferNode?.length == 0) preferNode = null
         }
 
@@ -307,7 +305,7 @@ class Settings : CommonActivity()
                     for (c in accounts)  // Rediscover tx for EVERY wallet using this blockchain
                     {
                         if (c.value.wallet.blockchain == bc)
-                            c.value.wallet.rediscover(false, true)
+                            c.value.wallet.rediscover(true, true)
                     }
 
                 }
@@ -318,7 +316,7 @@ class Settings : CommonActivity()
                 val coin = accounts[accountName]
                 if (coin == null) return
                 launch {
-                    coin.wallet.rediscover()
+                    coin.wallet.rediscover(true)
                     displayNotice(i18n(R.string.rediscoverNotice))
                 }
             }

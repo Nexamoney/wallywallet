@@ -152,9 +152,6 @@ class IdentityActivity : CommonNavActivity()
         {
             try
             {
-                //val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
-                val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-
                 val account = (application as WallyApp).primaryAccount
                 if (!account.visible)
                 {
@@ -277,7 +274,7 @@ class IdentityActivity : CommonNavActivity()
         return super.onCreateOptionsMenu(menu)
     }
 
-    fun onCommonIdentityWrapperClicked(v:View)
+    fun onCommonIdentityWrapperClicked(@Suppress("UNUSED_PARAMETER") v:View)
     {
         val tent = Intent(this, IdentitySettings::class.java)
         startActivity(tent)

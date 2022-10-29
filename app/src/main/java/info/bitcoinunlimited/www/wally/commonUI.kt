@@ -300,7 +300,7 @@ open class GuiListItemBinder<DATA> (val view: View) : RecyclerView.ViewHolder(vi
     }
 }
 
-class GuiList<DATA, BINDER: GuiListItemBinder<DATA>> internal constructor(var data: List<DATA>, context: Context?, val factory: (ViewGroup) -> BINDER) : RecyclerView.Adapter<BINDER>()
+class GuiList<DATA, BINDER: GuiListItemBinder<DATA>> internal constructor(var data: List<DATA>,  @Suppress("UNUSED_PARAMETER") context: Context?, val factory: (ViewGroup) -> BINDER) : RecyclerView.Adapter<BINDER>()
 {
     //private val inflater: LayoutInflater = LayoutInflater.from(context)
     // private var mClickListener: ItemClickListener? = null

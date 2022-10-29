@@ -9,9 +9,9 @@ android {
     defaultConfig {
         applicationId "info.bitcoinunlimited.www.wally"
         minSdkVersion 26
-        targetSdkVersion 30
-        versionCode 130
-        versionName "1.30"
+        targetSdkVersion 32
+        versionCode 150
+        versionName "1.50"
         testApplicationId "bitcoinunlimited.wally"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 

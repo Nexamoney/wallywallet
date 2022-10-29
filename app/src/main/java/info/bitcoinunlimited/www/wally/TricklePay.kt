@@ -71,7 +71,6 @@ data class TricklePayAssetList(val assets: List<TricklePayAssetInfo>)
 fun makeChallengeTx(sp: Spendable, challengerId: ByteArray, chalby: ByteArray): iTransaction?
 {
     if (chalby.size < 8 || chalby.size > 64) return null
-    var rg = Random.Default
     val rb = Random.nextBytes(chalby.size)
     val moddedChal = ByteArray(chalby.size * 2)
     for (i in 0 until chalby.size)
@@ -402,7 +401,8 @@ class TricklePayRegFragment : Fragment()
         {
             GuiAcceptRegTitle.text = i18n(R.string.EditTpRegistration)
             GuiTpRegisterRequestAccept.setVisibility(View.GONE)
-            GuiTpDenyRegisterRequest.setVisibility(View.GONE)
+            GuiTpDenyRegisterRequest.text = i18n(R.string.remove)
+            GuiTpDenyRegisterRequest.setVisibility(View.VISIBLE)
             GuiTpOkRegisterRequest.setVisibility(View.VISIBLE)
         }
         else
@@ -904,7 +904,7 @@ class TricklePayActivity : CommonNavActivity()
     fun load()
     {
         notInUI {
-            synchronized(domainsLoaded)
+            synchronized(domains)
             {
                 db?.let {
                     try
@@ -936,7 +936,7 @@ class TricklePayActivity : CommonNavActivity()
     fun save()
     {
         notInUI {
-            synchronized(domainsLoaded)
+            synchronized(domains)
             {
                 if (domainsLoaded)  // If we save the domains before we load them, we'll erase them!
                 {
@@ -1045,10 +1045,10 @@ class TricklePayActivity : CommonNavActivity()
         }
 
         // Look at the inputs and match with UTXOs that I have, so I have the additional info required to sign this input
-        val unspent = wal.unspent
+        val txos = wal.txos
         for ((idx, inp) in tx.inputs.withIndex())
         {
-            val utxo = unspent[inp.spendable.outpoint]
+            val utxo = txos[inp.spendable.outpoint]
             if (utxo != null)
             {
                 tx.inputs[idx].spendable = utxo
@@ -1319,7 +1319,7 @@ class TricklePayActivity : CommonNavActivity()
         val challengerId = host?.toByteArray()
 
         var matches = mutableListOf<TricklePayAssetInfo>()
-        for ((outpoint, spendable) in wal.unspent)
+        for ((outpoint, spendable) in wal.txos)
         {
             if (spendable.spentHeight < 0)  // unspent
             {
@@ -1404,7 +1404,7 @@ class TricklePayActivity : CommonNavActivity()
 
     fun loadCreateDomain(host: String, topic:String): TdppDomain
     {
-        return synchronized(domainsLoaded)
+        return synchronized(domains)
         {
             if (!domainsLoaded) load()
             var d = domains[domainKey(host, topic)]
@@ -1456,7 +1456,7 @@ class TricklePayActivity : CommonNavActivity()
                     // For all other commands, if the domain is unregistered create an entry for it but with no permissions
                     val domain = loadCreateDomain(h,t ?: "")
 
-                    if (path != null)
+                    if (path != "")
                     {
                         if (path == "/reg")
                         {
@@ -1486,7 +1486,7 @@ class TricklePayActivity : CommonNavActivity()
                             LogIt.info("Long Poll to ${host}")
                             parseCommonFields(iuri)
                             val proto = rproto ?: TDPP_DEFAULT_PROTOCOL
-                            val hostStr = host + ":" + port
+                            val hostStr = if (port > 0) host + ":" + port else (host ?: "")
                             wallyApp?.accessHandler?.startLongPolling(proto, hostStr, cookie)
                             clearIntentAndFinish(null, i18n(R.string.connectionEstablished))
                         }
@@ -1519,7 +1519,7 @@ class TricklePayActivity : CommonNavActivity()
     {
         try
         {
-            synchronized(domainsLoaded)
+            synchronized(domains)
             {
                 if (GuiTricklePayReg.view?.visibility == VISIBLE)
                 {
@@ -1640,13 +1640,29 @@ class TricklePayActivity : CommonNavActivity()
     fun onDenyTpReg(view: View?)
     {
         LogIt.info("deny trickle pay registration")
-        clearIntentAndFinish(notice = i18n(R.string.TpRegDenied))
+        if (GuiTricklePayReg !is TricklePayRegFragment) return clearIntentAndFinish(notice = i18n(R.string.TpRegDenied))
+        val frag = (GuiTricklePayReg as TricklePayRegFragment)
+        if (frag.editingReg)
+        {
+            val d: TdppDomain = frag.domain ?: return clearIntentAndFinish()  // should never happen
+            domains.remove(domainKey(d.domain, d.topic))
+            later {
+                  save()
+                  laterUI {
+                      clearIntentAndFinish(notice = i18n(R.string.removed))
+                  }
+              }
+        }
+        else
+        {
+            clearIntentAndFinish(notice = i18n(R.string.TpRegDenied))
+        }
     }
 
     @Suppress("UNUSED_PARAMETER")
     fun onDoneTp(view: View?)
     {
-        synchronized(domainsLoaded)
+        synchronized(domains)
         {
             regUxToMap()
             later {
@@ -1676,7 +1692,7 @@ class TricklePayActivity : CommonNavActivity()
 
             later {
                 val proto = "http:"
-                val host = pUri.host + ":" + pUri.port
+                val host = if (pUri.port > 0) pUri.host + ":" + pUri.port else pUri.host
                 val cookieString = if (pcookie != null) "&cookie=$pcookie" else ""
                 val req = URL(proto + "//" + host + "/tx?tx=${pTx.toHex()}${cookieString}")
                 val data = try
@@ -1760,8 +1776,6 @@ class TricklePayActivity : CommonNavActivity()
         val cookieString = if (cookie != null) "&cookie=$cookie" else ""
 
         val url = proto + "//" + host + "/assets?" + cookieString
-
-        val wal = getRelevantWallet() as CommonWallet
 
         later {
             LogIt.info("responding to server")
