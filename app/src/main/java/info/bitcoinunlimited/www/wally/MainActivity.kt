@@ -269,7 +269,7 @@ class MainActivity : CommonNavActivity()
                 if (c != null) try
                 {
                     mainActivityModel.lastSendCoinType = sct
-                    val sendAddr = PayAddress(sendToAddress.text.toString())
+                    val sendAddr = PayAddress(sendToAddress.text.toString().trim())
                     if (c.wallet.chainSelector != sendAddr.blockchain)
                     {
                         if (sendAddr != alreadyErroredAddress)
@@ -567,7 +567,7 @@ class MainActivity : CommonNavActivity()
         if (tnt == null || tnt.action == Intent.ACTION_MAIN) wallyApp?.getNotificationIntent()
 
         // Look in the paste buffer
-        if (sendToAddress.text.toString() == "")  // App started or resumed with nothing in the send field -- let's see if there's something in the paste buffer we can auto-populate
+        if (sendToAddress.text.toString().trim() == "")  // App started or resumed with nothing in the send field -- let's see if there's something in the paste buffer we can auto-populate
         {
             try
             {
@@ -660,7 +660,7 @@ class MainActivity : CommonNavActivity()
         // Check consistency between sendToAddress and sendCoinType
         try
         {
-            val sta = sendToAddress.text.toString()
+            val sta = sendToAddress.text.toString().trim()
             updateSendAccount(PayAddress(sta))
         } catch (e: PayAddressBlankException)
         {
@@ -1352,8 +1352,8 @@ class MainActivity : CommonNavActivity()
     override fun onSaveInstanceState(outState: Bundle)
     {
         super.onSaveInstanceState(outState)
-        outState.putString("sendToAddress", sendToAddress.text.toString())
-        outState.putString("sendQuantity", sendQuantity.text.toString())
+        outState.putString("sendToAddress", sendToAddress.text.toString().trim())
+        outState.putString("sendQuantity", sendQuantity.text.toString().trim())
         outState.putString("sendCurrencyType", (sendCurrencyType.selectedItem ?: defaultAccount) as String)
         outState.putString("recvCoinType", (recvCoinType.selectedItem ?: defaultAccount) as String)
     }
@@ -1662,7 +1662,7 @@ class MainActivity : CommonNavActivity()
         // Make sure the address is consistent with the selected coin to send
         val sendAddr = try
         {
-            PayAddress(sendToAddress.text.toString())
+            PayAddress(sendToAddress.text.toString().trim())
         }
         catch (e: WalletNotSupportedException)
         {
