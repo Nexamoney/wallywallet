@@ -215,9 +215,12 @@ class NewAccount : CommonNavActivity()
                     try
                     {
                         peekActivity(words.joinToString(" "), SupportedBlockchains[GuiBlockchainSelector.selectedItem]!!)
-                    } catch (e: Exception)
+                    }
+                    catch (e: Exception)
                     {
+                        laterUI { GuiNewAccountStatus.text = i18n(R.string.NewAccountSearchFailure) }
                         LogIt.severe("wallet peek error: " + e.toString())
+                        handleThreadException(e, "wallet peek error", sourceLoc())
                     }
                 }
 
@@ -241,29 +244,36 @@ class NewAccount : CommonNavActivity()
         while (index < count)
         {
             val newSecret = secretDerivation(index)
+            val us = UnsecuredSecret(newSecret)
 
-            val dest = Pay2PubKeyHashDestination(chainSelector, UnsecuredSecret(newSecret))  // Note, if multiple destination types are allowed, the wallet load/save routines must be updated
+            val dests = mutableListOf<SatoshiScript>(Pay2PubKeyHashDestination(chainSelector, us).outputScript())  // Note, if multiple destination types are allowed, the wallet load/save routines must be updated
             //LogIt.info(sourceLoc() + " " + name + ": New Destination " + tmp.toString() + ": " + dest.address.toString())
+            if (chainSelector.hasTemplates)
+                dests.add(Pay2PubKeyTemplateDestination(chainSelector, us).ungroupedOutputScript())
 
-            try
+            for (dest in dests)
             {
-                val use = ec.getFirstUse(dest.outputScript(), 10000)
-                if (use.block_hash != null)
+                try
                 {
-                    if (use.block_height != null)
+                    val use = ec.getFirstUse(dest, 10000)
+                    if (use.block_hash != null)
                     {
-                        val headerBin = ec.getHeader(use.block_height!!)
-                        val blkHeader = blockHeaderFor(chainSelector, BCHserialized(headerBin, SerializationType.HASH))
-                        return Pair(blkHeader.time, use.block_height!!)
+                        if (use.block_height != null)
+                        {
+                            val headerBin = ec.getHeader(use.block_height!!)
+                            val blkHeader = blockHeaderFor(chainSelector, BCHserialized(headerBin, SerializationType.HASH))
+                            return Pair(blkHeader.time, use.block_height!!)
+                        }
+                    }
+                    else
+                    {
+                        LogIt.info("didn't find activity")
                     }
                 }
-                else
+                catch (e: ElectrumNotFound)
                 {
                     LogIt.info("didn't find activity")
                 }
-            } catch (e: ElectrumNotFound)
-            {
-                LogIt.info("didn't find activity")
             }
             index++
         }
@@ -348,15 +358,22 @@ class NewAccount : CommonNavActivity()
 
         val ec = try
         {
-            ElectrumClient(chainSelector, svr, port)
+            ElectrumClient(chainSelector, svr, port, useSSL=true)
         } catch (e: java.io.IOException) // covers java.net.ConnectException, UnknownHostException and a few others that could trigger
         {
             try
             {
+                ElectrumClient(chainSelector, svr, port, useSSL = false)
+            }
+            catch(e: java.io.IOException)
+            {
                 if (chainSelector == ChainSelector.BCH)
                     ElectrumClient(chainSelector, LAST_RESORT_BCH_ELECTRS)
+                else if (chainSelector == ChainSelector.NEXA)
+                    ElectrumClient(chainSelector, LAST_RESORT_NEXA_ELECTRS, DEFAULT_NEXA_TCP_ELECTRUM_PORT, useSSL = false)
                 else throw e
-            } catch (e: java.io.IOException)
+            }
+            catch (e: java.io.IOException)
             {
                 laterUI {
                     GuiNewAccountStatus.text = i18n(R.string.ElectrumNetworkUnavailable)
@@ -390,6 +407,11 @@ class NewAccount : CommonNavActivity()
         val BTCactivity =
           bracketActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.BTC, 0, 0, it) })
         var BTCchangeActivity: HDActivityBracket?
+
+        val Bip44BTCMsg = ""
+        // This code checks whether coins exist on the Bitcoin derivation path to see if any prefork coins exist.  This is irrelevant for Nexa.
+        // I'm leaving the code in though because someday we might want to share pubkeys between BTC/BCH and Nexa and in that case we'd need to use their derivation path.
+        /*
         var Bip44BTCMsg = if (BTCactivity != null)
         {
             BTCchangeActivity =
@@ -407,6 +429,8 @@ class NewAccount : CommonNavActivity()
             )
         }
         else i18n(R.string.NoBip44BtcActivityNotice)
+        */
+
         /*
         earliestActivityP = searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, AddressDerivationKey.BTC, 0, 0, it) })
         var Bip44BTCMsg = if (earliestActivityP != null)

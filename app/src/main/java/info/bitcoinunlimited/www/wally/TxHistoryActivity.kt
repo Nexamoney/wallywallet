@@ -223,7 +223,12 @@ fun TransactionHistory.toCSV(): String
         val idx = outgoingIdxes.find({ it == i })
         if (idx != null)
         {
-            rcvWalletAddr.append(" " + spentTxos[idx.toInt()].script.address?.toString() ?: "")
+            if (idx < spentTxos.size)
+                rcvWalletAddr.append(" " + (spentTxos[idx.toInt()].script.address?.toString() ?: "") )
+            else
+            {
+                LogIt.info(sourceLoc() + " data consistency error")
+            }
         }
         else
         {
@@ -247,7 +252,7 @@ fun TransactionHistory.toCSV(): String
     ret.append(",")
     ret.append(saleOverride?.let { serializeFormat.format(it) } ?: "")
     ret.append(",")
-    ret.append(priceWhenIssued?.let { serializeFormat.format(it) } ?: "")
+    ret.append(priceWhenIssued.let { serializeFormat.format(it) } ?: "")
     ret.append(",")
     ret.append(priceWhatFiat)
     ret.append(",")

@@ -153,19 +153,23 @@ open class CommonActivity : AppCompatActivity()
         origTitleBackground?.let { titlebar.background = it }  // Set the title background color here, so we don't need to match the background defined in some resource file
 
         titlebar.setOnClickListener {
-            LogIt.info("title button pressed")
-            if (this is AlertActivity)
-            {
-                finish()  // If you click the header bar when looking at the error messages, then go back
-            }
-            else
-            {
-                var intent = Intent(this, AlertActivity::class.java)  // Otherwise start up the alert activity
-                startActivity(intent)
-            }
+            onTitleBarTouched()
         }
     }
 
+    open fun onTitleBarTouched()
+    {
+        LogIt.info("title button pressed")
+        if (this is AlertActivity)
+        {
+            finish()  // If you click the header bar when looking at the error messages, then go back
+        }
+        else
+        {
+            var intent = Intent(this, AlertActivity::class.java)  // Otherwise start up the alert activity
+            startActivity(intent)
+        }
+    }
 
     override fun onStart()
     {

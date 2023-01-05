@@ -145,6 +145,7 @@
     <string name="PasteDestinationAddressButton">Paste</string>
     <string name="NewAccountButton">New Account Setup</string>
     <string name="NewAccountSearchingForTransactions">...searching for transactions...</string>
+    <string name="NewAccountSearchFailure">transaction search failed</string>
     <string name="receiveAddressQRCode">receive QR code</string>
     <string name="paymentProposal">as per received payment proposal</string>
     <!-- You clicked the paste button (in a copy/paste operation), but nothing was copied -->

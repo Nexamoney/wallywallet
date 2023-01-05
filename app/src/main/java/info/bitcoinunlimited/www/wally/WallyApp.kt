@@ -37,9 +37,9 @@ import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 import kotlin.coroutines.CoroutineContext
 
-val LanHostIP = "192.168.1.100"
+val LAST_RESORT_BCH_ELECTRS = "bch2.bitcoinunlimited.net"
+val LAST_RESORT_NEXA_ELECTRS = "electrum.nexa.org"
 
-val LAST_RESORT_BCH_ELECTRS = "bch2.bitcoinunlimited.net" // "electrs.bitcoinunlimited.info"
 
 const val NOTIFICATION_CHANNEL_ID = "n"
 
