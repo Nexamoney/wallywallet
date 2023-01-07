@@ -18,7 +18,7 @@ import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
-import androidx.test.runner.AndroidJUnit4
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.*
 import kotlinx.android.synthetic.main.activity_identity.*
@@ -35,6 +35,7 @@ import java.math.BigDecimal
 import java.util.*
 import java.util.logging.Logger
 import info.bitcoinunlimited.www.wally.R.id as GuiId
+import info.bitcoinunlimited.www.wally.R  // so we can compare strings with what is on the screen
 
 
 val LogIt = Logger.getLogger("GuiTest")
@@ -42,6 +43,7 @@ val LogIt = Logger.getLogger("GuiTest")
 class TestTimeoutException(what: String): Exception(what)
 
 val REGTEST_RPC_PORT=18332
+val REGTEST_P2P_PORT=18444
 
 @RunWith(AndroidJUnit4::class)
 class GuiTest
@@ -330,7 +332,6 @@ class GuiTest
         catch (e:PrimaryWalletInvalidException)
         {
             app.newAccount("NEX1", ACCOUNT_FLAG_NONE, "", ChainSelector.NEXA)
-            app.primaryAccount
         }
 
 
@@ -410,7 +411,11 @@ class GuiTest
         activityScenario.onActivity { it.sendQuantity.text.clear() }
 
 
+
         createNewAccount("rNEX1", cs)
+        sleep(4000)
+        // waitForActivity(10000, activityScenario) { app?.accounts["rNEX1"]?.cnxnMgr == null }
+        app!!.accounts["rNEX1"]!!.cnxnMgr!!.exclusiveNodes(setOf(SimulationHostIP + ":" + REGTEST_P2P_PORT))
         activityScenario.onActivity { currentActivity == it }  // Clicking should bring us back to main screen
         createNewAccount("rNEX2", cs)
         activityScenario.onActivity { currentActivity == it }  // Clicking should bring us back to main screen

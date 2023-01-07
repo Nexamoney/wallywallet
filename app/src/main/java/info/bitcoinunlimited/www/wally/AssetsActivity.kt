@@ -25,6 +25,7 @@ private val LogIt = Logger.getLogger("BU.wally.assets")
 
 class AssetInfo
 {
+
 }
 
 

@@ -119,6 +119,8 @@ class IdentityActivity : CommonNavActivity()
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var adapter: RecyclerAdapter
 
+    var copylabel = ""
+
     override var navActivityId = R.id.navigation_identity
 
     var actUnlockCb = { populate() }
@@ -158,6 +160,7 @@ class IdentityActivity : CommonNavActivity()
                     throw PrimaryWalletInvalidException()
                 }
                 val wallet = account.wallet
+                copylabel = wallet.name
                 val identities: ArrayList<IdentityDomain> = ArrayList(wallet.allIdentityDomains())
                 LogIt.info("identity domain count:" + identities.size.toString())
                 LogIt.info(wallet.allIdentityDomains().map { it.domain }.toString())
@@ -283,6 +286,6 @@ class IdentityActivity : CommonNavActivity()
     @Suppress("UNUSED_PARAMETER")
     fun onCommonIdentityAddrTextClicked(v: View)
     {
-        copyTextToClipboard(commonIdentityAddress)
+        copyTextToClipboard(commonIdentityAddress, copylabel)
     }
 };

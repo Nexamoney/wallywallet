@@ -309,7 +309,6 @@ class TxHistoryBinder(view: View): GuiListItemBinder<TransactionHistory>(view)
     // Fill the view with this data
     override fun populate()
     {
-        //val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
         val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withZone(ZoneId.systemDefault())
 
         val activity = (view.context as TxHistoryActivity)
@@ -413,6 +412,65 @@ class TxHistoryBinder(view: View): GuiListItemBinder<TransactionHistory>(view)
         else
             view.background = ColorDrawable(Bcol)
     }
+
+    /** Click on the history, show web details */
+    override fun onClick(v: View)
+    {
+        changed()
+        val activity = (view.context as TxHistoryActivity)
+        val idx = pos
+        val d = data
+        if (d == null) return
+
+        synchronized(activity.viewSync)
+        {
+            val account = activity.account
+            if (account == null) return
+
+            LogIt.info("onclick: " + idx + " " + activity.showingDetails)
+            if (!activity.showingDetails)
+            {
+                LogIt.info("set showingDetails")
+                activity.showingDetails = true
+                val itemHeight = v.height
+                val heightButOne = activity.GuiTxHistoryList.height - itemHeight
+
+                activity.linearLayoutManager.scrollToPositionWithOffset(idx, 0)
+                activity.GuiTxHistoryList.layoutParams.height = itemHeight
+                activity.GuiTxHistoryList.requestLayout()
+                activity.GuiTxHistoryList.invalidate()
+                activity.GuiTxWebView.layoutParams.height = heightButOne
+                activity.GuiTxWebView.requestLayout()
+                activity.container.requestLayout()
+
+
+                val url = account.transactionInfoWebUrl(d.tx.id?.toHex())
+                url?.let {
+                    activity.GuiTxWebView.loadUrl(url)
+                }
+            }
+            else
+            {
+                activity.showingDetails = false
+                activity.container.requestLayout()
+                activity.GuiTxHistoryList.layoutParams.height = activity.listHeight
+                activity.GuiTxHistoryList.invalidate()
+                activity.GuiTxHistoryList.requestLayout()
+
+                activity.GuiTxWebView.layoutParams.height = 1
+                activity.GuiTxWebView.requestLayout()
+                activity.GuiTxWebView.loadUrl("about:blank")
+            }
+            activity.linearLayoutManager.requestLayout()
+        }
+
+        /* kicks you to the browser
+        var intent = Intent(v.context, DomainIdentitySettings::class.java)
+        intent.putExtra("domainName", this.id?.domain )
+        v.context.startActivity(intent)
+         */
+    }
+
 }
 
 class TxHistoryActivity : CommonNavActivity()

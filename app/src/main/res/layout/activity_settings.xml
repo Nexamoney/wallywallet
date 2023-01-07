@@ -8,41 +8,50 @@
     android:tooltipText="@string/empty"
     tools:context=".settings">
 
+    <View
+        android:id="@+id/dividerBlockchainSettings"
+        android:layout_width="400dp"
+        android:layout_height="3dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="8dp"
+        android:background="?android:attr/listDivider"
+        android:foreground="@color/listDividerFg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.50"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiDeveloperInfoSwitch" />
+
     <TextView
         android:id="@+id/GuiShowDeveloperInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:text="@string/enableDeveloperView"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/GuiDeveloperInfoSwitch"
-        app:layout_constraintStart_toEndOf="@+id/GuiDeveloperInfoSwitch"
+        app:layout_constraintStart_toStartOf="@+id/GuiLocalCurrencyText"
         app:layout_constraintTop_toTopOf="@+id/GuiDeveloperInfoSwitch"
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/GuiLocalCurrencyText"
         android:layout_width="213dp"
-        android:layout_height="32dp"
-        android:layout_marginTop="16dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
         android:text="@string/localCurrency"
         android:textAlignment="center"
         android:textSize="18sp"
-        app:layout_constraintEnd_toStartOf="@+id/GuiFiatCurrencySpinner"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/GuiFiatCurrencySpinner"
         app:layout_constraintTop_toBottomOf="@+id/GuiGeneralSettingsHeader" />
 
     <Spinner
         android:id="@+id/GuiFiatCurrencySpinner"
         android:layout_width="113dp"
         android:layout_height="32dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="10dp"
         android:entries="@array/FiatCurrencyTypes"
         app:layout_constraintBottom_toBottomOf="@+id/GuiLocalCurrencyText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/GuiLocalCurrencyText"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/GuiLocalCurrencyText"
         app:layout_constraintVertical_bias="0.0" />
 
@@ -55,7 +64,7 @@
         android:text="@string/clearIdentityDomains"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GuiDeveloperInfoSwitch" />
+        app:layout_constraintBottom_toTopOf="@+id/dividerBottom" />
 
     <Button
         android:id="@+id/GuiLogInterestingData"
@@ -66,85 +75,17 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/GuiClearIdentityDomains"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/GuiClearIdentityDomains" />
+        app:layout_constraintBottom_toTopOf="@+id/dividerBottom" />
 
     <Switch
         android:id="@+id/GuiDeveloperInfoSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:gravity="bottom"
-        app:layout_constraintStart_toStartOf="@+id/GuiBchPreferNodeSwitch"
-        app:layout_constraintTop_toBottomOf="@+id/GuiBchPreferNode" />
-
-    <Switch
-        android:id="@+id/GuiBchExclusiveNodeSwitch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="10dp"
         android:gravity="bottom"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GuiLocalCurrencyText" />
+        app:layout_constraintTop_toBottomOf="@+id/GuiFiatCurrencySpinner" />
 
-    <EditText
-        android:id="@+id/GuiBchExclusiveNode"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:ems="10"
-        android:gravity="bottom"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GuiBchExclusiveNodeSwitch" />
-
-    <EditText
-        android:id="@+id/GuiBchPreferNode"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:ems="10"
-        android:gravity="bottom"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GuiBchPreferNodeSwitch" />
-
-    <Switch
-        android:id="@+id/GuiBchPreferNodeSwitch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="8dp"
-        android:gravity="bottom"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GuiBchExclusiveNode" />
-
-    <TextView
-        android:id="@+id/GuiOnlyUseBCHNodeText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="@string/exclusiveNexaNode"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="@+id/GuiBchExclusiveNodeSwitch"
-        app:layout_constraintStart_toEndOf="@+id/GuiBchExclusiveNodeSwitch"
-        app:layout_constraintTop_toTopOf="@+id/GuiBchExclusiveNodeSwitch"
-        app:layout_constraintVertical_bias="1.0" />
-
-    <TextView
-        android:id="@+id/GuiPreferBchNodeText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="@string/preferNexaNode"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="@+id/GuiBchPreferNodeSwitch"
-        app:layout_constraintStart_toEndOf="@+id/GuiBchPreferNodeSwitch"
-        app:layout_constraintTop_toTopOf="@+id/GuiBchPreferNodeSwitch" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/ConfirmationConstraint"
@@ -275,24 +216,22 @@
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="@+id/GuiDeleteAccountButton"
             app:layout_constraintTop_toBottomOf="@+id/GuiDeleteAccountButton" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <View
-        android:id="@+id/divider6"
-        android:layout_width="409dp"
+        android:id="@+id/dividerAccountSettings"
+        android:layout_width="400dp"
         android:layout_height="3dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="10dp"
         android:layout_marginEnd="8dp"
         android:background="?android:attr/listDivider"
         android:foreground="@color/listDividerFg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GuiClearIdentityDomains" />
+        app:layout_constraintTop_toBottomOf="@+id/bchBlockchainSettings" />
 
     <View
-        android:id="@+id/divider7"
+        android:id="@+id/dividerBottom"
         android:layout_width="409dp"
         android:layout_height="3dp"
         android:background="?android:attr/listDivider"
@@ -314,6 +253,18 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/GuiBlockchainSettingsHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/BlockchainSettings"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.488"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dividerBlockchainSettings" />
+
+    <TextView
         android:id="@+id/GuiAccountSettingsHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -322,5 +273,333 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider6" />
+        app:layout_constraintTop_toBottomOf="@+id/dividerAccountSettings" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/nexaBlockchainSettings"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:onClick="onConfirmationOps"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiBlockchainSettingsHeader"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/GuiNexaText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nexa"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/GuiNexaNodeAddr"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/GuiNexaNodeAddr" />
+
+        <Switch
+            android:id="@+id/GuiNexaExclusiveNodeSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            app:layout_constraintBottom_toBottomOf="@+id/GuiNexaNodeAddr"
+            app:layout_constraintTop_toTopOf="@+id/GuiNexaNodeAddr"
+            app:layout_constraintEnd_toStartOf="@+id/GuiOnlyUseNexaNodeText"
+            />
+
+
+        <TextView
+            android:id="@+id/GuiPreferNexaNodeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/prefer"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/GuiNexaPreferNodeSwitch"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/GuiNexaPreferNodeSwitch"
+            app:layout_constraintVertical_bias="0.50" />
+
+
+        <EditText
+            android:id="@+id/GuiNexaNodeAddr"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="10dp"
+            android:gravity="bottom"
+            android:inputType="textPersonName"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/GuiNexaExclusiveNodeSwitch"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/GuiNexaText" />
+
+        <Switch
+            android:id="@+id/GuiNexaPreferNodeSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            app:layout_constraintBottom_toBottomOf="@+id/GuiOnlyUseNexaNodeText"
+            app:layout_constraintEnd_toStartOf="@+id/GuiPreferNexaNodeText"
+            app:layout_constraintTop_toTopOf="@+id/GuiOnlyUseNexaNodeText" />
+
+        <TextView
+            android:id="@+id/GuiOnlyUseNexaNodeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="@string/only"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/GuiNexaExclusiveNodeSwitch"
+            app:layout_constraintEnd_toStartOf="@+id/GuiNexaPreferNodeSwitch"
+            app:layout_constraintTop_toTopOf="@+id/GuiNexaExclusiveNodeSwitch" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/nexatestBlockchainSettings"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:onClick="onConfirmationOps"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nexaBlockchainSettings"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/GuiNexatestText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nexatest"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/GuiNexatestNodeAddr"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/GuiNexatestNodeAddr" />
+
+        <Switch
+            android:id="@+id/GuiNexatestExclusiveNodeSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            app:layout_constraintBottom_toBottomOf="@+id/GuiNexatestNodeAddr"
+            app:layout_constraintEnd_toStartOf="@+id/GuiOnlyUseNexatestNodeText"
+            app:layout_constraintTop_toTopOf="@+id/GuiNexatestNodeAddr" />
+
+
+        <TextView
+            android:id="@+id/GuiPreferNexatestNodeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/prefer"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/GuiNexatestPreferNodeSwitch"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/GuiNexatestPreferNodeSwitch"
+            app:layout_constraintVertical_bias="0.50" />
+
+
+        <EditText
+            android:id="@+id/GuiNexatestNodeAddr"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="10dp"
+            android:gravity="bottom"
+            android:inputType="textPersonName"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/GuiNexatestExclusiveNodeSwitch"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/GuiNexatestText" />
+
+        <Switch
+            android:id="@+id/GuiNexatestPreferNodeSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            app:layout_constraintBottom_toBottomOf="@+id/GuiOnlyUseNexatestNodeText"
+            app:layout_constraintEnd_toStartOf="@+id/GuiPreferNexatestNodeText"
+            app:layout_constraintTop_toTopOf="@+id/GuiOnlyUseNexatestNodeText" />
+
+        <TextView
+            android:id="@+id/GuiOnlyUseNexatestNodeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="@string/only"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/GuiNexatestExclusiveNodeSwitch"
+            app:layout_constraintEnd_toStartOf="@+id/GuiNexatestPreferNodeSwitch"
+            app:layout_constraintTop_toTopOf="@+id/GuiNexatestExclusiveNodeSwitch" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/nexaregBlockchainSettings"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:onClick="onConfirmationOps"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nexatestBlockchainSettings"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/GuiNexaregText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nexareg"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/GuiNexaregNodeAddr"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/GuiNexaregNodeAddr" />
+
+        <Switch
+            android:id="@+id/GuiNexaregExclusiveNodeSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            app:layout_constraintBottom_toBottomOf="@+id/GuiNexaregNodeAddr"
+            app:layout_constraintEnd_toStartOf="@+id/GuiOnlyUseNexaregNodeText"
+            app:layout_constraintTop_toTopOf="@+id/GuiNexaregNodeAddr" />
+
+
+        <TextView
+            android:id="@+id/GuiPreferNexaregNodeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/prefer"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/GuiNexaregPreferNodeSwitch"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/GuiNexaregPreferNodeSwitch"
+            app:layout_constraintVertical_bias="0.50" />
+
+
+        <EditText
+            android:id="@+id/GuiNexaregNodeAddr"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="10dp"
+            android:gravity="bottom"
+            android:inputType="textPersonName"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/GuiNexaregExclusiveNodeSwitch"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/GuiNexaregText" />
+
+        <Switch
+            android:id="@+id/GuiNexaregPreferNodeSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            app:layout_constraintBottom_toBottomOf="@+id/GuiOnlyUseNexaregNodeText"
+            app:layout_constraintEnd_toStartOf="@+id/GuiPreferNexaregNodeText"
+            app:layout_constraintTop_toTopOf="@+id/GuiOnlyUseNexaregNodeText" />
+
+        <TextView
+            android:id="@+id/GuiOnlyUseNexaregNodeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="@string/only"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/GuiNexaregExclusiveNodeSwitch"
+            app:layout_constraintEnd_toStartOf="@+id/GuiNexaregPreferNodeSwitch"
+            app:layout_constraintTop_toTopOf="@+id/GuiNexaregExclusiveNodeSwitch" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bchBlockchainSettings"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:onClick="onConfirmationOps"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nexaregBlockchainSettings"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/GuiBchText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BCH"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/GuiBchNodeAddr"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/GuiBchNodeAddr" />
+
+        <Switch
+            android:id="@+id/GuiBchExclusiveNodeSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            app:layout_constraintBottom_toBottomOf="@+id/GuiBchNodeAddr"
+            app:layout_constraintTop_toTopOf="@+id/GuiBchNodeAddr"
+            app:layout_constraintEnd_toStartOf="@+id/GuiOnlyUseBchNodeText"
+            />
+
+
+        <TextView
+            android:id="@+id/GuiPreferBchNodeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/prefer"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/GuiBchPreferNodeSwitch"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/GuiBchPreferNodeSwitch"
+            app:layout_constraintVertical_bias="0.50" />
+
+
+        <EditText
+            android:id="@+id/GuiBchNodeAddr"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="10dp"
+            android:gravity="bottom"
+            android:inputType="textPersonName"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/GuiBchExclusiveNodeSwitch"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/GuiBchText" />
+
+        <Switch
+            android:id="@+id/GuiBchPreferNodeSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            app:layout_constraintBottom_toBottomOf="@+id/GuiOnlyUseBchNodeText"
+            app:layout_constraintEnd_toStartOf="@+id/GuiPreferBchNodeText"
+            app:layout_constraintTop_toTopOf="@+id/GuiOnlyUseBchNodeText" />
+
+        <TextView
+            android:id="@+id/GuiOnlyUseBchNodeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="@string/only"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/GuiBchExclusiveNodeSwitch"
+            app:layout_constraintEnd_toStartOf="@+id/GuiBchPreferNodeSwitch"
+            app:layout_constraintTop_toTopOf="@+id/GuiBchExclusiveNodeSwitch" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

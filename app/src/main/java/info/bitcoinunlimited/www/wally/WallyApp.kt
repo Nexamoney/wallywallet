@@ -227,6 +227,8 @@ class Account(
         LogIt.info(sourceLoc() + " " + ": Loading wallet " + name)
         val t = Bip44Wallet(walletDb!!, name)  // Load a saved wallet
         LogIt.info(sourceLoc() + " " + ": Loaded wallet " + name)
+        val stats = t.statistics()
+        LogIt.info(sourceLoc() + " " + name + ": Used Addresses: " + stats.numUsedAddrs + " Unused Addresses: " + stats.numUnusedAddrs + " Num UTXOs: " + stats.numUnspentTxos + " Num wallet events: " + t.txHistory.size)
         t
     }
     else  // New account
@@ -267,7 +269,6 @@ class Account(
     init
     {
         val hundredThousand = CurrencyDecimal(SATinMBCH)
-        wallet.prepareDestinations(2, 2)  // Make sure that there is at least a few addresses before we hook into the network
 
         if (retrieveOnlyActivity != null)  // push in nonstandard addresses before we connect to the blockchain.
         {
@@ -281,7 +282,7 @@ class Account(
         }
 
         wallet.fillReceivingWithRetrieveOnly()
-
+        wallet.prepareDestinations(2, 2)  // Make sure that there is at least a few addresses before we hook into the network
         LogIt.info("wallet add blockchain")
         wallet.addBlockchain(chain, chain.checkpointHeight, startPlace)
         LogIt.info("wallet add blockchain done")
@@ -924,9 +925,6 @@ class WallyApp : Application()
 
                 val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
 
-                val NexaExclusiveNode: String? = if (prefs.getBoolean(defaultAccount + "." + EXCLUSIVE_NODE_SWITCH, false)) prefs.getString(defaultAccount + "." + EXCLUSIVE_NODE, null) else null
-                val NexaPreferredNode: String? = if (prefs.getBoolean(defaultAccount + "." + PREFER_NODE_SWITCH, false)) prefs.getString(defaultAccount + "." + PREFER_NODE, null) else null
-
                 if (REG_TEST_ONLY)  // If I want a regtest only wallet for manual debugging, just create it directly
                 {
                     accounts.getOrPut("RKEX") {
@@ -977,23 +975,28 @@ class WallyApp : Application()
 
                 for (c in accounts.values)
                 {
+                    val cs = c.chain.chainSelector
+                    val chainName = chainToURI[cs]
+                    val exclusiveNode: String? = if (prefs.getBoolean(chainName + "." + EXCLUSIVE_NODE_SWITCH, false)) prefs.getString(chainName + "." + CONFIGURED_NODE, null) else null
+                    val preferredNode: String? = if (prefs.getBoolean(chainName + "." + PREFER_NODE_SWITCH, false)) prefs.getString(chainName + "." + CONFIGURED_NODE, null) else null
+
                     // If I prefer an exclusive connection, then start up that way
-                    if ((NexaExclusiveNode != null) && (c.chain.chainSelector == ChainSelector.NEXA))
+                    if (exclusiveNode != null)
                     {
                         try
                         {
-                            val nodeSet:Set<String> = NexaExclusiveNode.toSet()
+                            val nodeSet:Set<String> = exclusiveNode.toSet()
                             c.cnxnMgr.exclusiveNodes(nodeSet)
                         } catch (e: Exception)
                         {
                         } // bad IP:port data
                     }
                     // If I have a preferred connection, then start up that way
-                    if ((NexaPreferredNode != null) && (c.chain.chainSelector == ChainSelector.NEXA))
+                    if (preferredNode != null)
                     {
                         try
                         {
-                            val nodeSet:Set<String> = NexaPreferredNode.toSet()
+                            val nodeSet:Set<String> = preferredNode.toSet()
                             c.cnxnMgr.preferNodes(nodeSet)
                         } catch (e: Exception)
                         {

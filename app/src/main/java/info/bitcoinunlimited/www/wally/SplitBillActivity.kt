@@ -50,7 +50,7 @@ class SplitBillActivity : CommonNavActivity()
             val acts = ((getApplication() as WallyApp).accounts)
             if (!acts.isEmpty())
             {
-                acct = acts[defaultAccount] ?: acts.values.first()
+                acct = acts[defaultBlockchain] ?: acts.values.first()
                 cryptoCurrencyCode = acct?.currencyCode ?: ""
             }
         }

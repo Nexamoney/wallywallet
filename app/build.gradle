@@ -70,8 +70,8 @@ dependencies {
     //debugImplementation files('aars/libbitcoincash-debug.aar')  // locate this directory at: <repo_home>/app/aars/
 
     // Grab libbitcoincash locally for debug or from the released location
-    // implementation files('aars/libbitcoincash-release.aar')  // locate this directory at: <repo_home>/app/aars/
-    implementation 'info.bitcoinunlimited:libbitcoincash:3.1.0'
+    implementation files('aars/libbitcoincash-release.aar')  // locate this directory at: <repo_home>/app/aars/
+    // implementation 'info.bitcoinunlimited:libbitcoincash:3.1.0'
 
     //releaseImplementation files('aars/libbitcoincash-release.aar')
     //implementation files('aars/libbitcoincash-debug.aar')  // locate this directory at: <repo_home>/app/aars/

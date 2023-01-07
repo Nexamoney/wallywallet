@@ -87,8 +87,8 @@
 
     <!-- Settings -->
     <string name="enableDeveloperView">Show developer information</string>
-    <string name="exclusiveNexaNode">Only use Nexa node:</string>
-    <string name="preferNexaNode">Prefer Nexa node:</string>
+    <string name="only">only</string>
+    <string name="prefer">prefer</string>
     <string name="rediscoverWalletTx">rediscover all transactions</string>
     <string name="rediscoverBlockchain">rediscover blockchain headers</string>
     <string name="logDebugData">Log Debug Data</string>
@@ -109,6 +109,7 @@
     <string name="recoveryPhrase">This 12 word phrase can be used to restore your wallet if your phone is damaged or lost.  This means that whoever possesses this phrase can spend your money.  Write it down on paper and store it securely!\nRecovery Phrase:</string>
     <string name="AccountSettings">Account Settings</string>
     <string name="GeneralSettings">General Settings</string>
+    <string name="BlockchainSettings">Blockchain Sources</string>
 
     <!-- Split bill -->
     <string name="Total">Total</string>

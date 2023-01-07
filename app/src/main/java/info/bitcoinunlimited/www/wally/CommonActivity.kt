@@ -538,17 +538,19 @@ open class CommonActivity : AppCompatActivity()
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
-    fun copyTextToClipboard(v: TextView)
+    fun copyTextToClipboard(v: TextView, label: String = "")
     {
         val addr = v.text
         try
         {
             var clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+            clipboard.clearPrimaryClip()
 
             if (addr != null)
             {
-                val clip = ClipData.newPlainText("text", addr)
+                val clip = ClipData.newPlainText(label, addr)
                 clipboard.setPrimaryClip(clip)
+                //clipboard.setText(addr)
 
                 // visual bling that indicates text copied
                 v.text = i18n(R.string.copiedToClipboard)

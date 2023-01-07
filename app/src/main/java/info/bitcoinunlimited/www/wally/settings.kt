@@ -28,11 +28,10 @@ val SHOW_DEV_INFO = "devinfo"
 //val BCH_PREFER_NODE = "BCH.preferNode"
 
 val EXCLUSIVE_NODE_SWITCH = "exclusiveNodeSwitch"
-val EXCLUSIVE_NODE = "exclusiveNode"
+val CONFIGURED_NODE = "NodeAddress"
 val PREFER_NODE_SWITCH = "preferNodeSwitch"
-val PREFER_NODE = "preferNode"
 
-var defaultAccount = chainToURI[ChainSelector.NEXA]  // The default crypto I'm using
+var defaultBlockchain = chainToURI[ChainSelector.NEXA]  // The default crypto I'm using
 
 private val LogIt = Logger.getLogger("BU.wally.settings")
 
@@ -107,24 +106,50 @@ class Settings : CommonActivity()
               {
                   GuiClearIdentityDomains.visibility = VISIBLE
                   GuiLogInterestingData.visibility = VISIBLE
+                  nexaregBlockchainSettings.visibility = VISIBLE
+                  nexatestBlockchainSettings.visibility = VISIBLE
               }
               else
               {
                   GuiClearIdentityDomains.visibility = GONE
                   GuiLogInterestingData.visibility = GONE
+                  nexaregBlockchainSettings.visibility = GONE
+                  nexatestBlockchainSettings.visibility = GONE
               }
           })
         {
             GuiClearIdentityDomains.visibility = VISIBLE
             GuiLogInterestingData.visibility = VISIBLE
+            nexaregBlockchainSettings.visibility = VISIBLE
+            nexatestBlockchainSettings.visibility = VISIBLE
+        }
+        else
+        {
+            GuiClearIdentityDomains.visibility = GONE
+            GuiLogInterestingData.visibility = GONE
+            nexaregBlockchainSettings.visibility = GONE
+            nexatestBlockchainSettings.visibility = GONE
         }
 
+        var name = chainToURI[ChainSelector.NEXA]
+        SetupBooleanPreferenceGui(name + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, GuiNexaExclusiveNodeSwitch)
+        SetupBooleanPreferenceGui(name + "." + PREFER_NODE_SWITCH, preferenceDB, GuiNexaPreferNodeSwitch)
+        SetupTextPreferenceGui(name + "." + CONFIGURED_NODE, preferenceDB, GuiNexaNodeAddr)
 
-        SetupBooleanPreferenceGui(defaultAccount + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, GuiBchExclusiveNodeSwitch)
-        SetupBooleanPreferenceGui(defaultAccount + "." + PREFER_NODE_SWITCH, preferenceDB, GuiBchPreferNodeSwitch)
+        name = chainToURI[ChainSelector.NEXATESTNET]
+        SetupBooleanPreferenceGui(name + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, GuiNexatestExclusiveNodeSwitch)
+        SetupBooleanPreferenceGui(name + "." + PREFER_NODE_SWITCH, preferenceDB, GuiNexatestPreferNodeSwitch)
+        SetupTextPreferenceGui(name + "." + CONFIGURED_NODE, preferenceDB, GuiNexatestNodeAddr)
 
-        SetupTextPreferenceGui(defaultAccount + "." + EXCLUSIVE_NODE, preferenceDB, GuiBchExclusiveNode)
-        SetupTextPreferenceGui(defaultAccount + "." + PREFER_NODE, preferenceDB, GuiBchPreferNode)
+        name = chainToURI[ChainSelector.NEXAREGTEST]
+        SetupBooleanPreferenceGui(name + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, GuiNexaregExclusiveNodeSwitch)
+        SetupBooleanPreferenceGui(name + "." + PREFER_NODE_SWITCH, preferenceDB, GuiNexaregPreferNodeSwitch)
+        SetupTextPreferenceGui(name + "." + CONFIGURED_NODE, preferenceDB, GuiNexaregNodeAddr)
+
+        name = chainToURI[ChainSelector.BCH]
+        SetupBooleanPreferenceGui(name + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, GuiBchExclusiveNodeSwitch)
+        SetupBooleanPreferenceGui(name + "." + PREFER_NODE_SWITCH, preferenceDB, GuiBchPreferNodeSwitch)
+        SetupTextPreferenceGui(name + "." + CONFIGURED_NODE, preferenceDB, GuiBchNodeAddr)
 
         val curCode: String = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"
         GuiFiatCurrencySpinner.setSelection(curCode)
@@ -201,49 +226,29 @@ class Settings : CommonActivity()
     {
         val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
 
-        var exclusiveNode: String? = null
-        var preferNode: String? = null
+        var nodeAddr: String? = null
 
-        if (prefs.getBoolean(defaultAccount + "." + EXCLUSIVE_NODE_SWITCH, false) == true)
+        for (chain in chainToURI)
         {
-            exclusiveNode = prefs.getString(defaultAccount + "." + EXCLUSIVE_NODE, null)
-            if (exclusiveNode?.length == 0) exclusiveNode = null
-        }
+            val name = chain.value
+            nodeAddr = prefs.getString(name + "." + CONFIGURED_NODE, null)
+            val excl = prefs.getBoolean(name + "." + EXCLUSIVE_NODE_SWITCH, false)
+            val prefd = prefs.getBoolean(name + "." + PREFER_NODE_SWITCH, false)
 
-        if (prefs.getBoolean(defaultAccount + "." + PREFER_NODE_SWITCH, false) == true)
-        {
-            preferNode = prefs.getString(defaultAccount + "." + PREFER_NODE, null)
-            if (preferNode?.length == 0) preferNode = null
-        }
-
-
-        val appv = app
-        if (appv != null)  // for every account on this blockchain, install the exclusive node or send a null saying not exclusive anymore
-            for (account in appv.accounts.values)
-            {
-                if (account.chain.chainSelector == ChainSelector.NEXA)
+            val appv = app
+            if (appv != null)  // for every account on this blockchain, install the exclusive node or send a null saying not exclusive anymore
+                for (account in appv.accounts.values)
                 {
-                    if (true)
+                    if (account.chain.chainSelector == chain.key)
                     {
-                        if (exclusiveNode == null || exclusiveNode == "") account.cnxnMgr.exclusiveNodes(null)
-                        else
-                        {
-                            val nodeSet:Set<String> = exclusiveNode.toSet()
-                            account.cnxnMgr.exclusiveNodes(nodeSet)
-                        }
-                    }
-
-                    if (true)
-                    {
-                        if (preferNode == null || preferNode == "") account.cnxnMgr.preferNodes(null)
-                        else
-                        {
-                            val nodeSet:Set<String> = preferNode.toSet()
-                            account.cnxnMgr.preferNodes(nodeSet)
-                        }
+                        val nodeSet: Set<String> = nodeAddr?.toSet() ?: setOf()
+                        if (!excl || (nodeSet.size == 0)) account.cnxnMgr.exclusiveNodes(null)
+                        else account.cnxnMgr.exclusiveNodes(nodeSet)
+                        if (!prefd || (nodeSet.size == 0)) account.cnxnMgr.preferNodes(null)
+                        else account.cnxnMgr.preferNodes(nodeSet)
                     }
                 }
-            }
+        }
 
         super.onStop()
     }

@@ -185,15 +185,15 @@ class MainActivity : CommonNavActivity()
         {
             sendToAddress.text.append(savedInstanceState.getString("sendToAddress", "") ?: "")
             sendQuantity.text.append(savedInstanceState.getString("sendQuantity", "") ?: "")
-            mainActivityModel.lastSendCurrencyType = savedInstanceState.getString("sendCurrencyType", defaultAccount)
-            mainActivityModel.lastRecvCoinType = savedInstanceState.getString("recvCoinType", defaultAccount)
-            mainActivityModel.lastSendCoinType = savedInstanceState.getString("sendCoinType", defaultAccount)
+            mainActivityModel.lastSendCurrencyType = savedInstanceState.getString("sendCurrencyType", defaultBlockchain)
+            mainActivityModel.lastRecvCoinType = savedInstanceState.getString("recvCoinType", defaultBlockchain)
+            mainActivityModel.lastSendCoinType = savedInstanceState.getString("sendCoinType", defaultBlockchain)
         }
         else
         {
-            mainActivityModel.lastSendCurrencyType = defaultAccount
-            mainActivityModel.lastRecvCoinType = defaultAccount
-            mainActivityModel.lastSendCoinType = defaultAccount
+            mainActivityModel.lastSendCurrencyType = defaultBlockchain
+            mainActivityModel.lastRecvCoinType = defaultBlockchain
+            mainActivityModel.lastSendCoinType = defaultBlockchain
         }
 
         readQRCodeButton.setOnClickListener {
@@ -311,12 +311,12 @@ class MainActivity : CommonNavActivity()
                 if (c != null)
                 {
                     mainActivityModel.lastRecvCoinType = sel
-                    val oldc = accounts[defaultAccount]
+                    val oldc = accounts[defaultBlockchain]
                     if (oldc != null)
                     {
                         oldc.updateReceiveAddressUI = null
                     }
-                    defaultAccount = c.name
+                    defaultBlockchain = c.name
                     c.updateReceiveAddressUI = { it -> updateReceiveAddressUI(it) }
                     updateReceiveAddressUI(c)
                 }
@@ -676,7 +676,7 @@ class MainActivity : CommonNavActivity()
 
         checkSendQuantity(sendQuantity.text.toString())
 
-        accounts[defaultAccount]?.let { updateReceiveAddressUI(it) }
+        accounts[defaultBlockchain]?.let { updateReceiveAddressUI(it) }
 
         // Process the intent that caused this activity to resume
         if (intent.scheme != null)  // its null if normal app startup
@@ -1354,8 +1354,8 @@ class MainActivity : CommonNavActivity()
         super.onSaveInstanceState(outState)
         outState.putString("sendToAddress", sendToAddress.text.toString().trim())
         outState.putString("sendQuantity", sendQuantity.text.toString().trim())
-        outState.putString("sendCurrencyType", (sendCurrencyType.selectedItem ?: defaultAccount) as String)
-        outState.putString("recvCoinType", (recvCoinType.selectedItem ?: defaultAccount) as String)
+        outState.putString("sendCurrencyType", (sendCurrencyType.selectedItem ?: defaultBlockchain) as String)
+        outState.putString("recvCoinType", (recvCoinType.selectedItem ?: defaultBlockchain) as String)
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -1381,7 +1381,7 @@ class MainActivity : CommonNavActivity()
         try
         {
             var clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-            val account = accounts[defaultAccount]
+            val account = accounts[defaultBlockchain]
             if (account == null) throw BadCryptoException(R.string.badCryptoCode)
 
             val recvAddrStr: String? = account.currentReceive?.address?.toString()
@@ -1394,7 +1394,7 @@ class MainActivity : CommonNavActivity()
                 // visual bling that indicates text copied
                 receiveAddress.text = i18n(R.string.copiedToClipboard)
                 laterUI {
-                    delay(5000); accounts[defaultAccount]?.let { updateReceiveAddressUI(it) }
+                    delay(5000); accounts[defaultBlockchain]?.let { updateReceiveAddressUI(it) }
                 }
             }
             else throw UnavailableException(R.string.receiveAddressUnavailable)
