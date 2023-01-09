@@ -366,7 +366,24 @@ class IdentityOpActivity : CommonNavActivity()
                 }
 
                 val wallet = act.wallet
-                val identityDest: PayDestination = wallet.destinationFor(h + path)
+                val idData = wallet.lookupIdentityDomain(h)
+
+                val seed = if (idData != null)
+                {
+                    if (idData.useIdentity == IdentityDomain.COMMON_IDENTITY)
+                        Bip44Wallet.COMMON_IDENTITY_SEED
+                    else if (idData.useIdentity == IdentityDomain.IDENTITY_BY_HASH)
+                        h + path
+                    else
+                    {
+                        LogIt.severe("Invalid identity selector; corrupt?")
+                        Bip44Wallet.COMMON_IDENTITY_SEED
+                    }
+                }
+                else
+                    Bip44Wallet.COMMON_IDENTITY_SEED
+
+                val identityDest: PayDestination = wallet.destinationFor(seed)
 
                 // This is a coding bug in the wallet
                 val secret = identityDest.secret ?: throw IdentityException("Wallet failed to provide an identity with a secret", "bad wallet", ErrorSeverity.Severe)
