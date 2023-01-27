@@ -558,9 +558,17 @@ class TxHistoryActivity : CommonNavActivity()
                         }
 
                         // copy the info to the clipboard
-                        var clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                        var clip = ClipData.newPlainText("text", historyCSV)
-                        clipboard.setPrimaryClip(clip)
+                        val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                        try
+                        {
+                            val clip = ClipData.newPlainText("text", historyCSV)
+                            clipboard.setPrimaryClip(clip)
+                        }
+                        catch (e: android.os.TransactionTooLargeException)
+                        {
+                            val clip = ClipData.newPlainText("text", "transaction history is too large for clipboard")
+                            clipboard.setPrimaryClip(clip)
+                        }
 
                         // can't set this until the options menu is created, which happens sometime after onCreate
                         while (shareActionProvider == null) delay(200)

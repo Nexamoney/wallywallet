@@ -22,10 +22,6 @@ import java.util.logging.Logger
 
 val LOCAL_CURRENCY_PREF = "localCurrency"
 val SHOW_DEV_INFO = "devinfo"
-//val BCH_EXCLUSIVE_NODE_SWITCH = "BCH.exclusiveNodeSwitch"
-//val BCH_EXCLUSIVE_NODE = "BCH.exclusiveNode"
-//val BCH_PREFER_NODE_SWITCH = "BCH.preferNodeSwitch"
-//val BCH_PREFER_NODE = "BCH.preferNode"
 
 val EXCLUSIVE_NODE_SWITCH = "exclusiveNodeSwitch"
 val CONFIGURED_NODE = "NodeAddress"
@@ -321,7 +317,7 @@ class Settings : CommonActivity()
                 val coin = accounts[accountName]
                 if (coin == null) return
                 launch {
-                    coin.wallet.rediscover(true)
+                    coin.wallet.rediscover(true, false)
                     displayNotice(i18n(R.string.rediscoverNotice))
                 }
             }

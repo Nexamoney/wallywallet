@@ -610,8 +610,11 @@ class IdentityOpActivity : CommonNavActivity()
                         val msgSig = Wallet.signMessage(msg, secret.getSecret())
                         val sigStr = Codec.encode64(msgSig)
                         laterUI {
+                            val msgStr = String(msg)
                             var clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                            var clip = ClipData.newPlainText("text", address.toString() + " -> " + sigStr)
+                            val s = """{ "message":"${msgStr}", "address":"${address.toString()}", "signature": "${sigStr}" }"""
+                            var clip = ClipData.newPlainText("text", s)
+                            LogIt.info(s)
                             clipboard.setPrimaryClip(clip)
                         }
                         displayNotice(R.string.sigInClipboard, NOTICE_DISPLAY_TIME, { clearIntentAndFinish() })

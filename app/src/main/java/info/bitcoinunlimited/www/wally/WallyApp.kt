@@ -256,9 +256,9 @@ class Account(
     //? specify how quantities should be formatted for display
     val cryptoFormat = mBchFormat
 
-    val cnxnMgr: CnxnMgr = GetCnxnMgr(wallet.chainSelector, name)
-
-    val chain: Blockchain = GetBlockchain(wallet.chainSelector, cnxnMgr, context, name)
+    val cnxnMgr: CnxnMgr = GetCnxnMgr(wallet.chainSelector, name, false)
+    val chain: Blockchain = GetBlockchain(wallet.chainSelector, cnxnMgr, context, chainToURI[wallet.chainSelector], false)  // do not start right away so we can configure exclusive/preferred nodes
+    var started = false  // Have the cnxnmgr and blockchain services been started or are we in initialization?
 
     val currencyCode: String = chainToMilliCurrencyCode[wallet.chainSelector]!!
 
@@ -283,9 +283,9 @@ class Account(
 
         wallet.fillReceivingWithRetrieveOnly()
         wallet.prepareDestinations(2, 2)  // Make sure that there is at least a few addresses before we hook into the network
-        LogIt.info("wallet add blockchain")
+        LogIt.info(sourceLoc() + name +": wallet connect blockchain ${chain.name}")
         wallet.addBlockchain(chain, chain.checkpointHeight, startPlace)
-        LogIt.info("wallet add blockchain done")
+        LogIt.info(sourceLoc() + name +": wallet blockchain ${chain.name} connection completed")
         if (chainSelector != ChainSelector.NEXA)  // no fiat price for nextchain
         {
             wallet.spotPrice = { currencyCode -> assert(currencyCode == fiatCurrencyCode); fiatPerCoin / hundredThousand }
@@ -505,13 +505,18 @@ class Account(
         return im!! // It must be not null because if null I set it
     }
 
+    // This can be called either when the app as been paused, or early during app initialization
+    // so we need to check to see if the is an actual resume-after-pause, or an initial startup
     fun onResume()
     {
-        LogIt.info("App resuming: Restarting threads if needed")
-        wallet.restart()
-        wallet.chainstate?.chain?.restart()
-        wallet.chainstate?.chain?.net?.restart()
-        onWalletChange(true)
+        if (started)
+        {
+            LogIt.info("App resuming: Restarting threads if needed")
+            wallet.restart()
+            wallet.chainstate?.chain?.restart()
+            wallet.chainstate?.chain?.net?.restart()
+            onWalletChange(true)
+        }
     }
 
     fun onWalletChange(force: Boolean = false)
@@ -561,10 +566,15 @@ class Account(
     }
 
     @Suppress("UNUSED_PARAMETER")
+    @Synchronized
     fun start(ac: Context)
     {
-        cnxnMgr.start()
-        chain.start()
+        if (!started)
+        {
+            cnxnMgr.start()
+            chain.start()
+            started=true
+        }
     }
 }
 
@@ -983,22 +993,26 @@ class WallyApp : Application()
                     // If I prefer an exclusive connection, then start up that way
                     if (exclusiveNode != null)
                     {
+                        LogIt.info(sourceLoc() + c.chain.name + ": Exclusive node mode")
                         try
                         {
                             val nodeSet:Set<String> = exclusiveNode.toSet()
                             c.cnxnMgr.exclusiveNodes(nodeSet)
-                        } catch (e: Exception)
+                        }
+                        catch (e: Exception)
                         {
                         } // bad IP:port data
                     }
                     // If I have a preferred connection, then start up that way
                     if (preferredNode != null)
                     {
+                        LogIt.info(sourceLoc() + c.chain.name + ": Preferred node mode")
                         try
                         {
                             val nodeSet:Set<String> = preferredNode.toSet()
                             c.cnxnMgr.preferNodes(nodeSet)
-                        } catch (e: Exception)
+                        }
+                        catch (e: Exception)
                         {
                         } // bad IP:port data provided by user
                     }
