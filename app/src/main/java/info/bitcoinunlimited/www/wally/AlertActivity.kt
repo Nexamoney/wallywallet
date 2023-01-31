@@ -12,10 +12,12 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import bitcoinunlimited.libbitcoincash.*
-import kotlinx.android.synthetic.main.activity_alerts.*
-import kotlinx.android.synthetic.main.activity_tx_history.*
-import kotlinx.android.synthetic.main.activity_tx_history.container
-import kotlinx.android.synthetic.main.alert_list_item.view.*
+import info.bitcoinunlimited.www.wally.databinding.ActivityAlertsBinding
+import info.bitcoinunlimited.www.wally.databinding.AlertListItemBinding
+//import kotlinx.android.synthetic.main.activity_alerts.*
+//import kotlinx.android.synthetic.main.activity_tx_history.*
+//import kotlinx.android.synthetic.main.activity_tx_history.container
+//import kotlinx.android.synthetic.main.alert_list_item.view.*
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -29,11 +31,12 @@ private val LogIt = Logger.getLogger("BU.wally.Alert")
 
 private class AlertRecyclerAdapter(private val activity: AlertActivity, private val alerts: ArrayList<Alert>) : RecyclerView.Adapter<AlertRecyclerAdapter.AlertDomainHolder>()
 {
-
+    lateinit var ui: AlertListItemBinding
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlertRecyclerAdapter.AlertDomainHolder
     {
-        val inflatedView = parent.inflate(R.layout.alert_list_item, false)
-        return AlertDomainHolder(activity, inflatedView)
+        val view = parent.inflate(R.layout.alert_list_item, false)
+
+        return AlertDomainHolder(activity, view)
     }
 
     override fun getItemCount(): Int = alerts.size
@@ -71,35 +74,35 @@ private class AlertRecyclerAdapter(private val activity: AlertActivity, private 
                     LogIt.info("set showingDetails")
                     activity.showingDetails = true
                     val itemsHeight = v.height * some
-                    val heightButSome = activity.GuiAlertList.height - itemsHeight
+                    val heightButSome = activity.ui.GuiAlertList.height - itemsHeight
 
                     activity.linearLayoutManager.scrollToPositionWithOffset(idx, 0)
-                    activity.GuiAlertList.layoutParams.height = itemsHeight
-                    activity.GuiAlertList.requestLayout()
-                    activity.GuiAlertList.invalidate()
-                    activity.GuiAlertView.layoutParams.height = heightButSome
-                    activity.GuiAlertView.requestLayout()
+                    activity.ui.GuiAlertList.layoutParams.height = itemsHeight
+                    activity.ui.GuiAlertList.requestLayout()
+                    activity.ui.GuiAlertList.invalidate()
+                    activity.ui.GuiAlertView.layoutParams.height = heightButSome
+                    activity.ui.GuiAlertView.requestLayout()
                     if (alert?.details != null)
                     {
-                        activity.GuiAlertView.text = alert?.details
+                        activity.ui.GuiAlertView.text = alert?.details
                     }
                     else
                     {
-                        activity.GuiAlertView.text = i18n(R.string.noAdditionalDetails)
+                        activity.ui.GuiAlertView.text = i18n(R.string.noAdditionalDetails)
                     }
-                    activity.container.requestLayout()
+                    activity.ui.container.requestLayout()
                 }
                 else
                 {
                     activity.showingDetails = false
-                    activity.container.requestLayout()
-                    activity.GuiAlertList.layoutParams.height = activity.listHeight
-                    activity.GuiAlertList.invalidate()
-                    activity.GuiAlertList.requestLayout()
+                    activity.ui.container.requestLayout()
+                    activity.ui.GuiAlertList.layoutParams.height = activity.listHeight
+                    activity.ui.GuiAlertList.invalidate()
+                    activity.ui.GuiAlertList.requestLayout()
 
-                    activity.GuiAlertView.layoutParams.height = 1
-                    activity.GuiAlertView.requestLayout()
-                    activity.GuiAlertView.text = ""
+                    activity.ui.GuiAlertView.layoutParams.height = 1
+                    activity.ui.GuiAlertView.requestLayout()
+                    activity.ui.GuiAlertView.text = ""
                 }
                 activity.linearLayoutManager.requestLayout()
             }
@@ -151,6 +154,7 @@ class AlertActivity : CommonNavActivity()
 {
     lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var adapter: AlertRecyclerAdapter
+    lateinit var ui: ActivityAlertsBinding
     var listHeight: Int = 0
 
     val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
@@ -165,15 +169,16 @@ class AlertActivity : CommonNavActivity()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
+        ui = ActivityAlertsBinding.inflate(layoutInflater)
         setContentView(R.layout.activity_alerts)
 
         linearLayoutManager = LinearLayoutManager(this)
-        GuiAlertList.layoutManager = linearLayoutManager
+        ui.GuiAlertList.layoutManager = linearLayoutManager
 
         // Remember the original height so that it can be restored when we move it
-        listHeight = GuiAlertList.layoutParams.height
+        listHeight = ui.GuiAlertList.layoutParams.height
 
-        GuiAlertList.addOnScrollListener(object : RecyclerView.OnScrollListener()
+        ui.GuiAlertList.addOnScrollListener(object : RecyclerView.OnScrollListener()
         {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)
             {
@@ -185,7 +190,7 @@ class AlertActivity : CommonNavActivity()
         laterUI {
             setTitle(i18n(R.string.title_activity_alert_history))
             adapter = AlertRecyclerAdapter(this, alerts)
-            GuiAlertList.adapter = adapter
+            ui.GuiAlertList.adapter = adapter
         }
     }
 

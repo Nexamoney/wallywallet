@@ -1,6 +1,6 @@
 package bitcoinunlimited.wally.guiTestImplementation
 
-import Nexa.NexaRpc.*
+import Nexa.NexaRpc.NexaRpcFactory
 import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -36,6 +36,7 @@ import java.util.*
 import java.util.logging.Logger
 import info.bitcoinunlimited.www.wally.R.id as GuiId
 import info.bitcoinunlimited.www.wally.R  // so we can compare strings with what is on the screen
+import java.net.URLEncoder
 
 
 val LogIt = Logger.getLogger("GuiTest")
@@ -237,7 +238,11 @@ class GuiTest
 
         val tw = Bip44Wallet(wdb,"testframework", ChainSelector.NEXA, "quantum curve elephant soccer faculty cheese merge medal vault damage sniff purpose")
         val dest = tw.destinationFor("")
-        var uriStr:String = "tdpp://www.yoursite.com/reg?addr=" + Uri.encode(dest.address!!.toString()) + "&descday=" + Uri.encode("desc2 space test") + "&descper=desc1&descweek=week&maxday=10000&maxper=1000&maxweek=100000&topic=thisisatest&uoa=NEX"
+        // TODO Uri.encode vs URLEncoder
+        var uriStr:String = "tdpp://www.yoursite.com/reg?addr=" + URLEncoder.encode(dest.address!!.toString()) + "&descday=" + URLEncoder.encode("desc2 space test") + "&descper=desc1&descweek=week&maxday=10000&maxper=1000&maxweek=100000&topic=thisisatest&uoa=NEX"
+        val tosign = uriStr.toByteArray()
+        println("signing text: ${uriStr}")
+        println("signing hex: ${tosign.toHex()}")
         val sig = Wallet.signMessage(uriStr.toByteArray(), dest.secret!!.getSecret())
         val uriSig64=Uri.encode(Codec.encode64(sig))
         uriStr = uriStr + "&sig=$uriSig64"
