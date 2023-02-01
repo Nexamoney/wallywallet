@@ -313,6 +313,17 @@ open class CommonActivity : AppCompatActivity()
         return ret
     }
 
+    fun initializeHelpOption(menu: Menu)
+    {
+        val item4 = menu.findItem(R.id.help)
+        if (item4 != null)
+        {
+            val temp = Intent(Intent.ACTION_VIEW)
+            temp.setData(Uri.parse("http://www.bitcoinunlimited.net/wally/faq"))
+            item4.intent = temp
+        }
+    }
+
     /** Display an short error string on the title bar, and then clear it after a bit */
     fun displayError(err: String, details: String? = null, then: (() -> Unit)? = null)
     {

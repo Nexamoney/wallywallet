@@ -11,7 +11,7 @@ import android.widget.Adapter
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import bitcoinunlimited.libbitcoincash.*
-import kotlinx.android.synthetic.main.activity_split_bill.*
+import info.bitcoinunlimited.www.wally.databinding.ActivitySplitBillBinding
 import java.lang.Exception
 import java.math.BigDecimal
 
@@ -23,6 +23,7 @@ private val LogIt = Logger.getLogger("BU.wally.splitBillActivity")
 
 class SplitBillActivity : CommonNavActivity()
 {
+    private lateinit var ui:ActivitySplitBillBinding
     override var navActivityId = -1
 
     //* Currently selected fiat currency code
@@ -43,7 +44,8 @@ class SplitBillActivity : CommonNavActivity()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_split_bill)
+        ui = ActivitySplitBillBinding.inflate(layoutInflater)
+        setContentView(ui.root)
 
         if (true)
         {
@@ -55,11 +57,11 @@ class SplitBillActivity : CommonNavActivity()
             }
         }
 
-        splitCount.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
+        ui.splitCount.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
         {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long)
             {
-                val v = splitCount.getSelectedItem().toString()
+                val v = ui.splitCount.getSelectedItem().toString()
                 splitWays = v.toBigDecimal()
                 LogIt.info("split count clicked: " + v)
                 updateUI()
@@ -70,7 +72,7 @@ class SplitBillActivity : CommonNavActivity()
             }
         }
 
-        tipPercentage.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
+        ui.tipPercentage.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
         {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long)
             {
@@ -86,7 +88,7 @@ class SplitBillActivity : CommonNavActivity()
             {
             }
         }
-        splitCurrencyType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
+        ui.splitCurrencyType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
         {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long)
             {
@@ -99,7 +101,7 @@ class SplitBillActivity : CommonNavActivity()
             }
         }
 
-        splitQuantity.addTextChangedListener(object : TextWatcher
+        ui.splitQuantity.addTextChangedListener(object : TextWatcher
         {
             override fun afterTextChanged(p0: Editable?)
             {
@@ -120,18 +122,18 @@ class SplitBillActivity : CommonNavActivity()
             }
         })
 
-        splitBillTipAmount.addTextChangedListener(object : TextWatcher
+        ui.splitBillTipAmount.addTextChangedListener(object : TextWatcher
         {
             override fun afterTextChanged(p0: Editable?)
             {
                 if (ignoreTipAmountChange) return
                 try
                 {
-                    val qty = splitBillTipAmount?.text?.toString()?.toBigDecimal(currencyMath)?.setScale(currencyScale)
+                    val qty = ui.splitBillTipAmount?.text?.toString()?.toBigDecimal(currencyMath)?.setScale(currencyScale)
                     if (qty != null)
                     {
                         tipAmt = qty
-                        tipPercentage.setSelection(0)
+                        ui.tipPercentage.setSelection(0)
                     }
                     else
                     {
@@ -196,8 +198,8 @@ class SplitBillActivity : CommonNavActivity()
     fun overrideTipAmount(qty: BigDecimal)
     {
         ignoreTipAmountChange = true
-        splitBillTipAmount.text.clear()
-        splitBillTipAmount.text.insert(0, formatAsInputCurrency(qty))
+        ui.splitBillTipAmount.text.clear()
+        ui.splitBillTipAmount.text.insert(0, formatAsInputCurrency(qty))
         ignoreTipAmountChange = false
 
     }
@@ -205,7 +207,7 @@ class SplitBillActivity : CommonNavActivity()
 
     fun loadtipFracFromSpinner()
     {
-        val v = tipPercentage.getSelectedItem().toString()
+        val v = ui.tipPercentage.getSelectedItem().toString()
         if (v.last() != '%')  // Its the not applicable symbol -- user is entering a tip quantity manually
         {
             tipFrac = null
@@ -218,7 +220,7 @@ class SplitBillActivity : CommonNavActivity()
 
     fun formatAsInputCurrency(qty: BigDecimal, includeCurrencyCode: Boolean = false): String
     {
-        var ctype: String? = splitCurrencyType.selectedItem as? String
+        var ctype: String? = ui.splitCurrencyType.selectedItem as? String
         val currencyCode = if (!includeCurrencyCode) "" else ctype
         if (ctype == fiatCurrencyCode)
         {
@@ -247,15 +249,15 @@ class SplitBillActivity : CommonNavActivity()
         // Set the send currency type spinner options to your default fiat currency or your currently selected crypto
         val spinData = arrayOf(fiatCurrencyCode, cryptoCurrencyCode)
         val aa = ArrayAdapter(this, android.R.layout.simple_spinner_item, spinData)
-        splitCurrencyType!!.setAdapter(aa)
+        ui.splitCurrencyType!!.setAdapter(aa)
 
 
-        splitQuantity.text.append(prefDb.getString("splitbill.splitAmount", "0"))
+        ui.splitQuantity.text.append(prefDb.getString("splitbill.splitAmount", "0"))
         val sel1: String = prefDb.getString("splitbill.splitCurrencyType", fiatCurrencyCode) ?: fiatCurrencyCode
-        splitCurrencyType.setSelection(sel1)
+        ui.splitCurrencyType.setSelection(sel1)
         val sel2 = prefDb.getString("splitbill.splitWays", "2") ?: "2"
         splitWays = BigDecimal(sel2)
-        splitCount.setSelection(sel2)
+        ui.splitCount.setSelection(sel2)
         val tippct = prefDb.getString("splitbill.tipFrac", null)
         tipAmt = BigDecimal(prefDb.getString("splitbill.tipAmt", "0"))
 
@@ -265,12 +267,12 @@ class SplitBillActivity : CommonNavActivity()
         {
             tipFrac = BigDecimal(tippct)
             val pct = (BigDecimal(tippct) * (100.toBigDecimal())).toInt().toString() + "%"
-            tipPercentage.setSelection(pct)
+            ui.tipPercentage.setSelection(pct)
         }
         else
         {
             tipFrac = null
-            tipPercentage.setSelection(0)
+            ui.tipPercentage.setSelection(0)
         }
 
     }
@@ -280,16 +282,16 @@ class SplitBillActivity : CommonNavActivity()
         val prefDb = getSharedPreferences(i18n(R.string.preferenceFileName), Context.MODE_PRIVATE)
         with(prefDb.edit())
         {
-            putString("splitbill.splitAmount", splitQuantity.text.toString())
-            putString("splitbill.splitCurrencyType", splitCurrencyType.selectedItem as String)
+            putString("splitbill.splitAmount", ui.splitQuantity.text.toString())
+            putString("splitbill.splitCurrencyType", ui.splitCurrencyType.selectedItem as String)
             putString("splitbill.splitWays", splitWays.toString())
             putString("splitbill.tipFrac", tipFrac.toString())
             putString("splitbill.tipAmt", tipAmt.toString())
             commit()
         }
         // clean up my installed callbacks
-        tipPercentage.onItemSelectedListener = null
-        splitCount.onItemSelectedListener = null
+        ui.tipPercentage.onItemSelectedListener = null
+        ui.splitCount.onItemSelectedListener = null
         super.onDestroy()
     }
 
@@ -297,7 +299,7 @@ class SplitBillActivity : CommonNavActivity()
     {
         try
         {
-            return splitQuantity.text.toString().toBigDecimal(currencyMath).setScale(currencyScale)
+            return ui.splitQuantity.text.toString().toBigDecimal(currencyMath).setScale(currencyScale)
         } catch (e: Exception)  // If we can't parse the user's input for any reason, just make it 0
         {
             return BigDecimal(0, currencyMath).setScale(currencyScale)
@@ -310,7 +312,7 @@ class SplitBillActivity : CommonNavActivity()
     fun toCrypto(inQty: BigDecimal): BigDecimal
     {
         var amt = inQty
-        var ctype: String? = splitCurrencyType.selectedItem as? String
+        var ctype: String? = ui.splitCurrencyType.selectedItem as? String
 
         if (ctype == fiatCurrencyCode)
         {
@@ -335,7 +337,7 @@ class SplitBillActivity : CommonNavActivity()
         {
 
             var total = getAmount() + tipAmt
-            splitBillTotal.text = formatAsInputCurrency(total, true)
+            ui.splitBillTotal.text = formatAsInputCurrency(total, true)
             var qty = toCrypto(total) / splitWays
 
             var fiatStr = ""
@@ -354,14 +356,14 @@ class SplitBillActivity : CommonNavActivity()
                 acct!!.receiveInfoWithQuantity(qty, 200, { updateQR(it) })
             }
 
-            perSplitAmount.text = (acct?.format(qty) ?: mBchFormat.format(qty)) + " " + cryptoCurrencyCode + fiatStr
+            ui.perSplitAmount.text = (acct?.format(qty) ?: mBchFormat.format(qty)) + " " + cryptoCurrencyCode + fiatStr
         } catch (e: java.lang.NumberFormatException)
         {
-            perSplitAmount.text = i18n(R.string.badAmount)
+            ui.perSplitAmount.text = i18n(R.string.badAmount)
         } catch (e: java.lang.ArithmeticException)  // division by zero because coin.fiatPerCoin is not loaded yet
         {
             displayNotice(i18n(R.string.cantConvert))
-            perSplitAmount.text = i18n(R.string.cantConvert)
+            ui.perSplitAmount.text = i18n(R.string.cantConvert)
         }
     }
 
@@ -369,7 +371,7 @@ class SplitBillActivity : CommonNavActivity()
     {
         laterUI {
             if (v.qr != null)
-                splitBillQR.setImageBitmap(v.qr)
+                ui.splitBillQR.setImageBitmap(v.qr)
         }
     }
 

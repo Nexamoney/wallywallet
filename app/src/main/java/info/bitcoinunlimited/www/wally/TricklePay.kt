@@ -11,8 +11,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.annotation.Keep
 import androidx.core.app.NavUtils
@@ -23,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import bitcoinunlimited.libbitcoincash.*
 import bitcoinunlimited.libbitcoincash.rem
+import info.bitcoinunlimited.www.wally.databinding.*
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.*
@@ -30,19 +29,10 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
-import kotlinx.android.synthetic.main.activity_trickle_pay.*
-import kotlinx.android.synthetic.main.trickle_pay_asset_request.*
-import kotlinx.android.synthetic.main.trickle_pay_custom_tx.*
-import kotlinx.android.synthetic.main.trickle_pay_reg.*
-import kotlinx.android.synthetic.main.trickle_pay_reg.GuiCustomTxCost
-import kotlinx.android.synthetic.main.trickle_pay_reg.GuiTricklePayEntity
 import java.lang.Exception
 import java.net.SocketTimeoutException
 import java.net.URL
 import java.util.logging.Logger
-import kotlinx.android.synthetic.main.tp_domain_list_item.view.*
-import kotlinx.android.synthetic.main.trickle_pay_main.*
-import kotlinx.android.synthetic.main.trickle_pay_send_to.*
 import java.math.BigDecimal
 import java.net.URLEncoder
 import kotlin.random.Random
@@ -58,6 +48,7 @@ const val TDPP_FLAG_NOSHUFFLE = 4
 const val TDPP_FLAG_PARTIAL = 8
 
 private val LogIt = Logger.getLogger("BU.wally.TricklePay")
+
 
 // Must be top level for the serializer to handle it
 @Keep
@@ -258,11 +249,12 @@ data class TdppDomain(
 
 class TricklePayEmptyFragment : Fragment()
 {
-
+    public lateinit var ui:TricklePayEmptyBinding
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        val ret = inflater.inflate(R.layout.trickle_pay_empty, container, false)
-        return ret
+        //val ret = inflater.inflate(R.layout.trickle_pay_empty, container, false)
+        ui = TricklePayEmptyBinding.inflate(inflater)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
@@ -273,40 +265,48 @@ class TricklePayEmptyFragment : Fragment()
 
 class TricklePayMainFragment : Fragment()
 {
-    private lateinit var adapter: TricklePayRecyclerAdapter
+    public lateinit var ui:TricklePayMainBinding
+    //private lateinit var adapter: TricklePayRecyclerAdapter
+    private lateinit var adapter: GuiList<TdppDomain, TpDomainBinder>
     private lateinit var linearLayoutManager: LinearLayoutManager
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        val ret = inflater.inflate(R.layout.trickle_pay_main, container, false)
-        return ret
+        ui = TricklePayMainBinding.inflate(inflater)
+        //val ret = inflater.inflate(R.layout.trickle_pay_main, container, false)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
         val tpAct = getActivity() as TricklePayActivity
-        adapter = TricklePayRecyclerAdapter(tpAct)
-        GuiTricklePayList.adapter = adapter
+        //adapter = TricklePayRecyclerAdapter(tpAct)
+        adapter = GuiList(ui.GuiTricklePayList, listOf(), tpAct, {
+            val ui = TpDomainListItemBinding.inflate(LayoutInflater.from(it.context), it, false)
+            TpDomainBinder(ui)
+        })
+        adapter.rowBackgroundColors = arrayOf(0xFFEEFFEE.toInt(), 0xFFBBDDBB.toInt())
+
 
         linearLayoutManager = LinearLayoutManager(tpAct)
-        GuiTricklePayList.layoutManager = linearLayoutManager
+        ui.GuiTricklePayList.layoutManager = linearLayoutManager
     }
 
     fun populate()
     {
         val tpAct = getActivity() as TricklePayActivity
         val domains = ArrayList(tpAct.domains.values)
+        adapter.set(domains)
+        /*
+        ui.GuiTricklePayList.adapter = null
+        ui.GuiTricklePayList.layoutManager = null
 
-        adapter.assignDomains(domains)
-        GuiTricklePayList.adapter = null
-        GuiTricklePayList.layoutManager = null
-
-        GuiTricklePayList.adapter = adapter
-        GuiTricklePayList.layoutManager = linearLayoutManager
+        ui.GuiTricklePayList.adapter = adapter
+        ui.GuiTricklePayList.layoutManager = linearLayoutManager
         adapter.notifyDataSetChanged()
         linearLayoutManager.requestLayout()
 
-        //laterUI { updateUI() }
+         */
     }
 
 }
@@ -314,14 +314,15 @@ class TricklePayMainFragment : Fragment()
 /* Handle a trickle pay Registration */
 class TricklePayRegFragment : Fragment()
 {
+    public lateinit var ui:TricklePayRegBinding
     //var uri: Uri? = null
-    var domain: TdppDomain? = null
-    var editingReg: Boolean = false
+    public var domain: TdppDomain? = null
+    public var editingReg: Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        val ret = inflater.inflate(R.layout.trickle_pay_reg, container, false)
-        return ret
+        ui = TricklePayRegBinding.inflate(inflater)
+        return ui.root
     }
 
     override fun onResume()
@@ -358,59 +359,59 @@ class TricklePayRegFragment : Fragment()
             }
             val account = accountLst[0]  // Just pick the first compatible wallet
 
-            GuiTricklePayEntity.text = d.domain
-            GuiTricklePayTopic.text = d.topic
-            TpAssetInfoRequestHandlingButton.text = d.assetInfo.toString()
+            ui.GuiTricklePayEntity.text = d.domain
+            ui.GuiTricklePayTopic.text = d.topic
+            ui.TpAssetInfoRequestHandlingButton.text = d.assetInfo.toString()
 
-            GuiEnableAutopay.setChecked(d.automaticEnabled)
+            ui.GuiEnableAutopay.setChecked(d.automaticEnabled)
 
-            GuiAutospendLimitEntry0.text.clear()
+            ui.GuiAutospendLimitEntry0.text.clear()
             if (d.maxper == -1L)
             {
-                GuiAutospendLimitEntry0.text.append(i18n(R.string.unspecified))
+                ui.GuiAutospendLimitEntry0.text.append(i18n(R.string.unspecified))
             }
             else
             {
-                GuiAutospendLimitEntry0.text.append(account.format(account.fromFinestUnit(d.maxper)))
+                ui.GuiAutospendLimitEntry0.text.append(account.format(account.fromFinestUnit(d.maxper)))
             }
-            GuiAutospendLimitDescription0.text = d.descper
+            ui.GuiAutospendLimitDescription0.text = d.descper
 
-            GuiAutospendLimitEntry1.text.clear()
+            ui.GuiAutospendLimitEntry1.text.clear()
             if (d.maxday == -1L)
-                GuiAutospendLimitEntry1.text.append(i18n(R.string.unspecified))
+                ui.GuiAutospendLimitEntry1.text.append(i18n(R.string.unspecified))
             else
-                GuiAutospendLimitEntry1.text.append(account.format(account.fromFinestUnit(d.maxday)))
-            GuiAutospendLimitDescription1.text = d.descday
+                ui.GuiAutospendLimitEntry1.text.append(account.format(account.fromFinestUnit(d.maxday)))
+            ui.GuiAutospendLimitDescription1.text = d.descday
 
-            GuiAutospendLimitEntry2.text.clear()
+            ui.GuiAutospendLimitEntry2.text.clear()
             if (d.maxweek == -1L)
-                GuiAutospendLimitEntry2.text.append(i18n(R.string.unspecified))
+                ui.GuiAutospendLimitEntry2.text.append(i18n(R.string.unspecified))
             else
-                GuiAutospendLimitEntry2.text.append(account.format(account.fromFinestUnit(d.maxweek)))
-            GuiAutospendLimitDescription2.text = d.descweek
+                ui.GuiAutospendLimitEntry2.text.append(account.format(account.fromFinestUnit(d.maxweek)))
+            ui.GuiAutospendLimitDescription2.text = d.descweek
 
-            GuiAutospendLimitEntry3.text.clear()
+            ui.GuiAutospendLimitEntry3.text.clear()
             if (d.maxmonth == -1L)
-                GuiAutospendLimitEntry3.text.append(i18n(R.string.unspecified))
+                ui.GuiAutospendLimitEntry3.text.append(i18n(R.string.unspecified))
             else
-                GuiAutospendLimitEntry3.text.append(account.format(account.fromFinestUnit(d.maxmonth)))
-            GuiAutospendLimitDescription3.text = d.descmonth
+                ui.GuiAutospendLimitEntry3.text.append(account.format(account.fromFinestUnit(d.maxmonth)))
+            ui.GuiAutospendLimitDescription3.text = d.descmonth
         }
 
         if (editingReg)
         {
-            GuiAcceptRegTitle.text = i18n(R.string.EditTpRegistration)
-            GuiTpRegisterRequestAccept.setVisibility(View.GONE)
-            GuiTpDenyRegisterRequest.text = i18n(R.string.remove)
-            GuiTpDenyRegisterRequest.setVisibility(View.VISIBLE)
-            GuiTpOkRegisterRequest.setVisibility(View.VISIBLE)
+            ui.GuiAcceptRegTitle.text = i18n(R.string.EditTpRegistration)
+            ui.GuiTpRegisterRequestAccept.setVisibility(View.GONE)
+            ui.GuiTpDenyRegisterRequest.text = i18n(R.string.remove)
+            ui.GuiTpDenyRegisterRequest.setVisibility(View.VISIBLE)
+            ui.GuiTpOkRegisterRequest.setVisibility(View.VISIBLE)
         }
         else
         {
-            GuiAcceptRegTitle.text = i18n(R.string.AcceptTpRegistration)
-            GuiTpOkRegisterRequest.setVisibility(View.GONE)
-            GuiTpRegisterRequestAccept.setVisibility(View.VISIBLE)
-            GuiTpDenyRegisterRequest.setVisibility(View.VISIBLE)
+            ui.GuiAcceptRegTitle.text = i18n(R.string.AcceptTpRegistration)
+            ui.GuiTpOkRegisterRequest.setVisibility(View.GONE)
+            ui.GuiTpRegisterRequestAccept.setVisibility(View.VISIBLE)
+            ui.GuiTpDenyRegisterRequest.setVisibility(View.VISIBLE)
         }
     }
 }
@@ -418,15 +419,17 @@ class TricklePayRegFragment : Fragment()
 /* Handle a trickle pay Registration */
 class TricklePayCustomTxFragment : Fragment()
 {
-    var uri: Uri? = null
-    var tx: iTransaction? = null
-    var analysis: TxAnalysisResults? = null
-    var tpActivity: TricklePayActivity? = null
+    public lateinit var ui: TricklePayCustomTxBinding
+    public var uri: Uri? = null
+    public var tx: iTransaction? = null
+    public var analysis: TxAnalysisResults? = null
+    public var tpActivity: TricklePayActivity? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        val ret = inflater.inflate(R.layout.trickle_pay_custom_tx, container, false)
-        return ret
+        ui = TricklePayCustomTxBinding.inflate(inflater)
+        //val ret = inflater.inflate(R.layout.trickle_pay_custom_tx, container, false)
+        return ui.root
     }
 
     override fun onResume()
@@ -457,11 +460,11 @@ class TricklePayCustomTxFragment : Fragment()
             if (it == null) ""
             else ":" + it
         }
-        GuiTricklePayEntity.text = u.authority + tpc
+        ui.GuiTricklePayEntity.text = u.authority + tpc
 
         val acc = tpActivity!!.getRelevantAccount()
 
-        GuiCustomTxBlockchain.text = chainToURI[acc.chain.chainSelector]
+        ui.GuiCustomTxBlockchain.text = chainToURI[acc.chain.chainSelector]
 
         val a = analysis
         if (a != null)
@@ -471,17 +474,17 @@ class TricklePayCustomTxFragment : Fragment()
 
             if (netSats > 0)
             {
-                GuiCustomTxCost.text = (i18n(R.string.receiving) + " " + acc.cryptoFormat.format(acc.fromFinestUnit(netSats)) + " " + acc.currencyCode)
+                ui.GuiCustomTxCost.text = (i18n(R.string.receiving) + " " + acc.cryptoFormat.format(acc.fromFinestUnit(netSats)) + " " + acc.currencyCode)
             }
             else if (netSats < 0)
             {
                 val txt = i18n(R.string.sending) + " " + acc.cryptoFormat.format(acc.fromFinestUnit(-netSats)) + " " + acc.currencyCode
                 LogIt.info(txt)
-                GuiCustomTxCost.text = txt
+                ui.GuiCustomTxCost.text = txt
             }
             else
             {
-                GuiCustomTxCost.text = i18n(R.string.nothing)
+                ui.GuiCustomTxCost.text = i18n(R.string.nothing)
             }
 
             if (a.otherInputSatoshis != null)
@@ -489,16 +492,16 @@ class TricklePayCustomTxFragment : Fragment()
                 val fee = (a.myInputSatoshis + a.otherInputSatoshis) - (a.receivingSats + a.sendingSats)
                 if (fee > 0)
                 {
-                    GuiCustomTxFee.text = (i18n(R.string.ForAFeeOf) % mapOf("fee" to acc.cryptoFormat.format(acc.fromFinestUnit(fee)), "units" to acc.currencyCode))
+                    ui.GuiCustomTxFee.text = (i18n(R.string.ForAFeeOf) % mapOf("fee" to acc.cryptoFormat.format(acc.fromFinestUnit(fee)), "units" to acc.currencyCode))
                 }
                 else  // Almost certainly the requester is going to fill out more of this tx so the fee is kind of irrelevant.  TODO: only show the fee if this wallet is paying it (tx is complete)
                 {
-                    GuiCustomTxFee.text = ""
+                    ui.GuiCustomTxFee.text = ""
                 }
             }
             else
             {
-                GuiCustomTxFee.text = ""
+                ui.GuiCustomTxFee.text = ""
             }
 
             // Expand the text to handle proving ownership of (that is, sending token to yourself)
@@ -508,11 +511,11 @@ class TricklePayCustomTxFragment : Fragment()
                 if (a.imSpendingTokenTypes > 0)
                 {
                     // This is not strictly true.  The counterparty could hand you a transaction that both supplies a token and spends that token to themselves...
-                    GuiCustomTxTokenSummary.text = i18n(R.string.TpExchangingTokens) % mapOf("tokSnd" to a.sendingTokenTypes.toString(), "tokRcv" to a.receivingTokenTypes.toString())
+                    ui.GuiCustomTxTokenSummary.text = i18n(R.string.TpExchangingTokens) % mapOf("tokSnd" to a.sendingTokenTypes.toString(), "tokRcv" to a.receivingTokenTypes.toString())
                 }
                 else
                 {
-                    GuiCustomTxTokenSummary.text = i18n(R.string.TpReceivingTokens) % mapOf("tokRcv" to a.receivingTokenTypes.toString())
+                    ui.GuiCustomTxTokenSummary.text = i18n(R.string.TpReceivingTokens) % mapOf("tokRcv" to a.receivingTokenTypes.toString())
                 }
             }
             else
@@ -521,11 +524,11 @@ class TricklePayCustomTxFragment : Fragment()
                 // sendingTokenTypes are those that are being output.
                 if (a.imSpendingTokenTypes > 0)
                 {
-                    GuiCustomTxTokenSummary.text = i18n(R.string.TpSendingTokens) % mapOf("tokSnd" to a.imSpendingTokenTypes.toString())
+                    ui.GuiCustomTxTokenSummary.text = i18n(R.string.TpSendingTokens) % mapOf("tokSnd" to a.imSpendingTokenTypes.toString())
                 }
                 if (a.sendingTokenTypes > 0)
                 {
-                    GuiCustomTxTokenSummary.text = i18n(R.string.TpSendingTokens) % mapOf("tokSnd" to a.sendingTokenTypes.toString())
+                    ui.GuiCustomTxTokenSummary.text = i18n(R.string.TpSendingTokens) % mapOf("tokSnd" to a.sendingTokenTypes.toString())
                 }
             }
 
@@ -536,14 +539,16 @@ class TricklePayCustomTxFragment : Fragment()
 /* Handle a trickle pay Registration */
 class TricklePaySendToFragment : Fragment()
 {
-    var uri: Uri? = null
-    var tpActivity: TricklePayActivity? = null
-    var askReasons: List<String>? = null
+    public lateinit var ui: TricklePaySendToBinding
+    public var uri: Uri? = null
+    public var tpActivity: TricklePayActivity? = null
+    public var askReasons: List<String>? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        val ret = inflater.inflate(R.layout.trickle_pay_send_to, container, false)
-        return ret
+        ui = TricklePaySendToBinding.inflate(inflater)
+        //val ret = inflater.inflate(R.layout.trickle_pay_send_to, container, false)
+        return ui.root
     }
 
     override fun onResume()
@@ -578,30 +583,30 @@ class TricklePaySendToFragment : Fragment()
             else ":" + it
         }
 
-        GuiSendToTricklePayEntity.text = u.authority + tpc
+        ui.GuiSendToTricklePayEntity.text = u.authority + tpc
 
         val acc = act.getRelevantAccount()
-        GuiSendToBlockchain.text = chainToURI[acc.chain.chainSelector]
+        ui.GuiSendToBlockchain.text = chainToURI[acc.chain.chainSelector]
 
         var total = 0L
         for (it in sa)
         {
             total += it.second
         }
-        GuiSendToCost.text = acc.cryptoFormat.format(acc.fromFinestUnit(total)) + " " + acc.currencyCode
+            ui.GuiSendToCost.text = acc.cryptoFormat.format(acc.fromFinestUnit(total)) + " " + acc.currencyCode
 
-        GuiSendToPurpose.text = tpActivity?.reason ?: ""
+            ui.GuiSendToPurpose.text = tpActivity?.reason ?: ""
 
         val ars = askReasons
         if (ars != null && ars.size > 0)
         {
-            GuiSendsToAskReasons.text = ars.joinToString("\n")
+            ui.GuiSendsToAskReasons.text = ars.joinToString("\n")
         }
         }
         catch(e:WalletInvalidException)
         {
             laterUI {
-                tpActivity?.displayFragment(GuiTricklePayMain)
+                tpActivity?.displayFragment(R.id.GuiTricklePayMain)
                 tpActivity?.displayError(R.string.NoAccounts)
             }
         }
@@ -612,14 +617,16 @@ class TricklePaySendToFragment : Fragment()
 /* Handle a trickle pay Registration */
 class TricklePayAssetRequestFragment : Fragment()
 {
-    var uri: Uri? = null
-    var tpActivity: TricklePayActivity? = null
-    var assets: List<TricklePayAssetInfo>? = null
+    public lateinit var ui: TricklePayAssetRequestBinding
+    public var uri: Uri? = null
+    public var tpActivity: TricklePayActivity? = null
+    public var assets: List<TricklePayAssetInfo>? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        val ret = inflater.inflate(R.layout.trickle_pay_asset_request, container, false)
-        return ret
+        ui = TricklePayAssetRequestBinding.inflate(inflater)
+        //val ret = inflater.inflate(R.layout.trickle_pay_asset_request, container, false)
+        return ui.root
     }
 
     override fun onResume()
@@ -654,11 +661,11 @@ class TricklePayAssetRequestFragment : Fragment()
             if (it == null) ""
             else ":" + it
         }
-        GuiTricklePayEntity.text = u.authority + tpc
+        ui.GuiTricklePayEntity.text = u.authority + tpc
 
         val acc = tpActivity!!.getRelevantAccount()
-        GuiAssetHandledByAccount.text = acc.name
-        GuiAssetAcceptQ3.text = i18n(R.string.TpAssetMatches) % mapOf("num" to (assets?.size ?: 0).toString())
+        ui.GuiAssetHandledByAccount.text = acc.name
+        ui.GuiAssetAcceptQ3.text = i18n(R.string.TpAssetMatches) % mapOf("num" to (assets?.size ?: 0).toString())
     }
 }
 
@@ -772,79 +779,31 @@ fun generateAndLogSomeTricklePayRequests(application: WallyApp)
 }
 
 
-private class TricklePayRecyclerAdapter(private val activity: TricklePayActivity) : RecyclerView.Adapter<TricklePayRecyclerAdapter.DomainHolder>()
+class TpDomainBinder(val ui: TpDomainListItemBinding): GuiListItemBinder<TdppDomain>(ui.root)
 {
-    var domains = arrayListOf<TdppDomain>()
-
-    fun assignDomains(d: ArrayList<TdppDomain>)
+    override fun populate()
     {
-        domains = d
+        ui.GuiTpDomainListHost.text = data?.domain
+        ui.GuiTpDomainListTopic.text = data?.topic
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TricklePayRecyclerAdapter.DomainHolder
+    override fun onClick(v: View)
     {
-        val inflatedView = parent.inflate(R.layout.tp_domain_list_item, false)
-        return DomainHolder(activity, inflatedView)
-    }
-
-    override fun getItemCount(): Int = domains.size
-
-
-    override fun onBindViewHolder(holder: TricklePayRecyclerAdapter.DomainHolder, position: Int)
-    {
-        val item = domains[domains.size - 1 - position]
-        holder.bind(item, position)
-    }
-
-    class DomainHolder(private val activity: TricklePayActivity, private val view: View) : RecyclerView.ViewHolder(view), View.OnClickListener
-    {
-        private var domain: TdppDomain? = null
-        var idx = 0
-        var showDev: Boolean
-
-        init
+        val activity = v.context as TricklePayActivity
+        synchronized(activity.viewSync)
         {
-            val prefs: SharedPreferences = activity.getSharedPreferences(activity.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
-            showDev = prefs.getBoolean(SHOW_DEV_INFO, false)
-            view.setOnClickListener(this)
-        }
-
-        /** Click on the history, show web details */
-        override fun onClick(v: View)
-        {
-            synchronized(activity.viewSync)
-            {
-                LogIt.info("onclick: " + idx + " " + activity.showingDetails)
-                domain?.let {
-                    activity.setSelectedDomain(it)
-                    activity.displayFragment(activity.GuiTricklePayReg)
-                }
+            LogIt.info("onclick: " + pos + " " + activity.showingDetails)
+            data?.let {
+                activity.setSelectedDomain(it)
+                activity.displayFragment(R.id.GuiTricklePayReg)
             }
-
-            /* kicks you to the browser
-            var intent = Intent(v.context, DomainIdentitySettings::class.java)
-            intent.putExtra("domainName", this.id?.domain )
-            v.context.startActivity(intent)
-             */
-        }
-
-        fun bind(obj: TdppDomain, pos: Int)
-        {
-            idx = pos
-            domain = obj
-            view.GuiTpDomainListHost.text = obj.domain
-            view.GuiTpDomainListTopic.text = obj.topic
-
-            var col = if ((pos and 1) == 0) activity.Acol else activity.Bcol
-            view.background = ColorDrawable(col.toInt())
         }
     }
-
 }
-
 
 class TricklePayActivity : CommonNavActivity()
 {
+    public lateinit var ui: ActivityTricklePayBinding
     override var navActivityId = R.id.navigation_trickle_pay
     var db: KvpDatabase? = null
 
@@ -872,12 +831,14 @@ class TricklePayActivity : CommonNavActivity()
     var rproto: String? = null
     var rpath: String? = null
     var chainSelector: ChainSelector? = null
+    var visibleFragment: Int = -1
 
     fun setSelectedDomain(d: TdppDomain)
     {
         host = d.domain
         topic = d.topic
-        (GuiTricklePayReg as TricklePayRegFragment).populate(d)
+        val frag: TricklePayRegFragment = fragment(R.id.GuiTricklePayReg)
+        frag.populate(d)
     }
 
     val viewSync = ThreadCond()
@@ -890,7 +851,9 @@ class TricklePayActivity : CommonNavActivity()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_trickle_pay)
+        ui = ActivityTricklePayBinding.inflate(layoutInflater)
+        setContentView(ui.root)
+
         if (wallyApp == null) wallyApp = (getApplication() as WallyApp)
 
         if (db == null)
@@ -928,7 +891,7 @@ class TricklePayActivity : CommonNavActivity()
                     }
                 }
                 domainsLoaded = true
-                (GuiTricklePayMain as TricklePayMainFragment).populate()
+                (fragment(R.id.GuiTricklePayMain) as TricklePayMainFragment).populate()
             }
         }
     }
@@ -981,39 +944,29 @@ class TricklePayActivity : CommonNavActivity()
         super.onResume()
         if (!launchedFromRecent() && (intent.scheme != null)) // its null if normal app startup
         {
+            displayFragment(R.id.GuiTricklePayEmpty)
             handleNewIntent(intent)
         }
         else
         {
-            displayFragment(GuiTricklePayMain)
+            displayFragment(R.id.GuiTricklePayMain)
         }
     }
 
-    fun displayFragment(frag: Fragment)
+    fun displayFragment(fragId: Int)
     {
-        val fragments = listOf(GuiTricklePayMain, GuiTricklePayReg, GuiTricklePayAssetRequest, GuiTricklePayCustomTx, GuiTricklePaySendTo, GuiTricklePayEmpty)
-
-        var showedSomething = false
-        for (f in fragments)
+        val fm = getSupportFragmentManager()
+        val frag = fm.findFragmentById(fragId)
+        val tpFrags = mutableListOf<Int>(R.id.GuiTricklePayMain, R.id.GuiTricklePayReg, R.id.GuiTricklePayCustomTx, R.id.GuiTricklePaySendTo, R.id.GuiTricklePayEmpty, R.id.GuiTricklePayAssetRequest)
+        tpFrags.remove(fragId)
+        val hideFrags = tpFrags.map { fm.findFragmentById(it)}
+        if (frag != null)
         {
-            val v = f.view
-            if (v == null)
-            {
-                LogIt.warning("NO VIEWS!!!")
-            }
-            else
-            {
-                if (f == frag)
-                {
-                    v.visibility = VISIBLE
-                    showedSomething = true
-                }
-                else v.visibility = GONE
-            }
-        }
-        if (!showedSomething)
-        {
-            LogIt.warning("Desired fragment is not in display list")
+            visibleFragment = fragId
+            val tx = fm.beginTransaction()
+            for (f in hideFrags) if (f != null) tx.hide(f)
+            tx.show(frag)
+            tx.commit()
         }
     }
 
@@ -1155,7 +1108,7 @@ class TricklePayActivity : CommonNavActivity()
         parseCommonFields(uri)
         if (chainSelector == null)
         {
-            displayFragment(GuiTricklePayMain)
+            displayFragment(R.id.GuiTricklePayMain)
             return displayError(R.string.badCryptoCode)  // Chain is a mandatory field
         }
 
@@ -1167,7 +1120,7 @@ class TricklePayActivity : CommonNavActivity()
         // If we are funding then inputSatoshis must be provided
         if ((inputSatoshis == null) && ((tflags and TDPP_FLAG_NOFUND) == 0))
         {
-            displayFragment(GuiTricklePayMain)
+            displayFragment(R.id.GuiTricklePayMain)
             return displayError(R.string.BadLink, "missing inamt parameter")
         }
 
@@ -1181,21 +1134,22 @@ class TricklePayActivity : CommonNavActivity()
         }
         catch (e: WalletInvalidException)  // probably don't have an account unlocked for this crypto
         {
-            displayFragment(GuiTricklePayMain)
+            displayFragment(R.id.GuiTricklePayMain)
             return displayException(e)
         }
         LogIt.info(sourceLoc() + ": Completed tx: " + tx.toHex())
 
-        (GuiTricklePayCustomTx as TricklePayCustomTxFragment).populate(this, uri, tx, analysis)
+        val frag = fragment(R.id.GuiTricklePayCustomTx) as TricklePayCustomTxFragment
+        frag.populate(this, uri, tx, analysis)
         // Change the title if the request is for a partial transaction
         if ((tflags and TDPP_FLAG_PARTIAL) != 0)
         {
-            (GuiTricklePayCustomTx as TricklePayCustomTxFragment).GuiSpecialTxTitle.text = i18n(R.string.IncompleteTpTransactionFrom)
+            frag.ui.GuiSpecialTxTitle.text = i18n(R.string.IncompleteTpTransactionFrom)
         }
 
         if (analysis.completionException == null) proposedTx = tx
         laterUI {
-            displayFragment(GuiTricklePayCustomTx)
+            displayFragment(R.id.GuiTricklePayCustomTx)
             // Ok now that we've displayed what we can, let's show the problem.
             if (analysis.completionException != null) displayException(analysis.completionException)
         }
@@ -1206,7 +1160,7 @@ class TricklePayActivity : CommonNavActivity()
         // Just explain why nothing will work
         if (domains.size == 0)
         {
-            displayFragment(GuiTricklePayMain)
+            displayFragment(R.id.GuiTricklePayMain)
             return displayError(R.string.TpNoRegistrations)
         }
 
@@ -1225,7 +1179,7 @@ class TricklePayActivity : CommonNavActivity()
             // if one exists but not the other, request is bad
             if ((amtS != null) xor (addrS != null))
             {
-                displayFragment(GuiTricklePayMain)
+                displayFragment(R.id.GuiTricklePayMain)
                 return displayError(R.string.BadLink, "missing parameter")
             }
             // if either do not exist, done
@@ -1236,14 +1190,18 @@ class TricklePayActivity : CommonNavActivity()
             addrAmt.add(Pair(PayAddress(addrS), amt.toLong()))
             val priorTotal = total
             total += amt
-            if (total < priorTotal) return displayError(R.string.BadLink, "bad amount")  // amounts wrapped around
+            if (total < priorTotal)
+            {
+                displayFragment(R.id.GuiTricklePayMain)
+                return displayError(R.string.BadLink, "bad amount")
+            }  // amounts wrapped around
             count++
         }
 
         parseCommonFields(uri)
         if (chainSelector == null)
         {
-            displayFragment(GuiTricklePayMain)
+            displayFragment(R.id.GuiTricklePayMain)
             return displayError(R.string.badCryptoCode)  // Chain is a mandatory field
         }
 
@@ -1255,7 +1213,7 @@ class TricklePayActivity : CommonNavActivity()
         {
             if (domain.maxperExceeded == TdppAction.DENY)
             {
-                displayFragment(GuiTricklePayMain)
+                displayFragment(R.id.GuiTricklePayMain)
                 laterUI { rejectSendToRequest(R.string.TpSendAutoReject) }
                 return
             }
@@ -1275,8 +1233,9 @@ class TricklePayActivity : CommonNavActivity()
         {
             // If it wasn't automatically accepted or rejected, ask
             laterUI {
-                (GuiTricklePaySendTo as TricklePaySendToFragment).populate(this, uri, askReasons)
-                displayFragment(GuiTricklePaySendTo)
+                val frag:TricklePaySendToFragment = fragment(R.id.GuiTricklePaySendTo)
+                frag.populate(this, uri, askReasons)
+                displayFragment(R.id.GuiTricklePaySendTo)
             }
         }
     }
@@ -1285,7 +1244,7 @@ class TricklePayActivity : CommonNavActivity()
     {
         if (domain.assetInfo == TdppAction.DENY)
         {
-            displayFragment(GuiTricklePayMain)
+            displayFragment(R.id.GuiTricklePayMain)
             return displayError(R.string.TpRequestAutoDeny)
         }
 
@@ -1294,7 +1253,7 @@ class TricklePayActivity : CommonNavActivity()
         val scriptTemplateHex = uri.getQueryParameter("af")
         if (scriptTemplateHex == null)
         {
-            displayFragment(GuiTricklePayMain)
+            displayFragment(R.id.GuiTricklePayMain)
             return displayError(R.string.BadLink, "missing 'af' parameter")
         }
 
@@ -1311,7 +1270,7 @@ class TricklePayActivity : CommonNavActivity()
         }
         catch (e: WalletInvalidException)
         {
-            displayFragment(GuiTricklePayMain)
+            displayFragment(R.id.GuiTricklePayMain)
             clearIntentAndFinish(error = i18n(R.string.badCryptoCode))
             return
         }
@@ -1340,9 +1299,9 @@ class TricklePayActivity : CommonNavActivity()
 
         if (domain.assetInfo == TdppAction.ASK)
         {
-            (GuiTricklePayAssetRequest as TricklePayAssetRequestFragment).populate(this, uri, resp.assets)
+            (fragment(R.id.GuiTricklePayAssetRequest) as TricklePayAssetRequestFragment).populate(this, uri, resp.assets)
             // ask for confirmation
-            displayFragment(GuiTricklePayAssetRequest)
+            displayFragment(R.id.GuiTricklePayAssetRequest)
         }
         if (domain.assetInfo == TdppAction.ACCEPT)
         {
@@ -1358,7 +1317,7 @@ class TricklePayActivity : CommonNavActivity()
         if (address == null)
         {
             laterUI {
-                displayFragment(GuiTricklePayMain)
+                displayFragment(R.id.GuiTricklePayMain)
                 clearIntentAndFinish(error = i18n(R.string.badLink))
             }
             return false
@@ -1376,12 +1335,12 @@ class TricklePayActivity : CommonNavActivity()
             val d = TdppDomain(uri)
             try
             {
-                (GuiTricklePayReg as TricklePayRegFragment).populate(d, false)
+                (fragment(R.id.GuiTricklePayReg) as TricklePayRegFragment).populate(d, false)
             }
             catch (e: WalletInvalidException)
             {
                 laterUI {
-                    displayFragment(GuiTricklePayMain)
+                    displayFragment(R.id.GuiTricklePayMain)
                     displayError(R.string.NoAccounts)
                 }
                 return false
@@ -1390,14 +1349,14 @@ class TricklePayActivity : CommonNavActivity()
         else
         {
             laterUI {
-                displayFragment(GuiTricklePayMain)
+                displayFragment(R.id.GuiTricklePayMain)
                 displayError(R.string.badSignature)
             }
             return false
         }
 
         laterUI {
-            displayFragment(GuiTricklePayReg)
+            displayFragment(R.id.GuiTricklePayReg)
         }
         return true
     }
@@ -1435,11 +1394,13 @@ class TricklePayActivity : CommonNavActivity()
                 LogIt.info("Full Intent=${iuri.toString()}")
                 if (h == null)
                 {
+                    displayFragment(R.id.GuiTricklePayMain)
                     displayError(R.string.BadLink, "no host provided")
                     return
                 }
                 if (path == null)
                 {
+                    displayFragment(R.id.GuiTricklePayMain)
                     displayError(i18n(R.string.unknownOperation) % mapOf("op" to "no operation"))
                     return
                 }
@@ -1492,13 +1453,13 @@ class TricklePayActivity : CommonNavActivity()
                         }
                         else
                         {
-                            displayFragment(GuiTricklePayMain)
+                            displayFragment(R.id.GuiTricklePayMain)
                             displayError(i18n(R.string.unknownOperation) % mapOf("op" to path));
                         }
                     }
                     else
                     {
-                        displayFragment(GuiTricklePayMain)
+                        displayFragment(R.id.GuiTricklePayMain)
                         displayError(i18n(R.string.unknownOperation) % mapOf("op" to "no operation"));
                     }
                 }
@@ -1509,7 +1470,7 @@ class TricklePayActivity : CommonNavActivity()
             }
         } catch (e: Exception)
         {
-            displayFragment(GuiTricklePayEmpty)
+            displayFragment(R.id.GuiTricklePayEmpty)
             LogIt.warning(e.toString())
             displayException(e)
         }
@@ -1521,7 +1482,7 @@ class TricklePayActivity : CommonNavActivity()
         {
             synchronized(domains)
             {
-                if (GuiTricklePayReg.view?.visibility == VISIBLE)
+                if (visibleFragment == R.id.GuiTricklePayReg)
                 {
                     regUxToMap()
                     later {
@@ -1553,11 +1514,21 @@ class TricklePayActivity : CommonNavActivity()
         }
     }
 
+    fun<T> fragment(id: Int):T
+    {
+        val fm = getSupportFragmentManager()
+        val frag = fm.findFragmentById(id) as T
+        if (frag == null) throw UiUnavailableException()
+        return frag
+    }
+
+
     // Move the Ux data into the map
     fun regUxToMap()
     {
-        if (GuiTricklePayReg !is TricklePayRegFragment) return
-        val d: TdppDomain = (GuiTricklePayReg as TricklePayRegFragment).domain ?: return
+        val frag: TricklePayRegFragment = fragment(R.id.GuiTricklePayReg)
+        val GuiTricklePayReg: TricklePayRegBinding = frag.ui
+        val d: TdppDomain = frag.domain ?: return
         val app = wallyApp
         if (app == null) return
 
@@ -1569,27 +1540,27 @@ class TricklePayActivity : CommonNavActivity()
         }
         val account = accountLst[0]
 
-        var s = GuiAutospendLimitEntry0.text.toString()
+        var s = GuiTricklePayReg.GuiAutospendLimitEntry0.text.toString()
         if (s == i18n(R.string.unspecified) || s == "") d.maxper = -1
         else
             d.maxper = account.toFinestUnit(BigDecimal(s))
 
-        s = GuiAutospendLimitEntry1.text.toString()
+        s = GuiTricklePayReg.GuiAutospendLimitEntry1.text.toString()
         if (s == i18n(R.string.unspecified) || s == "") d.maxday = -1
         else
             d.maxday = account.toFinestUnit(BigDecimal(s))
 
-        s = GuiAutospendLimitEntry2.text.toString()
+        s = GuiTricklePayReg.GuiAutospendLimitEntry2.text.toString()
         if (s == i18n(R.string.unspecified) || s == "") d.maxweek = -1
         else
             d.maxweek = account.toFinestUnit(BigDecimal(s))
 
-        s = GuiAutospendLimitEntry3.text.toString()
+        s = GuiTricklePayReg.GuiAutospendLimitEntry3.text.toString()
         if (s == i18n(R.string.unspecified) || s == "") d.maxmonth = -1
         else
             d.maxmonth = account.toFinestUnit(BigDecimal(s))
 
-        d.automaticEnabled = GuiEnableAutopay.isChecked
+        d.automaticEnabled = GuiTricklePayReg.GuiEnableAutopay.isChecked
 
         domains[domainKey(d.domain, d.topic)] = d
     }
@@ -1602,7 +1573,7 @@ class TricklePayActivity : CommonNavActivity()
         try
         {
             regUxToMap()
-            displayFragment(GuiTricklePayMain)
+            displayFragment(R.id.GuiTricklePayMain)
 
             later {
                 save()  // can't save in UI thread
@@ -1617,10 +1588,10 @@ class TricklePayActivity : CommonNavActivity()
     @Suppress("UNUSED_PARAMETER")
     fun onChangeTpAssetInfoHandling(view: View?)
     {
-        val frag = (GuiTricklePayReg as TricklePayRegFragment)
+        val frag: TricklePayRegFragment = fragment(R.id.GuiTricklePayReg)
         val domain = frag.domain ?: return
         domain.assetInfo++
-        TpAssetInfoRequestHandlingButton.text = domain.assetInfo.toString()
+        frag.ui.TpAssetInfoRequestHandlingButton.text = domain.assetInfo.toString()
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -1640,8 +1611,7 @@ class TricklePayActivity : CommonNavActivity()
     fun onDenyTpReg(view: View?)
     {
         LogIt.info("deny trickle pay registration")
-        if (GuiTricklePayReg !is TricklePayRegFragment) return clearIntentAndFinish(notice = i18n(R.string.TpRegDenied))
-        val frag = (GuiTricklePayReg as TricklePayRegFragment)
+        val frag: TricklePayRegFragment = fragment(R.id.GuiTricklePayReg)
         if (frag.editingReg)
         {
             val d: TdppDomain = frag.domain ?: return clearIntentAndFinish()  // should never happen
@@ -1688,7 +1658,7 @@ class TricklePayActivity : CommonNavActivity()
             proposalUri = null
             cookie = null
             LogIt.info("sign trickle pay special transaction")
-            displayFragment(GuiTricklePayMain)
+            displayFragment(R.id.GuiTricklePayMain)
 
             later {
                 val proto = "http:"
@@ -1724,7 +1694,7 @@ class TricklePayActivity : CommonNavActivity()
         proposedTx?.let { wal.abortTransaction(it) }
         proposedTx = null
 
-        displayFragment(GuiTricklePayMain)
+        displayFragment(R.id.GuiTricklePayMain)
         clearIntentAndFinish(notice = i18n(R.string.TpTxDenied))
     }
 
@@ -1762,7 +1732,8 @@ class TricklePayActivity : CommonNavActivity()
 
     fun onAcceptAssetRequest(@Suppress("UNUSED_PARAMETER") view: View?)
     {
-        val assets = (GuiTricklePayAssetRequest as TricklePayAssetRequestFragment).selectedAssets()
+        val frag: TricklePayAssetRequestFragment = fragment(R.id.GuiTricklePayAssetRequest)
+        val assets = frag.selectedAssets()
         acceptAssetRequest(assets)
     }
 
@@ -1810,7 +1781,7 @@ class TricklePayActivity : CommonNavActivity()
     fun onDenyAssetRequest(@Suppress("UNUSED_PARAMETER") view: View?)
     {
         LogIt.info("rejected asset request")
-        displayFragment(GuiTricklePayMain)
+        displayFragment(R.id.GuiTricklePayMain)
 
         clearIntentAndFinish(notice = i18n(R.string.TpAssetRequestDenied))
     }

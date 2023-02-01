@@ -9,7 +9,7 @@ import android.widget.ArrayAdapter
 import android.widget.MultiAutoCompleteTextView
 import android.widget.MultiAutoCompleteTextView.Tokenizer
 import bitcoinunlimited.libbitcoincash.*
-import kotlinx.android.synthetic.main.activity_new_account.*
+import info.bitcoinunlimited.www.wally.databinding.ActivityNewAccountBinding
 import java.util.logging.Logger
 import kotlin.concurrent.thread
 
@@ -59,6 +59,7 @@ class CharTokenizer(val separator: Char) : Tokenizer
 class NewAccount : CommonNavActivity()
 {
     override var navActivityId = R.id.navigation_home
+    private lateinit var ui:ActivityNewAccountBinding
 
     var app: WallyApp? = null
     var recoveryChange = 0
@@ -73,39 +74,41 @@ class NewAccount : CommonNavActivity()
     var nameOk = false
     var pinOk = true
 
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         app = (getApplication() as WallyApp)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_new_account)
+        ui = ActivityNewAccountBinding.inflate(layoutInflater)
+        setContentView(ui.root)
 
         val blockchains = ArrayAdapter(this, android.R.layout.simple_spinner_item, SupportedBlockchains.keys.toTypedArray())
-        GuiBlockchainSelector?.setAdapter(blockchains)
-        GuiBlockchainSelector?.setSelection("NEXA")
+        ui.GuiBlockchainSelector?.setAdapter(blockchains)
+        ui.GuiBlockchainSelector?.setSelection("NEXA")
 
         val adapter: ArrayAdapter<String> = ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, englishWordList)
         val textView = findViewById<MultiAutoCompleteTextView>(R.id.GuiAccountRecoveryPhraseEntry)
         textView.setAdapter(adapter)
         textView.setTokenizer(CharTokenizer(' '))
 
-        GuiBlockchainOk.setImageResource(R.drawable.ic_check)
-        GuiRecoveryPhraseOk.setImageResource(R.drawable.ic_check)  // empty recovery phrase is valid (means create a new one)
+        ui.GuiBlockchainOk.setImageResource(R.drawable.ic_check)
+        ui.GuiRecoveryPhraseOk.setImageResource(R.drawable.ic_check)  // empty recovery phrase is valid (means create a new one)
 
-        GuiAccountNameEntry.addTextChangedListener(object : TextWatcher
+        ui.GuiAccountNameEntry.addTextChangedListener(object : TextWatcher
         {
             override fun afterTextChanged(p0: Editable?)
             {
                 dbgAssertGuiThread()
                 if (p0.isNullOrBlank())
                 {
-                    GuiAccountNameOk.setImageResource(android.R.drawable.ic_delete)
+                    ui.GuiAccountNameOk.setImageResource(android.R.drawable.ic_delete)
                     nameOk = false
                     return
                 }
 
                 if (p0.length > 8)
                 {
-                    GuiAccountNameOk.setImageResource(android.R.drawable.ic_delete)
+                    ui.GuiAccountNameOk.setImageResource(android.R.drawable.ic_delete)
                     nameOk = false
                     return
                 }
@@ -113,12 +116,12 @@ class NewAccount : CommonNavActivity()
                 val proposedName = p0.toString()
                 if (app?.accounts?.contains(proposedName) ?: false == true)
                 {
-                    GuiAccountNameOk.setImageResource(android.R.drawable.ic_delete)
+                    ui.GuiAccountNameOk.setImageResource(android.R.drawable.ic_delete)
                     nameOk = false
                     return
 
                 }
-                GuiAccountNameOk.setImageResource(R.drawable.ic_check)
+                ui.GuiAccountNameOk.setImageResource(R.drawable.ic_check)
                 nameOk = true
             }
 
@@ -131,28 +134,28 @@ class NewAccount : CommonNavActivity()
             }
         })
 
-        GuiPINEntry.addTextChangedListener(object : TextWatcher
+        ui.GuiPINEntry.addTextChangedListener(object : TextWatcher
         {
             override fun afterTextChanged(p0: Editable?)
             {
                 dbgAssertGuiThread()
                 if (p0.isNullOrBlank())
                 {
-                    GuiPINOk.setImageResource(R.drawable.ic_check)
-                    PinProtectsSpending.text = i18n(R.string.PinSpendingUnprotected)
+                    ui.GuiPINOk.setImageResource(R.drawable.ic_check)
+                    ui.PinProtectsSpending.text = i18n(R.string.PinSpendingUnprotected)
                     pinOk = true
                     return
                 }
 
-                PinProtectsSpending.text = i18n(R.string.PinSpendingProtected)
+                ui.PinProtectsSpending.text = i18n(R.string.PinSpendingProtected)
                 if (p0.length < 4)
                 {
-                    GuiPINOk.setImageResource(android.R.drawable.ic_delete)
+                    ui.GuiPINOk.setImageResource(android.R.drawable.ic_delete)
                     pinOk = false
                     return
                 }
 
-                GuiPINOk.setImageResource(R.drawable.ic_check)
+                ui.GuiPINOk.setImageResource(R.drawable.ic_check)
                 pinOk = true
             }
 
@@ -166,7 +169,7 @@ class NewAccount : CommonNavActivity()
         })
 
 
-        GuiAccountRecoveryPhraseEntry.addTextChangedListener(object : TextWatcher
+        ui.GuiAccountRecoveryPhraseEntry.addTextChangedListener(object : TextWatcher
         {
             override fun afterTextChanged(p: Editable?)
             {
@@ -175,13 +178,13 @@ class NewAccount : CommonNavActivity()
                 dbgAssertGuiThread()
 
                 // clear the status for regeneration if the phrase is ok
-                GuiNewAccountStatus.text = ""
-                GuiNewAccountError.text = ""
+                ui.GuiNewAccountStatus.text = ""
+                ui.GuiNewAccountError.text = ""
 
                 // If Recovery phrase is blank we'll generate one so that's OK
                 if (p.isNullOrBlank())
                 {
-                    GuiRecoveryPhraseOk.setImageResource(R.drawable.ic_check)
+                    ui.GuiRecoveryPhraseOk.setImageResource(R.drawable.ic_check)
                     return
                 }
 
@@ -190,35 +193,35 @@ class NewAccount : CommonNavActivity()
                 val words = txt.split(' ')
                 if (words.size < 12)  // TODO support other size recovery keys
                 {
-                    GuiRecoveryPhraseOk.setImageResource(android.R.drawable.ic_delete)
-                    GuiNewAccountError.text = i18n(R.string.NotEnoughRecoveryWords)
+                    ui.GuiRecoveryPhraseOk.setImageResource(android.R.drawable.ic_delete)
+                    ui.GuiNewAccountError.text = i18n(R.string.NotEnoughRecoveryWords)
                     return
                 }
                 if (words.size > 12)  // TODO support other size recovery keys
                 {
-                    GuiRecoveryPhraseOk.setImageResource(android.R.drawable.ic_delete)
-                    GuiNewAccountError.text = i18n(R.string.TooManyRecoveryWords)
+                    ui.GuiRecoveryPhraseOk.setImageResource(android.R.drawable.ic_delete)
+                    ui.GuiNewAccountError.text = i18n(R.string.TooManyRecoveryWords)
                     return
                 }
                 val incorrectWords = Bip39InvalidWords(words)
                 if (incorrectWords.size > 0)
                 {
-                    GuiRecoveryPhraseOk.setImageResource(android.R.drawable.ic_delete)
-                    GuiNewAccountError.text = i18n(R.string.IncorrectRecoveryWords) % mapOf("words" to incorrectWords.joinToString(","))
+                    ui.GuiRecoveryPhraseOk.setImageResource(android.R.drawable.ic_delete)
+                    ui.GuiNewAccountError.text = i18n(R.string.IncorrectRecoveryWords) % mapOf("words" to incorrectWords.joinToString(","))
                     return
                 }
-                GuiRecoveryPhraseOk.setImageResource(R.drawable.ic_check)
+                ui.GuiRecoveryPhraseOk.setImageResource(R.drawable.ic_check)
 
                 // If the recovery phrase is good, let's peek at the blockchain to see if there's activity
                 thread(true, true, null, "peekWallet")
                 {
                     try
                     {
-                        peekActivity(words.joinToString(" "), SupportedBlockchains[GuiBlockchainSelector.selectedItem]!!)
+                        peekActivity(words.joinToString(" "), SupportedBlockchains[ui.GuiBlockchainSelector.selectedItem]!!)
                     }
                     catch (e: Exception)
                     {
-                        laterUI { GuiNewAccountStatus.text = i18n(R.string.NewAccountSearchFailure) }
+                        laterUI { ui.GuiNewAccountStatus.text = i18n(R.string.NewAccountSearchFailure) }
                         LogIt.severe("wallet peek error: " + e.toString())
                         handleThreadException(e, "wallet peek error", sourceLoc())
                     }
@@ -344,7 +347,7 @@ class NewAccount : CommonNavActivity()
     fun peekActivity(secretWords: String, chainSelector: ChainSelector)
     {
         laterUI {
-            GuiNewAccountStatus.text = i18n(R.string.NewAccountSearchingForTransactions)
+            ui.GuiNewAccountStatus.text = i18n(R.string.NewAccountSearchingForTransactions)
         }
 
         val (svr, port) = try
@@ -376,7 +379,7 @@ class NewAccount : CommonNavActivity()
             catch (e: java.io.IOException)
             {
                 laterUI {
-                    GuiNewAccountStatus.text = i18n(R.string.ElectrumNetworkUnavailable)
+                    ui.GuiNewAccountStatus.text = i18n(R.string.ElectrumNetworkUnavailable)
                 }
                 return
             }
@@ -443,7 +446,7 @@ class NewAccount : CommonNavActivity()
         else i18n(R.string.NoBip44BtcActivityNotice)
          */
 
-        laterUI { GuiNewAccountStatus.text = Bip44Msg + "\n" + Bip44BTCMsg }
+        laterUI { ui.GuiNewAccountStatus.text = Bip44Msg + "\n" + Bip44BTCMsg }
     }
 
     fun recoverAccountPhase2(name: String, flags: ULong, pin: String, secretWords: String, chainSelector: ChainSelector)
@@ -454,14 +457,14 @@ class NewAccount : CommonNavActivity()
             val words = secretWords.split(' ')
             if (words.size != 12)
             {
-                laterUI { GuiRecoveryPhraseOk.setImageResource(android.R.drawable.ic_delete) }
+                laterUI { ui.GuiRecoveryPhraseOk.setImageResource(android.R.drawable.ic_delete) }
                 displayError(R.string.invalidRecoveryPhrase)
                 return
             }
             val incorrectWords = Bip39InvalidWords(words)
             if (incorrectWords.size > 0)
             {
-                laterUI { GuiRecoveryPhraseOk.setImageResource(android.R.drawable.ic_delete) }
+                laterUI { ui.GuiRecoveryPhraseOk.setImageResource(android.R.drawable.ic_delete) }
                 displayError(R.string.invalidRecoveryPhrase)
                 return
             }
@@ -474,11 +477,11 @@ class NewAccount : CommonNavActivity()
     fun onCreateAccount(@Suppress("UNUSED_PARAMETER") v: View?)
     {
         LogIt.info("Create account button")
-        val secretWords = GuiAccountRecoveryPhraseEntry.text.toString().trim()
-        val chainName: String = GuiBlockchainSelector.selectedItem.toString()
+        val secretWords = ui.GuiAccountRecoveryPhraseEntry.text.toString().trim()
+        val chainName: String = ui.GuiBlockchainSelector.selectedItem.toString()
         val chainSelector = SupportedBlockchains[chainName]!!  // !! must work because I made the spinner from this map
-        val name = GuiAccountNameEntry.text.toString()
-        val pin: String = GuiPINEntry.text.toString()
+        val name = ui.GuiAccountNameEntry.text.toString()
+        val pin: String = ui.GuiPINEntry.text.toString()
         if (nameOk == false)
         {
             displayError(R.string.invalidAccountName)
@@ -490,7 +493,7 @@ class NewAccount : CommonNavActivity()
             return
         }
 
-        val flags: ULong = if (PinHidesAccount.isChecked()) ACCOUNT_FLAG_HIDE_UNTIL_PIN else ACCOUNT_FLAG_NONE
+        val flags: ULong = if (ui.PinHidesAccount.isChecked()) ACCOUNT_FLAG_HIDE_UNTIL_PIN else ACCOUNT_FLAG_NONE
         // Any time secret words are given, this is an account recovery -- we need to check for prior activity.
         // If there are no given secret words, this is a probabilistically completely new account
         if (secretWords.length > 0)

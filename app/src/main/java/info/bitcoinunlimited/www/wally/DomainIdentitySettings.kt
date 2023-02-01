@@ -4,14 +4,17 @@ package info.bitcoinunlimited.www.wally
 
 import android.app.Activity
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Switch
 import bitcoinunlimited.libbitcoincash.nexidParams
 import bitcoinunlimited.libbitcoincash.IdentityDomain
 import bitcoinunlimited.libbitcoincash.launch
+import info.bitcoinunlimited.www.wally.databinding.ActivityDomainIdentitySettingsBinding
+import info.bitcoinunlimited.www.wally.databinding.ActivityShoppingBinding
+import info.bitcoinunlimited.www.wally.databinding.ShoppingListItemBinding
 
-import kotlinx.android.synthetic.main.activity_domain_identity_settings.*
 import kotlinx.coroutines.runBlocking
 import java.util.logging.Logger
 
@@ -21,15 +24,18 @@ private val LogIt = Logger.getLogger("BU.wally.domainidentitysettings")
 @kotlinx.coroutines.ExperimentalCoroutinesApi
 class DomainIdentitySettings : CommonNavActivity()
 {
+    private lateinit var ui: ActivityDomainIdentitySettingsBinding
     var ui4params = arrayOf<Switch>()
     val reqs = mutableMapOf<String, String>()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_domain_identity_settings)
+        ui = ActivityDomainIdentitySettingsBinding.inflate(layoutInflater)
+        setContentView(ui.root)
+
         ui4params =
-          arrayOf(provideAttestations, provideAvatar, provideBillingAddress, provideBirthday, provideEmail, provideNameAlias, provideRealName, providePhone, providePostalAddress, provideSocialMedia)
+          arrayOf(ui.provideAttestations, ui.provideAvatar, ui.provideBillingAddress, ui.provideBirthday, ui.provideEmail, ui.provideNameAlias, ui.provideRealName, ui.providePhone, ui.providePostalAddress, ui.provideSocialMedia)
     }
 
     override fun onStart()
@@ -43,7 +49,7 @@ class DomainIdentitySettings : CommonNavActivity()
         {
             setTitle(title)
         }
-        domainName.text = domain
+        ui.domainName.text = domain
 
         for ((param, ui) in nexidParams zip ui4params)
         {
@@ -75,26 +81,26 @@ class DomainIdentitySettings : CommonNavActivity()
     fun removeDomainIdentity()
     {
         val wallet = (application as WallyApp).primaryAccount.wallet
-        wallet.removeIdentityDomain(domainName.text.toString())
-        domainName.text = ""
+        wallet.removeIdentityDomain(ui.domainName.text.toString())
+        ui.domainName.text = ""
         launch { wallet.save() }
     }
 
     fun upsertDomainIdentity()
     {
         // No domain to save
-        if (domainName.text.toString().length == 0) return
+        if (ui.domainName.text.toString().length == 0) return
 
         var changed = false
         val wallet = (application as WallyApp).primaryAccount.wallet
-        val id: Long = if (uniqueIdentitySwitch.isChecked) IdentityDomain.IDENTITY_BY_HASH else IdentityDomain.COMMON_IDENTITY
-        var idData = wallet.lookupIdentityDomain(domainName.text.toString())
+        val id: Long = if (ui.uniqueIdentitySwitch.isChecked) IdentityDomain.IDENTITY_BY_HASH else IdentityDomain.COMMON_IDENTITY
+        var idData = wallet.lookupIdentityDomain(ui.domainName.text.toString())
 
         if (idData == null)
         {
             runBlocking {
-                wallet.upsertIdentityDomain(IdentityDomain(domainName.text.toString(), id))
-                idData = wallet.lookupIdentityDomain(domainName.text.toString())
+                wallet.upsertIdentityDomain(IdentityDomain(ui.domainName.text.toString(), id))
+                idData = wallet.lookupIdentityDomain(ui.domainName.text.toString())
                 changed = true
             }
         }

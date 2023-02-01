@@ -6,11 +6,8 @@ import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
-import androidx.preference.PreferenceManager
-import kotlinx.android.synthetic.main.activity_identity_op.*
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -18,6 +15,7 @@ import java.net.URL
 import java.net.URLEncoder
 import java.util.logging.Logger
 import bitcoinunlimited.libbitcoincash.*
+import info.bitcoinunlimited.www.wally.databinding.ActivityIdentityOpBinding
 import java.io.DataOutputStream
 import java.net.URLDecoder
 
@@ -29,6 +27,7 @@ open class IdentityOpException(msg: String, shortMsg: String? = null, severity: 
 
 class IdentityOpActivity : CommonNavActivity()
 {
+    private lateinit var ui:ActivityIdentityOpBinding
     private val HTTP_REQ_TIMEOUT_MS: Int = 7000
     override var navActivityId = -1
 
@@ -47,7 +46,8 @@ class IdentityOpActivity : CommonNavActivity()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_identity_op)
+        ui = ActivityIdentityOpBinding.inflate(layoutInflater)
+        setContentView(ui.root)
 
         if (intent.scheme != null)  // its null if normal app startup
         {
@@ -65,7 +65,7 @@ class IdentityOpActivity : CommonNavActivity()
     {
         super.onResume()
         LogIt.info("Identity Operation")
-        identityInformation.visibility = View.INVISIBLE
+        ui.identityInformation.visibility = View.INVISIBLE
         // Process the intent that caused this activity to resume
         if (intent.scheme != null)  // its null if normal app startup
         {
@@ -79,11 +79,11 @@ class IdentityOpActivity : CommonNavActivity()
 
     fun blankActivity()
     {
-        displayLoginRecipient.visibility = View.INVISIBLE
-        provideIdentityNoButton.visibility = View.INVISIBLE
-        provideIdentityYesButton.visibility = View.INVISIBLE
-        ProvideLoginInfoText.visibility = View.INVISIBLE
-        identityInformation.visibility = View.INVISIBLE
+        ui.displayLoginRecipient.visibility = View.INVISIBLE
+        ui.provideIdentityNoButton.visibility = View.INVISIBLE
+        ui.provideIdentityYesButton.visibility = View.INVISIBLE
+        ui.ProvideLoginInfoText.visibility = View.INVISIBLE
+        ui.identityInformation.visibility = View.INVISIBLE
     }
 
     /** Check whether this domain has ever been seen before, and if it hasn't pop up the new domain configuration activity */
@@ -287,7 +287,7 @@ class IdentityOpActivity : CommonNavActivity()
         val op = attribs["op"]
         if (op == "info")
         {
-            ProvideLoginInfoText.text = i18n(R.string.provideInfoQuestion)
+            ui.ProvideLoginInfoText.text = i18n(R.string.provideInfoQuestion)
         }
         else if (op == "reg")
         {
@@ -295,22 +295,22 @@ class IdentityOpActivity : CommonNavActivity()
         }
         else if (op == "sign")
         {
-            ProvideLoginInfoText.text = i18n(R.string.signDataQuestion)
+            ui.ProvideLoginInfoText.text = i18n(R.string.signDataQuestion)
             val signText = attribs["sign"]
             if (signText != null)
             {
-                identityOpDetailsHeader.text = i18n(R.string.textToSign)
+                ui.identityOpDetailsHeader.text = i18n(R.string.textToSign)
                 val s = URLDecoder.decode(signText,"utf-8")
-                identityInformation.text = s
+                ui.identityInformation.text = s
                 msgToSign = signText.toByteArray()
             }
             else
             {
-                identityOpDetailsHeader.text = i18n(R.string.binaryToSign)
+                ui.identityOpDetailsHeader.text = i18n(R.string.binaryToSign)
                 val signHex = attribs["signhex"]
                 if (signHex != null)
                 {
-                    identityInformation.text = signHex
+                    ui.identityInformation.text = signHex
                     msgToSign = signHex.fromHex()
                 }
                 else
@@ -318,15 +318,15 @@ class IdentityOpActivity : CommonNavActivity()
                     clearIntentAndFinish(i18n(R.string.nothingToSign))
                 }
             }
-            identityInformation.visibility = View.VISIBLE
+            ui.identityInformation.visibility = View.VISIBLE
         }
 
 
-        displayLoginRecipient.visibility = View.VISIBLE
-        provideIdentityNoButton.visibility = View.VISIBLE
-        provideIdentityYesButton.visibility = View.VISIBLE
+        ui.displayLoginRecipient.visibility = View.VISIBLE
+        ui.provideIdentityNoButton.visibility = View.VISIBLE
+        ui.provideIdentityYesButton.visibility = View.VISIBLE
         displayedLoginRequest = iuri
-        displayLoginRecipient.text = host // + " (" + path + ")"
+        ui.displayLoginRecipient.text = host // + " (" + path + ")"
         checkIntentNewDomain(receivedIntent)
     }
 
@@ -338,8 +338,8 @@ class IdentityOpActivity : CommonNavActivity()
         launch {
             if (iuri != null)
             {
-                host = iuri.getHost()
-                val h = host!!
+                val tmpHost = iuri.getHost()
+                host = tmpHost
                 val port = iuri.getPort()
                 val path = iuri.getPath()
                 val attribs = iuri.queryMap()
@@ -366,14 +366,14 @@ class IdentityOpActivity : CommonNavActivity()
                 }
 
                 val wallet = act.wallet
-                val idData = wallet.lookupIdentityDomain(h)
+                val idData = wallet.lookupIdentityDomain(tmpHost)
 
                 val seed = if (idData != null)
                 {
                     if (idData.useIdentity == IdentityDomain.COMMON_IDENTITY)
                         Bip44Wallet.COMMON_IDENTITY_SEED
                     else if (idData.useIdentity == IdentityDomain.IDENTITY_BY_HASH)
-                        h + path
+                        tmpHost + path
                     else
                     {
                         LogIt.severe("Invalid identity selector; corrupt?")
@@ -391,7 +391,7 @@ class IdentityOpActivity : CommonNavActivity()
 
                 if (op == "login")
                 {
-                    val chalToSign = h + portStr + "_nexid_" + op + "_" + challenge
+                    val chalToSign = tmpHost + portStr + "_nexid_" + op + "_" + challenge
                     LogIt.info("challenge: " + chalToSign + " cookie: " + cookie)
 
                     if (challenge == null) // intent was previously cleared by someone throw IdentityException("challenge string was not provided", "no challenge")
@@ -405,7 +405,7 @@ class IdentityOpActivity : CommonNavActivity()
                     val sigStr = Codec.encode64(sig)
                     LogIt.info("signature is: " + sigStr)
 
-                    var loginReq = protocol + "://" + h + portStr + path
+                    var loginReq = protocol + "://" + tmpHost + portStr + path
                     loginReq += "?op=login&addr=" + address.toString() + "&sig=" + URLEncoder.encode(sigStr, "UTF-8") + "&cookie=" + URLEncoder.encode(cookie, "UTF-8")
 
                     var forwarded = 0;
@@ -451,7 +451,7 @@ class IdentityOpActivity : CommonNavActivity()
                 }
                 else if ((op == "reg") || (op == "info"))
                 {
-                    val chalToSign = h + portStr + "_nexid_" + op + "_" + challenge
+                    val chalToSign = tmpHost + portStr + "_nexid_" + op + "_" + challenge
                     LogIt.info("challenge: " + chalToSign + " cookie: " + cookie)
 
                     if (challenge == null) // intent was previously cleared by someone throw IdentityException("challenge string was not provided", "no challenge")
@@ -473,7 +473,7 @@ class IdentityOpActivity : CommonNavActivity()
                         throw IdentityException("Wallet did not provide identity information", "bad wallet", ErrorSeverity.Severe)
                     }
 
-                    var loginReq = protocol + "://" + h + portStr + path
+                    var loginReq = protocol + "://" + tmpHost + portStr + path
 
                     val params = mutableMapOf<String, String>()
                     params["op"] = op
@@ -484,7 +484,6 @@ class IdentityOpActivity : CommonNavActivity()
                     // Supply additional requested data
                     postloop@ while (forwarded < 3)
                     {
-                        val idData = wallet.lookupIdentityDomain(h)
                         if (idData != null)
                         {
                             val perms = mutableMapOf<String, Boolean>()
@@ -622,10 +621,10 @@ class IdentityOpActivity : CommonNavActivity()
                         val reply = attribs["reply"]
                         if (reply == null || reply == "true")
                         {
-                        var sigReq = protocol + "://" + h + portStr + path
+                        var sigReq = protocol + "://" + tmpHost + portStr + path
                         sigReq += "?op=sign&addr=" + address.toString() + "&sig=" + URLEncoder.encode(sigStr, "UTF-8") + "&cookie=" + URLEncoder.encode(cookie, "UTF-8")
 
-                        var forwarded = 0
+                        var forwarded = 0  // Handle URL forwarding
                         getloop@ while (forwarded < 3)
                         {
                             LogIt.info("signature reply: " + sigReq)
@@ -682,12 +681,12 @@ class IdentityOpActivity : CommonNavActivity()
     {
         val s = if (show) View.VISIBLE else View.INVISIBLE
 
-        identityInformation.visibility = s
-        identityOpDetailsHeader.visibility = s
-        ProvideLoginInfoText.visibility = s
-        displayLoginRecipient.visibility = s
-        provideIdentityNoButton.visibility = s
-        provideIdentityYesButton.visibility = s
+        ui.identityInformation.visibility = s
+        ui.identityOpDetailsHeader.visibility = s
+        ui.ProvideLoginInfoText.visibility = s
+        ui.displayLoginRecipient.visibility = s
+        ui.provideIdentityNoButton.visibility = s
+        ui.provideIdentityYesButton.visibility = s
     }
 
     @Suppress("UNUSED_PARAMETER")

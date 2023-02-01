@@ -14,8 +14,9 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import bitcoinunlimited.libbitcoincash.*
-import kotlinx.android.synthetic.main.activity_identity.*
-import kotlinx.android.synthetic.main.identity_list_item.view.*
+import info.bitcoinunlimited.www.wally.databinding.ActivityIdentityBinding
+import info.bitcoinunlimited.www.wally.databinding.AlertListItemBinding
+import info.bitcoinunlimited.www.wally.databinding.IdentityListItemBinding
 import java.lang.Exception
 import java.net.URLEncoder
 import java.util.logging.Logger
@@ -46,78 +47,34 @@ fun nexidUpdateIntentFromReqs(intent: Intent, reqs: MutableMap<String, String>)
 }
 
 
-class RecyclerAdapter(private val domains: ArrayList<IdentityDomain>) : RecyclerView.Adapter<RecyclerAdapter.IdentityDomainHolder>()
+class IdentityDomainBinder(val ui: IdentityListItemBinding): GuiListItemBinder<IdentityDomain>(ui.root)
 {
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerAdapter.IdentityDomainHolder
+    override fun populate()
     {
-        val inflatedView = parent.inflate(R.layout.identity_list_item, false)
-        return IdentityDomainHolder(inflatedView)
+        ui.domainNameText.text = data?.domain
     }
 
-    override fun getItemCount(): Int = domains.size
-
-
-    override fun onBindViewHolder(holder: RecyclerAdapter.IdentityDomainHolder, position: Int)
+    override fun onClick(v: View)
     {
-        val item = domains[position]
-        holder.bind(item, position)
+        var reqs = mutableMapOf<String, String>()
+        data?.getReqs(reqs)
+        var perms = mutableMapOf<String, Boolean>()
+        data?.getPerms(perms)
+
+        var intent = Intent(v.context, DomainIdentitySettings::class.java)
+        nexidUpdateIntentFromPerms(intent, perms)
+        nexidUpdateIntentFromReqs(intent, reqs)
+        intent.putExtra("domainName", this.data?.domain)
+        (v.context as Activity).startActivityForResult(intent, IDENTITY_SETTINGS_RESULT)
     }
-
-
-    class IdentityDomainHolder(v: View) : RecyclerView.ViewHolder(v), View.OnClickListener
-    {
-        private var view: View = v
-        private var id: IdentityDomain? = null
-
-        init
-        {
-            v.setOnClickListener(this)
-        }
-
-        override fun onClick(v: View)
-        {
-            var reqs = mutableMapOf<String, String>()
-            id?.getReqs(reqs)
-            var perms = mutableMapOf<String, Boolean>()
-            id?.getPerms(perms)
-
-            var intent = Intent(v.context, DomainIdentitySettings::class.java)
-            nexidUpdateIntentFromPerms(intent, perms)
-            nexidUpdateIntentFromReqs(intent, reqs)
-            intent.putExtra("domainName", this.id?.domain)
-            (v.context as Activity).startActivityForResult(intent, IDENTITY_SETTINGS_RESULT)
-        }
-
-        fun bind(obj: IdentityDomain, pos: Int)
-        {
-            this.id = obj
-            view.domainNameText.text = obj.domain
-
-            // Alternate colors for each row in the list
-            //val Acol: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowA) } ?: 0xFFEEFFEE.toInt()
-            //val Bcol: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowB) } ?: 0xFFBBDDBB.toInt()
-            val Acol = 0xFFEEFFEE.toInt()
-            val Bcol = 0xFFBBDDBB.toInt()
-
-            if ((pos and 1) == 0)
-            {
-                view.background = ColorDrawable(Acol)
-            }
-            else
-            {
-                view.background = ColorDrawable(Bcol)
-            }
-
-        }
-    }
-
 }
+
 
 class IdentityActivity : CommonNavActivity()
 {
+    private lateinit var ui: ActivityIdentityBinding
     private lateinit var linearLayoutManager: LinearLayoutManager
-    private lateinit var adapter: RecyclerAdapter
+    private lateinit var adapter: GuiList<IdentityDomain, IdentityDomainBinder>
 
     var copylabel = ""
 
@@ -128,13 +85,12 @@ class IdentityActivity : CommonNavActivity()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         navActivityId = R.id.navigation_identity
-
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_identity)
+        ui = ActivityIdentityBinding.inflate(layoutInflater)
+        setContentView(ui.root)
 
         linearLayoutManager = LinearLayoutManager(this)
-        identityList.layoutManager = linearLayoutManager
-        // adapter.notifyItemInserted( index of item)
+        ui.identityList.layoutManager = linearLayoutManager
 
         val app = (getApplication() as WallyApp)
         app.interestedInAccountUnlock.add(actUnlockCb)
@@ -164,8 +120,13 @@ class IdentityActivity : CommonNavActivity()
                 val identities: ArrayList<IdentityDomain> = ArrayList(wallet.allIdentityDomains())
                 LogIt.info("identity domain count:" + identities.size.toString())
                 LogIt.info(wallet.allIdentityDomains().map { it.domain }.toString())
-                adapter = RecyclerAdapter(identities)
-                identityList.adapter = adapter
+                //adapter = RecyclerAdapter(identities)
+                //ui.identityList.adapter = adapter
+                adapter = GuiList(ui.identityList, identities, this, {
+                    val ui = IdentityListItemBinding.inflate(LayoutInflater.from(it.context), it, false)
+                    IdentityDomainBinder(ui)
+                })
+                adapter.rowBackgroundColors = arrayOf(0xFFEEFFEE.toInt(), 0xFFBBDDBB.toInt())
 
                 val commonIdDest = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
                 val commonIdAddress = commonIdDest.address ?: throw PrimaryWalletInvalidException()
@@ -181,18 +142,18 @@ class IdentityActivity : CommonNavActivity()
                 val socialmedia: String? = identityInfo.sm
 
                 // Show these common fields for the "common identity" on the front screen
-                if (hdl != null) aliasInfo.text = hdl
-                if (email != null) emailInfo.text = email
+                if (hdl != null) ui.aliasInfo.text = hdl
+                if (email != null) ui.emailInfo.text = email
                 if (socialmedia != null)
                 {
                     val t = socialmedia.split(" ", ",").filter({ it -> it != "" })
-                    socialMediaInfo.text = t.joinToString("\n")
+                    ui.socialMediaInfo.text = t.joinToString("\n")
                 }
 
                 // Show a share identity link on the front screen
                 val dest = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
                 val destStr = dest.address.toString()
-                commonIdentityAddress.text = destStr
+                ui.commonIdentityAddress.text = destStr
 
                 var uri = "nexid://p2p?op=share&addr=" + destStr;
                 if (hdl != null && hdl != "") uri = uri + "&hdl=" + URLEncoder.encode(hdl, "utf-8")
@@ -200,13 +161,13 @@ class IdentityActivity : CommonNavActivity()
                 if (socialmedia != null && socialmedia != "") uri = uri + "&sm=" + URLEncoder.encode(socialmedia, "utf-8")
                 LogIt.info("encoded URI: " + uri)
 
-                val sz = min(commonIdentityQRCode.getWidth().toLong(), commonIdentityQRCode.getHeight().toLong())
+                val sz = min(ui.commonIdentityQRCode.getWidth().toLong(), ui.commonIdentityQRCode.getHeight().toLong())
                 val qr = textToQREncode(uri, sz.toInt())
-                commonIdentityQRCode.setImageBitmap(qr)
+                ui.commonIdentityQRCode.setImageBitmap(qr)
             }
             catch (e: PrimaryWalletInvalidException)
             {
-                commonIdentityAddress.text = i18n(R.string.NoAccounts)
+                ui.commonIdentityAddress.text = i18n(R.string.NoAccounts)
             }
         }
     }
@@ -270,10 +231,7 @@ class IdentityActivity : CommonNavActivity()
         val item3 = menu.findItem(R.id.unlock)
         item3.intent = Intent(this, UnlockActivity::class.java)
 
-        val item4 = menu.findItem(R.id.help)
-        item4.intent = Intent(Intent.ACTION_VIEW)
-        item4.intent.setData(Uri.parse("http://www.bitcoinunlimited.net/wally/faq"))
-
+        initializeHelpOption(menu)
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -286,6 +244,6 @@ class IdentityActivity : CommonNavActivity()
     @Suppress("UNUSED_PARAMETER")
     fun onCommonIdentityAddrTextClicked(v: View)
     {
-        copyTextToClipboard(commonIdentityAddress, copylabel)
+        copyTextToClipboard(ui.commonIdentityAddress, copylabel)
     }
 };

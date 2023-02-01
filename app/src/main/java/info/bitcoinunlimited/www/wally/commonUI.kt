@@ -298,18 +298,80 @@ open class GuiListItemBinder<DATA> (val view: View) : RecyclerView.ViewHolder(vi
     {
         changed()
     }
+
+    // Override to pick a custom background color based on this item's contents
+    open fun backgroundColor(highlight: Boolean = false):Long
+    {
+        return -1
+    }
 }
 
-class GuiList<DATA, BINDER: GuiListItemBinder<DATA>> internal constructor(var data: List<DATA>,  @Suppress("UNUSED_PARAMETER") context: Context?, val factory: (ViewGroup) -> BINDER) : RecyclerView.Adapter<BINDER>()
+class GuiList<DATA, BINDER: GuiListItemBinder<DATA>> internal constructor(val view: RecyclerView, var data: List<DATA>,  @Suppress("UNUSED_PARAMETER") context: Context?, val factory: (ViewGroup) -> BINDER) : RecyclerView.Adapter<BINDER>()
 {
-    //private val inflater: LayoutInflater = LayoutInflater.from(context)
-    // private var mClickListener: ItemClickListener? = null
-
     // Change (on init, before assignment to the RecyclerView) to have empty bottom lines (note your binder must be able to handle beyond-end-of-list bindings)
     var emptyBottomLines = 0
     // Set this to an array of colors to set the background colors of each row to alternate
     var rowBackgroundColors: Array<Int>? = null
 
+    var highlightPos = -1
+
+    /** Assign this to a new list (by reference) */
+    fun set(newData: List<DATA>)
+    {
+        data = newData
+        // detach and reattach the adapter since the data has changed (seems weird that all this is needed)
+        view.adapter = null
+        val tmp = view.layoutManager
+        view.layoutManager = null
+        view.adapter = this
+        view.layoutManager = tmp
+        notifyDataSetChanged()
+        tmp?.requestLayout()
+    }
+    /** call to highlight the item at this position in the list (only 1 item may be highlighted, any existing highlight is removed) */
+    fun highlight(position: Int)
+    {
+        dehighlight()
+        highlightPos = position
+        val vh = view.findViewHolderForAdapterPosition(position)
+        if (vh != null)
+        {
+            setBackgroundColorFor(vh as BINDER, position, true)
+        }
+    }
+
+    /** call to remove any highlighting */
+    fun dehighlight()
+    {
+        val hp = highlightPos
+        if (hp != -1)
+        {
+            val vh = view.findViewHolderForAdapterPosition(hp)
+            if (vh != null)
+            {
+                setBackgroundColorFor((vh as BINDER), hp, false)
+            }
+            highlightPos = -1
+        }
+    }
+
+    protected fun setBackgroundColorFor(holder: BINDER, position: Int, highlight: Boolean = false)
+    {
+        val bk = holder.backgroundColor(highlight)
+        if (bk == -1L)
+        {
+            val rbc = rowBackgroundColors
+            if (rbc != null)
+            {
+                val colIdx = position % rbc.size
+                holder.view.setBackgroundColor(rbc[colIdx])
+            }
+        }
+        else
+        {
+            holder.view.setBackgroundColor(bk.toInt())
+        }
+    }
 
     // inflates the row layout from xml when needed
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BINDER
@@ -345,13 +407,6 @@ class GuiList<DATA, BINDER: GuiListItemBinder<DATA>> internal constructor(var da
     {
         holder.unbind()
 
-        val rbc = rowBackgroundColors
-        if (rbc != null)
-        {
-            val colIdx = position % rbc.size
-            holder.view.setBackgroundColor(rbc[colIdx])
-        }
-
         if (position < data.size)
         {
             val d = data[position]
@@ -361,6 +416,8 @@ class GuiList<DATA, BINDER: GuiListItemBinder<DATA>> internal constructor(var da
         {
             holder.bind(position, null)
         }
+
+        setBackgroundColorFor(holder, position)
     }
 
     // total number of rows
@@ -373,5 +430,9 @@ class GuiList<DATA, BINDER: GuiListItemBinder<DATA>> internal constructor(var da
     fun getItem(id: Int): DATA
     {
         return data[id]
+    }
+
+    init {
+        view.adapter = this
     }
 }

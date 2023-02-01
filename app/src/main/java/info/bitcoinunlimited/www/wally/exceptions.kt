@@ -13,3 +13,5 @@ open class BadAmountException(msg: Int) : BUException(i18n(msg), i18n(R.string.b
 open class BadCryptoException(msg: Int = -1) : BUException(i18n(msg), i18n(R.string.badCryptoCode))
 open class BadUnitException(msg: Int = -1) : BUException(i18n(msg), i18n(R.string.badCurrencyUnit))
 open class UnavailableException(msg: Int = -1) : BUException(i18n(msg), i18n(R.string.unavailable))
+
+open class UiUnavailableException(msg: Int = -1) : BUException(i18n(msg), i18n(R.string.unavailable))

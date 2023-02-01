@@ -6,13 +6,15 @@ import android.content.Intent
 import bitcoinunlimited.libbitcoincash.*
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import androidx.core.content.ContextCompat
 import bitcoinunlimited.libbitcoincash.CurrencyDecimal
 import bitcoinunlimited.libbitcoincash.TransactionHistory
 import bitcoinunlimited.libbitcoincash.fiatFormat
-import kotlinx.android.synthetic.main.asset_list_item.view.*
-import kotlinx.android.synthetic.main.tx_history_list_item.view.*
+import info.bitcoinunlimited.www.wally.databinding.ActivityAssetsBinding
+import info.bitcoinunlimited.www.wally.databinding.ActivityShoppingBinding
+import info.bitcoinunlimited.www.wally.databinding.AssetListItemBinding
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDateTime
@@ -29,7 +31,7 @@ class AssetInfo
 }
 
 
-class AssetBinder(view: View): GuiListItemBinder<AssetInfo>(view)
+class AssetBinder(val ui: AssetListItemBinding): GuiListItemBinder<AssetInfo>(ui.root)
 {
     // Fill the view with this data
     override fun populate()
@@ -43,7 +45,7 @@ class AssetBinder(view: View): GuiListItemBinder<AssetInfo>(view)
 
         data?.let()
         { data ->
-            view.GuiAssetName.text = "TODO"
+            ui.GuiAssetName.text = "TODO"
             //view.GuiValueCrypto.text = act.cryptoFormat.format(act.fromFinestUnit(amt))
         }
 
@@ -61,6 +63,7 @@ class AssetBinder(view: View): GuiListItemBinder<AssetInfo>(view)
 
 class AssetsActivity : CommonNavActivity()
 {
+    private lateinit var ui: ActivityAssetsBinding
     override var navActivityId = R.id.navigation_assets
     var account: Account? = null
     var accountIdx = -1
@@ -69,7 +72,8 @@ class AssetsActivity : CommonNavActivity()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_assets)
+        ui = ActivityAssetsBinding.inflate(layoutInflater)
+        setContentView(ui.root)
 
         laterUI {
             wallyApp?.let { app ->
@@ -99,9 +103,9 @@ class AssetsActivity : CommonNavActivity()
         {
             val wallet = acc.wallet
             val assetList: List<AssetInfo> = listOf() ///wallet.txHistory.values.sortedBy { it.date }.reversed()
-            adapter = GuiList(assetList, this, {
-                val view = layoutInflater.inflate(R.layout.asset_list_item, it, false)
-                AssetBinder(view)
+            adapter = GuiList(ui.GuiAssetList, assetList, this, {
+                val ui = AssetListItemBinding.inflate(LayoutInflater.from(it.context), it, false)
+                AssetBinder(ui)
             })
         }
     }

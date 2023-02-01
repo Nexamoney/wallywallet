@@ -12,9 +12,8 @@ import androidx.core.view.MenuItemCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import bitcoinunlimited.libbitcoincash.*
-import kotlinx.android.synthetic.main.activity_tx_history.*
-import kotlinx.android.synthetic.main.infoeditrow.view.*
-import kotlinx.android.synthetic.main.tx_history_list_item.view.*
+import info.bitcoinunlimited.www.wally.databinding.ActivityTxHistoryBinding
+import info.bitcoinunlimited.www.wally.databinding.TxHistoryListItemBinding
 import kotlinx.coroutines.delay
 import java.math.BigDecimal
 import java.time.Instant
@@ -304,7 +303,7 @@ fun TransactionHistoryHeaderCSV(): String
 
 
 
-class TxHistoryBinder(view: View): GuiListItemBinder<TransactionHistory>(view)
+class TxHistoryBinder(val ui: TxHistoryListItemBinding): GuiListItemBinder<TransactionHistory>(ui.root)
 {
     // Fill the view with this data
     override fun populate()
@@ -320,17 +319,17 @@ class TxHistoryBinder(view: View): GuiListItemBinder<TransactionHistory>(view)
             val amt = data.incomingAmt - data.outgoingAmt
             val ldt = LocalDateTime.ofInstant(Instant.ofEpochMilli(data.date), ZoneId.systemDefault())
             val fdate = ldt.format(formatter)
-            view.GuiTxDate.text = fdate
-            view.GuiValueCrypto.text = act.cryptoFormat.format(act.fromFinestUnit(amt))
+            ui.GuiTxDate.text = fdate
+            ui.GuiValueCrypto.text = act.cryptoFormat.format(act.fromFinestUnit(amt))
 
             val sendIm = appContext?.let { ContextCompat.getDrawable(it.context, R.drawable.ic_sendarrow) }
             val recvIm = appContext?.let { ContextCompat.getDrawable(it.context, R.drawable.ic_receivearrow) }
-            view.GuiTxId.text = data.tx.idem.toHex()
+            ui.GuiTxId.text = data.tx.idem.toHex()
 
             val addrs = mutableListOf<String>()
             if (data.incomingAmt > data.outgoingAmt)  // receive
             {
-                if (recvIm != null) view.GuiSendRecvImage.setImageDrawable(recvIm)
+                if (recvIm != null) ui.GuiSendRecvImage.setImageDrawable(recvIm)
                 for (i in data.incomingIdxes)
                 {
                     if (i < data.tx.outputs.size)
@@ -349,7 +348,7 @@ class TxHistoryBinder(view: View): GuiListItemBinder<TransactionHistory>(view)
             }
             else  // Send
             {
-                if (sendIm != null) view.GuiSendRecvImage.setImageDrawable(sendIm)
+                if (sendIm != null) ui.GuiSendRecvImage.setImageDrawable(sendIm)
                 // For a send, we want to show all the addresses we sent TO, so all the addresses that are NOT ours
                 for (i in 0L until data.tx.outputs.size)
                 {
@@ -360,46 +359,46 @@ class TxHistoryBinder(view: View): GuiListItemBinder<TransactionHistory>(view)
                 }
             }
 
-            if (addrs.size > 0) {view.GuiAddress.text = addrs[0]; view.GuiAddress.visibility = View.VISIBLE}
-            if (addrs.size > 1) {view.GuiAddress1.text = addrs[1]; view.GuiAddress1.visibility = View.VISIBLE}
-            if (addrs.size > 2) {view.GuiAddress2.text = addrs[2]; view.GuiAddress2.visibility = View.VISIBLE}
-            if (addrs.size > 3) {view.GuiAddress3.text = addrs[3] + "..."; view.GuiAddress3.visibility = View.VISIBLE}
-            view.GuiTxNote.text = data.note
-            view.GuiTxNote.visibility = if (data.note != "") View.VISIBLE else View.GONE
+            if (addrs.size > 0) {ui.GuiAddress.text = addrs[0]; ui.GuiAddress.visibility = View.VISIBLE}
+            if (addrs.size > 1) {ui.GuiAddress1.text = addrs[1]; ui.GuiAddress1.visibility = View.VISIBLE}
+            if (addrs.size > 2) {ui.GuiAddress2.text = addrs[2]; ui.GuiAddress2.visibility = View.VISIBLE}
+            if (addrs.size > 3) {ui.GuiAddress3.text = addrs[3] + "..."; ui.GuiAddress3.visibility = View.VISIBLE}
+            ui.GuiTxNote.text = data.note
+            ui.GuiTxNote.visibility = if (data.note != "") View.VISIBLE else View.GONE
 
             val obj = data
             if (obj.priceWhatFiat != "")
             {
                 val netFiat = CurrencyDecimal(amt) * obj.priceWhenIssued
-                view.GuiValueFiat.text = fiatFormat.format(netFiat) + " " + obj.priceWhatFiat
+                ui.GuiValueFiat.text = fiatFormat.format(netFiat) + " " + obj.priceWhatFiat
 
-                view.GuiTxCostBasisOrProfitLoss.text.clear()
+                ui.GuiTxCostBasisOrProfitLoss.text.clear()
                 if (amt > 0)
                 {
                     if (obj.basisOverride != null)
-                        view.GuiTxCostBasisOrProfitLoss.text.append(fiatFormat.format(obj.basisOverride))
+                        ui.GuiTxCostBasisOrProfitLoss.text.append(fiatFormat.format(obj.basisOverride))
                     else
-                        view.GuiTxCostBasisOrProfitLoss.text.append(fiatFormat.format(netFiat))
-                    view.GuiBasisText.text = appResources?.getText(R.string.CostBasis)
+                        ui.GuiTxCostBasisOrProfitLoss.text.append(fiatFormat.format(netFiat))
+                    ui.GuiBasisText.text = appResources?.getText(R.string.CostBasis)
                 }
                 else
                 {
                     val capgain = obj.capGains()
-                    view.GuiTxCostBasisOrProfitLoss.text.append(fiatFormat.format(capgain))
+                    ui.GuiTxCostBasisOrProfitLoss.text.append(fiatFormat.format(capgain))
                     if (capgain >= BigDecimal.ZERO)
                     {
-                        view.GuiBasisText.text = appResources?.getText(R.string.CapitalGain)
+                        ui.GuiBasisText.text = appResources?.getText(R.string.CapitalGain)
                     }
                     else
                     {
-                        view.GuiBasisText.text = appResources?.getText(R.string.CapitalLoss)
+                        ui.GuiBasisText.text = appResources?.getText(R.string.CapitalLoss)
                     }
 
                 }
             }
             else
             {
-                view.GuiValueFiat.text = ""
+                ui.GuiValueFiat.text = ""
             }
 
         }
@@ -433,33 +432,33 @@ class TxHistoryBinder(view: View): GuiListItemBinder<TransactionHistory>(view)
                 LogIt.info("set showingDetails")
                 activity.showingDetails = true
                 val itemHeight = v.height
-                val heightButOne = activity.GuiTxHistoryList.height - itemHeight
+                val heightButOne = activity.ui.GuiTxHistoryList.height - itemHeight
 
                 activity.linearLayoutManager.scrollToPositionWithOffset(idx, 0)
-                activity.GuiTxHistoryList.layoutParams.height = itemHeight
-                activity.GuiTxHistoryList.requestLayout()
-                activity.GuiTxHistoryList.invalidate()
-                activity.GuiTxWebView.layoutParams.height = heightButOne
-                activity.GuiTxWebView.requestLayout()
-                activity.container.requestLayout()
+                activity.ui.GuiTxHistoryList.layoutParams.height = itemHeight
+                activity.ui.GuiTxHistoryList.requestLayout()
+                activity.ui.GuiTxHistoryList.invalidate()
+                activity.ui.GuiTxWebView.layoutParams.height = heightButOne
+                activity.ui.GuiTxWebView.requestLayout()
+                activity.ui.container.requestLayout()
 
 
                 val url = account.transactionInfoWebUrl(d.tx.id?.toHex())
                 url?.let {
-                    activity.GuiTxWebView.loadUrl(url)
+                    activity.ui.GuiTxWebView.loadUrl(url)
                 }
             }
             else
             {
                 activity.showingDetails = false
-                activity.container.requestLayout()
-                activity.GuiTxHistoryList.layoutParams.height = activity.listHeight
-                activity.GuiTxHistoryList.invalidate()
-                activity.GuiTxHistoryList.requestLayout()
+                activity.ui.container.requestLayout()
+                activity.ui.GuiTxHistoryList.layoutParams.height = activity.listHeight
+                activity.ui.GuiTxHistoryList.invalidate()
+                activity.ui.GuiTxHistoryList.requestLayout()
 
-                activity.GuiTxWebView.layoutParams.height = 1
-                activity.GuiTxWebView.requestLayout()
-                activity.GuiTxWebView.loadUrl("about:blank")
+                activity.ui.GuiTxWebView.layoutParams.height = 1
+                activity.ui.GuiTxWebView.requestLayout()
+                activity.ui.GuiTxWebView.loadUrl("about:blank")
             }
             activity.linearLayoutManager.requestLayout()
         }
@@ -475,6 +474,7 @@ class TxHistoryBinder(view: View): GuiListItemBinder<TransactionHistory>(view)
 
 class TxHistoryActivity : CommonNavActivity()
 {
+    public lateinit var ui: ActivityTxHistoryBinding
     lateinit var linearLayoutManager: LinearLayoutManager
     //private lateinit var adapter: TxHistoryRecyclerAdapter
     private lateinit var adapter: GuiList<TransactionHistory, TxHistoryBinder>
@@ -493,15 +493,16 @@ class TxHistoryActivity : CommonNavActivity()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_tx_history)
+        ui = ActivityTxHistoryBinding.inflate(layoutInflater)
+        setContentView(ui.root)
 
         linearLayoutManager = LinearLayoutManager(this)
-        GuiTxHistoryList.layoutManager = linearLayoutManager
+        ui.GuiTxHistoryList.layoutManager = linearLayoutManager
 
         // Remember the original height so that it can be restored when we move it
-        listHeight = GuiTxHistoryList.layoutParams.height
+        listHeight = ui.GuiTxHistoryList.layoutParams.height
 
-        GuiTxHistoryList.addOnScrollListener(object : RecyclerView.OnScrollListener()
+        ui.GuiTxHistoryList.addOnScrollListener(object : RecyclerView.OnScrollListener()
         {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)
             {
@@ -517,7 +518,7 @@ class TxHistoryActivity : CommonNavActivity()
             return
         }
 
-        GuiTxWebView.settings.javaScriptEnabled = true
+        ui.GuiTxWebView.settings.javaScriptEnabled = true
 
 
         laterUI {
@@ -536,11 +537,10 @@ class TxHistoryActivity : CommonNavActivity()
                         val wallet = coin.wallet
                         val historyList: List<TransactionHistory> = wallet.txHistory.values.sortedBy { it.date }.reversed()
                         account = coin
-                        adapter = GuiList(historyList, this, {
-                        val view = layoutInflater.inflate(R.layout.tx_history_list_item, it, false)
-                        TxHistoryBinder(view)
-                    })
-                        GuiTxHistoryList.adapter = adapter
+                        adapter = GuiList(ui.GuiTxHistoryList, historyList, this, {
+                            val ui = TxHistoryListItemBinding.inflate(LayoutInflater.from(it.context), it, false)
+                            TxHistoryBinder(ui)
+                        })
 
                         val csv = StringBuilder()
                         csv.append(TransactionHistoryHeaderCSV())

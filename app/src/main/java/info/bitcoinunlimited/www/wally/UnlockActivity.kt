@@ -8,16 +8,18 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_unlock.*
+import info.bitcoinunlimited.www.wally.databinding.ActivityUnlockBinding
 
 class UnlockActivity : AppCompatActivity()
 {
+    private lateinit var ui:ActivityUnlockBinding
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_unlock)
+        ui = ActivityUnlockBinding.inflate(layoutInflater)
+        setContentView(ui.root)
 
-        GuiEnterPIN.setOnEditorActionListener({ v: TextView, actionId: Int, event: KeyEvent? ->
+        ui.GuiEnterPIN.setOnEditorActionListener({ v: TextView, actionId: Int, event: KeyEvent? ->
             if (actionId == EditorInfo.IME_ACTION_DONE ||
               (event != null &&
                 event.action == KeyEvent.ACTION_DOWN &&
@@ -43,7 +45,7 @@ class UnlockActivity : AppCompatActivity()
     override fun onStart()
     {
         super.onStart()
-        GuiEnterPIN.requestFocus()
+        ui.GuiEnterPIN.requestFocus()
         val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
     }

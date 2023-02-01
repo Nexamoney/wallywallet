@@ -15,7 +15,7 @@ import android.widget.CompoundButton
 import android.widget.Spinner
 import androidx.core.content.ContextCompat
 import bitcoinunlimited.libbitcoincash.*
-import kotlinx.android.synthetic.main.activity_settings.*
+import info.bitcoinunlimited.www.wally.databinding.ActivitySettingsBinding
 import java.math.BigDecimal
 import java.util.logging.Logger
 
@@ -52,6 +52,7 @@ enum class ConfirmationFor
 // SharedPreferences is used to communicate settings from this activity to the rest of the program and to persist these choices between executions
 class Settings : CommonActivity()
 {
+    private lateinit var ui:ActivitySettingsBinding
     var app: WallyApp? = null
 
     val accounts: MutableMap<String, Account>
@@ -65,7 +66,7 @@ class Settings : CommonActivity()
         val preferenceDB = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
         with(preferenceDB.edit())
         {
-            putString(LOCAL_CURRENCY_PREF, GuiFiatCurrencySpinner.selectedItem as String)
+            putString(LOCAL_CURRENCY_PREF, ui.GuiFiatCurrencySpinner.selectedItem as String)
             commit()
         }
 
@@ -85,7 +86,8 @@ class Settings : CommonActivity()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+        ui = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(ui.root)
 
         app = (getApplication() as WallyApp)
 
@@ -97,60 +99,60 @@ class Settings : CommonActivity()
 
         val preferenceDB: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
 
-        if (SetupBooleanPreferenceGui(SHOW_DEV_INFO, preferenceDB, GuiDeveloperInfoSwitch) { _, isChecked ->
+        if (SetupBooleanPreferenceGui(SHOW_DEV_INFO, preferenceDB, ui.GuiDeveloperInfoSwitch) { _, isChecked ->
               if (isChecked)
               {
-                  GuiClearIdentityDomains.visibility = VISIBLE
-                  GuiLogInterestingData.visibility = VISIBLE
-                  nexaregBlockchainSettings.visibility = VISIBLE
-                  nexatestBlockchainSettings.visibility = VISIBLE
+                  ui.GuiClearIdentityDomains.visibility = VISIBLE
+                  ui.GuiLogInterestingData.visibility = VISIBLE
+                  ui.nexaregBlockchainSettings.visibility = VISIBLE
+                  ui.nexatestBlockchainSettings.visibility = VISIBLE
               }
               else
               {
-                  GuiClearIdentityDomains.visibility = GONE
-                  GuiLogInterestingData.visibility = GONE
-                  nexaregBlockchainSettings.visibility = GONE
-                  nexatestBlockchainSettings.visibility = GONE
+                  ui.GuiClearIdentityDomains.visibility = GONE
+                  ui.GuiLogInterestingData.visibility = GONE
+                  ui.nexaregBlockchainSettings.visibility = GONE
+                  ui.nexatestBlockchainSettings.visibility = GONE
               }
           })
         {
-            GuiClearIdentityDomains.visibility = VISIBLE
-            GuiLogInterestingData.visibility = VISIBLE
-            nexaregBlockchainSettings.visibility = VISIBLE
-            nexatestBlockchainSettings.visibility = VISIBLE
+            ui.GuiClearIdentityDomains.visibility = VISIBLE
+            ui.GuiLogInterestingData.visibility = VISIBLE
+            ui.nexaregBlockchainSettings.visibility = VISIBLE
+            ui.nexatestBlockchainSettings.visibility = VISIBLE
         }
         else
         {
-            GuiClearIdentityDomains.visibility = GONE
-            GuiLogInterestingData.visibility = GONE
-            nexaregBlockchainSettings.visibility = GONE
-            nexatestBlockchainSettings.visibility = GONE
+            ui.GuiClearIdentityDomains.visibility = GONE
+            ui.GuiLogInterestingData.visibility = GONE
+            ui.nexaregBlockchainSettings.visibility = GONE
+            ui.nexatestBlockchainSettings.visibility = GONE
         }
 
         var name = chainToURI[ChainSelector.NEXA]
-        SetupBooleanPreferenceGui(name + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, GuiNexaExclusiveNodeSwitch)
-        SetupBooleanPreferenceGui(name + "." + PREFER_NODE_SWITCH, preferenceDB, GuiNexaPreferNodeSwitch)
-        SetupTextPreferenceGui(name + "." + CONFIGURED_NODE, preferenceDB, GuiNexaNodeAddr)
+        SetupBooleanPreferenceGui(name + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, ui.GuiNexaExclusiveNodeSwitch)
+        SetupBooleanPreferenceGui(name + "." + PREFER_NODE_SWITCH, preferenceDB, ui.GuiNexaPreferNodeSwitch)
+        SetupTextPreferenceGui(name + "." + CONFIGURED_NODE, preferenceDB, ui.GuiNexaNodeAddr)
 
         name = chainToURI[ChainSelector.NEXATESTNET]
-        SetupBooleanPreferenceGui(name + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, GuiNexatestExclusiveNodeSwitch)
-        SetupBooleanPreferenceGui(name + "." + PREFER_NODE_SWITCH, preferenceDB, GuiNexatestPreferNodeSwitch)
-        SetupTextPreferenceGui(name + "." + CONFIGURED_NODE, preferenceDB, GuiNexatestNodeAddr)
+        SetupBooleanPreferenceGui(name + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, ui.GuiNexatestExclusiveNodeSwitch)
+        SetupBooleanPreferenceGui(name + "." + PREFER_NODE_SWITCH, preferenceDB, ui.GuiNexatestPreferNodeSwitch)
+        SetupTextPreferenceGui(name + "." + CONFIGURED_NODE, preferenceDB, ui.GuiNexatestNodeAddr)
 
         name = chainToURI[ChainSelector.NEXAREGTEST]
-        SetupBooleanPreferenceGui(name + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, GuiNexaregExclusiveNodeSwitch)
-        SetupBooleanPreferenceGui(name + "." + PREFER_NODE_SWITCH, preferenceDB, GuiNexaregPreferNodeSwitch)
-        SetupTextPreferenceGui(name + "." + CONFIGURED_NODE, preferenceDB, GuiNexaregNodeAddr)
+        SetupBooleanPreferenceGui(name + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, ui.GuiNexaregExclusiveNodeSwitch)
+        SetupBooleanPreferenceGui(name + "." + PREFER_NODE_SWITCH, preferenceDB, ui.GuiNexaregPreferNodeSwitch)
+        SetupTextPreferenceGui(name + "." + CONFIGURED_NODE, preferenceDB, ui.GuiNexaregNodeAddr)
 
         name = chainToURI[ChainSelector.BCH]
-        SetupBooleanPreferenceGui(name + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, GuiBchExclusiveNodeSwitch)
-        SetupBooleanPreferenceGui(name + "." + PREFER_NODE_SWITCH, preferenceDB, GuiBchPreferNodeSwitch)
-        SetupTextPreferenceGui(name + "." + CONFIGURED_NODE, preferenceDB, GuiBchNodeAddr)
+        SetupBooleanPreferenceGui(name + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, ui.GuiBchExclusiveNodeSwitch)
+        SetupBooleanPreferenceGui(name + "." + PREFER_NODE_SWITCH, preferenceDB, ui.GuiBchPreferNodeSwitch)
+        SetupTextPreferenceGui(name + "." + CONFIGURED_NODE, preferenceDB, ui.GuiBchNodeAddr)
 
         val curCode: String = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"
-        GuiFiatCurrencySpinner.setSelection(curCode)
+        ui.GuiFiatCurrencySpinner.setSelection(curCode)
 
-        GuiFiatCurrencySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
+        ui.GuiFiatCurrencySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
         {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long)
             {
@@ -162,30 +164,30 @@ class Settings : CommonActivity()
             }
         }
 
-        GuiSettingsAccountChoice.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
+        ui.GuiSettingsAccountChoice.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
         {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long)
             {
-                val item = GuiSettingsAccountChoice.selectedItem
+                val item = ui.GuiSettingsAccountChoice.selectedItem
                 if (item == null) return
                 val accountName = item.toString()
 
                 val coin = accounts[accountName]
                 if (coin == null) return onNothingSelected(parent)
 
-                GuiPINInvisibility.setEnabled(true)
-                GuiPINInvisibility.setChecked(coin.flags and ACCOUNT_FLAG_HIDE_UNTIL_PIN > 0UL)
+                ui.GuiPINInvisibility.setEnabled(true)
+                ui.GuiPINInvisibility.setChecked(coin.flags and ACCOUNT_FLAG_HIDE_UNTIL_PIN > 0UL)
             }
 
             override fun onNothingSelected(parent: AdapterView<out Adapter>?)
             {
-                GuiPINInvisibility.setChecked(false)
-                GuiPINInvisibility.setEnabled(false)
+                ui.GuiPINInvisibility.setChecked(false)
+                ui.GuiPINInvisibility.setEnabled(false)
             }
         }
 
-        GuiPINInvisibility.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { _, isChecked ->
-            val item = GuiSettingsAccountChoice.selectedItem
+        ui.GuiPINInvisibility.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { _, isChecked ->
+            val item = ui.GuiSettingsAccountChoice.selectedItem
             if (item != null)
             {
                 val accountName = item.toString()
@@ -215,7 +217,7 @@ class Settings : CommonActivity()
         val coinSpinData = app!!.visibleAccountNames()
 
         val coinAa = ArrayAdapter(this, android.R.layout.simple_spinner_item, coinSpinData)
-        GuiSettingsAccountChoice?.setAdapter(coinAa)
+        ui.GuiSettingsAccountChoice?.setAdapter(coinAa)
     }
 
     override fun onStop()
@@ -282,13 +284,13 @@ class Settings : CommonActivity()
     @Suppress("UNUSED_PARAMETER")
     fun onYes(v: View?)
     {
-        ConfirmationConstraint.visibility = GONE
-        confirmationOps.visibility = VISIBLE
+        ui.ConfirmationConstraint.visibility = GONE
+        ui.confirmationOps.visibility = VISIBLE
 
         val a = askingAbout
         if (a == null) return
 
-        val item = GuiSettingsAccountChoice.selectedItem
+        val item = ui.GuiSettingsAccountChoice.selectedItem
         if (item == null) return
         val accountName = item.toString()
 
@@ -354,8 +356,8 @@ class Settings : CommonActivity()
             }
             ConfirmationFor.RecoveryPhrase ->
             {
-                buttonNo.visibility = VISIBLE
-                buttonYes.text = i18n(R.string.yes)
+                ui.buttonNo.visibility = VISIBLE
+                ui.buttonYes.text = i18n(R.string.yes)
             }
         }
     }
@@ -364,14 +366,14 @@ class Settings : CommonActivity()
     fun onNo(v: View?)
     {
         askingAbout = null
-        ConfirmationConstraint.visibility = GONE
-        confirmationOps.visibility = VISIBLE
+        ui.ConfirmationConstraint.visibility = GONE
+        ui.confirmationOps.visibility = VISIBLE
     }
 
     fun showConfirmation()
     {
-        confirmationOps.visibility = GONE
-        ConfirmationConstraint.visibility = VISIBLE
+        ui.confirmationOps.visibility = GONE
+        ui.ConfirmationConstraint.visibility = VISIBLE
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -384,10 +386,10 @@ class Settings : CommonActivity()
     fun onRediscoverBlockchain(v: View?): Boolean
     {
         // Strangely, if the contraint layout is touched, it calls this function
-        if (v != GuiRediscoverBlockchainButton) return false
+        if (v != ui.GuiRediscoverBlockchainButton) return false
 
         askingAbout = ConfirmationFor.RediscoverBlockchain
-        GuiConfirmationText.text = i18n(R.string.rediscoverBlockchainConfirmation)
+        ui.GuiConfirmationText.text = i18n(R.string.rediscoverBlockchainConfirmation)
         showConfirmation()
         return true
     }
@@ -396,9 +398,9 @@ class Settings : CommonActivity()
     fun onRediscoverWallet(v: View?): Boolean
     {
         // Strangely, if the contraint layout is touched, it calls this function
-        if (v != GuiRediscoverButton) return false
+        if (v != ui.GuiRediscoverButton) return false
         askingAbout = ConfirmationFor.Rediscover
-        GuiConfirmationText.text = i18n(R.string.rediscoverConfirmation)
+        ui.GuiConfirmationText.text = i18n(R.string.rediscoverConfirmation)
         showConfirmation()
         return true
     }
@@ -408,16 +410,16 @@ class Settings : CommonActivity()
     {
         askingAbout = ConfirmationFor.RecoveryPhrase
 
-        val item = GuiSettingsAccountChoice.selectedItem
+        val item = ui.GuiSettingsAccountChoice.selectedItem
         if (item == null) return
         val accountName = item.toString()
 
         val coin = accounts[accountName]
         if (coin == null) return
-        GuiConfirmationText.text = i18n(R.string.recoveryPhrase) + "\n\n" + coin.wallet.secretWords
+        ui.GuiConfirmationText.text = i18n(R.string.recoveryPhrase) + "\n\n" + coin.wallet.secretWords
         showConfirmation()
-        buttonNo.visibility = GONE
-        buttonYes.text = i18n(R.string.done)
+        ui.buttonNo.visibility = GONE
+        ui.buttonYes.text = i18n(R.string.done)
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -425,7 +427,7 @@ class Settings : CommonActivity()
     public fun onAssessUnconfirmedButton(v: View)
     {
         askingAbout = ConfirmationFor.Reassess
-        GuiConfirmationText.text = i18n(R.string.reassessConfirmation)
+        ui.GuiConfirmationText.text = i18n(R.string.reassessConfirmation)
         showConfirmation()
     }
 
@@ -435,14 +437,14 @@ class Settings : CommonActivity()
     {
         askingAbout = ConfirmationFor.Delete
 
-        val item = GuiSettingsAccountChoice.selectedItem
+        val item = ui.GuiSettingsAccountChoice.selectedItem
         if (item == null) return
         val accountName = item.toString()
 
         val coin: Account? = accounts[accountName]
         if (coin == null) return
 
-        GuiConfirmationText.text = i18n(R.string.deleteConfirmation) % mapOf("accountName" to coin.name, "blockchain" to coin.currencyCode)
+        ui.GuiConfirmationText.text = i18n(R.string.deleteConfirmation) % mapOf("accountName" to coin.name, "blockchain" to coin.currencyCode)
         showConfirmation()
     }
 

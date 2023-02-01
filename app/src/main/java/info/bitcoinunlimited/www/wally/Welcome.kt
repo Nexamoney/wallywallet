@@ -8,17 +8,19 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import kotlinx.android.synthetic.main.welcomef3.*
+import info.bitcoinunlimited.www.wally.databinding.*
 
 class Welcome : CommonNavActivity()
 {
+    private lateinit var ui:ActivityWelcomeBinding
     var walletCreated = false
     var enteredIdentity = false
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_welcome)
+        ui = ActivityWelcomeBinding.inflate(layoutInflater)
+        setContentView(ui.root)
         val app = (getApplication() as WallyApp)
         app.firstRun = false  // Stops jumping back into the welcome if we've left it
 
@@ -45,11 +47,9 @@ class Welcome : CommonNavActivity()
  */
 class WelcomeFragment1 : Fragment()
 {
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        val ret = inflater.inflate(R.layout.welcomef1, container, false)
-        return ret
+        return Welcomef1Binding.inflate(inflater).root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
@@ -65,7 +65,7 @@ class WelcomeFragment2 : Fragment()
 {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        return inflater.inflate(R.layout.welcomef2, container, false)
+        return Welcomef2Binding.inflate(inflater).root
     }
 
     override fun onResume()
@@ -96,9 +96,11 @@ class WelcomeFragment2 : Fragment()
 
 class WelcomeFragment3 : Fragment()
 {
+    public lateinit var ui: Welcomef3Binding
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        return inflater.inflate(R.layout.welcomef3, container, false)
+        ui = Welcomef3Binding.inflate(inflater)
+        return ui.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
@@ -116,7 +118,7 @@ class WelcomeFragment3 : Fragment()
             }
         }
         if (wordSeeds == "") wordSeeds = accounts.values.first().wallet.secretWords
-        welcomeWalletBackupSecret.text = wordSeeds
+        ui.welcomeWalletBackupSecret.text = wordSeeds
 
         view.findViewById<Button>(R.id.button_first).setOnClickListener {
             findNavController().navigate(R.id.action_Backup_to_Identity)
@@ -126,9 +128,11 @@ class WelcomeFragment3 : Fragment()
 
 class WelcomeIdentity : Fragment()
 {
+    public lateinit var ui: Welcomef4Binding
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        return inflater.inflate(R.layout.welcomef4, container, false)
+        ui = Welcomef4Binding.inflate(inflater)
+        return ui.root
     }
 
     override fun onResume()
@@ -137,7 +141,7 @@ class WelcomeIdentity : Fragment()
         val act = activity as Welcome
         if (act.enteredIdentity)
         {
-            welcomeIdentityText.text = i18n(R.string.welcomeComplete)
+            ui.welcomeIdentityText.text = i18n(R.string.welcomeComplete)
         }
     }
 

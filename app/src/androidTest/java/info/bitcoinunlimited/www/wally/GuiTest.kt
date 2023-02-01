@@ -37,6 +37,7 @@ import java.util.logging.Logger
 import info.bitcoinunlimited.www.wally.R.id as GuiId
 import info.bitcoinunlimited.www.wally.R  // so we can compare strings with what is on the screen
 import java.net.URLEncoder
+import java.nio.charset.Charset
 
 
 val LogIt = Logger.getLogger("GuiTest")
@@ -194,7 +195,6 @@ class GuiTest
 
         val ctxt = PlatformContext(app!!.applicationContext)
         walletDb = OpenKvpDB(ctxt, dbPrefix + "TESTbip44walletdb")
-        val wdb = walletDb!!
 
         onView(withId(R.id.navigation_home)).perform(click())
         onView(withId(R.id.navigation_identity)).perform(click())
@@ -239,7 +239,7 @@ class GuiTest
         val tw = Bip44Wallet(wdb,"testframework", ChainSelector.NEXA, "quantum curve elephant soccer faculty cheese merge medal vault damage sniff purpose")
         val dest = tw.destinationFor("")
         // TODO Uri.encode vs URLEncoder
-        var uriStr:String = "tdpp://www.yoursite.com/reg?addr=" + URLEncoder.encode(dest.address!!.toString()) + "&descday=" + URLEncoder.encode("desc2 space test") + "&descper=desc1&descweek=week&maxday=10000&maxper=1000&maxweek=100000&topic=thisisatest&uoa=NEX"
+        var uriStr:String = "tdpp://www.yoursite.com/reg?addr=" + URLEncoder.encode(dest.address!!.toString(), "UTF-8") + "&descday=" + URLEncoder.encode("desc2 space test", "UTF-8") + "&descper=desc1&descweek=week&maxday=10000&maxper=1000&maxweek=100000&topic=thisisatest&uoa=NEX"
         val tosign = uriStr.toByteArray()
         println("signing text: ${uriStr}")
         println("signing hex: ${tosign.toHex()}")
@@ -304,8 +304,8 @@ class GuiTest
 
         // OK get rid of what we created
         onView(withId(GuiId.GuiTpDeleteAll)).perform(click())
-        activityScenario.close()
         asc.close()
+        activityScenario.close()
         activityScenarioM.close()
         println("worked!")
     }
@@ -420,7 +420,7 @@ class GuiTest
         createNewAccount("rNEX1", cs)
         sleep(4000)
         // waitForActivity(10000, activityScenario) { app?.accounts["rNEX1"]?.cnxnMgr == null }
-        app!!.accounts["rNEX1"]!!.cnxnMgr!!.exclusiveNodes(setOf(SimulationHostIP + ":" + REGTEST_P2P_PORT))
+        app!!.accounts["rNEX1"]!!.cnxnMgr.exclusiveNodes(setOf(SimulationHostIP + ":" + REGTEST_P2P_PORT))
         activityScenario.onActivity { currentActivity == it }  // Clicking should bring us back to main screen
         createNewAccount("rNEX2", cs)
         activityScenario.onActivity { currentActivity == it }  // Clicking should bring us back to main screen

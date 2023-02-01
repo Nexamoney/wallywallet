@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -11,8 +12,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import bitcoinunlimited.libbitcoincash.*
-import kotlinx.android.synthetic.main.activity_shopping_settings.*
-import kotlinx.android.synthetic.main.shopping_settings_list_item.view.*
+import info.bitcoinunlimited.www.wally.databinding.ActivityShoppingSettingsBinding
+import info.bitcoinunlimited.www.wally.databinding.ShoppingSettingsListItemBinding
 import java.lang.Exception
 import java.net.URI
 import java.util.logging.Logger
@@ -68,11 +69,12 @@ fun saveShoppingFromPreferences(prefs: SharedPreferences.Editor, shopping: Mutab
 
 private class ShoppingEditRecyclerAdapter(private val activity: ShoppingSettingsActivity, private val domains: Array<ShoppingDestination>) : RecyclerView.Adapter<ShoppingEditRecyclerAdapter.DomainHolder>()
 {
+    private lateinit var ui:ShoppingSettingsListItemBinding
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShoppingEditRecyclerAdapter.DomainHolder
     {
-        val inflatedView = parent.inflate(R.layout.shopping_settings_list_item, false)
-        return DomainHolder(activity, inflatedView)
+        ui = ShoppingSettingsListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return DomainHolder(activity, ui)
     }
 
     override fun getItemCount(): Int = domains.size
@@ -84,7 +86,7 @@ private class ShoppingEditRecyclerAdapter(private val activity: ShoppingSettings
         holder.bind(item, position)
     }
 
-    class DomainHolder(private val activity: ShoppingSettingsActivity, private val view: View) : RecyclerView.ViewHolder(view), View.OnClickListener
+    class DomainHolder(private val activity: ShoppingSettingsActivity, private val ui: ShoppingSettingsListItemBinding) : RecyclerView.ViewHolder(ui.root), View.OnClickListener
     {
         var idx = 0
         var txid: Hash256? = null
@@ -92,7 +94,7 @@ private class ShoppingEditRecyclerAdapter(private val activity: ShoppingSettings
 
         init
         {
-            view.setOnClickListener(this)
+            ui.root.setOnClickListener(this)
         }
 
         override fun onClick(v: View)
@@ -103,14 +105,14 @@ private class ShoppingEditRecyclerAdapter(private val activity: ShoppingSettings
         {
             idx = pos
             item = obj
-            view.GuiButtonText.setText(obj.buttonText)
-            view.GuiButtonWebLink.setText(obj.url)
-            view.GuiButtonText.addTextChangedListener(textChanged {
-                item?.let { it.buttonText = view.GuiButtonText.text.toString() }
+            ui.GuiButtonText.setText(obj.buttonText)
+            ui.GuiButtonWebLink.setText(obj.url)
+            ui.GuiButtonText.addTextChangedListener(textChanged {
+                item?.let { it.buttonText = ui.GuiButtonText.text.toString() }
             })
 
-            view.GuiButtonWebLink.addTextChangedListener(textChanged {
-                item?.let { it.url = view.GuiButtonWebLink.text.toString() }
+            ui.GuiButtonWebLink.addTextChangedListener(textChanged {
+                item?.let { it.url = ui.GuiButtonWebLink.text.toString() }
             })
 
             // Alternate colors for each row in the list
@@ -121,11 +123,11 @@ private class ShoppingEditRecyclerAdapter(private val activity: ShoppingSettings
 
             if ((pos and 1) == 0)
             {
-                view.background = ColorDrawable(Acol)
+                ui.root.background = ColorDrawable(Acol)
             }
             else
             {
-                view.background = ColorDrawable(Bcol)
+                ui.root.background = ColorDrawable(Bcol)
             }
 
         }
@@ -135,6 +137,7 @@ private class ShoppingEditRecyclerAdapter(private val activity: ShoppingSettings
 
 class ShoppingSettingsActivity : CommonNavActivity()
 {
+    private lateinit var ui:ActivityShoppingSettingsBinding
     override var navActivityId = R.id.navigation_shopping
 
     lateinit var linearLayoutManager: LinearLayoutManager
@@ -146,10 +149,11 @@ class ShoppingSettingsActivity : CommonNavActivity()
     {
         setTitle(R.string.title_activity_shopping_settings)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_shopping_settings)
+        ui = ActivityShoppingSettingsBinding.inflate(layoutInflater)
+        setContentView(ui.root)
 
         linearLayoutManager = LinearLayoutManager(this)
-        GuiShoppingEditList.layoutManager = linearLayoutManager
+        ui.GuiShoppingEditList.layoutManager = linearLayoutManager
 
         /*  Not needed if manifest is correct
         val titlebar: ActionBar? = supportActionBar
@@ -157,7 +161,7 @@ class ShoppingSettingsActivity : CommonNavActivity()
         titlebar?.setDisplayShowHomeEnabled(true)
         */
 
-        GuiShoppingEditList.addOnScrollListener(object : RecyclerView.OnScrollListener()
+        ui.GuiShoppingEditList.addOnScrollListener(object : RecyclerView.OnScrollListener()
         {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)
             {
@@ -172,7 +176,7 @@ class ShoppingSettingsActivity : CommonNavActivity()
             shopping.add(ShoppingDestination("", ""))  // Add a blank if there isn't one so a new button can be added by the user
 
         adapter = ShoppingEditRecyclerAdapter(this, shopping.toTypedArray())
-        GuiShoppingEditList.adapter = adapter
+        ui.GuiShoppingEditList.adapter = adapter
     }
 
     override fun onPause()

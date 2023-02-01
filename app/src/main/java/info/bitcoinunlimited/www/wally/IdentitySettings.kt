@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
@@ -19,26 +20,23 @@ import bitcoinunlimited.libbitcoincash.Bip44Wallet
 import bitcoinunlimited.libbitcoincash.PayAddress
 import bitcoinunlimited.libbitcoincash.IdentityInfo
 import bitcoinunlimited.libbitcoincash.Wallet
-import kotlinx.android.synthetic.main.activity_identity.*
-import kotlinx.android.synthetic.main.activity_identity_yourdata.*
-import kotlinx.android.synthetic.main.activity_identity_yourdata.view.*
-import kotlinx.android.synthetic.main.infoeditrow.view.*
-import java.util.*
+import info.bitcoinunlimited.www.wally.databinding.ActivityIdentityYourdataBinding
+import info.bitcoinunlimited.www.wally.databinding.InfoeditrowBinding
 import java.util.logging.Logger
 
 private val LogIt = Logger.getLogger("BU.wally.IdentityActivity")
 
-class TextDataPairBinder(view: View, val ii: IdentityInfo): GuiListItemBinder<Pair<String, String>>(view)
+class TextDataPairBinder(val ui: InfoeditrowBinding, val ii: IdentityInfo): GuiListItemBinder<Pair<String, String>>(ui.root)
 {
     // Fill the view with this data
     override fun populate()
     {
         data?.let { data ->
-            view.fieldName.text = data.first
-            view.fieldValue.text.clear()
-            view.fieldValue.text.append(ii.getString(data.second,""))
+            ui.fieldName.text = data.first
+            ui.fieldValue.text.clear()
+            ui.fieldValue.text.append(ii.getString(data.second,""))
         }
-        view.fieldValue.addTextChangedListener(object: TextWatcher
+        ui.fieldValue.addTextChangedListener(object: TextWatcher
         {
             override fun afterTextChanged(s: Editable) {}
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
@@ -46,7 +44,7 @@ class TextDataPairBinder(view: View, val ii: IdentityInfo): GuiListItemBinder<Pa
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int)
             {
                 data?.let {
-                    ii.putString(it.second, view.fieldValue.text.toString())
+                    ii.putString(it.second, ui.fieldValue.text.toString())
                 }
             }
         })
@@ -62,6 +60,7 @@ class TextDataPairBinder(view: View, val ii: IdentityInfo): GuiListItemBinder<Pa
 
 class IdentitySettings(var address: PayAddress?=null) : CommonNavActivity()
 {
+    private lateinit var ui: ActivityIdentityYourdataBinding
     private lateinit var adapter: GuiList<Pair<String, String>, TextDataPairBinder>
     private lateinit var wallet: Bip44Wallet
 
@@ -112,17 +111,16 @@ class IdentitySettings(var address: PayAddress?=null) : CommonNavActivity()
     {
         navActivityId = R.id.navigation_identity
         super.onCreate(savedInstanceState)
-        //val ret = layoutInflater.inflate(R.layout.activity_identity_yourdata, null)
-        setContentView(R.layout.activity_identity_yourdata)
+        ui = ActivityIdentityYourdataBinding.inflate(layoutInflater)
+        setContentView(ui.root)
 
         identityInfo?.let { ii ->
-            adapter = GuiList(fields, this, {
-                val view = layoutInflater.inflate(R.layout.infoeditrow, it, false)
-                TextDataPairBinder(view, ii)
+            adapter = GuiList(ui.infoValueRecycler, fields, this, {
+                val ui = InfoeditrowBinding.inflate(LayoutInflater.from(it.context), it, false)
+                TextDataPairBinder(ui, ii)
             })
         }
 
-        infoValueRecycler.layoutManager = LinearLayoutManager(this)
-        infoValueRecycler.adapter = adapter
+        ui.infoValueRecycler.layoutManager = LinearLayoutManager(this)
     }
 }

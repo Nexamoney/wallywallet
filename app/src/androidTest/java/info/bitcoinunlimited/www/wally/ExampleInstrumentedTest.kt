@@ -213,8 +213,6 @@ class UnitTest
     @Test
     fun testelectrumclient()
     {
-        return // TODO: skipped until Nexa Rostrum is available
-
         LogIt.info("This test requires an electrum cash server running at ${EMULATOR_HOST_IP}:${DEFAULT_TCP_ELECTRUM_PORT_REGTEST}")
 
         val c = try
