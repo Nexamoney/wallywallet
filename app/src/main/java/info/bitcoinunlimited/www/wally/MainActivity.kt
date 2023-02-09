@@ -9,13 +9,13 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.AnimatedVectorDrawable
-import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
+import android.view.View.INVISIBLE
 import android.view.inputmethod.EditorInfo
 import android.widget.Adapter
 import android.widget.AdapterView
@@ -36,6 +36,7 @@ import java.math.RoundingMode
 import java.net.URL
 import java.util.*
 import java.util.logging.Logger
+import kotlin.Comparator
 import kotlin.concurrent.thread
 
 private val LogIt = Logger.getLogger("BU.wally.mainActivity")
@@ -48,7 +49,7 @@ val NOTICE_DISPLAY_TIME = 4000L
 /** if phone is asleep for this time, lock wallets */
 val RELOCK_TIME = 5000L
 
-val MAX_ACCOUNTS = 3 // What are the maximum # of accounts this wallet GUI can show
+val MAX_ACCOUNTS = 10 // What are the maximum # of accounts this wallet GUI can show
 
 var SEND_ALL_TEXT = "all"  // Fixed up in onCreate when we have access to strings
 
@@ -60,10 +61,10 @@ class MainActivityModel
     var lastSendCurrencyType: String? = null
 
     //* On resume, we need to remember what receive currency type was selected.  This is given to us in the data bundle provided during onCreate, but is needed later
-    var lastRecvCoinType: String? = null
+    var lastRecvIntoAccount: String? = null
 
     //* remember last send coin selected
-    var lastSendCoinType: String? = null
+    var lastSendFromAccount: String? = null
 }
 
 var mainActivityModel = MainActivityModel()
@@ -188,14 +189,14 @@ class MainActivity : CommonNavActivity()
             ui.sendToAddress.text.append(savedInstanceState.getString("sendToAddress", "") ?: "")
             ui.sendQuantity.text.append(savedInstanceState.getString("sendQuantity", "") ?: "")
             mainActivityModel.lastSendCurrencyType = savedInstanceState.getString("sendCurrencyType", defaultBlockchain)
-            mainActivityModel.lastRecvCoinType = savedInstanceState.getString("recvCoinType", defaultBlockchain)
-            mainActivityModel.lastSendCoinType = savedInstanceState.getString("sendCoinType", defaultBlockchain)
+            mainActivityModel.lastRecvIntoAccount = savedInstanceState.getString("recvCoinType", defaultBlockchain)
+            mainActivityModel.lastSendFromAccount = savedInstanceState.getString("sendCoinType", defaultBlockchain)
         }
         else
         {
             mainActivityModel.lastSendCurrencyType = defaultBlockchain
-            mainActivityModel.lastRecvCoinType = defaultBlockchain
-            mainActivityModel.lastSendCoinType = defaultBlockchain
+            mainActivityModel.lastRecvIntoAccount = defaultBlockchain
+            mainActivityModel.lastSendFromAccount = defaultBlockchain
         }
 
         ui.readQRCodeButton.setOnClickListener {
@@ -270,7 +271,7 @@ class MainActivity : CommonNavActivity()
                 val c = accounts[sct]
                 if (c != null) try
                 {
-                    mainActivityModel.lastSendCoinType = sct
+                    mainActivityModel.lastSendFromAccount = sct
                     val sendAddr = PayAddress(ui.sendToAddress.text.toString().trim())
                     if (c.wallet.chainSelector != sendAddr.blockchain)
                     {
@@ -303,16 +304,16 @@ class MainActivity : CommonNavActivity()
 
 
         // When the receive coin type spinner is changed, update the receive address and picture with and address from the relevant coin
-        ui.recvCoinType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
+        ui.recvIntoAccount.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
         {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long)
             {
                 dbgAssertGuiThread()
-                val sel = ui.recvCoinType.selectedItem as? String
+                val sel = ui.recvIntoAccount.selectedItem as? String
                 val c = accounts[sel]
                 if (c != null)
                 {
-                    mainActivityModel.lastRecvCoinType = sel
+                    mainActivityModel.lastRecvIntoAccount = sel
                     val oldc = accounts[defaultBlockchain]
                     if (oldc != null)
                     {
@@ -369,80 +370,36 @@ class MainActivity : CommonNavActivity()
         return false
     }
 
-    fun clearAccountUI()
+    fun setFocusedAccount(account: Account?)
     {
-        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
-        val showDev = prefs.getBoolean(SHOW_DEV_INFO, false)
-
-        data class UI(val ticker: TextView, val balance: TextView, val units: TextView, val unconf: TextView, val info: TextView?)
-
-        val ui = listOf(
-          UI(ui.balanceTicker, ui.balanceValue, ui.balanceUnits, ui.balanceUnconfirmedValue, ui.WalletChainInfo),
-          UI(ui.balanceTicker2, ui.balanceValue2, ui.balanceUnits2, ui.balanceUnconfirmedValue2, ui.WalletChainInfo2),
-          UI(ui.balanceTicker3, ui.balanceValue3, ui.balanceUnits3, ui.balanceUnconfirmedValue3, ui.WalletChainInfo3)
-        )
-
-        // Clear all info in case we remap it
-        for (u in ui)
+        if (account != null)
         {
-            u.ticker.text = ""
-            u.balance.text = ""
-            u.units.text = ""
-            u.unconf.text = ""
-            u.info?.text = ""
-            u.info?.visibility = if (showDev) View.VISIBLE else View.GONE
-
-            // Invalidate so that the image gets cleared to keep accounts hidden during unlock
-            u.ticker.invalidate()
-            u.balance.invalidate()
-            u.units.invalidate()
-            u.unconf.invalidate()
-            u.info?.invalidate()
+            if (devMode)
+               app?.primaryAccount = account
+            ui.recvIntoAccount.setSelection(account.name)
+            ui.sendAccount.setSelection(account.name)
+            updateReceiveAddressUI(account)
         }
     }
 
+    val guiAccountList = GuiAccountList(this)
+
+    fun clearAccountUI()
+    {
+        ui.AccountList?.visibility = View.INVISIBLE
+        guiAccountList.changed()
+    }
     fun assignWalletsGuiSlots()
     {
         dbgAssertGuiThread()
-        // val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
-        // val showDev = prefs.getBoolean(SHOW_DEV_INFO, false)
 
-        data class UI(val ticker: TextView, val balance: TextView, val units: TextView, val unconf: TextView, val info: TextView?)
-
-        val ui = listOf(
-          UI(ui.balanceTicker, ui.balanceValue, ui.balanceUnits, ui.balanceUnconfirmedValue, ui.WalletChainInfo),
-          UI(ui.balanceTicker2, ui.balanceValue2, ui.balanceUnits2, ui.balanceUnconfirmedValue2, ui.WalletChainInfo2),
-          UI(ui.balanceTicker3, ui.balanceValue3, ui.balanceUnits3, ui.balanceUnconfirmedValue3, ui.WalletChainInfo3)
-        )
-
-        clearAccountUI()
-
-        var uiLoc = 1  // Start at 1 because spot 0 is reserved for the primary wallet
-
-        var foundAPrimary = false
-        for (ac in accounts.values)
+        // We have a Map of account names to values, but we need a list
+        // Sort the accounts based on account name
+        val lm = ListifyMap(app!!.accounts, { it.value.visible }, object : Comparator<String>
         {
-            var uiSet = false
-            if (ac.visible)
-            {
-                val curLoc = if (!foundAPrimary && ac.wallet.chainSelector == PRIMARY_CRYPTO)
-                {
-                    foundAPrimary = true; 0
-                }
-                else uiLoc
-                if (curLoc >= ui.size) continue
-                ui[curLoc].let {
-                    ac.setUI(it.ticker, it.balance, it.unconf, it.info)
-                    uiSet = true
-                    laterUI { ui[curLoc].units.text = ac.currencyCode }
-                }
-                if (curLoc != 0) uiLoc++
-            }
-            if (!uiSet)
-            {
-                ac.setUI(null, null, null, null)
-            }
-        }
+            override fun compare(p0: String, p1: String): Int = p0.compareTo(p1)
+        })
+        guiAccountList.inflate(this, ui.AccountList!!, lm)
 
         for (c in accounts.values)
         {
@@ -451,6 +408,7 @@ class MainActivity : CommonNavActivity()
             c.wallet.blockchain.net.changeCallback = { _, _ -> onWalletChange(c.wallet) }  // right now the wallet GUI update function also updates the cnxn mgr GUI display
             c.onWalletChange()  // update all wallet UI fields since just starting up
         }
+         ui.AccountList?.visibility = View.VISIBLE
     }
 
     fun assignCryptoSpinnerValues()
@@ -462,14 +420,14 @@ class MainActivity : CommonNavActivity()
             val coinSpinData = a.visibleAccountNames()
             val sendSpinData = coinSpinData.toMutableList()
             sendSpinData.add(i18n(R.string.choose))
-            val coinAa = ArrayAdapter(this, android.R.layout.simple_spinner_item, sendSpinData)
+            val coinAa = ArrayAdapter(this, R.layout.account_selection_spinner, sendSpinData)
             ui.sendAccount?.setAdapter(coinAa)
-            val coinRecvAa = ArrayAdapter(this, android.R.layout.simple_spinner_item, coinSpinData)
-            ui.recvCoinType?.setAdapter(coinRecvAa)
+            val coinRecvAa = ArrayAdapter(this, R.layout.account_selection_spinner, coinSpinData)
+            ui.recvIntoAccount?.setAdapter(coinRecvAa)
 
             // Restore GUI elements to their prior values
-            mainActivityModel.lastSendCoinType?.let { ui.sendAccount.setSelection(it) }
-            mainActivityModel.lastRecvCoinType?.let { ui.recvCoinType.setSelection(it) }
+            mainActivityModel.lastSendFromAccount?.let { ui.sendAccount.setSelection(it) }
+            mainActivityModel.lastRecvIntoAccount?.let { ui.recvIntoAccount.setSelection(it) }
             mainActivityModel.lastSendCurrencyType?.let { ui.sendCurrencyType.setSelection(it) }
         }
     }
@@ -479,6 +437,7 @@ class MainActivity : CommonNavActivity()
         super.onStart()
         dbgAssertGuiThread()
         appContext = PlatformContext(applicationContext)
+        sendVisibility(false)
 
         thread(true, true, null, "startup")
         {
@@ -486,6 +445,18 @@ class MainActivity : CommonNavActivity()
             while (!coinsCreated) Thread.sleep(50)
             LogIt.info("coins created")
             Thread.sleep(50)
+
+            val a = app
+            if (a != null)
+            {
+                // Ok coins were loaded and guess what no accounts exist.  So create one to help out new users.
+                if (a.firstRun == true && a.accounts.isEmpty())
+                {
+                    // Automatically create a Nexa wallet and put up some info
+                    a.newAccount("nexa", ACCOUNT_FLAG_NONE, "", ChainSelector.NEXA)
+                    a.firstRun = false
+                }
+            }
 
             laterUI {
                 dbgAssertGuiThread()
@@ -497,7 +468,7 @@ class MainActivity : CommonNavActivity()
                 // Set the send currency type spinner options to your default fiat currency or your currently selected crypto
                 updateSendCurrencyType()
 
-                ui.recvCoinType.selectedItem?.let {
+                ui.recvIntoAccount.selectedItem?.let {
                     val c = accounts[it.toString()]
                     c?.onUpdatedReceiveInfo(minOf(ui.GuiReceiveQRCode.layoutParams.width, ui.GuiReceiveQRCode.layoutParams.height, 1024)) { recvAddrStr, recvAddrQR ->
                         this@MainActivity.updateReceiveAddressUI(
@@ -514,9 +485,11 @@ class MainActivity : CommonNavActivity()
 
         if (app?.firstRun == true)
         {
+            /*  Start up the welcome guided setup
             LogIt.info("starting welcome activity")
             var intent = Intent(this, Welcome::class.java)
             startActivity(intent)
+             */
         }
 
     }
@@ -574,7 +547,6 @@ class MainActivity : CommonNavActivity()
             try
             {
                 handlePastedData()
-
             } catch (e: PasteEmptyException)  // nothing to do, having pasted data is optional on startup
             {
 
@@ -640,7 +612,7 @@ class MainActivity : CommonNavActivity()
                 val curIdx =
                   ui.sendCurrencyType.selectedItemPosition  // We know that this field will be [fiat, crypto] but not which exact choices.  So save the slot and restore it after resetting the values so the UX persists by class
                 val spinData = arrayOf(acc.currencyCode, fiatCurrencyCode)
-                val aa = ArrayAdapter(this, android.R.layout.simple_spinner_item, spinData)
+                val aa = ArrayAdapter(this, R.layout.currency_selection_spinner, spinData)
                 ui.sendCurrencyType.setAdapter(aa)
                 ui.sendCurrencyType.setSelection(curIdx)
             }
@@ -771,7 +743,11 @@ class MainActivity : CommonNavActivity()
                   else
                   {
                       val a = PayAddress(text) // attempt to convert into an address to trigger an exception and a subsequent UI error if its bad
-                      laterUI { updateSendAddress(a) }
+                      laterUI {
+                          updateSendAddress(a)
+                          sendVisibility(true)
+                          receiveVisibility(false)
+                      }
                       return
                   }
                   throw PasteUnintelligibleException()
@@ -890,7 +866,7 @@ class MainActivity : CommonNavActivity()
                 {
                     paymentInProgress = null
                     displayNotice(R.string.badCryptoCode, chainToCurrencyCode[chainSelector] ?: "unknown currency")
-                    a.primaryAccount.fromFinestUnit(pip.totalSatoshis)
+                    a.primaryAccount?.fromFinestUnit(pip.totalSatoshis) ?: throw WalletInvalidException()
                 }
                 else if (acts.size > 1)
                 {
@@ -976,6 +952,8 @@ class MainActivity : CommonNavActivity()
                     paymentInProgress = processJsonPay(bip72)
                     laterUI {
                         updateSendBasedOnPaymentInProgress()
+                        sendVisibility(true)
+                        receiveVisibility(false)
                     }
                 }
                 catch (e: Bip70Exception)
@@ -1017,6 +995,8 @@ class MainActivity : CommonNavActivity()
                     if (uc.contentEquals(sta) || lc.contentEquals(sta))  // Its all uppercase or all uppercase
                     {
                         updateSendAddress(PayAddress(lc))
+                        sendVisibility(true)
+                        receiveVisibility(false)
                     }
                     else  // Mixed upper/lower case not allowed
                     {
@@ -1027,6 +1007,8 @@ class MainActivity : CommonNavActivity()
                 else
                 {
                     updateSendAddress(PayAddress(sta))
+                    sendVisibility(true)
+                    receiveVisibility(false)
                 }
             }
             catch (e: UnknownBlockchainException)
@@ -1072,7 +1054,7 @@ class MainActivity : CommonNavActivity()
     fun updateReceiveAddressUI(account: Account)
     {
         laterUI {
-            if (ui.recvCoinType?.selectedItem?.toString() == account.name)  // Only update the UI if this coin is selected to be received
+            if (ui.recvIntoAccount?.selectedItem?.toString() == account.name)  // Only update the UI if this coin is selected to be received
             {
                 account.ifUpdatedReceiveInfo(minOf(ui.GuiReceiveQRCode.layoutParams.width, ui.GuiReceiveQRCode.layoutParams.height, 1024)) { recvAddrStr, recvAddrQR ->
                     updateReceiveAddressUI(
@@ -1126,7 +1108,7 @@ class MainActivity : CommonNavActivity()
         // This sets the scale assuming mBch.  mBch will have more decimals (5) than fiat (2) so we are ok
         val qty = try
         {
-            s.toBigDecimal(currencyMath).setScale(mBchDecimals)
+            s.toBigDecimal(currencyMath).setCurrency(coin.chain.chainSelector)
         } catch (e: NumberFormatException)
         {
             if (s == SEND_ALL_TEXT)  // Special case transferring everything
@@ -1354,7 +1336,7 @@ class MainActivity : CommonNavActivity()
         outState.putString("sendToAddress", ui.sendToAddress.text.toString().trim())
         outState.putString("sendQuantity", ui.sendQuantity.text.toString().trim())
         outState.putString("sendCurrencyType", (ui.sendCurrencyType.selectedItem ?: defaultBlockchain) as String)
-        outState.putString("recvCoinType", (ui.recvCoinType.selectedItem ?: defaultBlockchain) as String)
+        outState.putString("recvCoinType", (ui.recvIntoAccount.selectedItem ?: defaultBlockchain) as String)
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -1427,7 +1409,10 @@ class MainActivity : CommonNavActivity()
             dbgAssertGuiThread()
             val ticker = (view as TextView).text
             LogIt.info("balance ticker clicked: " + ticker)
-            val intent = Intent(this@MainActivity, TxHistoryActivity::class.java)
+            val intent = Intent(this@MainActivity, AccountDetailsActivity::class.java)
+            app?.let { a ->
+                a.accounts[ticker]?.let { a.focusedAccount = it }
+            }
             intent.putExtra("WalletName", ticker)
             startActivity(intent)
         } catch (e: Exception)
@@ -1580,10 +1565,53 @@ class MainActivity : CommonNavActivity()
         }
     }
 
+    /* Show or hide the send function visibility */
+    public fun sendVisibility(show: Boolean)
+    {
+        if (show)
+        {
+            ui.sendUI?.visibility = View.VISIBLE
+            ui.sendCancelButton?.visibility = View.VISIBLE
+            ui.splitBillButton?.visibility = View.GONE
+        }
+        else
+        {
+            ui.sendUI?.visibility = View.GONE
+            ui.sendCancelButton?.visibility = View.GONE
+            ui.splitBillButton?.visibility = View.VISIBLE
+        }
+    }
+    /* Show or hide the receive functionality */
+    public fun receiveVisibility(show: Boolean)
+    {
+        if (show)
+        {
+            ui.receiveUI?.visibility = View.VISIBLE
+        }
+        else
+        {
+             ui.receiveUI?.visibility = View.GONE
+        }
+    }
+
+
+    public fun onSendCancelButtonClicked(v: View): Boolean
+    {
+        sendVisibility(false)
+        receiveVisibility(true)
+        return true
+    }
+
     @Suppress("UNUSED_PARAMETER")
     /** Create and post a transaction when the send button is pressed */
     public fun onSendButtonClicked(v: View): Boolean
     {
+        if (ui.sendUI?.visibility != View.VISIBLE)
+        {
+            receiveVisibility(false)
+            sendVisibility(true)
+            return true
+        }
         dbgAssertGuiThread()
         LogIt.info("send button clicked")
         displayNotice(R.string.Processing)
@@ -1633,7 +1661,7 @@ class MainActivity : CommonNavActivity()
         var deductFeeFromAmount = false
         var amount = try
         {
-            amtstr.toBigDecimal(currencyMath).setScale(mBchDecimals)
+            amtstr.toBigDecimal(currencyMath).setCurrency(account.chain.chainSelector)
         }
         catch (e: NumberFormatException)
         {
@@ -1652,7 +1680,7 @@ class MainActivity : CommonNavActivity()
         {
             // If someone is asking to send sub-satoshi quantities, round up and ask them to click send again.
             ui.sendQuantity.text.clear()
-            ui.sendQuantity.text.append(amtstr.toBigDecimal().setScale(mBchDecimals, RoundingMode.UP).toString())
+            ui.sendQuantity.text.append(amtstr.toBigDecimal().setScale(account.chain.chainSelector.currencyDecimals, RoundingMode.UP).toString())
             displayError(R.string.badAmount, R.string.subSatoshiQuantities)
             ui.approximatelyText.text = i18n(R.string.roundedUpClickSendAgain)
             return false
@@ -1703,7 +1731,12 @@ class MainActivity : CommonNavActivity()
                 val atomAmt = account.toFinestUnit(amount)
                 val tx = account.wallet.send(atomAmt, sendAddr, deductFeeFromAmount, false, note = note)
                 onSendSuccess(atomAmt, sendAddr, tx)
-            } catch (e: Exception)  // We don't want to crash, we want to tell the user what went wrong
+                laterUI {
+                    receiveVisibility(true)
+                    sendVisibility(false)
+                }
+            }
+            catch (e: Exception)  // We don't want to crash, we want to tell the user what went wrong
             {
                 displayException(e)
             }

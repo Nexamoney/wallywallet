@@ -72,6 +72,9 @@
     <!-- User didn't enter any value into this field but that's ok -->
     <string name="unspecified">unspecified</string>
     <string name="removed">removed</string>
+    <!-- wallet is up to date with the blockchain -->
+    <string name="synced">ready</string>
+    <string name="unsynced">synchronizing</string>
 
     <!-- Implication is "no charge" or "no cost" for a transaction -->
     <string name="nothing">nothing</string>
@@ -84,9 +87,11 @@
     <string name="cancelled">cancelled</string>
     <!-- Issued if initialization isn't yet complete, but user tries to access the services -->
     <string name="pleaseWait">please wait</string>
+    <!-- Uses in the sense of attempting an operation, such as connecting to a node  -->
+    <string name="trying">trying</string>
 
     <!-- Settings -->
-    <string name="enableDeveloperView">Show developer information</string>
+    <string name="enableDeveloperView"> Advanced/developer mode</string>
     <string name="only">only</string>
     <string name="prefer">prefer</string>
     <string name="rediscoverWalletTx">rediscover all transactions</string>
@@ -95,7 +100,7 @@
     <string name="clearIdentityDomains">Clear Identity Domains</string>
     <string name="rediscoverTooltip">Delete blockchain state and search anew for all transactions relevant to the wallet</string>
     <string name="wordSeed">Account Recovery Secret Phrase</string>
-    <string name="deleteWalletAccount">Delete Above Account</string>
+    <string name="deleteWalletAccount">Delete Account</string>
     <string name="ViewRecoveryPhrase">View Account Recovery Secret Phrase</string>
     <string name="localCurrency">Local currency</string>
     <string name="assessUnconfirmed">Assess Unconfirmed Transactions</string>
@@ -106,12 +111,13 @@
     <string name="rediscoverBlockchainConfirmation">Rediscovering a blockchain will delete all blockchain header data from this wallet and re-download it from full nodes.  This process can take a long time.  Only use if you are sure that there is a blockchain header problem.</string>
     <string name="deleteConfirmation" formatted="false">Deleting an account will make all balances, identities, and history unavailable unless the account is recovered via the account recovery secret phrase!  Only do this if you are ABSOLUTELY SURE!\n\nDelete account "%accountName" (on %blockchain)?</string>
     <string name="reassessConfirmation">This operation will check the blockchain for recent transactions you have sent.  Based on their presence or absence, it will either confirm or erase them.  If transactions are erased, the money will seem to disappear.  You will need to "rediscover" to regain the spent balance.  Do not use if you have recently issued a transaction, since that transaction may be latent in the network, waiting for confirmation.</string>
-    <string name="recoveryPhrase">This 12 word phrase can be used to restore your wallet if your phone is damaged or lost.  This means that whoever possesses this phrase can spend your money.  Write it down on paper and store it securely!\nRecovery Phrase:</string>
-    <string name="AccountSettings">Account Settings</string>
+    <string name="recoveryPhrase">This 12 word phrase can be used to restore your wallet if your phone is damaged or lost.  This means that whoever possesses this phrase can spend your money.  Write it down on paper and store it securely!</string>
+    <string name="AccountActions">Account Actions</string>
     <string name="GeneralSettings">General Settings</string>
     <string name="BlockchainSettings">Blockchain Sources</string>
 
     <!-- Split bill -->
+    <string name="SplitBillDescription">You pay the bill (in fiat), your friends pay you their portion via the QR code below</string>
     <string name="Total">Total</string>
     <!-- Ways refers to how many equal portions a bill is being split into -->
     <string name="Ways">Ways</string>
@@ -119,6 +125,7 @@
     <string name="Tip">Tip</string>
     <string name="Amount">Amount</string>
     <!-- Home Page -->
+    <string name="balanceOnTheDate">as of %date</string>
     <string name="goodQR">QR readable</string>
     <string name="badQR">QR unreadable</string>
     <string name="badImageQR">bad image QR. more...</string>
@@ -126,11 +133,13 @@
     <string name="unlock">unlock</string>
     <string name="share">share</string>
     <string name="Send">Send</string>
+    <string name="OpenSend">Send</string>
+    <string name="SendCancel">Cancel</string>
     <!-- As in "Send from" -->
-    <string name="from">from</string>
+    <string name="from">From account</string>
     <!-- As in "Send to" -->
     <string name="toColon">to:</string>
-    <string name="Receive">Receive into</string>
+    <string name="Receive">Receive into account</string>
     <string name="Balance">Account Balances</string>
     <string name="Address">Address</string>
     <string name="settings">settings</string>
@@ -250,6 +259,17 @@
     <string name="CapitalGain">capital gain</string>
     <string name="OverrideSalesPrice">enter price when sold</string>
 
+    <!-- Account details activity -->
+    <string name="txHistoryButton">View or Export Account Activity</string>
+    <string name="AccountStatistics">Account Statistics</string>
+    <string name="AccountBlockchainSync">Currently %sync on blockchain %chain.</string>
+    <string name="AccountBlockchainDetails">At %actBlockDate, block %actBlock of %chainBlockCount.</string>
+    <string name="AccountBlockchainConnectionDetails">Connected to %num nodes: %names</string>
+    <string name="AccountNumAddresses">%num addresses</string>
+    <string name="FirstLastReceive">First deposit in block %first, most recent in block %last.</string>
+    <string name="FirstLastSend">First withdraw in block %first, most recent in block %last.</string>
+    <string name="AccountNumTx">%num transactions</string>
+    <string name="AccountNumUtxos">%num ledger entries</string>
     <!-- Assets activity -->
     <string name="title_activity_assets">Assets</string>
 
@@ -354,7 +374,8 @@
     <string name="title_activity_identity">Identity</string>
     <string name="title_activity_identity_op">Identity</string>
     <string name="title_activity_domain_identity_settings">Domain Identity Settings</string>
-    <string name="title_activity_tx_history" formatted="false">%walname Account History</string>
+    <string name="title_activity_tx_history" formatted="false">Account History: %account</string>
+    <string name="title_activity_account_details" formatted="false">Account Details: %account</string>
 
     <!-- Not part of the UI -->
     <string name="preferenceFileName">bitcoinunlimited.wally.prefs</string>
@@ -405,7 +426,7 @@
     <string name="GiftCardUrl">https://www.egifter.com</string>
     <string name="GiftCardAppPackage">com.groupgifting.android</string>
     <string name="NFTs">Nonfungible Tokens (NFTs)</string>
-    <string name="ExplainNFTs">Create and trade unique images and digital representations of unique items</string>
+    <string name="ExplainNFTs">NiftyArt.cash: Create and trade unique images and digital representations of unique items</string>
     <string name="NftUrl">http://niftyart.cash</string>
     <!--
     <string name="GiftCardButton">Gyft gift cards</string>
@@ -424,6 +445,8 @@
     <string name="StoreMapAppPackage"></string>
     <string name="OpenWebsite" formatted="false">Access %siteName</string>
     <string name="WebsiteUnavailable" formatted="false">Website unavailable</string>
+    <string name="ExplainTxBit">txbit.io: Trade NEX for other cryptocurrencies</string>
+    <string name="CexButton">exchange</string>
 
     <!-- Trickle Pay -->
     <string name="TpToBeDone">Your Trickle Pay connections will be displayed here</string>

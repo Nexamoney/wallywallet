@@ -3,22 +3,19 @@
 package info.bitcoinunlimited.www.wally
 
 import android.app.Activity
-import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
-import android.graphics.drawable.ColorDrawable
+import android.content.*
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.window.OnBackInvokedDispatcher.PRIORITY_DEFAULT
 import androidx.annotation.Keep
 import androidx.core.app.NavUtils
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import bitcoinunlimited.libbitcoincash.*
 import bitcoinunlimited.libbitcoincash.rem
 import info.bitcoinunlimited.www.wally.databinding.*
@@ -285,7 +282,7 @@ class TricklePayMainFragment : Fragment()
             val ui = TpDomainListItemBinding.inflate(LayoutInflater.from(it.context), it, false)
             TpDomainBinder(ui)
         })
-        adapter.rowBackgroundColors = arrayOf(0xFFEEFFEE.toInt(), 0xFFBBDDBB.toInt())
+        adapter.rowBackgroundColors = WallyRowColors //arrayOf(0xFFEEFFEE.toInt(), 0xFFBBDDBB.toInt())
 
 
         linearLayoutManager = LinearLayoutManager(tpAct)
@@ -751,33 +748,6 @@ fun VerifyTdppSignature(uri: Uri): Boolean?
     return true
 }
 
-fun generateAndLogSomeTricklePayRequests(application: WallyApp)
-{
-    val act = application.primaryAccount
-    val wallet = act.wallet
-    val identityDest: PayDestination = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
-
-    var uri = ConstructTricklePayRequest("testapp", "testtopic", "reg", identityDest, "BCH", 1000000UL, null, null, 100000000UL)
-    LogIt.info(uri.toString())
-    if (VerifyTdppSignature(uri) == true)
-    {
-        LogIt.info("Sig Verified")
-    }
-    else
-    {
-        VerifyTdppSignature(uri)
-    }
-    var uri2 = Uri.parse(uri.toString())
-    if (VerifyTdppSignature(uri2) == true)
-    {
-        LogIt.info("Sig Verified")
-    }
-    else
-    {
-        VerifyTdppSignature(uri)
-    }
-}
-
 
 class TpDomainBinder(val ui: TpDomainListItemBinding): GuiListItemBinder<TdppDomain>(ui.root)
 {
@@ -801,6 +771,7 @@ class TpDomainBinder(val ui: TpDomainListItemBinding): GuiListItemBinder<TdppDom
     }
 }
 
+@kotlinx.coroutines.ExperimentalCoroutinesApi
 class TricklePayActivity : CommonNavActivity()
 {
     public lateinit var ui: ActivityTricklePayBinding
@@ -853,6 +824,8 @@ class TricklePayActivity : CommonNavActivity()
         super.onCreate(savedInstanceState)
         ui = ActivityTricklePayBinding.inflate(layoutInflater)
         setContentView(ui.root)
+
+        // window.OnBackInvokedDispatcher.registerOnBackInvokedCallback (PRIORITY_DEFAULT, {})
 
         if (wallyApp == null) wallyApp = (getApplication() as WallyApp)
 
@@ -925,7 +898,7 @@ class TricklePayActivity : CommonNavActivity()
     fun getRelevantAccount(): Account
     {
         // Get a handle on the relevant wallets
-        val walChoices = wallyApp!!.accountsFor(chainSelector!!)
+        val walChoices = wallyApp!!.accountsFor(chainSelector ?: ChainSelector.NEXA)
 
         if (walChoices.size == 0)
         {
@@ -1310,6 +1283,75 @@ class TricklePayActivity : CommonNavActivity()
         }
     }
 
+    fun handleShareRequest(uri: Uri, domain: TdppDomain)
+    {
+        /*  TODO
+        if (domain.infoRequest == TdppAction.DENY)
+        {
+            displayFragment(R.id.GuiTricklePayMain)
+            return displayError(R.string.TpRequestAutoDeny)
+        }
+         */
+
+        parseCommonFields(uri)
+        val proto = rproto ?: TDPP_DEFAULT_PROTOCOL
+        val host = host + ":" + port
+        val cookieString = if (cookie != null) "?cookie=$cookie" else ""
+
+        var whatInfo = uri.getQueryParameter("info")
+        if (whatInfo == null)
+        {
+            whatInfo = "clipboard"
+        }
+
+        val url = proto + "//" + host + "/_share" + cookieString
+
+        if (whatInfo == "address")
+        {
+            val wal = try
+            {
+                getRelevantWallet() as CommonWallet
+            }
+            catch (e: WalletInvalidException)
+            {
+                clearIntentAndFinish(error = i18n(R.string.badCryptoCode))
+                return
+            }
+            val addr = wal.getNewAddress()
+            post(url) {
+                it.setBody(addr.toString())
+            }
+        }
+        else // (whatInfo == "clipboard")
+        {
+            laterUI {
+                var myClipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                val clip: ClipData? = myClipboard.getPrimaryClip()
+                val item = if (clip?.itemCount != 0) clip?.getItemAt(0) else null
+                val text = item?.text?.toString() ?: i18n(R.string.pasteIsEmpty)
+                post(url) {
+                    it.setBody(text)
+                }
+            }
+        }
+
+
+
+/*
+        if (domain.infoRequest == TdppAction.ASK)
+        {
+            (fragment(R.id.GuiTricklePayAssetRequest) as TricklePayAssetRequestFragment).populate(this, uri, resp.assets)
+            // ask for confirmation
+            displayFragment(R.id.GuiTricklePayAssetRequest)
+        }
+        if (domain.infoRequest == TdppAction.ACCEPT)
+        {
+            displayNotice(R.string.TpRequestAutoAccept)
+            acceptAssetRequest(resp)
+        }
+ */
+    }
+
     fun handleRegistration(uri: Uri): Boolean
     {
         parseCommonFields(uri)
@@ -1435,8 +1477,13 @@ class TricklePayActivity : CommonNavActivity()
                         }
                         else if (path == "/assets")
                         {
-                            LogIt.info("tx autopay")
+                            LogIt.info("asset request")
                             handleAssetRequest(iuri, domain)
+                        }
+                        else if (path == "/share")
+                        {
+                            LogIt.info("info request (reverse QR)")
+                            handleShareRequest(iuri, domain)
                         }
                         else if (path == "/jsonpay")
                         {
@@ -1517,7 +1564,7 @@ class TricklePayActivity : CommonNavActivity()
     fun<T> fragment(id: Int):T
     {
         val fm = getSupportFragmentManager()
-        val frag = fm.findFragmentById(id) as T
+        val frag = fm.findFragmentById(id) as? T
         if (frag == null) throw UiUnavailableException()
         return frag
     }
@@ -1764,7 +1811,7 @@ class TricklePayActivity : CommonNavActivity()
                 val response: HttpResponse = client.post(url) {
                     val tmp = json.write(assets)
                     LogIt.info("JSON response ${tmp.contentLength} : " + tmp.toString())
-                    setBody(json.write(assets))
+                    setBody(tmp)
                 }
                 val respText = response.bodyAsText()
                 clearIntentAndFinish(notice = respText)
@@ -1786,5 +1833,31 @@ class TricklePayActivity : CommonNavActivity()
         clearIntentAndFinish(notice = i18n(R.string.TpAssetRequestDenied))
     }
 
+    fun post(url: String, contents: (HttpRequestBuilder) -> Unit)
+    {
+        later()
+        {
+            LogIt.info("POST response to server: $url")
+            val client = HttpClient(Android)
+            {
+                install(ContentNegotiation) {
+                    json()
+                }
+                install(HttpTimeout) { requestTimeoutMillis = 5000 }
+            }
+
+            try
+            {
+                val response: HttpResponse = client.post(url, contents)
+                val respText = response.bodyAsText()
+                clearIntentAndFinish(notice = respText)
+            }
+            catch (e: SocketTimeoutException)
+            {
+                displayError(R.string.connectionException)
+            }
+            client.close()
+        }
+    }
 
 }

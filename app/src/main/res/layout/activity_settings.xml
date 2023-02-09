@@ -53,7 +53,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/GuiLocalCurrencyText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/GuiLocalCurrencyText"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.5" />
 
     <Button
         android:id="@+id/GuiClearIdentityDomains"
@@ -87,148 +87,7 @@
         app:layout_constraintTop_toBottomOf="@+id/GuiFiatCurrencySpinner" />
 
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/ConfirmationConstraint"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GuiAccountSettingsHeader"
-        tools:visibility="invisible">
 
-        <Button
-            android:id="@+id/buttonYes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onYes"
-            android:text="@string/yes"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/buttonNo"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/GuiConfirmationText" />
-
-        <Button
-            android:id="@+id/buttonNo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onNo"
-            android:text="@string/no"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/buttonYes"
-            app:layout_constraintTop_toBottomOf="@+id/GuiConfirmationText" />
-
-        <TextView
-            android:id="@+id/GuiConfirmationText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="8dp"
-            android:maxLines="16"
-            android:minLines="2"
-            android:textIsSelectable="true"
-            android:selectAllOnFocus="true"
-            android:tooltipText="@string/empty"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/confirmationOps"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:onClick="onConfirmationOps"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GuiAccountSettingsHeader"
-        tools:visibility="visible">
-
-        <Spinner
-            android:id="@+id/GuiSettingsAccountChoice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="24sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/GuiAssessUnconfirmedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onAssessUnconfirmedButton"
-            android:text="@string/assessUnconfirmed"
-            app:layout_constraintStart_toStartOf="@+id/GuiViewRecoveryPhraseButton"
-            app:layout_constraintTop_toBottomOf="@+id/GuiViewRecoveryPhraseButton" />
-
-        <Button
-            android:id="@+id/GuiRediscoverButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onRediscoverWallet"
-            android:text="@string/rediscoverWalletTx"
-            app:layout_constraintStart_toStartOf="@+id/GuiDeleteAccountButton"
-            app:layout_constraintTop_toBottomOf="@+id/GuiAssessUnconfirmedButton" />
-
-        <Button
-            android:id="@+id/GuiRediscoverBlockchainButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onRediscoverBlockchain"
-            android:text="@string/rediscoverBlockchain"
-            app:layout_constraintStart_toStartOf="@+id/GuiDeleteAccountButton"
-            app:layout_constraintTop_toBottomOf="@+id/GuiRediscoverButton" />
-
-        <Button
-            android:id="@+id/GuiDeleteAccountButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onDeleteAccountButton"
-            android:text="@string/deleteWalletAccount"
-            app:layout_constraintStart_toStartOf="@+id/GuiViewRecoveryPhraseButton"
-            app:layout_constraintTop_toBottomOf="@+id/GuiRediscoverBlockchainButton" />
-
-        <Button
-            android:id="@+id/GuiViewRecoveryPhraseButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:onClick="onViewRecoveryPhrase"
-            android:text="@string/ViewRecoveryPhrase"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.336"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/GuiSettingsAccountChoice" />
-
-        <Switch
-            android:id="@+id/GuiPINInvisibility"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/PinHidesAccount"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="@+id/GuiDeleteAccountButton"
-            app:layout_constraintTop_toBottomOf="@+id/GuiDeleteAccountButton" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <View
-        android:id="@+id/dividerAccountSettings"
-        android:layout_width="400dp"
-        android:layout_height="3dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:background="?android:attr/listDivider"
-        android:foreground="@color/listDividerFg"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bchBlockchainSettings" />
 
     <View
         android:id="@+id/dividerBottom"
@@ -264,16 +123,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dividerBlockchainSettings" />
 
-    <TextView
-        android:id="@+id/GuiAccountSettingsHeader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/AccountSettings"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dividerAccountSettings" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/nexaBlockchainSettings"

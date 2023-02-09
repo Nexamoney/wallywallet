@@ -94,6 +94,11 @@ class IdentityActivity : CommonNavActivity()
 
         val app = (getApplication() as WallyApp)
         app.interestedInAccountUnlock.add(actUnlockCb)
+
+        laterUI {
+            val acc: Account = wallyApp?.primaryAccount ?: throw PrimaryWalletInvalidException()
+            setTitle(i18n(R.string.title_activity_identity) + ": " + acc.name)
+        }
     }
 
     override fun onDestroy()
@@ -111,7 +116,7 @@ class IdentityActivity : CommonNavActivity()
             try
             {
                 val account = (application as WallyApp).primaryAccount
-                if (!account.visible)
+                if ((account == null) || (!account.visible))
                 {
                     throw PrimaryWalletInvalidException()
                 }
@@ -126,7 +131,7 @@ class IdentityActivity : CommonNavActivity()
                     val ui = IdentityListItemBinding.inflate(LayoutInflater.from(it.context), it, false)
                     IdentityDomainBinder(ui)
                 })
-                adapter.rowBackgroundColors = arrayOf(0xFFEEFFEE.toInt(), 0xFFBBDDBB.toInt())
+                adapter.rowBackgroundColors = WallyRowColors
 
                 val commonIdDest = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
                 val commonIdAddress = commonIdDest.address ?: throw PrimaryWalletInvalidException()

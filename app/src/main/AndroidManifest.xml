@@ -116,6 +116,15 @@
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
+                android:value="info.bitcoinunlimited.www.wally.AccountDetailsActivity" />
+        </activity>
+        <activity
+            android:name=".AccountDetailsActivity"
+            android:label="@string/title_activity_account_details"
+            android:launchMode="singleTask"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
                 android:value="info.bitcoinunlimited.www.wally.MainActivity" />
         </activity>
         <activity

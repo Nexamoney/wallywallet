@@ -116,6 +116,7 @@ open class CommonNavActivity : CommonActivity()
         if (navActivityId >= 0)  // This will both change the selection AND switch to that activity if it is different than the current one!
             navView.selectedItemId = navActivityId
         navView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
+        navView.getMenu().findItem(R.id.navigation_assets)?.setVisible(devMode)
     }
 }
 
@@ -157,6 +158,11 @@ open class CommonActivity : AppCompatActivity()
         }
     }
 
+    override fun setTitle(title: CharSequence?)
+    {
+        origTitle = title.toString()
+        super.setTitle(title)
+    }
     open fun onTitleBarTouched()
     {
         LogIt.info("title button pressed")
@@ -333,7 +339,7 @@ open class CommonActivity : AppCompatActivity()
             val titlebar: View = findViewById(R.id.action_bar)
             val myError = synchronized(errorSync)
             {
-                setTitle(err)
+                super.setTitle(err)
                 lastErrorString = err
                 errorCount += 1
                 menuHidden += 1
@@ -350,7 +356,7 @@ open class CommonActivity : AppCompatActivity()
                 invalidateOptionsMenu()
                 if (errorCount == myError)
                 {
-                    setTitle(origTitle)
+                    super.setTitle(origTitle)
                     origTitleBackground?.let { titlebar.background = it }
                 }
             }
@@ -383,7 +389,7 @@ open class CommonActivity : AppCompatActivity()
             val errorColor = ContextCompat.getColor(applicationContext, R.color.notice)
             val myError = synchronized(errorSync)
             {
-                setTitle(msg);
+                super.setTitle(msg)
                 alerts.add(Alert(msg, details, NOTICE_LEVEL))
                 titlebar.background = ColorDrawable(errorColor)
                 errorCount += 1
@@ -394,7 +400,7 @@ open class CommonActivity : AppCompatActivity()
             {
                 if (myError == errorCount)
                 {
-                    setTitle(origTitle)
+                    super.setTitle(origTitle)
                     origTitleBackground?.let { titlebar.background = it }
                 }
             }

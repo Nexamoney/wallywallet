@@ -107,13 +107,17 @@ class IdentityOpActivity : CommonNavActivity()
                 // Run blocking so the IdentityOp activity does not momentarily appear
                 val act = account ?: try
                 {
-                    (application as WallyApp).primaryAccount
-                } catch (e: PrimaryWalletInvalidException)
+                    val tmp = (application as WallyApp).primaryAccount
+                    if (tmp == null) throw PrimaryWalletInvalidException()
+                    tmp
+                }
+                catch (e: PrimaryWalletInvalidException)
                 {
                     val primName:String = chainToURI[PRIMARY_CRYPTO] ?: ""
                     clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to primName), i18n(R.string.primaryAccountRequiredDetails))
                     return
                 }
+
 
                 // If the primary account is locked do not proceed
                 if (act.locked)

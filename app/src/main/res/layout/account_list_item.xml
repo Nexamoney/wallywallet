@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/accountIcon"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:contentDescription="@string/receiveAddressQRCode"
+        android:padding="0px"
+        android:paddingStart="0px"
+        android:paddingLeft="0px"
+        android:paddingTop="0px"
+        android:paddingEnd="0px"
+        android:paddingRight="0px"
+        android:paddingBottom="0px"
+        android:scaleType="fitXY"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toTopOf="@+id/balanceUnconfirmedValue"
+        app:layout_constraintEnd_toStartOf="@+id/balanceTicker"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/balanceTicker"
+        android:layout_width="100sp"
+        android:layout_height="40sp"
+        android:autoSizeMaxTextSize="26sp"
+        android:autoSizeMinTextSize="14sp"
+        android:autoSizeStepGranularity="1sp"
+        android:autoSizeTextType="uniform"
+        android:clickable="true"
+        android:gravity="center_vertical|center_horizontal"
+        android:maxLines="1"
+        android:minLines="1"
+        android:onClick="onBalanceTickerClicked"
+        android:textAlignment="center"
+        android:text=""
+        app:layout_constraintStart_toEndOf="@+id/accountIcon"
+        app:layout_constraintTop_toTopOf="@+id/balanceValue"
+        app:layout_constraintBottom_toBottomOf="@+id/balanceValue"
+        app:layout_constraintVertical_bias="0.5"
+        />
+
+    <TextView
+        android:id="@+id/balanceValue"
+        android:layout_width="wrap_content"
+        android:layout_height="40sp"
+        android:clickable="true"
+        android:gravity="center_vertical|center_horizontal"
+        android:onClick="onBalanceValueClicked"
+        android:text=""
+        android:textAlignment="center"
+        android:textColor="@android:color/holo_green_dark"
+        android:textSize="28sp"
+
+        app:layout_constraintEnd_toStartOf="@+id/balanceUnits"
+        app:layout_constraintHorizontal_bias="0.07"
+        app:layout_constraintStart_toEndOf="@+id/balanceTicker"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/balanceUnconfirmedValue"
+        android:layout_width="0sp"
+        android:layout_height="24sp"
+        android:layout_marginStart="0dp"
+        android:gravity="center_vertical|center_horizontal"
+        android:maxLines="1"
+        android:minLines="1"
+        android:text=""
+        android:textAlignment="center"
+        android:textSize="24sp"
+        app:layout_constraintTop_toBottomOf="@+id/balanceValue"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="0.5" />
+
+    <TextView
+        android:id="@+id/balanceUnits"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        android:text=""
+        app:layout_constraintBottom_toBottomOf="@+id/balanceValue"
+        app:layout_constraintStart_toEndOf="@+id/balanceValue"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/Info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:maxLines="5"
+        android:text=""
+        android:textAlignment="center"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/balanceUnconfirmedValue" />
+    <!-- ImageView
+        android:id="@+id/GuiAccountDetailsButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="4dp"
+        android:scaleType="fitXY"
+        android:scrollbars="none"
+        android:onClick="accountDetailButtonClicked"
+        android:alpha="0.5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/ic_gear"
+        >
+    </ImageView>
+    <-->
+
+</androidx.constraintlayout.widget.ConstraintLayout>

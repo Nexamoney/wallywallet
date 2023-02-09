@@ -88,7 +88,7 @@ class AssetsActivity : CommonNavActivity()
 
                 }
             }
-            account?.let { setTitle(i18n(R.string.title_activity_assets) + " : " + it.name) }
+            account?.let { setTitle(i18n(R.string.title_activity_assets) + ": " + it.name) }
         }
     }
 

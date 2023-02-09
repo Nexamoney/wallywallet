@@ -42,7 +42,7 @@
         android:text="@string/Receive"
         android:textSize="32sp"
         app:layout_constraintStart_toStartOf="@+id/sendButton"
-        app:layout_constraintTop_toBottomOf="@+id/divider" />
+        app:layout_constraintTop_toBottomOf="@+id/sendReceiveDivider" />
 
     <TextView
         android:id="@+id/balanceTicker"
@@ -54,7 +54,7 @@
         android:onClick="onBalanceTickerClicked"
         android:textAlignment="center"
         android:textSize="24sp"
-        app:layout_constraintStart_toEndOf="@+id/divider2"
+        app:layout_constraintStart_toEndOf="@+id/receiveBalancesDivider"
         app:layout_constraintTop_toBottomOf="@+id/balanceTitle" />
 
     <TextView
@@ -106,8 +106,8 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintStart_toEndOf="@+id/divider2"
-        app:layout_constraintTop_toTopOf="@+id/divider2"
+        app:layout_constraintStart_toEndOf="@+id/receiveBalancesDivider"
+        app:layout_constraintTop_toTopOf="@+id/receiveBalancesDivider"
         app:srcCompat="@drawable/ani_syncing" />
 
     <TextView
@@ -190,12 +190,12 @@
         app:layout_constraintStart_toEndOf="@+id/balanceTicker3" />
 
     <TextView
-        android:id="@+id/HomeAddressText"
+        android:id="@+id/SendToText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/Address"
         android:textSize="30sp"
-        app:layout_constraintEnd_toStartOf="@+id/divider2"
+        app:layout_constraintEnd_toStartOf="@+id/receiveBalancesDivider"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sendButton" />
 
@@ -222,7 +222,7 @@
         android:autoSizeTextType="uniform"
         android:text="@string/approximatelyT"
         android:textAlignment="center"
-        app:layout_constraintEnd_toStartOf="@+id/divider2"
+        app:layout_constraintEnd_toStartOf="@+id/receiveBalancesDivider"
         app:layout_constraintStart_toStartOf="@+id/amountText"
         app:layout_constraintTop_toBottomOf="@+id/sendQuantity" />
 
@@ -254,7 +254,7 @@
         android:onClick="onReceiveAddrTextClicked"
         android:textAlignment="center"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/divider2"
+        app:layout_constraintEnd_toStartOf="@+id/receiveBalancesDivider"
         app:layout_constraintHorizontal_bias="0.446"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ReceiveTitle" />
@@ -278,7 +278,7 @@
         android:scaleType="fitStart"
         android:scrollbars="none"
         app:layout_constraintBottom_toTopOf="@+id/nav_view"
-        app:layout_constraintEnd_toStartOf="@+id/divider2"
+        app:layout_constraintEnd_toStartOf="@+id/receiveBalancesDivider"
         app:layout_constraintStart_toEndOf="@+id/purchaseButton"
         app:layout_constraintTop_toBottomOf="@+id/receiveAddress"
         app:layout_constraintVertical_bias="0.0" />
@@ -290,7 +290,7 @@
         android:layout_marginEnd="2dp"
         android:spinnerMode="dialog"
         app:layout_constraintBottom_toBottomOf="@+id/sendQuantity"
-        app:layout_constraintEnd_toStartOf="@+id/divider2"
+        app:layout_constraintEnd_toStartOf="@+id/receiveBalancesDivider"
         app:layout_constraintTop_toTopOf="@+id/sendQuantity"
         app:layout_constraintVertical_bias="0.357" />
 
@@ -306,7 +306,7 @@
         app:layout_constraintVertical_bias="0.377" />
 
     <Spinner
-        android:id="@+id/recvCoinType"
+        android:id="@+id/recvIntoAccount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
@@ -323,10 +323,10 @@
         android:textAlignment="center"
         android:textSize="13sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/divider2"
+        app:layout_constraintEnd_toStartOf="@+id/receiveBalancesDivider"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/HomeAddressText" />
+        app:layout_constraintTop_toBottomOf="@+id/SendToText" />
 
     <ImageButton
         android:id="@+id/readQRCodeButton"
@@ -343,17 +343,17 @@
         android:id="@+id/destAddrPasteButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toStartOf="@+id/divider2"
+        app:layout_constraintEnd_toStartOf="@+id/receiveBalancesDivider"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="?attr/actionModePasteDrawable" />
 
     <View
-        android:id="@+id/divider"
+        android:id="@+id/sendReceiveDivider"
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginStart="8dp"
         android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toStartOf="@+id/divider2"
+        app:layout_constraintEnd_toStartOf="@+id/receiveBalancesDivider"
         app:layout_constraintHorizontal_bias="0.561"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/approximatelyText" />
@@ -400,7 +400,7 @@
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/divider2"
+        app:layout_constraintStart_toEndOf="@+id/receiveBalancesDivider"
         app:layout_constraintTop_toBottomOf="@+id/balanceValue" />
 
     <TextView
@@ -412,7 +412,7 @@
         android:textAlignment="center"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/divider2"
+        app:layout_constraintStart_toEndOf="@+id/receiveBalancesDivider"
         app:layout_constraintTop_toBottomOf="@+id/balanceValue2" />
 
     <TextView
@@ -425,11 +425,11 @@
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/divider2"
+        app:layout_constraintStart_toEndOf="@+id/receiveBalancesDivider"
         app:layout_constraintTop_toBottomOf="@+id/balanceTicker3" />
 
     <View
-        android:id="@+id/divider2"
+        android:id="@+id/receiveBalancesDivider"
         android:layout_width="3dp"
         android:layout_height="0dp"
         android:background="?android:attr/listDivider"

@@ -73,8 +73,9 @@ fun MbchInFiat(fiat: String, setter: (BigDecimal) -> Unit)
 }
 
 /** Return the approximate price of mBCH at the time provided in seconds since the epoch */
-fun historicalMbchInFiat(fiat: String, timeStamp: Long): BigDecimal
+fun historicalUbchInFiat(fiat: String, timeStamp: Long): BigDecimal
 {
+
     if (fiat != "USD") return BigDecimal.ZERO  // TODO get other fiat historical prices
 
     // see https://index.bitcoin.com/
@@ -94,6 +95,6 @@ fun historicalMbchInFiat(fiat: String, timeStamp: Long): BigDecimal
     LogIt.info(sourceLoc() + " " + obj.toString())
 
     // TODO verify timestamp
-    val v = obj.lookup.price.toBigDecimal().setScale(16) / 100000.toBigDecimal().setScale(16) // bitcoin.com price is in cents per BCH.  We want "dollars" per MBCH (thousandth of a BCH)
+    val v = obj.lookup.price.toBigDecimal().setScale(16) / 100.toBigDecimal().setScale(16) // bitcoin.com price is in cents per BCH.  We want "dollars" per uBCH (millionths of a BCH)
     return v
 }

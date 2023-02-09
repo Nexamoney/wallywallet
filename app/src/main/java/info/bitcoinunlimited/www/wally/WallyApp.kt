@@ -9,10 +9,12 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.graphics.Paint
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
@@ -71,6 +73,7 @@ val WALLY_DATA_VERSION = byteArrayOf(1, 0, 0)
 var walletDb: KvpDatabase? = null
 var wallyApp: WallyApp? = null
 
+var devMode: Boolean = false
 
 const val ACCOUNT_FLAG_NONE = 0UL
 const val ACCOUNT_FLAG_HIDE_UNTIL_PIN = 1UL
@@ -250,8 +253,8 @@ class Account(
     var fiatPerCoin: BigDecimal = 0.toBigDecimal(currencyMath).setScale(16)
 
     //? Current bch balance (cached from accessing the wallet), in the display units
-    var balance: BigDecimal = 0.toBigDecimal(currencyMath).setScale(mBchDecimals)
-    var unconfirmedBalance: BigDecimal = 0.toBigDecimal(currencyMath).setScale(mBchDecimals)
+    var balance: BigDecimal = 0.toBigDecimal(currencyMath).setCurrency(chainSelector ?: ChainSelector.NEXA)
+    var unconfirmedBalance: BigDecimal = 0.toBigDecimal(currencyMath).setCurrency(chainSelector ?: ChainSelector.NEXA)
 
     //? specify how quantities should be formatted for display
     val cryptoFormat = mBchFormat
@@ -260,7 +263,7 @@ class Account(
     val chain: Blockchain = GetBlockchain(wallet.chainSelector, cnxnMgr, context, chainToURI[wallet.chainSelector], false)  // do not start right away so we can configure exclusive/preferred nodes
     var started = false  // Have the cnxnmgr and blockchain services been started or are we in initialization?
 
-    val currencyCode: String = chainToMilliCurrencyCode[wallet.chainSelector]!!
+    val currencyCode: String = chainToDisplayCurrencyCode[wallet.chainSelector]!!
 
     // If this coin's receive address is shown on-screen, this is not null
     var updateReceiveAddressUI: ((Account) -> Unit)? = null
@@ -268,8 +271,6 @@ class Account(
     /** loading existing wallet */
     init
     {
-        val hundredThousand = CurrencyDecimal(SATinMBCH)
-
         if (retrieveOnlyActivity != null)  // push in nonstandard addresses before we connect to the blockchain.
         {
             for (r in retrieveOnlyActivity)
@@ -288,8 +289,9 @@ class Account(
         LogIt.info(sourceLoc() + name +": wallet blockchain ${chain.name} connection completed")
         if (chainSelector != ChainSelector.NEXA)  // no fiat price for nextchain
         {
-            wallet.spotPrice = { currencyCode -> assert(currencyCode == fiatCurrencyCode); fiatPerCoin / hundredThousand }
-            wallet.historicalPrice = { currencyCode: String, epochSec: Long -> historicalMbchInFiat(currencyCode, epochSec) / hundredThousand }
+            val SatPerDisplayUnit = CurrencyDecimal(SATperUBCH)
+            wallet.spotPrice = { currencyCode -> assert(currencyCode == fiatCurrencyCode); fiatPerCoin * CurrencyDecimal(SATperBCH) / SatPerDisplayUnit }
+            wallet.historicalPrice = { currencyCode: String, epochSec: Long -> historicalUbchInFiat(currencyCode, epochSec) }
         }
 
     }
@@ -407,7 +409,7 @@ class Account(
     {
         val wm = context.context.getSystemService(Context.WIFI_SERVICE) as WifiManager
         val ip = wm.connectionInfo.ipAddress
-        LogIt.info("My IP" + ip.toString())
+        // LogIt.info("My IP" + ip.toString())
         if ((ip and 255) == 192)
         {
             return LanHostIP
@@ -416,13 +418,20 @@ class Account(
     }
 
     //? Set the user interface elements for this cryptocurrency
-    fun setUI(ticker: TextView?, balance: TextView?, unconf: TextView?, infoView: TextView?)
+    fun setUI(al: GuiAccountList, icon: ImageView?, ticker: TextView?, balance: TextView?, unconf: TextView?, infoView: TextView?)
     {
         if (ticker != null) tickerGUI.reactor = TextViewReactor<String>(ticker)
         else tickerGUI.reactor = null
-        if (balance != null) balanceGUI.reactor = TextViewReactor<String>(balance)
+        if (balance != null) balanceGUI.reactor = TextViewReactor<String>(balance, 0L, { s:String, paint:Paint ->
+            val desiredWidth = displayMetrics.widthPixels/2
+            paint.setTextSizeForWidth(s,desiredWidth, 30)
+        })
         else balanceGUI.reactor = null
-        if (unconf != null) unconfirmedBalanceGUI.reactor = TextViewReactor<String>(unconf)
+        if (unconf != null) unconfirmedBalanceGUI.reactor = TextViewReactor<String>(unconf, TextViewReactor.GONE_IF_EMPTY,
+          { s:String, paint:Paint ->
+            val desiredWidth = displayMetrics.widthPixels
+            paint.setTextSizeForWidth(s,desiredWidth, 18)
+        })
         else unconfirmedBalanceGUI.reactor = null
         if (infoView != null) infoGUI.reactor = TextViewReactor<String>(infoView)
         else infoGUI.reactor = null
@@ -431,25 +440,46 @@ class Account(
     //? Convert the default display units to the finest granularity of this currency.  For example, mBCH to Satoshis
     fun toFinestUnit(amount: BigDecimal): Long
     {
-        val ret = amount * SATinMBCH.toBigDecimal()
+        val ret = when (chain.chainSelector)
+        {
+            ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> (amount*BigDecimal(SATperNEX)).toLong()
+            ChainSelector.BCH, ChainSelector.BCHREGTEST, ChainSelector.BCHTESTNET -> (amount*BigDecimal(SATperUBCH)).toLong()
+        }
         return ret.toLong()
     }
 
     //? Convert the finest granularity of this currency to the default display unit.  For example, Satoshis to mBCH
     fun fromFinestUnit(amount: Long): BigDecimal
     {
-        val ret = BigDecimal(amount, currencyMath).setScale(currencyScale) / SATinMBCH.toBigDecimal()
+        val factor = when (chain.chainSelector)
+        {
+            ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> SATperNEX
+            ChainSelector.BCH, ChainSelector.BCHREGTEST, ChainSelector.BCHTESTNET -> SATperUBCH
+        }
+        val ret = BigDecimal(amount, currencyMath).setScale(currencyScale) / factor.toBigDecimal()
         return ret
     }
 
-    //? Convert a value in this currency code unit into its primary unit. The "primary unit" is the generally accepted currency unit, AKA "BCH" or "BTC".
+    //? Convert a value in the wallet's display currency code unit into its primary unit. The "primary unit" is the generally accepted currency unit, AKA "BCH" or "BTC".
     fun toPrimaryUnit(qty: BigDecimal): BigDecimal
     {
-        return qty / (1000.toBigDecimal())
+        val factor = when (chain.chainSelector)
+        {
+            ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> 1
+            ChainSelector.BCH, ChainSelector.BCHREGTEST, ChainSelector.BCHTESTNET -> 1000000
+        }
+        return qty / factor.toBigDecimal()
     }
 
     //? Convert the passed quantity to a string in the decimal format suitable for this currency
-    fun format(qty: BigDecimal): String = mBchFormat.format(qty)
+    fun format(qty: BigDecimal): String
+    {
+        return when (chain.chainSelector)
+        {
+            ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> nexFormat.format(qty)
+            ChainSelector.BCH, ChainSelector.BCHREGTEST, ChainSelector.BCHTESTNET -> uBchFormat.format(qty)
+        }
+    }
 
     data class ReceiveInfoResult(val addrString: String?, val qr: Bitmap?)
 
@@ -523,28 +553,56 @@ class Account(
     {
         notInUI {
             // Update our cache of the balances
-            balance = wallet.balance.toBigDecimal(currencyMath).setScale(currencyScale) / SATinMBCH.toBigDecimal()
-            unconfirmedBalance = wallet.balanceUnconfirmed.toBigDecimal(currencyMath).setScale(currencyScale) / SATinMBCH.toBigDecimal()
+            balance = fromFinestUnit(wallet.balance)
+            unconfirmedBalance = fromFinestUnit(wallet.balanceUnconfirmed)
 
-            balanceGUI(mBchFormat.format(balance.setScale(mBchDecimals)), force)
+            val chainstate = wallet.chainstate
+            if (chainstate != null)
+            {
+                if (chainstate.isSynchronized(1,60*60))  // ignore 1 block desync or this displays every time a new block is found
+                {
+                    balanceGUI.setAttribute("strength", "normal")
+                    val unconfBalStr =
+                      if (0.toBigDecimal(currencyMath).setScale(currencyScale) == unconfirmedBalance)
+                          ""
+                      else
+                          "+" + format(unconfirmedBalance)   // "\u2B05" == <--
 
-            val unconfBalStr =
-              if (0.toBigDecimal(currencyMath).setScale(currencyScale) == unconfirmedBalance)
-                  ""
-              else
-                  "*" + mBchFormat.format(unconfirmedBalance.setScale(mBchDecimals)) + "*"
+                    unconfirmedBalanceGUI.setAttribute("color", R.color.unconfirmedBalanceIncomingColor)
+                    unconfirmedBalanceGUI(unconfBalStr, force)
+                }
+                else
+                {
+                    balanceGUI.setAttribute("strength","dim")
+                    val asOfStr = i18n(R.string.balanceOnTheDate) % mapOf("date" to epochToDate(chainstate.syncedDate))
+                    unconfirmedBalanceGUI.setAttribute("color", R.color.unsyncedStatusColor)
+                    unconfirmedBalanceGUI(asOfStr, force)
+                }
+            }
+            else
+            {
+                balanceGUI.setAttribute("strength","dim")
+                unconfirmedBalanceGUI(i18n(R.string.walletDisconnectedFromBlockchain), force)
+            }
 
-            unconfirmedBalanceGUI(unconfBalStr, force)
-
+            balanceGUI(format(balance), force)
             // If we got something in a receive address, then show a new one
             updateReceiveAddressUI?.invoke(this)
 
-            val cnxnLst = wallet.chainstate?.chain?.net?.mapConnections() { it.name }
-            val peers = cnxnLst?.joinToString(", ")
-            val infoStr = i18n(R.string.at) + " " + (wallet.chainstate?.syncedHash?.toHex()?.take(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight
-              ?: "") + " " + i18n(R.string.of) + " " + (wallet.chainstate?.chain?.curHeight
-              ?: "") + " blocks, " + (wallet.chainstate?.chain?.net?.size ?: "") + " peers\n" + peers
-            infoGUI(force, { infoStr })  // since numPeers takes cnxnLock
+            if (chainstate != null)
+            {
+                val cnxnLst = wallet.chainstate?.chain?.net?.mapConnections() { it.name }
+
+                val trying: List<String> = if (chainstate.chain.net is MultiNodeCnxnMgr) (chainstate.chain.net as MultiNodeCnxnMgr).initializingCnxns.map { it.name } else listOf()
+                val peers = cnxnLst?.joinToString(", ") + (if (trying.isNotEmpty())  (" " + i18n(R.string.trying) + " " + trying.joinToString(", ")) else "")
+
+                val infoStr = i18n(R.string.at) + " " + (wallet.chainstate?.syncedHash?.toHex()?.take(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight
+                  ?: "") + " " + i18n(R.string.of) + " " + (wallet.chainstate?.chain?.curHeight
+                  ?: "") + " blocks, " + (wallet.chainstate?.chain?.net?.size ?: "") + " peers\n" + peers
+                infoGUI(force, { infoStr })  // since numPeers takes cnxnLock
+            }
+            else
+                infoGUI(force, { i18n(R.string.walletDisconnectedFromBlockchain) })
 
             tickerGUI(name, force)
         }
@@ -677,27 +735,41 @@ class WallyApp : Application()
     // Track notifications
     val notifs: MutableList<Pair<Int, PendingIntent>> = mutableListOf()
 
-    val primaryAccount: Account
+    // You can access the primary account object in a manner that throws an exception or returns a null, your choice
+    var nullablePrimaryAccount: Account? = null
+    var primaryAccount: Account
         get()
         {
-            // return the first Nexa wallet
-            for (i in accounts.values)
-            {
-                LogIt.info("looking for primary at wallet " + i.name + "blockchain: " + i.chain.name)
-                if (i.wallet.chainSelector == ChainSelector.NEXA) return i
-            }
-            for (i in accounts.values)
-            {
-                LogIt.info("falling back to testnet")
-                if (i.wallet.chainSelector == ChainSelector.NEXATESTNET) return i
-            }
-            for (i in accounts.values)
-            {
-                LogIt.info("falling back to regtest")
-                if (i.wallet.chainSelector == ChainSelector.NEXAREGTEST) return i
-            }
-            throw PrimaryWalletInvalidException()
+            val tmp = nullablePrimaryAccount
+            if (tmp == null) throw PrimaryWalletInvalidException()
+            return tmp
         }
+        set(other: Account) { nullablePrimaryAccount = other}
+
+    // The currently selected account
+    var focusedAccount: Account? = null
+
+
+    fun defaultPrimaryAccount(): Account
+    {
+        // return the first Nexa wallet
+        for (i in accounts.values)
+        {
+            LogIt.info("looking for primary at wallet " + i.name + "blockchain: " + i.chain.name)
+            if (i.wallet.chainSelector == ChainSelector.NEXA) return i
+        }
+        for (i in accounts.values)
+        {
+            LogIt.info("falling back to testnet")
+            if (i.wallet.chainSelector == ChainSelector.NEXATESTNET) return i
+        }
+        for (i in accounts.values)
+        {
+            LogIt.info("falling back to regtest")
+            if (i.wallet.chainSelector == ChainSelector.NEXAREGTEST) return i
+        }
+        throw PrimaryWalletInvalidException()
+    }
 
     /** Activity stacks don't quite work.  If task A uses an implicit intent launches a child wally activity, then finish() returns to A
      * if wally wasn't previously running.  But if wally was currently running, it returns to wally's Main activity.
@@ -920,7 +992,12 @@ class WallyApp : Application()
         super.onCreate()
         notInUIscope = coMiscScope
         appResources = getResources()
+        displayMetrics = getResources().getDisplayMetrics()
         wallyApp = this
+
+        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        devMode = prefs.getBoolean(SHOW_DEV_INFO, false)
+
 
         registerActivityLifecycleCallbacks(ActivityLifecycleHandler(this))  // track the current activity
         createNotificationChannel()
@@ -932,9 +1009,7 @@ class WallyApp : Application()
                 LogIt.info(sourceLoc() + " Wally Wallet App Started")
                 val ctxt = PlatformContext(applicationContext)
                 walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-
-                val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
-
+                
                 if (REG_TEST_ONLY)  // If I want a regtest only wallet for manual debugging, just create it directly
                 {
                     accounts.getOrPut("RKEX") {

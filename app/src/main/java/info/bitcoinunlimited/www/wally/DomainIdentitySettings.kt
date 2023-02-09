@@ -80,7 +80,7 @@ class DomainIdentitySettings : CommonNavActivity()
 
     fun removeDomainIdentity()
     {
-        val wallet = (application as WallyApp).primaryAccount.wallet
+        val wallet = (application as WallyApp).primaryAccount?.wallet ?: throw WalletInvalidException()
         wallet.removeIdentityDomain(ui.domainName.text.toString())
         ui.domainName.text = ""
         launch { wallet.save() }
@@ -92,7 +92,7 @@ class DomainIdentitySettings : CommonNavActivity()
         if (ui.domainName.text.toString().length == 0) return
 
         var changed = false
-        val wallet = (application as WallyApp).primaryAccount.wallet
+        val wallet = (application as WallyApp).primaryAccount?.wallet ?: throw WalletInvalidException()
         val id: Long = if (ui.uniqueIdentitySwitch.isChecked) IdentityDomain.IDENTITY_BY_HASH else IdentityDomain.COMMON_IDENTITY
         var idData = wallet.lookupIdentityDomain(ui.domainName.text.toString())
 

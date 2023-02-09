@@ -248,7 +248,7 @@ class SplitBillActivity : CommonNavActivity()
 
         // Set the send currency type spinner options to your default fiat currency or your currently selected crypto
         val spinData = arrayOf(fiatCurrencyCode, cryptoCurrencyCode)
-        val aa = ArrayAdapter(this, android.R.layout.simple_spinner_item, spinData)
+        val aa = ArrayAdapter(this, R.layout.currency_selection_spinner, spinData)
         ui.splitCurrencyType!!.setAdapter(aa)
 
 

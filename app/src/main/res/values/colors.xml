@@ -3,6 +3,7 @@
     <color name="colorPrimary">#D0A6FF</color>
     <color name="colorPrimaryDark">#5B276B</color>
     <color name="colorAccent">#C01BD0</color>
+    <color name="spinnerText">#FF3B0050</color>
 
     <color name="error">#FF6050</color>
     <color name="notice">#FFD040</color>
@@ -14,6 +15,13 @@
     <color name="black">#000000</color>
     <color name="white">#ffffff</color>
 
+    <color name="WallyBorder">#efddff</color>
+
     <color name="listDividerFg">#DDCCFF</color>
-    <color name="balanceAmount">#A0DFA0</color>
+    <color name="unconfirmedBalanceIncomingColor">#a19120</color>
+    <color name="unconfirmedBalanceOutgoingColor">#BD4311</color>
+    <color name="unsyncedBalanceColor">#DBBFB3</color>
+    <color name="unsyncedStatusColor">#685953</color>
+    <color name="accountSelectionBkg">@android:color/white</color>
+    <color name="accountSelectionBorder">@color/WallyBorder</color>
 </resources>

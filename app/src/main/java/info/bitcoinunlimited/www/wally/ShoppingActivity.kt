@@ -53,8 +53,41 @@ val initialShopping: ArrayList<ShoppingDestination> = arrayListOf(
   ShoppingDestination(i18n(R.string.StoreMapButton), i18n(R.string.ExplainStoreMap), i18n(R.string.StoreMapUrl), i18n(R.string.StoreMapAppPackage))
    */
   ShoppingDestination(i18n(R.string.NFTs), i18n(R.string.ExplainNFTs), i18n(R.string.NftUrl), "", R.drawable.ic_niftyart_logo_plain),
+  ShoppingDestination(i18n(R.string.CexButton), i18n(R.string.ExplainTxBit), "https://txbit.io/Trade/NEXA/USDT", "", R.drawable.txbit_io),
 )
 
+
+class ShoppingListBinder(val ui: ShoppingListItemBinding): GuiListItemBinder<ShoppingDestination>(ui.root)
+{
+    override fun populate()
+    {
+        val d = data
+        if (d != null)
+        {
+            ui.GuiShoppingButton.setText(d.buttonText)
+            if (d.icon != 0) ui.GuiShoppingIcon.setImageResource(d.icon)
+            ui.GuiShoppingExplain.text = d.explain
+        }
+    }
+
+    override fun onClick(v: View)
+    {
+        val i = data
+        if (i != null)
+        {
+            LogIt.info("clicked on " + i.buttonText)
+            try
+            {
+                i.launch(ui.root)
+            }
+            catch (e: ActivityNotFoundException)
+            {
+                //activity.displayError(R.string.BadLink)
+            }
+        }
+    }
+
+}
 
 private class ShoppingRecyclerAdapter(private val activity: ShoppingActivity, private val domains: MutableList<ShoppingDestination>) : RecyclerView.Adapter<ShoppingRecyclerAdapter.DomainHolder>()
 {
@@ -138,7 +171,8 @@ class ShoppingActivity : CommonNavActivity()
     private lateinit var ui: ActivityShoppingBinding
     override var navActivityId = R.id.navigation_shopping
     lateinit var linearLayoutManager: LinearLayoutManager
-    private lateinit var adapter: ShoppingRecyclerAdapter
+    private lateinit var adapter: GuiList<ShoppingDestination, ShoppingListBinder>
+    // private lateinit var adapter: ShoppingRecyclerAdapter
 
     var shopping = mutableListOf<ShoppingDestination>()
 
@@ -168,8 +202,13 @@ class ShoppingActivity : CommonNavActivity()
 
         val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
         loadShoppingFromPreferences(prefs, shopping)
-        adapter = ShoppingRecyclerAdapter(this, shopping)
-        ui.GuiShoppingList.adapter = adapter
+        //adapter = ShoppingRecyclerAdapter(this, shopping)
+        adapter = GuiList(ui.GuiShoppingList, shopping, this, {
+            val ui = ShoppingListItemBinding.inflate(LayoutInflater.from(it.context), it, false)
+            ShoppingListBinder(ui)
+        })
+        adapter.rowBackgroundColors = WallyRowColors
+
     }
 
     /** Inflate the options menu */

@@ -71,7 +71,7 @@ class IdentitySettings(var address: PayAddress?=null) : CommonNavActivity()
     init
     {
         val account = wallyApp!!.primaryAccount
-        if (!account.visible)
+        if ((account == null) || (!account.visible))
         {
             throw PrimaryWalletInvalidException()
         }

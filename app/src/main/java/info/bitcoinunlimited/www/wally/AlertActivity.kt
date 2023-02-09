@@ -155,8 +155,8 @@ class AlertActivity : CommonNavActivity()
 
         laterUI {
             setTitle(i18n(R.string.title_activity_alert_history))
-            adapter = GuiList(ui.GuiAlertList, alerts, this, {
-                val ui = AlertListItemBinding.inflate(LayoutInflater.from(it.context), it, false)
+            adapter = GuiList(ui.GuiAlertList, alerts, this, { vg ->
+                val ui = AlertListItemBinding.inflate(LayoutInflater.from(vg.context), vg, false)
                 AlertBinder(ui, this)
             })
 

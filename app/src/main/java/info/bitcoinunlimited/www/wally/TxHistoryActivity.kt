@@ -443,7 +443,7 @@ class TxHistoryBinder(val ui: TxHistoryListItemBinding): GuiListItemBinder<Trans
                 activity.ui.container.requestLayout()
 
 
-                val url = account.transactionInfoWebUrl(d.tx.id?.toHex())
+                val url = account.transactionInfoWebUrl(d.tx.id.toHex())
                 url?.let {
                     activity.ui.GuiTxWebView.loadUrl(url)
                 }
@@ -533,7 +533,7 @@ class TxHistoryActivity : CommonNavActivity()
                     val coin = app.accounts[walName]
                     if (coin != null)
                     {
-                        setTitle(i18n(R.string.title_activity_tx_history) % mapOf("walname" to walName));
+                        setTitle(i18n(R.string.title_activity_tx_history) % mapOf("account" to walName))
                         val wallet = coin.wallet
                         val historyList: List<TransactionHistory> = wallet.txHistory.values.sortedBy { it.date }.reversed()
                         account = coin

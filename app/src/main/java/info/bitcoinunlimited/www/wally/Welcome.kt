@@ -47,7 +47,7 @@ class Welcome : CommonNavActivity()
  */
 class WelcomeFragment1 : Fragment()
 {
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
     {
         return Welcomef1Binding.inflate(inflater).root
     }
@@ -63,7 +63,7 @@ class WelcomeFragment1 : Fragment()
 
 class WelcomeFragment2 : Fragment()
 {
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
     {
         return Welcomef2Binding.inflate(inflater).root
     }
@@ -71,7 +71,7 @@ class WelcomeFragment2 : Fragment()
     override fun onResume()
     {
         super.onResume()
-        if (wallyApp!!.accounts.size > 0)
+        if (wallyApp!!.accounts.isNotEmpty())
         {
             findNavController().navigate(R.id.action_NewAccount_to_Backup)
         }
@@ -81,7 +81,7 @@ class WelcomeFragment2 : Fragment()
     {
         super.onViewCreated(view, savedInstanceState)
         view.findViewById<Button>(R.id.button_first).setOnClickListener {
-            if (wallyApp!!.accounts.size == 0)
+            if (wallyApp!!.accounts.isEmpty())
             {
                 val intent = Intent(appContext!!.context, NewAccount::class.java)
                 startActivity(intent)
@@ -97,7 +97,7 @@ class WelcomeFragment2 : Fragment()
 class WelcomeFragment3 : Fragment()
 {
     public lateinit var ui: Welcomef3Binding
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
     {
         ui = Welcomef3Binding.inflate(inflater)
         return ui.root
@@ -129,7 +129,7 @@ class WelcomeFragment3 : Fragment()
 class WelcomeIdentity : Fragment()
 {
     public lateinit var ui: Welcomef4Binding
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
     {
         ui = Welcomef4Binding.inflate(inflater)
         return ui.root

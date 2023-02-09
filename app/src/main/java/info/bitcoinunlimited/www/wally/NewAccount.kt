@@ -82,11 +82,11 @@ class NewAccount : CommonNavActivity()
         ui = ActivityNewAccountBinding.inflate(layoutInflater)
         setContentView(ui.root)
 
-        val blockchains = ArrayAdapter(this, android.R.layout.simple_spinner_item, SupportedBlockchains.keys.toTypedArray())
+        val blockchains = ArrayAdapter(this, R.layout.blockchain_selection_spinner, SupportedBlockchains.keys.toTypedArray())
         ui.GuiBlockchainSelector?.setAdapter(blockchains)
         ui.GuiBlockchainSelector?.setSelection("NEXA")
 
-        val adapter: ArrayAdapter<String> = ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, englishWordList)
+        val adapter: ArrayAdapter<String> = ArrayAdapter<String>(this, R.layout.recovery_phrase_selection_spinner, englishWordList)
         val textView = findViewById<MultiAutoCompleteTextView>(R.id.GuiAccountRecoveryPhraseEntry)
         textView.setAdapter(adapter)
         textView.setTokenizer(CharTokenizer(' '))

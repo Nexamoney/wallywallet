@@ -37,7 +37,6 @@ import java.util.logging.Logger
 import info.bitcoinunlimited.www.wally.R.id as GuiId
 import info.bitcoinunlimited.www.wally.R  // so we can compare strings with what is on the screen
 import java.net.URLEncoder
-import java.nio.charset.Charset
 
 
 val LogIt = Logger.getLogger("GuiTest")
@@ -46,6 +45,36 @@ class TestTimeoutException(what: String): Exception(what)
 
 val REGTEST_RPC_PORT=18332
 val REGTEST_P2P_PORT=18444
+
+/*  helper test function not currently used */
+/*
+fun generateAndLogSomeTricklePayRequests(application: WallyApp)
+{
+    val act = application.primaryAccount
+    val wallet = act.wallet
+    val identityDest: PayDestination = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
+
+    var uri = ConstructTricklePayRequest("testapp", "testtopic", "reg", identityDest, "BCH", 1000000UL, null, null, 100000000UL)
+    LogIt.info(uri.toString())
+    if (VerifyTdppSignature(uri) == true)
+    {
+        LogIt.info("Sig Verified")
+    }
+    else
+    {
+        VerifyTdppSignature(uri)
+    }
+    var uri2 = Uri.parse(uri.toString())
+    if (VerifyTdppSignature(uri2) == true)
+    {
+        LogIt.info("Sig Verified")
+    }
+    else
+    {
+        VerifyTdppSignature(uri)
+    }
+}
+ */
 
 @RunWith(AndroidJUnit4::class)
 class GuiTest
@@ -451,7 +480,7 @@ class GuiTest
             pressImeActionButton()
         ).check(matches(withText("1")))
 
-        clickSpinnerItem(GuiId.recvCoinType, "rNEX1")
+        clickSpinnerItem(GuiId.recvIntoAccount, "rNEX1")
         var recvAddr: String = ""
         activityScenario.onActivity { recvAddr = it.receiveAddress.text.toString() }
 
@@ -466,7 +495,7 @@ class GuiTest
         waitForActivity(10000, activityScenario) { it.lastErrorString == i18n(R.string.insufficentBalance) }
 
         // Load coins
-        clickSpinnerItem(GuiId.recvCoinType, "rNEX1")
+        clickSpinnerItem(GuiId.recvIntoAccount, "rNEX1")
         do {
             activityScenario.onActivity { recvAddr = it.receiveAddress.text.toString() }
             if (recvAddr.contentEquals(i18n(R.string.copiedToClipboard))) Thread.sleep(200)
@@ -498,7 +527,7 @@ class GuiTest
 
         // Now send from 1 to 2
         clickSpinnerItem(GuiId.sendAccount, "rNEX1")  // Choose the account
-        clickSpinnerItem(GuiId.recvCoinType, "rNEX2")  // Read the receive address
+        clickSpinnerItem(GuiId.recvIntoAccount, "rNEX2")  // Read the receive address
         activityScenario.onActivity { recvAddr = it.receiveAddress.text.toString() }
         // Write the receive address in
         onView(withId(GuiId.sendToAddress)).perform(clearText(), typeText(recvAddr), pressImeActionButton())
