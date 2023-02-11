@@ -68,9 +68,11 @@ class ShoppingListBinder(val ui: ShoppingListItemBinding): GuiListItemBinder<Sho
             if (d.icon != 0) ui.GuiShoppingIcon.setImageResource(d.icon)
             ui.GuiShoppingExplain.text = d.explain
         }
+
+        ui.GuiShoppingButton.setOnClickListener({ onButtonClick(it)})
     }
 
-    override fun onClick(v: View)
+    fun onButtonClick(v: View)
     {
         val i = data
         if (i != null)
@@ -88,83 +90,6 @@ class ShoppingListBinder(val ui: ShoppingListItemBinding): GuiListItemBinder<Sho
     }
 
 }
-
-private class ShoppingRecyclerAdapter(private val activity: ShoppingActivity, private val domains: MutableList<ShoppingDestination>) : RecyclerView.Adapter<ShoppingRecyclerAdapter.DomainHolder>()
-{
-    private lateinit var ui:ShoppingListItemBinding
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShoppingRecyclerAdapter.DomainHolder
-    {
-        ui = ShoppingListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return DomainHolder(activity, ui)
-    }
-
-    override fun getItemCount(): Int = domains.size
-
-
-    override fun onBindViewHolder(holder: ShoppingRecyclerAdapter.DomainHolder, position: Int)
-    {
-        val item = domains[position]
-        holder.bind(item, position)
-    }
-
-    class DomainHolder(private val activity: ShoppingActivity, private val ui: ShoppingListItemBinding) : RecyclerView.ViewHolder(ui.root), View.OnClickListener
-    {
-        private var item: ShoppingDestination? = null
-        private val view = ui.root
-        var idx = 0
-        var txid: Hash256? = null
-
-        init
-        {
-            ui.root.setOnClickListener(this)
-            ui.GuiShoppingButton.setOnClickListener(this)
-        }
-
-        override fun onClick(v: View)
-        {
-            val i = item
-            if (i != null)
-            {
-                LogIt.info("clicked on " + i.buttonText)
-                try
-                {
-                    i.launch(ui.root)
-                } catch (e: ActivityNotFoundException)
-                {
-                    activity.displayError(R.string.BadLink)
-                }
-            }
-        }
-
-        fun bind(obj: ShoppingDestination, pos: Int)
-        {
-            item = obj
-            ui.GuiShoppingButton.setText(obj.buttonText)
-
-            if (obj.icon != 0) ui.GuiShoppingIcon.setImageResource(obj.icon)
-            ui.GuiShoppingExplain.text = obj.explain
-
-            // Alternate colors for each row in the list
-            //val Acol:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowA) } ?: 0xFFEEFFEE.toInt()
-            //val Bcol:Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowB) } ?: 0xFFBBDDBB.toInt()
-            val Acol = 0xFFF0EEFF.toInt()
-            val Bcol = 0xFFE0D0EF.toInt()
-
-            if ((pos and 1) == 0)
-            {
-                view.background = ColorDrawable(Acol)
-            }
-            else
-            {
-                view.background = ColorDrawable(Bcol)
-            }
-
-        }
-    }
-
-}
-
 
 class ShoppingActivity : CommonNavActivity()
 {
@@ -202,7 +127,6 @@ class ShoppingActivity : CommonNavActivity()
 
         val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
         loadShoppingFromPreferences(prefs, shopping)
-        //adapter = ShoppingRecyclerAdapter(this, shopping)
         adapter = GuiList(ui.GuiShoppingList, shopping, this, {
             val ui = ShoppingListItemBinding.inflate(LayoutInflater.from(it.context), it, false)
             ShoppingListBinder(ui)

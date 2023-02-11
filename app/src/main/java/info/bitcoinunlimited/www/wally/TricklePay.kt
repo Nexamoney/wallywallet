@@ -78,6 +78,7 @@ fun makeChallengeTx(sp: Spendable, challengerId: ByteArray, chalby: ByteArray): 
 // Structured data type to make it cleaner to return tx analysis data from the analysis function.
 // otherInputSatoshis: BCH being brought into this transaction by other participants
 data class TxAnalysisResults(
+  val account : Account,
   val receivingSats: Long,
   val sendingSats: Long,
   val receivingTokenTypes: Long,
@@ -249,7 +250,6 @@ class TricklePayEmptyFragment : Fragment()
     public lateinit var ui:TricklePayEmptyBinding
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        //val ret = inflater.inflate(R.layout.trickle_pay_empty, container, false)
         ui = TricklePayEmptyBinding.inflate(inflater)
         return ui.root
     }
@@ -269,7 +269,6 @@ class TricklePayMainFragment : Fragment()
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
         ui = TricklePayMainBinding.inflate(inflater)
-        //val ret = inflater.inflate(R.layout.trickle_pay_main, container, false)
         return ui.root
     }
 
@@ -277,7 +276,6 @@ class TricklePayMainFragment : Fragment()
     {
         super.onViewCreated(view, savedInstanceState)
         val tpAct = getActivity() as TricklePayActivity
-        //adapter = TricklePayRecyclerAdapter(tpAct)
         adapter = GuiList(ui.GuiTricklePayList, listOf(), tpAct, {
             val ui = TpDomainListItemBinding.inflate(LayoutInflater.from(it.context), it, false)
             TpDomainBinder(ui)
@@ -302,7 +300,6 @@ class TricklePayMainFragment : Fragment()
         ui.GuiTricklePayList.layoutManager = linearLayoutManager
         adapter.notifyDataSetChanged()
         linearLayoutManager.requestLayout()
-
          */
     }
 
@@ -371,6 +368,7 @@ class TricklePayRegFragment : Fragment()
             {
                 ui.GuiAutospendLimitEntry0.text.append(account.format(account.fromFinestUnit(d.maxper)))
             }
+            ui.currencyUnit0.text = account.currencyCode
             ui.GuiAutospendLimitDescription0.text = d.descper
 
             ui.GuiAutospendLimitEntry1.text.clear()
@@ -378,6 +376,7 @@ class TricklePayRegFragment : Fragment()
                 ui.GuiAutospendLimitEntry1.text.append(i18n(R.string.unspecified))
             else
                 ui.GuiAutospendLimitEntry1.text.append(account.format(account.fromFinestUnit(d.maxday)))
+            ui.currencyUnit1.text = account.currencyCode
             ui.GuiAutospendLimitDescription1.text = d.descday
 
             ui.GuiAutospendLimitEntry2.text.clear()
@@ -385,6 +384,7 @@ class TricklePayRegFragment : Fragment()
                 ui.GuiAutospendLimitEntry2.text.append(i18n(R.string.unspecified))
             else
                 ui.GuiAutospendLimitEntry2.text.append(account.format(account.fromFinestUnit(d.maxweek)))
+            ui.currencyUnit2.text = account.currencyCode
             ui.GuiAutospendLimitDescription2.text = d.descweek
 
             ui.GuiAutospendLimitEntry3.text.clear()
@@ -392,6 +392,7 @@ class TricklePayRegFragment : Fragment()
                 ui.GuiAutospendLimitEntry3.text.append(i18n(R.string.unspecified))
             else
                 ui.GuiAutospendLimitEntry3.text.append(account.format(account.fromFinestUnit(d.maxmonth)))
+            ui.currencyUnit3.text = account.currencyCode
             ui.GuiAutospendLimitDescription3.text = d.descmonth
         }
 
@@ -425,7 +426,6 @@ class TricklePayCustomTxFragment : Fragment()
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
         ui = TricklePayCustomTxBinding.inflate(inflater)
-        //val ret = inflater.inflate(R.layout.trickle_pay_custom_tx, container, false)
         return ui.root
     }
 
@@ -790,6 +790,7 @@ class TricklePayActivity : CommonNavActivity()
 
     var tflags: Int = 0
     var proposedTx: iTransaction? = null
+    var proposalAnalysis: TxAnalysisResults? = null
     var proposalUri: Uri? = null
     var proposedDestinations: List<Pair<PayAddress, Long>>? = null
     var proposalCookie: String? = null
@@ -803,6 +804,9 @@ class TricklePayActivity : CommonNavActivity()
     var rpath: String? = null
     var chainSelector: ChainSelector? = null
     var visibleFragment: Int = -1
+
+    var accepted: Boolean = false
+    var pinTries = 0
 
     fun setSelectedDomain(d: TdppDomain)
     {
@@ -949,7 +953,8 @@ class TricklePayActivity : CommonNavActivity()
         //if (domains.size == 0)
         //    displayError(R.string.TpNoRegistrations)
 
-        val wal = getRelevantWallet()
+        val act = getRelevantAccount()
+        val wal = act.wallet
 
         // Find out info about the outputs
         var outputSatoshis: Long = 0
@@ -1039,7 +1044,7 @@ class TricklePayActivity : CommonNavActivity()
             }
         }
 
-        return TxAnalysisResults(receivingSats, sendingSats, receivingTokenTypes, sendingTokenTypes, imSpendingTokenTypes, inputSatoshis, iFunded, ttInfo, completionException)
+        return TxAnalysisResults(act, receivingSats, sendingSats, receivingTokenTypes, sendingTokenTypes, imSpendingTokenTypes, inputSatoshis, iFunded, ttInfo, completionException)
     }
 
     fun parseCommonFields(uri: Uri)
@@ -1120,7 +1125,11 @@ class TricklePayActivity : CommonNavActivity()
             frag.ui.GuiSpecialTxTitle.text = i18n(R.string.IncompleteTpTransactionFrom)
         }
 
-        if (analysis.completionException == null) proposedTx = tx
+        if (analysis.completionException == null)
+        {
+            proposalAnalysis = analysis
+            proposedTx = tx
+        }
         laterUI {
             displayFragment(R.id.GuiTricklePayCustomTx)
             // Ok now that we've displayed what we can, let's show the problem.
@@ -1295,7 +1304,7 @@ class TricklePayActivity : CommonNavActivity()
 
         parseCommonFields(uri)
         val proto = rproto ?: TDPP_DEFAULT_PROTOCOL
-        val host = host + ":" + port
+        val hostport = if (port == -1) host else host + ":" + port
         val cookieString = if (cookie != null) "?cookie=$cookie" else ""
 
         var whatInfo = uri.getQueryParameter("info")
@@ -1304,10 +1313,11 @@ class TricklePayActivity : CommonNavActivity()
             whatInfo = "clipboard"
         }
 
-        val url = proto + "//" + host + "/_share" + cookieString
+        val url = proto + "//" + hostport + "/_share" + cookieString
 
         if (whatInfo == "address")
         {
+            /*
             val wal = try
             {
                 getRelevantWallet() as CommonWallet
@@ -1318,8 +1328,18 @@ class TricklePayActivity : CommonNavActivity()
                 return
             }
             val addr = wal.getNewAddress()
-            post(url) {
-                it.setBody(addr.toString())
+
+             */
+            val addr = getRelevantAccount().currentReceive?.address?.toString()
+            if (addr != null)
+            {
+                postThen(url, {
+                    it.setBody(addr.toString())
+                }, { finish()})
+            }
+            else
+            {
+                wallyApp?.displayError(R.string.NoAccounts)
             }
         }
         else // (whatInfo == "clipboard")
@@ -1329,9 +1349,7 @@ class TricklePayActivity : CommonNavActivity()
                 val clip: ClipData? = myClipboard.getPrimaryClip()
                 val item = if (clip?.itemCount != 0) clip?.getItemAt(0) else null
                 val text = item?.text?.toString() ?: i18n(R.string.pasteIsEmpty)
-                post(url) {
-                    it.setBody(text)
-                }
+                postThen(url, { it.setBody(text) }, { finish() })
             }
         }
 
@@ -1467,13 +1485,19 @@ class TricklePayActivity : CommonNavActivity()
                         }
                         else if (path == "/sendto")
                         {
-                            LogIt.info("address autopay")
-                            handleSendToAutopay(iuri, domain)
+                            if (accepted) acceptSendToRequest()  // must have asked for PIN
+                            else
+                            {
+                                LogIt.info("address autopay")
+                                handleSendToAutopay(iuri, domain)
+                            }
                         }
                         else if (path == "/tx")
                         {
                             LogIt.info("tx autopay")
-                            handleTxAutopay(iuri, domain)
+                            if (accepted) onSignSpecialTx(null)  // must have asked for PIN so we had to launch the pin entry intent
+                            else
+                                handleTxAutopay(iuri, domain)
                         }
                         else if (path == "/assets")
                         {
@@ -1515,7 +1539,8 @@ class TricklePayActivity : CommonNavActivity()
             {
                 displayError("bad link " + receivedIntent.scheme)
             }
-        } catch (e: Exception)
+        }
+        catch (e: Exception)
         {
             displayFragment(R.id.GuiTricklePayEmpty)
             LogIt.warning(e.toString())
@@ -1691,14 +1716,37 @@ class TricklePayActivity : CommonNavActivity()
         }
     }
 
+    fun launchPinEntry()
+    {
+        if (pinTries < 2)
+        {
+            if (pinTries > 0) wallyApp?.displayError(R.string.InvalidPIN)
+            val intent = Intent(this, UnlockActivity::class.java)
+            pinTries += 1
+            startActivity(intent)
+        }
+        else
+        {
+            wallyApp?.displayError(R.string.InvalidPIN)
+            finish()
+        }
+    }
     // Trickle pay transaction handlers
     @Suppress("UNUSED_PARAMETER")
     fun onSignSpecialTx(view: View?)
     {
         LogIt.info("accept trickle pay special transaction")
+        accepted = true
         val pTx = proposedTx
-        if (pTx != null)
+        val panalysis = proposalAnalysis
+        if ((pTx != null)&&(panalysis != null))
         {
+            if (panalysis.account.locked)
+            {
+                launchPinEntry()
+                return
+            }
+
             val pUri = proposalUri!!  // if proposedTx != null uri must have something
             val pcookie = cookie
             proposedTx = null
@@ -1747,6 +1795,7 @@ class TricklePayActivity : CommonNavActivity()
 
     fun onAcceptSendToRequest(@Suppress("UNUSED_PARAMETER") view: View?)
     {
+        accepted = true
         acceptSendToRequest()
     }
 
@@ -1757,8 +1806,16 @@ class TricklePayActivity : CommonNavActivity()
 
     fun acceptSendToRequest()
     {
-        val wal = getRelevantWallet()
+        val act = getRelevantAccount()
+        val wal = act.wallet
         val p = proposedDestinations
+
+        if (act.locked)
+        {
+            launchPinEntry()
+            return
+        }
+
         if (p == null)
         {
             clearIntentAndFinish()  // should never happen because page will not show if no destinations
@@ -1837,7 +1894,34 @@ class TricklePayActivity : CommonNavActivity()
     {
         later()
         {
-            LogIt.info("POST response to server: $url")
+            LogIt.info(sourceLoc() + ": POST response to server: $url")
+            val client = HttpClient(Android)
+            {
+                install(ContentNegotiation) {
+                    json()
+                }
+                install(HttpTimeout) { requestTimeoutMillis = 5000 }
+            }
+
+            try
+            {
+                val response: HttpResponse = client.post(url, contents)
+                val respText = response.bodyAsText()
+                clearIntentAndFinish(notice = respText)
+            }
+            catch (e: SocketTimeoutException)
+            {
+                displayError(R.string.connectionException)
+            }
+            client.close()
+        }
+    }
+
+    fun postThen(url: String, contents: (HttpRequestBuilder) -> Unit, next: ()->Unit)
+    {
+        later()
+        {
+            LogIt.info(sourceLoc() + ": POST response to server: $url")
             val client = HttpClient(Android)
             {
                 install(ContentNegotiation) {

@@ -274,10 +274,15 @@
                 app:layout_alignSelf="center"
                 android:onClick="onTxHistoryButton"
                 android:text="@string/txHistoryButton"
-                app:layout_constraintBottom_toTopOf="@+id/GuiAccountSettingsHeader"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                />
+            <Button
+                android:id="@+id/GuiPrimaryAccountButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_alignSelf="center"
+                android:onClick="onSetAsPrimaryAccountButton"
+                android:text="@string/setAsPrimaryAccountButton"
+                />
         <Button
             android:id="@+id/GuiAssessUnconfirmedButton"
             android:layout_width="wrap_content"

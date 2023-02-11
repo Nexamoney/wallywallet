@@ -30,6 +30,31 @@
         app:labelVisibilityMode="labeled"/>
 
     <TextView
+        android:id="@+id/GuiBlockchainText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Blockchain"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/GuiBlockchainSelector"
+        app:layout_constraintStart_toEndOf="@+id/GuiBlockchainOk"
+        app:layout_constraintTop_toTopOf="@+id/GuiBlockchainSelector"
+        app:layout_constraintVertical_bias="0.473" />
+
+    <Spinner
+        android:id="@+id/GuiBlockchainSelector"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/Blockchain"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="4dp"
+        android:popupBackground="@drawable/blockchain_selection_background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.238"
+        app:layout_constraintStart_toEndOf="@+id/GuiBlockchainText"
+        app:layout_constraintTop_toBottomOf="@+id/GuiNewAccountError" />
+
+    <TextView
         android:id="@+id/GuiAccountNameText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -54,41 +79,18 @@
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/GuiAccountNameText"
-        app:layout_constraintTop_toBottomOf="@+id/GuiNewAccountError" />
+        app:layout_constraintTop_toBottomOf="@+id/GuiBlockchainSelector" />
 
-    <TextView
-        android:id="@+id/GuiBlockchainText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/Blockchain"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/GuiBlockchainSelector"
-        app:layout_constraintStart_toEndOf="@+id/GuiBlockchainOk"
-        app:layout_constraintTop_toTopOf="@+id/GuiBlockchainSelector"
-        app:layout_constraintVertical_bias="0.473" />
-
-    <Spinner
-        android:id="@+id/GuiBlockchainSelector"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:contentDescription="@string/Blockchain"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.238"
-        app:layout_constraintStart_toEndOf="@+id/GuiBlockchainText"
-        app:layout_constraintTop_toBottomOf="@+id/GuiAccountNameEntry" />
 
     <TextView
         android:id="@+id/GuiRecoveryPhraseText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
         android:text="@string/AccountRecoveryPhrase"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@+id/GuiBlockchainText"
-        app:layout_constraintTop_toBottomOf="@+id/GuiBlockchainSelector" />
+        app:layout_constraintTop_toBottomOf="@+id/GuiAccountNameEntry" />
 
     <MultiAutoCompleteTextView
         android:id="@+id/GuiAccountRecoveryPhraseEntry"
@@ -221,6 +223,7 @@
         android:inputType="number"
         android:textAlignment="center"
         android:visibility="visible"
+        android:hint = "@string/PinSuggestions"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guiPINText" />

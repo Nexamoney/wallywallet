@@ -61,7 +61,7 @@
     <!-- Home Page -->
     <string name="Send">Spedisci</string>
     <string name="Receive">Ricevi</string>
-    <string name="Balance">Saldo</string>
+    <string name="AccountListHeader">Saldo</string>
     <string name="Address">Indirizzo</string>
     <string name="settings">configurazioni</string>
     <string name="help">aiuto</string>

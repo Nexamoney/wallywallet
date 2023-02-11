@@ -4,6 +4,12 @@
     <color name="colorPrimaryDark">#5B276B</color>
     <color name="colorAccent">#C01BD0</color>
     <color name="spinnerText">#FF3B0050</color>
+    <color name="defaultSpinnerBkg">@android:color/white</color>
+    <color name="defaultSpinnerBorder">@color/WallyBorder</color>
+    <color name="softKeyboardTop">#FFF6F6F6</color>
+
+    <color name="colorCredit">#70A01E</color>
+    <color name="colorDebit">#B43200</color>
 
     <color name="error">#FF6050</color>
     <color name="notice">#FFD040</color>

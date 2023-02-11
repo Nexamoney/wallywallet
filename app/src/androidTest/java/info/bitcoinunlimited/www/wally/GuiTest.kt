@@ -486,7 +486,7 @@ class GuiTest
 
         // Copy the receive addr, and paste it into the destination
         onView(withId(GuiId.receiveAddress)).perform(click())
-        onView(withId(GuiId.destAddrPasteButton)).perform(click())
+        onView(withId(GuiId.pasteFromClipboardButton)).perform(click())
         onView(withId(GuiId.sendToAddress)).check(matches(withText(recvAddr)))
 
         onView(withId(GuiId.sendQuantity)).perform(clearText(),typeText("100000000"), pressImeActionButton())

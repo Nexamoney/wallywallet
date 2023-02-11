@@ -25,26 +25,49 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/balanceTicker"
         android:layout_width="100sp"
         android:layout_height="40sp"
-        android:autoSizeMaxTextSize="26sp"
-        android:autoSizeMinTextSize="14sp"
-        android:autoSizeStepGranularity="1sp"
-        android:autoSizeTextType="uniform"
-        android:clickable="true"
-        android:gravity="center_vertical|center_horizontal"
-        android:maxLines="1"
-        android:minLines="1"
-        android:onClick="onBalanceTickerClicked"
-        android:textAlignment="center"
-        android:text=""
         app:layout_constraintStart_toEndOf="@+id/accountIcon"
         app:layout_constraintTop_toTopOf="@+id/balanceValue"
         app:layout_constraintBottom_toBottomOf="@+id/balanceValue"
         app:layout_constraintVertical_bias="0.5"
+        >
+
+    <TextView
+        android:id="@+id/balanceTickerText"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:clickable="true"
+        android:gravity="center_vertical|center_horizontal"
+        android:maxLines="1"
+        android:minLines="1"
+        android:textAlignment="center"
+        android:text=""
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         />
+
+    <ImageView
+        android:id="@+id/lockIcon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:padding="0px"
+        android:scaleType="fitXY"
+        android:scrollbars="none"
+        android:onClick="onAccountLockClicked"
+        app:layout_constraintStart_toEndOf="@+id/balanceTickerText"
+        app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <TextView
         android:id="@+id/balanceValue"

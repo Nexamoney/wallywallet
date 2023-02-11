@@ -10,9 +10,6 @@ import android.view.View
 import android.view.View.*
 import android.widget.Adapter
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.CompoundButton
-import android.widget.Spinner
 import androidx.core.content.ContextCompat
 import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.databinding.ActivitySettingsBinding
@@ -21,7 +18,8 @@ import java.util.logging.Logger
 
 
 val LOCAL_CURRENCY_PREF = "localCurrency"
-val SHOW_DEV_INFO = "devinfo"
+val PRIMARY_ACT_PREF = "primaryAccount"
+val DEV_MODE_PREF = "devinfo"
 
 val EXCLUSIVE_NODE_SWITCH = "exclusiveNodeSwitch"
 val CONFIGURED_NODE = "NodeAddress"
@@ -80,7 +78,7 @@ class Settings : CommonActivity()
 
         val preferenceDB: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
 
-        if (SetupBooleanPreferenceGui(SHOW_DEV_INFO, preferenceDB, ui.GuiDeveloperInfoSwitch) { _, isChecked ->
+        if (SetupBooleanPreferenceGui(DEV_MODE_PREF, preferenceDB, ui.GuiDeveloperInfoSwitch) { _, isChecked ->
               devMode = isChecked
               if (isChecked)
               {

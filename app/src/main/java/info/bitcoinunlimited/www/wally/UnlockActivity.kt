@@ -9,8 +9,9 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import info.bitcoinunlimited.www.wally.databinding.ActivityUnlockBinding
+import kotlinx.coroutines.delay
 
-class UnlockActivity : AppCompatActivity()
+class UnlockActivity : CommonActivity()
 {
     private lateinit var ui:ActivityUnlockBinding
     override fun onCreate(savedInstanceState: Bundle?)
@@ -28,7 +29,7 @@ class UnlockActivity : AppCompatActivity()
                 val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(v.windowToken, 0)
                 submitPIN(v.text.toString())
-                finish()
+
                 true
             }
             else false
@@ -39,14 +40,26 @@ class UnlockActivity : AppCompatActivity()
     fun submitPIN(pin: String)
     {
         val app = (getApplication() as WallyApp)
-        app.unlockAccounts(pin)
+        val ret = app.unlockAccounts(pin)
+        if (ret == 0) app.displayError(R.string.InvalidPIN)
+        finish()
     }
 
     override fun onStart()
     {
         super.onStart()
+    }
+
+    override fun onResume()
+    {
+        super.onResume()
         ui.GuiEnterPIN.requestFocus()
-        val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+        later {
+            delay(200)  // give it time to get focus
+            laterUI {
+                val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(ui.GuiEnterPIN, InputMethodManager.SHOW_IMPLICIT)
+            }
+        }
     }
 }

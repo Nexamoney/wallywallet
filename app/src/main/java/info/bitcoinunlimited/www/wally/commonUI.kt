@@ -17,6 +17,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -61,6 +62,12 @@ private val LogIt = Logger.getLogger("BU.wally.commonUI")
 fun String.toSet():Set<String>
 {
     return split(","," ").map({it.trim()}).filter({it.length > 0}).toSet()
+}
+
+fun EditText.set(s: String)
+{
+    val len = text.length
+    text.replace(0,len, s)
 }
 
 /** Convert a ChainSelector to its currency code at 100M/1000 units */

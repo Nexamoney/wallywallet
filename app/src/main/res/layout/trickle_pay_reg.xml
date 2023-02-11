@@ -337,7 +337,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
-        android:text="@string/KEX"
         app:layout_constraintBottom_toBottomOf="@+id/GuiCustomTxCost"
         app:layout_constraintStart_toEndOf="@+id/GuiAutospendLimitEntry0"
         app:layout_constraintTop_toTopOf="@+id/GuiCustomTxCost" />

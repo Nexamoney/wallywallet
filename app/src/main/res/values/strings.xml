@@ -89,6 +89,9 @@
     <string name="pleaseWait">please wait</string>
     <!-- Uses in the sense of attempting an operation, such as connecting to a node  -->
     <string name="trying">trying</string>
+    <string name="clear">clear</string>
+    <string name="thousand">thousand</string>
+    <string name="million">million</string>
 
     <!-- Settings -->
     <string name="enableDeveloperView"> Advanced/developer mode</string>
@@ -112,6 +115,7 @@
     <string name="deleteConfirmation" formatted="false">Deleting an account will make all balances, identities, and history unavailable unless the account is recovered via the account recovery secret phrase!  Only do this if you are ABSOLUTELY SURE!\n\nDelete account "%accountName" (on %blockchain)?</string>
     <string name="reassessConfirmation">This operation will check the blockchain for recent transactions you have sent.  Based on their presence or absence, it will either confirm or erase them.  If transactions are erased, the money will seem to disappear.  You will need to "rediscover" to regain the spent balance.  Do not use if you have recently issued a transaction, since that transaction may be latent in the network, waiting for confirmation.</string>
     <string name="recoveryPhrase">This 12 word phrase can be used to restore your wallet if your phone is damaged or lost.  This means that whoever possesses this phrase can spend your money.  Write it down on paper and store it securely!</string>
+    <string name="primaryAccountConfirmation">Your primary account is the account that is used for your identity and to make automatic payments.  It also is the first account shown in various places in this app.  It must be on the Nexa blockchain.</string>
     <string name="AccountActions">Account Actions</string>
     <string name="GeneralSettings">General Settings</string>
     <string name="BlockchainSettings">Blockchain Sources</string>
@@ -138,9 +142,9 @@
     <!-- As in "Send from" -->
     <string name="from">From account</string>
     <!-- As in "Send to" -->
-    <string name="toColon">to:</string>
+    <string name="toColon">To:</string>
     <string name="Receive">Receive into account</string>
-    <string name="Balance">Account Balances</string>
+    <string name="AccountListHeader">Accounts</string>
     <string name="Address">Address</string>
     <string name="settings">settings</string>
     <string name="help">help</string>
@@ -170,7 +174,7 @@
     <string name="pasteUnintelligible">paste not understood</string>
     <string name="chainIncompatibleWithAddress">address incompatible with account</string>
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Account currency is %walletCrypto, address is %addressCrypto.  Use the combo box to change the send from account to one that matches the address\'s blockchain.</string>
-
+    <string name="incoming" formatted="false">pending transfers of %delta is included</string>
     <string name="approximatelyT" formatted="false">approximately %qty %fiat</string>
     <string name="exchangeRate" formatted="false">(exchange rate: 1 %crypto is worth %amt %fiat)</string>
     <!-- user is attempting to send more cryptocurrency than the wallet contains.  The payment can't happen -->
@@ -261,6 +265,7 @@
 
     <!-- Account details activity -->
     <string name="txHistoryButton">View or Export Account Activity</string>
+    <string name="setAsPrimaryAccountButton">Make this your Primary Account</string>
     <string name="AccountStatistics">Account Statistics</string>
     <string name="AccountBlockchainSync">Currently %sync on blockchain %chain.</string>
     <string name="AccountBlockchainDetails">At %actBlockDate, block %actBlock of %chainBlockCount.</string>
@@ -282,7 +287,8 @@
     <string name="AccountNameHint">1-8 letters</string>
     <string name="Blockchain">Blockchain</string>
     <string name="AccountRecoveryPhrase">Recovery Phrase</string>
-    <string name="LeaveEmptyNewWallet">Leave empty when first creating a new wallet</string>
+    <string name="LeaveEmptyNewWallet">Leave empty to create a new account</string>
+    <string name="PinSuggestions">This secret number is needed to access the account</string>
     <string name="createAccount">create account</string>
     <string name="invalidRecoveryPhrase">bad recovery phrase</string>
     <string name="invalidAccountName">invalid name</string>

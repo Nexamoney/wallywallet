@@ -15,12 +15,12 @@ import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
-import android.view.View.INVISIBLE
+import android.view.View.OnFocusChangeListener
 import android.view.inputmethod.EditorInfo
 import android.widget.Adapter
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.widget.ShareActionProvider
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuItemCompat
@@ -36,8 +36,8 @@ import java.math.RoundingMode
 import java.net.URL
 import java.util.*
 import java.util.logging.Logger
-import kotlin.Comparator
 import kotlin.concurrent.thread
+
 
 private val LogIt = Logger.getLogger("BU.wally.mainActivity")
 
@@ -208,7 +208,7 @@ class MainActivity : CommonNavActivity()
             v.setPrompt(i18n(R.string.scanPaymentQRcode)).setBeepEnabled(false).setDesiredBarcodeFormats(BarcodeFormat.QR_CODE.name).setOrientationLocked(true).setCameraId(0).initiateScan()
         }
 
-        ui.destAddrPasteButton.setOnClickListener {
+        ui.pasteFromClipboardButton.setOnClickListener {
             dbgAssertGuiThread()
             //LogIt.info(sourceLoc() + ": paste button pressed")
             try
@@ -242,6 +242,13 @@ class MainActivity : CommonNavActivity()
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
             {
             }
+        })
+
+        ui.sendQuantity.setOnFocusChangeListener(OnFocusChangeListener { view, hasFocus ->
+            val sqvis = if (hasFocus) View.VISIBLE else View.GONE
+            ui.amountAllButton?.visibility = sqvis
+            ui.amountThousandButton?.visibility = sqvis
+            ui.amountMillionButton?.visibility = sqvis
         })
 
         // When the send currency type is updated, we need to also update the "approximately" line
@@ -374,8 +381,6 @@ class MainActivity : CommonNavActivity()
     {
         if (account != null)
         {
-            if (devMode)
-               app?.primaryAccount = account
             ui.recvIntoAccount.setSelection(account.name)
             ui.sendAccount.setSelection(account.name)
             updateReceiveAddressUI(account)
@@ -397,7 +402,12 @@ class MainActivity : CommonNavActivity()
         // Sort the accounts based on account name
         val lm = ListifyMap(app!!.accounts, { it.value.visible }, object : Comparator<String>
         {
-            override fun compare(p0: String, p1: String): Int = p0.compareTo(p1)
+            override fun compare(p0: String, p1: String): Int
+            {
+                if (wallyApp?.nullablePrimaryAccount?.name == p0) return Int.MIN_VALUE
+                if (wallyApp?.nullablePrimaryAccount?.name == p1) return Int.MAX_VALUE
+                return p0.compareTo(p1)
+            }
         })
         guiAccountList.inflate(this, ui.AccountList!!, lm)
 
@@ -437,7 +447,7 @@ class MainActivity : CommonNavActivity()
         super.onStart()
         dbgAssertGuiThread()
         appContext = PlatformContext(applicationContext)
-        sendVisibility(false)
+        // (set in XML) sendVisibility(false)
 
         thread(true, true, null, "startup")
         {
@@ -1113,7 +1123,7 @@ class MainActivity : CommonNavActivity()
         {
             if (s == SEND_ALL_TEXT)  // Special case transferring everything
             {
-                coin.fromFinestUnit(coin.wallet.balance + coin.wallet.balanceUnconfirmed)
+                coin.fromFinestUnit(coin.wallet.balance)
             }
             else
             {
@@ -1401,44 +1411,6 @@ class MainActivity : CommonNavActivity()
         onReadStoragePermissionGranted { openGalleryForImage() }
     }
 
-    /** Create and post a transaction when the send button is pressed */
-    fun onBalanceTickerClicked(view: View)
-    {
-        try
-        {
-            dbgAssertGuiThread()
-            val ticker = (view as TextView).text
-            LogIt.info("balance ticker clicked: " + ticker)
-            val intent = Intent(this@MainActivity, AccountDetailsActivity::class.java)
-            app?.let { a ->
-                a.accounts[ticker]?.let { a.focusedAccount = it }
-            }
-            intent.putExtra("WalletName", ticker)
-            startActivity(intent)
-        } catch (e: Exception)
-        {
-            LogIt.warning("Exception clicking on ticker name: " + e.toString())
-        }
-    }
-
-    fun onBalanceValueClicked(view: View)
-    {
-        try
-        {
-            dbgAssertGuiThread()
-            val account = app?.accountFromGui(view)
-            if (account == null) return
-
-            ui.sendQuantity.text.clear()
-            ui.sendQuantity.text.append(SEND_ALL_TEXT.toString())
-
-            ui.sendAccount.setSelection(account.name)
-        } catch (e: Exception)
-        {
-            LogIt.warning("Exception clicking on balance: " + e.toString())
-            handleThreadException(e)
-        }
-    }
 
     @Suppress("UNUSED_PARAMETER")
     /** Start the purchase activity when the purchase button is pressed */
@@ -1449,13 +1421,94 @@ class MainActivity : CommonNavActivity()
         return true
     }
 
+    public fun onAllButtonClicked(v:View): Boolean
+    {
+        if (ui.sendQuantity.hasFocus())
+        {
+            ui.sendQuantity.text.clear()
+            ui.sendQuantity.text.append(SEND_ALL_TEXT)
+        }
+        return true
+    }
+
+    public fun onClearButtonClicked(v:View): Boolean
+    {
+        if (ui.sendQuantity.hasFocus()) ui.sendQuantity.text.clear()
+        else if (ui.sendToAddress.hasFocus()) ui.sendToAddress.text.clear()
+        else if (ui.editSendNote?.hasFocus() == true) ui.editSendNote?.text?.clear()
+        return true
+    }
+    public fun onAmountThousandButtonClicked(v:View): Boolean
+    {
+        if (ui.sendQuantity.hasFocus())
+        {
+            val curText = ui.sendQuantity.text.toString()
+            var amt = try
+            {
+                BigDecimal(curText.toString())
+            }
+            catch(e:java.lang.NumberFormatException)
+            {
+                if ((ui.sendQuantity.text.length == 0) || (curText=="all")) BigDecimal(1)
+                else return false
+            }
+            amt *= BigDecimal(1000)
+            ui.sendQuantity.set(amt.toString())
+        }
+        return true
+    }
+
+    public fun onAmountMillionButtonClicked(v:View): Boolean
+    {
+        if (ui.sendQuantity.hasFocus())
+        {
+            val curText = ui.sendQuantity.text.toString()
+            var amt = try
+            {
+                BigDecimal(curText)
+            }
+            catch(e:java.lang.NumberFormatException)
+            {
+                if ((ui.sendQuantity.text.length == 0) || (curText=="all")) BigDecimal(1)
+                else return false
+            }
+            amt *= BigDecimal(1000000)
+            ui.sendQuantity.set(amt.toString())
+        }
+        return true
+    }
+
+    override fun onSoftKeyboard(shown: Boolean)
+    {
+        super.onSoftKeyboard(shown)
+        // We want to show these buttons only when the soft keyboard is NOT up
+        val oppositeVis = if (shown) View.GONE else View.VISIBLE
+        ui.readQRCodeButton.visibility = oppositeVis
+        ui.pasteFromClipboardButton.visibility = oppositeVis
+        ui.qrFromGallery.visibility = oppositeVis
+
+        // We want to show these when the soft keyboard IS up
+        val vis = if (shown) View.VISIBLE else View.GONE
+        ui.softKeyboardExtensions?.visibility = vis
+
+    }
+
     /** Allow the user to add/edit the send note */
     public fun onEditSendNoteButtonClicked(v: View): Boolean
     {
-        if (ui.editSendNote == null) return false
-        if (ui.sendNote == null) return false
-        ui.sendNote?.setVisibility(View.GONE)
-        ui.editSendNote?.setVisibility(View.VISIBLE)
+        val esn = ui.editSendNote
+        val sn = ui.sendNote
+        if (esn == null) return false
+        if (sn == null) return false
+        if (esn.visibility == View.VISIBLE) // hit the button again
+        {
+            esn.visibility = View.GONE
+            val tmp = esn.text.toString()
+            sn.setVisibility(if (tmp == "") View.GONE else View.VISIBLE)
+            return true
+        }
+        sn.setVisibility(View.GONE)
+        esn.setVisibility(View.VISIBLE)
         v.getRootView().invalidate()
 
         asyncUI {
@@ -1571,6 +1624,7 @@ class MainActivity : CommonNavActivity()
         if (show)
         {
             ui.sendUI?.visibility = View.VISIBLE
+            ui.editSendNoteButton?.visibility = View.VISIBLE
             ui.sendCancelButton?.visibility = View.VISIBLE
             ui.splitBillButton?.visibility = View.GONE
         }
@@ -1578,6 +1632,7 @@ class MainActivity : CommonNavActivity()
         {
             ui.sendUI?.visibility = View.GONE
             ui.sendCancelButton?.visibility = View.GONE
+            ui.editSendNoteButton?.visibility = View.GONE
             ui.splitBillButton?.visibility = View.VISIBLE
         }
     }
@@ -1668,7 +1723,7 @@ class MainActivity : CommonNavActivity()
             if (amtstr == SEND_ALL_TEXT)
             {
                 deductFeeFromAmount = true
-                account.fromFinestUnit(account.wallet.balance + account.wallet.balanceUnconfirmed)
+                account.fromFinestUnit(account.wallet.balance)
             }
             else
             {

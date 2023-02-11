@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import bitcoinunlimited.libbitcoincash.*
+import info.bitcoinunlimited.www.wally.databinding.AccountListItemBinding
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.*
@@ -215,6 +216,7 @@ class Account(
     val balanceGUI = Reactive<String>("")
     val unconfirmedBalanceGUI = Reactive<String>("")
     val infoGUI = Reactive<String>("")
+    var uiBinding:AccountListItemBinding? = null  // Maybe an easier way to do it than piecemeal as above
 
     val encodedPin: ByteArray? = loadEncodedPin()
 
@@ -255,6 +257,7 @@ class Account(
     //? Current bch balance (cached from accessing the wallet), in the display units
     var balance: BigDecimal = 0.toBigDecimal(currencyMath).setCurrency(chainSelector ?: ChainSelector.NEXA)
     var unconfirmedBalance: BigDecimal = 0.toBigDecimal(currencyMath).setCurrency(chainSelector ?: ChainSelector.NEXA)
+    var confirmedBalance: BigDecimal = 0.toBigDecimal(currencyMath).setCurrency(chainSelector ?: ChainSelector.NEXA)
 
     //? specify how quantities should be formatted for display
     val cryptoFormat = mBchFormat
@@ -303,6 +306,12 @@ class Account(
             if ((encodedPin != null) && ((flags and ACCOUNT_FLAG_HIDE_UNTIL_PIN) > 0UL) && !pinEntered) return false
             return true
         }
+
+    val lockable: Boolean
+    get()
+    {
+        return (encodedPin != null)   // If there is no PIN, can't be locked
+    }
 
     val locked: Boolean
         get()
@@ -418,8 +427,9 @@ class Account(
     }
 
     //? Set the user interface elements for this cryptocurrency
-    fun setUI(al: GuiAccountList, icon: ImageView?, ticker: TextView?, balance: TextView?, unconf: TextView?, infoView: TextView?)
+    fun setUI(ui: AccountListItemBinding, al: GuiAccountList, icon: ImageView?, ticker: TextView?, balance: TextView?, unconf: TextView?, infoView: TextView?)
     {
+        uiBinding = ui
         if (ticker != null) tickerGUI.reactor = TextViewReactor<String>(ticker)
         else tickerGUI.reactor = null
         if (balance != null) balanceGUI.reactor = TextViewReactor<String>(balance, 0L, { s:String, paint:Paint ->
@@ -551,11 +561,25 @@ class Account(
 
     fun onWalletChange(force: Boolean = false)
     {
+        uiBinding?.let {
+            if (lockable)
+            {
+                it.lockIcon.visibility = View.VISIBLE
+                if (locked)
+                    it.lockIcon.setImageResource(R.drawable.ic_lock)
+                else
+                    it.lockIcon.setImageResource(R.drawable.ic_unlock)
+            }
+            else
+                it.lockIcon.visibility = View.GONE
+        }
         notInUI {
             // Update our cache of the balances
             balance = fromFinestUnit(wallet.balance)
             unconfirmedBalance = fromFinestUnit(wallet.balanceUnconfirmed)
+            confirmedBalance = fromFinestUnit(wallet.balanceConfirmed)
 
+            val delta = balance - confirmedBalance
             val chainstate = wallet.chainstate
             if (chainstate != null)
             {
@@ -566,9 +590,12 @@ class Account(
                       if (0.toBigDecimal(currencyMath).setScale(currencyScale) == unconfirmedBalance)
                           ""
                       else
-                          "+" + format(unconfirmedBalance)   // "\u2B05" == <--
+                        i18n(R.string.incoming) % mapOf("delta" to
+                          (if (delta > BigDecimal.ZERO) "+" else "") + format(balance - confirmedBalance)   // "\u2B05" == <--
+                        )
 
-                    unconfirmedBalanceGUI.setAttribute("color", R.color.unconfirmedBalanceIncomingColor)
+                    if (delta > BigDecimal.ZERO) unconfirmedBalanceGUI.setAttribute("color", R.color.colorCredit)
+                    else unconfirmedBalanceGUI.setAttribute("color", R.color.colorDebit)
                     unconfirmedBalanceGUI(unconfBalStr, force)
                 }
                 else
@@ -744,7 +771,16 @@ class WallyApp : Application()
             if (tmp == null) throw PrimaryWalletInvalidException()
             return tmp
         }
-        set(other: Account) { nullablePrimaryAccount = other}
+        set(act: Account)
+        {
+            val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+            with(prefs.edit())
+            {
+                putString(PRIMARY_ACT_PREF, act.name)
+                commit()
+            }
+            nullablePrimaryAccount = act
+        }
 
     // The currently selected account
     var focusedAccount: Account? = null
@@ -777,6 +813,17 @@ class WallyApp : Application()
      * Whenever wally resumes, if finishParent > 0, it will immediately finish. */
     var finishParent = 0
 
+    var lastError:Int? = null
+    // var lastErrorStr:String? = null
+    var lastErrorDetails:String? = null
+
+    /** Display an short error string on the title bar, and then clear it after a bit.  The common activity will check for errors coming from other activities */
+    fun displayError(resource: Int, details: Int? = null, then: (() -> Unit)? = null)
+    {
+        lastError = resource
+        lastErrorDetails = if (details != null) i18n(details) else null
+    }
+
     /** Do whatever you pass but not within the user interface context, asynchronously.
      * Launching into these threads means your task will outlast the activity it was launched in */
     @kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -803,14 +850,15 @@ class WallyApp : Application()
     }
 
     /** Submit this PIN to all accounts, unlocking any that match */
-    fun unlockAccounts(pin: String)
+    fun unlockAccounts(pin: String): Int
     {
         var unlocked = 0
         for (account in accounts.values)
         {
-            if (!account.pinEntered) unlocked += account.submitAccountPin(pin)
+            unlocked += account.submitAccountPin(pin)
         }
         if (unlocked > 0) notifyAccountUnlocked()
+        return unlocked
     }
 
     val interestedInAccountUnlock = mutableListOf<() -> Unit>()
@@ -834,18 +882,16 @@ class WallyApp : Application()
     fun accountsFor(chain: ChainSelector): MutableList<Account>
     {
         val ret = mutableListOf<Account>()
-        /*
-        // Check to see if our preferred crypto matches first
-        for (account in accounts.values)
-        {
-            if ((account.name == defaultAccount) && (account.visible) && (chain == account.wallet.chainSelector)) return mutableListOf(account)
-        }
-         */
 
-        // Look for any match
+        // put the primary account first
+        nullablePrimaryAccount?.let {
+            if (chain == it.chain.chainSelector && it.visible) ret.add(it)
+        }
+
+        // Look for any other match
         for (account in accounts.values)
         {
-            if (account.visible && (chain == account.wallet.chainSelector))
+            if (account.visible && (chain == account.wallet.chainSelector) && (nullablePrimaryAccount != account))
             {
                 ret.add(account)
             }
@@ -996,8 +1042,7 @@ class WallyApp : Application()
         wallyApp = this
 
         val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
-        devMode = prefs.getBoolean(SHOW_DEV_INFO, false)
-
+        devMode = prefs.getBoolean(DEV_MODE_PREF, false)
 
         registerActivityLifecycleCallbacks(ActivityLifecycleHandler(this))  // track the current activity
         createNotificationChannel()
@@ -1057,6 +1102,19 @@ class WallyApp : Application()
                 }
 
                 coinsCreated = true
+
+                // Cannot pick the primary account until accounts are loaded
+                val primaryActName = prefs.getString(PRIMARY_ACT_PREF, null)
+                nullablePrimaryAccount = if (primaryActName != null) accounts[primaryActName] else null
+                try
+                {
+                    if (nullablePrimaryAccount == null) primaryAccount = defaultPrimaryAccount()
+                }
+                catch(e:PrimaryWalletInvalidException)
+                {
+                    // nothing to do in the case where there is no account to pick
+                }
+
 
                 for (c in accounts.values)
                 {

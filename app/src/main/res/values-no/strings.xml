@@ -61,7 +61,7 @@
     <!-- Home Page -->
     <string name="Send">Send</string>
     <string name="Receive">Motta</string>
-    <string name="Balance">Balanse</string>
+    <string name="AccountListHeader">Balanse</string>
     <string name="Address">Addresse</string>
     <string name="settings">instillinger</string>
     <string name="help">hjelp</string>

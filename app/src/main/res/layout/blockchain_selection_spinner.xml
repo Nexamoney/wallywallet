@@ -4,6 +4,5 @@
               android:layout_width="fill_parent"
               android:layout_height="wrap_content"
               android:textSize="24dp"
-              android:textColor="#FF3B0050"
-              android:background="#D8C9DB"
+              android:textColor="@color/spinnerText"
               android:gravity="center"/>

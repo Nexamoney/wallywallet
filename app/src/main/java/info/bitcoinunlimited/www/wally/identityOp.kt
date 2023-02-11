@@ -280,8 +280,8 @@ class IdentityOpActivity : CommonNavActivity()
             }
             else
             {
-                blankActivity()
-                displayError(R.string.NoAccounts, null, { finish() })
+                wallyApp?.displayError(R.string.NoAccounts)
+                finish()
                 return
             }
         }

@@ -16,7 +16,7 @@ private val LogIt = Logger.getLogger("BU.wally.actdetails")
 
 enum class ConfirmationFor
 {
-    Delete, Rediscover, RediscoverBlockchain, Reassess, RecoveryPhrase
+    Delete, Rediscover, RediscoverBlockchain, Reassess, RecoveryPhrase, PrimaryAccount
 }
 
 class AccountDetailsActivity: CommonNavActivity()
@@ -24,8 +24,8 @@ class AccountDetailsActivity: CommonNavActivity()
     private lateinit var ui: ActivityAccountDetailsBinding
     override var navActivityId = R.id.home
     var askingAbout: ConfirmationFor? = null
-
     var selectedAccount:Account? = null
+    var pinTries = 0
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -56,10 +56,45 @@ class AccountDetailsActivity: CommonNavActivity()
         })
     }
 
+    override fun onResume()
+    {
+        super.onResume()
+        val acc = selectedAccount
+        if (acc == null)
+        {
+            wallyApp?.displayError(R.string.NoAccounts)
+            finish()
+            return
+        }
+        if (acc.locked)
+        {
+            if (pinTries == 0)
+            {
+                val intent = Intent(this, UnlockActivity::class.java)
+                pinTries += 1
+                startActivity(intent)
+                return
+            }
+            else
+            {
+                wallyApp?.displayError(R.string.InvalidPIN)
+                finish()
+                return
+            }
+        }
+    }
+
 
     fun updateAccount(acc: Account)
     {
         setTitle(i18n(R.string.title_activity_account_details) % mapOf("account" to acc.name))
+
+        val primVis = if (wallyApp?.nullablePrimaryAccount == acc) View.GONE     // its already primary
+        else if (acc.chain.chainSelector == ChainSelector.NEXA) View.VISIBLE     // All nexa accounts are candidates
+        else if (devMode && acc.chain.chainSelector.isNexaFamily) View.VISIBLE   // all nexa family accounts are candidates in dev mode
+        else View.GONE
+        ui.GuiPrimaryAccountButton.visibility = primVis
+
         if (acc.encodedPin != null)
         {
             ui.GuiPINInvisibility.setEnabled(true)
@@ -135,6 +170,10 @@ class AccountDetailsActivity: CommonNavActivity()
         askingAbout = null
         when (a)
         {
+            ConfirmationFor.PrimaryAccount ->
+            {
+                if (act != null) wallyApp?.primaryAccount = act
+            }
             ConfirmationFor.RediscoverBlockchain ->
             {
                 if (act == null) return
@@ -267,6 +306,15 @@ class AccountDetailsActivity: CommonNavActivity()
     {
         askingAbout = ConfirmationFor.Reassess
         ui.GuiConfirmationText.text = i18n(R.string.reassessConfirmation)
+        showConfirmation()
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    /** Reassess unconfirmed transactions */
+    public fun onSetAsPrimaryAccountButton(v: View)
+    {
+        askingAbout = ConfirmationFor.PrimaryAccount
+        ui.GuiConfirmationText.text = i18n(R.string.primaryAccountConfirmation)
         showConfirmation()
     }
 

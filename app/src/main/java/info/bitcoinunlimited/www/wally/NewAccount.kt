@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.MultiAutoCompleteTextView
 import android.widget.MultiAutoCompleteTextView.Tokenizer
@@ -17,6 +19,11 @@ private val LogIt = Logger.getLogger("BU.wally.NewAccount")
 
 //* how many addresses to search in a particular derivation path
 val DERIVATION_PATH_SEARCH_DEPTH = 10
+
+val chainToName: Map<ChainSelector, String> = mapOf(
+  ChainSelector.NEXATESTNET to "tNexa", ChainSelector.NEXAREGTEST to "rNexa", ChainSelector.NEXA to "nexa",
+  ChainSelector.BCH to "bch", ChainSelector.BCHTESTNET to "tBch", ChainSelector.BCHREGTEST to "rBch"
+)
 
 class CharTokenizer(val separator: Char) : Tokenizer
 {
@@ -73,6 +80,8 @@ class NewAccount : CommonNavActivity()
 
     var nameOk = false
     var pinOk = true
+    var nameChangedByUser = false
+    var codeChanged:Int = 0  // if a field is programatically changed, this is set to stop the callback from behaving like it was a user selected change
 
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -84,7 +93,6 @@ class NewAccount : CommonNavActivity()
 
         val blockchains = ArrayAdapter(this, R.layout.blockchain_selection_spinner, SupportedBlockchains.keys.toTypedArray())
         ui.GuiBlockchainSelector?.setAdapter(blockchains)
-        ui.GuiBlockchainSelector?.setSelection("NEXA")
 
         val adapter: ArrayAdapter<String> = ArrayAdapter<String>(this, R.layout.recovery_phrase_selection_spinner, englishWordList)
         val textView = findViewById<MultiAutoCompleteTextView>(R.id.GuiAccountRecoveryPhraseEntry)
@@ -94,15 +102,48 @@ class NewAccount : CommonNavActivity()
         ui.GuiBlockchainOk.setImageResource(R.drawable.ic_check)
         ui.GuiRecoveryPhraseOk.setImageResource(R.drawable.ic_check)  // empty recovery phrase is valid (means create a new one)
 
+        ui.GuiBlockchainSelector.setOnItemSelectedListener(object : OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long)
+            {
+                if (!nameChangedByUser)  // If the user has already put something in, then don't touch it
+                {
+                    val bc = SupportedBlockchains[ui.GuiBlockchainSelector.selectedItem.toString()]
+                    val a = app
+                    if ((bc != null)&&(a != null))
+                    {
+                        val proposedName =  chainToName[bc]
+                        if ((proposedName!=null) && !a.accounts.contains(proposedName))  // If there's already a default choice, then don't offer one
+                        {
+                            codeChanged++
+                            val len = ui.GuiAccountNameEntry.text.length
+                            ui.GuiAccountNameEntry.text.replace(0,len, proposedName)
+
+                        }
+                    }
+                }
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?)
+            {
+                TODO("Not yet implemented")
+            }
+
+        })
+        ui.GuiBlockchainSelector?.setSelection("NEXA")
+
+
         ui.GuiAccountNameEntry.addTextChangedListener(object : TextWatcher
         {
             override fun afterTextChanged(p0: Editable?)
             {
+                if (codeChanged==0) nameChangedByUser = true
+                else codeChanged--  // a programmatic change will trigger one callback
                 dbgAssertGuiThread()
                 if (p0.isNullOrBlank())
                 {
                     ui.GuiAccountNameOk.setImageResource(android.R.drawable.ic_delete)
                     nameOk = false
+                    nameChangedByUser = false // If the user wipes out their name, we can resume proposing names
                     return
                 }
 

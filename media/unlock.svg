@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--part of the rodentia icon theme by sixsixfive released under CC0 (https://creativecommons.org/publicdomain/zero/1.0/) on openclipart-->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   viewBox="0 0 39.291401 39.418083"
+   version="1.1"
+   id="svg42"
+   sodipodi:docname="unlock.svg"
+   width="39.291401"
+   height="39.418083"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
+  <title
+     id="title1115">Lock</title>
+  <metadata
+     id="metadata46">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Lock</dc:title>
+        <cc:license
+           rdf:resource="http://creativecommons.org/publicdomain/zero/1.0/" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Andrew Stone</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:date>July 23, 2020</dc:date>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/publicdomain/zero/1.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="3840"
+     inkscape:window-height="2133"
+     id="namedview44"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="39.874642"
+     inkscape:cx="11.785125"
+     inkscape:cy="17.899391"
+     inkscape:window-x="7680"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg42" />
+  <defs
+     id="0" />
+  <path
+     id="path1038"
+     style="opacity:1;fill:#cccccc;fill-opacity:1;stroke:#404040;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:67.99999237;stroke-opacity:1"
+     d="M 0.50712085,8.6945318 3.4817299,8.6632818 C 3.3398639,6.0387617 5.9774752,3.615843 9.0364182,3.4953131 h -3e-6 c 0.09708,0.0019 0.191348,0.012673 0.287109,0.019531 0.09576,-0.00686 0,0 0.28711,-0.019531 3.0589418,0.12053 5.6965528,2.5434487 5.5546868,5.1679687 l 0.03786,7.6272252 -4.433513,-0.05016 c 0,0 -2.6845612,14.264044 -0.07031,20.621094 0.368204,0.895357 2.048829,2.056641 2.048829,2.056641 l 11.421875,-0.07422 11.421875,0.07422 c 0,0 1.680624,-1.161284 2.048828,-2.056641 2.614251,-6.35705 -0.07031,-20.621094 -0.07031,-20.621094 h -3.430373 l -0.06431,2.285767 -3.481071,-0.07258 0.02099,-2.085792 L 18.3871,16.273282 18.34056,8.8198868 C 18.316697,4.9980337 15.20624,0.84996021 9.2733705,0.49999991 3.3405005,0.8750388 0.52318385,4.8726006 0.50712085,8.6944918"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="cccccccccscccsccccccscc" />
+</svg>

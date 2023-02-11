@@ -25,18 +25,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:text="@string/Balance"
+        android:text="@string/AccountListHeader"
         android:textSize="24sp"
         app:layout_constraintEnd_toStartOf="@+id/GuiNewAccount"
         app:layout_constraintStart_toEndOf="@+id/syncingIcon"
         app:layout_constraintTop_toBottomOf="@+id/receiveBalancesDivider" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/sendUI"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TopInformation">
 
@@ -44,11 +43,11 @@
             android:id="@+id/SendToText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="8dp"
             android:text="@string/toColon"
             android:textSize="24sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/sendFromAccountText" />
+            app:layout_constraintStart_toEndOf="@+id/sendAccount"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/sendFromAccountColon"
@@ -118,7 +117,7 @@
 
         <EditText
             android:id="@+id/sendQuantity"
-            android:layout_width="160dp"
+            android:layout_width="180dp"
             android:layout_height="wrap_content"
             android:digits="abcdefghijklmnopqrstuvwxyz0123456789.,"
             android:ems="10"
@@ -143,10 +142,9 @@
             android:textAlignment="center"
             android:textSize="12sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/SendToText"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/SendToText"
-            app:layout_constraintTop_toTopOf="@+id/SendToText" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sendFromAccountText" />
 
         <EditText
             android:id="@+id/editSendNote"
@@ -167,12 +165,13 @@
 
         <Spinner
             android:id="@+id/sendCurrencyType"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:spinnerMode="dropdown"
             android:popupBackground="@drawable/currency_selection_background"
+            android:spinnerMode="dropdown"
             app:layout_constraintBottom_toBottomOf="@+id/sendQuantity"
             app:layout_constraintStart_toEndOf="@+id/sendQuantity"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/sendQuantity" />
 
         <Spinner
@@ -180,8 +179,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:spinnerMode="dropdown"
             android:popupBackground="@drawable/account_selection_background"
+            android:spinnerMode="dropdown"
             app:layout_constraintBottom_toBottomOf="@+id/sendFromAccountColon"
             app:layout_constraintStart_toEndOf="@+id/sendFromAccountColon"
             app:layout_constraintTop_toTopOf="@+id/sendFromAccountColon" />
@@ -196,16 +195,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/editSendNodeButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:onClick="onEditSendNoteButtonClicked"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/sendCurrencyType"
-            app:layout_constraintTop_toTopOf="@+id/sendQuantity"
-            app:srcCompat="@android:drawable/ic_menu_edit" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -217,6 +206,16 @@
         app:layout_constraintTop_toBottomOf="@+id/sendUI"
         app:justifyContent="space_evenly"> <!-- or "space_between", "space_evenly" -->
 
+        <ImageButton
+            android:id="@+id/editSendNoteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:onClick="onEditSendNoteButtonClicked"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/sendQuantity"
+            app:srcCompat="@android:drawable/ic_menu_edit" />
         <Button
             android:id="@+id/sendButton"
             android:layout_width="wrap_content"
@@ -372,16 +371,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/receiveUI" />
 
-    <View
-        android:id="@+id/GuiBottomGreen"
-        android:layout_width="0dp"
-        android:layout_height="3dp"
-        android:background="?android:attr/listDivider"
-        android:foreground="@color/listDividerFg"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/AccountList"
@@ -404,7 +393,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/ic_scanqricon2" />
     <ImageButton
-        android:id="@+id/destAddrPasteButton"
+        android:id="@+id/pasteFromClipboardButton"
         android:layout_width="55dp"
         android:layout_height="55dp"
         android:layout_marginEnd="4dp"
@@ -452,10 +441,72 @@
         android:layout_height="wrap_content"
         android:background="?android:attr/windowBackground"
         app:labelVisibilityMode="labeled"
-        app:layout_constraintBottom_toTopOf="@+id/GuiBottomGreen"
+        app:layout_constraintBottom_toTopOf="@+id/GuiBottomDivider"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:menu="@menu/bottom_nav_menu" />
+
+    <View
+        android:id="@+id/GuiBottomDivider"
+        android:layout_width="0dp"
+        android:layout_height="3dp"
+        android:background="?android:attr/listDivider"
+        android:foreground="@color/listDividerFg"
+        app:layout_constraintBottom_toTopOf="@+id/softKeyboardExtensions"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/softKeyboardExtensions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:paddingBottom="2dp"
+        android:paddingTop="2dp"
+        android:background="@color/softKeyboardTop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:justifyContent="space_evenly"> <!-- or "space_between", "space_evenly" -->
+
+        <Button
+            android:minHeight="32dp"
+            android:minWidth="32dp"
+            android:id="@+id/amountAllButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onAllButtonClicked"
+            android:text="@string/sendAll"
+            android:textAlignment="center"
+            style="@style/SoftKeyboardButton"
+            />
+
+        <Button
+            android:id="@+id/amountThousandButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onAmountThousandButtonClicked"
+            android:text="@string/thousand"
+            android:textAlignment="center"
+            style="@style/SoftKeyboardButton"
+            />
+        <Button
+            android:id="@+id/amountMillionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onAmountMillionButtonClicked"
+            android:text="@string/million"
+            style="@style/SoftKeyboardButton"
+            />
+        <Button
+            android:id="@+id/amountClearButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClearButtonClicked"
+            android:text="@string/clear"
+            style="@style/SoftKeyboardButton"
+            />
+    </com.google.android.flexbox.FlexboxLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

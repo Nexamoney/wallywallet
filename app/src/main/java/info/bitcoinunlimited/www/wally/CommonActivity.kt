@@ -20,6 +20,9 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat.setWindowInsetsAnimationCallback
+import androidx.core.view.WindowInsetsAnimationCompat
+import androidx.core.view.WindowInsetsCompat
 import bitcoinunlimited.libbitcoincash.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.*
@@ -69,6 +72,7 @@ fun isKeyboardShown(root: View): Boolean
 
     val heightDiff = root.height - rect.bottom
     val keyboardShown = heightDiff > root.dpToPx(200f)
+    LogIt.info("keyboard shown: " + keyboardShown.toString())
     return keyboardShown
 }
 
@@ -106,6 +110,11 @@ open class CommonNavActivity : CommonActivity()
     private val onNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item -> bottomNavSelectHandler(item, this) }
     open var navActivityId: Int = -1 //* Change this in derived classes to identify which navBar item this activity is
 
+    open fun onSoftKeyboard(shown: Boolean)
+    {
+        val navView: BottomNavigationView = findViewById(R.id.nav_view)
+        navView.visibility = if (shown) View.GONE else View.VISIBLE
+    }
     override fun onStart()
     {
         super.onStart()
@@ -117,6 +126,45 @@ open class CommonNavActivity : CommonActivity()
             navView.selectedItemId = navActivityId
         navView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
         navView.getMenu().findItem(R.id.navigation_assets)?.setVisible(devMode)
+
+        val rootView = navView.rootView
+
+        setWindowInsetsAnimationCallback(rootView, object : WindowInsetsAnimationCompat.Callback(DISPATCH_MODE_CONTINUE_ON_SUBTREE) {
+            override fun onProgress(insets: WindowInsetsCompat, runningAnimations: MutableList<WindowInsetsAnimationCompat>): WindowInsetsCompat
+            {
+                return insets
+            }
+
+            override fun onStart(animation: WindowInsetsAnimationCompat, bounds: WindowInsetsAnimationCompat.BoundsCompat): WindowInsetsAnimationCompat.BoundsCompat
+            {
+
+                if ((animation.typeMask and WindowInsetsCompat.Type.ime()) > 0)  // soft keyboard thing
+                {
+                    if (isKeyboardShown(rootView))
+                        onSoftKeyboard(true)
+                }
+                return super.onStart(animation, bounds)
+            }
+            override fun onEnd(animation: WindowInsetsAnimationCompat)
+            {
+                super.onEnd(animation)
+                //if (!isKeyboardShown(rootView))
+                onSoftKeyboard(isKeyboardShown(rootView))
+                // val showingKeyboard = rootView.rootWindowInsets.isVisible(WindowInsets.Type.ime())
+            }
+
+        })
+        /*
+        rootView.setWindowInsetsAnimationCallback(object : WindowInsetsAnimation.Callback {
+            override fun onEnd(animation: WindowInsetsAnimation) {
+                super.onEnd(animation)
+                val showingKeyboard = view.rootWindowInsets.isVisible(WindowInsets.Type.ime())
+                // now use the boolean for something
+            }
+        })
+
+         */
+
     }
 }
 
@@ -194,12 +242,20 @@ open class CommonActivity : AppCompatActivity()
     override fun onResume()
     {
         super.onResume()
+        finishShowingNotice()
+        // show anything provided by the other activity
+        val err = wallyApp?.lastError
+        val errDetails = wallyApp?.lastErrorDetails
+        wallyApp?.lastError = null
+        wallyApp?.lastErrorDetails = null
+        if (err != null) displayError(err, errDetails ?: "")
         isRunning = true
     }
 
     override fun onPause()
     {
         super.onPause()
+        finishShowingNotice()
         isRunning = false
     }
 
@@ -289,6 +345,7 @@ open class CommonActivity : AppCompatActivity()
     fun displayError(resource: Int)
     {
         lastErrorId = resource
+        if (resource == R.string.NoAccounts || resource == R.string.InvalidPIN || resource == R.string.accountLocked) keepShowingLock = true
         displayError(getString(resource))
     }
 
@@ -296,6 +353,7 @@ open class CommonActivity : AppCompatActivity()
     fun displayError(resource: Int, details: Int? = null, then: (() -> Unit)? = null)
     {
         lastErrorId = resource
+        if (resource == R.string.NoAccounts || resource == R.string.InvalidPIN || resource == R.string.accountLocked) keepShowingLock = true
         if (details == null)
             displayError(i18n(resource), null, then)
         else
@@ -305,16 +363,23 @@ open class CommonActivity : AppCompatActivity()
     fun displayError(resource: Int, details: String, then: (() -> Unit)? = null)
     {
         lastErrorId = resource
+        if (resource == R.string.NoAccounts || resource == R.string.InvalidPIN || resource == R.string.accountLocked) keepShowingLock = true
         displayError(i18n(resource), details, then)
     }
 
+    var keepShowingLock = false
     var menuHidden = 0
     override fun onCreateOptionsMenu(menu: Menu): Boolean
     {
         var ret = super.onCreateOptionsMenu(menu)
 
         for (i in 0 until menu.size())
-            menu.getItem(i).setVisible(menuHidden == 0)
+        {
+            val mi = menu.getItem(i)
+            if (mi.title != "unlock") menu.getItem(i).setVisible(menuHidden == 0)
+            else if (!keepShowingLock) menu.getItem(i).setVisible(menuHidden == 0)
+        }
+        if (menuHidden == 0) keepShowingLock = false  // Reset this every time we show the full menu
 
         return ret
     }
@@ -327,6 +392,28 @@ open class CommonActivity : AppCompatActivity()
             val temp = Intent(Intent.ACTION_VIEW)
             temp.setData(Uri.parse("http://www.bitcoinunlimited.net/wally/faq"))
             item4.intent = temp
+        }
+    }
+
+    @Synchronized
+    fun finishShowingNotice(errNo: Int? = null)
+    {
+        laterUI {
+            synchronized(errorSync)
+            {
+                val titlebar: View = findViewById(R.id.action_bar)
+                if (menuHidden > 0) menuHidden -= 1
+                if (errNo == 0)
+                {
+                    menuHidden = 0
+                } // Abort all errors shown (returned from other activity)
+                if (errorCount == errNo || errNo == null)
+                {
+                    invalidateOptionsMenu()
+                    super.setTitle(origTitle)
+                    origTitleBackground?.let { titlebar.background = it }
+                }
+            }
         }
     }
 
@@ -350,16 +437,7 @@ open class CommonActivity : AppCompatActivity()
                 errorCount
             }
             delay(ERROR_DISPLAY_TIME)
-            synchronized(errorSync)
-            {
-                menuHidden -= 1
-                invalidateOptionsMenu()
-                if (errorCount == myError)
-                {
-                    super.setTitle(origTitle)
-                    origTitleBackground?.let { titlebar.background = it }
-                }
-            }
+            finishShowingNotice(myError)
             if (then != null) then()
         }
 
@@ -396,14 +474,7 @@ open class CommonActivity : AppCompatActivity()
                 errorCount
             }
             delay(time)
-            synchronized(errorSync)
-            {
-                if (myError == errorCount)
-                {
-                    super.setTitle(origTitle)
-                    origTitleBackground?.let { titlebar.background = it }
-                }
-            }
+            finishShowingNotice(myError)
             if (then != null) then()
         }
     }
