@@ -571,31 +571,37 @@ class IdentityOpActivity : CommonNavActivity()
                             }
                             else
                             {
-                                displayError(resp, null, { clearIntentAndFinish() })
+                                wallyApp?.displayNotice(resp)
+                                clearIntentAndFinish()
                             }
                         }
                         catch (e: java.net.SocketTimeoutException)
                         {
                             LogIt.info("SOCKET TIMEOUT:  If development, check phone's network.  Ensure you can route from phone to target!  " + e.toString())
-                            displayError(R.string.connectionException, null, { clearIntentAndFinish() })
+                            wallyApp?.displayError(R.string.connectionException)
+                            clearIntentAndFinish()
                         }
                         catch (e: IOException)
                         {
                             LogIt.info("registration IOException: " + e.toString())
-                            displayError(R.string.connectionAborted, null, { clearIntentAndFinish() })
+                            wallyApp?.displayError(R.string.connectionAborted)
+                            clearIntentAndFinish()
                         }
                         catch (e: FileNotFoundException)
                         {
                             LogIt.info("registration FileNotFoundException: " + e.toString())
-                            displayError(R.string.badLink, null, { clearIntentAndFinish() })
+                            wallyApp?.displayError(R.string.badLink)
+                            clearIntentAndFinish()
                         }
                         catch (e: java.net.ConnectException)
                         {
-                            displayError(R.string.connectionException, null, { clearIntentAndFinish() })
+                            wallyApp?.displayError(R.string.connectionException)
+                            clearIntentAndFinish()
                         }
                         catch (e: Throwable)
                         {
-                            displayError(R.string.unknownError, null, { clearIntentAndFinish() })
+                            wallyApp?.displayError(R.string.unknownError,)
+                            clearIntentAndFinish()
                         }
 
                         break@postloop  // Only way to actually loop is to get a http 301 or 302
@@ -606,7 +612,8 @@ class IdentityOpActivity : CommonNavActivity()
                     val msg = msgToSign
                     if (msg == null)
                     {
-                        displayError(R.string.nothingToSign, null, { clearIntentAndFinish() })
+                        wallyApp?.displayError(R.string.nothingToSign)
+                        clearIntentAndFinish()
                     }
                     else
                     {
@@ -620,7 +627,7 @@ class IdentityOpActivity : CommonNavActivity()
                             LogIt.info(s)
                             clipboard.setPrimaryClip(clip)
                         }
-                        displayNotice(R.string.sigInClipboard, NOTICE_DISPLAY_TIME, { clearIntentAndFinish() })
+                        wallyApp?.displayNotice(R.string.sigInClipboard)
 
                         val reply = attribs["reply"]
                         if (reply == null || reply == "true")
@@ -640,7 +647,8 @@ class IdentityOpActivity : CommonNavActivity()
                                 LogIt.info("signature response code:" + req.responseCode.toString() + " response: " + resp)
                                 if ((req.responseCode >= 200) and (req.responseCode < 250))
                                 {
-                                    displayNotice(resp, null, 1000) { clearIntentAndFinish() }
+                                    wallyApp?.displayNotice(resp)
+                                    clearIntentAndFinish()
                                 }
                                 else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding (often switching from http to https)
                                 {
@@ -650,20 +658,24 @@ class IdentityOpActivity : CommonNavActivity()
                                 }
                                 else
                                 {
-                                    displayError(resp, null, { clearIntentAndFinish() })
+                                    wallyApp?.displayNotice(resp)
+                                    clearIntentAndFinish()
                                 }
                             }
                             catch (e: FileNotFoundException)
                             {
-                                displayError(R.string.badLink, sigReq, { clearIntentAndFinish() })
+                                wallyApp?.displayError(R.string.badLink)
+                                clearIntentAndFinish()
                             }
                             catch (e: IOException)
                             {
-                                displayError(R.string.connectionAborted, sigReq, { clearIntentAndFinish() })
+                                wallyApp?.displayError(R.string.connectionAborted)
+                                clearIntentAndFinish()
                             }
                             catch (e: java.net.ConnectException)
                             {
-                                displayError(R.string.connectionException, null, { clearIntentAndFinish() })
+                                wallyApp?.displayError(R.string.connectionException)
+                                clearIntentAndFinish()
                             }
                             break@getloop  // only way to actually loop is to hit a 301 or 302
                         }

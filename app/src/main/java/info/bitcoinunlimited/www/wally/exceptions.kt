@@ -3,15 +3,18 @@ package info.bitcoinunlimited.www.wally
 import bitcoinunlimited.libbitcoincash.BUException
 import bitcoinunlimited.libbitcoincash.ErrorSeverity
 
+open class BUExceptionI(val err: Int, details:String?=null, severity: ErrorSeverity=ErrorSeverity.Expected) : BUException(i18n(err), details, severity)
+
 open class PrimaryWalletInvalidException() : BUException("Primary account not defined or currently unavailable", "No primary account", ErrorSeverity.Abnormal)
-open class WalletInvalidException() : BUException(i18n(R.string.accountUnavailableDetails), i18n(R.string.accountUnavailable), ErrorSeverity.Expected)
+open class WalletInvalidException() : BUExceptionI(R.string.accountUnavailableDetails, i18n(R.string.accountUnavailable), ErrorSeverity.Expected)
 
-open class PasteUnintelligibleException() : BUException("", i18n(R.string.pasteUnintelligible), ErrorSeverity.Expected)
+open class PasteUnintelligibleException() : BUExceptionI(R.string.pasteUnintelligible, null, ErrorSeverity.Expected)
 open class NotUriException() : PasteUnintelligibleException()
-open class PasteEmptyException() : BUException("", i18n(R.string.pasteIsEmpty), ErrorSeverity.Abnormal)
-open class BadAmountException(msg: Int) : BUException(i18n(msg), i18n(R.string.badAmount))
-open class BadCryptoException(msg: Int = -1) : BUException(i18n(msg), i18n(R.string.badCryptoCode))
-open class BadUnitException(msg: Int = -1) : BUException(i18n(msg), i18n(R.string.badCurrencyUnit))
-open class UnavailableException(msg: Int = -1) : BUException(i18n(msg), i18n(R.string.unavailable))
+open class PasteEmptyException() : BUExceptionI(R.string.pasteIsEmpty, null, ErrorSeverity.Expected)
+open class BadAmountException(msg: Int) : BUExceptionI(R.string.badAmount, i18n(msg))
+open class BadCryptoException(msg: Int = -1) : BUExceptionI(R.string.badCryptoCode, i18n(msg))
+open class BadUnitException(msg: Int = -1) : BUExceptionI(R.string.badCurrencyUnit, i18n(msg))
+open class UnavailableException(msg: Int = -1) : BUExceptionI(R.string.unavailable, i18n(msg))
+open class UiUnavailableException(msg: Int = -1) : BUExceptionI(R.string.unavailable, i18n(msg))
 
-open class UiUnavailableException(msg: Int = -1) : BUException(i18n(msg), i18n(R.string.unavailable))
+open class TdppException(err: Int? = null, details: String?) : BUExceptionI(if (err != null) err else R.string.unknownError, details, ErrorSeverity.Abnormal)

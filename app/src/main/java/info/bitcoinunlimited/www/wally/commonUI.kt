@@ -22,10 +22,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import bitcoinunlimited.libbitcoincash.ChainSelector
-import bitcoinunlimited.libbitcoincash.NexDecimals
-import bitcoinunlimited.libbitcoincash.uBchDecimals
-import bitcoinunlimited.libbitcoincash.uriToChain
+import bitcoinunlimited.libbitcoincash.*
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
@@ -129,9 +126,10 @@ fun asyncUI(fn: suspend () -> Unit): Unit
         try
         {
             fn()
-        } catch (e: Exception)
+        }
+        catch (e: Exception)
         {
-            LogIt.warning("Exception in laterUI: " + e.toString())
+            handleThreadException(e,"Exception in laterUI", sourceLoc())
         }
 
     }
@@ -357,9 +355,9 @@ fun textToQREncode(value: String, size: Int): Bitmap?
     try
     {
         bitMatrix = MultiFormatWriter().encode(value, BarcodeFormat.QR_CODE, size, size, hintsMap)
-    } catch (e: IllegalArgumentException)
+    }
+    catch (e: IllegalArgumentException)
     {
-
         return null
     }
 

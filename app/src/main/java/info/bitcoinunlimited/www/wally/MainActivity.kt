@@ -4,6 +4,7 @@ package info.bitcoinunlimited.www.wally
 
 import android.Manifest
 import android.app.Activity
+import android.app.NotificationManager
 import android.content.*
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
@@ -21,6 +22,7 @@ import android.widget.Adapter
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.ShareActionProvider
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuItemCompat
@@ -549,7 +551,15 @@ class MainActivity : CommonNavActivity()
         // If there are any notifications waiting we need to show them when the app resumes,
         // but not if a different intent was launched (that's not just hey start the app)
         val tnt = intent
-        if (tnt == null || tnt.action == Intent.ACTION_MAIN) wallyApp?.getNotificationIntent()
+        if (tnt == null || tnt.action == Intent.ACTION_MAIN)
+        {
+            val newI = wallyApp?.getNotificationIntent()
+            if (newI != null)
+            {
+                LogIt.info(sourceLoc() + "onResume handle local intent")
+                handleAnyIntent(newI.toUri(0))
+            }
+        }
 
         // Look in the paste buffer
         if (ui.sendToAddress.text.toString().trim() == "")  // App started or resumed with nothing in the send field -- let's see if there's something in the paste buffer we can auto-populate
@@ -557,15 +567,19 @@ class MainActivity : CommonNavActivity()
             try
             {
                 handlePastedData()
-            } catch (e: PasteEmptyException)  // nothing to do, having pasted data is optional on startup
+            }
+            catch (e: PasteEmptyException)  // nothing to do, having pasted data is optional on startup
             {
 
-            } catch (e: PayAddressBlankException)  // nothing to do, having pasted data is optional on startup
+            }
+            catch (e: PayAddressBlankException)  // nothing to do, having pasted data is optional on startup
             {
 
-            } catch (e: PayAddressDecodeException)  // nothing to do, having pasted data is optional on startup
+            }
+            catch (e: PayAddressDecodeException)  // nothing to do, having pasted data is optional on startup
             {
-            } catch (e: Exception)
+            }
+            catch (e: Exception)
             {
                 //LogIt.info(sourceLoc() +" paste exception:")  // there could be random data in the paste, so be tolerant of whatever garbage might be in there but log it
                 //LogIt.info(sourceLoc() + Log.getStackTraceString(e))
@@ -593,7 +607,54 @@ class MainActivity : CommonNavActivity()
             while (true)
             {
                 updateSyncingIcon()
-                delay(7000)
+                delay(5000)
+            }
+        }
+
+        checkNofificationPermission()
+    }
+
+
+    var hasNotifPerm = 0
+
+    val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+        synchronized(hasNotifPerm)
+        {
+            if (isGranted)
+            {
+                    hasNotifPerm = 1
+            }
+            else
+            {
+                hasNotifPerm = 0
+            }
+        }
+    }
+    fun checkNofificationPermission(): Unit
+    {
+        if (hasNotifPerm == 1) return
+        when
+        {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED ->
+            {
+                hasNotifPerm = 1
+                return
+            }
+            shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) ->
+            {
+                // In an educational UI, explain to the user why your app requires this
+                // permission for a specific feature to behave as expected. In this UI,
+                // include a "cancel" or "no thanks" button that allows the user to
+                // continue using your app without granting the permission.
+                //showInContextUI(...)
+            }
+            else                                                                                                                       ->
+            {
+                // You can directly ask for the permission.
+                // The registered ActivityResultCallback gets the result of this request.
+                requestPermissionLauncher.launch(
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                )
             }
         }
     }
@@ -646,7 +707,8 @@ class MainActivity : CommonNavActivity()
         {
             val sta = ui.sendToAddress.text.toString().trim()
             updateSendAccount(PayAddress(sta))
-        } catch (e: PayAddressBlankException)
+        }
+        catch (e: PayAddressBlankException)
         {
         }  // nothing to update if its blank
         catch (e: UnknownBlockchainException)
@@ -822,7 +884,11 @@ class MainActivity : CommonNavActivity()
         LogIt.info("on new Intent: " + iuri)
         try
         {
-            for (c in accounts.values)
+            if (receivedIntent.scheme == "tdpp")
+            {
+
+            }
+            else for (c in accounts.values)
             {
                 if (receivedIntent.scheme != null)  // its null if normal app startup
                 {
@@ -837,7 +903,8 @@ class MainActivity : CommonNavActivity()
                     }
                 }
             }
-        } catch (e: Exception)
+        }
+        catch (e: Exception)
         {
             displayException(e)
         }

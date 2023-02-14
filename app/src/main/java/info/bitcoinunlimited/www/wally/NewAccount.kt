@@ -91,7 +91,7 @@ class NewAccount : CommonNavActivity()
         ui = ActivityNewAccountBinding.inflate(layoutInflater)
         setContentView(ui.root)
 
-        val blockchains = ArrayAdapter(this, R.layout.blockchain_selection_spinner, SupportedBlockchains.keys.toTypedArray())
+        val blockchains = ArrayAdapter(this, R.layout.blockchain_selection_spinner, SupportedBlockchains.filter { devMode || it.value.isMainNet }.keys.toTypedArray())
         ui.GuiBlockchainSelector?.setAdapter(blockchains)
 
         val adapter: ArrayAdapter<String> = ArrayAdapter<String>(this, R.layout.recovery_phrase_selection_spinner, englishWordList)
@@ -116,8 +116,11 @@ class NewAccount : CommonNavActivity()
                         {
                             codeChanged++
                             val len = ui.GuiAccountNameEntry.text.length
-                            ui.GuiAccountNameEntry.text.replace(0,len, proposedName)
-
+                            ui.GuiAccountNameEntry.set(proposedName)
+                        }
+                        else
+                        {
+                            ui.GuiAccountNameEntry.set("")  // If we set it then remove our name (because it refers to a different blockchain)
                         }
                     }
                 }

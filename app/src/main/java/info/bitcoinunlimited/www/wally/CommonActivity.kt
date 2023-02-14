@@ -249,6 +249,18 @@ open class CommonActivity : AppCompatActivity()
         wallyApp?.lastError = null
         wallyApp?.lastErrorDetails = null
         if (err != null) displayError(err, errDetails ?: "")
+        else  // If there's an error, it takes precedence
+        {
+            val notice = wallyApp?.lastNotice
+            val noticeDetails = wallyApp?.lastNoticeDetails
+            if (notice != null)
+                if ((notice == -1)&&(noticeDetails != null)) displayNotice(noticeDetails ?: "")
+                else displayNotice(notice, noticeDetails ?: "")
+
+        }
+        wallyApp?.lastNotice = null
+        wallyApp?.lastNoticeDetails = null
+
         isRunning = true
     }
 
@@ -469,6 +481,7 @@ open class CommonActivity : AppCompatActivity()
             {
                 super.setTitle(msg)
                 alerts.add(Alert(msg, details, NOTICE_LEVEL))
+                val tmp = ColorDrawable(errorColor)
                 titlebar.background = ColorDrawable(errorColor)
                 errorCount += 1
                 errorCount
@@ -500,8 +513,9 @@ open class CommonActivity : AppCompatActivity()
     fun handleAnyIntent(intentUri: String): Boolean
     {
         val uri = intentUri.split(":")[0]
-
         val notify = amIbackground()
+        val app = wallyApp
+        if (app == null) return false // should never occur
 
         if (uri == IDENTITY_URI_SCHEME)
         {
@@ -510,7 +524,7 @@ open class CommonActivity : AppCompatActivity()
             intent.data = Uri.parse(intentUri)
             if (notify)
             {
-                val nid = wallyApp?.notify(intent, "Identity Request", this)
+                val nid = app.notify(intent, "Identity Request", this)
                 intent.extras?.putIntegerArrayList("notificationId", arrayListOf(nid))
             }
             else startActivityForResult(intent, IDENTITY_OP_RESULT)
@@ -521,7 +535,8 @@ open class CommonActivity : AppCompatActivity()
             intent.data = Uri.parse(intentUri)
             if (notify)
             {
-                wallyApp?.notify(intent, "Trickle Pay Request", this)
+                if (!app.autoHandle(intentUri))
+                    app.notify(intent, "Trickle Pay Request", this)
             }
             else startActivityForResult(intent, TRICKLEPAY_RESULT)
         }

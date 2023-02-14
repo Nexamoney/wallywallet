@@ -81,6 +81,7 @@
 
     <string name="empty"></string>
     <string name="or">or</string>
+    <string name="onBlockchain">on</string>
     <string name="NotImplemented">Coming Soon</string>
     <string name="NoNodes">No blockchain access</string>
     <!-- The user chose not to proceed with some operation -->
@@ -139,6 +140,7 @@
     <string name="Send">Send</string>
     <string name="OpenSend">Send</string>
     <string name="SendCancel">Cancel</string>
+    <string name="ignoredInsecureRequest">Ignored Insecure Request</string>
     <!-- As in "Send from" -->
     <string name="from">From account</string>
     <!-- As in "Send to" -->
@@ -174,7 +176,7 @@
     <string name="pasteUnintelligible">paste not understood</string>
     <string name="chainIncompatibleWithAddress">address incompatible with account</string>
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Account currency is %walletCrypto, address is %addressCrypto.  Use the combo box to change the send from account to one that matches the address\'s blockchain.</string>
-    <string name="incoming" formatted="false">pending transfers of %delta is included</string>
+    <string name="incoming" formatted="false">includes pending transfer of %delta %unit</string>
     <string name="approximatelyT" formatted="false">approximately %qty %fiat</string>
     <string name="exchangeRate" formatted="false">(exchange rate: 1 %crypto is worth %amt %fiat)</string>
     <!-- user is attempting to send more cryptocurrency than the wallet contains.  The payment can't happen -->
@@ -476,6 +478,7 @@
     <string name="TpNoRegistrations">No Trickle Pay registrations</string>
     <string name="TpRegDenied">Denied registration</string>
     <string name="TpRegAccepted">Accepted registration</string>
+    <string name="TpRegUnchanged">Registration unchanged</string>
     <string name="TpRequestAutoDeny">Denied request (automatic)</string>
     <string name="TpRequestAutoAccept">Accepted request (automatic)</string>
     <string name="TpTxDenied">Denied transaction</string>
@@ -486,7 +489,7 @@
     <string name="SpecialTpTransactionFrom">Special Transaction From</string>
     <string name="IncompleteTpTransactionFrom">Firm Offer Proposal From</string>
     <string name="TpEntails">Entails</string>
-    <string name="TpOnBlockchain">On Blockchain</string>
+    <string name="TpInAccount">Using Account</string>
     <string name="TpAssetRequestFrom">Asset Information Request From</string>
     <string name="TpHandledByAccount">can be handled by your account</string>
     <string name="TpAssetMatches" formatted="false">Information about %num assets that you own will be provided to this service.</string>
