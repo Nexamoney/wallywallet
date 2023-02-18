@@ -65,6 +65,7 @@ class IdentityDomainBinder(val ui: IdentityListItemBinding): GuiListItemBinder<I
         nexidUpdateIntentFromPerms(intent, perms)
         nexidUpdateIntentFromReqs(intent, reqs)
         intent.putExtra("domainName", this.data?.domain)
+        intent.putExtra("mode", "edit")
         (v.context as Activity).startActivityForResult(intent, IDENTITY_SETTINGS_RESULT)
     }
 }

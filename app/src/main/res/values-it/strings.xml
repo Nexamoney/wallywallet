@@ -112,7 +112,7 @@
     <string name="excessiveFee">fee eccessiva</string>
     <string name="feeExceedsFlatMax">fee superiore alla massimo configurato</string>
     <string name="notSupported">non supportato</string>
-    <string name="dataMissing">dati mancanti</string>
+    <string name="PaymentDataMissing">dati mancanti</string>
     <string name="headersNotForthcoming">intestazioni non fornite</string>
     <string name="cantConvert">conversione temporaneamente non disponibile</string>
 

@@ -5,6 +5,7 @@ package info.bitcoinunlimited.www.wally
 import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -28,7 +29,6 @@ open class IdentityOpException(msg: String, shortMsg: String? = null, severity: 
 class IdentityOpActivity : CommonNavActivity()
 {
     private lateinit var ui:ActivityIdentityOpBinding
-    private val HTTP_REQ_TIMEOUT_MS: Int = 7000
     override var navActivityId = -1
 
     var displayedLoginRequest: URL? = null
@@ -42,6 +42,8 @@ class IdentityOpActivity : CommonNavActivity()
     var account: Account? = null
     var pinTries = 0
     var msgToSign:ByteArray? = null
+
+    var skipActivityResume = false
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -59,12 +61,17 @@ class IdentityOpActivity : CommonNavActivity()
     override fun onStart()
     {
         super.onStart()
+
+        // If we ever need to launch an identity op then start showing the menu item
+        enableMenu(this, SHOW_IDENTITY_PREF)
     }
 
     override fun onResume()
     {
         super.onResume()
-        LogIt.info("Identity Operation")
+
+        if (skipActivityResume) return  // because onActivityResult is handling it
+
         ui.identityInformation.visibility = View.INVISIBLE
         // Process the intent that caused this activity to resume
         if (intent.scheme != null)  // its null if normal app startup
@@ -134,12 +141,13 @@ class IdentityOpActivity : CommonNavActivity()
                 if (op != "sign")  // sign does not need a registered identity domain so skip all this checking for this op
                 {
                     val idData = w.lookupIdentityDomain(h) // + path)
-                    if (idData == null)
+                    if (idData == null)  // We don't know about this domain, so register and give it info in one shot
                     {
                         if (op != "reg")
                         {
                             blankActivity()
-                            displayError(R.string.UnknownDomainRegisterFirst, null, { finish() })
+                            wallyApp?.displayError(R.string.UnknownDomainRegisterFirst)
+                            finish()
                             return
                         }
                         if (triggeredNewDomain == false)  // I only want to drop into the new domain settings once
@@ -148,6 +156,7 @@ class IdentityOpActivity : CommonNavActivity()
                             var intent = Intent(context, DomainIdentitySettings::class.java)
                             intent.putExtra("domainName", h) // + path)
                             intent.putExtra("title", getString(R.string.newDomainRequestingIdentity))
+                            intent.putExtra("mode", "reg")
                             for ((k, v) in attribs)
                             {
                                 LogIt.info(k + " => " + v)
@@ -159,7 +168,7 @@ class IdentityOpActivity : CommonNavActivity()
                             startActivityForResult(intent, IDENTITY_SETTINGS_RESULT)
                         }
                     }
-                    else
+                    else // We know about this domain, but its asking for more info
                     {
                         idData.getPerms(perms)
                         idData.getReqs(reqs)
@@ -180,6 +189,7 @@ class IdentityOpActivity : CommonNavActivity()
                             var intent = Intent(context, DomainIdentitySettings::class.java)
                             intent.putExtra("domainName", h)
                             intent.putExtra("title", getString(R.string.domainRequestingAdditionalIdentityInfo))
+                            intent.putExtra("mode", "reg")
                             for ((k, v) in attribs)
                             {
                                 intent.putExtra(k, v)
@@ -228,8 +238,14 @@ class IdentityOpActivity : CommonNavActivity()
             {
                 if (data != null)
                 {
+                    skipActivityResume = true
                     val err = data.getStringExtra("error")
                     if (err != null) displayError(err)
+                    val result = data.getStringExtra("result")
+                    if (result == "accept")
+                        onProvideIdentity(null)
+                    else
+                        onDontProvideIdentity(null)
                 }
             }
             else if (requestCode == Activity.RESULT_CANCELED)  // If the DomainIdentitySettings activity got cancelled, the user wants to cancel the whole thing
@@ -336,7 +352,7 @@ class IdentityOpActivity : CommonNavActivity()
 
     // If "yes" button pressed, contact the remote server with your registration or identity information
     @Suppress("UNUSED_PARAMETER")
-    fun onProvideIdentity(v: View)
+    fun onProvideIdentity(v: View?)
     {
         val iuri = displayedLoginRequest
         launch {
@@ -410,48 +426,11 @@ class IdentityOpActivity : CommonNavActivity()
                     LogIt.info("signature is: " + sigStr)
 
                     var loginReq = protocol + "://" + tmpHost + portStr + path
-                    loginReq += "?op=login&addr=" + address.toString() + "&sig=" + URLEncoder.encode(sigStr, "UTF-8") + "&cookie=" + URLEncoder.encode(cookie, "UTF-8")
+                    loginReq += "?op=login&addr=" + address.urlEncode() + "&sig=" + sigStr.urlEncode() + "&cookie=" + URLEncoder.encode(cookie, "UTF-8")
 
-                    var forwarded = 0;
-                    getloop@ while (forwarded < 3)
-                    {
-                        LogIt.info("login reply: " + loginReq)
-                        try
-                        {
-                            val req: HttpURLConnection = URL(loginReq).openConnection() as HttpURLConnection
-                            req.setConnectTimeout(HTTP_REQ_TIMEOUT_MS)
-                            val resp = req.inputStream.bufferedReader().readText()
-                            LogIt.info("login response code:" + req.responseCode.toString() + " response: " + resp)
-                            if ((req.responseCode >= 200) and (req.responseCode < 250))
-                            {
-                                displayNotice(resp, null, 1000) { clearIntentAndFinish() }
-                            }
-                            else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding (often switching from http to https)
-                            {
-                                loginReq = req.getHeaderField("Location")
-                                forwarded += 1
-                                continue@getloop
-                            }
-                            else
-                            {
-                                displayError(resp, null, { clearIntentAndFinish() })
-                            }
-                        }
-                        catch (e: FileNotFoundException)
-                        {
-                            displayError(R.string.badLink, loginReq, { clearIntentAndFinish() })
-                        }
-                        catch (e: IOException)
-                        {
-                            displayError(R.string.connectionAborted, loginReq, { clearIntentAndFinish() })
-                        }
-                        catch (e: java.net.ConnectException)
-                        {
-                            displayError(R.string.connectionException, null, { clearIntentAndFinish() })
-                        }
+                    wallyApp?.handleLogin(loginReq)
+                    finish()
 
-                        break@getloop  // only way to actually loop is to hit a 301 or 302
-                    }
                 }
                 else if ((op == "reg") || (op == "info"))
                 {
@@ -486,8 +465,6 @@ class IdentityOpActivity : CommonNavActivity()
                     params["cookie"] = cookie.toString()
 
                     // Supply additional requested data
-                    postloop@ while (forwarded < 3)
-                    {
                         if (idData != null)
                         {
                             val perms = mutableMapOf<String, Boolean>()
@@ -503,10 +480,11 @@ class IdentityOpActivity : CommonNavActivity()
                                         val info = identityInfo.getString(i, null)
                                         if (info == null || info == "")  // missing some info that is needed
                                         {
-                                            var intent = Intent(v.context, IdentitySettings::class.java)
+                                            var intent = Intent(this, IdentitySettings::class.java)
                                             nexidUpdateIntentFromReqs(intent, reqs)
                                             intent.putExtra("domainName", idData.domain)
-                                            (v.context as Activity).startActivity(intent)
+                                            intent.putExtra("title", i18n(R.string.IdentityDataMissing))
+                                            startActivity(intent)
                                         }
                                         else
                                         {
@@ -526,10 +504,10 @@ class IdentityOpActivity : CommonNavActivity()
                             }
                         }
 
-                        val jsonBody = StringBuilder("{")
-                        var firstTime = true
-                        for ((k, value) in params)
-                        {
+                    val jsonBody = StringBuilder("{")
+                    var firstTime = true
+                    for ((k, value) in params)
+                    {
                             if (!firstTime) jsonBody.append(',')
                             else firstTime = false
                             jsonBody.append('"')
@@ -537,75 +515,11 @@ class IdentityOpActivity : CommonNavActivity()
                             jsonBody.append("""":"""")
                             jsonBody.append(value)
                             jsonBody.append('"')
-                        }
-                        jsonBody.append('}')
-
-                        LogIt.info("sending registration reply: " + loginReq)
-                        try
-                        {
-                            //val body = """[1,2,3]"""  // URLEncoder.encode("""[1,2,3]""","UTF-8")
-                            val req: HttpURLConnection = URL(loginReq).openConnection() as HttpURLConnection
-                            req.requestMethod = "POST"
-                            req.setRequestProperty("Content-Type", "application/json")
-                            req.setRequestProperty("Accept", "*/*")
-                            req.setRequestProperty("Content-Length", jsonBody.length.toString())
-                            req.setConnectTimeout(HTTP_REQ_TIMEOUT_MS)
-                            req.doOutput = true
-                            req.useCaches = false
-                            val os = DataOutputStream(req.outputStream)
-                            //os.write(jsonBody.toByteArray())
-                            os.writeBytes(jsonBody.toString())
-                            os.flush()
-                            os.close()
-                            val resp = req.inputStream.bufferedReader().readText()
-                            LogIt.info("reg response code:" + req.responseCode.toString() + " response: " + resp)
-                            if ((req.responseCode >= 200) and (req.responseCode < 300))
-                            {
-                                displayNotice(resp, null, 1000) { clearIntentAndFinish() }
-                            }
-                            else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding
-                            {
-                                loginReq = req.getHeaderField("Location")
-                                forwarded += 1
-                                continue@postloop
-                            }
-                            else
-                            {
-                                wallyApp?.displayNotice(resp)
-                                clearIntentAndFinish()
-                            }
-                        }
-                        catch (e: java.net.SocketTimeoutException)
-                        {
-                            LogIt.info("SOCKET TIMEOUT:  If development, check phone's network.  Ensure you can route from phone to target!  " + e.toString())
-                            wallyApp?.displayError(R.string.connectionException)
-                            clearIntentAndFinish()
-                        }
-                        catch (e: IOException)
-                        {
-                            LogIt.info("registration IOException: " + e.toString())
-                            wallyApp?.displayError(R.string.connectionAborted)
-                            clearIntentAndFinish()
-                        }
-                        catch (e: FileNotFoundException)
-                        {
-                            LogIt.info("registration FileNotFoundException: " + e.toString())
-                            wallyApp?.displayError(R.string.badLink)
-                            clearIntentAndFinish()
-                        }
-                        catch (e: java.net.ConnectException)
-                        {
-                            wallyApp?.displayError(R.string.connectionException)
-                            clearIntentAndFinish()
-                        }
-                        catch (e: Throwable)
-                        {
-                            wallyApp?.displayError(R.string.unknownError,)
-                            clearIntentAndFinish()
-                        }
-
-                        break@postloop  // Only way to actually loop is to get a http 301 or 302
                     }
+                    jsonBody.append('}')
+
+                    wallyApp?.handlePostLogin(loginReq, jsonBody.toString())
+                    clearIntentAndFinish()
                 }
                 else if (op == "sign")
                 {
@@ -706,7 +620,7 @@ class IdentityOpActivity : CommonNavActivity()
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun onDontProvideIdentity(v: View)
+    fun onDontProvideIdentity(v: View?)
     {
         showUI(false)
         clearIntentAndFinish()

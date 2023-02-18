@@ -4,6 +4,7 @@ package info.bitcoinunlimited.www.wally
 
 import android.app.Activity
 import android.content.*
+import android.content.Intent.CATEGORY_BROWSABLE
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -26,11 +27,8 @@ import io.ktor.client.statement.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
 import java.lang.Exception
-import java.net.SocketTimeoutException
-import java.net.URL
 import java.util.logging.Logger
 import java.math.BigDecimal
-import java.net.URLEncoder
 
 
 private val LogIt = Logger.getLogger("BU.wally.TricklePay")
@@ -87,8 +85,12 @@ class TricklePayMainFragment : Fragment()
 
     fun populate()
     {
-        val domains = ArrayList(wallyApp?.tpDomains?.domains?.values)
-        adapter.set(domains)
+        val app = wallyApp
+        if (app!=null)
+        {
+            val domains = ArrayList(app.tpDomains.domains.values)
+            adapter.set(domains)
+        }
     }
 
 }
@@ -146,39 +148,35 @@ class TricklePayRegFragment : Fragment()
 
             ui.GuiEnableAutopay.setChecked(d.automaticEnabled)
 
-            ui.GuiAutospendLimitEntry0.text.clear()
             if (d.maxper == -1L)
             {
-                ui.GuiAutospendLimitEntry0.text.append(i18n(R.string.unspecified))
+                ui.GuiAutospendLimitEntry0.set(i18n(R.string.unspecified))
             }
             else
             {
-                ui.GuiAutospendLimitEntry0.text.append(account.format(account.fromFinestUnit(d.maxper)))
+                ui.GuiAutospendLimitEntry0.set(account.format(account.fromFinestUnit(d.maxper)))
             }
             ui.currencyUnit0.text = account.currencyCode
             ui.GuiAutospendLimitDescription0.text = d.descper
 
-            ui.GuiAutospendLimitEntry1.text.clear()
             if (d.maxday == -1L)
-                ui.GuiAutospendLimitEntry1.text.append(i18n(R.string.unspecified))
+                ui.GuiAutospendLimitEntry1.set(i18n(R.string.unspecified))
             else
-                ui.GuiAutospendLimitEntry1.text.append(account.format(account.fromFinestUnit(d.maxday)))
+                ui.GuiAutospendLimitEntry1.set(account.format(account.fromFinestUnit(d.maxday)))
             ui.currencyUnit1.text = account.currencyCode
             ui.GuiAutospendLimitDescription1.text = d.descday
 
-            ui.GuiAutospendLimitEntry2.text.clear()
             if (d.maxweek == -1L)
-                ui.GuiAutospendLimitEntry2.text.append(i18n(R.string.unspecified))
+                ui.GuiAutospendLimitEntry2.set(i18n(R.string.unspecified))
             else
-                ui.GuiAutospendLimitEntry2.text.append(account.format(account.fromFinestUnit(d.maxweek)))
+                ui.GuiAutospendLimitEntry2.set(account.format(account.fromFinestUnit(d.maxweek)))
             ui.currencyUnit2.text = account.currencyCode
             ui.GuiAutospendLimitDescription2.text = d.descweek
 
-            ui.GuiAutospendLimitEntry3.text.clear()
             if (d.maxmonth == -1L)
-                ui.GuiAutospendLimitEntry3.text.append(i18n(R.string.unspecified))
+                ui.GuiAutospendLimitEntry3.set(i18n(R.string.unspecified))
             else
-                ui.GuiAutospendLimitEntry3.text.append(account.format(account.fromFinestUnit(d.maxmonth)))
+                ui.GuiAutospendLimitEntry3.set(account.format(account.fromFinestUnit(d.maxmonth)))
             ui.currencyUnit3.text = account.currencyCode
             ui.GuiAutospendLimitDescription3.text = d.descmonth
         }
@@ -224,7 +222,7 @@ class TricklePayCustomTxFragment : Fragment()
         super.onViewCreated(view, savedInstanceState)
     }
 
-    fun populate(pactivity: TricklePayActivity, sess: TricklePaySession)
+    fun populate(sess: TricklePaySession)
     {
         tpSession = sess
         updateUI()
@@ -571,12 +569,15 @@ class TricklePayActivity : CommonNavActivity()
             wallyApp?.tpDomains?.load()
             (fragment(R.id.GuiTricklePayMain) as TricklePayMainFragment).populate()
         }
+
+        enableMenu(this, SHOW_TRICKLEPAY_PREF) // If you ever drop into this activity, show it in the menu
     }
 
     override fun onResume()
     {
         super.onResume()
-        if (!launchedFromRecent() && (intent.scheme != null)) // its null if normal app startup
+        //if (!launchedFromRecent() && (intent.scheme != null)) // its null if normal app startup
+        if (intent.scheme != null)
         {
             displayFragment(R.id.GuiTricklePayEmpty)
             handleNewIntent(intent)
@@ -613,7 +614,7 @@ class TricklePayActivity : CommonNavActivity()
         if (action == TdppAction.ASK)
         {
             val frag = fragment(R.id.GuiTricklePayCustomTx) as TricklePayCustomTxFragment
-            frag.populate(this, sess)
+            frag.populate(sess)
             // Change the title if the request is for a partial transaction
             if ((sess.tflags and TDPP_FLAG_PARTIAL) != 0)
             {
@@ -629,14 +630,12 @@ class TricklePayActivity : CommonNavActivity()
         }
         else if (action == TdppAction.ACCEPT)
         {
-            wallyApp?.displayNotice(R.string.TpRequestAutoAccept)
             sess.acceptSpecialTx()
-            finish()
+            clearIntentAndFinish(notice=R.string.TpRequestAutoAccept)
         }
         else // if (action == TdppAction.DENY)
         {
-            wallyApp?.displayNotice(R.string.TpRequestAutoDeny)
-            finish()
+            clearIntentAndFinish(notice=R.string.TpRequestAutoDeny)
         }
     }
 
@@ -670,8 +669,7 @@ class TricklePayActivity : CommonNavActivity()
                     return
                 }
                 sess.acceptSendToRequest()
-                wallyApp?.displayNotice(R.string.TpSendRequestAccepted)
-                finish()
+                clearIntentAndFinish(notice=R.string.TpSendRequestAccepted)
             }
             else laterUI {  // If it wasn't automatically accepted or rejected, ask
                 val frag:TricklePaySendToFragment = fragment(R.id.GuiTricklePaySendTo)
@@ -682,13 +680,11 @@ class TricklePayActivity : CommonNavActivity()
         else if (action == TdppAction.ACCEPT)
         {
             sess.acceptSendToRequest()
-            wallyApp?.displayNotice(R.string.TpRequestAutoAccept)
-            finish()
+            clearIntentAndFinish(notice=R.string.TpRequestAutoAccept)
         }
         else // if (action == TdppAction.DENY)
         {
-            wallyApp?.displayNotice(R.string.TpRequestAutoDeny)
-            finish()
+            clearIntentAndFinish(notice=R.string.TpRequestAutoDeny)
         }
     }
 
@@ -707,15 +703,14 @@ class TricklePayActivity : CommonNavActivity()
         {
             displayFragment(R.id.GuiTricklePayEmpty)
             wallyApp?.displayException(e)
-            finish()
+            clearIntentAndFinish()
             return
         }
 
         if (action == TdppAction.DENY)
         {
             displayFragment(R.id.GuiTricklePayAssetRequest)
-            wallyApp?.displayError(R.string.TpRequestAutoDeny)
-            finish()
+            clearIntentAndFinish(error=R.string.TpRequestAutoDeny)
         }
         else if (action == TdppAction.ASK)
         {
@@ -726,9 +721,8 @@ class TricklePayActivity : CommonNavActivity()
         if (action == TdppAction.ACCEPT)
         {
             displayFragment(R.id.GuiTricklePayAssetRequest)
-            wallyApp?.displayNotice(R.string.TpRequestAutoAccept)
             sess.acceptAssetRequest()
-            finish()
+            clearIntentAndFinish(notice=R.string.TpRequestAutoAccept)
         }
     }
 
@@ -736,20 +730,9 @@ class TricklePayActivity : CommonNavActivity()
     fun handleShareRequest(uri: Uri)
     {
         val sess = tpSession ?: throw UnavailableException()  // you must have created a session and parsed the common fields first
-        sess.handleShareRequest(uri) { finish() }
-/*
-        if (domain.infoRequest == TdppAction.ASK)
-        {
-            (fragment(R.id.GuiTricklePayAssetRequest) as TricklePayAssetRequestFragment).populate(this, uri, resp.assets)
-            // ask for confirmation
-            displayFragment(R.id.GuiTricklePayAssetRequest)
+        sess.handleShareRequest(uri) {
+            finish()
         }
-        if (domain.infoRequest == TdppAction.ACCEPT)
-        {
-            displayNotice(R.string.TpRequestAutoAccept)
-            acceptAssetRequest(resp)
-        }
- */
     }
 
     fun handleRegistration(uri: Uri): Boolean
@@ -815,7 +798,11 @@ class TricklePayActivity : CommonNavActivity()
     //? Handle tdpp intents
     fun handleNewIntent(receivedIntent: Intent)
     {
-        val iuri: Uri = receivedIntent.toUri(0).toUri()  // URI_ANDROID_APP_SCHEME | URI_INTENT_SCHEME
+        // Automatically go back from the parent (wally main) activity to whoever called us
+        // In this case we'll do this when the intent is coming from browsing a local web site
+        val autoClose:Boolean = if (receivedIntent.categories != null) receivedIntent.categories.contains(CATEGORY_BROWSABLE) else false
+        val iuri = receivedIntent.toUri(0).toUri()
+
         wallyApp?.denotify(receivedIntent)
         try
         {
@@ -846,7 +833,7 @@ class TricklePayActivity : CommonNavActivity()
                 {
                     displayFragment(R.id.GuiTricklePayMain)
                     wallyApp?.displayError(R.string.badSignature)
-                    finish()
+                    clearIntentAndFinish()
                 }
 
                 later() later@ // Can't do in UI because domains MUST be loaded first
@@ -886,11 +873,13 @@ class TricklePayActivity : CommonNavActivity()
                         else if (path == "/assets")
                         {
                             LogIt.info("asset request")
+                            if (autoClose) wallyApp?.finishParent=1
                             handleAssetInfoRequest(iuri)
                         }
                         else if (path == "/share")
                         {
                             LogIt.info("info request (reverse QR)")
+                            if (autoClose) wallyApp?.finishParent=1
                             handleShareRequest(iuri)
                         }
                         else if (path == "/jsonpay")
@@ -901,6 +890,7 @@ class TricklePayActivity : CommonNavActivity()
                         {
                             LogIt.info(sourceLoc() + ": Start long Poll to ${h}")
                             wallyApp?.accessHandler?.startLongPolling(sess.replyProtocol, sess.hostAndPort, sess.cookie)
+                            if (autoClose) wallyApp?.finishParent=1
                             clearIntentAndFinish(null, R.string.connectionEstablished)
                         }
                         else
@@ -925,13 +915,13 @@ class TricklePayActivity : CommonNavActivity()
         catch (e: BUExceptionI)
         {
             wallyApp?.displayException(e)
-            finish()
+            clearIntentAndFinish()
         }
         catch (e: BUException)
         {
             handleThreadException(e)
             wallyApp?.displayError(R.string.unknownError, e.toString())
-            finish()
+            clearIntentAndFinish()
         }
     }
 
@@ -943,7 +933,7 @@ class TricklePayActivity : CommonNavActivity()
             {
                 if (visibleFragment == R.id.GuiTricklePayReg)
                 {
-                    regUxToMap()
+                    registrationUiToDomain()
                 }
             }
         } catch (e: Exception)
@@ -960,6 +950,7 @@ class TricklePayActivity : CommonNavActivity()
         if (error != null) wallyApp?.displayError(error)
         if (notice != null) wallyApp?.displayNotice(notice)
         setResult(Activity.RESULT_OK, intent)
+        tpSession = null
         if (up)  // parent
         {
             NavUtils.navigateUpFromSameTask(this)
@@ -979,8 +970,8 @@ class TricklePayActivity : CommonNavActivity()
     }
 
 
-    // Move the Ux data into the map
-    fun regUxToMap()
+    /** Move the UI data into the actual domain data structure */
+    fun registrationUiToDomain()
     {
         val frag: TricklePayRegFragment = fragment(R.id.GuiTricklePayReg)
         val GuiTricklePayReg: TricklePayRegBinding = frag.ui
@@ -1028,7 +1019,7 @@ class TricklePayActivity : CommonNavActivity()
         LogIt.info("accept trickle pay registration")
         try
         {
-            regUxToMap()
+            registrationUiToDomain()
             later {
                 tpDomains.save()  // can't save in UI thread
                 clearIntentAndFinish(notice = R.string.TpRegAccepted)
@@ -1091,7 +1082,7 @@ class TricklePayActivity : CommonNavActivity()
     {
         synchronized(tpDomains)
         {
-            regUxToMap()
+            registrationUiToDomain()
             later {
                 tpDomains.save()  // can't save in UI thread
                 laterUI {
@@ -1120,27 +1111,41 @@ class TricklePayActivity : CommonNavActivity()
     @Suppress("UNUSED_PARAMETER")
     fun onSignSpecialTx(view: View?)
     {
-        LogIt.info("accept trickle pay special transaction")
-        accepted = true
-        val sess = tpSession
-        tpSession = null
-        if (sess != null)
+        try
         {
-            val pTx = sess.proposedTx
-            val panalysis = sess.proposalAnalysis
-            if ((pTx != null) && (panalysis != null))
+            LogIt.info("accept trickle pay special transaction")
+            accepted = true
+            val sess = tpSession
+            tpSession = null
+            if (sess != null)
             {
-                if (panalysis.account.locked)
+                val pTx = sess.proposedTx
+                val panalysis = sess.proposalAnalysis
+                if ((pTx != null) && (panalysis != null))
                 {
-                    launchPinEntry()
+                    if (panalysis.account.locked)
+                    {
+                        launchPinEntry()
+                        return
+                    }
+                    sess.acceptSpecialTx()
+                    clearIntentAndFinish()
                     return
                 }
-                sess.acceptSpecialTx()
-                clearIntentAndFinish()
-                return
             }
+            return
         }
-        throw UnknownError()
+        catch (e: BUExceptionI)
+        {
+            wallyApp?.displayException(e)
+            finish()
+        }
+        catch (e: BUException)
+        {
+            handleThreadException(e)
+            wallyApp?.displayError(R.string.unknownError, e.toString())
+            finish()
+        }
     }
 
     fun onDenySpecialTx(@Suppress("UNUSED_PARAMETER") view: View?)
@@ -1161,10 +1166,31 @@ class TricklePayActivity : CommonNavActivity()
 
     fun onAcceptSendToRequest(@Suppress("UNUSED_PARAMETER") view: View?)
     {
-        accepted = true
-        tpSession?.acceptSendToRequest()
-        tpSession = null
-        clearIntentAndFinish(notice = R.string.TpSendRequestAccepted)
+        try
+        {
+            accepted = true
+            tpSession?.acceptSendToRequest()
+            tpSession = null
+            clearIntentAndFinish(notice = R.string.TpSendRequestAccepted)
+        }
+        catch (e: BUExceptionI)
+        {
+            wallyApp?.displayException(e)
+            clearIntentAndFinish()
+        }
+        catch (e: BUException)
+        {
+            handleThreadException(e)
+            if (e.errCode != -1)
+            {
+                wallyApp?.displayError(e.errCode, e.message ?: "")
+            }
+            else
+            {
+                 wallyApp?.displayError(R.string.unknownError, e.toString())
+            }
+            clearIntentAndFinish()
+        }
     }
 
     fun onRejectSendToRequest(@Suppress("UNUSED_PARAMETER") view: View?)

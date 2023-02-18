@@ -123,4 +123,16 @@ class IdentitySettings(var address: PayAddress?=null) : CommonNavActivity()
 
         ui.infoValueRecycler.layoutManager = LinearLayoutManager(this)
     }
+
+    override fun onStart()
+    {
+        super.onStart()
+
+        val intent = getIntent()
+        val title = intent.getStringExtra("title")
+        if (title != null)
+        {
+            setTitle(title)
+        }
+    }
 }

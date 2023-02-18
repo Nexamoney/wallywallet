@@ -26,7 +26,6 @@ import kotlin.collections.ArrayList
 
 private val LogIt = Logger.getLogger("BU.wally.Alert")
 
-
 class AlertBinder(val ui: AlertListItemBinding, val activity: AlertActivity): GuiListItemBinder<Alert>(ui.root)
 {
     // Fill the view with this data
@@ -63,6 +62,8 @@ class AlertBinder(val ui: AlertListItemBinding, val activity: AlertActivity): Gu
         synchronized(activity.viewSync)
         {
             LogIt.info("onclick: " + pos + " " + activity.showingDetails)
+            val d = data
+            if (d == null) return  // its an empty row
             if (!activity.showingDetails)
             {
                 val some = 5
@@ -77,14 +78,21 @@ class AlertBinder(val ui: AlertListItemBinding, val activity: AlertActivity): Gu
                 activity.ui.GuiAlertList.invalidate()
                 activity.ui.GuiAlertView.layoutParams.height = heightButSome
                 activity.ui.GuiAlertView.requestLayout()
-                if (data?.details != null)
+                var detailsText = if ((d.details != null)&&(d.details != ""))
                 {
-                    activity.ui.GuiAlertView.text = data?.details
+                    d.details
                 }
                 else
                 {
-                    activity.ui.GuiAlertView.text = i18n(R.string.noAdditionalDetails)
+                    i18n(R.string.noAdditionalDetails)
                 }
+
+                if (devMode)
+                {
+                    val traceString = d.trace.map { "[" + it.fileName + ":" + it.lineNumber + "] " + it.className.split(".").last() + "." + it.methodName }.joinToString("\n")
+                    detailsText = detailsText + "\n\n" + traceString
+                }
+                activity.ui.GuiAlertView.text = detailsText
                 activity.ui.container.requestLayout()
                 activity.highlight(pos)
             }

@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Rect
@@ -20,6 +21,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat.setWindowInsetsAnimationCallback
 import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
@@ -44,9 +46,20 @@ const val EXCEPTION_LEVEL = 200
 const val ERROR_LEVEL = 100
 const val NOTICE_LEVEL = 50
 
-data class Alert(val msg: String, val details: String?, val level: Int, val date: Instant = Instant.now())
+data class Alert(val msg: String, val details: String?, val level: Int, val trace:Array<StackTraceElement>, val date: Instant = Instant.now())
 
 val alerts = arrayListOf<Alert>()
+
+val defaultIgnoreFiles = mutableListOf<String>("ZygoteInit.java", "RuntimeInit.java", "ActivityThread.java", "Looper.java", "Handler.java", "DispatchedTask.kt")
+fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: MutableSet<String>?=null): Array<StackTraceElement>
+{
+    skipFirst.add("CommonActivityKt.stackTraceWithout\$default")
+    val igf = ignoreFiles ?: defaultIgnoreFiles
+    val st = Exception().stackTrace.toMutableList()
+    while (st.isNotEmpty() && skipFirst.contains(st.first().methodName)) st.removeAt(0)
+    st.removeAll { igf.contains(it.fileName) }
+    return st.toTypedArray()
+}
 
 // Lookup strings in strings.xml
 fun i18n(id: Int): String
@@ -125,7 +138,6 @@ open class CommonNavActivity : CommonActivity()
         if (navActivityId >= 0)  // This will both change the selection AND switch to that activity if it is different than the current one!
             navView.selectedItemId = navActivityId
         navView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
-        navView.getMenu().findItem(R.id.navigation_assets)?.setVisible(devMode)
 
         val rootView = navView.rootView
 
@@ -154,17 +166,21 @@ open class CommonNavActivity : CommonActivity()
             }
 
         })
-        /*
-        rootView.setWindowInsetsAnimationCallback(object : WindowInsetsAnimation.Callback {
-            override fun onEnd(animation: WindowInsetsAnimation) {
-                super.onEnd(animation)
-                val showingKeyboard = view.rootWindowInsets.isVisible(WindowInsets.Type.ime())
-                // now use the boolean for something
-            }
-        })
+    }
 
-         */
+    override fun onResume()
+    {
+        super.onResume()
 
+        val navView: BottomNavigationView = findViewById(R.id.nav_view)
+        val prefDB = getSharedPreferences(i18n(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val showIdentity = if (devMode) devMode else prefDB.getBoolean(SHOW_IDENTITY_PREF, false)
+        val showTrickePay = if (devMode) devMode else prefDB.getBoolean(SHOW_TRICKLEPAY_PREF, false)
+        val showAssets = if (devMode) devMode else prefDB.getBoolean(SHOW_ASSETS_PREF, false)
+        val menu = navView.getMenu()
+        menu.findItem(R.id.navigation_identity)?.setVisible(showIdentity)
+        menu.findItem(R.id.navigation_trickle_pay)?.setVisible(showTrickePay)
+        menu.findItem(R.id.navigation_assets)?.setVisible(showAssets)
     }
 }
 
@@ -248,14 +264,37 @@ open class CommonActivity : AppCompatActivity()
         val errDetails = wallyApp?.lastErrorDetails
         wallyApp?.lastError = null
         wallyApp?.lastErrorDetails = null
-        if (err != null) displayError(err, errDetails ?: "")
-        else  // If there's an error, it takes precedence
+
+        // This code pops out of this activity if the child requested it.  This is needed when an external intent directly
+        // spawns a child activity of wally's main activity, but upon completion of that child we want to drop back to the
+        // spawner not to wally's main screen
+        var finishNow = false
+        wallyApp?.let {
+            val fp = it.finishParent
+            if (fp > 0)
+            {
+                it.finishParent = fp -1
+                finishNow = true
+            }
+        }
+
+        // I want to display any message before finishing even if the child wants to go back more
+        if (err != null) displayError(err, errDetails ?: "", { if (finishNow) finish()})
+        else  // If there's an error, it takes precedence to warnings
         {
             val notice = wallyApp?.lastNotice
             val noticeDetails = wallyApp?.lastNoticeDetails
             if (notice != null)
-                if ((notice == -1)&&(noticeDetails != null)) displayNotice(noticeDetails ?: "")
-                else displayNotice(notice, noticeDetails ?: "")
+            {
+                var msg:String = ""
+                var details: String = ""
+                if ((notice == -1) && (noticeDetails != null)) displayNotice(noticeDetails ?: "", "", NORMAL_NOTICE_DISPLAY_TIME, { if (finishNow) finish()})
+                else displayNotice(notice, noticeDetails ?: "", NORMAL_NOTICE_DISPLAY_TIME, { if (finishNow) finish()})
+            }
+            else
+            {
+                if (finishNow) finish()
+            }
 
         }
         wallyApp?.lastNotice = null
@@ -271,12 +310,15 @@ open class CommonActivity : AppCompatActivity()
         isRunning = false
     }
 
+    /*
     // see https://stackoverflow.com/questions/13135545/android-activity-is-using-old-intent-if-launching-app-from-recent-task
     fun launchedFromRecent(): Boolean
     {
         val flags: Int = intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY
         return flags == Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY
     }
+
+     */
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
@@ -292,12 +334,12 @@ open class CommonActivity : AppCompatActivity()
     }
 
 
-    fun displayException(exc: Exception)
+    private fun prepareDisplayExceptionString(exc: Exception): Pair<String,String>
     {
-        var displayString: String
-        val buExc = exc as? BUException
-        var stack: String? = null
         var details: String = ""
+        var displayString: String
+        var stack: String? = null
+        val buExc = exc as? BUException
         if (buExc != null)
         {
             if (buExc.severity != ErrorSeverity.Expected)
@@ -306,8 +348,16 @@ open class CommonActivity : AppCompatActivity()
                 LogIt.severe(buExc.shortMsg + ":" + buExc.message)
                 LogIt.severe(stack)
             }
-            displayString = buExc.shortMsg ?: buExc.message ?: getString(R.string.unknownError)
-            if (buExc.shortMsg != null) details = "Details: " + buExc.message + "\n"
+            if (buExc.errCode != -1)  // errCode replaces (is redundant to) the shortMsg
+            {
+                displayString = i18n(buExc.errCode)
+                details = "Details: " + buExc.message + "\n"
+            }
+            else
+            {
+                displayString = buExc.shortMsg ?: buExc.message ?: getString(R.string.unknownError)
+                if (buExc.shortMsg != null) details = "Details: " + buExc.message + "\n"
+            }
         }
         else
         {
@@ -318,38 +368,20 @@ open class CommonActivity : AppCompatActivity()
 
             displayString = exc.message ?: getString(R.string.unknownError)
         }
-        displayError(displayString, details + i18n(R.string.devDebugInfoHeader) + ":\n" + stack)
+        return Pair(displayString, details)
+    }
+
+    fun displayException(exc: Exception)
+    {
+        val (displayString, details) = prepareDisplayExceptionString(exc)
+        displayError(displayString, details)
     }
 
     /** Display a specific error string rather than what the exception recommends, and offer the exception as details */
     fun displayException(resource: Int, exc: Exception, expected: Boolean = false)
     {
-        var displayString: String
-        val buExc = exc as? BUException
-        var stack: String? = null
-        var details: String = ""
-        if (buExc != null)
-        {
-            if (!expected || buExc.severity != ErrorSeverity.Expected)
-            {
-                stack = Log.getStackTraceString(buExc)
-                LogIt.severe(buExc.shortMsg + ":" + buExc.message)
-                LogIt.severe(stack)
-            }
-            displayString = buExc.shortMsg ?: buExc.message ?: getString(R.string.unknownError)
-            if (buExc.shortMsg != null) details = "Details: " + buExc.message + "\n"
-        }
-        else
-        {
-            if (!expected)
-            {
-                stack = Log.getStackTraceString(exc)
-                LogIt.severe(exc.toString())
-                LogIt.severe(stack)
-            }
-            displayString = exc.message ?: getString(R.string.unknownError)
-        }
-        displayError(resource, displayString + "\n" + details + i18n(R.string.devDebugInfoHeader) + ":\n" + stack)
+        val (displayString, details) = prepareDisplayExceptionString(exc)
+        displayError(resource, displayString + "\n" + details)
     }
 
 
@@ -442,7 +474,8 @@ open class CommonActivity : AppCompatActivity()
                 lastErrorString = err
                 errorCount += 1
                 menuHidden += 1
-                alerts.add(Alert(err, details, ERROR_LEVEL))
+                val trace = stackTraceWithout(mutableSetOf("displayError","displayNotice"))
+                alerts.add(Alert(err, details, ERROR_LEVEL, trace))
                 invalidateOptionsMenu()
                 val errorColor = ContextCompat.getColor(applicationContext, R.color.error)
                 titlebar.background = ColorDrawable(errorColor)
@@ -456,15 +489,15 @@ open class CommonActivity : AppCompatActivity()
     }
 
     /** Display an short notification string on the title bar, and then clear it after a bit */
-    fun displayNotice(resource: Int, details: Int? = null)
+    fun displayNotice(resource: Int, details: Int? = null, time: Long = NOTICE_DISPLAY_TIME, then: (() -> Unit)? = null)
     {
-        if (details == null) displayNotice(i18n(resource), null)
-        else displayNotice(i18n(resource), i18n(details))
+        if (details == null) displayNotice(i18n(resource), null, time, then)
+        else displayNotice(i18n(resource), i18n(details), time, then)
     }
 
     /** Display an short notification string on the title bar, and then clear it after a bit.
      * This is a common variant because the notification string is "canned" but the details may not be (for example QR contents) */
-    fun displayNotice(resource: Int, details: String) = displayNotice(i18n(resource), details)
+    fun displayNotice(resource: Int, details: String, time: Long = NOTICE_DISPLAY_TIME, then: (() -> Unit)? = null) = displayNotice(i18n(resource), details, time, then)
 
     /** Display an short notification string on the title bar, and then clear it after a bit */
     fun displayNotice(resource: Int, time: Long = NOTICE_DISPLAY_TIME, then: (() -> Unit)? = null) = displayNotice(i18n(resource), null, time, then)
@@ -480,7 +513,10 @@ open class CommonActivity : AppCompatActivity()
             val myError = synchronized(errorSync)
             {
                 super.setTitle(msg)
-                alerts.add(Alert(msg, details, NOTICE_LEVEL))
+                val trace = stackTraceWithout(mutableSetOf("displayError","displayNotice"))
+                alerts.add(Alert(msg, details, NOTICE_LEVEL, trace))
+                menuHidden += 1
+                invalidateOptionsMenu()
                 val tmp = ColorDrawable(errorColor)
                 titlebar.background = ColorDrawable(errorColor)
                 errorCount += 1
@@ -512,31 +548,54 @@ open class CommonActivity : AppCompatActivity()
     // Notifying and startActivityForResult produces a double call to that intent
     fun handleAnyIntent(intentUri: String): Boolean
     {
-        val uri = intentUri.split(":")[0]
+        //val scheme = intentUri.split(":")[0]
+        val uri = intentUri.toUri()
+        val scheme = uri.scheme
         val notify = amIbackground()
         val app = wallyApp
         if (app == null) return false // should never occur
 
-        if (uri == IDENTITY_URI_SCHEME)
+        val isChain = uriToChain[scheme]
+        if (isChain != null)  // handle a blockchain address (by preparing the send to)
+        {
+            LogIt.info("handle address")
+            if (currentActivity is MainActivity)
+            {
+                LogIt.info("main activity is open")
+                (currentActivity as MainActivity).handleNonIntentText(intentUri)  // Don't try as an intent, or recursive loop
+            }
+            else
+            {
+                LogIt.info("launch main activity")
+                var intent = Intent(this, MainActivity::class.java)
+                intent.data = Uri.parse(intentUri)
+                if (notify)
+                {
+                    val nid = app.notifyPopup(intent, i18n(R.string.sendRequestNotification), i18n(R.string.toColon) + intentUri, this, false)
+                    intent.extras?.putIntegerArrayList("notificationId", arrayListOf(nid))
+                }
+                else startActivityForResult(intent, IDENTITY_OP_RESULT)
+            }
+        }
+        else if (scheme == IDENTITY_URI_SCHEME)
         {
             LogIt.info("starting identity operation activity")
             var intent = Intent(this, IdentityOpActivity::class.java)
             intent.data = Uri.parse(intentUri)
             if (notify)
             {
-                val nid = app.notify(intent, "Identity Request", this)
+                val nid = app.notifyPopup(intent, i18n(R.string.identityRequestNotification), i18n(R.string.fromColon) + uri.host, this)
                 intent.extras?.putIntegerArrayList("notificationId", arrayListOf(nid))
             }
             else startActivityForResult(intent, IDENTITY_OP_RESULT)
         }
-        else if (uri == TDPP_URI_SCHEME)
+        else if (scheme == TDPP_URI_SCHEME)
         {
             var intent = Intent(this, TricklePayActivity::class.java)
             intent.data = Uri.parse(intentUri)
             if (notify)
             {
-                if (!app.autoHandle(intentUri))
-                    app.notify(intent, "Trickle Pay Request", this)
+                app.autoHandle(intentUri)
             }
             else startActivityForResult(intent, TRICKLEPAY_RESULT)
         }

@@ -129,7 +129,7 @@ class SplitBillActivity : CommonNavActivity()
                 if (ignoreTipAmountChange) return
                 try
                 {
-                    val qty = ui.splitBillTipAmount?.text?.toString()?.toBigDecimal(currencyMath)?.setScale(currencyScale)
+                    val qty = ui.splitBillTipAmount.text.toString().toBigDecimal(currencyMath).setScale(currencyScale)
                     if (qty != null)
                     {
                         tipAmt = qty
@@ -249,7 +249,7 @@ class SplitBillActivity : CommonNavActivity()
         // Set the send currency type spinner options to your default fiat currency or your currently selected crypto
         val spinData = arrayOf(fiatCurrencyCode, cryptoCurrencyCode)
         val aa = ArrayAdapter(this, R.layout.currency_selection_spinner, spinData)
-        ui.splitCurrencyType!!.setAdapter(aa)
+        ui.splitCurrencyType.setAdapter(aa)
 
 
         ui.splitQuantity.text.append(prefDb.getString("splitbill.splitAmount", "0"))

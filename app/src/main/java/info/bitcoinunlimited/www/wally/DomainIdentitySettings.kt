@@ -42,6 +42,8 @@ class DomainIdentitySettings : CommonNavActivity()
     {
         super.onStart()
 
+        if (devMode) ui.uniqueIdentitySwitch.visibility=View.VISIBLE
+
         val intent = getIntent()
         val domain = intent.getStringExtra("domainName")
         val title = intent.getStringExtra("title")
@@ -49,6 +51,23 @@ class DomainIdentitySettings : CommonNavActivity()
         {
             setTitle(title)
         }
+        val mode = intent.getStringExtra("mode")
+        if (mode == "reg")
+        {
+            ui.AcceptButton.visibility = View.VISIBLE
+            ui.RejectButton.visibility = View.VISIBLE
+            ui.NextButton.visibility = View.GONE
+            ui.RemoveButton.visibility = View.GONE
+        }
+        else if (mode == "edit")
+        {
+            ui.AcceptButton.visibility = View.GONE
+            ui.RejectButton.visibility = View.GONE
+            ui.NextButton.visibility = View.VISIBLE
+            ui.RemoveButton.visibility = View.VISIBLE
+
+        }
+
         ui.domainName.text = domain
 
         for ((param, ui) in nexidParams zip ui4params)
@@ -180,13 +199,32 @@ class DomainIdentitySettings : CommonNavActivity()
         super.onBackPressed()
     }
 
-    fun onNextButton(@Suppress("UNUSED_PARAMETER") view: View)
+    fun onDoneButton(@Suppress("UNUSED_PARAMETER") view: View)
     {
         upsertDomainIdentity()
         intent.putExtra("repeat", "true") // Tell identityOp not to come back here
         setResult(Activity.RESULT_OK, intent)
         finish()
     }
+
+    fun onAcceptButton(@Suppress("UNUSED_PARAMETER") view: View)
+    {
+        upsertDomainIdentity()
+        intent.putExtra("repeat", "true") // Tell identityOp not to come back here
+        intent.putExtra("result", "accept") // Tell identityOp not to come back here
+        setResult(Activity.RESULT_OK, intent)
+        finish()
+    }
+
+    fun onRejectButton(@Suppress("UNUSED_PARAMETER") view: View)
+    {
+        upsertDomainIdentity()
+        intent.putExtra("repeat", "true") // Tell identityOp not to come back here
+        intent.putExtra("result", "reject") // Tell identityOp not to come back here
+        setResult(Activity.RESULT_OK, intent)
+        finish()
+    }
+
 
     fun onRemoveButton(@Suppress("UNUSED_PARAMETER") view: View)
     {

@@ -10,7 +10,6 @@
         android:layout_marginStart="2dp"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
-        android:contentDescription="@string/receiveAddressQRCode"
         android:padding="0px"
         android:paddingStart="0px"
         android:paddingLeft="0px"
@@ -36,39 +35,38 @@
         app:layout_constraintVertical_bias="0.5"
         >
 
-    <TextView
-        android:id="@+id/balanceTickerText"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:clickable="true"
-        android:gravity="center_vertical|center_horizontal"
-        android:maxLines="1"
-        android:minLines="1"
-        android:textAlignment="center"
-        android:text=""
-        android:textIsSelectable="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
+        <TextView
+            android:id="@+id/balanceTickerText"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:gravity="center_vertical|center_horizontal"
+            android:maxLines="1"
+            android:minLines="1"
+            android:textAlignment="center"
+            android:text=""
+            android:textIsSelectable="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
 
-    <ImageView
-        android:id="@+id/lockIcon"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="2dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        android:padding="0px"
-        android:scaleType="fitXY"
-        android:scrollbars="none"
-        android:onClick="onAccountLockClicked"
-        app:layout_constraintStart_toEndOf="@+id/balanceTickerText"
-        app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageView
+            android:id="@+id/lockIcon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:padding="0px"
+            android:scaleType="fitXY"
+            android:scrollbars="none"
+            app:layout_constraintStart_toEndOf="@+id/balanceTickerText"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <TextView
@@ -77,7 +75,6 @@
         android:layout_height="40sp"
         android:clickable="true"
         android:gravity="center_vertical|center_horizontal"
-        android:onClick="onBalanceValueClicked"
         android:text=""
         android:textIsSelectable="true"
         android:textAlignment="center"
@@ -91,16 +88,15 @@
 
     <TextView
         android:id="@+id/balanceUnconfirmedValue"
-        android:layout_width="0sp"
-        android:layout_height="24sp"
-        android:layout_marginStart="0dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:gravity="center_vertical|center_horizontal"
-        android:maxLines="1"
-        android:minLines="1"
+        android:lines="1"
         android:text=""
         android:textIsSelectable="true"
         android:textAlignment="center"
-        android:textSize="24sp"
+        android:textSize="12sp"
+        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@+id/balanceValue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -116,7 +112,7 @@
         android:textIsSelectable="true"
         app:layout_constraintBottom_toBottomOf="@+id/balanceValue"
         app:layout_constraintStart_toEndOf="@+id/balanceValue"
-        app:layout_constraintEnd_toEndOf="parent" />
+        />
 
     <TextView
         android:id="@+id/Info"
@@ -128,23 +124,25 @@
         android:textIsSelectable="true"
         android:textAlignment="center"
         android:textSize="12sp"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/balanceUnconfirmedValue" />
-    <!-- ImageView
+    <ImageView
         android:id="@+id/GuiAccountDetailsButton"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginStart="4dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="4dp"
         android:scaleType="fitXY"
         android:scrollbars="none"
-        android:onClick="accountDetailButtonClicked"
-        android:alpha="0.5"
+        android:visibility="gone"
+        android:alpha="0.75"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:src="@drawable/ic_gear"
         >
     </ImageView>
-    <-->
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

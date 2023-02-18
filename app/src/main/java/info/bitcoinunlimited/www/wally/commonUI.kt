@@ -7,20 +7,19 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.DisplayMetrics
 import android.util.TypedValue
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import bitcoinunlimited.libbitcoincash.*
 import com.google.zxing.BarcodeFormat
@@ -33,7 +32,10 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.math.BigDecimal
+import java.net.URLEncoder
 import java.util.logging.Logger
+import kotlin.math.floor
+import kotlin.math.roundToInt
 
 
 const val SPLITBILL_MESSAGE = "info.bitcoinunlimited.www.wally.splitbill"
@@ -61,10 +63,44 @@ fun String.toSet():Set<String>
     return split(","," ").map({it.trim()}).filter({it.length > 0}).toSet()
 }
 
+fun String.urlEncode():String
+{
+    return URLEncoder.encode(this, "utf-8")
+}
+
+fun PayAddress.urlEncode():String
+{
+    return toString().urlEncode()
+}
+
+
 fun EditText.set(s: String)
 {
     val len = text.length
     text.replace(0,len, s)
+}
+
+
+/** dig through text looking for addresses */
+fun scanForFirstAddress(s: String):PayAddress?
+{
+    val words = s.split(" ",",","!",".","@","#","$","%","^","&","*","(",")","{","}","[","]","\\","|","/",">","<",";","'","\"","~","+","=","-","_","`","~","?") // None of these characters are allowed in addresses so split the text on them
+    for (w in words)
+    {
+        if (w.length > 32)  // cashaddr type addresses are pretty long
+        {
+            try
+            {
+                val pa = PayAddress(w)
+                return pa
+            }
+            catch (e: Exception)
+            {
+                // not an address
+            }
+        }
+    }
+    return null
 }
 
 /** Convert a ChainSelector to its currency code at 100M/1000 units */
@@ -236,7 +272,7 @@ fun Paint.setTextSizeForWidth(text: String, desiredWidth: Int, maxFontSizeInSp: 
         val tmp = spToPx(maxFontSizeInSp.toFloat())
         if (tmp < desiredTextSize) desiredTextSize = tmp.toFloat()
     }
-    textSize = desiredTextSize
+    textSize = floor(desiredTextSize)
 }
 
 fun textChanged(cb: () -> Unit): TextWatcher
@@ -398,37 +434,55 @@ fun textToQREncode(value: String, size: Int): Bitmap?
     return bitmap
 }
 
+
+
 // stores and recycles views as they are scrolled off screen
-open class GuiListItemBinder<DATA> (val view: View) : RecyclerView.ViewHolder(view), View.OnClickListener
+open class GuiListItemBinder<DATA> (val view: View) : RecyclerView.ViewHolder(view), View.OnClickListener, View.OnFocusChangeListener
 {
-    var pos: Int = -1
+    var pos: Int = -1  // Do not change -- only the RecyclerView changes this via the bind() function
     var data: DATA? = null
 
     init
     {
         view.setOnClickListener(this)
+        view.setOnFocusChangeListener(this)
     }
 
     // null is passed to d if and only if the position is beyond the end of the list because you have selected empty bottom lines
     fun bind(position: Int, d: DATA?)
     {
-        pos = position
-        data = d
-        populate()
+        synchronized(this)
+        {
+            pos = position
+            data = d
+            populate()
+        }
     }
 
     fun unbind()
     {
-        if (pos != -1)
+        synchronized(this)
         {
-            unpopulate()
-            pos = -1
-            data = null
+            if (pos != -1)
+            {
+                unpopulate()
+                pos = -1
+                data = null
+            }
         }
+    }
+
+
+    /** Default action for simplicity is to make gaining focus act like a click (because you have to touch a list item to gain focus) */
+    override fun onFocusChange(v: View, focused: Boolean)
+    {
+        LogIt.info("onfocus:" + focused)
+        if (focused) onClick(v)
     }
 
     override fun onClick(v: View)
     {
+        LogIt.info("onclick")
         changed()
     }
 
@@ -465,28 +519,25 @@ fun<DATA, BINDER, DATAVIEW> GuiListInflater(view: RecyclerView, data: List<DATA>
 }
  */
 
-class GuiList<DATA, BINDER: GuiListItemBinder<DATA>> internal constructor(val view: RecyclerView, var data: List<DATA>,  @Suppress("UNUSED_PARAMETER") context: Context?, val factory: (ViewGroup) -> BINDER) : RecyclerView.Adapter<BINDER>()
+open class GuiList<DATA, BINDER: GuiListItemBinder<DATA>> internal constructor(val view: RecyclerView, var data: List<DATA>,  @Suppress("UNUSED_PARAMETER") context: Context?, val factory: (ViewGroup) -> BINDER) : RecyclerView.Adapter<BINDER>()
 {
     // Change (on init, before assignment to the RecyclerView) to have empty bottom lines (note your binder must be able to handle beyond-end-of-list bindings)
     var emptyBottomLines = 0
     // Set this to an array of colors to set the background colors of each row to alternate
     var rowBackgroundColors: Array<Int>? = null
-
+    var highlightColor: Int = ContextCompat.getColor(view.context,R.color.defaultListHighlight)
     var highlightPos = -1
 
     /** Call if the size of an item changed */
     fun layout()
     {
         // detach and reattach the adapter since the data has changed (seems weird that all this is needed)
-        /*
         view.adapter = null
         val tmp = view.layoutManager
         view.layoutManager = null
         view.adapter = this
         view.layoutManager = tmp
         tmp?.requestLayout()
-
-         */
     }
 
     /** Assign this to a new list (by reference) */
@@ -534,11 +585,15 @@ class GuiList<DATA, BINDER: GuiListItemBinder<DATA>> internal constructor(val vi
         val bk = holder.backgroundColor(highlight)
         if (bk == -1L)
         {
-            val rbc = rowBackgroundColors
-            if (rbc != null)
+            if (highlight) holder.view.setBackgroundColor(highlightColor)
+            else
             {
-                val colIdx = position % rbc.size
-                holder.view.setBackgroundColor(rbc[colIdx])
+                val rbc = rowBackgroundColors
+                if (rbc != null)
+                {
+                    val colIdx = position % rbc.size
+                    holder.view.setBackgroundColor(rbc[colIdx])
+                }
             }
         }
         else
@@ -550,24 +605,24 @@ class GuiList<DATA, BINDER: GuiListItemBinder<DATA>> internal constructor(val vi
     // inflates the row layout from xml when needed
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BINDER
     {
-        //val view: View = inflater.inflate(R.layout.filterrow, parent, false)
-        //return factory(view)
         return(factory(parent))
     }
 
     override fun onDetachedFromRecyclerView (rv: RecyclerView)
     {
+        super.onDetachedFromRecyclerView(rv)
         return
     }
 
+    // The holder might still be active, its just scrolled off the screen
     override fun onViewDetachedFromWindow(holder: BINDER)
     {
-        holder.unpopulate()
+        super.onViewDetachedFromWindow(holder)
     }
 
     override fun onFailedToRecycleView(holder: BINDER): Boolean
     {
-        holder.unpopulate()
+        holder.unbind()
         return true
     }
 
@@ -579,18 +634,19 @@ class GuiList<DATA, BINDER: GuiListItemBinder<DATA>> internal constructor(val vi
     /** override to implement an on-click handler for any item (or do it in the BINDER class per-item) */
     open fun onItemClicked(holder: BINDER)
     {
+        LogIt.info(sourceLoc() + " item clicked")
 
     }
 
-    // binds the data to the TextView in each row
+    // binds the data to the View in each row
     override fun onBindViewHolder(holder: BINDER, position: Int)
     {
+        holder.unpopulate()
         holder.unbind()
 
         if (position < data.size)
         {
-            val d = data[position]
-            holder.bind(position, d)
+            holder.bind(position, data[position])
         }
         else
         {
@@ -599,6 +655,7 @@ class GuiList<DATA, BINDER: GuiListItemBinder<DATA>> internal constructor(val vi
 
         setBackgroundColorFor(holder, position)
     }
+
 
     // total number of rows
     override fun getItemCount(): Int
@@ -614,5 +671,20 @@ class GuiList<DATA, BINDER: GuiListItemBinder<DATA>> internal constructor(val vi
 
     init {
         view.adapter = this
+        view.setOnClickListener(object:View.OnClickListener {
+            override fun onClick(p0: View?)
+            {
+                LogIt.info(sourceLoc() + "on click")
+            }
+
+        })
+        view.setOnFocusChangeListener(object:View.OnFocusChangeListener {
+            override fun onFocusChange(p0: View?, p1: Boolean)
+            {
+                LogIt.info(sourceLoc() + "on focus")
+            }
+
+        })
+
     }
 }

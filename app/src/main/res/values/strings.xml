@@ -50,6 +50,7 @@
     <string name="of">of</string>
     <string name="choose">choose</string>
     <string name="accept">accept</string>
+    <string name="reject">reject</string>
     <string name="remove">remove</string>
     <string name="confirm">confirm</string>
     <string name="cancel">cancel</string>
@@ -63,18 +64,19 @@
     <string name="ask">ask</string>
     <string name="badSignature">bad signature</string>
     <string name="unknownCurrency">unknown currency</string>
+    <string name="unknownCryptoCurrency">unknown cryptocurrency or blockchain</string>
     <!-- wallet is currently working on doing whatever your button click asked it to do -->
     <string name="Processing">processing...</string>
     <string name="receiving">receiving</string>
     <string name="sending">sending</string>
     <string name="noAdditionalDetails">no additional details</string>
-    <string name="devDebugInfoHeader">Developer Information</string>
     <!-- User didn't enter any value into this field but that's ok -->
     <string name="unspecified">unspecified</string>
     <string name="removed">removed</string>
     <!-- wallet is up to date with the blockchain -->
     <string name="synced">ready</string>
     <string name="unsynced">synchronizing</string>
+    <string name="connected">connected</string>
 
     <!-- Implication is "no charge" or "no cost" for a transaction -->
     <string name="nothing">nothing</string>
@@ -95,7 +97,11 @@
     <string name="million">million</string>
 
     <!-- Settings -->
+    <string name="version" formatted="false">Wally Wallet Version: %ver</string>
     <string name="enableDeveloperView"> Advanced/developer mode</string>
+    <string name="enableIdentityMenu">Enable identity screen</string>
+    <string name="enableTricklePayMenu">Enable trickle pay screen</string>
+    <string name="enableAssetsMenu">Enable assets screen</string>
     <string name="only">only</string>
     <string name="prefer">prefer</string>
     <string name="rediscoverWalletTx">rediscover all transactions</string>
@@ -141,13 +147,18 @@
     <string name="OpenSend">Send</string>
     <string name="SendCancel">Cancel</string>
     <string name="ignoredInsecureRequest">Ignored Insecure Request</string>
-    <!-- As in "Send from" -->
+    <!-- As in "Send from" what account -->
     <string name="from">From account</string>
+    <!-- if user forgot to pick an account -->
+    <string name="chooseAccountError">choose an account</string>
     <!-- As in "Send to" -->
     <string name="toColon">To:</string>
+    <!-- As in what entity is requesting information -->
+    <string name="fromColon">From:</string>
     <string name="Receive">Receive into account</string>
     <string name="AccountListHeader">Accounts</string>
     <string name="Address">Address</string>
+    <string name="clipboard">clipboard</string>
     <string name="settings">settings</string>
     <string name="help">help</string>
     <string name="invalidQuantity">invalid quantity</string>
@@ -176,9 +187,9 @@
     <string name="pasteUnintelligible">paste not understood</string>
     <string name="chainIncompatibleWithAddress">address incompatible with account</string>
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Account currency is %walletCrypto, address is %addressCrypto.  Use the combo box to change the send from account to one that matches the address\'s blockchain.</string>
-    <string name="incoming" formatted="false">includes pending transfer of %delta %unit</string>
+    <string name="incoming" formatted="false">includes %delta %unit pending</string>
     <string name="approximatelyT" formatted="false">approximately %qty %fiat</string>
-    <string name="exchangeRate" formatted="false">(exchange rate: 1 %crypto is worth %amt %fiat)</string>
+    <string name="exchangeRate" formatted="false">(exchange rate: 1 %fiat is worth %amt %crypto)</string>
     <!-- user is attempting to send more cryptocurrency than the wallet contains.  The payment can't happen -->
     <string name="moreThanAvailable">"(more than available)"</string>
     <!-- This is a warning or informational message.  It says that the user is sending recently received coins, which is perfectly OK but slightly increases the chance of payment failure -->
@@ -189,16 +200,18 @@
     <string name="scanSuccess">scan succeeded</string>
     <string name="sendSuccess">send successful</string>
     <string name="sendQuantityHint">send quantity</string>
+    <string name="sendRequestNotification">Send requested</string>
     <string name="sendToAddressHint">destination address</string>
     <string name="sendAll">all</string>
-    <string name="editSendNoteHint">enter notes about this recipient</string>
+    <string name="editSendNoteHint">personal notes about this transfer</string>
     <string name="subSatoshiQuantities">Too many decimal places -- this currency does not divide that finely</string>
 
     <string name="retrievingExchangeRate">still retrieving exchange rate</string>
     <string name="unavailableExchangeRate">exchange rate unavailable</string>
 
     <!-- Identity -->
-
+    <string name="identityRequestNotification">identity requested</string>
+    <string name="IdentityDataMissing">Missing Identity Info</string>
     <!-- Some web site or company that you've never contacted before is requesting that you set up an account and authenticate a log-in.  This is an informational message
      that happens whenever the user first sets up a relationship between the web site/company and their wallet -->
     <string name="newDomainRequestingIdentity">New Domain Requesting Identity</string>
@@ -320,7 +333,7 @@
     <string name="notSupported">not supported</string>
     <!-- A temporal offer is not longer available.  For example, a payment via the BIP70 payment protocol is no longer available -->
     <string name="expired">payment expired</string>
-    <string name="dataMissing">payment missing data</string>
+    <string name="PaymentDataMissing">payment missing data</string>
     <string name="headersNotForthcoming">headers are not being provided</string>
     <string name="cantConvert">conversion temporarily unavailable</string>
 
@@ -457,6 +470,11 @@
     <string name="CexButton">exchange</string>
 
     <!-- Trickle Pay -->
+    <string name="SharedNotification">shared %what</string>
+    <string name="AuthAutopayTitle">Authorized Payment</string>
+    <string name="PaymentRequest">Payment requested</string>
+    <string name="AuthAutopayDeniedTitle">Authorized Payment Denied</string>
+    <string name="AuthAutopay" formatted="false">%amt to %domain</string>
     <string name="TpToBeDone">Your Trickle Pay connections will be displayed here</string>
     <string name="TpHistoryTbd">Your Trickle Pay history will be displayed here</string>
     <string name="AcceptTpRegistration">Accept Registration From:</string>

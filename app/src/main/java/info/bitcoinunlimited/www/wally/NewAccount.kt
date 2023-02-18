@@ -71,7 +71,9 @@ class NewAccount : CommonNavActivity()
     var app: WallyApp? = null
     var recoveryChange = 0
 
+    /** The earliest activity on this account in seconds since the epoch */
     var earliestActivity: Long? = 1577836800 // TODO support entry of recovery date
+    var earliestActivityHeight: Int = 0
 
     val nonstandardActivity = mutableListOf<Pair<Bip44Wallet.HdDerivationPath, HDActivityBracket>>()
 
@@ -132,7 +134,7 @@ class NewAccount : CommonNavActivity()
             }
 
         })
-        ui.GuiBlockchainSelector?.setSelection("NEXA")
+        ui.GuiBlockchainSelector.setSelection("NEXA")
 
 
         ui.GuiAccountNameEntry.addTextChangedListener(object : TextWatcher
@@ -218,7 +220,6 @@ class NewAccount : CommonNavActivity()
             override fun afterTextChanged(p: Editable?)
             {
                 recoveryChange++
-                // TODO: explain the problem
                 dbgAssertGuiThread()
 
                 // clear the status for regeneration if the phrase is ok
@@ -233,8 +234,7 @@ class NewAccount : CommonNavActivity()
                 }
 
                 // Check recovery phrase validity and be unhappy if its not good
-                val txt: String = p.toString().trim()
-                val words = txt.split(' ')
+                val words = processSecretWords(p.toString())
                 if (words.size < 12)  // TODO support other size recovery keys
                 {
                     ui.GuiRecoveryPhraseOk.setImageResource(android.R.drawable.ic_delete)
@@ -344,7 +344,6 @@ class NewAccount : CommonNavActivity()
             val newSecret = secretDerivation(index)
 
             val dest = Pay2PubKeyHashDestination(chainSelector, UnsecuredSecret(newSecret))  // Note, if multiple destination types are allowed, the wallet load/save routines must be updated
-            //LogIt.info(sourceLoc() + " " + name + ": New Destination " + tmp.toString() + ": " + dest.address.toString())
 
             try
             {
@@ -396,7 +395,7 @@ class NewAccount : CommonNavActivity()
 
         val (svr, port) = try
         {
-            ElectrumServerOn(chainSelector)
+            wallyApp!!.getElectrumServerOn(chainSelector)
         } catch (e: BadCryptoException)
         {
             LogIt.info("peek not supported for this blockchain")
@@ -440,9 +439,21 @@ class NewAccount : CommonNavActivity()
         var earliestActivityP =
           searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, 0, it) })
 
+        // Look for activity in the identity and common location
+        var earliestActivityId =
+          searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, 0, it) })
+
+        // Set earliestActivityP to the lesser of the two
+        if (earliestActivityP == null) earliestActivityP = earliestActivityId
+        else
+        {
+            if ((earliestActivityId != null) && (earliestActivityId.first < earliestActivityP.first)) earliestActivityP = earliestActivityId
+        }
+
         val Bip44Msg = if (earliestActivityP != null)
         {
             earliestActivity = earliestActivityP.first - 1 // -1 so earliest activity is just before the activity
+            earliestActivityHeight = earliestActivityP.second
             i18n(R.string.Bip44ActivityNotice) + " " + i18n(R.string.FirstUseDateHeightInfo) % mapOf(
               "date" to epochToDate(earliestActivityP.first),
               "height" to earliestActivityP.second.toString()
@@ -493,12 +504,20 @@ class NewAccount : CommonNavActivity()
         laterUI { ui.GuiNewAccountStatus.text = Bip44Msg + "\n" + Bip44BTCMsg }
     }
 
+    fun processSecretWords(secretWords: String): List<String>
+    {
+        val txt: String = secretWords.trim()
+        val wordSplit = txt.split(' ','\n','\t')
+        val junkDropped = wordSplit.filter { it.length > 0 }
+        return junkDropped
+    }
+
     fun recoverAccountPhase2(name: String, flags: ULong, pin: String, secretWords: String, chainSelector: ChainSelector)
     {
         // TODO Bip39 passphrase support
         if (secretWords.length > 0)
         {
-            val words = secretWords.split(' ')
+            val words = processSecretWords(secretWords)
             if (words.size != 12)
             {
                 laterUI { ui.GuiRecoveryPhraseOk.setImageResource(android.R.drawable.ic_delete) }
@@ -512,7 +531,8 @@ class NewAccount : CommonNavActivity()
                 displayError(R.string.invalidRecoveryPhrase)
                 return
             }
-            app!!.recoverAccount(name, flags, pin, secretWords, chainSelector, earliestActivity, nonstandardActivity)
+            val cleanedSecretWords = words.joinToString(" ")
+            app!!.recoverAccount(name, flags, pin, cleanedSecretWords, chainSelector, earliestActivity, earliestActivityHeight.toLong(), nonstandardActivity)
             finish()
         }
     }

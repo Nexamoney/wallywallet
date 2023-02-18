@@ -22,6 +22,7 @@ class Account(
   chainSelector: ChainSelector? = null,
   secretWords: String? = null,
   startPlace: Long? = null, //* Where to start looking for transactions
+  startHeight: Long? = null, //* block height of first activity
   retrieveOnlyActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, NewAccount.HDActivityBracket>>? = null  //* jam in other derivation paths to grab coins from (but use addresses of) (if new account)
 )
 {
@@ -83,6 +84,7 @@ class Account(
     val chain: Blockchain = GetBlockchain(wallet.chainSelector, cnxnMgr, context, chainToURI[wallet.chainSelector], false)  // do not start right away so we can configure exclusive/preferred nodes
     var started = false  // Have the cnxnmgr and blockchain services been started or are we in initialization?
 
+    /** A string denoting this wallet's currency units.  That is, the units that this wallet should use in display, in its BigDecimal amount representations, and is converted to and from in fromFinestUnit() and toFinestUnit() respectively */
     val currencyCode: String = chainToDisplayCurrencyCode[wallet.chainSelector]!!
 
     // If this coin's receive address is shown on-screen, this is not null
@@ -105,7 +107,7 @@ class Account(
         wallet.fillReceivingWithRetrieveOnly()
         wallet.prepareDestinations(2, 2)  // Make sure that there is at least a few addresses before we hook into the network
         LogIt.info(sourceLoc() + name +": wallet connect blockchain ${chain.name}")
-        wallet.addBlockchain(chain, chain.checkpointHeight, startPlace)
+        wallet.addBlockchain(chain, startHeight, startPlace)
         LogIt.info(sourceLoc() + name +": wallet blockchain ${chain.name} connection completed")
         if (chainSelector != ChainSelector.NEXA)  // no fiat price for nextchain
         {
@@ -113,6 +115,8 @@ class Account(
             wallet.spotPrice = { currencyCode -> assert(currencyCode == fiatCurrencyCode); fiatPerCoin * CurrencyDecimal(SATperBCH) / SatPerDisplayUnit }
             wallet.historicalPrice = { currencyCode: String, epochSec: Long -> historicalUbchInFiat(currencyCode, epochSec) }
         }
+
+        (cnxnMgr as MultiNodeCnxnMgr).getElectrumServerCandidate = { wallyApp!!.getElectrumServerOn(it) }
 
     }
 
@@ -208,6 +212,7 @@ class Account(
     {
         currentReceive = null
         currentReceiveQR = null
+        wallet.stop()
         wallet.delete()
         balance = BigDecimal.ZERO
         unconfirmedBalance = BigDecimal.ZERO
@@ -262,6 +267,15 @@ class Account(
         else unconfirmedBalanceGUI.reactor = null
         if (infoView != null) infoGUI.reactor = TextViewReactor<String>(infoView)
         else infoGUI.reactor = null
+    }
+
+    fun unsetUI()
+    {
+        uiBinding = null
+        tickerGUI.reactor = null
+        balanceGUI.reactor = null
+        unconfirmedBalanceGUI.reactor = null
+        infoGUI.reactor = null
     }
 
     //? Convert the default display units to the finest granularity of this currency.  For example, mBCH to Satoshis
@@ -372,11 +386,12 @@ class Account(
             wallet.restart()
             wallet.chainstate?.chain?.restart()
             wallet.chainstate?.chain?.net?.restart()
-            onWalletChange(true)
+            onChange(true)
         }
     }
 
-    fun onWalletChange(force: Boolean = false)
+    /** Call whenever the state of this account has changed so needs to be redrawn.  Or on first draw (with force = true) */
+    fun onChange(force: Boolean = false)
     {
         uiBinding?.let {
             if (lockable)
@@ -398,62 +413,73 @@ class Account(
 
             val delta = balance - confirmedBalance
             val chainstate = wallet.chainstate
+            var unconfBalStr = ""
             if (chainstate != null)
             {
                 if (chainstate.isSynchronized(1,60*60))  // ignore 1 block desync or this displays every time a new block is found
                 {
-                    val unconfBalStr =
+                    unconfBalStr =
                       if (0.toBigDecimal(currencyMath).setScale(currencyScale) == unconfirmedBalance)
                           ""
                       else
-                          i18n(R.string.incoming) % mapOf("delta" to
-                            (if (delta > BigDecimal.ZERO) "+" else "") + format(balance - confirmedBalance)  , // "\u2B05" == <--
-                          "unit" to currencyCode
+                          i18n(R.string.incoming) % mapOf(
+                            "delta" to (if (delta > BigDecimal.ZERO) "+" else "") + format(balance - confirmedBalance),
+                            "unit" to currencyCode
                           )
 
                     laterUI {
                         balanceGUI.setAttribute("strength", "normal")
                         if (delta > BigDecimal.ZERO) unconfirmedBalanceGUI.setAttribute("color", R.color.colorCredit)
                         else unconfirmedBalanceGUI.setAttribute("color", R.color.colorDebit)
-                        unconfirmedBalanceGUI(unconfBalStr, force)
                     }
                 }
                 else
                 {
-                    val asOfStr = i18n(R.string.balanceOnTheDate) % mapOf("date" to epochToDate(chainstate.syncedDate))
+                    unconfBalStr = if (chainstate.syncedDate <= 1231416000) i18n(R.string.unsynced)  // for fun: bitcoin genesis block
+                        else i18n(R.string.balanceOnTheDate) % mapOf("date" to epochToDate(chainstate.syncedDate))
                     laterUI {
                         balanceGUI.setAttribute("strength", "dim")
                         unconfirmedBalanceGUI.setAttribute("color", R.color.unsyncedStatusColor)
-                        unconfirmedBalanceGUI(asOfStr, force)
                     }
                 }
             }
             else
             {
                 balanceGUI.setAttribute("strength","dim")
-                unconfirmedBalanceGUI(i18n(R.string.walletDisconnectedFromBlockchain), force)
+                //unconfirmedBalanceGUI(i18n(R.string.walletDisconnectedFromBlockchain), force)
+                uiBinding?.balanceUnconfirmedValue?.text = i18n(R.string.walletDisconnectedFromBlockchain)
             }
 
-            balanceGUI(format(balance), force)
-            // If we got something in a receive address, then show a new one
-            updateReceiveAddressUI?.invoke(this)
 
-            if (chainstate != null)
-            {
-                val cnxnLst = wallet.chainstate?.chain?.net?.mapConnections() { it.name }
+                balanceGUI(format(balance), force)
+                unconfirmedBalanceGUI(unconfBalStr, force)
+                //uiBinding?.balanceValue?.text = format(balance)
+                //uiBinding?.balanceUnconfirmedValue?.text = unconfBalStr
 
-                val trying: List<String> = if (chainstate.chain.net is MultiNodeCnxnMgr) (chainstate.chain.net as MultiNodeCnxnMgr).initializingCnxns.map { it.name } else listOf()
-                val peers = cnxnLst?.joinToString(", ") + (if (trying.isNotEmpty())  (" " + i18n(R.string.trying) + " " + trying.joinToString(", ")) else "")
+                // If we got something in a receive address, then show a new one
+                updateReceiveAddressUI?.invoke(this)
 
-                val infoStr = i18n(R.string.at) + " " + (wallet.chainstate?.syncedHash?.toHex()?.take(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight
-                  ?: "") + " " + i18n(R.string.of) + " " + (wallet.chainstate?.chain?.curHeight
-                  ?: "") + " blocks, " + (wallet.chainstate?.chain?.net?.size ?: "") + " peers\n" + peers
-                infoGUI(force, { infoStr })  // since numPeers takes cnxnLock
-            }
-            else
-                infoGUI(force, { i18n(R.string.walletDisconnectedFromBlockchain) })
+                if (chainstate != null)
+                {
+                    val cnxnLst = wallet.chainstate?.chain?.net?.mapConnections() { it.name }
 
-            tickerGUI(name, force)
+                    val trying: List<String> = if (chainstate.chain.net is MultiNodeCnxnMgr) (chainstate.chain.net as MultiNodeCnxnMgr).initializingCnxns.map { it.name } else listOf()
+                    val peers = cnxnLst?.joinToString(", ") + (if (trying.isNotEmpty()) (" " + i18n(R.string.trying) + " " + trying.joinToString(", ")) else "")
+
+                    val infoStr = i18n(R.string.at) + " " + (wallet.chainstate?.syncedHash?.toHex()?.take(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight
+                      ?: "") + " " + i18n(R.string.of) + " " + (wallet.chainstate?.chain?.curHeight
+                      ?: "") + " blocks, " + (wallet.chainstate?.chain?.net?.size ?: "") + " peers\n" + peers
+                    infoGUI(force, { infoStr })  // since numPeers takes cnxnLock
+                    //uiBinding?.Info?.text = infoStr
+                }
+                else
+                {
+                    //uiBinding?.Info?.text = i18n(R.string.walletDisconnectedFromBlockchain)
+                    infoGUI(force, { i18n(R.string.walletDisconnectedFromBlockchain) })
+                }
+
+                tickerGUI(name, force)
+                //uiBinding?.balanceTickerText?.text = name
         }
     }
 

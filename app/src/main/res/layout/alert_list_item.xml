@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:autoSizeMaxTextSize="24sp"
-        android:autoSizeMinTextSize="18sp"
+        android:autoSizeMinTextSize="12sp"
         android:autoSizeStepGranularity="1px"
         android:autoSizeTextType="uniform"
         android:maxLines="25"

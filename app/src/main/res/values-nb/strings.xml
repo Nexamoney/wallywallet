@@ -112,7 +112,7 @@
     <string name="excessiveFee">for høy avgift</string>
     <string name="feeExceedsFlatMax">avgiften er større en konfigurert maks tillat fast avgift</string>
     <string name="notSupported">ikke støttet</string>
-    <string name="dataMissing">mangler data</string>
+    <string name="PaymentDataMissing">mangler data</string>
     <string name="headersNotForthcoming">mottar ikke headers</string>
     <string name="cantConvert">konvertering midlertidig utilgjengelig</string>
 

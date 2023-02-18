@@ -3,7 +3,7 @@ package info.bitcoinunlimited.www.wally
 import bitcoinunlimited.libbitcoincash.BUException
 import bitcoinunlimited.libbitcoincash.ErrorSeverity
 
-open class BUExceptionI(val err: Int, details:String?=null, severity: ErrorSeverity=ErrorSeverity.Expected) : BUException(i18n(err), details, severity)
+open class BUExceptionI(err: Int, details:String?=null, severity: ErrorSeverity=ErrorSeverity.Expected) : BUException(i18n(err), details, severity, err)
 
 open class PrimaryWalletInvalidException() : BUException("Primary account not defined or currently unavailable", "No primary account", ErrorSeverity.Abnormal)
 open class WalletInvalidException() : BUExceptionI(R.string.accountUnavailableDetails, i18n(R.string.accountUnavailable), ErrorSeverity.Expected)

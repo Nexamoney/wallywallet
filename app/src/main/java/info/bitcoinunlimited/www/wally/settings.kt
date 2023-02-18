@@ -2,6 +2,7 @@
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
 
+import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.drawable.ColorDrawable
@@ -20,6 +21,9 @@ import java.util.logging.Logger
 val LOCAL_CURRENCY_PREF = "localCurrency"
 val PRIMARY_ACT_PREF = "primaryAccount"
 val DEV_MODE_PREF = "devinfo"
+val SHOW_IDENTITY_PREF = "showIdentityMenu"
+val SHOW_TRICKLEPAY_PREF = "showTricklePayMenu"
+val SHOW_ASSETS_PREF = "showAssetsMenu"
 
 val EXCLUSIVE_NODE_SWITCH = "exclusiveNodeSwitch"
 val CONFIGURED_NODE = "NodeAddress"
@@ -28,6 +32,21 @@ val PREFER_NODE_SWITCH = "preferNodeSwitch"
 var defaultBlockchain = chainToURI[ChainSelector.NEXA]  // The default crypto I'm using
 
 private val LogIt = Logger.getLogger("BU.wally.settings")
+
+
+fun enableMenu(ctxt: Context, menuPref: String)
+{
+    val prefDB = ctxt.getSharedPreferences(i18n(R.string.preferenceFileName), Context.MODE_PRIVATE)
+    val show = prefDB.getBoolean(menuPref, false)
+    if (!show)
+    {
+        with(prefDB.edit())
+        {
+            putBoolean(menuPref, true)
+            commit()
+        }
+    }
+}
 
 // SharedPreferences is used to communicate settings from this activity to the rest of the program and to persist these choices between executions
 @Suppress("VARIABLE_WITH_REDUNDANT_INITIALIZER")
@@ -73,8 +92,9 @@ class Settings : CommonActivity()
         origTitle = title.toString()
         var titlebar: View = findViewById(R.id.action_bar)
         origTitleBackground = ColorDrawable(ContextCompat.getColor(applicationContext, R.color.titleBackground))
-
         origTitleBackground?.let { titlebar.background = it }  // Set the title background color here, so we don't need to match the background defined in some resource file
+
+        ui.GuiSoftwareVersion.text = i18n(R.string.version) % mapOf("ver" to BuildConfig.VERSION_NAME)
 
         val preferenceDB: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
 
@@ -128,6 +148,10 @@ class Settings : CommonActivity()
         SetupBooleanPreferenceGui(name + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, ui.GuiBchExclusiveNodeSwitch)
         SetupBooleanPreferenceGui(name + "." + PREFER_NODE_SWITCH, preferenceDB, ui.GuiBchPreferNodeSwitch)
         SetupTextPreferenceGui(name + "." + CONFIGURED_NODE, preferenceDB, ui.GuiBchNodeAddr)
+
+        SetupBooleanPreferenceGui(SHOW_IDENTITY_PREF, preferenceDB, ui.GuiIdentityMenu)
+        SetupBooleanPreferenceGui(SHOW_TRICKLEPAY_PREF, preferenceDB, ui.GuiTricklePayMenu)
+        SetupBooleanPreferenceGui(SHOW_ASSETS_PREF, preferenceDB, ui.GuiAssetsMenu)
 
         val curCode: String = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"
         ui.GuiFiatCurrencySpinner.setSelection(curCode)

@@ -4,17 +4,21 @@
 package info.bitcoinunlimited.www.wally
 
 import android.app.*
-import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
+import android.app.PendingIntent.CanceledException
+import android.content.*
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.service.notification.StatusBarNotification
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.net.toUri
 import bitcoinunlimited.libbitcoincash.*
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
@@ -27,8 +31,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.DataOutputStream
+import java.io.FileNotFoundException
+import java.io.IOException
 import java.net.ConnectException
+import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
+import java.net.URL
 import java.security.spec.InvalidKeySpecException
 import java.util.*
 import java.util.concurrent.Executors
@@ -41,7 +50,9 @@ val LAST_RESORT_BCH_ELECTRS = "bch2.bitcoinunlimited.net"
 val LAST_RESORT_NEXA_ELECTRS = "electrum.nexa.org"
 
 
-const val NOTIFICATION_CHANNEL_ID = "n"
+const val NORMAL_NOTIFICATION_CHANNEL_ID = "n"
+const val PRIORITY_NOTIFICATION_CHANNEL_ID = "p"
+const val HTTP_REQ_TIMEOUT_MS: Int = 7000
 
 private val LogIt = Logger.getLogger("BU.wally.app")
 
@@ -76,6 +87,13 @@ var devMode: Boolean = false
 const val ACCOUNT_FLAG_NONE = 0UL
 const val ACCOUNT_FLAG_HIDE_UNTIL_PIN = 1UL
 const val RETRIEVE_ONLY_ADDITIONAL_ADDRESSES = 10
+
+fun epochMilliSeconds(): Long
+{
+    return Date().time
+    // return System.currentTimeMillis()/1000
+}
+
 
 /** Store the PIN encoded.  However, note that for short PINs a dictionary attack is very feasible */
 fun EncodePIN(actName: String, pin: String, size: Int = 64): ByteArray
@@ -154,16 +172,17 @@ class AccessHandler(val app: WallyApp)
         }
 
         var count = 0
+        var avgResponse = 0.0f
         while (!done && lpInfo.active)
         {
+            val start = epochMilliSeconds()
             try
             {
 
                 val response: HttpResponse = client.get(url + "&i=${count}") {}
                 val respText = response.bodyAsText()
                 connectProblems = 0
-
-                LogIt.info("Long poll to $url resp: $respText")
+                LogIt.info(sourceLoc() + ": Long poll to $url resp: $respText")
                 if (respText == "Q")
                 {
                     LogIt.info(sourceLoc() + ": Long poll to $url ended (server request).")
@@ -193,18 +212,21 @@ class AccessHandler(val app: WallyApp)
                 endLongPolling(url)
                 return
             }
-            delay(200) // limit runaway polling, if the server misbehaves by responding right away
+            val end = epochMilliSeconds()
+            avgResponse = ((avgResponse*49f)+(end-start))/50.0f
+            if (avgResponse<1000)
+                delay(500) // limit runaway polling, if the server misbehaves by responding right away
         }
         LogIt.info(sourceLoc() + ": Long poll to $url ended (done).")
         endLongPolling(url)
     }
 }
 
-
+// in app init, we change the lbbc integers to our own resource ids.  So this translation is likely unnecessary
 val i18nLbc = mapOf(
   RinsufficentBalance to R.string.insufficentBalance,
   RbadWalletImplementation to R.string.badWalletImplementation,
-  RdataMissing to R.string.dataMissing,
+  RdataMissing to R.string.PaymentDataMissing,
   RwalletAndAddressIncompatible to R.string.chainIncompatibleWithAddress,
   RnotSupported to R.string.notSupported,
   Rexpired to R.string.expired,
@@ -220,7 +242,9 @@ val i18nLbc = mapOf(
   RdeductedFeeLargerThanSendAmount to R.string.deductedFeeLargerThanSendAmount,
   RwalletDisconnectedFromBlockchain to R.string.walletDisconnectedFromBlockchain,
   RsendDust to R.string.sendDustError,
-  RnoNodes to R.string.NoNodes
+  RnoNodes to R.string.NoNodes,
+  RwalletAddressMissing to R.string.badAddress,
+  RunknownCryptoCurrency to R.string.unknownCryptoCurrency
 )
 
 class ActivityLifecycleHandler(private val app: WallyApp) : Application.ActivityLifecycleCallbacks
@@ -269,8 +293,36 @@ class ActivityLifecycleHandler(private val app: WallyApp) : Application.Activity
     }
 }
 
-class WallyApp : Application()
+class WallyApp : Application.ActivityLifecycleCallbacks, Application()
 {
+    init
+    {
+        RinsufficentBalance = R.string.insufficentBalance
+        RbadWalletImplementation = R.string.badWalletImplementation
+        RwalletAndAddressIncompatible = R.string.chainIncompatibleWithAddress
+        RnotSupported = R.string.notSupported
+        Rexpired = R.string.expired
+        RsendMoreThanBalance = R.string.sendMoreThanBalance
+        RbadAddress = R.string.badAddress
+        RblankAddress = R.string.blankAddress
+        RblockNotForthcoming = R.string.blockNotForthcoming
+        RheadersNotForthcoming = R.string.headersNotForthcoming
+        RbadTransaction = R.string.badTransaction
+        RfeeExceedsFlatMax = R.string.feeExceedsFlatMax
+        RexcessiveFee = R.string.excessiveFee
+        Rbip70NoAmount = R.string.badAmount
+        RdeductedFeeLargerThanSendAmount = R.string.deductedFeeLargerThanSendAmount
+        RwalletDisconnectedFromBlockchain = R.string.walletDisconnectedFromBlockchain
+        RsendDust = R.string.sendDustError
+        RbadCryptoCode = R.string.badCryptoCode
+        RwalletAddressMissing = R.string.badAddress
+        RunknownCryptoCurrency = R.string.unknownCryptoCurrency
+
+        // RdataMissing = R.string.dataMissing
+        // RnoNodes = 0xf00d + 18 // R.string.noNodes
+        // RneedNonexistentAuthority = R.string.n
+    }
+
     var firstRun = false
     var notifId = 0
 
@@ -357,6 +409,9 @@ class WallyApp : Application()
     var lastNotice:Int? = null
     var lastNoticeDetails:String? = null
 
+    // Track the last item in the clipboard
+    var currentClip:ClipData? = null
+
     /** Display an short error string on the title bar, and then clear it after a bit.  The common activity will check for errors coming from other activities */
     fun displayError(resource: Int, details: Int? = null)
     {
@@ -391,7 +446,7 @@ class WallyApp : Application()
 
     fun displayException(e: BUExceptionI)
     {
-        lastError = e.err
+        lastError = e.errCode
         lastErrorDetails = e.message
     }
 
@@ -510,6 +565,120 @@ class WallyApp : Application()
         db.set("wallyDataVersion", WALLY_DATA_VERSION)
     }
 
+    fun handlePostLogin(loginReqParam: String, jsonBody: String)
+    {
+        var loginReq = loginReqParam
+        var forwarded = 0
+
+        postloop@ while (forwarded < 3)
+        {
+            LogIt.info("sending registration reply: " + loginReq)
+            try
+            {
+                //val body = """[1,2,3]"""  // URLEncoder.encode("""[1,2,3]""","UTF-8")
+                val req: HttpURLConnection = URL(loginReq).openConnection() as HttpURLConnection
+                req.requestMethod = "POST"
+                req.setRequestProperty("Content-Type", "application/json")
+                req.setRequestProperty("Accept", "*/*")
+                req.setRequestProperty("Content-Length", jsonBody.length.toString())
+                req.setConnectTimeout(HTTP_REQ_TIMEOUT_MS)
+                req.doOutput = true
+                req.useCaches = false
+                val os = DataOutputStream(req.outputStream)
+                //os.write(jsonBody.toByteArray())
+                os.writeBytes(jsonBody.toString())
+                os.flush()
+                os.close()
+                val resp = req.inputStream.bufferedReader().readText()
+                LogIt.info("reg response code:" + req.responseCode.toString() + " response: " + resp)
+                if ((req.responseCode >= 200) and (req.responseCode < 300))
+                {
+                    displayNotice(resp)
+                    return
+                }
+                else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding
+                {
+                    loginReq = req.getHeaderField("Location")
+                    forwarded += 1
+                    continue@postloop
+                }
+                else
+                {
+                    wallyApp?.displayNotice(resp)
+                    return
+                }
+            } catch (e: java.net.SocketTimeoutException)
+            {
+                LogIt.info("SOCKET TIMEOUT:  If development, check phone's network.  Ensure you can route from phone to target!  " + e.toString())
+                wallyApp?.displayError(R.string.connectionException)
+                return
+            } catch (e: IOException)
+            {
+                LogIt.info("registration IOException: " + e.toString())
+                wallyApp?.displayError(R.string.connectionAborted)
+                return
+            } catch (e: FileNotFoundException)
+            {
+                LogIt.info("registration FileNotFoundException: " + e.toString())
+                wallyApp?.displayError(R.string.badLink)
+                return
+            } catch (e: java.net.ConnectException)
+            {
+                wallyApp?.displayError(R.string.connectionException)
+                return
+            } catch (e: Throwable)
+            {
+                wallyApp?.displayError(R.string.unknownError)
+                return
+            }
+            break@postloop  // Only way to actually loop is to get a http 301 or 302
+        }
+    }
+
+    fun handleLogin(loginReqParam: String)
+    {
+        var loginReq = loginReqParam
+        var forwarded = 0
+        getloop@ while (forwarded < 3)
+        {
+            LogIt.info("login reply: " + loginReq)
+            try
+            {
+                val req: HttpURLConnection = URL(loginReq).openConnection() as HttpURLConnection
+                req.setConnectTimeout(HTTP_REQ_TIMEOUT_MS)
+                val resp = req.inputStream.bufferedReader().readText()
+                LogIt.info("login response code:" + req.responseCode.toString() + " response: " + resp)
+                if ((req.responseCode >= 200) and (req.responseCode < 250))
+                {
+                    displayNotice(resp)
+                    return
+                }
+                else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding (often switching from http to https)
+                {
+                    loginReq = req.getHeaderField("Location")
+                    forwarded += 1
+                    continue@getloop
+                }
+                else
+                {
+                    displayNotice(resp)
+                    return
+                }
+            } catch (e: FileNotFoundException)
+            {
+                displayError(R.string.badLink, loginReq)
+            } catch (e: IOException)
+            {
+                displayError(R.string.connectionAborted, loginReq)
+            } catch (e: java.net.ConnectException)
+            {
+                displayError(R.string.connectionException)
+            }
+
+            break@getloop  // only way to actually loop is to hit a 301 or 302
+        }
+    }
+
     fun newAccount(name: String, flags: ULong, pin: String, chainSelector: ChainSelector)
     {
         dbgAssertNotGuiThread()
@@ -520,25 +689,55 @@ class WallyApp : Application()
         val epin = if (pin.length > 0) EncodePIN(name, pin) else byteArrayOf()
         saveAccountPin(name, epin)
 
-        val ac = try
+        synchronized(accounts)
         {
-            val prehistoryDate = (Date().time / 1000L) - PREHISTORY_SAFEFTY_FACTOR // Set prehistory to 2 hours ago to account for block timestamp variations
-            Account(name, ctxt, flags, chainSelector, startPlace=prehistoryDate)
-        } catch (e: IllegalStateException)
-        {
-            LogIt.warning("Error creating account: ${e.message}")
-            return
+            val ac = try
+            {
+                val prehistoryDate = (Date().time / 1000L) - PREHISTORY_SAFEFTY_FACTOR // Set prehistory to 2 hours ago to account for block timestamp variations
+                Account(name, ctxt, flags, chainSelector, startPlace = prehistoryDate)
+            } catch (e: IllegalStateException)
+            {
+                LogIt.warning("Error creating account: ${e.message}")
+                return
+            }
+
+            ac.pinEntered = true  // for convenience, new accounts begin as if the pin has been entered
+            ac.start(applicationContext)
+            ac.onChange()
+            ac.wallet.save(true)
+
+            accounts[name] = ac
+            // Write the list of existing accounts, so we know what to load
+            saveActiveAccountList()
+            // wallet is saved in wallet constructor so no need to: ac.wallet.SaveBip44Wallet()
         }
+    }
 
-        ac.pinEntered = true  // for convenience, new accounts begin as if the pin has been entered
-        ac.start(applicationContext)
-        ac.onWalletChange()
-        ac.wallet.save(true)
 
-        accounts[name] = ac
-        // Write the list of existing accounts, so we know what to load
-        saveActiveAccountList()
-        // wallet is saved in wallet constructor so no need to: ac.wallet.SaveBip44Wallet()
+    fun deleteAccount(act: Account)
+    {
+        synchronized(accounts)
+        {
+            accounts.remove(act.name)  // remove this coin from any global access before we delete it
+            launch { // cannot access db in UI thread
+                saveActiveAccountList()
+                act.delete()
+            }
+
+            /* stopping the blockchain is handled by the wallet/ blockchain
+            val bc = act.chain.chainSelector
+            var anythingUsingThisBlockchain = false
+            for (a in accounts.values)
+            {
+                if (a.chain.chainSelector == bc)
+                {
+                    anythingUsingThisBlockchain = true
+                    break
+                }
+            }
+            if (!anythingUsingThisBlockchain) blockchains[bc]?.stop()
+             */
+        }
     }
 
     fun recoverAccount(
@@ -548,6 +747,7 @@ class WallyApp : Application()
       secretWords: String,
       chainSelector: ChainSelector,
       earliestActivity: Long?,
+      earliestHeight: Long?,
       nonstandardActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, NewAccount.HDActivityBracket>>?
     )
     {
@@ -574,15 +774,18 @@ class WallyApp : Application()
         }
         if (veryEarly != null) veryEarly = veryEarly - 1  // Must be earlier than the first activity
 
-        val ac = Account(name, ctxt, flags, chainSelector, secretWords, veryEarly, nonstandardActivity)
-        ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
-        ac.start(applicationContext)
-        ac.onWalletChange()
+        synchronized(accounts)
+        {
+            val ac = Account(name, ctxt, flags, chainSelector, secretWords, veryEarly, earliestHeight, nonstandardActivity)
+            ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
+            ac.start(applicationContext)
+            ac.onChange()
 
-        accounts[name] = ac
-        // Write the list of existing accounts, so we know what to load
-        saveActiveAccountList()
-        // wallet is saved in wallet constructor so no need to: ac.wallet.SaveBip44Wallet()
+            accounts[name] = ac
+            // Write the list of existing accounts, so we know what to load
+            saveActiveAccountList()
+            // wallet is saved in wallet constructor so no need to: ac.wallet.SaveBip44Wallet()
+        }
     }
 
     private fun createNotificationChannel()
@@ -594,13 +797,18 @@ class WallyApp : Application()
             val name = "Wally Wallet" //getString(R.string.channel_name)
             val descriptionText = "Wally Wallet Notifications" // getString(R.string.channel_description)
             val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance).apply {
+            val channel = NotificationChannel(NORMAL_NOTIFICATION_CHANNEL_ID, name, importance).apply {
+                description = descriptionText
+            }
+            val channelp = NotificationChannel(PRIORITY_NOTIFICATION_CHANNEL_ID, name, NotificationManager.IMPORTANCE_HIGH).apply {
                 description = descriptionText
             }
             // Register the channel with the system
             val notificationManager: NotificationManager =
               applicationContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
             notificationManager.createNotificationChannel(channel)
+            notificationManager.createNotificationChannel(channelp)
         }
     }
 
@@ -724,11 +932,28 @@ class WallyApp : Application()
                     }
 
                     c.start(applicationContext)
-                    c.onWalletChange()  // update all wallet UI fields since just starting up
+                    c.onChange()  // update all wallet UI fields since just starting up
                 }
             }
         }
 
+        var myClipboard = getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager
+        myClipboard.addPrimaryClipChangedListener(object:  ClipboardManager.OnPrimaryClipChangedListener {
+            override fun onPrimaryClipChanged()
+            {
+                val tmp = myClipboard.getPrimaryClip()
+                if (tmp != null) currentClip = tmp
+            }
+
+        })
+        updateClipboardCache()
+    }
+
+    fun updateClipboardCache()
+    {
+        var myClipboard = getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager
+        val tmp = myClipboard.getPrimaryClip()
+        if (tmp != null) currentClip = tmp
     }
 
     // Called by the system when the device configuration changes while your component is running.
@@ -747,22 +972,107 @@ class WallyApp : Application()
     }
 
 
-    /* Automatically handle this intent if its something that can be done without user intervention.
+    /** Automatically handle this intent if its something that can be done without user intervention.
     Returns true if it was handled, false if user-intervention needed.
     * */
+    var autoPayNotificationId = -1
     fun autoHandle(intentUri: String): Boolean
     {
-        val scheme = intentUri.split(":")[0]
+        val iuri: Uri = intentUri.toUri()
+        val scheme = iuri.scheme // intentUri.split(":")[0]
+        val path = iuri.getPath()
         if (scheme == TDPP_URI_SCHEME)
         {
             val tp = TricklePaySession(tpDomains)
-            val result = tp.attemptAutopay(intentUri)
-            if (result == TdppAction.ASK)
-                return false
-            else return true
+            if (path == "/sendto")
+            {
+                try
+                {
+                    val result = tp.attemptAutopay(intentUri)
+                    val acc = tp.getRelevantAccount()
+                    val amtS: String = acc.format(acc.fromFinestUnit(tp.totalNexaSpent)) + " " + acc.currencyCode
+                    val act = currentActivity
+                    when(result)
+                    {
+                        TdppAction.ASK ->
+                        {
+                            var intent = Intent(this, TricklePayActivity::class.java)
+                            intent.data = Uri.parse(intentUri)
+                            if (act != null) autoPayNotificationId =
+                              notifyPopup(intent, i18n(R.string.PaymentRequest), i18n(R.string.AuthAutopay) % mapOf("domain" to tp.domainAndTopic, "amt" to amtS), act, false, autoPayNotificationId)
+                            return false
+                        }
+                        TdppAction.ACCEPT ->
+                        {
+                            // Intent() means unclickable -- change to pop up configuration if clicked
+                            if (act != null) autoPayNotificationId =
+                                  notifyPopup(Intent(), i18n(R.string.AuthAutopayTitle), i18n(R.string.AuthAutopay) % mapOf("domain" to tp.domainAndTopic, "amt" to amtS), act, false, autoPayNotificationId)
+                            return true
+                        }
+
+                        TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
+                    }
+                }
+                catch (e:WalletNotEnoughBalanceException)
+                {
+                    val act = currentActivity
+                    if (act != null)
+                        autoPayNotificationId = notifyPopup(Intent(), i18n(R.string.insufficentBalance), e.shortMsg ?: e.message ?: i18n(R.string.unknownError), act, false, autoPayNotificationId)
+                }
+            }
+            if (path == "/lp")  // we are already connected which is how this being called in the app context
+            {
+                toast(R.string.connected)
+                return true
+            }
+            if (path == "/share")
+            {
+                val sess = TricklePaySession(tpDomains)
+                sess.handleShareRequest(iuri) {
+                    if (it != -1)
+                    {
+                        val msg: String = i18n(R.string.SharedNotification) % mapOf("what" to i18n(it))
+                        toast(msg)
+                    }
+                    else toast(R.string.badQR)
+                }
+            }
         }
         return false
     }
+
+
+    /** send a casual popup message that's not a notification */
+    fun toast(Rstring: Int) = toast(i18n(Rstring))
+    fun toast(s: String)
+    {
+        looper.handler.post {
+            val t = Toast.makeText(this, s, Toast.LENGTH_SHORT)
+            val y = displayMetrics.heightPixels
+            t.setGravity(android.view.Gravity.TOP, 0, y / 15)
+            t.show()
+        }
+    }
+
+    class LooperThread : Thread()
+    {
+        lateinit var handler: Handler
+        override fun run()
+        {
+            Looper.prepare()
+            handler = object : Handler(Looper.myLooper()!!)
+            {
+            }
+            Looper.loop()
+        }
+
+        init{
+            start()
+        }
+    }
+
+    val looper = LooperThread()
+
 
     /** Remove a notification that was installed using the notify() function */
     fun denotify(intent: Intent)
@@ -796,42 +1106,63 @@ class WallyApp : Application()
         //val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         //val notifs = nm.activeNotifications
         val sysnotifs = activeNotifications()
-        if (sysnotifs.size > 0)
+        var idx = 0
+        while(idx < sysnotifs.size)
         {
-            val sbn = sysnotifs[0]
+            val sbn = sysnotifs[idx]
             val id = sbn.id
             val n = sbn.notification
-            denotify(id)
             LogIt.info(sourceLoc() + "onResume handle notification intent:" + n.contentIntent.toString())
-            n.contentIntent.send()
-            return null
-        }
-        else  // If the user turned notifications off for this app, there won't be any but we still need to process incoming requests
-        {
-            if (notifs.isNotEmpty())
+            try
             {
-                val n = notifs[0]
-                notifs.removeAt(0)
-                return(n.third)
+                n.contentIntent.send()
+                return null
+            }
+            catch(e:CanceledException)
+            {
+                idx++
+            }
+            finally
+            {
+                denotify(id)
             }
         }
+
+        // If the user turned notifications off for this app, there won't be any but we still need to process incoming requests
+        if (notifs.isNotEmpty())
+        {
+            val n = notifs[0]
+            notifs.removeAt(0)
+            return(n.third)
+        }
+
         return null
     }
 
     /** Create a notification of a pending intent */
-    fun notify(intent: Intent, content: String, activity: AppCompatActivity): Int
+    fun notify(intent: Intent, content: String, activity: AppCompatActivity, actionRequired: Boolean = true, overwrite: Int = -1): Int
+    {
+        return notify(intent, "Wally Wallet", content, activity, actionRequired, overwrite)
+    }
+
+    fun notifyPopup(intent: Intent, title: String, content: String, activity: AppCompatActivity, actionRequired: Boolean = true, overwrite: Int = -1): Int
+    {
+        return notify(intent, title, content, activity, actionRequired, overwrite, NotificationCompat.PRIORITY_HIGH)
+    }
+    /** Create a notification of a pending intent */
+    fun notify(intent: Intent, title: String, content: String, activity: AppCompatActivity, actionRequired: Boolean = true, overwrite: Int = -1, priority: Int = NotificationCompat.PRIORITY_DEFAULT): Int
     {
         // Save the notification id into the Intent so we can remove it when needed
-        val nid = notifId
-        notifId+=1
+        val nid = if (overwrite == -1) notifId++ else overwrite  // reminder: this is a post-increment!
         intent.putExtra("wallyNotificationId", nid)
 
         val pendingIntent = PendingIntent.getActivity(activity, nid, intent, PendingIntent.FLAG_IMMUTABLE)
-        var builder = NotificationCompat.Builder(activity, NOTIFICATION_CHANNEL_ID)
-          .setSmallIcon(R.drawable.ic_notifications_black_24dp)
-          .setContentTitle("Wally Wallet")
+        var builder = NotificationCompat.Builder(activity, if (priority == NotificationCompat.PRIORITY_DEFAULT) NORMAL_NOTIFICATION_CHANNEL_ID else PRIORITY_NOTIFICATION_CHANNEL_ID)
+          //.setSmallIcon(R.drawable.ic_notifications_black_24dp)
+          .setSmallIcon(R.mipmap.wallynexa)
+          .setContentTitle(title)
           .setContentText(content)
-          .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+          .setPriority(priority)
           .setContentIntent(pendingIntent)
           .setAutoCancel(true)
 
@@ -904,6 +1235,49 @@ class WallyApp : Application()
             }
             client.close()
         }
+    }
+
+    fun getElectrumServerOn(cs: ChainSelector):IpPort
+    {
+        val prefDB: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+
+        // Return our configured node if we have one
+        var name = chainToURI[cs]
+        val node = prefDB.getString(name + "." + CONFIGURED_NODE, null)
+        if (node != null) return IpPort(node, DEFAULT_NEXATEST_TCP_ELECTRUM_PORT)
+        return ElectrumServerOn(cs)
+    }
+
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?)
+    {
+    }
+
+    override fun onActivityStarted(activity: Activity)
+    {
+    }
+
+    override fun onActivityResumed(activity: Activity)
+    {
+    }
+    override fun onActivityPostResumed(activity: Activity)
+    {
+        updateClipboardCache()
+    }
+
+    override fun onActivityPaused(activity: Activity)
+    {
+    }
+
+    override fun onActivityStopped(activity: Activity)
+    {
+    }
+
+    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle)
+    {
+    }
+
+    override fun onActivityDestroyed(activity: Activity)
+    {
     }
 
 }

@@ -65,7 +65,7 @@ fun MbchInFiat(fiat: String, setter: (BigDecimal) -> Unit)
         val obj = parser.decodeFromString(BchUsdBitcoinCom.serializer(), data)
         LogIt.info(sourceLoc() + " " + obj.toString())
         // TODO verify recent timestamp
-        val v = obj.price.toBigDecimal().setScale(16) / 100000.toBigDecimal().setScale(16) // bitcoin.com price is in cents per BCH.  We want "dollars" per MBCH (thousandth of a BCH)
+        val v = obj.price.toBigDecimal().setScale(16) / 100000000.toBigDecimal().setScale(16) // bitcoin.com price is in cents per BCH.  We want "dollars" per uBCH (millionths of a BCH)
         lastPoll[fiat] = Pair(Monotonic.markNow(), v)
         setter(v)
     }

@@ -22,7 +22,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.*
 import kotlinx.android.synthetic.main.activity_identity.*
-import kotlinx.android.synthetic.main.activity_main.*
+// import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.trickle_pay_reg.*
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject

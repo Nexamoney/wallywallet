@@ -37,7 +37,7 @@ class AssetBinder(val ui: AssetListItemBinding): GuiListItemBinder<AssetInfo>(ui
     override fun populate()
     {
         //val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
-        val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withZone(ZoneId.systemDefault())
+        //val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withZone(ZoneId.systemDefault())
 
         val activity = (view.context as AssetsActivity)
         val act = activity.account
@@ -74,6 +74,7 @@ class AssetsActivity : CommonNavActivity()
         super.onCreate(savedInstanceState)
         ui = ActivityAssetsBinding.inflate(layoutInflater)
         setContentView(ui.root)
+        enableMenu(this, SHOW_ASSETS_PREF)  // If you ever drop into this activity, show it in the menu
 
         laterUI {
             wallyApp?.let { app ->

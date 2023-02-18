@@ -28,12 +28,14 @@
         <activity android:name=".ShoppingSettingsActivity"
             android:label="@string/title_activity_shopping_settings"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:parentActivityName=".ShoppingActivity">
         </activity>
         <activity
             android:name=".ShoppingActivity"
             android:label="@string/title_activity_shopping"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity"
             />
         <activity android:name=".UnlockActivity" />
@@ -41,6 +43,7 @@
             android:name=".Welcome"
             android:label="@string/title_activity_welcome"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -49,11 +52,13 @@
         <activity
             android:name=".IdentitySettings"
             android:label="@string/title_activity_identity_settings"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask"
             android:parentActivityName=".IdentityActivity" />
         <activity
             android:name=".NewAccount"
             android:label="@string/title_activity_new_account"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask"
             android:parentActivityName=".MainActivity">
             <meta-data
@@ -63,6 +68,7 @@
         <activity
             android:name=".DomainIdentitySettings"
             android:label="@string/title_activity_domain_identity_settings"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask"
             android:parentActivityName=".IdentityActivity">
             <meta-data
@@ -72,6 +78,7 @@
         <activity
             android:name=".IdentityOpActivity"
             android:label="@string/title_activity_identity_op"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask"
             android:parentActivityName=".MainActivity"
             android:exported="true">
@@ -95,6 +102,7 @@
         <activity
             android:name=".IdentityActivity"
             android:label="@string/title_activity_identity"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask"
             android:parentActivityName=".MainActivity">
             <meta-data
@@ -104,6 +112,7 @@
         <activity
             android:name=".AssetsActivity"
             android:label="@string/title_activity_assets"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask"
             android:parentActivityName=".MainActivity">
             <meta-data
@@ -123,6 +132,7 @@
             android:name=".AccountDetailsActivity"
             android:label="@string/title_activity_account_details"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -132,6 +142,7 @@
             android:name=".ExchangeActivity"
             android:label="@string/title_activity_exchange"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity"
             android:exported="false">
             <meta-data
@@ -142,6 +153,7 @@
             android:name=".TricklePayActivity"
             android:label="@string/title_activity_trickle_pay"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -160,21 +172,25 @@
         <activity
             android:name=".Settings"
             android:label="@string/title_activity_settings"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".AlertActivity"
             android:label="@string/title_activity_alert_history"
-            android:launchMode="standard"
+            android:launchMode="singleTask"
+            android:parentActivityName=".MainActivity"
             />
         <activity
             android:name=".SplitBillActivity"
             android:label="@string/title_split_bill"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

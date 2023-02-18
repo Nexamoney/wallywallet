@@ -447,6 +447,13 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
             return TDPP_DEFAULT_PROTOCOL
         }
 
+    val domainAndTopic: String
+        get() {
+            val d = domain?.domain ?: ""
+            val t = topic ?: domain?.topic ?: ""
+            return d + (if (t != "") (":" + t) else "")
+        }
+
     val hostAndPort:String
         get()
         {
@@ -522,7 +529,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         if (p == null)
             return
 
-        wal.send(p, false, reason)
+        wal.send(p, false, i18n(R.string.title_activity_trickle_pay) + " " + domainAndTopic + ". " + reason)
         proposedDestinations = null
     }
 
@@ -571,10 +578,13 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         val panalysis = proposalAnalysis
         if ((pTx != null)&&(panalysis != null))
         {
-            val pUri = proposalUri!!  // if proposedTx != null uri must have something
             proposedTx = null
             proposalUri = null
             LogIt.info("sign trickle pay special transaction")
+
+            // TODO: put a record of this transaction somewhere so when it is completed by the server we can annotate the history with a reason.
+            // This is tricky because it may not be fully formed so idem will change.  Maybe look up by signature
+            // tx reason: i18n(R.string.title_activity_trickle_pay) + " " + domainAndTopic + ". " + reason)
 
             wallyApp?.let { app ->
                 // grab temps because activity could go away
@@ -765,7 +775,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         return d.assetInfo
     }
 
-    fun handleShareRequest(uri: Uri, then: (()->Unit)? = null)
+    fun handleShareRequest(uri: Uri, then: ((what: Int)->Unit)? = null)
     {
         parseCommonFields(uri)
 
@@ -793,25 +803,34 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
                 wallyApp?.post(url, {
                     it.setBody(addr.toString())
                 })
+                then?.invoke(R.string.Address)
             }
             else
             {
                 wallyApp?.displayError(R.string.NoAccounts)
             }
-            then?.invoke()
         }
-        else // (whatInfo == "clipboard")
+        else if (whatInfo == "clipboard")
         {
-            laterUI {
-                var myClipboard = wallyApp?.getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip: ClipData? = wallyApp?.currentClip
+            val item = if (clip?.itemCount != 0) clip?.getItemAt(0) else null
+            val text = item?.text?.toString() ?: i18n(R.string.pasteIsEmpty)
+            wallyApp?.post(url, { it.setBody(text) })
+                then?.invoke(R.string.clipboard)
+            /*
+            laterUI {  // We need to be in the foreground to read the clipboard
+                var myClipboard = wallyApp?.currentActivity?.getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager
                 val clip: ClipData? = myClipboard.getPrimaryClip()
                 val item = if (clip?.itemCount != 0) clip?.getItemAt(0) else null
                 val text = item?.text?.toString() ?: i18n(R.string.pasteIsEmpty)
                 wallyApp?.post(url, { it.setBody(text) })
                 then?.invoke()
-            }
+            } */
         }
-
+        else
+        {
+            then?.invoke(-1)
+        }
     }
 
 
@@ -823,7 +842,8 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         try
         {
             parseCommonFields(iuri, false)
-        } catch(e: TdppException)
+        }
+        catch(e: TdppException)
         {
             return TdppAction.DENY
         }

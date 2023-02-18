@@ -34,7 +34,7 @@ class AccountDetailsActivity: CommonNavActivity()
         setContentView(ui.root)
 
         wallyApp?.let { app ->
-            val acc = wallyApp?.focusedAccount
+            val acc = app.focusedAccount
             selectedAccount = acc
             if (acc != null) updateAccount(acc)
             else finish()  // I don't have an account; not even sure how this activity was run
@@ -221,8 +221,9 @@ class AccountDetailsActivity: CommonNavActivity()
 
                 if (act == null) return
                 act.detachUI()
+                wallyApp?.deleteAccount(act)
                 wallyApp?.accounts?.remove(act.name)  // remove this coin from any global access before we delete it
-
+                act.wallet.stop()
                 launch { // cannot access db in UI thread
                     wallyApp?.saveActiveAccountList()
                     selectedAccount?.delete()

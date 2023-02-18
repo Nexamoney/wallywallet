@@ -4,13 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import bitcoinunlimited.libbitcoincash.ChainSelector
 import bitcoinunlimited.libbitcoincash.dbgAssertGuiThread
 import bitcoinunlimited.libbitcoincash.handleThreadException
+import bitcoinunlimited.libbitcoincash.laterUI
 import info.bitcoinunlimited.www.wally.databinding.AccountListItemBinding
 import java.util.logging.Logger
 
@@ -23,6 +22,17 @@ class AccountListBinder(val ui: AccountListItemBinding, val guiList: GuiAccountL
         if (devMode) ui.Info.visibility = View.VISIBLE
         else ui.Info.visibility = View.GONE
         val d = data
+
+        // Clear this out just in case it is recycled as one of the blanks at the bottom
+        // or onChange is slow to update
+        ui.balanceUnconfirmedValue.text == ""
+        ui.Info.text = ""
+        ui.accountIcon.visibility = View.INVISIBLE
+        ui.lockIcon.visibility = View.INVISIBLE
+        ui.balanceTickerText.text = ""
+        ui.balanceValue.text = ""
+        ui.balanceUnits.text = ""
+
         if (d != null)
         {
             if (ui.balanceUnconfirmedValue.text == "") ui.balanceUnconfirmedValue.visibility = View.GONE
@@ -34,27 +44,50 @@ class AccountListBinder(val ui: AccountListItemBinding, val guiList: GuiAccountL
             if (d.wallet.chainSelector == ChainSelector.NEXAREGTEST) ui.accountIcon.setImageResource(R.drawable.nexareg_icon)
             if (d.wallet.chainSelector == ChainSelector.BCH) ui.accountIcon.setImageResource(R.drawable.bitcoin_cash_token)
             ui.accountIcon.visibility = View.VISIBLE
-            d.onWalletChange(true)
-        }
-        else  // Clear this out just in case it is recycled as one of the blanks at the bottom
-        {
-            ui.balanceUnconfirmedValue.text == ""
-            ui.Info.text = ""
-            ui.accountIcon.visibility = View.INVISIBLE
-            ui.lockIcon.visibility = View.INVISIBLE
-            ui.balanceTickerText.text = ""
-            ui.balanceValue.text = ""
-            ui.balanceUnits.text = ""
+            d.onChange(true)
         }
 
         ui.lockIcon.setOnClickListener({toggleLock() })
 
-        ui.accountIcon.setOnClickListener({ launchAccountDetails() })
-        ui.balanceTicker.setOnClickListener({ launchAccountDetails() })
-        ui.balanceTickerText.setOnClickListener({ launchAccountDetails() })
+        ui.GuiAccountDetailsButton.setOnClickListener({ launchAccountDetails() })
 
-        ui.balanceValue.setOnClickListener({ focusAccount() })
+        val touch = object: OnSwipeTouchListener(ui.root, false) // false claims we haven't handled it.  This allows the default behavior (e.g. long press selection) to work
+        {
+            override fun onClick(pos: Pair<Float, Float>): Boolean
+            {
+                onClick(view)
+                return false
+            }
+        }
 
+        for (view in listOf(ui.accountIcon, ui.balanceTicker, ui.balanceTickerText, ui.balanceValue, ui.balanceUnits, ui.balanceUnconfirmedValue))
+        {
+            view.setOnTouchListener(touch)
+        }
+        super.populate()
+    }
+
+    override fun unpopulate()
+    {
+        // Clear this out just in case it is recycled as one of the blanks at the bottom
+        // or onChange is slow to update
+        ui.balanceUnconfirmedValue.text == ""
+        ui.Info.text = ""
+        ui.accountIcon.visibility = View.INVISIBLE
+        ui.lockIcon.visibility = View.INVISIBLE
+        ui.balanceTickerText.text = ""
+        ui.balanceValue.text = ""
+        ui.balanceUnits.text = ""
+        val d = data
+        if (d != null) d.unsetUI()
+        super.unpopulate()
+    }
+
+    override fun backgroundColor(highlight: Boolean):Long
+    {
+        if (highlight) ui.GuiAccountDetailsButton.visibility = View.VISIBLE
+        else ui.GuiAccountDetailsButton.visibility = View.GONE
+        return -1 // Do not actually recommend a color
     }
 
     fun toggleLock()
@@ -72,11 +105,14 @@ class AccountListBinder(val ui: AccountListItemBinding, val guiList: GuiAccountL
                 else
                 {
                     d.pinEntered = false
-                    d.onWalletChange(true)
+                    d.onChange(true)
+                    // account should be hidden if locked
+                    if (!d.visible) guiList.layout()
                 }
             }
         }
     }
+
     override fun onClick(v: View)
     {
         guiList.onItemClicked(this)
@@ -101,7 +137,6 @@ class AccountListBinder(val ui: AccountListItemBinding, val guiList: GuiAccountL
     }
     fun launchAccountDetails()
     {
-        // dbgAssertGuiThread()
         val d = data
         if (d != null)
         {
@@ -113,7 +148,6 @@ class AccountListBinder(val ui: AccountListItemBinding, val guiList: GuiAccountL
             guiList.activity.startActivity(intent)
         }
     }
-
 }
 
 
@@ -200,23 +234,23 @@ class ListifyMap<K, E>(val origmap: Map<K, E>, var filterPredicate: (Map.Entry<K
 }
 
 
-class GuiAccountList(val activity: MainActivity)
+open class GuiAccountList(val activity: MainActivity)
 {
     private lateinit var linearLayoutManager: LinearLayoutManager
     public lateinit var adapter: GuiList<Account, AccountListBinder>
     var list:List<Account> = listOf()
 
-    fun changed()
-    {
-        // if (list is ListifyMap<String, Account>) (list as ListifyMap<String, Account>).changed()
-    }
-
     open fun onItemClicked(holder: AccountListBinder)
     {
+        adapter.highlight(holder.adapterPosition)
         activity.setFocusedAccount(holder.data)
     }
 
-
+    /** call this if the order, item, or # of elements in the list has changed */
+    fun layout()
+    {
+        laterUI { activity.assignWalletsGuiSlots() }
+    }
 
     fun inflate(context: Context, uiElem: RecyclerView, accountList: List<Account> )
     {
@@ -226,7 +260,7 @@ class GuiAccountList(val activity: MainActivity)
             val ui = AccountListItemBinding.inflate(LayoutInflater.from(vg.context), vg, false)
             AccountListBinder(ui, this)
         })
-        adapter.emptyBottomLines = 2
+        adapter.emptyBottomLines = 6
         adapter.rowBackgroundColors = WallyRowColors
         uiElem.layoutManager = linearLayoutManager
     }

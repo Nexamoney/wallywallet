@@ -57,6 +57,7 @@
             android:text="@string/useUniqueIdentity"
             android:textSize="18sp"
             android:tooltipText="@string/useUniqueIdentityToolTip"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -229,25 +230,49 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <Button
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/sendButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="10dp"
+        android:paddingBottom="6dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/nav_view"
+        app:justifyContent="space_evenly"> <!-- or "space_between", "space_evenly" -->
+
+        <Button
+            android:id="@+id/RemoveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onRemoveButton"
+            android:text="@string/remove"
+            />
+
+        <Button
         android:id="@+id/NextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
-        android:onClick="onNextButton"
-        android:text="@string/next"
-        app:layout_constraintBottom_toTopOf="@+id/nav_view"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:onClick="onDoneButton"
+        android:text="@string/done"
+        />
 
-    <Button
-        android:id="@+id/RemoveButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onRemoveButton"
-        android:text="@string/remove"
-        android:layout_marginStart="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/NextButton"
-        app:layout_constraintStart_toStartOf="parent" />
+        <Button
+            android:id="@+id/AcceptButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onAcceptButton"
+            android:text="@string/accept"
+            />
+
+        <Button
+            android:id="@+id/RejectButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onRemoveButton"
+            android:text="@string/reject"
+            />
+
+    </com.google.android.flexbox.FlexboxLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
