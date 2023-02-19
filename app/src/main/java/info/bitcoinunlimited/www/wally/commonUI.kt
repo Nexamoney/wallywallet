@@ -58,6 +58,10 @@ var displayMetrics = DisplayMetrics()
 
 private val LogIt = Logger.getLogger("BU.wally.commonUI")
 
+class Objectify<T>(var obj: T)
+{
+}
+
 fun String.toSet():Set<String>
 {
     return split(","," ").map({it.trim()}).filter({it.length > 0}).toSet()

@@ -26,7 +26,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/balanceTicker"
-        android:layout_width="100sp"
+        android:layout_width="110sp"
         android:layout_height="40sp"
         android:textIsSelectable="true"
         app:layout_constraintStart_toEndOf="@+id/accountIcon"
@@ -38,6 +38,7 @@
         <TextView
             android:id="@+id/balanceTickerText"
             android:layout_width="wrap_content"
+            android:maxWidth="90sp"
             android:layout_height="fill_parent"
             android:textSize="24sp"
             android:textStyle="bold"
@@ -58,7 +59,7 @@
             android:id="@+id/lockIcon"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:layout_marginStart="2dp"
+            android:layout_marginStart="-4dp"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="2dp"
             android:padding="0px"

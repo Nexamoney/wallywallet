@@ -85,6 +85,10 @@ class NewAccount : CommonNavActivity()
     var nameChangedByUser = false
     var codeChanged:Int = 0  // if a field is programatically changed, this is set to stop the callback from behaving like it was a user selected change
 
+    // For some operations, require that the "create account" button be pressed twice
+    var oked = 0
+
+    var curPeek: Objectify<Boolean>? = null
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -107,6 +111,13 @@ class NewAccount : CommonNavActivity()
         ui.GuiBlockchainSelector.setOnItemSelectedListener(object : OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long)
             {
+                val bc = SupportedBlockchains[ui.GuiBlockchainSelector.selectedItem.toString()]
+                // If the recovery phrase is good, let's peek at the blockchain to see if there's activity
+                val p = ui.GuiAccountRecoveryPhraseEntry.text.toString()
+                val words = processSecretWords(p)
+                launchPeekActivity(words, SupportedBlockchains[ui.GuiBlockchainSelector.selectedItem]!!)
+
+
                 if (!nameChangedByUser)  // If the user has already put something in, then don't touch it
                 {
                     val bc = SupportedBlockchains[ui.GuiBlockchainSelector.selectedItem.toString()]
@@ -226,6 +237,10 @@ class NewAccount : CommonNavActivity()
                 ui.GuiNewAccountStatus.text = ""
                 ui.GuiNewAccountError.text = ""
 
+                // Phrase changed so forget prior earliest activity
+                earliestActivity = null
+                earliestActivityHeight = 0
+
                 // If Recovery phrase is blank we'll generate one so that's OK
                 if (p.isNullOrBlank())
                 {
@@ -256,21 +271,7 @@ class NewAccount : CommonNavActivity()
                 }
                 ui.GuiRecoveryPhraseOk.setImageResource(R.drawable.ic_check)
 
-                // If the recovery phrase is good, let's peek at the blockchain to see if there's activity
-                thread(true, true, null, "peekWallet")
-                {
-                    try
-                    {
-                        peekActivity(words.joinToString(" "), SupportedBlockchains[ui.GuiBlockchainSelector.selectedItem]!!)
-                    }
-                    catch (e: Exception)
-                    {
-                        laterUI { ui.GuiNewAccountStatus.text = i18n(R.string.NewAccountSearchFailure) }
-                        LogIt.severe("wallet peek error: " + e.toString())
-                        handleThreadException(e, "wallet peek error", sourceLoc())
-                    }
-                }
-
+                launchPeekActivity(words, SupportedBlockchains[ui.GuiBlockchainSelector.selectedItem]!!)
             }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
@@ -284,6 +285,28 @@ class NewAccount : CommonNavActivity()
 
     }
 
+    fun launchPeekActivity(words: List<String>, cs: ChainSelector)
+    {
+        if (words.size != 12) return
+        curPeek?.let { it.obj = true }
+        val p = Objectify<Boolean>(false)
+        curPeek = p
+        // If the recovery phrase is good, let's peek at the blockchain to see if there's activity
+        thread(true, true, null, "peekWallet")
+        {
+            try
+            {
+                peekActivity(words.joinToString(" "), cs, p)
+            }
+            catch (e: Exception)
+            {
+                laterUI { ui.GuiNewAccountStatus.text = i18n(R.string.NewAccountSearchFailure) }
+                LogIt.severe("wallet peek error: " + e.toString())
+                handleThreadException(e, "wallet peek error", sourceLoc())
+            }
+        }
+
+    }
 
     fun searchActivity(ec: ElectrumClient, chainSelector: ChainSelector, count: Int, secretDerivation: (Int) -> ByteArray): Pair<Long, Int>?
     {
@@ -387,7 +410,7 @@ class NewAccount : CommonNavActivity()
     }
 
 
-    fun peekActivity(secretWords: String, chainSelector: ChainSelector)
+    fun peekActivity(secretWords: String, chainSelector: ChainSelector, aborter: Objectify<Boolean>)
     {
         laterUI {
             ui.GuiNewAccountStatus.text = i18n(R.string.NewAccountSearchingForTransactions)
@@ -402,6 +425,7 @@ class NewAccount : CommonNavActivity()
             return
         }
 
+        if (aborter.obj) return
         val ec = try
         {
             ElectrumClient(chainSelector, svr, port, useSSL=true)
@@ -423,13 +447,13 @@ class NewAccount : CommonNavActivity()
             {
                 laterUI {
                     ui.GuiNewAccountStatus.text = i18n(R.string.ElectrumNetworkUnavailable)
+                    ui.GuiStatusOk.setImageResource(android.R.drawable.ic_delete)
                 }
                 return
             }
         }
         ec.start()
-
-        // val features = ec.features()
+        if (aborter.obj) return
 
         val passphrase = "" // TODO: support a passphrase
         val secret = GenerateBip39Seed(secretWords, passphrase)
@@ -438,10 +462,12 @@ class NewAccount : CommonNavActivity()
 
         var earliestActivityP =
           searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, 0, it) })
+        if (aborter.obj) return
 
         // Look for activity in the identity and common location
         var earliestActivityId =
           searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, 0, it) })
+        if (aborter.obj) return
 
         // Set earliestActivityP to the lesser of the two
         if (earliestActivityP == null) earliestActivityP = earliestActivityId
@@ -449,7 +475,7 @@ class NewAccount : CommonNavActivity()
         {
             if ((earliestActivityId != null) && (earliestActivityId.first < earliestActivityP.first)) earliestActivityP = earliestActivityId
         }
-
+        if (aborter.obj) return
         val Bip44Msg = if (earliestActivityP != null)
         {
             earliestActivity = earliestActivityP.first - 1 // -1 so earliest activity is just before the activity
@@ -459,7 +485,12 @@ class NewAccount : CommonNavActivity()
               "height" to earliestActivityP.second.toString()
             )
         }
-        else i18n(R.string.NoBip44ActivityNotice)
+        else
+        {
+            earliestActivity = null
+            earliestActivityHeight = 0
+            i18n(R.string.NoBip44ActivityNotice)
+        }
 
         // Look in non-standard places for activity
         val BTCactivity =
@@ -501,7 +532,11 @@ class NewAccount : CommonNavActivity()
         else i18n(R.string.NoBip44BtcActivityNotice)
          */
 
-        laterUI { ui.GuiNewAccountStatus.text = Bip44Msg + "\n" + Bip44BTCMsg }
+        laterUI {
+            ui.GuiNewAccountStatus.text = Bip44Msg + "\n" + Bip44BTCMsg
+            if (earliestActivity != null) ui.GuiStatusOk.setImageResource(R.drawable.ic_check)
+            else ui.GuiStatusOk.setImageResource(android.R.drawable.ic_delete)
+        }
     }
 
     fun processSecretWords(secretWords: String): List<String>
@@ -531,6 +566,16 @@ class NewAccount : CommonNavActivity()
                 displayError(R.string.invalidRecoveryPhrase)
                 return
             }
+            if ((earliestActivity == null)&&(oked == 0))
+            {
+                oked +=1
+                laterUI {
+                    ui.GuiNewAccountError.text = i18n(R.string.creatingNoHistoryAccountWarning)
+                    ui.GuiStatusOk.setImageResource(android.R.drawable.ic_delete)
+                }
+                displayNotice(R.string.areYouSure)
+                return
+            }
             val cleanedSecretWords = words.joinToString(" ")
             app!!.recoverAccount(name, flags, pin, cleanedSecretWords, chainSelector, earliestActivity, earliestActivityHeight.toLong(), nonstandardActivity)
             finish()
@@ -540,6 +585,7 @@ class NewAccount : CommonNavActivity()
 
     fun onCreateAccount(@Suppress("UNUSED_PARAMETER") v: View?)
     {
+
         LogIt.info("Create account button")
         val secretWords = ui.GuiAccountRecoveryPhraseEntry.text.toString().trim()
         val chainName: String = ui.GuiBlockchainSelector.selectedItem.toString()

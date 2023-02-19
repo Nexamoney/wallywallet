@@ -220,6 +220,9 @@ class AccountDetailsActivity: CommonNavActivity()
             {
 
                 if (act == null) return
+                val app = wallyApp
+                if (app == null) return
+
                 act.detachUI()
                 wallyApp?.deleteAccount(act)
                 wallyApp?.accounts?.remove(act.name)  // remove this coin from any global access before we delete it
@@ -228,8 +231,8 @@ class AccountDetailsActivity: CommonNavActivity()
                     wallyApp?.saveActiveAccountList()
                     selectedAccount?.delete()
                 }
-                displayNotice(i18n(R.string.accountDeleteNotice))
-                // setupAccountSelection()  // reload this spinner since an account was removed
+                app.displayNotice(i18n(R.string.accountDeleteNotice))
+                finish()  // since account is deleted end this activity
             }
             ConfirmationFor.RecoveryPhrase ->
             {

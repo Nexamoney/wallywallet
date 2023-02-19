@@ -263,6 +263,7 @@
     <string name="TelegramText">Telegram</string>
     <string name="IdentityAssociatedWith">Associated Identity Info</string>
 
+    <string name="areYouSure">Are you sure?</string>
     <string name="firstName">first name</string>
     <string name="lastName">last name</string>
 
@@ -308,8 +309,8 @@
     <string name="invalidRecoveryPhrase">bad recovery phrase</string>
     <string name="invalidAccountName">invalid name</string>
     <string name="PassPhrase">Passphrase (optional)</string>
-    <string name="Bip44ActivityNotice">Found BIP44 activity</string>
-    <string name="NoBip44ActivityNotice">Warning, No BIP44 transactions found!</string>
+    <string name="Bip44ActivityNotice">Found account activity</string>
+    <string name="NoBip44ActivityNotice">Warning, No transactions found!</string>
     <string name="Bip44BtcActivityNotice">Found nonstandard or pre-fork wallet activity</string>
     <string name="NoBip44BtcActivityNotice">No pre-fork transactions found</string>
     <string name="FirstUseDateHeightInfo" formatted="false">starting at %date (block %height)</string>
@@ -322,6 +323,7 @@
     <string name="PinSpendingUnprotected">Spending without a PIN is enabled (no PIN entered)</string>
     <string name="PinSpendingProtected">Spending requires a PIN</string>
     <string name="InvalidPIN">Invalid PIN</string>
+    <string name="creatingNoHistoryAccountWarning">You are creating an account with a specific recovery phrase, but no activity was found on the blockchain.\nIs this right?\nIf so, go ahead and click the create button again and an empty account will be created.  But if this account should have activity, double check your selected blockchain and recovery phrase.  If that is not the problem, either the blockchain network is currently inaccessible (try again later), or it was created with an nonstandard wallet app.  Do not create this account now.</string>
     <!-- Error strings -->
     <string name="accountLocked">account locked</string>
     <string name="unknownError">error</string>

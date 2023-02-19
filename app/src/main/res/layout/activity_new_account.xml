@@ -228,6 +228,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/guiPINText" />
 
+    <ImageView
+        android:id="@+id/GuiStatusOk"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:contentDescription="@android:string/ok"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/GuiNewAccountStatus"
+        />
+
     <TextView
         android:id="@+id/GuiNewAccountStatus"
         android:layout_width="0dp"
@@ -235,12 +245,13 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:textSize="18sp"
         android:maxLines="5"
         android:minLines="1"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/GuiStatusOk"
         app:layout_constraintTop_toBottomOf="@+id/PinHidesAccount" />
 
     <TextView
@@ -250,6 +261,8 @@
         android:textAlignment="center"
         android:textColor="#F44336"
         android:textStyle="bold"
+        android:maxLines="10"
+        android:minLines="0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

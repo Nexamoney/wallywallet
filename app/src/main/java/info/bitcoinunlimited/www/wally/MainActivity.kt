@@ -522,6 +522,10 @@ class MainActivity : CommonNavActivity()
              */
         }
 
+        laterUI {
+            delay(5000)  // give a little time to start up
+            checkNofificationPermission()
+        }
     }
 
     override fun onPause()
@@ -616,8 +620,6 @@ class MainActivity : CommonNavActivity()
                 delay(5000)
             }
         }
-
-        checkNofificationPermission()
     }
 
 
@@ -639,30 +641,32 @@ class MainActivity : CommonNavActivity()
     fun checkNofificationPermission(): Unit
     {
         if (hasNotifPerm == 1) return
-        when
-        {
-            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED ->
+            when
             {
-                hasNotifPerm = 1
-                return
+                ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED ->
+                {
+                    hasNotifPerm = 1
+                    return
+                }
+
+                shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) ->
+                {
+                    // In an educational UI, explain to the user why your app requires this
+                    // permission for a specific feature to behave as expected. In this UI,
+                    // include a "cancel" or "no thanks" button that allows the user to
+                    // continue using your app without granting the permission.
+                    //showInContextUI(...)
+                }
+
+                else ->
+                {
+                    // You can directly ask for the permission.
+                    // The registered ActivityResultCallback gets the result of this request.
+                    requestPermissionLauncher.launch(
+                      Manifest.permission.POST_NOTIFICATIONS
+                    )
+                }
             }
-            shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) ->
-            {
-                // In an educational UI, explain to the user why your app requires this
-                // permission for a specific feature to behave as expected. In this UI,
-                // include a "cancel" or "no thanks" button that allows the user to
-                // continue using your app without granting the permission.
-                //showInContextUI(...)
-            }
-            else                                                                                                                       ->
-            {
-                // You can directly ask for the permission.
-                // The registered ActivityResultCallback gets the result of this request.
-                requestPermissionLauncher.launch(
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                )
-            }
-        }
     }
 
     override fun onDestroy()

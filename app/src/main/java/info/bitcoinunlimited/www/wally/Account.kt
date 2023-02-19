@@ -382,7 +382,7 @@ class Account(
     {
         if (started)
         {
-            LogIt.info("App resuming: Restarting threads if needed")
+            LogIt.info(sourceLoc() + ": App resuming: Restarting threads if needed")
             wallet.restart()
             wallet.chainstate?.chain?.restart()
             wallet.chainstate?.chain?.net?.restart()
