@@ -73,7 +73,7 @@ class IdentityDomainBinder(val ui: IdentityListItemBinding): GuiListItemBinder<I
 
 class IdentityActivity : CommonNavActivity()
 {
-    private lateinit var ui: ActivityIdentityBinding
+    lateinit var ui: ActivityIdentityBinding
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var adapter: GuiList<IdentityDomain, IdentityDomainBinder>
 

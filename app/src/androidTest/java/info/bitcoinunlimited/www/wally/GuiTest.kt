@@ -21,9 +21,9 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.*
-import kotlinx.android.synthetic.main.activity_identity.*
+//import kotlinx.android.synthetic.main.activity_identity.*
 // import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.trickle_pay_reg.*
+//import kotlinx.android.synthetic.main.trickle_pay_reg.*
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import org.hamcrest.CoreMatchers.instanceOf
@@ -300,12 +300,15 @@ class GuiTest
 
         // push all the buttons
         activityScenario.onActivity {
-            val s: String = it.GuiTricklePayEntity.text.toString()
+            val fm = it.getSupportFragmentManager()
+            val fragG = fm.findFragmentById(R.id.GuiTricklePayReg)
+            val frag = fragG as TricklePayRegFragment
+            val s: String = frag.ui.GuiTricklePayEntity.text.toString()
             check(s == "www.yoursite.com")
-            check(it.GuiTricklePayTopic.text.toString() == "thisisatest")
-            check(it.GuiAutospendLimitDescription0.text.toString() == "desc1")
-            check(it.GuiAutospendLimitDescription1.text.toString() == "desc2 space test")
-            check(it.GuiAutospendLimitDescription2.text.toString() == "week")
+            check(frag.ui.GuiTricklePayTopic.text.toString() == "thisisatest")
+            check(frag.ui.GuiAutospendLimitDescription0.text.toString() == "desc1")
+            check(frag.ui.GuiAutospendLimitDescription1.text.toString() == "desc2 space test")
+            check(frag.ui.GuiAutospendLimitDescription2.text.toString() == "week")
         }
 
         onView(withId(GuiId.TpAssetInfoRequestHandlingButton)).perform(click())
@@ -328,7 +331,7 @@ class GuiTest
 
         // Check that new registration was accepted
         asc.onActivity {
-            check(it.domains.size > 0)
+            check(it.tpDomains.size > 0)
         }
 
         // OK get rid of what we created
@@ -345,7 +348,7 @@ class GuiTest
 
         // There will be no accounts, so check proper error
         activityScenario.onActivity {
-            check(it.commonIdentityAddress.text == i18n(R.string.NoAccounts))
+            check(it.ui.commonIdentityAddress.text == i18n(R.string.NoAccounts))
         }
 
         val app = {
@@ -375,7 +378,7 @@ class GuiTest
 
         var addr:String = ""
         activityScenario.onActivity {
-            val s:String = it.commonIdentityAddress.text.toString()
+            val s:String = it.ui.commonIdentityAddress.text.toString()
             check(s.startsWith("nexa:"))
             addr = s
         }
@@ -384,7 +387,7 @@ class GuiTest
 
         onView(withId(GuiId.commonIdentityAddress)).perform(click())
         activityScenario.onActivity {
-            val s:String = it.commonIdentityAddress.text.toString()
+            val s:String = it.ui.commonIdentityAddress.text.toString()
             check(s == i18n(R.string.copiedToClipboard))
         }
         val cp = clipboardText()
@@ -430,19 +433,19 @@ class GuiTest
         }
 
         // Clear because other tests might have left stuff in these (and check that sending is invalid when fields cleared)
-        activityScenario.onActivity { it.sendQuantity.text.clear() }
+        activityScenario.onActivity { it.ui.sendQuantity.text.clear() }
         onView(withId(GuiId.sendButton)).perform(click())  // Note if your phone is in a uninterruptable mode (like settings or notifications) then you'll get a spurious exception here
 
         // If you come in to this routine clean, you'll get badCryptoCode, but if you have accounts defined, you'll get badAmount
         activityScenario.onActivity { check(it.lastErrorId == R.string.badAmount || it.lastErrorId == R.string.badCryptoCode) }
 
-        activityScenario.onActivity { it.sendQuantity.text.append("11") }
-        activityScenario.onActivity { it.sendToAddress.text.clear() }
+        activityScenario.onActivity { it.ui.sendQuantity.text.append("11") }
+        activityScenario.onActivity { it.ui.sendToAddress.text.clear() }
         onView(withId(GuiId.sendButton)).perform(click())
         // If you come in to this routine clean, you'll get badCryptoCode, but if you have accounts defined, you'll get badAddress
         activityScenario.onActivity { check(it.lastErrorId == R.string.badAddress  || it.lastErrorId == R.string.badCryptoCode) }
 
-        activityScenario.onActivity { it.sendQuantity.text.clear() }
+        activityScenario.onActivity { it.ui.sendQuantity.text.clear() }
 
 
 
@@ -482,7 +485,7 @@ class GuiTest
 
         clickSpinnerItem(GuiId.recvIntoAccount, "rNEX1")
         var recvAddr: String = ""
-        activityScenario.onActivity { recvAddr = it.receiveAddress.text.toString() }
+        activityScenario.onActivity { recvAddr = it.ui.receiveAddress.text.toString() }
 
         // Copy the receive addr, and paste it into the destination
         onView(withId(GuiId.receiveAddress)).perform(click())
@@ -497,7 +500,7 @@ class GuiTest
         // Load coins
         clickSpinnerItem(GuiId.recvIntoAccount, "rNEX1")
         do {
-            activityScenario.onActivity { recvAddr = it.receiveAddress.text.toString() }
+            activityScenario.onActivity { recvAddr = it.ui.receiveAddress.text.toString() }
             if (recvAddr.contentEquals(i18n(R.string.copiedToClipboard))) Thread.sleep(200)
         } while(recvAddr.contentEquals(i18n(R.string.copiedToClipboard)))
 
@@ -505,14 +508,16 @@ class GuiTest
         var txHash = rpc.sendtoaddress(recvAddr, BigDecimal("1000000"))
         LogIt.info("SendToAddress RPC result: " + txHash.toString())
 
+        TODO()
+        /*
         waitForActivity(30000, activityScenario)
         {
-            it.balanceUnconfirmedValue2.text == "*1,000*"
+            it.ui.balanceUnconfirmedValue2.text == "*1,000*"
         }
 
 
         // once we've received anything on an address, it should change to the next one
-        activityScenario.onActivity { check(recvAddr != it.receiveAddress.text.toString()) }
+        activityScenario.onActivity { check(recvAddr != it.ui.receiveAddress.text.toString()) }
 
         // confirm it
         val blockHash = rpc.generate(1)
@@ -522,13 +527,13 @@ class GuiTest
         // See confirmation flow in the UX
         waitForActivity(30000, activityScenario)
         {
-            (it.balanceUnconfirmedValue2.text == "") && (it.balanceValue2.text == "1,000")
+          (it.balanceUnconfirmedValue2.text == "") && (it.balanceValue2.text == "1,000")
         }
 
         // Now send from 1 to 2
         clickSpinnerItem(GuiId.sendAccount, "rNEX1")  // Choose the account
         clickSpinnerItem(GuiId.recvIntoAccount, "rNEX2")  // Read the receive address
-        activityScenario.onActivity { recvAddr = it.receiveAddress.text.toString() }
+        activityScenario.onActivity { recvAddr = it.ui.receiveAddress.text.toString() }
         // Write the receive address in
         onView(withId(GuiId.sendToAddress)).perform(clearText(), typeText(recvAddr), pressImeActionButton())
         onView(withId(GuiId.sendQuantity)).perform(clearText(),typeText("500"), pressImeActionButton())
@@ -539,6 +544,8 @@ class GuiTest
         {
             it.balanceUnconfirmedValue3.text == "*500*"
         }
+
+         */
 
         LogIt.info("Completed!")
     }

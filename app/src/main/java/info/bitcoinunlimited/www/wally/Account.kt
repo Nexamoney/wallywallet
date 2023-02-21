@@ -12,8 +12,28 @@ import info.bitcoinunlimited.www.wally.databinding.AccountListItemBinding
 import java.math.BigDecimal
 import java.security.spec.InvalidKeySpecException
 import java.util.logging.Logger
+import javax.crypto.SecretKeyFactory
+import javax.crypto.spec.PBEKeySpec
 
 private val LogIt = Logger.getLogger("BU.wally.Account")
+
+/** Store the PIN encoded.  However, note that for short PINs a dictionary attack is very feasible */
+fun EncodePIN(actName: String, pin: String, size: Int = 64): ByteArray
+{
+    val salt = "wally pin " + actName
+    val skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512")
+    val secretkey = PBEKeySpec(pin.toCharArray(), salt.toByteArray(), 2048, 512)
+    val seed = skf.generateSecret(secretkey)
+    return seed.encoded.slice(IntRange(0, size - 1)).toByteArray()
+}
+
+    /** Save the PIN of an account to the database */
+    fun SaveAccountPin(actName: String, epin: ByteArray)
+    {
+        val db = walletDb!!
+        db.set("accountPin_" + actName, epin)
+    }
+
 
 class Account(
   val name: String, //* The name of this account
@@ -32,7 +52,7 @@ class Account(
     val infoGUI = Reactive<String>("")
     var uiBinding: AccountListItemBinding? = null  // Maybe an easier way to do it than piecemeal as above
 
-    val encodedPin: ByteArray? = loadEncodedPin()
+    var encodedPin: ByteArray? = loadEncodedPin()
 
     /** This is a common account display descriptor it returns "<account name> on <blockchain>", e.g. "myaccount on nexa" */
     val nameAndChain: String
@@ -69,7 +89,7 @@ class Account(
     var currentReceive: PayDestination? = null //? This receive address appears on the main screen for quickly receiving coins
     var currentReceiveQR: Bitmap? = null
 
-    //? Current exchange rate between this currency (including units) and your selected fiat currency
+    /** Current exchange rate between this currency (in this account's default unit -- NOT the finest unit or blockchain unit) and your selected fiat currency */
     var fiatPerCoin: BigDecimal = 0.toBigDecimal(currencyMath).setScale(16)
 
     //? Current bch balance (cached from accessing the wallet), in the display units
@@ -204,6 +224,19 @@ class Account(
             return "http://testnet-explorer.nexa.org/tx/" + txHex
         if (wallet.chainSelector == ChainSelector.NEXA)
             return "http://explorer.nexa.org/tx/" + txHex
+        return null
+    }
+
+    /** Return a web URL that will provide more information about this address */
+    fun addressInfoWebUrl(address: String?): String?
+    {
+        if (address == null) return null
+        if (wallet.chainSelector == ChainSelector.BCH)
+            return "https://explorer.bitcoinunlimited.info/address/" + address
+        if (wallet.chainSelector == ChainSelector.NEXATESTNET)
+            return "http://testnet-explorer.nexa.org/address/" + address
+        if (wallet.chainSelector == ChainSelector.NEXA)
+            return "http://explorer.nexa.org/address/" + address
         return null
     }
 

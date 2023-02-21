@@ -73,7 +73,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="60dp"
-        android:layout_marginEnd="60dp"
+        android:layout_marginEnd="30dp"
         app:flexDirection="column"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/GuiSoftwareVersion"
@@ -195,7 +195,35 @@
         android:textSize="18sp"
         />
 
-    </com.google.android.flexbox.FlexboxLayout>
+        </com.google.android.flexbox.FlexboxLayout>
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/AreYouSureAmtFlex"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:alignItems="center"
+            app:justifyContent="space_between">
+            <EditText
+                android:id="@+id/AreYouSureAmt"
+                android:layout_width="160sp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginEnd="4dp"
+                android:gravity="bottom"
+                android:inputType="numberDecimal"
+                />
+
+            <TextView
+                android:id="@+id/AreYouSureInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/WhenAskSure"
+                android:textSize="16sp"
+                />
+
+        </com.google.android.flexbox.FlexboxLayout>
+
+
     </com.google.android.flexbox.FlexboxLayout>
 
 

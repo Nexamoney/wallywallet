@@ -146,6 +146,9 @@ class MainActivity : CommonNavActivity()
     /** Do this once we get file read permissions */
     var doOnFileReadPerms: (() -> Unit)? = null
 
+    /** track a 2 phase send operation */
+    var askedForConfirmation = false
+
     fun onBlockchainChange(blockchain: Blockchain)
     {
         for ((_, c) in accounts)
@@ -474,7 +477,6 @@ class MainActivity : CommonNavActivity()
             // Wait until stuff comes up
             while (!coinsCreated) Thread.sleep(50)
             LogIt.info("coins created")
-            Thread.sleep(50)
 
             val a = app
             if (a != null)
@@ -483,18 +485,15 @@ class MainActivity : CommonNavActivity()
                 if (devMode == false && a.firstRun == true && a.accounts.isEmpty())
                 {
                     // Automatically create a Nexa wallet and put up some info
-                    a.newAccount("nexa", ACCOUNT_FLAG_NONE, "", ChainSelector.NEXA)
-                    a.firstRun = false
+                    val ac = a.newAccount("nexa", ACCOUNT_FLAG_NONE, "", ChainSelector.NEXA)
                 }
             }
 
             laterUI {
                 dbgAssertGuiThread()
                 // First time GUI setup stuff
-
                 assignWalletsGuiSlots()
                 assignCryptoSpinnerValues()
-
                 // Set the send currency type spinner options to your default fiat currency or your currently selected crypto
                 updateSendCurrencyType()
 
@@ -571,8 +570,9 @@ class MainActivity : CommonNavActivity()
             }
         }
 
+        /* never automatically populate the send field on resume, user can just press the clipboard button
         // Look in the paste buffer
-        if (ui.sendToAddress.text.toString().trim() == "")  // App started or resumed with nothing in the send field -- let's see if there's something in the paste buffer we can auto-populate
+        if ((wallyApp?.firstRun == false) && (ui.sendToAddress.text.toString().trim() == "")) // App started or resumed with nothing in the send field -- let's see if there's something in the paste buffer we can auto-populate
         {
             try
             {
@@ -598,12 +598,16 @@ class MainActivity : CommonNavActivity()
                 ui.sendToAddress.text.clear()
             }
         }
+         */
 
         later {
             // Thread.sleep(100)  // Wait for accounts to be loaded
+            while (!coinsCreated) Thread.sleep(50)
             laterUI {
+
                 assignWalletsGuiSlots()
                 assignCryptoSpinnerValues()
+                updateGUI()
 
                 for (c in accounts.values)
                 {
@@ -620,6 +624,8 @@ class MainActivity : CommonNavActivity()
                 delay(5000)
             }
         }
+
+        wallyApp?.firstRun = false
     }
 
 
@@ -918,15 +924,15 @@ class MainActivity : CommonNavActivity()
                 if (updateIfNonAddress)
                 {
                     ui.sendToAddress.set(t)  // allow user to edit the bad text by showing it anyway
-                    sendVisibility(true)
                     receiveVisibility(false)
+                    sendVisibility(true)
                 }
                 throw e
             }
         }
 
-        sendVisibility(true)
         receiveVisibility(false)
+        sendVisibility(true)
         return ret
     }
 
@@ -1775,11 +1781,33 @@ class MainActivity : CommonNavActivity()
         }
     }
 
+    public fun confirmVisibility(show: Boolean)
+    {
+        if (show)
+        {
+            ui.SendConfirm.visibility = View.VISIBLE
+            ui.sendCancelButton.visibility = View.VISIBLE
+            ui.editSendNoteButton.visibility = View.GONE
+            ui.splitBillButton.visibility = View.GONE
+            ui.sendButton.visibility = View.VISIBLE
+            ui.sendButton.text = i18n(R.string.confirm)
+        }
+        else
+        {
+            ui.SendConfirm.visibility = View.GONE
+            ui.sendButton.text = i18n(R.string.Send)
+            ui.editSendNoteButton.visibility = View.GONE
+            ui.splitBillButton.visibility = View.VISIBLE
+        }
+    }
+
 
     public fun onSendCancelButtonClicked(v: View): Boolean
     {
+        confirmVisibility(false)
         sendVisibility(false)
         receiveVisibility(true)
+        askedForConfirmation = false
         return true
     }
 
@@ -1787,7 +1815,7 @@ class MainActivity : CommonNavActivity()
     /** Create and post a transaction when the send button is pressed */
     public fun onSendButtonClicked(v: View): Boolean
     {
-        if (ui.sendUI.visibility != View.VISIBLE)
+        if ((ui.sendUI.visibility != View.VISIBLE)&&(ui.SendConfirm.visibility != View.VISIBLE))  // First step in send, show the UI elements
         {
             receiveVisibility(false)
             sendVisibility(true)
@@ -1795,13 +1823,14 @@ class MainActivity : CommonNavActivity()
         }
         dbgAssertGuiThread()
         LogIt.info("send button clicked")
-        displayNotice(R.string.Processing)
+
         hideKeyboard()
         ui.sendQuantity.clearFocus()
         val note:String? = if (ui.editSendNote.visibility == View.VISIBLE) ui.editSendNote.text.toString() else if (ui.sendNote.visibility == View.VISIBLE) ui.sendNote.text.toString() else null
 
         if (paymentInProgress != null)
         {
+            displayNotice(R.string.Processing)
             coMiscScope.launch {
                 paymentInProgressSend()
             }
@@ -1913,32 +1942,69 @@ class MainActivity : CommonNavActivity()
         }
         else throw BadUnitException()
 
-        // TODO reenter password based on how much is being spent
+        val preferenceDB = getSharedPreferences(i18n(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val confirmAmtString = preferenceDB.getString(CONFIRM_ABOVE_PREF, "0") ?: "0"
+        val confirmAmt = try
+        {
+            BigDecimal(confirmAmtString)
+        }
+        catch (e:Exception)
+        {
+            BigDecimal(0)
+        }
 
-        coMiscScope.launch {  // avoid network on main thread exception
-            try
+        if ((amount >= confirmAmt)&&(!askedForConfirmation))
+        {
+            sendVisibility(false)
+            val fiatAmt = if (account.fiatPerCoin > BigDecimal.ZERO)
             {
-                val atomAmt = account.toFinestUnit(amount)
-                val tx = account.wallet.send(atomAmt, sendAddr, deductFeeFromAmount, false, note = note)
-                onSendSuccess(atomAmt, sendAddr, tx)
-                laterUI {
-                    receiveVisibility(true)
-                    sendVisibility(false)
+                var fiatDisplay = amount * account.fiatPerCoin
+                i18n(R.string.approximatelyT) % mapOf("qty" to fiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode)
+            }
+            else
+            {
+                ""
+            }
+            ui.SendConfirm.text = i18n(R.string.SendConfirmSummary) % mapOf("amt" to account.format(amount), "currency" to account.currencyCode,
+            "dest" to sendAddr.toString(),
+            "inFiat" to fiatAmt)
+            confirmVisibility(true)
+            askedForConfirmation = true  // Require send button to be pressed ONE MORE TIME!
+        }
+        else  // ok actually send
+        {
+            displayNotice(R.string.Processing)
+            coMiscScope.launch {  // avoid network on main thread exception
+                try
+                {
+                    val atomAmt = account.toFinestUnit(amount)
+                    val tx = account.wallet.send(atomAmt, sendAddr, deductFeeFromAmount, false, note = note)
+                    onSendSuccess(atomAmt, sendAddr, tx)
+                    laterUI {
+                        sendVisibility(false)
+                        confirmVisibility(false)
+                        receiveVisibility(true)
+                    }
+                } catch (e: Exception)  // We don't want to crash, we want to tell the user what went wrong
+                {
+                    laterUI {
+                        confirmVisibility(false)
+                        sendVisibility(true)
+                    }
+                    displayException(e)
+                    askedForConfirmation = false  // Force reconfirm is there is any error with the send
                 }
             }
-            catch (e: Exception)  // We don't want to crash, we want to tell the user what went wrong
-            {
-                displayException(e)
-            }
-        }
 
-        val sn = ui.sendNote
-        if (sn != null)
-        {
-            sn.text = ""
-            sn.visibility = View.GONE
+            val sn = ui.sendNote
+            if (sn != null)
+            {
+                sn.text = ""
+                sn.visibility = View.GONE
+            }
+            ui.editSendNote.let { it.visibility = View.GONE }
+            askedForConfirmation = false  // We are done with a send so reset state machine
         }
-        ui.editSendNote.let { it.visibility = View.GONE }
         return true
     }
 

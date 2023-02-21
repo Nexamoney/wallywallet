@@ -27,10 +27,21 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fadeScrollbars="true"
-        app:layout_constraintBottom_toTopOf="@+id/GuiHistoryWebDivider"
+        app:layout_constraintBottom_toTopOf="@+id/GuiAddressList"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/GuiAddressList"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fadeScrollbars="true"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/GuiTxHistoryList"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/GuiHistoryWebDivider"
+        />
     <View
         android:id="@+id/GuiHistoryWebDivider"
         android:layout_width="0dp"
@@ -39,7 +50,6 @@
         android:background="?android:attr/listDivider"
         android:foreground="@color/listDividerFg"
         app:layout_constraintBottom_toTopOf="@+id/GuiTxWebView"
-        app:layout_constraintTop_toBottomOf="@+id/GuiTxHistoryList"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
     <WebView

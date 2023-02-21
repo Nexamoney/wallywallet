@@ -77,6 +77,10 @@
     <string name="synced">ready</string>
     <string name="unsynced">synchronizing</string>
     <string name="connected">connected</string>
+    <string name="balance">current balance</string>
+    <string name="total">total received</string>
+
+    <string name="WebLoadingPage"><![CDATA[<body><h1><center>...loading...</h1></center></body>]]></string>
 
     <!-- Implication is "no charge" or "no cost" for a transaction -->
     <string name="nothing">nothing</string>
@@ -111,6 +115,13 @@
     <string name="rediscoverTooltip">Delete blockchain state and search anew for all transactions relevant to the wallet</string>
     <string name="wordSeed">Account Recovery Secret Phrase</string>
     <string name="deleteWalletAccount">Delete Account</string>
+    <string name="SetChangePin">Set or Change unlocking PIN</string>
+    <string name="CurrentPin">Current PIN</string>
+    <string name="NewPin">New PIN</string>
+    <string name="PinChanged">PIN changed</string>
+    <string name="PinRemoved">PIN removed</string>
+    <string name="PinInvalid">Invalid PIN</string>
+    <string name="PinTooShort">new PIN is too short</string>
     <string name="ViewRecoveryPhrase">View Account Recovery Secret Phrase</string>
     <string name="localCurrency">Local currency</string>
     <string name="assessUnconfirmed">Assess Unconfirmed Transactions</string>
@@ -264,6 +275,8 @@
     <string name="IdentityAssociatedWith">Associated Identity Info</string>
 
     <string name="areYouSure">Are you sure?</string>
+    <string name="WhenAskSure">Confirm transfers above (in NEX)</string>
+    <string name="SendConfirmSummary">Confirm send of %amt %currency %inFiat to address %dest?</string>
     <string name="firstName">first name</string>
     <string name="lastName">last name</string>
 
@@ -278,6 +291,8 @@
     <string name="CapitalLoss">capital loss</string>
     <string name="CapitalGain">capital gain</string>
     <string name="OverrideSalesPrice">enter price when sold</string>
+    <string name="AccountHistory">Transactions</string>
+    <string name="AccountAddresses">Addresses</string>
 
     <!-- Account details activity -->
     <string name="txHistoryButton">View or Export Account Activity</string>
@@ -436,6 +451,7 @@
     <string name="welcomeComplete">This completes the setup.  If you did not complete any of the steps in this welcome, all of the fields are available from within the app itself.\n\nThank you and enjoy your new wallet!</string>
     <!-- PIN Entry -->
     <string name="EnterPIN">Enter PIN</string>
+    <string name="EnterPINorBlankToRemove">New PIN (blank removes)</string>
     <string name="title_activity_shoppng">ShoppngActivity</string>
 
     <!-- Shopping -->

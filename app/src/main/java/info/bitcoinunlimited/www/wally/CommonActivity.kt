@@ -27,6 +27,7 @@ import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
 import bitcoinunlimited.libbitcoincash.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationBarView
 import kotlinx.coroutines.*
 import java.time.Instant
 import java.util.concurrent.Executors
@@ -120,24 +121,36 @@ fun View.dpToPx(dp: Float): Int = TypedValue.applyDimension(TypedValue.COMPLEX_U
 @SuppressLint("Registered")
 open class CommonNavActivity : CommonActivity()
 {
-    private val onNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item -> bottomNavSelectHandler(item, this) }
     open var navActivityId: Int = -1 //* Change this in derived classes to identify which navBar item this activity is
+    var navViewMenuId: Int? = null //* change this in derived classes to pick a different bottom nav menu
 
     open fun onSoftKeyboard(shown: Boolean)
     {
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
         navView.visibility = if (shown) View.GONE else View.VISIBLE
     }
+
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+
+    }
+
     override fun onStart()
     {
         super.onStart()
 
         // Finding a UI element has to happen after the derived class has inflated the view, so it cannot be in onCreate.
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
-        navView.setOnNavigationItemSelectedListener(null)
+        navView.setOnItemSelectedListener(null)
         if (navActivityId >= 0)  // This will both change the selection AND switch to that activity if it is different than the current one!
             navView.selectedItemId = navActivityId
-        navView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener)
+        navView.setOnItemSelectedListener { item -> bottomNavSelectHandler(item) }
+
+        navViewMenuId?.let {
+            navView.menu.clear()
+            navView.inflateMenu(it)
+        }
 
         val rootView = navView.rootView
 
@@ -181,6 +194,90 @@ open class CommonNavActivity : CommonActivity()
         menu.findItem(R.id.navigation_identity)?.setVisible(showIdentity)
         menu.findItem(R.id.navigation_trickle_pay)?.setVisible(showTrickePay)
         menu.findItem(R.id.navigation_assets)?.setVisible(showAssets)
+    }
+
+    // note to stop multiple copies of activities from being launched, use android:launchMode="singleTask" in the activity definition in AndroidManifest.xml
+
+    open fun bottomNavSelectHandler(item: MenuItem): Boolean
+    {
+        when (item.itemId)
+        {
+            R.id.navigation_identity ->
+            {
+                val message = "" // anything extra we want to send
+                val intent = Intent(this, IdentityActivity::class.java).apply {
+                    putExtra(IDENTITY_MESSAGE, message)
+                }
+                startActivity(intent)
+                return true
+            }
+
+            R.id.navigation_trickle_pay ->
+            {
+                val message = "" // anything extra we want to send
+                val intent = Intent(this, TricklePayActivity::class.java).apply {
+                    putExtra(TRICKLEPAY_MESSAGE, message)
+                }
+                startActivity(intent)
+                return true
+            }
+            /*
+                    R.id.navigation_exchange ->
+                    {
+                        val message = "" // anything extra we want to send
+                        val intent = Intent(ths, ExchangeActivity::class.java).apply {
+                            putExtra(EXCHANGE_MESSAGE, message)
+                        }
+                        ths.startActivity(intent)
+                        return true
+                    }
+
+                    R.id.navigation_invoices ->
+                    {
+                        val message = "" // anything extra we want to send
+                        val intent = Intent(ths, InvoicesActivity::class.java).apply {
+                            putExtra(INVOICES_MESSAGE, message)
+                        }
+                        ths.startActivity(intent)
+                        return true
+                    }
+            */
+            R.id.navigation_assets ->
+            {
+                val message = "" // anything extra we want to send
+                val intent = Intent(this, AssetsActivity::class.java).apply {  // TODO create Assets Activity
+                    putExtra(ASSETS_MESSAGE, message)
+                }
+                this.startActivity(intent)
+                return true
+            }
+
+            R.id.navigation_home ->
+            {
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                return true
+
+                /* This goes back */
+                /*
+                if (!(ths is MainActivity))
+                {
+                    ths.finish()
+                    return@bottomNavSelectHandler true
+                }
+                return false
+                */
+            }
+
+            R.id.navigation_shopping ->
+            {
+                val intent = Intent(this, ShoppingActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+        }
+
+        return false
     }
 }
 

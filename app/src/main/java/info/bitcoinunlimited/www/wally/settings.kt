@@ -2,7 +2,6 @@
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
 
-import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.drawable.ColorDrawable
@@ -24,6 +23,7 @@ val DEV_MODE_PREF = "devinfo"
 val SHOW_IDENTITY_PREF = "showIdentityMenu"
 val SHOW_TRICKLEPAY_PREF = "showTricklePayMenu"
 val SHOW_ASSETS_PREF = "showAssetsMenu"
+val CONFIRM_ABOVE_PREF = "confirmAbove"
 
 val EXCLUSIVE_NODE_SWITCH = "exclusiveNodeSwitch"
 val CONFIGURED_NODE = "NodeAddress"
@@ -128,6 +128,8 @@ class Settings : CommonActivity()
             ui.nexaregBlockchainSettings.visibility = GONE
             ui.nexatestBlockchainSettings.visibility = GONE
         }
+
+        SetupNexCurrencyPreferenceGui(CONFIRM_ABOVE_PREF, preferenceDB, ui.AreYouSureAmt)
 
         var name = chainToURI[ChainSelector.NEXA]
         SetupBooleanPreferenceGui(name + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, ui.GuiNexaExclusiveNodeSwitch)

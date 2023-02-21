@@ -11,6 +11,7 @@
 
     <color name="colorCredit">#70A01E</color>
     <color name="colorDebit">#B43200</color>
+    <color name="Confirm">#E48864</color>
 
     <color name="error">#FF6050</color>
     <color name="notice">#FFD040</color>

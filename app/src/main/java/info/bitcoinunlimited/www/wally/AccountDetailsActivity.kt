@@ -5,6 +5,8 @@ import bitcoinunlimited.libbitcoincash.*
 
 import android.content.*
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.*
 import android.widget.*
 
@@ -16,7 +18,7 @@ private val LogIt = Logger.getLogger("BU.wally.actdetails")
 
 enum class ConfirmationFor
 {
-    Delete, Rediscover, RediscoverBlockchain, Reassess, RecoveryPhrase, PrimaryAccount
+    Delete, Rediscover, RediscoverBlockchain, Reassess, RecoveryPhrase, PrimaryAccount, PinChange
 }
 
 class AccountDetailsActivity: CommonNavActivity()
@@ -26,6 +28,7 @@ class AccountDetailsActivity: CommonNavActivity()
     var askingAbout: ConfirmationFor? = null
     var selectedAccount:Account? = null
     var pinTries = 0
+    var curPinOk = false
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -53,6 +56,47 @@ class AccountDetailsActivity: CommonNavActivity()
                 }
             }
 
+        })
+
+        ui.GuiCurrentPinEntry.addTextChangedListener(object : TextWatcher
+        {
+            override fun afterTextChanged(p0: Editable?)
+            {
+                dbgAssertGuiThread()
+                if (p0.isNullOrBlank())
+                {
+                    ui.GuiCurPinOk.visibility = View.INVISIBLE
+                    curPinOk = false
+                    return
+                }
+
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
+            {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
+            {
+                if (p0 != null)
+                {
+                    if (p0.length < 4)
+                    {
+                        ui.GuiCurPinOk.setImageResource(android.R.drawable.ic_delete)
+                        return
+                    }
+                    if (selectedAccount?.submitAccountPin(p0.toString()) == 0)
+                    {
+                        ui.GuiCurPinOk.setImageResource(android.R.drawable.ic_delete)
+                        curPinOk = false
+                    }
+                    else
+                    {
+                        ui.GuiCurPinOk.setImageResource(R.drawable.ic_check)
+                        curPinOk = true
+                    }
+                }
+            }
         })
     }
 
@@ -241,6 +285,51 @@ class AccountDetailsActivity: CommonNavActivity()
                 ui.buttonNo.visibility = View.VISIBLE
                 ui.buttonYes.text = i18n(R.string.yes)
             }
+            ConfirmationFor.PinChange ->
+            {
+                if (act == null) return
+                if (curPinOk)
+                {
+                    val newPin = ui.GuiNewPinEntry.text.toString().trim()
+                    if ((newPin.length < 4)&&(newPin.length > 0))
+                    {
+                        displayError(i18n(R.string.PinTooShort))
+                        ui.ConfirmationConstraint.visibility = View.VISIBLE
+                        ui.confirmationOps.visibility = View.GONE
+                    }
+                    else
+                    {
+                        val name = act.name
+                        if (newPin.length != 0)
+                        {
+                            val epin = EncodePIN(name, newPin)
+                            selectedAccount?.encodedPin = epin
+                            later { SaveAccountPin(name, epin) }
+                            displayNotice(i18n(R.string.PinChanged))
+                        }
+                        else
+                        {
+                            selectedAccount?.encodedPin = null
+                            later { SaveAccountPin(name, byteArrayOf()) }
+                            displayNotice(i18n(R.string.PinRemoved))
+                        }
+
+                        // Worked so clear stuff out
+                        ui.GuiCurrentPinEntry.set("")
+                        ui.GuiNewPinEntry.set("")
+                        ui.PinChange.visibility = View.GONE
+                        ui.buttonYes.text = i18n(R.string.yes)
+                        updateAccount(act)
+                        curPinOk = false
+                    }
+                }
+                else
+                {
+                    displayError(i18n(R.string.PinInvalid))
+                    ui.ConfirmationConstraint.visibility = View.VISIBLE
+                    ui.confirmationOps.visibility = View.GONE
+                }
+            }
         }
     }
 
@@ -268,6 +357,7 @@ class AccountDetailsActivity: CommonNavActivity()
     @Suppress("UNUSED_PARAMETER")
     fun onRediscoverBlockchain(v: View?): Boolean
     {
+         ui.PinChange.visibility = View.GONE
         // Strangely, if the contraint layout is touched, it calls this function
         if (v != ui.GuiRediscoverBlockchainButton) return false
 
@@ -280,7 +370,7 @@ class AccountDetailsActivity: CommonNavActivity()
     @Suppress("UNUSED_PARAMETER")
     fun onRediscoverWallet(v: View?): Boolean
     {
-        // Strangely, if the contraint layout is touched, it calls this function
+        ui.PinChange.visibility = View.GONE
         if (v != ui.GuiRediscoverButton) return false
         askingAbout = ConfirmationFor.Rediscover
         ui.GuiConfirmationText.text = i18n(R.string.rediscoverConfirmation)
@@ -291,6 +381,7 @@ class AccountDetailsActivity: CommonNavActivity()
     @Suppress("UNUSED_PARAMETER")
     fun onViewRecoveryPhrase(v: View?)
     {
+        ui.PinChange.visibility = View.GONE
         askingAbout = ConfirmationFor.RecoveryPhrase
         val coin = selectedAccount
         if (coin == null) return
@@ -305,10 +396,39 @@ class AccountDetailsActivity: CommonNavActivity()
     }
 
     @Suppress("UNUSED_PARAMETER")
+    fun onSetChangePin(v: View?)
+    {
+        askingAbout = ConfirmationFor.PinChange
+        val acc = selectedAccount
+        if (acc != null)
+        {
+            if (acc.lockable)
+            {
+                ui.GuiCurrentPinFlex.visibility = View.VISIBLE
+                curPinOk = false
+            }
+            else  // No current PIN, so don't require entry
+            {
+                ui.GuiCurrentPinFlex.visibility = View.GONE
+                curPinOk = true
+            }
+
+            ui.GuiConfirmationText.text = ""
+            ui.GuiConfirmationText2.text = ""
+            ui.PinChange.visibility = View.VISIBLE
+            ui.buttonNo.visibility = View.VISIBLE
+            ui.buttonNo.text = i18n(R.string.cancel)
+            ui.buttonYes.text = i18n(R.string.accept)
+            showConfirmation()
+        }
+    }
+
+    @Suppress("UNUSED_PARAMETER")
     /** Reassess unconfirmed transactions */
     public fun onAssessUnconfirmedButton(v: View)
     {
         askingAbout = ConfirmationFor.Reassess
+        ui.PinChange.visibility = View.GONE
         ui.GuiConfirmationText.text = i18n(R.string.reassessConfirmation)
         showConfirmation()
     }
@@ -317,6 +437,7 @@ class AccountDetailsActivity: CommonNavActivity()
     /** Reassess unconfirmed transactions */
     public fun onSetAsPrimaryAccountButton(v: View)
     {
+        ui.PinChange.visibility = View.GONE
         askingAbout = ConfirmationFor.PrimaryAccount
         ui.GuiConfirmationText.text = i18n(R.string.primaryAccountConfirmation)
         showConfirmation()
@@ -326,6 +447,7 @@ class AccountDetailsActivity: CommonNavActivity()
     /** Delete a wallet account */
     public fun onDeleteAccountButton(v: View)
     {
+        ui.PinChange.visibility = View.GONE
         askingAbout = ConfirmationFor.Delete
         val coin = selectedAccount
         if (coin == null) return
@@ -335,6 +457,7 @@ class AccountDetailsActivity: CommonNavActivity()
 
     public fun onTxHistoryButton(v: View)
     {
+        ui.PinChange.visibility = View.GONE
         val acc = selectedAccount
         if (acc == null) return
         try
@@ -342,6 +465,26 @@ class AccountDetailsActivity: CommonNavActivity()
             dbgAssertGuiThread()
             val intent = Intent(this, TxHistoryActivity::class.java)
             intent.putExtra("WalletName", acc.name)
+            intent.putExtra("tab", "transactions")
+            startActivity(intent)
+        }
+        catch (e: Exception)
+        {
+            LogIt.warning("Exception clicking on ticker name: " + e.toString())
+        }
+    }
+
+    public fun onAddressesButtonClicked(v: View)
+    {
+        ui.PinChange.visibility = View.GONE
+        val acc = selectedAccount
+        if (acc == null) return
+        try
+        {
+            dbgAssertGuiThread()
+            val intent = Intent(this, TxHistoryActivity::class.java)
+            intent.putExtra("WalletName", acc.name)
+            intent.putExtra("tab", "addresses")
             startActivity(intent)
         }
         catch (e: Exception)

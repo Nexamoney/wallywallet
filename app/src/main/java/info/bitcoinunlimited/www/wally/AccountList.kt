@@ -85,7 +85,7 @@ class AccountListBinder(val ui: AccountListItemBinding, val guiList: GuiAccountL
 
     override fun backgroundColor(highlight: Boolean):Long
     {
-        if (highlight) ui.GuiAccountDetailsButton.visibility = View.VISIBLE
+        if (highlight && data != null) ui.GuiAccountDetailsButton.visibility = View.VISIBLE
         else ui.GuiAccountDetailsButton.visibility = View.GONE
         return -1 // Do not actually recommend a color
     }

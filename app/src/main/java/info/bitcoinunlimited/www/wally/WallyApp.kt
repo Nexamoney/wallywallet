@@ -42,8 +42,6 @@ import java.security.spec.InvalidKeySpecException
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.logging.Logger
-import javax.crypto.SecretKeyFactory
-import javax.crypto.spec.PBEKeySpec
 import kotlin.coroutines.CoroutineContext
 
 val LAST_RESORT_BCH_ELECTRS = "bch2.bitcoinunlimited.net"
@@ -95,15 +93,6 @@ fun epochMilliSeconds(): Long
 }
 
 
-/** Store the PIN encoded.  However, note that for short PINs a dictionary attack is very feasible */
-fun EncodePIN(actName: String, pin: String, size: Int = 64): ByteArray
-{
-    val salt = "wally pin " + actName
-    val skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512")
-    val secretkey = PBEKeySpec(pin.toCharArray(), salt.toByteArray(), 2048, 512)
-    val seed = skf.generateSecret(secretkey)
-    return seed.encoded.slice(IntRange(0, size - 1)).toByteArray()
-}
 
 data class LongPollInfo(val proto: String, val hostPort: String, val cookie: String?, var active: Boolean = true)
 
@@ -547,13 +536,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         return null
     }
 
-    /** Save the PIN of an account to the database */
-    fun saveAccountPin(actName: String, epin: ByteArray)
-    {
-        val db = walletDb!!
-        db.set("accountPin_" + actName, epin)
-    }
-
     /** Save the account list to the database */
     fun saveActiveAccountList()
     {
@@ -679,7 +661,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         }
     }
 
-    fun newAccount(name: String, flags: ULong, pin: String, chainSelector: ChainSelector)
+    fun newAccount(name: String, flags: ULong, pin: String, chainSelector: ChainSelector): Account?
     {
         dbgAssertNotGuiThread()
         val ctxt = PlatformContext(applicationContext)
@@ -687,7 +669,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         // I only want to write the PIN once when the account is first created
 
         val epin = if (pin.length > 0) EncodePIN(name, pin) else byteArrayOf()
-        saveAccountPin(name, epin)
+        SaveAccountPin(name, epin)
 
         synchronized(accounts)
         {
@@ -698,7 +680,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
             } catch (e: IllegalStateException)
             {
                 LogIt.warning("Error creating account: ${e.message}")
-                return
+                return null
             }
 
             ac.pinEntered = true  // for convenience, new accounts begin as if the pin has been entered
@@ -710,6 +692,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
             // Write the list of existing accounts, so we know what to load
             saveActiveAccountList()
             // wallet is saved in wallet constructor so no need to: ac.wallet.SaveBip44Wallet()
+            return ac
         }
     }
 
@@ -762,7 +745,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         {
             byteArrayOf()
         }
-        saveAccountPin(name, epin)
+        SaveAccountPin(name, epin)
 
         var veryEarly = earliestActivity
         if (nonstandardActivity != null)

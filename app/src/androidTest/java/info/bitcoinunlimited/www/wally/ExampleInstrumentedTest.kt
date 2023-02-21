@@ -872,7 +872,7 @@ class UnitTest
     @Test
     fun testBitcoinComPrices()
     {
-        val result = historicalMbchInFiat("USD", 1576616203)
+        val result = historicalUbchInFiat("USD", 1576616203)
         LogIt.info(result.toPlainString())
         check(result == BigDecimal(".18293").setScale(16))
     }
