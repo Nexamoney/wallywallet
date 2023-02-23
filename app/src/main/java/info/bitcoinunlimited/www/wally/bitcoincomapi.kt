@@ -36,8 +36,9 @@ data class HistBitcoinCom(val lookup: HistItemBitcoinCom)
 val lastPoll = mutableMapOf<String, Pair<TimeMark, BigDecimal>>()
 
 @OptIn(ExperimentalTime::class)
-fun MbchInFiat(fiat: String, setter: (BigDecimal) -> Unit)
+fun UbchInFiat(fiat: String, setter: (BigDecimal) -> Unit)
 {
+    if (!allowAccessPriceData) return
     val prior = lastPoll[fiat]
     if (prior != null)
     {
@@ -75,7 +76,7 @@ fun MbchInFiat(fiat: String, setter: (BigDecimal) -> Unit)
 /** Return the approximate price of mBCH at the time provided in seconds since the epoch */
 fun historicalUbchInFiat(fiat: String, timeStamp: Long): BigDecimal
 {
-
+    if (!allowAccessPriceData) return BigDecimal(-1)
     if (fiat != "USD") return BigDecimal.ZERO  // TODO get other fiat historical prices
 
     // see https://index.bitcoin.com/

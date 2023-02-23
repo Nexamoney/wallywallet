@@ -98,7 +98,7 @@ class NewAccount : CommonNavActivity()
         setContentView(ui.root)
 
         val blockchains = ArrayAdapter(this, R.layout.blockchain_selection_spinner, SupportedBlockchains.filter { devMode || it.value.isMainNet }.keys.toTypedArray())
-        ui.GuiBlockchainSelector?.setAdapter(blockchains)
+        ui.GuiBlockchainSelector.setAdapter(blockchains)
 
         val adapter: ArrayAdapter<String> = ArrayAdapter<String>(this, R.layout.recovery_phrase_selection_spinner, englishWordList)
         val textView = findViewById<MultiAutoCompleteTextView>(R.id.GuiAccountRecoveryPhraseEntry)
@@ -116,11 +116,8 @@ class NewAccount : CommonNavActivity()
                 val p = ui.GuiAccountRecoveryPhraseEntry.text.toString()
                 val words = processSecretWords(p)
                 launchPeekActivity(words, SupportedBlockchains[ui.GuiBlockchainSelector.selectedItem]!!)
-
-
                 if (!nameChangedByUser)  // If the user has already put something in, then don't touch it
                 {
-                    val bc = SupportedBlockchains[ui.GuiBlockchainSelector.selectedItem.toString()]
                     val a = app
                     if ((bc != null)&&(a != null))
                     {
@@ -128,7 +125,6 @@ class NewAccount : CommonNavActivity()
                         if ((proposedName!=null) && !a.accounts.contains(proposedName))  // If there's already a default choice, then don't offer one
                         {
                             codeChanged++
-                            val len = ui.GuiAccountNameEntry.text.length
                             ui.GuiAccountNameEntry.set(proposedName)
                         }
                         else

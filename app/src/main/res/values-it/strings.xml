@@ -89,18 +89,16 @@
     <string name="useUniqueIdentityToolTip">Attiva per usare questa identità solo per questo sito.</string>
     <string name="provideRealName">Fornisci il tuo vero nome?</string>
     <string name="provideRealNameToolTip">Seleziona questa opzione se vuoi che il tuo vero nome (come definito nelle configurazioni) sia trasmesso a questo sito web, se richiesto</string>
-    <string name="provideAddress">Fornisci il tuo indirizzo?</string>
-    <string name="provideAddressToolTip">Seleziona questa opzione se vuoi che il tuo indirizzo (come definito nelle configurazioni) sia trasmesso a questo sito web, se richiesto</string>
+    <string name="providePostalAddress">Fornisci il tuo indirizzo?</string>
+    <string name="providePostalAddressToolTip">Seleziona questa opzione se vuoi che il tuo indirizzo (come definito nelle configurazioni) sia trasmesso a questo sito web, se richiesto</string>
 
     <string name="provideLoginQuestion">Accedi a questo sito?</string>
 
     <string name="FirstNameOrAliasText">Nome o alias</string>
-    <string name="LastNameText">Cognome</string>
     <string name="HomeAddressText">Indirizzo di residenza</string>
     <string name="EmailText">Indirizzo Email</string>
     <string name="TwitterText">Twitter</string>
     <string name="TelegramText">Telegram</string>
-    <string name="KeybaseText">Keybase</string>
     <string name="IdentityAssociatedWith">Informazioni associate alla tua identità</string>
 
     <string name="firstName">Nome</string>

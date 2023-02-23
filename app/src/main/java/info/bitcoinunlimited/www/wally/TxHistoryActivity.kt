@@ -482,7 +482,7 @@ class TxHistoryActivity : CommonNavActivity()
         ui.GuiTxWebView.webViewClient = WebViewClient()
         ui.GuiTxWebView.loadData(webLoading,"text/html; charset=UTF-8", null)
 
-        val vto = ui.root.viewTreeObserver.addOnGlobalLayoutListener(object: OnGlobalLayoutListener {
+        ui.root.viewTreeObserver.addOnGlobalLayoutListener(object: OnGlobalLayoutListener {
             override fun onGlobalLayout()
             {
                 listHeight = max(listHeight, ui.GuiTxHistoryList.measuredHeight)

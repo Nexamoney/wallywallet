@@ -81,6 +81,7 @@ var walletDb: KvpDatabase? = null
 var wallyApp: WallyApp? = null
 
 var devMode: Boolean = false
+var allowAccessPriceData: Boolean = true
 
 const val ACCOUNT_FLAG_NONE = 0UL
 const val ACCOUNT_FLAG_HIDE_UNTIL_PIN = 1UL
@@ -807,6 +808,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
 
         val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
         devMode = prefs.getBoolean(DEV_MODE_PREF, false)
+        allowAccessPriceData = prefs.getBoolean(ACCESS_PRICE_DATA_PREF, true)
 
         registerActivityLifecycleCallbacks(ActivityLifecycleHandler(this))  // track the current activity
         createNotificationChannel()

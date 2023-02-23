@@ -385,7 +385,7 @@ open class CommonActivity : AppCompatActivity()
             {
                 var msg:String = ""
                 var details: String = ""
-                if ((notice == -1) && (noticeDetails != null)) displayNotice(noticeDetails ?: "", "", NORMAL_NOTICE_DISPLAY_TIME, { if (finishNow) finish()})
+                if ((notice == -1) && (noticeDetails != null)) displayNotice(noticeDetails, "", NORMAL_NOTICE_DISPLAY_TIME, { if (finishNow) finish()})
                 else displayNotice(notice, noticeDetails ?: "", NORMAL_NOTICE_DISPLAY_TIME, { if (finishNow) finish()})
             }
             else
@@ -614,7 +614,6 @@ open class CommonActivity : AppCompatActivity()
                 alerts.add(Alert(msg, details, NOTICE_LEVEL, trace))
                 menuHidden += 1
                 invalidateOptionsMenu()
-                val tmp = ColorDrawable(errorColor)
                 titlebar.background = ColorDrawable(errorColor)
                 errorCount += 1
                 errorCount

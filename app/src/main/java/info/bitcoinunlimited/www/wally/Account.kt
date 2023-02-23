@@ -513,22 +513,40 @@ class Account(
 
                 tickerGUI(name, force)
                 //uiBinding?.balanceTickerText?.text = name
+
+            laterUI {
+                if (fiatPerCoin > BigDecimal.ZERO)
+                {
+                    var fiatDisplay = balance * fiatPerCoin
+                    uiBinding?.info?.let { it.visibility = View.VISIBLE; it.text = i18n(R.string.approximatelyT) % mapOf("qty" to fiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode) }
+                }
+                else uiBinding?.info?.let { it.visibility = View.GONE}
+            }
         }
     }
 
     // Load the exchange rate
     fun getXchgRates(fiatCurrencyCode: String)
     {
-        if (chain.chainSelector != ChainSelector.BCH)
+        if (chain.chainSelector == ChainSelector.NEXA)
         {
-            fiatPerCoin = -1.toBigDecimal()  // Indicates that the exchange rate is unavailable
+            if (fiatCurrencyCode == "USD")
+            {
+                NexInFiat(fiatCurrencyCode) { fiatPerCoin = it }
+            }
+            else fiatPerCoin = -1.toBigDecimal()  // Indicates that the exchange rate is unavailable
             return
         }
 
-        // Only for BCH
-        MbchInFiat(fiatCurrencyCode) { v: BigDecimal ->
-            fiatPerCoin = v;
+        if (chain.chainSelector == ChainSelector.BCH)
+        {
+            UbchInFiat(fiatCurrencyCode) { v: BigDecimal ->
+                fiatPerCoin = v
+            }
         }
+
+        fiatPerCoin = -1.toBigDecimal()  // Indicates that the exchange rate is unavailable
+        return
     }
 
     @Suppress("UNUSED_PARAMETER")

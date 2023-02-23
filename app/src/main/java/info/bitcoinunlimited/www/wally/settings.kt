@@ -25,6 +25,8 @@ val SHOW_TRICKLEPAY_PREF = "showTricklePayMenu"
 val SHOW_ASSETS_PREF = "showAssetsMenu"
 val CONFIRM_ABOVE_PREF = "confirmAbove"
 
+val ACCESS_PRICE_DATA_PREF = "accessPriceData"
+
 val EXCLUSIVE_NODE_SWITCH = "exclusiveNodeSwitch"
 val CONFIGURED_NODE = "NodeAddress"
 val PREFER_NODE_SWITCH = "preferNodeSwitch"
@@ -151,6 +153,7 @@ class Settings : CommonActivity()
         SetupBooleanPreferenceGui(name + "." + PREFER_NODE_SWITCH, preferenceDB, ui.GuiBchPreferNodeSwitch)
         SetupTextPreferenceGui(name + "." + CONFIGURED_NODE, preferenceDB, ui.GuiBchNodeAddr)
 
+        SetupBooleanPreferenceGui(ACCESS_PRICE_DATA_PREF, preferenceDB, ui.GuiAccessPriceDataSwitch)
         SetupBooleanPreferenceGui(SHOW_IDENTITY_PREF, preferenceDB, ui.GuiIdentityMenu)
         SetupBooleanPreferenceGui(SHOW_TRICKLEPAY_PREF, preferenceDB, ui.GuiTricklePayMenu)
         SetupBooleanPreferenceGui(SHOW_ASSETS_PREF, preferenceDB, ui.GuiAssetsMenu)
@@ -175,9 +178,13 @@ class Settings : CommonActivity()
 
     override fun onStop()
     {
+        // Load any temporaries with the final preference choices
+
         val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
 
         var nodeAddr: String? = null
+
+        allowAccessPriceData = prefs.getBoolean(ACCESS_PRICE_DATA_PREF, true)
 
         for (chain in chainToURI)
         {

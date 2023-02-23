@@ -1308,7 +1308,7 @@ class MainActivity : CommonNavActivity()
                 ui.xchgRateText.text = i18n(R.string.unavailableExchangeRate)
                 return true
             }
-            else if (coin.fiatPerCoin != BigDecimal.ZERO)
+            else if (coin.fiatPerCoin > BigDecimal.ZERO)
             {
                 var fiatDisplay = qty * coin.fiatPerCoin
                 val coinPerFiat = BigDecimal.ONE.setScale(currencyScale)/coin.fiatPerCoin
@@ -1621,7 +1621,7 @@ class MainActivity : CommonNavActivity()
 
         // We want to show these when the soft keyboard IS up
         val vis = if (shown) View.VISIBLE else View.GONE
-        ui.softKeyboardExtensions?.visibility = vis
+        ui.softKeyboardExtensions.visibility = vis
 
     }
 
@@ -1644,7 +1644,6 @@ class MainActivity : CommonNavActivity()
         v.getRootView().invalidate()
 
         asyncUI {
-            val esn = ui.editSendNote
             if (esn != null)
             {
                 delay(100)

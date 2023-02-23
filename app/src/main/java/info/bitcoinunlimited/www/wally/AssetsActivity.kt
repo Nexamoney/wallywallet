@@ -5,10 +5,13 @@ package info.bitcoinunlimited.www.wally
 import android.content.Intent
 import bitcoinunlimited.libbitcoincash.*
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.OvalShape
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import bitcoinunlimited.libbitcoincash.CurrencyDecimal
 import bitcoinunlimited.libbitcoincash.TransactionHistory
 import bitcoinunlimited.libbitcoincash.fiatFormat
@@ -60,7 +63,6 @@ class AssetBinder(val ui: AssetListItemBinding): GuiListItemBinder<AssetInfo>(ui
 }
 
 
-
 class AssetsActivity : CommonNavActivity()
 {
     private lateinit var ui: ActivityAssetsBinding
@@ -74,6 +76,9 @@ class AssetsActivity : CommonNavActivity()
         super.onCreate(savedInstanceState)
         ui = ActivityAssetsBinding.inflate(layoutInflater)
         setContentView(ui.root)
+        ui.root.setBackground(graphShape(arrayOf<Double>(100.0,200.0,100.0,20.0,150.0,200.0,175.0,100.0), 50.0,
+          ResourcesCompat.getColor(resources, R.color.WallyRowAbkg1,null).toLong(),
+          ResourcesCompat.getColor(resources, R.color.WallyRowAbkg2,null).toLong()))
         enableMenu(this, SHOW_ASSETS_PREF)  // If you ever drop into this activity, show it in the menu
 
         laterUI {

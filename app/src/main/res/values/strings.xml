@@ -137,6 +137,8 @@
     <string name="AccountActions">Account Actions</string>
     <string name="GeneralSettings">General Settings</string>
     <string name="BlockchainSettings">Blockchain Sources</string>
+    <string name="AccessPriceData">Access Price Data</string>
+    <!-- not used right now string name="AccessPriceDataHint">This option allows the wallet to display the value of your cryptocurrency.  However, this data may not be accurate.  And the access uses more data and divulges your IP address to the service providing the data.</string -->
 
     <!-- Split bill -->
     <string name="SplitBillDescription">You pay the bill (in fiat), your friends pay you their portion via the QR code below</string>
@@ -276,7 +278,7 @@
 
     <string name="areYouSure">Are you sure?</string>
     <string name="WhenAskSure">Confirm transfers above (in NEX)</string>
-    <string name="SendConfirmSummary">Confirm send of %amt %currency %inFiat to address %dest?</string>
+    <string name="SendConfirmSummary">Confirm send of %amt %currency %inFiat to address %dest</string>
     <string name="firstName">first name</string>
     <string name="lastName">last name</string>
 
@@ -308,7 +310,7 @@
     <string name="AccountNumUtxos">%num ledger entries</string>
     <!-- Assets activity -->
     <string name="title_activity_assets">Assets</string>
-
+    <string name="title_activity_invoices">Invoices</string>
     <!-- Assets activity -->
     <string name="title_activity_scan">Scan</string>
 

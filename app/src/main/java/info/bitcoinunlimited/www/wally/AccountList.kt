@@ -2,31 +2,86 @@ package info.bitcoinunlimited.www.wally
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
+import android.graphics.Path
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.LayerDrawable
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.OvalShape
+import android.graphics.drawable.shapes.PathShape
+import android.graphics.drawable.shapes.RectShape
+import android.graphics.drawable.shapes.Shape
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import bitcoinunlimited.libbitcoincash.ChainSelector
-import bitcoinunlimited.libbitcoincash.dbgAssertGuiThread
-import bitcoinunlimited.libbitcoincash.handleThreadException
-import bitcoinunlimited.libbitcoincash.laterUI
+import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.databinding.AccountListItemBinding
+import kotlinx.coroutines.delay
 import java.util.logging.Logger
 
 private val LogIt = Logger.getLogger("BU.wally.accountlist")
+
+fun graphShape(dataPoints: Array<Double>, padding:Double, color: Long, bkgcolor: Long): Drawable
+{
+    val STD_HEIGHT = 250f
+    val STD_WIDTH = 1000f
+    val min = dataPoints.min()
+    val max = dataPoints.max()
+    val delta = padding + (max - min)
+    var dp = dataPoints.map { STD_HEIGHT - (STD_HEIGHT*(it - min + padding/2)/delta).toFloat()  }
+    if (dp.size==1) dp = listOf(dp[0], dp[0])    // Workaround for just 1 point
+    val xspacing = STD_WIDTH/(dp.size-1)
+
+    val bkg = ShapeDrawable(RectShape()).apply {
+        paint.color = bkgcolor.toInt()
+    }
+
+    val graph: ShapeDrawable = run {
+        val p = Path()
+        var xPos = 0f
+        var lastY = 0.0f
+        if (dp.size > 0)
+        {
+            for (pt in dp)
+            {
+                p.lineTo(xPos, pt)
+                lastY = pt
+                xPos += xspacing
+            }
+            p.lineTo(STD_WIDTH, lastY)
+            p.lineTo(STD_WIDTH, STD_HEIGHT)
+            p.lineTo(0f, STD_HEIGHT)
+            p.lineTo(0f, dp[0])
+
+            ShapeDrawable(PathShape(p, STD_WIDTH, STD_HEIGHT)).apply {
+                // If the color isn't set, the shape uses black as the default.
+                paint.color = color.toInt()
+                // If the bounds aren't set, the shape can't be drawn.
+                setBounds(0, 0, STD_WIDTH.toInt(), STD_HEIGHT.toInt())
+            }
+        }
+        else
+            ShapeDrawable()
+    }
+    //return graph
+    return LayerDrawable(arrayOf(bkg, graph))
+}
 
 class AccountListBinder(val ui: AccountListItemBinding, val guiList: GuiAccountList): GuiListItemBinder<Account>(ui.root)
 {
     override fun populate()
     {
-        if (devMode) ui.Info.visibility = View.VISIBLE
-        else ui.Info.visibility = View.GONE
+        if (devMode) ui.devInfo.visibility = View.VISIBLE
+        else ui.devInfo.visibility = View.GONE
         val d = data
 
         // Clear this out just in case it is recycled as one of the blanks at the bottom
         // or onChange is slow to update
         ui.balanceUnconfirmedValue.text == ""
-        ui.Info.text = ""
+        ui.devInfo.text = ""
+        ui.info.text = ""
         ui.accountIcon.visibility = View.INVISIBLE
         ui.lockIcon.visibility = View.INVISIBLE
         ui.balanceTickerText.text = ""
@@ -36,7 +91,7 @@ class AccountListBinder(val ui: AccountListItemBinding, val guiList: GuiAccountL
         if (d != null)
         {
             if (ui.balanceUnconfirmedValue.text == "") ui.balanceUnconfirmedValue.visibility = View.GONE
-            d.setUI(ui, guiList, ui.accountIcon, ui.balanceTickerText, ui.balanceValue, ui.balanceUnconfirmedValue, ui.Info)
+            d.setUI(ui, guiList, ui.accountIcon, ui.balanceTickerText, ui.balanceValue, ui.balanceUnconfirmedValue, ui.devInfo)
 
             ui.balanceUnits.text = d.currencyCode
             if (d.wallet.chainSelector == ChainSelector.NEXA) ui.accountIcon.setImageResource(R.drawable.nexa_icon)
@@ -60,7 +115,7 @@ class AccountListBinder(val ui: AccountListItemBinding, val guiList: GuiAccountL
             }
         }
 
-        for (view in listOf(ui.accountIcon, ui.balanceTicker, ui.balanceTickerText, ui.balanceValue, ui.balanceUnits, ui.balanceUnconfirmedValue))
+        for (view in listOf(ui.accountIcon, ui.balanceTicker, ui.balanceTickerText, ui.balanceValue, ui.balanceUnits, ui.balanceUnconfirmedValue, ui.info, ui.devInfo))
         {
             view.setOnTouchListener(touch)
         }
@@ -72,7 +127,8 @@ class AccountListBinder(val ui: AccountListItemBinding, val guiList: GuiAccountL
         // Clear this out just in case it is recycled as one of the blanks at the bottom
         // or onChange is slow to update
         ui.balanceUnconfirmedValue.text == ""
-        ui.Info.text = ""
+        ui.devInfo.text = ""
+        ui.info.text = ""
         ui.accountIcon.visibility = View.INVISIBLE
         ui.lockIcon.visibility = View.INVISIBLE
         ui.balanceTickerText.text = ""
@@ -88,6 +144,58 @@ class AccountListBinder(val ui: AccountListItemBinding, val guiList: GuiAccountL
         if (highlight && data != null) ui.GuiAccountDetailsButton.visibility = View.VISIBLE
         else ui.GuiAccountDetailsButton.visibility = View.GONE
         return -1 // Do not actually recommend a color
+    }
+    override fun backgroundDrawable(highlight: Boolean): Drawable?
+    {
+        val d = data
+        if (d == null) return null  // dont show a graph for an empty row
+        if (d.chain.chainSelector == ChainSelector.NEXA)  // I only support history for NEXA right now
+        {
+            val appR = appResources
+            val priceData = NexDaily(fiatCurrencyCode)?.map { it.toDouble() }?.toTypedArray()
+            if ((appR != null) && (priceData != null))
+            {
+                var cf = R.color.WallyRowAbkg1
+                var cb = R.color.WallyRowAbkg2
+
+                if (highlight)
+                {
+                    cf = R.color.defaultListHighlight
+                    cb = R.color.defaultListHighlight2
+                }
+                else if ((pos and 1) == 1)
+                {
+                    cf = R.color.WallyRowBbkg1
+                    cb = R.color.WallyRowBbkg2
+                }
+
+                return graphShape(
+                      priceData, 0.00000100,
+                      ResourcesCompat.getColor(appR, cf, null).toLong(),
+                      ResourcesCompat.getColor(appR, cb, null).toLong()
+                    )
+            }
+            else  // We don't have the data to draw the background (not loaded yet)
+            {
+                launch {
+                    var count = 0
+                    while (count < 3)  // don't want to be leaving spinner code around forever
+                    {
+                        delay(1000)
+                        val priceData = NexDaily(fiatCurrencyCode)
+                        if (priceData != null)  // if we get the data, trigger a redraw
+                        {
+                            guiList.layout()
+                            break
+                        }
+                        count++
+                    }
+                }
+            }
+        }
+
+        // if we can't supply a graph, don't provide any background and it will fall back to color then default
+        return null
     }
 
     fun toggleLock()

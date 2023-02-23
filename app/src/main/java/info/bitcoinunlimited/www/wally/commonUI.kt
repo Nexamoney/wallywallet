@@ -10,6 +10,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
+import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.DisplayMetrics
@@ -360,7 +361,9 @@ fun textToQREncode(value: String, size: Int): Bitmap?
 // stores and recycles views as they are scrolled off screen
 open class GuiListItemBinder<DATA> (val view: View) : RecyclerView.ViewHolder(view), View.OnClickListener, View.OnFocusChangeListener
 {
+    /** position of this item in the list */
     var pos: Int = -1  // Do not change -- only the RecyclerView changes this via the bind() function
+    /** The data associated with this position */
     var data: DATA? = null
 
     init
@@ -422,11 +425,14 @@ open class GuiListItemBinder<DATA> (val view: View) : RecyclerView.ViewHolder(vi
         changed()
     }
 
-    // Override to pick a custom background color based on this item's contents
+    /** Override to pick a custom background color based on this item's contents */
     open fun backgroundColor(highlight: Boolean = false):Long
     {
         return -1
     }
+
+    /** Override to pick a custom drawable for this item's contents -- note that backgroundColor takes precedence */
+    open fun backgroundDrawable(highlight: Boolean = false): Drawable? = null
 }
 
 
@@ -506,14 +512,22 @@ open class GuiList<DATA, BINDER: GuiListItemBinder<DATA>> internal constructor(v
         val bk = holder.backgroundColor(highlight)
         if (bk == -1L)
         {
-            if (highlight) holder.view.setBackgroundColor(highlightColor)
+            val bd = holder.backgroundDrawable(highlight)
+            if (bd != null)
+            {
+                holder.view.background = bd
+            }
             else
             {
-                val rbc = rowBackgroundColors
-                if (rbc != null)
+                if (highlight) holder.view.setBackgroundColor(highlightColor)
+                else
                 {
-                    val colIdx = position % rbc.size
-                    holder.view.setBackgroundColor(rbc[colIdx])
+                    val rbc = rowBackgroundColors
+                    if (rbc != null)
+                    {
+                        val colIdx = position % rbc.size
+                        holder.view.setBackgroundColor(rbc[colIdx])
+                    }
                 }
             }
         }

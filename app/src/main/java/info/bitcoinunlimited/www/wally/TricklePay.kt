@@ -358,7 +358,6 @@ class TricklePaySendToFragment : Fragment()
 
         try
         {
-        val act = tpActivity ?: return  // resumed but not populated with data yet
         val u: Uri = sess.proposalUri ?: return
         val sa: List<Pair<PayAddress, Long>> = sess.proposedDestinations ?: return
 
@@ -1207,8 +1206,6 @@ class TricklePayActivity : CommonNavActivity()
 
     fun onAcceptAssetRequest(@Suppress("UNUSED_PARAMETER") view: View?)
     {
-        val frag: TricklePayAssetRequestFragment = fragment(R.id.GuiTricklePayAssetRequest)
-        val assets = frag.selectedAssets()
         displayNotice(R.string.Processing, time = 4900)
         tpSession?.acceptAssetRequest()
         tpSession = null

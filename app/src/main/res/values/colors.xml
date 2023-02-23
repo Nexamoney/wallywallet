@@ -8,6 +8,7 @@
     <color name="defaultSpinnerBorder">@color/WallyBorder</color>
     <color name="softKeyboardTop">#FFF6F6F6</color>
     <color name="defaultListHighlight">#ECE1B6</color>
+    <color name="defaultListHighlight2">#e3d395</color>
 
     <color name="colorCredit">#70A01E</color>
     <color name="colorDebit">#B43200</color>
@@ -19,6 +20,11 @@
 
     <color name="rowA">#FFEFEFEF</color>
     <color name="rowB">#FFC0C0C0</color>
+
+    <color name="WallyRowAbkg1">#FFf5f8ff</color>
+    <color name="WallyRowAbkg2">#FFdce6ff</color>
+    <color name="WallyRowBbkg1">#FFf0f0ff</color>
+    <color name="WallyRowBbkg2">#FFd7d7ff</color>
 
     <color name="black">#000000</color>
     <color name="white">#ffffff</color>

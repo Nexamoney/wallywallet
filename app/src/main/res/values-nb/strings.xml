@@ -89,18 +89,16 @@
     <string name="useUniqueIdentityToolTip">Slå på for å beholde annen identitet her enn den benyttet på andre sider.</string>
     <string name="provideRealName">oppgi ditt ekte navn?</string>
     <string name="provideRealNameToolTip">Om du velger denne instillingen så vil ditt ekte navn (slik konfigurert i instillinger) bli gitt til dette nettstedet, om det ber om det</string>
-    <string name="provideAddress">oppgi din addresse?</string>
-    <string name="provideAddressToolTip">Om du velger denne instillingen så vil din addresse (slik konfigurert i instillinger) bli gitt til dette nettstedet, om det ber om det</string>
+    <string name="providePostalAddress">oppgi din addresse?</string>
+    <string name="providePostalAddressToolTip">Om du velger denne instillingen så vil din addresse (slik konfigurert i instillinger) bli gitt til dette nettstedet, om det ber om det</string>
 
     <string name="provideLoginQuestion">Logge inn på denne siden?</string>
 
     <string name="FirstNameOrAliasText">Fornavn eller alias</string>
-    <string name="LastNameText">Etternavn</string>
     <string name="HomeAddressText">Hjemmeadresse</string>
     <string name="EmailText">E-post addresse</string>
     <string name="TwitterText">Twitter</string>
     <string name="TelegramText">Telegram</string>
-    <string name="KeybaseText">Keybase</string>
     <string name="IdentityAssociatedWith">Info om tilknyttede identiteter</string>
 
     <string name="firstName">fornavn</string>

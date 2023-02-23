@@ -9,8 +9,8 @@ android {
         applicationId "info.bitcoinunlimited.www.wally"
         minSdkVersion 26
         targetSdkVersion 33
-        versionCode 200
-        versionName "2.00"
+        versionCode 211
+        versionName "2.11"
         testApplicationId "bitcoinunlimited.wally"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -21,10 +21,16 @@ android {
         }
     }
     buildTypes {
-        release {
+        debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            //signingConfig signingConfigs.debug
+            signingConfig signingConfigs.debug
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+            signingConfig
         }
     }
     buildFeatures {
@@ -70,8 +76,6 @@ dependencies {
     // example that grabs all aars and jars
     // implementation fileTree(dir: 'aars', include: ['*.aar'])
     // implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-    //debugImplementation files('aars/libbitcoincash-debug.aar')  // locate this directory at: <repo_home>/app/aars/
 
     // Grab libbitcoincash locally for debug or from the released location
     implementation files('aars/libbitcoincash-release.aar')  // locate this directory at: <repo_home>/app/aars/
