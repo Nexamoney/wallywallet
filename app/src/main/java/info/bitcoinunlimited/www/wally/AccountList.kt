@@ -170,7 +170,7 @@ class AccountListBinder(val ui: AccountListItemBinding, val guiList: GuiAccountL
                 }
 
                 return graphShape(
-                      priceData, 0.00000100,
+                      priceData, 0.00000050,  // how much value on either side?  with scale 8, last digit is pennies
                       ResourcesCompat.getColor(appR, cf, null).toLong(),
                       ResourcesCompat.getColor(appR, cb, null).toLong()
                     )
