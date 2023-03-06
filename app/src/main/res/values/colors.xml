@@ -2,6 +2,7 @@
 <resources>
     <color name="colorPrimary">#D0A6FF</color>
     <color name="colorPrimaryDark">#5B276B</color>
+    <color name="splashBackground">#5B276B</color>
     <color name="colorAccent">#C01BD0</color>
     <color name="spinnerText">#FF3B0050</color>
     <color name="defaultSpinnerBkg">@android:color/white</color>

@@ -100,7 +100,7 @@ class Account(
     //? specify how quantities should be formatted for display
     val cryptoFormat = mBchFormat
 
-    val cnxnMgr: CnxnMgr = GetCnxnMgr(wallet.chainSelector, name, false)
+    val cnxnMgr: CnxnMgr = WallyGetCnxnMgr(wallet.chainSelector, name, false)
     val chain: Blockchain = GetBlockchain(wallet.chainSelector, cnxnMgr, context, chainToURI[wallet.chainSelector], false)  // do not start right away so we can configure exclusive/preferred nodes
     var started = false  // Have the cnxnmgr and blockchain services been started or are we in initialization?
 
@@ -426,17 +426,19 @@ class Account(
     /** Call whenever the state of this account has changed so needs to be redrawn.  Or on first draw (with force = true) */
     fun onChange(force: Boolean = false)
     {
-        uiBinding?.let {
-            if (lockable)
-            {
-                it.lockIcon.visibility = View.VISIBLE
-                if (locked)
-                    it.lockIcon.setImageResource(R.drawable.ic_lock)
+        laterUI {
+            uiBinding?.let {
+                if (lockable)
+                {
+                    it.lockIcon.visibility = View.VISIBLE
+                    if (locked)
+                        it.lockIcon.setImageResource(R.drawable.ic_lock)
+                    else
+                        it.lockIcon.setImageResource(R.drawable.ic_unlock)
+                }
                 else
-                    it.lockIcon.setImageResource(R.drawable.ic_unlock)
+                    it.lockIcon.visibility = View.GONE
             }
-            else
-                it.lockIcon.visibility = View.GONE
         }
         notInUI {
             // Update our cache of the balances

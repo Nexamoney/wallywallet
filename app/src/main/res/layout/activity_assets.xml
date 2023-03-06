@@ -49,6 +49,15 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent">
 
+        <View
+            android:id="@+id/AssetListDetailDivider"
+            android:layout_width="0dp"
+            android:layout_height="3dp"
+            android:background="?android:attr/listDivider"
+            android:foreground="@color/listDividerFg"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
         <TextView
             android:id="@+id/GuiAssetGroupId"
             android:layout_width="0dp"
@@ -56,7 +65,18 @@
             android:text=""
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/AssetListDetailDivider"
             tools:layout_editor_absoluteY="16dp" />
+
+        <Button
+            android:id="@+id/GuiAssetBuySell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="Trade"
+            android:textSize="26sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/GuiAssetGroupId" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

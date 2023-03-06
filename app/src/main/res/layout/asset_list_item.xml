@@ -5,24 +5,26 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/GuiAssetBuySell"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/GuiAssetId"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:text="Trade"
-        android:textSize="26sp"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"
+        android:textSize="8sp"
+        android:lines="2"
+        android:text=""
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GuiAssetName" />
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/GuiAssetIcon"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_marginStart="4dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/GuiAssetId" />
 
     <TextView
         android:id="@+id/GuiAssetName"
@@ -34,7 +36,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toEndOf="@+id/GuiAssetIcon"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/GuiAssetId" />
 
     <TextView
         android:id="@+id/GuiAssetQuantity"

@@ -115,6 +115,8 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
     implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
 
+    implementation("com.caverock:androidsvg-aar:1.4")
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'Nexa:NexaRpc:1.0.5'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'

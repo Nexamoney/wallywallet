@@ -93,7 +93,16 @@ fun epochMilliSeconds(): Long
     // return System.currentTimeMillis()/1000
 }
 
-
+fun WallyGetCnxnMgr(chain: ChainSelector, name: String? = null, start:Boolean = true): CnxnMgr
+{
+    val ret = GetCnxnMgr(chain, name, start)
+    if (chain == ChainSelector.NEXA)
+    {
+        ret.add("nexa.wallywallet.org", NexaPort, 100, true)
+        ret.add("p2p.wallywallet.org", NexaPort, 90, true)
+    }
+    return ret
+}
 
 data class LongPollInfo(val proto: String, val hostPort: String, val cookie: String?, var active: Boolean = true)
 
@@ -806,6 +815,9 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         displayMetrics = getResources().getDisplayMetrics()
         wallyApp = this
 
+        // Add the Wally Wallet server to our list of Electrum/Rostrum connection points
+        nexaElectrum.add(0, IpPort("rostrum.wallywallet.org", DEFAULT_NEXA_TCP_ELECTRUM_PORT))
+
         val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
         devMode = prefs.getBoolean(DEV_MODE_PREF, false)
         allowAccessPriceData = prefs.getBoolean(ACCESS_PRICE_DATA_PREF, true)
@@ -1229,7 +1241,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         // Return our configured node if we have one
         var name = chainToURI[cs]
         val node = prefDB.getString(name + "." + CONFIGURED_NODE, null)
-        if (node != null) return IpPort(node, DEFAULT_NEXATEST_TCP_ELECTRUM_PORT)
+        if (node != null) return splitIpPort(node, DefaultElectrumTCP[cs] ?: -1)
         return ElectrumServerOn(cs)
     }
 

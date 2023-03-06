@@ -20,6 +20,7 @@ import bitcoinunlimited.wally.*
 import bitcoinunlimited.libbitcoincash.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.*
 import java.lang.AssertionError
 import java.lang.Exception
 import java.math.BigDecimal
@@ -358,6 +359,27 @@ class UnitTest
 
         //Thread.sleep(20000)
         cnxn.close()
+    }
+
+    @Test
+    fun testTokenDescDoc()
+    {
+        val s = """[{
+    "ticker": "NIFTY",
+    "name": "NiftyArt NFTs",
+    "summary": "These are NiftyArt nonfungible tokens",
+    "icon": "/td/niftyicon.svg"
+},
+ "IDeKqpAh/uVJMTX8rEr1kQ/ItKY4fPnvF/iUPuJOtV52MhNongMBNRVPYoYf++HWB+IPOvFZwX225j3tFyyUV10="
+]""".trimIndent()
+
+        val je = kotlinx.serialization.json.Json.decodeFromString(JsonElement.serializer(),s)
+        val jsonArray:JsonArray = je.jsonArray
+        val tdjo = jsonArray[0].jsonObject
+        val td = kotlinx.serialization.json.Json.decodeFromJsonElement(TokenDesc.serializer(), tdjo)
+        val sig: String = jsonArray[1].jsonPrimitive.content
+
+        println(je)
     }
 
     @Test
