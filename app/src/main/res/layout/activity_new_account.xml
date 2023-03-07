@@ -118,6 +118,7 @@
         android:layout_marginTop="20dp"
         android:onClick="onCreateAccount"
         android:text="@string/createAccount"
+        style="@style/WallyButton"
         app:layout_constraintBottom_toTopOf="@+id/nav_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -191,13 +192,12 @@
 
     <TextView
         android:id="@+id/guiPINText"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/CreatePIN"
         android:textSize="18sp"
         android:textStyle="bold"
         android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/GuiPINOk"
         app:layout_constraintTop_toBottomOf="@+id/GuiPassPhraseEntry" />
 
@@ -280,12 +280,10 @@
 
     <TextView
         android:id="@+id/PinProtectsSpending"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="26dp"
         android:layout_marginStart="8dp"
         android:text="@string/PinSpendingUnprotected"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/GuiPINEntry" />
 

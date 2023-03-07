@@ -321,8 +321,8 @@
     <string name="Blockchain">Blockchain</string>
     <string name="AccountRecoveryPhrase">Recovery Phrase</string>
     <string name="LeaveEmptyNewWallet">Leave empty to create a new account</string>
-    <string name="PinSuggestions">This secret number is needed to access the account</string>
-    <string name="createAccount">create account</string>
+    <string name="PinSuggestions"><font size="15">This secret number is needed to access the account</font></string>
+    <string name="createAccount">Create Account</string>
     <string name="invalidRecoveryPhrase">bad recovery phrase</string>
     <string name="invalidAccountName">invalid name</string>
     <string name="PassPhrase">Passphrase (optional)</string>
@@ -459,6 +459,7 @@
     <!-- Shopping -->
     <string name="ButtonTextHere">Set button text</string>
     <string name="ButtonLinkHere">Enter web link</string>
+    <string name="ShoppingWarning">CAUTION: The items on this page are links to 3rd party services and web sites, placed here for your convenience.  These sites/services have not been vetted by Wally Wallet.\n\nUse at your own risk!</string>
 
     <!-- All items are specified here so the service itself can be localized if your country does work with the default service. Use empty strings to disable -->
     <string name="BadLink">Invalid web link</string>
@@ -486,7 +487,8 @@
     <string name="StoreMapAppPackage"></string>
     <string name="OpenWebsite" formatted="false">Access %siteName</string>
     <string name="WebsiteUnavailable" formatted="false">Website unavailable</string>
-    <string name="ExplainTxBit">txbit.io: Trade NEX for other cryptocurrencies</string>
+    <string name="ExplainTxBit">txbit.io: Trade NEXA for other cryptocurrencies</string>
+    <string name="ExplainMexc">mexc.com: Trade NEXA for other cryptocurrencies</string>
     <string name="CexButton">exchange</string>
 
     <!-- Trickle Pay -->

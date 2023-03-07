@@ -26,6 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:text="@string/AccountListHeader"
+        android:textStyle="bold"
         android:textSize="24sp"
         app:layout_constraintEnd_toStartOf="@+id/GuiNewAccount"
         app:layout_constraintStart_toEndOf="@+id/syncingIcon"
@@ -306,8 +307,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:text="@string/Receive"
-            android:textSize="24sp"
-            app:layout_constraintStart_toStartOf="parent"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -317,7 +319,18 @@
             android:text=":"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="@+id/ReceiveTitle"
-            app:layout_constraintStart_toEndOf="@+id/ReceiveTitle"
+            app:layout_constraintLeft_toRightOf="@+id/ReceiveTitle"
+            app:layout_constraintTop_toTopOf="@+id/ReceiveTitle" />
+
+        <Spinner
+            android:id="@+id/recvIntoAccount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:popupBackground="@drawable/account_selection_background"
+            android:spinnerMode="dropdown"
+            app:layout_constraintBottom_toBottomOf="@+id/ReceiveTitle"
+            app:layout_constraintLeft_toRightOf="@+id/ReceiveTitle"
             app:layout_constraintTop_toTopOf="@+id/ReceiveTitle" />
 
         <TextView
@@ -365,18 +378,6 @@
         android:scrollbars="none"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/recvIntoAccount" />
-
-
-        <Spinner
-            android:id="@+id/recvIntoAccount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:popupBackground="@drawable/account_selection_background"
-            android:spinnerMode="dropdown"
-            app:layout_constraintBottom_toBottomOf="@+id/ReceiveTitle"
-            app:layout_constraintStart_toEndOf="@+id/ReceiveTitle"
-            app:layout_constraintTop_toTopOf="@+id/ReceiveTitle" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -440,11 +441,12 @@
 
     <ImageButton
         android:id="@+id/GuiNewAccount"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginEnd="4dp"
         android:onClick="onNewAccount"
-        android:scaleType="centerCrop"
+        style="@style/WallyButtonNoPad"
+        android:scaleType="fitXY"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/receiveBalancesDivider"
         app:srcCompat="@drawable/ic_plus" />

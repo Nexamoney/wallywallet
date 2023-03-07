@@ -54,6 +54,7 @@ val initialShopping: ArrayList<ShoppingDestination> = arrayListOf(
    */
   ShoppingDestination(i18n(R.string.NFTs), i18n(R.string.ExplainNFTs), i18n(R.string.NftUrl), "", R.drawable.ic_niftyart_logo_plain),
   ShoppingDestination(i18n(R.string.CexButton), i18n(R.string.ExplainTxBit), "https://txbit.io/Trade/NEXA/USDT", "", R.drawable.txbit_io),
+  ShoppingDestination(i18n(R.string.CexButton), i18n(R.string.ExplainMexc), "https://www.mexc.com/exchange/NEXA_USDT", "", R.drawable.ic_mexc)
 )
 
 
@@ -72,6 +73,7 @@ class ShoppingListBinder(val ui: ShoppingListItemBinding): GuiListItemBinder<Sho
         ui.GuiShoppingButton.setOnClickListener({ onButtonClick(it)})
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun onButtonClick(v: View)
     {
         val i = data
