@@ -13,6 +13,7 @@ import android.graphics.drawable.shapes.RectShape
 import android.graphics.drawable.shapes.Shape
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,7 +24,8 @@ import java.util.logging.Logger
 
 private val LogIt = Logger.getLogger("BU.wally.accountlist")
 
-fun graphShape(dataPoints: Array<Double>, padding:Double, color: Long, bkgcolor: Long): Drawable
+
+fun graphShape(dataPoints: Array<Double>, padding:Double, color: Int, bkgcolor: Int): Drawable
 {
     val STD_HEIGHT = 250f
     val STD_WIDTH = 1000f
@@ -155,8 +157,8 @@ class AccountListBinder(val ui: AccountListItemBinding, val guiList: GuiAccountL
             val priceData = NexDaily(fiatCurrencyCode)?.map { it.toDouble() }?.toTypedArray()
             if ((appR != null) && (priceData != null))
             {
-                var cf = R.color.WallyRowAbkg1
-                var cb = R.color.WallyRowAbkg2
+                var cf = R.color.WallyRowAbkg2
+                var cb = R.color.WallyRowAbkg1
 
                 if (highlight)
                 {
@@ -165,14 +167,14 @@ class AccountListBinder(val ui: AccountListItemBinding, val guiList: GuiAccountL
                 }
                 else if ((pos and 1) == 1)
                 {
-                    cf = R.color.WallyRowBbkg1
-                    cb = R.color.WallyRowBbkg2
+                    cf = R.color.WallyRowBbkg2
+                    cb = R.color.WallyRowBbkg1
                 }
 
                 return graphShape(
                       priceData, 0.00000050,  // how much value on either side?  with scale 8, last digit is pennies
-                      ResourcesCompat.getColor(appR, cf, null).toLong(),
-                      ResourcesCompat.getColor(appR, cb, null).toLong()
+                      ResourcesCompat.getColor(appR, cf, null), // .toLong(),
+                      ResourcesCompat.getColor(appR, cb, null) //.toLong()
                     )
             }
             else  // We don't have the data to draw the background (not loaded yet)
@@ -368,8 +370,9 @@ open class GuiAccountList(val activity: MainActivity)
             val ui = AccountListItemBinding.inflate(LayoutInflater.from(vg.context), vg, false)
             AccountListBinder(ui, this)
         })
-        adapter.emptyBottomLines = 6
-        adapter.rowBackgroundColors = WallyRowColors
+        adapter.emptyBottomLines = 0
+        val wallyAccountRowColors = arrayOf(ContextCompat.getColor(context, R.color.WallyRowAbkg1),ContextCompat.getColor(context, R.color.WallyRowBbkg1) )
+        adapter.rowBackgroundColors = wallyAccountRowColors
         uiElem.layoutManager = linearLayoutManager
     }
 }

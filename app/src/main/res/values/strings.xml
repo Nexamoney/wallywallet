@@ -1,7 +1,38 @@
+<!-- Hi and thanks for translating!
+If you see anything that is surrounded with symbols just like this text, that is, within !- and - (but with 2 dashes, I cannot write it here), then do not translate.
+These are comments to help you understand what to do or the context the next word is used in.
+
+Entries that need to be translated will look something like this:
+<string name="yes">yep</string>
+
+Do not translate the word in quotes (in this case "yes").  This is a name that we use to look up your translation.
+But DO translate the word or sentence between the greater than and less than signs.  In this case "yep".
+
+For example, if you were doing a French you might do this replacement:
+<string name="yes">oui</string>
+
+Try to not make your translation a lot longer than the english, or it might not all fit in the space the app has on screen!
+
+
+If, in the part you are supposed to translate, you see a percent sign and a word, like this: %foo, then do not translate it.  For example:
+
+<string name="delQ">Delete account "%accountName" (on %blockchain)</string>
+
+What is happening here is that the app will replace %accountName with the actual name of the relevant account and %blockchain with the actual name of the blockchain.
+So it will look like this in the app:
+  Delete account "myNexaAct" (on Nexa)
+
+You can change the order of the replaced words just by moving where the %word is in your translation.  For example, I could change this to:
+
+<string name="delQ">Delete from %blockchain, account "%accountName"</string>
+
+Good luck!
+-->
+
 <resources>
     <string name="app_name">Wally</string>
     <string-array name="CurrencyTypes">
-        <item>KEX</item>
+        <item>NEX</item>
         <item>USD</item>
     </string-array>
     <string-array name="FiatCurrencyTypes">
@@ -16,7 +47,7 @@
         <item>XAU</item>
     </string-array>
 
-    <string name="mBCH">mBCH</string>
+    <string name="uBCH">uBCH</string>
     <string name="KEX">KEX</string>
 
     <string-array name="OneToTen">
@@ -46,23 +77,35 @@
     <!-- General -->
     <string name="yes">yes</string>
     <string name="no">no</string>
+    <!-- used to specify what position in the blockchain -->
     <string name="at">at</string>
+    <!-- used to specify that total blockchain size "at block 6 of 100"  -->
     <string name="of">of</string>
+    <!-- used to ask the user to pick an account -->
     <string name="choose">choose</string>
+    <!-- accept a proposed transaction, configuration change, or a request from an external service -->
     <string name="accept">accept</string>
+    <!-- reject a proposed transaction or configuration change -->
     <string name="reject">reject</string>
+    <!-- remove some remembered services, like web sites you have logged into or paid -->
     <string name="remove">remove</string>
+    <!-- you have asked the app to do something, but the app is double checking.  This means yes do it -->
     <string name="confirm">confirm</string>
+    <!-- you have asked the app to do something, but the app is double checking.  This means no user changed their mind -->
     <string name="cancel">cancel</string>
+
     <string name="removeAll">remove all</string>
     <!-- done is like "yes" but more means "go to the next thing" rather than explicit acceptance of something.  The implication is that whatever is showing on the screen will be used.
          Its modern UX philosophy of "why do we have to explicitly "save" everything on settings screens?  If you make a change, that change ought to be made, no additional button clicks needed."
     -->
     <string name="done">done</string>
+    <!-- an external service is making a request (to see the assets you own, to get you to sign a transaction, or to prove your identity).  You refuse -->
     <string name="deny">deny</string>
     <!-- Should the program ask the user before authorizing this, verses automatically accepting or automatically denying -->
     <string name="ask">ask</string>
+    <!-- Some service sent you a request, but the service did not properly sign the request (which proves that they are who they claim to be) -->
     <string name="badSignature">bad signature</string>
+
     <string name="unknownCurrency">unknown currency</string>
     <string name="unknownCryptoCurrency">unknown cryptocurrency or blockchain</string>
     <!-- wallet is currently working on doing whatever your button click asked it to do -->
@@ -72,23 +115,31 @@
     <string name="noAdditionalDetails">no additional details</string>
     <!-- User didn't enter any value into this field but that's ok -->
     <string name="unspecified">unspecified</string>
+    <!-- If the user deletes something - like a connection to an external service, this is the confirmation string that the info was removed.  It needs to be short. -->
     <string name="removed">removed</string>
     <!-- wallet is up to date with the blockchain -->
     <string name="synced">ready</string>
+    <!-- wallet is still connecting to the blockchain -->
     <string name="unsynced">synchronizing</string>
     <string name="connected">connected</string>
     <string name="balance">current balance</string>
     <string name="total">total received</string>
 
+    <!-- this is an indication that we are still waiting for some web page to load. please leave the HTML and just translate ...loading... -->
     <string name="WebLoadingPage"><![CDATA[<body><h1><center>...loading...</h1></center></body>]]></string>
 
     <!-- Implication is "no charge" or "no cost" for a transaction -->
     <string name="nothing">nothing</string>
 
+    <!-- Do not actually put anything in this one!  Its needed when we want a blank line -->
     <string name="empty"></string>
+
     <string name="or">or</string>
+
     <string name="onBlockchain">on</string>
+
     <string name="NotImplemented">Coming Soon</string>
+
     <string name="NoNodes">No blockchain access</string>
     <!-- The user chose not to proceed with some operation -->
     <string name="cancelled">cancelled</string>
@@ -96,8 +147,12 @@
     <string name="pleaseWait">please wait</string>
     <!-- Uses in the sense of attempting an operation, such as connecting to a node  -->
     <string name="trying">trying</string>
+
+    <!-- meaning remove all the text in an edit box -->
     <string name="clear">clear</string>
+
     <string name="thousand">thousand</string>
+
     <string name="million">million</string>
 
     <!-- Settings -->
@@ -115,6 +170,8 @@
     <string name="rediscoverTooltip">Delete blockchain state and search anew for all transactions relevant to the wallet</string>
     <string name="wordSeed">Account Recovery Secret Phrase</string>
     <string name="deleteWalletAccount">Delete Account</string>
+
+    <!-- a PIN is a numeric password that gives you access to your account -->
     <string name="SetChangePin">Set or Change unlocking PIN</string>
     <string name="CurrentPin">Current PIN</string>
     <string name="NewPin">New PIN</string>
@@ -142,18 +199,26 @@
 
     <!-- Split bill -->
     <string name="SplitBillDescription">You pay the bill (in fiat), your friends pay you their portion via the QR code below</string>
-    <string name="Total">Total</string>
+    <string name="Total">Total:</string>
     <!-- Ways refers to how many equal portions a bill is being split into -->
-    <string name="Ways">Ways</string>
+    <string name="Ways">Ways:</string>
     <!-- Tip (gratuity) is how much more money you want to pay above the value of the bill -->
-    <string name="Tip">Tip</string>
-    <string name="Amount">Amount</string>
+    <string name="Tip">Tip:</string>
+
+    <string name="Amount">Amount:</string>
     <!-- Home Page -->
+
+    <!-- As the wallet is syncing, it shows you a balance.  But if the wallet is not caught up to NOW it shows this so you know that the balance that is being shown is not up to date.
+    IF YOU SEE %something (in this case date), THEN DO NOT translate the "something".  It will be replaced with the actual value by the program (in this case the date).
+    -->
     <string name="balanceOnTheDate">as of %date</string>
+
+    <!-- A QR is the 2-dimensional black and white boxes of pixels that wallets scan to read info -->
     <string name="goodQR">QR readable</string>
     <string name="badQR">QR unreadable</string>
     <string name="badImageQR">bad image QR. more...</string>
     <string name="badImageQRhelp">Try taking a picture from farther away if you took a close up of the QR code.  The white border is part of the QR code, and you can get confusing moire patterns if photographing a screen up close.</string>
+    <!-- as in unlock an account -->
     <string name="unlock">unlock</string>
     <string name="share">share</string>
     <string name="Send">Send</string>
@@ -161,7 +226,7 @@
     <string name="SendCancel">Cancel</string>
     <string name="ignoredInsecureRequest">Ignored Insecure Request</string>
     <!-- As in "Send from" what account -->
-    <string name="from">From account</string>
+    <string name="fromAccountColon">Send from account:</string>
     <!-- if user forgot to pick an account -->
     <string name="chooseAccountError">choose an account</string>
     <!-- As in "Send to" -->
@@ -170,10 +235,11 @@
     <string name="fromColon">From:</string>
     <string name="Receive">Receive into account</string>
     <string name="AccountListHeader">Accounts</string>
+    <!-- This is referring to a cryptocurrency address, not a physical address -->
     <string name="Address">Address</string>
     <string name="clipboard">clipboard</string>
-    <string name="settings">settings</string>
-    <string name="help">help</string>
+    <string name="settings">Settings</string>
+    <string name="help">Help</string>
     <string name="invalidQuantity">invalid quantity</string>
     <string name="invalidQuantityTooManyDecimalDigits">too many decimal places</string>
     <string name="roundedUpClickSendAgain">rounded up, press send again to accept</string>

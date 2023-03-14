@@ -5,15 +5,14 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    style = "@style/WallyBase"
     tools:context=".AlertActivity">
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="?android:attr/windowBackground"
-        android:fadingEdge="none"
-        android:foregroundTint="#f000f0"
+        style="@style/WallyNav"
         android:outlineProvider="background"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toTopOf="@+id/veryBottomDivider"

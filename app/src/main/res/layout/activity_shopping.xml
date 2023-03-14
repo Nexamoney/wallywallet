@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" android:id="@+id/constraintLayout" android:layout_width="match_parent" android:layout_height="match_parent" app:layout_anchor="@+id/constraintLayout" app:layout_anchorGravity="center">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" android:id="@+id/constraintLayout" android:layout_width="match_parent" android:layout_height="match_parent" app:layout_anchor="@+id/constraintLayout"
+    app:layout_anchorGravity="center"
+    style = "@style/WallyBase"
+    >
 
     <TextView
         android:id="@+id/ShoppingWarning"
@@ -27,6 +30,7 @@
         android:id="@+id/GuiShoppingList"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        style="@style/WallySwirl"
         app:layout_constraintBottom_toTopOf="@+id/nav_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -46,9 +50,8 @@
         android:id="@+id/nav_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="?android:attr/windowBackground"
+        style="@style/WallyNav"
         android:fadingEdge="none"
-        android:foregroundTint="#f000f0"
         android:outlineProvider="background"
         app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toTopOf="@+id/dividerEnd"

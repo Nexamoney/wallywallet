@@ -16,7 +16,7 @@
         <item>XAU</item>
     </string-array>
 
-    <string name="mBCH">mBCH</string>
+    <string name="uBCH">uBCH</string>
 
     <string-array name="OneToTen">
         <item>1</item>
@@ -94,8 +94,6 @@
 
     <string name="provideLoginQuestion">Accedi a questo sito?</string>
 
-    <string name="FirstNameOrAliasText">Nome o alias</string>
-    <string name="HomeAddressText">Indirizzo di residenza</string>
     <string name="EmailText">Indirizzo Email</string>
     <string name="TwitterText">Twitter</string>
     <string name="TelegramText">Telegram</string>

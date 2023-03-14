@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle" >
+    <item>
+        <bitmap android:src="@drawable/w_background"
+                android:scaleType="centerCrop"
+            android:alpha="0.4"
+            />
+</item>
+</layer-list>

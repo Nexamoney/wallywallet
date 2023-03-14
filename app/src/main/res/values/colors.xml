@@ -22,17 +22,21 @@
     <color name="rowA">#FFEFEFEF</color>
     <color name="rowB">#FFC0C0C0</color>
 
-    <color name="WallyRowAbkg1">#FFf5f8ff</color>
-    <color name="WallyRowAbkg2">#FFdce6ff</color>
-    <color name="WallyRowBbkg1">#FFf0f0ff</color>
-    <color name="WallyRowBbkg2">#FFd7d7ff</color>
+    <color name="WallyRowAbkg1">#8Ff0f0ff</color>
+    <color name="WallyRowBbkg1">#8FF4e0ec</color>
+    <color name="WallyRowAbkg2">#BFfff5f0</color>
+    <color name="WallyRowBbkg2">#BFf5f5ff</color>
 
     <color name="black">#000000</color>
     <color name="white">#ffffff</color>
 
     <color name="WallyBorder">#efddff</color>
+    <color name="BaseBkg">#FFFCF0D9</color>
+    <color name="BrightBkg">#FFFFFAF0</color>
 
-    <color name="listDividerFg">#DDCCFF</color>
+    <color name="navBarBkg">#FFF5EBC8</color>
+
+    <color name="listDividerFg">#906EB0</color>
     <color name="unconfirmedBalanceIncomingColor">#a19120</color>
     <color name="unconfirmedBalanceOutgoingColor">#BD4311</color>
     <color name="unsyncedBalanceColor">#DBBFB3</color>
