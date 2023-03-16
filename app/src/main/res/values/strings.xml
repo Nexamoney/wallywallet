@@ -143,7 +143,7 @@ Good luck!
     <string name="NoNodes">No blockchain access</string>
     <!-- The user chose not to proceed with some operation -->
     <string name="cancelled">cancelled</string>
-    <!-- Issued if initialization isn't yet complete, but user tries to access the services -->
+    <!-- Issued if initialization is not yet complete, but user tries to access the services -->
     <string name="pleaseWait">please wait</string>
     <!-- Uses in the sense of attempting an operation, such as connecting to a node  -->
     <string name="trying">trying</string>
@@ -179,6 +179,9 @@ Good luck!
     <string name="PinRemoved">PIN removed</string>
     <string name="PinInvalid">Invalid PIN</string>
     <string name="PinTooShort">new PIN is too short</string>
+    <string name="WriteDownRecoveryPhraseWarning">Warning: you have not written down the secret recovery phrases for some accounts!  To ensure funds are not lost if this device is lost or broken, write the secret recovery keys down on paper or other non-electronic format. Recovery keys are accessible within each account\'s settings page.</string>
+    <string name="WroteRecoveryPhraseDown">I wrote it down</string>
+    <string name="RecoveryPhraseKeepRemindingMe">Keep reminding me</string>
     <string name="ViewRecoveryPhrase">View Account Recovery Secret Phrase</string>
     <string name="localCurrency">Local currency</string>
     <string name="assessUnconfirmed">Assess Unconfirmed Transactions</string>
@@ -256,20 +259,20 @@ Good luck!
     <string name="paymentProposal">as per received payment proposal</string>
     <!-- You clicked the paste button (in a copy/paste operation), but nothing was copied -->
     <string name="pasteIsEmpty">paste empty</string>
-    <!-- Informational: The contents of the copy/paste buffer didn't make any sense to me, but you didn't explicitly tell me to paste so maybe that's ok.
+    <!-- Informational: The contents of the copy/paste buffer did not make any sense to me, but you did not explicitly tell me to paste so maybe that's ok.
      The app did not use this paste information.  This error happens when the app checks for implicit pastes.  For example, when wally wallet
      starts up it guesses that it might have been started to make a payment so checks the paste buffer for a destination address.
      -->
     <string name="pasteIgnored">paste ignored</string>
-    <!-- Error: The information in the copy/paste buffer didn't make any sense to me (not a crypto address, for example), and you explicitly asked me to paste.
-     The app refuses to fill the field with this information because it doesn't make sense to do so. -->
+    <!-- Error: The information in the copy/paste buffer did not make any sense to me (not a crypto address, for example), and you explicitly asked me to paste.
+     The app refuses to fill the field with this information because it does not make sense to do so. -->
     <string name="pasteUnintelligible">paste not understood</string>
     <string name="chainIncompatibleWithAddress">address incompatible with account</string>
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Account currency is %walletCrypto, address is %addressCrypto.  Use the combo box to change the send from account to one that matches the address\'s blockchain.</string>
     <string name="incoming" formatted="false">includes %delta %unit pending</string>
     <string name="approximatelyT" formatted="false">approximately %qty %fiat</string>
     <string name="exchangeRate" formatted="false">(exchange rate: 1 %fiat is worth %amt %crypto)</string>
-    <!-- user is attempting to send more cryptocurrency than the wallet contains.  The payment can't happen -->
+    <!-- user is attempting to send more cryptocurrency than the wallet contains.  The payment cannot happen -->
     <string name="moreThanAvailable">"(more than available)"</string>
     <!-- This is a warning or informational message.  It says that the user is sending recently received coins, which is perfectly OK but slightly increases the chance of payment failure -->
     <string name="moreThanConfirmedAvailable">"(more than confirmed)"</string>
@@ -291,7 +294,7 @@ Good luck!
     <!-- Identity -->
     <string name="identityRequestNotification">identity requested</string>
     <string name="IdentityDataMissing">Missing Identity Info</string>
-    <!-- Some web site or company that you've never contacted before is requesting that you set up an account and authenticate a log-in.  This is an informational message
+    <!-- Some web site or company that you have never contacted before is requesting that you set up an account and authenticate a log-in.  This is an informational message
      that happens whenever the user first sets up a relationship between the web site/company and their wallet -->
     <string name="newDomainRequestingIdentity">New Domain Requesting Identity</string>
     <string name="domainRequestingAdditionalIdentityInfo">Additional Information Requested</string>
@@ -317,7 +320,7 @@ Good luck!
     <string name="UnknownDomainRegisterFirst">Unknown domain, register first</string>
 
     <string name="commonIdentityQRCode">QR code</string>
-    <!-- An intent (aka link) specified an action that I don't know about -->
+    <!-- An intent (aka link) specified an action that I do not know about -->
     <string name="unknownOperation" formatted="false">operation %op unknown</string>
     <!-- This wallet already has a registration for this site, so registration is not needed (informational notice) -->
     <string name="alreadyRegistered">already registered</string>

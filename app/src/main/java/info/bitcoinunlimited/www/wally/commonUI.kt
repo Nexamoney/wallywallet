@@ -89,7 +89,7 @@ fun EditText.set(s: String)
 /** dig through text looking for addresses */
 fun scanForFirstAddress(s: String):PayAddress?
 {
-    val words = s.split(" ",",","!",".","@","#","$","%","^","&","*","(",")","{","}","[","]","\\","|","/",">","<",";","'","\"","~","+","=","-","_","`","~","?") // None of these characters are allowed in addresses so split the text on them
+    val words = s.split(" ",",","!",".","@","#","$","%","^","&","*","(",")","{","}","[","]","\\","|","/",">","<",";","\'","\"","~","+","=","-","_","`","~","?") // None of these characters are allowed in addresses so split the text on them
     for (w in words)
     {
         if (w.length > 32)  // cashaddr type addresses are pretty long

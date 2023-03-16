@@ -83,8 +83,6 @@ var wallyApp: WallyApp? = null
 var devMode: Boolean = false
 var allowAccessPriceData: Boolean = true
 
-const val ACCOUNT_FLAG_NONE = 0UL
-const val ACCOUNT_FLAG_HIDE_UNTIL_PIN = 1UL
 const val RETRIEVE_ONLY_ADDITIONAL_ADDRESSES = 10
 
 fun epochMilliSeconds(): Long
@@ -322,7 +320,12 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         // RneedNonexistentAuthority = R.string.n
     }
 
+
+    // Set to true if this is the first time this app has ever been run
     var firstRun = false
+    // Set to true if some wallet has a nontrivial balance and its recovery key has not been viewed (and we have not warned since app instantiation)
+    var warnBackupRecoveryKey = false
+    // Current notification ID
     var notifId = 0
 
     @kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -627,6 +630,9 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         }
     }
 
+    /** Execute a login request to a 3rd party web site via the nexid protocl.  This is done within the app context so that the login activity can return before the async login process
+     * is completed.
+     */
     fun handleLogin(loginReqParam: String)
     {
         var loginReq = loginReqParam
@@ -671,6 +677,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         }
     }
 
+    /** Create a new account */
     fun newAccount(name: String, flags: ULong, pin: String, chainSelector: ChainSelector): Account?
     {
         dbgAssertNotGuiThread()
@@ -707,6 +714,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     }
 
 
+    /** Remove an account from this app (note its still available for restoration via recovery key) */
     fun deleteAccount(act: Account)
     {
         synchronized(accounts)
@@ -733,9 +741,10 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         }
     }
 
+    /** Create an account given a recovery key and the account's earliest activity */
     fun recoverAccount(
       name: String,
-      flags: ULong,
+      flags_p: ULong,
       pin: String,
       secretWords: String,
       chainSelector: ChainSelector,
@@ -744,6 +753,8 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
       nonstandardActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, NewAccount.HDActivityBracket>>?
     )
     {
+        // If the account is being restored from a recovery key, then the user must have it saved somewhere already
+        val flags = flags_p or ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY
         dbgAssertNotGuiThread()
         val ctxt = PlatformContext(applicationContext)
 
@@ -828,7 +839,8 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         if (!RunningTheTests())  // If I'm running the unit tests, don't create any wallets since the tests will do so
         {
             // Initialize the currencies supported by this wallet
-            launch(coMiscScope) {
+            launch(coMiscScope)
+            {
                 LogIt.info(sourceLoc() + " Wally Wallet App Started")
                 val ctxt = PlatformContext(applicationContext)
                 walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
@@ -930,7 +942,13 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
 
                     c.start(applicationContext)
                     c.onChange()  // update all wallet UI fields since just starting up
+
+                    if (((c.flags and ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY) == 0UL) && (c.wallet.balance > MAX_NO_RECOVERY_WARN_BALANCE))
+                    {
+                        warnBackupRecoveryKey = true
+                    }
                 }
+
             }
         }
 

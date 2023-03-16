@@ -282,8 +282,11 @@ class AccountDetailsActivity: CommonNavActivity()
             {
                 // put it all back to its defaults
                 ui.GuiConfirmationText2.text = ""
-                ui.buttonNo.visibility = View.VISIBLE
                 ui.buttonYes.text = i18n(R.string.yes)
+                ui.buttonNo.text = i18n(R.string.no)
+                if (act == null) return
+                act.flags = act.flags or ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY
+                later { act.saveAccountFlags() }
             }
             ConfirmationFor.PinChange ->
             {
@@ -337,9 +340,30 @@ class AccountDetailsActivity: CommonNavActivity()
     fun onNo(v: View?)
     {
         ui.GuiConfirmationText2.text = ""
+        val a = askingAbout
         askingAbout = null
         ui.ConfirmationConstraint.visibility = View.GONE
         ui.confirmationOps.visibility = View.VISIBLE
+        // In case they were changed, put them back to their defaults
+        ui.buttonYes.text = i18n(R.string.yes)
+        ui.buttonNo.text = i18n(R.string.no)
+
+        if (a == null) return
+        val act = selectedAccount
+
+        when (a)
+        {
+            ConfirmationFor.RecoveryPhrase ->
+            {
+                // User wants to be reminded to back up the key again
+                if (act == null) return
+                act.flags = act.flags and ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY.inv()
+                later { act.saveAccountFlags() }
+            }
+            else ->
+            {
+            }
+        }
     }
 
     fun showConfirmation()
@@ -391,8 +415,9 @@ class AccountDetailsActivity: CommonNavActivity()
 
         ui.GuiConfirmationText2.text = tmp.subList(0,halfwords).joinToString(" ") + "\n" + tmp.subList(halfwords, tmp.size).joinToString(" ")
         showConfirmation()
-        ui.buttonNo.visibility = View.GONE
-        ui.buttonYes.text = i18n(R.string.done)
+        //ui.buttonNo.visibility = View.GONE
+        ui.buttonYes.text = i18n(R.string.WroteRecoveryPhraseDown)
+        ui.buttonNo.text = i18n(R.string.RecoveryPhraseKeepRemindingMe)
     }
 
     @Suppress("UNUSED_PARAMETER")

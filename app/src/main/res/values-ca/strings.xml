@@ -1,0 +1,618 @@
+<!-- Hi and thanks for translating!
+If you see anything that is surrounded with symbols just like this text, that is, within !- and - (but with 2 dashes, I cannot write it here), then do not translate.
+These are comments to help you understand what to do or the context the next word is used in.
+
+Entries that need to be translated will look something like this:
+<string name="yes">yep</string>
+
+Do not translate the word in quotes (in this case "yes").  This is a name that we use to look up your translation.
+But DO translate the word or sentence between the greater than and less than signs.  In this case "yep".
+
+For example, if you were doing a French you might do this replacement:
+<string name="yes">oui</string>
+
+Try to not make your translation a lot longer than the english, or it might not all fit in the space the app has on screen!
+
+
+If, in the part you are supposed to translate, you see a percent sign and a word, like this: %foo, then do not translate it.  For example:
+
+<string name="delQ">Delete account "%accountName" (on %blockchain)</string>
+
+What is happening here is that the app will replace %accountName with the actual name of the relevant account and %blockchain with the actual name of the blockchain.
+So it will look like this in the app:
+  Delete account "myNexaAct" (on Nexa)
+
+You can change the order of the replaced words just by moving where the %word is in your translation.  For example, I could change this to:
+
+<string name="delQ">Delete from %blockchain, account "%accountName"</string>
+
+Good luck!
+-->
+
+<resources>
+    <string name="app_name">Wally</string>
+    <string-array name="CurrencyTypes">
+        <item>NEX</item>
+        <item>USD</item>
+    </string-array>
+    <string-array name="FiatCurrencyTypes">
+        <item>BRL</item>
+        <item>CAD</item>
+        <item>CNY</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>JPY</item>
+        <item>RUB</item>
+        <item>USD</item>
+        <item>XAU</item>
+    </string-array>
+
+    <string name="uBCH">uBCH</string>
+    <string name="KEX">KEX</string>
+
+    <string-array name="OneToTen">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="tipPercentage">
+        <item>--</item>
+        <item>0%</item>
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+        <item>50%</item>
+    </string-array>
+
+    <!-- General -->
+    <string name="yes">si</string>
+    <string name="no">no</string>
+    <!-- used to specify what position in the blockchain -->
+    <string name="at">al</string>
+    <!-- used to specify that total blockchain size "at block 6 of 100"  -->
+    <string name="of">de</string>
+    <!-- used to ask the user to pick an account -->
+    <string name="choose">escull</string>
+    <!-- accept a proposed transaction, configuration change, or a request from an external service -->
+    <string name="accept">acceptar</string>
+    <!-- reject a proposed transaction or configuration change -->
+    <string name="reject">refusar</string>
+    <!-- remove some remembered services, like web sites you have logged into or paid -->
+    <string name="remove">eliminar</string>
+    <!-- you have asked the app to do something, but the app is double checking.  This means yes do it -->
+    <string name="confirm">confirmar</string>
+    <!-- you have asked the app to do something, but the app is double checking.  This means no user changed their mind -->
+    <string name="cancel">cancel.lar</string>
+
+    <string name="removeAll">eliminar tot</string>
+    <!-- done is like "yes" but more means "go to the next thing" rather than explicit acceptance of something.  The implication is that whatever is showing on the screen will be used.
+         Its modern UX philosophy of "why do we have to explicitly "save" everything on settings screens?  If you make a change, that change ought to be made, no additional button clicks needed."
+    -->
+    <string name="done">fet</string>
+    <!-- an external service is making a request (to see the assets you own, to get you to sign a transaction, or to prove your identity).  You refuse -->
+    <string name="deny">denegar</string>
+    <!-- Should the program ask the user before authorizing this, verses automatically accepting or automatically denying -->
+    <string name="ask">preguntar</string>
+    <!-- Some service sent you a request, but the service did not properly sign the request (which proves that they are who they claim to be) -->
+    <string name="badSignature">signatura errònea</string>
+
+    <string name="unknownCurrency">moneda desconeguda</string>
+    <string name="unknownCryptoCurrency">cripto o blockchain desconeguda</string>
+    <!-- wallet is currently working on doing whatever your button click asked it to do -->
+    <string name="Processing">processant...</string>
+    <string name="receiving">rebent</string>
+    <string name="sending">enviant</string>
+    <string name="noAdditionalDetails">sense detalls adiccionals</string>
+    <!-- User didn't enter any value into this field but that's ok -->
+    <string name="unspecified">sense especificar</string>
+    <!-- If the user deletes something - like a connection to an external service, this is the confirmation string that the info was removed.  It needs to be short. -->
+    <string name="removed">el.liminat</string>
+    <!-- wallet is up to date with the blockchain -->
+    <string name="synced">llest</string>
+    <!-- wallet is still connecting to the blockchain -->
+    <string name="unsynced">sincronitzant</string>
+    <string name="connected">connectat</string>
+    <string name="balance">balanç actual</string>
+    <string name="total">total rebut</string>
+
+    <!-- this is an indication that we are still waiting for some web page to load. please leave the HTML and just translate ...loading... -->
+    <string name="WebLoadingPage"><![CDATA[<body><h1><center>...carregant...</h1></center></body>]]></string>
+
+    <!-- Implication is "no charge" or "no cost" for a transaction -->
+    <string name="nothing">res</string>
+
+    <!-- Do not actually put anything in this one!  Its needed when we want a blank line -->
+    <string name="empty"></string>
+
+    <string name="or">o</string>
+
+    <string name="onBlockchain">on</string>
+
+    <string name="NotImplemented">Properament</string>
+
+    <string name="NoNodes">Sense acces blockchaing</string>
+    <!-- The user chose not to proceed with some operation -->
+    <string name="cancelled">cancel.lat</string>
+    <!-- Issued if initialization isn't yet complete, but user tries to access the services -->
+    <string name="pleaseWait">Per favor esperar</string>
+    <!-- Uses in the sense of attempting an operation, such as connecting to a node  -->
+    <string name="trying">intentant</string>
+
+    <!-- meaning remove all the text in an edit box -->
+    <string name="clear">Net</string>
+
+    <string name="thousand">mil</string>
+
+    <string name="million">mil.lió</string>
+
+    <!-- Settings -->
+    <string name="version" formatted="false">Wally Wallet Versió: %ver</string>
+    <string name="enableDeveloperView"> Avançat/dev mode</string>
+    <string name="enableIdentityMenu">Activa la pantalla d\'identitat</string>
+    <string name="enableTricklePayMenu">Activa la pantalla de pagament per compte</string>
+    <string name="enableAssetsMenu">Activa la pantalla de recursos</string>
+    <string name="only">només</string>
+    <string name="prefer">preferir</string>
+    <string name="rediscoverWalletTx">redescobrir totes les transaccions</string>
+    <string name="rediscoverBlockchain">redescobriu les capçaleres de blockchain</string>
+    <string name="logDebugData">Log Debug Data</string>
+    <string name="clearIdentityDomains">Esborra els dominis d\'identitat</string>
+    <string name="rediscoverTooltip">Suprimiu l\'estat de la cadena de blocs i cerqueu de nou totes les transaccions rellevants per a la cartera</string>
+    <string name="wordSeed">Frase secreta de recuperació del compte</string>
+    <string name="deleteWalletAccount">Esborrar compte</string>
+
+    <!-- a PIN is a numeric password that gives you access to your account -->
+    <string name="SetChangePin">Estableix o canvia el PIN de desbloqueig</string>
+    <string name="CurrentPin">PIN actual</string>
+    <string name="NewPin">PIN nou</string>
+    <string name="PinChanged">PIN canviat</string>
+    <string name="PinRemoved">PIN eliminat</string>
+    <string name="PinInvalid">PIN incorrecte</string>
+    <string name="PinTooShort">el PIN nou és massa curt</string>
+    <string name="ViewRecoveryPhrase">Visualitza la frase secreta de recuperació del compte</string>
+    <string name="localCurrency">Moneda local</string>
+    <string name="assessUnconfirmed">Avaluar les transaccions no confirmades</string>
+    <string name="rediscoverNotice">S\'ha iniciat el redescobriment del compte</string>
+    <string name="unconfAssessmentNotice">S\'ha iniciat l\'avaluació sense confirmar</string>
+    <string name="accountDeleteNotice">Compte suprimit</string>
+    <string name="rediscoverConfirmation">Tornar a descobrir un compte cercarà la cadena de blocs, ja que aquesta cartera es va crear per als pagaments que falten. Aquest procés pot trigar molt de temps. Utilitzeu-lo només si esteu segur que falta un pagament!</string>
+    <string name="rediscoverBlockchainConfirmation">Tornar a descobrir una cadena de blocs suprimirà totes les dades de la capçalera de la cadena de blocs d\'aquesta cartera i la tornarà a baixar dels nodes complets. Aquest procés pot trigar molt de temps. Utilitzeu-lo només si esteu segur que hi ha un problema de capçalera de cadena de blocs.</string>
+    <string name="deleteConfirmation" formatted="false">Si suprimiu un compte, tots els saldos, identitats i historial no estaran disponibles tret que el compte es recuperi mitjançant la frase secreta de recuperació del compte. Feu-ho només si esteu ABSOLUTAMENT SEGUR!\n\nVoleu suprimir el compte "%accountName" (a %blockchain)?</string>
+    <string name="reassessConfirmation">Aquesta operació comprovarà la cadena de blocs per a les transaccions recents que heu enviat. En funció de la seva presència o absència, les confirmarà o esborrarà. Si s\'esborren les transaccions, els diners sembla que desapareixeran. Haureu de "redescobrir" per recuperar el saldo gastat. No l\'utilitzeu si heu emès una transacció recentment, ja que aquesta transacció pot estar latent a la xarxa, esperant la confirmació.</string>
+    <string name="recoveryPhrase">Aquesta frase de 12 paraules es pot utilitzar per restaurar la cartera si el telèfon està danyat o perdut. Això vol dir que qui tingui aquesta frase pot gastar els teus diners. Escriu-ho en un paper i guarda-ho de manera segura!</string>
+    <string name="primaryAccountConfirmation">El vostre compte principal és el compte que s\'utilitza per a la vostra identitat i per fer pagaments automàtics. També és el primer compte que es mostra en diversos llocs d\'aquesta aplicació. Ha d\'estar a la cadena de blocs de Nexa.</string>
+    <string name="AccountActions">Accions del compte</string>
+    <string name="GeneralSettings">Configuració general</string>
+    <string name="BlockchainSettings">Fonts de Blockchain</string>
+    <string name="AccessPriceData">Accediu a les dades de preus</string>
+    <!-- not used right now string name="AccessPriceDataHint">This option allows the wallet to display the value of your cryptocurrency.  However, this data may not be accurate.  And the access uses more data and divulges your IP address to the service providing the data.</string -->
+
+    <!-- Split bill -->
+    <string name="SplitBillDescription">Pagues la factura (en fiat), els teus amics et paguen la seva part mitjançant el codi QR següent</string>
+    <string name="Total">Total:</string>
+    <!-- Ways refers to how many equal portions a bill is being split into -->
+    <string name="Ways">Parts:</string>
+    <!-- Tip (gratuity) is how much more money you want to pay above the value of the bill -->
+    <string name="Tip">Tip:</string>
+
+    <string name="Amount">Total:</string>
+    <!-- Home Page -->
+
+    <!-- As the wallet is syncing, it shows you a balance.  But if the wallet is not caught up to NOW it shows this so you know that the balance that is being shown is not up to date.
+    IF YOU SEE %something (in this case date), THEN DO NOT translate the "something".  It will be replaced with the actual value by the program (in this case the date).
+    -->
+    <string name="balanceOnTheDate">com de %date</string>
+
+    <!-- A QR is the 2-dimensional black and white boxes of pixels that wallets scan to read info -->
+    <string name="goodQR">QR llegible</string>
+    <string name="badQR">QR illegible</string>
+    <string name="badImageQR">mala imatge QR. més...</string>
+    <string name="badImageQRhelp">Proveu de fer una foto des de més lluny si heu fet un primer pla del codi QR. La vora blanca forma part del codi QR i podeu obtenir patrons de moiré confusos si feu una fotografia d\'una pantalla de prop.</string>
+    <!-- as in unlock an account -->
+    <string name="unlock">desbloquejar</string>
+    <string name="share">compartir</string>
+    <string name="Send">Enviar</string>
+    <string name="OpenSend">Enviar</string>
+    <string name="SendCancel">Cancel.lar</string>
+    <string name="ignoredInsecureRequest">Sol·licitud insegura ignorada</string>
+    <!-- As in "Send from" what account -->
+    <string name="fromAccountColon">Envia des del compte:</string>
+    <!-- if user forgot to pick an account -->
+    <string name="chooseAccountError">tria un compte</string>
+    <!-- As in "Send to" -->
+    <string name="toColon">A:</string>
+    <!-- As in what entity is requesting information -->
+    <string name="fromColon">De:</string>
+    <string name="Receive">Rebre en compte</string>
+    <string name="AccountListHeader">Comptes</string>
+    <!-- This is referring to a cryptocurrency address, not a physical address -->
+    <string name="Address">Adreça</string>
+    <string name="clipboard">clipboard</string>
+    <string name="settings">Configuració</string>
+    <string name="help">Ajuda</string>
+    <string name="invalidQuantity">quantitat no vàlida</string>
+    <string name="invalidQuantityTooManyDecimalDigits">massa decimals</string>
+    <string name="roundedUpClickSendAgain">arrodonit cap amunt, premeu enviar de nou per acceptar</string>
+    <!-- Write this below the send quantity field when it is empty - you probably want to write nothing at all -->
+    <string name="emptyQuantityField"></string>
+    <string name="purchase">compra</string>
+    <string name="scanPaymentQRcode">Escaneja el codi QR de l\'adreça de pagament</string>
+    <string name="ScanQRCodeButton">Escaneja un codi QR</string>
+    <string name="PasteDestinationAddressButton">Enganxa</string>
+    <string name="NewAccountButton">Configuració del compte nou</string>
+    <string name="NewAccountSearchingForTransactions">...cercant transaccions...</string>
+    <string name="NewAccountSearchFailure">La cerca de transaccions ha fallat</string>
+    <string name="receiveAddressQRCode">rebre el codi QR</string>
+    <string name="paymentProposal">segons la proposta de pagament rebuda</string>
+    <!-- You clicked the paste button (in a copy/paste operation), but nothing was copied -->
+    <string name="pasteIsEmpty">enganxa buit</string>
+    <!-- Informational: The contents of the copy/paste buffer didn't make any sense to me, but you didn't explicitly tell me to paste so maybe that's ok.
+     The app did not use this paste information.  This error happens when the app checks for implicit pastes.  For example, when wally wallet
+     starts up it guesses that it might have been started to make a payment so checks the paste buffer for a destination address.
+     -->
+    <string name="pasteIgnored">enganxa ignorat</string>
+    <!-- Error: The information in the copy/paste buffer didn't make any sense to me (not a crypto address, for example), and you explicitly asked me to paste.
+     The app refuses to fill the field with this information because it doesn't make sense to do so. -->
+    <string name="pasteUnintelligible">pasta no s\'entén</string>
+    <string name="chainIncompatibleWithAddress">adreça incompatible amb el compte</string>
+    <string name="chainIncompatibleWithAddressDetails" formatted="false">La moneda del compte és %wallet Crypto, l\'adreça és %addressCrypto. Utilitzeu el quadre combinat per canviar l\'enviament del compte a un que coincideixi amb la cadena de blocs de l\'adreça.</string>
+    <string name="incoming" formatted="false">inclou %delta %unit pendent</string>
+    <string name="approximatelyT" formatted="false">aproximadament %qty %fiat</string>
+    <string name="exchangeRate" formatted="false">(tipus de canvi: 1 %fiat val %amt %crypto)</string>
+    <!-- user is attempting to send more cryptocurrency than the wallet contains.  The payment can't happen -->
+    <string name="moreThanAvailable">"(més que disponible)"</string>
+    <!-- This is a warning or informational message.  It says that the user is sending recently received coins, which is perfectly OK but slightly increases the chance of payment failure -->
+    <string name="moreThanConfirmedAvailable">"(més que confirmat)"</string>
+    <string name="actuallySendingT" formatted="false">enviant realment %qty %crypto</string>
+    <string name="copiedToClipboard">...copiat al clipboard...</string>
+    <string name="scanFailed">l\'escaneig ha fallat</string>
+    <string name="scanSuccess">l\'exploració ha estat correcta</string>
+    <string name="sendSuccess">envia correctament</string>
+    <string name="sendQuantityHint">enviar quantitat</string>
+    <string name="sendRequestNotification">Envia sol·licitat</string>
+    <string name="sendToAddressHint">adreça de destinació</string>
+    <string name="sendAll">tot</string>
+    <string name="editSendNoteHint">notes personals sobre aquesta transferència</string>
+    <string name="subSatoshiQuantities">Massa decimals: aquesta moneda no ho divideix finament</string>
+
+    <string name="retrievingExchangeRate">encara recuperant el tipus de canvi</string>
+    <string name="unavailableExchangeRate">tipus de canvi no disponible</string>
+
+    <!-- Identity -->
+    <string name="identityRequestNotification">identitat sol·licitada</string>
+    <string name="IdentityDataMissing">Falta informació d\'identitat</string>
+    <!-- Some web site or company that you've never contacted before is requesting that you set up an account and authenticate a log-in.  This is an informational message
+     that happens whenever the user first sets up a relationship between the web site/company and their wallet -->
+    <string name="newDomainRequestingIdentity">Nou domini que sol·licita identitat</string>
+    <string name="domainRequestingAdditionalIdentityInfo">Informació addicional sol.licitada</string>
+    <string name="useUniqueIdentityToolTip">Activa per mantenir la teva identitat aquí separada d\'altres llocs.</string>
+    <string name="provideAlias">Proporcioneu el vostre nom d\'usuari/identificador/àlies?</string>
+    <string name="provideAliasToolTip">Seleccioneu aquesta opció proporcionarà el vostre àlies (tal com s\'ha configurat a la configuració, NO el vostre nom real) a aquest lloc web, si se us demana</string>
+    <string name="provideSocialMedia">Proporcioneu informació de les vostres xarxes socials?</string>
+    <string name="provideSocialMediaToolTip">Si seleccioneu aquesta opció, es proporcionarà la informació de les vostres xarxes socials a aquest lloc web, si se sol·licita</string>
+    <string name="providePostalAddress">Proporcioneu la vostra adreça postal?</string>
+    <string name="providePostalAddressToolTip">En seleccionar aquesta opció, es proporcionarà la vostra adreça (tal com s\'ha configurat a la configuració) a aquest lloc web, si se us demana</string>
+    <string name="provideBillingAddress">Proporcioneu la vostra adreça de facturació?</string>
+    <string name="provideBillingAddressToolTip">Si seleccioneu aquesta opció, es proporcionarà la vostra adreça de facturació (tal com s\'ha configurat a la configuració) a aquest lloc web, si se us demana</string>
+    <string name="provideEmail">Proporcioneu el vostre email?</string>
+    <string name="provideAvatar">Vols proporcionar la teva imatge d\'avatar?</string>
+    <string name="provideRealName">Proporcioneu el vostre nom real?</string>
+    <string name="provideRealNameToolTip">Seleccioneu aquesta opció donarà el vostre nom real a aquest lloc web</string>
+    <string name="provideBirthday">Indica la teva data de naixement?</string>
+    <string name="providePhone">Proporcioneu el vostre número de telèfon?</string>
+    <string name="provideAttestations">Proporcionar certificats?</string>
+    <string name="provideAttestationsToolTip">Les certificacions són signatures de tercers que confirmen les dades que proporcioneu</string>
+    <string name="primaryAccountRequired" formatted="false">Es necessita un compte %primCurrency per utilitzar aquesta funció</string>
+    <string name="primaryAccountRequiredDetails" formatted="false">Algunes funcions estan vinculades a determinades criptomonedes. Heu de crear o desbloquejar un compte en aquesta criptomoneda abans d\'utilitzar la funció.</string>
+    <string name="UnknownDomainRegisterFirst">Domini desconegut, registreu-vos primer</string>
+
+    <string name="commonIdentityQRCode">codi QR</string>
+    <!-- An intent (aka link) specified an action that I don't know about -->
+    <string name="unknownOperation" formatted="false">operació %op desconeguda</string>
+    <!-- This wallet already has a registration for this site, so registration is not needed (informational notice) -->
+    <string name="alreadyRegistered">ja registrat</string>
+
+    <string name="provideLoginQuestion">Inicieu sessió en aquest lloc?</string>
+    <string name="provideInfoQuestion">Informació d\'identitat sol·licitada per</string>
+    <string name="signDataQuestion">Signatura sol·licitada a</string>
+    <string name="nothingToSign">No s\'ha proporcionat cap missatge</string>
+    <string name="binaryToSign">Signar aquestes dades binàries?</string>
+    <string name="textToSign">Signar aquest missatge?</string>
+    <string name="sigInClipboard">S\'ha copiat la signatura al clipboard</string>
+
+    <string name="SocialMediaText">Social Media</string>
+    <string name="SocialMediaSummary">Introduïu com a llista de servei: ex. twitter:jGonzis, keybase:JGonzi</string>
+    <string name="UsernameOrAliasText">Nom d\'usuari/identificador/àlies</string>
+    <string name="NameText">Nom complet</string>
+    <string name="PostalAddressText">Adreça postal</string>
+    <string name="BillingAddressText">Adreça de facturació</string>
+    <string name="PostalCodeText">CP</string>
+    <string name="EmailText">Direcció email </string>
+    <string name="TwitterText">Twitter</string>
+    <string name="TelegramText">Telegram</string>
+    <string name="IdentityAssociatedWith">Informació d\'identitat associada</string>
+
+    <string name="areYouSure">Estàs segur?</string>
+    <string name="WhenAskSure">Confirmeu les transferències anteriors (a NEX)</string>
+    <string name="SendConfirmSummary">Confirmeu l\'enviament de %amt %currency %inFiat a l\'adreça %dest</string>
+    <string name="firstName">nom</string>
+    <string name="lastName">cognom</string>
+
+    <string name="connectionEstablished">connexió establerta</string>
+    <string name="connectionException">no es pot connectar al lloc</string>
+    <string name="withholdingMandatoryInfo">El lloc requereix informació que us negueu a proporcionar</string>
+    <string name="badLink">mal enllaç</string>
+    <string name="connectionAborted">Inici de sessió avortat al lloc</string>
+    <!-- Transaction history activity -->
+    <string name="HintAdjustCostBasis">guany de base o límit</string>
+    <string name="CostBasis">base de cost</string>
+    <string name="CapitalLoss">pèrdua de capital</string>
+    <string name="CapitalGain">plusvàlua</string>
+    <string name="OverrideSalesPrice">introduïu el preu quan es ven</string>
+    <string name="AccountHistory">Transaccions</string>
+    <string name="AccountAddresses">Adreces</string>
+
+    <!-- Account details activity -->
+    <string name="txHistoryButton">Visualitza o exporta l\'activitat del compte</string>
+    <string name="setAsPrimaryAccountButton">Feu que aquest sigui el vostre compte principal</string>
+    <string name="AccountStatistics">Estadístiques del compte</string>
+    <string name="AccountBlockchainSync">Actualment %sync a la cadena de blocs %chain.</string>
+    <string name="AccountBlockchainDetails">A %actBlockDate, bloquegeu %actBlock de %chainBlockCount.</string>
+    <string name="AccountBlockchainConnectionDetails">Connectat a %num nodes: %names</string>
+    <string name="AccountNumAddresses">%num adreces</string>
+    <string name="FirstLastReceive">Primer dipòsit al bloc %first, el més recent al bloc %last.</string>
+    <string name="FirstLastSend">Primer retireu-vos al bloc %first, el més recent al bloc %last.</string>
+    <string name="AccountNumTx">%num transaccions</string>
+    <string name="AccountNumUtxos">%num assentaments del llibre major</string>
+    <!-- Assets activity -->
+    <string name="title_activity_assets">Actius</string>
+    <string name="title_activity_invoices">Factures</string>
+    <!-- Assets activity -->
+    <string name="title_activity_scan">Escaneja</string>
+
+    <!-- New Account activity -->
+    <string name="title_activity_new_account">Compte nou</string>
+    <string name="AccountName">Nom del compte</string>
+    <string name="AccountNameHint">1-8 lletres</string>
+    <string name="Blockchain">Blockchain</string>
+    <string name="AccountRecoveryPhrase">Frase de recuperació</string>
+    <string name="LeaveEmptyNewWallet">Deixa buit per crear un compte nou</string>
+    <string name="PinSuggestions"><font size="15">Aquest número secret és necessari per accedir al compte</font></string>
+    <string name="createAccount">Crear compte</string>
+    <string name="invalidRecoveryPhrase">frase de mala recuperació</string>
+    <string name="invalidAccountName">nom no vàlid</string>
+    <string name="PassPhrase">Frase de contrasenya (opcional)</string>
+    <string name="Bip44ActivityNotice">S\'ha trobat activitat del compte</string>
+    <string name="NoBip44ActivityNotice">Avís, no s\'han trobat transaccions!</string>
+    <string name="Bip44BtcActivityNotice">S\'ha trobat activitat de cartera no estàndard o prèvia a la forquilla</string>
+    <string name="NoBip44BtcActivityNotice">No s\'han trobat transaccions prèvies a la bifurcació</string>
+    <string name="FirstUseDateHeightInfo" formatted="false">a partir de %date (bloc %height)</string>
+    <string name="NotEnoughRecoveryWords">Calen més paraules de recuperació</string>
+    <string name="TooManyRecoveryWords">Massa paraules de recuperació</string>
+    <string name="IncorrectRecoveryWords" formatted="false">Paraules no vàlides: %words</string>
+    <string name="ElectrumNetworkUnavailable">La xarxa Electrum no està disponible. La recuperació de la cartera serà lenta i no descobrirà transaccions abans de l\'1 de gener de 2020</string>
+    <string name="PinHidesAccount">Voleu amagar el compte fins que s\'introdueixi el PIN?</string>
+    <string name="CreatePIN">PIN (opcional)</string>
+    <string name="PinSpendingUnprotected">La despesa sense PIN està activada (no s\'ha introduït cap PIN)</string>
+    <string name="PinSpendingProtected">La despesa requereix un PIN</string>
+    <string name="InvalidPIN">Invàlid PIN</string>
+    <string name="creatingNoHistoryAccountWarning">Esteu creant un compte amb una frase de recuperació específica, però no s\'ha trobat cap activitat a la cadena de blocs.\nÉs correcte?\nSi és així, seguiu endavant i torneu a fer clic al botó Crear i es crearà un compte buit. Però si aquest compte hauria de tenir activitat, comproveu la vostra cadena de blocs i la frase de recuperació seleccionada. Si aquest no és el problema, la xarxa blockchain no és actualment accessible (torneu-ho a provar més tard) o s\'ha creat amb una aplicació de cartera no estàndard. No creeu aquest compte ara.</string>
+    <!-- Error strings -->
+    <string name="accountLocked">compte bloquejat</string>
+    <string name="unknownError">error</string>
+    <string name="insufficentBalance">equilibri insuficient</string>
+    <string name="excessiveFee">tarifa excessiva</string>
+    <string name="sendDustError">quantitat inferior al mínim</string>
+    <string name="sendingDustWarning">la quantitat és inferior al mínim de la xarxa</string>
+    <string name="feeExceedsFlatMax">la tarifa supera la tarifa plana màxima permesa configurada</string>
+    <string name="notSupported">no compatible</string>
+    <!-- A temporal offer is not longer available.  For example, a payment via the BIP70 payment protocol is no longer available -->
+    <string name="expired">pagament caducat</string>
+    <string name="PaymentDataMissing">falten dades de pagament</string>
+    <string name="headersNotForthcoming">no es proporcionen capçaleres</string>
+    <string name="cantConvert">conversió temporalment no disponible</string>
+
+    <string name="walletDisconnectedFromBlockchain">cartera desconnectada</string>
+
+    <string name="badTransaction">mala transacció</string>
+    <string name="badAddress">adreça no vàlida</string>
+    <string name="badAmount">quantitat no vàlida</string>
+    <!-- No accounts have been created yet -->
+    <string name="NoAccounts">No hi ha comptes accessibles</string>
+    <!-- The crypto currency code (e.g NEX, BTC, BCH, etc) is not understood or handled by this wallet.  This message will be very hard to actually see because the UI
+    protects against entering unknown crypto codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
+     -->
+    <string name="badCryptoCode">no hi ha cap compte desbloquejat per a aquesta moneda o cadena de blocs</string>
+    <string name="badCryptoCodeDetails" formatted="false">Moneda desconeguda o no disponible: %currency</string>
+    <!-- The fiat currency code (e.g USD, EUR, JPY etc) is not understood or handled by this wallet.  This message will be very hard to actually see because the UI
+      protects against entering unknown fiat codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
+    -->
+    <string name="badCurrencyUnit">no moneda</string>
+    <!-- The account contains the wrong currency for this use -->
+    <string name="incompatibleAccount">moneda incorrecta</string>
+    <string name="incompatibleAccountDetails" formatted="false">Heu seleccionat pagar des d\'un compte que conté %cryptoAct però cal %cryptoPay</string>
+    <string name="detailsOfBadAmountFromIntent">El programa de trucada va proporcionar un número mal format quan va proporcionar el quantitat a enviar. Haureu d\'introduir la quantitat vosaltres mateixos</string>
+    <string name="blankAddress">adreça en blanc</string>
+    <string name="unavailable">no disponible</string>
+    <string name="blockNotForthcoming">bloq no disponible</string>
+    <string name="receiveAddressUnavailable">Una nova adreça de recepció està en procés de càlcul. Si us plau espera...</string>
+    <!-- The maximum number of accounts that this wallet can show has been reached -->
+    <string name="accountLimitReached">comptes màxims</string>
+    <string name="accountUnavailableDetails">O cap compte existent coincideix amb aquesta cadena de blocs o el compte no s\'ha desbloquejat.</string>
+    <string name="accountUnavailable">No hi ha cap compte compatible desbloquejat</string>
+
+    <!-- Error long strings -->
+    <string name="sendMoreThanBalance">Esteu provant d\'enviar més monedes de les que teniu disponibles ara mateix. Si tu
+         Penseu que no esteu gastant més del vostre saldo, potser heu oblidat que les transaccions tenen un petit
+         una tarifa addicional, o si veieu que tot el vostre saldo no està confirmat, és possible que hàgiu fet massa transaccions en un
+         fila. Hi ha un límit a fins a quin punt podeu "avançar" de la cadena de blocs. Deixa que el teu saldo no confirmat confirmi i
+         torna-ho a provar.
+    </string>
+    <string name="deductedFeeLargerThanSendAmount">La quota deduïda és més gran que l\'import enviat</string>
+
+    <string name="badWalletImplementation">Implementació incorrecta de la cartera. Informa d\'aquest error!</string>
+
+    <!-- TITLES -->
+    <string name="title_split_bill">Dividir una factura</string>
+    <string name="title_activity_settings">Configuració</string>
+    <string name="title_activity_exchange">Intercanvi</string>
+    <string name="title_activity_shopping">Compres</string>
+    <string name="title_activity_shopping_settings">Botons de compres personalitzats</string>
+    <string name="title_activity_trickle_pay">Trickle Pay</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notificacions</string>
+    <!-- string name="title_activity_invoices">Invoices</string> -->
+    <string name="title_activity_identity">Identitat</string>
+    <string name="title_activity_identity_op">Identitat</string>
+    <string name="title_activity_domain_identity_settings">Configuració d\'identitat de domini</string>
+    <string name="title_activity_tx_history" formatted="false">Historial del compte: %account</string>
+    <string name="title_activity_account_details" formatted="false">Detalls del compte: %account</string>
+
+    <!-- Not part of the UI -->
+    <string name="preferenceFileName">bitcoinunlimited.wally.prefs</string>
+
+    <!-- Domain Identity Settings -->
+    <string name="useUniqueIdentity">Utilitzeu una identitat única</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Missatges</string>
+    <string name="sync_header">Sincronitzar</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">La teva signatura</string>
+    <string name="reply_title">Acció de resposta predeterminada</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sincronitza el email periòdicament</string>
+    <string name="attachment_title">Baixeu els fitxers adjunts entrants</string>
+    <string name="attachment_summary_on">Baixeu automàticament els fitxers adjunts pels emails entrants</string>
+    <string name="attachment_summary_off">Baixeu fitxers adjunts només quan se sol·liciti manualment</string>
+    <string name="title_activity_identity_settings">Configuració d\'identitat</string>
+    <string name="title_activity_welcome">Configuració d\'identitat</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="next">Següent</string>
+    <string name="previous">Anterior</string>
+    <!-- Welcome -->
+    <string name="welcome1Label">Benvingut</string>
+    <string name="welcome1">Benvingut a Wally, una cartera de criptomoneda!\n\nA les pantalles següents, configurareu el vostre primer compte de cadena de blocs de Nexa (NEX) i configurareu altres serveis, com ara la gestió de contrasenyes.\n\nO podeu prémer la fletxa enrere per ometre-ho. muntatge guiat.</string>
+    <string name="welcome2_title">Configuració del compte NEXA</string>
+    <string name="welcome2">A la pantalla següent, configurareu el vostre primer compte Nexa.\n\nAquest compte contindrà els vostres diners i identitats Nexa. Identitats és una nova funció de Wally Wallet que us permet iniciar sessió automàticament als llocs web compatibles.\n\nPodeu triar protegir els comptes d\'accés amb un número d\'identificació personal (PIN), però us recomanem que els usuaris nous no utilitzin un PIN ( i mantenir un saldo baix) per al seu primer compte. Per a la protecció dels usuaris, els comptes protegits per PIN poden ser completament invisibles fins que no hàgiu introduït el PIN correcte (i no es dóna cap indicació que n\'heu introduït un de incorrecte).\n\nA més, si voleu recuperar un compte NEXA existent, poseu la frase secreta de recuperació del compte on s\'indiqui. Si aquest espai es deixa en blanc, es crea un compte nou.</string>
+    <string name="welcome3_title">Frase secreta de recuperació del compte de NEXA</string>
+    <string name="welcome3">Aquest compte es pot restaurar o moure a un altre dispositiu mitjançant la frase secreta que es mostra a continuació. A diferència de molts serveis, aquesta cartera no necessita una "còpia de seguretat" periòdica. Les dades de la cadena de blocs pública, combinades amb aquesta frase secreta, són suficients per recuperar tots els vostres fons i l\'historial del vostre compte. Escriu aquesta frase i mantén-la en un lloc segur ara mateix.\n\nA Bitcoin, TU has d\'assumir la responsabilitat!\n\nSi perds aquesta frase, serà absolutament impossible recuperar el teu compte. Si us roben la vostra frase secreta, el lladre pot agafar tots els vostres fons i iniciar sessió als llocs com vosaltres que heu configurat amb la funció d\'identitat de Wally.\nAixò pot semblar espantós, però té un gran avantatge: el vostre Els diners són en aquest telèfon i a la vostra còpia de seguretat i enlloc més.\n\nAixí que són vostres i només vostres. Ningú pot piratejar una base de dades corporativa i robar els vostres diners i ningú pot interferir amb que gasteu els vostres diners.\n\nCom els diners a la vostra cartera física.\n\nSi aquesta responsabilitat us fa por, tracta aquesta cartera com ho faries. la vostra cartera física: no hi guardeu molts diners.</string>
+    <string name="welcome4_title">Identitat</string>
+    <string name="welcome4">A continuació, se us portarà a la pantalla d\'informació d\'identitat. Aquesta informació s\'utilitza quan feu servir Wally com a gestor d\'identitat i d\'inici de sessió (per iniciar sessió automàticament a diversos llocs web o proporcionar informació quan feu una compra).\n\nWally està molt centrat en la privadesa!\n\nAquesta informació no es compartirà amb qualsevol lloc sense el vostre permís exprés, i mai s\'envia cap informació d\'aquesta cartera als autors d\'aquesta aplicació. També podeu triar deixar qualsevol camp en blanc.\nQuan estigui complet, premeu la fletxa enrere (a la part superior esquerra).</string>
+    <string name="welcomeComplete">Això completa la configuració. Si no heu completat cap dels passos d\'aquesta benvinguda, tots els camps estan disponibles des de la mateixa aplicació.\n\nGràcies i gaudiu de la vostra nova cartera!</string>
+    <!-- PIN Entry -->
+    <string name="EnterPIN">Entrar PIN</string>
+    <string name="EnterPINorBlankToRemove">PIN nou (eliminació en blanc)</string>
+    <string name="title_activity_shoppng">Activitat de compres</string>
+
+    <!-- Shopping -->
+    <string name="ButtonTextHere">Estableix el text del botó</string>
+    <string name="ButtonLinkHere">Introduïu l\'enllaç web</string>
+    <string name="ShoppingWarning">PRECAUCIÓ: els elements d\'aquesta pàgina són enllaços a serveis i llocs web de tercers, col·locats aquí per a la vostra comoditat. Wally Wallet no ha revisat aquests llocs/serveis.\n\nFeu servir sota el vostre propi risc!</string>
+
+    <!-- All items are specified here so the service itself can be localized if your country does work with the default service. Use empty strings to disable -->
+    <string name="BadLink">Enllaç web no vàlid</string>
+    <string name="ExplainGiftCards">La compra de targetes regal us permet accedir a centenars de botigues que no accepten directament criptomoneda.</string>
+    <string name="GiftCardButton">Targetes de regal eGifter</string>
+    <string name="GiftCardUrl">https://www.egifter.com</string>
+    <string name="GiftCardAppPackage">com.groupgifting.android</string>
+    <string name="NFTs">Nonfungible Tokens (NFTs)</string>
+    <string name="ExplainNFTs">NiftyArt.cash: Creeu i comercialitzeu imatges úniques i representacions digitals d\'articles únics</string>
+    <string name="NftUrl">http://niftyart.cash</string>
+    <!--
+    <string name="GiftCardButton">Gyft gift cards</string>
+    <string name="GiftCardUrl">https://www.gyft.com</string>
+    <string name="GiftCardAppPackage">com.gyft.android</string>
+    -->
+
+    <string name="ExplainRestaurant">Els serveis de comandes de restaurants en línia (per a lliurament o recollida) poden acceptar criptomoneda encara que la ubicació física no ho faci.</string>
+    <string name="RestaurantButton">Menufy comandes al restaurant</string>
+    <string name="RestaurantUrl">https://www.menufy.com</string>
+    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
+
+    <string name="ExplainStoreMap">Trobeu ubicacions a prop vostre que acceptin criptomoneda.</string>
+    <string name="StoreMapButton">mapa de botigues</string>
+    <string name="StoreMapUrl">https://map.bitcoin.com</string>
+    <string name="StoreMapAppPackage"></string>
+    <string name="OpenWebsite" formatted="false">Accés %siteName</string>
+    <string name="WebsiteUnavailable" formatted="false">Lloc web no disponible</string>
+    <string name="ExplainTxBit">txbit.io: Canvieu NEXA per altres criptomonedes</string>
+    <string name="ExplainMexc">mexc.com: Canvieu NEXA per altres criptomonedes</string>
+    <string name="CexButton">intercanvi</string>
+
+    <!-- Trickle Pay -->
+    <string name="SharedNotification">compartit %what</string>
+    <string name="AuthAutopayTitle">Pagament autoritzat</string>
+    <string name="PaymentRequest">Pagament sol.licitat</string>
+    <string name="AuthAutopayDeniedTitle">Pagament autoritzat denegat</string>
+    <string name="AuthAutopay" formatted="false">%amt al %domain</string>
+    <string name="TpToBeDone">Les teves connexions de Trickle Pay es mostraran aquí</string>
+    <string name="TpHistoryTbd">El vostre historial de Trickle Pay es mostrarà aquí</string>
+    <string name="AcceptTpRegistration">Accepta la inscripció des de:</string>
+    <string name="EditTpRegistration">Configuració de l\'entitat:</string>
+    <string name="AcceptTpRegistrationTopic">Propòsit:</string>
+    <string name="TpMaxSpendHint">introduïu la despesa automàtica màxima</string>
+    <string name="TpAssetInfoRequest">sol·licituds d\'informació d\'actius</string>
+
+    <string name="TpMaxHeading">Límits automàtics</string>
+    <string name="TpMaxPer">Cada petició</string>
+    <string name="TpMaxPerDay">Per dia</string>
+    <string name="TpMaxPerWeek">Per setmana</string>
+    <string name="TpMaxPerMonth">Per mes</string>
+
+    <string name="TpEnableAutopay">Activa el pagament automàtic (si no està marcat, tots els pagaments demanen autorització de l\'usuari)</string>
+
+    <string name="asciiArrow"><![CDATA[=>]]></string>
+
+    <string name="TpNoRegistrations">No hi ha registres de Trickle Pay</string>
+    <string name="TpRegDenied">Inscripció denegada</string>
+    <string name="TpRegAccepted">Inscripció acceptada</string>
+    <string name="TpRegUnchanged">Inscripció sense canvis</string>
+    <string name="TpRequestAutoDeny">Sol·licitud denegada (automàtica)</string>
+    <string name="TpRequestAutoAccept">Sol·licitud acceptada (automàtica)</string>
+    <string name="TpTxDenied">Transacció denegada</string>
+    <string name="TpTxAccepted">Transacció acceptada</string>
+    <string name="TpAssetRequestDenied">No enviant actius</string>
+    <string name="TpAssetRequestAccepted">Enviament d\'actius</string>
+
+    <string name="SpecialTpTransactionFrom">Transacció especial de</string>
+    <string name="IncompleteTpTransactionFrom">Proposta d\'oferta ferma de</string>
+    <string name="TpEntails">Implica</string>
+    <string name="TpInAccount">Ús del compte</string>
+    <string name="TpAssetRequestFrom">Sol·licitud d\'informació d\'actius de</string>
+    <string name="TpHandledByAccount">pot ser gestionat pel vostre compte</string>
+    <string name="TpAssetMatches" formatted="false">La informació sobre %num actius que teniu es proporcionarà a aquest servei.</string>
+    <string name="TpAssetInfoNotXfer">Acceptar aquesta sol·licitud només proporciona informació del servei sobre la teva propietat. No autoritza cap transferència.</string>
+    <string name="ForAFeeOf" formatted="false">inclosa una tarifa de %fee %units</string>
+    <string name="TpExchangingTokens" formatted="false">i intercanvi de fitxes (enviament %tokSnd, rebent %tokRcv).</string>
+    <string name="TpSendingTokens" formatted="false">i enviament %tokSnd tokens.</string>
+    <string name="TpReceivingTokens" formatted="false">i rebent %tokRcv tokens.</string>
+
+    <string name="TpSendToTitle">Pagament sol·licitat per</string>
+    <string name="TpSpends">Despeses</string>
+    <string name="TpSendRequestDenied">Pagament denegat</string>
+    <string name="TpSendAutoReject">Pagament rebutjat automàticament</string>
+    <string name="TpSendRequestAccepted">Pagament acceptat</string>
+    <string name="TpWhyNotAuto">No signarà automàticament perquè</string>
+
+    <string name="TpAutomaticDisabled">Pagaments automàtics desactivats</string>
+    <string name="TpExceededMaxPer">Supera el màxim per sol·licitud</string>
+    <string name="TpExceededMaxDaily">Supera el màxim per dia</string>
+    <string name="TpExceededMaxWeekly">Supera el màxim per setmana</string>
+    <string name="TpExceededMaxMonthly">Supera el màxim mensual</string>
+
+    <string name="title_activity_alert_history">Missatges recents</string>
+</resources>

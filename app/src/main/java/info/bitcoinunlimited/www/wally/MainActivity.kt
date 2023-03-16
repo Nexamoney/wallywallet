@@ -9,13 +9,14 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.AnimatedVectorDrawable
+import android.opengl.Visibility
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
-import android.view.View.OnFocusChangeListener
+import android.view.View.*
 import android.view.inputmethod.EditorInfo
 import android.widget.Adapter
 import android.widget.AdapterView
@@ -350,8 +351,12 @@ class MainActivity : CommonNavActivity()
 
             override fun onNothingSelected(parent: AdapterView<out Adapter>?)
             {
-
             }
+        }
+
+        ui.TopInformation.setOnClickListener {
+            dbgAssertGuiThread()
+            clearRecoveryKeyNotBackedUpWarning()
         }
     }
 
@@ -522,9 +527,41 @@ class MainActivity : CommonNavActivity()
         }
 
         laterUI {
+            delay(1000)
+            val a = app
+            if (a != null)
+            {
+                if (a.warnBackupRecoveryKey == true)
+                {
+                    a.warnBackupRecoveryKey = false
+                    laterUI {
+                        displayRecoveryKeyNotBackedUpWarning()
+                    }
+                }
+            }
+        }
+
+        laterUI {
             delay(5000)  // give a little time to start up
             checkNofificationPermission()
         }
+    }
+
+
+    fun clearRecoveryKeyNotBackedUpWarning()
+    {
+        val t = i18n(R.string.WriteDownRecoveryPhraseWarning)
+        if (ui.TopInformation.text == t)
+        {
+            ui.TopInformation.text=""
+            ui.TopInformation.visibility = GONE
+        }
+    }
+    suspend fun displayRecoveryKeyNotBackedUpWarning()
+    {
+        val t = i18n(R.string.WriteDownRecoveryPhraseWarning)
+        ui.TopInformation.text = t
+        ui.TopInformation.visibility = VISIBLE
     }
 
     override fun onPause()
