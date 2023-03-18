@@ -8,40 +8,8 @@
     <fragment
         android:id="@+id/WelcomeFragment1"
         android:name="info.bitcoinunlimited.www.wally.WelcomeFragment1"
-        android:label="@string/welcome1Label"
-        tools:layout="@layout/welcomef1">
-        <action
-            android:id="@+id/action_Welcome1_to_Welcome2"
-            app:destination="@id/WelcomeFragment2" />
+        android:label=""
+        tools:layout="">
     </fragment>
-    <fragment
-        android:id="@+id/WelcomeFragment2"
-        android:name="info.bitcoinunlimited.www.wally.WelcomeFragment2"
-        android:label="@string/welcome2_title"
-        tools:layout="@layout/welcomef2">
 
-        <action
-            android:id="@+id/action_NewAccount_to_Backup"
-            app:destination="@id/welcomef3" />
-    </fragment>
-    <fragment
-        android:id="@+id/welcomef3"
-        android:name="info.bitcoinunlimited.www.wally.WelcomeFragment3"
-        android:label="@string/welcome3_title"
-        tools:layout="@layout/welcomef3">
-
-        <action
-            android:id="@+id/action_Backup_to_Identity"
-            app:destination="@id/welcomef4" />
-    </fragment>
-    <fragment
-        android:id="@+id/welcomef4"
-        android:name="info.bitcoinunlimited.www.wally.WelcomeIdentity"
-        android:label="@string/welcome4_title"
-        tools:layout="@layout/welcomef4">
-
-        <action
-            android:id="@+id/action_NewAccount_to_Backup"
-            app:destination="@id/welcomef3" />
-    </fragment>
 </navigation>
