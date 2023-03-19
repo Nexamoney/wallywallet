@@ -357,13 +357,13 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="2dp"
         android:contentDescription="@string/receiveAddressQRCode"
-        android:padding="0px"
-        android:paddingStart="4px"
-        android:paddingLeft="0px"
-        android:paddingTop="0px"
-        android:paddingEnd="0px"
-        android:paddingRight="0px"
-        android:paddingBottom="0px"
+        android:padding="0dp"
+        android:paddingStart="2dp"
+        android:paddingLeft="0dp"
+        android:paddingTop="0dp"
+        android:paddingEnd="0dp"
+        android:paddingRight="0dp"
+        android:paddingBottom="0dp"
         android:scaleType="fitXY"
         android:scrollbars="none"
         app:layout_constraintStart_toStartOf="parent"
@@ -418,7 +418,8 @@
             android:scaleType="fitXY"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_plus" />
+            app:srcCompat="@drawable/ic_plus"
+            tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/syncingIcon"

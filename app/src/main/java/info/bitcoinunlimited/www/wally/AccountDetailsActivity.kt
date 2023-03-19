@@ -192,7 +192,7 @@ class AccountDetailsActivity: CommonNavActivity()
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun onClearIdentityDomains(v: View?)
+    fun onClearIdentityDomains(v: View)
     {
         val act = selectedAccount
         launch {
@@ -201,7 +201,7 @@ class AccountDetailsActivity: CommonNavActivity()
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun onYes(v: View?)
+    fun onYes(v: View)
     {
         ui.ConfirmationConstraint.visibility = View.GONE
         ui.confirmationOps.visibility = View.VISIBLE
@@ -337,7 +337,7 @@ class AccountDetailsActivity: CommonNavActivity()
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun onNo(v: View?)
+    fun onNo(v: View)
     {
         ui.GuiConfirmationText2.text = ""
         val a = askingAbout
@@ -373,13 +373,7 @@ class AccountDetailsActivity: CommonNavActivity()
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun onConfirmationOps(v: View?): Boolean
-    {
-        return true
-    }
-
-    @Suppress("UNUSED_PARAMETER")
-    fun onRediscoverBlockchain(v: View?): Boolean
+    fun onRediscoverBlockchain(v: View): Boolean
     {
          ui.PinChange.visibility = View.GONE
         // Strangely, if the contraint layout is touched, it calls this function
@@ -392,7 +386,7 @@ class AccountDetailsActivity: CommonNavActivity()
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun onRediscoverWallet(v: View?): Boolean
+    fun onRediscoverWallet(v: View): Boolean
     {
         ui.PinChange.visibility = View.GONE
         if (v != ui.GuiRediscoverButton) return false
@@ -403,7 +397,7 @@ class AccountDetailsActivity: CommonNavActivity()
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun onViewRecoveryPhrase(v: View?)
+    fun onViewRecoveryPhrase(v: View)
     {
         ui.PinChange.visibility = View.GONE
         askingAbout = ConfirmationFor.RecoveryPhrase
@@ -421,7 +415,7 @@ class AccountDetailsActivity: CommonNavActivity()
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun onSetChangePin(v: View?)
+    fun onSetChangePin(v: View)
     {
         askingAbout = ConfirmationFor.PinChange
         val acc = selectedAccount
@@ -517,4 +511,5 @@ class AccountDetailsActivity: CommonNavActivity()
             LogIt.warning("Exception clicking on ticker name: " + e.toString())
         }
     }
+
 }

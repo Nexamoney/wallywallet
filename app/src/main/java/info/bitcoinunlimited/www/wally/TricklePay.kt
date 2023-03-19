@@ -1013,7 +1013,7 @@ class TricklePayActivity : CommonNavActivity()
 
     // Trickle pay registration handlers
     @Suppress("UNUSED_PARAMETER")
-    fun onAcceptTpReg(view: View?)
+    fun onAcceptTpReg(view: View)
     {
         LogIt.info("accept trickle pay registration")
         try
@@ -1030,7 +1030,7 @@ class TricklePayActivity : CommonNavActivity()
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun onChangeTpAssetInfoHandling(view: View?)
+    fun onChangeTpAssetInfoHandling(view: View)
     {
         val frag: TricklePayRegFragment = fragment(R.id.GuiTricklePayReg)
         val domain = frag.domain ?: return
@@ -1039,7 +1039,7 @@ class TricklePayActivity : CommonNavActivity()
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun onTpDeleteRegs(view: View?)
+    fun onTpDeleteRegs(view: View)
     {
         LogIt.info("accept trickle pay registration")
         tpDomains.clear()
@@ -1052,7 +1052,7 @@ class TricklePayActivity : CommonNavActivity()
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun onDenyTpReg(view: View?)
+    fun onDenyTpReg(view: View)
     {
         LogIt.info("deny trickle pay registration")
         val frag: TricklePayRegFragment = fragment(R.id.GuiTricklePayReg)
@@ -1077,7 +1077,7 @@ class TricklePayActivity : CommonNavActivity()
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun onDoneTp(view: View?)
+    fun onDoneTp(view: View)
     {
         synchronized(tpDomains)
         {
@@ -1163,7 +1163,7 @@ class TricklePayActivity : CommonNavActivity()
         clearIntentAndFinish(notice = R.string.TpTxDenied)
     }
 
-    fun onAcceptSendToRequest(@Suppress("UNUSED_PARAMETER") view: View?)
+    fun onAcceptSendToRequest(@Suppress("UNUSED_PARAMETER") view: View)
     {
         try
         {
@@ -1192,7 +1192,7 @@ class TricklePayActivity : CommonNavActivity()
         }
     }
 
-    fun onRejectSendToRequest(@Suppress("UNUSED_PARAMETER") view: View?)
+    fun onRejectSendToRequest(@Suppress("UNUSED_PARAMETER") view: View)
     {
         rejectSendToRequest()
     }

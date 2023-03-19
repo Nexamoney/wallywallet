@@ -338,14 +338,14 @@ Good luck!
     <string name="txHistoryButton">Ver o Exportar Actividad de Cuenta</string>
     <string name="setAsPrimaryAccountButton">Haz que esto sea tu cuenta principal</string>
     <string name="AccountStatistics">Estadísticas de cuenta</string>
-    <string name="AccountBlockchainSync">Actualmente %sync en blockchain %chain.</string>
-    <string name="AccountBlockchainDetails">En %actBlockDate, bloque %actBlock de %chainBlockCount.</string>
-    <string name="AccountBlockchainConnectionDetails">Conectado a %num nodos: %names</string>
-    <string name="AccountNumAddresses">%num direcciones</string>
-    <string name="FirstLastReceive">Primer depósito en el bloque %first, el más reciente en el bloque %last.</string>
-    <string name="FirstLastSend">Primero retirar en el bloque %first, el más reciente en el bloque %last.</string>
-    <string name="AccountNumTx">%num transacciones</string>
-    <string name="AccountNumUtxos">%num entradas de libro mayor</string>
+    <string name="AccountBlockchainSync" formatted="false">Actualmente %sync en blockchain %chain.</string>
+    <string name="AccountBlockchainDetails" formatted="false">En %actBlockDate, bloque %actBlock de %chainBlockCount.</string>
+    <string name="AccountBlockchainConnectionDetails" formatted="false">Conectado a %num nodos: %names</string>
+    <string name="AccountNumAddresses" formatted="false">%num direcciones</string>
+    <string name="FirstLastReceive" formatted="false">Primer depósito en el bloque %first, el más reciente en el bloque %last.</string>
+    <string name="FirstLastSend" formatted="false">Primero retirar en el bloque %first, el más reciente en el bloque %last.</string>
+    <string name="AccountNumTx" formatted="false">%num transacciones</string>
+    <string name="AccountNumUtxos" formatted="false">%num entradas de libro mayor</string>
     <!-- Assets activity -->
     <string name="title_activity_assets">Activos</string>
     <string name="title_activity_scan">Scan</string>

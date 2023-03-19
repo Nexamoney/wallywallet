@@ -359,19 +359,29 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     var primaryAccount: Account
         get()
         {
-            val tmp = nullablePrimaryAccount
-            if (tmp == null) throw PrimaryWalletInvalidException()
-            return tmp
+            synchronized(this)
+            {
+                var tmp = nullablePrimaryAccount
+                if (tmp == null)
+                {
+                    tmp = defaultPrimaryAccount()
+                    nullablePrimaryAccount = tmp
+                }
+                return tmp
+            }
         }
         set(act: Account)
         {
-            val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
-            with(prefs.edit())
+            synchronized(this)
             {
-                putString(PRIMARY_ACT_PREF, act.name)
-                commit()
+                val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+                with(prefs.edit())
+                {
+                    putString(PRIMARY_ACT_PREF, act.name)
+                    commit()
+                }
+                nullablePrimaryAccount = act
             }
-            nullablePrimaryAccount = act
         }
 
     // The currently selected account

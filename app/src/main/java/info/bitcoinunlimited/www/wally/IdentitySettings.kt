@@ -1,5 +1,6 @@
 package info.bitcoinunlimited.www.wally
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -16,10 +17,7 @@ import androidx.core.view.MenuItemCompat
 import androidx.preference.EditTextPreference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import bitcoinunlimited.libbitcoincash.Bip44Wallet
-import bitcoinunlimited.libbitcoincash.PayAddress
-import bitcoinunlimited.libbitcoincash.IdentityInfo
-import bitcoinunlimited.libbitcoincash.Wallet
+import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.databinding.ActivityIdentityYourdataBinding
 import info.bitcoinunlimited.www.wally.databinding.InfoeditrowBinding
 import java.util.logging.Logger
@@ -70,41 +68,48 @@ class IdentitySettings(var address: PayAddress?=null) : CommonNavActivity()
 
     init
     {
-        val account = wallyApp!!.primaryAccount
-        if ((account == null) || (!account.visible))
+        try
         {
-            throw PrimaryWalletInvalidException()
-        }
-        wallet = account.wallet
+            val account = wallyApp!!.primaryAccount
+            if ((account == null) || (!account.visible))
+            {
+                throw PrimaryWalletInvalidException()
+            }
+            wallet = account.wallet
 
-        if (address == null)  // get the default identity from the primary wallet
-        {
-            val dest = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
-            address = dest.address
-        }
+            if (address == null)  // get the default identity from the primary wallet
+            {
+                val dest = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
+                address = dest.address
+            }
 
-        var ii = wallet.lookupIdentityInfo(address!!)
-        if (ii == null)
-        {
-            ii = IdentityInfo()
-            ii.identity = address
-            wallet.upsertIdentityInfo(ii)
-        }
-        if (ii.identity == null)
-        {
-            ii.identity = address
-            wallet.upsertIdentityInfo(ii)
-        }
+            var ii = wallet.lookupIdentityInfo(address!!)
+            if (ii == null)
+            {
+                ii = IdentityInfo()
+                ii.identity = address
+                wallet.upsertIdentityInfo(ii)
+            }
+            if (ii.identity == null)
+            {
+                ii.identity = address
+                wallet.upsertIdentityInfo(ii)
+            }
 
-        fields = listOf(
-          Pair(i18n(R.string.UsernameOrAliasText), "hdl"),
-          Pair(i18n(R.string.EmailText), "email"),
-          Pair(i18n(R.string.NameText), "realname"),
-          Pair(i18n(R.string.PostalAddressText), "postal"),
-          Pair(i18n(R.string.BillingAddressText), "billing"),
-          Pair(i18n(R.string.SocialMediaText), "sm"),
-          )
-        identityInfo = ii
+            fields = listOf(
+              Pair(i18n(R.string.UsernameOrAliasText), "hdl"),
+              Pair(i18n(R.string.EmailText), "email"),
+              Pair(i18n(R.string.NameText), "realname"),
+              Pair(i18n(R.string.PostalAddressText), "postal"),
+              Pair(i18n(R.string.BillingAddressText), "billing"),
+              Pair(i18n(R.string.SocialMediaText), "sm"),
+            )
+            identityInfo = ii
+        }
+        catch(e: PrimaryWalletInvalidException)
+        {
+
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -124,15 +129,32 @@ class IdentitySettings(var address: PayAddress?=null) : CommonNavActivity()
         ui.infoValueRecycler.layoutManager = LinearLayoutManager(this)
     }
 
+    fun clearIntentAndFinish(error: Int, details: String)
+    {
+        wallyApp?.displayError(error, details)
+        setResult(Activity.RESULT_OK, intent)
+        finish()
+    }
+
     override fun onStart()
     {
         super.onStart()
 
-        val intent = getIntent()
-        val title = intent.getStringExtra("title")
-        if (title != null)
+        try
         {
-            setTitle(title)
+            val name = wallet.name
+
+            val intent = getIntent()
+            val title = intent.getStringExtra("title")
+            if (title != null)
+            {
+                setTitle(title + ": " + name)
+            }
+        }
+        catch(e: kotlin.UninitializedPropertyAccessException)
+        {
+            clearIntentAndFinish(R.string.NoAccounts, i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to (chainToURI[PRIMARY_CRYPTO] ?: "")))
+            return
         }
     }
 }

@@ -55,7 +55,7 @@
         />
     <!-- Put the balance value before the ticker so that the lock icon will be on top  -->
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/balanceTicker"
         android:layout_width="110sp"
         android:layout_height="40sp"
@@ -97,6 +97,7 @@
             android:padding="0px"
             android:scaleType="fitXY"
             android:scrollbars="none"
+            android:contentDescription="@string/unlock"
             app:layout_constraintStart_toEndOf="@+id/balanceTickerText"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>

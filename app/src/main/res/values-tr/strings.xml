@@ -363,14 +363,14 @@ Good luck!
     <string name="txHistoryButton">Hesap Etkinliğini Görüntüle veya Dışa Aktar</string>
     <string name="setAsPrimaryAccountButton">Bu Hesabı Ana Hesap Yap</string>
     <string name="AccountStatistics">Hesap İstatistikleri</string>
-    <string name="AccountBlockchainSync">%chain blok zinciri için şu anda %sync.</string>
-    <string name="AccountBlockchainDetails">%chain blok zinciri için %actBlockDate tarihinde %actBlock/%chainBlockCount blok.</string>
-    <string name="AccountBlockchainConnectionDetails">%num düğüme bağlandı: %names</string>
-    <string name="AccountNumAddresses">%num adres</string>
-    <string name="FirstLastReceive">İlk yatırma %first blokta, en son yatırma %last blokta.</string>
-    <string name="FirstLastSend">İlk çekim %first blokta, en son çekim %last blokta.</string>
-    <string name="AccountNumTx">%num işlem</string>
-    <string name="AccountNumUtxos">%num defter girdisi</string>
+    <string name="AccountBlockchainSync" formatted="false">%chain blok zinciri için şu anda %sync.</string>
+    <string name="AccountBlockchainDetails" formatted="false">%chain blok zinciri için %actBlockDate tarihinde %actBlock/%chainBlockCount blok.</string>
+    <string name="AccountBlockchainConnectionDetails" formatted="false">%num düğüme bağlandı: %names</string>
+    <string name="AccountNumAddresses" formatted="false">%num adres</string>
+    <string name="FirstLastReceive" formatted="false">İlk yatırma %first blokta, en son yatırma %last blokta.</string>
+    <string name="FirstLastSend" formatted="false">İlk çekim %first blokta, en son çekim %last blokta.</string>
+    <string name="AccountNumTx" formatted="false">%num işlem</string>
+    <string name="AccountNumUtxos" formatted="false">%num defter girdisi</string>
 
     <string name="title_activity_assets">Varlıklar</string>
     <string name="title_activity_invoices">Faturalar</string>
@@ -476,36 +476,11 @@ Good luck!
 
     <string name="useUniqueIdentity">Benzersiz bir kimlik kullan</string>
 
-    <!-- Tercih Başlıkları -->
-    <string name="messages_header">Mesajlar</string>
-    <string name="sync_header">Senkronize et</string>
-
-    <!-- Mesaj Tercihleri -->
-    <string name="signature_title">Senin imzan</string>
-    <string name="reply_title">Varsayılan yanıt eylemi</string>
-
-    <!-- Senkronizasyon Tercihleri -->
-    <string name="sync_title">E-postaları düzenli olarak senkronize et</string>
-    <string name="attachment_title">Gelen ekleri indir</string>
-    <string name="attachment_summary_on">Gelen e-postalar için ekleri otomatik olarak indir</string>
-    <string name="attachment_summary_off">Sadece manuel olarak istendiğinde ekleri indir</string>
     <string name="title_activity_identity_settings">Kimlik Ayarları</string>
     <string name="title_activity_welcome">Hoşgeldiniz</string>
     <!-- Navigasyon için kullanılan fragment dizeleri -->
     <string name="next">İleri</string>
     <string name="previous">Geri</string>
-    <!-- Hoşgeldiniz -->
-    <string name="welcome1Label">Hoşgeldiniz</string>
-    <string name="welcome1">Kripto para birimi cüzdanı olan Wally\'e hoş geldiniz!\n\nAşağıdaki ekranlarda ilk Nexa blockchain (NEX) hesabınızı ve şifre yönetimi gibi diğer hizmetleri ayarlayacaksınız.\n\nVeya bu rehberli kurulumu atlayabilirsiniz.</string>
-    <string name="welcome2_title">NEXA Hesap Ayarları</string>
-    <string name="welcome2">Bir sonraki ekranda ilk Nexa hesabınızı ayarlayacaksınız.\n\nBu hesap, Nexa paranızı ve kimliklerinizi içerecektir. Kimlikler, Wally Wallet\'in desteklenen web sitelerine otomatik olarak giriş yapmanıza olanak tanıyan yeni bir özelliktir.\n\nHesapları kişisel kimlik numarası (PIN) ile koruma seçeneğiniz bulunmaktadır, ancak yeni kullanıcılar için bir PIN kullanmamalarını (ve düşük bir bakiye tutmalarını) öneriyoruz. Kullanıcıların korunması için, PIN\'lerle korunan hesaplar tamamen görünmez olabilir ve doğru PIN girilene kadar yanlış girildiğine dair herhangi bir işaret verilmeyebilir.\n\nAyrıca, mevcut bir NEXA hesabını kurtarmak isterseniz, Gizli Kurtarma Cümlesini ilgili yere yerleştirin. Bu alan boş bırakılırsa, yeni bir hesap oluşturulur.</string>
-    <string name="welcome3_title">NEXA Hesap Kurtarma Gizli Cümlesi</string>
-
-
-    <string name="welcome3">Bu hesap, aşağıda görüntülenen gizli kelime öbeği aracılığıyla başka bir cihaza taşınabilir veya geri yüklenebilir. Birçok hizmetin aksine, bu cüzdan periyodik bir "yedekleme" gerektirmez. Halka açık blok zincirindeki veriler, bu gizli kelime öbeğiyle birleştirilerek tüm fonlarınızı ve hesap geçmişinizi kurtarmak için yeterlidir. Bu kelime öbeğini yazın ve hemen güvenli bir yerde saklayın.\n\nBitcoin\'de, SİZ sorumlu olmalısınız!\n\nBu kelime öbeğini kaybederseniz hesabınızı kesinlikle kurtaramazsınız. Gizli kelime öbeğiniz sizden çalınırsa, hırsız tüm fonlarınızı alabilir ve Wally\'nin kimlik özelliğini kullandığınız sitelere siz olarak giriş yapabilir.\nBu korkutucu gelebilir, ancak büyük bir avantajı vardır: paranız bu telefonda ve yedeklemede ve başka hiçbir yerde değildir.\n\nBu yüzden sizin ve sadece sizin. Kimse bir kurumsal veritabanını hackleyemez ve paranızı çalamaz ve kimse paranızı harcamanıza müdahale edemez.\n\nFiziksel cüzdanınızdaki para gibi.\n\nBu sorumluluk size korkutucu geliyorsa, bu cüzdanı fiziksel cüzdanınız gibi muamele edin - içinde çok fazla para tutmayın.</string>
-    <string name="welcome4_title">Kimlik</string>
-    <string name="welcome4">Şimdi kimlik bilgileri ekranına yönlendirileceksiniz. Wally\'yi bir kimlik ve oturum açma yöneticisi olarak kullandığınızda (çeşitli web sitelerine otomatik olarak giriş yapmak veya bir satın alma işlemi yaparken bilgi sağlamak için), bu bilgiler kullanılır.\n\nWally son derece gizlilik odaklıdır!\n\nBu bilgi, sizin açık izniniz olmadan hiçbir siteyle paylaşılmayacak ve bu uygulamanın yazarlarına asla herhangi bir bilgi gönderilmeyecektir. Ayrıca, herhangi bir alanı boş bırakmayı seçebilirsiniz.\nTamamlandığında, geri ok düğmesine basın (üst sol tarafta).</string>
-    <string name="welcomeComplete">Kurulum tamamlandı. Bu karşılama adımlarından herhangi birini tamamlamadıysanız, tüm alanlar uygulama içinde mevcuttur.\n\nTeşekkür ederiz ve yeni cüzdanınızın keyfini çıkarın!</string>
     <!-- PIN Girişi -->
 
     <string name="EnterPIN">PIN Girin</string>
@@ -520,22 +495,10 @@ Good luck!
 
     <!-- Tüm öğeler burada belirtilir, böylece ülkeniz varsayılan servisle çalışmıyorsa servis kendisi yerelleştirilebilir. Devre dışı bırakmak için boş dizeler kullanın -->
     <string name="BadLink">Geçersiz web bağlantısı</string>
-    <string name="ExplainGiftCards">Hediye kartı satın almak, doğrudan kripto para birimini kabul etmeyen 100\'lere mağazaya erişim sağlar.</string>
-    <string name="GiftCardButton">eGifter hediye kartları</string>
-    <string name="GiftCardUrl">https://www.egifter.com</string>
-    <string name="GiftCardAppPackage">com.groupgifting.android</string>
     <string name="NFTs">Fonksiyonsuz Olmayan Token\'lar (FOT\'lar)</string>
     <string name="ExplainNFTs">NiftyArt.cash: Eşsiz resimler ve benzersiz öğelerin dijital temsillerini oluşturun ve takas edin.</string>
     <string name="NftUrl">http://niftyart.cash</string>
 
-    <string name="ExplainRestaurant">Teslimat veya alım için çevrimiçi restoran sipariş hizmetleri fiziksel konum kabul etmese bile kripto para birimi kabul edebilir.</string>
-    <string name="RestaurantButton">Menufy restoran siparişi</string>
-    <string name="RestaurantUrl">https://www.menufy.com</string>
-    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
-    <string name="ExplainStoreMap">Yakınınızda kripto para birimi kabul eden yerleri bulun.</string>
-    <string name="StoreMapButton">mağaza haritası</string>
-    <string name="StoreMapUrl">https://map.bitcoin.com</string>
-    <string name="StoreMapAppPackage"></string>
     <string name="OpenWebsite" formatted="false">%siteName\'e erişim</string>
     <string name="WebsiteUnavailable" formatted="false">Web sitesi mevcut değil</string>
     <string name="ExplainTxBit">txbit.io: NEXA\'yı diğer kripto para birimleriyle takas edin</string>

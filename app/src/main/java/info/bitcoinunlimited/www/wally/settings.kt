@@ -100,11 +100,11 @@ class Settings : CommonActivity()
 
         val preferenceDB: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
 
-        if (SetupBooleanPreferenceGui(DEV_MODE_PREF, preferenceDB, ui.GuiDeveloperInfoSwitch) { _, isChecked ->
+        if (SetupBooleanPreferenceGui(DEV_MODE_PREF, preferenceDB, false, ui.GuiDeveloperInfoSwitch) { _, isChecked ->
               devMode = isChecked
               if (isChecked)
               {
-                  ui.GuiClearIdentityDomains.visibility = VISIBLE
+                  //ui.GuiClearIdentityDomains.visibility = VISIBLE
                   ui.GuiLogInterestingData.visibility = VISIBLE
                   ui.nexaregBlockchainSettings.visibility = VISIBLE
                   ui.nexatestBlockchainSettings.visibility = VISIBLE
@@ -118,7 +118,7 @@ class Settings : CommonActivity()
               }
           })
         {
-            ui.GuiClearIdentityDomains.visibility = VISIBLE
+            //ui.GuiClearIdentityDomains.visibility = VISIBLE
             ui.GuiLogInterestingData.visibility = VISIBLE
             ui.nexaregBlockchainSettings.visibility = VISIBLE
             ui.nexatestBlockchainSettings.visibility = VISIBLE
@@ -134,29 +134,29 @@ class Settings : CommonActivity()
         SetupNexCurrencyPreferenceGui(CONFIRM_ABOVE_PREF, preferenceDB, ui.AreYouSureAmt)
 
         var name = chainToURI[ChainSelector.NEXA]
-        SetupBooleanPreferenceGui(name + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, ui.GuiNexaExclusiveNodeSwitch)
-        SetupBooleanPreferenceGui(name + "." + PREFER_NODE_SWITCH, preferenceDB, ui.GuiNexaPreferNodeSwitch)
+        SetupBooleanPreferenceGui(name + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, false, ui.GuiNexaExclusiveNodeSwitch)
+        SetupBooleanPreferenceGui(name + "." + PREFER_NODE_SWITCH, preferenceDB, false, ui.GuiNexaPreferNodeSwitch)
         SetupTextPreferenceGui(name + "." + CONFIGURED_NODE, preferenceDB, ui.GuiNexaNodeAddr)
 
         name = chainToURI[ChainSelector.NEXATESTNET]
-        SetupBooleanPreferenceGui(name + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, ui.GuiNexatestExclusiveNodeSwitch)
-        SetupBooleanPreferenceGui(name + "." + PREFER_NODE_SWITCH, preferenceDB, ui.GuiNexatestPreferNodeSwitch)
+        SetupBooleanPreferenceGui(name + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, false, ui.GuiNexatestExclusiveNodeSwitch)
+        SetupBooleanPreferenceGui(name + "." + PREFER_NODE_SWITCH, preferenceDB, false, ui.GuiNexatestPreferNodeSwitch)
         SetupTextPreferenceGui(name + "." + CONFIGURED_NODE, preferenceDB, ui.GuiNexatestNodeAddr)
 
         name = chainToURI[ChainSelector.NEXAREGTEST]
-        SetupBooleanPreferenceGui(name + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, ui.GuiNexaregExclusiveNodeSwitch)
-        SetupBooleanPreferenceGui(name + "." + PREFER_NODE_SWITCH, preferenceDB, ui.GuiNexaregPreferNodeSwitch)
+        SetupBooleanPreferenceGui(name + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, false, ui.GuiNexaregExclusiveNodeSwitch)
+        SetupBooleanPreferenceGui(name + "." + PREFER_NODE_SWITCH, preferenceDB, false, ui.GuiNexaregPreferNodeSwitch)
         SetupTextPreferenceGui(name + "." + CONFIGURED_NODE, preferenceDB, ui.GuiNexaregNodeAddr)
 
         name = chainToURI[ChainSelector.BCH]
-        SetupBooleanPreferenceGui(name + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, ui.GuiBchExclusiveNodeSwitch)
-        SetupBooleanPreferenceGui(name + "." + PREFER_NODE_SWITCH, preferenceDB, ui.GuiBchPreferNodeSwitch)
+        SetupBooleanPreferenceGui(name + "." + EXCLUSIVE_NODE_SWITCH, preferenceDB, false, ui.GuiBchExclusiveNodeSwitch)
+        SetupBooleanPreferenceGui(name + "." + PREFER_NODE_SWITCH, preferenceDB, false, ui.GuiBchPreferNodeSwitch)
         SetupTextPreferenceGui(name + "." + CONFIGURED_NODE, preferenceDB, ui.GuiBchNodeAddr)
 
-        SetupBooleanPreferenceGui(ACCESS_PRICE_DATA_PREF, preferenceDB, ui.GuiAccessPriceDataSwitch)
-        SetupBooleanPreferenceGui(SHOW_IDENTITY_PREF, preferenceDB, ui.GuiIdentityMenu)
-        SetupBooleanPreferenceGui(SHOW_TRICKLEPAY_PREF, preferenceDB, ui.GuiTricklePayMenu)
-        SetupBooleanPreferenceGui(SHOW_ASSETS_PREF, preferenceDB, ui.GuiAssetsMenu)
+        SetupBooleanPreferenceGui(ACCESS_PRICE_DATA_PREF, preferenceDB,true, ui.GuiAccessPriceDataSwitch)
+        SetupBooleanPreferenceGui(SHOW_IDENTITY_PREF, preferenceDB,false, ui.GuiIdentityMenu)
+        SetupBooleanPreferenceGui(SHOW_TRICKLEPAY_PREF, preferenceDB,false, ui.GuiTricklePayMenu)
+        SetupBooleanPreferenceGui(SHOW_ASSETS_PREF, preferenceDB,false, ui.GuiAssetsMenu)
 
         val curCode: String = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"
         ui.GuiFiatCurrencySpinner.setSelection(curCode)

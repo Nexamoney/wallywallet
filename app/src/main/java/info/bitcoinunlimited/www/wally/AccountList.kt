@@ -145,6 +145,8 @@ class AccountListBinder(val ui: AccountListItemBinding, val guiList: GuiAccountL
     {
         if (highlight && data != null) ui.GuiAccountDetailsButton.visibility = View.VISIBLE
         else ui.GuiAccountDetailsButton.visibility = View.GONE
+        if (data == null)  // Its blank
+            return 0x00000000  // clear
         return -1 // Do not actually recommend a color
     }
     override fun backgroundDrawable(highlight: Boolean): Drawable?
@@ -370,7 +372,7 @@ open class GuiAccountList(val activity: MainActivity)
             val ui = AccountListItemBinding.inflate(LayoutInflater.from(vg.context), vg, false)
             AccountListBinder(ui, this)
         })
-        adapter.emptyBottomLines = 0
+        adapter.emptyBottomLines = 3
         val wallyAccountRowColors = arrayOf(ContextCompat.getColor(context, R.color.WallyRowAbkg1),ContextCompat.getColor(context, R.color.WallyRowBbkg1) )
         adapter.rowBackgroundColors = wallyAccountRowColors
         uiElem.layoutManager = linearLayoutManager

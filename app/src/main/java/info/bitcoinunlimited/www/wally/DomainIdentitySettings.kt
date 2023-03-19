@@ -99,52 +99,67 @@ class DomainIdentitySettings : CommonNavActivity()
 
     fun removeDomainIdentity()
     {
-        val wallet = (application as WallyApp).primaryAccount.wallet
-        wallet.removeIdentityDomain(ui.domainName.text.toString())
-        ui.domainName.text = ""
-        launch { wallet.save() }
+        try
+        {
+
+            val wallet = (application as WallyApp).primaryAccount.wallet
+            wallet.removeIdentityDomain(ui.domainName.text.toString())
+            ui.domainName.text = ""
+            launch { wallet.save() }
+        }
+        catch(e:PrimaryWalletInvalidException)
+        {
+            // nothing to change if no primary account
+        }
     }
 
     fun upsertDomainIdentity()
     {
-        // No domain to save
-        if (ui.domainName.text.toString().length == 0) return
-
-        var changed = false
-        val wallet = (application as WallyApp).primaryAccount.wallet
-        val id: Long = if (ui.uniqueIdentitySwitch.isChecked) IdentityDomain.IDENTITY_BY_HASH else IdentityDomain.COMMON_IDENTITY
-        var idData = wallet.lookupIdentityDomain(ui.domainName.text.toString())
-
-        if (idData == null)
+        try
         {
-            runBlocking {
-                wallet.upsertIdentityDomain(IdentityDomain(ui.domainName.text.toString(), id))
-                idData = wallet.lookupIdentityDomain(ui.domainName.text.toString())
+            // No domain to save
+            if (ui.domainName.text.toString().length == 0) return
+
+            var changed = false
+            val wallet = (application as WallyApp).primaryAccount.wallet
+            val id: Long = if (ui.uniqueIdentitySwitch.isChecked) IdentityDomain.IDENTITY_BY_HASH else IdentityDomain.COMMON_IDENTITY
+            var idData = wallet.lookupIdentityDomain(ui.domainName.text.toString())
+
+            if (idData == null)
+            {
+                runBlocking {
+                    wallet.upsertIdentityDomain(IdentityDomain(ui.domainName.text.toString(), id))
+                    idData = wallet.lookupIdentityDomain(ui.domainName.text.toString())
+                    changed = true
+                }
+            }
+
+            // Update what identity to use if that has changed
+            if (idData?.useIdentity != id)
+            {
+                idData?.useIdentity = id
                 changed = true
             }
+
+            val perms = mutableMapOf<String, Boolean>()
+            for ((param, ui) in nexidParams zip ui4params)
+            {
+                perms[param] = ui.isChecked
+            }
+
+            changed = (idData?.setPerms(perms) ?: false) or changed
+            changed = (idData?.setReqs(reqs) ?: false) or changed
+
+            // Save the wallet if something has changed
+            if (changed)
+            {
+                wallet.identityDomainChanged = true
+                launch { wallet.save() } // do this out-of-band so UI response is quicker
+            }
         }
-
-        // Update what identity to use if that has changed
-        if (idData?.useIdentity != id)
+        catch(e:PrimaryWalletInvalidException)
         {
-            idData?.useIdentity = id
-            changed = true
-        }
-
-        val perms = mutableMapOf<String, Boolean>()
-        for ((param, ui) in nexidParams zip ui4params)
-        {
-            perms[param] = ui.isChecked
-        }
-
-        changed = (idData?.setPerms(perms) ?: false) or changed
-        changed = (idData?.setReqs(reqs) ?: false) or changed
-
-        // Save the wallet if something has changed
-        if (changed)
-        {
-            wallet.identityDomainChanged = true
-            launch { wallet.save() } // do this out-of-band so UI response is quicker
+            LogIt.info("no primary account")
         }
     }
 

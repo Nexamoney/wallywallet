@@ -13,8 +13,8 @@
         android:autoSizeMinTextSize="10sp"
         android:autoSizeStepGranularity="1sp"
         android:autoSizeTextType="uniform"
-        android:gravity="center_vertical"
-        android:text="Domain name here"
+        android:gravity="center"
+        android:text="@string/empty"
 
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"

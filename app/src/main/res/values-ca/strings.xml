@@ -366,14 +366,14 @@ Good luck!
     <string name="txHistoryButton">Visualitza o exporta l\'activitat del compte</string>
     <string name="setAsPrimaryAccountButton">Feu que aquest sigui el vostre compte principal</string>
     <string name="AccountStatistics">Estadístiques del compte</string>
-    <string name="AccountBlockchainSync">Actualment %sync a la cadena de blocs %chain.</string>
-    <string name="AccountBlockchainDetails">A %actBlockDate, bloquegeu %actBlock de %chainBlockCount.</string>
-    <string name="AccountBlockchainConnectionDetails">Connectat a %num nodes: %names</string>
-    <string name="AccountNumAddresses">%num adreces</string>
-    <string name="FirstLastReceive">Primer dipòsit al bloc %first, el més recent al bloc %last.</string>
-    <string name="FirstLastSend">Primer retireu-vos al bloc %first, el més recent al bloc %last.</string>
-    <string name="AccountNumTx">%num transaccions</string>
-    <string name="AccountNumUtxos">%num assentaments del llibre major</string>
+    <string name="AccountBlockchainSync" formatted="false">Actualment %sync a la cadena de blocs %chain.</string>
+    <string name="AccountBlockchainDetails" formatted="false">A %actBlockDate, bloquegeu %actBlock de %chainBlockCount.</string>
+    <string name="AccountBlockchainConnectionDetails" formatted="false">Connectat a %num nodes: %names</string>
+    <string name="AccountNumAddresses" formatted="false">%num adreces</string>
+    <string name="FirstLastReceive" formatted="false">Primer dipòsit al bloc %first, el més recent al bloc %last.</string>
+    <string name="FirstLastSend" formatted="false">Primer retireu-vos al bloc %first, el més recent al bloc %last.</string>
+    <string name="AccountNumTx" formatted="false">%num transaccions</string>
+    <string name="AccountNumUtxos" formatted="false">%num assentaments del llibre major</string>
     <!-- Assets activity -->
     <string name="title_activity_assets">Actius</string>
     <string name="title_activity_invoices">Factures</string>
@@ -485,34 +485,11 @@ Good luck!
     <!-- Domain Identity Settings -->
     <string name="useUniqueIdentity">Utilitzeu una identitat única</string>
 
-    <!-- Preference Titles -->
-    <string name="messages_header">Missatges</string>
-    <string name="sync_header">Sincronitzar</string>
-
-    <!-- Messages Preferences -->
-    <string name="signature_title">La teva signatura</string>
-    <string name="reply_title">Acció de resposta predeterminada</string>
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sincronitza el email periòdicament</string>
-    <string name="attachment_title">Baixeu els fitxers adjunts entrants</string>
-    <string name="attachment_summary_on">Baixeu automàticament els fitxers adjunts pels emails entrants</string>
-    <string name="attachment_summary_off">Baixeu fitxers adjunts només quan se sol·liciti manualment</string>
     <string name="title_activity_identity_settings">Configuració d\'identitat</string>
     <string name="title_activity_welcome">Configuració d\'identitat</string>
     <!-- Strings used for fragments for navigation -->
     <string name="next">Següent</string>
     <string name="previous">Anterior</string>
-    <!-- Welcome -->
-    <string name="welcome1Label">Benvingut</string>
-    <string name="welcome1">Benvingut a Wally, una cartera de criptomoneda!\n\nA les pantalles següents, configurareu el vostre primer compte de cadena de blocs de Nexa (NEX) i configurareu altres serveis, com ara la gestió de contrasenyes.\n\nO podeu prémer la fletxa enrere per ometre-ho. muntatge guiat.</string>
-    <string name="welcome2_title">Configuració del compte NEXA</string>
-    <string name="welcome2">A la pantalla següent, configurareu el vostre primer compte Nexa.\n\nAquest compte contindrà els vostres diners i identitats Nexa. Identitats és una nova funció de Wally Wallet que us permet iniciar sessió automàticament als llocs web compatibles.\n\nPodeu triar protegir els comptes d\'accés amb un número d\'identificació personal (PIN), però us recomanem que els usuaris nous no utilitzin un PIN ( i mantenir un saldo baix) per al seu primer compte. Per a la protecció dels usuaris, els comptes protegits per PIN poden ser completament invisibles fins que no hàgiu introduït el PIN correcte (i no es dóna cap indicació que n\'heu introduït un de incorrecte).\n\nA més, si voleu recuperar un compte NEXA existent, poseu la frase secreta de recuperació del compte on s\'indiqui. Si aquest espai es deixa en blanc, es crea un compte nou.</string>
-    <string name="welcome3_title">Frase secreta de recuperació del compte de NEXA</string>
-    <string name="welcome3">Aquest compte es pot restaurar o moure a un altre dispositiu mitjançant la frase secreta que es mostra a continuació. A diferència de molts serveis, aquesta cartera no necessita una "còpia de seguretat" periòdica. Les dades de la cadena de blocs pública, combinades amb aquesta frase secreta, són suficients per recuperar tots els vostres fons i l\'historial del vostre compte. Escriu aquesta frase i mantén-la en un lloc segur ara mateix.\n\nA Bitcoin, TU has d\'assumir la responsabilitat!\n\nSi perds aquesta frase, serà absolutament impossible recuperar el teu compte. Si us roben la vostra frase secreta, el lladre pot agafar tots els vostres fons i iniciar sessió als llocs com vosaltres que heu configurat amb la funció d\'identitat de Wally.\nAixò pot semblar espantós, però té un gran avantatge: el vostre Els diners són en aquest telèfon i a la vostra còpia de seguretat i enlloc més.\n\nAixí que són vostres i només vostres. Ningú pot piratejar una base de dades corporativa i robar els vostres diners i ningú pot interferir amb que gasteu els vostres diners.\n\nCom els diners a la vostra cartera física.\n\nSi aquesta responsabilitat us fa por, tracta aquesta cartera com ho faries. la vostra cartera física: no hi guardeu molts diners.</string>
-    <string name="welcome4_title">Identitat</string>
-    <string name="welcome4">A continuació, se us portarà a la pantalla d\'informació d\'identitat. Aquesta informació s\'utilitza quan feu servir Wally com a gestor d\'identitat i d\'inici de sessió (per iniciar sessió automàticament a diversos llocs web o proporcionar informació quan feu una compra).\n\nWally està molt centrat en la privadesa!\n\nAquesta informació no es compartirà amb qualsevol lloc sense el vostre permís exprés, i mai s\'envia cap informació d\'aquesta cartera als autors d\'aquesta aplicació. També podeu triar deixar qualsevol camp en blanc.\nQuan estigui complet, premeu la fletxa enrere (a la part superior esquerra).</string>
-    <string name="welcomeComplete">Això completa la configuració. Si no heu completat cap dels passos d\'aquesta benvinguda, tots els camps estan disponibles des de la mateixa aplicació.\n\nGràcies i gaudiu de la vostra nova cartera!</string>
     <!-- PIN Entry -->
     <string name="EnterPIN">Entrar PIN</string>
     <string name="EnterPINorBlankToRemove">PIN nou (eliminació en blanc)</string>
@@ -525,28 +502,9 @@ Good luck!
 
     <!-- All items are specified here so the service itself can be localized if your country does work with the default service. Use empty strings to disable -->
     <string name="BadLink">Enllaç web no vàlid</string>
-    <string name="ExplainGiftCards">La compra de targetes regal us permet accedir a centenars de botigues que no accepten directament criptomoneda.</string>
-    <string name="GiftCardButton">Targetes de regal eGifter</string>
-    <string name="GiftCardUrl">https://www.egifter.com</string>
-    <string name="GiftCardAppPackage">com.groupgifting.android</string>
     <string name="NFTs">Nonfungible Tokens (NFTs)</string>
     <string name="ExplainNFTs">NiftyArt.cash: Creeu i comercialitzeu imatges úniques i representacions digitals d\'articles únics</string>
     <string name="NftUrl">http://niftyart.cash</string>
-    <!--
-    <string name="GiftCardButton">Gyft gift cards</string>
-    <string name="GiftCardUrl">https://www.gyft.com</string>
-    <string name="GiftCardAppPackage">com.gyft.android</string>
-    -->
-
-    <string name="ExplainRestaurant">Els serveis de comandes de restaurants en línia (per a lliurament o recollida) poden acceptar criptomoneda encara que la ubicació física no ho faci.</string>
-    <string name="RestaurantButton">Menufy comandes al restaurant</string>
-    <string name="RestaurantUrl">https://www.menufy.com</string>
-    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
-
-    <string name="ExplainStoreMap">Trobeu ubicacions a prop vostre que acceptin criptomoneda.</string>
-    <string name="StoreMapButton">mapa de botigues</string>
-    <string name="StoreMapUrl">https://map.bitcoin.com</string>
-    <string name="StoreMapAppPackage"></string>
     <string name="OpenWebsite" formatted="false">Accés %siteName</string>
     <string name="WebsiteUnavailable" formatted="false">Lloc web no disponible</string>
     <string name="ExplainTxBit">txbit.io: Canvieu NEXA per altres criptomonedes</string>

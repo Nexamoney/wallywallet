@@ -338,14 +338,14 @@ Good luck!
 <string name="txHistoryButton">खाता गतिविधि देखें या निर्यात करें</string>
 <string name="setAsPrimaryAccountButton">इसे अपना प्राथमिक खाता बनाएं</string>
 <string name="AccountStatistics">खाता आंकड़े</string>
-<string name="AccountBlockchainSync">वर्तमान में %chain पर ब्लॉकचेन %sync है।</string>
-<string name="AccountBlockchainDetails">%chainBlockCount के %actBlock ब्लॉक को %actBlockDate को ब्लॉक किया गया।</string>
-<string name="AccountBlockchainConnectionDetails">%num नोडों से जुड़ा हुआ है: %names</string>
-<string name="AccountNumAddresses">%num पते</string>
-<string name="FirstLastReceive">पहली जमा ब्लॉक %first में, सबसे हाल का ब्लॉक %last में।</string>
-<string name="FirstLastSend">पहले ब्लॉक %first में निकालें, सबसे हाल के ब्लॉक %last में।</string>
-<string name="AccountNumTx">%num लेन-देन</string>
-<string name="AccountNumUtxos">%num लेजर एंट्रीज</string>
+<string name="AccountBlockchainSync" formatted="false">वर्तमान में %chain पर ब्लॉकचेन %sync है।</string>
+<string name="AccountBlockchainDetails" formatted="false">%chainBlockCount के %actBlock ब्लॉक को %actBlockDate को ब्लॉक किया गया।</string>
+<string name="AccountBlockchainConnectionDetails" formatted="false">%num नोडों से जुड़ा हुआ है: %names</string>
+<string name="AccountNumAddresses" formatted="false">%num पते</string>
+<string name="FirstLastReceive" formatted="false">पहली जमा ब्लॉक %first में, सबसे हाल का ब्लॉक %last में।</string>
+<string name="FirstLastSend" formatted="false">पहले ब्लॉक %first में निकालें, सबसे हाल के ब्लॉक %last में।</string>
+<string name="AccountNumTx" formatted="false">%num लेन-देन</string>
+<string name="AccountNumUtxos" formatted="false">%num लेजर एंट्रीज</string>
 <!-- Assets activity -->
 <string name="title_activity_assets">एसेट्स</string>
 <string name="title_activity_scan">स्कैन</string>

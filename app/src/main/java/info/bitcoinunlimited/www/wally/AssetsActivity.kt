@@ -345,8 +345,15 @@ class AssetsActivity : CommonNavActivity()
                 }
                 else
                 {
-                    val acc = wallyApp?.primaryAccount
-                    updateAccount(acc)
+                    try
+                    {
+                        val acc = wallyApp?.primaryAccount
+                        updateAccount(acc)
+                    }
+                    catch(e: PrimaryWalletInvalidException)
+                    {
+                        LogIt.info(sourceLoc() + "No primary account")
+                    }
                 }
             }
             account?.let { setTitle(i18n(R.string.title_activity_assets) + ": " + it.name) }

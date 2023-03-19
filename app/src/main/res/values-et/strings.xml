@@ -369,14 +369,14 @@ Good luck!
     <string name="txHistoryButton">Vaata või ekspordi konto tegemised</string>
     <string name="setAsPrimaryAccountButton">Tee see konto oma peamiseks kontoks</string>
     <string name="AccountStatistics">Konto statistika</string>
-    <string name="AccountBlockchainSync">Hetkel %sync plokiahelal %chain.</string>
-    <string name="AccountBlockchainDetails">At %actBlockDate, block %actBlock of %chainBlockCount.</string>
+    <string name="AccountBlockchainSync" formatted="false">Hetkel %sync plokiahelal %chain.</string>
+    <string name="AccountBlockchainDetails" formatted="false">At %actBlockDate, block %actBlock of %chainBlockCount.</string>
     <string name="AccountBlockchainConnectionDetails">Ühendatud %num noode: %names</string>
-    <string name="AccountNumAddresses">%num aadresse</string>
-    <string name="FirstLastReceive">Esimene deposiit plokis %first, kõige hiljutisem plokis %last.</string>
-    <string name="FirstLastSend">Esimene väljavõtt plokis %first, kõige hiljutisem plokis %last.</string>
-    <string name="AccountNumTx">%num tehingut</string>
-    <string name="AccountNumUtxos">%num pearaamatu kannet</string>
+    <string name="AccountNumAddresses" formatted="false">%num aadresse</string>
+    <string name="FirstLastReceive" formatted="false">Esimene deposiit plokis %first, kõige hiljutisem plokis %last.</string>
+    <string name="FirstLastSend" formatted="false">Esimene väljavõtt plokis %first, kõige hiljutisem plokis %last.</string>
+    <string name="AccountNumTx" formatted="false">%num tehingut</string>
+    <string name="AccountNumUtxos" formatted="false">%num pearaamatu kannet</string>
     <!-- Assets activity -->
     <string name="title_activity_assets">Varad</string>
     <string name="title_activity_invoices">Arved</string>
@@ -483,34 +483,11 @@ Good luck!
     <!-- Domain Identity Settings -->
     <string name="useUniqueIdentity">Kasuta unikaalset identiteeti</string>
 
-    <!-- Preference Titles -->
-    <string name="messages_header">Sõnumid</string>
-    <string name="sync_header">Sünkroniseeri</string>
-
-    <!-- Messages Preferences -->
-    <string name="signature_title">Teie allkiri</string>
-    <string name="reply_title">Vaikimise vastamise toiming</string>
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sünkroniseeri email perioodiliselt</string>
-    <string name="attachment_title">Lae alla sissetulevad liidesed</string>
-    <string name="attachment_summary_on">Automaatselt lae alla liidesed sissetulevatelt emailidelt</string>
-    <string name="attachment_summary_off">Lae alla liidesed ainult kui palutud</string>
     <string name="title_activity_identity_settings">Identiteedi sätted</string>
     <string name="title_activity_welcome">Tere tulemast</string>
     <!-- Strings used for fragments for navigation -->
     <string name="next">Järgmine</string>
     <string name="previous">Eelmine</string>
-    <!-- Welcome -->
-    <string name="welcome1Label">Tere tulemast</string>
-    <string name="welcome1">Tere tulemast krütptovaluuta rahakotti - Wally ! \n\nJärgnevates sammudes sätestate üles enda esimese NEXA plokiahela (NEX) konto ja muud teenused, nagu paroolihalduse.\n\nVõi te võite vajutada tagasinoolt ja jätta see abistatud sätestamine vahele.</string>
-    <string name="welcome2_title">NEXA konto sätestamine</string>
-    <string name="welcome2">Tuleval ekraanil, te seate üles oma esimese Nexa konto.\n\nSee konto saab hoidma teie Nexa raha ja identiteedid. Identiteedid on Wally rahakoti uus tunnusjoon mis lubab teid automaatselt sisse logida toetatud lehekülgedele.\n\nNüüd võite valida kaitsa oma isiklike kontosid PIN koodiga, kuigi me soovitame, et uued kasutajad PIN koodi ei kasutaks (ja hoiaks kontosaldot madalana) nende esimesel kontol.Kasutajate kaitseks, kontod mis on kaitstud PIN koodiga on täielikult nähtamatud nii kaua kuni õige PIN on sisestatud (ja teile EI ANTA teada, kui vale PIN on sisestatud).\n\nSamuti, kui te soovita olemasolevat NEXA kontot taastada, sisestage oma konto taastamise salafraas kuhu palutud. Kui see lahter on jäetud tühjaks, siis luuakse uus konto.</string>
-    <string name="welcome3_title">NEXA konto taastamise salafraas</string>
-    <string name="welcome3">Seda kontot saab taastada või liigutada teisele seadmele kasutades seda salafraasi mis on alla välja toodud. Erinevalt mitmetest teistest seadmetest, sellele rahakotile pole vaja varukoopiat. Andmed asuvad plokiahelal ja kõik vahendid/valuutad on taastavad ainult selle salafraasiga. Kirjutage see fraas üles ja hoidke seda kusagil turvaliselt.\n\nBitcoiniga, SINA pead olema vastutustundlik !\n\nKui sa kaotad selle fraasi, siis on VÕIMATU oma kontot taastada. Kui sinu salafraas varastatakse, siis varas saab ligipääsu KÕIKIDELE sinu andmetele, varadele ja ajaloole mis sinu rahakotis on sätestatud.\nSee võib kõlada hirmuäratavalt, aga tal on suur eelis: kõik sinu raha on selles seadmes ja sinu varukoopias ja mitte kusagil mujal.\n\nNimelt see on sinu oma ja AINULT sinu oma. Keegi ei saa sisse häkkida näiteks databaasi ja sinu raha varastada ja keegi ei saa segada sind oma raha kulutamast.\n\nJust nagu sularaha sinu rahakotis.\n\nKui see kohustus on teie jaoks hirmuäratav, siis kohtle seda rahakotti nagu enda füüsilist rahakotti ja ära hoia selles palju raha.</string>
-    <string name="welcome4_title">Identiteet</string>
-    <string name="welcome4">Järgmisena teid viiakse identiteedi informatsiooni leheküljele. Seda informatsiooni kasutatakse juhul kui sa kasutad Wally rahakotti kui identiteedi ja logini informatsiooni haldurina (et automaatselt erinevatesse lehekülgedesse sisse logida või edastada informatsiooni kui soovita midagi osta).\n\nWally on ekstreemselt privaatsusele suunatud !\n\nSeda informatsiooni ei jagata mitte kellegiga välja arvatud kui te olete andnud oma nõusoleku ja teie andmeid ei saadeta kunagi arendajatele ! Te võite ka jätta osad väljad tühjaks.\nKui olete valmis, vajutage tagasinoolt (üleval vasakul nurgas).</string>
-    <string name="welcomeComplete">Sätestamine on lõpetatud ! Kui te ei täitnud osasid samme selles faasis, siis saate teha hiljem selles äpis.\n\nAitäh teile ja nautige oma uut rahakotti !</string>
     <!-- PIN Entry -->
     <string name="EnterPIN">Sisestage PIN</string>
     <string name="EnterPINorBlankToRemove">Uus PIN (tühjaks jäotud lahter eemaldab)</string>
@@ -523,28 +500,10 @@ Good luck!
 
     <!-- All items are specified here so the service itself can be localized if your country does work with the default service. Use empty strings to disable -->
     <string name="BadLink">Vigane veebilink</string>
-    <string name="ExplainGiftCards">Ostes kinkekaarte annab teile ligipääsu sadadele poodidele mis otse ei aksepteeri krüptovaluutat.</string>
-    <string name="GiftCardButton">eGifter kinkekaardid</string>
-    <string name="GiftCardUrl">https://www.egifter.com</string>
-    <string name="GiftCardAppPackage">com.groupgifting.android</string>
     <string name="NFTs">Nonfungible Tokens (NFTs)</string>
     <string name="ExplainNFTs">NiftyArt.cash: Loo ja vaheta unikaalseid pilte ja digitaalseid versioone unikaalsetest objektidest.</string>
     <string name="NftUrl">http://niftyart.cash</string>
-    <!--
-    <string name="GiftCardButton">Gyft kinkekaardid</string>
-    <string name="GiftCardUrl">https://www.gyft.com</string>
-    <string name="GiftCardAppPackage">com.gyft.android</string>
-    -->
 
-    <string name="ExplainRestaurant">Online restoranide tellimusteenused (n.t. Wolt/Bolt/Fudy) võivad aksepteerida krüptovaluutat kui kohapeal nad seda ei tee.</string>
-    <string name="RestaurantButton">Menufy tellimused</string>
-    <string name="RestaurantUrl">https://www.menufy.com</string>
-    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
-
-    <string name="ExplainStoreMap">Leia asukohti enda lähedal kes aksepteerivad krüptot.</string>
-    <string name="StoreMapButton">poodide kaart</string>
-    <string name="StoreMapUrl">https://map.bitcoin.com</string>
-    <string name="StoreMapAppPackage"></string>
     <string name="OpenWebsite" formatted="false">Sisene %siteName</string>
     <string name="WebsiteUnavailable" formatted="false">Lehekülg pole saadaval</string>
     <string name="ExplainTxBit">txbit.io: Trade NEXA for other cryptocurrencies</string>

@@ -74,8 +74,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:text="Trade"
+            android:text="@string/empty"
             android:textSize="26sp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/GuiAssetGroupId" />
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -490,35 +490,12 @@ Good luck!
     <!-- Domain Identity Settings -->
     <string name="useUniqueIdentity">Usa un\'identità unica</string>
 
-    <!-- Preference Titles -->
-    <string name="messages_header">Messaggi</string>
-    <string name="sync_header">Sincronizzazione</string>
-
-    <!-- Messages Preferences -->
-    <string name="signature_title">La tua firma</string>
-    <string name="reply_title">Azione predefinita per risposta</string>
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sincronizza le email periodicamente</string>
-    <string name="attachment_title">Scarica gli allegati in arrivo</string>
-    <string name="attachment_summary_on">Scarica automaticamente gli allegati delle email in arrivo</string>
-    <string name="attachment_summary_off">Scarica gli allegati solo su richiesta manuale</string>
     <string name="title_activity_identity_settings">Impostazioni identità</string>
     <string name="title_activity_welcome">Benvenuto</string>
     <!-- Strings used for fragments for navigation -->
     <string name="next">Avanti</string>
     <string name="previous">Indietro</string>
 
-    <!-- Welcome -->
-    <string name="welcome1Label">Benvenuto</string>
-    <string name="welcome1">Benvenuto su Wally, un portafoglio di criptovalute!\n\nNei prossimi schermi configurerai il tuo primo account Nexa blockchain (NEX) e altri servizi come la gestione delle password.\n\nOppure puoi premere la freccia indietro per saltare questa configurazione guidata.</string>
-    <string name="welcome2_title">Configurazione Account NEXA</string>
-    <string name="welcome2">Nella schermata successiva, configurerai il tuo primo account Nexa.\n\nQuesto account conterrà i tuoi soldi Nexa e le tue identità. Le identità sono una nuova funzionalità di Wally Wallet che ti permette di accedere automaticamente ai siti web supportati.\n\nPuoi scegliere di proteggere l\'accesso agli account con un codice di identificazione personale (PIN), tuttavia consigliamo ai nuovi utenti di non utilizzare un PIN (e mantenere un saldo basso) per il loro primo account. Per la protezione degli utenti, gli account protetti da PIN possono essere completamente invisibili fino a quando non si è inserito il PIN corretto (senza alcuna indicazione che ne è stato inserito uno errato).\n\nInoltre, se desideri recuperare un account NEXA esistente, inserisci la Frase Segreta di Recupero dell\'Account dove indicato. Se questo spazio viene lasciato vuoto, viene creato un nuovo account.</string>
-    <string name="welcome3_title">Frase Segreta di Recupero Account NEXA</string>
-    <string name="welcome3">Questo account può essere ripristinato o spostato su un altro dispositivo tramite la frase segreta visualizzata di seguito. A differenza di molti servizi, questo portafoglio non ha bisogno di un "backup" periodico. I dati nella blockchain pubblica, combinati con questa frase segreta, sono sufficienti per recuperare tutti i tuoi fondi e la cronologia del tuo account. Scrivi questa frase e conservala in un luogo sicuro adesso.\n\nIn Bitcoin, TU devi assumerti la responsabilità!\n\nSe perdi questa frase, è assolutamente impossibile recuperare il tuo account. Se la tua frase segreta viene rubata, il ladro può prendere tutti i tuoi fondi e accedere ai siti come te che hai impostato con la funzione di identità di Wally.\nQuesto può sembrare spaventoso, ma ha un grande vantaggio: i tuoi soldi sono su questo telefono e nel tuo backup e in nessun altro posto.\n\nQuindi sono tuoi e solo tuoi. Nessuno può hackerare un database aziendale e rubare i tuoi soldi e nessuno può interferire con le tue spese.\n\nProprio come i soldi nel tuo portafoglio fisico.\n\nSe questa responsabilità ti spaventa, trattalo come il tuo portafoglio fisico: non tenerci troppi soldi.</string>
-    <string name="welcome4_title">Identità</string>
-    <string name="welcome4">Successivamente verrai indirizzato alla schermata delle informazioni sull\'identità. Queste informazioni vengono utilizzate quando usi Wally come gestore di identità e accesso (per accedere automaticamente a vari siti web o fornire informazioni quando effettui un acquisto).\n\nWally è estremamente attento alla privacy!\n\nQueste informazioni non verranno condivise con nessun sito senza il tuo esplicito consenso e NESSUNA informazione di questo portafoglio viene mai inviata agli autori di questa app. Puoi anche scegliere di lasciare vuoti alcuni campi.\nQuando hai finito, premi la freccia indietro (in alto a sinistra).</string>
-    <string name="welcomeComplete">Questo completa la configurazione. Se non hai completato alcuno dei passaggi in questo benvenuto, tutti i campi sono disponibili all\'interno dell\'app stessa.\n\nGrazie e buon divertimento con il tuo nuovo portafoglio!</string>
     <!-- PIN Entry -->
     <string name="EnterPIN">Inserisci PIN</string>
     <string name="EnterPINorBlankToRemove">Nuovo PIN (vuoto per rimuovere)</string>
@@ -531,10 +508,6 @@ Good luck!
 
     <!-- All items are specified here so the service itself can be localized if your country does work with the default service. Use empty strings to disable -->
     <string name="BadLink">Link web non valido</string>
-    <string name="ExplainGiftCards">L\'acquisto di buoni regalo ti dà accesso a centinaia di negozi che non accettano direttamente criptovalute.</string>
-    <string name="GiftCardButton">Buoni regalo eGifter</string>
-    <string name="GiftCardUrl">https://www.egifter.com</string>
-    <string name="GiftCardAppPackage">com.groupgifting.android</string>
     <string name="NFTs">Token non fungibili (NFT)</string>
     <string name="ExplainNFTs">NiftyArt.cash: Crea e scambia immagini uniche e rappresentazioni digitali di oggetti unici</string>
     <string name="NftUrl">http://niftyart.cash</string>
@@ -544,15 +517,7 @@ Good luck!
     <string name="GiftCardAppPackage">com.gyft.android</string>
     -->
 
-    <string name="ExplainRestaurant">I servizi di ordinazione online nei ristoranti (per la consegna o il ritiro) potrebbero accettare criptovalute anche se la sede fisica non lo fa.</string>
-    <string name="RestaurantButton">Ordinazione ristorante Menufy</string>
-    <string name="RestaurantUrl">https://www.menufy.com</string>
-    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
 
-    <string name="ExplainStoreMap">Trova luoghi vicino a te che accettano criptovalute.</string>
-    <string name="StoreMapButton">mappa dei negozi</string>
-    <string name="StoreMapUrl">https://map.bitcoin.com</string>
-    <string name="StoreMapAppPackage"></string>
     <string name="OpenWebsite" formatted="false">Accedi a %siteName</string>
     <string name="WebsiteUnavailable" formatted="false">Sito web non disponibile</string>
     <string name="ExplainTxBit">txbit.io: Scambia NEXA con altre criptovalute</string>

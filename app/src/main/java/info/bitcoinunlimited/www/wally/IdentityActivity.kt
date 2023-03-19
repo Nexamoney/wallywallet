@@ -97,8 +97,16 @@ class IdentityActivity : CommonNavActivity()
         app.interestedInAccountUnlock.add(actUnlockCb)
 
         laterUI {
-            val acc: Account = wallyApp?.primaryAccount ?: throw PrimaryWalletInvalidException()
-            setTitle(i18n(R.string.title_activity_identity) + ": " + acc.name)
+            val name = try
+            {
+                val acc: Account = wallyApp?.primaryAccount ?: throw PrimaryWalletInvalidException()
+                ": " + acc.name
+            }
+            catch(e: PrimaryWalletInvalidException)
+            {
+                ""
+            }
+            setTitle(i18n(R.string.title_activity_identity) + ": " + name)
         }
     }
 

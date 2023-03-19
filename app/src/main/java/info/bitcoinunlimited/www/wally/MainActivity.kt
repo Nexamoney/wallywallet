@@ -1520,23 +1520,22 @@ class MainActivity : CommonNavActivity()
 
     @Suppress("UNUSED_PARAMETER")
       /** If user clicks on the receive address, copy it to the clipboard */
-    fun onNewAccount(view: View): Boolean
+    fun onNewAccount(view: View)
     {
         LogIt.info("new account")
         if (app?.accounts?.size ?: 1000 >= MAX_ACCOUNTS)
         {
             displayError(R.string.accountLimitReached)
-            return false
+            return
         }
 
         val intent = Intent(this@MainActivity, NewAccount::class.java)
         startActivity(intent)
-        return true
     }
 
     @Suppress("UNUSED_PARAMETER")
       /** If user clicks on the receive address, copy it to the clipboard */
-    fun onReceiveAddrTextClicked(view: View): Boolean
+    fun onReceiveAddrTextClicked(view: View)
     {
         try
         {
@@ -1562,16 +1561,14 @@ class MainActivity : CommonNavActivity()
         {
             displayException(e)
         }
-        return true
     }
 
     @Suppress("UNUSED_PARAMETER")
     /** Start the split bill activity when the split bill button is pressed */
-    public fun onSplitBill(v: View): Boolean
+    public fun onSplitBill(v: View)
     {
         val intent = Intent(this@MainActivity, SplitBillActivity::class.java)
         startActivity(intent)
-        return true
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -1583,31 +1580,28 @@ class MainActivity : CommonNavActivity()
 
     @Suppress("UNUSED_PARAMETER")
     /** Start the purchase activity when the purchase button is pressed */
-    public fun onPurchaseButton(v: View): Boolean
+    public fun onPurchaseButton(v: View)
     {
         //val intent = Intent(this@MainActivity, InvoicesActivity::class.java)
         //startActivity(intent)
-        return true
     }
 
-    public fun onAllButtonClicked(v:View): Boolean
+    public fun onAllButtonClicked(v:View)
     {
         if (ui.sendQuantity.hasFocus())
         {
             ui.sendQuantity.text.clear()
             ui.sendQuantity.text.append(SEND_ALL_TEXT)
         }
-        return true
     }
 
-    public fun onClearButtonClicked(v:View): Boolean
+    public fun onClearButtonClicked(v:View)
     {
         if (ui.sendQuantity.hasFocus()) ui.sendQuantity.text.clear()
         else if (ui.sendToAddress.hasFocus()) ui.sendToAddress.text.clear()
         else if (ui.editSendNote.hasFocus() == true) ui.editSendNote.text.clear()
-        return true
     }
-    public fun onAmountThousandButtonClicked(v:View): Boolean
+    public fun onAmountThousandButtonClicked(v:View)
     {
         if (ui.sendQuantity.hasFocus())
         {
@@ -1619,15 +1613,14 @@ class MainActivity : CommonNavActivity()
             catch(e:java.lang.NumberFormatException)
             {
                 if ((ui.sendQuantity.text.length == 0) || (curText=="all")) BigDecimal(1)
-                else return false
+                else return
             }
             amt *= BigDecimal(1000)
             ui.sendQuantity.set(amt.toString())
         }
-        return true
     }
 
-    public fun onAmountMillionButtonClicked(v:View): Boolean
+    public fun onAmountMillionButtonClicked(v:View)
     {
         if (ui.sendQuantity.hasFocus())
         {
@@ -1639,12 +1632,11 @@ class MainActivity : CommonNavActivity()
             catch(e:java.lang.NumberFormatException)
             {
                 if ((ui.sendQuantity.text.length == 0) || (curText=="all")) BigDecimal(1)
-                else return false
+                else return
             }
             amt *= BigDecimal(1000000)
             ui.sendQuantity.set(amt.toString())
         }
-        return true
     }
 
     override fun onSoftKeyboard(shown: Boolean)
@@ -1663,18 +1655,18 @@ class MainActivity : CommonNavActivity()
     }
 
     /** Allow the user to add/edit the send note */
-    public fun onEditSendNoteButtonClicked(v: View): Boolean
+    public fun onEditSendNoteButtonClicked(v: View)
     {
         val esn = ui.editSendNote
         val sn = ui.sendNote
-        if (esn == null) return false
-        if (sn == null) return false
+        if (esn == null) return
+        if (sn == null) return
         if (esn.visibility == View.VISIBLE) // hit the button again
         {
             esn.visibility = View.GONE
             val tmp = esn.text.toString()
             sn.setVisibility(if (tmp == "") View.GONE else View.VISIBLE)
-            return true
+            return
         }
         sn.setVisibility(View.GONE)
         esn.setVisibility(View.VISIBLE)
@@ -1736,7 +1728,6 @@ class MainActivity : CommonNavActivity()
                 )
             }
         }
-        return true
     }
 
 
@@ -1838,24 +1829,23 @@ class MainActivity : CommonNavActivity()
     }
 
 
-    public fun onSendCancelButtonClicked(v: View): Boolean
+    public fun onSendCancelButtonClicked(v: View)
     {
         confirmVisibility(false)
         sendVisibility(false)
         receiveVisibility(true)
         askedForConfirmation = false
-        return true
     }
 
     @Suppress("UNUSED_PARAMETER")
     /** Create and post a transaction when the send button is pressed */
-    public fun onSendButtonClicked(v: View): Boolean
+    public fun onSendButtonClicked(v: View)
     {
         if ((ui.sendUI.visibility != View.VISIBLE)&&(ui.SendConfirm.visibility != View.VISIBLE))  // First step in send, show the UI elements
         {
             receiveVisibility(false)
             sendVisibility(true)
-            return true
+            return
         }
         dbgAssertGuiThread()
         LogIt.info("send button clicked")
@@ -1870,7 +1860,7 @@ class MainActivity : CommonNavActivity()
             coMiscScope.launch {
                 paymentInProgressSend()
             }
-            return true
+            return
         }
 
         var currencyType: String? = ui.sendCurrencyType.selectedItem as String?
@@ -1879,32 +1869,33 @@ class MainActivity : CommonNavActivity()
         val walletName = try
         {
             ui.sendAccount.selectedItem as String
-        } catch (e: TypeCastException)  // No wallets are defined so no sendCoinType is possible
+        }
+        catch (e: TypeCastException)  // No wallets are defined so no sendCoinType is possible
         {
             displayException(R.string.badCryptoCode, e)
-            return false
+            return
         }
         if (walletName == i18n(R.string.choose))
         {
             displayError(R.string.chooseAccountError)
-            return false
+            return
         }
         val account = accounts[walletName]
 
         if (currencyType == null)
         {
             displayError(R.string.badCryptoCode)
-            return false
+            return
         }
         if (account == null)
         {
             displayError(R.string.badCryptoCode, i18n(R.string.badCryptoCodeDetails) % mapOf("currency" to currencyType) )
-            return false
+            return
         }
         if (account.locked)
         {
             displayError(R.string.accountLocked)
-            return false
+            return
         }
 
         val amtstr: String = ui.sendQuantity.text.toString()
@@ -1925,7 +1916,7 @@ class MainActivity : CommonNavActivity()
             {
                 if (amtstr == "") displayError(R.string.badAmount, R.string.empty)
                 else displayError(R.string.badAmount, i18n(R.string.badAmount) + " " + amtstr)
-                return false
+                return
             }
         }
         catch (e: ArithmeticException)  // Rounding error
@@ -1935,7 +1926,7 @@ class MainActivity : CommonNavActivity()
             ui.sendQuantity.text.append(amtstr.toBigDecimal().setScale(account.chain.chainSelector.currencyDecimals, RoundingMode.UP).toString())
             displayError(R.string.badAmount, R.string.subSatoshiQuantities)
             ui.approximatelyText.text = i18n(R.string.roundedUpClickSendAgain)
-            return false
+            return
         }
 
         // Make sure the address is consistent with the selected coin to send
@@ -1948,23 +1939,23 @@ class MainActivity : CommonNavActivity()
         {
             val details = i18n(R.string.badAddress) + " " + if (addrText == "") i18n(R.string.empty) else addrText
             displayError(R.string.badAddress, details)
-            return false
+            return
         }
         catch (e: UnknownBlockchainException)
         {
             val details = i18n(R.string.unknownCurrency) + " " + if (addrText == "") i18n(R.string.empty) else addrText
            displayError(R.string.badAddress, details)
-            return false
+            return
         }
         if (account.wallet.chainSelector != sendAddr.blockchain)
         {
             displayError(R.string.chainIncompatibleWithAddress, ui.sendToAddress.text.toString())
-            return false
+            return
         }
         if (sendAddr.type == PayAddressType.NONE)
         {
             displayError(R.string.badAddress, ui.sendToAddress.text.toString())
-            return false
+            return
         }
 
         if (currencyType == account.currencyCode)
@@ -2041,7 +2032,6 @@ class MainActivity : CommonNavActivity()
             ui.editSendNote.let { it.visibility = View.GONE }
             askedForConfirmation = false  // We are done with a send so reset state machine
         }
-        return true
     }
 
     fun onSendSuccess(amt: Long, addr: PayAddress, tx: iTransaction)
