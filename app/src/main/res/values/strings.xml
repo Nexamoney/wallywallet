@@ -162,8 +162,8 @@ Good luck!
     <string name="enableAssetsMenu">Enable assets screen</string>
     <string name="only">only</string>
     <string name="prefer">prefer</string>
-    <string name="rediscoverWalletTx">rediscover all transactions</string>
-    <string name="rediscoverBlockchain">rediscover blockchain headers</string>
+    <string name="rediscoverWalletTx">Rediscover All Transactions</string>
+    <string name="rediscoverBlockchain">Rediscover Blockchain Headers</string>
     <string name="logDebugData">Log Debug Data</string>
     <string name="clearIdentityDomains">Clear Identity Domains</string>
     <string name="rediscoverTooltip">Delete blockchain state and search anew for all transactions relevant to the wallet</string>
@@ -171,7 +171,7 @@ Good luck!
     <string name="deleteWalletAccount">Delete Account</string>
 
     <!-- a PIN is a numeric password that gives you access to your account -->
-    <string name="SetChangePin">Set or Change unlocking PIN</string>
+    <string name="SetChangePin">Set or Change Unlocking PIN</string>
     <string name="CurrentPin">Current PIN</string>
     <string name="NewPin">New PIN</string>
     <string name="PinChanged">PIN changed</string>
@@ -233,6 +233,7 @@ Good luck!
     <string name="chooseAccountError">choose an account</string>
     <!-- As in "Send to" -->
     <string name="toColon">To:</string>
+    <string name="assetsColon">Assets:</string>
     <!-- As in what entity is requesting information -->
     <string name="fromColon">From:</string>
     <string name="Receive">Receive into account</string>
@@ -561,8 +562,8 @@ Good luck!
     <string name="TpAssetInfoNotXfer">Accepting this request simply gives the service information about your ownership.  It does not authorize any transfers.</string>
     <string name="ForAFeeOf" formatted="false">including a fee of %fee %units</string>
     <string name="TpExchangingTokens" formatted="false">and exchanging tokens (sending %tokSnd, receiving %tokRcv).</string>
-    <string name="TpSendingTokens" formatted="false">and sending %tokSnd tokens.</string>
-    <string name="TpReceivingTokens" formatted="false">and receiving %tokRcv tokens.</string>
+    <string name="TpSendingTokens" formatted="false">and sending %tokSnd types of tokens.</string>
+    <string name="TpReceivingTokens" formatted="false">and receiving %tokRcv types of tokens.</string>
 
     <string name="TpSendToTitle">Payment Requested By</string>
     <string name="TpSpends">Spends</string>
@@ -578,4 +579,16 @@ Good luck!
     <string name="TpExceededMaxMonthly">Exceeds per month maximum</string>
 
     <string name="title_activity_alert_history">Recent Messages</string>
+
+    <string name="AssetApplication">Invoke</string>
+    <string name="AssetMarketplace">Trade</string>
+    <string name="AssetAddedToTransferList">Added to \'Send\' in main tab</string>
+    <string name="NftCardFront">Front</string>
+    <string name="NftCardBack">Back</string>
+    <string name="NftPublicMedia">Contents</string>
+    <string name="NftOwnerMedia">Owner\'s Content</string>
+    <string name="NftInfo">Info</string>
+    <string name="NftLegal">License</string>
+    <string name="NftSeries" formatted="false">Series: %series</string>
+    <string name="NftAuthor" formatted="false">Author: %author</string>
 </resources>

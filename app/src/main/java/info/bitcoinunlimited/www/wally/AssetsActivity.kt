@@ -3,38 +3,40 @@
 package info.bitcoinunlimited.www.wally
 
 
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
 import android.graphics.BitmapFactory
 import bitcoinunlimited.libbitcoincash.*
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.PictureDrawable
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.OvalShape
+import android.media.MediaPlayer
+import android.media.MediaPlayer.OnPreparedListener
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import androidx.core.graphics.drawable.toIcon
+import android.view.ViewTreeObserver
+import android.widget.ImageView
+import androidx.core.graphics.get
+import androidx.core.widget.doAfterTextChanged
 
 import androidx.recyclerview.widget.LinearLayoutManager
-import bitcoinunlimited.libbitcoincash.CurrencyDecimal
-import bitcoinunlimited.libbitcoincash.TransactionHistory
-import bitcoinunlimited.libbitcoincash.fiatFormat
 import com.caverock.androidsvg.SVG
-import com.caverock.androidsvg.SVGImageView
 import info.bitcoinunlimited.www.wally.databinding.ActivityAssetsBinding
-import info.bitcoinunlimited.www.wally.databinding.ActivityShoppingBinding
 import info.bitcoinunlimited.www.wally.databinding.AssetListItemBinding
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.*
+import info.bitcoinunlimited.www.wally.databinding.AssetSuccinctListItemBinding
 import java.io.*
 import java.net.URI
 import java.net.URL
 import java.util.logging.Logger
-import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
 
 private val LogIt = Logger.getLogger("BU.wally.assets")
+
+var WallyAssetRowColors = arrayOf(0x4Ff5f8ff.toInt(), 0x4Fd0d0ef.toInt())
+
+
+var DBG_NO_ASSET_CACHE = false
 
 open class IncorrectTokenDescriptionDoc(details: String) : BUException(details, "Incorrect token description document", ErrorSeverity.Expected)
 
@@ -43,33 +45,189 @@ val NIFTY_ART_IP = mapOf(
   ChainSelector.NEXAREGTEST to "192.168.1.5:8988"
 )
 
+fun String.runCommand(): String?
+{
+    throw UnimplementedException("cannot run executables on Android")
+}
+
 class AssetManager(val app: WallyApp)
 {
-    fun getNftFile(groupId:GroupId)
+    val transferList = mutableListOf<AssetInfo>()
+
+    fun storeAssetFile(filename: String, data: ByteArray): String
     {
-        if (false)  // streaming
+        val context = app
+
+        val dir = context.getDir("asset", Context.MODE_PRIVATE)
+        val file = File(dir, filename)
+        FileOutputStream(file).use {
+            it.write(data)
+        }
+        return file.absolutePath
+    }
+
+    fun loadAssetFile(filename: String): Pair<String, ByteArray>
+    {
+        if (DBG_NO_ASSET_CACHE) throw Exception()
+        val context = app
+        val dir = context.getDir("asset", Context.MODE_PRIVATE)
+        val file = File(dir, filename)
+        val name = file.absolutePath
+        FileInputStream(file).use {
+            return Pair(name,it.readBytes())
+        }
+    }
+
+    fun nftUrl(s: String?, groupId: GroupId):String?
+    {
+        if (s == null)
         {
-            val fis = FileInputStream(app.filesDir.resolve(groupId.toHex() + ".zip"))
-            val zis = ZipInputStream(BufferedInputStream(fis))
+            return("http://" + NIFTY_ART_IP[groupId.blockchain] + "/_public/" + groupId)
+        }
+        // TODO many more ways to get it
+        return null
+    }
 
-            while (true)
+    /** Adds this asset to the list of assets to be transferred in the next send */
+    fun addAssetToTransferList(a: AssetInfo): Boolean
+    {
+        if (transferList.contains(a)) return false
+        transferList.add(a)
+        return true
+    }
+
+    fun storeTokenDesc(groupId: GroupId, td: TokenDesc)
+    {
+        val ser = kotlinx.serialization.json.Json.encodeToString(TokenDesc.serializer(), td)
+        storeAssetFile(groupId.toHex() + ".td", ser.toByteArray())
+    }
+
+    fun getTokenDesc(chain: Blockchain, groupId: GroupId, forceReload:Boolean = false): TokenDesc
+    {
+        try
+        {
+            if (DBG_NO_ASSET_CACHE) throw Exception()
+            if (forceReload) throw Exception()
+            val data = loadAssetFile(groupId.toHex() + ".td").second
+            return kotlinx.serialization.json.Json.decodeFromString(TokenDesc.serializer(),String(data))
+        }
+        catch(e: Exception) // file not found
+        {
+            LogIt.info("Genesis Info for ${groupId.toHex()} not in cache")
+            // first load the token description doc (TDD)
+            val ec = openElectrum(chain.chainSelector)
+            val tg = ec.getTokenGenesisInfo(groupId, 30*1000)
+
+            val docUrl = tg.document_url
+            if (docUrl != null)
             {
-                var ze = zis.nextEntry
-                if (ze.isDirectory)
+                var doc: String? = null
+                try
                 {
+                    LogIt.info(sourceLoc() + ": Accessing TDD from " + docUrl)
+                    doc = URL(docUrl).readText()
+                }
+                catch (e: java.io.FileNotFoundException)
+                {
+                }
+                catch (e: Exception)
+                {
+                    LogIt.info(sourceLoc() + ": Error retrieving token description document: " + e.message)
+                }
 
+                if (doc != null)  // got the TDD
+                {
+                    val tx=ec.getTx(tg.txid)
+                    var addr:PayAddress? = null
+                    for (out in tx.outputs)
+                    {
+                        val gi = out.script.groupInfo(out.amount)
+                        if (gi != null)
+                        {
+                            if (gi.groupId == groupId)  // genesis of group must only produce 1 authority output so just match the groupid
+                            {
+                                //assert(gi.isAuthority()) // possibly but double check subgroup creation
+                                addr = out.script.address
+                                break
+                            }
+                        }
+                    }
+
+                    val td:TokenDesc = decodeTokenDescDoc(doc, addr)
+                    val tddHash = td.tddHash
+                    if ((tddHash != null) && (tg.document_hash == Hash256(tddHash).toHex()))
+                    {
+
+                            td.genesisInfo = tg
+                            storeTokenDesc(groupId, td)  // We got good data, so cache it
+                            return td
+                    }
+                    else
+                    {
+                            LogIt.info("Incorrect token desc document")
+                            val td = TokenDesc(tg.ticker ?: "", tg.name, "token description document is invalid")
+                            td.genesisInfo = tg
+                            return td
+                    }
+                }
+                else  // Could not access the doc for some reason, don't cache it so we retry next time we load the token
+                {
+                    val td = TokenDesc(tg.ticker ?: "", tg.name)
+                    td.genesisInfo = tg
+                    return td
                 }
             }
-        }
+            else // There is no token doc, cache what we have since its everything known about this token
+            {
+                val td = TokenDesc(tg.ticker ?: "", tg.name)
+                td.genesisInfo = tg
+                storeTokenDesc(groupId, td)
+                return td
+            }
 
-        if (true)  // absolute
+        }
+    }
+
+
+    fun getNftFile(td: TokenDesc?, groupId: GroupId):Pair<String,ByteArray>?
+    {
+        try
         {
-            val file = File(app.filesDir, groupId.toHex() + ".zip")
-            val zf = ZipFile(file)
-
-            val ze = zf.getEntry("blah")
+            return loadAssetFile(groupId.toHex() + ".zip")
+        }
+        catch(e: Exception) // file not found
+        {
+            LogIt.info("NFT ${groupId.toHex()} not in cache")
         }
 
+        val url = td?.nftUrl ?: nftUrl(td?.genesisInfo?.document_url, groupId)
+        LogIt.info(sourceLoc() + ": nft URL: " + url)
+
+        if (url != null)
+        {
+            try
+            {
+                val zipBytes = URL(url).readBytes()
+                val zf = ZipInputStream(ByteArrayInputStream(zipBytes))
+                // Just try to go thru the zip dir to see if its basically a valid file
+                val files = generateSequence { zf.nextEntry }.map { it.name }.toList()
+                LogIt.info(sourceLoc() + ": nft zip contents " + files.joinToString(" "))
+                val hash = Hash.hash256(zipBytes)
+                if (groupId.subgroupData() contentEquals  hash)
+                {
+                    storeAssetFile(groupId.toHex() + ".zip", zipBytes)
+                    return Pair(url, zipBytes)
+                }
+                else
+                {
+                    LogIt.info(sourceLoc() + ": nft zip file does not match hash")
+                }
+            }
+            catch(e:java.net.MalformedURLException)
+            {
+            }
+        }
+        return null
     }
 
 }
@@ -122,200 +280,500 @@ class AssetInfo(val groupInfo: GroupInfo)
     var tokenInfo: TokenDesc? = null
     var iconBytes: ByteArray? = null
     var iconUri: Uri? = null
+    var iconBackBytes: ByteArray? = null
+    var iconBackUri: Uri? = null
 
-    fun storeNftFile(filename: String, data: ByteArray)
+    var nft: NexaNFTv2? = null
+
+    var publicMediaCache: String? = null
+    var publicMediaBytes: ByteArray? = null
+    var ownerMediaCache: String? = null
+    var ownerMediaBytes: ByteArray? = null
+
+    // Connection to the UI if shown on screen
+    var ui:AssetBinder? = null
+    var sui:AssetSuccinctBinder? = null
+
+    // display this amount if set (for quantity selection during send)
+    var displayAmount: Long? = null
+
+    var account: Account? = null
+
+    /** Get the file associated with this NFT (if this is an NFT), or null
+     * This function may retrieve this data from a local cache or remotely.
+     * This is a function rather than a val with a getter to emphasize that this might be an expensive operation
+     * */
+    fun nftFile(am: AssetManager):Pair<String,ByteArray>?
     {
-        val context = wallyApp!!
-
-        val dir = context.getDir("nft", Context.MODE_PRIVATE)
-        val file = File(dir, filename)
-        FileOutputStream(file).use {
-            it.write(data)
-        }
+        // TODO: cache both in RAM and on disk
+        return am.getNftFile(tokenInfo, groupInfo.groupId)
     }
 
-    fun loadNftFile(filename: String): ByteArray
-    {
-        val context = wallyApp!!
-        val dir = context.getDir("nft", Context.MODE_PRIVATE)
-        val file = File(dir, filename)
-        FileInputStream(file).use {
-            return it.readBytes()
-        }
-    }
 
-    fun nftUrl(s: String?, groupId: GroupId):String?
+    fun extractNftData(nftZip:ByteArray)
     {
-        if (s == null)
+        // grab image from zip file
+        val (fname, data) = nftCardFront(nftZip)
+        if (fname != null)
         {
-            return("http://" + NIFTY_ART_IP[groupId.blockchain] + "/_public/" + groupId)
+            iconBytes = data
+            iconUri = Uri.parse(fname)  // TODO, actually just a filename
         }
-        // TODO many more ways to get it
-        return null
+        val (bname, bdata) = nftCardBack(nftZip)
+        if (bname != null)
+        {
+            iconBackBytes = bdata
+            iconBackUri = Uri.parse(bname)  // TODO, actually just a filename
+        }
+
+        // grab NFT text data
+        val nfti = nftData(nftZip)
+        if (nfti != null)
+        {
+            nft = nfti
+        }
     }
 
-    fun webGetNftFile(td: TokenDesc?, groupId: GroupId):ByteArray?
+    /** returns the Uri and the bytes, or null if nonexistent, cannot be loaded */
+    fun getTddIcon(td: TokenDesc): Pair<Uri?, ByteArray?>
     {
-        val url = td?.nftUrl ?: nftUrl(td?.genesisInfo?.document_url, groupId)
-        LogIt.info(sourceLoc() + ": nft URL: " + url)
-
-        if (url != null)
+        val iconUrl = tokenInfo?.icon
+        if (iconUrl != null)
         {
-            try
+            val img = try
             {
-                val zipBytes = URL(url).readBytes()
-                val zf = ZipInputStream(ByteArrayInputStream(zipBytes))
-                // Just try to go thru the zip dir to see if its basically a valid file
-                val files = generateSequence { zf.nextEntry }.map { it.name }.toList()
-                LogIt.info(sourceLoc() + ": nft zip contents " + files.joinToString(" "))
-                val hash = Hash.hash256(zipBytes)
-                if (groupId.subgroupData() contentEquals  hash)
+                val data = URL(iconUrl).readBytes()
+                return Pair(Uri.parse(URL(iconUrl).toString()), data)
+            }
+            catch (e: java.net.MalformedURLException)
+            {
+                try
                 {
-                    storeNftFile(groupId.toHex() + ".zip", zipBytes)
-                    return zipBytes
+                    val data = URI(docUrl).resolve(iconUrl).toURL().readBytes()
+                    return Pair(Uri.parse(URI(docUrl).resolve(iconUrl).toString()), data)
                 }
-                else
+                catch(e: Exception)
                 {
-                     LogIt.info(sourceLoc() + ": nft zip file does not match hash")
+                    // link is dead
+                    return Pair(null, null)
                 }
             }
-            catch(e:java.net.MalformedURLException)
-            {
-            }
         }
-        return null
+        return Pair(null,null)
     }
 
-    fun load(chain: Blockchain)  // Attempt to find all asset info from a variety of data sources
+    fun load(chain: Blockchain, am: AssetManager)  // Attempt to find all asset info from a variety of data sources
     {
-        // first load the token description doc (TDD)
-        val ec = openElectrum(chain.chainSelector)
-        val tg = ec.getTokenGenesisInfo(groupInfo.groupId, 30*1000)
-        LogIt.info(sourceLoc() + chain.name + ": rostrum loaded: " + tg.name)
+
+        var td = am.getTokenDesc(chain, groupInfo.groupId)
+        var tg = td.genesisInfo
+        var dataChanged = false
+
+        if (tg == null)
+        {
+            td = am.getTokenDesc(chain, groupInfo.groupId, true)
+            tg = td.genesisInfo
+            if (tg == null) return // can't load
+        }
+
+        LogIt.info(sourceLoc() + chain.name + ": loaded: " + tg.name)
 
         name = tg.name
         ticker = tg.ticker
         genesisHeight = tg.height
         genesisTxidem = Hash256(tg.txidem)
-        tg.document_hash?.let { docHash = Hash256(it) }
+
         docUrl = tg.document_url
 
-        var doc: String? = null
         if (docUrl != null)
         {
-            try
+            // Ok find the NFT description
+            val nftZipData = am.getNftFile(td, groupInfo.groupId)
+            if (nftZipData != null)
             {
-                LogIt.info(sourceLoc() + ": Accessing TDD from " + docUrl)
-                doc = URL(docUrl).readText()
-            } catch (e: java.io.FileNotFoundException)
-            {
-            } catch (e: Exception)
-            {
-                LogIt.info(sourceLoc() + ": Error retrieving token description document: " + e.message)
-            }
-
-            val d = doc
-            LogIt.info(sourceLoc() + ": TDD:" + d)
-            if (d != null)
-            {
-                val (td, hash, sig) = decodeTokenDescDoc(d)
-                td.genesisInfo = tg
-
-                val nftZip = webGetNftFile(td, groupInfo.groupId)
-                if (nftZip != null)
+                tokenInfo = td
+                if (td.marketUri == null)
                 {
-                    // TODO grab image from zip file
-                    val (name, data) = cardFront(nftZip)
-                    if (name != null)
+                    val u: URI = URI(nftZipData.first)
+                    if (u.isAbsolute)  // This is a real URI, not a local path
                     {
-                        iconBytes = data
-                        iconUri = Uri.parse(name)  // TODO, actually just a filename
+                        td.marketUri = u.resolve("/token/" + groupInfo.groupId.toHex()).toString()
+                        am.storeTokenDesc(groupInfo.groupId, td)
                     }
+                    else
+                    {
+                        td.marketUri = URI(docUrl).resolve("/token/" + groupInfo.groupId.toHex()).toString()
+                    }
+                    tokenInfo = td
+                    am.storeTokenDesc(groupInfo.groupId, td)
                 }
-                else
+                extractNftData(nftZipData.second)
+                if (iconBackUri == null) getTddIcon(td).let { iconBackUri = it.first; iconBackBytes = it.second }
+                dataChanged = true
+            }
+            else  // Not an NFT, so fill in the data from the TDD
+            {
+                LogIt.info(sourceLoc() + ": $name == ${td.name}, $ticker == ${td.ticker} ")
+                if (ticker != td.ticker)
                 {
-                    LogIt.info(sourceLoc() + ": $name == ${td.name}, $ticker == ${td.ticker} ")
-                    if (ticker != td.ticker)
-                    {
-                        throw IncorrectTokenDescriptionDoc("ticker does not match asset genesis transaction")
-                    }
+                    throw IncorrectTokenDescriptionDoc("ticker does not match asset genesis transaction")
+                }
 
-                    // TODO verify TDD sig
+                if (td.pubkey != null)  // the document signature passed
+                {
                     name = td.name
                     ticker = td.ticker
-                    tokenInfo = td  // ok save all the info
-                    val iconUrl = tokenInfo?.icon
-                    LogIt.info(sourceLoc() + ": icon " + iconUrl)
-
-                    if (iconUrl != null)
-                    {
-                        val img = try
-                        {
-                            iconBytes = URL(iconUrl).readBytes()
-                            iconUri = Uri.parse(URL(iconUrl).toString())
-                        } catch (e: java.net.MalformedURLException)
-                        {
-                            iconBytes = URI(docUrl).resolve(iconUrl).toURL().readBytes()
-                            iconUri = Uri.parse(URI(docUrl).resolve(iconUrl).toString())
-                        }
-                        LogIt.info(sourceLoc() + " icon is" + img)
-                    }
+                }
+                // Guess one location for the market
+                td.marketUri = URI(docUrl).resolve("/token/" + groupInfo.groupId.toHex()).toString()
+                tokenInfo = td  // ok save all the info
+                am.storeTokenDesc(groupInfo.groupId, td)
+                val iconUrl = tokenInfo?.icon
+                if (iconUrl != null)
+                {
+                    getTddIcon(td).let { iconUri = it.first; iconBytes = it.second }
+                    dataChanged = true
                 }
             }
         }
-        else
+        else // Missing some standard token info, look around for an NFT file
         {
-            val nftZip = webGetNftFile(null, groupInfo.groupId)
-            if (nftZip != null)
+            val nftZipData = am.getNftFile(null, groupInfo.groupId)
+            if (nftZipData != null)
             {
-                // TODO grab image from zip file
-                val (name, data) = cardFront(nftZip)
-                if (name != null)
+                tokenInfo = td
+                if (td.marketUri == null)
                 {
-                    iconBytes = data
-                    iconUri = Uri.parse(name)  // TODO, actually just a filename
+                    val u: URI = URI(nftZipData.first)
+                    if (u.isAbsolute)  // This is a real URI, not a local path
+                    {
+                        td.marketUri = u.resolve("/token/" + groupInfo.groupId.toHex()).toString()
+                        am.storeTokenDesc(groupInfo.groupId, td)
+                    }
                 }
+                extractNftData(nftZipData.second)
+                dataChanged = true
             }
+        }
+
+        if (dataChanged)
+        {
+            ui?.repopulate()
+            sui?.repopulate()
         }
     }
 
 }
 
 
-class AssetBinder(val ui: AssetListItemBinding, val activity: AssetsActivity): GuiListItemBinder<AssetInfo>(ui.root)
+class AssetSuccinctBinder(val ui: AssetSuccinctListItemBinding, val activity: CommonNavActivity): GuiListItemBinder<AssetInfo>(ui.root)
 {
+    var showFront = true
     // Fill the view with this data
     override fun populate()
     {
         LogIt.info(sourceLoc() + "populate: " + (data?.groupInfo?.groupId?.toString() ?: ""))
         data?.let()
         { d ->
-            ui.GuiAssetId.text = d.groupInfo.groupId.toString()
-            ui.GuiAssetName.text = d.name ?: ""
-            ui.GuiAssetQuantity.text = d.groupInfo.tokenAmt.toString()
-            // only works for local Uris
-            // if (d.iconUri != null) ui.GuiAssetIcon.setImageURI(d.iconUri)
-            if (d.iconUri != null)
+            d.sui = this
+
+            val nft = d.nft
+            if (nft == null)
             {
-                if (d.iconUri.toString().endsWith(".svg", ignoreCase = true))
+                ui.GuiAssetName.text = d.ticker ?: d.name
+                ui.GuiAssetQuantity.text = d.displayAmount?.toString() ?: d.groupInfo.tokenAmt.toString()
+                ui.GuiAssetQuantity.visibility = View.VISIBLE
+            }
+            else
+            {
+                ui.GuiAssetName.text = nft.title ?: d.name ?: ""
+                if (d.groupInfo.tokenAmt == 1L)  // If its an NFT and there's just 1 (remember SFTs could have > 1) then don't bother to show quantity
                 {
-                    val svg = SVG.getFromInputStream(ByteArrayInputStream(d.iconBytes))
-                    val drawable = PictureDrawable(svg.renderToPicture())
-                    ui.GuiAssetIcon.setImageDrawable(drawable)
+                    ui.GuiAssetQuantity.visibility = View.GONE
                 }
-                if (d.iconUri.toString().endsWith(".jpg", ignoreCase = true))
+                else
                 {
-                    val bmp = BitmapFactory.decodeStream(ByteArrayInputStream(d.iconBytes))
-                    ui.GuiAssetIcon.setImageBitmap(bmp)
+                    ui.GuiAssetQuantity.visibility = View.VISIBLE
+                    ui.GuiAssetQuantity.text = d.displayAmount?.toString() ?: d.groupInfo.tokenAmt.toString()
+                }
+            }
+
+            if (showFront)
+            {
+                showImage(ui.GuiAssetIcon, d.iconUri, d.iconBytes)
+            }
+            else
+            {
+                showImage(ui.GuiAssetIcon, d.iconBackUri, d.iconBackBytes)
+
+            }
+
+            ui.GuiAssetIcon.setOnClickListener() {
+                showFront = !showFront
+                if (showFront)
+                {
+                    showImage(ui.GuiAssetIcon, d.iconUri, d.iconBytes)
+                }
+                else
+                {
+                    showImage(ui.GuiAssetIcon, d.iconBackUri, d.iconBackBytes)
                 }
             }
         }
+
+        ui.GuiAssetQuantity.setOnClickListener {
+            val d = data ?: return@setOnClickListener
+            ui.GuiAssetQuantity.visibility = View.INVISIBLE
+            if (d.displayAmount == null) d.displayAmount = 1
+            ui.GuiAssetEditQuantity.set((d.displayAmount ?: 1L).toString())
+            ui.GuiAssetEditQuantity.visibility = View.VISIBLE
+        }
+
+        ui.GuiAssetEditQuantity.setOnFocusChangeListener(object: View.OnFocusChangeListener
+        {
+            override fun onFocusChange(view: View?, hasFocus: Boolean)
+            {
+                if (hasFocus)
+                {
+                    activity.setVisibleSoftKeys(SoftKey.ALL or SoftKey.THOUSAND or SoftKey.MILLION or SoftKey.CLEAR)
+                    activity.showKeyboard()
+                }
+                else
+                {
+                    try
+                    {
+                        val d = data ?: return
+                        ui.GuiAssetQuantity.visibility = View.VISIBLE
+                        ui.GuiAssetEditQuantity.visibility = View.INVISIBLE
+                        val s = ui.GuiAssetEditQuantity.text.toString().lowercase()
+                        var v = if (s == "all") d.groupInfo.tokenAmt else ui.GuiAssetEditQuantity.text.toString().toLong()
+                        if (v > d.groupInfo.tokenAmt)
+                            activity.displayNotice(R.string.moreThanAvailable)
+                        else
+                        {
+                            if (v < 0L)
+                            {
+                                LogIt.info(sourceLoc() + ": Bad token amount $v")
+                                activity.displayNotice(R.string.badAmount)
+                            }
+                        }
+
+                        if (v == 0L)
+                        {
+                            // TODO remove this element from the list
+                        }
+
+                        ui.GuiAssetQuantity.text = v.toString()
+                        ui.GuiAssetEditQuantity.set("")  // Set this to empty so its size collapses back to its minimum
+                    }
+                    catch (e: Exception)
+                    {
+                        handleThreadException(e)
+                        activity.displayNotice(R.string.badAmount)
+                    }
+                }
+            }
+        })
+
+        ui.GuiAssetEditQuantity.doAfterTextChanged {
+            // remember that this is called even if the change happens programatically
+            val d = data ?: return@doAfterTextChanged
+            try
+            {
+                activity.finishShowingNotice()
+                val s = ui.GuiAssetEditQuantity.text.toString().lowercase()
+                if (s.length == 0) return@doAfterTextChanged
+                var v = if (s == "all") d.groupInfo.tokenAmt else ui.GuiAssetEditQuantity.text.toString().toLong()
+                if (v > d.groupInfo.tokenAmt)
+                    activity.displayNotice(R.string.moreThanAvailable)
+                else if (v < 0L) activity.displayNotice(R.string.badAmount)
+                else
+                    {
+                        ui.GuiAssetQuantity.text = v.toString()
+                        d.displayAmount = v
+                    }
+            }
+            catch (e: Exception)
+            {
+                handleThreadException(e)
+            }
+        }
+
+    }
+
+    /** shows this image in the passed imageview.  Returns the image data loaded from the URI, for your cache, or the bytes you sent this function */
+    fun showImage(ui: ImageView, uri: Uri?, bytes: ByteArray? = null): ByteArray?
+    {
+        if (uri == null)
+        {
+            ui.setImageDrawable(null)
+            return null
+        }
+        if (bytes == null)  throw UnimplementedException("load from uri")
+        val name = uri.toString().lowercase()
+
+        if (name.endsWith(".svg", true))
+        {
+            val svg = SVG.getFromInputStream(ByteArrayInputStream(bytes))
+            val drawable = PictureDrawable(svg.renderToPicture())
+            ui.setImageDrawable(drawable)
+            ui.visibility=View.VISIBLE
+        }
+        else if (name.endsWith(".jpg", true) ||
+          name.endsWith(".jpeg", true) ||
+          name.endsWith(".png", true) ||
+          name.endsWith(".webp",true) ||
+          name.endsWith(".gif",true) ||
+          name.endsWith(".heic",true) ||
+          name.endsWith(".heif",true)
+        )
+        {
+            val bmp = BitmapFactory.decodeStream(ByteArrayInputStream(bytes))
+            ui.setImageBitmap(bmp)
+            ui.visibility=View.VISIBLE
+        }
+        return bytes
+    }
+
+    fun repopulate()
+    {
+        laterUI { populate() }
+    }
+
+    override fun unpopulate()
+    {
+        data?.ui = null
+        super.unpopulate()
     }
 
     override fun onClick(v: View)
     {
         super.onClick(v)
-        activity.adapter.layout()  // TODO: temporary hack to force showing of image on click -- should auto-redraw when the image is available
+    }
+}
+
+class AssetBinder(val ui: AssetListItemBinding, val activity: AssetsActivity): GuiListItemBinder<AssetInfo>(ui.root)
+{
+    var showFront = true
+    // Fill the view with this data
+    override fun populate()
+    {
+        LogIt.info(sourceLoc() + "populate: " + (data?.groupInfo?.groupId?.toString() ?: ""))
+        data?.let()
+        { d ->
+            d.ui = this
+            ui.GuiAssetId.text = d.groupInfo.groupId.toString()
+            ui.GuiAssetId.visibility = if (devMode) View.VISIBLE else View.GONE
+
+            val nft = d.nft
+            if (nft == null)
+            {
+                ui.GuiAssetId.text = d.groupInfo.groupId.toString()
+                ui.GuiAssetName.text = d.name ?: ""
+                ui.GuiAssetQuantity.text = d.groupInfo.tokenAmt.toString()
+                ui.GuiAssetQuantity.visibility = View.VISIBLE
+                ui.GuiAssetAuthor.visibility = View.GONE
+                ui.GuiAssetSeries.visibility = View.GONE
+            }
+            else
+            {
+                ui.GuiAssetName.text = nft.title ?: d.name ?: ""
+                if (d.groupInfo.tokenAmt == 1L)  // If its an NFT and there's just 1 (remember SFTs could have > 1) then don't bother to show quantity
+                {
+                    ui.GuiAssetQuantity.visibility = View.INVISIBLE
+                }
+                else
+                {
+                    ui.GuiAssetQuantity.visibility = View.VISIBLE
+                    ui.GuiAssetQuantity.text = d.groupInfo.tokenAmt.toString()
+                }
+
+                if ((nft.author != null)&&(nft.author.length > 0))
+                {
+                    ui.GuiAssetAuthor.text = i18n(R.string.NftAuthor) % mapOf("author" to nft.author)
+                    ui.GuiAssetAuthor.visibility = View.VISIBLE
+                }
+                else ui.GuiAssetAuthor.visibility = View.GONE
+                if (nft.series != null)
+                {
+                    ui.GuiAssetSeries.text = i18n(R.string.NftSeries) % mapOf("series" to nft.series)
+                    ui.GuiAssetSeries.visibility = View.VISIBLE
+                }
+                else ui.GuiAssetSeries.visibility = View.GONE
+            }
+
+            if ((showFront)||(d.iconBackBytes == null))
+            {
+                showImage(ui.GuiAssetIcon, d.iconUri, d.iconBytes)
+            }
+            else
+            {
+                showImage(ui.GuiAssetIcon, d.iconBackUri, d.iconBackBytes)
+            }
+
+            ui.GuiAssetIcon.setOnClickListener() {
+                showFront = !showFront
+                if ((showFront)||(d.iconBackBytes == null))
+                {
+                    showImage(ui.GuiAssetIcon, d.iconUri, d.iconBytes)
+                }
+                else
+                {
+                    showImage(ui.GuiAssetIcon, d.iconBackUri, d.iconBackBytes)
+                }
+            }
+        }
+    }
+
+    /** shows this image in the passed imageview.  Returns the image data loaded from the URI, for your cache, or the bytes you sent this function */
+    fun showImage(ui: ImageView, uri: Uri?, bytes: ByteArray? = null): ByteArray?
+    {
+        if (uri == null)
+        {
+            ui.setImageDrawable(null)
+            return null
+        }
+        if (bytes == null)  throw UnimplementedException("load from uri")
+        val name = uri.toString().lowercase()
+
+        if (name.endsWith(".svg", true))
+        {
+            val svg = SVG.getFromInputStream(ByteArrayInputStream(bytes))
+            val drawable = PictureDrawable(svg.renderToPicture())
+            ui.setImageDrawable(drawable)
+            ui.visibility=View.VISIBLE
+        }
+        else if (name.endsWith(".jpg", true) ||
+          name.endsWith(".jpeg", true) ||
+            name.endsWith(".png", true) ||
+            name.endsWith(".webp",true) ||
+          name.endsWith(".gif",true) ||
+          name.endsWith(".heic",true) ||
+          name.endsWith(".heif",true)
+          )
+        {
+            val bmp = BitmapFactory.decodeStream(ByteArrayInputStream(bytes))
+            ui.setImageBitmap(bmp)
+            ui.visibility=View.VISIBLE
+        }
+        return bytes
+    }
+
+    fun repopulate()
+    {
+        laterUI { populate() }
+    }
+
+    override fun unpopulate()
+    {
+        data?.ui = null
+        super.unpopulate()
+    }
+
+    override fun onClick(v: View)
+    {
+        super.onClick(v)
+        activity.showDetails(pos, data, v.height)
     }
 }
 
@@ -323,9 +781,16 @@ class AssetBinder(val ui: AssetListItemBinding, val activity: AssetsActivity): G
 class AssetsActivity : CommonNavActivity()
 {
     private lateinit var ui: ActivityAssetsBinding
+    lateinit var assetsLayoutManager: LinearLayoutManager
     override var navActivityId = R.id.navigation_assets
+    var listHeight: Int = 0
+    var navHeight: Int = 0
+
     var account: Account? = null
     var accountIdx = -1
+    var currentlyViewing = -1
+    var asset: AssetInfo? = null
+
     lateinit var adapter: GuiList<AssetInfo, AssetBinder>
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -333,9 +798,44 @@ class AssetsActivity : CommonNavActivity()
         super.onCreate(savedInstanceState)
         ui = ActivityAssetsBinding.inflate(layoutInflater)
         setContentView(ui.root)
-        ui.GuiAssetList.layoutManager = LinearLayoutManager(this)
+        assetsLayoutManager = LinearLayoutManager(this)
+        ui.GuiAssetList.layoutManager = assetsLayoutManager
 
         enableMenu(this, SHOW_ASSETS_PREF)  // If you ever drop into this activity, show it in the menu
+
+        ui.GuiAssetImage.setOnClickListener { onMediaClicked() }
+        ui.GuiAssetVideo.setOnClickListener { onMediaClicked() }
+        ui.GuiAssetWeb.setOnClickListener { onMediaClicked() }
+        ui.GuiAssetMediaRole.setOnClickListener { onMediaClicked() }
+
+        ui.GuiNftCardFrontButton.setOnClickListener { showCardFront() }
+        ui.GuiNftPublicButton.setOnClickListener { showPublicMedia() }
+        ui.GuiNftOwnerButton.setOnClickListener { showOwnerMedia() }
+        ui.GuiNftCardBackButton.setOnClickListener { showCardBack() }
+        ui.GuiNftInfo.setOnClickListener { showInfo() }
+        ui.GuiNftLegal.setOnClickListener { showLicense() }
+
+        ui.GuiAssetInvoke.setOnClickListener { onInvokeButton() }
+        ui.GuiAssetTrade.setOnClickListener { onTradeButton() }
+        ui.GuiAssetSend.setOnClickListener { onSendButton() }
+
+        ui.GuiAssetVideoBox.setOnPreparedListener(object: OnPreparedListener {
+            override fun onPrepared(mp: MediaPlayer?)
+            {
+                mp?.setLooping(true)
+            }
+        })
+
+        ui.root.viewTreeObserver.addOnGlobalLayoutListener(object: ViewTreeObserver.OnGlobalLayoutListener
+        {
+            override fun onGlobalLayout()
+            {
+                listHeight = max(listHeight, ui.GuiAssetList.measuredHeight)
+                navHeight = max(navHeight, ui.navView.measuredHeight)
+            }
+        })
+
+
 
         laterUI {
             wallyApp?.let { app ->
@@ -347,12 +847,14 @@ class AssetsActivity : CommonNavActivity()
                 {
                     try
                     {
-                        val acc = wallyApp?.primaryAccount
+                        val acc = wallyApp?.focusedAccount ?: wallyApp?.primaryAccount
                         updateAccount(acc)
                     }
                     catch(e: PrimaryWalletInvalidException)
                     {
-                        LogIt.info(sourceLoc() + "No primary account")
+                        LogIt.info(sourceLoc() + "No focused or primary account")
+                        wallyApp?.displayError(R.string.NoAccounts)
+                        finish()
                     }
                 }
             }
@@ -360,10 +862,16 @@ class AssetsActivity : CommonNavActivity()
         }
     }
 
+    override fun onBackPressed()
+    {
+        if (ui.GuiAssetDetail.visibility == View.VISIBLE) closeDetails()
+        else super.onBackPressed()
+    }
+
     fun constructAssetList(acc: Account): List<AssetInfo>
     {
         LogIt.info(sourceLoc() + acc.name + ": Construct assets")
-        val ret = mutableListOf<AssetInfo>()
+        val ast = mutableMapOf<GroupId, AssetInfo>()
         for (txo in acc.wallet.txos)
         {
             val sp = txo.value
@@ -372,16 +880,380 @@ class AssetsActivity : CommonNavActivity()
                 val grp = sp.groupInfo()
                 if ((grp != null)&& !grp.isAuthority())  // TODO not dealing with authority txos in Wally mobile
                 {
-                    val ai = AssetInfo(grp)
-                    later {
-                        ai.load(acc.wallet.blockchain)
-                        }
-                    ret.add(ai)
+                    val tmp = grp.tokenAmt  // Set the tokenAmt to 0 and than add it back in once we grab or create the AssetInfo
+                    grp.tokenAmt = 0
+                    val ai: AssetInfo = ast[grp.groupId] ?: AssetInfo(grp)
+                    ai.groupInfo.tokenAmt += tmp
+                    ai.account = acc
+                    ast[grp.groupId] = ai
                 }
             }
         }
-        return ret.toList()
+
+        // Start grabbing the data for all assets (asynchronously)
+        for (asset in ast.values)
+        {
+            later {
+                asset.load(acc.wallet.blockchain, wallyApp!!.assetManager)
+            }
+        }
+        return ast.values.toList()
     }
+
+    fun onMediaClicked()
+    {
+
+    }
+
+    fun onSendButton()
+    {
+        val a = asset
+        if (a!=null)
+        {
+            a.displayAmount = 1  // The default send is to transfer a single one (for safety)
+            if (wallyApp!!.assetManager.addAssetToTransferList(a))
+            {
+                displayNotice(R.string.AssetAddedToTransferList)
+            }
+            else
+            {
+                // Already on list
+            }
+        }
+    }
+
+    fun onTradeButton()
+    {
+        val a = asset
+        if (a!=null)
+        {
+            try
+            {
+                val market = a.tokenInfo?.marketUri
+                if (market != null)
+                {
+                    // TODO create Challenge Transaction proof-of-ownership
+                    val uri = Uri.parse(market)
+                    val intent: Intent = Intent(Intent.ACTION_VIEW, uri)
+                    intent.putExtra("tokenid", a.groupInfo.groupId.toHex())
+                    startActivity(intent)
+                }
+            }
+            catch(e: ActivityNotFoundException)
+            {
+                LogIt.info("asset marketplace activity not found: ${a.tokenInfo?.marketUri}")
+            }
+        }
+    }
+
+    fun onInvokeButton()
+    {
+        val a = asset
+        if (a!=null)
+        {
+            var appuri = a.nft?.appuri
+
+            if (appuri != null && appuri.length > 0)
+            {
+                if (!appuri.contains(":")) appuri = "http://" + appuri
+                LogIt.info("launching " + appuri)
+
+                // TODO create Challenge Transaction proof-of-ownership
+
+                if (appuri.lowercase().startsWith("http"))
+                {
+                    if (appuri.contains("?")) appuri = appuri + "&" + "tokenid=" + a.groupInfo.groupId.toHex()
+                    else appuri = appuri + "?" + "tokenid=" + a.groupInfo.groupId.toHex()
+                }
+
+                val uri = Uri.parse(appuri)
+                val intent: Intent = Intent(Intent.ACTION_VIEW, uri)
+                intent.putExtra("tokenid", a.groupInfo.groupId.toHex())
+                startActivity(intent)
+            }
+        }
+    }
+
+    fun closeDetails()
+    {
+        finishShowingNotice()
+        ui.GuiAssetDetail.visibility = View.GONE
+        ui.GuiAssetList.layoutParams.height = listHeight
+        ui.GuiAssetList.requestLayout()
+        ui.GuiAssetList.invalidate()
+        ui.container.requestLayout()
+        assetsLayoutManager.requestLayout()
+        return
+    }
+
+    fun showDetails(pos:Int, a: AssetInfo?, itemHeight: Int)
+    {
+        // close
+        if ((a == null) || ((ui.GuiAssetDetail.visibility == View.VISIBLE)&&(currentlyViewing == pos)))
+        {
+            closeDetails()
+            return
+        }
+
+        val heightButOne = listHeight - itemHeight
+        assetsLayoutManager.scrollToPositionWithOffset(pos, 0)
+        ui.GuiAssetList.layoutParams.height = itemHeight
+        ui.GuiAssetList.requestLayout()
+        ui.GuiAssetList.invalidate()
+        ui.GuiAssetDetail.visibility = View.VISIBLE
+        ui.GuiAssetDetail.layoutParams.height = heightButOne
+        ui.GuiAssetDetail.requestLayout()
+        ui.container.requestLayout()
+
+
+        asset = a
+        currentlyViewing = pos
+
+        val nftDetail = a.nft
+        if (nftDetail != null)
+        {
+            if (nftDetail.appuri != "")
+                ui.GuiAssetInvoke.visibility = View.VISIBLE
+            else ui.GuiAssetInvoke.visibility = View.GONE
+        }
+        else
+        {
+            ui.GuiAssetInvoke.visibility = View.GONE
+        }
+
+        ui.GuiAssetTrade.visOrGone(a.tokenInfo?.marketUri != null)
+
+        showCardFront()
+
+        // Cache any large NFT files, and once we have inventoried what's available show the buttons
+        later {
+            val nftZipData = a.nftFile(wallyApp!!.assetManager)
+            if (nftZipData != null)
+            {
+                val nftZip = nftZipData.second
+                if (true)
+                {
+                    val (uriStr, b) = cacheNftMedia(a.groupInfo.groupId, nftPublicMedia(nftZip))
+                    if (uriStr != null)
+                    {
+                        a.publicMediaCache = uriStr
+                        a.publicMediaBytes = b
+                    }
+                }
+                if (true)
+                {
+                    val (uriStr, b) = cacheNftMedia(a.groupInfo.groupId, nftOwnerMedia(nftZip))
+                    if (uriStr != null)
+                    {
+                        a.ownerMediaCache = uriStr
+                        a.ownerMediaBytes = b
+                    }
+                }
+            }
+            laterUI { showAvailableCardButtons() }
+        }
+    }
+
+
+    fun cacheNftMedia(groupId: GroupId, media: Pair<String?, ByteArray?>): Pair<String?, ByteArray?>
+    {
+        val cacheDir = wallyApp!!.cacheDir
+        var uriStr = media.first
+        var b = media.second
+        if (b != null)
+        {
+            if ((b.size > 10000000) || (uriStr!=null && isVideo(uriStr)))
+            {
+                val result = canonicalSplitExtension(uriStr)
+                if (result == null) return Pair(uriStr, b)  // never going to happen because uriStr != null
+                val (fnoext, ext) = result
+                File.createTempFile(groupId.toHex() + "_" + fnoext, ext, cacheDir)
+                val f = File(cacheDir, groupId.toHex() + "_" + fnoext + "." + ext)
+                uriStr = f.absolutePath
+                f.writeBytes(b)
+                b = null  // We want to load this from cache file so don't save the bytes
+            }
+        }
+        return Pair(uriStr, b)
+    }
+
+
+    fun showAvailableCardButtons()
+    {
+        val a = asset ?: return
+        ui.GuiNftCardFrontButton.visOrGone(a.iconUri != null)
+        ui.GuiNftCardBackButton.visOrGone(a.iconBackUri != null)
+        ui.GuiNftPublicButton.visOrGone(a.publicMediaCache != null)
+        ui.GuiNftOwnerButton.visOrGone(a.ownerMediaCache != null)
+        ui.GuiNftInfo.visOrGone((a.nft?.info ?: "") != "")
+        ui.GuiNftLegal.visOrGone((a.nft?.license ?: "") != "")
+    }
+    fun showInfo()
+    {
+        val a = asset ?: return
+        val nft = a.nft ?: return
+        ui.GuiAssetVideo.visibility = View.GONE
+        ui.GuiAssetWeb.visibility = View.VISIBLE
+        ui.GuiAssetImage.visibility = View.GONE
+        ui.GuiAssetWebBox.settings.javaScriptEnabled = true
+        ui.GuiAssetWebBox.settings.allowFileAccess = false
+        ui.GuiAssetWebBox.settings.blockNetworkLoads = false
+        ui.GuiAssetWebBox.settings.blockNetworkImage = false
+        ui.GuiAssetWebBox.loadData(nft.info,"text/html; charset=utf-8", "utf-8")
+        ui.GuiAssetMediaRole.text = i18n(R.string.NftInfo)
+    }
+
+    fun showLicense()
+    {
+        val a = asset ?: return
+        val nft = a.nft ?: return
+        ui.GuiAssetVideo.visibility = View.GONE
+        ui.GuiAssetWeb.visibility = View.VISIBLE
+        ui.GuiAssetImage.visibility = View.GONE
+        ui.GuiAssetWebBox.settings.javaScriptEnabled = true
+        ui.GuiAssetWebBox.settings.allowFileAccess = false
+        ui.GuiAssetWebBox.settings.blockNetworkLoads = false
+        ui.GuiAssetWebBox.settings.blockNetworkImage = false
+        ui.GuiAssetWebBox.loadData(nft.license,"text/html; charset=utf-8", "utf-8")
+        ui.GuiAssetMediaRole.text = i18n(R.string.NftLegal)
+    }
+
+
+    fun showCardFront()
+    {
+        val a = asset ?: return
+        showDetailMediaUri(a.iconUri ?: null, a.iconBytes)
+        ui.GuiAssetMediaRole.text = i18n(R.string.NftCardFront)
+    }
+
+    fun showPublicMedia()
+    {
+        val a = asset ?: return
+        ui.GuiAssetMediaRole.text = i18n(R.string.NftPublicMedia)
+        if (a.publicMediaCache != null) showDetailMedia(a.publicMediaCache, a.publicMediaBytes)
+        else
+        {
+            later {
+                val nftZipData = a.nftFile(wallyApp!!.assetManager)
+                if (nftZipData == null) {  }
+                else
+                {
+                    val (uriStr, b) = cacheNftMedia(a.groupInfo.groupId, nftPublicMedia(nftZipData.second))
+                    if (uriStr != null)
+                    {
+                        a.publicMediaCache = uriStr
+                        a.publicMediaBytes = b
+                        laterUI {
+                            showDetailMedia(uriStr, b)
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    fun showOwnerMedia()
+    {
+        val a = asset ?: return
+        ui.GuiAssetMediaRole.text = i18n(R.string.NftOwnerMedia)
+        if (a.ownerMediaCache != null) showDetailMedia(a.ownerMediaCache, a.ownerMediaBytes)
+        else
+        {
+
+            later {
+                val nftZip = a.nftFile(wallyApp!!.assetManager)
+                if (nftZip == null) {  }
+                else
+                {
+                    val (uriStr, b) = cacheNftMedia(a.groupInfo.groupId, nftOwnerMedia(nftZip.second))
+                    if (uriStr != null)
+                    {
+                        a.ownerMediaCache = uriStr
+                        a.ownerMediaBytes = b
+                        laterUI {
+                            showDetailMedia(uriStr, b)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun showCardBack()
+    {
+        val a = asset ?: return
+        if (a.iconBackUri != null)
+        {
+            showDetailMediaUri(a.iconBackUri ?: null, a.iconBackBytes)
+            ui.GuiAssetMediaRole.text = i18n(R.string.NftCardBack)
+            return
+        }
+        else {  }
+    }
+
+
+    fun showDetailMediaUri(uri: Uri?, bytes: ByteArray? = null): ByteArray? = showDetailMedia(uri.toString().lowercase(), bytes)
+
+    fun showDetailMedia(name: String?, bytes: ByteArray? = null): ByteArray?
+    {
+        ui.GuiAssetVideo.visibility = View.GONE
+        ui.GuiAssetWeb.visibility = View.GONE
+        ui.GuiAssetImage.visibility = View.GONE
+        if (name == null)
+        {
+            return null
+        }
+        if (bytes == null && name.startsWith("http"))  throw UnimplementedException("load from uri")
+
+        if (name.endsWith(".svg", true))
+        {
+            val svg = SVG.getFromInputStream(ByteArrayInputStream(bytes))
+            val svgp = svg.renderToPicture()
+            val drawable = PictureDrawable(svgp)
+            ui.GuiAssetImageBox.setImageDrawable(drawable)
+            ui.GuiAssetImage.visibility=View.VISIBLE
+        }
+        else if (name.endsWith(".jpg", true) ||
+          name.endsWith(".jpeg", true) ||
+          name.endsWith(".png", true) ||
+          name.endsWith(".webp",true) ||
+          name.endsWith(".gif",true) ||
+          name.endsWith(".heic",true) ||
+          name.endsWith(".heif",true)
+        )
+        {
+            val bmp = BitmapFactory.decodeStream(ByteArrayInputStream(bytes))
+            ui.GuiAssetImageBorder.visibility=View.VISIBLE
+            if (bmp.hasAlpha())  // If the image has an alpha channel and some transparent pixels, don't show a border
+            {
+                if ((bmp.get(0,0) ushr 24 != 0xFF) ||
+                  (bmp.get(bmp.width - 1,0) ushr 24 != 0xFF) ||
+                  (bmp.get(bmp.width - 1,bmp.height-1) ushr 24 != 0xFF) ||
+                  (bmp.get(0,bmp.height-1) ushr 24 != 0xFF))
+                    ui.GuiAssetImageBorder.visibility=View.GONE
+            }
+            ui.GuiAssetImageBox.setImageBitmap(bmp)
+            ui.GuiAssetImage.visibility=View.VISIBLE
+            laterUI {
+                // ui.GuiAssetImageBorder.layoutParams.height = ui.GuiAssetImageBox.layoutParams.height
+                // ui.GuiAssetImageBorder.layoutParams.width = ui.GuiAssetImageBox.layoutParams.width
+                // ui.GuiAssetImageBorder.requestLayout()
+            }
+        }
+        else if (name.endsWith(".mp4", true) ||
+           name.endsWith(".webm", true) ||
+          name.endsWith(".3gp", true) ||
+          name.endsWith(".mkv", true))
+        {
+            ui.GuiAssetVideo.visibility = View.VISIBLE
+            ui.GuiAssetVideoBox.setVideoPath(name)
+            ui.GuiAssetVideoBox.start()
+        }
+
+        return bytes
+    }
+
 
 
     fun updateAccount(acc: Account?)
@@ -399,25 +1271,37 @@ class AssetsActivity : CommonNavActivity()
                 val ui = AssetListItemBinding.inflate(LayoutInflater.from(it.context), it, false)
                 AssetBinder(ui, this)
             })
-            adapter.rowBackgroundColors = WallyRowColors
+            adapter.rowBackgroundColors = WallyAssetRowColors
+
+            currentlyViewing = -1
+            ui.GuiAssetDetail.visibility = View.GONE
+
         }
     }
 
     override fun onTitleBarTouched()
     {
+        // Move to another account
         LogIt.info("title button pressed")
+        // If details is open, close it
+        if (ui.GuiAssetDetail.visibility == View.VISIBLE) closeDetails()
         wallyApp?.let {
             if (it.accounts.size == 0)
             {
                 displayError(R.string.NoAccounts, null, { })
                 return
             }
-            accountIdx+=1
-            if (accountIdx >= it.accounts.size) accountIdx = 0
-            val al = it.accounts.values.toList()
-            if (al[accountIdx] == account) accountIdx++  // Avoid a repeat unless this is the only account
-            if (accountIdx >= it.accounts.size) accountIdx = 0
-            updateAccount(al[accountIdx])
+            val (acti, account) = it.nextAccount(accountIdx)
+            if (account == null)  // all accounts mysteriously disappeared!
+            {
+                wallyApp?.displayNotice(R.string.NoAccounts)
+                finish()
+            }
+            else
+            {
+                accountIdx = acti
+                updateAccount(account)
+            }
         }
     }
 

@@ -13,6 +13,7 @@ import android.opengl.Visibility
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
@@ -21,16 +22,20 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Adapter
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.ShareActionProvider
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.view.MenuItemCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import bitcoinunlimited.libbitcoincash.*
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
 import info.bitcoinunlimited.www.wally.databinding.ActivityMainBinding
+import info.bitcoinunlimited.www.wally.databinding.AssetListItemBinding
+import info.bitcoinunlimited.www.wally.databinding.AssetSuccinctListItemBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -117,6 +122,8 @@ class SleepMonitor(val activity: MainActivity) : BroadcastReceiver()
 class MainActivity : CommonNavActivity()
 {
     public lateinit var ui: ActivityMainBinding
+    lateinit var sendAssetsLayoutManager: LinearLayoutManager
+    lateinit var sendAssetsAdapter: GuiList<AssetInfo, AssetSuccinctBinder>
     override var navActivityId = R.id.navigation_home
 
     var app: WallyApp? = null
@@ -133,6 +140,9 @@ class MainActivity : CommonNavActivity()
 
     /** If there's a payment proposal that this app has seen, information about it is located here */
     var paymentInProgress: ProspectivePayment? = null
+
+    /** what assets are marked to be transferred */
+    var sendAssetList: List<AssetInfo> = listOf()
 
     /** If this program is changing the GUI, rather then the user, then there are some logic differences */
     var machineChangingGUI: Boolean = false
@@ -188,6 +198,11 @@ class MainActivity : CommonNavActivity()
 
         ui.sendToAddress.text.clear()
         ui.sendQuantity.text.clear()
+
+        ui.GuiSendAssetList.visibility = View.GONE
+        sendAssetsLayoutManager = LinearLayoutManager(this)
+        ui.GuiSendAssetList.layoutManager = sendAssetsLayoutManager
+        setAssetsToTransfer(null)  // Not transferring any assets
 
         // Load the model with persistently saves stuff when this activity is created
         if (savedInstanceState != null)
@@ -295,6 +310,7 @@ class MainActivity : CommonNavActivity()
                 val c = accounts[sct]
                 if (c != null) try
                 {
+                    setAssetsToTransfer(wallyApp!!.assetManager.transferList, c)
                     mainActivityModel.lastSendFromAccount = sct
                     val sendAddr = PayAddress(ui.sendToAddress.text.toString().trim())
                     if (c.wallet.chainSelector != sendAddr.blockchain)
@@ -308,12 +324,14 @@ class MainActivity : CommonNavActivity()
                         }
                         updateSendAccount(sendAddr)
                     }
-                } catch (e: PayAddressBlankException)
+                }
+                catch (e: PayAddressBlankException)
                 {
                 }  // nothing to update if its blank
                 catch (e: UnknownBlockchainException)
                 {
-                } catch (e: Exception)
+                }
+                catch (e: Exception)
                 {
                     if (DEBUG) throw e
                 } // ignore all problems from user input, unless in debug mode when we should analyze them
@@ -387,6 +405,14 @@ class MainActivity : CommonNavActivity()
 
     }
 
+    override fun setVisibleSoftKeys(which: SoftKeys)
+    {
+        ui.amountAllButton?.visOrGone(which.contains(SoftKey.ALL))
+        ui.amountThousandButton?.visOrGone(which.contains(SoftKey.THOUSAND))
+        ui.amountMillionButton?.visOrGone(which.contains(SoftKey.MILLION))
+        ui.amountClearButton?.visOrGone(which.contains(SoftKey.CLEAR))
+    }
+
     // call this with a function to execute whenever that function needs file read permissions
     fun onReadStoragePermissionGranted(doit: () -> Unit): Boolean
     {
@@ -400,10 +426,12 @@ class MainActivity : CommonNavActivity()
 
     fun setFocusedAccount(account: Account?)
     {
+        wallyApp!!.focusedAccount = account
         if (account != null)
         {
             ui.recvIntoAccount.setSelection(account.name)
             ui.sendAccount.setSelection(account.name)
+            setAssetsToTransfer(wallyApp!!.assetManager.transferList, account)
             updateReceiveAddressUI(account)
         }
     }
@@ -651,6 +679,15 @@ class MainActivity : CommonNavActivity()
                     c.updateReceiveAddressUI = { it -> updateReceiveAddressUI(it) }
                     c.onResume()
                 }
+
+                val tl = app?.assetManager?.transferList
+                if (tl != null && tl.size > 0)
+                {
+                    setAssetsToTransfer(tl)
+                    sendVisibility(true)
+                    receiveVisibility(false)
+                }
+
             }
         }
         // Poll the syncing icon update because it doesn't matter how long it takes
@@ -912,9 +949,15 @@ class MainActivity : CommonNavActivity()
         {
             val matches = app!!.accountsFor(chainSelector)
             if (matches.size > 1)
+            {
                 ui.sendAccount.setSelection(i18n(R.string.choose))
+                setAssetsToTransfer(null)
+            }
             else if (matches.size == 1)
+            {
                 ui.sendAccount.setSelection(matches[0].name)
+                setAssetsToTransfer(wallyApp!!.assetManager.transferList, matches[0])
+            }
         }
     }
 
@@ -1059,8 +1102,10 @@ class MainActivity : CommonNavActivity()
                     acts[0].fromFinestUnit(pip.totalSatoshis)
                 }
 
+                // This payment in progress looks ok, set up the UX to show it
                 if (true)
                 {
+                    setAssetsToTransfer(null)  // PIP spec does not cover any assets so make sure none are selected
                     updateSendAccount(chainSelector)
                     // Update the sendCurrencyType field to contain our coin selection
                     updateSendCurrencyType()
@@ -1227,17 +1272,24 @@ class MainActivity : CommonNavActivity()
         }
     }
 
-    /** actually update the UI elements based on the provided data.  Must be called in the GUI context */
+    /** actually update the UI elements based on the provided data. */
     fun updateReceiveAddressUI(account: Account)
     {
+        // Demonstration of the significant pain required to only access UI elements in the UI thread, and other blocking calls outside of the UI thread!
         laterUI {
             if (ui.recvIntoAccount.selectedItem?.toString() == account.name)  // Only update the UI if this coin is selected to be received
             {
-                account.ifUpdatedReceiveInfo(minOf(ui.GuiReceiveQRCode.layoutParams.width, ui.GuiReceiveQRCode.layoutParams.height, 1024)) { recvAddrStr, recvAddrQR ->
-                    updateReceiveAddressUI(
-                      recvAddrStr,
-                      recvAddrQR
-                    )
+                val width = ui.GuiReceiveQRCode.layoutParams.width
+                val height = ui.GuiReceiveQRCode.layoutParams.height
+                later {
+                    account.ifUpdatedReceiveInfo(minOf(width, height, 1024)) { recvAddrStr, recvAddrQR ->
+                        laterUI {
+                            updateReceiveAddressUI(
+                              recvAddrStr,
+                              recvAddrQR
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -1588,54 +1640,59 @@ class MainActivity : CommonNavActivity()
 
     public fun onAllButtonClicked(v:View)
     {
-        if (ui.sendQuantity.hasFocus())
+        val focus = currentFocus
+        if (focus is EditText)
         {
-            ui.sendQuantity.text.clear()
-            ui.sendQuantity.text.append(SEND_ALL_TEXT)
+            focus.text.clear()
+            focus.text.append(SEND_ALL_TEXT)
         }
     }
 
     public fun onClearButtonClicked(v:View)
     {
-        if (ui.sendQuantity.hasFocus()) ui.sendQuantity.text.clear()
-        else if (ui.sendToAddress.hasFocus()) ui.sendToAddress.text.clear()
-        else if (ui.editSendNote.hasFocus() == true) ui.editSendNote.text.clear()
+        val focus = currentFocus  // If you don't want this  button to work on this edit text, don't show the button!
+        if (focus is EditText)
+        {
+            focus.text.clear()
+        }
     }
     public fun onAmountThousandButtonClicked(v:View)
     {
-        if (ui.sendQuantity.hasFocus())
+        val focus = currentFocus  // If you don't want this  button to work on this edit text, don't show the button!
+        if (focus is EditText)
         {
-            val curText = ui.sendQuantity.text.toString()
+            val curText = focus.text.toString()
             var amt = try
             {
                 BigDecimal(curText.toString())
             }
             catch(e:java.lang.NumberFormatException)
             {
-                if ((ui.sendQuantity.text.length == 0) || (curText=="all")) BigDecimal(1)
+                if ((focus.text.length == 0) || (curText=="all")) BigDecimal(1)
                 else return
             }
             amt *= BigDecimal(1000)
-            ui.sendQuantity.set(amt.toString())
+            focus.set(amt.toString())
         }
     }
 
     public fun onAmountMillionButtonClicked(v:View)
     {
-        if (ui.sendQuantity.hasFocus())
+        val focus = currentFocus  // If you don't want this  button to work on this edit text, don't show the button!
+        if (focus is EditText)
         {
-            val curText = ui.sendQuantity.text.toString()
+            val curText = focus.text.toString()
             var amt = try
             {
                 BigDecimal(curText)
             }
             catch(e:java.lang.NumberFormatException)
             {
-                if ((ui.sendQuantity.text.length == 0) || (curText=="all")) BigDecimal(1)
+                if ((focus.text.length == 0) || (curText=="all")) BigDecimal(1)
                 else return
             }
             amt *= BigDecimal(1000000)
-            ui.sendQuantity.set(amt.toString())
+            focus.set(amt.toString())
         }
     }
 
@@ -1730,6 +1787,46 @@ class MainActivity : CommonNavActivity()
         }
     }
 
+    public fun setAssetsToTransfer(assets: List<AssetInfo>?=null, account: Account? = null)
+    {
+        if ((assets == null)||(assets.size == 0))
+        {
+            sendAssetList = listOf()
+            ui.GuiSendAssetList.visibility = View.GONE
+            ui.AssetsHeader.visibility = View.GONE
+        }
+        else
+        {
+            // if no account is chosen, pick the account of the first asset
+            var act = account
+            if (act == null) act = assets[0].account  // actually no asset should be in this list that has no account (because how did user select it?)
+            if (act == null) return  // we don't know what account to use
+            // make sure the send from account combo box is correct.
+            ui.sendAccount.setSelection(act.name)
+            // filter the assets by the chosen account
+            sendAssetList = assets.filter { it.account == act }
+
+            if (sendAssetList.size == 0)
+            {
+                sendAssetList = listOf()
+                ui.GuiSendAssetList.visibility = View.GONE
+                ui.AssetsHeader.visibility = View.GONE
+            }
+            else
+            {
+                ui.GuiSendAssetList.visibility = View.VISIBLE
+                ui.AssetsHeader.visibility = View.VISIBLE
+
+                sendAssetsAdapter = GuiList(ui.GuiSendAssetList, sendAssetList, this, {
+                    val ui = AssetSuccinctListItemBinding.inflate(LayoutInflater.from(it.context), it, false)
+                    AssetSuccinctBinder(ui, this)
+                })
+                sendAssetsAdapter.rowBackgroundColors = WallyAssetRowColors
+                sendAssetsAdapter.layout()
+                sendAssetsLayoutManager.requestLayout()
+            }
+        }
+    }
 
     public fun paymentInProgressSend()
     {
@@ -1835,6 +1932,10 @@ class MainActivity : CommonNavActivity()
         sendVisibility(false)
         receiveVisibility(true)
         askedForConfirmation = false
+
+        // Clear out any assets lined up to be transferred if the send is cancelled
+        wallyApp?.assetManager?.transferList?.clear()
+        setAssetsToTransfer(null)
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -1901,22 +2002,27 @@ class MainActivity : CommonNavActivity()
         val amtstr: String = ui.sendQuantity.text.toString()
 
         var deductFeeFromAmount = false
-        var amount = try
+        var amount: BigDecimal = try
         {
             amtstr.toBigDecimal(currencyMath).setCurrency(account.chain.chainSelector)
         }
         catch (e: NumberFormatException)
         {
-            if (amtstr == SEND_ALL_TEXT)
+            if (amtstr.lowercase() == SEND_ALL_TEXT)
             {
                 deductFeeFromAmount = true
                 account.fromFinestUnit(account.wallet.balance)
             }
             else
             {
-                if (amtstr == "") displayError(R.string.badAmount, R.string.empty)
-                else displayError(R.string.badAmount, i18n(R.string.badAmount) + " " + amtstr)
-                return
+                // Its ok to send no native coin if you are sending assets
+                if ((amtstr == "") && (sendAssetList.size > 0)) BigDecimal.ZERO
+                else
+                {
+                    if (amtstr == "") displayError(R.string.badAmount, R.string.empty)
+                    else displayError(R.string.badAmount, i18n(R.string.badAmount) + " " + amtstr)
+                    return
+                }
             }
         }
         catch (e: ArithmeticException)  // Rounding error
@@ -1980,6 +2086,7 @@ class MainActivity : CommonNavActivity()
             BigDecimal(0)
         }
 
+        // TODO confirm assets
         if ((amount >= confirmAmt)&&(!askedForConfirmation))
         {
             sendVisibility(false)
@@ -2005,9 +2112,49 @@ class MainActivity : CommonNavActivity()
                 try
                 {
                     val atomAmt = account.toFinestUnit(amount)
-                    val tx = account.wallet.send(atomAmt, sendAddr, deductFeeFromAmount, false, note = note)
+                    val tx: iTransaction = if (sendAssetList.size == 0)
+                    {
+                        account.wallet.send(atomAmt, sendAddr, deductFeeFromAmount, false, note = note)
+                    }
+                    else
+                    {
+                        val cs = account.wallet.chainSelector
+                        // TBD: It would be interesting to automatically use an authority, if one is sent to this account: TxCompletionFlags.USE_GROUP_AUTHORITIES
+                        val cflags = TxCompletionFlags.FUND_NATIVE or TxCompletionFlags.FUND_GROUPS or TxCompletionFlags.SIGN
+                        val tx = txFor(cs)
+                        // Construct an output that sends the right amount of native coin
+                        if (atomAmt > 0)
+                        {
+                            val coinOut = txOutputFor(cs)
+                            coinOut.amount = atomAmt
+                            coinOut.script = sendAddr.outputScript()
+                            tx.add(coinOut)
+                        }
+                        // Construct outputs that send all selected assets
+                        for (asset in sendAssetList)
+                        {
+                            if (asset.account == account)
+                            {
+                                val aout = txOutputFor(cs)
+                                aout.amount = Dust(cs)
+                                aout.script = sendAddr.groupedConstraintScript(asset.groupInfo.groupId, asset.displayAmount ?: 1)
+                                tx.add(aout)
+                            }
+                            else
+                            {
+                                LogIt.info("asset from the wrong account in sendAssetList!  (Should never happen)")
+                            }
+                        }
+                        // Attempt to pay for the constructed transaction
+                        account.wallet.txCompleter(tx, 0, cflags, 0)
+                        account.wallet.send(tx,false, note = note)
+                        tx
+                    }
+                    LogIt.info("Sending TX: ${tx.toHex()}")
                     onSendSuccess(atomAmt, sendAddr, tx)
+                    wallyApp?.assetManager?.transferList?.removeAll(sendAssetList)
                     laterUI {
+                        setAssetsToTransfer(null)
                         sendVisibility(false)
                         confirmVisibility(false)
                         receiveVisibility(true)

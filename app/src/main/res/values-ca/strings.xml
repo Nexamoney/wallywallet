@@ -179,6 +179,9 @@ Good luck!
     <string name="PinRemoved">PIN eliminat</string>
     <string name="PinInvalid">PIN incorrecte</string>
     <string name="PinTooShort">el PIN nou és massa curt</string>
+    <string name="WriteDownRecoveryPhraseWarning">Avís: no heu anotat les frases secretes de recuperació d\'alguns comptes! Per assegurar-vos que no es perdin fons si aquest dispositiu es perd o es trenca, escriviu les claus secretes de recuperació en paper o en un altre format no electrònic. Les claus de recuperació són accessibles a la pàgina de configuració de cada compte.</string>
+    <string name="WroteRecoveryPhraseDown">Ho he escrit</string>
+    <string name="RecoveryPhraseKeepRemindingMe">Continuar recordant-me</string>
     <string name="ViewRecoveryPhrase">Visualitza la frase secreta de recuperació del compte</string>
     <string name="localCurrency">Moneda local</string>
     <string name="assessUnconfirmed">Avaluar les transaccions no confirmades</string>

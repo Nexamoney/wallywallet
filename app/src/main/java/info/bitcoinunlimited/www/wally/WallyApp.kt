@@ -345,6 +345,9 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         }
     }
 
+
+    val assetManager = AssetManager(this)
+
     val init = Initialize.LibBitcoinCash(ChainSelector.NEXATESTNET.v)  // Initialize the C library first
 
     val accounts: MutableMap<String, Account> = mutableMapOf()
@@ -408,6 +411,17 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
             if (i.wallet.chainSelector == ChainSelector.NEXAREGTEST) return i
         }
         throw PrimaryWalletInvalidException()
+    }
+
+    /** Iterate through all the accounts, looping */
+    fun nextAccount(accountIdx: Int):Pair<Int, Account?>
+    {
+        var actIdx = accountIdx
+        val actList = visibleAccountNames()
+        actIdx++
+        if (actIdx >= actList.size) actIdx=0
+        accounts[actList[actIdx]]
+        return Pair(actIdx, accounts[actList[actIdx]])
     }
 
     /** Activity stacks don't quite work.  If task A uses an implicit intent launches a child wally activity, then finish() returns to A

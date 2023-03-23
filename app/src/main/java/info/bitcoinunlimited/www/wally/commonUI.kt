@@ -59,8 +59,21 @@ var displayMetrics = DisplayMetrics()
 
 private val LogIt = Logger.getLogger("BU.wally.commonUI")
 
+
 class Objectify<T>(var obj: T)
 {
+}
+
+fun View.visOrGone(vis: Boolean)
+{
+    if (vis) visibility = View.VISIBLE
+    else visibility = View.GONE
+}
+
+fun View.visOrInvis(vis: Boolean)
+{
+    if (vis) visibility = View.VISIBLE
+    else visibility = View.INVISIBLE
 }
 
 fun String.toSet():Set<String>

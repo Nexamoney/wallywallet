@@ -89,7 +89,39 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/sendFromAccountText" />
 
+        <EditText
+            android:id="@+id/sendToAddress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
 
+            android:hint="@string/sendToAddressHint"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:lines="1"
+            android:text=" "
+            android:textAlignment="center"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/SendToText"
+            app:layout_constraintTop_toBottomOf="@+id/sendFromAccountText" />
+
+        <EditText
+            android:id="@+id/editSendNote"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/editSendNoteHint"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:lines="1"
+            android:text=""
+            android:textAlignment="center"
+            android:textSize="14sp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sendToAddress" />
         <TextView
             android:id="@+id/amountText"
             android:layout_width="wrap_content"
@@ -172,39 +204,31 @@
             app:layout_constraintTop_toBottomOf="@+id/approximatelyText" />
 
 
-        <EditText
-            android:id="@+id/sendToAddress"
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/AssetsHeader"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
-            android:hint="@string/sendToAddressHint"
-            android:importantForAutofill="no"
-            android:inputType="textPersonName"
-            android:lines="1"
-            android:text=" "
-            android:textAlignment="center"
-            android:textSize="11sp"
-            android:textStyle="bold"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintLeft_toRightOf="@+id/SendToText"
-            app:layout_constraintTop_toBottomOf="@+id/sendFromAccountText" />
-
-        <EditText
-            android:id="@+id/editSendNote"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:hint="@string/editSendNoteHint"
-            android:importantForAutofill="no"
-            android:inputType="textPersonName"
-            android:lines="1"
-            android:text=""
-            android:textAlignment="center"
-            android:textSize="14sp"
+            android:layout_marginStart="4dp"
+            android:text="@string/assetsColon"
+            android:textSize="18sp"
             android:visibility="gone"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/approximatelyText"
+            app:layout_constraintVertical_bias="0.565" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/GuiSendAssetList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@+id/AssetsHeader"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/sendToAddress" />
+        />
+
 
 
 

@@ -153,6 +153,7 @@ class AccountListBinder(val ui: AccountListItemBinding, val guiList: GuiAccountL
     {
         val d = data
         if (d == null) return null  // dont show a graph for an empty row
+        if (highlight) focusAccount(true)
         if (d.chain.chainSelector == ChainSelector.NEXA)  // I only support history for NEXA right now
         {
             val appR = appResources
@@ -230,9 +231,9 @@ class AccountListBinder(val ui: AccountListItemBinding, val guiList: GuiAccountL
         guiList.onItemClicked(this)
     }
 
-    fun focusAccount()
+    fun focusAccount(focused: Boolean)
     {
-        try
+        if (focused) try
         {
             dbgAssertGuiThread()
             val account = data
@@ -241,7 +242,8 @@ class AccountListBinder(val ui: AccountListItemBinding, val guiList: GuiAccountL
             // ui.sendAccount.setSelection(account.name)
             guiList.activity.setFocusedAccount(account)
 
-        } catch (e: Exception)
+        }
+        catch (e: Exception)
         {
             LogIt.warning("Exception clicking on balance: " + e.toString())
             handleThreadException(e)

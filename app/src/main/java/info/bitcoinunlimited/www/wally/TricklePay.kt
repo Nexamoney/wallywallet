@@ -521,20 +521,6 @@ class TricklePayActivity : CommonNavActivity()
     var regAddress: String = ""
 
     var tpSession: TricklePaySession? = null
-    // var proposedTx: iTransaction? = null
-    // var proposalAnalysis: TxAnalysisResults? = null
-    // var proposalUri: Uri? = null
-    // var proposedDestinations: List<Pair<PayAddress, Long>>? = null
-    // var proposalCookie: String? = null
-    // var host: String? = null
-    // var port: Int = 80
-    // var topic: String? = null
-    // var sig: String? = null
-    // var cookie: String? = null
-    // var reason: String? = null
-    var rproto: String? = null
-    var rpath: String? = null
-    var chainSelector: ChainSelector? = null
     var visibleFragment: Int = -1
 
     var accepted: Boolean = false

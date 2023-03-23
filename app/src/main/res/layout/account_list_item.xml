@@ -3,6 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clipChildren="false"
+    android:layout_marginVertical="1dp"
+    android:layout_marginHorizontal="4dp"
     >
     <!-- clipChildren allows the account lock icon to overlay rather than be cut off -->
 

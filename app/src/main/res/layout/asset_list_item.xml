@@ -2,6 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:paddingVertical="2dp"
+    android:layout_marginVertical="2dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -22,8 +24,8 @@
         android:id="@+id/GuiAssetIcon"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:layout_marginStart="4dp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/GuiAssetQuantity"
         app:layout_constraintTop_toBottomOf="@+id/GuiAssetId" />
 
     <TextView
@@ -31,22 +33,49 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
-        android:layout_marginEnd="2dp"
-        android:text="AssetName"
+        android:gravity="center"
+        android:text=""
+        android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toEndOf="@+id/GuiAssetIcon"
         app:layout_constraintTop_toBottomOf="@+id/GuiAssetId" />
+
+    <TextView
+        android:id="@+id/GuiAssetAuthor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="2dp"
+        android:text=""
+        android:textSize="20sp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/GuiAssetIcon"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAssetName" />
+
+    <TextView
+        android:id="@+id/GuiAssetSeries"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="2dp"
+        android:text=""
+        android:textSize="16sp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/GuiAssetIcon"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAssetAuthor" />
+
 
     <TextView
         android:id="@+id/GuiAssetQuantity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
-        android:text="AssetQuantity"
-        android:textSize="26sp"
+        android:minWidth="60dp"
+        style="@style/PositiveBalance"
+        android:text=""
+        android:gravity="center"
+        android:textSize="28sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/GuiAssetIcon"
-        app:layout_constraintTop_toBottomOf="@+id/GuiAssetName" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/GuiAssetName" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

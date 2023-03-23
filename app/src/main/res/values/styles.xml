@@ -15,9 +15,17 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="AssetQuantityEdit">
+        <item name="android:layout_marginVertical">0dp</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="PositiveBalance">
+        <item name="android:textColor">@color/colorCredit</item>
+    </style>
 
     <style name="IdentityInfo" parent="WallyWSwirl">
     </style>
@@ -41,6 +49,13 @@
         <item name="android:textSize">20sp</item>
         <item name="android:paddingVertical">3dp</item>
         <item name="android:layout_marginVertical">4dp</item>
+    </style>
+    <style name="WallyCardButton" parent="WallyButton">
+        <item name="android:paddingHorizontal">4dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginHorizontal">1dp</item>
     </style>
     <style name="WallyButtonNoPad" parent="android:Widget.Button">
         <item name="android:minHeight">32dp</item>

@@ -30,6 +30,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
 import kotlinx.coroutines.*
 import java.time.Instant
+import java.util.*
 import java.util.concurrent.Executors
 import java.util.logging.Logger
 import kotlin.coroutines.CoroutineContext
@@ -39,6 +40,24 @@ private val LogIt = Logger.getLogger("BU.wally.commonActivity")
 
 var currentActivity: CommonActivity? = null
 public var appResources: Resources? = null
+
+
+enum class SoftKey
+{
+    ALL,
+    THOUSAND,
+    MILLION,
+    CLEAR;
+
+    infix fun or(other: SoftKey) = SoftKeys.of(this, other)
+}
+
+typealias SoftKeys = EnumSet<SoftKey>
+
+infix fun SoftKeys.allOf(other: SoftKeys) = this.containsAll(other)
+infix fun SoftKeys.or(other: SoftKey) = SoftKeys.of(other, *this.toTypedArray())
+
+
 
 // TODO translate libbitcoincash error codes to our i18n strings
 val lbcMap = mapOf<Int, Int>(RinsufficentBalance to R.string.insufficentBalance)
@@ -823,5 +842,12 @@ open class CommonActivity : AppCompatActivity()
         {
             displayException(e)
         }
+    }
+
+
+    /** If the derived activity supports a soft keyboard layout, then it will override this function to show them */
+    open fun setVisibleSoftKeys(which: SoftKeys)
+    {
+
     }
 }

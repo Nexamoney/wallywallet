@@ -60,7 +60,10 @@ data class TxAnalysisResults(
   val imSpendingTokenTypes: Long,  // The tx spends this number of token TYPES currently controlled by this wallet
   val otherInputSatoshis: Long?,  // If this is null, I'm not funding this tx (its likely a partial tx)
   val myInputSatoshis: Long,
-  val ttInfo: Map<GroupId, Long>,
+
+  val myInputTokenInfo: Map<GroupId, Long>,  // This wallet inputting these tokens into this transaction
+  val sendingTokenInfo: Map<GroupId, Long>,  // This wallet is sending these tokens to another wallet
+  val receivingTokenInfo: Map<GroupId, Long>,  // This wallet is receiving these tokens
   val completionException: java.lang.Exception?
 )
 
@@ -866,7 +869,9 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         var sendingTokenTypes: Long = 0
         var imSpendingTokenTypes: Long = 0
         var iFunded: Long = 0
-        var ttInfo = mutableMapOf<GroupId, Long>()
+        var receivingTokenInfo = mutableMapOf<GroupId, Long>()
+        var sendingTokenInfo = mutableMapOf<GroupId, Long>()
+        var myInputTokenInfo = mutableMapOf<GroupId, Long>()
 
         var cflags = TxCompletionFlags.FUND_NATIVE or TxCompletionFlags.SIGN or TxCompletionFlags.BIND_OUTPUT_PARAMETERS
 
@@ -892,8 +897,6 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         var completionException: java.lang.Exception? = null
         try
         {
-            // Someday the wallet might want to fund groups, etc but for now all it does is pay for txes because the wallet UX can only show that
-            //(wal as CommonWallet).txCompleter2(tx, 0, cflags, inputSatoshis)
             wal.txCompleter(tx, 0, cflags, inputSatoshis)
         }
         catch (e: java.lang.Exception)  // Try to report on the tx even if we can't complete it.
@@ -906,7 +909,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         for (inp in tx.inputs)
         {
             val address = inp.spendable.addr
-            if ((address != null) && (wal.isWalletAddress(address)))
+            if ((address != null) && (wal.isWalletAddress(address)))  // Is this coming from this wallet?
             {
                 assert(inp.spendable.amount != -1L)  // Its -1 if I don't know the amount (in which case it ought to NOT be one of my inputs so should never happen)
                 iFunded += inp.spendable.amount
@@ -915,7 +918,8 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
                 if (iSuppliedTokens != null)
                 {
                     imSpendingTokenTypes++
-                    // TODO track tokens that I provided.
+                    if (!iSuppliedTokens.isAuthority())
+                        myInputTokenInfo[iSuppliedTokens.groupId] = (myInputTokenInfo[iSuppliedTokens.groupId] ?: 0) + iSuppliedTokens.tokenAmt
                 }
             }
         }
@@ -932,7 +936,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
                 if ((groupInfo != null) && (!groupInfo.isAuthority()))
                 {
                     receivingTokenTypes++
-                    ttInfo[groupInfo.groupId] = (ttInfo[groupInfo.groupId] ?: 0) + groupInfo.tokenAmt
+                    receivingTokenInfo[groupInfo.groupId] = (receivingTokenInfo[groupInfo.groupId] ?: 0) + groupInfo.tokenAmt
                 }
             }
             else
@@ -941,12 +945,12 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
                 if ((groupInfo != null) && (!groupInfo.isAuthority()))
                 {
                     sendingTokenTypes++
-                    ttInfo[groupInfo.groupId] = (ttInfo[groupInfo.groupId] ?: 0) + groupInfo.tokenAmt
+                    sendingTokenInfo[groupInfo.groupId] = (receivingTokenInfo[groupInfo.groupId] ?: 0) + groupInfo.tokenAmt
                 }
             }
         }
 
-        return TxAnalysisResults(act, receivingSats, sendingSats, receivingTokenTypes, sendingTokenTypes, imSpendingTokenTypes, inputSatoshis, iFunded, ttInfo, completionException)
+        return TxAnalysisResults(act, receivingSats, sendingSats, receivingTokenTypes, sendingTokenTypes, imSpendingTokenTypes, inputSatoshis, iFunded, myInputTokenInfo, sendingTokenInfo, receivingTokenInfo, completionException)
     }
 
 }

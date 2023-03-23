@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="yes">da</string>
+    <string name="no">ne</string>
+    <!--  used to specify what position in the blockchain  -->
+    <string name="at">pri</string>
+    <!--  used to specify that total blockchain size "at block 6 of 100"   -->
+    <string name="of">od</string>
+    <!--  used to ask the user to pick an account  -->
+    <string name="choose">izberi</string>
+    <!--  accept a proposed transaction, configuration change, or a request from an external service  -->
+    <string name="accept">sprejmi</string>
+    <!--  reject a proposed transaction or configuration change  -->
+    <string name="reject">zavrni</string>
+    <!--  remove some remembered services, like web sites you have logged into or paid  -->
+    <string name="remove">odstrani</string>
+    <!--  you have asked the app to do something, but the app is double checking.  This means yes do it  -->
+    <string name="confirm">potrdi</string>
+    <!--  you have asked the app to do something, but the app is double checking.  This means no user changed their mind  -->
+    <string name="cancel">prekliči</string>
+    <string name="removeAll">odstrani vse</string>
+    <!--  done is like "yes" but more means "go to the next thing" rather than explicit acceptance of something.  The implication is that whatever is showing on the screen will be used.
+             Its modern UX philosophy of "why do we have to explicitly "save" everything on settings screens?  If you make a change, that change ought to be made, no additional button clicks needed."
+         -->
+    <string name="done">končano</string>
+    <!--  an external service is making a request (to see the assets you own, to get you to sign a transaction, or to prove your identity).  You refuse  -->
+    <string name="deny">zavrni</string>
+    <!--  Should the program ask the user before authorizing this, verses automatically accepting or automatically denying  -->
+    <string name="ask">vprašaj</string>
+    <!--  Some service sent you a request, but the service did not properly sign the request (which proves that they are who they claim to be)  -->
+    <string name="badSignature">neveljaven podpis</string>
+    <string name="unknownCurrency">neznana valuta</string>
+    <string name="unknownCryptoCurrency">neznana valuta ali neznana podatkovna veriga blokov</string>
+    <!--  wallet is currently working on doing whatever your button click asked it to do  -->
+    <string name="Processing">obdelovanje...</string>
+    <string name="receiving">prejemanje</string>
+    <string name="sending">pošiljanje</string>
+    <string name="noAdditionalDetails">ni dodatnih podrobnosti</string>
+    <!--  User didn't enter any value into this field but that's ok  -->
+    <string name="unspecified">nedoločeno</string>
+    <!--  If the user deletes something - like a connection to an external service, this is the confirmation string that the info was removed.  It needs to be short.  -->
+    <string name="removed">odstranjeno</string>
+    <!--  wallet is up to date with the blockchain  -->
+    <string name="synced">sinhronizirana</string>
+    <!--  wallet is still connecting to the blockchain  -->
+    <string name="unsynced">nesinhronizirana</string>
+    <string name="connected">povezana</string>
+    <string name="balance">trenutno stanje</string>
+    <string name="total">skupno prejeto</string>
+    <!--  this is an indication that we are still waiting for some web page to load. please leave the HTML and just translate ...loading...  -->
+    <string name="WebLoadingPage">
+<![CDATA[ <body><h1><center>...nalaganje...</h1></center></body> ]]>
+</string>
+    <!--  Implication is "no charge" or "no cost" for a transaction  -->
+    <string name="nothing">nič</string>
+    <!--  Do not actually put anything in this one!  Its needed when we want a blank line  -->
+    <string name="empty"/>
+    <string name="or">ali</string>
+    <string name="onBlockchain">na</string>
+    <string name="NotImplemented">prihaja kmalu</string>
+    <string name="NoNodes">Ni dostopa do podatkovne verige blokov</string>
+    <!--  The user chose not to proceed with some operation  -->
+    <string name="cancelled">prekinjeno</string>
+    <!--  Issued if initialization isn't yet complete, but user tries to access the services  -->
+    <string name="pleaseWait">prosimo počakajte</string>
+    <!--  Uses in the sense of attempting an operation, such as connecting to a node   -->
+    <string name="trying">poskušam</string>
+    <!--  meaning remove all the text in an edit box  -->
+    <string name="clear">odstrani</string>
+    <string name="thousand">tisoč</string>
+    <string name="million">milijon</string>
+    <!--  Settings  -->
+    <string name="version" formatted="false">Wally Wallet verzija: %ver</string>
+    <string name="enableDeveloperView"> Napredno/Razvijalski način</string>
+    <string name="enableIdentityMenu"> Omogoči zaslon z identiteto</string>
+    <string name="enableTricklePayMenu"> Omogoči zaslon za tekoče plačilo</string>
+    <string name="enableAssetsMenu"> Omogoči zaslon sredstev</string>
+    <string name="only">samo</string>
+    <string name="prefer">raje</string>
+    <string name="rediscoverWalletTx"> ponovno odkrijte vse transakcije</string>
+    <string name="rediscoverBlockchain"> ponovno odkrijte glave verige blokov</string>
+    <string name="logDebugData"> Zabeležni podatki o odpravljanju napak</string>
+    <string name="clearIdentityDomains">Počisti domenske identitete</string>
+    <string name="rediscoverTooltip">Izbrišite stanje verige blokov in znova poiščite vse transakcije, ki so pomembne za denarnico</string>
+    <string name="wordSeed">Skrivna fraza za obnovitev računa</string>
+    <string name="deleteWalletAccount">Izbriši račun</string>
+    <!--  a PIN is a numeric password that gives you access to your account  -->
+    <string name="SetChangePin">Nastavite ali spremenite PIN za odklepanje</string>
+    <string name="CurrentPin">Trenutni PIN</string>
+    <string name="NewPin">Novi koda PIN</string>
+    <string name="PinChanged">PIN spremenjen</string>
+    <string name="PinRemoved">PIN odstranjen</string>
+    <string name="PinInvalid">Neveljaven PIN</string>
+    <string name="PinTooShort">Novi PIN je prekratek</string>
+    <string name="ViewRecoveryPhrase">Ogled skrivne fraze za obnovitev računa</string>
+    <string name="localCurrency">Lokalna valuta</string>
+    <string name="assessUnconfirmed">Oceni nepotrjene transakcije</string>
+    <string name="rediscoverNotice">Ponovno odkrivanje računa se je začelo</string>
+    <string name="unconfAssessmentNotice">Začelo se je nepotrjeno ocenjevanje</string>
+    <string name="accountDeleteNotice">Račun izbrisan</string>
+    <string name="rediscoverConfirmation">Ponovno odkritje računa bo preiskalo verigo blokov, saj je bila ta denarnica ustvarjena za manjkajoča plačila. Ta proces lahko traja dolgo časa. Uporabite samo, če ste prepričani, da manjka plačilo!</string>
+    <string name="rediscoverBlockchainConfirmation">Ponovno odkritje verige blokov bo izbrisalo vse podatke glave verige blokov iz te denarnice in jih znova preneslo iz polnih vozlišč. Ta proces lahko traja dolgo časa. Uporabite le, če ste prepričani, da obstaja težava z glavo verige blokov.</string>
+    <string name="deleteConfirmation" formatted="false">Če izbrišete račun, bodo vsa stanja, identitete in zgodovina nerazpoložljivi, razen če je račun obnovljen prek skrivne fraze za obnovitev računa! To storite le, če ste POPOLNOMA PREPRIČANI! \n\nDelete account "%accountName" (on %blockchain)?</string>
+    <string name="reassessConfirmation">Ta operacija bo preverila verigo blokov za nedavne transakcije, ki ste jih poslali. Glede na njihovo prisotnost ali odsotnost jih bo potrdil ali izbrisal. Če se transakcije izbrišejo, se zdi, da denar izgine. Morali boste "ponovno odkriti", da ponovno pridobite porabljeno stanje. Ne uporabljajte, če ste pred kratkim izvedli transakcijo, saj je ta lahko v omrežju latentna in čaka na potrditev</string>
+    <string name="recoveryPhrase">Ta 12-besedni stavek lahko uporabite za obnovitev vaše denarnice, če je vaš telefon poškodovan ali izgubljen. To pomeni, da lahko tisti, ki ima to frazo, porabi vaš denar. Zapišite na papir in varno shranite!</string>
+<string name="primaryAccountConfirmation">Vaš primarni račun je račun, ki se uporablja za vašo identiteto in za izvajanje samodejnih plačil. To je tudi prvi račun, prikazan na različnih mestih v tej aplikaciji. Biti mora v verigi blokov Nexa.</string>
+<string name="AccountActions">Dejanja računa</string>
+<string name="GeneralSettings">Splošne nastavitve</string>
+<string name="BlockchainSettings">Viri verige blokov</string>
+<string name="AccessPriceData">Dostop do podatkov o cenah</string>
+    <!--  not used right now string name="AccessPriceDataHint">Ta možnost omogoča, da denarnica prikaže vrednost vaše kriptovalute. Vendar ti podatki morda niso točni. In dostop uporablja več podatkov in razkrije vaš naslov IP storitvi, ki zagotavlja podatke.</string  -->
+    <!--  Split bill  -->
+<string name="SplitBillDescription">YVi plačate račun (v fiatu), vaši prijatelji vam plačajo svoj delež prek spodnje QR kode.</string>
+<string name="Total">Skupno:</string>
+    <!--  Ways refers to how many equal portions a bill is being split into  -->
+<string name="Ways">Delov:</string>
+    <!--  Tip (gratuity) is how much more money you want to pay above the value of the bill  -->
+<string name="Tip">Napitnina:</string>
+<string name="Amount">Znesek:</string>
+    <!--  Home Page  -->
+    <!--  As the wallet is syncing, it shows you a balance.  But if the wallet is not caught up to NOW it shows this so you know that the balance that is being shown is not up to date.
+        IF YOU SEE %something (in this case date), THEN DO NOT translate the "something".  It will be replaced with the actual value by the program (in this case the date).
+         -->
+<string name="balanceOnTheDate">od %date</string>
+    <!--  A QR is the 2-dimensional black and white boxes of pixels that wallets scan to read info  -->
+<string name="goodQR">QR je berljiv</string>
+<string name="badQR">QR ni berljiv</string>
+<string name="badImageQR">slaba slika QR kode. Več...</string>
+<string name="badImageQRhelp">Poskusite fotografirati od daleč, če ste kodo QR posneli od blizu. Bela obroba je del kode QR in lahko dobite zmedene vzorce, če fotografirate od blizu.</string>
+    <!--  as in unlock an account  -->
+<string name="unlock">odkleni</string>
+<string name="share">skupna raba</string>
+<string name="Send">Pošlji</string>
+<string name="OpenSend">Pošlji</string>
+<string name="SendCancel">Prekliči</string>
+<string name="ignoredInsecureRequest">Prezrta nevarna zahteva</string>
+    <!--  As in "Send from" what account  -->
+<string name="fromAccountColon">Poslano iz računa:</string>
+    <!--  if user forgot to pick an account  -->
+<string name="chooseAccountError">izberi račun</string>
+    <!--  As in "Send to"  -->
+<string name="toColon">Za:</string>
+    <!--  As in what entity is requesting information  -->
+<string name="fromColon">Od:</string>
+<string name="Receive">Prejmi v račun</string>
+<string name="AccountListHeader">Računi</string>
+    <!--  This is referring to a cryptocurrency address, not a physical address  -->
+<string name="Address">Naslov</string>
+<string name="clipboard">odložišče</string>
+<string name="settings">Nastavitve</string>
+<string name="help">Pomoč</string>
+<string name="invalidQuantity">neveljavna količina</string>
+<string name="invalidQuantityTooManyDecimalDigits">preveč decimalnih mest</string>
+<string name="roundedUpClickSendAgain"> zaokroženo navzgor, ponovno pritisnite pošlji, da lahko sprejmete </string>
+    <!--  Write this below the send quantity field when it is empty - you probably want to write nothing at all  -->
+<string name="emptyQuantityField"/>
+<string name="purchase">nakup</string>
+<string name="scanPaymentQRcode"> Skenirajte kodo QR naslova za plačilo </string>
+<string name="ScanQRCodeButton"> Skenirajte kodo QR </string>
+<string name="PasteDestinationAddressButton"> Prilepi </string>
+<string name="NewAccountButton"> Nastavitev novega računa </string>
+<string name="NewAccountSearchingForTransactions">... iščem transakcije...</string>
+<string name="NewAccountSearchFailure"> iskanje transakcije ni uspelo </string>
+<string name="receiveAddressQRCode"> prejmi kodo QR</string>
+<string name="paymentProposal"> glede na prejeti predlog plačila </string>
+    <!--  You clicked the paste button (in a copy/paste operation), but nothing was copied  -->
+<string name="pasteIsEmpty"> prilepite prazno </string>
+    <!--  Informational: The contents of the copy/paste buffer didn't make any sense to me, but you didn't explicitly tell me to paste so maybe that's ok.
+         The app did not use this paste information.  This error happens when the app checks for implicit pastes.  For example, when wally wallet
+         starts up it guesses that it might have been started to make a payment so checks the paste buffer for a destination address.
+          -->
+<string name="pasteIgnored">prilepi prezrto</string>
+    <!--  Error: The information in the copy/paste buffer didn't make any sense to me (not a crypto address, for example), and you explicitly asked me to paste.
+         The app refuses to fill the field with this information because it doesn't make sense to do so.  -->
+<string name="pasteUnintelligible">prilepitev ni razumljena</string>
+<string name="chainIncompatibleWithAddress">naslov ni združljiv z računom</string>
+<string name="chainIncompatibleWithAddressDetails" formatted="false">Valuta računa je %walletCrypto, naslov je %addressCrypto. Uporabite kombinirano polje, da spremenite pošiljanje iz računa v tisto, ki se ujema z verigo blokov naslova.</string>
+<string name="incoming" formatted="false">vsebuje %delta %unit pending</string>
+<string name="approximatelyT" formatted="false">približno %qty %fiat</string>
+<string name="exchangeRate" formatted="false">(menjalni tečaj: 1 %fiat je vreden %amt %crypto)</string>
+<!--  user is attempting to send more cryptocurrency than the wallet contains.  The payment can't happen  -->
+<string name="moreThanAvailable">"(več kot je na voljo)"</string>
+<!--  This is a warning or informational message.  It says that the user is sending recently received coins, which is perfectly OK but slightly increases the chance of payment failure  -->
+<string name="moreThanConfirmedAvailable">"(več kot je potrjeno)"</string>
+<string name="actuallySendingT" formatted="false">dejansko pošiljanje %qty %crypto</string>
+<string name="copiedToClipboard">...kopirano v odložišče...</string>
+<string name="scanFailed">skeniranje ni uspelo</string>
+<string name="scanSuccess">skeniranje je uspelo</string>
+<string name="sendSuccess">pošiljanje uspešno</string>
+<string name="sendQuantityHint">količina pošiljanja</string>
+<string name="sendRequestNotification">Zahtevano pošiljanje</string>
+<string name="sendToAddressHint">ciljni naslov</string>
+<string name="sendAll">vse</string>
+<string name="editSendNoteHint">osebne opombe o tem prenosu</string>
+<string name="subSatoshiQuantities">Preveč decimalnih mest – ta valuta ne deli tako natančno</string>
+<string name="retrievingExchangeRate">še vedno pridobivam menjalni tečaj</string>
+<string name="unavailableExchangeRate">menjalni tečaj ni na voljo</string>
+<!--  Identity  -->
+<string name="identityRequestNotification">zahtevana identiteta</string>
+<string name="IdentityDataMissing">Manjkajo informacije o identiteti</string>
+<!--  Some web site or company that you've never contacted before is requesting that you set up an account and authenticate a log-in.  This is an informational message
+     that happens whenever the user first sets up a relationship between the web site/company and their wallet  -->
+<string name="newDomainRequestingIdentity">Nova identiteta za zahtevo domene</string>
+<string name="domainRequestingAdditionalIdentityInfo">Zahtevani dodatni podatki</string>
+<string name="useUniqueIdentityToolTip">Vklopite, da bo vaša identiteta tukaj ločena od drugih spletnih mest.</string>
+<string name="provideAlias">Vnestite svoje uporabniško ime/prikaz/vzdevek?</string>
+<string name="provideAliasToolTip">Izbira te možnosti bo vašemu spletnemu mestu zagotovila vaš vzdevek (kot je konfiguriran v nastavitvah, NE vaše pravo ime), če bo zahtevano</string>
+<string name="provideSocialMedia">Želite posredovati podatke o družbenih medijih?</string>
+<string name="provideSocialMediaToolTip">Če izberete to možnost, boste temu spletnemu mestu na zahtevo posredovali podatke o svojih družabnih medijih (kot je konfigurirano v nastavitvah)</string>
+<string name="providePostalAddress">Želite navesti svoj poštni naslov?</string>
+<string name="providePostalAddressToolTip">Če izberete to možnost, bo to spletno mesto prejelo vaš naslov (kot je konfiguriran v nastavitvah), če bo zahtevano</string>
+<string name="provideBillingAddress">Navedite svoj naslov za izstavitev računa?</string>
+<string name="provideBillingAddressToolTip">Če izberete to možnost, boste na zahtevo tega spletnega mesta posredovali vaš naslov za izstavitev računa (kot je konfiguriran v nastavitvah)</string>
+<string name="provideEmail">Navedite svoj e-poštni naslov?</string>
+<string name="provideAvatar">Želite posredovati sliko svojega avatarja?</string>
+<string name="provideRealName">Navedite svoje pravo ime?</string>
+<string name="provideRealNameToolTip">Če izberete to možnost, boste tej spletni strani dali svoje pravo ime (kot je konfigurirano v nastavitvah)</string>
+<string name="provideBirthday">Navedite svoj rojstni dan?</string>
+<string name="providePhone">Navedite svojo telefonsko številko?</string>
+<string name="provideAttestations">Želite zagotoviti potrdila?</string>
+<string name="provideAttestationsToolTip">Potrdila so podpisi tretjih oseb, ki potrjujejo podatke, ki jih posredujete</string>
+<string name="primaryAccountRequired" formatted="false">Za uporabo te funkcije je potreben račun %primCurrency</string>
+<string name="primaryAccountRequiredDetails" formatted="false">Nekatere funkcije so povezane z določenimi kriptovalutami. Pred uporabo te funkcije morate ustvariti ali odkleniti račun za to kriptovaluto.</string>
+<string name="UnknownDomainRegisterFirst">Neznana domena, najprej se registrirajte</string>
+<string name="commonIdentityQRCode">QR koda</string>
+<!--  An intent (aka link) specified an action that I don't know about  --><string name="unknownOperation" formatted="false">operacija %op neznana</string>
+<!--  This wallet already has a registration for this site, so registration is not needed (informational notice)  --><string name="alreadyRegistered">že registriran</string>
+<string name="provideLoginQuestion">Se želite prijaviti na to spletno mesto?</string>
+<string name="provideInfoQuestion">Podatki o identiteti, ki jih je zahteval</string>
+<string name="signDataQuestion">Zahtevan podpis</string>
+<string name="nothingToSign">Ni sporočila</string>
+<string name="binaryToSign">Želite podpisati te binarne podatke?</string>
+<string name="textToSign">Želite podpisati to sporočilo?</string>
+<string name="sigInClipboard">Podpis kopiran v odložišče</string>
+<string name="SocialMediaText">Družabni mediji</string>
+<string name="SocialMediaSummary">Vnesite kot seznam storitve:vzdevek, npr. twitter:janeDoe, keybase:janieD</string>
+<string name="UsernameOrAliasText">Uporabniško ime/vzdevek/alias</string>
+<string name="NameText">Polno ime</string>
+<string name="PostalAddressText">Poštni naslov</string>
+<string name="BillingAddressText">Naslov za izstavitev računa</string>
+<string name="PostalCodeText">Poštna številka</string>
+<string name="EmailText">E-poštni naslov</string>
+<string name="TwitterText">Twitter</string><string name="TelegramText">Telegram</string>
+<string name="IdentityAssociatedWith">Podatki o povezani identiteti</string>
+<string name="areYouSure">Ste prepričani?</string>
+<string name="WhenAskSure">Potrdite prenose zgoraj (v NEX)</string>
+<string name="SendConfirmSummary">Potrditev pošiljanja %amt %currency %inFiat na naslov %dest</string>
+<string name="firstName">ime</string>
+<string name="lastName">priimek</string>
+<string name="connectionEstablished">povezava vzpostavljena</string>
+<string name="connectionException">se ne morem povezati s spletnim mestom</string>
+<string name="withholdingMandatoryInfo">mesto zahteva podatke, ki jih zavrnete</string>
+<string name="badLink">slaba povezava</string>
+<string name="connectionAborted">spletno mesto je prekinilo prijavo</string>
+<!--  Transaction history activity  -->
+<string name="HintAdjustCostBasis">osnovni ali maksimalni dobiček</string>
+<string name="CostBasis">osnova za stroške</string>
+<string name="CapitalLoss">kapitalska izguba</string>
+<string name="CapitalGain">kapitalski dobiček</string>
+<string name="OverrideSalesPrice">vnesite ceno ob prodaji</string>
+<string name="AccountHistory">Transakcije</string>
+<string name="AccountAddresses">Naslovi</string>
+<!--  Account details activity  -->
+<string name="txHistoryButton">Ogled ali izvoz dejavnosti računa</string>
+<string name="setAsPrimaryAccountButton">Nastavite to za svoj primarni račun</string>
+<string name="AccountStatistics">Statistika računa</string>
+<string name="AccountBlockchainSync">Trenutno %sinhronizacija v verigi blokov %chain.</string>
+<string name="AccountBlockchainDetails">Na %actBlockDate blokirajte %actBlock od %chainBlockCount.</string>
+<string name="AccountBlockchainConnectionDetails">Povezan z %num vozlišči: %names</string>
+<string name="AccountNumAddresses">%num naslovov</string>
+<string name="FirstLastReceive">Prvi depozit v bloku %first, zadnji v bloku %last.</string>
+<string name="FirstLastSend">Prvi dvig v bloku %first, zadnji v bloku %last.</string>
+<string name="AccountNumTx">%num transakcij</string>
+<string name="AccountNumUtxos">%num vnosov v knjigo</string>
+<!--  Assets activity  -->
+<string name="title_activity_assets">Sredstva</string>
+<string name="title_activity_invoices">Računi</string>
+<!--  Assets activity  -->
+<string name="title_activity_scan">Skeniranje</string>
+<!--  New Account activity  -->
+<string name="title_activity_new_account">Nov račun</string>
+<string name="AccountName">Ime računa</string>
+<string name="AccountNameHint">1-8 črk</string>
+<string name="Blockchain">Blockchain</string>
+<string name="AccountRecoveryPhrase">Obnovitvena besedna zveza</string>
+<string name="LeaveEmptyNewWallet">Pustite prazno, če želite ustvariti nov račun</string>
+<string name="PinSuggestions">
+<font size="15">Ta skrivna številka je potrebna za dostop do računa</font>
+</string>
+<string name="createAccount">Ustvari račun</string>
+<string name="invalidRecoveryPhrase">Nepravilen izraz za obnovitev</string>
+<string name="invalidAccountName">neveljavno ime</string>
+<string name="PassPhrase">Geslo (neobvezno)</string>
+<string name="Bip44ActivityNotice">Najdena dejavnost računa</string>
+<string name="NoBip44ActivityNotice">Opozorilo, transakcija ni najdena!</string>
+<string name="Bip44BtcActivityNotice">Najdena nestandardna dejavnost ali dejavnost denarnice pred forkom</string>
+<string name="NoBip44BtcActivityNotice">Ni najdenih transakcij pred forkom</string>
+<string name="FirstUseDateHeightInfo" formatted="false">začenši %datum (blok %height)</string>
+<string name="NotEnoughRecoveryWords">Potrebnih je več obnovitvenih besed</string>
+<string name="TooManyRecoveryWords">Preveč obnovitvenih besed</string>
+<string name="IncorrectRecoveryWords" formatted="false">Neveljavne besede: %words</string>
+<string name="ElectrumNetworkUnavailable">Omrežje Electrum ni na voljo. Obnovitev denarnice bo počasna in ne bo odkrila transakcij pred 1. januarjem 2020</string>
+<string name="PinHidesAccount">Želite skriti račun, dokler ne vnesete kode PIN?</string>
+<string name="CreatePIN">PIN (neobvezno)</string>
+<string name="PinSpendingUnprotected">Poraba brez PIN-a je omogočena (PIN ni vnesen)</string>
+<string name="PinSpendingProtected">Poraba zahteva PIN</string>
+<string name="InvalidPIN">Neveljaven PIN</string>
+<string name="creatingNoHistoryAccountWarning">Ustvarjate račun z določeno besedno zvezo za obnovitev, vendar v verigi blokov ni bila najdena nobena aktivnost.\nJe to prav?\nČe je tako, nadaljujte in znova kliknite gumb za ustvarjanje in prazen račun se bo ustvaril. Če pa bo ta račun moral imeti dejavnost, še enkrat preverite izbrano verigo blokov in besedno zvezo za obnovitev. Če to ni težava, je omrežje blockchain trenutno nedostopno (poskusite znova pozneje) ali pa je bilo ustvarjeno z nestandardno aplikacijo denarnice. Ne ustvarite tega računa zdaj.</string>
+<!--  Error strings  -->
+<string name="accountLocked">račun zaklenjen</string>
+<string name="unknownError">napaka</string>
+<string name="insufficentBalance">nezadostno stanje</string>
+<string name="excessiveFee">previsoka pristojbina</string>
+<string name="sendDustError">znesek nižji od minimuma</string>
+<string name="sendingDustWarning">znesek je pod omrežnim minimumom</string>
+<string name="feeExceedsFlatMax">provizija presega konfigurirano najvišjo dovoljeno pavšalno provizijo</string>
+<string name="notSupported">ni podprto</string>
+<!--  A temporal offer is not longer available.  For example, a payment via the BIP70 payment protocol is no longer available  -->
+<string name="expired">plačilo je poteklo</string>
+<string name="PaymentDataMissing">manjkajo podatki o plačilu</string>
+<string name="headersNotForthcoming">glave niso na voljo</string>
+<string name="cantConvert">pretvorba začasno ni na voljo</string>
+<string name="walletDisconnectedFromBlockchain">povezava z denarnico je prekinjena</string>
+<string name="badTransaction">slaba transakcija</string>
+<string name="badAddress">neveljaven naslov</string>
+<string name="badAmount">neveljaven znesek</string>
+<!--  No accounts have been created yet  -->
+<string name="NoAccounts"> Ni dostopnih računov </string>
+<!--  The crypto currency code (e.g NEX, BTC, BCH, etc) is not understood or handled by this wallet.  This message will be very hard to actually see because the UI
+    protects against entering unknown crypto codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
+      -->
+<string name="badCryptoCode">za to valuto ali verigo blokov ne obstaja noben odklenjen račun</string>
+<string name="badCryptoCodeDetails" formatted="false">Neznana ali valuta ni na voljo: %currency</string>
+<!--  The fiat currency code (e.g USD, EUR, JPY etc) is not understood or handled by this wallet.  This message will be very hard to actually see because the UI
+      protects against entering unknown fiat codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
+     -->
+<string name="badCurrencyUnit">ni valuta</string>
+<!--  The account contains the wrong currency for this use  -->
+<string name="incompatibleAccount">nepravilna valuta</string>
+<string name="incompatibleAccountDetails" formatted="false">Izbrali ste plačilo z računa, ki vsebuje %cryptoAct, vendar je potreben %cryptoPay</string>
+<string name="detailsOfBadAmountFromIntent">Program, ki je klical je pri podajanju količine za pošiljanje posredoval napačno oblikovano številko. Količino boste morali vnesti sami </string>
+<string name="blankAddress">prazen naslov</string>
+<string name="unavailable">ni na voljo</string>
+<string name="blockNotForthcoming">blok ni na voljo</string>
+<string name="receiveAddressUnavailable">Nov prejemni naslov je v procesu izračuna. Počakajte prosim... </string>
+<!--  The maximum number of accounts that this wallet can show has been reached  -->
+<string name="accountLimitReached">največje število računov</string>
+<string name="accountUnavailableDetails">Noben obstoječi račun se ne ujema s to verigo blokov ali pa račun ni bil odklenjen.</string>
+<string name="accountUnavailable">Ni odklenjenega združljivega računa</string>
+<!--  Error long strings  -->
+<string name="sendMoreThanBalance"> Poskušate poslati več kovancev, kot jih imate trenutno na voljo. Če menite, da ne porabite več, kot znaša vaše stanje, ste morda pozabili, da imajo transakcije majhno dodatno provizijo, ali če vidite vse svoje stanje kot nepotrjeno, ste morda opravili preveč transakcij zapored. Obstaja omejitev, kako daleč lahko "prehitiš" verigo blokov. Naj se vaše nepotrjeno stanje potrdi in poskusite znova.</string>
+<string name="deductedFeeLargerThanSendAmount">Odtegnjena provizija je višja od poslanega zneska</string>
+<string name="badWalletImplementation">Nepravilna implementacija denarnice. Prijavite to napako!</string>
+<!--  TITLES  -->
+<string name="title_split_bill">Razdelite račun</string>
+<string name="title_activity_settings">Nastavitve</string>
+<string name="title_activity_exchange">Izmenjava</string>
+<string name="title_activity_shopping">Nakupovanje</string>
+<string name="title_activity_shopping_settings">Gumbi za nakupovanje po meri</string>
+<string name="title_activity_trickle_pay">Trickle Pay</string>
+<string name="title_home">Domov</string>
+<string name="title_dashboard">Nadzorna plošča</string>
+<string name="title_notifications">Obvestila</string>
+<!--  string name="title_activity_invoices">Računi</string>  -->
+<string name="title_activity_identity">Identiteta</string>
+<string name="title_activity_identity_op">Identiteta</string>
+<string name="title_activity_domain_identity_settings">Nastavitev identitete domene</string>
+<string name="title_activity_tx_history" formatted="false">Zgodovina računa: %account</string>
+<string name="title_activity_account_details" formatted="false">Podrobnosti računa: %account</string>
+<!--  Not part of the UI  -->
+<string name="preferenceFileName">bitcoinunlimited.wally.prefs</string>
+<!--  Domain Identity Settings  -->
+<string name="useUniqueIdentity">Uporabi unikatno identiteto</string>
+<!--  Preference Titles  -->
+<string name="title_activity_identity_settings">Nastavitve identitete</string>
+<string name="title_activity_welcome">Dobrodošli</string>
+<!--  Strings used for fragments for navigation  -->
+<string name="next">Naslednji</string>
+<string name="previous">Prejšnji</string>
+<!--  Welcome  -->
+<string name="welcome1Label">Dobrodošli</string>
+<string name="welcome1"> Dobrodošli v Wally, denarnici za kriptovalute!\n\nNa naslednjih zaslonih boste nastavili svoj prvi račun Nexa blockchain (NEX) in nastavili druge storitve, kot je upravljanje gesel.\n\nLahko pa pritisnete puščico nazaj, da to preskočite to vodeno nastavitev.</string>
+<string name="welcome2_title">Nastavitev računa NEXA</string>
+<string name="welcome2">Na naslednjem zaslonu boste nastavili svoj prvi račun Nexa.\n\nTa račun bo vseboval vaš denar in identiteto Nexa. Identitete so nova funkcija Wally Wallet, ki vam omogoča samodejno prijavo na podprta spletna mesta.\n\nIzberete lahko zaščito dostopa do računov z osebno identifikacijsko številko (PIN), vendar priporočamo, da novi uporabniki ne uporabljajo PIN (in ohranjajo nizko stanje) za svoj prvi račun. Zaradi zaščite uporabnikov so lahko računi, zaščiteni s kodami PIN, popolnoma nevidni, dokler ne vnesete pravilne kode PIN (in nič ne kaže, da ste vnesli napačno).\n\nČe želite obnoviti obstoječi račun NEXA, vnesite skrivno besedno zvezo za obnovitev računa, kjer je navedena. Če ta prostor ostane prazen, se ustvari nov račun.</string>
+<string name="welcome3_title">NEXA Skrivna besedna zveza za obnovitev računa</string>
+<string name="welcome3">Ta račun je mogoče obnoviti ali premakniti v drugo napravo prek skrivne besedne zveze, prikazane spodaj. Za razliko od mnogih storitev ta denarnica ne potrebuje občasnega "varnostnega kopiranja". Podatki v javni verigi blokov v kombinaciji s to skrivno besedno zvezo zadostujejo za povrnitev vseh vaših sredstev in zgodovine vašega računa. Zapišite to besedno zvezo in jo takoj shranite nekje na varnem.\n\nV svetu Bitcoina morate VI prevzeti odgovornost!\n\nČe izgubite to besedno zvezo, je absolutno nemogoče obnoviti vaš račun. Če vam ukradejo vašo skrivno besedno zvezo, lahko tat vzame vsa vaša sredstva in se v vašemu imenu prijavi na spletna mesta, ki ste jih nastavili z Wallyjevo identiteto.\nTo se morda sliši strašljivo, vendar ima veliko prednost: denar je na tem telefonu in v vaši varnostni kopiji in nikjer drugje.\n\nTorej je vaš in samo vaš. Nihče ne more vdreti v bazo podatkov podjetja in ukrasti vašega denarja in nihče vas ne more ovirati pri porabi vašega denarja.\n\nTako kot denar v vaši fizični denarnici.\n\nČe vas ta odgovornost straši, ravnajte s to denarnico, kot bi s svojo fizično denarnico – v njej ne imejte veliko denarja.</string>
+<string name="welcome4_title">Identiteta</string>
+<string name="welcome4"> Nato boste preusmerjeni na zaslon z informacijami o identiteti. Ti podatki se uporabljajo, ko uporabljate Wally kot upravitelja identitete in prijave (za samodejno prijavo na različna spletna mesta ali posredovanje informacij pri nakupu).\n\nWally je izjemno osredotočen na zasebnost!\n\nTe informacije ne bodo razkrite. s katerim koli spletnim mestom brez vašega izrecnega dovoljenja in avtorjem te aplikacije nikoli ne bodo poslane nobene informacije iz te denarnice. Izberete lahko tudi, da katera koli polja pustite prazna.\nKo končate, pritisnite puščico nazaj (zgoraj levo).</string>
+<string name="welcomeComplete">S tem je nastavitev končana. Če niste dokončali nobenega od korakov v tej dobrodošlici, so vsa polja na voljo v sami aplikaciji.\n\nHvala in uživajte v novi denarnici!</string>
+<!--  PIN Entry  -->
+<string name="EnterPIN">Vnesi PIN</string>
+<string name="EnterPINorBlankToRemove">Novi PIN (blank removes)</string>
+<string name="title_activity_shoppng">Nakupovalne aktivnosti</string>
+<!--  Shopping  -->
+<string name="ButtonTextHere">Nastavite besedilo gumba</string>
+<string name="ButtonLinkHere">Vnesi spletno povezavo</string>
+<string name="ShoppingWarning"> POZOR: Elementi na tej strani so povezave do storitev in spletnih mest tretjih oseb, ki so tukaj postavljene zaradi vas Teh spletnih mest/storitev ni preveril Wally Wallet.\n\nUporabljajte na lastno odgovornost!</string>
+<!--  All items are specified here so the service itself can be localized if your country does work with the default service. Use empty strings to disable  -->
+<string name="BadLink">Neveljavna spletna povezava</string>
+<string name="ExplainGiftCards"> Nakup darilnih kartic vam omogoča dostop do stotine trgovin, ki ne sprejemajo neposredno kriptovalute.</string>
+<string name="GiftCardButton">eGifter darilne kartice</string>
+<string name="GiftCardUrl">https://www.egifter.com</string>
+<string name="GiftCardAppPackage">com.groupgifting.android</string>
+<string name="NFTs">Nezamenljivi žetoni (NFTs)</string>
+<string name="ExplainNFTs">NiftyArt.cash: Ustvarite in trgovajte z edinstvenimi slikami in digitalnimi predstavitvami unikatnih predmetov </string>
+<string name="NftUrl">http://niftyart.cash</string>
+<!--
+    <string name="GiftCardButton">Gyft darilne kartice</string>
+    <string name="GiftCardUrl">https://www.gyft.com</string>
+    <string name="GiftCardAppPackage">com.gyft.android</string>
+     -->
+<string name="ExplainRestaurant"> Spletne storitve naročanja v restavracijah (za dostavo ali prevzem) lahko sprejemajo kriptovalute, tudi če fizična lokacija ne sprejema kriptovalut.</string>
+<string name="RestaurantButton">Menufy naročanje iz restavracje</string>
+<string name="RestaurantUrl">https://www.menufy.com</string>
+<string name="RestaurantAppPackage">com.menufy.menufyportal</string>
+<string name="ExplainStoreMap"> Poiščite lokacije v svoji bližini, ki sprejemajo kriptovalute.</string>
+<string name="StoreMapButton">zemljevid trgovin</string>
+<string name="StoreMapUrl">https://map.bitcoin.com</string>
+<string name="StoreMapAppPackage"/>
+<string name="OpenWebsite" formatted="false">Dostop %siteName</string>
+<string name="WebsiteUnavailable" formatted="false">Spletna stran ni na voljo</string>
+<string name="ExplainTxBit">txbit.io: Zamenjaj NEXA za drugo kriptovaluto</string>
+<string name="ExplainMexc">mexc.com: Zamenjaj NEXA za drugo kriptovaluto</string>
+<string name="CexButton">menjalnica</string>
+<!--  Trickle Pay  -->
+<string name="SharedNotification">je delil %what</string>
+<string name="AuthAutopayTitle">Avtorizirano plačilo</string>
+<string name="PaymentRequest">Zahtevano plačilo</string>
+<string name="AuthAutopayDeniedTitle"> Avtorizirano plačilo zavrnjeno</string>
+<string name="AuthAutopay" formatted="false">%amt do %domain</string>
+<string name="TpToBeDone"> Vaše Trickle Pay povezave bodo prikazane tukaj </string>
+<string name="TpHistoryTbd"> Vaša Trickle Pay zgodovina bod prikazana tukaj </string>
+<string name="AcceptTpRegistration">Potrdi registracijo From:</string>
+<string name="EditTpRegistration">Nastavitve za subjekt:</string>
+<string name="AcceptTpRegistrationTopic">Namen:</string>
+<string name="TpMaxSpendHint">vnesite največjo samodejno porabo</string>
+<string name="TpAssetInfoRequest"> zahteve za informacije o sredstvih </string>
+<string name="TpMaxHeading"> Omejitve samodejnega plačila </string>
+<string name="TpMaxPer">Vsaka zahteva</string>
+<string name="TpMaxPerDay">Na dan</string>
+<string name="TpMaxPerWeek">Na teden</string>
+<string name="TpMaxPerMonth">Na mesec</string>
+<string name="TpEnableAutopay"> Omogoči samodejno plačilo (če ni označeno, vsa plačila potrebujejo avtorizacijo uporabnika) </string>
+<string name="asciiArrow"><![CDATA[ => ]]></string>
+<string name="TpNoRegistrations"> Brez registracij Trickle Pay </string>
+<string name="TpRegDenied">Zavrnjena registracija</string>
+<string name="TpRegAccepted">Potrjena registracija</string>
+<string name="TpRegUnchanged">Registracija nespremenjena</string>
+<string name="TpRequestAutoDeny">Zavrnjena zahteva (avtomatično)</string>
+<string name="TpRequestAutoAccept">Odobrena zahteva (automatic)</string>
+<string name="TpTxDenied">Zavrnjena transakcija</string>
+<string name="TpTxAccepted">Odobrena transakcija</string>
+<string name="TpAssetRequestDenied"> Ne pošilja sredstev </string>
+<string name="TpAssetRequestAccepted"> Pošilja sredstva </string>
+<string name="SpecialTpTransactionFrom"> Posebna transakcija od </string>
+<string name="IncompleteTpTransactionFrom"> Predlog ponudbe od podjetja</string>
+<string name="TpEntails">Vključuje</string>
+<string name="TpInAccount">Uporablja račun</string>
+<string name="TpAssetRequestFrom"> Zahteva za informacije o sredstvih</string>
+<string name="TpHandledByAccount"> lahko upravlja vaš račun</string>
+<string name="TpAssetMatches" formatted="false">Informacije o %num redstvih, ki jih imate, bodo posredovane tej storitvi.</string>
+<string name="TpAssetInfoNotXfer"> Sprejem te zahteve preprosto posreduje storitvi informacije o vašem lastništvu. Ne dovoljuje nobenih prenosov.</string>
+<string name="ForAFeeOf" formatted="false"> vključno s provizijo %fee %units</string>
+<string name="TpExchangingTokens" formatted="false"> in izmenjava žetonov (pošiljanje%tokSnd, prejemanje %tokRcv).</string>
+<string name="TpSendingTokens" formatted="false">in pošiljanje %tokSnd žetonov.</string>
+<string name="TpReceivingTokens" formatted="false">in prejemanje %tokRcv žetonov.</string>
+<string name="TpSendToTitle">Plačilo zahtevano od</string>
+<string name="TpSpends">Poraba </string>
+<string name="TpSendRequestDenied">Plačilo zavrnjeno</string>
+<string name="TpSendAutoReject">Plačilo avtomatično zavrnjeno</string>
+<string name="TpSendRequestAccepted">Plačilo potrjeno</string>
+<string name="TpWhyNotAuto"> Ne bo samodejno podpisan, ker </string>
+<string name="TpAutomaticDisabled"> Samodejna plačila onemogočena </string>
+<string name="TpExceededMaxPer"> Presega največje dovoljeno število zahtevkov</string>
+<string name="TpExceededMaxDaily"> Presega največje dovoljeno število na zahtevkov na dan</string>
+<string name="TpExceededMaxWeekly"> Presega največje dovoljeno število na zahtevkov na teden</string>
+<string name="TpExceededMaxMonthly"> Presega največje dovoljeno število na zahtevkov na mesec</string>
+<string name="title_activity_alert_history">Nedavna sporočila</string>
+<string name="WriteDownRecoveryPhraseWarning">Opozorilo: za nekatere račune niste zapisali skrivnih besednih zvez za obnovitev! Da preprečite izgubo sredstev, če se ta naprava izgubi ali pokvari, zapišite skrivne obnovitvene ključe na papir ali drugo neelektronsko obliko. Ključi za obnovitev so dostopni na strani z nastavitvami vsakega računa.</string>
+<string name="WroteRecoveryPhraseDown">Zapisal sem si</string>
+<string name="RecoveryPhraseKeepRemindingMe">Opomni me</string>
+</resources>
