@@ -409,6 +409,11 @@ open class GuiListItemBinder<DATA> (val view: View) : RecyclerView.ViewHolder(vi
         }
     }
 
+    open fun onView(attached: Boolean)
+    {
+
+    }
+
 
     /** Default action for simplicity is to make gaining focus act like a click (because you have to touch a list item to gain focus) */
     override fun onFocusChange(v: View, focused: Boolean)
@@ -565,7 +570,14 @@ open class GuiList<DATA, BINDER: GuiListItemBinder<DATA>> internal constructor(v
     // The holder might still be active, its just scrolled off the screen
     override fun onViewDetachedFromWindow(holder: BINDER)
     {
+        holder.onView(false)
         super.onViewDetachedFromWindow(holder)
+    }
+
+    override fun onViewAttachedToWindow(holder: BINDER)
+    {
+        holder.onView(true)
+        super.onViewAttachedToWindow(holder)
     }
 
     override fun onFailedToRecycleView(holder: BINDER): Boolean

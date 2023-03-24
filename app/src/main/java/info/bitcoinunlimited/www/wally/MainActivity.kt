@@ -9,7 +9,6 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.AnimatedVectorDrawable
-import android.opengl.Visibility
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -34,7 +33,6 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
 import info.bitcoinunlimited.www.wally.databinding.ActivityMainBinding
-import info.bitcoinunlimited.www.wally.databinding.AssetListItemBinding
 import info.bitcoinunlimited.www.wally.databinding.AssetSuccinctListItemBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -376,11 +374,70 @@ class MainActivity : CommonNavActivity()
             dbgAssertGuiThread()
             clearRecoveryKeyNotBackedUpWarning()
         }
+
+        // touching the divider line switches it
+        ui.sendReceiveDivider.setOnClickListener {
+            if (ui.sendUI.visibility == View.GONE)
+            {
+                sendVisibility(true)
+            }
+            else
+            {
+                sendVisibility(false)
+                if (ui.receiveUI.visibility == View.GONE) receiveVisibility(true)
+            }
+        }
+        ui.sendUI.setOnClickListener {
+            if (ui.sendUI.visibility == View.GONE)
+            {
+                sendVisibility(true)
+            }
+            else
+            {
+                sendVisibility(false)
+                if (ui.receiveUI.visibility == View.GONE) receiveVisibility(true)
+            }
+        }
+
+        ui.receiveBalancesDivider.setOnClickListener {
+            if (ui.receiveUI.visibility == View.GONE)
+            {
+                receiveVisibility(true)
+            }
+            else
+            {
+                sendVisibility(false)
+                if (ui.sendUI.visibility == View.GONE) receiveVisibility(true)
+            }
+        }
+        ui.AccountInfo.setOnClickListener {
+            if (ui.receiveUI.visibility == View.GONE)
+            {
+                receiveVisibility(true)
+            }
+            else
+            {
+                receiveVisibility(false)
+                if (ui.sendUI.visibility == View.GONE) receiveVisibility(true)
+            }
+        }
+        ui.balanceTitle.setOnClickListener {
+            if (ui.receiveUI.visibility == View.GONE)
+            {
+                receiveVisibility(true)
+            }
+            else
+            {
+                receiveVisibility(false)
+                if (ui.sendUI.visibility == View.GONE) receiveVisibility(true)
+            }
+        }
     }
 
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray)
     {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode)
         {
             READ_FILES_PERMISSION_RESULT ->
@@ -2001,7 +2058,7 @@ class MainActivity : CommonNavActivity()
 
         val amtstr: String = ui.sendQuantity.text.toString()
 
-        var deductFeeFromAmount = false
+        var spendAll = false
         var amount: BigDecimal = try
         {
             amtstr.toBigDecimal(currencyMath).setCurrency(account.chain.chainSelector)
@@ -2010,7 +2067,7 @@ class MainActivity : CommonNavActivity()
         {
             if (amtstr.lowercase() == SEND_ALL_TEXT)
             {
-                deductFeeFromAmount = true
+                spendAll = true
                 account.fromFinestUnit(account.wallet.balance)
             }
             else
@@ -2109,34 +2166,35 @@ class MainActivity : CommonNavActivity()
         {
             displayNotice(R.string.Processing)
             coMiscScope.launch {  // avoid network on main thread exception
+                val cs = account.wallet.chainSelector
+                var tx: iTransaction = txFor(cs)
                 try
                 {
                     val atomAmt = account.toFinestUnit(amount)
-                    val tx: iTransaction = if (sendAssetList.size == 0)
+                    if (sendAssetList.size == 0)
                     {
-                        account.wallet.send(atomAmt, sendAddr, deductFeeFromAmount, false, note = note)
+                        // If we are spending all, then deduct the fee from the amount (which was set above to the full ungrouped balance)
+                        tx = account.wallet.send(atomAmt, sendAddr, spendAll, false, note = note)
                     }
                     else
                     {
-                        val cs = account.wallet.chainSelector
                         // TBD: It would be interesting to automatically use an authority, if one is sent to this account: TxCompletionFlags.USE_GROUP_AUTHORITIES
-                        val cflags = TxCompletionFlags.FUND_NATIVE or TxCompletionFlags.FUND_GROUPS or TxCompletionFlags.SIGN
-                        val tx = txFor(cs)
-                        // Construct an output that sends the right amount of native coin
-                        if (atomAmt > 0)
+                        var cflags = TxCompletionFlags.FUND_NATIVE or TxCompletionFlags.FUND_GROUPS or TxCompletionFlags.SIGN
+
+                        if (spendAll)
                         {
-                            val coinOut = txOutputFor(cs)
-                            coinOut.amount = atomAmt
-                            coinOut.script = sendAddr.outputScript()
-                            tx.add(coinOut)
+                            cflags = cflags or TxCompletionFlags.SPEND_ALL_NATIVE or TxCompletionFlags.DEDUCT_FEE_FROM_OUTPUT
                         }
+
                         // Construct outputs that send all selected assets
+                        var assetDustOut = 0L
                         for (asset in sendAssetList)
                         {
                             if (asset.account == account)
                             {
                                 val aout = txOutputFor(cs)
                                 aout.amount = Dust(cs)
+                                assetDustOut += aout.amount
                                 aout.script = sendAddr.groupedConstraintScript(asset.groupInfo.groupId, asset.displayAmount ?: 1)
                                 tx.add(aout)
                             }
@@ -2145,10 +2203,20 @@ class MainActivity : CommonNavActivity()
                                 LogIt.info("asset from the wrong account in sendAssetList!  (Should never happen)")
                             }
                         }
+                        //
+                        // Construct an output that sends the right amount of native coin
+                        if (atomAmt > 0)
+                        {
+                            val coinOut = txOutputFor(cs)
+                            coinOut.amount = atomAmt
+                            if (spendAll) coinOut.amount -= assetDustOut  // it doesn't matter because txCompleter will solve but needs to not be too much
+                            coinOut.script = sendAddr.outputScript()
+                            tx.add(coinOut)
+                        }
+
                         // Attempt to pay for the constructed transaction
-                        account.wallet.txCompleter(tx, 0, cflags, 0)
+                        account.wallet.txCompleter(tx, 0, cflags, null, if (spendAll) (tx.outputs.size-1) else null)
                         account.wallet.send(tx,false, note = note)
-                        tx
                     }
                     LogIt.info("Sending TX: ${tx.toHex()}")
                     onSendSuccess(atomAmt, sendAddr, tx)
@@ -2159,13 +2227,16 @@ class MainActivity : CommonNavActivity()
                         confirmVisibility(false)
                         receiveVisibility(true)
                     }
-                } catch (e: Exception)  // We don't want to crash, we want to tell the user what went wrong
+                }
+                catch (e: Exception)  // We don't want to crash, we want to tell the user what went wrong
                 {
                     laterUI {
                         confirmVisibility(false)
                         sendVisibility(true)
                     }
                     displayException(e)
+                    handleThreadException(e)
+                    LogIt.info("Failed transaction is: ${tx.toHex()}")
                     askedForConfirmation = false  // Force reconfirm is there is any error with the send
                 }
             }

@@ -591,4 +591,5 @@ Good luck!
     <string name="NftLegal">License</string>
     <string name="NftSeries" formatted="false">Series: %series</string>
     <string name="NftAuthor" formatted="false">Author: %author</string>
+    <string name="NftNoInfoProvidedHTML"><![CDATA[<body><h1><center>...No Information Provided...</h1></center></body>]]></string>
 </resources>

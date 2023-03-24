@@ -97,7 +97,7 @@ data class NexaNFTv2(
   val info: String,
   val bindata: String?=null,
   val data: JsonObject?=null,
-  val license: String,
+  val license: String?=null,
 )
 
 /** return filename and data of the public card front */

@@ -7,20 +7,21 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
-import bitcoinunlimited.libbitcoincash.*
 import android.graphics.drawable.PictureDrawable
 import android.media.MediaPlayer
 import android.media.MediaPlayer.OnPreparedListener
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewTreeObserver
 import android.widget.ImageView
+import android.widget.VideoView
 import androidx.core.graphics.get
 import androidx.core.widget.doAfterTextChanged
-
 import androidx.recyclerview.widget.LinearLayoutManager
+import bitcoinunlimited.libbitcoincash.*
 import com.caverock.androidsvg.SVG
 import info.bitcoinunlimited.www.wally.databinding.ActivityAssetsBinding
 import info.bitcoinunlimited.www.wally.databinding.AssetListItemBinding
@@ -30,6 +31,7 @@ import java.net.URI
 import java.net.URL
 import java.util.logging.Logger
 import java.util.zip.ZipInputStream
+
 
 private val LogIt = Logger.getLogger("BU.wally.assets")
 
@@ -71,6 +73,30 @@ class AssetManager(val app: WallyApp)
         if (DBG_NO_ASSET_CACHE) throw Exception()
         val context = app
         val dir = context.getDir("asset", Context.MODE_PRIVATE)
+        val file = File(dir, filename)
+        val name = file.absolutePath
+        FileInputStream(file).use {
+            return Pair(name,it.readBytes())
+        }
+    }
+
+    fun storeCardFile(filename: String, data: ByteArray): String
+    {
+        val context = app
+
+        val dir = context.getDir("card", Context.MODE_PRIVATE)
+        val file = File(dir, filename)
+        FileOutputStream(file).use {
+            it.write(data)
+        }
+        return file.absolutePath
+    }
+
+    fun loadCardFile(filename: String): Pair<String, ByteArray>
+    {
+        if (DBG_NO_ASSET_CACHE) throw Exception()
+        val context = app
+        val dir = context.getDir("card", Context.MODE_PRIVATE)
         val file = File(dir, filename)
         val name = file.absolutePath
         FileInputStream(file).use {
@@ -200,31 +226,49 @@ class AssetManager(val app: WallyApp)
             LogIt.info("NFT ${groupId.toHex()} not in cache")
         }
 
-        val url = td?.nftUrl ?: nftUrl(td?.genesisInfo?.document_url, groupId)
+        var url = td?.nftUrl ?: nftUrl(td?.genesisInfo?.document_url, groupId)
         LogIt.info(sourceLoc() + ": nft URL: " + url)
 
+        var zipBytes:ByteArray? = null
         if (url != null)
         {
             try
             {
-                val zipBytes = URL(url).readBytes()
-                val zf = ZipInputStream(ByteArrayInputStream(zipBytes))
-                // Just try to go thru the zip dir to see if its basically a valid file
-                val files = generateSequence { zf.nextEntry }.map { it.name }.toList()
-                LogIt.info(sourceLoc() + ": nft zip contents " + files.joinToString(" "))
-                val hash = Hash.hash256(zipBytes)
-                if (groupId.subgroupData() contentEquals  hash)
-                {
-                    storeAssetFile(groupId.toHex() + ".zip", zipBytes)
-                    return Pair(url, zipBytes)
-                }
-                else
-                {
-                    LogIt.info(sourceLoc() + ": nft zip file does not match hash")
-                }
+                zipBytes = URL(url).readBytes()
             }
             catch(e:java.net.MalformedURLException)
             {
+            }
+        }
+
+        // Try well known locations
+        if (zipBytes == null)
+        {
+            try
+            {
+                url = "https://niftyart.cash/_public/${groupId.toHex()}"
+                zipBytes = URL(url).readBytes()
+            }
+            catch(e: Exception)
+            {
+            }
+        }
+
+        if (zipBytes != null)
+        {
+            val zf = ZipInputStream(ByteArrayInputStream(zipBytes))
+            // Just try to go thru the zip dir to see if its basically a valid file
+            val files = generateSequence { zf.nextEntry }.map { it.name }.toList()
+            LogIt.info(sourceLoc() + ": nft zip contents " + files.joinToString(" "))
+            val hash = Hash.hash256(zipBytes)
+            if (groupId.subgroupData() contentEquals  hash)
+            {
+                storeAssetFile(groupId.toHex() + ".zip", zipBytes)
+                return Pair(url!!, zipBytes)
+            }
+            else
+            {
+                LogIt.info(sourceLoc() + ": nft zip file does not match hash")
             }
         }
         return null
@@ -269,6 +313,67 @@ fun openElectrum(chainSelector: ChainSelector): ElectrumClient
     return ec
 }
 
+/** shows this image in the passed imageview.  Returns true if imageView chosen, else false */
+fun showMedia(iui: ImageView, vui: VideoView?, uri: Uri?, bytes: ByteArray? = null): Boolean
+{
+    if (uri == null)
+    {
+        iui.setImageDrawable(null)
+        return true
+    }
+    if (bytes == null)  throw UnimplementedException("load from uri")
+    val name = uri.toString().lowercase()
+
+    if (name.endsWith(".svg", true))
+    {
+        val svg = SVG.getFromInputStream(ByteArrayInputStream(bytes))
+        val drawable = PictureDrawable(svg.renderToPicture())
+        iui.setImageDrawable(drawable)
+        iui.visibility=View.VISIBLE
+        vui?.visibility=View.GONE
+        return true
+    }
+    else if (name.endsWith(".jpg", true) ||
+      name.endsWith(".jpeg", true) ||
+      name.endsWith(".png", true) ||
+      name.endsWith(".webp",true) ||
+      name.endsWith(".gif",true) ||
+      name.endsWith(".heic",true) ||
+      name.endsWith(".heif",true)
+    )
+    {
+        val bmp = BitmapFactory.decodeStream(ByteArrayInputStream(bytes))
+        iui.setImageBitmap(bmp)
+        iui.visibility=View.VISIBLE
+        vui?.visibility=View.GONE
+        return true
+    }
+    else
+    {
+        if ((vui != null) && (name.endsWith(".mp4", true) ||
+          name.endsWith(".webm", true) ||
+          name.endsWith(".3gp", true) ||
+          name.endsWith(".mkv", true)))
+        {
+            LogIt.info("Video URI: ${uri.toString()}")
+            vui.setVideoPath(uri.toString())
+            vui.start()
+            iui.visibility=View.GONE
+            vui?.visibility=View.VISIBLE
+            return false
+        }
+        else
+        {
+            // TODO: pick a better cannot load image
+            iui.setImageResource(R.drawable.asset_cannot_show_icon)
+            iui.visibility=View.VISIBLE
+            vui?.visibility=View.GONE
+            return true
+        }
+    }
+}
+
+
 class AssetInfo(val groupInfo: GroupInfo)
 {
     var name:String? = null
@@ -310,20 +415,24 @@ class AssetInfo(val groupInfo: GroupInfo)
     }
 
 
-    fun extractNftData(nftZip:ByteArray)
+    fun extractNftData(am: AssetManager, grpId: GroupId, nftZip:ByteArray)
     {
         // grab image from zip file
         val (fname, data) = nftCardFront(nftZip)
         if (fname != null)
         {
             iconBytes = data
-            iconUri = Uri.parse(fname)  // TODO, actually just a filename
+            // Note caching is NEEDED to show video (because videoview can only take a file)
+            if (data != null) iconUri = Uri.parse(am.storeCardFile(grpId.toHex() + fname, data))
+            else iconUri = Uri.parse(fname)
         }
         val (bname, bdata) = nftCardBack(nftZip)
         if (bname != null)
         {
             iconBackBytes = bdata
-            iconBackUri = Uri.parse(bname)  // TODO, actually just a filename
+            // Note caching is NEEDED to show video (because videoview can only take a file)
+            if (data != null) iconUri = Uri.parse(am.storeCardFile(grpId.toHex() + bname, data))
+            else iconBackUri = Uri.parse(bname)
         }
 
         // grab NFT text data
@@ -364,106 +473,113 @@ class AssetInfo(val groupInfo: GroupInfo)
 
     fun load(chain: Blockchain, am: AssetManager)  // Attempt to find all asset info from a variety of data sources
     {
-
-        var td = am.getTokenDesc(chain, groupInfo.groupId)
-        var tg = td.genesisInfo
-        var dataChanged = false
-
-        if (tg == null)
+        synchronized(this)
         {
-            td = am.getTokenDesc(chain, groupInfo.groupId, true)
-            tg = td.genesisInfo
-            if (tg == null) return // can't load
-        }
 
-        LogIt.info(sourceLoc() + chain.name + ": loaded: " + tg.name)
+            var td = am.getTokenDesc(chain, groupInfo.groupId)
+            var tg = td.genesisInfo
+            var dataChanged = false
 
-        name = tg.name
-        ticker = tg.ticker
-        genesisHeight = tg.height
-        genesisTxidem = Hash256(tg.txidem)
-
-        docUrl = tg.document_url
-
-        if (docUrl != null)
-        {
-            // Ok find the NFT description
-            val nftZipData = am.getNftFile(td, groupInfo.groupId)
-            if (nftZipData != null)
+            if (tg == null)
             {
-                tokenInfo = td
-                if (td.marketUri == null)
+                td = am.getTokenDesc(chain, groupInfo.groupId, true)
+                tg = td.genesisInfo
+                if (tg == null) return // can't load
+            }
+
+            LogIt.info(sourceLoc() + chain.name + ": loaded: " + tg.name)
+
+            name = tg.name
+            ticker = tg.ticker
+            genesisHeight = tg.height
+            genesisTxidem = Hash256(tg.txidem)
+
+            docUrl = tg.document_url
+
+            if (docUrl != null)
+            {
+                // Ok find the NFT description
+                val nftZipData = am.getNftFile(td, groupInfo.groupId)
+                if (nftZipData != null)
                 {
-                    val u: URI = URI(nftZipData.first)
-                    if (u.isAbsolute)  // This is a real URI, not a local path
+                    tokenInfo = td
+                    if (td.marketUri == null)
                     {
-                        td.marketUri = u.resolve("/token/" + groupInfo.groupId.toHex()).toString()
+                        val u: URI = URI(nftZipData.first)
+                        if (u.isAbsolute)  // This is a real URI, not a local path
+                        {
+                            td.marketUri = u.resolve("/token/" + groupInfo.groupId.toHex()).toString()
+                            am.storeTokenDesc(groupInfo.groupId, td)
+                        }
+                        else
+                        {
+                            td.marketUri = URI(docUrl).resolve("/token/" + groupInfo.groupId.toHex()).toString()
+                        }
+                        tokenInfo = td
                         am.storeTokenDesc(groupInfo.groupId, td)
                     }
-                    else
+                    extractNftData(am, groupInfo.groupId, nftZipData.second)
+                    if (iconBackUri == null) getTddIcon(td).let { iconBackUri = it.first; iconBackBytes = it.second }
+                    dataChanged = true
+                }
+                else  // Not an NFT, so fill in the data from the TDD
+                {
+                    LogIt.info(sourceLoc() + ": $name == ${td.name}, $ticker == ${td.ticker} ")
+                    if (ticker != td.ticker)
                     {
-                        td.marketUri = URI(docUrl).resolve("/token/" + groupInfo.groupId.toHex()).toString()
+                        throw IncorrectTokenDescriptionDoc("ticker does not match asset genesis transaction")
                     }
-                    tokenInfo = td
-                    am.storeTokenDesc(groupInfo.groupId, td)
-                }
-                extractNftData(nftZipData.second)
-                if (iconBackUri == null) getTddIcon(td).let { iconBackUri = it.first; iconBackBytes = it.second }
-                dataChanged = true
-            }
-            else  // Not an NFT, so fill in the data from the TDD
-            {
-                LogIt.info(sourceLoc() + ": $name == ${td.name}, $ticker == ${td.ticker} ")
-                if (ticker != td.ticker)
-                {
-                    throw IncorrectTokenDescriptionDoc("ticker does not match asset genesis transaction")
-                }
 
-                if (td.pubkey != null)  // the document signature passed
-                {
-                    name = td.name
-                    ticker = td.ticker
+                    if (td.pubkey != null)  // the document signature passed
+                    {
+                        name = td.name
+                        ticker = td.ticker
+                    }
+                    // Guess one location for the market
+                    td.marketUri = URI(docUrl).resolve("/token/" + groupInfo.groupId.toHex()).toString()
+                    tokenInfo = td  // ok save all the info
+                    am.storeTokenDesc(groupInfo.groupId, td)
+                    val iconUrl = tokenInfo?.icon
+                    if (iconUrl != null)
+                    {
+                        getTddIcon(td).let { iconUri = it.first; iconBytes = it.second }
+                        dataChanged = true
+                    }
                 }
-                // Guess one location for the market
-                td.marketUri = URI(docUrl).resolve("/token/" + groupInfo.groupId.toHex()).toString()
-                tokenInfo = td  // ok save all the info
-                am.storeTokenDesc(groupInfo.groupId, td)
-                val iconUrl = tokenInfo?.icon
-                if (iconUrl != null)
+            }
+            else // Missing some standard token info, look around for an NFT file
+            {
+                val nftZipData = am.getNftFile(null, groupInfo.groupId)
+                if (nftZipData != null)
                 {
-                    getTddIcon(td).let { iconUri = it.first; iconBytes = it.second }
+                    tokenInfo = td
+                    if (td.marketUri == null)
+                    {
+                        val u: URI = URI(nftZipData.first)
+                        if (u.isAbsolute)  // This is a real URI, not a local path
+                        {
+                            td.marketUri = u.resolve("/token/" + groupInfo.groupId.toHex()).toString()
+                            am.storeTokenDesc(groupInfo.groupId, td)
+                        }
+                    }
+                    extractNftData(am, groupInfo.groupId, nftZipData.second)
                     dataChanged = true
                 }
             }
-        }
-        else // Missing some standard token info, look around for an NFT file
-        {
-            val nftZipData = am.getNftFile(null, groupInfo.groupId)
-            if (nftZipData != null)
-            {
-                tokenInfo = td
-                if (td.marketUri == null)
-                {
-                    val u: URI = URI(nftZipData.first)
-                    if (u.isAbsolute)  // This is a real URI, not a local path
-                    {
-                        td.marketUri = u.resolve("/token/" + groupInfo.groupId.toHex()).toString()
-                        am.storeTokenDesc(groupInfo.groupId, td)
-                    }
-                }
-                extractNftData(nftZipData.second)
-                dataChanged = true
-            }
-        }
 
-        if (dataChanged)
-        {
-            ui?.repopulate()
-            sui?.repopulate()
+            laterUI {
+                if (dataChanged)
+                {
+                    ui?.repopulate()
+                    sui?.repopulate()
+                }
+            }
         }
     }
 
 }
+
+
 
 
 class AssetSuccinctBinder(val ui: AssetSuccinctListItemBinding, val activity: CommonNavActivity): GuiListItemBinder<AssetInfo>(ui.root)
@@ -473,8 +589,25 @@ class AssetSuccinctBinder(val ui: AssetSuccinctListItemBinding, val activity: Co
     override fun populate()
     {
         LogIt.info(sourceLoc() + "populate: " + (data?.groupInfo?.groupId?.toString() ?: ""))
-        data?.let()
-        { d ->
+
+        // Loop any video that might be playing
+        ui.GuiAssetVideoIcon.setOnPreparedListener(OnPreparedListener { mp -> mp.isLooping = true })
+
+        // If this video cannot be played, do not do an ugly popup -- just switch to the cannot show icon
+        ui.GuiAssetVideoIcon.setOnErrorListener(object : MediaPlayer.OnErrorListener {
+            override fun onError( mp: MediaPlayer?,  what: Int,  extra: Int): Boolean {
+                mp?.stop()
+                ui.GuiAssetVideoIcon.visibility = View.GONE
+                ui.GuiAssetIcon.visibility = View.VISIBLE
+                ui.GuiAssetIcon.setImageResource(R.drawable.asset_cannot_show_icon)
+                return true
+            }
+        })
+
+
+        val d = data
+        if (d != null)
+        {
             d.sui = this
 
             val nft = d.nft
@@ -500,27 +633,34 @@ class AssetSuccinctBinder(val ui: AssetSuccinctListItemBinding, val activity: Co
 
             if (showFront)
             {
-                showImage(ui.GuiAssetIcon, d.iconUri, d.iconBytes)
+                showMedia(ui.GuiAssetIcon, ui.GuiAssetVideoIcon, d.iconUri, d.iconBytes)
             }
             else
             {
-                showImage(ui.GuiAssetIcon, d.iconBackUri, d.iconBackBytes)
-
+                showMedia(ui.GuiAssetIcon, ui.GuiAssetVideoIcon, d.iconBackUri, d.iconBackBytes)
             }
 
             ui.GuiAssetIcon.setOnClickListener() {
                 showFront = !showFront
                 if (showFront)
                 {
-                    showImage(ui.GuiAssetIcon, d.iconUri, d.iconBytes)
+                    showMedia(ui.GuiAssetIcon, ui.GuiAssetVideoIcon, d.iconUri, d.iconBytes)
                 }
                 else
                 {
-                    showImage(ui.GuiAssetIcon, d.iconBackUri, d.iconBackBytes)
+                    showMedia(ui.GuiAssetIcon, ui.GuiAssetVideoIcon, d.iconBackUri, d.iconBackBytes)
                 }
             }
         }
+        else
+        {
+            ui.GuiAssetQuantity.text = ""
+            ui.GuiAssetIcon.setImageResource(0)
+            ui.GuiAssetName.text = ""
+            ui.GuiAssetEditQuantity.set("")
+        }
 
+        // Allows editing the quantity (for sending partial amounts)
         ui.GuiAssetQuantity.setOnClickListener {
             val d = data ?: return@setOnClickListener
             ui.GuiAssetQuantity.visibility = View.INVISIBLE
@@ -601,40 +741,6 @@ class AssetSuccinctBinder(val ui: AssetSuccinctListItemBinding, val activity: Co
 
     }
 
-    /** shows this image in the passed imageview.  Returns the image data loaded from the URI, for your cache, or the bytes you sent this function */
-    fun showImage(ui: ImageView, uri: Uri?, bytes: ByteArray? = null): ByteArray?
-    {
-        if (uri == null)
-        {
-            ui.setImageDrawable(null)
-            return null
-        }
-        if (bytes == null)  throw UnimplementedException("load from uri")
-        val name = uri.toString().lowercase()
-
-        if (name.endsWith(".svg", true))
-        {
-            val svg = SVG.getFromInputStream(ByteArrayInputStream(bytes))
-            val drawable = PictureDrawable(svg.renderToPicture())
-            ui.setImageDrawable(drawable)
-            ui.visibility=View.VISIBLE
-        }
-        else if (name.endsWith(".jpg", true) ||
-          name.endsWith(".jpeg", true) ||
-          name.endsWith(".png", true) ||
-          name.endsWith(".webp",true) ||
-          name.endsWith(".gif",true) ||
-          name.endsWith(".heic",true) ||
-          name.endsWith(".heif",true)
-        )
-        {
-            val bmp = BitmapFactory.decodeStream(ByteArrayInputStream(bytes))
-            ui.setImageBitmap(bmp)
-            ui.visibility=View.VISIBLE
-        }
-        return bytes
-    }
-
     fun repopulate()
     {
         laterUI { populate() }
@@ -643,6 +749,10 @@ class AssetSuccinctBinder(val ui: AssetSuccinctListItemBinding, val activity: Co
     override fun unpopulate()
     {
         data?.ui = null
+        ui.GuiAssetVideoIcon.visibility = View.GONE
+        ui.GuiAssetIcon.visibility = View.GONE
+        ui.GuiAssetVideoIcon.stopPlayback()
+        ui.GuiAssetIcon.setImageResource(0)
         super.unpopulate()
     }
 
@@ -655,119 +765,171 @@ class AssetSuccinctBinder(val ui: AssetSuccinctListItemBinding, val activity: Co
 class AssetBinder(val ui: AssetListItemBinding, val activity: AssetsActivity): GuiListItemBinder<AssetInfo>(ui.root)
 {
     var showFront = true
+    var mediaIsImage = true
     // Fill the view with this data
     override fun populate()
     {
         LogIt.info(sourceLoc() + "populate: " + (data?.groupInfo?.groupId?.toString() ?: ""))
-        data?.let()
-        { d ->
-            d.ui = this
-            ui.GuiAssetId.text = d.groupInfo.groupId.toString()
-            ui.GuiAssetId.visibility = if (devMode) View.VISIBLE else View.GONE
 
-            val nft = d.nft
-            if (nft == null)
+        // Loop any video that might be playing
+        ui.GuiAssetVideoIcon.setOnPreparedListener(OnPreparedListener { mp -> mp.isLooping = true })
+
+        // If this video cannot be played, do not do an ugly popup -- just switch to the cannot show icon
+        ui.GuiAssetVideoIcon.setOnErrorListener(object : MediaPlayer.OnErrorListener {
+            override fun onError( mp: MediaPlayer?,  what: Int,  extra: Int): Boolean {
+                // mp?.stop()
+                ui.GuiAssetVideoIcon.visibility = View.GONE
+                ui.GuiAssetIcon.visibility = View.VISIBLE
+                ui.GuiAssetIcon.setImageResource(R.drawable.asset_cannot_show_icon)
+                return true
+            }
+        })
+
+        val d = data
+        if (d != null)
+        {
+            synchronized(d)
             {
+                d.ui = this
                 ui.GuiAssetId.text = d.groupInfo.groupId.toString()
-                ui.GuiAssetName.text = d.name ?: ""
-                ui.GuiAssetQuantity.text = d.groupInfo.tokenAmt.toString()
-                ui.GuiAssetQuantity.visibility = View.VISIBLE
-                ui.GuiAssetAuthor.visibility = View.GONE
-                ui.GuiAssetSeries.visibility = View.GONE
-            }
-            else
-            {
-                ui.GuiAssetName.text = nft.title ?: d.name ?: ""
-                if (d.groupInfo.tokenAmt == 1L)  // If its an NFT and there's just 1 (remember SFTs could have > 1) then don't bother to show quantity
+                ui.GuiAssetId.visibility = if (devMode) View.VISIBLE else View.GONE
+
+                val nft = d.nft
+                if (nft == null)
                 {
-                    ui.GuiAssetQuantity.visibility = View.INVISIBLE
-                }
-                else
-                {
-                    ui.GuiAssetQuantity.visibility = View.VISIBLE
+                    ui.GuiAssetId.text = d.groupInfo.groupId.toString()
+                    ui.GuiAssetName.text = d.name ?: ""
                     ui.GuiAssetQuantity.text = d.groupInfo.tokenAmt.toString()
-                }
-
-                if ((nft.author != null)&&(nft.author.length > 0))
-                {
-                    ui.GuiAssetAuthor.text = i18n(R.string.NftAuthor) % mapOf("author" to nft.author)
-                    ui.GuiAssetAuthor.visibility = View.VISIBLE
-                }
-                else ui.GuiAssetAuthor.visibility = View.GONE
-                if (nft.series != null)
-                {
-                    ui.GuiAssetSeries.text = i18n(R.string.NftSeries) % mapOf("series" to nft.series)
-                    ui.GuiAssetSeries.visibility = View.VISIBLE
-                }
-                else ui.GuiAssetSeries.visibility = View.GONE
-            }
-
-            if ((showFront)||(d.iconBackBytes == null))
-            {
-                showImage(ui.GuiAssetIcon, d.iconUri, d.iconBytes)
-            }
-            else
-            {
-                showImage(ui.GuiAssetIcon, d.iconBackUri, d.iconBackBytes)
-            }
-
-            ui.GuiAssetIcon.setOnClickListener() {
-                showFront = !showFront
-                if ((showFront)||(d.iconBackBytes == null))
-                {
-                    showImage(ui.GuiAssetIcon, d.iconUri, d.iconBytes)
+                    ui.GuiAssetQuantity.visibility = View.VISIBLE
+                    ui.GuiAssetAuthor.visibility = View.GONE
+                    ui.GuiAssetSeries.visibility = View.GONE
                 }
                 else
                 {
-                    showImage(ui.GuiAssetIcon, d.iconBackUri, d.iconBackBytes)
+                    ui.GuiAssetName.text = nft.title ?: d.name ?: ""
+                    if (d.groupInfo.tokenAmt == 1L)  // If its an NFT and there's just 1 (remember SFTs could have > 1) then don't bother to show quantity
+                    {
+                        ui.GuiAssetQuantity.visibility = View.INVISIBLE
+                    }
+                    else
+                    {
+                        ui.GuiAssetQuantity.visibility = View.VISIBLE
+                        ui.GuiAssetQuantity.text = d.groupInfo.tokenAmt.toString()
+                    }
+
+                    if ((nft.author != null) && (nft.author.length > 0))
+                    {
+                        ui.GuiAssetAuthor.text = i18n(R.string.NftAuthor) % mapOf("author" to nft.author)
+                        ui.GuiAssetAuthor.visibility = View.VISIBLE
+                    }
+                    else ui.GuiAssetAuthor.visibility = View.GONE
+                    if (nft.series != null)
+                    {
+                        ui.GuiAssetSeries.text = i18n(R.string.NftSeries) % mapOf("series" to nft.series)
+                        ui.GuiAssetSeries.visibility = View.VISIBLE
+                    }
+                    else ui.GuiAssetSeries.visibility = View.GONE
+                }
+
+                if ((showFront) || (d.iconBackBytes == null))
+                {
+                    mediaIsImage = showMedia(ui.GuiAssetIcon,ui.GuiAssetVideoIcon, d.iconUri, d.iconBytes)
+                }
+                else
+                {
+                    mediaIsImage = showMedia(ui.GuiAssetIcon,ui.GuiAssetVideoIcon, d.iconBackUri, d.iconBackBytes)
+                }
+
+                ui.GuiAssetIcon.setOnClickListener() {
+                    showFront = !showFront
+                    if ((showFront) || (d.iconBackBytes == null))
+                    {
+                        mediaIsImage = showMedia(ui.GuiAssetIcon, ui.GuiAssetVideoIcon, d.iconUri, d.iconBytes)
+                    }
+                    else
+                    {
+                        mediaIsImage = showMedia(ui.GuiAssetIcon, ui.GuiAssetVideoIcon, d.iconBackUri, d.iconBackBytes)
+                    }
                 }
             }
         }
-    }
+        else
+        {
+            ui.GuiAssetVideoIcon.visibility = View.GONE
+            ui.GuiAssetIcon.visibility = View.GONE
+            // ui.GuiAssetVideoIcon.stopPlayback()
+            ui.GuiAssetIcon.setImageResource(0)
+            ui.GuiAssetSeries.text = ""
+            ui.GuiAssetAuthor.text = ""
+            ui.GuiAssetQuantity.text = ""
+            ui.GuiAssetId.text=""
+            ui.GuiAssetName.text=""
+        }
 
-    /** shows this image in the passed imageview.  Returns the image data loaded from the URI, for your cache, or the bytes you sent this function */
-    fun showImage(ui: ImageView, uri: Uri?, bytes: ByteArray? = null): ByteArray?
-    {
-        if (uri == null)
-        {
-            ui.setImageDrawable(null)
-            return null
-        }
-        if (bytes == null)  throw UnimplementedException("load from uri")
-        val name = uri.toString().lowercase()
-
-        if (name.endsWith(".svg", true))
-        {
-            val svg = SVG.getFromInputStream(ByteArrayInputStream(bytes))
-            val drawable = PictureDrawable(svg.renderToPicture())
-            ui.setImageDrawable(drawable)
-            ui.visibility=View.VISIBLE
-        }
-        else if (name.endsWith(".jpg", true) ||
-          name.endsWith(".jpeg", true) ||
-            name.endsWith(".png", true) ||
-            name.endsWith(".webp",true) ||
-          name.endsWith(".gif",true) ||
-          name.endsWith(".heic",true) ||
-          name.endsWith(".heif",true)
-          )
-        {
-            val bmp = BitmapFactory.decodeStream(ByteArrayInputStream(bytes))
-            ui.setImageBitmap(bmp)
-            ui.visibility=View.VISIBLE
-        }
-        return bytes
     }
 
     fun repopulate()
     {
-        laterUI { populate() }
+        laterUI {
+            LogIt.info("repopulate $this")
+            populate()
+        }
     }
 
     override fun unpopulate()
     {
+        LogIt.info("unpopulate $this")
         data?.ui = null
+        ui.GuiAssetVideoIcon.visibility = View.GONE
+        ui.GuiAssetIcon.visibility = View.GONE
+        //ui.GuiAssetVideoIcon.stopPlayback()
+        ui.GuiAssetIcon.setImageResource(0)
         super.unpopulate()
+    }
+
+    override fun onView(attached: Boolean)
+    {
+        LogIt.info("onView $attached $this")
+        if (attached)
+        {
+            if (mediaIsImage) ui.GuiAssetIcon.visibility = View.VISIBLE
+            else
+            {
+                ui.GuiAssetVideoIcon.visibility = View.VISIBLE
+                //ui.GuiAssetVideoIcon.resume()
+                ui.GuiAssetVideoIcon.start()
+
+                /*
+                ui.GuiAssetVideoIcon.holder.addCallback(object : SurfaceHolder.Callback {
+                    override fun surfaceCreated(holder: SurfaceHolder)
+                    {
+                    }
+
+                    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int)
+                    {
+                        TODO("Not yet implemented")
+                    }
+
+                    override fun surfaceDestroyed(holder: SurfaceHolder)
+                    {
+                        TODO("Not yet implemented")
+                    }
+                })
+
+                 */
+            }
+        }
+        else
+        {
+            if (mediaIsImage) ui.GuiAssetIcon.visibility = View.GONE
+            else
+            {
+                ui.GuiAssetVideoIcon.visibility = View.GONE
+                //ui.GuiAssetVideoIcon.pause()
+                ui.GuiAssetVideoIcon.stopPlayback()
+            }
+
+        }
     }
 
     override fun onClick(v: View)
@@ -1099,7 +1261,7 @@ class AssetsActivity : CommonNavActivity()
         ui.GuiAssetWebBox.settings.allowFileAccess = false
         ui.GuiAssetWebBox.settings.blockNetworkLoads = false
         ui.GuiAssetWebBox.settings.blockNetworkImage = false
-        ui.GuiAssetWebBox.loadData(nft.info,"text/html; charset=utf-8", "utf-8")
+        ui.GuiAssetWebBox.loadData(nft.info ?: i18n(R.string.NftNoInfoProvidedHTML),"text/html; charset=utf-8", "utf-8")
         ui.GuiAssetMediaRole.text = i18n(R.string.NftInfo)
     }
 
@@ -1114,7 +1276,7 @@ class AssetsActivity : CommonNavActivity()
         ui.GuiAssetWebBox.settings.allowFileAccess = false
         ui.GuiAssetWebBox.settings.blockNetworkLoads = false
         ui.GuiAssetWebBox.settings.blockNetworkImage = false
-        ui.GuiAssetWebBox.loadData(nft.license,"text/html; charset=utf-8", "utf-8")
+        ui.GuiAssetWebBox.loadData(nft.license ?: i18n(R.string.NftNoInfoProvidedHTML),"text/html; charset=utf-8", "utf-8")
         ui.GuiAssetMediaRole.text = i18n(R.string.NftLegal)
     }
 

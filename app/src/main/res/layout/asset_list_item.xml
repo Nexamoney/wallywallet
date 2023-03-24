@@ -27,6 +27,14 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/GuiAssetQuantity"
         app:layout_constraintTop_toBottomOf="@+id/GuiAssetId" />
+    <VideoView
+        android:id="@+id/GuiAssetVideoIcon"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/GuiAssetQuantity"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAssetId" />
 
     <TextView
         android:id="@+id/GuiAssetName"
@@ -45,6 +53,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="2dp"
+        android:layout_marginStart="2dp"
         android:text=""
         android:textSize="20sp"
         android:gravity="center"
@@ -57,6 +66,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="2dp"
+        android:layout_marginStart="2dp"
         android:text=""
         android:textSize="16sp"
         android:gravity="center"
