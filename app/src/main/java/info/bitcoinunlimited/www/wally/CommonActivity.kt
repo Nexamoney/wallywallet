@@ -215,6 +215,23 @@ open class CommonNavActivity : CommonActivity()
         menu.findItem(R.id.navigation_assets)?.setVisible(showAssets)
     }
 
+    /** return true if the asset nav item is shown */
+    fun isShowingAssetsNavButton(): Boolean
+    {
+        val navView: BottomNavigationView = findViewById(R.id.nav_view)
+        val menu = navView.getMenu()
+        return menu.findItem(R.id.navigation_assets)?.isVisible ?: false
+    }
+
+    /** show or hide the assets nav button */
+    fun setAssetsNavVisible(vis: Boolean)
+    {
+        val navView: BottomNavigationView = findViewById(R.id.nav_view)
+        val menu = navView.getMenu()
+        menu.findItem(R.id.navigation_assets)?.setVisible(vis)
+        navView.requestLayout()
+    }
+
     // note to stop multiple copies of activities from being launched, use android:launchMode="singleTask" in the activity definition in AndroidManifest.xml
 
     open fun bottomNavSelectHandler(item: MenuItem): Boolean

@@ -160,22 +160,26 @@ class MainActivity : CommonNavActivity()
 
     fun onBlockchainChange(blockchain: Blockchain)
     {
-        for ((_, c) in accounts)
-        {
-            if (c.chain == blockchain)
-                c.onChange()  // coin onWalletChange also updates the blockchain state GUI
+        later {  // Don't execute within the callback context
+            for ((_, c) in accounts)
+            {
+                if (c.chain == blockchain)
+                    c.onChange()  // coin onWalletChange also updates the blockchain state GUI
+            }
         }
     }
 
     fun onWalletChange(wallet: Wallet)  // callback provided to the wallet code
     {
-        for ((_, c) in accounts)
-        {
-            if (c.wallet == wallet)
+        later {  // Don't execute this change code within the wallet-atomic context of this callback because it just updates the UI
+            for ((_, c) in accounts)
             {
-                c.onChange()
-                // recalculate the QR code if needed early to speed up response time
-                //GlobalScope.launch { c.getReceiveQR(minOf(imageView.layoutParams.width, imageView.layoutParams.height, 1024)) }
+                if (c.wallet == wallet)
+                {
+                    c.onChange()
+                    // recalculate the QR code if needed early to speed up response time
+                    //GlobalScope.launch { c.getReceiveQR(minOf(imageView.layoutParams.width, imageView.layoutParams.height, 1024)) }
+                }
             }
         }
     }
@@ -778,32 +782,33 @@ class MainActivity : CommonNavActivity()
     fun checkNofificationPermission(): Unit
     {
         if (hasNotifPerm == 1) return
-            when
+        
+        when
+        {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED ->
             {
-                ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED ->
-                {
-                    hasNotifPerm = 1
-                    return
-                }
-
-                shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) ->
-                {
-                    // In an educational UI, explain to the user why your app requires this
-                    // permission for a specific feature to behave as expected. In this UI,
-                    // include a "cancel" or "no thanks" button that allows the user to
-                    // continue using your app without granting the permission.
-                    //showInContextUI(...)
-                }
-
-                else ->
-                {
-                    // You can directly ask for the permission.
-                    // The registered ActivityResultCallback gets the result of this request.
-                    requestPermissionLauncher.launch(
-                      Manifest.permission.POST_NOTIFICATIONS
-                    )
-                }
+                hasNotifPerm = 1
+                return
             }
+
+            shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) ->
+            {
+                // In an educational UI, explain to the user why your app requires this
+                // permission for a specific feature to behave as expected. In this UI,
+                // include a "cancel" or "no thanks" button that allows the user to
+                // continue using your app without granting the permission.
+                //showInContextUI(...)
+            }
+
+            else ->
+            {
+                // You can directly ask for the permission.
+                // The registered ActivityResultCallback gets the result of this request.
+                requestPermissionLauncher.launch(
+                  Manifest.permission.POST_NOTIFICATIONS
+                )
+            }
+        }
     }
 
     override fun onDestroy()
@@ -1435,7 +1440,13 @@ class MainActivity : CommonNavActivity()
                         ui.approximatelyText.text = i18n(R.string.actuallySendingT) % mapOf("qty" to mBchFormat.format(mbchToSend), "crypto" to coin.currencyCode) + availabilityWarning(coin, mbchToSend)
                     ui.xchgRateText.text = i18n(R.string.exchangeRate) % mapOf("amt" to coin.format(coinPerFiat), "crypto" to coin.currencyCode, "fiat" to fiatCurrencyCode)
                     return true
-                } catch (e: ArithmeticException)  // Division by zero
+                }
+                catch (e: ArithmeticException)  // Division by zero
+                {
+                    ui.xchgRateText.text = i18n(R.string.retrievingExchangeRate)
+                    return true
+                }
+                catch (e: java.lang.ArithmeticException)  // Division by zero
                 {
                     ui.xchgRateText.text = i18n(R.string.retrievingExchangeRate)
                     return true
@@ -1449,19 +1460,34 @@ class MainActivity : CommonNavActivity()
             else
                 ui.approximatelyText.text = ""
 
-            if (coin.fiatPerCoin == -1.toBigDecimal())
+            val fpc = coin.fiatPerCoin
+
+            if (fpc == -1.toBigDecimal())
             {
                 ui.xchgRateText.text = i18n(R.string.unavailableExchangeRate)
                 return true
             }
-            else if (coin.fiatPerCoin > BigDecimal.ZERO)
+            else if (fpc > BigDecimal.ZERO)
             {
-                var fiatDisplay = qty * coin.fiatPerCoin
-                val coinPerFiat = BigDecimal.ONE.setScale(currencyScale)/coin.fiatPerCoin
-                if (ui.approximatelyText.text == "")
-                    ui.approximatelyText.text = i18n(R.string.approximatelyT) % mapOf("qty" to fiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode) + availabilityWarning(coin, qty)
-                ui.xchgRateText.text = i18n(R.string.exchangeRate) % mapOf("amt" to coin.format(coinPerFiat), "crypto" to coin.currencyCode, "fiat" to fiatCurrencyCode)
-                return true
+                try
+                {
+                    var fiatDisplay = qty * fpc
+                    val coinPerFiat = BigDecimal.ONE.setScale(currencyScale) / fpc
+                    if (ui.approximatelyText.text == "")
+                        ui.approximatelyText.text = i18n(R.string.approximatelyT) % mapOf("qty" to fiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode) + availabilityWarning(coin, qty)
+                    ui.xchgRateText.text = i18n(R.string.exchangeRate) % mapOf("amt" to coin.format(coinPerFiat), "crypto" to coin.currencyCode, "fiat" to fiatCurrencyCode)
+                    return true
+                }
+                catch(e: ArithmeticException)
+                {
+                   ui.xchgRateText.text = i18n(R.string.retrievingExchangeRate)
+                   return true
+                }
+                catch(e: java.lang.ArithmeticException)
+                {
+                   ui.xchgRateText.text = i18n(R.string.retrievingExchangeRate)
+                   return true
+                }
             }
             else
             {
@@ -2038,25 +2064,24 @@ class MainActivity : CommonNavActivity()
             displayError(R.string.chooseAccountError)
             return
         }
-        val account = accounts[walletName]
+        val account: Account = accounts.getOrElse(walletName) {
+            displayError(R.string.accountUnavailable, R.string.accountUnavailableDetails)
+            return@onSendButtonClicked
+        }
 
         if (currencyType == null)
         {
             displayError(R.string.badCryptoCode)
             return
         }
-        if (account == null)
-        {
-            displayError(R.string.badCryptoCode, i18n(R.string.badCryptoCodeDetails) % mapOf("currency" to currencyType) )
-            return
-        }
+
         if (account.locked)
         {
             displayError(R.string.accountLocked)
             return
         }
 
-        val amtstr: String = ui.sendQuantity.text.toString()
+        val amtstr: String = ui.sendQuantity.text?.toString() ?: ""
 
         var spendAll = false
         var amount: BigDecimal = try
@@ -2073,7 +2098,7 @@ class MainActivity : CommonNavActivity()
             else
             {
                 // Its ok to send no native coin if you are sending assets
-                if ((amtstr == "") && (sendAssetList.size > 0)) BigDecimal.ZERO
+                if ((amtstr == "") && (sendAssetList.isNotEmpty())) BigDecimal.ZERO
                 else
                 {
                     if (amtstr == "") displayError(R.string.badAmount, R.string.empty)
@@ -2107,7 +2132,7 @@ class MainActivity : CommonNavActivity()
         catch (e: UnknownBlockchainException)
         {
             val details = i18n(R.string.unknownCurrency) + " " + if (addrText == "") i18n(R.string.empty) else addrText
-           displayError(R.string.badAddress, details)
+            displayError(R.string.badAddress, details)
             return
         }
         if (account.wallet.chainSelector != sendAddr.blockchain)
@@ -2126,9 +2151,21 @@ class MainActivity : CommonNavActivity()
         }
         else if (currencyType == fiatCurrencyCode)
         {
-            if (account.fiatPerCoin != BigDecimal.ZERO)
-                amount = amount / account.fiatPerCoin
-            else throw UnavailableException(R.string.retrievingExchangeRate)
+            val fpc = account.fiatPerCoin
+            try
+            {
+                if (fpc != BigDecimal.ZERO)
+                    amount = amount / fpc
+                else throw UnavailableException(R.string.retrievingExchangeRate)
+            }
+            catch (e:java.lang.ArithmeticException)
+            {
+                throw UnavailableException(R.string.retrievingExchangeRate)
+            }
+            catch (e:ArithmeticException)
+            {
+                throw UnavailableException(R.string.retrievingExchangeRate)
+            }
         }
         else throw BadUnitException()
 
@@ -2156,9 +2193,12 @@ class MainActivity : CommonNavActivity()
             {
                 ""
             }
+
+            val assetsNote = if (sendAssetList.isEmpty()) "" else i18n(R.string.AndSomeAssets)
             ui.SendConfirm.text = i18n(R.string.SendConfirmSummary) % mapOf("amt" to account.format(amount), "currency" to account.currencyCode,
             "dest" to sendAddr.toString(),
-            "inFiat" to fiatAmt)
+            "inFiat" to fiatAmt,
+            "assets" to assetsNote)
             confirmVisibility(true)
             askedForConfirmation = true  // Require send button to be pressed ONE MORE TIME!
         }

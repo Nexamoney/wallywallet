@@ -431,7 +431,7 @@ class AssetInfo(val groupInfo: GroupInfo)
         {
             iconBackBytes = bdata
             // Note caching is NEEDED to show video (because videoview can only take a file)
-            if (data != null) iconUri = Uri.parse(am.storeCardFile(grpId.toHex() + bname, data))
+            if (bdata != null) iconBackUri = Uri.parse(am.storeCardFile(grpId.toHex() + bname, bdata))
             else iconBackUri = Uri.parse(bname)
         }
 
@@ -1096,9 +1096,42 @@ class AssetsActivity : CommonNavActivity()
                 {
                     // TODO create Challenge Transaction proof-of-ownership
                     val uri = Uri.parse(market)
-                    val intent: Intent = Intent(Intent.ACTION_VIEW, uri)
-                    intent.putExtra("tokenid", a.groupInfo.groupId.toHex())
-                    startActivity(intent)
+                    val app = wallyApp
+                    var cnxn:LongPollInfo? = null
+                    if (app != null)
+                    {
+                        val cnxns = app.accessHandler
+                        val h = uri.host
+                        if (h != null)
+                            cnxn = cnxns.activeTo(h)
+                    }
+
+                    if (cnxn != null && cnxn.active)
+                    {
+                        displayNotice(R.string.IssuedToConnection)
+                        val c = cnxn
+                        later {  // Can't do network in UI thread
+                            val connectedUrl = URL(URL(c.proto + "://" + c.hostPort + "/"), uri.path + "?cookie=${c.cookie}")
+                            try
+                            {
+                                val result = connectedUrl.readText()
+                                LogIt.info(sourceLoc() + "read: ${connectedUrl} ->\n${result.toString()}")
+                            }
+                            catch (e: Exception)
+                            {
+                                // Trigger activity launch
+                                val intent: Intent = Intent(Intent.ACTION_VIEW, uri)
+                                intent.putExtra("tokenid", a.groupInfo.groupId.toHex())
+                                startActivity(intent)
+                            }
+                        }
+                    }
+                    else
+                    {
+                        val intent: Intent = Intent(Intent.ACTION_VIEW, uri)
+                        intent.putExtra("tokenid", a.groupInfo.groupId.toHex())
+                        startActivity(intent)
+                    }
                 }
             }
             catch(e: ActivityNotFoundException)

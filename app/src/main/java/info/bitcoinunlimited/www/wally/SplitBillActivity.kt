@@ -322,11 +322,22 @@ class SplitBillActivity : CommonNavActivity()
                 return 0.toBigDecimal()
             }
             val fpc = acct!!.fiatPerCoin
-            if (fpc == -1.toBigDecimal())  // No conversion
+            try
+            {
+                if (fpc == -1.toBigDecimal())  // No conversion
+                {
+                    amt = BigDecimal.ZERO
+                }
+                else amt = amt / fpc
+            }
+            catch(e: ArithmeticException)
             {
                 amt = BigDecimal.ZERO
             }
-            else amt = amt / acct!!.fiatPerCoin
+            catch(e: java.lang.ArithmeticException)
+            {
+                amt = BigDecimal.ZERO
+            }
         }
         return amt
     }
@@ -338,7 +349,7 @@ class SplitBillActivity : CommonNavActivity()
 
             var total = getAmount() + tipAmt
             ui.splitBillTotal.text = formatAsInputCurrency(total, true)
-            var qty = toCrypto(total) / splitWays
+            var qty = if (splitWays > BigDecimal.ZERO) toCrypto(total) / splitWays else toCrypto(total)
 
             var fiatStr = ""
             if (acct != null)

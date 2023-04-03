@@ -33,7 +33,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.math.BigDecimal
+import java.net.URL
 import java.net.URLEncoder
+import java.util.*
 import java.util.logging.Logger
 import kotlin.math.floor
 import kotlin.math.roundToInt
@@ -90,7 +92,6 @@ fun PayAddress.urlEncode():String
 {
     return toString().urlEncode()
 }
-
 
 fun EditText.set(s: String)
 {

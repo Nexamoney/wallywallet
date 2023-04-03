@@ -213,7 +213,7 @@
             android:textSize="18sp"
             android:visibility="gone"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/approximatelyText"
+            app:layout_constraintTop_toBottomOf="@+id/xchgRateText"
             app:layout_constraintVertical_bias="0.565" />
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/GuiSendAssetList"

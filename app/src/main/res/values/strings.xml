@@ -347,7 +347,7 @@ Good luck!
 
     <string name="areYouSure">Are you sure?</string>
     <string name="WhenAskSure">Confirm transfers above (in NEX)</string>
-    <string name="SendConfirmSummary">Confirm send of %amt %currency %inFiat to address %dest</string>
+    <string name="SendConfirmSummary">Confirm send of %amt %currency %inFiat %assets to address %dest</string>
     <string name="firstName">first name</string>
     <string name="lastName">last name</string>
 
@@ -529,7 +529,7 @@ Good luck!
     <string name="EditTpRegistration">Settings for Entity:</string>
     <string name="AcceptTpRegistrationTopic">Purpose:</string>
     <string name="TpMaxSpendHint">enter max auto-spend</string>
-    <string name="TpAssetInfoRequest">asset information requests</string>
+    <string name="TpAssetInfoRequest">Asset information requested</string>
 
     <string name="TpMaxHeading">Autopay Limits</string>
     <string name="TpMaxPer">Each request</string>
@@ -592,4 +592,7 @@ Good luck!
     <string name="NftSeries" formatted="false">Series: %series</string>
     <string name="NftAuthor" formatted="false">Author: %author</string>
     <string name="NftNoInfoProvidedHTML"><![CDATA[<body><h1><center>...No Information Provided...</h1></center></body>]]></string>
+    <string name="IssuedToConnection">Launched in connected site</string>
+    <!-- this message tells users that some assets will be part of a proposed transaction -->
+    <string name="AndSomeAssets">and some assets</string>
 </resources>

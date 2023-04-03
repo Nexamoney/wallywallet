@@ -120,17 +120,6 @@ class AccessHandler(val app: WallyApp)
             }
         }
     }
-
-    suspend fun endLongPolling(proto: String, hostPort: String, cookie: String?)
-    {
-        val cookieString = if (cookie != null) "?cookie=$cookie" else ""
-        val url = proto + "//" + hostPort + "/_lpx" + cookieString
-        val client = HttpClient(Android)
-        {
-            install(HttpTimeout) { requestTimeoutMillis = 2000 } // Long timeout because we don't expect a response right away; its a long poll
-        }
-        val response: HttpResponse = client.get(url) {}
-    }
     */
 
     fun startLongPolling(proto: String, hostPort: String, cookie: String?)
@@ -146,6 +135,27 @@ class AccessHandler(val app: WallyApp)
         }
     }
 
+    /** Searches for an active connection to this host.  If the host is provided without a port, any connection to that host is used
+     * */
+    fun activeTo(host: String): LongPollInfo?
+    {
+        if (host.contains(":") )
+        {
+            val lpi = activeLongPolls[host]
+            if (lpi != null && lpi.active) return activeLongPolls[host]
+        }
+        // Search for only host (not port)
+        for (lpi in activeLongPolls)
+        {
+            if (lpi.value.hostPort.split(":")[0] == host.split(":")[0])
+            {
+                if (lpi.value.active)
+                    return lpi.value
+            }
+        }
+        return null
+    }
+
     suspend fun longPolling(scheme: String, hostPort: String, cookie: String?)
     {
         var connectProblems = 0
@@ -154,13 +164,13 @@ class AccessHandler(val app: WallyApp)
 
         val lpInfo = synchronized(activeLongPolls)
         {
-            if (activeLongPolls.contains(url))
+            if (activeLongPolls.contains(hostPort))
             {
-                LogIt.info("Already long polling to $url, replacing it.")
-                activeLongPolls[url]?.active = false
+                LogIt.info("Already long polling to $hostPort, replacing it with $url.")
+                activeLongPolls[hostPort]?.active = false
             }
-            activeLongPolls.put(url, LongPollInfo(scheme, hostPort, cookie))
-            activeLongPolls[url]!!
+            activeLongPolls.put(hostPort, LongPollInfo(scheme, hostPort, cookie))
+            activeLongPolls[hostPort]!!
         }
 
         val client = HttpClient(Android)
@@ -179,24 +189,31 @@ class AccessHandler(val app: WallyApp)
                 val response: HttpResponse = client.get(url + "&i=${count}") {}
                 val respText = response.bodyAsText()
                 connectProblems = 0
-                LogIt.info(sourceLoc() + ": Long poll to $url resp: $respText")
+                LogIt.info(sourceLoc() + ": Long poll to $url returned with this request: $respText")
                 if (respText == "Q")
                 {
                     LogIt.info(sourceLoc() + ": Long poll to $url ended (server request).")
-                    endLongPolling(url)
+                    endLongPolling(hostPort)
                     return // Server tells us to quit long polling
                 }
-                val ci = app.currentActivity
-                if (ci != null) ci.handleAnyIntent(respText)
-                else LogIt.info("cannot handle long poll response, no current activity")
-                count += 1
+                if (respText != "")
+                {
+                    val ci = app.currentActivity
+                    if (ci != null) ci.handleAnyIntent(respText)
+                    else LogIt.info("cannot handle long poll response, no current activity")
+                    count += 1
+                }
+                else
+                {
+                    LogIt.info(sourceLoc() + ": Long poll to $url finished with no activity.")
+                }
             }
             catch (e: ConnectException)  // network error?  TODO retry a few times
             {
                 if (connectProblems > 500)
                 {
-                    LogIt.info(sourceLoc() + ": Long poll to $url connection exception $e, stopping")
-                    endLongPolling(url)
+                    LogIt.info(sourceLoc() + ": Long poll to $url connection exception $e, stopping.")
+                    endLongPolling(hostPort)
                     return
                 }
                 connectProblems += 1
@@ -204,9 +221,9 @@ class AccessHandler(val app: WallyApp)
             }
             catch (e: Throwable)
             {
-                // LogIt.info(sourceLoc() + ": Long poll to $url error, stopping: ")
-                handleThreadException(e, "Long poll to $url error, stopping", sourceLoc())
-                endLongPolling(url)
+                LogIt.info(sourceLoc() + ": Long poll to $url error, stopping: ")
+                //handleThreadException(e, "Long poll to $url error, stopping.", sourceLoc())
+                endLongPolling(hostPort)
                 return
             }
             val end = epochMilliSeconds()
@@ -214,8 +231,8 @@ class AccessHandler(val app: WallyApp)
             if (avgResponse<1000)
                 delay(500) // limit runaway polling, if the server misbehaves by responding right away
         }
-        LogIt.info(sourceLoc() + ": Long poll to $url ended (done).")
-        endLongPolling(url)
+        LogIt.info(sourceLoc() + ": Long poll to $hostPort ($url) ended (done).")
+        endLongPolling(hostPort)
     }
 }
 
@@ -475,7 +492,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         lastError = e.errCode
         lastErrorDetails = e.message
     }
-
 
 
     /** Do whatever you pass but not within the user interface context, asynchronously.
@@ -1066,8 +1082,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
             }
             if (path == "/share")
             {
-                val sess = TricklePaySession(tpDomains)
-                sess.handleShareRequest(iuri) {
+                tp.handleShareRequest(iuri) {
                     if (it != -1)
                     {
                         val msg: String = i18n(R.string.SharedNotification) % mapOf("what" to i18n(it))
@@ -1076,6 +1091,59 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
                     else toast(R.string.badQR)
                 }
             }
+            else if (path == "/assets")
+            {
+                val result = tp.handleAssetInfoRequest(iuri)
+                val acc = tp.getRelevantAccount()
+                val act = currentActivity
+
+                when(result)
+                {
+                    TdppAction.ASK ->  // ASSETS
+                    {
+                        var intent = Intent(this, TricklePayActivity::class.java)
+                        intent.data = Uri.parse(intentUri)
+                        if (act != null) autoPayNotificationId =
+                          notifyPopup(intent, i18n(R.string.TpAssetInfoRequest), i18n(R.string.fromColon) + tp.domainAndTopic, act, false, autoPayNotificationId)
+                        return false
+                    }
+                    TdppAction.ACCEPT -> // ASSETS
+                    {
+                        tp.acceptAssetRequest()
+                        return true
+                    }
+
+                    TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
+                }
+            }
+            else if (path == "/tx")
+            {
+                val result = tp.attemptSpecialTx(intentUri)
+                val acc = tp.getRelevantAccount()
+                val act = currentActivity
+                when(result)
+                {
+                    TdppAction.ASK ->  // special tx
+                    {
+                        var intent = Intent(this, TricklePayActivity::class.java)
+                        intent.data = Uri.parse(intentUri)
+                        if (act != null) autoPayNotificationId =
+                            notifyPopup(intent, i18n(R.string.PaymentRequest), i18n(R.string.SpecialTpTransactionFrom) + " " + tp.domainAndTopic, act, false, autoPayNotificationId)
+                        return false
+                    }
+                    TdppAction.ACCEPT ->  // special tx auto accepted
+                    {
+                        // Intent() means unclickable -- change to pop up configuration if clicked
+                        if (act != null) autoPayNotificationId =
+                            notifyPopup(Intent(), i18n(R.string.AuthAutopayTitle), tp.domainAndTopic, act, false, autoPayNotificationId)
+                        return true
+                    }
+
+                    // special tx auto-deny
+                    TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
+                }
+            }
+
         }
         return false
     }

@@ -508,8 +508,20 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
     fun getRelevantAccount(): Account
     {
         // Get a handle on the relevant wallets
-        val walChoices = wallyApp!!.accountsFor(chainSelector ?: ChainSelector.NEXA)
+        var act = wallyApp!!.focusedAccount
+        if (act != null)
+        {
+            if (chainSelector == null || act.chain.chainSelector == chainSelector) return act
+        }
 
+        act = wallyApp!!.primaryAccount
+        if (act != null)
+        {
+            if (chainSelector == null || act.chain.chainSelector == chainSelector) return act
+        }
+
+
+        val walChoices = wallyApp!!.accountsFor(chainSelector ?: ChainSelector.NEXA)
         if (walChoices.size == 0)
         {
             throw WalletInvalidException()
@@ -518,9 +530,10 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         // TODO associate an account with a trickle pay
         // For now, grab the first sorted
         val walSorted = walChoices.toList().sortedBy { it.name }
-        val wal = walSorted[0]
-        return wal
+        act = walSorted[0]
+        return act
     }
+
 
     /* Issue the sendto style transaction */
     fun acceptSendToRequest()
@@ -855,6 +868,26 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
             acceptSendToRequest()
         return result
     }
+
+    /** Will parse the string request and attempt to autopay a special transaction.  Returns ASK if user needs to be asked.  Returns ACCEPT or DENY if
+     * no need to ask and the request was accepted or denied.*/
+    fun attemptSpecialTx(req: String): TdppAction
+    {
+        val iuri: Uri = req.toUri()
+        try
+        {
+            parseCommonFields(iuri, false)
+        }
+        catch(e: TdppException)
+        {
+            return TdppAction.DENY
+        }
+        var result = handleTxAutopay(iuri)
+        if (result == TdppAction.ACCEPT)
+            acceptSpecialTx()
+        return result
+    }
+
 
     fun analyzeCompleteAndSignTx(tx: iTransaction, inputSatoshis: Long?, flags: Int?): TxAnalysisResults
     {
