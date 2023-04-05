@@ -1,6 +1,7 @@
 package info.bitcoinunlimited.www.wally
 
 
+import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -18,7 +19,8 @@ import kotlin.concurrent.thread
 private val LogIt = Logger.getLogger("BU.wally.NewAccount")
 
 //* how many addresses to search in a particular derivation path
-val DERIVATION_PATH_SEARCH_DEPTH = 10
+val DERIVATION_PATH_SEARCH_DEPTH = 100
+val IDENTITY_DERIVATION_PATH_SEARCH_DEPTH = 10
 
 val chainToName: Map<ChainSelector, String> = mapOf(
   ChainSelector.NEXATESTNET to "tNexa", ChainSelector.NEXAREGTEST to "rNexa", ChainSelector.NEXA to "nexa",
@@ -89,6 +91,8 @@ class NewAccount : CommonNavActivity()
     var oked = 0
 
     var curPeek: Objectify<Boolean>? = null
+
+    val peekThreads = ThreadGroup("account_lookahead")
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -288,7 +292,8 @@ class NewAccount : CommonNavActivity()
         val p = Objectify<Boolean>(false)
         curPeek = p
         // If the recovery phrase is good, let's peek at the blockchain to see if there's activity
-        thread(true, true, null, "peekWallet")
+        // thread(true, true, null, "peekWallet") // kotlin api does not offer stack size setting
+        val th = Thread(peekThreads,
         {
             try
             {
@@ -300,13 +305,15 @@ class NewAccount : CommonNavActivity()
                 LogIt.severe("wallet peek error: " + e.toString())
                 handleThreadException(e, "wallet peek error", sourceLoc())
             }
-        }
+        }, "peekThread", 4*1024*1024)
+        th.start()
 
     }
 
-    fun searchActivity(ec: ElectrumClient, chainSelector: ChainSelector, count: Int, secretDerivation: (Int) -> ByteArray): Pair<Long, Int>?
+    fun searchActivity(ec: ElectrumClient, chainSelector: ChainSelector, count: Int, secretDerivation: (Int) -> ByteArray, activityFound: ((Long, Int) -> Boolean)? = null): Pair<Long, Int>?
     {
         var index = 0
+        var ret: Pair<Long, Int>? = null
         while (index < count)
         {
             val newSecret = secretDerivation(index)
@@ -324,26 +331,32 @@ class NewAccount : CommonNavActivity()
                     val use = ec.getFirstUse(dest, 10000)
                     if (use.block_hash != null)
                     {
-                        if (use.block_height != null)
+                        val bh = use.block_height
+                        if (bh != null)
                         {
-                            val headerBin = ec.getHeader(use.block_height!!)
+                            LogIt.info("Found activity at index $index in ${dest.address.toString()}")
+                            val headerBin = ec.getHeader(bh)
                             val blkHeader = blockHeaderFor(chainSelector, BCHserialized(headerBin, SerializationType.HASH))
-                            return Pair(blkHeader.time, use.block_height!!)
+                            if (ret == null || blkHeader.time < ret.first)
+                            {
+                                activityFound?.invoke(blkHeader.time, bh)
+                                ret = Pair(blkHeader.time, bh)
+                            }
                         }
                     }
                     else
                     {
-                        LogIt.info("didn't find activity")
+                        LogIt.info("didn't find activity at index $index in ${dest.address.toString()}")
                     }
                 }
                 catch (e: ElectrumNotFound)
                 {
-                    LogIt.info("didn't find activity")
+                    LogIt.info("didn't find activity at index $index in ${dest.address.toString()}")
                 }
             }
             index++
         }
-        return null
+        return ret
     }
 
     // Note that this returns the last time and block when a new address was FIRST USED, so this may not be what you wanted
@@ -410,6 +423,9 @@ class NewAccount : CommonNavActivity()
     {
         laterUI {
             ui.GuiNewAccountStatus.text = i18n(R.string.NewAccountSearchingForTransactions)
+            val d: AnimatedVectorDrawable = getDrawable(R.drawable.ani_syncing) as AnimatedVectorDrawable // Insert your AnimatedVectorDrawable resource identifier
+            ui.GuiStatusOk.setImageDrawable(d)
+            d.start()
         }
 
         val (svr, port) = try
@@ -425,7 +441,8 @@ class NewAccount : CommonNavActivity()
         val ec = try
         {
             ElectrumClient(chainSelector, svr, port, useSSL=true)
-        } catch (e: java.io.IOException) // covers java.net.ConnectException, UnknownHostException and a few others that could trigger
+        }
+        catch (e: java.io.IOException) // covers java.net.ConnectException, UnknownHostException and a few others that could trigger
         {
             try
             {
@@ -456,13 +473,28 @@ class NewAccount : CommonNavActivity()
 
         val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
 
+        LogIt.info("Searching in ${addressDerivationCoin}")
         var earliestActivityP =
-          searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, 0, it) })
+          searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, {
+              AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, 0, it) }, { time, height -> laterUI {
+              ui.GuiNewAccountStatus.text = i18n(R.string.Bip44ActivityNotice) + " " + (i18n(R.string.FirstUseDateHeightInfo) % mapOf(
+              "date" to epochToDate(time),
+              "height" to height.toString())
+            )
+              synchronized(earliestActivityHeight) {
+                  earliestActivity = time
+                  earliestActivityHeight = height
+              }
+        }
+              true })
+
         if (aborter.obj) return
 
+        LogIt.info("Searching in ${AddressDerivationKey.ANY}")
         // Look for activity in the identity and common location
         var earliestActivityId =
-          searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, 0, it) })
+          searchActivity(ec, chainSelector, IDENTITY_DERIVATION_PATH_SEARCH_DEPTH, {
+              AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, 0, it) })
         if (aborter.obj) return
 
         // Set earliestActivityP to the lesser of the two
@@ -474,8 +506,10 @@ class NewAccount : CommonNavActivity()
         if (aborter.obj) return
         val Bip44Msg = if (earliestActivityP != null)
         {
-            earliestActivity = earliestActivityP.first - 1 // -1 so earliest activity is just before the activity
-            earliestActivityHeight = earliestActivityP.second
+            synchronized(earliestActivityHeight) {
+                earliestActivity = earliestActivityP.first - 1 // -1 so earliest activity is just before the activity
+                earliestActivityHeight = earliestActivityP.second
+            }
             i18n(R.string.Bip44ActivityNotice) + " " + i18n(R.string.FirstUseDateHeightInfo) % mapOf(
               "date" to epochToDate(earliestActivityP.first),
               "height" to earliestActivityP.second.toString()
@@ -483,20 +517,24 @@ class NewAccount : CommonNavActivity()
         }
         else
         {
-            earliestActivity = null
-            earliestActivityHeight = 0
+            synchronized(earliestActivityHeight) {
+                earliestActivity = null
+                earliestActivityHeight = 0
+            }
             i18n(R.string.NoBip44ActivityNotice)
         }
 
+        val Bip44BTCMsg = ""
+
+        /*
         // Look in non-standard places for activity
         val BTCactivity =
           bracketActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.BTC, 0, 0, it) })
         var BTCchangeActivity: HDActivityBracket?
 
-        val Bip44BTCMsg = ""
         // This code checks whether coins exist on the Bitcoin derivation path to see if any prefork coins exist.  This is irrelevant for Nexa.
         // I'm leaving the code in though because someday we might want to share pubkeys between BTC/BCH and Nexa and in that case we'd need to use their derivation path.
-        /*
+
         var Bip44BTCMsg = if (BTCactivity != null)
         {
             BTCchangeActivity =
@@ -562,7 +600,14 @@ class NewAccount : CommonNavActivity()
                 displayError(R.string.invalidRecoveryPhrase)
                 return
             }
-            if ((earliestActivity == null)&&(oked == 0))
+
+            var ea : Long? = null
+            var eah : Int = Int.MAX_VALUE
+            synchronized(earliestActivityHeight) {
+                ea = earliestActivity
+                eah = earliestActivityHeight
+            }
+            if ((ea == null)&&(oked == 0))
             {
                 oked +=1
                 laterUI {
@@ -573,7 +618,7 @@ class NewAccount : CommonNavActivity()
                 return
             }
             val cleanedSecretWords = words.joinToString(" ")
-            app!!.recoverAccount(name, flags, pin, cleanedSecretWords, chainSelector, earliestActivity, earliestActivityHeight.toLong(), nonstandardActivity)
+            app!!.recoverAccount(name, flags, pin, cleanedSecretWords, chainSelector, ea, eah.toLong(), nonstandardActivity)
             finish()
         }
     }

@@ -567,7 +567,7 @@ open class CommonActivity : AppCompatActivity()
         if (item4 != null)
         {
             val temp = Intent(Intent.ACTION_VIEW)
-            temp.setData(Uri.parse("http://www.bitcoinunlimited.net/wally/faq"))
+            temp.setData(Uri.parse("http://www.wallywallet.org/help"))
             item4.intent = temp
         }
     }

@@ -12,10 +12,7 @@ import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.View
+import android.view.*
 import android.view.View.*
 import android.view.inputmethod.EditorInfo
 import android.widget.Adapter
@@ -133,8 +130,6 @@ class MainActivity : CommonNavActivity()
 
     //* last paste so we don't try to paste the same thing again
     var lastPaste: String = ""
-
-    private var shareActionProvider: ShareActionProvider? = null
 
     /** If there's a payment proposal that this app has seen, information about it is located here */
     var paymentInProgress: ProspectivePayment? = null
@@ -782,7 +777,7 @@ class MainActivity : CommonNavActivity()
     fun checkNofificationPermission(): Unit
     {
         if (hasNotifPerm == 1) return
-        
+
         when
         {
             ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED ->
@@ -1321,16 +1316,6 @@ class MainActivity : CommonNavActivity()
         {
             ui.GuiReceiveQRCode.setImageBitmap(recvAddrQR)
             ui.receiveAddress.text = recvAddrStr
-
-            val receiveAddrSendIntent: Intent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_TEXT, recvAddrStr)
-                type = "text/plain"
-            }
-
-            laterUI {// somehow this code can cause the GUI to lock up for awhile
-                shareActionProvider?.setShareIntent(receiveAddrSendIntent)
-            }
         }
     }
 
@@ -1589,25 +1574,6 @@ class MainActivity : CommonNavActivity()
                         displayError(R.string.badAddress, QRstring)
                     }
 
-                    /*  Replaced by just handleInputedText, kept for reference temporarily
-                    if (!handleAnyIntent(QRstring))
-                    {
-                        try
-                        {
-                            handleSendURI(result.contents)
-                        } catch (e: Exception)
-                        {
-                            try
-                            {
-                                handleInputedText(QRstring)
-                            } catch (e: Exception)  // I can't handle it as plain text
-                            {
-                                LogIt.info(sourceLoc() + ": QR contents invalid: " + QRstring)
-                                displayError(R.string.badAddress, QRstring)
-                            }
-                        }
-                    }
-                     */
                 }
                 return
             }
@@ -1630,9 +1596,17 @@ class MainActivity : CommonNavActivity()
         inflater.inflate(R.menu.options_menu, menu);
 
         // Locate MenuItem with ShareActionProvider
-        val item = menu.findItem(R.id.menu_item_share)
-        // Fetch and store ShareActionProvider
-        shareActionProvider = MenuItemCompat.getActionProvider(item) as? ShareActionProvider
+        val shareItem = menu.findItem(R.id.menu_item_share)
+        shareItem.setOnMenuItemClickListener {
+            val recvAddrStr = ui.receiveAddress.text
+            val receiveAddrSendIntent: Intent = Intent(Intent.ACTION_SEND).apply {
+                putExtra(Intent.EXTRA_TEXT, recvAddrStr)
+                type = "text/plain"
+            }
+            val shareIntent = Intent.createChooser(receiveAddrSendIntent, null)
+            startActivity(shareIntent)
+            true
+        }
 
         val item2 = menu.findItem(R.id.settings)
         item2.intent = Intent(this, Settings::class.java)  // .apply { putExtra(SETTINGS_MESSAGE, "") }

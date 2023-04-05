@@ -3,18 +3,18 @@
     <item
         android:id="@+id/menu_item_share"
         android:title="@string/share"
-        app:actionProviderClass="androidx.appcompat.widget.ShareActionProvider"
+        android:icon="@android:drawable/ic_menu_share"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/unlock"
+        android:icon="@drawable/ic_lock"
+        android:title="@string/unlock"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/settings"
         android:icon="@drawable/ic_gear"
         android:title="@string/settings"
         app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/unlock"
-        android:icon="@drawable/ic_lock"
-        android:title="@string/unlock"
-        app:showAsAction="always" />
     <item
         android:id="@+id/help"
         android:icon="@drawable/ic_help"

@@ -43,4 +43,7 @@
     <color name="unsyncedStatusColor">#685953</color>
     <color name="accountSelectionBkg">@android:color/white</color>
     <color name="accountSelectionBorder">@color/WallyBorder</color>
+
+    <color name="nuggetBody">#dfbc00</color>
+    <color name="nuggetChip">#9b8d44</color>
 </resources>
