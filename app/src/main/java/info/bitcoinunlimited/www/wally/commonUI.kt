@@ -54,7 +54,7 @@ val TRICKLEPAY_RESULT = 27722
 val IMAGE_RESULT = 27723
 val READ_FILES_PERMISSION_RESULT = 27724
 
-var WallyRowColors = arrayOf(0x4Ff5f8ff.toInt(), 0x4Ff0f0ff.toInt())
+var WallyRowColors = arrayOf(0x4Ff5f8ff.toInt(), 0x4Fd0d0ef.toInt())
 
 // Assign this in your App.onCreate
 var displayMetrics = DisplayMetrics()

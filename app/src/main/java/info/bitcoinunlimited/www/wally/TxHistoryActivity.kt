@@ -384,25 +384,32 @@ class AddressListBinder(val ui: AddressListItemBinding): GuiListItemBinder<Addre
             LogIt.info("onclick: " + idx + " " + activity.showingDetails)
             if (!activity.showingDetails)
             {
-                LogIt.info("set showingDetails")
-                activity.ui.navView.visibility = View.GONE
-                activity.showingDetails = true
-                val itemHeight = v.height
-                val heightButOne = activity.navHeight + activity.listHeight - itemHeight
+                try
+                {
+                    LogIt.info("set showingDetails")
+                    activity.ui.navView.visibility = View.GONE
+                    activity.showingDetails = true
+                    val itemHeight = v.height
+                    val heightButOne = activity.navHeight + activity.listHeight - itemHeight
 
-                activity.addressListLayoutManager.scrollToPositionWithOffset(idx, 0)
-                activity.ui.GuiTxHistoryList.visibility = View.GONE
-                activity.ui.GuiAddressList.layoutParams.height = itemHeight
-                activity.ui.GuiAddressList.requestLayout()
-                activity.ui.GuiAddressList.invalidate()
-                activity.ui.GuiTxWebView.layoutParams.height = heightButOne
-                activity.ui.GuiTxWebView.requestLayout()
-                activity.ui.container.requestLayout()
-                activity.ui.GuiTxWebView.visibility = View.VISIBLE
+                    activity.addressListLayoutManager.scrollToPositionWithOffset(idx, 0)
+                    activity.ui.GuiTxHistoryList.visibility = View.GONE
+                    activity.ui.GuiAddressList.layoutParams.height = itemHeight
+                    activity.ui.GuiAddressList.requestLayout()
+                    activity.ui.GuiAddressList.invalidate()
+                    activity.ui.GuiTxWebView.layoutParams.height = heightButOne
+                    activity.ui.GuiTxWebView.requestLayout()
+                    activity.ui.container.requestLayout()
+                    activity.ui.GuiTxWebView.visibility = View.VISIBLE
 
-                val url = account.addressInfoWebUrl(d.address.toString())
-                url?.let {
-                    activity.ui.GuiTxWebView.loadUrl(url)
+                    val url = account.addressInfoWebUrl(d.address.toString())
+                    url?.let {
+                        activity.ui.GuiTxWebView.loadUrl(url)
+                    }
+                }
+                catch (e: Exception)
+                {
+                    logThreadException(e)
                 }
             }
             else
@@ -512,6 +519,7 @@ class TxHistoryActivity : CommonNavActivity()
                             val ui = TxHistoryListItemBinding.inflate(LayoutInflater.from(it.context), it, false)
                             TxHistoryBinder(ui)
                         })
+                        adapter.rowBackgroundColors = WallyRowColors
 
                         val csv = StringBuilder()
                         csv.append(TransactionHistoryHeaderCSV())
@@ -539,6 +547,7 @@ class TxHistoryActivity : CommonNavActivity()
                             }
                         }
 
+                        /* No longer, you need to click the share button
                         // copy the info to the clipboard
                         val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
                         try
@@ -553,6 +562,8 @@ class TxHistoryActivity : CommonNavActivity()
                             //val clip = ClipData.newPlainText("text", "history is too large for clipboard")
                             //clipboard.setPrimaryClip(clip)
                         }
+
+                         */
 
 
                         try
@@ -593,25 +604,34 @@ class TxHistoryActivity : CommonNavActivity()
         }
         else
         {
-            showingDetails = false
-            ui.navView.visibility = View.VISIBLE
-            if (ui.GuiAddressList.visibility != View.GONE)
-            {
-                ui.GuiAddressList.layoutParams.height = listHeight
-                ui.GuiAddressList.invalidate()
-                ui.GuiAddressList.requestLayout()
-            }
-            else
-            {
-                ui.GuiTxHistoryList.layoutParams.height = listHeight
-                ui.GuiTxHistoryList.invalidate()
-                ui.GuiTxHistoryList.requestLayout()
-            }
+            laterUI {
+                try
+                {
+                    showingDetails = false
+                    ui.navView.visibility = View.VISIBLE
+                    if (ui.GuiAddressList.visibility != View.GONE)
+                    {
+                        ui.GuiAddressList.layoutParams.height = listHeight
+                        ui.GuiAddressList.invalidate()
+                        ui.GuiAddressList.requestLayout()
+                    }
+                    else
+                    {
+                        ui.GuiTxHistoryList.layoutParams.height = listHeight
+                        ui.GuiTxHistoryList.invalidate()
+                        ui.GuiTxHistoryList.requestLayout()
+                    }
 
-            ui.GuiTxWebView.visibility = View.GONE
-            ui.GuiTxWebView.requestLayout()
-            ui.GuiTxWebView.loadData(webLoading,"text/html; charset=UTF-8", null)
-            ui.container.requestLayout()
+                    ui.GuiTxWebView.visibility = View.GONE
+                    ui.GuiTxWebView.loadData(webLoading, "text/html; charset=UTF-8", null)
+                    ui.GuiTxWebView.requestLayout()
+                    ui.container.requestLayout()
+                }
+                catch(e:Exception)
+                {
+                    logThreadException(e)
+                }
+            }
         }
     }
 
@@ -684,9 +704,16 @@ class TxHistoryActivity : CommonNavActivity()
         {
             R.id.menu_item_share ->
             {
-                var clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                var clip = ClipData.newPlainText("text", historyCSV)
-                clipboard.setPrimaryClip(clip)
+                try
+                {
+                    var clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                    var clip = ClipData.newPlainText("text", historyCSV)
+                    clipboard.setPrimaryClip(clip)
+                }
+                catch(e:Exception)
+                {
+                    displayError(R.string.cannotCopyToClipboard)
+                }
             }
         }
         return super.onOptionsItemSelected(item)

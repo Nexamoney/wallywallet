@@ -9,8 +9,8 @@ android {
         applicationId "info.bitcoinunlimited.www.wally"
         minSdkVersion 26
         targetSdkVersion 33
-        versionCode 232
-        versionName "2.32"
+        versionCode 234
+        versionName "2.34"
         testApplicationId "bitcoinunlimited.wally"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 

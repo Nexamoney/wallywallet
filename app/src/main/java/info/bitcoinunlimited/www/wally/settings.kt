@@ -31,7 +31,7 @@ val EXCLUSIVE_NODE_SWITCH = "exclusiveNodeSwitch"
 val CONFIGURED_NODE = "NodeAddress"
 val PREFER_NODE_SWITCH = "preferNodeSwitch"
 
-var defaultBlockchain = chainToURI[ChainSelector.NEXA]  // The default crypto I'm using
+var currentlySelectedAccount = chainToURI[ChainSelector.NEXA]  // The default crypto I'm using
 
 private val LogIt = Logger.getLogger("BU.wally.settings")
 

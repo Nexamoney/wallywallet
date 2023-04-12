@@ -31,7 +31,7 @@ Good luck!
 -->
 <resources>
   <string name="app_name">Wally</string>
-  <string-array name="Valutatyper">
+  <string-array name="CurrencyTypes">
     <item>NEX</item>
     <item>USD</item>
   </string-array>
@@ -47,7 +47,6 @@ Good luck!
     <item>XAU</item>
   </string-array>
   <string name="uBCH">uBCH</string>
-  <string name="KEX">KEX</string>
   <string-array name="OneToTen">
     <item>1</item>
     <item>2</item>
@@ -60,7 +59,7 @@ Good luck!
     <item>9</item>
     <item>10</item>
   </string-array>
-  <string-array name="tipsProcent">
+  <string-array name="tipPercentage">
     <item>--</item>
     <item>0%</item>
     <item>5%</item>
@@ -462,15 +461,8 @@ Om så är fallet, klicka på skapa-knappen igen och ett tomt konto kommer att s
   <!-- Preference Titles -->
   <string name="messages_header">Meddelanden</string>
   <string name="sync_header">Synkronisera</string>
-  <!-- Messages Preferences -->
-  <string name="signature_title">Din signatur</string>
-  <string name="reply_title">Standardsvarsåtgärd</string>
-  <!-- Sync Preferences -->
-  <string name="sync_title">Synkronisera e-post med jämna mellanrum</string>
-  <string name="attachment_title">Ladda ner inkommande bilagor</string>
-  <string name="attachment_summary_on">Ladda automatiskt ned bilagor för inkommande e-postmeddelanden</string>
-  <string name="attachment_summary_off">Ladda bara ned bilagor när det begärs manuellt</string>
-  <string name="title_activity_identity_settings">Identitetsinställningar</string>
+
+    <string name="title_activity_identity_settings">Identitetsinställningar</string>
   <string name="title_activity_welcome">Välkommen</string>
   <!-- Strings used for fragments for navigation -->
   <string name="next">Nästa</string>

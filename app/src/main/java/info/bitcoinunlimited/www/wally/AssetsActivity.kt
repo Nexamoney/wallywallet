@@ -358,7 +358,7 @@ fun showMedia(iui: ImageView, vui: VideoView?, uri: Uri?, bytes: ByteArray? = nu
             LogIt.info("Video URI: ${uri.toString()}")
             vui.setVideoPath(uri.toString())
             vui.start()
-            iui.visibility=View.GONE
+            iui.visibility=View.INVISIBLE  // Can't be GONE because other stuff is positioned against it
             vui?.visibility=View.VISIBLE
             return false
         }
@@ -750,7 +750,7 @@ class AssetSuccinctBinder(val ui: AssetSuccinctListItemBinding, val activity: Co
     {
         data?.ui = null
         ui.GuiAssetVideoIcon.visibility = View.GONE
-        ui.GuiAssetIcon.visibility = View.GONE
+        ui.GuiAssetIcon.visibility = View.INVISIBLE
         ui.GuiAssetVideoIcon.stopPlayback()
         ui.GuiAssetIcon.setImageResource(0)
         super.unpopulate()
@@ -856,7 +856,7 @@ class AssetBinder(val ui: AssetListItemBinding, val activity: AssetsActivity): G
         else
         {
             ui.GuiAssetVideoIcon.visibility = View.GONE
-            ui.GuiAssetIcon.visibility = View.GONE
+            ui.GuiAssetIcon.visibility = View.INVISIBLE
             // ui.GuiAssetVideoIcon.stopPlayback()
             ui.GuiAssetIcon.setImageResource(0)
             ui.GuiAssetSeries.text = ""
@@ -881,7 +881,7 @@ class AssetBinder(val ui: AssetListItemBinding, val activity: AssetsActivity): G
         LogIt.info("unpopulate $this")
         data?.ui = null
         ui.GuiAssetVideoIcon.visibility = View.GONE
-        ui.GuiAssetIcon.visibility = View.GONE
+        ui.GuiAssetIcon.visibility = View.INVISIBLE
         //ui.GuiAssetVideoIcon.stopPlayback()
         ui.GuiAssetIcon.setImageResource(0)
         super.unpopulate()
@@ -921,7 +921,7 @@ class AssetBinder(val ui: AssetListItemBinding, val activity: AssetsActivity): G
         }
         else
         {
-            if (mediaIsImage) ui.GuiAssetIcon.visibility = View.GONE
+            if (mediaIsImage) ui.GuiAssetIcon.visibility = View.INVISIBLE
             else
             {
                 ui.GuiAssetVideoIcon.visibility = View.GONE

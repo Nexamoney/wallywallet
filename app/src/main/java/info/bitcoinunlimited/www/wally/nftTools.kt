@@ -189,7 +189,8 @@ fun nftData(nftyZip: ByteArray): NexaNFTv2?
             val data = zipIn.readBytes()
             val s = String(data, Charsets.UTF_8)
             val js = Json { ignoreUnknownKeys = true }
-            val nftInfo = js.decodeFromString<NexaNFTv2>(s)
+            //val nftInfo = js.decodeFromString<NexaNFTv2>(s)  // DOES NOT WORK IN MINIFIED RELEASE BUILD
+            val nftInfo = js.decodeFromString(NexaNFTv2.serializer(),s)
             zipIn.close()
             return nftInfo
         }

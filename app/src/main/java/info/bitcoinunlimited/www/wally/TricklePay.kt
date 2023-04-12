@@ -540,10 +540,6 @@ class TricklePayActivity : CommonNavActivity()
     val viewSync = ThreadCond()
     var showingDetails = false
 
-    // Alternate colors for each row in the list
-    val Acol: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowA) } ?: 0xFFEEFFEE.toInt()
-    val Bcol: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowB) } ?: 0xFFBBDDBB.toInt()
-
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)

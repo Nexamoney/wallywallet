@@ -996,8 +996,17 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         myClipboard.addPrimaryClipChangedListener(object:  ClipboardManager.OnPrimaryClipChangedListener {
             override fun onPrimaryClipChanged()
             {
-                val tmp = myClipboard.getPrimaryClip()
-                if (tmp != null) currentClip = tmp
+                // This is not essential, so don't crash if something is wrong
+                // In particular, some users get android.os.DeadSystemRuntimeException on android 13, implying an Android bug
+                try
+                {
+                    val tmp = myClipboard.getPrimaryClip()
+                    if (tmp != null) currentClip = tmp
+                }
+                catch (e: Exception)
+                {
+                    logThreadException(e, "primary clipboard object changed")
+                }
             }
 
         })

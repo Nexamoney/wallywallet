@@ -20,10 +20,8 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.widget.ShareActionProvider
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
-import androidx.core.view.MenuItemCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import bitcoinunlimited.libbitcoincash.*
 import com.google.zxing.BarcodeFormat
@@ -206,16 +204,21 @@ class MainActivity : CommonNavActivity()
         {
             ui.sendToAddress.text.append(savedInstanceState.getString("sendToAddress", "") ?: "")
             ui.sendQuantity.text.append(savedInstanceState.getString("sendQuantity", "") ?: "")
-            mainActivityModel.lastSendCurrencyType = savedInstanceState.getString("sendCurrencyType", defaultBlockchain)
-            mainActivityModel.lastRecvIntoAccount = savedInstanceState.getString("recvCoinType", defaultBlockchain)
-            mainActivityModel.lastSendFromAccount = savedInstanceState.getString("sendCoinType", defaultBlockchain)
+            mainActivityModel.lastSendCurrencyType = savedInstanceState.getString("sendCurrencyType", currentlySelectedAccount)
+            mainActivityModel.lastRecvIntoAccount = savedInstanceState.getString("recvCoinType", currentlySelectedAccount)
+            mainActivityModel.lastSendFromAccount = savedInstanceState.getString("sendCoinType", currentlySelectedAccount)
         }
         else
         {
-            mainActivityModel.lastSendCurrencyType = defaultBlockchain
-            mainActivityModel.lastRecvIntoAccount = defaultBlockchain
-            mainActivityModel.lastSendFromAccount = defaultBlockchain
+            mainActivityModel.lastSendCurrencyType = currentlySelectedAccount
+            mainActivityModel.lastRecvIntoAccount = currentlySelectedAccount
+            mainActivityModel.lastSendFromAccount = currentlySelectedAccount
         }
+
+        ui.sendButton.setOnClickListener { onSendButtonClicked(it) }
+        ui.sendCancelButton.setOnClickListener { onSendCancelButtonClicked(it) }
+        ui.splitBillButton.setOnClickListener { onSplitBill(it) }
+        ui.purchaseButton.setOnClickListener { onPurchaseButton(it) }
 
         ui.readQRCodeButton.setOnClickListener {
             dbgAssertGuiThread()
@@ -353,12 +356,12 @@ class MainActivity : CommonNavActivity()
                 if (c != null)
                 {
                     mainActivityModel.lastRecvIntoAccount = sel
-                    val oldc = accounts[defaultBlockchain]
+                    val oldc = accounts[currentlySelectedAccount]
                     if (oldc != null)
                     {
                         oldc.updateReceiveAddressUI = null
                     }
-                    defaultBlockchain = c.name
+                    currentlySelectedAccount = c.name
                     c.updateReceiveAddressUI = { it -> updateReceiveAddressUI(it) }
                     updateReceiveAddressUI(c)
                 }
@@ -870,7 +873,7 @@ class MainActivity : CommonNavActivity()
 
         checkSendQuantity(ui.sendQuantity.text.toString())
 
-        accounts[defaultBlockchain]?.let { updateReceiveAddressUI(it) }
+        accounts[currentlySelectedAccount]?.let { updateReceiveAddressUI(it) }
 
         // Process the intent that caused this activity to resume
         if (intent.scheme != null)  // its null if normal app startup
@@ -1598,7 +1601,9 @@ class MainActivity : CommonNavActivity()
         // Locate MenuItem with ShareActionProvider
         val shareItem = menu.findItem(R.id.menu_item_share)
         shareItem.setOnMenuItemClickListener {
-            val recvAddrStr = ui.receiveAddress.text
+            val account = accounts[currentlySelectedAccount]
+            var recvAddrStr: String? = account?.currentReceive?.address.toString()
+            if (recvAddrStr == null) recvAddrStr = i18n(R.string.NoAccounts)
             val receiveAddrSendIntent: Intent = Intent(Intent.ACTION_SEND).apply {
                 putExtra(Intent.EXTRA_TEXT, recvAddrStr)
                 type = "text/plain"
@@ -1623,8 +1628,8 @@ class MainActivity : CommonNavActivity()
         super.onSaveInstanceState(outState)
         outState.putString("sendToAddress", ui.sendToAddress.text.toString().trim())
         outState.putString("sendQuantity", ui.sendQuantity.text.toString().trim())
-        outState.putString("sendCurrencyType", (ui.sendCurrencyType.selectedItem ?: defaultBlockchain) as String)
-        outState.putString("recvCoinType", (ui.recvIntoAccount.selectedItem ?: defaultBlockchain) as String)
+        outState.putString("sendCurrencyType", (ui.sendCurrencyType.selectedItem ?: currentlySelectedAccount) as String)
+        outState.putString("recvCoinType", (ui.recvIntoAccount.selectedItem ?: currentlySelectedAccount) as String)
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -1649,7 +1654,7 @@ class MainActivity : CommonNavActivity()
         try
         {
             var clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-            val account = accounts[defaultBlockchain]
+            val account = accounts[currentlySelectedAccount]
             if (account == null) throw BadCryptoException(R.string.badCryptoCode)
 
             val recvAddrStr: String? = account.currentReceive?.address?.toString()
@@ -1662,7 +1667,7 @@ class MainActivity : CommonNavActivity()
                 // visual bling that indicates text copied
                 ui.receiveAddress.text = i18n(R.string.copiedToClipboard)
                 laterUI {
-                    delay(5000); accounts[defaultBlockchain]?.let { updateReceiveAddressUI(it) }
+                    delay(5000); accounts[currentlySelectedAccount]?.let { updateReceiveAddressUI(it) }
                 }
             }
             else throw UnavailableException(R.string.receiveAddressUnavailable)
