@@ -151,9 +151,6 @@
     <!-- Domain Identity Settings -->
     <string name="useUniqueIdentity">Bruk en unik identitet</string>
 
-    <!-- Preference Titles -->
-    <string name="messages_header">Meldinger</string>
-    <string name="sync_header">Synkroniser</string>
 
     <!-- Messages Preferences -->
     <string name="signature_title">Din signatur</string>
@@ -161,9 +158,6 @@
 
     <!-- Sync Preferences -->
     <string name="sync_title">Synkroniser e-post jevne mellomrom</string>
-    <string name="attachment_title">Last ned innkommende vedlegg</string>
-    <string name="attachment_summary_on">Last ned e-postvedlegg automatisk</string>
-    <string name="attachment_summary_off">Bare last ned vedlegg ved forespørsel</string>
     <string name="localCurrency">Lokal valuta</string>
 
 </resources>

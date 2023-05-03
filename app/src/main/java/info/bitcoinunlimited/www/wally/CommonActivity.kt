@@ -325,13 +325,8 @@ open class CommonActivity : AppCompatActivity()
     var origTitleBackground: ColorDrawable? = null  //* The app's title background color (I will sometimes overwrite it with a temporary error message)
     var errorCount = 0 // Used to make sure one error's clear doesn't prematurely clear out a different problem
 
-    @kotlinx.coroutines.ExperimentalCoroutinesApi
     protected val coGuiScope = MainScope()
-
-    @kotlinx.coroutines.ExperimentalCoroutinesApi
     protected val coMiscCtxt: CoroutineContext = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
-
-    @kotlinx.coroutines.ExperimentalCoroutinesApi
     protected val coMiscScope: CoroutineScope = kotlinx.coroutines.CoroutineScope(coMiscCtxt)
 
     // for GUI automated testing
@@ -739,7 +734,6 @@ open class CommonActivity : AppCompatActivity()
     }
 
     /** Do whatever you pass but not within the user interface context, asynchronously */
-    @kotlinx.coroutines.ExperimentalCoroutinesApi
     fun later(fn: suspend () -> Unit): Unit
     {
         coMiscScope.launch {
@@ -755,7 +749,6 @@ open class CommonActivity : AppCompatActivity()
     }
 
     /** Do whatever you pass within the user interface context, asynchronously */
-    @kotlinx.coroutines.ExperimentalCoroutinesApi
     fun laterUI(fn: suspend () -> Unit): Unit
     {
         coGuiScope.launch {

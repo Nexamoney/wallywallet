@@ -151,14 +151,6 @@
     <!-- Domain Identity Settings -->
     <string name="useUniqueIdentity">Bruk en unik identitet</string>
 
-    <!-- Preference Titles -->
-    <string name="messages_header">Meldinger</string>
-    <string name="sync_header">Synkroniser</string>
-
-    <!-- Messages Preferences -->
-    <string name="signature_title">Din signatur</string>
-    <string name="reply_title">Standard handling ved besvarelse</string>
-
     <!-- Sync Preferences -->
     <string name="sync_title">Synkroniser e-post jevne mellomrom</string>
     <string name="attachment_title">Last ned innkommende vedlegg</string>

@@ -462,7 +462,7 @@ class AccountDetailsActivity: CommonNavActivity()
         showConfirmation()
     }
 
-    @Suppress("UNUSED_PARAMETER")
+    @Suppress(SUP)
     /** Delete a wallet account */
     public fun onDeleteAccountButton(v: View)
     {
@@ -474,7 +474,7 @@ class AccountDetailsActivity: CommonNavActivity()
         showConfirmation()
     }
 
-    public fun onTxHistoryButton(v: View)
+    public fun onTxHistoryButton(@Suppress(SUP) v: View)
     {
         ui.PinChange.visibility = View.GONE
         val acc = selectedAccount
@@ -493,6 +493,7 @@ class AccountDetailsActivity: CommonNavActivity()
         }
     }
 
+    @Suppress(SUP)
     public fun onAddressesButtonClicked(v: View)
     {
         ui.PinChange.visibility = View.GONE

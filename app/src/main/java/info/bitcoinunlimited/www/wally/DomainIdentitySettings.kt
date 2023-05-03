@@ -21,7 +21,7 @@ import java.util.logging.Logger
 private val LogIt = Logger.getLogger("BU.wally.domainidentitysettings")
 
 
-@kotlinx.coroutines.ExperimentalCoroutinesApi
+
 class DomainIdentitySettings : CommonNavActivity()
 {
     private lateinit var ui: ActivityDomainIdentitySettingsBinding

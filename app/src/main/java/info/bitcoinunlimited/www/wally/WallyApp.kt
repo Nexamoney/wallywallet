@@ -345,10 +345,8 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     // Current notification ID
     var notifId = 0
 
-    @kotlinx.coroutines.ExperimentalCoroutinesApi
     protected val coMiscCtxt: CoroutineContext = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
 
-    @kotlinx.coroutines.ExperimentalCoroutinesApi
     protected val coMiscScope: CoroutineScope = kotlinx.coroutines.CoroutineScope(coMiscCtxt)
 
     companion object
@@ -496,7 +494,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
 
     /** Do whatever you pass but not within the user interface context, asynchronously.
      * Launching into these threads means your task will outlast the activity it was launched in */
-    @kotlinx.coroutines.ExperimentalCoroutinesApi
     fun later(fn: suspend () -> Unit): Unit
     {
         coMiscScope.launch {

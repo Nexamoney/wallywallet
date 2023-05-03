@@ -28,6 +28,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.logging.Logger
 
+val MAX_CLIPBOARD_SIZE = 10000  // Copying too much triggers an android bug on a few phones.  This size is a guess
 
 private val LogIt = Logger.getLogger("BU.wally.TxHistory")
 
@@ -706,9 +707,17 @@ class TxHistoryActivity : CommonNavActivity()
             {
                 try
                 {
-                    var clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                    var clip = ClipData.newPlainText("text", historyCSV)
-                    clipboard.setPrimaryClip(clip)
+                    if (historyCSV.length < MAX_CLIPBOARD_SIZE)  // this avoids an android bug
+                    {
+                        var clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                        var clip = ClipData.newPlainText("text", historyCSV)
+                        clipboard.setPrimaryClip(clip)
+                    }
+                    else
+                    {
+                        // TODO: write a file to the common area on the phone
+                        displayNotice(R.string.tooLargeForClipboard)
+                    }
                 }
                 catch(e:Exception)
                 {

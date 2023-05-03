@@ -5,9 +5,7 @@ package info.bitcoinunlimited.www.wally
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
-import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
@@ -20,7 +18,6 @@ import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import bitcoinunlimited.libbitcoincash.*
 import com.google.zxing.BarcodeFormat
@@ -33,13 +30,13 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.math.BigDecimal
-import java.net.URL
 import java.net.URLEncoder
+import java.text.NumberFormat
 import java.util.*
 import java.util.logging.Logger
 import kotlin.math.floor
-import kotlin.math.roundToInt
 
+const val SUP = "UNUSED_PARAMETER"
 
 const val SPLITBILL_MESSAGE = "info.bitcoinunlimited.www.wally.splitbill"
 const val TRICKLEPAY_MESSAGE = "info.bitcoinunlimited.www.wally.tricklepay"
@@ -60,6 +57,7 @@ var WallyRowColors = arrayOf(0x4Ff5f8ff.toInt(), 0x4Fd0d0ef.toInt())
 var displayMetrics = DisplayMetrics()
 
 private val LogIt = Logger.getLogger("BU.wally.commonUI")
+
 
 
 class Objectify<T>(var obj: T)
@@ -127,6 +125,17 @@ val chainToDisplayCurrencyCode: Map<ChainSelector, String> = mapOf(
   ChainSelector.NEXATESTNET to "tNEX", ChainSelector.NEXAREGTEST to "rNEX", ChainSelector.NEXA to "NEX",
   ChainSelector.BCH to "uBCH", ChainSelector.BCHTESTNET to "tuBCH", ChainSelector.BCHREGTEST to "ruBCH"
 )
+
+/** Get this string as a BigDecimal currency value (using your default locale's number representation) */
+fun String.toCurrency(chainSelector: ChainSelector? = null): BigDecimal
+{
+    val nf = NumberFormat.getInstance(Locale.getDefault()) as java.text.DecimalFormat
+    nf.setParseBigDecimal(true)
+    val ret = (nf.parseObject(this) as BigDecimal)
+    if (chainSelector != null) ret.setCurrency(chainSelector)
+    else ret.setScale(currencyScale)
+    return ret
+}
 
 fun BigDecimal.setCurrency(chainSelector: ChainSelector): BigDecimal
 {

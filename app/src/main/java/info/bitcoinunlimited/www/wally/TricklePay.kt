@@ -5,6 +5,7 @@ package info.bitcoinunlimited.www.wally
 import android.app.Activity
 import android.content.*
 import android.content.Intent.CATEGORY_BROWSABLE
+import android.content.Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,23 +13,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.Keep
 import androidx.core.app.NavUtils
-import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import bitcoinunlimited.libbitcoincash.*
-import bitcoinunlimited.libbitcoincash.rem
 import info.bitcoinunlimited.www.wally.databinding.*
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
-import java.lang.Exception
-import java.util.logging.Logger
 import java.math.BigDecimal
+import java.util.logging.Logger
 
 
 private val LogIt = Logger.getLogger("BU.wally.TricklePay")
@@ -510,11 +508,12 @@ class TpDomainBinder(val ui: TpDomainListItemBinding): GuiListItemBinder<TdppDom
     }
 }
 
-@kotlinx.coroutines.ExperimentalCoroutinesApi
 class TricklePayActivity : CommonNavActivity()
 {
     public lateinit var ui: ActivityTricklePayBinding
     override var navActivityId = R.id.navigation_trickle_pay
+
+    var goHomeWhenDone = false
 
     /** The currency selected as the unit of account during registration/configuration */
     var regCurrency: String = ""
@@ -672,7 +671,13 @@ class TricklePayActivity : CommonNavActivity()
 
     fun handleAssetInfoRequest(uri: Uri)
     {
-        val sess = tpSession ?: throw UnavailableException()  // you must have created a session and parsed the common fields first
+
+        val sess = tpSession
+        if (sess == null)
+        {
+            LogIt.info(sourceLoc() + ": Asset request NO SESSION!")
+            throw UnavailableException()
+        }  // you must have created a session and parsed the common fields first
 
         // If user has already accepted, then ok, just move to completing the ASK
         // You may need to go thru this multiple times when an account is locked so we need to launch the PIN entry activity
@@ -702,8 +707,8 @@ class TricklePayActivity : CommonNavActivity()
         if (action == TdppAction.ACCEPT)
         {
             displayFragment(R.id.GuiTricklePayAssetRequest)
-            sess.acceptAssetRequest()
-            clearIntentAndFinish(notice=R.string.TpRequestAutoAccept)
+            val details = sess.acceptAssetRequest()
+            clearIntentAndFinish(notice=R.string.TpRequestAutoAccept, details=details)
         }
     }
 
@@ -781,8 +786,15 @@ class TricklePayActivity : CommonNavActivity()
     {
         // Automatically go back from the parent (wally main) activity to whoever called us
         // In this case we'll do this when the intent is coming from browsing a local web site
-        val autoClose:Boolean = if (receivedIntent.categories != null) receivedIntent.categories.contains(CATEGORY_BROWSABLE) else false
+        val autoClose:Boolean = if (receivedIntent.categories != null)
+        {
+            (receivedIntent.categories.contains(CATEGORY_BROWSABLE) && ((receivedIntent.flags and FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) == 0))
+        }
+        else false
+
         val iuri = receivedIntent.toUri(0).toUri()
+
+        if ((receivedIntent.flags and FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0) goHomeWhenDone = true
 
         wallyApp?.denotify(receivedIntent)
         try
@@ -840,39 +852,39 @@ class TricklePayActivity : CommonNavActivity()
                             if (sess.accepted == true) sess.acceptSendToRequest()  // must have asked for PIN
                             else
                             {
-                                LogIt.info("address autopay")
+                                LogIt.info(sourceLoc() + ": address autopay")
                                 handleSendToAutopay(iuri)
                             }
                         }
                         else if (path == "/tx")
                         {
-                            LogIt.info("tx autopay")
+                            LogIt.info(sourceLoc() + ": tx autopay")
                             if (accepted) onSignSpecialTx(null)  // must have asked for PIN so we had to launch the pin entry intent
                             else
                                 handleTxAutopay(iuri)
                         }
                         else if (path == "/assets")
                         {
-                            LogIt.info("asset request")
+                            LogIt.info(sourceLoc() + ": asset request")
                             if (autoClose) wallyApp?.finishParent=1
                             handleAssetInfoRequest(iuri)
                         }
                         else if (path == "/share")
                         {
-                            LogIt.info("info request (reverse QR)")
+                            LogIt.info(sourceLoc() + ": info request (reverse QR)")
                             if (autoClose) wallyApp?.finishParent=1
                             handleShareRequest(iuri)
                         }
                         else if (path == "/jsonpay")
                         {
-                            LogIt.info("json autopay")
+                            LogIt.info(sourceLoc() + ": json autopay")
                         }
                         else if (path == "/lp")
                         {
                             LogIt.info(sourceLoc() + ": Start long Poll to ${h}")
                             wallyApp?.accessHandler?.startLongPolling(sess.replyProtocol, sess.hostAndPort, sess.cookie)
                             if (autoClose) wallyApp?.finishParent=1
-                            clearIntentAndFinish(null, R.string.connectionEstablished)
+                            clearIntentAndFinish(null, R.string.connectionEstablished, details="Connected to ${h}")
                         }
                         else
                         {
@@ -890,7 +902,7 @@ class TricklePayActivity : CommonNavActivity()
             else  // This should never happen because the AndroidManifest.xml Intent filter should match the URIs that we handle
             {
                 displayFragment(R.id.GuiTricklePayMain)
-                displayError("bad link " + receivedIntent.scheme)
+                displayError(sourceLoc() + ": bad link " + receivedIntent.scheme)
             }
         }
         catch (e: BUExceptionI)
@@ -925,14 +937,18 @@ class TricklePayActivity : CommonNavActivity()
         super.onBackPressed()
     }
 
-    fun clearIntentAndFinish(error: Int? = null, notice: Int? = null, up: Boolean = false)
+    fun clearIntentAndFinish(error: Int? = null, notice: Int? = null, up: Boolean = false, details: String? = null )
     {
         wallyApp?.denotify(intent)
-        if (error != null) wallyApp?.displayError(error)
-        if (notice != null) wallyApp?.displayNotice(notice)
+        if (error != null) if (details != null) wallyApp?.displayError(error, details) else wallyApp?.displayError(error)
+        if (notice != null) if (details != null) wallyApp?.displayNotice(notice, details) else wallyApp?.displayNotice(notice)
         setResult(Activity.RESULT_OK, intent)
         tpSession = null
-        if (up)  // parent
+        if (goHomeWhenDone)
+        {
+            startActivity(Intent(this, MainActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+        }
+        else if (up)  // parent
         {
             NavUtils.navigateUpFromSameTask(this)
         }
@@ -1189,9 +1205,9 @@ class TricklePayActivity : CommonNavActivity()
     fun onAcceptAssetRequest(@Suppress("UNUSED_PARAMETER") view: View?)
     {
         displayNotice(R.string.Processing, time = 4900)
-        tpSession?.acceptAssetRequest()
+        val details = tpSession?.acceptAssetRequest()
         tpSession = null
-        clearIntentAndFinish(notice = R.string.TpAssetRequestAccepted)
+        clearIntentAndFinish(notice = R.string.TpAssetRequestAccepted, details = details)
     }
 
     fun onDenyAssetRequest(@Suppress("UNUSED_PARAMETER") view: View?)

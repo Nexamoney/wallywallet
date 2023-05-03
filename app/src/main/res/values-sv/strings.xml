@@ -458,9 +458,6 @@ Om så är fallet, klicka på skapa-knappen igen och ett tomt konto kommer att s
   <string name="preferenceFileName">bitcoinunlimited.wally.prefs</string>
   <!-- Domain Identity Settings -->
   <string name="useUniqueIdentity">Använd en unik identitet</string>
-  <!-- Preference Titles -->
-  <string name="messages_header">Meddelanden</string>
-  <string name="sync_header">Synkronisera</string>
 
     <string name="title_activity_identity_settings">Identitetsinställningar</string>
   <string name="title_activity_welcome">Välkommen</string>

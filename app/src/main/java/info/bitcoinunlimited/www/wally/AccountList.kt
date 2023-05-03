@@ -137,7 +137,7 @@ class AccountListBinder(val ui: AccountListItemBinding, val guiList: GuiAccountL
         ui.balanceValue.text = ""
         ui.balanceUnits.text = ""
         val d = data
-        if (d != null) d.unsetUI()
+        if (d != null) d.detachUI()
         super.unpopulate()
     }
 
@@ -187,8 +187,8 @@ class AccountListBinder(val ui: AccountListItemBinding, val guiList: GuiAccountL
                     while (count < 3)  // don't want to be leaving spinner code around forever
                     {
                         delay(1000)
-                        val priceData = NexDaily(fiatCurrencyCode)
-                        if (priceData != null)  // if we get the data, trigger a redraw
+                        val pData = NexDaily(fiatCurrencyCode)
+                        if (pData != null)  // if we get the data, trigger a redraw
                         {
                             guiList.layout()
                             break

@@ -164,6 +164,7 @@ class Account(
     }
 
 
+    /** Is this account currently visible to the user */
     val visible: Boolean
         get()
         {
@@ -171,12 +172,14 @@ class Account(
             return true
         }
 
+    /** Can this account be locked */
     val lockable: Boolean
         get()
         {
             return (encodedPin != null)   // If there is no PIN, can't be locked
         }
 
+    /** Is this account currently locked */
     val locked: Boolean
         get()
         {
@@ -184,6 +187,7 @@ class Account(
             return (!pinEntered)
         }
 
+    /** Get the locking PIN from storage */
     fun loadEncodedPin(): ByteArray?
     {
         val db = walletDb!!
@@ -199,7 +203,7 @@ class Account(
         return null
     }
 
-    /** Save the PIN of an account to the database, return 1 if account unlocked else 0 */
+    /** Check the PIN of an account, return 1 if account unlocked else 0 & update unlocked status */
     fun submitAccountPin(pin: String): Int
     {
         if (encodedPin == null) return 0
@@ -228,9 +232,6 @@ class Account(
     /** Returns true if this account has unspent assets (grouped UTXOs) in it */
     fun hasAssets(): Boolean
     {
-
-        LogIt.info(sourceLoc() + name + ": Construct assets")
-        val ast = mutableMapOf<GroupId, AssetInfo>()
         for (txo in wallet.txos)
         {
             val sp = txo.value
@@ -285,7 +286,7 @@ class Account(
         return null
     }
 
-    //? Completely delete this wallet, rendering any money you may have in it inaccessible unless the wallet is restored from backup words
+    /** Completely delete this wallet, rendering any money you may have in it inaccessible unless the wallet is restored from backup words */
     fun delete()
     {
         currentReceive = null
@@ -296,7 +297,7 @@ class Account(
         unconfirmedBalance = BigDecimal.ZERO
     }
 
-    //? Disconnect from the UI and clear the UI
+    /** Disconnect from the UI and clear the UI */
     fun detachUI()
     {
         dbgAssertGuiThread()
@@ -305,6 +306,7 @@ class Account(
         unconfirmedBalanceGUI("")
         infoGUI("")
 
+        uiBinding = null
         tickerGUI.reactor = null
         balanceGUI.reactor = null
         unconfirmedBalanceGUI.reactor = null
@@ -312,20 +314,7 @@ class Account(
 
     }
 
-    //? If running in regtest mode determine whether we are running on a simulated or actual device (on the 192 network)
-    //  and return the corresponding hard-coded IP address of the regtest full node
-    fun RegtestIP(): String
-    {
-        val wm = context.context.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        val ip = wm.connectionInfo.ipAddress
-        // LogIt.info("My IP" + ip.toString())
-        if ((ip and 255) == 192)
-        {
-            return LanHostIP
-        }
-        else return SimulationHostIP
-    }
-
+    @Suppress(SUP)
     //? Set the user interface elements for this cryptocurrency
     fun setUI(ui: AccountListItemBinding, al: GuiAccountList, icon: ImageView?, ticker: TextView?, balance: TextView?, unconf: TextView?, infoView: TextView?)
     {
@@ -347,16 +336,8 @@ class Account(
         else infoGUI.reactor = null
     }
 
-    fun unsetUI()
-    {
-        uiBinding = null
-        tickerGUI.reactor = null
-        balanceGUI.reactor = null
-        unconfirmedBalanceGUI.reactor = null
-        infoGUI.reactor = null
-    }
 
-    //? Convert the default display units to the finest granularity of this currency.  For example, mBCH to Satoshis
+    /** Convert the default display units to the finest granularity of this currency.  For example, mBCH to Satoshis */
     fun toFinestUnit(amount: BigDecimal): Long
     {
         val ret = when (chain.chainSelector)
@@ -379,7 +360,7 @@ class Account(
         return ret
     }
 
-    //? Convert a value in the wallet's display currency code unit into its primary unit. The "primary unit" is the generally accepted currency unit, AKA "BCH" or "BTC".
+    /** Convert a value in the wallet's display currency code unit into its primary unit. The "primary unit" is the generally accepted currency unit, AKA "BCH" or "BTC". */
     fun toPrimaryUnit(qty: BigDecimal): BigDecimal
     {
         val factor = when (chain.chainSelector)
@@ -389,6 +370,18 @@ class Account(
         }
         return qty / factor.toBigDecimal()
     }
+
+    /** Convert a value in the wallet's display currency code unit into its primary unit. The "primary unit" is the generally accepted currency unit, AKA "BCH" or "BTC". */
+    fun fromPrimaryUnit(qty: BigDecimal): BigDecimal
+    {
+        val factor = when (chain.chainSelector)
+        {
+            ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> 1
+            ChainSelector.BCH, ChainSelector.BCHREGTEST, ChainSelector.BCHTESTNET -> 1000000
+        }
+        return qty * factor.toBigDecimal()
+    }
+
 
     //? Convert the passed quantity to a string in the decimal format suitable for this currency
     fun format(qty: BigDecimal): String
@@ -410,12 +403,11 @@ class Account(
             val addr: PayAddress? = it?.address
 
             val qr = currentReceiveQR
-            var genNew = false
-            if ((it == null) || (addr == null) || (qr == null))
-                genNew = true
+            var genNew = if ((it == null) || (addr == null) || (qr == null))
+                true
             else
             {
-                genNew = syncNotInUI { (wallet.getBalanceIn(addr) > 0) }
+                syncNotInUI { (wallet.getBalanceIn(addr) > 0) }
             }
 
             if (genNew)
@@ -502,7 +494,8 @@ class Account(
             unconfirmedBalance = fromFinestUnit(wallet.balanceUnconfirmed)
             confirmedBalance = fromFinestUnit(wallet.balanceConfirmed)
 
-            val delta = balance - confirmedBalance
+            var delta = balance - confirmedBalance
+
             val chainstate = wallet.chainstate
             var unconfBalStr = ""
             if (chainstate != null)
@@ -514,7 +507,7 @@ class Account(
                           ""
                       else
                           i18n(R.string.incoming) % mapOf(
-                            "delta" to (if (delta > BigDecimal.ZERO) "+" else "") + format(balance - confirmedBalance),
+                            "delta" to (if (delta > BigDecimal.ZERO) "+" else "") + format(delta),
                             "unit" to currencyCode
                           )
 

@@ -183,7 +183,6 @@ class AssetManager(val app: WallyApp)
                     val tddHash = td.tddHash
                     if ((tddHash != null) && (tg.document_hash == Hash256(tddHash).toHex()))
                     {
-
                             td.genesisInfo = tg
                             storeTokenDesc(groupId, td)  // We got good data, so cache it
                             return td
@@ -191,9 +190,9 @@ class AssetManager(val app: WallyApp)
                     else
                     {
                             LogIt.info("Incorrect token desc document")
-                            val td = TokenDesc(tg.ticker ?: "", tg.name, "token description document is invalid")
-                            td.genesisInfo = tg
-                            return td
+                            val tderr = TokenDesc(tg.ticker ?: "", tg.name, "token description document is invalid")
+                            tderr.genesisInfo = tg
+                            return tderr
                     }
                 }
                 else  // Could not access the doc for some reason, don't cache it so we retry next time we load the token
@@ -444,12 +443,12 @@ class AssetInfo(val groupInfo: GroupInfo)
     }
 
     /** returns the Uri and the bytes, or null if nonexistent, cannot be loaded */
-    fun getTddIcon(td: TokenDesc): Pair<Uri?, ByteArray?>
+    fun getTddIcon(): Pair<Uri?, ByteArray?>
     {
         val iconUrl = tokenInfo?.icon
         if (iconUrl != null)
         {
-            val img = try
+            try
             {
                 val data = URL(iconUrl).readBytes()
                 return Pair(Uri.parse(URL(iconUrl).toString()), data)
@@ -519,7 +518,7 @@ class AssetInfo(val groupInfo: GroupInfo)
                         am.storeTokenDesc(groupInfo.groupId, td)
                     }
                     extractNftData(am, groupInfo.groupId, nftZipData.second)
-                    if (iconBackUri == null) getTddIcon(td).let { iconBackUri = it.first; iconBackBytes = it.second }
+                    if (iconBackUri == null) getTddIcon().let { iconBackUri = it.first; iconBackBytes = it.second }
                     dataChanged = true
                 }
                 else  // Not an NFT, so fill in the data from the TDD
@@ -542,7 +541,7 @@ class AssetInfo(val groupInfo: GroupInfo)
                     val iconUrl = tokenInfo?.icon
                     if (iconUrl != null)
                     {
-                        getTddIcon(td).let { iconUri = it.first; iconBytes = it.second }
+                        getTddIcon().let { iconUri = it.first; iconBytes = it.second }
                         dataChanged = true
                     }
                 }
@@ -594,8 +593,10 @@ class AssetSuccinctBinder(val ui: AssetSuccinctListItemBinding, val activity: Co
         ui.GuiAssetVideoIcon.setOnPreparedListener(OnPreparedListener { mp -> mp.isLooping = true })
 
         // If this video cannot be played, do not do an ugly popup -- just switch to the cannot show icon
-        ui.GuiAssetVideoIcon.setOnErrorListener(object : MediaPlayer.OnErrorListener {
-            override fun onError( mp: MediaPlayer?,  what: Int,  extra: Int): Boolean {
+        ui.GuiAssetVideoIcon.setOnErrorListener(object : MediaPlayer.OnErrorListener
+        {
+            override fun onError(mp: MediaPlayer?, what: Int, extra: Int): Boolean
+            {
                 mp?.stop()
                 ui.GuiAssetVideoIcon.visibility = View.GONE
                 ui.GuiAssetIcon.visibility = View.VISIBLE
@@ -605,43 +606,34 @@ class AssetSuccinctBinder(val ui: AssetSuccinctListItemBinding, val activity: Co
         })
 
 
-        val d = data
-        if (d != null)
+        if (true)
         {
-            d.sui = this
+            val d = data
+            if (d != null)
+            {
+                d.sui = this
 
-            val nft = d.nft
-            if (nft == null)
-            {
-                ui.GuiAssetName.text = d.ticker ?: d.name
-                ui.GuiAssetQuantity.text = d.displayAmount?.toString() ?: d.groupInfo.tokenAmt.toString()
-                ui.GuiAssetQuantity.visibility = View.VISIBLE
-            }
-            else
-            {
-                ui.GuiAssetName.text = nft.title ?: d.name ?: ""
-                if (d.groupInfo.tokenAmt == 1L)  // If its an NFT and there's just 1 (remember SFTs could have > 1) then don't bother to show quantity
+                val nft = d.nft
+                if (nft == null)
                 {
-                    ui.GuiAssetQuantity.visibility = View.GONE
+                    ui.GuiAssetName.text = d.ticker ?: d.name
+                    ui.GuiAssetQuantity.text = d.displayAmount?.toString() ?: d.groupInfo.tokenAmt.toString()
+                    ui.GuiAssetQuantity.visibility = View.VISIBLE
                 }
                 else
                 {
-                    ui.GuiAssetQuantity.visibility = View.VISIBLE
-                    ui.GuiAssetQuantity.text = d.displayAmount?.toString() ?: d.groupInfo.tokenAmt.toString()
+                    ui.GuiAssetName.text = nft.title ?: d.name ?: ""
+                    if (d.groupInfo.tokenAmt == 1L)  // If its an NFT and there's just 1 (remember SFTs could have > 1) then don't bother to show quantity
+                    {
+                        ui.GuiAssetQuantity.visibility = View.GONE
+                    }
+                    else
+                    {
+                        ui.GuiAssetQuantity.visibility = View.VISIBLE
+                        ui.GuiAssetQuantity.text = d.displayAmount?.toString() ?: d.groupInfo.tokenAmt.toString()
+                    }
                 }
-            }
 
-            if (showFront)
-            {
-                showMedia(ui.GuiAssetIcon, ui.GuiAssetVideoIcon, d.iconUri, d.iconBytes)
-            }
-            else
-            {
-                showMedia(ui.GuiAssetIcon, ui.GuiAssetVideoIcon, d.iconBackUri, d.iconBackBytes)
-            }
-
-            ui.GuiAssetIcon.setOnClickListener() {
-                showFront = !showFront
                 if (showFront)
                 {
                     showMedia(ui.GuiAssetIcon, ui.GuiAssetVideoIcon, d.iconUri, d.iconBytes)
@@ -650,14 +642,26 @@ class AssetSuccinctBinder(val ui: AssetSuccinctListItemBinding, val activity: Co
                 {
                     showMedia(ui.GuiAssetIcon, ui.GuiAssetVideoIcon, d.iconBackUri, d.iconBackBytes)
                 }
+
+                ui.GuiAssetIcon.setOnClickListener() {
+                    showFront = !showFront
+                    if (showFront)
+                    {
+                        showMedia(ui.GuiAssetIcon, ui.GuiAssetVideoIcon, d.iconUri, d.iconBytes)
+                    }
+                    else
+                    {
+                        showMedia(ui.GuiAssetIcon, ui.GuiAssetVideoIcon, d.iconBackUri, d.iconBackBytes)
+                    }
+                }
             }
-        }
-        else
-        {
-            ui.GuiAssetQuantity.text = ""
-            ui.GuiAssetIcon.setImageResource(0)
-            ui.GuiAssetName.text = ""
-            ui.GuiAssetEditQuantity.set("")
+            else
+            {
+                ui.GuiAssetQuantity.text = ""
+                ui.GuiAssetIcon.setImageResource(0)
+                ui.GuiAssetName.text = ""
+                ui.GuiAssetEditQuantity.set("")
+            }
         }
 
         // Allows editing the quantity (for sending partial amounts)

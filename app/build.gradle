@@ -9,8 +9,8 @@ android {
         applicationId "info.bitcoinunlimited.www.wally"
         minSdkVersion 26
         targetSdkVersion 33
-        versionCode 234
-        versionName "2.34"
+        versionCode 235
+        versionName "2.35"
         testApplicationId "bitcoinunlimited.wally"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -38,13 +38,13 @@ android {
     }
 
     kotlinOptions {  // Needed for potassium-nitrate database
-        jvmTarget = JavaVersion.VERSION_11
+        jvmTarget = JavaVersion.VERSION_17
         // freeCompilerArgs = ["-Xuse-experimental=kotlinx.serialization.UnstableDefault"]
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     lint {
         abortOnError false
@@ -66,12 +66,12 @@ allprojects {
 
 
 dependencies {
-    def room_version = "2.5.0"
+    def room_version = '2.5.1'
     def ax_test_version = '1.5.2'
-    def ktor_version = "2.2.2"
+    def ktor_version = '2.3.0'
     def ax_espresso_version = '3.5.1'
-    def serializationVersion = "1.4.1"
-    def androidXCoreVersion = '1.9.0'
+    def serializationVersion = '1.5.0'
+    def androidXCoreVersion = '1.10.0'
 
     // example that grabs all aars and jars
     // implementation fileTree(dir: 'aars', include: ['*.aar'])
@@ -99,7 +99,7 @@ dependencies {
     implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
 
     implementation "androidx.room:room-runtime:$room_version"
-    implementation 'androidx.appcompat:appcompat:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation "androidx.core:core-ktx:$androidXCoreVersion"
 
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'

@@ -279,6 +279,7 @@ Good luck!
     <string name="actuallySendingT" formatted="false">actually sending %qty %crypto</string>
     <string name="copiedToClipboard">...copied to clipboard...</string>
     <string name="cannotCopyToClipboard">Cannot copy to clipboard</string>
+    <string name="tooLargeForClipboard">Too much data for clipboard</string>
     <string name="scanFailed">scan failed</string>
     <string name="scanSuccess">scan succeeded</string>
     <string name="sendSuccess">send successful</string>

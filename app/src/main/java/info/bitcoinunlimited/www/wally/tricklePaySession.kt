@@ -14,6 +14,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.json.Json
 import java.net.SocketTimeoutException
 import java.net.URL
 import java.net.URLEncoder
@@ -549,10 +550,10 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         proposedDestinations = null
     }
 
-    fun acceptAssetRequest()
+    fun acceptAssetRequest():String
     {
         LogIt.info("accepted asset request")
-        val assets = assetInfoList ?: return
+        val assets = assetInfoList ?: return "no assets"
 
         val url = replyProtocol + "://" + hostAndPort + "/assets?" + cookieParam
 
@@ -565,13 +566,13 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
                 }
                 install(HttpTimeout) { requestTimeoutMillis = 5000 }
             }
-            val json = io.ktor.client.plugins.json.defaultSerializer()
 
+            val js = Json {}
             try
             {
                 val response: HttpResponse = client.post(url) {
-                    val tmp = json.write(assets)
-                    LogIt.info("JSON response ${tmp.contentLength} : " + tmp.toString())
+                    val tmp = js.encodeToString(TricklePayAssetList.serializer(), assets)
+                    LogIt.info("JSON response ${tmp.length} : " + tmp.toString())
                     setBody(tmp)
                 }
                 val respText = response.bodyAsText()
@@ -583,6 +584,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
             }
             client.close()
         }
+        return "Sent to: " + url
     }
 
 

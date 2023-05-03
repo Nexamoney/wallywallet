@@ -41,8 +41,6 @@ import kotlin.concurrent.thread
 
 private val LogIt = Logger.getLogger("BU.wally.mainActivity")
 
-val uriToMbch = 1000.toBigDecimal()  // Todo allow other currencies supported by this wallet
-
 val ERROR_DISPLAY_TIME = 10000L
 val NOTICE_DISPLAY_TIME = 4000L
 val NORMAL_NOTICE_DISPLAY_TIME = 2000L
@@ -1257,58 +1255,60 @@ class MainActivity : CommonNavActivity()
         {
             amt = try
             {
-                stramt.toBigDecimal(currencyMath).setScale(currencyScale)  // currencyScale because BCH may have more decimals than mBCH
-            } catch (e: NumberFormatException)
+                stramt.toCurrency()
+                //stramt.toBigDecimal(currencyMath).setScale(currencyScale)  // currencyScale because BCH may have more decimals than mBCH
+            }
+            catch (e: NumberFormatException)
             {
                 throw BadAmountException(R.string.detailsOfBadAmountFromIntent)
-            } catch (e: ArithmeticException)  // Rounding error
+            }
+            catch (e: ArithmeticException)  // Rounding error
             {
                 // If someone is asking for sub-satoshi quantities, round up and overpay them
                 LogIt.warning("Sub-satoshi quantity ${stramt} requested.  Rounding up")
                 stramt.toBigDecimal().setScale(bchDecimals, RoundingMode.UP)
             }
-            amt *= uriToMbch  // convert from bch to mBch
         }
+
+        val lc = sta.lowercase(Locale.getDefault())
+
+        val pa:PayAddress?
+        var amtString = "0"
+        val act: Account?
+        try
+        {
+            pa = PayAddress(lc)
+            val acts = app?.accountsFor(pa.blockchain)
+            if ((acts == null)|| acts.isEmpty())
+            {
+                displayError(R.string.NoAccounts)
+                return
+            }
+            act = acts[0]
+            amt = act.fromPrimaryUnit(amt)
+            amtString = act.format(amt)
+        }
+        catch (e: UnknownBlockchainException)
+        {
+            displayError(R.string.badAddress, scheme)
+            return
+        }
+
 
         laterUI {
             // TODO label and message
-            try
-            {
-                if (isCashAddrScheme(scheme))  // Handle cashaddr upper/lowercase stuff
-                {
-                    val lc = sta.lowercase(Locale.getDefault())
-                    val uc = sta.uppercase(Locale.getDefault())
-                    if (uc.contentEquals(sta) || lc.contentEquals(sta))  // Its all uppercase or all uppercase
-                    {
-                        updateSendAddress(PayAddress(lc))
-                    }
-                    else  // Mixed upper/lower case not allowed
-                    {
-                        displayError(R.string.badAddress, "Mixed upper and lower case is not allowed in the CashAddr format")
-                        return@laterUI
-                    }
-                }
-                else
-                {
-                    updateSendAddress(PayAddress(sta))
-                }
-            }
-            catch (e: UnknownBlockchainException)
-            {
-                displayError(R.string.badAddress, scheme)
-                return@laterUI
-            }
+            updateSendAddress(pa) // This also updates the send account
 
             if (amt >= BigDecimal.ZERO)
             {
                 ui.sendQuantity.text.clear()
-                ui.sendQuantity.text.append(mBchFormat.format(amt))
+                ui.sendQuantity.text.append(amtString)
                 checkSendQuantity(ui.sendQuantity.text.toString())
             }
-        }
 
-        // attempt to convert into an address to trigger an exception and a subsequent UI error if its bad
-        PayAddress(sta)
+            receiveVisibility(false)
+            sendVisibility(true)
+        }
     }
 
     /** actually update the UI elements based on the provided data.  Must be called in the GUI context */
@@ -1380,15 +1380,16 @@ class MainActivity : CommonNavActivity()
         val coin = accounts[coinType]
         if (coin == null)
         {
-            ui.approximatelyText.text = i18n(R.string.badCurrencyUnit)
+            ui.approximatelyText.text = ""
             return true // send quantity is valid or irrelevant since the currency type is unknown
         }
 
         // This sets the scale assuming mBch.  mBch will have more decimals (5) than fiat (2) so we are ok
         val qty = try
         {
-            s.toBigDecimal(currencyMath).setCurrency(coin.chain.chainSelector)
-        } catch (e: NumberFormatException)
+            s.toCurrency(coin.chain.chainSelector)
+        }
+        catch (e: NumberFormatException)
         {
             if (s == SEND_ALL_TEXT)  // Special case transferring everything
             {
@@ -1399,7 +1400,8 @@ class MainActivity : CommonNavActivity()
                 ui.approximatelyText.text = i18n(R.string.invalidQuantity)
                 return false
             }
-        } catch (e: ArithmeticException)
+        }
+        catch (e: ArithmeticException)
         {
             ui.approximatelyText.text = i18n(R.string.invalidQuantityTooManyDecimalDigits)
             return false
@@ -1936,7 +1938,7 @@ class MainActivity : CommonNavActivity()
         }
     }
 
-    /* Show or hide the send function visibility */
+    /** Show or hide the send function visibility */
     public fun sendVisibility(show: Boolean)
     {
         if (show)
@@ -1954,7 +1956,7 @@ class MainActivity : CommonNavActivity()
             ui.splitBillButton.visibility = View.VISIBLE
         }
     }
-    /* Show or hide the receive functionality */
+    /** Show or hide the receive functionality */
     public fun receiveVisibility(show: Boolean)
     {
         if (show)
@@ -2065,7 +2067,7 @@ class MainActivity : CommonNavActivity()
         var spendAll = false
         var amount: BigDecimal = try
         {
-            amtstr.toBigDecimal(currencyMath).setCurrency(account.chain.chainSelector)
+            amtstr.toCurrency(account.chain.chainSelector)
         }
         catch (e: NumberFormatException)
         {
@@ -2090,7 +2092,7 @@ class MainActivity : CommonNavActivity()
         {
             // If someone is asking to send sub-satoshi quantities, round up and ask them to click send again.
             ui.sendQuantity.text.clear()
-            ui.sendQuantity.text.append(amtstr.toBigDecimal().setScale(account.chain.chainSelector.currencyDecimals, RoundingMode.UP).toString())
+            ui.sendQuantity.text.append(amtstr.toCurrency(account.chain.chainSelector).setScale(account.chain.chainSelector.currencyDecimals, RoundingMode.UP).toString())
             displayError(R.string.badAmount, R.string.subSatoshiQuantities)
             ui.approximatelyText.text = i18n(R.string.roundedUpClickSendAgain)
             return
