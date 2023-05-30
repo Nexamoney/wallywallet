@@ -21,6 +21,7 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.net.ParseException
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.LinearLayoutManager
 import bitcoinunlimited.libbitcoincash.*
@@ -2065,7 +2066,7 @@ class MainActivity : CommonNavActivity()
         val amtstr: String = ui.sendQuantity.text?.toString() ?: ""
 
         var spendAll = false
-        var amount: BigDecimal = try
+        var amount: BigDecimal = if (amtstr.isEmpty()) BigDecimal.ZERO else try
         {
             amtstr.toCurrency(account.chain.chainSelector)
         }
@@ -2095,6 +2096,11 @@ class MainActivity : CommonNavActivity()
             ui.sendQuantity.text.append(amtstr.toCurrency(account.chain.chainSelector).setScale(account.chain.chainSelector.currencyDecimals, RoundingMode.UP).toString())
             displayError(R.string.badAmount, R.string.subSatoshiQuantities)
             ui.approximatelyText.text = i18n(R.string.roundedUpClickSendAgain)
+            return
+        }
+        catch(e: ParseException)
+        {
+            displayError(R.string.badAmount)
             return
         }
 

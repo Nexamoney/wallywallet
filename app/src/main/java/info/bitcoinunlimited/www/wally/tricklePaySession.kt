@@ -4,6 +4,7 @@ import android.content.ClipboardManager
 import android.net.Uri
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.net.toUri
 import java.util.logging.Logger
 import bitcoinunlimited.libbitcoincash.*
@@ -14,6 +15,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 import java.net.SocketTimeoutException
 import java.net.URL
@@ -830,11 +832,41 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         }
         else if (whatInfo == "clipboard")
         {
-            val clip: ClipData? = wallyApp?.currentClip
+            var clip: ClipData? = null // wallyApp?.currentClip
+            if (clip == null)
+            {
+                laterUI {
+                    //  Because background apps monitor the clipboard and steal data, you can no longer access the clipboard unless you are foreground.
+                    //  However, (and this is probably a bug) if you are becoming foreground, like an activity just completed and returned to you
+                    //  in onActivityResult, then your activity hasn't been foregrounded yet :-(.  So I need to delay
+                    //  Wait for this app to regain the input focus
+                    //  https://developer.android.com/reference/android/content/ClipboardManager#hasPrimaryClip()
+                    //  If the application is not the default IME or the does not have input focus getPrimaryClip() will return false.
+                    delay(250)
+                    // We need to be in the foreground to read the clipboard which is why I prefer the cached clipboard
+                    try
+                    {
+                        //var myClipboard = getSystemService(wallyApp!!, AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager
+                        var myClipboard = wallyApp?.currentActivity?.getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager
+                        clip = myClipboard.getPrimaryClip()
+                        val item = if (clip?.itemCount != 0) clip?.getItemAt(0) else null
+                        val text = item?.text?.toString() ?: i18n(R.string.pasteIsEmpty)
+                        wallyApp?.post(url, { it.setBody(text) })
+                        then?.invoke(R.string.clipboard)
+                    }
+                    catch (e: Exception)
+                    {
+                    }
+
+                }
+            }
+            /*
             val item = if (clip?.itemCount != 0) clip?.getItemAt(0) else null
             val text = item?.text?.toString() ?: i18n(R.string.pasteIsEmpty)
             wallyApp?.post(url, { it.setBody(text) })
                 then?.invoke(R.string.clipboard)
+
+             */
             /*
             laterUI {  // We need to be in the foreground to read the clipboard
                 var myClipboard = wallyApp?.currentActivity?.getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager

@@ -9,8 +9,8 @@ android {
         applicationId "info.bitcoinunlimited.www.wally"
         minSdkVersion 26
         targetSdkVersion 33
-        versionCode 235
-        versionName "2.35"
+        versionCode 236
+        versionName "2.36"
         testApplicationId "bitcoinunlimited.wally"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -78,12 +78,9 @@ dependencies {
     // implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Grab libbitcoincash locally for debug or from the released location
-    implementation files('aars/libbitcoincash-release.aar')  // locate this directory at: <repo_home>/app/aars/
-    // implementation 'info.bitcoinunlimited:libbitcoincash:3.1.0'
+    //implementation files('aars/libbitcoincash-release.aar')  // locate this directory at: <repo_home>/app/aars/
+    implementation 'info.bitcoinunlimited:libbitcoincash:3.2.2'
 
-    //releaseImplementation files('aars/libbitcoincash-release.aar')
-    //implementation files('aars/libbitcoincash-debug.aar')  // locate this directory at: <repo_home>/app/aars/
-    //implementation "info.bitcoinunlimited:libbitcoincash:0.2.1"
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'

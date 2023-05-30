@@ -1015,6 +1015,19 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         var myClipboard = getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager
         val tmp = myClipboard.getPrimaryClip()
         if (tmp != null) currentClip = tmp
+
+        //  Because background apps monitor the clipboard and steal data, you can no longer access the clipboard unless you are foreground.
+        //  However, (and this is probably a bug) if you are becoming foreground, like an activity just completed and returned to you
+        //  in onActivityResult, then your activity hasn't been foregrounded yet :-(.  So I need to delay
+        //  Wait for this app to regain the input focus
+        //  https://developer.android.com/reference/android/content/ClipboardManager#hasPrimaryClip()
+        //  If the application is not the default IME or the does not have input focus getPrimaryClip() will return false.
+        laterUI {
+            delay(250)
+            var myClipboard = getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager
+            val tmp = myClipboard.getPrimaryClip()
+            if (tmp != null) currentClip = tmp
+        }
     }
 
     // Called by the system when the device configuration changes while your component is running.
