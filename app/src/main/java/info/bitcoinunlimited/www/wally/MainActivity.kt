@@ -1388,19 +1388,24 @@ class MainActivity : CommonNavActivity()
         // This sets the scale assuming mBch.  mBch will have more decimals (5) than fiat (2) so we are ok
         val qty = try
         {
-            s.toCurrency(coin.chain.chainSelector)
-        }
-        catch (e: NumberFormatException)
-        {
-            if (s == SEND_ALL_TEXT)  // Special case transferring everything
+            if (s.lowercase() == SEND_ALL_TEXT)  // Special case transferring everything
             {
                 coin.fromFinestUnit(coin.wallet.balance)
             }
             else
             {
-                ui.approximatelyText.text = i18n(R.string.invalidQuantity)
-                return false
+                s.toCurrency(coin.chain.chainSelector)
             }
+        }
+        catch (e: java.text.ParseException)
+        {
+            ui.approximatelyText.text = i18n(R.string.invalidQuantity)
+            return false
+        }
+        catch (e: NumberFormatException)
+        {
+            ui.approximatelyText.text = i18n(R.string.invalidQuantity)
+            return false
         }
         catch (e: ArithmeticException)
         {
@@ -2066,28 +2071,31 @@ class MainActivity : CommonNavActivity()
         val amtstr: String = ui.sendQuantity.text?.toString() ?: ""
 
         var spendAll = false
-        var amount: BigDecimal = if (amtstr.isEmpty()) BigDecimal.ZERO else try
+        var amount: BigDecimal = try
         {
-            amtstr.toCurrency(account.chain.chainSelector)
-        }
-        catch (e: NumberFormatException)
-        {
-            if (amtstr.lowercase() == SEND_ALL_TEXT)
+            // Its ok to send nothing if you are sending assets
+            if ((amtstr.isEmpty()) && (sendAssetList.isNotEmpty())) BigDecimal.ZERO
+            // Special case transferring everything
+            else if (amtstr.lowercase() == SEND_ALL_TEXT)
             {
                 spendAll = true
                 account.fromFinestUnit(account.wallet.balance)
             }
+            // Transferring a specific amount
             else
             {
-                // Its ok to send no native coin if you are sending assets
-                if ((amtstr == "") && (sendAssetList.isNotEmpty())) BigDecimal.ZERO
-                else
-                {
-                    if (amtstr == "") displayError(R.string.badAmount, R.string.empty)
-                    else displayError(R.string.badAmount, i18n(R.string.badAmount) + " " + amtstr)
-                    return
-                }
+                amtstr.toCurrency(account.chain.chainSelector)
             }
+        }
+        catch (e: java.text.ParseException)
+        {
+            displayError(R.string.badAmount, i18n(R.string.badAmount) + " " + amtstr)
+            return
+        }
+        catch (e: NumberFormatException)
+        {
+            displayError(R.string.badAmount, i18n(R.string.badAmount) + " " + amtstr)
+            return
         }
         catch (e: ArithmeticException)  // Rounding error
         {
@@ -2100,7 +2108,7 @@ class MainActivity : CommonNavActivity()
         }
         catch(e: ParseException)
         {
-            displayError(R.string.badAmount)
+            displayError(R.string.badAmount, amtstr)
             return
         }
 
