@@ -2041,6 +2041,11 @@ class MainActivity : CommonNavActivity()
         {
             ui.sendAccount.selectedItem as String
         }
+        catch (e: NullPointerException)
+        {
+            displayException(R.string.badCryptoCode, e)
+            return
+        }
         catch (e: TypeCastException)  // No wallets are defined so no sendCoinType is possible
         {
             displayException(R.string.badCryptoCode, e)

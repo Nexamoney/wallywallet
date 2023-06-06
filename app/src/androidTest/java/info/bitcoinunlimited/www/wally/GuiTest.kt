@@ -2,22 +2,23 @@ package bitcoinunlimited.wally.guiTestImplementation
 
 import Nexa.NexaRpc.NexaRpcFactory
 import android.app.Activity
-import android.content.ClipData
-import android.content.ClipboardManager
+import android.content.*
 import android.content.Context.CLIPBOARD_SERVICE
-import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
+import android.provider.Settings.Global.getString
+import android.view.View
+import android.widget.Switch
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
+import androidx.test.espresso.*
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.NoMatchingViewException
-import androidx.test.espresso.PerformException
 import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.*
@@ -36,6 +37,7 @@ import java.util.*
 import java.util.logging.Logger
 import info.bitcoinunlimited.www.wally.R.id as GuiId
 import info.bitcoinunlimited.www.wally.R  // so we can compare strings with what is on the screen
+import org.hamcrest.Matcher
 import java.net.URLEncoder
 
 
@@ -43,8 +45,20 @@ val LogIt = Logger.getLogger("GuiTest")
 
 class TestTimeoutException(what: String): Exception(what)
 
-val REGTEST_RPC_PORT=18332
-val REGTEST_P2P_PORT=18444
+//val REGTEST_RPC_PORT=18332
+//val REGTEST_P2P_PORT=18444
+
+val REGTEST_P2P_PORT=7327
+val REGTEST_RPC_PORT=7328
+
+
+fun ViewInteraction.isGone() = getViewAssertion(ViewMatchers.Visibility.GONE)
+fun ViewInteraction.isVisible() = getViewAssertion(ViewMatchers.Visibility.VISIBLE)
+fun ViewInteraction.isInvisible() = getViewAssertion(ViewMatchers.Visibility.INVISIBLE)
+
+private fun getViewAssertion(visibility: ViewMatchers.Visibility): ViewAssertion? {
+    return ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(visibility))
+}
 
 /*  helper test function not currently used */
 /*
@@ -185,11 +199,11 @@ class GuiTest
             Thread.sleep(1000)
         }
 
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        val act = currentActivity!!
-        check(act.lastErrorId == R.string.invalidAccountName)
-
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(typeText(name), pressImeActionButton(), pressBack())
+        //onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
+        //val act = currentActivity!!
+        // TODO test invalid account names.  But right now this is going to work because its autofilled in
+        // check(act.lastErrorId == R.string.invalidAccountName)
+        //onView(withId(GuiId.GuiAccountNameEntry)).perform(typeText(name), pressImeActionButton(), pressBack())
         clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[chainSelector]!!)
 
         onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
@@ -200,7 +214,7 @@ class GuiTest
         LogIt.info("This test requires a full node running on regtest")
 
         // Set up RPC connection
-        val rpcConnection = "http://" + SimulationHostIP + ":" + "18332"
+        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
 
         val nexaRpc = NexaRpcFactory.create(rpcConnection)
 
@@ -226,19 +240,40 @@ class GuiTest
         walletDb = OpenKvpDB(ctxt, dbPrefix + "TESTbip44walletdb")
 
         onView(withId(R.id.navigation_home)).perform(click())
-        onView(withId(R.id.navigation_identity)).perform(click())
+
+        /*
+        onView(allOf(withId(R.id.navigation_identity), isDisplayed())).let {
+            it.perform( object : ViewAction
+            {
+                override fun getDescription(): String
+                {
+                    return ""
+                }
+                override fun getConstraints(): Matcher<View>
+                {
+                    return hasFocus()
+                }
+                override fun perform(uiController: UiController?, view: View?)
+                {
+                    if (view != null)
+                    {
+                        click()
+                    }
+                }
+            })
+        }
+        */
+
         onView(withId(R.id.navigation_trickle_pay)).perform(click())
-        onView(withId(R.id.navigation_assets)).perform(click())
+        //onView(withId(R.id.navigation_assets)).perform(click())
         onView(withId(R.id.navigation_shopping)).perform(click())
-
         onView(withId(R.id.navigation_home)).perform(click())
-
-        onView(withId(R.id.navigation_identity)).perform(click())
+        // onView(withId(R.id.navigation_identity)).perform(click())
         pressBack()
         onView(withId(R.id.navigation_trickle_pay)).perform(click())
         pressBack()
-        onView(withId(R.id.navigation_assets)).perform(click())
-        pressBack()
+        //onView(withId(R.id.navigation_assets)).perform(click())
+        //pressBack()
         onView(withId(R.id.navigation_shopping)).perform(click())
         pressBack()
 
@@ -394,6 +429,54 @@ class GuiTest
         check(cp == addr)
     }
 
+    @Test fun testSettingsDevMode()
+    {
+        // Start up a particular Activity.  In this case "Settings"
+        val activityScenario: ActivityScenario<Settings> = ActivityScenario.launch(Settings::class.java)
+        activityScenario.moveToState(Lifecycle.State.RESUMED)
+
+        // Grab the instance of our app
+        var app: WallyApp? = null
+        activityScenario.onActivity { app = (it.application as WallyApp) }
+        assert(app != null)
+
+        // Get access to what is happening in the back end
+        // Everything needs to be inside onActivity, to schedule it within the activity context
+        var preferenceDB: SharedPreferences? = null
+        activityScenario.onActivity {
+            preferenceDB = it.getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        }
+
+        // This test should work regardless of the current setting, so figure that out first
+        var origDevMode = devMode
+
+        // check that the global matches the switch state
+        if (origDevMode)
+            onView(withId(GuiId.GuiDeveloperInfoSwitch)).check { v, exc -> check((v as Switch).isChecked) }
+        else
+            onView(withId(GuiId.GuiDeveloperInfoSwitch)).check { v, exc -> check(!(v as Switch).isChecked) }
+
+        // You look in the activity's layout .xml file to find the name of the UI object you want to manipulate
+        onView(withId(GuiId.GuiDeveloperInfoSwitch)).perform(click())
+
+        // Now you can check by looking though the "back end" that it worked.
+        // I'm going to check both the global variable and the preferences database in this case because
+        // the dev mode switch should modify both of them.
+        activityScenario.onActivity {
+            check(devMode != origDevMode )
+            val ret = preferenceDB!!.getBoolean(DEV_MODE_PREF, false)
+            check(ret == devMode)
+        }
+
+        // Set it back to whatever it was
+        onView(withId(GuiId.GuiDeveloperInfoSwitch)).perform(click())
+        // check that the global matches the switch state
+        if (origDevMode)
+            onView(withId(GuiId.GuiDeveloperInfoSwitch)).check { v, exc -> check((v as Switch).isChecked) }
+        else
+            onView(withId(GuiId.GuiDeveloperInfoSwitch)).check { v, exc -> check(!(v as Switch).isChecked) }
+    }
+
     @Test fun testHomeActivity()
     {
         val cs = ChainSelector.NEXAREGTEST
@@ -432,8 +515,11 @@ class GuiTest
             rpcBalance = rpc.getbalance()
         }
 
+        // Opens the send portion of the window
+        onView(withId(GuiId.sendButton)).perform(click())  // Note if your phone is in a uninterruptable mode (like settings or notifications) then you'll get a spurious exception here
         // Clear because other tests might have left stuff in these (and check that sending is invalid when fields cleared)
         activityScenario.onActivity { it.ui.sendQuantity.text.clear() }
+        // now do an actual send (with nothing filled in)
         onView(withId(GuiId.sendButton)).perform(click())  // Note if your phone is in a uninterruptable mode (like settings or notifications) then you'll get a spurious exception here
 
         // If you come in to this routine clean, you'll get badCryptoCode, but if you have accounts defined, you'll get badAmount

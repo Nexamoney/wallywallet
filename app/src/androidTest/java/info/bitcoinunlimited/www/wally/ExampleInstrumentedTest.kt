@@ -214,11 +214,11 @@ class UnitTest
     @Test
     fun testelectrumclient()
     {
-        LogIt.info("This test requires an electrum cash server running at ${EMULATOR_HOST_IP}:${DEFAULT_TCP_ELECTRUM_PORT_REGTEST}")
+        LogIt.info("This test requires an electrum cash server running at ${EMULATOR_HOST_IP}:${DEFAULT_NEXAREG_TCP_ELECTRUM_PORT}")
 
         val c = try
         {
-            ElectrumClient(ChainSelector.BCHREGTEST, EMULATOR_HOST_IP, DEFAULT_TCP_ELECTRUM_PORT_REGTEST, "Electrum@${EMULATOR_HOST_IP}:${DEFAULT_TCP_ELECTRUM_PORT_REGTEST}")
+            ElectrumClient(ChainSelector.NEXAREGTEST, EMULATOR_HOST_IP, DEFAULT_NEXAREG_TCP_ELECTRUM_PORT, "Electrum@${EMULATOR_HOST_IP}:${DEFAULT_NEXAREG_TCP_ELECTRUM_PORT}")
         } catch (e: java.net.ConnectException)
         {
             LogIt.warning("Cannot connect: Skipping Electrum tests: ${e}")
@@ -786,7 +786,7 @@ class UnitTest
         // Test different constructions
         val P2PKH6 = SatoshiScript(ch, SatoshiScript.Type.SATOSCRIPT, OP.DUP, OP.HASH160, OP.push("0123456789abcdef01230123456789abcdef0123".fromHex()), OP.EQUALVERIFY, OP.CHECKSIG)
         val P2PKH7 =
-          SatoshiScript(ch, SatoshiScript.Type.SATOSCRIPT, OP.DUP, OP.HASH160, OP.PUSHDATA1, byteArrayOf(20), "0123456789abcdef01230123456789abcdef0123".fromHex(), OP.EQUALVERIFY, OP.CHECKSIG)
+          SatoshiScript(ch, SatoshiScript.Type.SATOSCRIPT, OP.DUP, OP.HASH160, OP.push(byteArrayOf(20)), OP.push("0123456789abcdef01230123456789abcdef0123".fromHex()), OP.EQUALVERIFY, OP.CHECKSIG)
 
         if (true)
         {
