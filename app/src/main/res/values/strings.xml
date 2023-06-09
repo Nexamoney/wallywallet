@@ -294,6 +294,7 @@ Good luck!
     <string name="unavailableExchangeRate">exchange rate unavailable</string>
 
     <!-- Identity -->
+    <string name="commonIdentityForAccount" formatted="false">Common ID for Account: %act</string>
     <string name="identityRequestNotification">identity requested</string>
     <string name="IdentityDataMissing">Missing Identity Info</string>
     <!-- Some web site or company that you have never contacted before is requesting that you set up an account and authenticate a log-in.  This is an informational message

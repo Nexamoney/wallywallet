@@ -106,7 +106,7 @@ class IdentityActivity : CommonNavActivity()
             {
                 ""
             }
-            setTitle(i18n(R.string.title_activity_identity) + ": " + name)
+            setTitle(i18n(R.string.title_activity_identity) + name)
         }
     }
 
@@ -168,6 +168,8 @@ class IdentityActivity : CommonNavActivity()
                 val dest = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
                 val destStr = dest.address.toString()
                 ui.commonIdentityAddress.text = destStr
+
+                ui.commonIdentityInfo.text = i18n(R.string.commonIdentityForAccount) % mapOf("act" to wallet.name)
 
                 var uri = "nexid://p2p?op=share&addr=" + destStr;
                 if (hdl != null && hdl != "") uri = uri + "&hdl=" + URLEncoder.encode(hdl, "utf-8")
