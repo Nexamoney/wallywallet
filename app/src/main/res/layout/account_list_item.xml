@@ -10,8 +10,8 @@
 
     <ImageView
         android:id="@+id/accountIcon"
-        android:layout_width="34dp"
-        android:layout_height="34dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_marginStart="2dp"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
@@ -40,7 +40,7 @@
         android:textColor="@android:color/holo_green_dark"
         android:textSize="28sp"
 
-        app:layout_constraintHorizontal_bias="0.07"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/balanceTicker"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -59,8 +59,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/balanceTicker"
-        android:layout_width="110sp"
-        android:layout_height="40sp"
+        android:layout_width="125sp"
+        android:layout_height="38sp"
+        android:layout_marginEnd="2dp"
         android:layout_marginStart="-2dp"
         android:textIsSelectable="true"
         app:layout_constraintStart_toEndOf="@+id/accountIcon"
@@ -72,30 +73,30 @@
         <TextView
             android:id="@+id/balanceTickerText"
             android:layout_width="wrap_content"
-            android:maxWidth="90sp"
+            android:maxWidth="100sp"
             android:layout_height="fill_parent"
             android:textSize="24sp"
             android:textStyle="bold"
             android:clickable="true"
             android:gravity="center_vertical|center_horizontal"
             android:maxLines="1"
-            android:minLines="1"
-            android:textAlignment="center"
+            android:textAlignment="gravity"
             android:text=""
             android:textIsSelectable="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.40"
             />
 
         <ImageView
             android:id="@+id/lockIcon"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_marginStart="-4dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginBottom="2dp"
+            android:layout_width="22sp"
+            android:layout_height="22sp"
+            android:layout_marginStart="-3sp"
+            android:layout_marginTop="2sp"
+            android:layout_marginBottom="4sp"
             android:padding="0px"
             android:scaleType="fitXY"
             android:scrollbars="none"

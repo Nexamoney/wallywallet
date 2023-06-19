@@ -222,6 +222,12 @@ fun spToPx(sp: Float): Int
 {
     return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, displayMetrics).toInt()
 }
+
+fun spToPxF(sp: Float): Float
+{
+    return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, displayMetrics)
+}
+
 fun dpToSp(dp: Float): Int
 {
     return (dpToPx(dp) / displayMetrics.scaledDensity).toInt()
@@ -297,7 +303,7 @@ fun Paint.setTextSizeForWidth(text: String, desiredWidth: Int, maxFontSizeInSp: 
     // Set the paint for that size.
     if (maxFontSizeInSp != null)
     {
-        val tmp = spToPx(maxFontSizeInSp.toFloat())
+        val tmp = spToPxF(maxFontSizeInSp.toFloat())
         if (tmp < desiredTextSize) desiredTextSize = tmp.toFloat()
     }
     textSize = floor(desiredTextSize)

@@ -319,10 +319,15 @@ class Account(
     fun setUI(ui: AccountListItemBinding, al: GuiAccountList, icon: ImageView?, ticker: TextView?, balance: TextView?, unconf: TextView?, infoView: TextView?)
     {
         uiBinding = ui
-        if (ticker != null) tickerGUI.reactor = TextViewReactor<String>(ticker)
+        // if (ticker != null) tickerGUI.reactor = TextViewReactor<String>(ticker)
+        if (ticker != null) tickerGUI.reactor = TextViewReactor<String>(ticker, 0L, { s:String, paint: Paint ->
+            // val desiredWidth = (displayMetrics.scaledDensity*97).toInt()
+            val desiredWidth = spToPx(95f)
+            paint.setTextSizeForWidth(s,desiredWidth, 28)
+        })
         else tickerGUI.reactor = null
         if (balance != null) balanceGUI.reactor = TextViewReactor<String>(balance, 0L, { s:String, paint: Paint ->
-            val desiredWidth = displayMetrics.widthPixels/2
+            val desiredWidth =  (displayMetrics.widthPixels.toFloat()/2.2f).toInt()
             paint.setTextSizeForWidth(s,desiredWidth, 30)
         })
         else balanceGUI.reactor = null
@@ -332,6 +337,7 @@ class Account(
               paint.setTextSizeForWidth(s,desiredWidth, 18)
           })
         else unconfirmedBalanceGUI.reactor = null
+
         if (infoView != null) infoGUI.reactor = TextViewReactor<String>(infoView)
         else infoGUI.reactor = null
     }
