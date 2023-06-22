@@ -2,7 +2,9 @@ package bitcoinunlimited.wally.guiTestImplementation
 
 import Nexa.NexaRpc.NexaRpcFactory
 import android.app.Activity
+import android.app.ActivityManager
 import android.content.*
+import android.content.Context.ACTIVITY_SERVICE
 import android.content.Context.CLIPBOARD_SERVICE
 import android.content.res.Configuration
 import android.net.Uri
@@ -20,6 +22,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.*
 //import kotlinx.android.synthetic.main.activity_identity.*
@@ -37,6 +40,7 @@ import java.util.*
 import java.util.logging.Logger
 import info.bitcoinunlimited.www.wally.R.id as GuiId
 import info.bitcoinunlimited.www.wally.R  // so we can compare strings with what is on the screen
+import kotlinx.coroutines.delay
 import org.hamcrest.Matcher
 import java.net.URLEncoder
 
@@ -90,9 +94,93 @@ fun generateAndLogSomeTricklePayRequests(application: WallyApp)
 }
  */
 
+// from http://www.douevencode.com/articles/2019-02/espresso-wait-for-activity-visible/
+inline fun <reified T : Activity> WallyApp.isVisible() : Boolean {
+    val am = applicationContext.getSystemService(ACTIVITY_SERVICE) as ActivityManager
+    val visibleActivityName = am.appTasks[0].taskInfo.baseActivity!!.className
+    return visibleActivityName == T::class.java.name
+}
+
+val TIMEOUT = 5000L
+val CONDITION_CHECK_INTERVAL = 100L
+
+inline fun <reified T : Activity> WallyApp.waitUntilActivityVisible() {
+    val startTime = System.currentTimeMillis()
+    while (!isVisible<T>()) {
+        Thread.sleep(CONDITION_CHECK_INTERVAL)
+        if (System.currentTimeMillis() - startTime >= TIMEOUT) {
+            throw AssertionError("Activity ${T::class.java.simpleName} not visible after $TIMEOUT milliseconds")
+        }
+    }
+}
+
 @RunWith(AndroidJUnit4::class)
 class GuiTest
 {
+    @Test fun testAccountSendNex1()
+    {
+        val cs = ChainSelector.NEXAREGTEST
+        val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
+        activityScenario.moveToState(Lifecycle.State.RESUMED);
+        var app: WallyApp? = null
+        activityScenario.onActivity { app = (it.application as WallyApp) }
+        assert(app != null)
+
+        val ctxt = PlatformContext(app!!.applicationContext)
+        //walletDb = OpenKvpDB(ctxt, dbPrefix + "TESTbip44walletdb")
+        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
+        val wdb = walletDb!!
+
+        // Clean up any prior run
+        deleteWallet(wdb, "rNexa", cs)
+        //deleteWallet(wdb, "rNEX2", cs)
+
+        // supply this wallet with coins
+        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        bitcoinunlimited.wally.androidTestImplementation.LogIt.info("Connecting to: " + rpcConnection)
+        var rpc = NexaRpcFactory.create(rpcConnection)
+        var peerInfo = rpc.getpeerinfo()
+        bitcoinunlimited.wally.androidTestImplementation.check(peerInfo.size >= 0 && peerInfo.size <= 10)  // Lots of stuff could be connected if you are actively working
+
+        /*
+        // Generate blocks until we get coins to spend. This is needed inside the ci testing.
+        // But the code checks first so that lots of extra blocks aren't created during dev testing
+        var rpcBalance = rpc.getbalance()
+        bitcoinunlimited.wally.androidTestImplementation.LogIt.info("balance is: " + rpcBalance.toPlainString())
+        while (rpcBalance < BigDecimal(50))
+        {
+            rpc.generate(1)
+            rpcBalance = rpc.getbalance()
+        }
+        val addr = rpc.getnewaddress()
+        rpc.sendtoaddress(addr, BigDecimal(10000))
+        rpc.generate(1)
+
+         */
+
+        // METHOD 1: DIY
+        onView(withId(R.id.GuiNewAccount)).perform(click())
+        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
+        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX1"), pressImeActionButton(), pressBack())
+        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
+        app!!.waitUntilActivityVisible<MainActivity>()
+
+        // METHOD 2: call helper function (that drives UI like a user)
+        createNewAccount("rNEX2", app!!, cs)
+
+        // METHOD 3: directly call APIs
+        val act = app!!.newAccount("rNEX3", 0UL, "", cs)
+        check(act != null)
+        // if using method 3 we need to manually tell the GUI to refresh
+        activityScenario.onActivity { currentActivity == it }
+        activityScenario.onActivity {
+            it.assignWalletsGuiSlots()
+            it.assignCryptoSpinnerValues()
+            it.updateGUI()
+        }
+        activityScenario.onActivity { sleep(4000) }
+    }
+
     fun setLocale(locale: Locale, app: WallyApp)
     {
         Locale.setDefault(locale)
@@ -187,7 +275,8 @@ class GuiTest
         }
     }
 
-    fun createNewAccount(name: String, chainSelector: ChainSelector)
+    /** This expects that you are in the main activity */
+    fun createNewAccount(name: String, app: WallyApp, chainSelector: ChainSelector)
     {
         // Switch to a different activity
         while(true) try {
@@ -205,8 +294,9 @@ class GuiTest
         // check(act.lastErrorId == R.string.invalidAccountName)
         //onView(withId(GuiId.GuiAccountNameEntry)).perform(typeText(name), pressImeActionButton(), pressBack())
         clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[chainSelector]!!)
-
+        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(),typeText(name), pressImeActionButton(), pressBack())
         onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
+        app!!.waitUntilActivityVisible<MainActivity>()
     }
 
     @Test fun testRpc()
@@ -264,7 +354,7 @@ class GuiTest
         }
         */
 
-        onView(withId(R.id.navigation_trickle_pay)).perform(click())
+        //onView(withId(R.id.navigation_trickle_pay)).perform(click())
         //onView(withId(R.id.navigation_assets)).perform(click())
         onView(withId(R.id.navigation_shopping)).perform(click())
         onView(withId(R.id.navigation_home)).perform(click())
@@ -277,9 +367,9 @@ class GuiTest
         onView(withId(R.id.navigation_shopping)).perform(click())
         pressBack()
 
-        onView(withId(R.id.navigation_trickle_pay)).perform(click())
+        onView(withId(R.id.navigation_shopping)).perform(click())
         pressBack()
-        onView(withId(R.id.navigation_trickle_pay)).perform(click())
+        onView(withId(R.id.navigation_shopping)).perform(click())
         pressBack()
         onView(withId(R.id.navigation_trickle_pay)).perform(click())
         pressBack()
@@ -535,12 +625,12 @@ class GuiTest
 
 
 
-        createNewAccount("rNEX1", cs)
+        createNewAccount("rNEX1", app!!, cs)
         sleep(4000)
         // waitForActivity(10000, activityScenario) { app?.accounts["rNEX1"]?.cnxnMgr == null }
         app!!.accounts["rNEX1"]!!.cnxnMgr.exclusiveNodes(setOf(SimulationHostIP + ":" + REGTEST_P2P_PORT))
         activityScenario.onActivity { currentActivity == it }  // Clicking should bring us back to main screen
-        createNewAccount("rNEX2", cs)
+        createNewAccount("rNEX2", app!!, cs)
         activityScenario.onActivity { currentActivity == it }  // Clicking should bring us back to main screen
 
         peerInfo = rpc.getpeerinfo()
