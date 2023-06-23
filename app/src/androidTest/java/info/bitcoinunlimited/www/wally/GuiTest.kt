@@ -1,5 +1,8 @@
 package bitcoinunlimited.wally.guiTestImplementation
 
+//import kotlinx.android.synthetic.main.activity_identity.*
+// import kotlinx.android.synthetic.main.activity_main.*
+//import kotlinx.android.synthetic.main.trickle_pay_reg.*
 import Nexa.NexaRpc.NexaRpcFactory
 import android.app.Activity
 import android.app.ActivityManager
@@ -8,7 +11,6 @@ import android.content.Context.ACTIVITY_SERVICE
 import android.content.Context.CLIPBOARD_SERVICE
 import android.content.res.Configuration
 import android.net.Uri
-import android.provider.Settings.Global.getString
 import android.view.View
 import android.widget.Switch
 import androidx.lifecycle.Lifecycle
@@ -19,30 +21,27 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.*
-//import kotlinx.android.synthetic.main.activity_identity.*
-// import kotlinx.android.synthetic.main.activity_main.*
-//import kotlinx.android.synthetic.main.trickle_pay_reg.*
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import org.hamcrest.CoreMatchers.instanceOf
+import org.hamcrest.Description
+import org.hamcrest.Matcher
 import org.hamcrest.Matchers.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.lang.Thread.sleep
 import java.math.BigDecimal
+import java.net.URLEncoder
 import java.util.*
 import java.util.logging.Logger
 import info.bitcoinunlimited.www.wally.R.id as GuiId
-import info.bitcoinunlimited.www.wally.R  // so we can compare strings with what is on the screen
-import kotlinx.coroutines.delay
-import org.hamcrest.Matcher
-import java.net.URLEncoder
+import info.bitcoinunlimited.www.wally.R
 
 
 val LogIt = Logger.getLogger("GuiTest")
@@ -114,6 +113,35 @@ inline fun <reified T : Activity> WallyApp.waitUntilActivityVisible() {
     }
 }
 
+fun clickId(id: Int): ViewAction
+{
+    return object : ViewAction
+    {
+        override fun getConstraints(): Matcher<View>
+        {
+            return object
+                : Matcher<View>
+            {
+                override fun describeTo(description: Description?) {}
+                override fun matches(actual: Any?): Boolean = true
+                override fun describeMismatch(actual: Any?, mismatchDescription: Description?) {}
+                override fun _dont_implement_Matcher___instead_extend_BaseMatcher_() {}
+            }
+        }
+
+        override fun getDescription(): String
+        {
+            return "Click on a child view with specified id."
+        }
+
+        override fun perform(uiController: UiController?, view: View)
+        {
+            val v = view.findViewById<View>(id)
+            v.performClick()
+        }
+    }
+}
+
 @RunWith(AndroidJUnit4::class)
 class GuiTest
 {
@@ -179,7 +207,17 @@ class GuiTest
             it.updateGUI()
         }
         activityScenario.onActivity { sleep(4000) }
+
+        val positionNum = 1
+        // R.id.lockIcon
+
+        // select the row so that it highlights and the gear shows
+        onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(positionNum, click()))
+        // click the gear icon
+        onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(positionNum, clickId(R.id.GuiAccountDetailsButton)))
     }
+
+
 
     fun setLocale(locale: Locale, app: WallyApp)
     {
