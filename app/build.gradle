@@ -79,7 +79,7 @@ dependencies {
 
     // Grab libbitcoincash locally for debug or from the released location
     //implementation files('aars/libbitcoincash-release.aar')  // locate this directory at: <repo_home>/app/aars/
-    implementation 'info.bitcoinunlimited:libbitcoincash:3.2.2'
+    implementation 'info.bitcoinunlimited:libbitcoincash:3.2.3'
 
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'

@@ -13,6 +13,7 @@ import android.content.res.Configuration
 import android.net.Uri
 import android.view.View
 import android.widget.Switch
+import android.widget.TextView
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.*
@@ -24,6 +25,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.screenshot.captureToBitmap
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.*
@@ -186,6 +188,7 @@ class GuiTest
 
          */
 
+        /*
         // METHOD 1: DIY
         onView(withId(R.id.GuiNewAccount)).perform(click())
         clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
@@ -195,6 +198,8 @@ class GuiTest
 
         // METHOD 2: call helper function (that drives UI like a user)
         createNewAccount("rNEX2", app!!, cs)
+
+         */
 
         // METHOD 3: directly call APIs
         val act = app!!.newAccount("rNEX3", 0UL, "", cs)
@@ -208,13 +213,24 @@ class GuiTest
         }
         activityScenario.onActivity { sleep(4000) }
 
-        val positionNum = 1
+        val positionNum = 0
         // R.id.lockIcon
 
         // select the row so that it highlights and the gear shows
         onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(positionNum, click()))
         // click the gear icon
-        onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(positionNum, clickId(R.id.GuiAccountDetailsButton)))
+        //onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(positionNum, clickId(R.id.GuiAccountDetailsButton)))
+
+        //val bmp = onView(withId(R.id.receiveAddress)).captureToBitmap()
+
+        var ret: String? = null
+        onView(withId(R.id.receiveAddress)).check { v, exc ->
+            ret = (v as TextView).text.toString()
+        }
+        println(ret)
+        println(ret)
+        sleep(10000)
+
     }
 
 

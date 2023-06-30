@@ -135,14 +135,26 @@ class AssetManager(val app: WallyApp)
             if (DBG_NO_ASSET_CACHE) throw Exception()
             if (forceReload) throw Exception()
             val data = loadAssetFile(groupId.toHex() + ".td").second
-            return kotlinx.serialization.json.Json.decodeFromString(TokenDesc.serializer(),String(data))
+            val ret = kotlinx.serialization.json.Json.decodeFromString(TokenDesc.serializer(),String(data))
+            if (ret.genesisInfo?.height ?: 0 >= 0)  // If the data is valid in the asset file
+                return ret
         }
-        catch(e: Exception) // file not found
+        catch(e: Exception) // file not found, so grab it
         {
-            LogIt.info("Genesis Info for ${groupId.toHex()} not in cache")
-            // first load the token description doc (TDD)
-            val ec = openElectrum(chain.chainSelector)
-            val tg = ec.getTokenGenesisInfo(groupId, 30*1000)
+        }
+
+        LogIt.info("Genesis Info for ${groupId.toHex()} not in cache")
+        // first load the token description doc (TDD)
+        val ec = openElectrum(chain.chainSelector)
+        val tg = try {
+            ec.getTokenGenesisInfo(groupId, 30*1000)
+        }
+        catch(e: ElectrumRequestTimeout)
+        {
+            app.currentActivity?.displayException(R.string.ElectrumNetworkUnavailable, e)
+            LogIt.info(sourceLoc() + ": Rostrum is inaccessible loading token info for ${groupId.toHex()}")
+            TokenGenesisInfo(null, null, -1, null, null, "", "", "")
+        }
 
             val docUrl = tg.document_url
             if (docUrl != null)
@@ -210,7 +222,6 @@ class AssetManager(val app: WallyApp)
                 return td
             }
 
-        }
     }
 
 
@@ -236,6 +247,9 @@ class AssetManager(val app: WallyApp)
                 zipBytes = URL(url).readBytes()
             }
             catch(e:java.net.MalformedURLException)
+            {
+            }
+            catch(e:java.net.ConnectException)
             {
             }
         }
@@ -472,10 +486,9 @@ class AssetInfo(val groupInfo: GroupInfo)
 
     fun load(chain: Blockchain, am: AssetManager)  // Attempt to find all asset info from a variety of data sources
     {
+        var td = am.getTokenDesc(chain, groupInfo.groupId)
         synchronized(this)
         {
-
-            var td = am.getTokenDesc(chain, groupInfo.groupId)
             var tg = td.genesisInfo
             var dataChanged = false
 
@@ -491,7 +504,7 @@ class AssetInfo(val groupInfo: GroupInfo)
             name = tg.name
             ticker = tg.ticker
             genesisHeight = tg.height
-            genesisTxidem = Hash256(tg.txidem)
+            genesisTxidem = if (tg.txidem.length > 0) Hash256(tg.txidem) else null
 
             docUrl = tg.document_url
 
@@ -1044,14 +1057,19 @@ class AssetsActivity : CommonNavActivity()
             if (sp.isUnspent)
             {
                 val grp = sp.groupInfo()
-                if ((grp != null)&& !grp.isAuthority())  // TODO not dealing with authority txos in Wally mobile
+
+                if (grp != null)
                 {
-                    val tmp = grp.tokenAmt  // Set the tokenAmt to 0 and than add it back in once we grab or create the AssetInfo
-                    grp.tokenAmt = 0
-                    val ai: AssetInfo = ast[grp.groupId] ?: AssetInfo(grp)
-                    ai.groupInfo.tokenAmt += tmp
-                    ai.account = acc
-                    ast[grp.groupId] = ai
+                    LogIt.info(sourceLoc() + acc.name + ": unspent asset ${grp.groupId.toHex()}")
+                    if (!grp.isAuthority())  // TODO not dealing with authority txos in Wally mobile
+                    {
+                        val tmp = grp.tokenAmt  // Set the tokenAmt to 0 and than add it back in once we grab or create the AssetInfo
+                        grp.tokenAmt = 0
+                        val ai: AssetInfo = ast[grp.groupId] ?: AssetInfo(grp)
+                        ai.groupInfo.tokenAmt += tmp
+                        ai.account = acc
+                        ast[grp.groupId] = ai
+                    }
                 }
             }
         }
