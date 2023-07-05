@@ -108,7 +108,7 @@ class AssetManager(val app: WallyApp)
     {
         if (s == null)
         {
-            return("http://" + NIFTY_ART_IP[groupId.blockchain] + "/_public/" + groupId)
+            return("http://" + NIFTY_ART_IP[groupId.blockchain] + "/_public/" + groupId.toStringNoPrefix())
         }
         // TODO many more ways to get it
         return null
