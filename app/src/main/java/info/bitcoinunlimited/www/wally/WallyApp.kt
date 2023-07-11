@@ -945,38 +945,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
 
                 for (c in accounts.values)
                 {
-                    val cs = c.chain.chainSelector
-                    val chainName = chainToURI[cs]
-                    val exclusiveNode: String? = if (prefs.getBoolean(chainName + "." + EXCLUSIVE_NODE_SWITCH, false)) prefs.getString(chainName + "." + CONFIGURED_NODE, null) else null
-                    val preferredNode: String? = if (prefs.getBoolean(chainName + "." + PREFER_NODE_SWITCH, false)) prefs.getString(chainName + "." + CONFIGURED_NODE, null) else null
-
-                    // If I prefer an exclusive connection, then start up that way
-                    if (exclusiveNode != null)
-                    {
-                        LogIt.info(sourceLoc() + c.chain.name + ": Exclusive node mode")
-                        try
-                        {
-                            val nodeSet:Set<String> = exclusiveNode.toSet()
-                            c.cnxnMgr.exclusiveNodes(nodeSet)
-                        }
-                        catch (e: Exception)
-                        {
-                        } // bad IP:port data
-                    }
-                    // If I have a preferred connection, then start up that way
-                    if (preferredNode != null)
-                    {
-                        LogIt.info(sourceLoc() + c.chain.name + ": Preferred node mode")
-                        try
-                        {
-                            val nodeSet:Set<String> = preferredNode.toSet()
-                            c.cnxnMgr.preferNodes(nodeSet)
-                        }
-                        catch (e: Exception)
-                        {
-                        } // bad IP:port data provided by user
-                    }
-
+                    c.setBlockchainAccessModeFromPrefs()
                     c.start(applicationContext)
                     c.onChange()  // update all wallet UI fields since just starting up
 

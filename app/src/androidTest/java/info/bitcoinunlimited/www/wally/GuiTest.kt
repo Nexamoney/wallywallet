@@ -203,6 +203,10 @@ class GuiTest
 
         // METHOD 3: directly call APIs
         val act = app!!.newAccount("rNEX3", 0UL, "", cs)
+
+        //val blk:Blockchain = app!!.accounts["rNEX3"]!!.chain
+        //blk.req.net.exclusiveNodes(setOf("10.0.2.2:7327"))
+
         check(act != null)
         // if using method 3 we need to manually tell the GUI to refresh
         activityScenario.onActivity { currentActivity == it }
@@ -230,7 +234,6 @@ class GuiTest
         println(ret)
         println(ret)
         sleep(10000)
-
     }
 
 
