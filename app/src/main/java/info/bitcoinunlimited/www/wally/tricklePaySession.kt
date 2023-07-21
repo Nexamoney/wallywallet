@@ -32,6 +32,7 @@ const val TDPP_FLAG_NOFUND = 1
 const val TDPP_FLAG_NOPOST = 2
 const val TDPP_FLAG_NOSHUFFLE = 4
 const val TDPP_FLAG_PARTIAL = 8
+const val TDPP_FLAG_FUND_GROUPS = 16
 
 fun makeChallengeTx(sp: Spendable, challengerId: ByteArray, chalby: ByteArray): iTransaction?
 {
@@ -67,6 +68,7 @@ data class TxAnalysisResults(
   val myInputTokenInfo: Map<GroupId, Long>,  // This wallet inputting these tokens into this transaction
   val sendingTokenInfo: Map<GroupId, Long>,  // This wallet is sending these tokens to another wallet
   val receivingTokenInfo: Map<GroupId, Long>,  // This wallet is receiving these tokens
+  val myNetTokenInfo: Map<GroupId, Long>,  // If < 0 this wallet is spending these tokens.  If > 0 this wallet is receiving tokens.  If == 0 (verses undefined) the wallet presented (sent to itself) the token type
   val completionException: java.lang.Exception?
 )
 
@@ -125,7 +127,11 @@ data class TdppDomain(
   var descday: String,
   var descweek: String,
   var descmonth: String,
-  @cli(Display.Simple, "enable/disable all automatic payments to this entity") var automaticEnabled: Boolean
+  @cli(Display.Simple, "enable/disable all automatic payments to this entity") var automaticEnabled: Boolean,
+  @cli(Display.Simple, "Single payment address") var mainPayAddress: String,
+  @cli(Display.Simple, "Last payment address") var lastPayAddress: String,
+  @cli(Display.Simple, "Associated account") var accountName: String,
+
 ) : BCHserializable
 {
     @cli(Display.Simple, "Maximum automatic payment exeeded action")
@@ -146,17 +152,17 @@ data class TdppDomain(
     @cli(Display.Simple, "Balance information query")
     var balanceInfo: TdppAction = TdppAction.ASK
 
-    constructor(uri: Uri) : this("", "", "", "", -1, -1, -1, -1, "", "", "", "", false)
+    constructor(uri: Uri) : this("", "", "", "", -1, -1, -1, -1, "", "", "", "", false,"","","")
     {
         load(uri)
     }
 
     // This is the implicit registration constructor -- it does not authorize any automatic payments.
-    constructor(_domain: String, _topic: String) : this(_domain, _topic, "", "", 0, 0, 0, 0, "", "", "", "", false)
+    constructor(_domain: String, _topic: String) : this(_domain, _topic, "", "", 0, 0, 0, 0, "", "", "", "", false, "","","")
     {
     }
 
-    constructor(stream: BCHserialized) : this("", "", "", "", -1, -1, -1, -1, "", "", "", "", false)
+    constructor(stream: BCHserialized) : this("", "", "", "", -1, -1, -1, -1, "", "", "", "", false,"","","")
     {
         BCHdeserialize(stream)
     }
@@ -168,7 +174,8 @@ data class TdppDomain(
           descper + descday + descweek + descmonth +
           automaticEnabled +
           maxperExceeded.v + maxdayExceeded.v + maxweekExceeded.v + maxmonthExceeded.v +
-          assetInfo.v + balanceInfo.v
+          assetInfo.v + balanceInfo.v +
+          mainPayAddress + lastPayAddress + accountName
     }
 
     override fun BCHdeserialize(stream: BCHserialized): BCHserialized //!< Deserializer
@@ -197,6 +204,10 @@ data class TdppDomain(
 
         assetInfo = TdppAction.of(stream.debyte())
         balanceInfo = TdppAction.of(stream.debyte())
+
+        mainPayAddress = stream.deString()
+        lastPayAddress = stream.deString()
+        accountName = stream.deString()
 
         return stream
     }
@@ -429,6 +440,8 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
 
     var totalNexaSpent: Long = 0  // How much does this proposal spend in nexa satoshis
 
+    var uniqueAddress: Boolean = false
+
     var domain: TdppDomain? = null
 
     val isSecureRequest:Boolean
@@ -508,8 +521,14 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         sigOk = VerifyTdppSignature(uri, domain?.addr)
     }
 
-    fun getRelevantAccount(): Account
+    fun getRelevantAccount(preferredAccount: String? = null): Account
     {
+        if (preferredAccount != null && preferredAccount != "")  // Prefer the account associated with this domain
+        {
+            val act = wallyApp!!.accounts[preferredAccount]
+            if (act != null) return act
+        }
+
         // Get a handle on the relevant wallets
         var act = wallyApp!!.focusedAccount
         if (act != null)
@@ -550,6 +569,74 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
 
         wal.send(p, false, i18n(R.string.title_activity_trickle_pay) + " " + domainAndTopic + ". " + reason)
         proposedDestinations = null
+    }
+
+    fun respondWith(url: String, postResp: String)
+    {
+        wallyApp?.later {
+            LogIt.info("responding to server")
+            val client = HttpClient(Android)
+            {
+                install(ContentNegotiation) {
+                    json()
+                }
+                install(HttpTimeout) { requestTimeoutMillis = 5000 }
+            }
+
+            try
+            {
+                val response: HttpResponse = client.post(url) {
+                    setBody(postResp)
+                }
+                val respText = response.bodyAsText()
+                wallyApp?.displayNotice(R.string.accept, respText)
+            }
+            catch (e: SocketTimeoutException)
+            {
+                wallyApp?.displayError(R.string.connectionException)
+            }
+            client.close()
+        }
+    }
+
+    fun acceptAddressRequest(): String
+    {
+        LogIt.info("accepted address request")
+        val url = replyProtocol + "://" + hostAndPort + "/address?" + cookieParam
+
+        val d = domain
+        if (d == null) throw TdppException(R.string.BadLink, "bad domain")
+
+        // Once you've associated an address with this domain, you've also associated an account!
+        val acc = getRelevantAccount(d.accountName)
+        val wal = acc.wallet
+
+        // If requester wants a unique address just give one.  Otherwise give the main address (if we have one; if not, make one)
+        val addr:String = if (uniqueAddress)
+        {
+            wal.getNewAddress().toString()
+        }
+        else
+        {
+            if (d.mainPayAddress != "") d.mainPayAddress
+            else
+            {
+                val tmp = wal.getNewAddress()
+                d.mainPayAddress = tmp.toString()
+                tmp.toString()
+            }
+        }
+
+        d.lastPayAddress = addr
+        d.accountName = acc.name
+
+        respondWith(url, addr)
+
+        wallyApp?.later {  // Because I changed the lastPayAddress and maybe mainPayAddress
+            tpDomains.save()
+        }
+
+        return "Sent to: " + url
     }
 
     fun acceptAssetRequest():String
@@ -607,6 +694,8 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
             // tx reason: i18n(R.string.title_activity_trickle_pay) + " " + domainAndTopic + ". " + reason)
 
             wallyApp?.let { app ->
+                // Post this transaction if the TDPP protocol suggests that I do so (its complete)
+                if ((tflags and TDPP_FLAG_NOPOST) == 0) getRelevantAccount(domain?.accountName).wallet.send(pTx)
                 // grab temps because activity could go away
                 val rp = replyProtocol
                 val hp = hostAndPort
@@ -745,6 +834,21 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         totalNexaSpent = total
         proposedDestinations = addrAmt
         return determineAction(domain)
+    }
+
+    fun handleAddressInfoRequest(uri: Uri): TdppAction
+    {
+        parseCommonFields(uri)
+        val d = domain
+        if (d == null) throw TdppException(R.string.BadLink, "bad domain")
+
+        val bc = uri.getQueryParameter("blockchain") ?: chainToURI[ChainSelector.NEXA]
+        chainSelector = uriToChain[bc]
+        if (chainSelector == null) throw TdppException(R.string.BadLink, "unknown blockchain")
+
+        uniqueAddress = uri.getQueryParameter("unique").toBoolean() ?: false
+
+        return TdppAction.ACCEPT
     }
 
     fun handleAssetInfoRequest(uri: Uri): TdppAction
@@ -947,6 +1051,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
             // If nofund flag is set turn off fund_native
             if ((flags and TDPP_FLAG_NOFUND) > 0) cflags = cflags and (TxCompletionFlags.FUND_NATIVE.inv())
             if ((flags and TDPP_FLAG_PARTIAL) > 0) cflags = cflags or TxCompletionFlags.PARTIAL
+            if ((flags and TDPP_FLAG_FUND_GROUPS) > 0) cflags = cflags or TxCompletionFlags.FUND_GROUPS
         }
 
         // Look at the inputs and match with UTXOs that I have, so I have the additional info required to sign this input
@@ -964,7 +1069,10 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         var completionException: java.lang.Exception? = null
         try
         {
-            wal.txCompleter(tx, 0, cflags, inputSatoshis)
+            val oneAddr:PayAddress? = this.domain?.lastPayAddress?.let {
+                if (it == "") null else PayAddress(it) }
+
+            wal.txCompleter(tx, 0, cflags, inputSatoshis, destinationAddress = oneAddr)
         }
         catch (e: java.lang.Exception)  // Try to report on the tx even if we can't complete it.
         {
@@ -1017,7 +1125,23 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
             }
         }
 
-        return TxAnalysisResults(act, receivingSats, sendingSats, receivingTokenTypes, sendingTokenTypes, imSpendingTokenTypes, inputSatoshis, iFunded, myInputTokenInfo, sendingTokenInfo, receivingTokenInfo, completionException)
+        // Net ignores anything others are doing
+        var myNetTokenInfo = mutableMapOf<GroupId, Long>()
+
+        // Start with all that I received
+        for ((k,v) in receivingTokenInfo.iterator())
+        {
+            myNetTokenInfo[k] = myNetTokenInfo.getOrDefault(k, 0L) + v
+        }
+        // Subtract out what I spent
+        for ((k,v) in myInputTokenInfo.iterator())
+        {
+            myNetTokenInfo[k] = myNetTokenInfo.getOrDefault(k, 0L) - v
+        }
+
+
+
+        return TxAnalysisResults(act, receivingSats, sendingSats, receivingTokenTypes, sendingTokenTypes, imSpendingTokenTypes, inputSatoshis, iFunded, myInputTokenInfo, sendingTokenInfo, receivingTokenInfo, myNetTokenInfo, completionException)
     }
 
 }

@@ -58,6 +58,21 @@ class AccountDetailsActivity: CommonNavActivity()
 
         })
 
+        ui.GuiAutomaticNewAddress.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { _, isChecked ->
+            val coin = selectedAccount
+            if (coin != null)
+            {
+                if (!isChecked)
+                    coin.flags = coin.flags or ACCOUNT_FLAG_REUSE_ADDRESSES
+                else
+                    coin.flags = coin.flags and ACCOUNT_FLAG_REUSE_ADDRESSES.inv()
+                launch {  // Can't be in UI thread
+                    coin.saveAccountFlags()
+                }
+            }
+
+        })
+
         ui.GuiCurrentPinEntry.addTextChangedListener(object : TextWatcher
         {
             override fun afterTextChanged(p0: Editable?)
@@ -138,6 +153,8 @@ class AccountDetailsActivity: CommonNavActivity()
         else if (devMode && acc.chain.chainSelector.isNexaFamily) View.VISIBLE   // all nexa family accounts are candidates in dev mode
         else View.GONE
         ui.GuiPrimaryAccountButton.visibility = primVis
+
+        ui.GuiAutomaticNewAddress.setChecked(acc.flags and ACCOUNT_FLAG_REUSE_ADDRESSES == 0UL)
 
         if (acc.encodedPin != null)
         {

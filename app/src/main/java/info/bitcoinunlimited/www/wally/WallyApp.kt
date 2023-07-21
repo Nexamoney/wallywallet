@@ -1079,6 +1079,35 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
                     else toast(R.string.badQR)
                 }
             }
+            else if (path == "/address")
+            {
+                val result = tp.handleAddressInfoRequest(iuri)
+                val acc = tp.getRelevantAccount()
+                val act = currentActivity
+
+                when(result)
+                {
+                    TdppAction.ASK ->  // ADDRESS
+                    {
+                        TODO("always accept for now")
+                        /*
+                        var intent = Intent(this, TricklePayActivity::class.java)
+                        intent.data = Uri.parse(intentUri)
+                        if (act != null) autoPayNotificationId =
+                          notifyPopup(intent, i18n(R.string.TpAssetInfoRequest), i18n(R.string.fromColon) + tp.domainAndTopic, act, false, autoPayNotificationId)
+                        return false
+
+                         */
+                    }
+                    TdppAction.ACCEPT -> // ADDRESS
+                    {
+                        tp.acceptAssetRequest()
+                        return true
+                    }
+
+                    TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
+                }
+            }
             else if (path == "/assets")
             {
                 val result = tp.handleAssetInfoRequest(iuri)

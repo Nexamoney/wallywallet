@@ -177,6 +177,13 @@ class TricklePayRegFragment : Fragment()
                 ui.GuiAutospendLimitEntry3.set(account.format(account.fromFinestUnit(d.maxmonth)))
             ui.currencyUnit3.text = account.currencyCode
             ui.GuiAutospendLimitDescription3.text = d.descmonth
+
+            if (d.accountName != "")
+                ui.textView7.text = i18n(R.string.TpAssociatedAccount) % mapOf("act" to d.accountName)
+            else ui.textView7.visibility = View.GONE
+            if (d.mainPayAddress != "")
+                ui.TpAssociatedAddressField.text = i18n(R.string.TpAssociatedAddress) % mapOf("addr" to d.mainPayAddress)
+            else ui.TpAssociatedAddressField.visibility = View.GONE
         }
 
         if (editingReg)
@@ -280,6 +287,43 @@ class TricklePayCustomTxFragment : Fragment()
 
             // Expand the text to handle proving ownership of (that is, sending token to yourself)
 
+            var receivingTokenTypes = 0L
+            var spendingTokenTypes = 0L
+            var provingTokenTypes = 0L
+            for ((k,v) in a.myNetTokenInfo)
+            {
+                if (v > 0) receivingTokenTypes++
+                else if (v < 0) spendingTokenTypes++
+                else provingTokenTypes++
+            }
+
+
+            var summary = if (receivingTokenTypes > 0)
+            {
+                if (spendingTokenTypes > 0)
+                {
+                    i18n(R.string.TpExchangingTokens) % mapOf("tokSnd" to a.sendingTokenTypes.toString(), "tokRcv" to a.receivingTokenTypes.toString())
+                }
+                else
+                {
+                    i18n(R.string.TpReceivingTokens) % mapOf("tokRcv" to a.receivingTokenTypes.toString())
+                }
+            }
+            else
+            {
+                if (spendingTokenTypes > 0)
+                {
+                    i18n(R.string.TpSendingTokens) % mapOf("tokSnd" to spendingTokenTypes.toString())
+                }
+                else ""
+            }
+
+            if (provingTokenTypes > 0) summary = summary + "\n" + (i18n(R.string.TpShowingTokens) % mapOf("tokReveal" to provingTokenTypes.toString()))
+
+            ui.GuiCustomTxTokenSummary.text = summary
+
+
+/*
             if (a.receivingTokenTypes > 0)
             {
                 if (a.imSpendingTokenTypes > 0)
@@ -305,7 +349,7 @@ class TricklePayCustomTxFragment : Fragment()
                     ui.GuiCustomTxTokenSummary.text = i18n(R.string.TpSendingTokens) % mapOf("tokSnd" to a.sendingTokenTypes.toString())
                 }
             }
-
+*/
         }
 
         // Change the title if the request is for a partial transaction
@@ -668,6 +712,45 @@ class TricklePayActivity : CommonNavActivity()
         }
     }
 
+    fun handleAddressInfoRequest(uri: Uri)
+    {
+        val sess = tpSession
+        if (sess == null)
+        {
+            LogIt.info(sourceLoc() + ": Address request NO SESSION!")
+            throw UnavailableException()
+        }  // you must have created a session and parsed the common fields first
+
+        // If user has already accepted, then ok, just move to completing the ASK
+        // You may need to go thru this multiple times when an account is locked so we need to launch the PIN entry activity
+        val action = if (sess.accepted == true) TdppAction.ASK else try
+        {
+            sess.handleAddressInfoRequest(uri)
+        }
+        catch(e:BUExceptionI)
+        {
+            displayFragment(R.id.GuiTricklePayEmpty)
+            wallyApp?.displayException(e)
+            clearIntentAndFinish()
+            return
+        }
+
+        if (action == TdppAction.DENY)
+        {
+            displayFragment(R.id.GuiTricklePayAssetRequest)
+            clearIntentAndFinish(error=R.string.TpRequestAutoDeny)
+        }
+        else if (action == TdppAction.ASK)
+        {
+            TODO("always accept address requests for now")
+        }
+        if (action == TdppAction.ACCEPT)
+        {
+            displayFragment(R.id.GuiTricklePayEmpty)
+            val details = sess.acceptAddressRequest()
+            clearIntentAndFinish(notice=R.string.TpRequestAutoAccept, details=details)
+        }
+    }
 
     fun handleAssetInfoRequest(uri: Uri)
     {
@@ -868,6 +951,12 @@ class TricklePayActivity : CommonNavActivity()
                             LogIt.info(sourceLoc() + ": asset request")
                             if (autoClose) wallyApp?.finishParent=1
                             handleAssetInfoRequest(iuri)
+                        }
+                        else if (path == "/address")
+                        {
+                            LogIt.info(sourceLoc() + ": address request")
+                            if (autoClose) wallyApp?.finishParent=1
+                            handleAddressInfoRequest(iuri)
                         }
                         else if (path == "/share")
                         {

@@ -73,7 +73,8 @@ val alerts = arrayListOf<Alert>()
 val defaultIgnoreFiles = mutableListOf<String>("ZygoteInit.java", "RuntimeInit.java", "ActivityThread.java", "Looper.java", "Handler.java", "DispatchedTask.kt")
 fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: MutableSet<String>?=null): Array<StackTraceElement>
 {
-    skipFirst.add("CommonActivityKt.stackTraceWithout\$default")
+    skipFirst.add("stackTraceWithout")
+    skipFirst.add("stackTraceWithout\$default")
     val igf = ignoreFiles ?: defaultIgnoreFiles
     val st = Exception().stackTrace.toMutableList()
     while (st.isNotEmpty() && skipFirst.contains(st.first().methodName)) st.removeAt(0)
@@ -592,6 +593,7 @@ open class CommonActivity : AppCompatActivity()
     /** Display an short error string on the title bar, and then clear it after a bit */
     fun displayError(err: String, details: String? = null, then: (() -> Unit)? = null)
     {
+        val trace = stackTraceWithout(mutableSetOf("displayError\$default","displayError","displayNotice"))
         laterUI {
             // This coroutine has to be limited to this thread because only the main thread can touch UI views
             // Display the error by changing the title and title bar color temporarily
@@ -602,7 +604,6 @@ open class CommonActivity : AppCompatActivity()
                 lastErrorString = err
                 errorCount += 1
                 menuHidden += 1
-                val trace = stackTraceWithout(mutableSetOf("displayError","displayNotice"))
                 alerts.add(Alert(err, details, ERROR_LEVEL, trace))
                 invalidateOptionsMenu()
                 val errorColor = ContextCompat.getColor(applicationContext, R.color.error)
@@ -633,6 +634,7 @@ open class CommonActivity : AppCompatActivity()
     /** Display an short notification string on the title bar, and then clear it after a bit */
     fun displayNotice(msg: String, details: String? = null, time: Long = NOTICE_DISPLAY_TIME, then: (() -> Unit)? = null)
     {
+        val trace = stackTraceWithout(mutableSetOf("displayError","displayNotice"))
         laterUI {
             // This coroutine has to be limited to this thread because only the main thread can touch UI views
             // Display the error by changing the title and title bar color temporarily
@@ -641,7 +643,7 @@ open class CommonActivity : AppCompatActivity()
             val myError = synchronized(errorSync)
             {
                 super.setTitle(msg)
-                val trace = stackTraceWithout(mutableSetOf("displayError","displayNotice"))
+
                 alerts.add(Alert(msg, details, NOTICE_LEVEL, trace))
                 menuHidden += 1
                 invalidateOptionsMenu()

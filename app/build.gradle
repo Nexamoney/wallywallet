@@ -9,8 +9,8 @@ android {
         applicationId "info.bitcoinunlimited.www.wally"
         minSdkVersion 26
         targetSdkVersion 33
-        versionCode 236
-        versionName "2.36"
+        versionCode 251
+        versionName "2.51"
         testApplicationId "bitcoinunlimited.wally"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -82,6 +82,7 @@ dependencies {
     //implementation 'info.bitcoinunlimited:libbitcoincash:3.2.3'
 
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
+    implementation 'androidx.activity:activity:1.7.2'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
     implementation 'androidx.wear:wear:1.2.0'

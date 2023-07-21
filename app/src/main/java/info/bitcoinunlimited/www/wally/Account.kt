@@ -23,6 +23,7 @@ private val LogIt = Logger.getLogger("BU.wally.Account")
 const val ACCOUNT_FLAG_NONE = 0UL
 const val ACCOUNT_FLAG_HIDE_UNTIL_PIN = 1UL
 const val ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY = 2UL
+const val ACCOUNT_FLAG_REUSE_ADDRESSES = 4UL
 
 /** Do not warn about not having backed up the recovery key until balance exceeds this amount (satoshis) */
 const val MAX_NO_RECOVERY_WARN_BALANCE = 1000000 * 10
@@ -163,6 +164,7 @@ class Account(
         (cnxnMgr as MultiNodeCnxnMgr).getElectrumServerCandidate = { wallyApp!!.getElectrumServerOn(it) }
 
         setBlockchainAccessModeFromPrefs()
+        loadAccountAddress()
     }
 
 
@@ -298,6 +300,27 @@ class Account(
         flags = ser.deuint32().toULong()
     }
 
+    fun saveAccountAddress()
+    {
+        notInUI { walletDb!!.set("accountAddress_" + name, (currentReceive?.address?.toString() ?: "").toByteArray()) }
+    }
+
+    fun loadAccountAddress()
+    {
+        try
+        {
+            val ser = walletDb!!.get("accountAddress_" + name)
+            if (ser.size != 0)
+            {
+                currentReceive = wallet.walletDestination(PayAddress(String(ser)))
+            }
+        }
+        catch(e: DataMissingException)
+        {
+            // its fine we'll grab a new one
+        }
+
+    }
 
     /** Return a web URL that will provide more information about this transaction */
     fun transactionInfoWebUrl(txHex: String?): String?
@@ -445,32 +468,38 @@ class Account(
     suspend fun onUpdatedReceiveInfo(sz: Int, refresh: ((String, Bitmap) -> Unit)): Unit
     {
         currentReceive.let {
-            val addr: PayAddress? = it?.address
+            var addr: PayAddress? = it?.address
 
-            val qr = currentReceiveQR
-            var genNew = if ((it == null) || (addr == null) || (qr == null))
+            var qr = currentReceiveQR
+            var genNew = if (addr == null)
                 true
             else
             {
-                syncNotInUI { (wallet.getBalanceIn(addr) > 0) }
+                // If we have an address, then if re-use is true don't get another one
+                if ((flags and ACCOUNT_FLAG_REUSE_ADDRESSES) > 0U) false
+                // Otherwise get another one if our balance on this address is nonzero
+                else addr.let { syncNotInUI { (wallet.getBalanceIn(it) > 0) } }
             }
 
             if (genNew)
             {
-                currentReceive = null
-                currentReceiveQR = null
-
                 val ret = wallet.newDestination()
-                val qr2 = textToQREncode(ret.address.toString(), sz + 200)
                 currentReceive = ret
-                currentReceiveQR = qr2
-                if (qr2 != null) refresh.invoke(ret.address.toString(), qr2)
+                saveAccountAddress()
+                currentReceiveQR = null // force regeneration
+                addr = ret.address
             }
-            else
+
+            // regenerate the QR from the address
+            if (currentReceiveQR == null)
             {
-                if ((addr != null)&&(qr != null))  // Should always be true if we get here
-                    refresh.invoke(addr.toString(), qr)
+                qr = textToQREncode(addr.toString(), sz + 200)
+                currentReceiveQR = qr
             }
+
+            if ((addr != null)&&(qr != null))  // Should always be true if we get here
+                refresh.invoke(addr.toString(), qr)
+
         }
     }
 

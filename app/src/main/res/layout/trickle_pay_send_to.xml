@@ -48,7 +48,7 @@
         app:layout_constraintTop_toBottomOf="@+id/GuiSendToBlockchain" />
 
     <TextView
-        android:id="@+id/textView8"
+        android:id="@+id/TpAssociatedAddressField"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/TpWhyNotAuto"
@@ -130,7 +130,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView8" />
+        app:layout_constraintTop_toBottomOf="@+id/TpAssociatedAddressField" />
 
     <View
         android:id="@+id/receiveBalancesDivider"

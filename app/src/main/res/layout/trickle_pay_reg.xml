@@ -93,7 +93,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TpAssetInfoRequestHandlingButton" />
+        app:layout_constraintTop_toBottomOf="@+id/TpAssociatedAddressField" />
 
     <TextView
         android:id="@+id/GuiCustomTxCost"
@@ -321,6 +321,27 @@
         app:layout_constraintBottom_toBottomOf="@+id/TpAssetInfoRequestHandlingButton"
         app:layout_constraintStart_toEndOf="@+id/TpAssetInfoRequestHandlingButton"
         app:layout_constraintTop_toTopOf="@+id/TpAssetInfoRequestHandlingButton" />
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text=""
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@+id/TpAssetInfoRequestHandlingButton"
+        app:layout_constraintStart_toStartOf="parent"
+         />
+    <TextView
+        android:id="@+id/TpAssociatedAddressField"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text=""
+        android:textSize="12sp"
+        android:textIsSelectable="true"
+        app:layout_constraintTop_toBottomOf="@+id/textView7"
+        app:layout_constraintStart_toStartOf="parent"
+        />
 
     <TextView
         android:id="@+id/currencyUnit1"

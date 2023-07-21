@@ -3,9 +3,7 @@
 package info.bitcoinunlimited.www.wally
 
 
-import android.content.ActivityNotFoundException
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.graphics.BitmapFactory
 import android.graphics.drawable.PictureDrawable
 import android.media.MediaPlayer
@@ -997,6 +995,7 @@ class AssetsActivity : CommonNavActivity()
         ui.GuiAssetInvoke.setOnClickListener { onInvokeButton() }
         ui.GuiAssetTrade.setOnClickListener { onTradeButton() }
         ui.GuiAssetSend.setOnClickListener { onSendButton() }
+        ui.GuiAssetCopyToClipboard.setOnClickListener { onCopyToClipboardButton() }
 
         ui.GuiAssetVideoBox.setOnPreparedListener(object: OnPreparedListener {
             override fun onPrepared(mp: MediaPlayer?)
@@ -1105,6 +1104,20 @@ class AssetsActivity : CommonNavActivity()
             }
         }
     }
+
+    fun onCopyToClipboardButton()
+    {
+        val a = asset
+        if (a!=null)
+        {
+            var clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+            var clip = ClipData.newPlainText("text", a.groupInfo.groupId.toString())
+            clipboard.setPrimaryClip(clip)
+            if (android.os.Build.VERSION.SDK_INT <= 32)  // system toasts above this version
+                displayNotice(R.string.copiedToClipboard)
+        }
+    }
+
 
     fun onTradeButton()
     {

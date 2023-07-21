@@ -171,7 +171,7 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/GuiAccountSettingsHeader"
-        tools:visibility="visible">
+        tools:visibility="invisible">
 
         <Button
             android:id="@+id/buttonYes"
@@ -327,7 +327,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/GuiAccountSettingsHeader"
-        tools:visibility="gone">
+        tools:visibility="visible">
 
 
         <com.google.android.flexbox.FlexboxLayout
@@ -346,6 +346,14 @@
                 android:layout_height="wrap_content"
                 app:layout_alignSelf="center"
                 android:text="@string/PinHidesAccount"
+                android:textSize="20sp" />
+            <Switch
+                android:id="@+id/GuiAutomaticNewAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_alignSelf="center"
+                android:tooltipText="@string/AutomaticNewAddressToolTip"
+                android:text="@string/AutomaticNewAddress"
                 android:textSize="20sp" />
             <Button
                 android:id="@+id/SetChangePinButton"

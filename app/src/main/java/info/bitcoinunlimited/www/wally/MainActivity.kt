@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
@@ -146,6 +147,10 @@ class MainActivity : CommonNavActivity()
 
     /** Do this once we get file read permissions */
     var doOnFileReadPerms: (() -> Unit)? = null
+
+    /** Do this once we get file read permissions */
+    var doOnMediaReadPerms: (() -> Unit)? = null
+
 
     /** track a 2 phase send operation */
     var askedForConfirmation = false
@@ -450,7 +455,26 @@ class MainActivity : CommonNavActivity()
                 }
                 else
                 {
-                    // Explain to the user that the feature is unavailable because the features requires a permission that the user has denied.
+                    laterUI {
+                        delay(1000)
+                        displayError(R.string.NoPermission, i18n(R.string.NoPermissionDetails) % mapOf("perm" to "Read external storage"))
+                    }
+                }
+                return
+            }
+            READ_MEDIA_IMAGES_RESULT ->
+            {
+                // If request is cancelled, the result arrays are empty.
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED))
+                {
+                    doOnMediaReadPerms?.invoke()
+                }
+                else
+                {
+                    laterUI {
+                        delay(1000)
+                        displayError(R.string.NoPermission, i18n(R.string.NoPermissionDetails) % mapOf("perm" to "Read media images"))
+                    }
                 }
                 return
             }
@@ -477,8 +501,23 @@ class MainActivity : CommonNavActivity()
         if (ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
             doit()
         else
+        {
             doOnFileReadPerms = doit
-        requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), READ_FILES_PERMISSION_RESULT)
+            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), READ_FILES_PERMISSION_RESULT)
+        }
+        return false
+    }
+
+    // call this with a function to execute whenever that function needs file read permissions
+    fun onReadMediaPermissionGranted(doit: () -> Unit): Boolean
+    {
+        if (ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+            doit()
+        else
+        {
+            doOnMediaReadPerms = doit
+            requestPermissions(arrayOf(Manifest.permission.READ_MEDIA_IMAGES), READ_MEDIA_IMAGES_RESULT)
+        }
         return false
     }
 
@@ -666,14 +705,18 @@ class MainActivity : CommonNavActivity()
     override fun onResume()
     {
         LogIt.info("Wally is resuming")
-        if (dynOrStaticOrientation != -1)  // If we turned off dynamic screen orientation, set it back to whatever it was
-        {
-            requestedOrientation =  ActivityInfo.SCREEN_ORIENTATION_SENSOR //dynOrStaticOrientation  // Set it back after turning it off while scanning QR
-            dynOrStaticOrientation = -1
-        }
         dbgAssertGuiThread()
         clearAccountUI()
         super.onResume()
+
+        laterUI {
+            delay(2000)  // give a little time because presumably user is still manipulating phone
+            if (dynOrStaticOrientation != -1)  // If we turned off dynamic screen orientation, set it back to whatever it was
+            {
+                requestedOrientation = dynOrStaticOrientation // ActivityInfo.SCREEN_ORIENTATION_SENSOR  // Set it back after turning it off while scanning QR
+                dynOrStaticOrientation = -1
+            }
+        }
 
         appContext = PlatformContext(applicationContext)
         val preferenceDB = getSharedPreferences(i18n(R.string.preferenceFileName), Context.MODE_PRIVATE)
@@ -1042,6 +1085,8 @@ class MainActivity : CommonNavActivity()
         updateSendAccount(pa)
         // Update the sendCurrencyType field to contain our coin selection
         updateSendCurrencyType()
+        receiveVisibility(false)
+        sendVisibility(true)
     }
 
     fun updateSendAddress(text: String, updateIfNonAddress:Boolean = false): PayAddress
@@ -1497,9 +1542,12 @@ class MainActivity : CommonNavActivity()
     /** This triggers image selection (presumably a QR code) */
     private fun openGalleryForImage()
     {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(intent, IMAGE_RESULT)
+
+        //val intent = Intent(Intent.ACTION_PICK)
+        //intent.type = "image/*"
+        //startActivityForResult(intent, IMAGE_RESULT)
     }
 
     /** this handles the result of variety of launched subactivities including:
@@ -1696,7 +1744,8 @@ class MainActivity : CommonNavActivity()
     @Suppress("UNUSED_PARAMETER")
     fun onQRfromGalleryClicked(view: View)
     {
-        onReadStoragePermissionGranted { openGalleryForImage() }
+        onReadMediaPermissionGranted { openGalleryForImage() }
+        // onReadStoragePermissionGranted { openGalleryForImage() }
     }
 
 
