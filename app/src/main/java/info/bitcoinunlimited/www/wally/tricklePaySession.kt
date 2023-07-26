@@ -695,7 +695,15 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
 
             wallyApp?.let { app ->
                 // Post this transaction if the TDPP protocol suggests that I do so (its complete)
-                if ((tflags and TDPP_FLAG_NOPOST) == 0) getRelevantAccount(domain?.accountName).wallet.send(pTx)
+                if ((tflags and TDPP_FLAG_NOPOST) == 0) try
+                    {
+                        getRelevantAccount(domain?.accountName).wallet.send(pTx)
+                    }
+                    catch(e:Exception)  // Its possible that the tx is partial but the caller didn't set the bit, so if the tx is rejected ignore
+                    {
+                    }
+
+                // And hand it back to the requester...
                 // grab temps because activity could go away
                 val rp = replyProtocol
                 val hp = hostAndPort

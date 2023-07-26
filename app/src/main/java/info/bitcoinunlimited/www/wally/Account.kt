@@ -544,25 +544,9 @@ class Account(
         }
     }
 
-    var lastAssetCheck = 0L
-    /** Call whenever the state of this account has changed so needs to be redrawn.  Or on first draw (with force = true) */
-    fun onChange(force: Boolean = false)
+
+    fun changeAsyncProcessing(force: Boolean)
     {
-        laterUI {
-            uiBinding?.let {
-                if (lockable)
-                {
-                    it.lockIcon.visibility = View.VISIBLE
-                    if (locked)
-                        it.lockIcon.setImageResource(R.drawable.ic_lock)
-                    else
-                        it.lockIcon.setImageResource(R.drawable.ic_unlock)
-                }
-                else
-                    it.lockIcon.visibility = View.GONE
-            }
-        }
-        notInUI {
             // Update our cache of the balances
             balance = fromFinestUnit(wallet.balance)
             unconfirmedBalance = fromFinestUnit(wallet.balanceUnconfirmed)
@@ -658,7 +642,7 @@ class Account(
                     {
                         //val prefDB = act.getSharedPreferences(i18n(R.string.preferenceFileName), Context.MODE_PRIVATE)
                         //val showingAssets = prefDB.getBoolean(SHOW_ASSETS_PREF, false)
-                       if (!act.isShowingAssetsNavButton())  // only check if not currently showing the assets nav
+                        if (!act.isShowingAssetsNavButton())  // only check if not currently showing the assets nav
                         {
                             if (hasAssets()) laterUI {
                                 act.setAssetsNavVisible(true)  // once there are assets, we show the nav, but we don't change the prefs so if the assets are sent, asset nav will disappear on the next run
@@ -667,7 +651,30 @@ class Account(
                     }
                 }
             }
+    }
+
+    var lastAssetCheck = 0L
+    /** Call whenever the state of this account has changed so needs to be redrawn.  Or on first draw (with force = true) */
+    fun onChange(force: Boolean = false)
+    {
+        laterUI {
+            uiBinding?.let {
+                if (lockable)
+                {
+                    it.lockIcon.visibility = View.VISIBLE
+                    if (locked)
+                        it.lockIcon.setImageResource(R.drawable.ic_lock)
+                    else
+                        it.lockIcon.setImageResource(R.drawable.ic_unlock)
+                }
+                else
+                    it.lockIcon.visibility = View.GONE
+            }
         }
+        later {
+            changeAsyncProcessing(force)
+        }
+
     }
 
     // Load the exchange rate

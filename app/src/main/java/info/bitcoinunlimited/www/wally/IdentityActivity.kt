@@ -171,9 +171,9 @@ class IdentityActivity : CommonNavActivity()
 
                 ui.commonIdentityInfo.text = i18n(R.string.commonIdentityForAccount) % mapOf("act" to wallet.name)
 
-                var uri = "nexid://p2p?op=share&addr=" + destStr;
+                var uri = "nexid://p2p?op=share&addr=" + destStr
                 if (hdl != null && hdl != "") uri = uri + "&hdl=" + URLEncoder.encode(hdl, "utf-8")
-                if (email != null && email != "") uri = uri + "&email=" + URLEncoder.encode(email, "utf-8")
+                if (email != null && email != "") uri = uri + "&em=" + email.encodeToByteArray().toHex()
                 if (socialmedia != null && socialmedia != "") uri = uri + "&sm=" + URLEncoder.encode(socialmedia, "utf-8")
                 LogIt.info("encoded URI: " + uri)
 

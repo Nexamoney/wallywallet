@@ -313,7 +313,7 @@ Good luck!
     <string name="providePostalAddressToolTip">Selecting this option will provide your address (as configured in settings) to this web site, if requested</string>
     <string name="provideBillingAddress">Provide your billing address?</string>
     <string name="provideBillingAddressToolTip">Selecting this option will provide your billing address (as configured in settings) to this web site, if requested</string>
-    <string name="provideEmail">Provide your email address?</string>
+    <string name="provideEmail">Provide your e---- address?</string>
     <string name="provideAvatar">Provide your avatar image?</string>
     <string name="provideRealName">Provide your real name?</string>
     <string name="provideRealNameToolTip">Selecting this option will give your real name (as configured in settings) to this web site</string>
@@ -346,7 +346,7 @@ Good luck!
     <string name="PostalAddressText">Postal Address</string>
     <string name="BillingAddressText">Billing Address</string>
     <string name="PostalCodeText">Zip Code</string>
-    <string name="EmailText">Email Address</string>
+    <string name="EmailText">Optional e---- Address</string>
     <string name="TwitterText">Twitter</string>
     <string name="TelegramText">Telegram</string>
     <string name="IdentityAssociatedWith">Associated Identity Info</string>
@@ -361,6 +361,7 @@ Good luck!
     <string name="connectionException">cannot connect to site</string>
     <string name="withholdingMandatoryInfo">site requires info that you refuse to provide</string>
     <string name="badLink">bad link</string>
+    <string name="BadLink">Invalid web link</string>
     <string name="connectionAborted">site aborted login</string>
     <!-- Transaction history activity -->
     <string name="HintAdjustCostBasis">basis or cap gain</string>
@@ -420,6 +421,7 @@ Good luck!
     <string name="accountLocked">account locked</string>
     <string name="unknownError">error</string>
     <string name="insufficentBalance">insufficient balance</string>
+    <string name="insufficentTokenBalance">insufficient token balance</string>
     <string name="excessiveFee">excessive fee</string>
     <string name="sendDustError">amount below minimum</string>
     <string name="sendingDustWarning">amount is below network minimum</string>
@@ -471,9 +473,13 @@ Good luck!
         row. There is a limit to how far you can "get ahead" of the blockchain. Let your unconfirmed balance confirm and
         try again.
     </string>
+    <string name="sendMoreTokensThanBalance">You are attempting to send more tokens than you have available right now.
+    </string>
     <string name="deductedFeeLargerThanSendAmount">Deducted fee is larger than the amount being sent</string>
 
     <string name="badWalletImplementation">Incorrect wallet implementation.  Report this bug!</string>
+
+    <string name="CannotCompleteTransaction">Error: Cannot Complete</string>
 
     <!-- TITLES -->
     <string name="title_split_bill">Split a bill</string>
@@ -514,7 +520,6 @@ Good luck!
     <string name="ShoppingWarning">CAUTION: The items on this page are links to 3rd party services and web sites, placed here for your convenience.  These sites/services have not been vetted by Wally Wallet.\n\nUse at your own risk!</string>
 
     <!-- All items are specified here so the service itself can be localized if your country does work with the default service. Use empty strings to disable -->
-    <string name="BadLink">Invalid web link</string>
     <string name="NFTs">Nonfungible Tokens (NFTs)</string>
     <string name="ExplainNFTs">NiftyArt.cash: Create and trade unique images and digital representations of unique items</string>
     <string name="NftUrl">http://niftyart.cash</string>
@@ -575,6 +580,7 @@ Good luck!
     <string name="TpShowingTokens" formatted="false">%tokReveal token types are revealed (spent to yourself, proving you own them).</string>
     <string name="TpSendingTokens" formatted="false">and sending %tokSnd types of tokens.</string>
     <string name="TpReceivingTokens" formatted="false">and receiving %tokRcv types of tokens.</string>
+    <string name="TpHasNoPurpose">This request has no effect on this account.</string>
 
     <string name="TpSendToTitle">Payment Requested By</string>
     <string name="TpSpends">Spends</string>

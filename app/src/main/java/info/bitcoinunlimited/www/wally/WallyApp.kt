@@ -258,7 +258,8 @@ val i18nLbc = mapOf(
   RsendDust to R.string.sendDustError,
   RnoNodes to R.string.NoNodes,
   RwalletAddressMissing to R.string.badAddress,
-  RunknownCryptoCurrency to R.string.unknownCryptoCurrency
+  RunknownCryptoCurrency to R.string.unknownCryptoCurrency,
+  RsendMoreTokensThanBalance to R.string.insufficentTokenBalance
 )
 
 class ActivityLifecycleHandler(private val app: WallyApp) : Application.ActivityLifecycleCallbacks
@@ -345,7 +346,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     // Current notification ID
     var notifId = 0
 
-    protected val coMiscCtxt: CoroutineContext = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
+    protected val coMiscCtxt: CoroutineContext = Executors.newFixedThreadPool(6).asCoroutineDispatcher()
 
     protected val coMiscScope: CoroutineScope = kotlinx.coroutines.CoroutineScope(coMiscCtxt)
 

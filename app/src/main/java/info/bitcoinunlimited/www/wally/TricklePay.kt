@@ -208,7 +208,7 @@ class TricklePayRegFragment : Fragment()
 class TricklePayCustomTxFragment : Fragment()
 {
     public lateinit var ui: TricklePayCustomTxBinding
-    public var tpSession: TricklePaySession? = null
+    public var tpActivity: TricklePayActivity? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
@@ -227,15 +227,15 @@ class TricklePayCustomTxFragment : Fragment()
         super.onViewCreated(view, savedInstanceState)
     }
 
-    fun populate(sess: TricklePaySession)
+    fun populate(activity: TricklePayActivity)
     {
-        tpSession = sess
+        tpActivity = activity
         updateUI()
     }
 
     fun updateUI()
     {
-        val sess = tpSession ?: return
+        val sess = tpActivity?.tpSession ?: return
 
         val tpc = sess.topic.let {
             if (it == null) ""
@@ -297,7 +297,6 @@ class TricklePayCustomTxFragment : Fragment()
                 else provingTokenTypes++
             }
 
-
             var summary = if (receivingTokenTypes > 0)
             {
                 if (spendingTokenTypes > 0)
@@ -322,6 +321,27 @@ class TricklePayCustomTxFragment : Fragment()
 
             ui.GuiCustomTxTokenSummary.text = summary
 
+            var error:String? = null
+            if ((receivingTokenTypes == 0L)&&(spendingTokenTypes == 0L)&&(provingTokenTypes==0L)&&(netSats == 0L))
+            {
+                error = i18n(R.string.TpHasNoPurpose)
+            }
+
+            a.completionException?.let { error = it.message }
+
+            if (error != null)  // If there's an exception, the only possibility is to abort
+            {
+                ui.GuiCustomTxErrorHeading.visibility = View.VISIBLE
+                ui.GuiTpSpecialTxAccept.visibility = View.GONE
+                ui.GuiCustomTxError.text = error
+                ui.DeleteButton.text = i18n(R.string.cancel)
+            }
+            else
+            {
+                ui.GuiCustomTxErrorHeading.visibility = View.GONE
+                ui.GuiTpSpecialTxAccept.visibility = View.VISIBLE
+                ui.GuiCustomTxError.text = ""
+            }
 
 /*
             if (a.receivingTokenTypes > 0)
@@ -365,7 +385,6 @@ class TricklePayCustomTxFragment : Fragment()
 class TricklePaySendToFragment : Fragment()
 {
     public lateinit var ui: TricklePaySendToBinding
-    public var tpSession: TricklePaySession? = null
     public var tpActivity: TricklePayActivity? = null
 
 
@@ -386,24 +405,22 @@ class TricklePaySendToFragment : Fragment()
         super.onViewCreated(view, savedInstanceState)
     }
 
-    fun populate(pactivity: TricklePayActivity, sess: TricklePaySession)
+    fun populate(pactivity: TricklePayActivity)
     {
-        tpSession = sess
         tpActivity = pactivity
         updateUI()
     }
 
     fun updateUI()
     {
-        val sess = tpSession
-        if (sess == null) return
+        val sess = tpActivity?.tpSession ?: return
 
         try
         {
         val u: Uri = sess.proposalUri ?: return
         val sa: List<Pair<PayAddress, Long>> = sess.proposedDestinations ?: return
 
-        val tpc = tpSession?.topic.let {
+        val tpc = sess.topic.let {
             if (it == null) ""
             else ":" + it
         }
@@ -443,7 +460,6 @@ class TricklePayAssetRequestFragment : Fragment()
 {
     public lateinit var ui: TricklePayAssetRequestBinding
     public var tpActivity: TricklePayActivity? = null
-    public var tpSession: TricklePaySession? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
@@ -465,19 +481,18 @@ class TricklePayAssetRequestFragment : Fragment()
 
     fun selectedAssets(): TricklePayAssetList
     {
-        return tpSession!!.assetInfoList!!
+        return tpActivity!!.tpSession!!.assetInfoList!!
     }
 
-    fun populate(pactivity: TricklePayActivity, sess: TricklePaySession)
+    fun populate(pactivity: TricklePayActivity)
     {
         tpActivity = pactivity
-        tpSession = sess
         updateUI()
     }
 
     fun updateUI()
     {
-        val sess = tpSession // if we don't have a session yet clear it out
+        val sess = tpActivity?.tpSession // if we don't have a session yet clear it out
         if (sess == null)
         {
             ui.GuiTricklePayEntity.text = ""
@@ -566,7 +581,7 @@ class TricklePayActivity : CommonNavActivity()
     var tpSession: TricklePaySession? = null
     var visibleFragment: Int = -1
 
-    var accepted: Boolean = false
+    // var accepted: Boolean = false
     var pinTries = 0
 
     // We must have an app by the time an activity is created
@@ -638,7 +653,7 @@ class TricklePayActivity : CommonNavActivity()
         if (action == TdppAction.ASK)
         {
             val frag = fragment(R.id.GuiTricklePayCustomTx) as TricklePayCustomTxFragment
-            frag.populate(sess)
+            frag.populate(this)
             // Change the title if the request is for a partial transaction
             if ((sess.tflags and TDPP_FLAG_PARTIAL) != 0)
             {
@@ -697,7 +712,7 @@ class TricklePayActivity : CommonNavActivity()
             }
             else laterUI {  // If it wasn't automatically accepted or rejected, ask
                 val frag:TricklePaySendToFragment = fragment(R.id.GuiTricklePaySendTo)
-                frag.populate(this, sess)
+                frag.populate(this)
                 displayFragment(R.id.GuiTricklePaySendTo)
             }
         }
@@ -754,7 +769,6 @@ class TricklePayActivity : CommonNavActivity()
 
     fun handleAssetInfoRequest(uri: Uri)
     {
-
         val sess = tpSession
         if (sess == null)
         {
@@ -783,7 +797,7 @@ class TricklePayActivity : CommonNavActivity()
         }
         else if (action == TdppAction.ASK)
         {
-            (fragment(R.id.GuiTricklePayAssetRequest) as TricklePayAssetRequestFragment).populate(this, sess)
+            (fragment(R.id.GuiTricklePayAssetRequest) as TricklePayAssetRequestFragment).populate(this)
             // ask for confirmation
             displayFragment(R.id.GuiTricklePayAssetRequest)
         }
@@ -884,9 +898,20 @@ class TricklePayActivity : CommonNavActivity()
         {
             if (receivedIntent.scheme == TDPP_URI_SCHEME)
             {
-                val sess = TricklePaySession(tpDomains)
-                tpSession = sess
-                sess.parseCommonFields(iuri, autoCreateDomain = false)
+                var sess = if (tpSession != null)
+                {
+                    // Get the current session if the uri matches
+                    if (tpSession?.proposalUri != iuri) tpSession = null
+                    tpSession
+                } else null
+
+                if (sess == null)
+                {
+                    sess = TricklePaySession(tpDomains)
+                    sess.parseCommonFields(iuri, autoCreateDomain = false)
+                    tpSession=sess
+                }
+
                 val h = sess.host
                 val t = sess.topic
                 val path = iuri.getPath()
@@ -894,104 +919,117 @@ class TricklePayActivity : CommonNavActivity()
                 LogIt.info(sourceLoc() + "Full Intent=${iuri.toString()}")
                 if (h == null)
                 {
-                    displayFragment(R.id.GuiTricklePayMain)
-                    displayError(R.string.BadLink, "no host provided")
+                    wallyApp?.displayError(R.string.BadLink, "no host provided")
+                    clearIntentAndFinish()
                     return
                 }
                 if (path == null)
                 {
-                    displayFragment(R.id.GuiTricklePayMain)
-                    displayError(i18n(R.string.unknownOperation) % mapOf("op" to "no operation"))
+                    wallyApp?.displayError(R.string.badLink,i18n(R.string.unknownOperation) % mapOf("op" to "no operation"))
+                    clearIntentAndFinish()
                     return
                 }
 
                 if (sess.sigOk == false)  // it is never correct to send a bad signature, even if signatures are optional
                 {
-                    displayFragment(R.id.GuiTricklePayMain)
                     wallyApp?.displayError(R.string.badSignature)
                     clearIntentAndFinish()
+                    return
                 }
 
                 later() later@ // Can't do in UI because domains MUST be loaded first
                 {
-                    if (path == "/reg")  // Handle registration
+                    try
                     {
-                        handleRegistration(iuri)
-                        return@later
-                    }
-
-                    // For all other commands, if the domain is unregistered create an entry for it but with no permissions
-                    val domain = sess.domain ?: tpDomains.loadCreateDomain(h, t ?: "")
-                    if (sess.domain == null) sess.domain = domain
-
-                    if (path != "")
-                    {
-                        if (path == "/reg")
+                        if (path == "/reg")  // Handle registration
                         {
-                            // already handled before domain saved
+                            handleRegistration(iuri)
+                            return@later
                         }
-                        else if (path == "/sendto")
+
+                        // For all other commands, if the domain is unregistered create an entry for it but with no permissions
+                        val domain = sess.domain ?: tpDomains.loadCreateDomain(h, t ?: "")
+                        if (sess.domain == null) sess.domain = domain
+
+                        if (path != "")
                         {
-                            if (sess.accepted == true) sess.acceptSendToRequest()  // must have asked for PIN
+                            if (path == "/reg")
+                            {
+                                // already handled before domain saved
+                            }
+                            else if (path == "/sendto")
+                            {
+                                if (sess.accepted == true) sess.acceptSendToRequest()  // must have asked for PIN
+                                else
+                                {
+                                    LogIt.info(sourceLoc() + ": address autopay")
+                                    handleSendToAutopay(iuri)
+                                }
+                            }
+                            else if (path == "/tx")
+                            {
+                                LogIt.info(sourceLoc() + ": tx autopay")
+                                if (sess.accepted) onSignSpecialTx(null)  // must have asked for PIN so we had to launch the pin entry intent
+                                else
+                                    handleTxAutopay(iuri)
+                            }
+                            else if (path == "/assets")
+                            {
+                                LogIt.info(sourceLoc() + ": asset request")
+                                if (autoClose) wallyApp?.finishParent = 1
+                                handleAssetInfoRequest(iuri)
+                            }
+                            else if (path == "/address")
+                            {
+                                LogIt.info(sourceLoc() + ": address request")
+                                if (autoClose) wallyApp?.finishParent = 1
+                                handleAddressInfoRequest(iuri)
+                            }
+                            else if (path == "/share")
+                            {
+                                LogIt.info(sourceLoc() + ": info request (reverse QR)")
+                                if (autoClose) wallyApp?.finishParent = 1
+                                handleShareRequest(iuri)
+                            }
+                            else if (path == "/jsonpay")
+                            {
+                                LogIt.info(sourceLoc() + ": json autopay")
+                            }
+                            else if (path == "/lp")
+                            {
+                                LogIt.info(sourceLoc() + ": Start long Poll to ${h}")
+                                wallyApp?.accessHandler?.startLongPolling(sess.replyProtocol, sess.hostAndPort, sess.cookie)
+                                if (autoClose) wallyApp?.finishParent = 1
+                                clearIntentAndFinish(null, R.string.connectionEstablished, details = "Connected to ${h}")
+                                return@later
+                            }
                             else
                             {
-                                LogIt.info(sourceLoc() + ": address autopay")
-                                handleSendToAutopay(iuri)
+                                wallyApp?.displayError(R.string.badLink,i18n(R.string.unknownOperation) % mapOf("op" to path))
+                                clearIntentAndFinish()
+                                return@later
                             }
-                        }
-                        else if (path == "/tx")
-                        {
-                            LogIt.info(sourceLoc() + ": tx autopay")
-                            if (accepted) onSignSpecialTx(null)  // must have asked for PIN so we had to launch the pin entry intent
-                            else
-                                handleTxAutopay(iuri)
-                        }
-                        else if (path == "/assets")
-                        {
-                            LogIt.info(sourceLoc() + ": asset request")
-                            if (autoClose) wallyApp?.finishParent=1
-                            handleAssetInfoRequest(iuri)
-                        }
-                        else if (path == "/address")
-                        {
-                            LogIt.info(sourceLoc() + ": address request")
-                            if (autoClose) wallyApp?.finishParent=1
-                            handleAddressInfoRequest(iuri)
-                        }
-                        else if (path == "/share")
-                        {
-                            LogIt.info(sourceLoc() + ": info request (reverse QR)")
-                            if (autoClose) wallyApp?.finishParent=1
-                            handleShareRequest(iuri)
-                        }
-                        else if (path == "/jsonpay")
-                        {
-                            LogIt.info(sourceLoc() + ": json autopay")
-                        }
-                        else if (path == "/lp")
-                        {
-                            LogIt.info(sourceLoc() + ": Start long Poll to ${h}")
-                            wallyApp?.accessHandler?.startLongPolling(sess.replyProtocol, sess.hostAndPort, sess.cookie)
-                            if (autoClose) wallyApp?.finishParent=1
-                            clearIntentAndFinish(null, R.string.connectionEstablished, details="Connected to ${h}")
                         }
                         else
                         {
-                            displayFragment(R.id.GuiTricklePayMain)
-                            displayError(i18n(R.string.unknownOperation) % mapOf("op" to path));
+                            wallyApp?.displayError(R.string.badLink, i18n(R.string.unknownOperation) % mapOf("op" to "no operation"))
+                            clearIntentAndFinish()
+                            return@later
                         }
                     }
-                    else
+                    catch (e: WalletInvalidException)
                     {
-                        displayFragment(R.id.GuiTricklePayMain)
-                        displayError(i18n(R.string.unknownOperation) % mapOf("op" to "no operation"));
+                        wallyApp?.displayError(R.string.NoAccounts, R.string.badCryptoCode)
+                        clearIntentAndFinish()
+                        return@later
                     }
                 }
             }
             else  // This should never happen because the AndroidManifest.xml Intent filter should match the URIs that we handle
             {
-                displayFragment(R.id.GuiTricklePayMain)
-                displayError(sourceLoc() + ": bad link " + receivedIntent.scheme)
+                wallyApp?.displayError(R.string.badLink,sourceLoc() + ": bad link " + receivedIntent.scheme)
+                clearIntentAndFinish()
+                return
             }
         }
         catch (e: BUExceptionI)
@@ -1000,6 +1038,12 @@ class TricklePayActivity : CommonNavActivity()
             clearIntentAndFinish()
         }
         catch (e: BUException)
+        {
+            handleThreadException(e)
+            wallyApp?.displayError(R.string.unknownError, e.toString())
+            clearIntentAndFinish()
+        }
+        catch (e: Exception)
         {
             handleThreadException(e)
             wallyApp?.displayError(R.string.unknownError, e.toString())
@@ -1200,11 +1244,10 @@ class TricklePayActivity : CommonNavActivity()
         try
         {
             LogIt.info("accept trickle pay special transaction")
-            accepted = true
             val sess = tpSession
-            tpSession = null
             if (sess != null)
             {
+                sess.accepted = true
                 val pTx = sess.proposedTx
                 val panalysis = sess.proposalAnalysis
                 if ((pTx != null) && (panalysis != null))
@@ -1214,9 +1257,13 @@ class TricklePayActivity : CommonNavActivity()
                         launchPinEntry()
                         return
                     }
-                    sess.acceptSpecialTx()
-                    clearIntentAndFinish()
-                    return
+                    else
+                    {
+                        tpSession = null
+                        sess.acceptSpecialTx()
+                        clearIntentAndFinish()
+                        return
+                    }
                 }
             }
             return
@@ -1254,7 +1301,7 @@ class TricklePayActivity : CommonNavActivity()
     {
         try
         {
-            accepted = true
+            tpSession?.let { it.accepted = true }
             tpSession?.acceptSendToRequest()
             tpSession = null
             clearIntentAndFinish(notice = R.string.TpSendRequestAccepted)

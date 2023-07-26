@@ -33,6 +33,7 @@ import info.bitcoinunlimited.www.wally.databinding.ActivityMainBinding
 import info.bitcoinunlimited.www.wally.databinding.AssetSuccinctListItemBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.lang.Thread.sleep
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.net.URL
@@ -141,6 +142,7 @@ class MainActivity : CommonNavActivity()
     var sleepMonitor: SleepMonitor? = null
 
     var curWalletsSynced: Boolean? = null
+    var walletsSynced:Boolean = true
 
     /** If we've already put up an error for this address, don't do it again */
     var alreadyErroredAddress: PayAddress? = null
@@ -791,12 +793,26 @@ class MainActivity : CommonNavActivity()
 
             }
         }
+
+        thread {
+            while (true)
+            {
+                Thread.sleep(1000)
+                var tmp = true
+                for (c in accounts)
+                {
+                        if (c.value.visible && !c.value.wallet.synced()) tmp = false
+                }
+                if (walletsSynced != tmp) walletsSynced = tmp
+                Thread.sleep(2000)
+            }
+        }
         // Poll the syncing icon update because it doesn't matter how long it takes
         laterUI {
             while (true)
             {
                 updateSyncingIcon()
-                delay(5000)
+                delay(3000)
             }
         }
 
@@ -934,15 +950,6 @@ class MainActivity : CommonNavActivity()
     fun updateSyncingIcon()
     {
         dbgAssertGuiThread()
-        val walletsSynced = syncNotInUI {
-            var walletsSynced = true
-            for (c in accounts)
-            {
-                if (c.value.visible && !c.value.wallet.synced()) walletsSynced = false
-            }
-            return@syncNotInUI walletsSynced
-        }
-
         if (!walletsSynced)
         {
             if (curWalletsSynced != false)
@@ -1006,15 +1013,17 @@ class MainActivity : CommonNavActivity()
         else
         {
             val notify = amIbackground()
-            val a = updateSendAddress(text, !notify)
-            if (notify)
-            {
-                LogIt.info("Wally in background, sending notification")
-                var intent = Intent(this, MainActivity::class.java)
-                val addrString = a.toString() ?: ""
-                intent.data = addrString.toUri()
-                val nid = wallyApp?.notifyPopup(intent, i18n(R.string.sendRequestNotification), i18n(R.string.toColon) + addrString, this, false)
-                intent.extras?.putIntegerArrayList("notificationId", arrayListOf(nid))
+            laterUI {
+                val a = updateSendAddress(text, !notify)
+                if (notify)
+                {
+                    LogIt.info("Wally in background, sending notification")
+                    var intent = Intent(this, MainActivity::class.java)
+                    val addrString = a.toString() ?: ""
+                    intent.data = addrString.toUri()
+                    val nid = wallyApp?.notifyPopup(intent, i18n(R.string.sendRequestNotification), i18n(R.string.toColon) + addrString, this, false)
+                    intent.extras?.putIntegerArrayList("notificationId", arrayListOf(nid))
+                }
             }
             return
         }
@@ -2085,10 +2094,17 @@ class MainActivity : CommonNavActivity()
 
         var currencyType: String? = ui.sendCurrencyType.selectedItem as String?
 
-        // Which crypto are we sending
-        val walletName = try
+        val tmp = ui.sendAccount.selectedItem
+        if (tmp == null)
         {
-            ui.sendAccount.selectedItem as String
+            displayError(R.string.badCryptoCode)
+            return
+        }
+
+        // Which crypto are we sending
+        val walletName: String = try
+        {
+            tmp as String
         }
         catch (e: NullPointerException)
         {
