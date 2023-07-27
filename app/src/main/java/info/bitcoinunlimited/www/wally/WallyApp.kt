@@ -29,6 +29,7 @@ import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.DataOutputStream
@@ -342,7 +343,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     // Set to true if this is the first time this app has ever been run
     var firstRun = false
     // Set to true if some wallet has a nontrivial balance and its recovery key has not been viewed (and we have not warned since app instantiation)
-    var warnBackupRecoveryKey = false
+    var warnBackupRecoveryKey = Channel<Boolean>() // false
     // Current notification ID
     var notifId = 0
 
@@ -858,6 +859,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     // Overriding this method is totally optional!
     override fun onCreate()
     {
+        LogIt.info("------------  WALLY APP CREATED  ---------------")
         super.onCreate()
         notInUIscope = coMiscScope
         appResources = getResources()
@@ -931,6 +933,17 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
 
                 coinsCreated = true
 
+                var warning = false
+                for (c in accounts.values)
+                {
+                    if (((c.flags and ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY) == 0UL) && (c.wallet.balance > MAX_NO_RECOVERY_WARN_BALANCE))
+                    {
+                        warning = true
+                        break
+                    }
+                }
+                warnBackupRecoveryKey.send(warning)
+
                 // Cannot pick the primary account until accounts are loaded
                 val primaryActName = prefs.getString(PRIMARY_ACT_PREF, null)
                 nullablePrimaryAccount = if (primaryActName != null) accounts[primaryActName] else null
@@ -943,17 +956,11 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
                     // nothing to do in the case where there is no account to pick
                 }
 
-
                 for (c in accounts.values)
                 {
                     c.setBlockchainAccessModeFromPrefs()
                     c.start(applicationContext)
                     c.onChange()  // update all wallet UI fields since just starting up
-
-                    if (((c.flags and ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY) == 0UL) && (c.wallet.balance > MAX_NO_RECOVERY_WARN_BALANCE))
-                    {
-                        warnBackupRecoveryKey = true
-                    }
                 }
 
             }

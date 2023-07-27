@@ -654,13 +654,13 @@ class MainActivity : CommonNavActivity()
         }
 
         laterUI {
-            delay(1000)
+            delay(500)
             val a = app
             if (a != null)
             {
-                if (a.warnBackupRecoveryKey == true)
+                val warnBackupRecoveryKey = a.warnBackupRecoveryKey.receive()
+                if (warnBackupRecoveryKey == true)
                 {
-                    a.warnBackupRecoveryKey = false
                     laterUI {
                         displayRecoveryKeyNotBackedUpWarning()
                     }
@@ -684,7 +684,7 @@ class MainActivity : CommonNavActivity()
             ui.TopInformation.visibility = GONE
         }
     }
-    suspend fun displayRecoveryKeyNotBackedUpWarning()
+    fun displayRecoveryKeyNotBackedUpWarning()
     {
         val t = i18n(R.string.WriteDownRecoveryPhraseWarning)
         ui.TopInformation.text = t
@@ -1567,6 +1567,7 @@ class MainActivity : CommonNavActivity()
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
     {
         LogIt.info(sourceLoc() + " activity completed $requestCode $resultCode")
+        displayPendingTopbarMessages()
 
         // Handle my sub-activity results
         if ((requestCode == IDENTITY_OP_RESULT) || (requestCode == TRICKLEPAY_RESULT))

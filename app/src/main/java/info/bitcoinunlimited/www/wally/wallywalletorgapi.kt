@@ -102,38 +102,39 @@ fun NexInFiat(fiat: String, setter: (BigDecimal) -> Unit)
     // only usdt pair supported right now
     if (fiat != "USD") return
 
-    val prior = lastNexaPricePoll[fiat]
-    if (prior != null)
-    {
-        if (prior.first.elapsedNow().inWholeMilliseconds < POLL_INTERVAL)
-        {
-            setter(prior.second)
-            return
-        }
-    }
-
     // TODO periodic update
     launch {
-        val data = try
+        synchronized(lastNexaPricePoll)
         {
-            URL("http://$WALLY_WALLET_ORG_HOST/_api/v0/now/nex/usdt").readText()
+            val prior = lastNexaPricePoll[fiat]
+            if (prior != null)
+            {
+                if (prior.first.elapsedNow().inWholeMilliseconds < POLL_INTERVAL)
+                {
+                    setter(prior.second)
+                    return@launch
+                }
+            }
+
+            val data = try
+            {
+                URL("http://$WALLY_WALLET_ORG_HOST/_api/v0/now/nex/usdt").readText()
+            } catch (e: java.io.FileNotFoundException)
+            {
+                return@launch
+            } catch (e: Exception)
+            {
+                LogIt.info("Error retrieving price: " + e.message)
+                return@launch
+            }
+            LogIt.info(sourceLoc() + " " + data)
+            val parser: Json = Json { isLenient = true; ignoreUnknownKeys = true }  // nonstrict mode ignores extra fields
+            val obj = parser.decodeFromString(WallyWalletOrgApiCurPrice.serializer(), data)
+            LogIt.info(sourceLoc() + " " + obj.toString())
+            // Average the bid and ask prices
+            val v = (obj.Bid + obj.Ask) / BigDecimal(2)
+            lastNexaPricePoll[fiat] = Pair(Monotonic.markNow(), v)
+            setter(v)
         }
-        catch (e: java.io.FileNotFoundException)
-        {
-            return@launch
-        }
-        catch (e: Exception)
-        {
-            LogIt.info("Error retrieving price: " + e.message)
-            return@launch
-        }
-        LogIt.info(sourceLoc() + " " + data)
-        val parser: Json = Json { isLenient = true; ignoreUnknownKeys = true }  // nonstrict mode ignores extra fields
-        val obj = parser.decodeFromString(WallyWalletOrgApiCurPrice.serializer(), data)
-        LogIt.info(sourceLoc() + " " + obj.toString())
-        // Average the bid and ask prices
-        val v = (obj.Bid + obj.Ask)/BigDecimal(2)
-        lastNexaPricePoll[fiat] = Pair(Monotonic.markNow(), v)
-        setter(v)
     }
 }
