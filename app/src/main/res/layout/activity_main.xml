@@ -30,22 +30,21 @@
 
 
     <TextView
-            android:id="@+id/SendConfirm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="40dp"
-            android:paddingVertical="20dp"
-            android:paddingHorizontal="8dp"
-            android:text=""
-            android:textStyle="bold"
-            android:visibility="gone"
-            android:textSize="20sp"
-            style="@style/ConfirmAction"
-            android:textAlignment="center"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/TopInformation"
-            />
+        android:id="@+id/SendConfirm"
+        style="@style/ConfirmAction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="40dp"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="20dp"
+        android:text=""
+        android:textAlignment="center"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TopInformation" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/sendUI"
