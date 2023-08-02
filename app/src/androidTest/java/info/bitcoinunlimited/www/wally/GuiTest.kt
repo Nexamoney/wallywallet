@@ -47,6 +47,7 @@ import info.bitcoinunlimited.www.wally.R
 import org.nexa.libnexakotlin.libnexa
 
 
+
 val LogIt = Logger.getLogger("GuiTest")
 
 class TestTimeoutException(what: String): Exception(what)
