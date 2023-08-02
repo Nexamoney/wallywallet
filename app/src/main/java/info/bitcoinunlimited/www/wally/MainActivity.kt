@@ -1694,8 +1694,10 @@ class MainActivity : CommonNavActivity()
         super.onSaveInstanceState(outState)
         outState.putString("sendToAddress", ui.sendToAddress.text.toString().trim())
         outState.putString("sendQuantity", ui.sendQuantity.text.toString().trim())
-        outState.putString("sendCurrencyType", (ui.sendCurrencyType.selectedItem ?: currentlySelectedAccount) as String)
-        outState.putString("recvCoinType", (ui.recvIntoAccount.selectedItem ?: currentlySelectedAccount) as String)
+        outState.putString("sendCurrencyType",
+          (exceptNull{ui.sendCurrencyType.selectedItem } ?: currentlySelectedAccount) as String)
+        outState.putString("recvCoinType",
+          (exceptNull{ui.recvIntoAccount.selectedItem } ?: currentlySelectedAccount) as String)
     }
 
     @Suppress("UNUSED_PARAMETER")

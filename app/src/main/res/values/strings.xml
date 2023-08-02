@@ -133,6 +133,9 @@ Good luck!
     <!-- Implication is "no charge" or "no cost" for a transaction -->
     <string name="nothing">nothing</string>
 
+    <!-- This is only used in a debugging context to produce deliberately bad data -->
+    <string name="breakIt">break</string>
+
     <!-- Do not actually put anything in this one!  Its needed when we want a blank line -->
     <string name="empty" translatable="false"></string>
 

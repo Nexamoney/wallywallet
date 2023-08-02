@@ -2,6 +2,7 @@ package info.bitcoinunlimited.www.wally
 
 import bitcoinunlimited.libbitcoincash.BUException
 import bitcoinunlimited.libbitcoincash.ErrorSeverity
+import bitcoinunlimited.libbitcoincash.logThreadException
 
 open class BUExceptionI(err: Int, details:String?=null, severity: ErrorSeverity=ErrorSeverity.Expected) : BUException(i18n(err), details, severity, err)
 
@@ -18,3 +19,19 @@ open class UnavailableException(msg: Int = -1) : BUExceptionI(R.string.unavailab
 open class UiUnavailableException(msg: Int = -1) : BUExceptionI(R.string.unavailable, i18n(msg))
 
 open class TdppException(err: Int? = null, details: String?) : BUExceptionI(if (err != null) err else R.string.unknownError, details, ErrorSeverity.Abnormal)
+
+fun<T> exceptNull(logTest:((e:Exception)->Boolean)? = null,doit: ()->T?):T?
+{
+    try
+    {
+        return doit()
+    }
+    catch(e:Exception)
+    {
+        if (logTest != null && logTest(e))
+        {
+            logThreadException(e)
+        }
+    }
+    return null
+}

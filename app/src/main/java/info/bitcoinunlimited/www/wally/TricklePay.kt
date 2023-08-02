@@ -235,6 +235,9 @@ class TricklePayCustomTxFragment : Fragment()
 
     fun updateUI()
     {
+        if (brokenMode) ui.GuiTpSpecialTxBreak.visibility = View.VISIBLE
+        else ui.GuiTpSpecialTxBreak.visibility = View.GONE
+
         val sess = tpActivity?.tpSession ?: return
 
         val tpc = sess.topic.let {
@@ -342,34 +345,6 @@ class TricklePayCustomTxFragment : Fragment()
                 ui.GuiTpSpecialTxAccept.visibility = View.VISIBLE
                 ui.GuiCustomTxError.text = ""
             }
-
-/*
-            if (a.receivingTokenTypes > 0)
-            {
-                if (a.imSpendingTokenTypes > 0)
-                {
-                    // This is not strictly true.  The counterparty could hand you a transaction that both supplies a token and spends that token to themselves...
-                    ui.GuiCustomTxTokenSummary.text = i18n(R.string.TpExchangingTokens) % mapOf("tokSnd" to a.sendingTokenTypes.toString(), "tokRcv" to a.receivingTokenTypes.toString())
-                }
-                else
-                {
-                    ui.GuiCustomTxTokenSummary.text = i18n(R.string.TpReceivingTokens) % mapOf("tokRcv" to a.receivingTokenTypes.toString())
-                }
-            }
-            else
-            {
-                // This needs more thought.  imSpendingTokenTypes are the tokens that are being input into the transaction
-                // sendingTokenTypes are those that are being output.
-                if (a.imSpendingTokenTypes > 0)
-                {
-                    ui.GuiCustomTxTokenSummary.text = i18n(R.string.TpSendingTokens) % mapOf("tokSnd" to a.imSpendingTokenTypes.toString())
-                }
-                if (a.sendingTokenTypes > 0)
-                {
-                    ui.GuiCustomTxTokenSummary.text = i18n(R.string.TpSendingTokens) % mapOf("tokSnd" to a.sendingTokenTypes.toString())
-                }
-            }
-*/
         }
 
         // Change the title if the request is for a partial transaction
@@ -1239,7 +1214,9 @@ class TricklePayActivity : CommonNavActivity()
     }
     // Trickle pay transaction handlers
     @Suppress("UNUSED_PARAMETER")
-    fun onSignSpecialTx(view: View?)
+    fun onSignSpecialTx(view: View?) = SignSpecialTx()
+
+    fun SignSpecialTx(breakIt:Boolean = false)
     {
         try
         {
@@ -1260,7 +1237,7 @@ class TricklePayActivity : CommonNavActivity()
                     else
                     {
                         tpSession = null
-                        sess.acceptSpecialTx()
+                        sess.acceptSpecialTx(breakIt)
                         clearIntentAndFinish()
                         return
                     }
@@ -1280,6 +1257,9 @@ class TricklePayActivity : CommonNavActivity()
             finish()
         }
     }
+
+    fun onBreakSpecialTx(view: View?) = SignSpecialTx(true)
+
 
     fun onDenySpecialTx(@Suppress("UNUSED_PARAMETER") view: View?)
     {

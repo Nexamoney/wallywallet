@@ -41,7 +41,7 @@ private val LogIt = Logger.getLogger("BU.wally.assets")
 
 var WallyAssetRowColors = arrayOf(0x4Ff5f8ff.toInt(), 0x4Fd0d0ef.toInt())
 
-
+// If true, do not cache asset info locally -- load it every time
 var DBG_NO_ASSET_CACHE = false
 
 open class IncorrectTokenDescriptionDoc(details: String) : BUException(details, "Incorrect token description document", ErrorSeverity.Expected)
@@ -222,7 +222,6 @@ class AssetManager(val app: WallyApp)
             storeTokenDesc(groupId, td)
             return td
         }
-
     }
 
 

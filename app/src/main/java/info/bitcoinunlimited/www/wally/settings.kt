@@ -57,6 +57,8 @@ class Settings : CommonActivity()
     private lateinit var ui:ActivitySettingsBinding
     var app: WallyApp? = null
 
+    var devModeChecks = 0
+
     val accounts: MutableMap<String, Account>
         get() = app!!.accounts
 
@@ -108,6 +110,13 @@ class Settings : CommonActivity()
                   ui.GuiLogInterestingData.visibility = VISIBLE
                   ui.nexaregBlockchainSettings.visibility = VISIBLE
                   ui.nexatestBlockchainSettings.visibility = VISIBLE
+                  if (devModeChecks == 3)
+                  {
+                      brokenMode = true
+                      this.displayNotice("enabled negative test mode")
+                      devModeChecks = 0
+                  }
+                  else devModeChecks++
               }
               else
               {
@@ -115,6 +124,7 @@ class Settings : CommonActivity()
                   ui.GuiLogInterestingData.visibility = GONE
                   ui.nexaregBlockchainSettings.visibility = GONE
                   ui.nexatestBlockchainSettings.visibility = GONE
+                  brokenMode = false
               }
           })
         {
@@ -172,7 +182,6 @@ class Settings : CommonActivity()
             {
             }
         }
-
 
     }
 

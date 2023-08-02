@@ -9,8 +9,8 @@ android {
         applicationId "info.bitcoinunlimited.www.wally"
         minSdkVersion 26
         targetSdkVersion 33
-        versionCode 252
-        versionName "2.52"
+        versionCode 253
+        versionName "2.53"
         testApplicationId "bitcoinunlimited.wally"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -66,43 +66,43 @@ allprojects {
 
 
 dependencies {
-    def room_version = '2.5.1'
+    def room_version = '2.5.2'  // https://developer.android.com/jetpack/androidx/releases/room
+    def ktor_version = '2.3.2' // https://github.com/ktorio/ktor
     def ax_test_version = '1.5.2'
-    def ktor_version = '2.3.1'
     def ax_espresso_version = '3.5.1'
-    def serializationVersion = '1.5.1'
-    def androidXCoreVersion = '1.10.1'
+    def serializationVersion = '1.5.1' // https://github.com/Kotlin/kotlinx.serialization/releases
+    def androidXCoreVersion = '1.10.1' // https://developer.android.com/jetpack/androidx/releases/core
 
     // example that grabs all aars and jars
     // implementation fileTree(dir: 'aars', include: ['*.aar'])
     // implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Grab libbitcoincash locally for debug or from the released location
-    implementation files('aars/libbitcoincash-release.aar')  // locate this directory at: <repo_home>/app/aars/
-    //implementation 'info.bitcoinunlimited:libbitcoincash:3.2.3'
+    //implementation files('aars/libbitcoincash-release.aar')  // locate this directory at: <repo_home>/app/aars/
+    implementation 'info.bitcoinunlimited:libbitcoincash:3.2.6'
 
-    implementation 'com.google.android.flexbox:flexbox:3.0.0'
+    implementation 'com.google.android.flexbox:flexbox:3.0.0'  // https://github.com/google/flexbox-layout/tags
     implementation 'androidx.activity:activity:1.7.2'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.6.0'  // https://developer.android.com/jetpack/androidx/releases/navigation
+    implementation 'androidx.navigation:navigation-ui-ktx:2.6.0'
     implementation 'androidx.wear:wear:1.2.0'
     //implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"  // https://github.com/Kotlin/kotlinx.coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-cbor:$serializationVersion"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    implementation 'com.android.support.constraint:constraint-layout:2.1.4'
+    implementation 'com.android.support.constraint:constraint-layout:2.1.4'  // https://developer.android.com/jetpack/androidx/releases/constraintlayout
     implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
 
     implementation "androidx.room:room-runtime:$room_version"
-    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.appcompat:appcompat:1.6.1'  // https://developer.android.com/jetpack/androidx/releases/appcompat
     implementation "androidx.core:core-ktx:$androidXCoreVersion"
 
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'com.google.android.material:material:1.8.0'
-    implementation 'androidx.preference:preference:1.2.0'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.preference:preference:1.2.1'  // https://developer.android.com/jetpack/androidx/releases/preference
     kapt "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
 
@@ -116,7 +116,7 @@ dependencies {
     implementation("com.caverock:androidsvg-aar:1.4")
 
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'Nexa:NexaRpc:1.0.5'
+    androidTestImplementation 'Nexa:NexaRpc:1.0.6'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation "androidx.test:runner:$ax_test_version"
     androidTestImplementation "androidx.test:rules:1.5.0"

@@ -82,6 +82,7 @@ var walletDb: KvpDatabase? = null
 var wallyApp: WallyApp? = null
 
 var devMode: Boolean = false
+var brokenMode: Boolean = false
 var allowAccessPriceData: Boolean = true
 
 const val RETRIEVE_ONLY_ADDITIONAL_ADDRESSES = 10
