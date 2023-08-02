@@ -384,6 +384,29 @@ open class CommonActivity : AppCompatActivity()
         super.onDestroy()
     }
 
+    fun displayPendingTopbarMessages()
+    {
+        // show anything provided by the other activity
+        val err = wallyApp?.lastError
+        val errDetails = wallyApp?.lastErrorDetails
+        wallyApp?.lastError = null
+        wallyApp?.lastErrorDetails = null
+
+        if (err != null) displayError(err, errDetails ?: "")
+        else  // If there's an error, it takes precedence to warnings
+        {
+            val notice = wallyApp?.lastNotice
+            val noticeDetails = wallyApp?.lastNoticeDetails
+            if (notice != null)
+            {
+                if ((notice == -1) && (noticeDetails != null)) displayNotice(noticeDetails, "", NORMAL_NOTICE_DISPLAY_TIME)
+                else displayNotice(notice, noticeDetails ?: "", NORMAL_NOTICE_DISPLAY_TIME)
+            }
+        }
+        wallyApp?.lastNotice = null
+        wallyApp?.lastNoticeDetails = null
+    }
+
     override fun onResume()
     {
         super.onResume()
@@ -415,8 +438,6 @@ open class CommonActivity : AppCompatActivity()
             val noticeDetails = wallyApp?.lastNoticeDetails
             if (notice != null)
             {
-                var msg:String = ""
-                var details: String = ""
                 if ((notice == -1) && (noticeDetails != null)) displayNotice(noticeDetails, "", NORMAL_NOTICE_DISPLAY_TIME, { if (finishNow) finish()})
                 else displayNotice(notice, noticeDetails ?: "", NORMAL_NOTICE_DISPLAY_TIME, { if (finishNow) finish()})
             }

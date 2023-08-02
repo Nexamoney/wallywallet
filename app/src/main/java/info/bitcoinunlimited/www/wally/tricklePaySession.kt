@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.net.toUri
 import java.util.logging.Logger
 import bitcoinunlimited.libbitcoincash.*
+import bitcoinunlimited.libbitcoincash.simpleapi.NexaScript
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.*
@@ -17,6 +18,7 @@ import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
+import java.lang.Math.random
 import java.net.SocketTimeoutException
 import java.net.URL
 import java.net.URLEncoder
@@ -677,14 +679,38 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
     }
 
 
-    fun acceptSpecialTx()
+    /** If breakIt is true, a bad transaction is generated (for testing) */
+    fun acceptSpecialTx(breakIt:Boolean = false)
     {
         LogIt.info("accept trickle pay special transaction")
         accepted = true
         val pTx = proposedTx
         val panalysis = proposalAnalysis
+
         if ((pTx != null)&&(panalysis != null))
         {
+            if (breakIt)
+            {
+                val choice = (0..1).random()
+                when (choice)
+                {
+                    // remove an input
+                    0 ->  pTx!!.inputs.removeAt((0 until pTx!!.inputs.size).random())
+                    // remove a signature
+                    1 ->
+                    {
+                        val inp = pTx!!.inputs.random()
+                        inp.script = NexaScript()
+                    }
+                    // remove an output; this should work because some sig should have signed the whole tx (up to this point if partial)
+                    2 ->
+                    {
+                        pTx!!.outputs.removeAt((0 until pTx!!.outputs.size).random())
+                    }
+                }
+                LogIt.info("Breaking this TDPP special transaction response: ${pTx.toHex()}")
+            }
+
             proposedTx = null
             proposalUri = null
             LogIt.info("sign trickle pay special transaction")
@@ -695,7 +721,8 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
 
             wallyApp?.let { app ->
                 // Post this transaction if the TDPP protocol suggests that I do so (its complete)
-                if ((tflags and TDPP_FLAG_NOPOST) == 0) try
+                // (And I'm not deliberately creating a bad transaction)
+                if (((tflags and TDPP_FLAG_NOPOST) == 0)&&(!breakIt)) try
                     {
                         getRelevantAccount(domain?.accountName).wallet.send(pTx)
                     }
@@ -877,7 +904,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         val chalby = chalbyStr?.fromHex()
 
         val stemplate = SatoshiScript(chainSelector!!, SatoshiScript.Type.SATOSCRIPT, scriptTemplateHex.fromHex())
-        LogIt.info(sourceLoc() + ": Asset filter: " + stemplate.toHex())
+        LogIt.info(sourceLoc() + ": Asset filter: " + stemplate.toHex() + " ASM: " + stemplate.toAsm())
 
 
         val acc = getRelevantAccount()
@@ -899,6 +926,12 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
                         if (chalby != null && challengerId != null) makeChallengeTx(spendable, challengerId, chalby)?.toHex() else null,
                       )
                     )
+                }
+                else
+                {
+                    LogIt.info("Rejected: " + constraint.toHex() + "  ASM: " + constraint.toAsm())
+                    val tryAgain = constraint.matches(stemplate, true)
+                    LogIt.info(tryAgain.toString())
                 }
             }
         }

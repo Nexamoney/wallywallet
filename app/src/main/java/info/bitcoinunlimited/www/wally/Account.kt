@@ -540,117 +540,120 @@ class Account(
             wallet.restart()
             wallet.chainstate?.chain?.restart()
             wallet.chainstate?.chain?.net?.restart()
-            onChange(true)
+            updateUI(true)
         }
     }
 
 
     fun changeAsyncProcessing(force: Boolean)
     {
-            // Update our cache of the balances
-            balance = fromFinestUnit(wallet.balance)
-            unconfirmedBalance = fromFinestUnit(wallet.balanceUnconfirmed)
-            confirmedBalance = fromFinestUnit(wallet.balanceConfirmed)
+        // Update our cache of the balances
+        balance = fromFinestUnit(wallet.balance)
+        unconfirmedBalance = fromFinestUnit(wallet.balanceUnconfirmed)
+        confirmedBalance = fromFinestUnit(wallet.balanceConfirmed)
 
-            var delta = balance - confirmedBalance
+        updateUI(force)
+    }
 
-            val chainstate = wallet.chainstate
-            var unconfBalStr = ""
-            if (chainstate != null)
+    fun updateUI(force: Boolean)
+    {
+        var delta = balance - confirmedBalance
+
+        val chainstate = wallet.chainstate
+        var unconfBalStr = ""
+        if (chainstate != null)
+        {
+            if (chainstate.isSynchronized(1, 60 * 60))  // ignore 1 block desync or this displays every time a new block is found
             {
-                if (chainstate.isSynchronized(1, 60 * 60))  // ignore 1 block desync or this displays every time a new block is found
-                {
-                    unconfBalStr =
-                      if (0.toBigDecimal(currencyMath).setScale(currencyScale) == unconfirmedBalance)
-                          ""
-                      else
-                          i18n(R.string.incoming) % mapOf(
-                            "delta" to (if (delta > BigDecimal.ZERO) "+" else "") + format(delta),
-                            "unit" to currencyCode
-                          )
+                unconfBalStr =
+                  if (0.toBigDecimal(currencyMath).setScale(currencyScale) == unconfirmedBalance)
+                      ""
+                  else
+                      i18n(R.string.incoming) % mapOf(
+                        "delta" to (if (delta > BigDecimal.ZERO) "+" else "") + format(delta),
+                        "unit" to currencyCode
+                      )
 
-                    laterUI {
-                        balanceGUI.setAttribute("strength", "normal")
-                        if (delta > BigDecimal.ZERO) unconfirmedBalanceGUI.setAttribute("color", R.color.colorCredit)
-                        else unconfirmedBalanceGUI.setAttribute("color", R.color.colorDebit)
-                    }
-                }
-                else
-                {
-                    unconfBalStr = if (chainstate.syncedDate <= 1231416000) i18n(R.string.unsynced)  // for fun: bitcoin genesis block
-                    else i18n(R.string.balanceOnTheDate) % mapOf("date" to epochToDate(chainstate.syncedDate))
-                    laterUI {
-                        balanceGUI.setAttribute("strength", "dim")
-                        unconfirmedBalanceGUI.setAttribute("color", R.color.unsyncedStatusColor)
-                    }
+                laterUI {
+                    balanceGUI.setAttribute("strength", "normal")
+                    if (delta > BigDecimal.ZERO) unconfirmedBalanceGUI.setAttribute("color", R.color.colorCredit)
+                    else unconfirmedBalanceGUI.setAttribute("color", R.color.colorDebit)
                 }
             }
             else
             {
+                unconfBalStr = if (chainstate.syncedDate <= 1231416000) i18n(R.string.unsynced)  // for fun: bitcoin genesis block
+                else i18n(R.string.balanceOnTheDate) % mapOf("date" to epochToDate(chainstate.syncedDate))
                 laterUI {
                     balanceGUI.setAttribute("strength", "dim")
-                    //unconfirmedBalanceGUI(i18n(R.string.walletDisconnectedFromBlockchain), force)
-                    uiBinding?.balanceUnconfirmedValue?.text = i18n(R.string.walletDisconnectedFromBlockchain)
+                    unconfirmedBalanceGUI.setAttribute("color", R.color.unsyncedStatusColor)
                 }
             }
-
-
-            balanceGUI(format(balance), force)
-            unconfirmedBalanceGUI(unconfBalStr, force)
-
-            // If we got something in a receive address, then show a new one
-            updateReceiveAddressUI?.invoke(this)
-
-            if (chainstate != null)
-            {
-                val cnxnLst = wallet.chainstate?.chain?.net?.mapConnections() { it.name }
-
-                val trying: List<String> = if (chainstate.chain.net is MultiNodeCnxnMgr) (chainstate.chain.net as MultiNodeCnxnMgr).initializingCnxns.map { it.name } else listOf()
-                val peers = cnxnLst?.joinToString(", ") + (if (trying.isNotEmpty()) (" " + i18n(R.string.trying) + " " + trying.joinToString(", ")) else "")
-
-                val infoStr = i18n(R.string.at) + " " + (wallet.chainstate?.syncedHash?.toHex()?.take(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight
-                  ?: "") + " " + i18n(R.string.of) + " " + (wallet.chainstate?.chain?.curHeight
-                  ?: "") + " blocks, " + (wallet.chainstate?.chain?.net?.size ?: "") + " peers\n" + peers
-                infoGUI(infoStr, force)  // since numPeers takes cnxnLock
-            }
-            else
-            {
-                //uiBinding?.Info?.text = i18n(R.string.walletDisconnectedFromBlockchain)
-                infoGUI(i18n(R.string.walletDisconnectedFromBlockchain), force)
-            }
-
-            tickerGUI(name, force)
-            //uiBinding?.balanceTickerText?.text = name
-
+        }
+        else
+        {
             laterUI {
-                if (fiatPerCoin > BigDecimal.ZERO)
-                {
-                    var fiatDisplay = balance * fiatPerCoin
-                    uiBinding?.info?.let { it.visibility = View.VISIBLE; it.text = i18n(R.string.approximatelyT) % mapOf("qty" to fiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode) }
-                }
-                else uiBinding?.info?.let { it.visibility = View.GONE }
+                balanceGUI.setAttribute("strength", "dim")
+                //unconfirmedBalanceGUI(i18n(R.string.walletDisconnectedFromBlockchain), force)
+                uiBinding?.balanceUnconfirmedValue?.text = i18n(R.string.walletDisconnectedFromBlockchain)
             }
+        }
 
-            // Decide whether to show the assets nav
-            if (!devMode)  // because always shown in dev mode
+
+        balanceGUI(format(balance), force)
+        unconfirmedBalanceGUI(unconfBalStr, force)
+
+        // If we got something in a receive address, then show a new one
+        updateReceiveAddressUI?.invoke(this)
+
+        if (chainstate != null)
+        {
+            val cnxnLst = wallet.chainstate?.chain?.net?.mapConnections() { it.name }
+
+            val trying: List<String> = if (chainstate.chain.net is MultiNodeCnxnMgr) (chainstate.chain.net as MultiNodeCnxnMgr).initializingCnxns.map { it.name } else listOf()
+            val peers = cnxnLst?.joinToString(", ") + (if (trying.isNotEmpty()) (" " + i18n(R.string.trying) + " " + trying.joinToString(", ")) else "")
+
+            val infoStr = i18n(R.string.at) + " " + (wallet.chainstate?.syncedHash?.toHex()?.take(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight
+              ?: "") + " " + i18n(R.string.of) + " " + (wallet.chainstate?.chain?.curHeight
+              ?: "") + " blocks, " + (wallet.chainstate?.chain?.net?.size ?: "") + " peers\n" + peers
+            infoGUI(infoStr, force)  // since numPeers takes cnxnLock
+        }
+        else
+        {
+            infoGUI(i18n(R.string.walletDisconnectedFromBlockchain), force)
+        }
+
+        tickerGUI(name, force)
+
+        laterUI {
+            if (fiatPerCoin > BigDecimal.ZERO)
             {
-                val now: Long = Instant.now().toEpochMilli()
-                if (lastAssetCheck + (5L * 1000L) < now)  // Don't check too often
+                var fiatDisplay = balance * fiatPerCoin
+                uiBinding?.info?.let { it.visibility = View.VISIBLE; it.text = i18n(R.string.approximatelyT) % mapOf("qty" to fiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode) }
+            }
+            else uiBinding?.info?.let { it.visibility = View.GONE }
+        }
+
+        // Decide whether to show the assets nav
+        if (!devMode)  // because always shown in dev mode
+        {
+            val now: Long = Instant.now().toEpochMilli()
+            if (lastAssetCheck + (8L * 1000L) < now)  // Don't check too often
+            {
+                val act = currentActivity
+                if (act != null && act is CommonNavActivity)
                 {
-                    val act = currentActivity
-                    if (act != null && act is CommonNavActivity)
+                    //val prefDB = act.getSharedPreferences(i18n(R.string.preferenceFileName), Context.MODE_PRIVATE)
+                    //val showingAssets = prefDB.getBoolean(SHOW_ASSETS_PREF, false)
+                    if (!act.isShowingAssetsNavButton())  // only check if not currently showing the assets nav
                     {
-                        //val prefDB = act.getSharedPreferences(i18n(R.string.preferenceFileName), Context.MODE_PRIVATE)
-                        //val showingAssets = prefDB.getBoolean(SHOW_ASSETS_PREF, false)
-                        if (!act.isShowingAssetsNavButton())  // only check if not currently showing the assets nav
-                        {
-                            if (hasAssets()) laterUI {
-                                act.setAssetsNavVisible(true)  // once there are assets, we show the nav, but we don't change the prefs so if the assets are sent, asset nav will disappear on the next run
-                            }
+                        if (hasAssets()) laterUI {
+                            act.setAssetsNavVisible(true)  // once there are assets, we show the nav, but we don't change the prefs so if the assets are sent, asset nav will disappear on the next run
                         }
                     }
                 }
             }
+        }
     }
 
     var lastAssetCheck = 0L

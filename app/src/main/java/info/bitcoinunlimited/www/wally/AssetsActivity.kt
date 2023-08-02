@@ -24,18 +24,24 @@ import com.caverock.androidsvg.SVG
 import info.bitcoinunlimited.www.wally.databinding.ActivityAssetsBinding
 import info.bitcoinunlimited.www.wally.databinding.AssetListItemBinding
 import info.bitcoinunlimited.www.wally.databinding.AssetSuccinctListItemBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
 import java.io.*
+import java.math.BigDecimal
 import java.net.URI
 import java.net.URL
+import java.util.concurrent.Executors
 import java.util.logging.Logger
 import java.util.zip.ZipInputStream
+import kotlin.coroutines.CoroutineContext
 
 
 private val LogIt = Logger.getLogger("BU.wally.assets")
 
 var WallyAssetRowColors = arrayOf(0x4Ff5f8ff.toInt(), 0x4Fd0d0ef.toInt())
 
-
+// If true, do not cache asset info locally -- load it every time
 var DBG_NO_ASSET_CACHE = false
 
 open class IncorrectTokenDescriptionDoc(details: String) : BUException(details, "Incorrect token description document", ErrorSeverity.Expected)
@@ -133,93 +139,89 @@ class AssetManager(val app: WallyApp)
             if (DBG_NO_ASSET_CACHE) throw Exception()
             if (forceReload) throw Exception()
             val data = loadAssetFile(groupId.toHex() + ".td").second
-            val ret = kotlinx.serialization.json.Json.decodeFromString(TokenDesc.serializer(),String(data))
+            val ret = kotlinx.serialization.json.Json.decodeFromString(TokenDesc.serializer(), String(data))
             if (ret.genesisInfo?.height ?: 0 >= 0)  // If the data is valid in the asset file
                 return ret
-        }
-        catch(e: Exception) // file not found, so grab it
+        } catch (e: Exception) // file not found, so grab it
         {
         }
 
         LogIt.info("Genesis Info for ${groupId.toHex()} not in cache")
         // first load the token description doc (TDD)
         val ec = openElectrum(chain.chainSelector)
-        val tg = try {
-            ec.getTokenGenesisInfo(groupId, 30*1000)
-        }
-        catch(e: ElectrumRequestTimeout)
+        val tg = try
+        {
+            ec.getTokenGenesisInfo(groupId, 30 * 1000)
+        } catch (e: ElectrumRequestTimeout)
         {
             app.currentActivity?.displayException(R.string.ElectrumNetworkUnavailable, e)
             LogIt.info(sourceLoc() + ": Rostrum is inaccessible loading token info for ${groupId.toHex()}")
             TokenGenesisInfo(null, null, -1, null, null, "", "", "")
         }
 
-            val docUrl = tg.document_url
-            if (docUrl != null)
+        val docUrl = tg.document_url
+        if (docUrl != null)
+        {
+            var doc: String? = null
+            try
             {
-                var doc: String? = null
-                try
-                {
-                    LogIt.info(sourceLoc() + ": Accessing TDD from " + docUrl)
-                    doc = URL(docUrl).readText()
-                }
-                catch (e: java.io.FileNotFoundException)
-                {
-                }
-                catch (e: Exception)
-                {
-                    LogIt.info(sourceLoc() + ": Error retrieving token description document: " + e.message)
-                }
+                LogIt.info(sourceLoc() + ": Accessing TDD from " + docUrl)
+                doc = URL(docUrl).readText()
+            } catch (e: java.io.FileNotFoundException)
+            {
+            } catch (e: Exception)
+            {
+                LogIt.info(sourceLoc() + ": Error retrieving token description document: " + e.message)
+            }
 
-                if (doc != null)  // got the TDD
+            if (doc != null)  // got the TDD
+            {
+                val tx = ec.getTx(tg.txid)
+                var addr: PayAddress? = null
+                for (out in tx.outputs)
                 {
-                    val tx=ec.getTx(tg.txid)
-                    var addr:PayAddress? = null
-                    for (out in tx.outputs)
+                    val gi = out.script.groupInfo(out.amount)
+                    if (gi != null)
                     {
-                        val gi = out.script.groupInfo(out.amount)
-                        if (gi != null)
+                        if (gi.groupId == groupId)  // genesis of group must only produce 1 authority output so just match the groupid
                         {
-                            if (gi.groupId == groupId)  // genesis of group must only produce 1 authority output so just match the groupid
-                            {
-                                //assert(gi.isAuthority()) // possibly but double check subgroup creation
-                                addr = out.script.address
-                                break
-                            }
+                            //assert(gi.isAuthority()) // possibly but double check subgroup creation
+                            addr = out.script.address
+                            break
                         }
                     }
-
-                    val td:TokenDesc = decodeTokenDescDoc(doc, addr)
-                    val tddHash = td.tddHash
-                    if ((tddHash != null) && (tg.document_hash == Hash256(tddHash).toHex()))
-                    {
-                            td.genesisInfo = tg
-                            storeTokenDesc(groupId, td)  // We got good data, so cache it
-                            return td
-                    }
-                    else
-                    {
-                            LogIt.info("Incorrect token desc document")
-                            val tderr = TokenDesc(tg.ticker ?: "", tg.name, "token description document is invalid")
-                            tderr.genesisInfo = tg
-                            return tderr
-                    }
                 }
-                else  // Could not access the doc for some reason, don't cache it so we retry next time we load the token
+
+                val td: TokenDesc = decodeTokenDescDoc(doc, addr)
+                val tddHash = td.tddHash
+                if ((tddHash != null) && (tg.document_hash == Hash256(tddHash).toHex()))
                 {
-                    val td = TokenDesc(tg.ticker ?: "", tg.name)
                     td.genesisInfo = tg
+                    storeTokenDesc(groupId, td)  // We got good data, so cache it
                     return td
                 }
+                else
+                {
+                    LogIt.info("Incorrect token desc document")
+                    val tderr = TokenDesc(tg.ticker ?: "", tg.name, "token description document is invalid")
+                    tderr.genesisInfo = tg
+                    return tderr
+                }
             }
-            else // There is no token doc, cache what we have since its everything known about this token
+            else  // Could not access the doc for some reason, don't cache it so we retry next time we load the token
             {
                 val td = TokenDesc(tg.ticker ?: "", tg.name)
                 td.genesisInfo = tg
-                storeTokenDesc(groupId, td)
                 return td
             }
-
+        }
+        else // There is no token doc, cache what we have since its everything known about this token
+        {
+            val td = TokenDesc(tg.ticker ?: "", tg.name)
+            td.genesisInfo = tg
+            storeTokenDesc(groupId, td)
+            return td
+        }
     }
 
 
@@ -814,7 +816,9 @@ class AssetBinder(val ui: AssetListItemBinding, val activity: AssetsActivity): G
                 {
                     ui.GuiAssetId.text = d.groupInfo.groupId.toString()
                     ui.GuiAssetName.text = d.name ?: ""
-                    ui.GuiAssetQuantity.text = d.groupInfo.tokenAmt.toString()
+                    var tmp = BigDecimal(d.groupInfo.tokenAmt).setScale(d.tokenInfo?.genesisInfo?.decimal_places ?: 0)
+                    tmp = tmp/(BigDecimal(10).pow(d.tokenInfo?.genesisInfo?.decimal_places ?: 0))
+                    ui.GuiAssetQuantity.text = tmp.toString()
                     ui.GuiAssetQuantity.visibility = View.VISIBLE
                     ui.GuiAssetAuthor.visibility = View.GONE
                     ui.GuiAssetSeries.visibility = View.GONE
@@ -829,7 +833,9 @@ class AssetBinder(val ui: AssetListItemBinding, val activity: AssetsActivity): G
                     else
                     {
                         ui.GuiAssetQuantity.visibility = View.VISIBLE
-                        ui.GuiAssetQuantity.text = d.groupInfo.tokenAmt.toString()
+                        var tmp = BigDecimal(d.groupInfo.tokenAmt).setScale(d.tokenInfo?.genesisInfo?.decimal_places ?: 0)
+                        tmp = tmp/(BigDecimal(10).pow(d.tokenInfo?.genesisInfo?.decimal_places ?: 0))
+                        ui.GuiAssetQuantity.text = tmp.toString()
                     }
 
                     if ((nft.author != null) && (nft.author.length > 0))
@@ -957,6 +963,9 @@ class AssetBinder(val ui: AssetListItemBinding, val activity: AssetsActivity): G
 
 class AssetsActivity : CommonNavActivity()
 {
+    protected val coCtxt: CoroutineContext = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
+    protected val coScope: CoroutineScope = kotlinx.coroutines.CoroutineScope(coMiscCtxt)
+
     private lateinit var ui: ActivityAssetsBinding
     lateinit var assetsLayoutManager: LinearLayoutManager
     override var navActivityId = R.id.navigation_assets
@@ -1076,11 +1085,26 @@ class AssetsActivity : CommonNavActivity()
         // Start grabbing the data for all assets (asynchronously)
         for (asset in ast.values)
         {
-            later {
+            laterAssets {
                 asset.load(acc.wallet.blockchain, wallyApp!!.assetManager)
             }
         }
         return ast.values.toList()
+    }
+
+    /** Do whatever you pass but not within the user interface context, asynchronously */
+    fun laterAssets(fn: suspend () -> Unit): Unit
+    {
+        coScope.launch(coCtxt) {
+            try
+            {
+                fn()
+            } catch (e: Exception) // Uncaught exceptions will end the app
+            {
+                LogIt.info(sourceLoc() + ": General exception handler (should be caught earlier!)")
+                handleThreadException(e)
+            }
+        }
     }
 
     fun onMediaClicked()
