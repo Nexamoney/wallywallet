@@ -21,6 +21,7 @@ import bitcoinunlimited.libbitcoincash.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
+import org.nexa.libnexakotlin.libnexa
 import java.lang.AssertionError
 import java.lang.Exception
 import java.math.BigDecimal
@@ -32,7 +33,7 @@ import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
 // The IP address of the host machine: Android sets up a fake network with the host hardcoded to this IP
-val EMULATOR_HOST_IP = SimulationHostIP //"192.168.1.100" //"10.0.2.2"
+val EMULATOR_HOST_IP = "192.168.1.5" //SimulationHostIP //"192.168.1.100" //"10.0.2.2"
 
 val LogIt = Logger.getLogger("AndroidTest")
 
@@ -218,7 +219,7 @@ class UnitTest
 
         val c = try
         {
-            ElectrumClient(ChainSelector.NEXAREGTEST, EMULATOR_HOST_IP, DEFAULT_NEXAREG_TCP_ELECTRUM_PORT, "Electrum@${EMULATOR_HOST_IP}:${DEFAULT_NEXAREG_TCP_ELECTRUM_PORT}")
+            ElectrumClient(ChainSelector.NEXAREGTEST, EMULATOR_HOST_IP, DEFAULT_NEXAREG_TCP_ELECTRUM_PORT, "Electrum@${EMULATOR_HOST_IP}:${DEFAULT_NEXAREG_TCP_ELECTRUM_PORT}", useSSL = false)
         } catch (e: java.net.ConnectException)
         {
             LogIt.warning("Cannot connect: Skipping Electrum tests: ${e}")
@@ -254,9 +255,9 @@ class UnitTest
         {
             cnxn.getTx("5a2e45c999509a3505cf543d462977b198957abefcc9c86f4a0ef59525363d00", 1000)  // doesn't exist
             assert(false)
-        } catch (e: ElectrumIncorrectRequest)
+        } catch (e: ElectrumNotFound)
         {
-            assert(e.message!!.contains("not indexed tx"))
+            assert(e.message!!.contains("not in blockchain"))
         }
 
         //cnxn.getTx("5a2e45c999509a3505cf543d462977b198957abefcc9c86f4a0ef59525363d0b", 1000)
@@ -362,6 +363,18 @@ class UnitTest
     }
 
     @Test
+    fun TestGroup()
+    {
+        val groupId = GroupId(ChainSelector.NEXAREGTEST, ByteArray(32, { it.toByte() }))
+        val h = groupId.toHex()
+        val a = groupId.toString()
+        val an = groupId.toStringNoPrefix()
+        check(h == "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")
+        check(a == "nexareg:tqqqzqsrqszsvpcgpy9qkrqdpc83qygjzv2p29shrqv35xcur50p7z29u6yap")
+        check(an == "tqqqzqsrqszsvpcgpy9qkrqdpc83qygjzv2p29shrqv35xcur50p7z29u6yap")
+    }
+
+    @Test
     fun testTokenDescDoc()
     {
         val s = """[{
@@ -417,17 +430,16 @@ class UnitTest
     fun testHash()
     {
         // run against some test vectors...
-
-        var hash1 = Hash.sha256(ByteArray(64, { _ -> 1 }))
+        var hash1 = libnexa.sha256(ByteArray(64, { _ -> 1 }))
         assertEquals("7c8975e1e60a5c8337f28edf8c33c3b180360b7279644a9bc1af3c51e6220bf5", hash1.toHex())
-        var hash2 = Hash.hash256(ByteArray(64, { _ -> 1 }))
+        var hash2 = libnexa.hash256(ByteArray(64, { _ -> 1 }))
         assertEquals("61a088b4cf1f244e52e5e88fcd91b3b7d6135ebff53476ecc8436e23b5e7f095", hash2.toHex())
-        var hash3 = Hash.hash160(ByteArray(64, { _ -> 1 }))
+        var hash3 = libnexa.hash160(ByteArray(64, { _ -> 1 }))
         assertEquals("171073b9bee66e89f657f50532412e3539bb1d6b", hash3.toHex())
 
         val data =
           "0100000001ef128218b638f8b34e125d3a87f074974522b07be629f84b72bba549d493abcb0000000049483045022100dbd9a860d31ef53b9ae12306f25a5f64ac732d5951e1d843314ced89d80c585b02202697cd52be31156a1c30f094aa388cb0d5e8e7f767472fd0b03cb1b7e666c23841feffffff0277800f04000000001976a9148132c3672810992a3c780772b980b1d690598af988ac80969800000000001976a914444b7eaa50459a727a4238778cde09a21f9b579a88ac81531400".fromHex()
-        var hash4 = Hash256(Hash.hash256(data))
+        var hash4 = Hash256(libnexa.hash256(data))
         assertEquals(hash4.toHex(), "1605af3f8beb87fa26fc12a45e52ce5e0e296d0da551c0775916634d451ca664")
 
         val tx = BchTransaction(ChainSelector.BCHTESTNET, data, SerializationType.NETWORK)
@@ -493,12 +505,10 @@ class UnitTest
         kotlin.check(sp.spentUnconfirmed == sp2.spentUnconfirmed)
         kotlin.check(sp.spendableUnconfirmed == sp2.spendableUnconfirmed)
 
-        val td = TdppDomain("domain", "topic", "addr", "currency", -1, 2, 3, 4, "per", "day", "perweek", "permonth", false)
-
+        val td = TdppDomain("domain", "topic", "addr", "currency", -1, 2, 3, 4, "per", "day", "perweek", "permonth", false, "mainpay", "lastpay", "actname")
         var ser3 = BCHserialized(td.BCHserialize(SerializationType.DISK).flatten(), SerializationType.DISK)
         var tdc = TdppDomain(ser3)
         check(td.equals(tdc))
-
     }
 
     @Test
@@ -506,9 +516,9 @@ class UnitTest
     {
         val secret = ByteArray(32, { _ -> 1 })
         val index = 0
-        val newSecret = AddressDerivationKey.Hd44DeriveChildKey(secret, 27, AddressDerivationKey.ANY, 0, 1, index.toInt())
-        LogIt.info("HD key: " + newSecret.toHex())
-        assertEquals(newSecret.toHex(), "9c219cb84e3199b076aaa0f954418407b1e8d54f79103612fbaf04598bc8be55")
+        val newSecret = libnexa.deriveHd44ChildKey(secret, 27, AddressDerivationKey.ANY, 0, true, index)
+        LogIt.info("HD key: " + newSecret.first.toHex())
+        assertEquals(newSecret.first.toHex(), "9c219cb84e3199b076aaa0f954418407b1e8d54f79103612fbaf04598bc8be55")
 
         val ctxt = PlatformContext(applicationContext)
         val wdb = OpenKvpDB(ctxt, dbPrefix + "testHDerivationWallet")!!
@@ -560,7 +570,7 @@ class UnitTest
     @Test
     fun testBlockchain()
     {
-        val workBytes = Blockchain.getWorkFromDifficultyBits(0x172c4e11)
+        val workBytes = libnexa.getWorkFromDifficultyBits(0x172c4e11)
         val work = BigInteger(1, workBytes)
         assertEquals(work, BigInteger("5c733e87890743fed65", 16))
     }
@@ -604,7 +614,7 @@ class UnitTest
         for (i: Int in 1..1000)
         {
             val b = byteArrayOf(i.and(255).toByte(), ((i shr 8) and 255).toByte(), ((i shr 16) and 255).toByte())
-            val v = Hash256(Hash.sha256(b))
+            val v = Hash256(libnexa.sha256(b))
             assertEquals(hac.fromByteArray(hac.toByteArray(v)), v)
         }
 
@@ -709,49 +719,49 @@ class UnitTest
         val secret = identityDest.secret ?: throw IdentityException("Wallet failed to provide an identity with a secret", "bad wallet", ErrorSeverity.Severe)
         val address = identityDest.address ?: throw IdentityException("Wallet failed to provide an identity with an address", "bad wallet", ErrorSeverity.Severe)
 
-        val sig = Wallet.signMessage(testMessage.toByteArray(), secret.getSecret())
-
-        val verify = Wallet.verifyMessage(testMessage.toByteArray(), address.data, sig)
+        val sig = libnexa.signMessage(testMessage.toByteArray(), secret.getSecret())
+        check(sig != null)
+        val verify = libnexa.verifyMessage(testMessage.toByteArray(), address.data, sig ?: byteArrayOf())
         check(verify != null)
         check(verify!!.size != 0)
         check(verify contentEquals identityDest.pubkey)
 
         // Try bad verifications
 
-        if (true)
+        if (sig != null)
         {
             val badaddr = ByteArray(10, { _ -> 3 })
-            val badVerify = Wallet.verifyMessage(testMessage.toByteArray(), badaddr, sig)
+            val badVerify = libnexa.verifyMessage(testMessage.toByteArray(), badaddr, sig)
             check(badVerify == null)
         }
 
-        if (true)
+        if (sig != null)
         {
             val badaddr = ByteArray(20, { _ -> 3 })
-            val badVerify = Wallet.verifyMessage(testMessage.toByteArray(), badaddr, sig)
+            val badVerify = libnexa.verifyMessage(testMessage.toByteArray(), badaddr, sig)
             check(badVerify == null)
         }
 
-        if (true)
+        if (sig != null)
         {
             val badaddr = address.data.copyOf()
             badaddr[0] = (badaddr[0].toByte() + 1.toByte()).toByte()  // Change the address a little
-            val badVerify = Wallet.verifyMessage(testMessage.toByteArray(), badaddr, sig)
+            val badVerify = libnexa.verifyMessage(testMessage.toByteArray(), badaddr, sig)
             check(badVerify == null)
         }
 
-        if (true)
+        if (sig != null)
         {
             val differentMessage = "This is another test"
-            val badVerify = Wallet.verifyMessage(differentMessage.toByteArray(), address.data, sig)
+            val badVerify = libnexa.verifyMessage(differentMessage.toByteArray(), address.data, sig)
             check(badVerify == null)
         }
 
-        if (true)
+        if (sig != null)
         {
             val badSig = sig.copyOf()
             badSig[0] = (badSig[0] + 1.toByte()).toByte()
-            val badVerify = Wallet.verifyMessage(testMessage.toByteArray(), address.data, badSig)
+            val badVerify = libnexa.verifyMessage(testMessage.toByteArray(), address.data, badSig)
             check(badVerify == null)
         }
     }
@@ -786,7 +796,7 @@ class UnitTest
         // Test different constructions
         val P2PKH6 = SatoshiScript(ch, SatoshiScript.Type.SATOSCRIPT, OP.DUP, OP.HASH160, OP.push("0123456789abcdef01230123456789abcdef0123".fromHex()), OP.EQUALVERIFY, OP.CHECKSIG)
         val P2PKH7 =
-          SatoshiScript(ch, SatoshiScript.Type.SATOSCRIPT, OP.DUP, OP.HASH160, OP.push(byteArrayOf(20)), OP.push("0123456789abcdef01230123456789abcdef0123".fromHex()), OP.EQUALVERIFY, OP.CHECKSIG)
+          SatoshiScript(ch, SatoshiScript.Type.SATOSCRIPT, OP.DUP, OP.HASH160, OP(byteArrayOf(20)), OP(("0123456789abcdef01230123456789abcdef0123".fromHex())), OP.EQUALVERIFY, OP.CHECKSIG)
 
         if (true)
         {
@@ -899,6 +909,7 @@ class UnitTest
         check(result == BigDecimal(".18293").setScale(16))
     }
 
+    /*
     companion object
     {
         // Used to load the 'native-lib' library on application startup.
@@ -908,4 +919,6 @@ class UnitTest
             Initialize.LibBitcoinCash(ChainSelector.NEXAREGTEST.v)
         }
     }
+
+     */
 }

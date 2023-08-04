@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.*
+import org.nexa.libnexakotlin.libnexa
 import java.io.*
 import java.nio.file.Path
 import java.util.zip.ZipEntry
@@ -301,7 +302,7 @@ fun makeNftyZip(outFile: Path, data: NFTCreationData, outputPrefix: String, pare
     val zipFile = FileInputStream(outFile.toFile())
     val zipBytes = zipFile.readBytes()
 
-    var nftHash = bitcoinunlimited.libbitcoincash.Hash.hash256(zipBytes)
+    var nftHash = libnexa.hash256(zipBytes)
     if (data.bindata != null && data.bindata.size > 0)
     {
         nftHash = nftHash+data.bindata

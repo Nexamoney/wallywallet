@@ -17,6 +17,7 @@ import java.net.URLEncoder
 import java.util.logging.Logger
 import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.databinding.ActivityIdentityOpBinding
+import org.nexa.libnexakotlin.libnexa
 import java.io.DataOutputStream
 import java.net.URLDecoder
 
@@ -24,7 +25,7 @@ private val LogIt = Logger.getLogger("BU.wally.IdentityOp")
 
 val IDENTITY_URI_SCHEME = "nexid"
 
-open class IdentityOpException(msg: String, shortMsg: String? = null, severity: ErrorSeverity = ErrorSeverity.Abnormal) : BUException(msg, shortMsg, severity)
+open class IdentityOpException(msg: String, shortMsg: String? = null, severity: ErrorSeverity = ErrorSeverity.Abnormal) : LibNexaException(msg, shortMsg, severity)
 
 class IdentityOpActivity : CommonNavActivity()
 {
@@ -420,8 +421,8 @@ class IdentityOpActivity : CommonNavActivity()
                         return@launch
                     }
 
-                    val sig = Wallet.signMessage(chalToSign.toByteArray(), secret.getSecret())
-                    if (sig.size == 0) throw IdentityException("Wallet failed to provide a signable identity", "bad wallet", ErrorSeverity.Severe)
+                    val sig = libnexa.signMessage(chalToSign.toByteArray(), secret.getSecret())
+                    if (sig == null || sig.size == 0) throw IdentityException("Wallet failed to provide a signable identity", "bad wallet", ErrorSeverity.Severe)
                     val sigStr = Codec.encode64(sig)
                     LogIt.info("signature is: " + sigStr)
 
@@ -443,8 +444,8 @@ class IdentityOpActivity : CommonNavActivity()
                         return@launch
                     }
 
-                    val sig = Wallet.signMessage(chalToSign.toByteArray(), secret.getSecret())
-                    if (sig.size == 0) throw IdentityException("Wallet failed to provide a signable identity", "bad wallet", ErrorSeverity.Severe)
+                    val sig = libnexa.signMessage(chalToSign.toByteArray(), secret.getSecret())
+                    if (sig == null || sig.size == 0) throw IdentityException("Wallet failed to provide a signable identity", "bad wallet", ErrorSeverity.Severe)
                     val sigStr = Codec.encode64(sig)
                     LogIt.info("signature is: " + sigStr)
 
@@ -531,68 +532,73 @@ class IdentityOpActivity : CommonNavActivity()
                     }
                     else
                     {
-                        val msgSig = Wallet.signMessage(msg, secret.getSecret())
-                        val sigStr = Codec.encode64(msgSig)
-                        laterUI {
-                            val msgStr = String(msg)
-                            var clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                            val s = """{ "message":"${msgStr}", "address":"${address.toString()}", "signature": "${sigStr}" }"""
-                            var clip = ClipData.newPlainText("text", s)
-                            LogIt.info(s)
-                            clipboard.setPrimaryClip(clip)
-                        }
-                        wallyApp?.displayNotice(R.string.sigInClipboard)
-
-                        val reply = attribs["reply"]
-                        if (reply == null || reply == "true")
+                        val msgSig = libnexa.signMessage(msg, secret.getSecret())
+                        if (msgSig == null || msgSig.size == 0)
                         {
-                        var sigReq = protocol + "://" + tmpHost + portStr + path
-                        sigReq += "?op=sign&addr=" + address.toString() + "&sig=" + URLEncoder.encode(sigStr, "UTF-8") + "&cookie=" + URLEncoder.encode(cookie, "UTF-8")
-
-                        var forwarded = 0  // Handle URL forwarding
-                        getloop@ while (forwarded < 3)
-                        {
-                            LogIt.info("signature reply: " + sigReq)
-                            try
-                            {
-                                val req: HttpURLConnection = URL(sigReq).openConnection() as HttpURLConnection
-                                req.setConnectTimeout(HTTP_REQ_TIMEOUT_MS)
-                                val resp = req.inputStream.bufferedReader().readText()
-                                LogIt.info("signature response code:" + req.responseCode.toString() + " response: " + resp)
-                                if ((req.responseCode >= 200) and (req.responseCode < 250))
-                                {
-                                    wallyApp?.displayNotice(resp)
-                                    clearIntentAndFinish()
-                                }
-                                else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding (often switching from http to https)
-                                {
-                                    sigReq = req.getHeaderField("Location")
-                                    forwarded += 1
-                                    continue@getloop
-                                }
-                                else
-                                {
-                                    wallyApp?.displayNotice(resp)
-                                    clearIntentAndFinish()
-                                }
-                            }
-                            catch (e: FileNotFoundException)
-                            {
-                                wallyApp?.displayError(R.string.badLink)
-                                clearIntentAndFinish()
-                            }
-                            catch (e: IOException)
-                            {
-                                wallyApp?.displayError(R.string.connectionAborted)
-                                clearIntentAndFinish()
-                            }
-                            catch (e: java.net.ConnectException)
-                            {
-                                wallyApp?.displayError(R.string.connectionException)
-                                clearIntentAndFinish()
-                            }
-                            break@getloop  // only way to actually loop is to hit a 301 or 302
+                            wallyApp?.displayError(R.string.badSignature)
+                            clearIntentAndFinish()
                         }
+                        else
+                        {
+                            val sigStr = Codec.encode64(msgSig)
+                            laterUI {
+                                val msgStr = String(msg)
+                                var clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                                val s = """{ "message":"${msgStr}", "address":"${address.toString()}", "signature": "${sigStr}" }"""
+                                var clip = ClipData.newPlainText("text", s)
+                                LogIt.info(s)
+                                clipboard.setPrimaryClip(clip)
+                            }
+                            wallyApp?.displayNotice(R.string.sigInClipboard)
+
+                            val reply = attribs["reply"]
+                            if (reply == null || reply == "true")
+                            {
+                                var sigReq = protocol + "://" + tmpHost + portStr + path
+                                sigReq += "?op=sign&addr=" + address.toString() + "&sig=" + URLEncoder.encode(sigStr, "UTF-8") + "&cookie=" + URLEncoder.encode(cookie, "UTF-8")
+
+                                var forwarded = 0  // Handle URL forwarding
+                                getloop@ while (forwarded < 3)
+                                {
+                                    LogIt.info("signature reply: " + sigReq)
+                                    try
+                                    {
+                                        val req: HttpURLConnection = URL(sigReq).openConnection() as HttpURLConnection
+                                        req.setConnectTimeout(HTTP_REQ_TIMEOUT_MS)
+                                        val resp = req.inputStream.bufferedReader().readText()
+                                        LogIt.info("signature response code:" + req.responseCode.toString() + " response: " + resp)
+                                        if ((req.responseCode >= 200) and (req.responseCode < 250))
+                                        {
+                                            wallyApp?.displayNotice(resp)
+                                            clearIntentAndFinish()
+                                        }
+                                        else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding (often switching from http to https)
+                                        {
+                                            sigReq = req.getHeaderField("Location")
+                                            forwarded += 1
+                                            continue@getloop
+                                        }
+                                        else
+                                        {
+                                            wallyApp?.displayNotice(resp)
+                                            clearIntentAndFinish()
+                                        }
+                                    } catch (e: FileNotFoundException)
+                                    {
+                                        wallyApp?.displayError(R.string.badLink)
+                                        clearIntentAndFinish()
+                                    } catch (e: IOException)
+                                    {
+                                        wallyApp?.displayError(R.string.connectionAborted)
+                                        clearIntentAndFinish()
+                                    } catch (e: java.net.ConnectException)
+                                    {
+                                        wallyApp?.displayError(R.string.connectionException)
+                                        clearIntentAndFinish()
+                                    }
+                                    break@getloop  // only way to actually loop is to hit a 301 or 302
+                                }
+                            }
                         }
                     }
 

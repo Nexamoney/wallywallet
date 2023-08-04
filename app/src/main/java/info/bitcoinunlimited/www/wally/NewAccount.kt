@@ -13,6 +13,7 @@ import android.widget.MultiAutoCompleteTextView
 import android.widget.MultiAutoCompleteTextView.Tokenizer
 import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.databinding.ActivityNewAccountBinding
+import org.nexa.libnexakotlin.libnexa
 import java.util.logging.Logger
 import kotlin.concurrent.thread
 
@@ -476,7 +477,7 @@ class NewAccount : CommonNavActivity()
         LogIt.info("Searching in ${addressDerivationCoin}")
         var earliestActivityP =
           searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, {
-              AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, 0, it) }, { time, height -> laterUI {
+              libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first }, { time, height -> laterUI {
               ui.GuiNewAccountStatus.text = i18n(R.string.Bip44ActivityNotice) + " " + (i18n(R.string.FirstUseDateHeightInfo) % mapOf(
               "date" to epochToDate(time),
               "height" to height.toString())
@@ -494,7 +495,7 @@ class NewAccount : CommonNavActivity()
         // Look for activity in the identity and common location
         var earliestActivityId =
           searchActivity(ec, chainSelector, IDENTITY_DERIVATION_PATH_SEARCH_DEPTH, {
-              AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, 0, it) })
+              libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, false, it).first })
         if (aborter.obj) return
 
         // Set earliestActivityP to the lesser of the two

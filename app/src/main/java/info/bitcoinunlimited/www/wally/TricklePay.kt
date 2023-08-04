@@ -25,6 +25,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
+import org.nexa.libnexakotlin.libnexa
 import java.math.BigDecimal
 import java.util.logging.Logger
 
@@ -512,8 +513,8 @@ fun ConstructTricklePayRequest(entity: String, topic: String?, operation: String
 
     val signThis = uri.build().toString()
     LogIt.info(signThis)
-    val sig = Wallet.signMessage(signThis.toByteArray(), secret.getSecret())
-    if (sig.size == 0) throw IdentityException("Wallet failed to provide a signable identity", "bad wallet", ErrorSeverity.Severe)
+    val sig = libnexa.signMessage(signThis.toByteArray(), secret.getSecret())
+    if (sig == null || sig.size == 0) throw IdentityException("Wallet failed to provide a signable identity", "bad wallet", ErrorSeverity.Severe)
     val sigStr = Codec.encode64(sig)
     uri.appendQueryParameter("sig", sigStr)
     return uri.build()
@@ -664,7 +665,7 @@ class TricklePayActivity : CommonNavActivity()
         {
             sess.handleSendToAutopay(uri)
         }
-        catch(e:BUExceptionI)
+        catch(e:LibNexaExceptionI)
         {
             wallyApp?.displayException(e)
             finish()
@@ -717,7 +718,7 @@ class TricklePayActivity : CommonNavActivity()
         {
             sess.handleAddressInfoRequest(uri)
         }
-        catch(e:BUExceptionI)
+        catch(e:LibNexaExceptionI)
         {
             displayFragment(R.id.GuiTricklePayEmpty)
             wallyApp?.displayException(e)
@@ -757,7 +758,7 @@ class TricklePayActivity : CommonNavActivity()
         {
             sess.handleAssetInfoRequest(uri)
         }
-        catch(e:BUExceptionI)
+        catch(e:LibNexaExceptionI)
         {
             displayFragment(R.id.GuiTricklePayEmpty)
             wallyApp?.displayException(e)
@@ -1007,12 +1008,12 @@ class TricklePayActivity : CommonNavActivity()
                 return
             }
         }
-        catch (e: BUExceptionI)
+        catch (e: LibNexaExceptionI)
         {
             wallyApp?.displayException(e)
             clearIntentAndFinish()
         }
-        catch (e: BUException)
+        catch (e: LibNexaException)
         {
             handleThreadException(e)
             wallyApp?.displayError(R.string.unknownError, e.toString())
@@ -1245,12 +1246,12 @@ class TricklePayActivity : CommonNavActivity()
             }
             return
         }
-        catch (e: BUExceptionI)
+        catch (e: LibNexaExceptionI)
         {
             wallyApp?.displayException(e)
             finish()
         }
-        catch (e: BUException)
+        catch (e: LibNexaException)
         {
             handleThreadException(e)
             wallyApp?.displayError(R.string.unknownError, e.toString())
@@ -1286,12 +1287,12 @@ class TricklePayActivity : CommonNavActivity()
             tpSession = null
             clearIntentAndFinish(notice = R.string.TpSendRequestAccepted)
         }
-        catch (e: BUExceptionI)
+        catch (e: LibNexaExceptionI)
         {
             wallyApp?.displayException(e)
             clearIntentAndFinish()
         }
-        catch (e: BUException)
+        catch (e: LibNexaException)
         {
             handleThreadException(e)
             if (e.errCode != -1)

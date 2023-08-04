@@ -358,7 +358,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         init
         {
             //System.loadLibrary("native-lib")
-            System.loadLibrary("nexandroid")
+            System.loadLibrary("nexalight")
             appI18n = { libErr: Int -> i18n(i18nLbc[libErr] ?: libErr) }
         }
     }
@@ -366,7 +366,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
 
     val assetManager = AssetManager(this)
 
-    val init = Initialize.LibBitcoinCash(ChainSelector.NEXATESTNET.v)  // Initialize the C library first
+    val init = org.nexa.libnexakotlin.initializeLibNexa()
 
     val accounts: MutableMap<String, Account> = mutableMapOf()
     val accessHandler = AccessHandler(this)
@@ -488,7 +488,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         lastNoticeDetails = notice
     }
 
-    fun displayException(e: BUExceptionI)
+    fun displayException(e: LibNexaExceptionI)
     {
         lastError = e.errCode
         lastErrorDetails = e.message

@@ -489,7 +489,7 @@ open class CommonActivity : AppCompatActivity()
         var details: String = ""
         var displayString: String
         var stack: String? = null
-        val buExc = exc as? BUException
+        val buExc = exc as? LibNexaException
         if (buExc != null)
         {
             if (buExc.severity != ErrorSeverity.Expected)

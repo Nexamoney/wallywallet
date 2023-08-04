@@ -18,6 +18,7 @@ import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
+import org.nexa.libnexakotlin.libnexa
 import java.lang.Math.random
 import java.net.SocketTimeoutException
 import java.net.URL
@@ -409,7 +410,7 @@ fun VerifyTdppSignature(uri: Uri, addressParam:String? = null): Boolean?
         return false
     }
     LogIt.info("Sig: " + sigBytes.toHex())
-    val result = Wallet.verifyMessage(verifyThis.toByteArray(), pa.data, sigBytes)
+    val result = libnexa.verifyMessage(verifyThis.toByteArray(), pa.data, sigBytes)
     if (result == null || result.size == 0)
     {
         LogIt.info("verification failed for: " + verifyThis + " Address: " + addressStr)

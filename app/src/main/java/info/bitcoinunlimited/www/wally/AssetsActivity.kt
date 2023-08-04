@@ -20,6 +20,7 @@ import androidx.core.graphics.get
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import bitcoinunlimited.libbitcoincash.*
+import org.nexa.libnexakotlin.*
 import com.caverock.androidsvg.SVG
 import info.bitcoinunlimited.www.wally.databinding.ActivityAssetsBinding
 import info.bitcoinunlimited.www.wally.databinding.AssetListItemBinding
@@ -44,7 +45,7 @@ var WallyAssetRowColors = arrayOf(0x4Ff5f8ff.toInt(), 0x4Fd0d0ef.toInt())
 // If true, do not cache asset info locally -- load it every time
 var DBG_NO_ASSET_CACHE = false
 
-open class IncorrectTokenDescriptionDoc(details: String) : BUException(details, "Incorrect token description document", ErrorSeverity.Expected)
+open class IncorrectTokenDescriptionDoc(details: String) : LibNexaException(details, "Incorrect token description document", ErrorSeverity.Expected)
 
 val NIFTY_ART_IP = mapOf(
   ChainSelector.NEXA to "niftyart.cash",
@@ -273,7 +274,7 @@ class AssetManager(val app: WallyApp)
             // Just try to go thru the zip dir to see if its basically a valid file
             val files = generateSequence { zf.nextEntry }.map { it.name }.toList()
             LogIt.info(sourceLoc() + ": nft zip contents " + files.joinToString(" "))
-            val hash = Hash.hash256(zipBytes)
+            val hash = libnexa.hash256(zipBytes)
             if (groupId.subgroupData() contentEquals  hash)
             {
                 storeAssetFile(groupId.toHex() + ".zip", zipBytes)

@@ -44,7 +44,7 @@ import java.util.*
 import java.util.logging.Logger
 import info.bitcoinunlimited.www.wally.R.id as GuiId
 import info.bitcoinunlimited.www.wally.R
-
+import org.nexa.libnexakotlin.libnexa
 
 
 val LogIt = Logger.getLogger("GuiTest")
@@ -376,7 +376,8 @@ class GuiTest
         val tosign = uriStr.toByteArray()
         println("signing text: ${uriStr}")
         println("signing hex: ${tosign.toHex()}")
-        val sig = Wallet.signMessage(uriStr.toByteArray(), dest.secret!!.getSecret())
+        val sig = libnexa.signMessage(uriStr.toByteArray(), dest.secret!!.getSecret())
+        check(sig != null)
         val uriSig64=Uri.encode(Codec.encode64(sig))
         uriStr = uriStr + "&sig=$uriSig64"
 
