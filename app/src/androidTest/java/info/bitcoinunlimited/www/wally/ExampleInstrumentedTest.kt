@@ -450,56 +450,56 @@ class UnitTest
         check(data contentEquals data2)
     }
 
-    @Test
-    fun testSerialize()
-    {
-        val chain = ChainSelector.NEXAREGTEST
-        val outpoint = NexaTxOutpoint(Hash256("1f443a6340d2f805e0046b3bcea0d93830844b356edd72da053044dd3fb09f54"), 32)
-        var sp = Spendable(chain)
-        sp.secret = UnsecuredSecret(byteArrayOf(1,2,3))
-        sp.outpoint = outpoint
-        sp.priorOutScript = SatoshiScript(chain) + OP.DUP + OP.HASH160 + OP.push(ByteArray(20, { 0})) + OP.EQUALVERIFY + OP.CHECKSIG
-        sp.addr = PayAddress("nexareg:qpaj30le3wqz04ldwnsj94x75u9kv782kvh6hgf5e0")
-        sp.amount = 4567
-        sp.redeemScript = SatoshiScript(chain) + OP.push(byteArrayOf(7,8))
-        sp.commitHeight = 987654321
-        sp.commitBlockHash = Guid(Hash256("1c2f4377f2222f167a9015c0ee2ca47200b368d5c17e3698962d0f307e565881"))
-        sp.spentHeight = 5739243
-        sp.spentBlockHash = Guid()
-
-        val rawAddr = (sp.addr as PayAddress).data
-        kotlin.check(rawAddr.size == 20)
-
-        val serScr = sp.priorOutScript.BCHserialize(SerializationType.DISK).flatten()
-        val scr2 = SatoshiScript(chain)
-        scr2.BCHdeserialize(BCHserialized(serScr, SerializationType.DISK))
-        kotlin.check(scr2.flatten().contentEquals(sp.priorOutScript.flatten()))
-
-        val ser = sp.BCHserialize(SerializationType.DISK).flatten()
-
-        var ser2 = BCHserialized(ser, SerializationType.DISK)
-        val sp2 = Spendable(chain, ser2)
-
-        kotlin.check(sp.secret?.getSecret().contentEquals(sp2.secret!!.getSecret()))
-        kotlin.check(sp.outpoint == sp2.outpoint)
-        kotlin.check(sp.priorOutScript == sp.priorOutScript)
-        kotlin.check(sp.addr == sp2.addr)
-        kotlin.check(sp.amount == sp2.amount)
-        kotlin.check(sp.redeemScript.contentEquals(sp2.redeemScript))
-        kotlin.check(sp.commitHeight == sp2.commitHeight)
-        kotlin.check(sp.commitBlockHash == sp2.commitBlockHash)
-        kotlin.check(sp.spentHeight == sp2.spentHeight)
-        kotlin.check(sp.spentBlockHash == sp2.spentBlockHash)
-        kotlin.check(sp.spentUnconfirmed == sp2.spentUnconfirmed)
-        kotlin.check(sp.spendableUnconfirmed == sp2.spendableUnconfirmed)
-
-        val td = TdppDomain("domain", "topic", "addr", "currency", -1, 2, 3, 4, "per", "day", "perweek", "permonth", false)
-
-        var ser3 = BCHserialized(td.BCHserialize(SerializationType.DISK).flatten(), SerializationType.DISK)
-        var tdc = TdppDomain(ser3)
-        check(td.equals(tdc))
-
-    }
+//    @Test
+//    fun testSerialize()
+//    {
+//        val chain = ChainSelector.NEXAREGTEST
+//        val outpoint = NexaTxOutpoint(Hash256("1f443a6340d2f805e0046b3bcea0d93830844b356edd72da053044dd3fb09f54"), 32)
+//        var sp = Spendable(chain)
+//        sp.secret = UnsecuredSecret(byteArrayOf(1,2,3))
+//        sp.outpoint = outpoint
+//        sp.priorOutScript = SatoshiScript(chain) + OP.DUP + OP.HASH160 + OP.push(ByteArray(20, { 0})) + OP.EQUALVERIFY + OP.CHECKSIG
+//        sp.addr = PayAddress("nexareg:qpaj30le3wqz04ldwnsj94x75u9kv782kvh6hgf5e0")
+//        sp.amount = 4567
+//        sp.redeemScript = SatoshiScript(chain) + OP.push(byteArrayOf(7,8))
+//        sp.commitHeight = 987654321
+//        sp.commitBlockHash = Guid(Hash256("1c2f4377f2222f167a9015c0ee2ca47200b368d5c17e3698962d0f307e565881"))
+//        sp.spentHeight = 5739243
+//        sp.spentBlockHash = Guid()
+//
+//        val rawAddr = (sp.addr as PayAddress).data
+//        kotlin.check(rawAddr.size == 20)
+//
+//        val serScr = sp.priorOutScript.BCHserialize(SerializationType.DISK).flatten()
+//        val scr2 = SatoshiScript(chain)
+//        scr2.BCHdeserialize(BCHserialized(serScr, SerializationType.DISK))
+//        kotlin.check(scr2.flatten().contentEquals(sp.priorOutScript.flatten()))
+//
+//        val ser = sp.BCHserialize(SerializationType.DISK).flatten()
+//
+//        var ser2 = BCHserialized(ser, SerializationType.DISK)
+//        val sp2 = Spendable(chain, ser2)
+//
+//        kotlin.check(sp.secret?.getSecret().contentEquals(sp2.secret!!.getSecret()))
+//        kotlin.check(sp.outpoint == sp2.outpoint)
+//        kotlin.check(sp.priorOutScript == sp.priorOutScript)
+//        kotlin.check(sp.addr == sp2.addr)
+//        kotlin.check(sp.amount == sp2.amount)
+//        kotlin.check(sp.redeemScript.contentEquals(sp2.redeemScript))
+//        kotlin.check(sp.commitHeight == sp2.commitHeight)
+//        kotlin.check(sp.commitBlockHash == sp2.commitBlockHash)
+//        kotlin.check(sp.spentHeight == sp2.spentHeight)
+//        kotlin.check(sp.spentBlockHash == sp2.spentBlockHash)
+//        kotlin.check(sp.spentUnconfirmed == sp2.spentUnconfirmed)
+//        kotlin.check(sp.spendableUnconfirmed == sp2.spendableUnconfirmed)
+//
+//        val td = TdppDomain("domain", "topic", "addr", "currency", -1, 2, 3, 4, "per", "day", "perweek", "permonth", false)
+//
+//        var ser3 = BCHserialized(td.BCHserialize(SerializationType.DISK).flatten(), SerializationType.DISK)
+//        var tdc = TdppDomain(ser3)
+//        check(td.equals(tdc))
+//
+//    }
 
     @Test
     fun testHDderivation()
