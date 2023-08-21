@@ -175,27 +175,11 @@ fun setUpSettTests() : Pair<SharedPreferences?,ActivityScenario<Settings>>
     return Pair(preferenceDB,activityScenario)
 }
 
-fun setUpInMain(vararg names:String) : Triple<ChainSelector,ActivityScenario<MainActivity>,WallyApp?>
+inline fun<reified T : Activity> setUp(vararg names:String) : Triple<ChainSelector,ActivityScenario<T>,WallyApp?>
 {
-    val cs = ChainSelector.NEXAREGTEST
-    val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
-    activityScenario.moveToState(Lifecycle.State.RESUMED);
-    var app: WallyApp? = null
-    activityScenario.onActivity { app = (it.application as WallyApp) }
-    assert(app != null)
 
-    val ctxt = PlatformContext(app!!.applicationContext)
-    walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-    var wdb = walletDb!!
-    for (name in names) {
-        deleteWallet(wdb, name, cs)
-    }
-    return Triple(cs,activityScenario,app!!)
-}
-fun setUpInSettings(vararg names:String) : Triple<ChainSelector,ActivityScenario<Settings>,WallyApp?>
-{
     val cs = ChainSelector.NEXAREGTEST
-    val activityScenario: ActivityScenario<Settings> = ActivityScenario.launch(Settings::class.java)
+    val activityScenario: ActivityScenario<T> = ActivityScenario.launch(T::class.java)
     activityScenario.moveToState(Lifecycle.State.RESUMED);
     var app: WallyApp? = null
     activityScenario.onActivity { app = (it.application as WallyApp) }
@@ -793,8 +777,7 @@ class GuiTest
 
     @Test fun testAccountCreation() {
         //begin with setting up the necessary things
-        val (cs,activityScenario,app) = setUpInMain("rNEX1", "rNEX2", "rNEX3")
-
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1", "rNEX2", "rNEX3")
         // supply this wallet with coins
         var rpc = giveWalletCoins()
 
@@ -831,7 +814,7 @@ class GuiTest
 
     @Test fun testCreateExistingAccount() {
         //begin with setting up the necessary things
-        val (cs,activityScenario,app) = setUpInMain("rNEX4")
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX4")
 
         // supply this wallet with coins
         var rpc = giveWalletCoins()
@@ -860,7 +843,7 @@ class GuiTest
     }
     @Test fun testLockAccount() {
         //begin with setting up the necessary things
-        val (cs,activityScenario,app) = setUpInMain("rNEX1")
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1")
 
         // supply this wallet with coins
         var rpc = giveWalletCoins()
@@ -893,7 +876,7 @@ class GuiTest
 
     @Test fun testUnlockFromIdentity() {
         //begin with setting up the necessary things
-        val (cs,activityScenario,app) = setUpInMain("rNEX1")
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1")
 
         // supply this wallet with coins
         var rpc = giveWalletCoins()
@@ -933,7 +916,7 @@ class GuiTest
 
     @Test fun testHideLockAccount() {
         //begin with setting up the necessary things
-        val (cs,activityScenario,app) = setUpInMain("rNEX1")
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1")
 
         // supply this wallet with coins
         var rpc = giveWalletCoins()
@@ -966,7 +949,7 @@ class GuiTest
 
     @Test fun testTwoUnlockAccount() {
         //begin with setting up the necessary things
-        val (cs,activityScenario,app) = setUpInMain("rNEX1","rNEX2")
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1","rNEX2")
 
         // supply this wallet with coins
         var rpc = giveWalletCoins()
@@ -1007,7 +990,7 @@ class GuiTest
     }
     @Test fun testOneHiddenTwoUnlockAccount() {
         //begin with setting up the necessary things
-        val (cs,activityScenario,app) = setUpInMain("rNEX1","rNEX2")
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1","rNEX2")
 
         // supply this wallet with coins
         var rpc = giveWalletCoins()
@@ -1049,7 +1032,7 @@ class GuiTest
 
     @Test fun testTwoPassDiffUnlock() {
         //begin with setting up the necessary things
-        val (cs,activityScenario,app) = setUpInMain("rNEX1","rNEX2")
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1","rNEX2")
 
         // supply this wallet with coins
         var rpc = giveWalletCoins()
@@ -1103,7 +1086,7 @@ class GuiTest
     //negative test
     @Test fun testLockedAccountWrongPin() {
         //begin with setting up the necessary things
-        val (cs,activityScenario,app) = setUpInMain("rNEX1")
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1")
 
         // supply this wallet with coins
         var rpc = giveWalletCoins()
@@ -1150,7 +1133,7 @@ class GuiTest
     @Test fun testSettingsConfirmTransfersSmall()
     {
         //begin with setting up the necessary things
-        val (cs,activityScenario,app) = setUpInSettings("rNEX1", "rNEX2")
+        val (cs,activityScenario,app) = setUp<Settings>("rNEX1", "rNEX2")
 
         // supply this wallet with coins
         var rpc = giveWalletCoins()
@@ -1225,7 +1208,7 @@ class GuiTest
     @Test fun testSettingsConfirmTransfersBig()
     {
         //begin with setting up the necessary things
-        val (cs,activityScenario,app) = setUpInSettings("rNEX1", "rNEX2")
+        val (cs,activityScenario,app) = setUp<Settings>("rNEX1", "rNEX2")
 
         // supply this wallet with coins
         var rpc = giveWalletCoins()
@@ -1299,7 +1282,7 @@ class GuiTest
     @Test fun testCannotSendZero()
     {
         //begin with setting up the necessary things
-        val (cs,activityScenario,app) = setUpInMain("rNEX1","rNEX2")
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1","rNEX2")
 
         // supply this wallet with coins
         var rpc = giveWalletCoins()
@@ -1362,7 +1345,7 @@ class GuiTest
     @Test fun testSendMoreNexThanAccountHasError()
     {
         //begin with setting up the necessary things
-        val (cs,activityScenario,app) = setUpInMain("rNEX1","rNEX2")
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1","rNEX2")
 
         // supply this wallet with coins
         var rpc = giveWalletCoins()
@@ -1426,7 +1409,7 @@ class GuiTest
     @Test fun testLoadingNexToAccount()
     {
         //begin with setting up the necessary things
-        val (cs,activityScenario,app) = setUpInMain("rNEX1")
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1")
 
         // supply this wallet with coins
         var rpc = giveWalletCoins()
@@ -1471,7 +1454,7 @@ class GuiTest
     @Test fun testSendToSelf()
     {
         //begin with setting up the necessary things
-        val (cs,activityScenario,app) = setUpInMain("rNEX1")
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1")
 
 
         // supply this wallet with coins
