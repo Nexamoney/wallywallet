@@ -58,9 +58,6 @@ class TestTimeoutException(what: String): Exception(what)
 val REGTEST_P2P_PORT=7327
 val REGTEST_RPC_PORT=7328
 
-data class Three<A, B, C>(val a: A, val b: B, val c: C)
-typealias startUpM = Three<ChainSelector,ActivityScenario<MainActivity>,WallyApp?>
-typealias startUpS = Three<ChainSelector,ActivityScenario<Settings>,WallyApp?>
 
 fun ViewInteraction.isGone() = getViewAssertion(ViewMatchers.Visibility.GONE)
 fun ViewInteraction.isVisible() = getViewAssertion(ViewMatchers.Visibility.VISIBLE)
@@ -349,6 +346,30 @@ class GuiTest
         onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(),typeText(name), pressImeActionButton(), pressBack())
         onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
         app!!.waitUntilActivityVisible<MainActivity>()
+    }
+
+    fun makeLockedAcc(name: String,pin: String,hidden:Boolean, app: WallyApp, cs: ChainSelector)
+    {
+        // Switch to a different activity
+        while(true) try {
+            onView(withId(GuiId.GuiNewAccount)).perform(click())
+            break
+        }
+        catch (e: NoMatchingViewException)
+        {
+            Thread.sleep(1000)
+        }
+        //onView(withId(R.id.GuiNewAccount)).perform(click())
+        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
+        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText(name), pressImeActionButton(), pressBack())
+        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText(pin), pressImeActionButton(), pressBack())
+        if(hidden)
+        {
+            onView(withId(GuiId.PinHidesAccount)).perform(click())
+        }
+        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
+        app!!.waitUntilActivityVisible<MainActivity>()
+        sleep(1000)
     }
 
     @Test fun testRpc()
@@ -788,13 +809,7 @@ class GuiTest
         activityScenario.onActivity { sleep(2000) }
 
         //make a locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX2"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX2","0000",false,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
@@ -802,21 +817,14 @@ class GuiTest
         }
         activityScenario.onActivity { sleep(2000) }
 
-
         //make a hidden locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX3"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("1234"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.PinHidesAccount)).perform(click())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX3","1234",true,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
             it.updateGUI()
         }
+        activityScenario.onActivity { sleep(2000) }
         activityScenario.onActivity { sleep(4000) }
 
     }
@@ -858,19 +866,13 @@ class GuiTest
         var rpc = giveWalletCoins()
 
         //make a locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX1"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX1","0000",false,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
             it.updateGUI()
         }
-        activityScenario.onActivity { sleep(1000) }
+        activityScenario.onActivity { sleep(2000) }
 
         //lock it
         onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon)))
@@ -897,19 +899,13 @@ class GuiTest
         var rpc = giveWalletCoins()
 
         //make a locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX1"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX1","0000",false,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
             it.updateGUI()
         }
-        activityScenario.onActivity { sleep(1000) }
+        activityScenario.onActivity { sleep(2000) }
 
         //lock it
         onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon)))
@@ -943,20 +939,13 @@ class GuiTest
         var rpc = giveWalletCoins()
 
         //make a hidden locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX1"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.PinHidesAccount)).perform(click())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX1","0000",true,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
             it.updateGUI()
         }
-        activityScenario.onActivity { sleep(1000) }
+        activityScenario.onActivity { sleep(2000) }
 
         // click the lock icon
         onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon)))
@@ -983,34 +972,22 @@ class GuiTest
         var rpc = giveWalletCoins()
 
         //make a locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX1"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX1","0000",false,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
             it.updateGUI()
         }
-        activityScenario.onActivity { sleep(1000) }
+        activityScenario.onActivity { sleep(2000) }
 
         //make a second locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX2"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX2","0000",false,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
             it.updateGUI()
         }
-        activityScenario.onActivity { sleep(1000) }
+        activityScenario.onActivity { sleep(2000) }
 
         // click the lock icons
         onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon)))
@@ -1036,35 +1013,22 @@ class GuiTest
         var rpc = giveWalletCoins()
 
         //make a locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX1"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX1","0000",false,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
             it.updateGUI()
         }
-        activityScenario.onActivity { sleep(1000) }
+        activityScenario.onActivity { sleep(2000) }
 
         //make a second hidden locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX2"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.PinHidesAccount)).perform(click())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX2","0000",true,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
             it.updateGUI()
         }
-        activityScenario.onActivity { sleep(1000) }
+        activityScenario.onActivity { sleep(2000) }
 
         // click the lock icon
         onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon)))
@@ -1091,13 +1055,7 @@ class GuiTest
         var rpc = giveWalletCoins()
 
         //make a locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX1"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX1","0000",false,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
@@ -1106,13 +1064,7 @@ class GuiTest
         activityScenario.onActivity { sleep(1000) }
 
         //make a second locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX2"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("1111"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX2","1111",false,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
@@ -1148,6 +1100,7 @@ class GuiTest
         activityScenario.onActivity { sleep(3000) }
     }
 
+    //negative test
     @Test fun testLockedAccountWrongPin() {
         //begin with setting up the necessary things
         val (cs,activityScenario,app) = setUpInMain("rNEX1")
@@ -1156,13 +1109,7 @@ class GuiTest
         var rpc = giveWalletCoins()
 
         //make a locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX1"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX1","0000",false,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
@@ -1180,7 +1127,7 @@ class GuiTest
         sleep(1000)
         //check for error
         waitForActivity(10000, activityScenario) { it.lastErrorString == i18n(R.string.PinInvalid) }
-        sleep(1000)
+        sleep(2000)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
@@ -1348,6 +1295,7 @@ class GuiTest
         sleep(4000)
     }
 
+    //negative test
     @Test fun testCannotSendZero()
     {
         //begin with setting up the necessary things
@@ -1409,6 +1357,8 @@ class GuiTest
         sleep(4000)
 
     }
+
+    //negative test
     @Test fun testSendMoreNexThanAccountHasError()
     {
         //begin with setting up the necessary things
