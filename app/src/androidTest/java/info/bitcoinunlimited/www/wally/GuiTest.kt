@@ -3,6 +3,7 @@ package bitcoinunlimited.wally.guiTestImplementation
 //import kotlinx.android.synthetic.main.activity_identity.*
 // import kotlinx.android.synthetic.main.activity_main.*
 //import kotlinx.android.synthetic.main.trickle_pay_reg.*
+import Nexa.NexaRpc.NexaRpc
 import Nexa.NexaRpc.NexaRpcFactory
 import android.app.Activity
 import android.app.ActivityManager
@@ -44,7 +45,7 @@ import java.util.*
 import java.util.logging.Logger
 import info.bitcoinunlimited.www.wally.R.id as GuiId
 import info.bitcoinunlimited.www.wally.R
-
+import io.ktor.client.network.sockets.*
 
 
 val LogIt = Logger.getLogger("GuiTest")
@@ -152,6 +153,59 @@ fun clickId(id: Int): ViewAction
             v.performClick()
         }
     }
+}
+
+fun setUpSettTests() : Pair<SharedPreferences?,ActivityScenario<Settings>>
+{
+    // Start up a particular Activity.  In this case "Settings"
+    val activityScenario: ActivityScenario<Settings> = ActivityScenario.launch(Settings::class.java)
+    activityScenario.moveToState(Lifecycle.State.RESUMED)
+
+    // Grab the instance of our app
+    var app: WallyApp? = null
+    activityScenario.onActivity { app = (it.application as WallyApp) }
+    assert(app != null)
+
+    // Get access to what is happening in the back end
+    // Everything needs to be inside onActivity, to schedule it within the activity context
+    var preferenceDB: SharedPreferences? = null
+    activityScenario.onActivity {
+        preferenceDB = it.getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+    }
+    return Pair(preferenceDB,activityScenario)
+}
+
+inline fun<reified T : Activity> setUp(vararg names:String) : Triple<ChainSelector,ActivityScenario<T>,WallyApp?>
+{
+
+    val cs = ChainSelector.NEXAREGTEST
+    val activityScenario: ActivityScenario<T> = ActivityScenario.launch(T::class.java)
+    activityScenario.moveToState(Lifecycle.State.RESUMED);
+    var app: WallyApp? = null
+    activityScenario.onActivity { app = (it.application as WallyApp) }
+    assert(app != null)
+
+    val ctxt = PlatformContext(app!!.applicationContext)
+    walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
+    var wdb = walletDb!!
+    for (name in names) {
+        deleteWallet(wdb, name, cs)
+    }
+    return Triple(cs,activityScenario,app!!)
+}
+
+fun giveWalletCoins() : NexaRpc
+{
+    val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+    LogIt.info("Connecting to: " + rpcConnection)
+    var rpc = NexaRpcFactory.create(rpcConnection)
+    var peerInfo = try {
+        rpc.getpeerinfo()
+    } catch (e: ConnectTimeoutException) {
+        throw ConnectTimeoutException("ATTENTION! You haven't run the nexa-qt.exe. Please go do that!")
+    }
+    check(peerInfo.size >= 0 && peerInfo.size <= 10)
+    return rpc
 }
 
 @RunWith(AndroidJUnit4::class)
@@ -276,6 +330,30 @@ class GuiTest
         onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(),typeText(name), pressImeActionButton(), pressBack())
         onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
         app!!.waitUntilActivityVisible<MainActivity>()
+    }
+
+    fun makeLockedAcc(name: String,pin: String,hidden:Boolean, app: WallyApp, cs: ChainSelector)
+    {
+        // Switch to a different activity
+        while(true) try {
+            onView(withId(GuiId.GuiNewAccount)).perform(click())
+            break
+        }
+        catch (e: NoMatchingViewException)
+        {
+            Thread.sleep(1000)
+        }
+        //onView(withId(R.id.GuiNewAccount)).perform(click())
+        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
+        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText(name), pressImeActionButton(), pressBack())
+        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText(pin), pressImeActionButton(), pressBack())
+        if(hidden)
+        {
+            onView(withId(GuiId.PinHidesAccount)).perform(click())
+        }
+        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
+        app!!.waitUntilActivityVisible<MainActivity>()
+        sleep(1000)
     }
 
     @Test fun testRpc()
@@ -501,21 +579,8 @@ class GuiTest
     //The following are settings tests
     @Test fun testSettingsDevMode()
     {
-        // Start up a particular Activity.  In this case "Settings"
-        val activityScenario: ActivityScenario<Settings> = ActivityScenario.launch(Settings::class.java)
-        activityScenario.moveToState(Lifecycle.State.RESUMED)
-
-        // Grab the instance of our app
-        var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
-        assert(app != null)
-
-        // Get access to what is happening in the back end
-        // Everything needs to be inside onActivity, to schedule it within the activity context
-        var preferenceDB: SharedPreferences? = null
-        activityScenario.onActivity {
-            preferenceDB = it.getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
-        }
+        // Set up beginning
+        var (preferenceDB,activityScenario) = setUpSettTests()
 
         // This test should work regardless of the current setting, so figure that out first
         var origDevMode = devMode
@@ -549,21 +614,8 @@ class GuiTest
 
     @Test fun testSettingsAssetsScreen()
     {
-        // Start up a particular Activity.  In this case "Settings"
-        val activityScenario: ActivityScenario<Settings> = ActivityScenario.launch(Settings::class.java)
-        activityScenario.moveToState(Lifecycle.State.RESUMED)
-
-        // Grab the instance of our app
-        var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
-        assert(app != null)
-
-        // Get access to what is happening in the back end
-        // Everything needs to be inside onActivity, to schedule it within the activity context
-        var preferenceDB: SharedPreferences? = null
-        activityScenario.onActivity {
-            preferenceDB = it.getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
-        }
+        // Set up beginning
+        var (preferenceDB,activityScenario) = setUpSettTests()
 
         // This test should work regardless of the current setting, so figure that out first
         var origAS = preferenceDB!!.getBoolean(SHOW_ASSETS_PREF, false)
@@ -598,21 +650,8 @@ class GuiTest
 
     @Test fun testSettingsTricklePayScreen()
     {
-        // Start up a particular Activity.  In this case "Settings"
-        val activityScenario: ActivityScenario<Settings> = ActivityScenario.launch(Settings::class.java)
-        activityScenario.moveToState(Lifecycle.State.RESUMED)
-
-        // Grab the instance of our app
-        var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
-        assert(app != null)
-
-        // Get access to what is happening in the back end
-        // Everything needs to be inside onActivity, to schedule it within the activity context
-        var preferenceDB: SharedPreferences? = null
-        activityScenario.onActivity {
-            preferenceDB = it.getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
-        }
+        // Set up beginning
+        var (preferenceDB,activityScenario) = setUpSettTests()
 
         // This test should work regardless of the current setting, so figure that out first
         var origTPS = preferenceDB!!.getBoolean(SHOW_TRICKLEPAY_PREF, false)
@@ -647,24 +686,11 @@ class GuiTest
 
     @Test fun testSettingsIdentityScreen()
     {
-        // Start up a particular Activity.  In this case "Settings"
-        val activityScenario: ActivityScenario<Settings> = ActivityScenario.launch(Settings::class.java)
-        activityScenario.moveToState(Lifecycle.State.RESUMED)
-
-        // Grab the instance of our app
-        var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
-        assert(app != null)
-
-        // Get access to what is happening in the back end
-        // Everything needs to be inside onActivity, to schedule it within the activity context
-        var preferenceDB: SharedPreferences? = null
-        activityScenario.onActivity {
-            preferenceDB = it.getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
-        }
+        // Set up beginning
+        var (preferenceDB,activityScenario) = setUpSettTests()
 
         // Find Current Setting
-        var origIdentity = preferenceDB!!.getBoolean(ACCESS_PRICE_DATA_PREF, false)
+        var origIdentity = preferenceDB!!.getBoolean(SHOW_IDENTITY_PREF, false)
         val negated = !origIdentity
 
 
@@ -693,21 +719,8 @@ class GuiTest
     }
     @Test fun testSettingsPriceData()
     {
-        // Start up a particular Activity.  In this case "Settings"
-        val activityScenario: ActivityScenario<Settings> = ActivityScenario.launch(Settings::class.java)
-        activityScenario.moveToState(Lifecycle.State.RESUMED)
-
-        // Grab the instance of our app
-        var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
-        assert(app != null)
-
-        // Get access to what is happening in the back end
-        // Everything needs to be inside onActivity, to schedule it within the activity context
-        var preferenceDB: SharedPreferences? = null
-        activityScenario.onActivity {
-            preferenceDB = it.getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
-        }
+        // Set up beginning
+        var (preferenceDB,activityScenario) = setUpSettTests()
 
         // This test should work regardless of the current setting, so figure that out first
         var origAPD = allowAccessPriceData
@@ -739,21 +752,8 @@ class GuiTest
     }
     @Test fun testSettingsLocalCurrency()
     {
-        // Start up a particular Activity.  In this case "Settings"
-        val activityScenario: ActivityScenario<Settings> = ActivityScenario.launch(Settings::class.java)
-        activityScenario.moveToState(Lifecycle.State.RESUMED)
-
-        // Grab the instance of our app
-        var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
-        assert(app != null)
-
-        // Get access to what is happening in the back end
-        // Everything needs to be inside onActivity, to schedule it within the activity context
-        var preferenceDB: SharedPreferences? = null
-        activityScenario.onActivity {
-            preferenceDB = it.getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
-        }
+        // Set up beginning
+        var (preferenceDB,activityScenario) = setUpSettTests()
 
         // go through the different languages
         clickSpinnerItem(GuiId.GuiFiatCurrencySpinner,"BRL")
@@ -776,28 +776,10 @@ class GuiTest
     //The following tests pertain to account creation
 
     @Test fun testAccountCreation() {
-        val cs = ChainSelector.NEXAREGTEST
-        val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
-        activityScenario.moveToState(Lifecycle.State.RESUMED);
-        var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
-        assert(app != null)
-
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-        deleteWallet(wdb, "rNEX2", cs)
-        deleteWallet(wdb, "rNEX3", cs)
-
+        //begin with setting up the necessary things
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1", "rNEX2", "rNEX3")
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
+        var rpc = giveWalletCoins()
 
         //Make a normal account
         createNewAccount("rNEX1",  app!!, cs)
@@ -807,63 +789,35 @@ class GuiTest
             it.assignCryptoSpinnerValues()
             it.updateGUI()
         }
-        activityScenario.onActivity { sleep(4000) }
+        activityScenario.onActivity { sleep(2000) }
 
         //make a locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX2"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX2","0000",false,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
             it.updateGUI()
         }
-        activityScenario.onActivity { sleep(4000) }
-
+        activityScenario.onActivity { sleep(2000) }
 
         //make a hidden locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX3"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("1234"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.PinHidesAccount)).perform(click())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX3","1234",true,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
             it.updateGUI()
         }
+        activityScenario.onActivity { sleep(2000) }
         activityScenario.onActivity { sleep(4000) }
 
     }
 
     @Test fun testCreateExistingAccount() {
-        val cs = ChainSelector.NEXAREGTEST
-        val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
-        activityScenario.moveToState(Lifecycle.State.RESUMED);
-        var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
-        assert(app != null)
-
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX4", cs)
+        //begin with setting up the necessary things
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX4")
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
+        var rpc = giveWalletCoins()
 
         //make an account
         onView(withId(R.id.GuiNewAccount)).perform(click())
@@ -888,41 +842,20 @@ class GuiTest
 
     }
     @Test fun testLockAccount() {
-        val cs = ChainSelector.NEXAREGTEST
-        val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
-        activityScenario.moveToState(Lifecycle.State.RESUMED);
-        var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
-        assert(app != null)
-
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
+        //begin with setting up the necessary things
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1")
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
+        var rpc = giveWalletCoins()
 
         //make a locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX1"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX1","0000",false,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
             it.updateGUI()
         }
-        activityScenario.onActivity { sleep(1000) }
+        activityScenario.onActivity { sleep(2000) }
 
         //lock it
         onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon)))
@@ -942,41 +875,20 @@ class GuiTest
     }
 
     @Test fun testUnlockFromIdentity() {
-        val cs = ChainSelector.NEXAREGTEST
-        val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
-        activityScenario.moveToState(Lifecycle.State.RESUMED);
-        var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
-        assert(app != null)
-
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
+        //begin with setting up the necessary things
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1")
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
+        var rpc = giveWalletCoins()
 
         //make a locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX1"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX1","0000",false,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
             it.updateGUI()
         }
-        activityScenario.onActivity { sleep(1000) }
+        activityScenario.onActivity { sleep(2000) }
 
         //lock it
         onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon)))
@@ -1003,42 +915,20 @@ class GuiTest
     }
 
     @Test fun testHideLockAccount() {
-        val cs = ChainSelector.NEXAREGTEST
-        val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
-        activityScenario.moveToState(Lifecycle.State.RESUMED);
-        var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
-        assert(app != null)
-
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
+        //begin with setting up the necessary things
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1")
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
+        var rpc = giveWalletCoins()
 
         //make a hidden locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX1"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.PinHidesAccount)).perform(click())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX1","0000",true,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
             it.updateGUI()
         }
-        activityScenario.onActivity { sleep(1000) }
+        activityScenario.onActivity { sleep(2000) }
 
         // click the lock icon
         onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon)))
@@ -1058,57 +948,29 @@ class GuiTest
     }
 
     @Test fun testTwoUnlockAccount() {
-        val cs = ChainSelector.NEXAREGTEST
-        val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
-        activityScenario.moveToState(Lifecycle.State.RESUMED);
-        var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
-        assert(app != null)
-
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-        deleteWallet(wdb, "rNEX2", cs)
+        //begin with setting up the necessary things
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1","rNEX2")
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
+        var rpc = giveWalletCoins()
 
         //make a locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX1"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX1","0000",false,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
             it.updateGUI()
         }
-        activityScenario.onActivity { sleep(1000) }
+        activityScenario.onActivity { sleep(2000) }
 
         //make a second locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX2"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX2","0000",false,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
             it.updateGUI()
         }
-        activityScenario.onActivity { sleep(1000) }
+        activityScenario.onActivity { sleep(2000) }
 
         // click the lock icons
         onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon)))
@@ -1127,58 +989,29 @@ class GuiTest
         activityScenario.onActivity { sleep(3000) }
     }
     @Test fun testOneHiddenTwoUnlockAccount() {
-        val cs = ChainSelector.NEXAREGTEST
-        val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
-        activityScenario.moveToState(Lifecycle.State.RESUMED);
-        var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
-        assert(app != null)
-
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-        deleteWallet(wdb, "rNEX2", cs)
+        //begin with setting up the necessary things
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1","rNEX2")
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
+        var rpc = giveWalletCoins()
 
         //make a locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX1"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX1","0000",false,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
             it.updateGUI()
         }
-        activityScenario.onActivity { sleep(1000) }
+        activityScenario.onActivity { sleep(2000) }
 
         //make a second hidden locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX2"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.PinHidesAccount)).perform(click())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX2","0000",true,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
             it.updateGUI()
         }
-        activityScenario.onActivity { sleep(1000) }
+        activityScenario.onActivity { sleep(2000) }
 
         // click the lock icon
         onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon)))
@@ -1198,36 +1031,14 @@ class GuiTest
     }
 
     @Test fun testTwoPassDiffUnlock() {
-        val cs = ChainSelector.NEXAREGTEST
-        val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
-        activityScenario.moveToState(Lifecycle.State.RESUMED);
-        var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
-        assert(app != null)
-
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-        deleteWallet(wdb, "rNEX2", cs)
+        //begin with setting up the necessary things
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1","rNEX2")
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
+        var rpc = giveWalletCoins()
 
         //make a locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX1"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX1","0000",false,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
@@ -1236,13 +1047,7 @@ class GuiTest
         activityScenario.onActivity { sleep(1000) }
 
         //make a second locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX2"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("1111"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX2","1111",false,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
@@ -1278,36 +1083,16 @@ class GuiTest
         activityScenario.onActivity { sleep(3000) }
     }
 
+    //negative test
     @Test fun testLockedAccountWrongPin() {
-        val cs = ChainSelector.NEXAREGTEST
-        val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
-        activityScenario.moveToState(Lifecycle.State.RESUMED);
-        var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
-        assert(app != null)
-
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
+        //begin with setting up the necessary things
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1")
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
+        var rpc = giveWalletCoins()
 
         //make a locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX1"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        makeLockedAcc("rNEX1","0000",false,app!!, cs)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
@@ -1325,13 +1110,13 @@ class GuiTest
         sleep(1000)
         //check for error
         waitForActivity(10000, activityScenario) { it.lastErrorString == i18n(R.string.PinInvalid) }
-        sleep(1000)
+        sleep(2000)
         activityScenario.onActivity {
             it.assignWalletsGuiSlots()
             it.assignCryptoSpinnerValues()
             it.updateGUI()
         }
-        activityScenario.onActivity { sleep(1000) }
+        activityScenario.onActivity { sleep(3000) }
         //enter right pin
         onView(withId(GuiId.unlock)).perform(click())
         sleep(1000)
@@ -1347,30 +1132,11 @@ class GuiTest
 
     @Test fun testSettingsConfirmTransfersSmall()
     {
-        val cs = ChainSelector.NEXAREGTEST
-        // Start up a particular Activity.  In this case "Settings"
-        val activityScenario: ActivityScenario<Settings> = ActivityScenario.launch(Settings::class.java)
-        activityScenario.moveToState(Lifecycle.State.RESUMED)
-
-        // Grab the instance of our app
-        var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
-        assert(app != null)
-
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "TESTbip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-        deleteWallet(wdb, "rNEX2", cs)
+        //begin with setting up the necessary things
+        val (cs,activityScenario,app) = setUp<Settings>("rNEX1", "rNEX2")
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0  && peerInfo.size <= 10)
+        var rpc = giveWalletCoins()
 
         // Get access to what is happening in the back end
         // Everything needs to be inside onActivity, to schedule it within the activity context
@@ -1441,30 +1207,11 @@ class GuiTest
 
     @Test fun testSettingsConfirmTransfersBig()
     {
-        val cs = ChainSelector.NEXAREGTEST
-        // Start up a particular Activity.  In this case "Settings"
-        val activityScenario: ActivityScenario<Settings> = ActivityScenario.launch(Settings::class.java)
-        activityScenario.moveToState(Lifecycle.State.RESUMED)
-
-        // Grab the instance of our app
-        var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
-        assert(app != null)
-
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "TESTbip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-        deleteWallet(wdb, "rNEX2", cs)
+        //begin with setting up the necessary things
+        val (cs,activityScenario,app) = setUp<Settings>("rNEX1", "rNEX2")
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0  && peerInfo.size <= 10)
+        var rpc = giveWalletCoins()
 
         // Get access to what is happening in the back end
         // Everything needs to be inside onActivity, to schedule it within the activity context
@@ -1531,30 +1278,14 @@ class GuiTest
         sleep(4000)
     }
 
+    //negative test
     @Test fun testCannotSendZero()
     {
-        val cs = ChainSelector.NEXAREGTEST
-        val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
-        activityScenario.moveToState(Lifecycle.State.RESUMED);
-        var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
-        assert(app != null)
-
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-        deleteWallet(wdb, "rNEX2", cs)
+        //begin with setting up the necessary things
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1","rNEX2")
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
-        println("PORT: "+ REGTEST_RPC_PORT)
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
+        var rpc = giveWalletCoins()
 
         var rpcBalance = rpc.getbalance()
         LogIt.info("balance is: " + rpcBalance.toPlainString())
@@ -1609,30 +1340,15 @@ class GuiTest
         sleep(4000)
 
     }
+
+    //negative test
     @Test fun testSendMoreNexThanAccountHasError()
     {
-        val cs = ChainSelector.NEXAREGTEST
-        val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
-        activityScenario.moveToState(Lifecycle.State.RESUMED);
-        var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
-        assert(app != null)
-
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-        deleteWallet(wdb, "rNEX2", cs)
+        //begin with setting up the necessary things
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1","rNEX2")
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
-        println("PORT: "+ REGTEST_RPC_PORT)
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
+        var rpc = giveWalletCoins()
 
         var rpcBalance = rpc.getbalance()
         LogIt.info("balance is: " + rpcBalance.toPlainString())
@@ -1692,28 +1408,11 @@ class GuiTest
     }
     @Test fun testLoadingNexToAccount()
     {
-
-        val cs = ChainSelector.NEXAREGTEST
-        val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
-        activityScenario.moveToState(Lifecycle.State.RESUMED);
-        var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
-        assert(app != null)
-
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
+        //begin with setting up the necessary things
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1")
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
-        println("PORT: "+ REGTEST_RPC_PORT)
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
+        var rpc = giveWalletCoins()
 
         var rpcBalance = rpc.getbalance()
         LogIt.info("balance is: " + rpcBalance.toPlainString())
@@ -1754,27 +1453,12 @@ class GuiTest
     }
     @Test fun testSendToSelf()
     {
-        val cs = ChainSelector.NEXAREGTEST
-        val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
-        activityScenario.moveToState(Lifecycle.State.RESUMED);
-        var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
-        assert(app != null)
+        //begin with setting up the necessary things
+        val (cs,activityScenario,app) = setUp<MainActivity>("rNEX1")
 
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
-        println("PORT: "+ REGTEST_RPC_PORT)
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
+        var rpc = giveWalletCoins()
 
         var rpcBalance = rpc.getbalance()
         LogIt.info("balance is: " + rpcBalance.toPlainString())
@@ -1812,6 +1496,8 @@ class GuiTest
         sleep(4000)
     }
 
+
+    //TODO: get this function working
     @Test fun testHomeActivity()
     {
         val cs = ChainSelector.NEXAREGTEST
@@ -1833,12 +1519,16 @@ class GuiTest
         //deleteBlockHeaders("mRbch1", dbPrefix, appContext!!)
         //deleteBlockHeaders("mRbch2", dbPrefix, appContext!!)
 
-        // supply this wallet with coins
+        //supply this wallet with coins
         val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0  && peerInfo.size <= 10)  // Lots of stuff could be connected if you are actively working
+        var peerInfo = try {
+            rpc.getpeerinfo()
+        } catch (e: ConnectTimeoutException) {
+            throw ConnectTimeoutException("ATTENTION! You haven't run the nexa-qt.exe. Please go do that!")
+        }
+        check(peerInfo.size >= 0 && peerInfo.size <= 10)
 
         // Generate blocks until we get coins to spend. This is needed inside the ci testing.
         // But the code checks first so that lots of extra blocks aren't created during dev testing
