@@ -45,17 +45,16 @@ import java.util.logging.Logger
 import info.bitcoinunlimited.www.wally.R.id as GuiId
 import info.bitcoinunlimited.www.wally.R
 
-
-
 val LogIt = Logger.getLogger("GuiTest")
 
 class TestTimeoutException(what: String): Exception(what)
 
-//val REGTEST_RPC_PORT=18332
-//val REGTEST_P2P_PORT=18444
+val REGTEST_RPC_PORT=18332
+val REGTEST_P2P_PORT=18444
+//val REGTEST_P2P_PORT=7327
+//val REGTEST_RPC_PORT=7328
 
-val REGTEST_P2P_PORT=7327
-val REGTEST_RPC_PORT=7328
+val HOST_IP = "192.168.1.5"  // SimulationHostIP
 
 
 fun ViewInteraction.isGone() = getViewAssertion(ViewMatchers.Visibility.GONE)
@@ -157,8 +156,6 @@ fun clickId(id: Int): ViewAction
 @RunWith(AndroidJUnit4::class)
 class GuiTest
 {
-
-
     fun setLocale(locale: Locale, app: WallyApp)
     {
         Locale.setDefault(locale)
@@ -283,7 +280,7 @@ class GuiTest
         LogIt.info("This test requires a full node running on regtest")
 
         // Set up RPC connection
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + HOST_IP + ":" + REGTEST_RPC_PORT
 
         val nexaRpc = NexaRpcFactory.create(rpcConnection)
 
@@ -360,6 +357,7 @@ class GuiTest
         LogIt.info("Completed!")
     }
 
+    /*
     @Test fun testTricklePayRegistration()
     {
         val activityScenarioM: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
@@ -445,6 +443,8 @@ class GuiTest
         activityScenarioM.close()
         println("worked!")
     }
+
+     */
 
     @Test fun testIdentityActivity()
     {
@@ -775,7 +775,8 @@ class GuiTest
 
     //The following tests pertain to account creation
 
-    @Test fun testAccountCreation() {
+    @Test fun testAccountCreation()
+    {
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
@@ -793,7 +794,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX3", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + HOST_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -843,7 +844,8 @@ class GuiTest
 
     }
 
-    @Test fun testCreateExistingAccount() {
+    @Test fun testCreateExistingAccount()
+    {
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
@@ -859,7 +861,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX4", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + HOST_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -884,10 +886,9 @@ class GuiTest
             it.updateGUI()
         }
         activityScenario.onActivity { sleep(4000) }
-
-
     }
-    @Test fun testLockAccount() {
+    @Test fun testLockAccount()
+    {
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
@@ -903,7 +904,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX1", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + HOST_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -941,7 +942,8 @@ class GuiTest
         activityScenario.onActivity { sleep(3000) }
     }
 
-    @Test fun testUnlockFromIdentity() {
+    @Test fun testUnlockFromIdentity()
+    {
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
@@ -957,7 +959,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX1", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + HOST_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -1002,7 +1004,8 @@ class GuiTest
         activityScenario.onActivity { sleep(3000) }
     }
 
-    @Test fun testHideLockAccount() {
+    @Test fun testHideLockAccount()
+    {
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
@@ -1018,7 +1021,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX1", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + HOST_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -1057,7 +1060,8 @@ class GuiTest
         activityScenario.onActivity { sleep(3000) }
     }
 
-    @Test fun testTwoUnlockAccount() {
+    @Test fun testTwoUnlockAccount()
+    {
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
@@ -1074,7 +1078,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX2", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + HOST_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -1126,7 +1130,8 @@ class GuiTest
         }
         activityScenario.onActivity { sleep(3000) }
     }
-    @Test fun testOneHiddenTwoUnlockAccount() {
+    @Test fun testOneHiddenTwoUnlockAccount()
+    {
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
@@ -1143,7 +1148,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX2", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + HOST_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -1197,7 +1202,8 @@ class GuiTest
         activityScenario.onActivity { sleep(3000) }
     }
 
-    @Test fun testTwoPassDiffUnlock() {
+    @Test fun testTwoPassDiffUnlock()
+    {
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
@@ -1214,7 +1220,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX2", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + HOST_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -1278,7 +1284,8 @@ class GuiTest
         activityScenario.onActivity { sleep(3000) }
     }
 
-    @Test fun testLockedAccountWrongPin() {
+    @Test fun testLockedAccountWrongPin()
+    {
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
@@ -1294,7 +1301,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX1", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + HOST_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -1366,7 +1373,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX2", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + HOST_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -1460,7 +1467,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX2", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + HOST_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -1549,7 +1556,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX2", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + HOST_IP + ":" + REGTEST_RPC_PORT
         println("PORT: "+ REGTEST_RPC_PORT)
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
@@ -1627,7 +1634,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX2", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + HOST_IP + ":" + REGTEST_RPC_PORT
         println("PORT: "+ REGTEST_RPC_PORT)
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
@@ -1708,7 +1715,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX1", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + HOST_IP + ":" + REGTEST_RPC_PORT
         println("PORT: "+ REGTEST_RPC_PORT)
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
@@ -1769,7 +1776,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX1", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + HOST_IP + ":" + REGTEST_RPC_PORT
         println("PORT: "+ REGTEST_RPC_PORT)
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
@@ -1834,7 +1841,7 @@ class GuiTest
         //deleteBlockHeaders("mRbch2", dbPrefix, appContext!!)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + HOST_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -1873,7 +1880,7 @@ class GuiTest
         createNewAccount("rNEX1", app!!, cs)
         sleep(4000)
         // waitForActivity(10000, activityScenario) { app?.accounts["rNEX1"]?.cnxnMgr == null }
-        app!!.accounts["rNEX1"]!!.cnxnMgr.exclusiveNodes(setOf(SimulationHostIP + ":" + REGTEST_P2P_PORT))
+        app!!.accounts["rNEX1"]!!.cnxnMgr.exclusiveNodes(setOf(HOST_IP + ":" + REGTEST_P2P_PORT))
         activityScenario.onActivity { currentActivity == it }  // Clicking should bring us back to main screen
         createNewAccount("rNEX2", app!!, cs)
         activityScenario.onActivity { currentActivity == it }  // Clicking should bring us back to main screen

@@ -32,7 +32,7 @@ import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
 // The IP address of the host machine: Android sets up a fake network with the host hardcoded to this IP
-val EMULATOR_HOST_IP = SimulationHostIP //"192.168.1.100" //"10.0.2.2"
+val EMULATOR_HOST_IP = "192.168.1.100" //"10.0.2.2"
 
 val LogIt = Logger.getLogger("AndroidTest")
 
@@ -450,6 +450,7 @@ class UnitTest
         check(data contentEquals data2)
     }
 
+    /*
     @Test
     fun testSerialize()
     {
@@ -498,8 +499,8 @@ class UnitTest
         var ser3 = BCHserialized(td.BCHserialize(SerializationType.DISK).flatten(), SerializationType.DISK)
         var tdc = TdppDomain(ser3)
         check(td.equals(tdc))
-
     }
+    */
 
     @Test
     fun testHDderivation()

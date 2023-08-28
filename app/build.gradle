@@ -78,8 +78,8 @@ dependencies {
     // implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Grab libbitcoincash locally for debug or from the released location
-    //implementation files('aars/libbitcoincash-release.aar')  // locate this directory at: <repo_home>/app/aars/
-    implementation 'info.bitcoinunlimited:libbitcoincash:3.2.6'
+    implementation files('aars/libbitcoincash-debug.aar')  // locate this directory at: <repo_home>/app/aars/
+    //implementation 'info.bitcoinunlimited:libbitcoincash:3.2.6'
 
     implementation 'com.google.android.flexbox:flexbox:3.0.0'  // https://github.com/google/flexbox-layout/tags
     implementation 'androidx.activity:activity:1.7.2'
