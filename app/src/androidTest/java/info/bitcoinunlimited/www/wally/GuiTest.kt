@@ -52,11 +52,11 @@ val LogIt = Logger.getLogger("GuiTest")
 
 class TestTimeoutException(what: String): Exception(what)
 
-//val REGTEST_RPC_PORT=18332
-//val REGTEST_P2P_PORT=18444
-
-val REGTEST_P2P_PORT=7327
-val REGTEST_RPC_PORT=7328
+val REGTEST_RPC_PORT=18332
+val REGTEST_P2P_PORT=18444
+val FULL_NODE_IP = "192.168.1.5" // SimulationHostIP
+//val REGTEST_P2P_PORT=7327
+//val REGTEST_RPC_PORT=7328
 
 
 fun ViewInteraction.isGone() = getViewAssertion(ViewMatchers.Visibility.GONE)
@@ -284,7 +284,7 @@ class GuiTest
         LogIt.info("This test requires a full node running on regtest")
 
         // Set up RPC connection
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
 
         val nexaRpc = NexaRpcFactory.create(rpcConnection)
 
@@ -795,7 +795,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX3", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -861,7 +861,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX4", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -905,7 +905,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX1", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -959,7 +959,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX1", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -1020,7 +1020,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX1", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -1076,7 +1076,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX2", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -1145,7 +1145,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX2", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -1216,7 +1216,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX2", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -1296,7 +1296,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX1", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -1368,7 +1368,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX2", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -1462,7 +1462,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX2", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -1551,7 +1551,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX2", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
         println("PORT: "+ REGTEST_RPC_PORT)
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
@@ -1629,7 +1629,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX2", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
         println("PORT: "+ REGTEST_RPC_PORT)
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
@@ -1710,7 +1710,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX1", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
         println("PORT: "+ REGTEST_RPC_PORT)
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
@@ -1771,7 +1771,7 @@ class GuiTest
         deleteWallet(wdb, "rNEX1", cs)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
         println("PORT: "+ REGTEST_RPC_PORT)
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
@@ -1836,7 +1836,7 @@ class GuiTest
         //deleteBlockHeaders("mRbch2", dbPrefix, appContext!!)
 
         // supply this wallet with coins
-        val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
         var peerInfo = rpc.getpeerinfo()
@@ -1875,7 +1875,7 @@ class GuiTest
         createNewAccount("rNEX1", app!!, cs)
         sleep(4000)
         // waitForActivity(10000, activityScenario) { app?.accounts["rNEX1"]?.cnxnMgr == null }
-        app!!.accounts["rNEX1"]!!.cnxnMgr.exclusiveNodes(setOf(SimulationHostIP + ":" + REGTEST_P2P_PORT))
+        app!!.accounts["rNEX1"]!!.cnxnMgr.exclusiveNodes(setOf(FULL_NODE_IP + ":" + REGTEST_P2P_PORT))
         activityScenario.onActivity { currentActivity == it }  // Clicking should bring us back to main screen
         createNewAccount("rNEX2", app!!, cs)
         activityScenario.onActivity { currentActivity == it }  // Clicking should bring us back to main screen

@@ -96,6 +96,6 @@ fun historicalUbchInFiat(fiat: String, timeStamp: Long): BigDecimal
     LogIt.info(sourceLoc() + " " + obj.toString())
 
     // TODO verify timestamp
-    val v = obj.lookup.price.toBigDecimal().setScale(16) / 100.toBigDecimal().setScale(16) // bitcoin.com price is in cents per BCH.  We want "dollars" per uBCH (millionths of a BCH)
+    val v = obj.lookup.price.toBigDecimal().setScale(16) / 100000000.toBigDecimal().setScale(16) // bitcoin.com price is in cents per BCH.  We want "dollars" per uBCH (millionths of a BCH)
     return v
 }
