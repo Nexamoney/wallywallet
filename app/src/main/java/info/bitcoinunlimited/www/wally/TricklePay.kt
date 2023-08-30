@@ -16,7 +16,6 @@ import androidx.core.app.NavUtils
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.databinding.*
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
@@ -26,9 +25,10 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
 import org.nexa.libnexakotlin.libnexa
-import java.math.BigDecimal
+import com.ionspin.kotlin.bignum.decimal.*
 import java.util.logging.Logger
-
+import org.nexa.libnexakotlin.*
+import org.nexa.threads.Mutex
 
 private val LogIt = Logger.getLogger("BU.wally.TricklePay")
 
@@ -532,8 +532,7 @@ class TpDomainBinder(val ui: TpDomainListItemBinding): GuiListItemBinder<TdppDom
     override fun onClick(v: View)
     {
         val activity = v.context as TricklePayActivity
-        synchronized(activity.viewSync)
-        {
+        activity.viewSync.synchronized {
             LogIt.info("onclick: " + pos + " " + activity.showingDetails)
             data?.let {
                 activity.setSelectedInfoDomain(it)
@@ -571,7 +570,7 @@ class TricklePayActivity : CommonNavActivity()
         frag.populate(d)
     }
 
-    val viewSync = ThreadCond()
+    val viewSync = Mutex()
     var showingDetails = false
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -1096,22 +1095,22 @@ class TricklePayActivity : CommonNavActivity()
         var s = GuiTricklePayReg.GuiAutospendLimitEntry0.text.toString()
         if (s == i18n(R.string.unspecified) || s == "") d.maxper = -1
         else
-            d.maxper = account.toFinestUnit(BigDecimal(s))
+            d.maxper = account.toFinestUnit(s.toCurrency(account.chain.chainSelector))
 
         s = GuiTricklePayReg.GuiAutospendLimitEntry1.text.toString()
         if (s == i18n(R.string.unspecified) || s == "") d.maxday = -1
         else
-            d.maxday = account.toFinestUnit(BigDecimal(s))
+            d.maxday = account.toFinestUnit(s.toCurrency(account.chain.chainSelector))
 
         s = GuiTricklePayReg.GuiAutospendLimitEntry2.text.toString()
         if (s == i18n(R.string.unspecified) || s == "") d.maxweek = -1
         else
-            d.maxweek = account.toFinestUnit(BigDecimal(s))
+            d.maxweek = account.toFinestUnit(s.toCurrency(account.chain.chainSelector))
 
         s = GuiTricklePayReg.GuiAutospendLimitEntry3.text.toString()
         if (s == i18n(R.string.unspecified) || s == "") d.maxmonth = -1
         else
-            d.maxmonth = account.toFinestUnit(BigDecimal(s))
+            d.maxmonth = account.toFinestUnit(s.toCurrency(account.chain.chainSelector))
 
         d.automaticEnabled = GuiTricklePayReg.GuiEnableAutopay.isChecked
 

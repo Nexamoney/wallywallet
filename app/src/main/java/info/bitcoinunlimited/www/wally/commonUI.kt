@@ -5,6 +5,7 @@ package info.bitcoinunlimited.www.wally
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.Paint
 import android.graphics.Rect
@@ -14,27 +15,26 @@ import android.text.TextWatcher
 import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.*
+import android.widget.CompoundButton
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import bitcoinunlimited.libbitcoincash.*
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.WriterException
 import com.google.zxing.common.BitMatrix
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import java.math.BigDecimal
+import kotlinx.coroutines.*
 import java.net.URLEncoder
-import java.text.NumberFormat
 import java.util.*
 import java.util.logging.Logger
 import kotlin.math.floor
+import com.ionspin.kotlin.bignum.decimal.*
+import org.nexa.libnexakotlin.*
+import java.net.URL
+import java.net.URLDecoder
 
 const val SUP = "UNUSED_PARAMETER"
 
@@ -59,14 +59,35 @@ var WallyRowColors = arrayOf(0x4Ff5f8ff.toInt(), 0x4Fd0d0ef.toInt())
 // Assign this in your App.onCreate
 var displayMetrics = DisplayMetrics()
 
+var dbPrefix = if (RunningTheTests()) "test_" else if (REG_TEST_ONLY == true) "regtest_" else ""
+
+
 private val LogIt = Logger.getLogger("BU.wally.commonUI")
 
+open class AssertException(why: String) : LibNexaException(why, "Assertion", ErrorSeverity.Abnormal)
 
-
+/** Make some type (probably a primitive type) into an object that holds one of them */
 class Objectify<T>(var obj: T)
 {
 }
 
+fun RunningTheTests(): Boolean
+{
+    try
+    {
+        /* I can search for either UnitTest or GuiTest here because both are included in the
+        test image.
+         */
+        Class.forName("info.bitcoinunlimited.wally.androidTestImplementation.UnitTest")
+        return true
+    }
+    catch (e: ClassNotFoundException)
+    {
+        return false
+    }
+}
+
+/** */
 fun View.visOrGone(vis: Boolean)
 {
     if (vis) visibility = View.VISIBLE
@@ -129,26 +150,7 @@ val chainToDisplayCurrencyCode: Map<ChainSelector, String> = mapOf(
   ChainSelector.BCH to "uBCH", ChainSelector.BCHTESTNET to "tuBCH", ChainSelector.BCHREGTEST to "ruBCH"
 )
 
-/** Get this string as a BigDecimal currency value (using your default locale's number representation) */
-fun String.toCurrency(chainSelector: ChainSelector? = null): BigDecimal
-{
-    val nf = NumberFormat.getInstance(Locale.getDefault()) as java.text.DecimalFormat
-    nf.setParseBigDecimal(true)
-    val ret = (nf.parseObject(this) as BigDecimal)
-    if (chainSelector != null) ret.setCurrency(chainSelector)
-    else ret.setScale(currencyScale)
-    return ret
-}
 
-fun BigDecimal.setCurrency(chainSelector: ChainSelector): BigDecimal
-{
-    when (chainSelector)
-    {
-        ChainSelector.BCHTESTNET, ChainSelector.BCHREGTEST, ChainSelector.BCH -> setScale(uBchDecimals)
-        ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> setScale(NexDecimals)
-    }
-    return this
-}
 
 val ChainSelector.currencyDecimals: Int
   get()
@@ -156,7 +158,7 @@ val ChainSelector.currencyDecimals: Int
     return when (this)
     {
         ChainSelector.BCHTESTNET, ChainSelector.BCHREGTEST, ChainSelector.BCH -> uBchDecimals
-        ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> NexDecimals
+        ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> NexaDecimals
     }
 }
 
@@ -186,8 +188,48 @@ fun <RET> doUI(fn: suspend () -> RET): RET
     }
 }
 
+// see https://stackoverflow.com/questions/13592236/parse-a-uri-string-into-name-value-collection
+fun URL.queryMap(): Map<String, String>
+{
+    val query_pairs = LinkedHashMap<String, String>()
+    val query = this.getQuery()
+    if (query == null) return mapOf()
+    val pairs = query.split("&")
+    for (pair in pairs)
+    {
+        val idx = pair.indexOf("=")
+        query_pairs[URLDecoder.decode(pair.substring(0, idx), "UTF-8")] = URLDecoder.decode(pair.substring(idx + 1), "UTF-8")
+    }
+    return query_pairs
+}
+
+
+fun dbgAssertGuiThread()
+{
+    val tname = Thread.currentThread().name
+    if (tname != "main")
+    {
+        LogIt.warning("ASSERT GUI operations in thread " + tname)
+        val e = AssertException("Executing GUI operations in thread " + tname)
+        LogIt.warning(e.stackTraceToString())
+        throw e
+    }
+}
+
+fun dbgAssertNotGuiThread()
+{
+    val tname = Thread.currentThread().name
+    if (tname == "main")
+    {
+        LogIt.warning("ASSERT blocking operations in GUI thread " + tname)
+        val e = AssertException("Executing blocking operations in GUI thread " + tname)
+        LogIt.warning(e.stackTraceToString())
+        throw e
+    }
+}
+
 /** Do whatever you pass within the user interface context, asynchronously */
-fun asyncUI(fn: suspend () -> Unit): Unit
+fun laterUI(fn: suspend () -> Unit): Unit
 {
     GlobalScope.launch(Dispatchers.Main) {
         try
@@ -199,6 +241,70 @@ fun asyncUI(fn: suspend () -> Unit): Unit
             handleThreadException(e,"Exception in laterUI", sourceLoc())
         }
 
+    }
+}
+
+// you can install your own coroutine threads here and this common code will use that instead of GlobalScope
+var notInUIscope: CoroutineScope? = null
+
+/** Do whatever you pass but not within the user interface context, asynchronously */
+fun later(fn: suspend () -> Unit): Unit
+{
+    (notInUIscope ?:GlobalScope).launch {
+        try
+        {
+            fn()
+        } catch (e: Exception) // Uncaught exceptions will end the app
+        {
+            LogIt.info(sourceLoc() + ": General exception handler (should be caught earlier!)")
+            handleThreadException(e)
+        }
+    }
+}
+
+/** execute the passed code block directly if not in the UI thread, otherwise defer it */
+fun notInUI(fn: () -> Unit)
+{
+    val tname = Thread.currentThread().name
+    if (tname == "main")  // main is the UI thread so need to launch this
+    {
+        (notInUIscope ?:GlobalScope).launch {
+            try
+            {
+                fn()
+            }
+            catch (e: Exception)
+            {
+                LogIt.warning("Exception in notInUI: " + e.toString())
+            }
+        }
+    }
+    else // otherwise just call it
+    {
+        try
+        {
+            fn()
+        }
+        catch (e: Exception)
+        {
+            LogIt.warning("Exception in notInUI: " + e.toString())
+        }
+    }
+}
+
+fun <RET> syncNotInUI(fn: () -> RET): RET
+{
+    val tname = Thread.currentThread().name
+    if (tname == "main")
+    {
+        val ret = runBlocking(Dispatchers.IO) {
+            fn()
+        }
+        return ret
+    }
+    else
+    {
+        return fn()
     }
 }
 
@@ -359,10 +465,11 @@ fun textToQREncode(value: String, size: Int): Bitmap?
     val pixels = IntArray(bitMatrixWidth * bitMatrixHeight)
 
 
-    //val white = 0xFFFFFFFF.toInt()
-    //val black = 0xFF000000.toInt()
-    val white: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.white) } ?: 0xFFFFFFFF.toInt()
-    val black: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.black) } ?: 0xFF000000.toInt()
+    val white = 0xFFFFFFFF.toInt()
+    val black = 0xFF000000.toInt()
+    // TODO access resource
+    //val white: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.white) } ?: 0xFFFFFFFF.toInt()
+    //val black: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.black) } ?: 0xFF000000.toInt()
 
     var offset = 0
     for (y in 0 until bitMatrixHeight)
@@ -666,4 +773,121 @@ open class GuiList<DATA, BINDER: GuiListItemBinder<DATA>> internal constructor(v
         })
 
     }
+}
+
+/** Connects a gui switch to a preference DB item.  To be called in onCreate.
+ * Returns the current state of the preference item.
+ * Uses setOnCheckedChangeListener, so you cannot call that yourself.  Instead pass your listener into this function
+ * */
+fun SetupBooleanPreferenceGui(key: String, db: SharedPreferences, defaultValue: Boolean, button: CompoundButton, onChecked: ((CompoundButton?, Boolean) -> Unit)? = null): Boolean
+{
+    val ret = db.getBoolean(key, defaultValue)
+    button.setChecked(ret)
+
+    button.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener
+    {
+        override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean)
+        {
+            with(db.edit())
+            {
+                putBoolean(key, isChecked)
+                commit()
+            }
+            if (onChecked != null) onChecked(buttonView, isChecked)
+        }
+    })
+    return ret
+}
+
+/** Connects a gui text entry field to a preference DB item.  To be called in onCreate */
+fun SetupTextPreferenceGui(key: String, db: SharedPreferences, view: EditText)
+{
+    view.text.clear()
+    view.text.append(db.getString(key, ""))
+
+    view.addTextChangedListener(object : TextWatcher
+    {
+        override fun afterTextChanged(p: Editable?)
+        {
+            dbgAssertGuiThread()
+            if (p == null) return
+            val text = p.toString()
+            with(db.edit())
+            {
+                putString(key, text)
+                commit()
+            }
+        }
+
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
+        {
+        }
+
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
+        {
+        }
+    })
+}
+
+/** Connects a gui text entry field to a preference DB item.  To be called in onCreate */
+fun SetupNexCurrencyPreferenceGui(key: String, db: SharedPreferences, view: EditText)
+{
+    view.text.clear()
+    if (true)
+    {
+        val v = db.getString(key, "0") ?: "0"
+        val dec = try
+        {
+            CurrencyDecimal(v)
+        }
+        catch (e:Exception)
+        {
+            CurrencyDecimal(0)
+        }
+        view.text.append(db.getString(key, nexFormat.format(dec)))
+    }
+
+    view.addTextChangedListener(object : TextWatcher
+    {
+        override fun afterTextChanged(p: Editable?)
+        {
+            dbgAssertGuiThread()
+            if (p == null) return
+            val text = p.toString()
+            try
+            {
+                val dec = CurrencyDecimal(text)
+                with(db.edit())
+                {
+                    putString(key, serializeFormat.format(dec))
+                    commit()
+                }
+            }
+            catch (e:Exception)  // number format execption, for one
+            {
+                logThreadException(e)
+            }
+        }
+
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
+        {
+        }
+
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
+        {
+        }
+    })
+}
+
+/**
+ * Convert a uri scheme to a url, and then plug it into the java URL parser.
+ * @return java.net.URL
+ */
+fun String.toUrl(): URL
+{
+    // replace the scheme with http so we can use URL to parse it
+    val index = indexOf(':')
+    // val scheme = take(index)
+    val u = URL("http" + drop(index))
+    return u
 }

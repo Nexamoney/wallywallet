@@ -10,10 +10,10 @@ import android.view.View
 import android.widget.Adapter
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.databinding.ActivitySplitBillBinding
 import java.lang.Exception
-import java.math.BigDecimal
+import com.ionspin.kotlin.bignum.decimal.*
+import org.nexa.libnexakotlin.*
 
 import java.util.logging.Logger
 
@@ -34,11 +34,11 @@ class SplitBillActivity : CommonNavActivity()
     var acct: Account? = null
 
     //* convenience variable mirroring the Ways GUI element
-    var splitWays = BigDecimal(2)
+    var splitWays = BigDecimal.fromInt(2)
 
     //* convenience variable mirroring the Tip GUI element
-    var tipFrac: BigDecimal? = BigDecimal(0)
-    var tipAmt = BigDecimal(0)
+    var tipFrac: BigDecimal? = CURRENCY_0
+    var tipAmt = CURRENCY_0
     var ignoreTipAmountChange = false  //? This tells us that the program is changing the tip amount, not the user
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -129,7 +129,7 @@ class SplitBillActivity : CommonNavActivity()
                 if (ignoreTipAmountChange) return
                 try
                 {
-                    val qty = ui.splitBillTipAmount.text.toString().toBigDecimal(currencyMath).setScale(currencyScale)
+                    val qty = CurrencyDecimal(ui.splitBillTipAmount.text.toString())
                     if (qty != null)
                     {
                         tipAmt = qty
@@ -214,7 +214,7 @@ class SplitBillActivity : CommonNavActivity()
         }
         else
         {
-            tipFrac = v.dropLast(1).toBigDecimal(currencyMath).setScale(currencyScale) / 100.toBigDecimal()  // get rid of the % and convert to a bigdecimal decimal rather than percentage
+            tipFrac = CurrencyDecimal(v.dropLast(1)) / BigDecimal.fromInt(100)  // get rid of the % and convert to a bigdecimal decimal rather than percentage
         }
     }
 
@@ -256,17 +256,17 @@ class SplitBillActivity : CommonNavActivity()
         val sel1: String = prefDb.getString("splitbill.splitCurrencyType", fiatCurrencyCode) ?: fiatCurrencyCode
         ui.splitCurrencyType.setSelection(sel1)
         val sel2 = prefDb.getString("splitbill.splitWays", "2") ?: "2"
-        splitWays = BigDecimal(sel2)
+        splitWays = CurrencyDecimal(sel2)
         ui.splitCount.setSelection(sel2)
         val tippct = prefDb.getString("splitbill.tipFrac", null)
-        tipAmt = BigDecimal(prefDb.getString("splitbill.tipAmt", "0"))
+        tipAmt = CurrencyDecimal(prefDb.getString("splitbill.tipAmt", "0") ?: "0")
 
         overrideTipAmount(tipAmt)
 
         if ((tippct != null) && (tippct != "null"))
         {
-            tipFrac = BigDecimal(tippct)
-            val pct = (BigDecimal(tippct) * (100.toBigDecimal())).toInt().toString() + "%"
+            tipFrac = CurrencyDecimal(tippct)
+            val pct = (CurrencyDecimal(tippct) * (100.toBigDecimal())).toLong().toString() + "%"
             ui.tipPercentage.setSelection(pct)
         }
         else
@@ -299,10 +299,10 @@ class SplitBillActivity : CommonNavActivity()
     {
         try
         {
-            return ui.splitQuantity.text.toString().toBigDecimal(currencyMath).setScale(currencyScale)
+            return CurrencyDecimal(ui.splitQuantity.text.toString())
         } catch (e: Exception)  // If we can't parse the user's input for any reason, just make it 0
         {
-            return BigDecimal(0, currencyMath).setScale(currencyScale)
+            return CURRENCY_0
         }
     }
 

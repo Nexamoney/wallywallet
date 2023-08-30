@@ -11,11 +11,10 @@ import android.view.View.*
 import android.widget.Adapter
 import android.widget.AdapterView
 import androidx.core.content.ContextCompat
-import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.databinding.ActivitySettingsBinding
-import java.math.BigDecimal
+import com.ionspin.kotlin.bignum.decimal.*
 import java.util.logging.Logger
-
+import org.nexa.libnexakotlin.*
 
 val LOCAL_CURRENCY_PREF = "localCurrency"
 val PRIMARY_ACT_PREF = "primaryAccount"

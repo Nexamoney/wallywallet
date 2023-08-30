@@ -4,19 +4,19 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.Paint
-import android.net.wifi.WifiManager
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import bitcoinunlimited.libbitcoincash.*
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import info.bitcoinunlimited.www.wally.databinding.AccountListItemBinding
-import java.math.BigDecimal
 import java.security.spec.InvalidKeySpecException
 import java.time.Instant
 import java.util.logging.Logger
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
+
+import com.ionspin.kotlin.bignum.decimal.*
+import org.nexa.libnexakotlin.*
+import org.nexa.walletoperations.*
 
 private val LogIt = Logger.getLogger("BU.wally.Account")
 
@@ -48,7 +48,6 @@ fun EncodePIN(actName: String, pin: String, size: Int = 64): ByteArray
 
 class Account(
   val name: String, //* The name of this account
-  val context: PlatformContext,
   var flags: ULong = ACCOUNT_FLAG_NONE,
   chainSelector: ChainSelector? = null,
   secretWords: String? = null,
@@ -101,18 +100,18 @@ class Account(
     var currentReceiveQR: Bitmap? = null
 
     /** Current exchange rate between this currency (in this account's default unit -- NOT the finest unit or blockchain unit) and your selected fiat currency */
-    var fiatPerCoin: BigDecimal = 0.toBigDecimal(currencyMath).setScale(16)
+    var fiatPerCoin: BigDecimal = CurrencyDecimal(0)
 
     //? Current bch balance (cached from accessing the wallet), in the display units
-    var balance: BigDecimal = 0.toBigDecimal(currencyMath).setCurrency(chainSelector ?: ChainSelector.NEXA)
-    var unconfirmedBalance: BigDecimal = 0.toBigDecimal(currencyMath).setCurrency(chainSelector ?: ChainSelector.NEXA)
-    var confirmedBalance: BigDecimal = 0.toBigDecimal(currencyMath).setCurrency(chainSelector ?: ChainSelector.NEXA)
+    var balance: BigDecimal = CurrencyDecimal(0)
+    var unconfirmedBalance: BigDecimal = CurrencyDecimal(0)
+    var confirmedBalance: BigDecimal = CurrencyDecimal(0)
 
     //? specify how quantities should be formatted for display
     val cryptoFormat = mBchFormat
 
     val cnxnMgr: CnxnMgr = WallyGetCnxnMgr(wallet.chainSelector, name, false)
-    val chain: Blockchain = GetBlockchain(wallet.chainSelector, cnxnMgr, context, chainToURI[wallet.chainSelector], false)  // do not start right away so we can configure exclusive/preferred nodes
+    val chain: Blockchain = GetBlockchain(wallet.chainSelector, cnxnMgr, chainToURI[wallet.chainSelector], false)  // do not start right away so we can configure exclusive/preferred nodes
     var started = false  // Have the cnxnmgr and blockchain services been started or are we in initialization?
 
     /** A string denoting this wallet's currency units.  That is, the units that this wallet should use in display, in its BigDecimal amount representations, and is converted to and from in fromFinestUnit() and toFinestUnit() respectively */
@@ -408,12 +407,14 @@ class Account(
     /** Convert the default display units to the finest granularity of this currency.  For example, mBCH to Satoshis */
     fun toFinestUnit(amount: BigDecimal): Long
     {
-        val ret = when (chain.chainSelector)
+        val ret:Long = when (chain.chainSelector)
         {
-            ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> (amount* BigDecimal(SATperNEX)).toLong()
-            ChainSelector.BCH, ChainSelector.BCHREGTEST, ChainSelector.BCHTESTNET -> (amount* BigDecimal(SATperUBCH)).toLong()
+            ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET ->
+                (amount*CurrencyDecimal(SATperNEX)).toLong()
+
+            ChainSelector.BCH, ChainSelector.BCHREGTEST, ChainSelector.BCHTESTNET -> (amount* CurrencyDecimal(SATperUBCH)).toLong()
         }
-        return ret.toLong()
+        return ret
     }
 
     //? Convert the finest granularity of this currency to the default display unit.  For example, Satoshis to mBCH
@@ -424,7 +425,7 @@ class Account(
             ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> SATperNEX
             ChainSelector.BCH, ChainSelector.BCHREGTEST, ChainSelector.BCHTESTNET -> SATperUBCH
         }
-        val ret = BigDecimal(amount, currencyMath).setScale(currencyScale) / factor.toBigDecimal()
+        val ret = CurrencyDecimal(amount) / factor.toBigDecimal()
         return ret
     }
 
@@ -566,7 +567,7 @@ class Account(
             if (chainstate.isSynchronized(1, 60 * 60))  // ignore 1 block desync or this displays every time a new block is found
             {
                 unconfBalStr =
-                  if (0.toBigDecimal(currencyMath).setScale(currencyScale) == unconfirmedBalance)
+                  if (CURRENCY_ZERO == unconfirmedBalance)
                       ""
                   else
                       i18n(R.string.incoming) % mapOf(
@@ -689,7 +690,7 @@ class Account(
             {
                 NexInFiat(fiatCurrencyCode) { fiatPerCoin = it }
             }
-            else fiatPerCoin = -1.toBigDecimal()  // Indicates that the exchange rate is unavailable
+            else fiatPerCoin = CURRENCY_NEG1  // Indicates that the exchange rate is unavailable
             return
         }
 

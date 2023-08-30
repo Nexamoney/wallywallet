@@ -1,11 +1,9 @@
 package info.bitcoinunlimited.www.wally
 
-import java.math.BigDecimal
+import org.nexa.libnexakotlin.*
+import com.ionspin.kotlin.bignum.decimal.*
 import java.net.URL
 import java.util.logging.Logger
-
-import bitcoinunlimited.libbitcoincash.launch
-import bitcoinunlimited.libbitcoincash.sourceLoc
 
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
@@ -20,6 +18,7 @@ import kotlinx.serialization.descriptors.*
 import kotlinx.coroutines.*
 import kotlin.time.*
 import kotlin.time.TimeSource.Monotonic
+
 
 private val LogIt = Logger.getLogger("BU.wally.orgapi")
 
@@ -132,7 +131,7 @@ fun NexInFiat(fiat: String, setter: (BigDecimal) -> Unit)
             val obj = parser.decodeFromString(WallyWalletOrgApiCurPrice.serializer(), data)
             LogIt.info(sourceLoc() + " " + obj.toString())
             // Average the bid and ask prices
-            val v = (obj.Bid + obj.Ask) / BigDecimal(2)
+            val v = (obj.Bid + obj.Ask) / CurrencyDecimal(2)
             lastNexaPricePoll[fiat] = Pair(Monotonic.markNow(), v)
             setter(v)
         }

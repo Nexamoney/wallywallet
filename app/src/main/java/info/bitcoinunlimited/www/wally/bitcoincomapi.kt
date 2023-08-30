@@ -2,17 +2,18 @@
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
 
-import bitcoinunlimited.libbitcoincash.launch
-import bitcoinunlimited.libbitcoincash.sourceLoc
+import org.nexa.libnexakotlin.*
+import com.ionspin.kotlin.bignum.decimal.*
+
 import kotlinx.coroutines.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.Serializable
 
 import java.lang.Exception
-import java.math.BigDecimal
 
 import java.net.URL
+import java.util.Currency
 
 import java.util.logging.Logger
 import kotlin.time.*
@@ -66,7 +67,7 @@ fun UbchInFiat(fiat: String, setter: (BigDecimal) -> Unit)
         val obj = parser.decodeFromString(BchUsdBitcoinCom.serializer(), data)
         LogIt.info(sourceLoc() + " " + obj.toString())
         // TODO verify recent timestamp
-        val v = obj.price.toBigDecimal().setScale(16) / 100000000.toBigDecimal().setScale(16) // bitcoin.com price is in cents per BCH.  We want "dollars" per uBCH (millionths of a BCH)
+        val v = CurrencyDecimal(obj.price.toLong()) / CurrencyDecimal(100000000) // bitcoin.com price is in cents per BCH.  We want "dollars" per uBCH (millionths of a BCH)
         lastPoll[fiat] = Pair(Monotonic.markNow(), v)
         setter(v)
     }
@@ -76,7 +77,7 @@ fun UbchInFiat(fiat: String, setter: (BigDecimal) -> Unit)
 /** Return the approximate price of mBCH at the time provided in seconds since the epoch */
 fun historicalUbchInFiat(fiat: String, timeStamp: Long): BigDecimal
 {
-    if (!allowAccessPriceData) return BigDecimal(-1)
+    if (!allowAccessPriceData) return CurrencyDecimal(-1L)
     if (fiat != "USD") return BigDecimal.ZERO  // TODO get other fiat historical prices
 
     // see https://index.bitcoin.com/
@@ -86,7 +87,7 @@ fun historicalUbchInFiat(fiat: String, timeStamp: Long): BigDecimal
         URL(spec).readText()
     } catch (e: java.io.FileNotFoundException)
     {
-        return BigDecimal(-1)
+        return CurrencyDecimal(-1L)
     }
     val parser: Json = Json { isLenient = true; ignoreUnknownKeys = true }  // nonstrict mode and ignore extra fields
 
@@ -96,6 +97,6 @@ fun historicalUbchInFiat(fiat: String, timeStamp: Long): BigDecimal
     LogIt.info(sourceLoc() + " " + obj.toString())
 
     // TODO verify timestamp
-    val v = obj.lookup.price.toBigDecimal().setScale(16) / 100000000.toBigDecimal().setScale(16) // bitcoin.com price is in cents per BCH.  We want "dollars" per uBCH (millionths of a BCH)
+    val v = CurrencyDecimal(obj.lookup.price.toLong()) / CurrencyDecimal(100000000) // bitcoin.com price is in cents per BCH.  We want "dollars" per uBCH (millionths of a BCH)
     return v
 }

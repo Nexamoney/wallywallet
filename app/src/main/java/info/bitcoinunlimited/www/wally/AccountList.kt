@@ -17,7 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import bitcoinunlimited.libbitcoincash.*
+import org.nexa.libnexakotlin.*
 import info.bitcoinunlimited.www.wally.databinding.AccountListItemBinding
 import kotlinx.coroutines.delay
 import java.util.logging.Logger

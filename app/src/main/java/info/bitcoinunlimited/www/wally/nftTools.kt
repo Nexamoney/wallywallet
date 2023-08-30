@@ -1,13 +1,9 @@
 // This should become a library
 package info.bitcoinunlimited.www.wally
 
-import bitcoinunlimited.libbitcoincash.GroupId
-import bitcoinunlimited.libbitcoincash.toHex
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.*
-import org.nexa.libnexakotlin.libnexa
 import java.io.*
 import java.nio.file.Path
 import java.util.zip.ZipEntry
@@ -18,6 +14,7 @@ import kotlin.io.path.copyTo
 import java.util.logging.Logger
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.deleteIfExists
+import org.nexa.libnexakotlin.*
 
 private val LogIt = Logger.getLogger("nifty.nftTools")
 
@@ -38,6 +35,8 @@ val NFTY_SUPPORTED_IMAGE = listOf(".svg", ".gif", ".png", ".apng", ".jpg", ".jpe
 val NFTY_SUPPORTED_MEDIA = NFTY_SUPPORTED_VIDEO + NFTY_SUPPORTED_IMAGE
 
 val NFTY_FILE_EXT = ".zip"
+
+val TOKEN_PRECISION = 40L
 
 // To use the image and video resizing functionality, you need to point to these programs on your system
 var FFMPEG = "/usr/bin/ffmpeg"

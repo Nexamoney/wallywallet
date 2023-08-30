@@ -38,7 +38,7 @@ import org.hamcrest.Matchers.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.lang.Thread.sleep
-import java.math.BigDecimal
+import com.ionspin.kotlin.bignum.decimal.*
 import java.net.URLEncoder
 import java.util.*
 import java.util.logging.Logger

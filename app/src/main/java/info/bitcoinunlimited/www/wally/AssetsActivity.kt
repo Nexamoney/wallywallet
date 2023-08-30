@@ -2,6 +2,8 @@
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
 
+import org.nexa.libnexakotlin.*
+import com.ionspin.kotlin.bignum.decimal.*
 
 import android.content.*
 import android.graphics.BitmapFactory
@@ -19,8 +21,6 @@ import android.widget.VideoView
 import androidx.core.graphics.get
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
-import bitcoinunlimited.libbitcoincash.*
-import org.nexa.libnexakotlin.*
 import com.caverock.androidsvg.SVG
 import info.bitcoinunlimited.www.wally.databinding.ActivityAssetsBinding
 import info.bitcoinunlimited.www.wally.databinding.AssetListItemBinding
@@ -29,7 +29,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
 import java.io.*
-import java.math.BigDecimal
 import java.net.URI
 import java.net.URL
 import java.util.concurrent.Executors
@@ -817,8 +816,8 @@ class AssetBinder(val ui: AssetListItemBinding, val activity: AssetsActivity): G
                 {
                     ui.GuiAssetId.text = d.groupInfo.groupId.toString()
                     ui.GuiAssetName.text = d.name ?: ""
-                    var tmp = BigDecimal(d.groupInfo.tokenAmt).setScale(d.tokenInfo?.genesisInfo?.decimal_places ?: 0)
-                    tmp = tmp/(BigDecimal(10).pow(d.tokenInfo?.genesisInfo?.decimal_places ?: 0))
+                    var tmp = BigDecimal.fromLong(d.groupInfo.tokenAmt,DecimalMode(TOKEN_PRECISION, scale = (d.tokenInfo?.genesisInfo?.decimal_places ?: 0).toLong()))
+                    tmp = tmp/(BigDecimal.fromInt(10).pow(d.tokenInfo?.genesisInfo?.decimal_places ?: 0))
                     ui.GuiAssetQuantity.text = tmp.toString()
                     ui.GuiAssetQuantity.visibility = View.VISIBLE
                     ui.GuiAssetAuthor.visibility = View.GONE
@@ -834,8 +833,8 @@ class AssetBinder(val ui: AssetListItemBinding, val activity: AssetsActivity): G
                     else
                     {
                         ui.GuiAssetQuantity.visibility = View.VISIBLE
-                        var tmp = BigDecimal(d.groupInfo.tokenAmt).setScale(d.tokenInfo?.genesisInfo?.decimal_places ?: 0)
-                        tmp = tmp/(BigDecimal(10).pow(d.tokenInfo?.genesisInfo?.decimal_places ?: 0))
+                        var tmp = BigDecimal.fromLong(d.groupInfo.tokenAmt,DecimalMode(TOKEN_PRECISION, scale = (d.tokenInfo?.genesisInfo?.decimal_places ?: 0).toLong()))
+                        tmp = tmp/(BigDecimal.fromInt(10).pow(d.tokenInfo?.genesisInfo?.decimal_places ?: 0))
                         ui.GuiAssetQuantity.text = tmp.toString()
                     }
 

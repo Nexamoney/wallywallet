@@ -14,19 +14,20 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.MenuItemCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.databinding.ActivityTxHistoryBinding
 import info.bitcoinunlimited.www.wally.databinding.AddressListItemBinding
 import info.bitcoinunlimited.www.wally.databinding.TxHistoryListItemBinding
 import kotlinx.coroutines.delay
 import java.lang.RuntimeException
-import java.math.BigDecimal
+import com.ionspin.kotlin.bignum.decimal.*
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.logging.Logger
+import org.nexa.libnexakotlin.*
+import org.nexa.threads.Mutex
 
 val MAX_CLIPBOARD_SIZE = 10000  // Copying too much triggers an android bug on a few phones.  This size is a guess
 
@@ -159,8 +160,8 @@ class TxHistoryBinder(val ui: TxHistoryListItemBinding): GuiListItemBinder<Trans
             ui.GuiTxDate.text = fdate
             ui.GuiValueCrypto.text = act.cryptoFormat.format(act.fromFinestUnit(amt))
 
-            val sendIm = appContext?.let { ContextCompat.getDrawable(it.context, R.drawable.ic_sendarrow) }
-            val recvIm = appContext?.let { ContextCompat.getDrawable(it.context, R.drawable.ic_receivearrow) }
+            val sendIm = appContext?.let { ContextCompat.getDrawable(it, R.drawable.ic_sendarrow) }
+            val recvIm = appContext?.let { ContextCompat.getDrawable(it, R.drawable.ic_receivearrow) }
             ui.GuiTxId.text = data.tx.idem.toHex()
 
             val addrs = mutableListOf<String>()
@@ -212,8 +213,9 @@ class TxHistoryBinder(val ui: TxHistoryListItemBinding): GuiListItemBinder<Trans
                 ui.GuiTxCostBasisOrProfitLoss.text.clear()
                 if (amt > 0)
                 {
-                    if (obj.basisOverride != null)
-                        ui.GuiTxCostBasisOrProfitLoss.text.append(fiatFormat.format(obj.basisOverride))
+                    val tmp = obj.basisOverride
+                    if (tmp != null)
+                        ui.GuiTxCostBasisOrProfitLoss.text.append(fiatFormat.format(tmp))
                     else
                         ui.GuiTxCostBasisOrProfitLoss.text.append(fiatFormat.format(netFiat))
                     ui.GuiBasisText.text = appResources?.getText(R.string.CostBasis)
@@ -241,8 +243,8 @@ class TxHistoryBinder(val ui: TxHistoryListItemBinding): GuiListItemBinder<Trans
         }
 
         // Alternate colors for each row in the list
-        val Acol: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowA) } ?: 0xFFEEFFEE.toInt()
-        val Bcol: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowB) } ?: 0xFFBBDDBB.toInt()
+        val Acol: Int = appContext?.let { ContextCompat.getColor(it, R.color.rowA) } ?: 0xFFEEFFEE.toInt()
+        val Bcol: Int = appContext?.let { ContextCompat.getColor(it, R.color.rowB) } ?: 0xFFBBDDBB.toInt()
         if ((pos and 1) == 0)
             view.background = ColorDrawable(Acol)
         else
@@ -258,10 +260,9 @@ class TxHistoryBinder(val ui: TxHistoryListItemBinding): GuiListItemBinder<Trans
         val d = data
         if (d == null) return
 
-        synchronized(activity.viewSync)
-        {
+        activity.viewSync.synchronized {
             val account = activity.account
-            if (account == null) return
+            if (account == null) return@synchronized
 
             LogIt.info("onclick: " + idx + " " + activity.showingDetails)
             if (!activity.showingDetails)
@@ -377,10 +378,9 @@ class AddressListBinder(val ui: AddressListItemBinding): GuiListItemBinder<Addre
         val d = data
         if (d == null) return
 
-        synchronized(activity.viewSync)
-        {
+        activity.viewSync.synchronized {
             val account = activity.account
-            if (account == null) return
+            if (account == null) return@synchronized
 
             LogIt.info("onclick: " + idx + " " + activity.showingDetails)
             if (!activity.showingDetails)
@@ -438,7 +438,7 @@ class TxHistoryActivity : CommonNavActivity()
 
     override var navActivityId = R.id.home
 
-    val viewSync = ThreadCond()
+    val viewSync = Mutex()
     var showingDetails = false
     var walletName: String? = null
     var historyCSV: String = ""

@@ -17,10 +17,10 @@ import androidx.core.view.MenuItemCompat
 import androidx.preference.EditTextPreference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.databinding.ActivityIdentityYourdataBinding
 import info.bitcoinunlimited.www.wally.databinding.InfoeditrowBinding
 import java.util.logging.Logger
+import org.nexa.libnexakotlin.*
 
 private val LogIt = Logger.getLogger("BU.wally.IdentityActivity")
 

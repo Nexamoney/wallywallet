@@ -25,7 +25,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.ParseException
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.LinearLayoutManager
-import bitcoinunlimited.libbitcoincash.*
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
@@ -34,13 +33,13 @@ import info.bitcoinunlimited.www.wally.databinding.AssetSuccinctListItemBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.Thread.sleep
-import java.math.BigDecimal
+import com.ionspin.kotlin.bignum.decimal.*
 import java.math.RoundingMode
 import java.net.URL
 import java.util.*
 import java.util.logging.Logger
 import kotlin.concurrent.thread
-
+import org.nexa.libnexakotlin.*
 
 private val LogIt = Logger.getLogger("BU.wally.mainActivity")
 
@@ -55,7 +54,7 @@ val MAX_ACCOUNTS = 10 // What are the maximum # of accounts this wallet GUI can 
 
 var SEND_ALL_TEXT = "all"  // Fixed up in onCreate when we have access to strings
 
-var appContext: PlatformContext? = null
+var appContext: Context? = null
 
 class MainActivityModel
 {
@@ -190,7 +189,7 @@ class MainActivity : CommonNavActivity()
         ui = ActivityMainBinding.inflate(layoutInflater)
         setContentView(ui.root)
 
-        val ctxt = PlatformContext(applicationContext)
+        val ctxt = applicationContext
         appContext = ctxt
 
         sleepMonitor = SleepMonitor(this)
@@ -601,7 +600,7 @@ class MainActivity : CommonNavActivity()
     {
         super.onStart()
         dbgAssertGuiThread()
-        appContext = PlatformContext(applicationContext)
+        appContext = applicationContext
         // (set in XML) sendVisibility(false)
 
         thread(true, true, null, "startup")
@@ -720,7 +719,7 @@ class MainActivity : CommonNavActivity()
             }
         }
 
-        appContext = PlatformContext(applicationContext)
+        appContext = applicationContext
         val preferenceDB = getSharedPreferences(i18n(R.string.preferenceFileName), Context.MODE_PRIVATE)
         fiatCurrencyCode = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"
         ui.xchgRateText?.text = ""
@@ -1282,7 +1281,7 @@ class MainActivity : CommonNavActivity()
 
         val bip72 = attribs["r"]
         val stramt = attribs["amount"]
-        var amt: BigDecimal = BigDecimal(-1)
+        var amt: BigDecimal = CURRENCY_NEG1
         if (bip72 != null)
         {
             later {
@@ -1321,7 +1320,7 @@ class MainActivity : CommonNavActivity()
             {
                 // If someone is asking for sub-satoshi quantities, round up and overpay them
                 LogIt.warning("Sub-satoshi quantity ${stramt} requested.  Rounding up")
-                stramt.toBigDecimal().setScale(bchDecimals, RoundingMode.UP)
+                BigDecimal.fromString(stramt, nexaMathMode)
             }
         }
 
@@ -1482,9 +1481,9 @@ class MainActivity : CommonNavActivity()
                 {
                     ui.approximatelyText.text = ""
                     val mbchToSend = qty / fiatPerCoin
-                    val coinPerFiat = BigDecimal.ONE.setScale(currencyScale)/fiatPerCoin
+                    val coinPerFiat = CURRENCY_1/fiatPerCoin
                     val sats = coin.toFinestUnit(mbchToSend)
-                    if (sats <= Dust(coin.chain.chainSelector))
+                    if (sats <= dust(coin.chain.chainSelector))
                         ui.approximatelyText.text = i18n(R.string.sendingDustWarning)
                     else
                         ui.approximatelyText.text = i18n(R.string.actuallySendingT) % mapOf("qty" to mBchFormat.format(mbchToSend), "crypto" to coin.currencyCode) + availabilityWarning(coin, mbchToSend)
@@ -1505,7 +1504,7 @@ class MainActivity : CommonNavActivity()
         }
         else
         {
-            if (qty <= coin.fromFinestUnit(Dust(coin.chain.chainSelector)))
+            if (qty <= coin.fromFinestUnit(dust(coin.chain.chainSelector)))
                 ui.approximatelyText.text = i18n(R.string.sendingDustWarning)
             else
                 ui.approximatelyText.text = ""
@@ -1522,7 +1521,7 @@ class MainActivity : CommonNavActivity()
                 try
                 {
                     var fiatDisplay = qty * fpc
-                    val coinPerFiat = BigDecimal.ONE.setScale(currencyScale) / fpc
+                    val coinPerFiat = CURRENCY_1 / fpc
                     if (ui.approximatelyText.text == "")
                         ui.approximatelyText.text = i18n(R.string.approximatelyT) % mapOf("qty" to fiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode) + availabilityWarning(coin, qty)
                     ui.xchgRateText.text = i18n(R.string.exchangeRate) % mapOf("amt" to coin.format(coinPerFiat), "crypto" to coin.currencyCode, "fiat" to fiatCurrencyCode)
@@ -1795,14 +1794,14 @@ class MainActivity : CommonNavActivity()
             val curText = focus.text.toString()
             var amt = try
             {
-                BigDecimal(curText.toString())
+                CurrencyDecimal(curText)
             }
             catch(e:java.lang.NumberFormatException)
             {
-                if ((focus.text.length == 0) || (curText=="all")) BigDecimal(1)
+                if ((focus.text.length == 0) || (curText=="all")) CURRENCY_1
                 else return
             }
-            amt *= BigDecimal(1000)
+            amt *= BigDecimal.fromInt(1000)
             focus.set(amt.toString())
         }
     }
@@ -1815,14 +1814,14 @@ class MainActivity : CommonNavActivity()
             val curText = focus.text.toString()
             var amt = try
             {
-                BigDecimal(curText)
+                CurrencyDecimal(curText)
             }
             catch(e:java.lang.NumberFormatException)
             {
-                if ((focus.text.length == 0) || (curText=="all")) BigDecimal(1)
+                if ((focus.text.length == 0) || (curText=="all")) CURRENCY_1
                 else return
             }
-            amt *= BigDecimal(1000000)
+            amt *= BigDecimal.fromInt(1000000)
             focus.set(amt.toString())
         }
     }
@@ -1860,7 +1859,7 @@ class MainActivity : CommonNavActivity()
         esn.setVisibility(View.VISIBLE)
         v.getRootView().invalidate()
 
-        asyncUI {
+        laterUI {
             if (esn != null)
             {
                 delay(100)
@@ -2174,7 +2173,7 @@ class MainActivity : CommonNavActivity()
         {
             // If someone is asking to send sub-satoshi quantities, round up and ask them to click send again.
             ui.sendQuantity.text.clear()
-            ui.sendQuantity.text.append(amtstr.toCurrency(account.chain.chainSelector).setScale(account.chain.chainSelector.currencyDecimals, RoundingMode.UP).toString())
+            ui.sendQuantity.text.append(amtstr.toCurrency(account.chain.chainSelector).toString())
             displayError(R.string.badAmount, R.string.subSatoshiQuantities)
             ui.approximatelyText.text = i18n(R.string.roundedUpClickSendAgain)
             return
@@ -2241,11 +2240,11 @@ class MainActivity : CommonNavActivity()
         val confirmAmtString = preferenceDB.getString(CONFIRM_ABOVE_PREF, "0") ?: "0"
         val confirmAmt = try
         {
-            BigDecimal(confirmAmtString)
+            CurrencyDecimal(confirmAmtString)
         }
         catch (e:Exception)
         {
-            BigDecimal(0)
+            CURRENCY_ZERO
         }
 
         // TODO confirm assets
@@ -2301,7 +2300,7 @@ class MainActivity : CommonNavActivity()
                             if (asset.account == account)
                             {
                                 val aout = txOutputFor(cs)
-                                aout.amount = Dust(cs)
+                                aout.amount = dust(cs)
                                 assetDustOut += aout.amount
                                 aout.script = sendAddr.groupedConstraintScript(asset.groupInfo.groupId, asset.displayAmount ?: 1)
                                 tx.add(aout)

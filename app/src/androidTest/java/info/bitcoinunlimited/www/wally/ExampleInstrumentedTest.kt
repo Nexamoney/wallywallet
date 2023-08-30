@@ -25,7 +25,7 @@ import org.nexa.libnexakotlin.initializeLibNexa
 import org.nexa.libnexakotlin.libnexa
 import java.lang.AssertionError
 import java.lang.Exception
-import java.math.BigDecimal
+import com.ionspin.kotlin.bignum.decimal.*
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.logging.Logger

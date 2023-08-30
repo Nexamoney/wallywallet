@@ -1,8 +1,7 @@
 // Copyright (c) 2019 Andrew Stone Consulting (qq9wwnuw4eukyh5g34ckg5vk4aaxnvr04vkspyv850)
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
-import bitcoinunlimited.libbitcoincash.*
-
+import org.nexa.libnexakotlin.*
 import android.content.*
 import android.os.Bundle
 import android.text.Editable

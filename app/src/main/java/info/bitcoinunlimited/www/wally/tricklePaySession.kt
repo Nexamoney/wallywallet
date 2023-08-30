@@ -7,8 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.net.toUri
 import java.util.logging.Logger
-import bitcoinunlimited.libbitcoincash.*
-import bitcoinunlimited.libbitcoincash.simpleapi.NexaScript
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.*
@@ -24,6 +22,8 @@ import java.net.SocketTimeoutException
 import java.net.URL
 import java.net.URLEncoder
 import kotlin.random.Random
+import org.nexa.libnexakotlin.*
+import org.nexa.libnexakotlin.simpleapi.NexaScript
 
 private val LogIt = Logger.getLogger("BU.wally.tpsess")
 
@@ -314,8 +314,7 @@ class TricklePayDomains(val app: WallyApp)
             {
                 if (db == null)
                 {
-                    val ctxt = PlatformContext(app)
-                    db = OpenKvpDB(ctxt, "wallyData")
+                    db = openKvpDB("wallyData")
                 }
 
                 db?.let {

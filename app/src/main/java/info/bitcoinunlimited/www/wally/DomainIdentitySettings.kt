@@ -8,12 +8,10 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Switch
-import bitcoinunlimited.libbitcoincash.nexidParams
-import bitcoinunlimited.libbitcoincash.IdentityDomain
-import bitcoinunlimited.libbitcoincash.launch
 import info.bitcoinunlimited.www.wally.databinding.ActivityDomainIdentitySettingsBinding
 import info.bitcoinunlimited.www.wally.databinding.ActivityShoppingBinding
 import info.bitcoinunlimited.www.wally.databinding.ShoppingListItemBinding
+import org.nexa.libnexakotlin.*
 
 import kotlinx.coroutines.runBlocking
 import java.util.logging.Logger

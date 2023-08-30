@@ -1,8 +1,6 @@
 package info.bitcoinunlimited.www.wally
 
-import bitcoinunlimited.libbitcoincash.LibNexaException
-import bitcoinunlimited.libbitcoincash.ErrorSeverity
-import bitcoinunlimited.libbitcoincash.logThreadException
+import org.nexa.libnexakotlin.*
 
 open class LibNexaExceptionI(err: Int, details:String?=null, severity: ErrorSeverity=ErrorSeverity.Expected) : LibNexaException(i18n(err), details, severity, err)
 

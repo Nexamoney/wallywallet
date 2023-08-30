@@ -1,19 +1,13 @@
 // Copyright (c) 2019 Andrew Stone Consulting (qq9wwnuw4eukyh5g34ckg5vk4aaxnvr04vkspyv850)
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
-
+import org.nexa.libnexakotlin.*
 import android.app.Activity
 import android.content.Intent
-import android.content.SharedPreferences
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.net.Uri
 import android.view.*
 import androidx.annotation.LayoutRes
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.databinding.ActivityIdentityBinding
 import info.bitcoinunlimited.www.wally.databinding.AlertListItemBinding
 import info.bitcoinunlimited.www.wally.databinding.IdentityListItemBinding

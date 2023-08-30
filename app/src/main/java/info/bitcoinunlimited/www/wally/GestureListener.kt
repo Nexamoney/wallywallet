@@ -66,8 +66,10 @@ open class OnSwipeTouchListener(val view: View, var claimIfUsed: Boolean=true) :
         }
 
         // Determines the fling velocity and then fires the appropriate swipe event accordingly
-        override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean
+        override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean
         {
+            // Aug 29, 2023 onFling fn def changed so e1 can be a null, but no docs explain what that means.  I need to see the fling direction...
+            if (e1 == null) return false
             val result = false
             try
             {

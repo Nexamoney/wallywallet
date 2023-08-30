@@ -1,7 +1,7 @@
 // Copyright (c) 2019 Andrew Stone Consulting (qq9wwnuw4eukyh5g34ckg5vk4aaxnvr04vkspyv850)
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
-
+import org.nexa.libnexakotlin.*
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ClipData
@@ -25,7 +25,6 @@ import androidx.core.net.toUri
 import androidx.core.view.ViewCompat.setWindowInsetsAnimationCallback
 import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
-import bitcoinunlimited.libbitcoincash.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
 import kotlinx.coroutines.*
@@ -865,8 +864,8 @@ open class CommonActivity : AppCompatActivity()
                 // visual bling that indicates text copied
                 v.text = i18n(R.string.copiedToClipboard)
                 // Set it back to the address after awhile
-                asyncUI {
-                    delay(3000);
+                laterUI {
+                    delay(3000)
                     v.text = addr
                 }
             }

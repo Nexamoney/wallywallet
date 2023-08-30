@@ -2,6 +2,8 @@
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
 
+import org.nexa.libnexakotlin.*
+import org.nexa.threads.*
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.drawable.ColorDrawable
@@ -12,7 +14,6 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.databinding.ActivityAlertsBinding
 import info.bitcoinunlimited.www.wally.databinding.AlertListItemBinding
 import info.bitcoinunlimited.www.wally.databinding.InfoeditrowBinding
@@ -23,6 +24,7 @@ import java.time.format.FormatStyle
 import java.util.*
 import java.util.logging.Logger
 import kotlin.collections.ArrayList
+
 
 private val LogIt = Logger.getLogger("BU.wally.Alert")
 
@@ -63,7 +65,7 @@ class AlertBinder(val ui: AlertListItemBinding, val activity: AlertActivity): Gu
         {
             LogIt.info("onclick: " + pos + " " + activity.showingDetails)
             val d = data
-            if (d == null) return  // its an empty row
+            if (d == null) return@synchronized  // its an empty row
             if (!activity.showingDetails)
             {
                 val some = 5
@@ -127,7 +129,7 @@ class AlertActivity : CommonNavActivity()
 
     override var navActivityId = R.id.home
 
-    val viewSync = ThreadCond()
+    val viewSync = Gate()
     var showingDetails = false
 
     fun highlight(idx: Int)

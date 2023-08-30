@@ -6,15 +6,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import bitcoinunlimited.libbitcoincash.Hash256
 import info.bitcoinunlimited.www.wally.databinding.ActivityShoppingBinding
 import info.bitcoinunlimited.www.wally.databinding.ShoppingListItemBinding
+import org.nexa.libnexakotlin.*
 
 import java.util.logging.Logger
 

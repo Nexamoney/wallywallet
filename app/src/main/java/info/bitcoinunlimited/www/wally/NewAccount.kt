@@ -11,11 +11,12 @@ import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.MultiAutoCompleteTextView
 import android.widget.MultiAutoCompleteTextView.Tokenizer
-import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.databinding.ActivityNewAccountBinding
 import org.nexa.libnexakotlin.libnexa
 import java.util.logging.Logger
 import kotlin.concurrent.thread
+import org.nexa.libnexakotlin.*
+import org.nexa.threads.Mutex
 
 private val LogIt = Logger.getLogger("BU.wally.NewAccount")
 
@@ -81,7 +82,7 @@ class NewAccount : CommonNavActivity()
     val nonstandardActivity = mutableListOf<Pair<Bip44Wallet.HdDerivationPath, HDActivityBracket>>()
 
     var processingThread: Thread? = null
-    var lock = ThreadCond()
+    var lock = Mutex()
 
     var nameOk = false
     var pinOk = true
@@ -443,13 +444,13 @@ class NewAccount : CommonNavActivity()
         {
             ElectrumClient(chainSelector, svr, port, useSSL=true)
         }
-        catch (e: java.io.IOException) // covers java.net.ConnectException, UnknownHostException and a few others that could trigger
+        catch (e: ElectrumConnectError) // covers java.net.ConnectException, UnknownHostException and a few others that could trigger
         {
             try
             {
-                ElectrumClient(chainSelector, svr, port, useSSL = false)
+                ElectrumClient(chainSelector, svr, port, useSSL = false, accessTimeoutMs = 60000, connectTimeoutMs = 10000)
             }
-            catch(e: java.io.IOException)
+            catch(e: ElectrumConnectError)
             {
                 if (chainSelector == ChainSelector.BCH)
                     ElectrumClient(chainSelector, LAST_RESORT_BCH_ELECTRS)
@@ -457,7 +458,7 @@ class NewAccount : CommonNavActivity()
                     ElectrumClient(chainSelector, LAST_RESORT_NEXA_ELECTRS, DEFAULT_NEXA_TCP_ELECTRUM_PORT, useSSL = false)
                 else throw e
             }
-            catch (e: java.io.IOException)
+            catch (e: ElectrumConnectError)
             {
                 laterUI {
                     ui.GuiNewAccountStatus.text = i18n(R.string.ElectrumNetworkUnavailable)
@@ -470,7 +471,7 @@ class NewAccount : CommonNavActivity()
         if (aborter.obj) return
 
         val passphrase = "" // TODO: support a passphrase
-        val secret = GenerateBip39Seed(secretWords, passphrase)
+        val secret = generateBip39Seed(secretWords, passphrase)
 
         val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
 

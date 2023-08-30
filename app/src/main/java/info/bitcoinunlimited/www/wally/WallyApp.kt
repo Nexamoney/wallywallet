@@ -19,7 +19,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.net.toUri
-import bitcoinunlimited.libbitcoincash.*
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.*
@@ -44,6 +43,8 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.logging.Logger
 import kotlin.coroutines.CoroutineContext
+
+import org.nexa.libnexakotlin.*
 
 val LAST_RESORT_BCH_ELECTRS = "bch2.bitcoinunlimited.net"
 val LAST_RESORT_NEXA_ELECTRS = "electrum.nexa.org"
@@ -721,7 +722,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     fun newAccount(name: String, flags: ULong, pin: String, chainSelector: ChainSelector): Account?
     {
         dbgAssertNotGuiThread()
-        val ctxt = PlatformContext(applicationContext)
+        val ctxt = applicationContext
 
         // I only want to write the PIN once when the account is first created
 
@@ -733,7 +734,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
             val ac = try
             {
                 val prehistoryDate = (Date().time / 1000L) - PREHISTORY_SAFEFTY_FACTOR // Set prehistory to 2 hours ago to account for block timestamp variations
-                Account(name, ctxt, flags, chainSelector, startPlace = prehistoryDate)
+                Account(name, flags, chainSelector, startPlace = prehistoryDate)
             } catch (e: IllegalStateException)
             {
                 LogIt.warning("Error creating account: ${e.message}")
@@ -796,7 +797,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         // If the account is being restored from a recovery key, then the user must have it saved somewhere already
         val flags = flags_p or ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY
         dbgAssertNotGuiThread()
-        val ctxt = PlatformContext(applicationContext)
 
         // I only want to write the PIN once when the account is first created
         val epin = try
@@ -820,7 +820,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
 
         synchronized(accounts)
         {
-            val ac = Account(name, ctxt, flags, chainSelector, secretWords, veryEarly, earliestHeight, nonstandardActivity)
+            val ac = Account(name, flags, chainSelector, secretWords, veryEarly, earliestHeight, nonstandardActivity)
             ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
             ac.start(applicationContext)
             ac.onChange()
@@ -883,19 +883,18 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
             launch(coMiscScope)
             {
                 LogIt.info(sourceLoc() + " Wally Wallet App Started")
-                val ctxt = PlatformContext(applicationContext)
-                walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
+                walletDb = openKvpDB(dbPrefix + "bip44walletdb")
                 
                 if (REG_TEST_ONLY)  // If I want a regtest only wallet for manual debugging, just create it directly
                 {
                     accounts.getOrPut("RKEX") {
                         try
                         {
-                            val c = Account("RKEX", ctxt);
+                            val c = Account("RKEX");
                             c
                         } catch (e: DataMissingException)
                         {
-                            val c = Account("RKEX", ctxt, ACCOUNT_FLAG_NONE, ChainSelector.NEXAREGTEST)
+                            val c = Account("RKEX", ACCOUNT_FLAG_NONE, ChainSelector.NEXAREGTEST)
                             c
                         }
                     }
@@ -921,7 +920,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
                         LogIt.info(sourceLoc() + " " + name + ": Loading account")
                         try
                         {
-                            val ac = Account(name, ctxt)
+                            val ac = Account(name)
                             accounts[ac.name] = ac
                         } catch (e: DataMissingException)
                         {

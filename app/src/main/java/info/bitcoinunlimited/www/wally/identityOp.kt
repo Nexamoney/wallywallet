@@ -15,11 +15,11 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
 import java.util.logging.Logger
-import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.databinding.ActivityIdentityOpBinding
 import org.nexa.libnexakotlin.libnexa
 import java.io.DataOutputStream
 import java.net.URLDecoder
+import org.nexa.libnexakotlin.*
 
 private val LogIt = Logger.getLogger("BU.wally.IdentityOp")
 

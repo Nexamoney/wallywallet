@@ -11,12 +11,12 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.databinding.ActivityShoppingSettingsBinding
 import info.bitcoinunlimited.www.wally.databinding.ShoppingSettingsListItemBinding
 import java.lang.Exception
 import java.net.URI
 import java.util.logging.Logger
+import org.nexa.libnexakotlin.*
 
 private val LogIt = Logger.getLogger("BU.wally.shoppingSettingsActivity")
 
@@ -116,8 +116,9 @@ private class ShoppingEditRecyclerAdapter(private val activity: ShoppingSettings
             })
 
             // Alternate colors for each row in the list
-            val Acol: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowA) } ?: 0xFFEEFFEE.toInt()
-            val Bcol: Int = appContext?.let { ContextCompat.getColor(it.context, R.color.rowB) } ?: 0xFFBBDDBB.toInt()
+
+            val Acol: Int = appContext?.let { ContextCompat.getColor(it, R.color.rowA) } ?: 0xFFEEFFEE.toInt()
+            val Bcol: Int = appContext?.let { ContextCompat.getColor(it, R.color.rowB) } ?: 0xFFBBDDBB.toInt()
             //val Acol = 0xFFEEFFEE.toInt()
             //val Bcol = 0xFFBBDDBB.toInt()
 
