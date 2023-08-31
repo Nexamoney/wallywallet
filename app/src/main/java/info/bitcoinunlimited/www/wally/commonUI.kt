@@ -59,7 +59,7 @@ var WallyRowColors = arrayOf(0x4Ff5f8ff.toInt(), 0x4Fd0d0ef.toInt())
 // Assign this in your App.onCreate
 var displayMetrics = DisplayMetrics()
 
-var dbPrefix = if (RunningTheTests()) "test_" else if (REG_TEST_ONLY == true) "regtest_" else ""
+var dbPrefix = ""
 
 
 private val LogIt = Logger.getLogger("BU.wally.commonUI")
@@ -71,20 +71,22 @@ class Objectify<T>(var obj: T)
 {
 }
 
-fun RunningTheTests(): Boolean
+fun RunningTheUnitTests(): Boolean
 {
+    return runningTheTests
+    /*
     try
     {
-        /* I can search for either UnitTest or GuiTest here because both are included in the
-        test image.
-         */
-        Class.forName("info.bitcoinunlimited.wally.androidTestImplementation.UnitTest")
+        // I can search for either UnitTest or GuiTest here because both are included in the test image.
+        Class.forName("org.wallywallet.androidTestImplementation.UnitTest")
         return true
     }
     catch (e: ClassNotFoundException)
     {
         return false
     }
+
+     */
 }
 
 /** */

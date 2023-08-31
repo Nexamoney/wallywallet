@@ -56,6 +56,7 @@ const val HTTP_REQ_TIMEOUT_MS: Int = 7000
 
 private val LogIt = Logger.getLogger("BU.wally.app")
 
+var runningTheUnitTests = false
 var coinsCreated = false
 
 /** Currently selected fiat currency code */
@@ -877,7 +878,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         registerActivityLifecycleCallbacks(ActivityLifecycleHandler(this))  // track the current activity
         createNotificationChannel()
 
-        if (!RunningTheTests())  // If I'm running the unit tests, don't create any wallets since the tests will do so
+        if (!runningTheUnitTests)  // If I'm running the unit tests, don't auto-create any wallets since the tests will do so
         {
             // Initialize the currencies supported by this wallet
             launch(coMiscScope)

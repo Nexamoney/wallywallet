@@ -1,9 +1,9 @@
 package bitcoinunlimited.wally.guiTestImplementation
 
-//import kotlinx.android.synthetic.main.activity_identity.*
-// import kotlinx.android.synthetic.main.activity_main.*
-//import kotlinx.android.synthetic.main.trickle_pay_reg.*
-import Nexa.NexaRpc.NexaRpcFactory
+import org.nexa.libnexakotlin.*
+import com.ionspin.kotlin.bignum.decimal.*
+import org.nexa.nexarpc.NexaRpcFactory
+
 import android.app.Activity
 import android.app.ActivityManager
 import android.content.*
@@ -25,9 +25,8 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.espresso.screenshot.captureToBitmap
+// import androidx.test.espresso.screenshot.captureToBitmap
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import bitcoinunlimited.libbitcoincash.*
 import info.bitcoinunlimited.www.wally.*
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
@@ -38,15 +37,13 @@ import org.hamcrest.Matchers.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.lang.Thread.sleep
-import com.ionspin.kotlin.bignum.decimal.*
 import java.net.URLEncoder
-import java.util.*
 import java.util.logging.Logger
 import info.bitcoinunlimited.www.wally.R.id as GuiId
 import info.bitcoinunlimited.www.wally.R
-import org.nexa.libnexakotlin.libnexa
-
-
+import org.hamcrest.Matchers
+import org.nexa.nexarpc.NexaRpc
+import java.util.*
 
 val LogIt = Logger.getLogger("GuiTest")
 
@@ -158,7 +155,44 @@ fun clickId(id: Int): ViewAction
 @RunWith(AndroidJUnit4::class)
 class GuiTest
 {
+    init {
+        runningTheTests = true
+        runningTheUnitTests = false
+        dbPrefix = "guitest_"
+    }
 
+    fun openRpc(): NexaRpc
+    {
+        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
+        LogIt.info("Connecting to: " + rpcConnection)
+        var rpc = NexaRpcFactory.create(rpcConnection)
+        var peerInfo = rpc.getpeerinfo()
+        check(peerInfo.size > 0)
+        return rpc
+    }
+
+    fun ensureFullNodeBalance(rpc:NexaRpc, amt: Int)
+    {
+        var rpcBalance = rpc.getbalance()
+        LogIt.info("balance is: " + rpcBalance.toPlainString())
+        while (rpcBalance < BigDecimal.fromInt(amt))
+        {
+            rpc.generate(1)
+            rpcBalance = rpc.getbalance()
+        }
+    }
+
+    fun cleanupWallets()
+    {
+        val cs = ChainSelector.NEXAREGTEST
+        wallyApp!!.accounts.clear()
+        walletDb = openKvpDB(dbPrefix + "bip44walletdb")
+        val wdb = walletDb!!
+        deleteWallet(wdb, "rNEX1", cs)
+        deleteWallet(wdb, "rNEX2", cs)
+        deleteWallet(wdb, "rNEX3", cs)
+        deleteWallet(wdb, "rNEX4", cs)
+    }
 
     fun setLocale(locale: Locale, app: WallyApp)
     {
@@ -181,10 +215,18 @@ class GuiTest
 
     fun clickSpinnerItem(entity: Int, item: String)
     {
-        onView(withId(entity)).perform(click())
-        onData(allOf(instanceOf(String::class.java), equalTo(item)))
-           // .inAdapterView(withId(entity))  // redundant
-            .perform(click())
+        while(true) try
+        {
+            waitForView  { onView(withId(entity)).perform(click()) }
+            onData(allOf(instanceOf(String::class.java), equalTo(item)))
+              // .inAdapterView(withId(entity))  // redundant
+              .perform(click())
+            break
+        }
+        catch (e: androidx.test.espresso.PerformException)
+        {
+            sleep(500)
+        }
     }
 
     fun clickSpinnerItem(listRes: Int, position: Int)
@@ -218,6 +260,30 @@ class GuiTest
             Thread.sleep(100)
             count-=100
             if (count < 0 ) throw TestTimeoutException("Timout waiting for predicate")
+        }
+    }
+
+    fun<T> waitForView(time: Int = 5000, thunk: ()->T) : T
+    {
+        var countup = 0
+        while(true) try
+        {
+            return thunk()
+        }
+        catch (e: NoMatchingViewException)
+        {
+            if (countup >= time)
+            {
+                LogIt.info("After delay of $time, there is still no matching view")
+                throw e
+            }
+            sleep(500)
+            countup += 500
+        }
+        catch (e: PerformException)
+        {
+            sleep(500)
+            countup += 500
         }
     }
 
@@ -255,7 +321,7 @@ class GuiTest
     }
 
     /** This expects that you are in the main activity */
-    fun createNewAccount(name: String, app: WallyApp, chainSelector: ChainSelector)
+    fun createNewAccount(name: String, app: WallyApp, chainSelector: ChainSelector, pin:String? = null, hidden:Boolean = false, recoveryPhrase: String? = null, doubleOk:Boolean = false)
     {
         // Switch to a different activity
         while(true) try {
@@ -264,7 +330,11 @@ class GuiTest
         }
         catch (e: NoMatchingViewException)
         {
-            Thread.sleep(1000)
+            sleep(500)
+        }
+        catch (e: PerformException)
+        {
+            sleep(500)
         }
 
         //onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
@@ -273,9 +343,19 @@ class GuiTest
         // check(act.lastErrorId == R.string.invalidAccountName)
         //Note: I've changed this to input a preferred name. Will have to implement that check for invalid names eventually.
         //onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(),typeText(name), pressImeActionButton(), pressBack())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[chainSelector]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(),typeText(name), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
+        waitForView { clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[chainSelector]!!) }
+        waitForView { onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(),typeText(name), pressImeActionButton(), pressBack()) }
+        if (pin != null) waitForView { onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText(pin), pressImeActionButton(), pressBack()) }
+        if (hidden) waitForView { onView(withId(GuiId.PinHidesAccount)).perform(click()) }
+        if (recoveryPhrase != null) waitForView { onView(withId(GuiId.GuiAccountRecoveryPhraseEntry)).perform(clearText(),typeText(recoveryPhrase), pressImeActionButton(), pressBack()) }
+
+        sleep(1000)
+        waitForView { onView(withId(GuiId.GuiCreateAccountButton)).perform(click()) }
+        if (doubleOk)
+        {
+            sleep(1000)
+            waitForView { onView(withId(GuiId.GuiCreateAccountButton)).perform(click()) }
+        }
         app!!.waitUntilActivityVisible<MainActivity>()
     }
 
@@ -306,8 +386,7 @@ class GuiTest
         activityScenario.onActivity { app = (it.application as WallyApp) }
         assert(app != null)
 
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "TESTbip44walletdb")
+        walletDb = openKvpDB(dbPrefix + "TESTbip44walletdb")
 
         onView(withId(R.id.navigation_home)).perform(click())
 
@@ -366,8 +445,7 @@ class GuiTest
         val activityScenarioM: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenarioM.moveToState(Lifecycle.State.RESUMED)
         val app = wallyApp!!
-        val ctxt = PlatformContext(app.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "TESTbip44walletdb")
+        walletDb = openKvpDB(dbPrefix + "TESTbip44walletdb")
         val wdb = walletDb!!
 
         val tw = Bip44Wallet(wdb,"testframework", ChainSelector.NEXA, "quantum curve elephant soccer faculty cheese merge medal vault damage sniff purpose")
@@ -450,6 +528,8 @@ class GuiTest
 
     @Test fun testIdentityActivity()
     {
+        cleanupWallets()
+        sleep(1000)
         val activityScenario: ActivityScenario<IdentityActivity> = ActivityScenario.launch(IdentityActivity::class.java)
 
         // There will be no accounts, so check proper error
@@ -464,8 +544,7 @@ class GuiTest
             a!!
         }()
 
-        val ctxt = PlatformContext(app.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "TESTbip44walletdb")
+        walletDb = openKvpDB(dbPrefix + "TESTbip44walletdb")
         val wdb = walletDb!!
 
         val act = try
@@ -653,11 +732,6 @@ class GuiTest
         val activityScenario: ActivityScenario<Settings> = ActivityScenario.launch(Settings::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED)
 
-        // Grab the instance of our app
-        var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
-        assert(app != null)
-
         // Get access to what is happening in the back end
         // Everything needs to be inside onActivity, to schedule it within the activity context
         var preferenceDB: SharedPreferences? = null
@@ -666,7 +740,7 @@ class GuiTest
         }
 
         // Find Current Setting
-        var origIdentity = preferenceDB!!.getBoolean(ACCESS_PRICE_DATA_PREF, false)
+        var origIdentity = preferenceDB!!.getBoolean(SHOW_IDENTITY_PREF, false)
         val negated = !origIdentity
 
 
@@ -691,7 +765,8 @@ class GuiTest
         if (origIdentity)
             onView(withId(GuiId.GuiIdentityMenu)).check { v, exc -> check((v as Switch).isChecked) }
         else
-            onView(withId(GuiId.GuiIdentityMenu)).check { v, exc -> check(!(v as Switch).isChecked) }
+            onView(withId(GuiId.GuiIdentityMenu)).check { v, exc ->
+                check(!(v as Switch).isChecked) }
     }
     @Test fun testSettingsPriceData()
     {
@@ -777,119 +852,56 @@ class GuiTest
 
     //The following tests pertain to account creation
 
-    @Test fun testAccountCreation() {
+    fun updateWalletSlots(activityScenario: ActivityScenario<MainActivity>)
+    {
+        sleep(1000)
+        activityScenario.onActivity {
+            it.assignWalletsGuiSlots()
+            it.assignCryptoSpinnerValues()
+            it.updateGUI()
+        }
+        activityScenario.onActivity { sleep(1000) }
+    }
+
+    @Test fun testAccountCreation()
+    {
+        cleanupWallets()
+
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
         var app: WallyApp? = null
         activityScenario.onActivity { app = (it.application as WallyApp) }
         assert(app != null)
-
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-        deleteWallet(wdb, "rNEX2", cs)
-        deleteWallet(wdb, "rNEX3", cs)
-
-        // supply this wallet with coins
-        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
 
         //Make a normal account
         createNewAccount("rNEX1",  app!!, cs)
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(4000) }
-
         //make a locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX2"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(4000) }
-
-
+        createNewAccount("rNEX2", app!!, cs, "0000")
         //make a hidden locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX3"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("1234"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.PinHidesAccount)).perform(click())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(4000) }
-
+        createNewAccount("rNEX3", app!!, cs, "1234", true)
     }
 
-    @Test fun testCreateExistingAccount() {
+    @Test fun testCreateExistingAccount()
+    {
+        cleanupWallets()
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
         var app: WallyApp? = null
         activityScenario.onActivity { app = (it.application as WallyApp) }
         assert(app != null)
-
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX4", cs)
-
-        // supply this wallet with coins
-        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
 
         //make an account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX4"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiAccountRecoveryPhraseEntry)).perform(clearText(),typeText("pull crazy gold display bone hidden device mask balcony client tower junior"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        //the duplicate of this line is necessary because when using a recovery phrase the warning message pops up
-        //(no activity was found on this block chain)
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
+        createNewAccount("rNEX4", app!!, cs, null, false, "pull crazy gold display bone hidden device mask balcony client tower junior", doubleOk = true)
 
-        //manually reload the page
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(4000) }
-
-
+        // TODO check account
     }
-    @Test fun testLockAccount() {
+
+
+    @Test fun testLockAccount()
+    {
+        cleanupWallets()
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
@@ -897,53 +909,19 @@ class GuiTest
         activityScenario.onActivity { app = (it.application as WallyApp) }
         assert(app != null)
 
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-
-        // supply this wallet with coins
-        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
-
         //make a locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX1"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(1000) }
+        createNewAccount("rNEX1", app!!, cs, "0000")
 
         //lock it
-        onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon)))
-        sleep(1000)
-        onView(withId(GuiId.unlock)).perform(click())
-        sleep(1000)
-
+        waitForView { onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon))) }
+        waitForView { onView(withId(GuiId.unlock)).perform(click()) }
         //unlock it
-        onView(withId(GuiId.GuiEnterPIN)).perform(clearText(), typeText("0000"), pressImeActionButton())
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(3000) }
+        waitForView { onView(withId(GuiId.GuiEnterPIN)).perform(clearText(), typeText("0000"), pressImeActionButton()) }
     }
 
-    @Test fun testUnlockFromIdentity() {
+    @Test fun testUnlockFromIdentity()
+    {
+        cleanupWallets()
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
@@ -951,115 +929,45 @@ class GuiTest
         activityScenario.onActivity { app = (it.application as WallyApp) }
         assert(app != null)
 
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-
-        // supply this wallet with coins
-        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
-
         //make a locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX1"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(1000) }
+        createNewAccount("rNEX1", app!!, cs, "0000")
 
         //lock it
-        onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon)))
-        sleep(1000)
-
+        waitForView { onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon))) }
         //go to the identity screen
-        onView(withId(R.id.navigation_identity)).perform(click())
-        sleep(1000)
-
+        waitForView { onView(withId(R.id.navigation_identity)).perform(click()) }
         //unlock it
-        onView(withId(GuiId.unlock)).perform(click())
-        sleep(1000)
-        onView(withId(GuiId.GuiEnterPIN)).perform(clearText(), typeText("0000"), pressImeActionButton())
-        sleep(500)
+        waitForView { onView(withId(GuiId.unlock)).perform(click()) }
+        waitForView { onView(withId(GuiId.GuiEnterPIN)).perform(clearText(), typeText("0000"), pressImeActionButton()) }
         //return to the home page
-        onView(withId(R.id.navigation_home)).perform(click())
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(3000) }
+        waitForView { onView(withId(R.id.navigation_home)).perform(click()) }
     }
 
-    @Test fun testHideLockAccount() {
+    @Test fun testHideLockAccount()
+    {
+        cleanupWallets()
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
         var app: WallyApp? = null
         activityScenario.onActivity { app = (it.application as WallyApp) }
         assert(app != null)
-
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-
-        // supply this wallet with coins
-        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
 
         //make a hidden locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX1"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.PinHidesAccount)).perform(click())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(1000) }
+        createNewAccount("rNEX1", app!!, cs, "0000", true)
 
         // click the lock icon
-        onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon)))
-        sleep(1000)
-        onView(withId(GuiId.unlock)).perform(click())
-        sleep(1000)
+        waitForView { onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon))) }
+        waitForView { onView(withId(GuiId.unlock)).perform(click()) }
 
         //unlock it
-        onView(withId(GuiId.GuiEnterPIN)).perform(clearText(), typeText("0000"), pressImeActionButton())
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(3000) }
+        waitForView { onView(withId(GuiId.GuiEnterPIN)).perform(clearText(), typeText("0000"), pressImeActionButton()) }
     }
 
-    @Test fun testTwoUnlockAccount() {
+    @Test fun testTwoUnlockAccount()
+    {
+        // Clean up any prior run
+        cleanupWallets()
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
@@ -1067,68 +975,24 @@ class GuiTest
         activityScenario.onActivity { app = (it.application as WallyApp) }
         assert(app != null)
 
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-        deleteWallet(wdb, "rNEX2", cs)
-
-        // supply this wallet with coins
-        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
 
         //make a locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX1"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(1000) }
+        createNewAccount("rNEX1", app!!, cs, "0000" )
 
         //make a second locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX2"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(1000) }
+        createNewAccount("rNEX2", app!!, cs, "0000")
 
         // click the lock icons
-        onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon)))
-        onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(1, clickId(R.id.lockIcon)))
-        sleep(4000)
+        waitForView { onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon))) }
+        waitForView { onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(1, clickId(R.id.lockIcon))) }
         //unlock it
-        onView(withId(GuiId.unlock)).perform(click())
-        sleep(1000)
-        onView(withId(GuiId.GuiEnterPIN)).perform(clearText(), typeText("0000"), pressImeActionButton())
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(3000) }
+        waitForView { onView(withId(GuiId.unlock)).perform(click()) }
+        waitForView { onView(withId(GuiId.GuiEnterPIN)).perform(clearText(), typeText("0000"), pressImeActionButton()) }
     }
-    @Test fun testOneHiddenTwoUnlockAccount() {
+    @Test fun testOneHiddenTwoUnlockAccount()
+    {
+        cleanupWallets()
+
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
@@ -1136,70 +1000,24 @@ class GuiTest
         activityScenario.onActivity { app = (it.application as WallyApp) }
         assert(app != null)
 
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-        deleteWallet(wdb, "rNEX2", cs)
-
-        // supply this wallet with coins
-        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
-
         //make a locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX1"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(1000) }
+        createNewAccount("rNEX1", app!!, cs, "0000" )
 
         //make a second hidden locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX2"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.PinHidesAccount)).perform(click())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(1000) }
+        createNewAccount("rNEX2", app!!, cs, "0000", true )
 
         // click the lock icon
-        onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon)))
-        onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(1, clickId(R.id.lockIcon)))
-        sleep(4000)
+        waitForView { onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon))) }
+        waitForView { onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(1, clickId(R.id.lockIcon))) }
+
         //unlock them
-        onView(withId(GuiId.unlock)).perform(click())
-        sleep(1000)
-        onView(withId(GuiId.GuiEnterPIN)).perform(clearText(), typeText("0000"), pressImeActionButton())
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(3000) }
+        waitForView {  onView(withId(GuiId.unlock)).perform(click()) }
+        waitForView {  onView(withId(GuiId.GuiEnterPIN)).perform(clearText(), typeText("0000"), pressImeActionButton()) }
     }
 
-    @Test fun testTwoPassDiffUnlock() {
+    @Test fun testTwoPassDiffUnlock()
+    {
+        cleanupWallets()
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
@@ -1207,80 +1025,25 @@ class GuiTest
         activityScenario.onActivity { app = (it.application as WallyApp) }
         assert(app != null)
 
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-        deleteWallet(wdb, "rNEX2", cs)
-
-        // supply this wallet with coins
-        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
-
         //make a locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX1"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(1000) }
-
+        createNewAccount("rNEX1", app!!, cs, "0000" )
         //make a second locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX2"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("1111"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(1000) }
+        createNewAccount("rNEX2", app!!, cs, "1111" )
 
         // click the lock icon
-        onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon)))
-        onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(1, clickId(R.id.lockIcon)))
-        sleep(4000)
+        waitForView {onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon))) }
+        waitForView {onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(1, clickId(R.id.lockIcon))) }
         //unlock 1
-        onView(withId(GuiId.unlock)).perform(click())
-        sleep(1000)
-        onView(withId(GuiId.GuiEnterPIN)).perform(clearText(), typeText("0000"), pressImeActionButton())
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(3000) }
+        waitForView {onView(withId(GuiId.unlock)).perform(click()) }
+        waitForView {onView(withId(GuiId.GuiEnterPIN)).perform(clearText(), typeText("0000"), pressImeActionButton()) }
         //unlock the other
-        onView(withId(GuiId.unlock)).perform(click())
-        sleep(1000)
-        onView(withId(GuiId.GuiEnterPIN)).perform(clearText(), typeText("1111"), pressImeActionButton())
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(3000) }
+        waitForView {onView(withId(GuiId.unlock)).perform(click()) }
+        waitForView {onView(withId(GuiId.GuiEnterPIN)).perform(clearText(), typeText("1111"), pressImeActionButton()) }
     }
 
-    @Test fun testLockedAccountWrongPin() {
+    @Test fun testLockedAccountWrongPin()
+    {
+        cleanupWallets()
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
@@ -1288,67 +1051,24 @@ class GuiTest
         activityScenario.onActivity { app = (it.application as WallyApp) }
         assert(app != null)
 
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-
-        // supply this wallet with coins
-        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
-
         //make a locked account
-        onView(withId(R.id.GuiNewAccount)).perform(click())
-        clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(), typeText("rNEX1"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiPINEntry)).perform(clearText(), typeText("0000"), pressImeActionButton(), pressBack())
-        onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
-        app!!.waitUntilActivityVisible<MainActivity>()
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(1000) }
+        createNewAccount("rNEX1", app!!, cs, "0000" )
 
         //lock it
-        onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon)))
-        sleep(1000)
-        onView(withId(GuiId.unlock)).perform(click())
-        sleep(1000)
+        waitForView {onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, clickId(R.id.lockIcon))) }
+        waitForView {onView(withId(GuiId.unlock)).perform(click()) }
         //enter wrong pin
-        onView(withId(GuiId.GuiEnterPIN)).perform(clearText(), typeText("1111"), pressImeActionButton())
-        sleep(1000)
+        waitForView { onView(withId(GuiId.GuiEnterPIN)).perform(clearText(), typeText("1111"), pressImeActionButton()) }
         //check for error
         waitForActivity(10000, activityScenario) { it.lastErrorString == i18n(R.string.PinInvalid) }
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(1000) }
         //enter right pin
-        onView(withId(GuiId.unlock)).perform(click())
-        sleep(1000)
-        onView(withId(GuiId.GuiEnterPIN)).perform(clearText(), typeText("0000"), pressImeActionButton())
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(3000) }
+        waitForView {onView(withId(GuiId.unlock)).perform(click()) }
+        waitForView { onView(withId(GuiId.GuiEnterPIN)).perform(clearText(), typeText("0000"), pressImeActionButton()) }
     }
 
     @Test fun testSettingsConfirmTransfersSmall()
     {
+        cleanupWallets()
         val cs = ChainSelector.NEXAREGTEST
         // Start up a particular Activity.  In this case "Settings"
         val activityScenario: ActivityScenario<Settings> = ActivityScenario.launch(Settings::class.java)
@@ -1359,20 +1079,7 @@ class GuiTest
         activityScenario.onActivity { app = (it.application as WallyApp) }
         assert(app != null)
 
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "TESTbip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-        deleteWallet(wdb, "rNEX2", cs)
-
-        // supply this wallet with coins
-        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0  && peerInfo.size <= 10)
+        var rpc = openRpc()
 
         // Get access to what is happening in the back end
         // Everything needs to be inside onActivity, to schedule it within the activity context
@@ -1382,8 +1089,8 @@ class GuiTest
         }
 
         //clearing any existing text to avoid more trouble
-        onView(withId(GuiId.AreYouSureAmt)).perform(clearText())
-        onView(withId(GuiId.AreYouSureAmt)).perform(typeText("2"))
+        waitForView {onView(withId(GuiId.AreYouSureAmt)).perform(clearText()) }
+        waitForView {onView(withId(GuiId.AreYouSureAmt)).perform(typeText("2")) }
         sleep(1000)
         //go to home screen
         val activityScenarioM: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
@@ -1391,7 +1098,7 @@ class GuiTest
 
         var rpcBalance = rpc.getbalance()
         LogIt.info("balance is: " + rpcBalance.toPlainString())
-        while (rpcBalance < BigDecimal(50))
+        while (rpcBalance < BigDecimal.fromInt(50))
         {
             rpc.generate(1)
             rpcBalance = rpc.getbalance()
@@ -1399,50 +1106,35 @@ class GuiTest
 
         //make a new account
         createNewAccount("rNEX1",  app!!, cs)
-        sleep(1000)
-        activityScenarioM.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenarioM.onActivity { sleep(1000) }
-
-
         createNewAccount("rNEX2", app!!, cs)
-        sleep(1000)
-        activityScenarioM.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenarioM.onActivity { sleep(4000) }
-        onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, click()))
+
+        waitForView {onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, click())) }
         println(getText(GuiId.receiveAddress)) //this shows the address
-        onView(withId(GuiId.receiveAddress)).perform(click())
+        waitForView { onView(withId(GuiId.receiveAddress)).perform(click()) }
         val addr = clipboardText()
+        check(addr.startsWith("nexareg:"))
         println(addr) //through this I can tell that the copy and paste maneuver works
         //also by comparing it to the Recent Transactions I can see that the transaction in the line below does go through
-        rpc.sendtoaddress(addr, BigDecimal(100))
+        rpc.sendtoaddress(addr, BigDecimal.fromInt(100))
         rpc.generate(1)
 
-        onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(1, click()))
-        onView(withId(GuiId.receiveAddress)).perform(click())
+        waitForView {onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(1, click())) }
+        waitForView {onView(withId(GuiId.receiveAddress)).perform(click()) }
         var recvAddr: String = clipboardText()
+        check(recvAddr.startsWith("nexareg:"))
         println(recvAddr) //through this I can tell that the copy and paste maneuver works
 
-        onView(withId(GuiId.sendButton)).perform(click())
-        clickSpinnerItem(GuiId.sendAccount, "rNEX1")
-        onView(withId(GuiId.sendToAddress)).perform(clearText(), typeText(recvAddr), pressImeActionButton())
-        onView(withId(GuiId.sendQuantity)).perform(clearText(), typeText("95"), pressImeActionButton()) //Note: there is a 5 ish nex fee
-        sleep(1000)
-        onView(withId(GuiId.sendButton)).perform(click())
-        onView(withId(GuiId.sendButton)).perform(click())
-        sleep(4000)
-
+        waitForView {onView(withId(GuiId.sendButton)).perform(click()) }
+        waitForView {clickSpinnerItem(GuiId.sendAccount, "rNEX1") }
+        waitForView {onView(withId(GuiId.sendToAddress)).perform(clearText(), typeText(recvAddr), pressImeActionButton()) }
+        waitForView {onView(withId(GuiId.sendQuantity)).perform(clearText(), typeText("95"), pressImeActionButton()) } //Note: there is a 5 ish nex fee
+        waitForView { onView(withId(GuiId.sendButton)).perform(click()) }
+        waitForView { onView(withId(GuiId.sendButton)).perform(click()) }
     }
 
     @Test fun testSettingsConfirmTransfersBig()
     {
+        cleanupWallets()
         val cs = ChainSelector.NEXAREGTEST
         // Start up a particular Activity.  In this case "Settings"
         val activityScenario: ActivityScenario<Settings> = ActivityScenario.launch(Settings::class.java)
@@ -1453,20 +1145,7 @@ class GuiTest
         activityScenario.onActivity { app = (it.application as WallyApp) }
         assert(app != null)
 
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "TESTbip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-        deleteWallet(wdb, "rNEX2", cs)
-
-        // supply this wallet with coins
-        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0  && peerInfo.size <= 10)
+        var rpc = openRpc()
 
         // Get access to what is happening in the back end
         // Everything needs to be inside onActivity, to schedule it within the activity context
@@ -1476,8 +1155,8 @@ class GuiTest
         }
 
         //clearing any existing text to avoid more trouble
-        onView(withId(GuiId.AreYouSureAmt)).perform(clearText())
-        onView(withId(GuiId.AreYouSureAmt)).perform(typeText("99999999999999999999"))
+        waitForView { onView(withId(GuiId.AreYouSureAmt)).perform(clearText()) }
+        waitForView { onView(withId(GuiId.AreYouSureAmt)).perform(typeText("99999999999999999999")) }
         sleep(1000)
         //go to home screen
         val activityScenarioM: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
@@ -1485,7 +1164,7 @@ class GuiTest
 
         var rpcBalance = rpc.getbalance()
         LogIt.info("balance is: " + rpcBalance.toPlainString())
-        while (rpcBalance < BigDecimal(50))
+        while (rpcBalance < BigDecimal.fromInt(50))
         {
             rpc.generate(1)
             rpcBalance = rpc.getbalance()
@@ -1493,48 +1172,35 @@ class GuiTest
 
         //make a new account
         createNewAccount("rNEX1",  app!!, cs)
-        sleep(1000)
-        activityScenarioM.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenarioM.onActivity { sleep(1000) }
-
-
+        updateWalletSlots(activityScenarioM)
         createNewAccount("rNEX2", app!!, cs)
-        sleep(1000)
-        activityScenarioM.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenarioM.onActivity { sleep(4000) }
-        onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, click()))
+        updateWalletSlots(activityScenarioM)
+
+        waitForView { onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, click())) }
         println(getText(GuiId.receiveAddress)) //this shows the address
-        onView(withId(GuiId.receiveAddress)).perform(click())
+        waitForView { onView(withId(GuiId.receiveAddress)).perform(click()) }
         val addr = clipboardText()
         println(addr) //through this I can tell that the copy and paste maneuver works
         //also by comparing it to the Recent Transactions I can see that the transaction in the line below does go through
-        rpc.sendtoaddress(addr, BigDecimal(10000))
+        rpc.sendtoaddress(addr, BigDecimal.fromInt(10000))
         rpc.generate(1)
 
-        onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(1, click()))
-        onView(withId(GuiId.receiveAddress)).perform(click())
+        waitForView { onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(1, click())) }
+        waitForView {onView(withId(GuiId.receiveAddress)).perform(click()) }
         var recvAddr: String = clipboardText()
+        check(recvAddr.startsWith("nexareg:"))
         println(recvAddr) //through this I can tell that the copy and paste maneuver works
 
-        onView(withId(GuiId.sendButton)).perform(click())
-        clickSpinnerItem(GuiId.sendAccount, "rNEX1")
-        onView(withId(GuiId.sendToAddress)).perform(clearText(), typeText(recvAddr), pressImeActionButton())
-        onView(withId(GuiId.sendQuantity)).perform(clearText(), typeText("9995"), pressImeActionButton()) //Note: there is a 5 ish nex fee
-        sleep(1000)
-        onView(withId(GuiId.sendButton)).perform(click())
-        sleep(4000)
+        waitForView { onView(withId(GuiId.sendButton)).perform(click()) }
+        waitForView { clickSpinnerItem(GuiId.sendAccount, "rNEX1") }
+        waitForView { onView(withId(GuiId.sendToAddress)).perform(clearText(), typeText(recvAddr), pressImeActionButton()) }
+        waitForView { onView(withId(GuiId.sendQuantity)).perform(clearText(), typeText("9995"), pressImeActionButton())  } //Note: there is a 5 ish nex fee
+        waitForView { onView(withId(GuiId.sendButton)).perform(click()) }
     }
 
     @Test fun testCannotSendZero()
     {
+        cleanupWallets()
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
@@ -1542,77 +1208,39 @@ class GuiTest
         activityScenario.onActivity { app = (it.application as WallyApp) }
         assert(app != null)
 
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-        deleteWallet(wdb, "rNEX2", cs)
-
-        // supply this wallet with coins
-        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
-        println("PORT: "+ REGTEST_RPC_PORT)
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
-
-        var rpcBalance = rpc.getbalance()
-        LogIt.info("balance is: " + rpcBalance.toPlainString())
-        while (rpcBalance < BigDecimal(50))
-        {
-            rpc.generate(1)
-            rpcBalance = rpc.getbalance()
-        }
+        var rpc = openRpc()
+        ensureFullNodeBalance(rpc, 100)
 
         //make a new account
         createNewAccount("rNEX1",  app!!, cs)
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(1000) }
-
-
+        updateWalletSlots(activityScenario)
         createNewAccount("rNEX2", app!!, cs)
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(4000) }
-        onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, click()))
+        updateWalletSlots(activityScenario)
+
+        waitForView { onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, click())) }
         println(getText(GuiId.receiveAddress)) //this shows the address
-        onView(withId(GuiId.receiveAddress)).perform(click())
+        waitForView { onView(withId(GuiId.receiveAddress)).perform(click()) }
         val addr = clipboardText()
         println(addr) //through this I can tell that the copy and paste maneuver works
-        rpc.sendtoaddress(addr, BigDecimal(100))
+        rpc.sendtoaddress(addr, BigDecimal.fromInt(100))
         rpc.generate(1)
 
-        onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(1, click()))
-        onView(withId(GuiId.receiveAddress)).perform(click())
+        waitForView { onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(1, click())) }
+        waitForView { onView(withId(GuiId.receiveAddress)).perform(click()) }
         var recvAddr: String = clipboardText()
-        println(recvAddr)
+        check(recvAddr.startsWith("nexareg:"))
 
-        onView(withId(GuiId.sendButton)).perform(click())
-        clickSpinnerItem(GuiId.sendAccount, "rNEX1")
-        onView(withId(GuiId.sendToAddress)).perform(clearText(), typeText(recvAddr), pressImeActionButton())
-        onView(withId(GuiId.sendQuantity)).perform(clearText(), typeText("0"), pressImeActionButton()) //Note: there is a 5 ish nex fee
-        sleep(1000)
-        onView(withId(GuiId.sendButton)).perform(click())
-        sleep(1000)
-        onView(withId(GuiId.sendCancelButton)).perform(click())
+        waitForView { onView(withId(GuiId.sendButton)).perform(click()) }
+        waitForView { clickSpinnerItem(GuiId.sendAccount, "rNEX1") }
+        waitForView { onView(withId(GuiId.sendToAddress)).perform(clearText(), typeText(recvAddr), pressImeActionButton()) }
+        waitForView { onView(withId(GuiId.sendQuantity)).perform(clearText(), typeText("0"), pressImeActionButton()) } //Note: there is a 5 ish nex fee
+        waitForView { onView(withId(GuiId.sendButton)).perform(click()) }
+        waitForView { onView(withId(GuiId.sendCancelButton)).perform(click()) }
         waitForActivity(10000, activityScenario) { it.lastErrorString == i18n(R.string.sendDustError) }
-
-        sleep(4000)
-
     }
     @Test fun testSendMoreNexThanAccountHasError()
     {
+        cleanupWallets()
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
@@ -1620,81 +1248,42 @@ class GuiTest
         activityScenario.onActivity { app = (it.application as WallyApp) }
         assert(app != null)
 
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-        deleteWallet(wdb, "rNEX2", cs)
-
-        // supply this wallet with coins
-        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
-        println("PORT: "+ REGTEST_RPC_PORT)
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
-
-        var rpcBalance = rpc.getbalance()
-        LogIt.info("balance is: " + rpcBalance.toPlainString())
-        while (rpcBalance < BigDecimal(50))
-        {
-            rpc.generate(1)
-            rpcBalance = rpc.getbalance()
-        }
+        var rpc = openRpc()
+        ensureFullNodeBalance(rpc, 100)
 
         //make a new account
         createNewAccount("rNEX1",  app!!, cs)
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(1000) }
-
-
+        updateWalletSlots(activityScenario)
         createNewAccount("rNEX2", app!!, cs)
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(4000) }
-        onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, click()))
+        updateWalletSlots(activityScenario)
+
+        waitForView { onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, click())) }
         println(getText(GuiId.receiveAddress)) //this shows the address
-        onView(withId(GuiId.receiveAddress)).perform(click())
+        waitForView { onView(withId(GuiId.receiveAddress)).perform(click()) }
         val addr = clipboardText()
         println(addr) //through this I can tell that the copy and paste maneuver works
         //also by comparing it to the Recent Transactions I can see that the transaction in the line below does go through
-        rpc.sendtoaddress(addr, BigDecimal(100))
+        rpc.sendtoaddress(addr, BigDecimal.fromInt(100))
         rpc.generate(1)
 
-        onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(1, click()))
-        onView(withId(GuiId.receiveAddress)).perform(click())
+        waitForView { onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(1, click())) }
+        waitForView { onView(withId(GuiId.receiveAddress)).perform(click()) }
         var recvAddr: String = clipboardText()
+        check(recvAddr.startsWith("nexareg:n"))
         println(recvAddr) //through this I can tell that the copy and paste maneuver works
 
-        onView(withId(GuiId.sendButton)).perform(click())
-        clickSpinnerItem(GuiId.sendAccount, "rNEX1")
-        onView(withId(GuiId.sendToAddress)).perform(clearText(), typeText(recvAddr), pressImeActionButton())
-        onView(withId(GuiId.sendQuantity)).perform(clearText(), typeText("150"), pressImeActionButton()) //Note: there is a 5 ish nex fee
-        sleep(1000)
-        onView(withId(GuiId.sendButton)).perform(click())
-        sleep(1000)
-        onView(withId(GuiId.sendButton)).perform(click())
-        sleep(4000)
-        onView(withId(GuiId.sendCancelButton)).perform(click())
+        waitForView { onView(withId(GuiId.sendButton)).perform(click()) }
+        waitForView { clickSpinnerItem(GuiId.sendAccount, "rNEX1") }
+        waitForView { onView(withId(GuiId.sendToAddress)).perform(clearText(), typeText(recvAddr), pressImeActionButton()) }
+        waitForView { onView(withId(GuiId.sendQuantity)).perform(clearText(), typeText("150"), pressImeActionButton()) } //Note: there is a 5 ish nex fee
+        waitForView { onView(withId(GuiId.sendButton)).perform(click()) }
+        waitForView { onView(withId(GuiId.sendButton)).perform(click()) }
+        waitForView { onView(withId(GuiId.sendCancelButton)).perform(click()) }
         waitForActivity(10000, activityScenario) { it.lastErrorString == i18n(R.string.insufficentBalance) }
-
-        sleep(4000)
-
     }
     @Test fun testLoadingNexToAccount()
     {
-
+        cleanupWallets()
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
@@ -1702,32 +1291,16 @@ class GuiTest
         activityScenario.onActivity { app = (it.application as WallyApp) }
         assert(app != null)
 
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-
         // supply this wallet with coins
-        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
-        println("PORT: "+ REGTEST_RPC_PORT)
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
+        var rpc = openRpc()
+        ensureFullNodeBalance(rpc,100)
 
-        var rpcBalance = rpc.getbalance()
-        LogIt.info("balance is: " + rpcBalance.toPlainString())
-        while (rpcBalance < BigDecimal(50))
-        {
-            rpc.generate(1)
-            rpcBalance = rpc.getbalance()
-        }
-
+        createNewAccount("rNEX1",app!!,cs,null,false,"pull crazy gold display bone hidden device mask balcony client tower junior", true)
+        /*
         onView(withId(GuiId.GuiNewAccount)).perform(click())
+        activityScenario.onActivity { sleep(500) }
         clickSpinnerItem(GuiId.GuiBlockchainSelector, ChainSelectorToSupportedBlockchains[cs]!!)
-        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(),typeText("rNex1"), pressImeActionButton(), pressBack())
+        onView(withId(GuiId.GuiAccountNameEntry)).perform(clearText(),typeText("rNEX1"), pressImeActionButton(), pressBack())
         onView(withId(GuiId.GuiAccountRecoveryPhraseEntry)).perform(clearText(),typeText("pull crazy gold display bone hidden device mask balcony client tower junior"), pressImeActionButton(), pressBack())
         //pull crazy gold display bone hidden device mask balcony client tower junior
         onView(withId(GuiId.GuiCreateAccountButton)).perform(click())
@@ -1735,27 +1308,22 @@ class GuiTest
         //only done twice because i'm confirming an "empty" account (no activity found on the block chain)
         //the above line SHOULD cause a crash when the account figures out it has rnex
         app!!.waitUntilActivityVisible<MainActivity>()
+        updateWalletSlots(activityScenario)
+         */
 
-
-        sleep(1000)
-        activityScenario.onActivity {//doesn't show up until I manually reboot the page despite doing the app!!.etc above
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(4000) }
-        onView(withId(R.id.AccountList)).perform( click())
+        waitForView  { onView(withId(R.id.AccountList)).perform( click()) }
         println(getText(GuiId.receiveAddress)) //this shows the address
-        onView(withId(GuiId.receiveAddress)).perform(click())
+        waitForView  { onView(withId(GuiId.receiveAddress)).perform(click()) }
         val addr = clipboardText()
-        println(addr) //through this I can tell that the copy and paste maneuver works
+        // println(addr) //through this I can tell that the copy and paste maneuver works
         //also by comparing it to the Recent Transactions I can see that the transaction in the line below does go through
-        rpc.sendtoaddress(addr, BigDecimal(100))
+        rpc.sendtoaddress(addr, BigDecimal.fromInt(100))
         rpc.generate(10)
         activityScenario.onActivity { sleep(4000) }
     }
     @Test fun testSendToSelf()
     {
+        cleanupWallets()
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
@@ -1763,24 +1331,16 @@ class GuiTest
         activityScenario.onActivity { app = (it.application as WallyApp) }
         assert(app != null)
 
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "bip44walletdb")
+        walletDb = openKvpDB(dbPrefix + "bip44walletdb")
         val wdb = walletDb!!
 
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-
         // supply this wallet with coins
-        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
-        println("PORT: "+ REGTEST_RPC_PORT)
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0 && peerInfo.size <= 10)
+        var rpc = openRpc()
+        ensureFullNodeBalance(rpc, 50)
 
         var rpcBalance = rpc.getbalance()
         LogIt.info("balance is: " + rpcBalance.toPlainString())
-        while (rpcBalance < BigDecimal(50))
+        while (rpcBalance < BigDecimal.fromInt(50))
         {
             rpc.generate(1)
             rpcBalance = rpc.getbalance()
@@ -1788,34 +1348,27 @@ class GuiTest
 
         //make a new account
         createNewAccount("rNEX1",  app!!, cs)
-        sleep(1000)
-        activityScenario.onActivity {
-            it.assignWalletsGuiSlots()
-            it.assignCryptoSpinnerValues()
-            it.updateGUI()
-        }
-        activityScenario.onActivity { sleep(1000) }
+        updateWalletSlots(activityScenario)
 
-        onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, click()))
+        waitForView { onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, click())) }
         println(getText(GuiId.receiveAddress)) //this shows the address
-        onView(withId(GuiId.receiveAddress)).perform(click())
+        waitForView { onView(withId(GuiId.receiveAddress)).perform(click()) }
         val addr = clipboardText()
         println(addr) //through this I can tell that the copy and paste maneuver works
         //also by comparing it to the Recent Transactions I can see that the transaction in the line below does go through
-        rpc.sendtoaddress(addr, BigDecimal(100))
+        rpc.sendtoaddress(addr, BigDecimal.fromInt(100))
         rpc.generate(1)
 
-        onView(withId(GuiId.sendButton)).perform(click())
-        clickSpinnerItem(GuiId.sendAccount, "rNEX1")
-        onView(withId(GuiId.sendToAddress)).perform(clearText(), typeText(addr), pressImeActionButton())
-        onView(withId(GuiId.sendQuantity)).perform(clearText(), typeText("95"), pressImeActionButton()) //Note: there is a 5 ish nex fee
-        sleep(1000)
-        onView(withId(GuiId.sendButton)).perform(click())
-        sleep(4000)
+        waitForView  { onView(withId(GuiId.sendButton)).perform(click()) }
+        waitForView  { clickSpinnerItem(GuiId.sendAccount, "rNEX1") }
+        waitForView  { onView(withId(GuiId.sendToAddress)).perform(clearText(), typeText(addr), pressImeActionButton()) }
+        waitForView  { onView(withId(GuiId.sendQuantity)).perform(clearText(), typeText("95"), pressImeActionButton()) } //Note: there is a 5 ish nex fee
+        waitForView  { onView(withId(GuiId.sendButton)).perform(click()) }
     }
 
     @Test fun testHomeActivity()
     {
+        cleanupWallets()
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED) ;
@@ -1823,65 +1376,38 @@ class GuiTest
         activityScenario.onActivity { app = (it.application as WallyApp) }
         assert(app != null)
 
-        val ctxt = PlatformContext(app!!.applicationContext)
-        walletDb = OpenKvpDB(ctxt, dbPrefix + "TESTbip44walletdb")
-        val wdb = walletDb!!
-
-        // Clean up any prior run
-        deleteWallet(wdb, "rNEX1", cs)
-        deleteWallet(wdb, "rNEX2", cs)
-
         // Clean up old headers  ONLY NEEDED IF YOU RECREATE REGTEST NETWORK but reuse an emulator
         //deleteBlockHeaders("mRbch1", dbPrefix, appContext!!)
         //deleteBlockHeaders("mRbch2", dbPrefix, appContext!!)
 
-        // supply this wallet with coins
-        val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
-        LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size >= 0  && peerInfo.size <= 10)  // Lots of stuff could be connected if you are actively working
-
-        // Generate blocks until we get coins to spend. This is needed inside the ci testing.
-        // But the code checks first so that lots of extra blocks aren't created during dev testing
-        var rpcBalance = rpc.getbalance()
-        LogIt.info(rpcBalance.toPlainString())
-        while (rpcBalance < BigDecimal(50))
-        {
-            rpc.generate(1)
-            rpcBalance = rpc.getbalance()
-        }
+        var rpc = openRpc()
+        ensureFullNodeBalance(rpc, 100)
 
         // Opens the send portion of the window
-        onView(withId(GuiId.sendButton)).perform(click())  // Note if your phone is in a uninterruptable mode (like settings or notifications) then you'll get a spurious exception here
+        waitForView  { onView(withId(GuiId.sendButton)).perform(click()) } // Note if your phone is in a uninterruptable mode (like settings or notifications) then you'll get a spurious exception here
         // Clear because other tests might have left stuff in these (and check that sending is invalid when fields cleared)
         activityScenario.onActivity { it.ui.sendQuantity.text.clear() }
         // now do an actual send (with nothing filled in)
-        onView(withId(GuiId.sendButton)).perform(click())  // Note if your phone is in a uninterruptable mode (like settings or notifications) then you'll get a spurious exception here
+        waitForView  { onView(withId(GuiId.sendButton)).perform(click())  } // Note if your phone is in a uninterruptable mode (like settings or notifications) then you'll get a spurious exception here
 
         // If you come in to this routine clean, you'll get badCryptoCode, but if you have accounts defined, you'll get badAmount
-        activityScenario.onActivity { check(it.lastErrorId == R.string.badAmount || it.lastErrorId == R.string.badCryptoCode) }
+        activityScenario.onActivity {
+            check(it.lastErrorId == R.string.chooseAccountError || it.lastErrorId == R.string.badAmount || it.lastErrorId == R.string.badCryptoCode)
+        }
 
         activityScenario.onActivity { it.ui.sendQuantity.text.append("11") }
         activityScenario.onActivity { it.ui.sendToAddress.text.clear() }
         onView(withId(GuiId.sendButton)).perform(click())
         // If you come in to this routine clean, you'll get badCryptoCode, but if you have accounts defined, you'll get badAddress
-        activityScenario.onActivity { check(it.lastErrorId == R.string.badAddress  || it.lastErrorId == R.string.badCryptoCode) }
+        activityScenario.onActivity { check(it.lastErrorId == R.string.chooseAccountError || it.lastErrorId == R.string.badAddress  || it.lastErrorId == R.string.badCryptoCode) }
 
         activityScenario.onActivity { it.ui.sendQuantity.text.clear() }
 
-
-
         createNewAccount("rNEX1", app!!, cs)
-        sleep(4000)
-        // waitForActivity(10000, activityScenario) { app?.accounts["rNEX1"]?.cnxnMgr == null }
-        app!!.accounts["rNEX1"]!!.cnxnMgr.exclusiveNodes(setOf(FULL_NODE_IP + ":" + REGTEST_P2P_PORT))
+        //app!!.accounts["rNEX1"]!!.cnxnMgr.exclusiveNodes(setOf(FULL_NODE_IP + ":" + REGTEST_P2P_PORT))
         activityScenario.onActivity { currentActivity == it }  // Clicking should bring us back to main screen
         createNewAccount("rNEX2", app!!, cs)
         activityScenario.onActivity { currentActivity == it }  // Clicking should bring us back to main screen
-
-        peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size > 0)  // My accounts should be connected
 
         /* Send negative tests */
         retryUntilLayoutCan(){
@@ -1891,47 +1417,50 @@ class GuiTest
             )
         }
 
-        onView(withId(GuiId.sendQuantity)).perform(typeText("1.0"), pressImeActionButton())
-        onView(withId(GuiId.sendButton)).perform(click())
+        waitForView  {onView(withId(GuiId.sendQuantity)).perform(clearText(), typeText("1.0"), pressImeActionButton())}
+        waitForView  {onView(withId(GuiId.sendButton)).perform(click())}
         activityScenario.onActivity { check(it.lastErrorId == R.string.badAddress) }
 
-        onView(withId(GuiId.sendQuantity)).perform(clearText(),typeText("xyz"), pressImeActionButton())
-        onView(withId(GuiId.sendButton)).perform(click())
+        waitForView  {onView(withId(GuiId.sendQuantity)).perform(clearText(),typeText("xyz"), pressImeActionButton())}
+        waitForView  {onView(withId(GuiId.sendButton)).perform(click())}
         activityScenario.onActivity { check(it.lastErrorId == R.string.badAmount) }
 
         // - can't be typed in the amount field
-        onView(withId(GuiId.sendQuantity)).perform(
+        waitForView  {onView(withId(GuiId.sendQuantity)).perform(
             clearText(),
             typeText("-1"),
             pressImeActionButton()
-        ).check(matches(withText("1")))
+        ).check(matches(withText("1")))}
 
-        clickSpinnerItem(GuiId.recvIntoAccount, "rNEX1")
+        waitForView  {onView(withId(GuiId.sendCancelButton)).perform(click())}
+        waitForView  {clickSpinnerItem(GuiId.recvIntoAccount, "rNEX1")}
         var recvAddr: String = ""
         activityScenario.onActivity { recvAddr = it.ui.receiveAddress.text.toString() }
+        check(recvAddr.startsWith("nexareg:"))
 
         // Copy the receive addr, and paste it into the destination
-        onView(withId(GuiId.receiveAddress)).perform(click())
-        onView(withId(GuiId.pasteFromClipboardButton)).perform(click())
-        onView(withId(GuiId.sendToAddress)).check(matches(withText(recvAddr)))
+        waitForView  {onView(withId(GuiId.receiveAddress)).perform(click())}
+        waitForView  {onView(withId(GuiId.pasteFromClipboardButton)).perform(click())}
+        waitForView  {onView(withId(GuiId.sendToAddress)).check(matches(withText(recvAddr)))}
 
-        onView(withId(GuiId.sendQuantity)).perform(clearText(),typeText("100000000"), pressImeActionButton())
-        clickSpinnerItem(GuiId.sendAccount, "rNEX1")
-        onView(withId(GuiId.sendButton)).perform(click())
-        waitForActivity(10000, activityScenario) { it.lastErrorString == i18n(R.string.insufficentBalance) }
+        waitForView  {onView(withId(GuiId.sendQuantity)).perform(clearText(),typeText("100000000"), pressImeActionButton())}
+        waitForView  {clickSpinnerItem(GuiId.sendAccount, "rNEX1")}
+        waitForView  {onView(withId(GuiId.sendButton)).perform(click())}
+        waitForActivity(2000, activityScenario) { it.lastErrorString == i18n(R.string.insufficentBalance) }
 
+        waitForView  {onView(withId(GuiId.sendCancelButton)).perform(click())}
         // Load coins
-        clickSpinnerItem(GuiId.recvIntoAccount, "rNEX1")
+        waitForView  {clickSpinnerItem(GuiId.recvIntoAccount, "rNEX1")}
         do {
             activityScenario.onActivity { recvAddr = it.ui.receiveAddress.text.toString() }
             if (recvAddr.contentEquals(i18n(R.string.copiedToClipboard))) Thread.sleep(200)
         } while(recvAddr.contentEquals(i18n(R.string.copiedToClipboard)))
 
         // RPC specifies in NEX, wallet in KEX
-        var txHash = rpc.sendtoaddress(recvAddr, BigDecimal("1000000"))
+        var txHash = rpc.sendtoaddress(recvAddr, BigDecimal.fromInt(1000000))
         LogIt.info("SendToAddress RPC result: " + txHash.toString())
 
-        TODO()
+        //TODO()
         /*
         waitForActivity(30000, activityScenario)
         {
@@ -1972,4 +1501,123 @@ class GuiTest
 
         LogIt.info("Completed!")
     }
+
+    fun sendTo(addr:String, fromAccount:String, amount: Int)
+    {
+        waitForView { onView(withId(GuiId.sendButton)).perform(click()) }
+        waitForView { clickSpinnerItem(GuiId.sendAccount, fromAccount) }
+        waitForView { onView(withId(GuiId.sendToAddress)).perform(clearText(), typeText(addr), pressImeActionButton()) }
+        waitForView { onView(withId(GuiId.sendQuantity)).perform(clearText(), typeText(amount.toString()), pressImeActionButton()) } //Note: there is a 5 ish nex fee
+        waitForView { onView(withId(GuiId.sendButton)).perform(click()) }
+        // wait for a half sec for the confirm dialog to pop up.
+        var needsAnotherClick = false
+        waitForView(500) { onView(withId(GuiId.SendConfirm)).perform(execute {
+            if ((it as TextView).visibility == View.VISIBLE) needsAnotherClick = true
+        }) }
+        if (needsAnotherClick) waitForView { onView(withId(GuiId.sendButton)).perform(click()) } // confirm it
+
+        // ok then unless there's a send error (which can happen if out of balance), send window should go away
+        // if it doesn't we need to cancel it
+        needsAnotherClick = false
+        waitForView(500) { onView(withId(GuiId.sendCancelButton)).perform(execute {
+            if (it.visibility == View.VISIBLE) needsAnotherClick = true
+        }) }
+        if (needsAnotherClick) waitForView { onView(withId(GuiId.sendCancelButton)).perform(click()) }
+    }
+
+    @Test fun backForthTest()
+    {
+        check(runningTheTests == true)
+        check(runningTheUnitTests == false)
+        cleanupWallets()
+        val cs = ChainSelector.NEXAREGTEST
+        val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
+        activityScenario.moveToState(Lifecycle.State.RESUMED);
+        var app: WallyApp? = null
+        activityScenario.onActivity { app = (it.application as WallyApp) }
+        assert(app != null)
+
+        var rpc = openRpc()
+        ensureFullNodeBalance(rpc, 1000)
+
+        //make a new account
+        createNewAccount("rNEX1",  app!!, cs)
+        createNewAccount("rNEX2", app!!, cs)
+
+        waitForView { onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, click())) }
+        println(getText(GuiId.receiveAddress)) //this shows the address
+        waitForView { onView(withId(GuiId.receiveAddress)).perform(click()) }
+
+        var addr1 = ""
+        waitFor { addr1 = clipboardText();  addr1.startsWith("nexareg:")}
+        rpc.sendtoaddress(addr1, BigDecimal.fromInt(100000))
+        rpc.generate(1)
+
+        waitForView { onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(1, click())) }
+        waitForView { onView(withId(GuiId.receiveAddress)).perform(click()) }
+        var addr2: String = ""
+        waitFor { addr2 = clipboardText();  addr2.startsWith("nexareg:")}
+
+        for (i in 0 .. 20)
+        {
+            sendTo(addr2, "rNEX1", (500 .. 8000).random() )
+            sendTo(addr1, "rNEX2", (500 .. 10000).random() )
+            if (i % 10 == 0)
+            {
+                rpc.generate(1)
+                waitForView { onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(0, click())) }
+                waitForView { onView(withId(GuiId.receiveAddress)).perform(click()) }
+                waitFor { addr1 = clipboardText();  addr1.startsWith("nexareg:")}
+                waitForView { onView(withId(R.id.AccountList)).perform(RecyclerViewActions.actionOnItemAtPosition<AccountListBinder>(1, click())) }
+                waitForView { onView(withId(GuiId.receiveAddress)).perform(click()) }
+                waitFor { addr2 = clipboardText();  addr2.startsWith("nexareg:")}
+            }
+            println("iteration $i")
+            LogIt.info("iteration $i")
+        }
+
+    }
 }
+
+
+class execute(val desc: String = "", val block: (View) -> Unit):ViewAction
+{
+    override fun getConstraints(): Matcher<View>
+    {
+        var ret: Matcher<View> = Matchers.any(View::class.java)
+        return ret
+    }
+
+    override fun getDescription(): String
+    {
+        return "execute $desc"
+    }
+
+    override fun perform(uiController: UiController?, view: View?)
+    {
+        if (view != null) block(view)
+    }
+}
+
+class executeUI(val desc: String = "", val block: (View?, UiController?) -> Unit):ViewAction
+{
+    override fun getConstraints(): Matcher<View>
+    {
+        var ret: Matcher<View> = Matchers.any(View::class.java)
+        return ret
+    }
+
+    override fun getDescription(): String
+    {
+        return "executeUI $desc"
+    }
+
+    override fun perform(uiController: UiController?, view: View?)
+    {
+        block(view, uiController)
+    }
+}
+
+fun<T> ViewInteraction.perform(block:()->T) {
+}
+//fun<T> ViewInteraction.dothis(block: ()->T): View

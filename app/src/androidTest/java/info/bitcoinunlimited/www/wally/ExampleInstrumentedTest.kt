@@ -1,12 +1,11 @@
-package bitcoinunlimited.wally.androidTestImplementation
+package org.wallywallet.androidTestImplementation
 
+import org.nexa.libnexakotlin.*
 import android.content.Context
 import android.util.Log
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.filters.SmallTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import bitcoinunlimited.libbitcoincash.ChainSelector
-import bitcoinunlimited.libbitcoincash.Initialize
 
 
 import org.junit.Test
@@ -17,7 +16,6 @@ import org.junit.Assert.*
 
 import info.bitcoinunlimited.www.wally.*
 import bitcoinunlimited.wally.*
-import bitcoinunlimited.libbitcoincash.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
@@ -26,6 +24,7 @@ import org.nexa.libnexakotlin.libnexa
 import java.lang.AssertionError
 import java.lang.Exception
 import com.ionspin.kotlin.bignum.decimal.*
+import org.nexa.threads.Gate
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.logging.Logger
@@ -203,6 +202,9 @@ class UnitTest
 {
     init {
         initializeLibNexa()
+        runningTheTests = true
+        runningTheUnitTests = true
+        dbPrefix = "test_"
     }
 
     var applicationContext = ApplicationProvider.getApplicationContext<Context>()
@@ -355,11 +357,11 @@ class UnitTest
 
         assert(uses.size >= 100)  // Might be wrong if the regtest chain startup is changed.
 
-        val headers = cnxn.getHeaders(0, 1000, 10000)
+        val headers = cnxn.getHeadersFor(cnxn.chainSelector, 0, 1000, 10000)
         for (i in headers.indices)
         {
             val hdr = cnxn.getHeader(i, 1000)
-            check(hdr contentEquals headers[i])
+            check(hdr contentEquals (headers[i] as NexaBlockHeader).serializeHeader(SerializationType.NETWORK).flatten() )
 
         }
 
@@ -439,7 +441,7 @@ class UnitTest
         val tx = BchTransaction(ChainSelector.BCHTESTNET, data, SerializationType.NETWORK)
         assertEquals(tx.hash.toHex(), hash4.toHex())
         // testnet3 block 1
-        val blk = BchBlock(ChainSelector.BCHTESTNET, BCHserialized("0100000043497fd7f826957108f4a30fd9cec3aeba79972084e90ead01ea330900000000bac8b0fa927c0ac8234287e33c5f74d38d354820e24756ad709d7038fc5f31f020e7494dffff001d03e4b6720101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0e0420e7494d017f062f503253482fffffffff0100f2052a010000002321021aeaf2f8638a129a3156fbe7e5ef635226b0bafd495ff03afe2c843d7e3a4b51ac00000000".FromHex(), SerializationType.NETWORK))
+        val blk = BchBlock(ChainSelector.BCHTESTNET, BCHserialized("0100000043497fd7f826957108f4a30fd9cec3aeba79972084e90ead01ea330900000000bac8b0fa927c0ac8234287e33c5f74d38d354820e24756ad709d7038fc5f31f020e7494dffff001d03e4b6720101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0e0420e7494d017f062f503253482fffffffff0100f2052a010000002321021aeaf2f8638a129a3156fbe7e5ef635226b0bafd495ff03afe2c843d7e3a4b51ac00000000".fromHex(), SerializationType.NETWORK))
         assertEquals(blk.hash.toHex(), "00000000b873e79784647a6c82962c70d228557d24a747ea4d1b8bbe878e1206")
 
     }
@@ -517,8 +519,7 @@ class UnitTest
         LogIt.info("HD key: " + newSecret.first.toHex())
         assertEquals(newSecret.first.toHex(), "9c219cb84e3199b076aaa0f954418407b1e8d54f79103612fbaf04598bc8be55")
 
-        val ctxt = PlatformContext(applicationContext)
-        val wdb = OpenKvpDB(ctxt, dbPrefix + "testHDerivationWallet")!!
+        val wdb = openKvpDB(dbPrefix + "testHDerivationWallet")!!
         // Test vector for wallet derivation path
         val wal = Bip44Wallet(wdb,"mBCH", ChainSelector.BCH,"night wing zebra gate juice absorb student disease gospel maple depth trap")
         val knownAddrs = mutableListOf(
@@ -594,6 +595,7 @@ class UnitTest
         }
     }
 
+    /*  Tests deprecated ROOM db converters
     @Test
     fun testConverters()
     {
@@ -618,6 +620,8 @@ class UnitTest
             assertEquals(hac.fromByteArray(hac.toByteArray(v)), v)
         }
     }
+
+     */
 
     @Test
     fun testBchTransaction()
@@ -857,10 +861,10 @@ class UnitTest
         loc.add(Hash256())  // This will ask for the genesis block because no hashes will match
         val stop = Hash256()
         var headers: MutableList<out iBlockHeader>? = null
-        val waiter = ThreadCond()
+        val waiter = Gate()
         cnxn.getHeaders(loc, stop, { lst, _ -> headers = lst; waiter.wake(); true })
 
-        waiter.delay(5000)
+        waiter.timedwaitfor(5000, { headers != null}) {}
         check(headers != null)  // If its null we didn't get the headers
 
         for (hdr in headers!!)
@@ -886,7 +890,7 @@ class UnitTest
             val b = tv[0].fromHex()
             val words = GenerateBip39SecretWords(b)
             check(words == tv[1])
-            val seed = GenerateBip39Seed(words, "TREZOR", 64)
+            val seed = generateBip39Seed(words, "TREZOR", 64)
             LogIt.info(seed.toHex())
             check(seed.toHex() == tv[2])
         }
@@ -898,6 +902,6 @@ class UnitTest
     {
         val result = historicalUbchInFiat("USD", 1576616203)
         LogIt.info(result.toPlainString())
-        check(result == BigDecimal(".00018293").setScale(16))
+        check(result == CurrencyDecimal(".00018293"))
     }
 }

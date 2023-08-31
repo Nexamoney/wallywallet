@@ -613,7 +613,7 @@ class MainActivity : CommonNavActivity()
             if (a != null)
             {
                 // Ok coins were loaded and guess what no accounts exist.  So create one to help out new users.
-                if (devMode == false && a.firstRun == true && a.accounts.isEmpty())
+                if (runningTheTests == false && devMode == false && a.firstRun == true && a.accounts.isEmpty())
                 {
                     // Automatically create a Nexa wallet and put up some info
                     val ac = a.newAccount("nexa", ACCOUNT_FLAG_NONE, "", ChainSelector.NEXA)
