@@ -335,12 +335,15 @@ open class CommonActivity : AppCompatActivity()
 
     var isRunning = false
 
+    var actionBarId:Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
 
         origTitle = title.toString()
-        val titlebar: View = findViewById(R.id.action_bar)
+        actionBarId = resources.getIdentifier("action_bar", "id", packageName)
+        val titlebar: View = findViewById(actionBarId) // R.id.action_bar)
         origTitleBackground = ColorDrawable(ContextCompat.getColor(applicationContext, R.color.titleBackground))
 
         origTitleBackground?.let { titlebar.background = it }  // Set the title background color here, so we don't need to match the background defined in some resource file
@@ -594,7 +597,7 @@ open class CommonActivity : AppCompatActivity()
         laterUI {
             synchronized(errorSync)
             {
-                val titlebar: View = findViewById(R.id.action_bar)
+                val titlebar: View = findViewById(actionBarId)
                 if (menuHidden > 0) menuHidden -= 1
                 if (errNo == 0)
                 {
@@ -617,7 +620,7 @@ open class CommonActivity : AppCompatActivity()
         laterUI {
             // This coroutine has to be limited to this thread because only the main thread can touch UI views
             // Display the error by changing the title and title bar color temporarily
-            val titlebar: View = findViewById(R.id.action_bar)
+            val titlebar: View = findViewById(actionBarId)
             val myError = synchronized(errorSync)
             {
                 super.setTitle(err)
@@ -658,7 +661,7 @@ open class CommonActivity : AppCompatActivity()
         laterUI {
             // This coroutine has to be limited to this thread because only the main thread can touch UI views
             // Display the error by changing the title and title bar color temporarily
-            var titlebar: View = findViewById(R.id.action_bar)
+            var titlebar: View = findViewById(actionBarId)
             val errorColor = ContextCompat.getColor(applicationContext, R.color.notice)
             val myError = synchronized(errorSync)
             {

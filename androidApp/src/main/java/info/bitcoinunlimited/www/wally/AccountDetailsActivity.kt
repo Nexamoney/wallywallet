@@ -23,7 +23,7 @@ enum class ConfirmationFor
 class AccountDetailsActivity: CommonNavActivity()
 {
     private lateinit var ui: ActivityAccountDetailsBinding
-    override var navActivityId = R.id.home
+    override var navActivityId = R.id.navigation_home
     var askingAbout: ConfirmationFor? = null
     var selectedAccount:Account? = null
     var pinTries = 0

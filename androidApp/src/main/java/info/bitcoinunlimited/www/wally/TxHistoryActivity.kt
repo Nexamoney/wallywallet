@@ -436,7 +436,7 @@ class TxHistoryActivity : CommonNavActivity()
     var listHeight: Int = 0
     var navHeight: Int = 0
 
-    override var navActivityId = R.id.home
+    override var navActivityId = R.id.navigation_home  // All the activities that don't have a bottom nav use the ID of where they launch from
 
     val viewSync = Mutex()
     var showingDetails = false

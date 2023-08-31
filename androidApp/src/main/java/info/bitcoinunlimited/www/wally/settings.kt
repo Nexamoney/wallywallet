@@ -15,6 +15,7 @@ import info.bitcoinunlimited.www.wally.databinding.ActivitySettingsBinding
 import com.ionspin.kotlin.bignum.decimal.*
 import java.util.logging.Logger
 import org.nexa.libnexakotlin.*
+import org.nexa.libnexakotlin.rem
 
 val LOCAL_CURRENCY_PREF = "localCurrency"
 val PRIMARY_ACT_PREF = "primaryAccount"
@@ -93,7 +94,7 @@ class Settings : CommonActivity()
         app = (getApplication() as WallyApp)
 
         origTitle = title.toString()
-        var titlebar: View = findViewById(R.id.action_bar)
+        var titlebar: View = findViewById(actionBarId)
         origTitleBackground = ColorDrawable(ContextCompat.getColor(applicationContext, R.color.titleBackground))
         origTitleBackground?.let { titlebar.background = it }  // Set the title background color here, so we don't need to match the background defined in some resource file
 
