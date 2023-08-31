@@ -762,6 +762,8 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         synchronized(accounts)
         {
             accounts.remove(act.name)  // remove this coin from any global access before we delete it
+            // clean up the a reference to this account, if its the primary
+            if (nullablePrimaryAccount == act) nullablePrimaryAccount = null
             launch { // cannot access db in UI thread
                 saveActiveAccountList()
                 act.delete()

@@ -534,6 +534,7 @@ class GuiTest
 
         // There will be no accounts, so check proper error
         activityScenario.onActivity {
+            println("it.ui.commonIdentityAddress.text " + it.ui.commonIdentityAddress.text )
             check(it.ui.commonIdentityAddress.text == i18n(R.string.NoAccounts))
         }
 
