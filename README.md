@@ -1,7 +1,6 @@
-# Wally Wallet Bitcoin Cash Android Wallet
+# Wally Personal Wallet
 
-This is a non-custodial SPV wallet that gathers its information from "normal" Bitcoin Cash nodes via the Bitcoin P2P and ElectrumX protocols.
-
+This is a non-custodial SPV & Electrum protocol wallet for Nexa and Bitcoin Cash.
 
 ## Cloning
 
