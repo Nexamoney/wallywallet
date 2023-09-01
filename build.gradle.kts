@@ -252,7 +252,7 @@ kotlin {
 
                 // nexa
                 implementation("org.nexa:mpthreads:$mpThreadsVersion")
-                implementation("org.nexa:libnexakotlin:0.0.7f")
+                implementation("org.nexa:libnexakotlin:0.0.8")
                 //implementation("org.nexa:walletoperations:0.0.1")
             }
         }
