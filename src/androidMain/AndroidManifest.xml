@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.hardware.camera" />
+    <uses-permission android:name="android.hardware.camera.autofocus" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+
+    <application
+        android:requestLegacyExternalStorage="true"
+        android:name=".WallyApp"
+        android:allowBackup="true"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_wally"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_wally_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+
+        <activity android:name=".ShoppingSettingsActivity"
+            android:label="@string/title_activity_shopping_settings"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".ShoppingActivity">
+        </activity>
+        <activity
+            android:name=".ShoppingActivity"
+            android:label="@string/title_activity_shopping"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainActivity"
+            />
+        <activity android:name=".UnlockActivity" />
+        <activity
+            android:name=".Welcome"
+            android:label="@string/title_activity_welcome"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="info.bitcoinunlimited.www.wally.MainActivity" />
+        </activity>
+        <activity
+            android:name=".IdentitySettings"
+            android:label="@string/title_activity_identity_settings"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"
+            android:parentActivityName=".IdentityActivity" />
+        <activity
+            android:name=".NewAccount"
+            android:label="@string/title_activity_new_account"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="info.bitcoinunlimited.www.wally.MainActivity" />
+        </activity>
+        <activity
+            android:name=".DomainIdentitySettings"
+            android:label="@string/title_activity_domain_identity_settings"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"
+            android:parentActivityName=".IdentityActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="info.bitcoinunlimited.www.wally.IdentityActivity" />
+        </activity>
+        <activity
+            android:name=".IdentityOpActivity"
+            android:label="@string/title_activity_identity_op"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"
+            android:parentActivityName=".MainActivity"
+            android:exported="true">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="info.bitcoinunlimited.www.wally.MainActivity" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:label="identity"/>
+                <data android:scheme="nexid" />
+            </intent-filter>
+        </activity> <!-- hardwareAccelerated supposedly needed for zxing -->
+        <activity
+            android:name=".IdentityActivity"
+            android:label="@string/title_activity_identity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="info.bitcoinunlimited.www.wally.MainActivity" />
+        </activity>
+        <activity
+            android:name=".AssetsActivity"
+            android:label="@string/title_activity_assets"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="info.bitcoinunlimited.www.wally.MainActivity" />
+        </activity>
+        <activity
+            android:name=".TxHistoryActivity"
+            android:label="@string/title_activity_tx_history"
+            android:launchMode="singleTask"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="info.bitcoinunlimited.www.wally.AccountDetailsActivity" />
+        </activity>
+        <activity
+            android:name=".AccountDetailsActivity"
+            android:label="@string/title_activity_account_details"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="info.bitcoinunlimited.www.wally.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ExchangeActivity"
+            android:label="@string/title_activity_exchange"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="info.bitcoinunlimited.www.wally.MainActivity" />
+        </activity>
+        <activity
+            android:name=".TricklePayActivity"
+            android:label="@string/title_activity_trickle_pay"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:label="tricklepay"/>
+                <data android:scheme="tdpp" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Settings"
+            android:label="@string/title_activity_settings"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".AlertActivity"
+            android:label="@string/title_activity_alert_history"
+            android:launchMode="singleTask"
+            android:parentActivityName=".MainActivity"
+            />
+        <activity
+            android:name=".SplitBillActivity"
+            android:label="@string/title_split_bill"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".MainActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="bitcoincash" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="bchreg" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="nexa" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="nexatest" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="nexareg" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

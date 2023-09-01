@@ -1,0 +1,574 @@
+<!-- Hi and thanks for translating!
+If you see anything that is surrounded with symbols just like this text, that is, within !- and - (but with 2 dashes, I cannot write it here), then do not translate.
+These are comments to help you understand what to do or the context the next word is used in.
+
+Entries that need to be translated will look something like this:
+<string name="yes">yep</string>
+
+Do not translate the word in quotes (in this case "yes").  This is a name that we use to look up your translation.
+But DO translate the word or sentence between the greater than and less than signs.  In this case "yep".
+
+For example, if you were doing a French you might do this replacement:
+<string name="yes">oui</string>
+
+Try to not make your translation a lot longer than the english, or it might not all fit in the space the app has on screen!
+
+
+If, in the part you are supposed to translate, you see a percent sign and a word, like this: %foo, then do not translate it.  For example:
+
+<string name="delQ">Delete account "%accountName" (on %blockchain)</string>
+
+What is happening here is that the app will replace %accountName with the actual name of the relevant account and %blockchain with the actual name of the blockchain.
+So it will look like this in the app:
+  Delete account "myNexaAct" (on Nexa)
+
+You can change the order of the replaced words just by moving where the %word is in your translation.  For example, I could change this to:
+
+<string name="delQ">Delete from %blockchain, account "%accountName"</string>
+
+Good luck!
+-->
+
+<resources>
+    <string name="app_name">Wally</string>
+    <string-array name="CurrencyTypes">
+        <item>NEX</item>
+        <item>USD</item>
+    </string-array>
+    <string-array name="FiatCurrencyTypes">
+        <item>BRL</item>
+        <item>CAD</item>
+        <item>CNY</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>JPY</item>
+        <item>RUB</item>
+        <item>USD</item>
+        <item>XAU</item>
+    </string-array>
+
+    <string name="uBCH">uBCH</string>
+
+    <string-array name="OneToTen">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="tipPercentage">
+        <item>--</item>
+        <item>0%</item>
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+        <item>50%</item>
+    </string-array>
+
+    <!-- General -->
+    <string name="yes">jah</string>
+    <string name="no">ei</string>
+    <!-- used to specify what position in the blockchain -->
+    <string name="at">asukohal</string>
+    <!-- used to specify that total blockchain size "at block 6 of 100"  -->
+    <string name="of">plokist</string>
+    <!-- used to ask the user to pick an account -->
+    <string name="choose">vali</string>
+    <!-- accept a proposed transaction, configuration change, or a request from an external service -->
+    <string name="accept">aksepteeri</string>
+    <!-- reject a proposed transaction or configuration change -->
+    <string name="reject">keeldu</string>
+    <!-- remove some remembered services, like web sites you have logged into or paid -->
+    <string name="remove">eemalda</string>
+    <!-- you have asked the app to do something, but the app is double checking.  This means yes do it -->
+    <string name="confirm">kinnita</string>
+    <!-- you have asked the app to do something, but the app is double checking.  This means no user changed their mind -->
+    <string name="cancel">keeldu</string>
+
+    <string name="removeAll">eemalda kõik</string>
+    <!-- done is like "yes" but more means "go to the next thing" rather than explicit acceptance of something.  The implication is that whatever is showing on the screen will be used.
+         Its modern UX philosophy of "why do we have to explicitly "save" everything on settings screens?  If you make a change, that change ought to be made, no additional button clicks needed."
+    -->
+    <string name="done">valmis</string>
+    <!-- an external service is making a request (to see the assets you own, to get you to sign a transaction, or to prove your identity).  You refuse -->
+    <string name="deny">keeldu</string>
+    <!-- Should the program ask the user before authorizing this, verses automatically accepting or automatically denying -->
+    <string name="ask">küsi</string>
+    <!-- Some service sent you a request, but the service did not properly sign the request (which proves that they are who they claim to be) -->
+    <string name="badSignature">vale allkiri</string>
+
+    <string name="unknownCurrency">tundmatu valuuta</string>
+    <string name="unknownCryptoCurrency">tundmatu krüpto või plokiahel</string>
+    <!-- wallet is currently working on doing whatever your button click asked it to do -->
+    <string name="Processing">mõtlemine...</string>
+    <string name="receiving">vastuvõtmine</string>
+    <string name="sending">saatmine</string>
+    <string name="noAdditionalDetails">puuduvad detailid</string>
+    <!-- User didn't enter any value into this field but that's ok -->
+    <string name="unspecified">täpsustamata</string>
+    <!-- If the user deletes something - like a connection to an external service, this is the confirmation string that the info was removed.  It needs to be short. -->
+    <string name="removed">eemaldatud</string>
+    <!-- wallet is up to date with the blockchain -->
+    <string name="synced">sünkroniseeritud</string>
+    <!-- wallet is still connecting to the blockchain -->
+    <string name="unsynced">sünkroniseerimine</string>
+    <string name="connected">ühendatud</string>
+    <string name="balance">kontojääk</string>
+    <string name="total">kokku vastuvõetud</string>
+
+    <!-- this is an indication that we are still waiting for some web page to load. please leave the HTML and just translate ...loading... -->
+    <string name="WebLoadingPage"><![CDATA[<body><h1><center>...laadimine...</h1></center></body>]]></string>
+
+    <!-- Implication is "no charge" or "no cost" for a transaction -->
+    <string name="nothing">tasuta</string>
+
+    <!-- Do not actually put anything in this one!  Its needed when we want a blank line -->
+    <string name="empty"></string>
+
+    <string name="or">või</string>
+
+    <string name="onBlockchain">plokiahelal</string>
+
+    <string name="NotImplemented">tulekul</string>
+
+    <string name="NoNodes">Ligipääs plokiahelale puudub</string>
+    <!-- The user chose not to proceed with some operation -->
+    <string name="cancelled">tühista</string>
+    <!-- Issued if initialization isn't yet complete, but user tries to access the services -->
+    <string name="pleaseWait">palun oodake</string>
+    <!-- Uses in the sense of attempting an operation, such as connecting to a node  -->
+    <string name="trying">Üritamine</string>
+
+    <!-- meaning remove all the text in an edit box -->
+    <string name="clear">tühjenda</string>
+
+    <string name="thousand">tuhat</string>
+
+    <string name="million">miljon</string>
+
+    <!-- Settings -->
+    <string name="version" formatted="false">Wally Wallet Versioon: %ver</string>
+    <string name="enableDeveloperView"> Täpsem/Arendaja mood</string>
+    <string name="enableIdentityMenu">Luba identiteedi menüü</string>
+    <string name="enableTricklePayMenu">Luba trickle pay menüü</string>
+    <string name="enableAssetsMenu">Luba varade menüü</string>
+    <string name="only">ainult</string>
+    <string name="prefer">eelista</string>
+    <string name="rediscoverWalletTx">taasavasta kõik tehingud</string>
+    <string name="rediscoverBlockchain">taasavasta plokiahela pealkirjad</string>
+    <string name="logDebugData">Logi Debug andmed</string>
+    <string name="clearIdentityDomains">Tühjenda Identiteedi Domeenid</string>
+    <string name="rediscoverTooltip">Tühjenda plokiahela seis ja otsi uuesti kõik vastavad tehingud vastavale rahakotile</string>
+    <string name="wordSeed">Konto taastamise salalfraas</string>
+    <string name="deleteWalletAccount">Kustuta konto</string>
+
+    <!-- a PIN is a numeric password that gives you access to your account -->
+    <string name="SetChangePin">Sisesta või vaheta pin kood</string>
+    <string name="CurrentPin">Hetkeseisu PIN</string>
+    <string name="NewPin">Uus PIN</string>
+    <string name="PinChanged">PIN vahetatud</string>
+    <string name="PinRemoved">PIN eemaldatud</string>
+    <string name="PinInvalid">Vale PIN</string>
+    <string name="PinTooShort">Uus PIN on liiga lühike</string>
+    <string name="WriteDownRecoveryPhraseWarning">HOIATUS: Te pole oma osade kontode taastamis salafraasi üles kirjutanud! Et tagada, et teie raha ei kaoks kui antud seade kaob/hävineb - kirjutage palun fraas üles paberitüki peale ja pange turvalisse kohta. Taastamise salafraasid on kättesaadavad iga konto sätete leheküljelt.</string>
+    <string name="WroteRecoveryPhraseDown">Ma kirjutasin üles!</string>
+    <string name="RecoveryPhraseKeepRemindingMe">Jätka meeldetuletamist</string>
+    <string name="ViewRecoveryPhrase">Vaata konto taastamise salafraasi</string>
+    <string name="localCurrency">Kohalik currency</string>
+    <string name="assessUnconfirmed">Hinda kinnitamata tehinguid</string>
+    <string name="rediscoverNotice">Konto taasavastamine alustatud</string>
+    <string name="unconfAssessmentNotice">Kinnitamata hindamine alustatud</string>
+    <string name="accountDeleteNotice">Konto kustutatud</string>
+    <string name="rediscoverConfirmation">Konto taasavastamine otsib läbi plokiahela kuna see rahakott loodi kadunud maksete jaoks. Protsess võib võtta kaua aega. Kasutage ainult kui te olete kindlad, et makse on kadunud!</string>
+    <string name="rediscoverBlockchainConfirmation">Plokiahela taasavastamine kustutab kõik plokiahela headeri andmed ja laeb need alla uuesti täis node\'idest. See protsess võib võtta kaua aega. Kasutage ainult kui te olete kindlad, et tegemist on headeri probleemiga!</string>
+    <string name="deleteConfirmation" formatted="false">Konto kustutamine teeb kõik bilansid, identiteedid ja konto ajaloo kättesaamatuks välja arvatud kui konto on taastatud kasutades taastamise salafraasi ! Kasutage ainult kui te olete väga kindlad !\n\nDelete account "%accountName" (on %blockchain)?</string>
+    <string name="reassessConfirmation">See toiming kontrollib plokiahelat teie hiljutiste tehingute osas. Nende olemasolu või puudumise põhjal see kas kinnitab või kustutab need. Kui tehingud kustutatakse, kaob raha justkui ära. Kulutatud saldo taastamiseks peate "taasavastama". Ärge kasutage, kui olete tehingu hiljuti väljastanud, kuna see tehing võib olla võrgus varjatud ja oodata kinnitust.</string>
+    <string name="recoveryPhrase">Seda 12 sõnalist salafraasi saab kasutada oma rahakoti taastamiseks kui teie telefon peaks saada kahjustada või kaob. See tähendab, et igaüks kes seda fraasi teab, saab seda teha. Kirjutage salafraas paberile ja pange ohutusse kohta.</string>
+    <string name="primaryAccountConfirmation">Teie pealmine konto on see, mida kasutatakse teie indentiteedi jaoks ja millega tehakse automaatseid makse. See on ka esimene konto mida kuvatakse esimesena erinevates kohtades selles appis. See peab asuma NEXA plokiahelal.</string>
+    <string name="AccountActions">Konto tegemised</string>
+    <string name="GeneralSettings">Üldsätted</string>
+    <string name="BlockchainSettings">Plokiahela allikad</string>
+    <string name="AccessPriceData">Kuva hinnaandmed</string>
+    <!-- not used right now string name="AccessPriceDataHint">This option allows the wallet to display the value of your cryptocurrency.  However, this data may not be accurate.  And the access uses more data and divulges your IP address to the service providing the data.</string -->
+
+    <!-- Split bill -->
+    <string name="SplitBillDescription">Sina maksad arve (FIAT valuutas), su sõbrad maksavad enda osa läbi QR koodi all.</string>
+    <string name="Total">Summa:</string>
+    <!-- Ways refers to how many equal portions a bill is being split into -->
+    <string name="Ways">Vahel:</string>
+    <!-- Tip (gratuity) is how much more money you want to pay above the value of the bill -->
+    <string name="Tip">Jootraha:</string>
+
+    <string name="Amount">Summa kokku:</string>
+    <!-- Home Page -->
+
+    <!-- As the wallet is syncing, it shows you a balance.  But if the wallet is not caught up to NOW it shows this so you know that the balance that is being shown is not up to date.
+    IF YOU SEE %something (in this case date), THEN DO NOT translate the "something".  It will be replaced with the actual value by the program (in this case the date).
+    -->
+    <string name="balanceOnTheDate">alates %date</string>
+
+    <!-- A QR is the 2-dimensional black and white boxes of pixels that wallets scan to read info -->
+    <string name="goodQR">QR loetav</string>
+    <string name="badQR">QR pole loetav</string>
+    <string name="badImageQR">halvasti loetav QR. more...</string>
+    <string name="badImageQRhelp">Proovige teha pilt kaugemalt kui te proovisite liiga lähedalt. Valge piirjoon on QR koodi osa.</string>
+    <!-- as in unlock an account -->
+    <string name="unlock">Ava</string>
+    <string name="share">Jaga</string>
+    <string name="Send">Saada</string>
+    <string name="OpenSend">Saada</string>
+    <string name="SendCancel">Tühista</string>
+    <string name="ignoredInsecureRequest">Ebaturvaline päring ignoreeritud</string>
+    <!-- As in "Send from" what account -->
+    <string name="fromAccountColon">Saada kontolt:</string>
+    <!-- if user forgot to pick an account -->
+    <string name="chooseAccountError">Valige mis kontolt</string>
+    <!-- As in "Send to" -->
+    <string name="toColon">Kellele:</string>
+    <!-- As in what entity is requesting information -->
+    <string name="fromColon">Kellelt:</string>
+    <string name="Receive">Võta vastu kontole</string>
+    <string name="AccountListHeader">Kontod</string>
+    <!-- This is referring to a cryptocurrency address, not a physical address -->
+    <string name="Address">Krüptoaadress</string>
+    <string name="clipboard">lõikelaud</string>
+    <string name="settings">Seaded</string>
+    <string name="help">Abi</string>
+    <string name="invalidQuantity">vigane kogus</string>
+    <string name="invalidQuantityTooManyDecimalDigits">liiga mitu komakohta</string>
+    <string name="roundedUpClickSendAgain">Ümardatud. Palun saatke uuesti, et aksepteerida.</string>
+    <!-- Write this below the send quantity field when it is empty - you probably want to write nothing at all -->
+    <string name="emptyQuantityField"></string>
+    <string name="purchase">Osta</string>
+    <string name="scanPaymentQRcode">Skanneeri makseaadress või QR kood</string>
+    <string name="ScanQRCodeButton">Skanneeri QR kood</string>
+    <string name="PasteDestinationAddressButton">Kleebi</string>
+    <string name="NewAccountButton">Uue konto loomine</string>
+    <string name="NewAccountSearchingForTransactions">...otsime tehinguid...</string>
+    <string name="NewAccountSearchFailure">tehingute otsing ebaõnnestus</string>
+    <string name="receiveAddressQRCode">Võta vastu QR kood</string>
+    <string name="paymentProposal">vastuvõetud maksesoovituse põhjal</string>
+    <!-- You clicked the paste button (in a copy/paste operation), but nothing was copied -->
+    <string name="pasteIsEmpty">kleepimine on tühi</string>
+    <!-- Informational: The contents of the copy/paste buffer didn't make any sense to me, but you didn't explicitly tell me to paste so maybe that's ok.
+     The app did not use this paste information.  This error happens when the app checks for implicit pastes.  For example, when wally wallet
+     starts up it guesses that it might have been started to make a payment so checks the paste buffer for a destination address.
+     -->
+    <string name="pasteIgnored">kleepimine ignoreeritud</string>
+    <!-- Error: The information in the copy/paste buffer didn't make any sense to me (not a crypto address, for example), and you explicitly asked me to paste.
+     The app refuses to fill the field with this information because it doesn't make sense to do so. -->
+    <string name="pasteUnintelligible">arusaamatu kleepimine</string>
+    <string name="chainIncompatibleWithAddress">aadress ei ühildu kontoga</string>
+    <string name="chainIncompatibleWithAddressDetails" formatted="false">Konto valuuta on %walletCrypto, aadress on %addressCrypto.  Kasutage kombo lahtrit et vahetada saatmise aadress selliseks, et ta ühtiks saaja plokiahelaga.</string>
+    <string name="incoming" formatted="false">sisaldab %delta %unit ootel</string>
+    <string name="approximatelyT" formatted="false">Umbes %qty %fiat</string>
+    <string name="exchangeRate" formatted="false">(valuutakurss: 1 %fiat is worth %amt %crypto)</string>
+    <!-- user is attempting to send more cryptocurrency than the wallet contains.  The payment can't happen -->
+    <string name="moreThanAvailable">"(Pole piisavalt valuutat)"</string>
+    <!-- This is a warning or informational message.  It says that the user is sending recently received coins, which is perfectly OK but slightly increases the chance of payment failure -->
+    <string name="moreThanConfirmedAvailable">"(Proovite saata äsja vastuvõetud valuutat.)"</string>
+    <string name="actuallySendingT" formatted="false">aktuaalselt saatmisel %qty %crypto</string>
+    <string name="copiedToClipboard">...kopeeritud lõikelauale...</string>
+    <string name="scanFailed">skanneerimine ebaõnnestus</string>
+    <string name="scanSuccess">skanneerimine õnnestus</string>
+    <string name="sendSuccess">saatmine õnnestus</string>
+    <string name="sendQuantityHint">saada kogus</string>
+    <string name="sendRequestNotification">Saatmine palutud</string>
+    <string name="sendToAddressHint">Sihtkoha aadress</string>
+    <string name="sendAll">kõik</string>
+    <string name="editSendNoteHint">Isiklikud märkmed kande kohta</string>
+    <string name="subSatoshiQuantities">Liiga mitu komakohta -- see valuuta ei jaotu nii täpselt</string>
+
+    <string name="retrievingExchangeRate">valuutakurss vastuvõtmisel</string>
+    <string name="unavailableExchangeRate">valuutakurss mitte saadaval</string>
+
+    <!-- Identity -->
+    <string name="identityRequestNotification">Identiteet küsimisel</string>
+    <string name="IdentityDataMissing">Puuduv identiteedi info</string>
+    <!-- Some web site or company that you've never contacted before is requesting that you set up an account and authenticate a log-in.  This is an informational message
+     that happens whenever the user first sets up a relationship between the web site/company and their wallet -->
+    <string name="newDomainRequestingIdentity">Uus domeen küsib identiteeti</string>
+    <string name="domainRequestingAdditionalIdentityInfo">Rohkem informatsiooni vajatud</string>
+    <string name="useUniqueIdentityToolTip">Vajuta siia, et hoida identiteet eraldi teistest lehekülgedest.</string>
+    <string name="provideAlias">Sisesta oma kasutajanimi/hüüdnimi/alias?</string>
+    <string name="provideAliasToolTip">See optsioon esitab sinu aliase (nagu sätetes pandud, MITTE sinu päris nime) sellele leheküljele kui palutud</string>
+    <string name="provideSocialMedia">Esita oma sotsiaalmeedia informatsioon?</string>
+    <string name="provideSocialMediaToolTip">See optsioon edastab sinu sotsiaalmeedia informatsiooni (nagu sätetes sisestatud) sellele leheküljele kui küsitud.</string>
+    <string name="providePostalAddress">Sisesta oma postiaadress?</string>
+    <string name="providePostalAddressToolTip">See optsioon esitab sinu aadressi (nagu sätetes sisestatud) sellele leheküljele kui palutud</string>
+    <string name="provideBillingAddress">Esita oma arveaadress ?</string>
+    <string name="provideBillingAddressToolTip">See optsioon edastab sinu arveaadressi (nagu sätetes sisestatud) sellele leheküljele kui küsitud.</string>
+    <string name="provideEmail">Edasta oma e-mail ?</string>
+    <string name="provideAvatar">Edasta oma profiilipilt ?</string>
+    <string name="provideRealName">Edasta oma päris nimi ?</string>
+    <string name="provideRealNameToolTip">See optsioon edastab sinu päris nime (nagu sätetes sisestatud) sellele leheküljele kui palutud</string>
+    <string name="provideBirthday">Edasta oma sünnikuupäev ?</string>
+    <string name="providePhone">Edasta oma telefoninumber ?</string>
+    <string name="provideAttestations">Esita tõendeid ?</string>
+    <string name="provideAttestationsToolTip">Tõendid on kolmandate osapoolte allkirjad mis kinnitavad edastatud andmete tõelisust.</string>
+    <string name="primaryAccountRequired" formatted="false"> %primCurrency kontot on vaja, et seda funktsiooni kasutada</string>
+    <string name="primaryAccountRequiredDetails" formatted="false">Osad funktsioonid töötavad ainult vastavate krüptovaluutadega. Te peate vastava krüpto konto avama.</string>
+    <string name="UnknownDomainRegisterFirst">Tundmatu domeen, palun ennem registreerida.</string>
+
+    <string name="commonIdentityQRCode">QR kood</string>
+    <!-- An intent (aka link) specified an action that I don't know about -->
+    <string name="unknownOperation" formatted="false">operatsioon %op on tundmatu</string>
+    <!-- This wallet already has a registration for this site, so registration is not needed (informational notice) -->
+    <string name="alreadyRegistered">Olete juba registreerunud</string>
+
+    <string name="provideLoginQuestion">Logige sellele leheküljele sisse ?</string>
+    <string name="provideInfoQuestion">Identiteedi informatsioon nõutud </string>
+    <string name="signDataQuestion">Signatuuri päring</string>
+    <string name="nothingToSign">Sõnum pole esitatud</string>
+    <string name="binaryToSign">Allkirjasta see binaarinfo ?</string>
+    <string name="textToSign">Allkirjasta see sõnum ?</string>
+    <string name="sigInClipboard">Allkiri kopeeritud lõikelauale</string>
+
+    <string name="SocialMediaText">Sotsiaalmeedia</string>
+    <string name="SocialMediaSummary">Sisesta nagu teenuse nimekiri. näiteks twitter:janeDoe, keybase:janieD</string>
+    <string name="UsernameOrAliasText">Kasutajanimi/hüüdnimi/alias</string>
+    <string name="NameText">Täisnimi</string>
+    <string name="PostalAddressText">Postiaadress</string>
+    <string name="BillingAddressText">Arveaadress</string>
+    <string name="PostalCodeText">Postiindeks</string>
+    <string name="EmailText">Email</string>
+    <string name="TwitterText">Twitter</string>
+    <string name="TelegramText">Telegram</string>
+    <string name="IdentityAssociatedWith">Seotud identiteedi info</string>
+
+    <string name="areYouSure">Kas oled kindel ?</string>
+    <string name="WhenAskSure">Kinnita üleval olevad kanded (NEX valuutas)</string>
+    <string name="SendConfirmSummary">Kinnita %amt %currency saatmine %inFiat aadressile %dest</string>
+    <string name="firstName">eesnimi</string>
+    <string name="lastName">perekonnanimi</string>
+
+    <string name="connectionEstablished">ühendus loodud</string>
+    <string name="connectionException">ei saa ühendust leheküljega</string>
+    <string name="withholdingMandatoryInfo">lehekülg nõuab infot millest keeldusite</string>
+    <string name="badLink">halb link</string>
+    <string name="connectionAborted">lehekülg tühistas logini</string>
+    <!-- Transaction history activity -->
+    <string name="HintAdjustCostBasis">basis or cap gain</string>
+    <string name="CostBasis">cost basis</string>
+    <string name="CapitalLoss">capital loss</string>
+    <string name="CapitalGain">capital gain</string>
+    <string name="OverrideSalesPrice">enter price when sold</string>
+    <string name="AccountHistory">Transactions</string>
+    <string name="AccountAddresses">Addresses</string>
+
+    <!-- Account details activity -->
+    <string name="txHistoryButton">Vaata või ekspordi konto tegemised</string>
+    <string name="setAsPrimaryAccountButton">Tee see konto oma peamiseks kontoks</string>
+    <string name="AccountStatistics">Konto statistika</string>
+    <string name="AccountBlockchainSync" formatted="false">Hetkel %sync plokiahelal %chain.</string>
+    <string name="AccountBlockchainDetails" formatted="false">At %actBlockDate, block %actBlock of %chainBlockCount.</string>
+    <string name="AccountBlockchainConnectionDetails">Ühendatud %num noode: %names</string>
+    <string name="AccountNumAddresses" formatted="false">%num aadresse</string>
+    <string name="FirstLastReceive" formatted="false">Esimene deposiit plokis %first, kõige hiljutisem plokis %last.</string>
+    <string name="FirstLastSend" formatted="false">Esimene väljavõtt plokis %first, kõige hiljutisem plokis %last.</string>
+    <string name="AccountNumTx" formatted="false">%num tehingut</string>
+    <string name="AccountNumUtxos" formatted="false">%num pearaamatu kannet</string>
+    <!-- Assets activity -->
+    <string name="title_activity_assets">Varad</string>
+    <string name="title_activity_invoices">Arved</string>
+    <!-- Assets activity -->
+    <string name="title_activity_scan">Skanneeri</string>
+
+    <!-- New Account activity -->
+    <string name="title_activity_new_account">Uus konto</string>
+    <string name="AccountName">Konto nimi</string>
+    <string name="AccountNameHint">1-8 tähte</string>
+    <string name="Blockchain">Plokiahel</string>
+    <string name="AccountRecoveryPhrase">Taastamisfraas</string>
+    <string name="LeaveEmptyNewWallet">Jätke tühjaks et luua uus konto</string>
+    <string name="PinSuggestions"><font size="15">Seda salanumbrit on vaja, et pääseda ligi kontole</font></string>
+    <string name="createAccount">Loo konto</string>
+    <string name="invalidRecoveryPhrase">Vale salafraas</string>
+    <string name="invalidAccountName">Vigane nimi</string>
+    <string name="PassPhrase">Pääsufraas (valikuline)</string>
+    <string name="Bip44ActivityNotice">Konto aktiivsus avastatud</string>
+    <string name="NoBip44ActivityNotice">Hoiatus, ühtegi tehingut ei leitud!</string>
+    <string name="Bip44BtcActivityNotice">Ebastandartne või muudatuste eelne rahakoti aktiivsus leitud</string>
+    <string name="NoBip44BtcActivityNotice">Muudatuste eelnevaid tehinguid ei leitud</string>
+    <string name="FirstUseDateHeightInfo" formatted="false">Algushetk %date (block %height)</string>
+    <string name="NotEnoughRecoveryWords">Rohkem taastamissõnu vaja</string>
+    <string name="TooManyRecoveryWords">Liiga mitu taastamissõna</string>
+    <string name="IncorrectRecoveryWords" formatted="false">Vigased sõnad: %words</string>
+    <string name="ElectrumNetworkUnavailable">Electrum\'i võrk ei ole saadaval. Rahakoti taastamine on aeglane ja tehinguid eelnevalt Jaanuar 1,2020 ei leita.</string>
+    <string name="PinHidesAccount">Varja konto ennem kui PIN on sisestatud?</string>
+    <string name="CreatePIN">PIN (valikuline)</string>
+    <string name="PinSpendingUnprotected">Ilma PIN koodita kulutamine on lubatud (PIN\'i pole sisestatud)</string>
+    <string name="PinSpendingProtected">Kulutamine nõuab PIN koodi</string>
+    <string name="InvalidPIN">Vigane PIN</string>
+    <string name="creatingNoHistoryAccountWarning">Te proovite luua kontot spetsiifilise taastamisfraasiga, aga plokiahelal aktiivsust ei leitud.\nKas see on õige?\nKui jah, palun vajutage uuesti LOO nuppu ja tühi konto luuakse. Aga kui sellel kontol peaks olema aktiivsust, palun kontrollige oma plokiahela valikut ja oma salafraasi. Kui see ei ole vigane, siis kas plokiahela võrk on hetkel kättesaamatu (proovige hiljem uuesti) või ta loodi ebastandartse rahakotiga. Ärge palun seda kontot hetkel looge.</string>
+    <!-- Error strings -->
+    <string name="accountLocked">Konto lukustatud</string>
+    <string name="unknownError">Viga</string>
+    <string name="insufficentBalance">Ebapiisav bilanss</string>
+    <string name="excessiveFee">Liigne tasu</string>
+    <string name="sendDustError">Kogus alla miinimumi</string>
+    <string name="sendingDustWarning">Kogus on alla võrgu miinimumi</string>
+    <string name="feeExceedsFlatMax">Tasu ületab maksimaalse sätestatud piirmäära.</string>
+    <string name="notSupported">Pole toetatud</string>
+    <!-- A temporal offer is not longer available.  For example, a payment via the BIP70 payment protocol is no longer available -->
+    <string name="expired">Makse aegunud</string>
+    <string name="PaymentDataMissing">Maksel puuduvad andmed</string>
+    <string name="headersNotForthcoming">Pealkirju pole antud</string>
+    <string name="cantConvert">Konversioon pole ajutiselt saadaval</string>
+
+    <string name="walletDisconnectedFromBlockchain">Rahakott lahti ühendatud</string>
+
+    <string name="badTransaction">Halb tehind</string>
+    <string name="badAddress">vigane aadress</string>
+    <string name="badAmount">vigane summa</string>
+    <!-- No accounts have been created yet -->
+    <string name="NoAccounts">Pole loodud kontosid</string>
+    <!-- The crypto currency code (e.g NEX, BTC, BCH, etc) is not understood or handled by this wallet.  This message will be very hard to actually see because the UI
+    protects against entering unknown crypto codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
+     -->
+    <string name="badCryptoCode">Puuduvad kontod selle valuuta või plokiahela jaoks</string>
+    <string name="badCryptoCodeDetails" formatted="false">Tundmatu või kättesaamatu valuuta: %currency</string>
+    <!-- The fiat currency code (e.g USD, EUR, JPY etc) is not understood or handled by this wallet.  This message will be very hard to actually see because the UI
+      protects against entering unknown fiat codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
+    -->
+    <string name="badCurrencyUnit">Pole valuuta</string>
+    <!-- The account contains the wrong currency for this use -->
+    <string name="incompatibleAccount">Vale valuuta</string>
+    <string name="incompatibleAccountDetails" formatted="false">Te valisite et maksta kontoga mis sisaldab %cryptoAct aga %cryptoPay on vajalik</string>
+    <string name="detailsOfBadAmountFromIntent">Kutsuv programm edastas halvasti formateeritud numbri kui proovis edastada koguse mida saata. Sisestage palun kogus ise.</string>
+    <string name="blankAddress">Tühi aadress</string>
+    <string name="unavailable">pole saadaval</string>
+    <string name="blockNotForthcoming">plokk pole saadaval</string>
+    <string name="receiveAddressUnavailable">Uus saaja aaddress on loomisel. Palun oodake....</string>
+    <!-- The maximum number of accounts that this wallet can show has been reached -->
+    <string name="accountLimitReached">Maksimum kontod näidatud</string>
+    <string name="accountUnavailableDetails">Kas mite ükski konto ei ühti selle plokiahelaga, või konto pole lahti lukustatud.</string>
+    <string name="accountUnavailable">Pole sobivat kontot lahtilukustatud</string>
+
+    <!-- Error long strings -->
+    <string name="sendMoreThanBalance">Te proovite saata rohkem münte kui teil hetkel kontol on. Kui te arvate, et te ei kuluta rohkem kui teil kontol on, siis te võib-olla unustasite, et igal tehingul on väikene kulu (fee), või kui te näete oma tervet bilanssi kui kinnitamata siis olete te võib-olla teinud liiga mitu tehingut järjest. Laske oma kinnitamata bilansil ennast ära kinnitada ja proovige uuesti.</string>
+    <string name="deductedFeeLargerThanSendAmount">Mahavõetud tasu on suurem kui summa mida proovite saata</string>
+
+    <string name="badWalletImplementation">Vale rahakoti implementeerimine. Teavitage meid sellest veast!</string>
+
+    <!-- TITLES -->
+    <string name="title_split_bill">Tee arve pooleks</string>
+    <string name="title_activity_settings">Sätted</string>
+    <string name="title_activity_exchange">Valuutavahetus/Turg</string>
+    <string name="title_activity_shopping">Shoppamine</string>
+    <string name="title_activity_shopping_settings">Custom Shoppamise Nupud</string>
+    <string name="title_activity_trickle_pay">Trickle Pay</string>
+    <string name="title_home">Kodu</string>
+    <string name="title_dashboard">Töölaud</string>
+    <string name="title_notifications">Teated</string>
+    <!-- string name="title_activity_invoices">Arved</string> -->
+    <string name="title_activity_identity">Identiteet</string>
+    <string name="title_activity_identity_op">Identiteet</string>
+    <string name="title_activity_domain_identity_settings">Domeeni identiteedi seaded</string>
+    <string name="title_activity_tx_history" formatted="false">Konto ajalugu: %account</string>
+    <string name="title_activity_account_details" formatted="false">Konto detailid: %account</string>
+
+    <!-- Not part of the UI -->
+    <string name="preferenceFileName">bitcoinunlimited.wally.prefs</string>
+
+    <!-- Domain Identity Settings -->
+    <string name="useUniqueIdentity">Kasuta unikaalset identiteeti</string>
+
+    <string name="title_activity_identity_settings">Identiteedi sätted</string>
+    <string name="title_activity_welcome">Tere tulemast</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="next">Järgmine</string>
+    <string name="previous">Eelmine</string>
+    <!-- PIN Entry -->
+    <string name="EnterPIN">Sisestage PIN</string>
+    <string name="EnterPINorBlankToRemove">Uus PIN (tühjaks jäotud lahter eemaldab)</string>
+    <string name="title_activity_shoppng">Shoppamise ajalugu</string>
+
+    <!-- Shopping -->
+    <string name="ButtonTextHere">Määra nupu tekst</string>
+    <string name="ButtonLinkHere">Sisesta veebilink</string>
+    <string name="ShoppingWarning">HOIATUS: Need objektid siin leheküljel on lingid kolmandate osapoolte teenustele ja lehekülgedele, pandud siia teie mugavuseks. Need leheküljed/teenused ei ole seotud/kontrollitud Wally rahakoti poolt.\n\nKasutage omal vastutuse !</string>
+
+    <!-- All items are specified here so the service itself can be localized if your country does work with the default service. Use empty strings to disable -->
+    <string name="BadLink">Vigane veebilink</string>
+    <string name="NFTs">Nonfungible Tokens (NFTs)</string>
+    <string name="ExplainNFTs">NiftyArt.cash: Loo ja vaheta unikaalseid pilte ja digitaalseid versioone unikaalsetest objektidest.</string>
+    <string name="NftUrl">http://niftyart.cash</string>
+
+    <string name="OpenWebsite" formatted="false">Sisene %siteName</string>
+    <string name="WebsiteUnavailable" formatted="false">Lehekülg pole saadaval</string>
+    <string name="ExplainTxBit">txbit.io: Trade NEXA for other cryptocurrencies</string>
+    <string name="ExplainMexc">mexc.com: Trade NEXA for other cryptocurrencies</string>
+    <string name="CexButton">Krüptoturg</string>
+
+    <!-- Trickle Pay -->
+    <string name="SharedNotification">Jagatud %what</string>
+    <string name="AuthAutopayTitle">Lubatud Makse</string>
+    <string name="PaymentRequest">Makse palutud</string>
+    <string name="AuthAutopayDeniedTitle">Lubatud makse keelatud</string>
+    <string name="AuthAutopay" formatted="false">%amt to %domain</string>
+    <string name="TpToBeDone">Sinu Trickle Pay ühendused kuvatakse siia välja</string>
+    <string name="TpHistoryTbd">Sinu Trickle Pay ajalugu kuvatakse siia</string>
+    <string name="AcceptTpRegistration">Aksepteeri registreerumine :</string>
+    <string name="EditTpRegistration">Olemi seaded:</string>
+    <string name="AcceptTpRegistrationTopic">Põhjus:</string>
+    <string name="TpMaxSpendHint">Sisesta maksimaalne auto-kulutamine:</string>
+    <string name="TpAssetInfoRequest">vara teadmepäringud</string>
+
+    <string name="TpMaxHeading">Autopay Piirid</string>
+    <string name="TpMaxPer">Iga päring</string>
+    <string name="TpMaxPerDay">Per päev</string>
+    <string name="TpMaxPerWeek">Per nädal</string>
+    <string name="TpMaxPerMonth">Per kuu</string>
+
+    <string name="TpEnableAutopay">luba autopay (Kui märkimata, kõik maksed küsivad luba)</string>
+
+    <string name="asciiArrow"><![CDATA[=>]]></string>
+
+    <string name="TpNoRegistrations">puuduvad Trickle Pay registratsioonid</string>
+    <string name="TpRegDenied">Keelatud registreerumine</string>
+    <string name="TpRegAccepted">Lubatud registreerumine</string>
+    <string name="TpRegUnchanged">Registratsioon muutmata</string>
+    <string name="TpRequestAutoDeny">Päring hüljatud (automaatne)</string>
+    <string name="TpRequestAutoAccept">Päring vastuvõetud (automaatne)</string>
+    <string name="TpTxDenied">Tehing hüljatud</string>
+    <string name="TpTxAccepted">Tehingud vastuvõetud</string>
+    <string name="TpAssetRequestDenied">Varad mitte saadetud</string>
+    <string name="TpAssetRequestAccepted">Varad saatmisel</string>
+
+    <string name="SpecialTpTransactionFrom">Eriline tehing isikult</string>
+    <string name="IncompleteTpTransactionFrom">Jäiga pakkumise pakkumine isikult</string>
+    <string name="TpEntails">Toob kaasa</string>
+    <string name="TpInAccount">Kasutades kontot</string>
+    <string name="TpAssetRequestFrom">Vara informatsiooni palve isikult</string>
+    <string name="TpHandledByAccount">saab hallata teie kontoga</string>
+    <string name="TpAssetMatches" formatted="false">%num omatava vara info mis te teenusele edastate.</string>
+    <string name="TpAssetInfoNotXfer">Selle taotluse vastuvõtmine annab teenusele lihtsalt teavet teie omandiõiguse kohta. See ei luba mingeid tehinguid teha.</string>
+    <string name="ForAFeeOf" formatted="false">sisaldab maksud %fee %units</string>
+    <string name="TpExchangingTokens" formatted="false">ja müntide vahetus (sending %tokSnd, receiving %tokRcv).</string>
+    <string name="TpSendingTokens" formatted="false">ja %tokSnd tokens saatmine.</string>
+    <string name="TpReceivingTokens" formatted="false">ja %tokRcv tokens vastuvõtmine.</string>
+
+    <string name="TpSendToTitle">Makset palutud</string>
+    <string name="TpSpends">Kulutab</string>
+    <string name="TpSendRequestDenied">Makse hüljatud</string>
+    <string name="TpSendAutoReject">Makse automaatselt hüljatud</string>
+    <string name="TpSendRequestAccepted">Makse vastuvõetud</string>
+    <string name="TpWhyNotAuto">Ei allkirjastata automaatselt sest</string>
+
+    <string name="TpAutomaticDisabled">Automaatsed maksed välja lülitatud</string>
+    <string name="TpExceededMaxPer">Ületab ühe taotluse maksimumi</string>
+    <string name="TpExceededMaxDaily">Ületab ühe päeva maksimumi</string>
+    <string name="TpExceededMaxWeekly">Ületab ühe nädala maksimumi</string>
+    <string name="TpExceededMaxMonthly">Ületab ühe kuu maksimumi</string>
+
+    <string name="title_activity_alert_history">Viimased sõnumid</string>
+</resources>

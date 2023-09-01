@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    style = "@style/WallyBase"
+    tools:context=".AccountDetailsActivity">
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        style="@style/WallyNav"
+        android:fadingEdge="none"
+        android:outlineProvider="background"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toTopOf="@+id/veryBottomDivider"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:menu="@menu/bottom_nav_menu" />
+
+
+    <TextView
+        android:id="@+id/GuiAccountStatisticsHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/AccountStatistics"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/GuiAccountStatisticsFlexbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAccountStatisticsHeader"
+        app:flexDirection="column"
+        app:justifyContent="space_evenly">
+
+        <TextView
+            android:id="@+id/AccountBlockchainSync"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal|center_vertical"
+            android:lines="1"
+            android:text="@string/AccountBlockchainSync"
+            android:textColor="#217E90"
+            android:textSize="18sp"
+            app:layout_alignSelf="center"
+            tools:layout_editor_absoluteX="85dp" />
+
+        <TextView
+            android:id="@+id/AccountBlockchainDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal|center_vertical"
+            android:lines="2"
+            android:text="@string/AccountBlockchainDetails"
+            app:layout_alignSelf="center"
+            tools:layout_editor_absoluteX="27dp"
+            tools:layout_editor_absoluteY="45dp" />
+        <TextView
+            android:id="@+id/AccountBlockchainConnectionDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/AccountBlockchainConnectionDetails"
+            app:layout_alignSelf="center"
+            />
+        <TextView
+            android:id="@+id/FirstLastReceive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/FirstLastReceive"
+            app:layout_alignSelf="center"
+            />
+        <TextView
+            android:id="@+id/FirstLastSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/FirstLastSend"
+            app:layout_alignSelf="center"
+            />
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/GuiAccountTxStatisticsFlexbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAccountStatisticsHeader"
+        app:flexDirection="row"
+        app:alignItems="center"
+        app:justifyContent="space_evenly">
+
+        <Button
+            android:id="@+id/NumAddresses"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/AccountNumAddresses"
+            android:textAlignment="center"
+            android:textColor="#217E90"
+            android:layout_marginHorizontal="2dp"
+            style="@style/WallyButton"
+            android:onClick="onAddressesButtonClicked"
+            android:textSize="16sp"
+            />
+
+
+        <Button
+            android:id="@+id/NumTransactions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/AccountNumTx"
+            android:textAlignment="center"
+            android:layout_marginHorizontal="2dp"
+            android:textColor="#217E90"
+            android:textSize="16sp"
+            style="@style/WallyButton"
+            android:onClick="onTxHistoryButton"
+             />
+
+        <TextView
+            android:id="@+id/NumUtxos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/AccountNumUtxos"
+            android:textAlignment="center"
+            android:layout_marginHorizontal="3dp"
+            android:textColor="#217E90"
+            android:textSize="16sp"
+            android:background="@drawable/thin_rectangle"
+            tools:layout_editor_absoluteX="229dp" />
+    </com.google.android.flexbox.FlexboxLayout>
+    </com.google.android.flexbox.FlexboxLayout>
+
+    <View
+        android:id="@+id/dividerAccountSettings"
+        android:layout_width="400dp"
+        android:layout_height="3dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="8dp"
+        android:background="?android:attr/listDivider"
+        android:foreground="@color/listDividerFg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAccountStatisticsFlexbox" />
+
+    <TextView
+        android:id="@+id/GuiAccountSettingsHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/AccountActions"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dividerAccountSettings" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/ConfirmationConstraint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAccountSettingsHeader"
+        tools:visibility="invisible">
+
+        <Button
+            android:id="@+id/buttonYes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onYes"
+            android:text="@string/yes"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/buttonNo"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/GuiConfirmationText2" />
+
+        <Button
+            android:id="@+id/buttonNo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onNo"
+            android:text="@string/no"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/buttonYes"
+            app:layout_constraintTop_toBottomOf="@+id/GuiConfirmationText2" />
+
+
+
+        <TextView
+            android:id="@+id/GuiConfirmationText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            android:maxLines="16"
+            android:minLines="2"
+            android:textIsSelectable="true"
+            android:selectAllOnFocus="true"
+            android:tooltipText="@string/empty"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/PinChange"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/GuiConfirmationText"
+            app:justifyContent="space_evenly"
+            app:flexDirection="column"
+            android:visibility="visible"
+            >
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/GuiCurrentPinFlex"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:flexDirection="row"
+                app:alignItems="center"
+                >
+
+                <ImageView
+                    android:id="@+id/GuiCurPinOk"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="@android:string/ok"
+                    app:srcCompat="@drawable/ic_check" />
+                <TextView
+                    android:id="@+id/guiCurrentPinText"
+                    android:layout_width="100sp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/CurrentPin"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    />
+                <EditText
+                    android:id="@+id/GuiCurrentPinEntry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:ems="12"
+                    android:inputType="number"
+                    android:textAlignment="center"
+                    android:autofillHints="password"
+                    android:hint = "@string/EnterPIN" />
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/GuiNewPinEntryFlex"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:flexDirection="row"
+                app:alignItems="center">
+
+                <ImageView
+                    android:id="@+id/GuiNewPinOk"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="@android:string/ok"
+                    app:srcCompat="@drawable/ic_check" />
+                <TextView
+                    android:id="@+id/guiNewPinText"
+                    android:layout_width="100sp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/NewPin"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                />
+                <EditText
+                    android:id="@+id/GuiNewPinEntry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:ems="12"
+                    android:inputType="number"
+                    android:textAlignment="center"
+                    android:autofillHints="password"
+                    android:hint = "@string/EnterPINorBlankToRemove" />
+            </com.google.android.flexbox.FlexboxLayout>
+        </com.google.android.flexbox.FlexboxLayout>
+
+        <TextView
+            android:id="@+id/GuiConfirmationText2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            android:maxLines="4"
+            android:minLines="1"
+            android:selectAllOnFocus="true"
+            android:textAlignment="viewStart"
+            android:textColor="#C03131"
+            android:textIsSelectable="true"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:tooltipText="@string/empty"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/PinChange" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/confirmationOps"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAccountSettingsHeader"
+        tools:visibility="visible">
+
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/sendButtons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/confirmationOps"
+            app:flexDirection="column"
+            app:justifyContent="space_evenly"
+            >
+
+            <Switch
+                android:id="@+id/GuiPINInvisibility"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_alignSelf="center"
+                android:text="@string/PinHidesAccount"
+                android:textSize="20sp" />
+            <Switch
+                android:id="@+id/GuiAutomaticNewAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_alignSelf="center"
+                android:tooltipText="@string/AutomaticNewAddressToolTip"
+                android:text="@string/AutomaticNewAddress"
+                android:textSize="20sp" />
+            <Button
+                android:id="@+id/SetChangePinButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_alignSelf="center"
+                android:onClick="onSetChangePin"
+                android:text="@string/SetChangePin"
+                style="@style/WallyButton"
+                />
+            <Button
+                android:id="@+id/GuiViewRecoveryPhraseButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_alignSelf="center"
+                android:onClick="onViewRecoveryPhrase"
+                android:text="@string/ViewRecoveryPhrase"
+                style="@style/WallyButton"
+                />
+
+            <Button
+                android:id="@+id/GuiTxHistoryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_alignSelf="center"
+                android:onClick="onTxHistoryButton"
+                android:text="@string/txHistoryButton"
+                style="@style/WallyButton"
+                />
+            <Button
+                android:id="@+id/GuiPrimaryAccountButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_alignSelf="center"
+                android:onClick="onSetAsPrimaryAccountButton"
+                android:text="@string/setAsPrimaryAccountButton"
+                style="@style/WallyButton"
+                />
+        <Button
+            android:id="@+id/GuiAssessUnconfirmedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_alignSelf="center"
+            android:onClick="onAssessUnconfirmedButton"
+            android:text="@string/assessUnconfirmed"
+            style="@style/WallyButton"
+            />
+
+        <Button
+            android:id="@+id/GuiRediscoverButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_alignSelf="center"
+            android:onClick="onRediscoverWallet"
+            android:text="@string/rediscoverWalletTx"
+            style="@style/WallyButton"
+          />
+
+        <Button
+            android:id="@+id/GuiRediscoverBlockchainButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_alignSelf="center"
+            android:onClick="onRediscoverBlockchain"
+            android:text="@string/rediscoverBlockchain"
+            style="@style/WallyButton"
+         />
+
+        <Button
+            android:id="@+id/GuiDeleteAccountButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onDeleteAccountButton"
+            app:layout_alignSelf="center"
+            android:text="@string/deleteWalletAccount"
+            style="@style/WallyButton"
+ />
+        </com.google.android.flexbox.FlexboxLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    <View
+        android:id="@+id/veryBottomDivider"
+        android:layout_width="0dp"
+        android:layout_height="3dp"
+        android:background="?android:attr/listDivider"
+        android:foreground="@color/listDividerFg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

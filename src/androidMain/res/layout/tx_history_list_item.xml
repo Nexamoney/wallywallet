@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:paddingVertical="2dp"
+    android:layout_marginVertical="2dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/GuiValueCrypto"
+        android:layout_width="0dp"
+        android:layout_height="32dp"
+        android:maxLines="1"
+        android:text="0.00"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/GuiTxDate"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAddress"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/GuiSendRecvImage"
+        android:layout_width="32dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/GuiValueCrypto"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/ic_receivearrow" />
+
+    <TextView
+        android:id="@+id/GuiTxId"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:autoSizeMaxTextSize="10sp"
+        android:autoSizeMinTextSize="6sp"
+        android:autoSizeStepGranularity="1sp"
+        android:autoSizeTextType="uniform"
+        android:maxLines="1"
+        android:textAlignment="center"
+        android:textSize="10sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiTxNote" />
+
+    <TextView
+        android:id="@+id/GuiTxNote"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:autoSizeMaxTextSize="24sp"
+        android:autoSizeMinTextSize="11sp"
+        android:autoSizeStepGranularity="1sp"
+        android:autoSizeTextType="uniform"
+        android:maxLines="10"
+        android:minHeight="10dp"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiValueCrypto" />
+
+    <TextView
+        android:id="@+id/GuiTxDate"
+        android:layout_width="103dp"
+        android:layout_height="wrap_content"
+        android:text="date"
+        android:textAlignment="center"
+        app:layout_constraintStart_toEndOf="@+id/GuiSendRecvImage"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/GuiTxCostBasisOrProfitLoss"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:gravity="top"
+        android:hint="@string/HintAdjustCostBasis"
+        android:inputType="textShortMessage|numberSigned|numberDecimal"
+        android:maxLines="1"
+        android:textAlignment="textEnd"
+        android:textSize="12sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/GuiTxDate"
+        app:layout_constraintTop_toBottomOf="@+id/GuiBasisText" />
+
+    <TextView
+        android:id="@+id/GuiValueFiat"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:visibility="gone"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/GuiTxCostBasisOrProfitLoss"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAddress3"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/GuiAddress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:autoSizeMaxTextSize="18sp"
+        android:autoSizeMinTextSize="6sp"
+        android:autoSizeStepGranularity="1px"
+        android:autoSizeTextType="uniform"
+        android:scrollHorizontally="true"
+        android:maxLines="1"
+        android:visibility="gone"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiTxId" />
+    <TextView
+        android:id="@+id/GuiAddress1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:autoSizeMaxTextSize="18sp"
+        android:autoSizeMinTextSize="6sp"
+        android:autoSizeStepGranularity="1px"
+        android:autoSizeTextType="uniform"
+        android:scrollHorizontally="true"
+        android:maxLines="1"
+        android:visibility="gone"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAddress" />
+    <TextView
+        android:id="@+id/GuiAddress2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:autoSizeMaxTextSize="18sp"
+        android:autoSizeMinTextSize="6sp"
+        android:autoSizeStepGranularity="1px"
+        android:autoSizeTextType="uniform"
+        android:scrollHorizontally="true"
+        android:maxLines="1"
+        android:visibility="gone"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAddress1" />
+    <TextView
+        android:id="@+id/GuiAddress3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:autoSizeMaxTextSize="18sp"
+        android:autoSizeMinTextSize="6sp"
+        android:autoSizeStepGranularity="1px"
+        android:autoSizeTextType="uniform"
+        android:scrollHorizontally="true"
+        android:maxLines="1"
+        android:visibility="gone"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAddress2" />
+
+    <TextView
+        android:id="@+id/GuiBasisText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:textSize="10sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/GuiTxCostBasisOrProfitLoss"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/GuiTxDate"
+        app:layout_constraintTop_toBottomOf="@+id/GuiAddress3" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

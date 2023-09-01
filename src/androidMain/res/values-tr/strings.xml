@@ -1,0 +1,571 @@
+<!-- Hi and thanks for translating!
+If you see anything that is surrounded with symbols just like this text, that is, within !- and - (but with 2 dashes, I cannot write it here), then do not translate.
+These are comments to help you understand what to do or the context the next word is used in.
+
+Entries that need to be translated will look something like this:
+<string name="yes">yep</string>
+
+Do not translate the word in quotes (in this case "yes").  This is a name that we use to look up your translation.
+But DO translate the word or sentence between the greater than and less than signs.  In this case "yep".
+
+For example, if you were doing a French you might do this replacement:
+<string name="yes">oui</string>
+
+Try to not make your translation a lot longer than the english, or it might not all fit in the space the app has on screen!
+
+
+If, in the part you are supposed to translate, you see a percent sign and a word, like this: %foo, then do not translate it.  For example:
+
+<string name="delQ">Delete account "%accountName" (on %blockchain)</string>
+
+What is happening here is that the app will replace %accountName with the actual name of the relevant account and %blockchain with the actual name of the blockchain.
+So it will look like this in the app:
+  Delete account "myNexaAct" (on Nexa)
+
+You can change the order of the replaced words just by moving where the %word is in your translation.  For example, I could change this to:
+
+<string name="delQ">Delete from %blockchain, account "%accountName"</string>
+
+Good luck!
+-->
+
+<resources>
+    <string name="app_name">Wally</string>
+    <string-array name="CurrencyTypes">
+        <item>NEX</item>
+        <item>USD</item>
+    </string-array>
+    <string-array name="FiatCurrencyTypes">
+        <item>BRL</item>
+        <item>CAD</item>
+        <item>CNY</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>JPY</item>
+        <item>RUB</item>
+        <item>USD</item>
+        <item>XAU</item>
+    </string-array>
+
+    <string name="uBCH">uBCH</string>
+
+    <string-array name="OneToTen">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="tipPercentage">
+        <item>--</item>
+        <item>0%</item>
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+        <item>50%</item>
+    </string-array>
+
+    <!-- General -->
+    <string name="yes">evet</string>
+    <string name="no">hayır</string>
+    <!-- used to specify what position in the blockchain -->
+    <string name="at">konum</string>
+    <!-- used to specify that total blockchain size "at block 6 of 100"  -->
+    <string name="of"> / </string>
+    <!-- used to ask the user to pick an account -->
+    <string name="choose">seç</string>
+    <!-- accept a proposed transaction, configuration change, or a request from an external service -->
+    <string name="accept">kabul et</string>
+    <!-- reject a proposed transaction or configuration change -->
+    <string name="reject">reddet</string>
+    <!-- remove some remembered services, like web sites you have logged into or paid -->
+    <string name="remove">kaldır</string>
+    <!-- you have asked the app to do something, but the app is double checking.  This means yes do it -->
+    <string name="confirm">onayla</string>
+    <!-- you have asked the app to do something, but the app is double checking.  This means no user changed their mind -->
+    <string name="cancel">iptal</string>
+
+    <string name="removeAll">hepsini kaldır</string>
+    <!-- done is like "yes" but more means "go to the next thing" rather than explicit acceptance of something.  The implication is that whatever is showing on the screen will be used.
+         Its modern UX philosophy of "why do we have to explicitly "save" everything on settings screens?  If you make a change, that change ought to be made, no additional button clicks needed."
+    -->
+    <string name="done">tamamlandı</string>
+    <!-- an external service is making a request (to see the assets you own, to get you to sign a transaction, or to prove your identity).  You refuse -->
+    <string name="deny">reddet</string>
+    <!-- Should the program ask the user before authorizing this, verses automatically accepting or automatically denying -->
+    <string name="ask">sor</string>
+    <!-- Some service sent you a request, but the service did not properly sign the request (which proves that they are who they claim to be) -->
+    <string name="badSignature">geçersiz imza</string>
+
+    <string name="unknownCurrency">bilinmeyen para birimi</string>
+    <string name="unknownCryptoCurrency">bilinmeyen kripto para birimi veya blockchain</string>
+    <!-- wallet is currently working on doing whatever your button click asked it to do -->
+    <string name="Processing">işleniyor...</string>
+    <string name="receiving">alınıyor</string>
+    <string name="sending">gönderiliyor</string>
+    <string name="noAdditionalDetails">ek ayrıntı yok</string>
+    <!-- User didn't enter any value into this field but that's ok -->
+    <string name="unspecified">belirtilmemiş</string>
+    <!-- If the user deletes something - like a connection to an external service, this is the confirmation string that the info was removed.  It needs to be short. -->
+    <string name="removed">kaldırıldı</string>
+    <!-- wallet is up to date with the blockchain -->
+    <string name="synced">hazır</string>
+    <!-- wallet is still connecting to the blockchain -->
+    <string name="unsynced">senkronize ediliyor</string>
+
+    <string name="connected">bağlı</string>
+    <string name="balance">güncel bakiye</string>
+    <string name="total">toplam alınan</string>
+    <!-- this is an indication that we are still waiting for some web page to load. please leave the HTML and just translate ...loading... -->
+    <string name="WebLoadingPage"><![CDATA[<body><h1><center>...yükleniyor...</h1></center></body>]]></string>
+
+    <!-- Implication is "no charge" or "no cost" for a transaction -->
+    <string name="nothing">hiçbir şey</string>
+
+    <!-- Do not actually put anything in this one!  Its needed when we want a blank line -->
+    <string name="empty"></string>
+
+    <string name="or">veya</string>
+
+    <string name="onBlockchain">üzerinde</string>
+
+    <string name="NotImplemented">Çok Yakında</string>
+
+    <string name="NoNodes">Block zinciri erişimi yok</string>
+    <!-- The user chose not to proceed with some operation -->
+    <string name="cancelled">iptal edildi</string>
+    <!-- Issued if initialization is not yet complete, but user tries to access the services -->
+    <string name="pleaseWait">lütfen bekleyin</string>
+    <!-- Uses in the sense of attempting an operation, such as connecting to a node  -->
+    <string name="trying">deniyor</string>
+
+    <!-- meaning remove all the text in an edit box -->
+    <string name="clear">temizle</string>
+
+    <string name="thousand">bin</string>
+
+    <string name="million">milyon</string>
+
+    <!-- Settings -->
+
+    <string name="version" formatted="false">Wally Cüzdan Sürümü: %ver</string>
+    <string name="enableDeveloperView">Gelişmiş/Geliştirici Modu Etkinleştir</string>
+    <string name="enableIdentityMenu">Kimlik Ekranını Etkinleştir</string>
+    <string name="enableTricklePayMenu">Damlalık Ödeme Ekranını Etkinleştir</string>
+    <string name="enableAssetsMenu">Varlık Ekranını Etkinleştir</string>
+    <string name="only">yalnızca</string>
+    <string name="prefer">tercih etmek</string>
+    <string name="rediscoverWalletTx">tüm işlemleri yeniden keşfet</string>
+    <string name="rediscoverBlockchain">blok zinciri başlıklarını yeniden keşfet</string>
+    <string name="logDebugData">Hata Ayıklama Verilerini Kaydet</string>
+    <string name="clearIdentityDomains">Kimlik Alanlarını Temizle</string>
+    <string name="rediscoverTooltip">Blok zinciri durumunu sil ve cüzdanla ilgili tüm işlemleri yeniden ara</string>
+    <string name="wordSeed">Hesap Kurtarma Gizli Cümlesi</string>
+    <string name="deleteWalletAccount">Hesabı Sil</string>
+
+    <string name="SetChangePin">PIN kilidini ayarla veya değiştir</string>
+    <string name="CurrentPin">Mevcut PIN</string>
+    <string name="NewPin">Yeni PIN</string>
+    <string name="PinChanged">PIN değiştirildi</string>
+    <string name="PinRemoved">PIN kaldırıldı</string>
+    <string name="PinInvalid">Geçersiz PIN</string>
+    <string name="PinTooShort">Yeni PIN çok kısa</string>
+    <string name="WriteDownRecoveryPhraseWarning">Uyarı: Bazı hesapların gizli kurtarma ifadelerini kağıt veya diğer elektronik olmayan bir formatta yazmadınız! Bu cihaz kaybedilirse veya bozulursa fonların kaybedilmesini önlemek için, her hesabın ayarlar sayfasında bulunan kurtarma anahtarlarını kağıda yazın. </string>
+    <string name="WroteRecoveryPhraseDown">Yazdım</string>
+    <string name="RecoveryPhraseKeepRemindingMe">Hatırlatmaya devam et</string>
+    <string name="ViewRecoveryPhrase">Hesap Kurtarma Gizli İfadesini Görüntüle</string>
+    <string name="localCurrency">Yerel para birimi</string>
+    <string name="assessUnconfirmed">Onaylanmayan işlemleri değerlendir</string>
+    <string name="rediscoverNotice">Hesap yeniden keşfedildi</string>
+    <string name="unconfAssessmentNotice">Onaylanmayan işlem değerlendirmesi başlatıldı</string>
+    <string name="accountDeleteNotice">Hesap silindi</string>
+    <string name="rediscoverConfirmation">Bir hesabın yeniden keşfedilmesi, ödemelerin eksik olup olmadığına bakmak için bu cüzdanın oluşturulduğundan beri blok zincirinde arama yapacaktır. Bu işlem uzun sürebilir. Yalnızca bir ödeme eksik olduğundan eminseniz kullanın!</string>
+    <string name="rediscoverBlockchainConfirmation">Bir blok zincirinin yeniden keşfedilmesi, bu cüzdandan tüm blok zinciri başlık verilerini siler ve tam düğümlerden yeniden indirir. Bu işlem uzun sürebilir. Yalnızca bir blok zinciri başlık sorunu olduğundan eminseniz kullanın.</string>
+    <string name="deleteConfirmation" formatted="false">Bir hesabın silinmesi, bakiyelerin, kimliklerin ve geçmişin tümünü kurtarma anahtar ifadesiyle geri yüklenmedikçe kullanılamaz hale getirecektir! Yalnızca MUTLAKA EMİN OLDUĞUNUZDA bunu yapın!\n\n"%accountName" hesabı silinsin mi? (%blockchain)</string>
+
+
+    <string name="reassessConfirmation">Bu işlem, gönderdiğiniz son işlemleri kontrol edecektir. Varlıklarının mevcudiyetine veya yokluğuna bağlı olarak, bunları onaylayacak veya silecektir. İşlemler silinirse, para kaybolmuş gibi görünecektir. Harcanan bakiyeyi geri kazanmak için "yeniden keşfetme" yapmanız gerekecektir. Ağda onay bekleyen bir işlem varsa, yakın zamanda işlem yapmadıysanız bunu kullanmayın.</string>
+    <string name="recoveryPhrase">Bu 12 kelime ifade, telefonunuz hasar gördüğünde veya kaybolduğunda cüzdanınızı geri yüklemek için kullanılabilir. Bu, bu ifadeye sahip olan herhangi birinin paranızı harcayabileceği anlamına gelir. Onu kağıda yazın ve güvenli bir şekilde saklayın!</string>
+    <string name="primaryAccountConfirmation">Birincil hesabınız kimliğinizin ve otomatik ödemelerinizi yapmak için kullanılan hesaptır. Ayrıca, uygulamanın çeşitli yerlerinde gösterilen ilk hesaptır. Nexa blockchaininde olması gerekmektedir.</string>
+    <string name="AccountActions">Hesap İşlemleri</string>
+    <string name="GeneralSettings">Genel Ayarlar</string>
+    <string name="BlockchainSettings">Blockchain Kaynakları</string>
+    <string name="AccessPriceData">Fiyat Verilerine Erişim</string>
+
+    <string name="SplitBillDescription">Sen faturayı (fiat para birimiyle) ödersin, arkadaşların da aşağıdaki QR kodu aracılığıyla kendi paylarını sana öderler.</string>
+    <string name="Total">Toplam:</string>
+    <!-- Ways, faturanın bölündüğü eşit pay sayısını ifade eder -->
+    <string name="Ways">Paylaşılan Yollar:</string>
+    <!-- Bahşiş, fatura tutarının üzerine ödemek istediğin daha fazla para miktarıdır -->
+    <string name="Tip">Bahşiş:</string>
+
+    <string name="Amount">Miktar:</string>
+    <!-- Ana Sayfa -->
+
+    <!-- Cüzdan senkronize olduğunda bir bakiye gösterir. Ancak cüzdan ŞİMDİ'ye yetişmediyse, gösterilen bakiyenin güncel olmadığını bildirir.
+    EĞER %bir şey (bu durumda tarih) GÖRÜRSENİZ, "bir şeyi" çevirmeyin. Program tarafından (bu durumda tarih) gerçek değerle değiştirilecektir.
+    -->
+    <string name="balanceOnTheDate">%date tarihi itibariyle</string>
+
+    <!-- QR, cüzdanların bilgi okumak için tarama yaptığı 2 boyutlu siyah ve beyaz piksel kutularıdır -->
+    <string name="goodQR">QR okunabilir</string>
+    <string name="badQR">QR okunamıyor</string>
+    <string name="badImageQR">kötü görüntü QR kodu. daha fazla...</string>
+    <string name="badImageQRhelp">QR kodunu yakından çektiyseniz, daha uzaktan bir resim çekmeyi deneyin. Beyaz kenar QR kodunun bir parçasıdır ve ekranı yakından fotoğraflarsanız karışık moire desenleri(birbirine geçmiş desenler) elde edebilirsiniz.</string>
+    <!-- bir hesabı kilitlemek gibi -->
+    <string name="unlock">kilidi aç</string>
+    <string name="share">paylaş</string>
+    <string name="Send">Gönder</string>
+    <string name="OpenSend">Gönder</string>
+    <string name="SendCancel">İptal</string>
+    <string name="ignoredInsecureRequest">Güvenliksiz İstek Yok Sayıldı</string>
+
+    <string name="fromAccountColon">Hesaptan gönder:</string>
+    <!-- Kullanıcı hesap seçmeyi unuttuysa -->
+    <string name="chooseAccountError">Hesap seçin</string>
+    <!-- "Gönderilen" anlamında -->
+    <string name="toColon">Kime:</string>
+    <!-- Hangi kuruluş bilgi istiyor -->
+    <string name="fromColon">Kimden:</string>
+    <string name="Receive">Hesaba al</string>
+    <string name="AccountListHeader">Hesaplar</string>
+    <!-- Bu bir kripto para adresine, fiziksel bir adrese değil -->
+    <string name="Address">Adres</string>
+    <string name="clipboard">Pano</string>
+    <string name="settings">Ayarlar</string>
+    <string name="help">Yardım</string>
+    <string name="invalidQuantity">Geçersiz miktar</string>
+    <string name="invalidQuantityTooManyDecimalDigits">Çok fazla ondalık basamak</string>
+    <string name="roundedUpClickSendAgain">Yuvarlandı, kabul etmek için tekrar gönder düğmesine basın</string>
+    <!-- Gönderi miktarı alanı boşken bunu altına yazın - muhtemelen hiçbir şey yazmak istemeyeceksiniz -->
+    <string name="emptyQuantityField"></string>
+    <string name="purchase">Satın al</string>
+    <string name="scanPaymentQRcode">Ödeme adresi QR kodunu tarayın</string>
+    <string name="ScanQRCodeButton">QR kodu tarayın</string>
+    <string name="PasteDestinationAddressButton">Yapıştır</string>
+    <string name="NewAccountButton">Yeni Hesap Kurulumu</string>
+    <string name="NewAccountSearchingForTransactions">...işlemler aranıyor...</string>
+    <string name="NewAccountSearchFailure">işlem arama hatası</string>
+    <string name="receiveAddressQRCode">QR kodu al</string>
+    <string name="paymentProposal">alınan ödeme teklifi gereği</string>
+    <!-- Yapıştırma düğmesine tıkladınız, ancak hiçbir şey kopyalanmadı -->
+    <string name="pasteIsEmpty">yapıştırma boş</string>
+    <!-- Bilgilendirici: Panodaki kopyala / yapıştır işleminin içeriği bana hiçbir anlam ifade etmedi, ancak doğrudan yapıştırmamamı belirtmediniz, belki bu iyidir.
+     Uygulama bu yapıştırma bilgisini kullanmadı.  Bu hata, uygulama örtük yapıştırmalar için kontrol ettiğinde meydana gelir. Örneğin, Wally cüzdanı
+     başlatıldığında ödeme yapmak için başlatılmış olabileceğini tahmin ederek, bir varış adresi için yapışkanı kontrol eder.
+     -->
+    <string name="pasteIgnored">yapıştırma görmezden gelindi</string>
+
+    <string name="pasteUnintelligible">anlaşılmayan yapıştırma</string>
+    <string name="chainIncompatibleWithAddress">adres hesapla uyumsuz</string>
+    <string name="chainIncompatibleWithAddressDetails" formatted="false">Hesap para birimi %walletCrypto, adres ise %addressCrypto. Gönderim yapmak için adresin blockchain\'ine uygun olan hesabı seçin.</string>
+    <string name="incoming" formatted="false">%delta %unit beklemede</string>
+    <string name="approximatelyT" formatted="false">yaklaşık %qty %fiat</string>
+    <string name="exchangeRate" formatted="false">(döviz kuru: 1 %fiat, %crypto değerinde %amt)</string>
+    <!-- kullanıcı cüzdanında olduğundan daha fazla kripto para göndermeye çalışıyor. Ödeme gerçekleştirilemez -->
+    <string name="moreThanAvailable">"(müsaitten daha fazla)"</string>
+    <!-- Bu bir uyarı ya da bilgilendirme mesajıdır. Kullanıcının yeni alınan coin'leri göndermeye çalıştığını söyler, bu tamam ama ödeme başarısız olma olasılığını biraz artırır -->
+    <string name="moreThanConfirmedAvailable">"(onaylanandan daha fazla)"</string>
+    <string name="actuallySendingT" formatted="false">gerçekte %qty %crypto gönderiliyor</string>
+    <string name="copiedToClipboard">...panoya kopyalandı...</string>
+    <string name="scanFailed">tarama başarısız oldu</string>
+    <string name="scanSuccess">tarama başarılı oldu</string>
+    <string name="sendSuccess">gönderim başarılı</string>
+    <string name="sendQuantityHint">miktar gönder</string>
+    <string name="sendRequestNotification">Gönderim istendi</string>
+    <string name="sendToAddressHint">hedef adres</string>
+    <string name="sendAll">hepsi</string>
+    <string name="editSendNoteHint">bu transfer hakkında kişisel notlar</string>
+    <string name="subSatoshiQuantities">Çok fazla ondalık basamak var - bu para birimi o kadar ince ayrılmaz</string>
+    <string name="retrievingExchangeRate">döviz kuru hala alınıyor</string>
+    <string name="unavailableExchangeRate">döviz kuru mevcut değil</string>
+
+    <!-- Kimlik -->
+    <string name="identityRequestNotification">kimlik istendi</string>
+    <string name="IdentityDataMissing">Eksik Kimlik Bilgisi</string>
+    <!-- Daha önce hiç iletişim kurmadığınız bir web sitesi veya şirket hesap açmanızı ve giriş yaparken kimlik doğrulaması yapmanızı istiyor. Bu bir bilgilendirme mesajıdır ve kullanıcının web sitesi/şirket ve cüzdanları arasındaki ilişkiyi ilk kez kurduğunda gerçekleşir -->
+    <string name="newDomainRequestingIdentity">Kimlik İsteyen Yeni Domain</string>
+    <string name="domainRequestingAdditionalIdentityInfo">Ek Bilgi İsteniyor</string>
+    <string name="useUniqueIdentityToolTip">Kimliğinizi burada diğer sitelerden ayırmak için açın.</string>
+    <string name="provideAlias">Kullanıcı adı/kulp/takma adınızı sağlamak istiyor musunuz?</string>
+    <string name="provideAliasToolTip">Bu seçeneği seçmek, bu web sitesinin isteği üzerine takma adınızı (ayarlarınızda yapılandırıldığı gibi GERÇEK adınız değil) sağlayacaktır</string>
+    <string name="provideSocialMedia">Sosyal medya bilgilerinizi sağlamak istiyor musunuz?</string>
+    <string name="provideSocialMediaToolTip">Bu seçeneği seçmek, bu web sitesinin isteği üzerine sosyal medya bilgilerinizi (ayarlarınızda yapılandırıldığı gibi) sağlayacaktır</string>
+    <string name="providePostalAddress">Posta adresinizi sağlamak istiyor musunuz?</string>
+    <string name="providePostalAddressToolTip">Bu seçeneği seçmek, bu web sitesinin isteği üzerine adresinizi (ayarlarınızda yapılandırıldığı gibi) sağlayacaktır</string>
+    <string name="provideBillingAddress">Fatura adresinizi sağlamak istiyor musunuz?</string>
+    <string name="provideBillingAddressToolTip">Bu seçeneği seçmek, bu web sitesinin isteği üzerine fatura adresinizi (ayarlarınızda yapılandırıldığı gibi) sağlayacaktır</string>
+    <string name="provideEmail">E-posta adresinizi verin?</string>
+    <string name="provideAvatar">Avatar resminizi verin?</string>
+    <string name="provideRealName">Gerçek adınızı verin?</string>
+    <string name="provideRealNameToolTip">Bu seçeneği seçmek, gerçek adınızı (ayarlarınızda yapılandırıldığı gibi) bu web sitesine verecektir.</string>
+    <string name="provideBirthday">Doğum gününüzü verin?</string>
+    <string name="providePhone">Telefon numaranızı verin?</string>
+    <string name="provideAttestations">Attestasyonlar sağlayın?</string>
+    <string name="provideAttestationsToolTip">Attestasyonlar, sunduğunuz verileri onaylayan 3. taraf imzalarıdır.</string>
+    <string name="primaryAccountRequired" formatted="false">%primCurrency hesabı bu özelliği kullanmak için gereklidir</string>
+    <string name="primaryAccountRequiredDetails" formatted="false">Bazı özellikler belirli kripto para birimlerine bağlıdır. Özelliği kullanmadan önce o kripto para biriminde hesap oluşturmanız veya kilidini açmanız gerekiyor.</string>
+    <string name="UnknownDomainRegisterFirst">Bilinmeyen alan adı, önce kayıt olun</string>
+    <string name="commonIdentityQRCode">QR kodu</string>
+
+    <string name="unknownOperation" formatted="false">%op işlemi bilinmiyor</string>
+    <!-- Bu cüzdan zaten bu site için kayıtlı olduğundan, kayıt gerekli değil (bilgilendirme uyarısı) -->
+    <string name="alreadyRegistered">zaten kayıtlı</string>
+    <string name="provideLoginQuestion">Bu siteye giriş yapmak istiyor musunuz?</string>
+    <string name="provideInfoQuestion">Kimlik Bilgisi İstenen Site</string>
+    <string name="signDataQuestion">İmza İstenen Kişi/Kurum</string>
+    <string name="nothingToSign">İmzalanacak mesaj yok</string>
+    <string name="binaryToSign">Bu ikili verileri imzalamak istiyor musunuz?</string>
+    <string name="textToSign">Bu mesajı imzalamak istiyor musunuz?</string>
+    <string name="sigInClipboard">İmza panoya kopyalandı</string>
+
+    <string name="SocialMediaText">Sosyal Medya</string>
+    <string name="SocialMediaSummary">Hizmet:handle şeklinde bir liste girin, Örn. twitter:janeDoe, keybase:janieD</string>
+    <string name="UsernameOrAliasText">Kullanıcı adı/handle/takma ad</string>
+    <string name="NameText">Tam Ad</string>
+    <string name="PostalAddressText">Posta Adresi</string>
+    <string name="BillingAddressText">Fatura Adresi</string>
+    <string name="PostalCodeText">Posta Kodu</string>
+    <string name="EmailText">E-posta Adresi</string>
+    <string name="TwitterText">Twitter</string>
+    <string name="TelegramText">Telegram</string>
+    <string name="IdentityAssociatedWith">İlişkili Kimlik Bilgisi</string>
+
+    <string name="areYouSure">Emin misiniz?</string>
+    <string name="WhenAskSure">Yukarıdaki transferleri (NEX\'te) onaylayın</string>
+    <string name="SendConfirmSummary">%amt %currency %inFiat tutarının %dest adresine gönderilmesini onaylayın</string>
+    <string name="firstName">ad</string>
+    <string name="lastName">soyad</string>
+
+    <string name="connectionEstablished">bağlantı kuruldu</string>
+    <string name="connectionException">siteye bağlanılamıyor</string>
+    <string name="withholdingMandatoryInfo">site, sağlamayı reddettiğiniz bilgileri gerektirir</string>
+    <string name="badLink">geçersiz bağlantı</string>
+    <string name="connectionAborted">site girişi iptal etti</string>
+    <!-- Transaction history activity -->
+    <string name="HintAdjustCostBasis">temel veya sermaye kazancı</string>
+    <string name="CostBasis">maliyet bazı</string>
+    <string name="CapitalLoss">sermaye kaybı</string>
+    <string name="CapitalGain">sermaye kazancı</string>
+    <string name="OverrideSalesPrice">satıldığında girilen fiyat</string>
+    <string name="AccountHistory">İşlemler</string>
+    <string name="AccountAddresses">Adresler</string>
+
+    <string name="txHistoryButton">Hesap Etkinliğini Görüntüle veya Dışa Aktar</string>
+    <string name="setAsPrimaryAccountButton">Bu Hesabı Ana Hesap Yap</string>
+    <string name="AccountStatistics">Hesap İstatistikleri</string>
+    <string name="AccountBlockchainSync" formatted="false">%chain blok zinciri için şu anda %sync.</string>
+    <string name="AccountBlockchainDetails" formatted="false">%chain blok zinciri için %actBlockDate tarihinde %actBlock/%chainBlockCount blok.</string>
+    <string name="AccountBlockchainConnectionDetails" formatted="false">%num düğüme bağlandı: %names</string>
+    <string name="AccountNumAddresses" formatted="false">%num adres</string>
+    <string name="FirstLastReceive" formatted="false">İlk yatırma %first blokta, en son yatırma %last blokta.</string>
+    <string name="FirstLastSend" formatted="false">İlk çekim %first blokta, en son çekim %last blokta.</string>
+    <string name="AccountNumTx" formatted="false">%num işlem</string>
+    <string name="AccountNumUtxos" formatted="false">%num defter girdisi</string>
+
+    <string name="title_activity_assets">Varlıklar</string>
+    <string name="title_activity_invoices">Faturalar</string>
+    <!-- Assets activity -->
+    <string name="title_activity_scan">Tara</string>
+    <!-- New Account activity -->
+    <string name="title_activity_new_account">Yeni Hesap</string>
+    <string name="AccountName">Hesap Adı</string>
+    <string name="AccountNameHint">1-8 harf</string>
+    <string name="Blockchain">Blok Zinciri</string>
+    <string name="AccountRecoveryPhrase">Kurtarma Cümlesi</string>
+    <string name="LeaveEmptyNewWallet">Yeni bir hesap oluşturmak için boş bırakın</string>
+    <string name="PinSuggestions"><font size="15">Hesaba erişmek için bu gizli numara gereklidir</font></string>
+    <string name="createAccount">Hesap Oluştur</string>
+    <string name="invalidRecoveryPhrase">geçersiz kurtarma cümlesi</string>
+    <string name="invalidAccountName">geçersiz hesap adı</string>
+    <string name="PassPhrase">Parola Cümlesi (isteğe bağlı)</string>
+    <string name="Bip44ActivityNotice">Hesap faaliyeti bulundu</string>
+    <string name="NoBip44ActivityNotice">Uyarı, işlem bulunamadı!</string>
+    <string name="Bip44BtcActivityNotice">Standart olmayan veya önceden çatallanma cüzdanı faaliyeti bulundu</string>
+    <string name="NoBip44BtcActivityNotice">Önceden çatallanma işlemi bulunamadı</string>
+
+    <string name="FirstUseDateHeightInfo" formatted="false">%date tarihinde (blok %height) başlanarak</string>
+    <string name="NotEnoughRecoveryWords">Daha fazla kurtarma kelimesi gerekli</string>
+    <string name="TooManyRecoveryWords">Çok fazla kurtarma kelimesi</string>
+    <string name="IncorrectRecoveryWords" formatted="false">Geçersiz kelimeler: %words</string>
+    <string name="ElectrumNetworkUnavailable">Electrum ağı kullanılamıyor. Cüzdan kurtarma işlemi yavaş olacak ve 01 Ocak 2020\'den önceki işlemleri keşfedemeyecektir.</string>
+    <string name="PinHidesAccount">Hesap PIN girilene kadar gizlensin mi?</string>
+    <string name="CreatePIN">PIN (isteğe bağlı)</string>
+    <string name="PinSpendingUnprotected">PIN girilmemiş olduğu için harcama korumasızdır.</string>
+    <string name="PinSpendingProtected">Harcama yapmak için PIN gerekli</string>
+    <string name="InvalidPIN">Geçersiz PIN</string>
+    <string name="creatingNoHistoryAccountWarning">Belirli bir kurtarma cümlesiyle bir hesap oluşturuyorsunuz, ancak blok zincirinde herhangi bir aktivite bulunamadı.\nBu doğru mu?\nEğer öyleyse, tekrar oluşturma düğmesine tıklayın ve boş bir hesap oluşturulacaktır. Ancak bu hesabın aktiviteye sahip olması gerekiyorsa, seçtiğiniz blok zinciri ve kurtarma cümlesini kontrol edin. Eğer sorun bu değilse, blok zinciri ağı şu anda erişilemez durumda (daha sonra tekrar deneyin), ya da bir standart olmayan cüzdan uygulaması ile oluşturuldu. Bu hesabı şimdi oluşturmayın.</string>
+
+    <string name="accountLocked">hesap kilitli</string>
+    <string name="unknownError">hata</string>
+    <string name="insufficentBalance">yetersiz bakiye</string>
+    <string name="excessiveFee">aşırı ücret</string>
+    <string name="sendDustError">minimum tutarın altında</string>
+    <string name="sendingDustWarning">tutar ağdaki minimum tutarın altında</string>
+    <string name="feeExceedsFlatMax">ücret yapılandırılmış maksimum düz ücreti aşıyor</string>
+    <string name="notSupported">desteklenmiyor</string>
+    <string name="expired">ödeme süresi dolmuş</string>
+    <string name="PaymentDataMissing">ödeme verisi eksik</string>
+    <string name="headersNotForthcoming">başlıklar sağlanmıyor</string>
+    <string name="cantConvert">dönüştürme geçici olarak kullanılamıyor</string>
+    <string name="walletDisconnectedFromBlockchain">cüzdan bağlantısı kesildi</string>
+    <string name="badTransaction">geçersiz işlem</string>
+    <string name="badAddress">geçersiz adres</string>
+    <string name="badAmount">geçersiz miktar</string>
+
+    <string name="NoAccounts">Erişilebilir hesap yok</string>
+    <!--Kripto para birimi kodu (ör. NEX, BTC, BCH vb.) Bu cüzdan tarafından anlaşılmaz veya işlemez. Bu mesaj çok zor görülecek çünkü UI
+    diğer yollarla bilinmeyen kripto kodları girmekten kaçınarak korunur (örneğin spinners kullanarak). Ancak bir şekilde bilinmeyen bir kod girilirse, bu hatayı görüntüler.
+     -->
+    <string name="badCryptoCode">Bu para birimi veya blok zinciri için açık hesap yok</string>
+    <string name="badCryptoCodeDetails" formatted="false">Bilinmeyen veya kullanılamayan para birimi: %currency</string>
+    <!--Fiat para birimi kodu (ör. USD, EUR, JPY vb.) Bu cüzdan tarafından anlaşılmaz veya işlemez. Bu mesaj çok zor görülecek çünkü UI
+      bilinmeyen fiat kodlarını girmekten kaçınarak diğer yollarla korunur (örneğin spinners kullanarak). Ancak bir şekilde bilinmeyen bir kod girilirse, bu hatayı görüntüler.
+    -->
+    <string name="badCurrencyUnit">para birimi değil</string>
+    <!--Hesap bu kullanım için yanlış para birimini içeriyor-->
+    <string name="incompatibleAccount">yanlış para birimi</string>
+    <string name="incompatibleAccountDetails" formatted="false">%cryptoAct içeren bir hesaptan ödeme yapmak seçtiniz, ancak %cryptoPay gerekiyor</string>
+    <string name="detailsOfBadAmountFromIntent">Çağıran program, gönderilecek miktarı sağlayarak kötü biçimlendirilmiş sayı sağladı. Miktarı kendiniz girmeniz gerekecek
+    </string>
+    <string name="blankAddress">boş adres</string>
+    <string name="unavailable">kullanılamaz</string>
+    <string name="blockNotForthcoming">blok kullanılamaz</string>
+    <string name="receiveAddressUnavailable">Yeni bir alım adresi hesaplanıyor. Lütfen bekleyin...
+    </string>
+    <!--Bu cüzdanın gösterebileceği maksimum hesap sayısına ulaşıldı -->
+    <string name="accountLimitReached">maksimum hesap sayısı</string>
+    <string name="accountUnavailableDetails">Bu blok zinciri için mevcut hiçbir hesap eşleşmiyor veya hesap kilidi açılmamıştır.</string>
+    <string name="accountUnavailable">Kilidi açılmamış uyumlu hesap yok</string>
+
+    <string name="sendMoreThanBalance">Şu anda sahip olduğunuzdan daha fazla coin göndermeye çalışıyorsunuz. Bakiyenizden daha fazla harcama yapmadığınızı düşünüyorsanız, işlemlerin küçük bir ek ücreti olduğunu unutmuş olabilirsiniz ya da bakiyenizin tamamı onaylanmamış olarak görünüyorsa, arka arkaya çok fazla işlem yapmış olabilirsiniz. Blok zincirinin ne kadar ilerisine geçebileceğiniz bir sınırı vardır. Onaylanmamış bakiyenizi onaylatın ve tekrar deneyin.
+</string>
+    <string name="deductedFeeLargerThanSendAmount">Kesilen ücret gönderilecek tutardan daha fazladır</string>
+
+    <string name="badWalletImplementation">Yanlış cüzdan uygulaması. Bu hatayı bildirin!</string>
+    <!-- TITLES -->
+
+    <string name="title_split_bill">Hesabı Böl</string>
+    <string name="title_activity_settings">Ayarlar</string>
+    <string name="title_activity_exchange">Değişim</string>
+    <string name="title_activity_shopping">Alışveriş</string>
+    <string name="title_activity_shopping_settings">Özel Alışveriş Düğmeleri</string>
+    <string name="title_activity_trickle_pay">Damlalık Ödeme</string>
+    <string name="title_home">Ana Sayfa</string>
+    <string name="title_dashboard">Kontrol Paneli</string>
+    <string name="title_notifications">Bildirimler</string>
+    <!-- string name="title_activity_invoices">Faturalar</string> -->
+
+    <string name="title_activity_identity">Kimlik</string>
+    <string name="title_activity_identity_op">Kimlik</string>
+    <string name="title_activity_domain_identity_settings">Alan Adı Kimlik Ayarları</string>
+    <string name="title_activity_tx_history" formatted="false">Hesap Geçmişi: %account</string>
+    <string name="title_activity_account_details" formatted="false">Hesap Detayları: %account</string>
+
+    <!-- Not part of the UI -->
+    <string name="preferenceFileName">bitcoinunlimited.wally.prefs</string>
+
+    <string name="useUniqueIdentity">Benzersiz bir kimlik kullan</string>
+
+    <string name="title_activity_identity_settings">Kimlik Ayarları</string>
+    <string name="title_activity_welcome">Hoşgeldiniz</string>
+    <!-- Navigasyon için kullanılan fragment dizeleri -->
+    <string name="next">İleri</string>
+    <string name="previous">Geri</string>
+    <!-- PIN Girişi -->
+
+    <string name="EnterPIN">PIN Girin</string>
+
+    <string name="EnterPINorBlankToRemove">Yeni PIN (boş bırakarak kaldırın)</string>
+    <string name="title_activity_shoppng">Alışveriş Aktivitesi</string>
+
+    <!-- Alışveriş -->
+    <string name="ButtonTextHere">Düğme metnini ayarla</string>
+    <string name="ButtonLinkHere">Web bağlantısını girin</string>
+    <string name="ShoppingWarning">DİKKAT: Bu sayfadaki öğeler, kolaylık sağlamak için buraya yerleştirilen 3. taraf hizmetleri ve web sitelerine bağlantılardır. Bu siteler/hizmetler Wally Cüzdan tarafından kontrol edilmemiştir.\n\nKendi riskinizde kullanın!</string>
+
+    <!-- Tüm öğeler burada belirtilir, böylece ülkeniz varsayılan servisle çalışmıyorsa servis kendisi yerelleştirilebilir. Devre dışı bırakmak için boş dizeler kullanın -->
+    <string name="BadLink">Geçersiz web bağlantısı</string>
+    <string name="NFTs">Fonksiyonsuz Olmayan Token\'lar (FOT\'lar)</string>
+    <string name="ExplainNFTs">NiftyArt.cash: Eşsiz resimler ve benzersiz öğelerin dijital temsillerini oluşturun ve takas edin.</string>
+    <string name="NftUrl">http://niftyart.cash</string>
+
+    <string name="OpenWebsite" formatted="false">%siteName\'e erişim</string>
+    <string name="WebsiteUnavailable" formatted="false">Web sitesi mevcut değil</string>
+    <string name="ExplainTxBit">txbit.io: NEXA\'yı diğer kripto para birimleriyle takas edin</string>
+    <string name="ExplainMexc">mexc.com: NEXA\'yı diğer kripto para birimleriyle takas edin</string>
+    <string name="CexButton">değiş tokuş</string>
+
+    <!-- Trickle Pay -->
+
+    <string name="SharedNotification">%what paylaşıldı</string>
+    <string name="AuthAutopayTitle">Yetkili Ödeme</string>
+    <string name="PaymentRequest">Ödeme istendi</string>
+    <string name="AuthAutopayDeniedTitle">Yetkili Ödeme Reddedildi</string>
+    <string name="AuthAutopay" formatted="false">%domain için %amt</string>
+    <string name="TpToBeDone">Trickle Pay bağlantılarınız burada gösterilecektir</string>
+    <string name="TpHistoryTbd">Trickle Pay geçmişiniz burada gösterilecektir</string>
+    <string name="AcceptTpRegistration">Kayıt Kabul Et:</string>
+    <string name="EditTpRegistration">Varlık Ayarları:</string>
+    <string name="AcceptTpRegistrationTopic">Amaç:</string>
+    <string name="TpMaxSpendHint">maksimum otomatik harcama girin</string>
+    <string name="TpAssetInfoRequest">varlık bilgisi talepleri</string>
+
+    <string name="TpMaxHeading">Otomatik Ödeme Sınırları</string>
+    <string name="TpMaxPer">Her istek için</string>
+    <string name="TpMaxPerDay">Günlük</string>
+    <string name="TpMaxPerWeek">Haftalık</string>
+    <string name="TpMaxPerMonth">Aylık</string>
+
+    <string name="TpEnableAutopay">Otomatik ödemeyi etkinleştirin (seçilmezse, tüm ödemeler kullanıcı onayı isteyecektir)</string>
+
+    <string name="asciiArrow"><![CDATA[=>]]></string>
+
+    <string name="TpNoRegistrations">Trickle Pay kaydı yok</string>
+    <string name="TpRegDenied">Kayıt reddedildi</string>
+    <string name="TpRegAccepted">Kayıt kabul edildi</string>
+    <string name="TpRegUnchanged">Kayıt değişmedi</string>
+    <string name="TpRequestAutoDeny">İstek reddedildi (otomatik)</string>
+    <string name="TpRequestAutoAccept">İstek kabul edildi (otomatik)</string>
+    <string name="TpTxDenied">İşlem reddedildi</string>
+    <string name="TpTxAccepted">İşlem kabul edildi</string>
+    <string name="TpAssetRequestDenied">Varlıklar gönderilmiyor</string>
+    <string name="TpAssetRequestAccepted">Varlıklar gönderiliyor</string>
+
+    <string name="SpecialTpTransactionFrom">Özel İşlem Gönderen</string>
+    <string name="IncompleteTpTransactionFrom">Tamamlanmamış Teklif Önerisi Gönderen</string>
+    <string name="TpEntails">Kapsar</string>
+    <string name="TpInAccount">Hesap Kullanarak</string>
+    <string name="TpAssetRequestFrom">Varlık Bilgisi İsteği Gönderen</string>
+    <string name="TpHandledByAccount">hesabınız tarafından işlenebilir</string>
+    <string name="TpAssetMatches" formatted="false">Bu hizmete sahip olduğunuz %num varlık hakkında bilgi sağlanacaktır.</string>
+    <string name="TpAssetInfoNotXfer">Bu isteği kabul etmek, hizmetin mülkiyetiniz hakkında bilgi edinmesini sağlar. Herhangi bir transferi yetkilendirmez.</string>
+    <string name="ForAFeeOf" formatted="false">%fee %units ücret dahil</string>
+    <string name="TpExchangingTokens" formatted="false">ve jetonları değiştirerek ( %tokSnd gönderme, %tokRcv alma).</string>
+    <string name="TpSendingTokens" formatted="false">%tokSnd jeton gönderme.</string>
+    <string name="TpReceivingTokens" formatted="false">%tokRcv jeton alma.</string>
+
+    <string name="TpSendToTitle">Ödeme İsteği Gönderen</string>
+    <string name="TpSpends">Harcama</string>
+    <string name="TpSendRequestDenied">Ödeme reddedildi</string>
+    <string name="TpSendAutoReject">Ödeme otomatik olarak reddedildi</string>
+    <string name="TpSendRequestAccepted">Ödeme kabul edildi</string>
+    <string name="TpWhyNotAuto">Otomatik olarak imzalamıyor çünkü</string>
+
+    <string name="TpAutomaticDisabled">Otomatik ödemeler devre dışı bırakıldı</string>
+    <string name="TpExceededMaxPer">Teklif başına maksimum limit aşıldı</string>
+    <string name="TpExceededMaxDaily">Günlük maksimum limit aşıldı</string>
+    <string name="TpExceededMaxWeekly">Haftalık maksimum limit aşıldı</string>
+    <string name="TpExceededMaxMonthly">Aylık maksimum limit aşıldı</string>
+
+    <string name="title_activity_alert_history">En Yeni Mesajlar</string>
+
+</resources>

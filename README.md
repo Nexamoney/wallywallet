@@ -6,7 +6,29 @@ This is a non-custodial SPV & Electrum protocol wallet for Nexa and Bitcoin Cash
 
 Use `git clone https://gitlab.com/wallywallet/android.git` or `git clone git@gitlab.com:wallywallet/android.git` to clone this repository.
 
+## Platforms
+
+### JVM
+
+#### Building
+
+```bash
+./gradlew appJar
+```
+
+#### Execution
+
+In Android Studio, create a "JAR Application" in edit run configurations.  Just put the application (fat) jar file into the "Path To Jar" field.
+Then go down to "Before Launch" and add a gradle task with this project "wpw" and task name "appJar".  The Jar file is located at:
+
+```bash
+YOUR_PROJECT_PATH/build/libs/wpw-app.jar
+```
+
 ## Building
+
+
+
 
 ### Tools
 
