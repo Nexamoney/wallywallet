@@ -285,6 +285,12 @@ class GuiTest
             sleep(500)
             countup += 500
         }
+        catch (e: RuntimeException)  // Error while connecting UiAutomation
+        {
+            sleep(1000)
+            countup += 1000
+        }
+
     }
 
     fun<T:Activity> waitForActivity(timeout: Int = 10000, activityScenario: ActivityScenario<T>, checkIt: (act: T)->Boolean)
@@ -333,6 +339,10 @@ class GuiTest
             sleep(500)
         }
         catch (e: PerformException)
+        {
+            sleep(500)
+        }
+        catch (e: RuntimeException)  // Error while connecting UiAutomation
         {
             sleep(500)
         }
@@ -1531,11 +1541,27 @@ class GuiTest
         check(runningTheTests == true)
         check(runningTheUnitTests == false)
         cleanupWallets()
+
         val cs = ChainSelector.NEXAREGTEST
         val activityScenario: ActivityScenario<MainActivity> = ActivityScenario.launch(MainActivity::class.java)
         activityScenario.moveToState(Lifecycle.State.RESUMED);
         var app: WallyApp? = null
-        activityScenario.onActivity { app = (it.application as WallyApp) }
+        activityScenario.onActivity {
+            app = (it.application as WallyApp)
+            var prefs: SharedPreferences = it.getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+            devMode = true
+            with(prefs.edit())
+            {
+                putBoolean(DEV_MODE_PREF, true)
+                val name = chainToURI[ChainSelector.NEXAREGTEST]
+                putBoolean(name + "." + EXCLUSIVE_NODE_SWITCH, true)
+                putString(name + "." + CONFIGURED_NODE, "192.168.1.5")
+                commit()
+            }
+
+
+
+        }
         assert(app != null)
 
         var rpc = openRpc()
@@ -1559,7 +1585,7 @@ class GuiTest
         var addr2: String = ""
         waitFor { addr2 = clipboardText();  addr2.startsWith("nexareg:")}
 
-        for (i in 0 .. 20)
+        for (i in 0 .. 2000)
         {
             sendTo(addr2, "rNEX1", (500 .. 8000).random() )
             sendTo(addr1, "rNEX2", (500 .. 10000).random() )

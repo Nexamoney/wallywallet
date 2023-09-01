@@ -41,6 +41,7 @@ val MSWIN = System.getProperty("os.name").lowercase().contains("windows")
 // and so it will be as if it does not exist from a dependency perspective, even if you later publish the library from
 // another host.
 val LINUX_TARGETS = LINUX
+val LINUX_NATIVE_TARGETS = false // not supported in compose
 val MAC_TARGETS = MAC
 // ktor network does not support ms windows so we cannot produce MSWIN right now
 var MSWIN_TARGETS = false
@@ -289,14 +290,17 @@ kotlin {
         }
 
 
-        // Common to all "native" targets
-        val nativeMain by getting {
-            // dependsOn(sourceSets.named("commonMain").get())
-            dependencies {
-                // Compose
-                implementation("org.jetbrains.compose.runtime:runtime:$composeVersion")
-                implementation("org.jetbrains.compose.foundation:foundation:$composeVersion")
-                implementation("org.jetbrains.compose.material3:material3:$composeVersion")
+        if (MAC_TARGETS || MSWIN_TARGETS || LINUX_NATIVE_TARGETS)
+        {
+            // Common to all "native" targets
+            val nativeMain by getting {
+                // dependsOn(sourceSets.named("commonMain").get())
+                dependencies {
+                    // Compose
+                    implementation("org.jetbrains.compose.runtime:runtime:$composeVersion")
+                    implementation("org.jetbrains.compose.foundation:foundation:$composeVersion")
+                    implementation("org.jetbrains.compose.material3:material3:$composeVersion")
+                }
             }
         }
 
@@ -424,12 +428,19 @@ kotlin {
         val androidInstrumentedTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
-                implementation("org.nexa:NexaRpc:1.1.0")
+                implementation("org.nexa:nexarpc:1.1.2")
                 implementation("androidx.test:core:1.5.0")
                 implementation("androidx.test:core-ktx:1.5.0")
                 implementation("androidx.test.ext:junit:1.1.5")
                 implementation("androidx.test.ext:junit-ktx:1.1.5")
 
+                 // androidTestImplementation 'androidx.test:support-annotations:24.0.0'
+                implementation("androidx.test.espresso:espresso-contrib:3.5.1")
+                // for intent mocking
+                implementation("androidx.test.espresso:espresso-intents:3.5.1")
+                // for network testing to track idle state
+                implementation ("androidx.test.espresso.idling:idling-concurrent:3.5.1")
+                implementation ("androidx.test.espresso:espresso-idling-resource:3.5.1")
                 implementation("androidx.test.espresso:espresso-core:3.5.1")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")

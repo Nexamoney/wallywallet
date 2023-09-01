@@ -256,7 +256,7 @@ class UnitTest
          */
 
         val ret2 = cnxn.call("blockchain.block.header", listOf(100, 102), 1000)
-        LogIt.info(ret2)
+        LogIt.info(ret2 ?: "null")
 
         try
         {
