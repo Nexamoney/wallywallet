@@ -205,7 +205,7 @@ open class CommonNavActivity : CommonActivity()
         super.onResume()
 
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
-        val prefDB = getSharedPreferences(i18n(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val prefDB = getSharedPreferences(i18n(R.string.preferenceFileName), PREF_MODE_PRIVATE)
         val showIdentity = if (devMode) devMode else prefDB.getBoolean(SHOW_IDENTITY_PREF, false)
         val showTrickePay = if (devMode) devMode else prefDB.getBoolean(SHOW_TRICKLEPAY_PREF, false)
         val showAssets = if (devMode) devMode else prefDB.getBoolean(SHOW_ASSETS_PREF, false)

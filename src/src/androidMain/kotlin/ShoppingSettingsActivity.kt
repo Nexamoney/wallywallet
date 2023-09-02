@@ -1,6 +1,5 @@
 package info.bitcoinunlimited.www.wally
 
-import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -171,7 +170,7 @@ class ShoppingSettingsActivity : CommonNavActivity()
         }
         )
 
-        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), PREF_MODE_PRIVATE)
         loadShoppingFromPreferences(prefs, shopping)
         if ((shopping.size == 0) || (shopping[shopping.size - 1].buttonText != ""))
             shopping.add(ShoppingDestination("", ""))  // Add a blank if there isn't one so a new button can be added by the user
@@ -183,7 +182,7 @@ class ShoppingSettingsActivity : CommonNavActivity()
     override fun onPause()
     {
         super.onPause()
-        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), PREF_MODE_PRIVATE)
         saveShoppingFromPreferences(prefs.edit(), shopping)
     }
 

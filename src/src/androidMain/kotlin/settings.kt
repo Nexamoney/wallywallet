@@ -38,7 +38,7 @@ private val LogIt = GetLog("BU.wally.settings")
 
 fun enableMenu(ctxt: Context, menuPref: String)
 {
-    val prefDB = ctxt.getSharedPreferences(i18n(R.string.preferenceFileName), Context.MODE_PRIVATE)
+    val prefDB = getSharedPreferences(i18n(R.string.preferenceFileName), PREF_MODE_PRIVATE)
     val show = prefDB.getBoolean(menuPref, false)
     if (!show)
     {
@@ -65,7 +65,7 @@ class Settings : CommonActivity()
     @Suppress("UNUSED_PARAMETER")
     fun onFiatChange(guiElem: View?): Boolean
     {
-        val preferenceDB = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val preferenceDB = getSharedPreferences(getString(R.string.preferenceFileName), PREF_MODE_PRIVATE)
         with(preferenceDB.edit())
         {
             putString(LOCAL_CURRENCY_PREF, ui.GuiFiatCurrencySpinner.selectedItem as String)
@@ -100,7 +100,7 @@ class Settings : CommonActivity()
 
         ui.GuiSoftwareVersion.text = i18n(R.string.version) % mapOf("ver" to BuildConfig.VERSION_NAME)
 
-        val preferenceDB: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val preferenceDB: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), PREF_MODE_PRIVATE)
 
         if (SetupBooleanPreferenceGui(DEV_MODE_PREF, preferenceDB, false, ui.GuiDeveloperInfoSwitch) { _, isChecked ->
               devMode = isChecked
@@ -189,7 +189,7 @@ class Settings : CommonActivity()
     {
         // Load any temporaries with the final preference choices
 
-        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), PREF_MODE_PRIVATE)
 
         var nodeAddr: String? = null
 
@@ -233,7 +233,5 @@ class Settings : CommonActivity()
             }
         }
     }
-
-
 
 }

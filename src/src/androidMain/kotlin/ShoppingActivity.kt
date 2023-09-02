@@ -110,7 +110,7 @@ class ShoppingActivity : CommonNavActivity()
         for (s in initialShopping)
             shopping.add(s)
 
-        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), PREF_MODE_PRIVATE)
         loadShoppingFromPreferences(prefs, shopping)
 
         linearLayoutManager = LinearLayoutManager(this)
@@ -125,7 +125,7 @@ class ShoppingActivity : CommonNavActivity()
         for (s in initialShopping)
             shopping.add(s)
 
-        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), PREF_MODE_PRIVATE)
         loadShoppingFromPreferences(prefs, shopping)
         adapter = GuiList(ui.GuiShoppingList, shopping, this, {
             val ui = ShoppingListItemBinding.inflate(LayoutInflater.from(it.context), it, false)

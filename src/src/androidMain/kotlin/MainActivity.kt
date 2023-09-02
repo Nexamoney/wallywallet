@@ -720,7 +720,7 @@ class MainActivity : CommonNavActivity()
         }
 
         appContext = applicationContext
-        val preferenceDB = getSharedPreferences(i18n(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val preferenceDB = getSharedPreferences(i18n(R.string.preferenceFileName), PREF_MODE_PRIVATE)
         fiatCurrencyCode = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"
         ui.xchgRateText?.text = ""
 
@@ -2236,7 +2236,7 @@ class MainActivity : CommonNavActivity()
         }
         else throw BadUnitException()
 
-        val preferenceDB = getSharedPreferences(i18n(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val preferenceDB = getSharedPreferences(i18n(R.string.preferenceFileName), PREF_MODE_PRIVATE)
         val confirmAmtString = preferenceDB.getString(CONFIRM_ABOVE_PREF, "0") ?: "0"
         val confirmAmt = try
         {

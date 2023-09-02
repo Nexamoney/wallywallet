@@ -2,7 +2,6 @@
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
 
-import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -243,7 +242,7 @@ class SplitBillActivity : CommonNavActivity()
     {
         super.onResume()
 
-        val prefDb = getSharedPreferences(i18n(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val prefDb = getSharedPreferences(i18n(R.string.preferenceFileName), PREF_MODE_PRIVATE)
         fiatCurrencyCode = prefDb.getString(i18n(R.string.localCurrency), "USD") ?: "USD"
 
         // Set the send currency type spinner options to your default fiat currency or your currently selected crypto
@@ -279,7 +278,7 @@ class SplitBillActivity : CommonNavActivity()
 
     override fun onDestroy()
     {
-        val prefDb = getSharedPreferences(i18n(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val prefDb = getSharedPreferences(i18n(R.string.preferenceFileName), PREF_MODE_PRIVATE)
         with(prefDb.edit())
         {
             putString("splitbill.splitAmount", ui.splitQuantity.text.toString())

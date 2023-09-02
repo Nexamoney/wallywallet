@@ -5,7 +5,7 @@ package info.bitcoinunlimited.www.wally
 
 import android.app.*
 import android.app.PendingIntent.CanceledException
-import android.content.*
+import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
@@ -397,7 +397,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         {
             synchronized(this)
             {
-                val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+                val prefs = getSharedPreferences(getString(R.string.preferenceFileName), PREF_MODE_PRIVATE)
                 with(prefs.edit())
                 {
                     putString(PRIMARY_ACT_PREF, act.name)
@@ -458,9 +458,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     var lastErrorDetails:String? = null
     var lastNotice:Int? = null
     var lastNoticeDetails:String? = null
-
-    // Track the last item in the clipboard
-    var currentClip:ClipData? = null
 
     /** Display an short error string on the title bar, and then clear it after a bit.  The common activity will check for errors coming from other activities */
     fun displayError(resource: Int, details: Int? = null)
@@ -886,7 +883,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         // Add the Wally Wallet server to our list of Electrum/Rostrum connection points
         nexaElectrum.add(0, IpPort("rostrum.wallywallet.org", DEFAULT_NEXA_TCP_ELECTRUM_PORT))
 
-        val prefs: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val prefs = getSharedPreferences(getString(R.string.preferenceFileName), PREF_MODE_PRIVATE)
         devMode = prefs.getBoolean(DEV_MODE_PREF, false)
         allowAccessPriceData = prefs.getBoolean(ACCESS_PRICE_DATA_PREF, true)
 
@@ -988,6 +985,8 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
             }
         }
 
+
+        /*
         var myClipboard = getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager
         myClipboard.addPrimaryClipChangedListener(object:  ClipboardManager.OnPrimaryClipChangedListener {
             override fun onPrimaryClipChanged()
@@ -1006,11 +1005,13 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
             }
 
         })
+        */
         updateClipboardCache()
     }
 
-    fun updateClipboardCache()
+    fun updateClipboardCache()  // modern android doesn't let you track the clipboard like this for security reasons
     {
+        /*
         var myClipboard = getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager
         val tmp = myClipboard.getPrimaryClip()
         if (tmp != null) currentClip = tmp
@@ -1027,6 +1028,8 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
             val tmp = myClipboard.getPrimaryClip()
             if (tmp != null) currentClip = tmp
         }
+
+         */
     }
 
     // Called by the system when the device configuration changes while your component is running.
@@ -1393,7 +1396,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
 
     fun getElectrumServerOn(cs: ChainSelector):IpPort
     {
-        val prefDB: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val prefDB = getSharedPreferences(getString(R.string.preferenceFileName), PREF_MODE_PRIVATE)
 
         // Return our configured node if we have one
         var name = chainToURI[cs]

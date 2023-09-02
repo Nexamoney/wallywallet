@@ -172,7 +172,7 @@ class Account(
     {
         val cs = chain.chainSelector
         val chainName = chainToURI[cs]
-        val prefs: SharedPreferences = wallyApp!!.getSharedPreferences(wallyApp!!.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+        val prefs = getSharedPreferences(wallyApp!!.getString(R.string.preferenceFileName), PREF_MODE_PRIVATE)
         val exclusiveNode: String? = if (prefs.getBoolean(chainName + "." + EXCLUSIVE_NODE_SWITCH, false)) prefs.getString(chainName + "." + CONFIGURED_NODE, null) else null
         val preferredNode: String? = if (prefs.getBoolean(chainName + "." + PREFER_NODE_SWITCH, false)) prefs.getString(chainName + "." + CONFIGURED_NODE, null) else null
 
