@@ -42,7 +42,7 @@ val MSWIN = System.getProperty("os.name").lowercase().contains("windows")
 // another host.
 val LINUX_TARGETS = LINUX
 val LINUX_NATIVE_TARGETS = false // not supported in compose
-val MAC_TARGETS = MAC
+val MAC_TARGETS = MAC || LINUX
 // ktor network does not support ms windows so we cannot produce MSWIN right now
 var MSWIN_TARGETS = false
 
@@ -285,7 +285,7 @@ kotlin {
                 implementation(compose.desktop.common)
                 implementation("org.jetbrains.skiko:skiko-awt-runtime-$skikoTarget:$skikoVersion")
                 implementation(compose.desktop.currentOs)
-                implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
+                implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
             }
         }
 
@@ -643,7 +643,7 @@ tasks.register<Jar>("appJar") {
 
 tasks {
     register<Exec>("runJvmApp") {
-        commandLine("java", "-classpath", "build/libs/wpw-app.jar", "info.bitcoinunlimited.www.wally.WallyJvmApp")
+        commandLine("java", "-classpath", "build/libs/src-app.jar", "info.bitcoinunlimited.www.wally.WallyJvmApp")
     }
 }
 
