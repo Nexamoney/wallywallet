@@ -1,11 +1,8 @@
 package info.bitcoinunlimited.www.wally
 
+import io.ktor.http.*
 import kotlinx.coroutines.*
 import org.nexa.libnexakotlin.*
-import java.net.URL
-import java.net.URLDecoder
-import java.util.LinkedHashMap
-
 private val LogIt = GetLog("BU.wally.utils")
 
 /** dig through text looking for addresses */
@@ -54,21 +51,20 @@ fun isCashAddrScheme(s: String): Boolean
     return chain != null
 }
 
-
-// see https://stackoverflow.com/questions/13592236/parse-a-uri-string-into-name-value-collection
-fun URL.queryMap(): Map<String, String>
-{
-    val query_pairs = LinkedHashMap<String, String>()
-    val query = this.getQuery()
-    if (query == null) return mapOf()
-    val pairs = query.split("&")
-    for (pair in pairs)
-    {
-        val idx = pair.indexOf("=")
-        query_pairs[URLDecoder.decode(pair.substring(0, idx), "UTF-8")] = URLDecoder.decode(pair.substring(idx + 1), "UTF-8")
+// The parameters property of Ktor's Url class already provides parsed and decoded query parameters.
+fun Url.queryMap(): Map<String, String> {
+    val parameters = ParametersBuilder()
+    this.parameters.forEach { name, values ->
+        values.forEach { value ->
+            parameters.append(name, value)
+        }
     }
-    return query_pairs
+    return parameters.build().entries()
+      .associate { it.key to it.value.first() }
 }
+
+// This extension function is used to convert List to a single value, considering only the first element.
+fun List<String>.first(): String = this[0]
 
 // you can install your own coroutine threads here and this common code will use that instead of GlobalScope
 var notInUIscope: CoroutineScope? = null
@@ -87,50 +83,3 @@ fun later(fn: suspend () -> Unit): Unit
         }
     }
 }
-
-/** execute the passed code block directly if not in the UI thread, otherwise defer it */
-fun notInUI(fn: () -> Unit)
-{
-    val tname = Thread.currentThread().name
-    if (tname == "main")  // main is the UI thread so need to launch this
-    {
-        (notInUIscope ?: GlobalScope).launch {
-            try
-            {
-                fn()
-            }
-            catch (e: Exception)
-            {
-                LogIt.warning("Exception in notInUI: " + e.toString())
-            }
-        }
-    }
-    else // otherwise just call it
-    {
-        try
-        {
-            fn()
-        }
-        catch (e: Exception)
-        {
-            LogIt.warning("Exception in notInUI: " + e.toString())
-        }
-    }
-}
-
-fun <RET> syncNotInUI(fn: () -> RET): RET
-{
-    val tname = Thread.currentThread().name
-    if (tname == "main")
-    {
-        val ret = runBlocking(Dispatchers.IO) {
-            fn()
-        }
-        return ret
-    }
-    else
-    {
-        return fn()
-    }
-}
-
