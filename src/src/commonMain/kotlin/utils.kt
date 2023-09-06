@@ -51,16 +51,19 @@ fun isCashAddrScheme(s: String): Boolean
     return chain != null
 }
 
-// The parameters property of Ktor's Url class already provides parsed and decoded query parameters.
-fun Url.queryMap(): Map<String, String> {
-    val parameters = ParametersBuilder()
+/** Return the parameters in this Url.  If a parameter name is repeated, return only the first instance.
+ */
+fun Url.queryMap(): Map<String, String>
+{
+    // The parameters property of Ktor's Url class already provides parsed and decoded query parameters.
+    val parameters = mutableMapOf<String, String>()
     this.parameters.forEach { name, values ->
-        values.forEach { value ->
-            parameters.append(name, value)
-        }
+        if (values.size > 0)
+            parameters[name] = values[0]
+        else
+            parameters[name] = ""
     }
-    return parameters.build().entries()
-      .associate { it.key to it.value.first() }
+    return parameters
 }
 
 // This extension function is used to convert List to a single value, considering only the first element.

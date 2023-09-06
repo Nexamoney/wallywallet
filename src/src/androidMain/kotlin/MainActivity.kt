@@ -34,6 +34,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.Thread.sleep
 import com.ionspin.kotlin.bignum.decimal.*
+import io.ktor.http.*
 import java.math.RoundingMode
 import java.net.URL
 import java.util.*
@@ -1273,11 +1274,16 @@ class MainActivity : CommonNavActivity()
         val index = iuri.indexOf(':')
         if (index == -1) throw NotUriException() // Can't be a URI if no colon
         val scheme = iuri.take(index)
-        // TODO, discover the coin from the scheme
-        val u = URL("http" + iuri.drop(index))
+        // To decode the parameters, we drop our scheme (blockchain identifier) and replace with http, so the standard Url parser will do the job for us.
+        val u = Url("http" + iuri.drop(index))
         val attribs = u.queryMap()
-        LogIt.info(u.path)
-        val sta = scheme + ":" + u.path
+        if (u.pathSegments.size!=1)  // path segments are the parts separated by /.  But in BIP21 there must be only an address
+        {
+            displayError(R.string.badAddress, scheme)
+            return
+        }
+        // Now put our scheme back in, dropping the parameters.  So we should have something like "nexa:<address>"
+        val sta = scheme + ":" + u.pathSegments[0]
 
         val bip72 = attribs["r"]
         val stramt = attribs["amount"]
@@ -1802,7 +1808,7 @@ class MainActivity : CommonNavActivity()
                 else return
             }
             amt *= BigDecimal.fromInt(1000)
-            focus.set(amt.toString())
+            focus.set(amt.toPlainString())
         }
     }
 
@@ -1822,7 +1828,7 @@ class MainActivity : CommonNavActivity()
                 else return
             }
             amt *= BigDecimal.fromInt(1000000)
-            focus.set(amt.toString())
+            focus.set(amt.toPlainString())
         }
     }
 

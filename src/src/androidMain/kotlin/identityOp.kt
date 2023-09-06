@@ -16,6 +16,7 @@ import java.net.URL
 import java.net.URLEncoder
 
 import info.bitcoinunlimited.www.wally.databinding.ActivityIdentityOpBinding
+import io.ktor.http.*
 import org.nexa.libnexakotlin.libnexa
 import java.io.DataOutputStream
 import java.net.URLDecoder
@@ -32,7 +33,7 @@ class IdentityOpActivity : CommonNavActivity()
     private lateinit var ui:ActivityIdentityOpBinding
     override var navActivityId = -1
 
-    var displayedLoginRequest: URL? = null
+    var displayedLoginRequest: Url? = null
 
     var queries: Map<String, String> = mapOf()
     val perms = mutableMapOf<String, Boolean>()
@@ -97,16 +98,21 @@ class IdentityOpActivity : CommonNavActivity()
     /** Check whether this domain has ever been seen before, and if it hasn't pop up the new domain configuration activity */
     fun checkIntentNewDomain(receivedIntent: Intent)
     {
-        val iuri = receivedIntent.toUri(0).toUrl()  // URI_ANDROID_APP_SCHEME | URI_INTENT_SCHEME
+        //val iuri = receivedIntent.toUri(0).toUrl()  // URI_ANDROID_APP_SCHEME | URI_INTENT_SCHEME
+
+        val uri = receivedIntent.data
+        if (uri == null) return
+
+        val kUrl = Url(receivedIntent.toUri(0))
 
         if (receivedIntent.scheme == IDENTITY_URI_SCHEME)
         {
-            val h = iuri.getHost()
+            val h = kUrl.host
             host = h
 
             // val path = iuri.getPath()
-            val attribs = iuri.queryMap()
-            queries = iuri.queryMap()
+            val attribs = kUrl.queryMap()
+            queries = attribs
 
             val context = this
 
@@ -261,8 +267,9 @@ class IdentityOpActivity : CommonNavActivity()
     //? A new intent to pay someone could come from either startup (onResume) or just on it own (onNewIntent) so create a single function to deal with both
     fun handleNewIntent(receivedIntent: Intent)
     {
-        val iuri = receivedIntent.toUri(0).toUrl()  // URI_ANDROID_APP_SCHEME | URI_INTENT_SCHEME
-        LogIt.info(sourceLoc() + " Identity OP new Intent: " + iuri.toString())
+        //val iuri = receivedIntent.toUri(0).toUrl()  // URI_ANDROID_APP_SCHEME | URI_INTENT_SCHEME
+        val kuri = Url(receivedIntent.toUri(0))
+        LogIt.info(sourceLoc() + " Identity OP new Intent: " + kuri.toString())
 
         // Received bogus intent, or a repeat one that was already cleared
         if (receivedIntent.getStringExtra("repeat") == "true")
@@ -303,8 +310,8 @@ class IdentityOpActivity : CommonNavActivity()
             }
         }
 
-        host = iuri.getHost()
-        val attribs = iuri.queryMap()
+        host = kuri.host
+        val attribs = kuri.queryMap()
         val op = attribs["op"]
         if (op == "info")
         {
@@ -346,7 +353,7 @@ class IdentityOpActivity : CommonNavActivity()
         ui.displayLoginRecipient.visibility = View.VISIBLE
         ui.provideIdentityNoButton.visibility = View.VISIBLE
         ui.provideIdentityYesButton.visibility = View.VISIBLE
-        displayedLoginRequest = iuri
+        displayedLoginRequest = kuri
         ui.displayLoginRecipient.text = host // + " (" + path + ")"
         checkIntentNewDomain(receivedIntent)
     }
@@ -359,16 +366,16 @@ class IdentityOpActivity : CommonNavActivity()
         launch {
             if (iuri != null)
             {
-                val tmpHost = iuri.getHost()
+                val tmpHost = iuri.host
                 host = tmpHost
-                val port = iuri.getPort()
-                val path = iuri.getPath()
+                val port = iuri.port
+                val path = iuri.encodedPath
                 val attribs = iuri.queryMap()
                 val challenge = attribs["chal"]
                 val cookie = attribs["cookie"]
                 val op = attribs["op"]
                 val responseProtocol = attribs["proto"]
-                val protocol = responseProtocol ?: iuri.protocol  // Prefer the protocol requested by the other side, otherwise use the same protocol we got the request from
+                val protocol = responseProtocol ?: iuri.protocol.name  // Prefer the protocol requested by the other side, otherwise use the same protocol we got the request from
 
                 val portStr = if ((port > 0) && (port != 80) && (port != 443)) ":" + port.toString() else ""
 
