@@ -23,6 +23,7 @@ object WallyJvmApp
         setLocale()
         LogIt.warning("Starting Wally Enterprise Wallet")
         val wal = openOrNewWallet("reg", ChainSelector.NEXAREGTEST)
+        wal.blockchain.req.net.exclusiveNodes(setOf("192.168.1.5"))
         accounts[wal.name] = wal
         guiNewPanel()
     }
