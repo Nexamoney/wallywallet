@@ -12,6 +12,19 @@
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 		8E1ECA662AA957D300759B4F /* strings_en.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA652AA957D200759B4F /* strings_en.bin */; };
+		8E1ECA742AAA002000759B4F /* strings_es.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA672AAA001B00759B4F /* strings_es.bin */; };
+		8E1ECA752AAA002000759B4F /* strings_hi.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA682AAA001C00759B4F /* strings_hi.bin */; };
+		8E1ECA762AAA002000759B4F /* strings_round.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA692AAA001C00759B4F /* strings_round.bin */; };
+		8E1ECA772AAA002000759B4F /* strings_sl.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA6A2AAA001C00759B4F /* strings_sl.bin */; };
+		8E1ECA782AAA002000759B4F /* strings_et.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA6B2AAA001D00759B4F /* strings_et.bin */; };
+		8E1ECA792AAA002000759B4F /* strings_nb.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA6C2AAA001D00759B4F /* strings_nb.bin */; };
+		8E1ECA7A2AAA002000759B4F /* strings_ca.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA6D2AAA001D00759B4F /* strings_ca.bin */; };
+		8E1ECA7B2AAA002000759B4F /* strings_it.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA6E2AAA001E00759B4F /* strings_it.bin */; };
+		8E1ECA7C2AAA002000759B4F /* strings_sv.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA6F2AAA001E00759B4F /* strings_sv.bin */; };
+		8E1ECA7D2AAA002000759B4F /* strings_tr.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA702AAA001F00759B4F /* strings_tr.bin */; };
+		8E1ECA7E2AAA002000759B4F /* strings_no.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA712AAA001F00759B4F /* strings_no.bin */; };
+		8E1ECA7F2AAA002000759B4F /* strings_de.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA722AAA001F00759B4F /* strings_de.bin */; };
+		8E1ECA802AAA002000759B4F /* strings_in.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA732AAA002000759B4F /* strings_in.bin */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,6 +48,19 @@
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8E1ECA652AA957D200759B4F /* strings_en.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_en.bin; path = ../src/src/commonMain/resources/strings_en.bin; sourceTree = "<group>"; };
+		8E1ECA672AAA001B00759B4F /* strings_es.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_es.bin; path = ../src/src/commonMain/resources/strings_es.bin; sourceTree = "<group>"; };
+		8E1ECA682AAA001C00759B4F /* strings_hi.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_hi.bin; path = ../src/src/commonMain/resources/strings_hi.bin; sourceTree = "<group>"; };
+		8E1ECA692AAA001C00759B4F /* strings_round.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_round.bin; path = ../src/src/commonMain/resources/strings_round.bin; sourceTree = "<group>"; };
+		8E1ECA6A2AAA001C00759B4F /* strings_sl.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_sl.bin; path = ../src/src/commonMain/resources/strings_sl.bin; sourceTree = "<group>"; };
+		8E1ECA6B2AAA001D00759B4F /* strings_et.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_et.bin; path = ../src/src/commonMain/resources/strings_et.bin; sourceTree = "<group>"; };
+		8E1ECA6C2AAA001D00759B4F /* strings_nb.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_nb.bin; path = ../src/src/commonMain/resources/strings_nb.bin; sourceTree = "<group>"; };
+		8E1ECA6D2AAA001D00759B4F /* strings_ca.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_ca.bin; path = ../src/src/commonMain/resources/strings_ca.bin; sourceTree = "<group>"; };
+		8E1ECA6E2AAA001E00759B4F /* strings_it.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_it.bin; path = ../src/src/commonMain/resources/strings_it.bin; sourceTree = "<group>"; };
+		8E1ECA6F2AAA001E00759B4F /* strings_sv.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_sv.bin; path = ../src/src/commonMain/resources/strings_sv.bin; sourceTree = "<group>"; };
+		8E1ECA702AAA001F00759B4F /* strings_tr.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_tr.bin; path = ../src/src/commonMain/resources/strings_tr.bin; sourceTree = "<group>"; };
+		8E1ECA712AAA001F00759B4F /* strings_no.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_no.bin; path = ../src/src/commonMain/resources/strings_no.bin; sourceTree = "<group>"; };
+		8E1ECA722AAA001F00759B4F /* strings_de.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_de.bin; path = ../src/src/commonMain/resources/strings_de.bin; sourceTree = "<group>"; };
+		8E1ECA732AAA002000759B4F /* strings_in.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_in.bin; path = ../src/src/commonMain/resources/strings_in.bin; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +85,19 @@
 		7555FF72242A565900829871 = {
 			isa = PBXGroup;
 			children = (
+				8E1ECA6D2AAA001D00759B4F /* strings_ca.bin */,
+				8E1ECA722AAA001F00759B4F /* strings_de.bin */,
+				8E1ECA672AAA001B00759B4F /* strings_es.bin */,
+				8E1ECA6B2AAA001D00759B4F /* strings_et.bin */,
+				8E1ECA682AAA001C00759B4F /* strings_hi.bin */,
+				8E1ECA732AAA002000759B4F /* strings_in.bin */,
+				8E1ECA6E2AAA001E00759B4F /* strings_it.bin */,
+				8E1ECA6C2AAA001D00759B4F /* strings_nb.bin */,
+				8E1ECA712AAA001F00759B4F /* strings_no.bin */,
+				8E1ECA692AAA001C00759B4F /* strings_round.bin */,
+				8E1ECA6A2AAA001C00759B4F /* strings_sl.bin */,
+				8E1ECA6F2AAA001E00759B4F /* strings_sv.bin */,
+				8E1ECA702AAA001F00759B4F /* strings_tr.bin */,
 				8E1ECA652AA957D200759B4F /* strings_en.bin */,
 				7555FF7D242A565900829871 /* iosApp */,
 				7555FF7C242A565900829871 /* Products */,
@@ -154,8 +193,21 @@
 			buildActionMask = 2147483647;
 			files = (
 				8E1ECA662AA957D300759B4F /* strings_en.bin in Resources */,
+				8E1ECA7D2AAA002000759B4F /* strings_tr.bin in Resources */,
+				8E1ECA772AAA002000759B4F /* strings_sl.bin in Resources */,
+				8E1ECA752AAA002000759B4F /* strings_hi.bin in Resources */,
+				8E1ECA7C2AAA002000759B4F /* strings_sv.bin in Resources */,
+				8E1ECA802AAA002000759B4F /* strings_in.bin in Resources */,
+				8E1ECA7E2AAA002000759B4F /* strings_no.bin in Resources */,
+				8E1ECA7B2AAA002000759B4F /* strings_it.bin in Resources */,
+				8E1ECA792AAA002000759B4F /* strings_nb.bin in Resources */,
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
+				8E1ECA742AAA002000759B4F /* strings_es.bin in Resources */,
+				8E1ECA7A2AAA002000759B4F /* strings_ca.bin in Resources */,
+				8E1ECA7F2AAA002000759B4F /* strings_de.bin in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
+				8E1ECA762AAA002000759B4F /* strings_round.bin in Resources */,
+				8E1ECA782AAA002000759B4F /* strings_et.bin in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

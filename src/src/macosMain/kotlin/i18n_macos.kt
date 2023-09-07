@@ -2,8 +2,10 @@ package info.bitcoinunlimited.www.wally
 
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.readBytes
+import platform.Foundation.NSBundle
 import org.nexa.libnexakotlin.decodeUtf8
-import platform.Foundation.*
+import platform.Foundation.NSData
+import platform.Foundation.create
 
 var LocaleStrings = listOf<String>()
 
@@ -17,14 +19,9 @@ actual fun i18n(id: Int): String
 
 actual fun setLocale():Boolean
 {
-    // we want whatever the phone is set to, not where the user is currently located, so system locale.
-    var locale = NSLocale.systemLocale()
-    if (locale.languageCode == null)
-    {
-        locale = NSLocale.currentLocale()
-    }
-    println("LANGUAGE: ${locale.languageCode}, COUNTRY: ${locale.countryCode}")
-    return setLocale(locale.languageCode, locale.countryCode ?: "")
+    //val locale = Locale.getDefault()
+    //return setLocale(locale.language, locale.country)
+    return false
 }
 
 fun provideLocaleFilesData(data:ByteArray)
@@ -34,16 +31,9 @@ fun provideLocaleFilesData(data:ByteArray)
 @OptIn(ExperimentalForeignApi::class)
 actual fun setLocale(language: String, country: String):Boolean
 {
+
     //val nothing = Objectify<Int>(0)
     val loadTries = listOf<() -> ByteArray>(
-      {
-          val url = NSBundle.mainBundle.URLForResource("strings_${language}_$country", "bin")
-          if (url == null) throw NotUriException()
-          val data = NSData.create(url!!)
-          if (data == null) throw NotUriException()
-          data.bytes?.readBytes(data.length.toInt()) ?: throw NotUriException()
-      },
-
       {
           val url = NSBundle.mainBundle.URLForResource("strings_$language", "bin")
           if (url == null) throw NotUriException()
@@ -51,6 +41,10 @@ actual fun setLocale(language: String, country: String):Boolean
           if (data == null) throw NotUriException()
           data.bytes?.readBytes(data.length.toInt()) ?: throw NotUriException()
       }
+      // { nothing::class.java.getClassLoader().getResourceAsStream("strings_${language}_${country}.bin").readBytes() },
+      //  { nothing::class.java.getClassLoader().getResourceAsStream("strings_${language}.bin").readBytes() },
+      // { File("strings_${language}_${country}.bin").readBytes() },
+      //  { File("strings_${language}.bin").readBytes() }
     )
 
     var strs = byteArrayOf()

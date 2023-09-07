@@ -16,7 +16,7 @@ extension KotlinByteArray {
 
 func loadLocaleFile() -> Data?
 {
-    guard let fileURL = Bundle.main.url(forResource: "strings_en", withExtension: "bin") else {
+    guard let fileURL = Bundle.main.url(forResource: "strings_no", withExtension: "bin") else {
         print("Failed to create URL for file.")
         return nil
     }
@@ -35,19 +35,21 @@ struct iOSApp: App {
     
     init()
     {
+    /*
         if #available(iOS 16, *) {
             I18n_iosKt.setLocale(language: Locale.current.language.languageCode!.identifier, country: Locale.current.identifier)
         } else {
             I18n_iosKt.setLocale(language: Locale.current.languageCode!, country: Locale.current.identifier)
         }
-        
+
         var localeData = loadLocaleFile()
         if (localeData != nil)
         {
             var kba = KotlinByteArray.from(data: localeData!)
             I18n_iosKt.provideLocaleFilesData(data: kba)
         }
-        
+        */
+        MainViewControllerKt.OnAppStartup()
     }
     
 
