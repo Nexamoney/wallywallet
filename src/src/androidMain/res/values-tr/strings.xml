@@ -123,7 +123,7 @@ Good luck!
 
     <string name="connected">bağlı</string>
     <string name="balance">güncel bakiye</string>
-    <string name="total">toplam alınan</string>
+    <string name="totalReceived">toplam alınan</string>
     <!-- this is an indication that we are still waiting for some web page to load. please leave the HTML and just translate ...loading... -->
     <string name="WebLoadingPage"><![CDATA[<body><h1><center>...yükleniyor...</h1></center></body>]]></string>
 
@@ -493,7 +493,7 @@ Good luck!
     <string name="ShoppingWarning">DİKKAT: Bu sayfadaki öğeler, kolaylık sağlamak için buraya yerleştirilen 3. taraf hizmetleri ve web sitelerine bağlantılardır. Bu siteler/hizmetler Wally Cüzdan tarafından kontrol edilmemiştir.\n\nKendi riskinizde kullanın!</string>
 
     <!-- Tüm öğeler burada belirtilir, böylece ülkeniz varsayılan servisle çalışmıyorsa servis kendisi yerelleştirilebilir. Devre dışı bırakmak için boş dizeler kullanın -->
-    <string name="BadLink">Geçersiz web bağlantısı</string>
+    <string name="BadWebLink">Geçersiz web bağlantısı</string>
     <string name="NFTs">Fonksiyonsuz Olmayan Token\'lar (FOT\'lar)</string>
     <string name="ExplainNFTs">NiftyArt.cash: Eşsiz resimler ve benzersiz öğelerin dijital temsillerini oluşturun ve takas edin.</string>
     <string name="NftUrl">http://niftyart.cash</string>

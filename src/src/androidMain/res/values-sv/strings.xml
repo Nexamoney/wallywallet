@@ -117,7 +117,7 @@ Good luck!
   <string name="unsynced">synkronisering</string>
   <string name="connected">ansluten</string>
   <string name="balance">aktuellt saldo</string>
-  <string name="total">totalt mottagna</string>
+  <string name="totalReceived">totalt mottagna</string>
   <!-- this is an indication that we are still waiting for some web page to load. please leave the HTML and just translate ...loading... -->
   <string name="WebLoadingPage"><![CDATA[<body><h1><center>...loading...</h1></center></body>]]></string>
   <!-- Implication is "no charge" or "no cost" for a transaction -->
@@ -496,7 +496,7 @@ Tack och njut av din nya plånbok!</string>
   <string name="ButtonLinkHere">Ange webblänk</string>
   <string name="ShoppingWarning">VARNING: Objekten på den här sidan är länkar till tredjepartstjänster och webbplatser, placerade här för din bekvämlighet. Dessa webbplatser/tjänster har inte granskats av Wally Wallet.\n\nAnvänd på egen risk!</string>
   <!-- All items are specified here so the service itself can be localized if your country does work with the default service. Use empty strings to disable -->
-  <string name="BadLink">Ogiltig webblänk</string>
+  <string name="BadWebLink">Ogiltig webblänk</string>
   <string name="ExplainGiftCards">Att köpa presentkort ger dig tillgång till 100-tals butiker som inte direkt accepterar kryptovaluta.</string>
   <string name="GiftCardButton">eGifter presentkort</string>
   <string name="GiftCardUrl">https://www.egifter.com</string>

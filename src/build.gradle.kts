@@ -85,7 +85,6 @@ ext {
     var linuxTarget = prop["linux.target"]
 }
 
-
 @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
 kotlin {
     targetHierarchy.default()
@@ -639,6 +638,7 @@ tasks.register<Jar>("appJar") {
         }
         from(c.output)
     }
+    from(kotlin.sourceSets.named("commonMain").get().resources)
 }
 
 tasks {

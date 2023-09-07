@@ -5,7 +5,6 @@ package info.bitcoinunlimited.www.wally
 import android.content.*
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.os.TransactionTooLargeException
 import android.view.*
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.webkit.WebViewClient
@@ -330,7 +329,7 @@ class AddressListBinder(val ui: AddressListItemBinding): GuiListItemBinder<Addre
             ui.GuiSendRecvImage.visibility = View.VISIBLE
             ui.GuiSendRecvImage.setImageResource(R.drawable.ic_receivearrow)
             ui.GuiValueCrypto.text = i18n(R.string.balance) + " " + act.cryptoFormat.format(act.fromFinestUnit(d.amountHeld))
-            ui.GuiTotalReceived.text = i18n(R.string.total) + " " + act.cryptoFormat.format(act.fromFinestUnit(d.totalReceived))
+            ui.GuiTotalReceived.text = i18n(R.string.totalReceived) + " " + act.cryptoFormat.format(act.fromFinestUnit(d.totalReceived))
 
             if (d.firstRecv != Long.MIN_VALUE)
             {

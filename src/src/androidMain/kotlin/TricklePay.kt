@@ -17,15 +17,7 @@ import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import info.bitcoinunlimited.www.wally.databinding.*
-import io.ktor.client.*
-import io.ktor.client.engine.android.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.serialization.kotlinx.json.*
 import org.nexa.libnexakotlin.libnexa
-import com.ionspin.kotlin.bignum.decimal.*
 
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
@@ -894,7 +886,7 @@ class TricklePayActivity : CommonNavActivity()
                 LogIt.info(sourceLoc() + "Full Intent=${iuri.toString()}")
                 if (h == null)
                 {
-                    wallyApp?.displayError(R.string.BadLink, "no host provided")
+                    wallyApp?.displayError(R.string.BadWebLink, "no host provided")
                     clearIntentAndFinish()
                     return
                 }

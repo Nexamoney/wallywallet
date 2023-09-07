@@ -81,23 +81,6 @@ fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: MutableSet<Str
     return st.toTypedArray()
 }
 
-// Lookup strings in strings.xml
-actual fun i18n(id: Int): String
-{
-    if (id == -1) return ""
-    try
-    {
-        if (appResources == null) LogIt.error("appResources not loaded")
-        val s = appResources?.getString(id)
-        if (s != null) return s
-    } catch (e: Resources.NotFoundException)
-    {
-    }
-
-    LogIt.error("Missing strings.xml translation for " + id.toString() + "(0x" + id.toString(16))
-    return "STR" + id.toString()
-}
-
 fun isKeyboardShown(root: View): Boolean
 {
     val rect = Rect()

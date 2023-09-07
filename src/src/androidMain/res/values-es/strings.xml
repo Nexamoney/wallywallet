@@ -116,7 +116,7 @@ Good luck!
     <string name="unsynced">sincronizando</string>
     <string name="connected">conectado</string>
     <string name="balance">Saldo actual</string>
-    <string name="total">total recibido</string>
+    <string name="totalReceived">total recibido</string>
     <!-- this is an indication that we are still waiting for some web page to load. please leave the HTML and just translate ...loading... -->
     <string name="WebLoadingPage">&lt;body&gt;&lt;h1&gt;&lt;center&gt;...cargando...&lt;/h1&gt;&lt;/center&gt;&lt;/body&gt;</string>
     <!-- Implication is "no charge" or "no cost" for a transaction -->
@@ -455,7 +455,7 @@ Good luck!
     <string name="ButtonLinkHere">Ingresar enlace web</string>
     <string name="ShoppingWarning">PRECAUCIÓN: Los elementos en esta página son enlaces a servicios y sitios web de terceros, colocados aquí para su conveniencia. Estos sitios/servicios no han sido evaluados por Wally Wallet. ¡Úselos bajo su propio riesgo!</string>
     <!-- All items are specified here so the service itself can be localized if your country does work with the default service. Use empty strings to disable -->
-    <string name="BadLink">Enlace web inválido</string>
+    <string name="BadWebLink">Enlace web inválido</string>
     <string name="NFTs">Tokens no fungibles (NFTs)</string>
     <string name="ExplainNFTs">NiftyArt.cash: Crea y comercia imágenes únicas y representaciones digitales de objetos exclusivos.</string>
     <string name="NftUrl">http://niftyart.cash</string>

@@ -67,7 +67,7 @@
 	<string name="unsynced">synchronisiert</string>
 	<string name="connected">verbunden</string>
 	<string name="balance">aktuelles Guthaben</string>
-	<string name="total">insgesamt erhalten</string>
+	<string name="totalReceived">insgesamt erhalten</string>
 	<string name="WebLoadingPage">
 		<![CDATA[<body><h1><center>...lädt...</h1></center></body>]]>
 	</string>
@@ -363,7 +363,7 @@ versuchen Sie es nochmal.
 	<string name="ButtonTextHere">Buttontext eingeben</string>
 	<string name="ButtonLinkHere">Weblink einfügen</string>
 	<string name="ShoppingWarning">ACHTUNG: Die Artikel auf dieser Seite sind Services und Websites von Drittanbietern, für Sie hier bereitgestellt. Diese Seiten/Services wurden nicht von Wally Wallet überprüft.\n\nBenutzen auf eigene Gefahr!</string>
-	<string name="BadLink">Ungültiger Weblink</string>
+	<string name="BadWebLink">Ungültiger Weblink</string>
 	<string name="ExplainGiftCards">Geschenkkarten kaufen gibt Ihnen Zugriff auf hunderte Stores, die nicht direkt Kryptowährung akzeptieren.</string>
 	<string name="GiftCardButton">eGifter Geschenkkarten</string>
 	<string name="GiftCardUrl">https://www.egifter.com</string>

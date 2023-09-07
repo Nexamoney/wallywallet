@@ -122,7 +122,7 @@ Good luck!
     <string name="unsynced">sincronitzant</string>
     <string name="connected">connectat</string>
     <string name="balance">balanç actual</string>
-    <string name="total">total rebut</string>
+    <string name="totalReceived">total rebut</string>
 
     <!-- this is an indication that we are still waiting for some web page to load. please leave the HTML and just translate ...loading... -->
     <string name="WebLoadingPage"><![CDATA[<body><h1><center>...carregant...</h1></center></body>]]></string>
@@ -503,7 +503,7 @@ Good luck!
     <string name="ShoppingWarning">PRECAUCIÓ: els elements d\'aquesta pàgina són enllaços a serveis i llocs web de tercers, col·locats aquí per a la vostra comoditat. Wally Wallet no ha revisat aquests llocs/serveis.\n\nFeu servir sota el vostre propi risc!</string>
 
     <!-- All items are specified here so the service itself can be localized if your country does work with the default service. Use empty strings to disable -->
-    <string name="BadLink">Enllaç web no vàlid</string>
+    <string name="BadWebLink">Enllaç web no vàlid</string>
     <string name="NFTs">Nonfungible Tokens (NFTs)</string>
     <string name="ExplainNFTs">NiftyArt.cash: Creeu i comercialitzeu imatges úniques i representacions digitals d\'articles únics</string>
     <string name="NftUrl">http://niftyart.cash</string>

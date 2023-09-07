@@ -32,12 +32,10 @@ import info.bitcoinunlimited.www.wally.databinding.ActivityMainBinding
 import info.bitcoinunlimited.www.wally.databinding.AssetSuccinctListItemBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.lang.Thread.sleep
 import com.ionspin.kotlin.bignum.decimal.*
 import io.ktor.http.*
-import java.math.RoundingMode
-import java.net.URL
 import java.util.*
+
 
 import kotlin.concurrent.thread
 import org.nexa.libnexakotlin.*
@@ -118,7 +116,7 @@ class MainActivity : CommonNavActivity()
     public lateinit var ui: ActivityMainBinding
     lateinit var sendAssetsLayoutManager: LinearLayoutManager
     lateinit var sendAssetsAdapter: GuiList<AssetInfo, AssetSuccinctBinder>
-    override var navActivityId = R.id.navigation_home
+    override var navActivityId:Int = R.id.navigation_home
 
     var app: WallyApp? = null
 
@@ -1159,7 +1157,7 @@ class MainActivity : CommonNavActivity()
                 }
                 if (!handled) // This should never happen because the AndroidManifest.xml Intent filter should match the URIs that we handle
                 {
-                    displayError(R.string.BadLink, receivedIntent.scheme.toString())
+                    displayError(R.string.BadWebLink, receivedIntent.scheme.toString())
                 }
 
             }

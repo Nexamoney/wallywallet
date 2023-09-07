@@ -116,7 +116,7 @@ Good luck!
 <string name="unsynced">समकालीनता</string>
 <string name="connected">जुड़ा</string>
 <string name="balance">वर्तमान शेष</string>
-<string name="total">कुल प्राप्त</string>
+<string name="totalReceived">कुल प्राप्त</string>
 <!-- this is an indication that we are still waiting for some web page to load. please leave the HTML and just translate ...loading... -->
 <string name="WebLoadingPage">&lt;body&gt;&lt;h1&gt;&lt;center&gt;...लोड हो रहा है...&lt;/h1&gt;&lt;/center&gt;&lt;/body&gt;</string>
 <!-- Implication is "no charge" or "no cost" for a transaction -->
@@ -455,7 +455,7 @@ Good luck!
 <string name="ButtonLinkHere">वेब लिंक दर्ज करें</string>
 <string name="ShoppingWarning">सावधानी: इस पेज पर दिए गए आइटम आपकी सुविधा के लिए यहाँ रखे गए 3वें पक्ष की सेवाओं और वेबसाइटों के लिंक हैं। ये साइट/सेवाएं वाली वॉलेट द्वारा जांच नहीं की गई हैं।\n\nअपने जोखिम पर उपयोग करें!</string>
 <!-- All items are specified here so the service itself can be localized if your country does work with the default service. Use empty strings to disable -->
-<string name="BadLink">अमान्य वेब लिंक</string>
+<string name="BadWebLink">अमान्य वेब लिंक</string>
 <string name="NFTs">गैर-फंगिबल टोकन (NFTs)</string>
 <string name="ExplainNFTs">NiftyArt.cash: अनूठे आइटमों की अनूठी तस्वीरें और डिजिटल प्रतिनिधियों को बनाएं और व्यापार करें।</string>
 <string name="NftUrl">http://niftyart.cash</string>

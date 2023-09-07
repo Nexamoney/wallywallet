@@ -122,7 +122,7 @@ Good luck!
     <string name="unsynced">in attesa di sincronizzazione</string>
     <string name="connected">connesso</string>
     <string name="balance">saldo attuale</string>
-    <string name="total">totale ricevuto</string>
+    <string name="totalReceived">totale ricevuto</string>
 
     <!-- this is an indication that we are still waiting for some web page to load. please leave the HTML and just translate ...loading... -->
     <string name="WebLoadingPage"><![CDATA[<body><h1><center>...in caricamento...</h1></center></body>]]></string>
@@ -506,7 +506,7 @@ Good luck!
     <string name="ShoppingWarning">ATTENZIONE: Gli elementi in questa pagina sono collegamenti a servizi e siti web di terze parti, inseriti qui per tua comodità. Questi siti/servizi non sono stati verificati da Wally Wallet.\n\nUsa a tuo rischio!</string>
 
     <!-- All items are specified here so the service itself can be localized if your country does work with the default service. Use empty strings to disable -->
-    <string name="BadLink">Link web non valido</string>
+    <string name="BadWebLink">Link web non valido</string>
     <string name="NFTs">Token non fungibili (NFT)</string>
     <string name="ExplainNFTs">NiftyArt.cash: Crea e scambia immagini uniche e rappresentazioni digitali di oggetti unici</string>
     <string name="NftUrl">http://niftyart.cash</string>

@@ -51,10 +51,10 @@ fun DashboardPanel(dashWidth: Dp, accounts: MutableMap<String, Bip44Wallet>)
         {
             val headerStyle = TextStyle(fontWeight = FontWeight.Bold, fontSize = dashboardFontSize)
             val textStyle = TextStyle(fontSize = dashboardFontSize)
-            Text(_x_("Blockchains"), Modifier.fillMaxWidth(), style = headerStyle)
+            Text(i18n(S.Blockchain), Modifier.fillMaxWidth(), style = headerStyle)
             Text(blockchainInfo, style = textStyle, overflow = TextOverflow.Clip)
 
-            Text(_x_("Wallets"), style = headerStyle)
+            Text(i18n(S.AccountListHeader), style = headerStyle)
             Text(walletInfo, style = textStyle, overflow = TextOverflow.Clip, softWrap = false)
         }
     }

@@ -31,6 +31,7 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.nexa.libnexakotlin.*
 import java.io.DataOutputStream
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -41,10 +42,7 @@ import java.net.URL
 import java.security.spec.InvalidKeySpecException
 import java.util.*
 import java.util.concurrent.Executors
-
 import kotlin.coroutines.CoroutineContext
-
-import org.nexa.libnexakotlin.*
 
 val LAST_RESORT_BCH_ELECTRS = "bch2.bitcoinunlimited.net"
 val LAST_RESORT_NEXA_ELECTRS = "electrum.nexa.org"
@@ -241,28 +239,28 @@ class AccessHandler(val app: WallyApp)
 
 // in app init, we change the lbbc integers to our own resource ids.  So this translation is likely unnecessary
 val i18nLbc = mapOf(
-  RinsufficentBalance to R.string.insufficentBalance,
-  RbadWalletImplementation to R.string.badWalletImplementation,
-  RdataMissing to R.string.PaymentDataMissing,
-  RwalletAndAddressIncompatible to R.string.chainIncompatibleWithAddress,
-  RnotSupported to R.string.notSupported,
-  Rexpired to R.string.expired,
-  RsendMoreThanBalance to R.string.sendMoreThanBalance,
-  RbadAddress to R.string.badAddress,
-  RblankAddress to R.string.blankAddress,
-  RblockNotForthcoming to R.string.blockNotForthcoming,
-  RheadersNotForthcoming to R.string.headersNotForthcoming,
-  RbadTransaction to R.string.badTransaction,
-  RfeeExceedsFlatMax to R.string.feeExceedsFlatMax,
-  RexcessiveFee to R.string.excessiveFee,
-  Rbip70NoAmount to R.string.badAmount,
-  RdeductedFeeLargerThanSendAmount to R.string.deductedFeeLargerThanSendAmount,
-  RwalletDisconnectedFromBlockchain to R.string.walletDisconnectedFromBlockchain,
-  RsendDust to R.string.sendDustError,
-  RnoNodes to R.string.NoNodes,
-  RwalletAddressMissing to R.string.badAddress,
-  RunknownCryptoCurrency to R.string.unknownCryptoCurrency,
-  RsendMoreTokensThanBalance to R.string.insufficentTokenBalance
+  RinsufficentBalance to S.insufficentBalance,
+  RbadWalletImplementation to S.badWalletImplementation,
+  RdataMissing to S.PaymentDataMissing,
+  RwalletAndAddressIncompatible to S.chainIncompatibleWithAddress,
+  RnotSupported to S.notSupported,
+  Rexpired to S.expired,
+  RsendMoreThanBalance to S.sendMoreThanBalance,
+  RbadAddress to S.badAddress,
+  RblankAddress to S.blankAddress,
+  RblockNotForthcoming to S.blockNotForthcoming,
+  RheadersNotForthcoming to S.headersNotForthcoming,
+  RbadTransaction to S.badTransaction,
+  RfeeExceedsFlatMax to S.feeExceedsFlatMax,
+  RexcessiveFee to S.excessiveFee,
+  Rbip70NoAmount to S.badAmount,
+  RdeductedFeeLargerThanSendAmount to S.deductedFeeLargerThanSendAmount,
+  RwalletDisconnectedFromBlockchain to S.walletDisconnectedFromBlockchain,
+  RsendDust to S.sendDustError,
+  RnoNodes to S.NoNodes,
+  RwalletAddressMissing to S.badAddress,
+  RunknownCryptoCurrency to S.unknownCryptoCurrency,
+  RsendMoreTokensThanBalance to S.insufficentTokenBalance
 )
 
 class ActivityLifecycleHandler(private val app: WallyApp) : Application.ActivityLifecycleCallbacks
@@ -315,30 +313,30 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
 {
     init
     {
-        RinsufficentBalance = R.string.insufficentBalance
-        RbadWalletImplementation = R.string.badWalletImplementation
-        RwalletAndAddressIncompatible = R.string.chainIncompatibleWithAddress
-        RnotSupported = R.string.notSupported
-        Rexpired = R.string.expired
-        RsendMoreThanBalance = R.string.sendMoreThanBalance
-        RbadAddress = R.string.badAddress
-        RblankAddress = R.string.blankAddress
-        RblockNotForthcoming = R.string.blockNotForthcoming
-        RheadersNotForthcoming = R.string.headersNotForthcoming
-        RbadTransaction = R.string.badTransaction
-        RfeeExceedsFlatMax = R.string.feeExceedsFlatMax
-        RexcessiveFee = R.string.excessiveFee
-        Rbip70NoAmount = R.string.badAmount
-        RdeductedFeeLargerThanSendAmount = R.string.deductedFeeLargerThanSendAmount
-        RwalletDisconnectedFromBlockchain = R.string.walletDisconnectedFromBlockchain
-        RsendDust = R.string.sendDustError
-        RbadCryptoCode = R.string.badCryptoCode
-        RwalletAddressMissing = R.string.badAddress
-        RunknownCryptoCurrency = R.string.unknownCryptoCurrency
-
-        // RdataMissing = R.string.dataMissing
-        // RnoNodes = 0xf00d + 18 // R.string.noNodes
-        // RneedNonexistentAuthority = R.string.n
+        RinsufficentBalance = S.insufficentBalance
+        RbadWalletImplementation = S.badWalletImplementation
+        RdataMissing = S.PaymentDataMissing
+        RwalletAndAddressIncompatible = S.chainIncompatibleWithAddress
+        RnotSupported = S.notSupported
+        Rexpired = S.expired
+        RsendMoreThanBalance = S.sendMoreThanBalance
+        RbadAddress = S.badAddress
+        RblankAddress = S.blankAddress
+        RblockNotForthcoming = S.blockNotForthcoming
+        RheadersNotForthcoming = S.headersNotForthcoming
+        RbadTransaction = S.badTransaction
+        RfeeExceedsFlatMax = S.feeExceedsFlatMax
+        RexcessiveFee = S.excessiveFee
+        Rbip70NoAmount = S.badAmount
+        RdeductedFeeLargerThanSendAmount = S.deductedFeeLargerThanSendAmount
+        RwalletDisconnectedFromBlockchain = S.walletDisconnectedFromBlockchain
+        RsendDust = S.sendDustError
+        RnoNodes = S.NoNodes
+        RbadCryptoCode = S.badCryptoCode
+        RneedNonexistentAuthority = S.needNonexistentAuthority
+        RwalletAddressMissing = S.badAddress
+        RunknownCryptoCurrency = S.unknownCryptoCurrency
+        RsendMoreTokensThanBalance = S.sendMoreTokensThanBalance
     }
 
 
@@ -878,6 +876,13 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         notInUIscope = coMiscScope
         appResources = getResources()
         displayMetrics = getResources().getDisplayMetrics()
+        val locales = resources.configuration.locales
+        for (idx in 0 until locales.size())
+        {
+            val loc = locales[idx]
+            LogIt.info("Locale: ${loc.language} ${loc.country}")
+            if (setLocale(loc.language, loc.country)) break
+        }
         wallyApp = this
 
         // Add the Wally Wallet server to our list of Electrum/Rostrum connection points

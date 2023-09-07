@@ -2,9 +2,7 @@ package info.bitcoinunlimited.www.wally
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.net.Uri
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.net.toUri
 
 import io.ktor.client.*
@@ -17,7 +15,6 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 import org.nexa.libnexakotlin.libnexa
-import java.lang.Math.random
 import java.net.SocketTimeoutException
 import java.net.URL
 import java.net.URLEncoder
@@ -607,7 +604,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         val url = replyProtocol + "://" + hostAndPort + "/address?" + cookieParam
 
         val d = domain
-        if (d == null) throw TdppException(R.string.BadLink, "bad domain")
+        if (d == null) throw TdppException(R.string.BadWebLink, "bad domain")
 
         // Once you've associated an address with this domain, you've also associated an account!
         val acc = getRelevantAccount(d.accountName)
@@ -805,7 +802,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         val txHex = uri.getQueryParameter("tx")
         if (txHex == null)
         {
-            throw TdppException(R.string.BadLink, "missing tx parameter")
+            throw TdppException(R.string.BadWebLink, "missing tx parameter")
         }
 
         parseCommonFields(uri)
@@ -816,7 +813,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         val inputSatoshis = uri.getQueryParameter("inamt")?.toLongOrNull()  // ?: return displayError(R.string.BadLink)
         if ((inputSatoshis == null) && ((tflags and TDPP_FLAG_NOFUND) == 0))
         {
-            throw TdppException(R.string.BadLink, "missing inamt parameter")
+            throw TdppException(R.string.BadWebLink, "missing inamt parameter")
         }
 
         val tx = txFor(chainSelector!!, BCHserialized(txHex.fromHex(), SerializationType.NETWORK))
@@ -848,7 +845,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
             // if one exists but not the other, request is bad
             if ((amtS != null) xor (addrS != null))
             {
-                throw DataMissingException(i18n(R.string.BadLink))
+                throw DataMissingException(i18n(R.string.BadWebLink))
                 // return displayError(R.string.BadLink, "missing parameter")
             }
             // if either do not exist, done
@@ -875,11 +872,11 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
     {
         parseCommonFields(uri)
         val d = domain
-        if (d == null) throw TdppException(R.string.BadLink, "bad domain")
+        if (d == null) throw TdppException(R.string.BadWebLink, "bad domain")
 
         val bc = uri.getQueryParameter("blockchain") ?: chainToURI[ChainSelector.NEXA]
         chainSelector = uriToChain[bc]
-        if (chainSelector == null) throw TdppException(R.string.BadLink, "unknown blockchain")
+        if (chainSelector == null) throw TdppException(R.string.BadWebLink, "unknown blockchain")
 
         uniqueAddress = uri.getQueryParameter("unique").toBoolean() ?: false
 
@@ -890,14 +887,14 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
     {
         parseCommonFields(uri)
         val d = domain
-        if (d == null) throw TdppException(R.string.BadLink, "bad domain")
+        if (d == null) throw TdppException(R.string.BadWebLink, "bad domain")
 
         if (d.assetInfo == TdppAction.DENY) return TdppAction.DENY
 
         val scriptTemplateHex = uri.getQueryParameter("af")
         if (scriptTemplateHex == null)
         {
-            throw TdppException(R.string.BadLink, "missing 'af' parameter")
+            throw TdppException(R.string.BadWebLink, "missing 'af' parameter")
         }
 
         val chalbyStr = uri.getQueryParameter("chalby")

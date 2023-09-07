@@ -46,7 +46,7 @@
     <string name="unsynced">nesinhronizirana</string>
     <string name="connected">povezana</string>
     <string name="balance">trenutno stanje</string>
-    <string name="total">skupno prejeto</string>
+    <string name="totalReceived">skupno prejeto</string>
     <!--  this is an indication that we are still waiting for some web page to load. please leave the HTML and just translate ...loading...  -->
     <string name="WebLoadingPage">
 <![CDATA[ <body><h1><center>...nalaganje...</h1></center></body> ]]>
@@ -396,7 +396,7 @@
 <string name="ButtonLinkHere">Vnesi spletno povezavo</string>
 <string name="ShoppingWarning"> POZOR: Elementi na tej strani so povezave do storitev in spletnih mest tretjih oseb, ki so tukaj postavljene zaradi vas Teh spletnih mest/storitev ni preveril Wally Wallet.\n\nUporabljajte na lastno odgovornost!</string>
 <!--  All items are specified here so the service itself can be localized if your country does work with the default service. Use empty strings to disable  -->
-<string name="BadLink">Neveljavna spletna povezava</string>
+<string name="BadWebLink">Neveljavna spletna povezava</string>
 <string name="ExplainGiftCards"> Nakup darilnih kartic vam omogoča dostop do stotine trgovin, ki ne sprejemajo neposredno kriptovalute.</string>
 <string name="GiftCardButton">eGifter darilne kartice</string>
 <string name="GiftCardUrl">https://www.egifter.com</string>
