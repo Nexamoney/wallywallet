@@ -624,7 +624,8 @@ for (s in kotlin.targets)
 
 /* Put all the dependent files into a single big jar */
 tasks.register<Jar>("appJar") {
-    archiveClassifier.set("app")
+    //archiveClassifier.set("app")
+    archiveBaseName.set("wpw")
     manifest {
         attributes["Main-Class"] = "info.bitcoinunlimited.www.wally.WallyJvmApp"
     }
@@ -649,7 +650,7 @@ tasks.register<Jar>("appJar") {
 
 tasks {
     register<Exec>("runJvmApp") {
-        commandLine("java", "-classpath", "build/libs/src-app.jar", "info.bitcoinunlimited.www.wally.WallyJvmApp")
+        commandLine("java", "-classpath", "build/libs/wpw.jar", "info.bitcoinunlimited.www.wally.WallyJvmApp")
     }
 }
 
