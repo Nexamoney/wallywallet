@@ -5,11 +5,14 @@ import java.time.Instant
 import java.net.URL
 
 // Dependency versions
+val mpThreadsVersion = "0.1.7"
+val nexaRpcVersion = "1.1.3"
+val libNexaKotlinVersion = "0.0.13"
+
 val serializationVersion = "1.6.0"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.7.3"     // https://github.com/Kotlin/kotlinx.coroutines
 val ktorVersion = "2.3.3"           // https://github.com/ktorio/ktor
 val bigNumVersion = "0.3.8"
-val mpThreadsVersion = "0.1.6"
 val composeVersion = "1.5.0"
 val androidxActivityComposeVersion = "1.7.2"
 
@@ -249,7 +252,7 @@ kotlin {
 
                 // nexa
                 implementation("org.nexa:mpthreads:$mpThreadsVersion")
-                implementation("org.nexa:libnexakotlin:0.0.12")
+                implementation("org.nexa:libnexakotlin:$libNexaKotlinVersion")
                 //implementation("org.nexa:walletoperations:0.0.1")
             }
         }
@@ -433,7 +436,7 @@ kotlin {
         val androidInstrumentedTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
-                implementation("org.nexa:nexarpc:1.1.2")
+                implementation("org.nexa:nexarpc:$nexaRpcVersion")
                 implementation("androidx.test:core:1.5.0")
                 implementation("androidx.test:core-ktx:1.5.0")
                 implementation("androidx.test.ext:junit:1.1.5")
