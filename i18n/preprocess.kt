@@ -10,7 +10,7 @@ import org.w3c.dom.*
 
 var packageName = "info.bitcoinunlimited.www.wally"
 
-var langs = listOf("ca","de","es","et","hi","in","it","nb","no","round","sl","sv","tr")
+var langs = listOf("ca","de","es","et","hi","in","it","nb","no","round","sl","sv","tr","ko")
 
 fun readStringsXml(filename: String):MutableMap<String,String>
 {

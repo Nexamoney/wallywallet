@@ -42,7 +42,7 @@ val MSWIN = System.getProperty("os.name").lowercase().contains("windows")
 // another host.
 val LINUX_TARGETS = LINUX
 val LINUX_NATIVE_TARGETS = false // not supported in compose
-val MAC_TARGETS = MAC || LINUX
+val MAC_TARGETS = MAC // || LINUX
 // ktor network does not support ms windows so we cannot produce MSWIN right now
 var MSWIN_TARGETS = false
 
@@ -249,7 +249,7 @@ kotlin {
 
                 // nexa
                 implementation("org.nexa:mpthreads:$mpThreadsVersion")
-                implementation("org.nexa:libnexakotlin:0.0.10")
+                implementation("org.nexa:libnexakotlin:0.0.12")
                 //implementation("org.nexa:walletoperations:0.0.1")
             }
         }
@@ -282,8 +282,14 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.common)
+                // Strangely this appears to work on multiple platforms (win, macos) if the linux-built jar is copied to them
                 implementation("org.jetbrains.skiko:skiko-awt-runtime-$skikoTarget:$skikoVersion")
                 implementation(compose.desktop.currentOs)
+                implementation(compose.desktop.linux_x64)
+                implementation(compose.desktop.linux_arm64)
+                implementation(compose.desktop.windows_x64)
+                implementation(compose.desktop.macos_x64)
+                implementation(compose.desktop.macos_arm64)
                 implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
             }
         }

@@ -2,3 +2,9 @@ local.properties
 .idea
 .gradle
 **build
+i18n/*.bin
+i18n/*.jar
+dwally.log*
+src/dwally.log*
+src/*.db
+*.db

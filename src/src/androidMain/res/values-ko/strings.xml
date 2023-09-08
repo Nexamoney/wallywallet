@@ -1,0 +1,614 @@
+<resources>
+    <!-- Hi and thanks for translating!
+If you see anything that is surrounded with symbols just like this text, that is, within !- and - (but with 2 dashes, I cannot write it here), then do not translate.
+These are comments to help you understand what to do or the context the next word is used in.
+
+Entries that need to be translated will look something like this:
+<string name="yes">yep</string>
+
+Do not translate the word in quotes (in this case "yes").  This is a name that we use to look up your translation.
+But DO translate the word or sentence between the greater than and less than signs.  In this case "yep".
+
+For example, if you were doing a French you might do this replacement:
+<string name="yes">oui</string>
+
+Try to not make your translation a lot longer than the english, or it might not all fit in the space the app has on screen!
+
+
+If, in the part you are supposed to translate, you see a percent sign and a word, like this: %foo, then do not translate it.  For example:
+
+<string name="delQ">Delete account "%accountName" (on %blockchain)</string>
+
+What is happening here is that the app will replace %accountName with the actual name of the relevant account and %blockchain with the actual name of the blockchain.
+So it will look like this in the app:
+  Delete account "myNexaAct" (on Nexa)
+
+You can change the order of the replaced words just by moving where the %word is in your translation.  For example, I could change this to:
+
+<string name="delQ">Delete from %blockchain, account "%accountName"</string>
+
+Good luck!
+-->
+    <string name="app_name" translatable="false">월리</string>
+    <string-array name="CurrencyTypes">
+        <item>NEX</item>
+        <item>USD</item>
+    </string-array>
+    <string-array name="FiatCurrencyTypes">
+        <item>BRL</item>
+        <item>CAD</item>
+        <item>CNY</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>JPY</item>
+        <item>RUB</item>
+        <item>USD</item>
+        <item>XAU</item>
+    </string-array>
+
+    <string name="uBCH" translatable="false">uBCH</string>
+    <string name="NEX" translatable="false">NEX</string>
+
+    <string-array name="OneToTen">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="tipPercentage">
+        <item>--</item>
+        <item>0%</item>
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+        <item>50%</item>
+    </string-array>
+
+    <!-- General -->
+    <string name="yes">네</string>
+    <string name="no">아니오</string>
+    <!-- used to specify what position in the blockchain -->
+    <string name="at">번째</string>
+    <!-- used to specify that total blockchain size "at block 6 of 100"  -->
+    <string name="of">중에서</string>
+    <!-- used to ask the user to pick an account -->
+    <string name="choose">선택하기</string>
+    <!-- accept a proposed transaction, configuration change, or a request from an external service -->
+    <string name="accept">승인하기</string>
+    <!-- reject a proposed transaction or configuration change -->
+    <string name="reject">거부하기</string>
+    <!-- remove some remembered services, like web sites you have logged into or paid -->
+    <string name="remove">삭제하기</string>
+    <!-- you have asked the app to do something, but the app is double checking.  This means yes do it -->
+    <string name="confirm">확인</string>
+    <!-- you have asked the app to do something, but the app is double checking.  This means no user changed their mind -->
+    <string name="cancel">취소</string>
+
+    <string name="removeAll">모두 삭제하기</string>
+    <!-- done is like "yes" but more means "go to the next thing" rather than explicit acceptance of something.  The implication is that whatever is showing on the screen will be used.
+         Its modern UX philosophy of "why do we have to explicitly "save" everything on settings screens?  If you make a change, that change ought to be made, no additional button clicks needed."
+    -->
+    <string name="done">알겠습니다</string>
+    <!-- an external service is making a request (to see the assets you own, to get you to sign a transaction, or to prove your identity).  You refuse -->
+    <string name="deny">거부하기</string>
+    <!-- Should the program ask the user before authorizing this, verses automatically accepting or automatically denying -->
+    <string name="ask">확인하기</string>
+    <!-- Some service sent you a request, but the service did not properly sign the request (which proves that they are who they claim to be) -->
+    <string name="badSignature">잘못된 시그니처</string>
+
+    <string name="unknownCurrency">알 수 없는 화폐</string>
+    <string name="unknownCryptoCurrency">알 수 없는 가상화폐 또는 블록체인</string>
+    <!-- wallet is currently working on doing whatever your button click asked it to do -->
+    <string name="Processing">진행중...</string>
+    <string name="receiving">받는중</string>
+    <string name="sending">보내는중</string>
+    <string name="noAdditionalDetails">추가적인 디테일 없음</string>
+    <!-- User didn't enter any value into this field but that's ok -->
+    <string name="unspecified">상세불명</string>
+    <!-- If the user deletes something - like a connection to an external service, this is the confirmation string that the info was removed.  It needs to be short. -->
+    <string name="removed">삭제됨</string>
+    <!-- wallet is up to date with the blockchain -->
+    <string name="synced">동기화</string>
+    <!-- wallet is still connecting to the blockchain -->
+    <string name="unsynced">동기화 하는 중</string>
+    <string name="connected">연결됨</string>
+    <string name="balance">현재 자금</string>
+    <string name="totalReceived">받은 총액</string>
+
+    <string name="NoPermission">허가되지 않음</string>
+    <string name="NoPermissionDetails" formatted="false">이 기능을 사용하기 위해서 귀하는 %perm 허가를 활성화 해야 합니다. 하는 방법은 안드로이드 설정 -> 앱 -> 월리 -> 허가 입니다</string>
+
+    <!-- this is an indication that we are still waiting for some web page to load. please leave the HTML and just translate ...loading... -->
+    <string name="WebLoadingPage"><![CDATA[<body><h1><center>...로딩중...</h1></center></body>]]></string>
+
+    <!-- Implication is "no charge" or "no cost" for a transaction -->
+    <string name="nothing">무료</string>
+
+    <!-- This is only used in a debugging context to produce deliberately bad data -->
+    <string name="breakIt">브레이킹</string>
+
+    <!-- Do not actually put anything in this one!  Its needed when we want a blank line -->
+    <string name="empty" translatable="false"></string>
+
+    <string name="or">또는</string>
+
+    <string name="onBlockchain">~에</string>
+
+    <string name="NotImplemented">커밍 순</string>
+
+    <string name="NoNodes">블록체인 접근 불가</string>
+    <!-- The user chose not to proceed with some operation -->
+    <string name="cancelled">취소됨</string>
+    <!-- Issued if initialization is not yet complete, but user tries to access the services -->
+    <string name="pleaseWait">기다려 주세요</string>
+    <!-- Uses in the sense of attempting an operation, such as connecting to a node  -->
+    <string name="trying">시도중</string>
+
+    <!-- meaning remove all the text in an edit box -->
+    <string name="clear">전부 삭제하기</string>
+
+    <string name="thousand">천</string>
+
+    <string name="million">백만</string>
+
+    <!-- Settings -->
+    <string name="version" formatted="false">월리 지갑 버전: %ver</string>
+    <string name="enableDeveloperView">상급자/개발자 모드</string>
+    <string name="enableIdentityMenu">신원 확인 스크린 활성화</string>
+    <string name="enableTricklePayMenu">트리클 충전 스크린 활성화</string>
+    <string name="enableAssetsMenu">자산 스크린 활성화</string>
+    <string name="only">오직</string>
+    <string name="prefer">선호</string>
+    <string name="rediscoverWalletTx">모든 거래 재발견</string>
+    <string name="rediscoverBlockchain">블록체인 헤더 재발견</string>
+    <string name="logDebugData">디버그 데이터 로그</string>
+    <string name="clearIdentityDomains">신원 확인 도메인 제거하기</string>
+    <string name="rediscoverTooltip">지갑과 관련한 모든 거래를 새롭게 찾고 블록체인 스테이트 삭제하기</string>
+    <string name="wordSeed">계정 복구 비밀 문구</string>
+    <string name="deleteWalletAccount">계정 삭제하기</string>
+
+    <!-- a PIN is a numeric password that gives you access to your account -->
+    <string name="SetChangePin">핀번호 설정 또는 바꾸기</string>
+    <string name="CurrentPin">현재 핀번호</string>
+    <string name="NewPin">새로운 핀번호</string>
+    <string name="PinChanged">핀번호가 변경됨</string>
+    <string name="PinRemoved">핀번호가 제거됨</string>
+    <string name="PinInvalid">유효하지 않은 핀번호</string>
+    <string name="PinTooShort">새로운 핀번호가 너무 짧습니다</string>
+    <string name="WriteDownRecoveryPhraseWarning">경고: 귀하는 아직 몇 계정들의 비밀 복구 문구를 적어두지 않았습니다! 기기를 잃어버리거나 기기가 부숴져도 자금을 잃지 않기 위해 비밀 복구 키를 종이나 다른 비전자 형식에 적어두세요. 복구 키는 각 계정의 설정 페이지에서 확인 가능합니다.</string>
+    <string name="WroteRecoveryPhraseDown">나는 적었습니다</string>
+    <string name="RecoveryPhraseKeepRemindingMe">계속해서 알려주세요</string>
+    <string name="ViewRecoveryPhrase">계정 복구 비밀 문구 보기</string>
+    <string name="localCurrency">현지 화폐</string>
+    <string name="assessUnconfirmed">컨펌되지 않은 거래들 확인하기</string>
+    <string name="rediscoverNotice">계정 재발견 시작됨</string>
+    <string name="unconfAssessmentNotice">컨펌되지 않은 평가 시작됨</string>
+    <string name="accountDeleteNotice">계정이 삭제됨</string>
+    <string name="rediscoverConfirmation">계정 재발견은 발견되지 않은 지불을 위해 지갑이 생성된 이후의 블록체인을 탐색할 것입니다. 이 과정은 오래 걸릴 수 있습니다. 지불이 발견되지 않았다고 확신되는 경우에만 사용하세요!</string>
+    <string name="rediscoverBlockchainConfirmation">블록체인 재발견은 이 지갑으로부터의 모든 블록체인 헤더 데이터를 삭제하고 풀 노드를 통해 다시 다운로드할 것입니다. 이 과정을 오래 걸릴 수 있습니다. 블록체인 헤더 문제가 있다고 확신하는 경우에만 사용하세요.</string>
+    <string name="deleteConfirmation" formatted="false">계정 삭제하기는 계정이 계정 복구 비밀 문구를 통해 복구된 경우를 제외하곤 모든 자금, 신원 확인 및 내역들이 이용 불가능하게 됩니다. 완전히 확신하는 경우에만 이용하세요!\n\n계정 삭제하기 "%accountName" (%blockchain 에)?</string>
+    <string name="reassessConfirmation">해당 진행은 귀하가 최근에 보낸 거래들을 체크할 것입니다. 그들의 존재 여부에 따라 그들을 확인하거나 지울 것입니다. 만약 거래가 지워졌다면 자금이 사라진 것처럼 보일 것입니다. 귀하는 "재발견"을 해야 사용한 자금을 다시 확보할 수 있습니다. 최근에 거래를 생성했다면 그 거래가 네트워크에 잠재되어 컨펌을 기다릴수도 있으니 사용하지 마세요.</string>
+    <string name="recoveryPhrase">이 12 단어 문구는 귀하의 핸드폰이 망가지거나 잃어버렸을 때 귀하의 지갑을 복구하는데 사용될 수 있습니다. 이것은 또한 이 문구를 가진 누구던 귀하의 돈을 사용할 수 있다는 것을 의미합니다. 종이에 적거나 안전하게 보관하세요!</string>
+    <string name="primaryAccountConfirmation">귀하의 주요 계정은 귀하의 신원 확인을 위해 사용되며 자동 지불을 위해 사용됩니다. 또한 이 계정은 이 앱의 많은 곳에서 처음으로 보이는 계정입니다. 이 계정은 반드시 NEXA 블록체인에 있어야 합니다.</string>
+    <string name="AccountActions">계정 활동</string>
+    <string name="GeneralSettings">일반 설정</string>
+    <string name="BlockchainSettings">블록체인 소스</string>
+    <string name="AccessPriceData">가격 데이터 접근하기</string>
+    <!-- not used right now string name="AccessPriceDataHint">이 기능은 지갑이 귀하의 가상화폐의 가치를 보여주게 합니다. 그러나 이 데이터는 정확하지 않을 수 있습니다. 그리고 이 접근 기능은 더 많은 데이터를 이용하며 데이터를 제공하는 곳에 귀하의 IP 주소를 알려줍니다.</string -->
+
+    <!-- Split bill -->
+    <string name="SplitBillDescription">귀하는 (in fiat) 금액을 계산합니다, 귀하의 친구들은 아래의 QR코드를 통해 그들의 부분을 귀하에게 지불합니다</string>
+    <string name="Total">총금액:</string>
+    <!-- Ways refers to how many equal portions a bill is being split into -->
+    <string name="Ways">분할 갯수:</string>
+    <!-- Tip (gratuity) is how much more money you want to pay above the value of the bill -->
+    <string name="Tip">팁:</string>
+
+    <string name="Amount">금액:</string>
+    <!-- Home Page -->
+
+    <!-- As the wallet is syncing, it shows you a balance.  But if the wallet is not caught up to NOW it shows this so you know that the balance that is being shown is not up to date.
+    IF YOU SEE %something (in this case date), THEN DO NOT translate the "something".  It will be replaced with the actual value by the program (in this case the date).
+    -->
+    <string name="balanceOnTheDate">%date 의</string>
+
+    <!-- A QR is the 2-dimensional black and white boxes of pixels that wallets scan to read info -->
+    <string name="goodQR">식별 가능한 QR</string>
+    <string name="badQR">식별 불가능한 QR</string>
+    <string name="badImageQR">잘못된 QR 이미지. 더 많은...</string>
+    <string name="badImageQRhelp">만약 귀하가 QR코드를 가까이서 찍고 있다면 좀 더 떨어져서 찍어보세요. 흰색 부분도 QR코드의 일부이므로 만약 가까이서 찍고 있다면 카메라 모아레 현상이 발생할 수 있습니다.</string>
+    <!-- as in unlock an account -->
+    <string name="unlock">풀다</string>
+    <string name="share">공유하다</string>
+    <string name="Send">보내다</string>
+    <string name="OpenSend">보내다</string>
+    <string name="SendCancel">취소하다</string>
+    <string name="ignoredInsecureRequest">안전하지 않은 요청 무시됨</string>
+    <!-- As in "Send from" what account -->
+    <string name="fromAccountColon">계정:%account 에서 보내기</string>
+    <!-- if user forgot to pick an account -->
+    <string name="chooseAccountError">수량을 선택하세요</string>
+    <!-- As in "Send to" -->
+    <string name="toColon">수신인주소:</string>
+    <string name="assetsColon">자산:</string>
+    <!-- As in what entity is requesting information -->
+    <string name="fromColon">송신인주소:</string>
+    <string name="Receive">계정으로 받기</string>
+    <string name="AccountListHeader">계정</string>
+    <!-- This is referring to a cryptocurrency address, not a physical address -->
+    <string name="Address">주소</string>
+    <string name="clipboard">클립보드</string>
+    <string name="settings">설정</string>
+    <string name="help">도움말</string>
+    <string name="invalidQuantity">유효하지 않은 수량</string>
+    <string name="invalidQuantityTooManyDecimalDigits">소수점 자리수가 너무 많습니다</string>
+    <string name="roundedUpClickSendAgain">반올림 되었습니다, 승인하려면 보내기를 한 번 더 누르세요</string>
+    <!-- Write this below the send quantity field when it is empty - you probably want to write nothing at all -->
+    <string name="emptyQuantityField"></string>
+    <string name="purchase">구매하기</string>
+    <string name="scanPaymentQRcode">지불 주소 QR코드 스캔하기</string>
+    <string name="ScanQRCodeButton">QR코드 스캔하기</string>
+    <string name="PasteDestinationAddressButton">붙여넣기</string>
+    <string name="NewAccountButton">새로운 계정 만들기</string>
+    <string name="NewAccountSearchingForTransactions">...거래 탐색중...</string>
+    <string name="NewAccountSearchFailure">거래 탐색이 실패함</string>
+    <string name="receiveAddressQRCode">QR코드 받기</string>
+    <string name="paymentProposal">받은 지불 요청에 따라서</string>
+    <!-- You clicked the paste button (in a copy/paste operation), but nothing was copied -->
+    <string name="pasteIsEmpty">빈 칸을 복사합니다</string>
+    <!-- Informational: The contents of the copy/paste buffer did not make any sense to me, but you did not explicitly tell me to paste so maybe that's ok.
+     The app did not use this paste information.  This error happens when the app checks for implicit pastes.  For example, when wally wallet
+     starts up it guesses that it might have been started to make a payment so checks the paste buffer for a destination address.
+     -->
+    <string name="pasteIgnored">붙여넣기가 무시됨</string>
+    <!-- Error: The information in the copy/paste buffer did not make any sense to me (not a crypto address, for example), and you explicitly asked me to paste.
+     The app refuses to fill the field with this information because it does not make sense to do so. -->
+    <string name="pasteUnintelligible">유효하지 않은 붙여넣기</string>
+    <string name="chainIncompatibleWithAddress">계정과 호환되지 않는 주소</string>
+    <string name="chainIncompatibleWithAddressDetails" formatted="false">계정의 화폐는 %walletCrypto 이고 주소는 %addressCrypto 입니다. 콤보 박스를 이용하여 해당 주소의 블록체인과 매칭되는 송신인주소로 바꾸세요.</string>
+    <string name="incoming" formatted="false">보류중인 %delta %unit 포함</string>
+    <string name="approximatelyT" formatted="false">대략 %qty %fiat</string>
+    <string name="exchangeRate" formatted="false">(교환 비율: 1 %fiat 는 %amt %crypto 의 가치가 있습니다)</string>
+    <!-- user is attempting to send more cryptocurrency than the wallet contains.  The payment cannot happen -->
+    <string name="moreThanAvailable">"(사용 가능한 수량을 초과했습니다)"</string>
+    <!-- This is a warning or informational message.  It says that the user is sending recently received coins, which is perfectly OK but slightly increases the chance of payment failure -->
+    <string name="moreThanConfirmedAvailable">"(컨펌된 횟수를 초과했습니다)"</string>
+    <string name="actuallySendingT" formatted="false">실제로 %qty %crypto 를 보내는 중</string>
+    <string name="copiedToClipboard">...클립보드에 복사됨...</string>
+    <string name="cannotCopyToClipboard">클립보드에 복사할 수 없습니다</string>
+    <string name="tooLargeForClipboard">클립보드에 이미 데이터가 꽉 차있습니다</string>
+    <string name="scanFailed">스캔 실패</string>
+    <string name="scanSuccess">스캔 성공</string>
+    <string name="sendSuccess">보내기 성공</string>
+    <string name="sendQuantityHint">보낼 수량</string>
+    <string name="sendRequestNotification">보내기가 요청됨</string>
+    <string name="sendToAddressHint">도착 주소</string>
+    <string name="sendAll">전체</string>
+    <string name="editSendNoteHint">해당 전송에 대한 노트</string>
+    <string name="subSatoshiQuantities">너무 많은 소수점 자리수 -- 이 화폐는 그만큼 잘게 나눌 수 없습니다.</string>
+
+    <string name="retrievingExchangeRate">아직 교환 비율 확보중</string>
+    <string name="unavailableExchangeRate">교환 비율 이용 불가능</string>
+
+    <!-- Identity -->
+    <string name="commonIdentityForAccount" formatted="false">계정 일반 ID: %act</string>
+    <string name="identityRequestNotification">신원 확인 요청됨</string>
+    <string name="IdentityDataMissing">부족한 신원 확인 정보</string>
+    <!-- Some web site or company that you have never contacted before is requesting that you set up an account and authenticate a log-in.  This is an informational message
+     that happens whenever the user first sets up a relationship between the web site/company and their wallet -->
+    <string name="newDomainRequestingIdentity">새로운 도메인으로부터 신원 확인이 요청됨</string>
+    <string name="domainRequestingAdditionalIdentityInfo">추가 정보가 요청됨</string>
+    <string name="useUniqueIdentityToolTip">귀하의 신원 정보가 타 사이트와 분리되어 보관될 수 있게 이 기능을 켜세요.</string>
+    <string name="provideAlias">귀하의 닉네임/핸들/별명을 제공하세요?</string>
+    <string name="provideAliasToolTip">이 옵션을 선택하면 요청시 현재 웹사이트에 귀하의 별명(설정값, 실제 이름이 아닙니다)이 제공될 것입니다.</string>
+    <string name="provideSocialMedia">귀하의 소셜 미디어 정보를 제공하세요?</string>
+    <string name="provideSocialMediaToolTip">이 옵션을 선택하면 요청시 현재 웹사이트에 귀하의 소셜 미디어 정보(설정값)가 제공될 것입니다.</string>
+    <string name="providePostalAddress">귀하의 우편 주소를 제공하세요?</string>
+    <string name="providePostalAddressToolTip">이 옵션을 선택하면 요청시 현재 웹사이트에 귀하의 주소(설정값)가 제공될 것입니다.</string>
+    <string name="provideBillingAddress">귀하의 청구지 주소를 제공하세요?</string>
+    <string name="provideBillingAddressToolTip">이 옵션을 선택하면 요청시 현재 웹사이트에 귀하의 청구지 주소(설정값)가 제공될 것입니다.</string>
+    <string name="provideEmail">귀하의 e---- 주소를 제공하세요?</string>
+    <string name="provideAvatar">귀하의 아바타 이미지를 제공하세요?</string>
+    <string name="provideRealName">귀하의 실명을 제공하세요?</string>
+    <string name="provideRealNameToolTip">이 옵션을 선택하면 요청시 현재 웹사이트에 귀하의 실명(설정값)이 제공될 것입니다.</string>
+    <string name="provideBirthday">귀하의 생일을 제공하세요?</string>
+    <string name="providePhone">귀하의 전화번호를 제공하세요?</string>
+    <string name="provideAttestations">증명을 제공하세요?</string>
+    <string name="provideAttestationsToolTip">증명은 제3자 시그니처로 귀하가 제공한 데이터를 확정합니다.</string>
+    <string name="primaryAccountRequired" formatted="false">%primCurrency 계정은 이 기능을 사용하기 위해 필요합니다.</string>
+    <string name="primaryAccountRequiredDetails" formatted="false">몇 가지 기능은 특정 가상화폐와 연결되어 있습니다. 귀하는 이 기능을 사용하기 전에 해당 가상화폐의 계정을 만들거나 풀어야 합니다.</string>
+    <string name="UnknownDomainRegisterFirst">알 수 없는 도메인, 등록을 먼저 하세요</string>
+
+    <string name="commonIdentityQRCode">QR코드</string>
+    <!-- An intent (aka link) specified an action that I do not know about -->
+    <string name="unknownOperation" formatted="false">알 수 없는 %op</string>
+    <!-- This wallet already has a registration for this site, so registration is not needed (informational notice) -->
+    <string name="alreadyRegistered">이미 등록되어 있습니다</string>
+
+    <string name="provideLoginQuestion">현재 사이트에 로그인 하시겠습니까?</string>
+    <string name="provideInfoQuestion">신원 확인 정보가 요청되었습니다</string>
+    <string name="signDataQuestion">시그니처가 요청되었습니다</string>
+    <string name="nothingToSign">제공된 메세지가 없습니다</string>
+    <string name="binaryToSign">이 바이너리 데이터에 서명하시겠습니까? </string>
+    <string name="textToSign">이 메세지에 서명하시겠습니까?</string>
+    <string name="sigInClipboard">시그니처가 클립보드에 복사되었습니다</string>
+
+    <string name="SocialMediaText">소셜 미디어</string>
+    <string name="SocialMediaSummary">서비스 리스트를 입력하세요:핸들, 예시, 트위터:janeDoe, 키베이스:janieD</string>
+    <string name="UsernameOrAliasText">닉네임/핸들/별명</string>
+    <string name="NameText">성을 포함한 이름</string>
+    <string name="PostalAddressText">우편 주소</string>
+    <string name="BillingAddressText">청구지 주소</string>
+    <string name="PostalCodeText">우편 번호</string>
+    <string name="EmailText">선택가능 e---- 주소</string>
+    <string name="TwitterText">트위터</string>
+    <string name="TelegramText">텔레그램</string>
+    <string name="IdentityAssociatedWith">연관된 신원 확인 정보</string>
+
+    <string name="areYouSure">확실하신가요?</string>
+    <string name="WhenAskSure">위의 전송을 확인합니다(NEX로)</string>
+    <string name="SendConfirmSummary">주소 %dest 에 %amt %currency %inFiat %assets 를 전송하는 것을 확인합니다</string>
+    <string name="firstName">이름</string>
+    <string name="lastName">성</string>
+
+    <string name="connectionEstablished">연결이 성립됨</string>
+    <string name="connectionException">사이트에 연결할 수 없음</string>
+    <string name="withholdingMandatoryInfo">귀하가 제공 거부한 정보를 사이트가 요청함</string>
+    <string name="badLink">잘못된 링크</string>
+    <string name="BadWebLink">유효하지 않은 웹 링크</string>
+    <string name="connectionAborted">사이트가 로그인을 중단함</string>
+    <!-- Transaction history activity -->
+    <string name="HintAdjustCostBasis">기준 또는 자본 이득</string>
+    <string name="CostBasis">비용 기준</string>
+    <string name="CapitalLoss">자본 손실</string>
+    <string name="CapitalGain">자본 이득</string>
+    <string name="OverrideSalesPrice">매도할 가격을 입력하세요</string>
+    <string name="AccountHistory">거래</string>
+    <string name="AccountAddresses">주소</string>
+
+    <!-- Account details activity -->
+    <string name="txHistoryButton">계정 활동 보기 또는 내보내기</string>
+    <string name="setAsPrimaryAccountButton">이 계정을 주 계정으로 하기</string>
+    <string name="AccountStatistics">계정 통계</string>
+    <string name="AccountBlockchainSync">현재 %sync 블록체인 %chain에서.</string>
+    <string name="AccountBlockchainDetails">%actBlockDate 에, 전체 %chainBlockCount 중 블록 %actBlock.</string>
+    <string name="AccountBlockchainConnectionDetails">%num nodes: %names 에 연결됨</string>
+    <string name="AccountNumAddresses">%num 주소들</string>
+    <string name="FirstLastReceive">%first 블록에서 첫 번째 입금, 가장 최근 블록 %last.</string>
+    <string name="FirstLastSend">%first 블록에서 첫 번째 출금, 가장 최근 블록 %last.</string>
+    <string name="AccountNumTx">%num 거래들</string>
+    <string name="AccountNumUtxos">%num 레저 개수</string>
+    <!-- Assets activity -->
+    <string name="title_activity_assets">자산</string>
+    <string name="title_activity_scan">스캔하기</string>
+
+    <!-- New Account activity -->
+    <string name="title_activity_new_account">새 계정</string>
+    <string name="AccountName">계정 이름</string>
+    <string name="AccountNameHint">1-8자</string>
+    <string name="Blockchain">블록체인</string>
+    <string name="AccountRecoveryPhrase">복구 문구</string>
+    <string name="LeaveEmptyNewWallet">새 계정을 만드려면 빈 칸으로 두세요</string>
+    <string name="PinSuggestions"><font size="15">계정에 접근하기 위해선 이 비밀번호가 필요합니다</font></string>
+    <string name="createAccount">새 계정 만들기</string>
+    <string name="invalidRecoveryPhrase">잘못된 복구 문구</string>
+    <string name="invalidAccountName">유효하지 않은 이름</string>
+    <string name="PassPhrase">암호 (선택 가능)</string>
+    <string name="Bip44ActivityNotice">계정 활동이 발견됨</string>
+    <string name="NoBip44ActivityNotice">경고, 거래가 발견되지 않음!</string>
+    <string name="Bip44BtcActivityNotice">비표준 또는 과거 포크 지갑 활동이 발견됨</string>
+    <string name="NoBip44BtcActivityNotice">과거 포크 거래가 발견되지 않음</string>
+    <string name="FirstUseDateHeightInfo" formatted="false">%date 에 시작됨 (블록 %height)</string>
+    <string name="NotEnoughRecoveryWords">더 많은 복구 단어가 필요함</string>
+    <string name="TooManyRecoveryWords">너무 많은 복구 단어</string>
+    <string name="IncorrectRecoveryWords" formatted="false">유효하지 않은 단어: %words</string>
+    <string name="ElectrumNetworkUnavailable">일렉트럼 네트워크 이용 불가능.  지갑 복구가 느릴 것입니다 그리고 Jan 1, 2020 이전의 거래는 발견하지 못합니다.</string>
+    <string name="PinHidesAccount">핀번호가 입력될 때까지 계정을 숨기기?</string>
+    <string name="AutomaticNewAddress">계정 개인 정보</string>
+    <string name="AutomaticNewAddressToolTip">현재 주소가 사용될 때마다 새 주소가 자동적으로 나타납니다.</string>
+    <string name="CreatePIN">핀번호 (선택 가능)</string>
+    <string name="PinSpendingUnprotected">핀번호가 활성되지 않아도 소비하기 (핀번호가 입력되지 않았습니다)</string>
+    <string name="PinSpendingProtected">소비하기 위해선 핀번호가 요구됩니다</string>
+    <string name="InvalidPIN">유효하지 않은 핀번호</string>
+    <string name="creatingNoHistoryAccountWarning">귀하는 특정 복구 문구와 함께 계정을 생성하고 있지만 블록체인에서는 어떠한 활동도 발견되지 않았습니다.\n이것이 맞나요?\n만약 그렇다면 생성 버튼을 다시 누르면 빈 계정이 생성될 것입니다. 그러나 만약 이 게정이 활동 내역이 있다면 귀하가 선택한 블록체인과 복구 문구를 다시 확인하세요. 만약 이 문제가 아니라면 블록체인 네트워크가 현재 접근 불가능이거나(나중에 다시 시도하세요) 또는 비표준 지갑 앱으로 생성된 것입니다. 지금은 계정을 생성하지 마십시오.</string>
+    <!-- Error strings -->
+    <string name="accountLocked">계정이 잠겼습니다</string>
+    <string name="unknownError">오류</string>
+    <string name="insufficentBalance">불충분한 자금</string>
+    <string name="insufficentTokenBalance">불충분한 토큰 자금</string>
+    <string name="excessiveFee">과도한 비용</string>
+    <string name="sendDustError">최소 수량보다 적은 수량</string>
+    <string name="sendingDustWarning">수량이 네트워크가 요구하는 최소 수량보다 작습니다</string>
+    <string name="feeExceedsFlatMax">비용이 설정된 최대 허용 가능한 총액을 초과했습니다</string>
+    <string name="notSupported">지원되지 않습니다</string>
+    <!-- A temporal offer is not longer available.  For example, a payment via the BIP70 payment protocol is no longer available -->
+    <string name="expired">지불이 만료됨</string>
+    <string name="PaymentDataMissing">지불이 데이터를 가지고 있지 않습니다</string>
+    <string name="headersNotForthcoming">헤더가 제공되지 않고 있습니다</string>
+    <string name="cantConvert">전환이 일시적으로 이용 불가능합니다</string>
+
+    <string name="walletDisconnectedFromBlockchain">지갑이 연결 해제됨</string>
+
+    <string name="badTransaction">잘못된 거래</string>
+    <string name="badAddress">유효하지 않은 주소</string>
+    <string name="badAmount">유효하지 않은 수량</string>
+    <!-- No accounts have been created yet -->
+    <string name="NoAccounts">접근 가능한 계정이 없습니다</string>
+    <!-- The crypto currency code (e.g NEX, BTC, BCH, etc) is not understood or handled by this wallet.  This message will be very hard to actually see because the UI
+    protects against entering unknown crypto codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
+     -->
+    <string name="badCryptoCode">이 화폐 또는 블록체인에 존재하는 잠겨있지 않은 계정이 없습니다</string>
+    <string name="badCryptoCodeDetails" formatted="false">알 수 없는 또는 이용 불가능한 화폐: %currency</string>
+    <!-- The fiat currency code (e.g USD, EUR, JPY etc) is not understood or handled by this wallet.  This message will be very hard to actually see because the UI
+      protects against entering unknown fiat codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
+    -->
+    <string name="badCurrencyUnit">인식할 수 없는 화폐</string>
+    <!-- The account contains the wrong currency for this use -->
+    <string name="incompatibleAccount">잘못된 화폐</string>
+    <string name="incompatibleAccountDetails" formatted="false">귀하는 이 계정으로부터 %cryptoAct 을 포함해 지불하기로 했으나 %cryptoPay 가 필요합니다</string>
+    <string name="detailsOfBadAmountFromIntent">보낼 수량을 제공할 때 불러온 프로그램이 잘못 포맷된 숫자를 제공했습니다. 귀하는 직접 수량을 입력해야 합니다</string>
+    <string name="blankAddress">빈 주소</string>
+    <string name="unavailable">이용 불가능</string>
+    <string name="blockNotForthcoming">이용 불가능한 블록</string>
+    <string name="receiveAddressUnavailable">새 수신 주소가 계산중에 있습니다. 잠시 기다려주세요...
+    </string>
+    <!-- The maximum number of accounts that this wallet can show has been reached -->
+    <string name="accountLimitReached">최대 계정 수량</string>
+    <string name="accountUnavailableDetails">보유중인 계정 중에 이 블록체인에 매치되는 계정이 없거나 계정이 잠금 해제되지 않았습니다.</string>
+    <string name="accountUnavailable">잠금 해제된 호환되는 계정이 없습니다</string>
+
+    <!-- Error long strings -->
+    <string name="sendMoreThanBalance">귀하는 지금 이용 가능한 것보다 더 많은 코인을 보내려고 하고 있습니다. 만약 
+	귀하가 생각하기에 귀하의 잔액보다 더 많이 소비하는 것이 아니라면 아마 귀하는 거래에 약간의 추가 비용이 드는 것을 잊었거나
+        또는 만약 귀하의 잔액 전체가 컨펌되지 않는 걸로 보인다면 귀하는 아마 연속으로 너무 많은 거래를 시도한 것일 수 있습니다. 
+	블록체인에서 앞서 나갈 수 있는 한도가 있습니다. 컨펌되지 않은 잔액이 컨펌될 때까지 기다리시고 다시 시도해보세요.
+    </string>
+    <string name="sendMoreTokensThanBalance">귀하는 이용 가능한 수량 이상의 토큰을 보내려고 하고 있습니다.
+    </string>
+    <string name="deductedFeeLargerThanSendAmount">차감된 비용이 보내려는 수량보다 큽니다</string>
+
+    <string name="badWalletImplementation">잘못된 지갑 실행입니다. 이 버그를 제출해주세요!</string>
+
+    <string name="CannotCompleteTransaction">오류: 완료할 수 없음</string>
+
+    <!-- TITLES -->
+    <string name="title_split_bill">영수증 금액 나누기</string>
+    <string name="title_activity_settings">설정</string>
+    <string name="title_activity_exchange">교환</string>
+    <string name="title_activity_shopping">쇼핑</string>
+    <string name="title_activity_shopping_settings">맞춤 쇼핑 버튼</string>
+    <string name="title_activity_trickle_pay">트리클 지불</string>
+    <string name="title_home">홈</string>
+    <string name="title_dashboard">대시보드</string>
+    <string name="title_notifications">알림</string>
+    <string name="title_activity_invoices">인보이스</string>
+    <string name="title_activity_identity">신원</string>
+    <string name="title_activity_identity_op">신원</string>
+    <string name="title_activity_domain_identity_settings">도메인 신원 확인 설정</string>
+    <string name="title_activity_tx_history" formatted="false">계정 과거 내역: %account</string>
+    <string name="title_activity_account_details" formatted="false">계정 세부내용: %account</string>
+
+    <!-- Not part of the UI -->
+    <string name="preferenceFileName" translatable="false">bitcoinunlimited.wally.prefs</string>
+
+    <!-- Domain Identity Settings -->
+    <string name="useUniqueIdentity">새로운 신원을 사용하세요</string>
+
+    <string name="title_activity_identity_settings">신원 확인 설정</string>
+    <string name="title_activity_welcome">환영합니다</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="next">다음</string>
+    <string name="previous">이전</string>
+    <!-- PIN Entry -->
+    <string name="EnterPIN">핀번호를 입력하세요</string>
+    <string name="EnterPINorBlankToRemove">새로운 핀번호(빈칸 지우기)</string>
+    <string name="title_activity_shoppng">Shoppng활동</string>
+
+    <!-- Shopping -->
+    <string name="ButtonTextHere">버튼 내용 설정하기</string>
+    <string name="ButtonLinkHere">웹 링크 입력하기</string>
+    <string name="ShoppingWarning">주의: 귀하의 편의를 위해 만든 이 페이지의 아이템들은 제3자 서비스와 웹사이트의 링크들입니다. 이 사이트/서비스는 월리 지갑에 의해 점검되지 않았습니다.\n\n주의하세요!</string>
+
+    <!-- All items are specified here so the service itself can be localized if your country does work with the default service. Use empty strings to disable -->
+    <string name="NFTs">대체 불가능한 토큰(NFTs)</string>
+    <string name="ExplainNFTs">NiftyArt.cash: 유니크한 아이템들의 유니크한 이미지와 디지털 묘사들을 생성하고 거래하세요</string>
+    <string name="NftUrl">http://niftyart.cash</string>
+
+    <string name="OpenWebsite" formatted="false">%siteName 에 접근하기</string>
+    <string name="WebsiteUnavailable" formatted="false">이용 불가능한 웹사이트</string>
+    <string name="ExplainTxBit">txbit.io: 다른 화폐로 NEXA를 거래하세요</string>
+    <string name="ExplainMexc">mexc.com: 다른 화폐로 NEXA를 거래하세요</string>
+    <string name="CexButton">교환하기</string>
+
+    <!-- Trickle Pay -->
+    <string name="SharedNotification">%what 공유됨</string>
+    <string name="AuthAutopayTitle">승인된 지불</string>
+    <string name="PaymentRequest">지불이 요청됨</string>
+    <string name="AuthAutopayDeniedTitle">승인된 지불이 거절됨</string>
+    <string name="AuthAutopay" formatted="false">%amt %domain 으로</string>
+    <string name="TpToBeDone">귀하의 트리클 지불 연결은 여기 나타납니다</string>
+    <string name="TpHistoryTbd">귀하의 트리클 지불 내역은 여기 나타납니다</string>
+    <string name="AcceptTpRegistration">: 로부터의 등록 승인하기</string>
+    <string name="EditTpRegistration">항목: 설정</string>
+    <string name="AcceptTpRegistrationTopic">목적:</string>
+    <string name="TpMaxSpendHint">최대 자동-소비를 입력하세요</string>
+    <string name="TpAssetInfoRequest">자산 정보가 요청됨</string>
+    <string name="TpAssociatedAccount" formatted="false">계정과 연관됨: %act</string>
+    <string name="TpAssociatedAddress" formatted="false">%addr</string>
+
+    <string name="TpMaxHeading">자동지불 한도</string>
+    <string name="TpMaxPer">각 요청</string>
+    <string name="TpMaxPerDay">매일마다</string>
+    <string name="TpMaxPerWeek">매주마다</string>
+    <string name="TpMaxPerMonth">매월마다</string>
+
+    <string name="TpEnableAutopay">자동지불 활성화하기(체크되어 있지 않으면 모든 지불은 사용자 승인을 요청합니다)</string>
+
+    <string name="asciiArrow"><![CDATA[=>]]></string>
+
+    <string name="TpNoRegistrations">트리클 지불 등록이 없습니다</string>
+    <string name="TpRegDenied">등록이 거절됨</string>
+    <string name="TpRegAccepted">등록이 승인됨</string>
+    <string name="TpRegUnchanged">등록이 변경되지 않음</string>
+    <string name="TpRequestAutoDeny">거절된 요청(자동)</string>
+    <string name="TpRequestAutoAccept">승인된 요청(자동)</string>
+    <string name="TpTxDenied">거절된 거래</string>
+    <string name="TpTxAccepted">승인된 거래</string>
+    <string name="TpAssetRequestDenied">자산 보내지 않기</string>
+    <string name="TpAssetRequestAccepted">자산 보내기</string>
+
+    <string name="SpecialTpTransactionFrom">로부터의 특별 거래</string>
+    <string name="IncompleteTpTransactionFrom">로부터의 확정 오퍼 제의</string>
+    <string name="TpEntails">수반하기</string>
+    <string name="TpInAccount">계정 이용하기</string>
+    <string name="TpAssetRequestFrom">로부터의 자산 정보 요청</string>
+    <string name="TpHandledByAccount">귀하의 계정을 통해 처리할 수 있습니다</string>
+    <string name="TpAssetMatches" formatted="false">귀하가 보유한 %num 자산에 대한 정보는 이 서비스에 제공될 것입니다.</string>
+    <string name="TpAssetInfoNotXfer">이 요청을 승인하면 단순히 귀하의 소유권에 대한 정보를 이 서비스에 제공합니다. 이 요청은 전송을 허가하지 않습니다.</string>
+    <string name="ForAFeeOf" formatted="false">%fee %units 비용 포함</string>
+    <string name="TpExchangingTokens" formatted="false">그리고 교환되는 토큰(%tokSnd 보내기, %tokRcv 받기).</string>
+    <string name="TpShowingTokens" formatted="false">%tokReveal 토큰 유형이 확인됩니다 (본인에게 소비됨, 귀하가 보유한다는 전제 하에).</string>
+    <string name="TpSendingTokens" formatted="false">그리고 %tokSnd 유형의 토큰 보내기.</string>
+    <string name="TpReceivingTokens" formatted="false">그리고 %tokRcv 유형의 토큰 받기.</string>
+    <string name="TpHasNoPurpose">이 요청은 해당 계정에 아무런 영향을 주지 않습니다.</string>
+
+    <string name="TpSendToTitle">로부터 요청된 지불</string>
+    <string name="TpSpends">소비하기</string>
+    <string name="TpSendRequestDenied">지불이 거절됨</string>
+    <string name="TpSendAutoReject">지불이 자동으로 거절됨</string>
+    <string name="TpSendRequestAccepted">지불이 승인됨</string>
+    <string name="TpWhyNotAuto">자동으로 서명하지 않습니다 왜냐하면</string>
+
+    <string name="TpAutomaticDisabled">자동 지불이 비활성화됨</string>
+    <string name="TpExceededMaxPer">요청당 최대 한도를 초과함</string>
+    <string name="TpExceededMaxDaily">1일 기준 최대 한도를 초과함</string>
+    <string name="TpExceededMaxWeekly">1주 기준 최대 한도를 초과함</string>
+    <string name="TpExceededMaxMonthly">1개월 기준 최대 한도를 초과함</string>
+
+    <string name="title_activity_alert_history">최근 메세지</string>
+
+    <string name="AssetApplication">적용하기</string>
+    <string name="AssetMarketplace">거래하기</string>
+    <string name="AssetAddedToTransferList">메인 탭에 \'Send\'에 추가됨</string>
+    <string name="NftCardFront">앞</string>
+    <string name="NftCardBack">뒤</string>
+    <string name="NftPublicMedia">컨텐츠</string>
+    <string name="NftOwnerMedia">소유자의 컨텐츠</string>
+    <string name="NftInfo">정보</string>
+    <string name="NftLegal">라이센스</string>
+    <string name="NftSeries" formatted="false">시리즈: %series</string>
+    <string name="NftAuthor" formatted="false">작가: %author</string>
+    <string name="NftNoInfoProvidedHTML"><![CDATA[<body><h1><center>...정보가 제공되지 않음...</h1></center></body>]]></string>
+    <string name="IssuedToConnection">연결된 사이트에서 런칭됨</string>
+    <!-- this message tells users that some assets will be part of a proposed transaction -->
+    <string name="AndSomeAssets">그리고 어떤 자산</string>
+</resources>
