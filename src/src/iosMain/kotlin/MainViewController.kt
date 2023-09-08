@@ -24,7 +24,7 @@ fun OnAppStartup()
 
 fun MainViewController() = ComposeUIViewController {
     // TODO call some other startup function
-    if (accounts.size == 0 ) {
+    if (accounts.isEmpty() ) {
         initializeLibNexa()
         val wal = openOrNewWallet("reg", ChainSelector.NEXAREGTEST)
         wal.blockchain.req.net.exclusiveNodes(setOf("192.168.1.5"))

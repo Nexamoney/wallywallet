@@ -7,7 +7,7 @@ import java.net.URL
 // Dependency versions
 val mpThreadsVersion = "0.1.7"
 val nexaRpcVersion = "1.1.3"
-val libNexaKotlinVersion = "0.0.13"
+val libNexaKotlinVersion = "0.0.15"
 
 val serializationVersion = "1.6.0"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.7.3"     // https://github.com/Kotlin/kotlinx.coroutines
@@ -48,6 +48,7 @@ val LINUX_NATIVE_TARGETS = false // not supported in compose
 val MAC_TARGETS = MAC // || LINUX
 // ktor network does not support ms windows so we cannot produce MSWIN right now
 var MSWIN_TARGETS = false
+var ANDROID_TARGETS = false
 
 if (MAC) println("Host is a MAC, MacOS and iOS targets are enabled")
 if (LINUX) println("Host is LINUX, Android, JVM, and LinuxNative targets are enabled")
@@ -58,6 +59,7 @@ if (MSWIN) { println("Host is MS-WINDOWS"); MSWIN_TARGETS = true }
 if (!LINUX_TARGETS) println("Linux targets are disabled")
 if (!MAC_TARGETS) println("MacOS and iOS targets are disabled")
 if (!MSWIN_TARGETS) println("Ms-windows Mingw64 target is disabled")
+if (!ANDROID_TARGETS) println("Android target is disabled")
 
 val NATIVE_BUILD_CHOICE: NativeBuildType = NativeBuildType.DEBUG
 
@@ -111,17 +113,17 @@ kotlin {
         //from { configurations.jvmRuntimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
     }
 
-
-    androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "17"
+    if (ANDROID_TARGETS)
+    {
+        androidTarget {
+            compilations.all {
+                kotlinOptions {
+                    jvmTarget = "17"
+                }
             }
+            // publishLibraryVariants("release", "debug")
         }
-        // publishLibraryVariants("release", "debug")
     }
-
-
 
     if (MAC_TARGETS)
     {
@@ -324,53 +326,56 @@ kotlin {
 
          */
 
-        val androidMain by getting {
-            //dependsOn(sourceSets.named("commonJvm").get())
-            dependencies {
-                //implementation(project(":shared"))
+        if (ANDROID_TARGETS)
+        {
+            val androidMain by getting {
+                //dependsOn(sourceSets.named("commonJvm").get())
+                dependencies {
+                    //implementation(project(":shared"))
 
-                implementation(kotlin("stdlib-jdk8"))
-                implementation("androidx.activity:activity-compose:$androidxActivityComposeVersion")
+                    implementation(kotlin("stdlib-jdk8"))
+                    implementation("androidx.activity:activity-compose:$androidxActivityComposeVersion")
 
-                implementation("androidx.compose.ui:ui:1.5.0")
-                implementation("androidx.compose.ui:ui-tooling:1.5.0")
-                implementation("androidx.compose.ui:ui-tooling-preview:1.5.0")
-                implementation("androidx.compose.foundation:foundation:1.5.0")
-                implementation("androidx.compose.material:material:1.5.0")
-                implementation("androidx.activity:activity-compose:1.7.2")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.5.1")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.0")
+                    implementation("androidx.compose.ui:ui:1.5.0")
+                    implementation("androidx.compose.ui:ui-tooling:1.5.0")
+                    implementation("androidx.compose.ui:ui-tooling-preview:1.5.0")
+                    implementation("androidx.compose.foundation:foundation:1.5.0")
+                    implementation("androidx.compose.material:material:1.5.0")
+                    implementation("androidx.activity:activity-compose:1.7.2")
+                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.5.1")
+                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.0")
 
-                // android layout dependencies
-                implementation("com.google.android.flexbox:flexbox:3.0.0")  // https://github.com/google/flexbox-layout/tags
-                implementation("androidx.activity:activity:1.7.2")
-                implementation("androidx.navigation:navigation-fragment-ktx:2.7.1")  // https://developer.android.com/jetpack/androidx/releases/navigation
-                implementation("androidx.navigation:navigation-ui-ktx:2.7.1")
-                implementation("androidx.wear:wear:1.3.0")
-                implementation("com.android.support.constraint:constraint-layout:2.1.4") // https://developer.android.com/jetpack/androidx/releases/constraintlayout
-                implementation("com.google.android.material:material:1.9.0")
-                implementation("androidx.preference:preference:1.2.1")  // https://developer.android.com/jetpack/androidx/releases/preference
+                    // android layout dependencies
+                    implementation("com.google.android.flexbox:flexbox:3.0.0")  // https://github.com/google/flexbox-layout/tags
+                    implementation("androidx.activity:activity:1.7.2")
+                    implementation("androidx.navigation:navigation-fragment-ktx:2.7.1")  // https://developer.android.com/jetpack/androidx/releases/navigation
+                    implementation("androidx.navigation:navigation-ui-ktx:2.7.1")
+                    implementation("androidx.wear:wear:1.3.0")
+                    implementation("com.android.support.constraint:constraint-layout:2.1.4") // https://developer.android.com/jetpack/androidx/releases/constraintlayout
+                    implementation("com.google.android.material:material:1.9.0")
+                    implementation("androidx.preference:preference:1.2.1")  // https://developer.android.com/jetpack/androidx/releases/preference
 
-                // network access
-                implementation("io.ktor:ktor-client-core:$ktorVersion")
-                implementation("io.ktor:ktor-client-cio:$ktorVersion")
-                implementation("io.ktor:ktor-client-android:$ktorVersion")
-                implementation("io.ktor:ktor-client-serialization:$ktorVersion")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+                    // network access
+                    implementation("io.ktor:ktor-client-core:$ktorVersion")
+                    implementation("io.ktor:ktor-client-cio:$ktorVersion")
+                    implementation("io.ktor:ktor-client-android:$ktorVersion")
+                    implementation("io.ktor:ktor-client-serialization:$ktorVersion")
+                    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+                    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
 
-                // for bigintegers
-                implementation("com.ionspin.kotlin:bignum:0.3.8")
-                implementation("com.ionspin.kotlin:bignum-serialization-kotlinx:0.3.8")
+                    // for bigintegers
+                    implementation("com.ionspin.kotlin:bignum:0.3.8")
+                    implementation("com.ionspin.kotlin:bignum-serialization-kotlinx:0.3.8")
 
 
-                // QR scanning
-                implementation("com.journeyapps:zxing-android-embedded:4.3.0")
-                // Image file conversion
-                implementation("com.caverock:androidsvg-aar:1.4")
+                    // QR scanning
+                    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+                    // Image file conversion
+                    implementation("com.caverock:androidsvg-aar:1.4")
 
-                // This calls your own startup code with the app context (see AndroidManifest.xml)
-                //implementation("androidx.startup:startup-runtime:1.1.1")
+                    // This calls your own startup code with the app context (see AndroidManifest.xml)
+                    //implementation("androidx.startup:startup-runtime:1.1.1")
+                }
             }
         }
 
@@ -433,25 +438,28 @@ kotlin {
         }
 
 
-        val androidInstrumentedTest by getting {
-            dependencies {
-                implementation(kotlin("test-junit"))
-                implementation("org.nexa:nexarpc:$nexaRpcVersion")
-                implementation("androidx.test:core:1.5.0")
-                implementation("androidx.test:core-ktx:1.5.0")
-                implementation("androidx.test.ext:junit:1.1.5")
-                implementation("androidx.test.ext:junit-ktx:1.1.5")
+        if (ANDROID_TARGETS)
+        {
+            val androidInstrumentedTest by getting {
+                dependencies {
+                    implementation(kotlin("test-junit"))
+                    implementation("org.nexa:nexarpc:$nexaRpcVersion")
+                    implementation("androidx.test:core:1.5.0")
+                    implementation("androidx.test:core-ktx:1.5.0")
+                    implementation("androidx.test.ext:junit:1.1.5")
+                    implementation("androidx.test.ext:junit-ktx:1.1.5")
 
-                 // androidTestImplementation 'androidx.test:support-annotations:24.0.0'
-                implementation("androidx.test.espresso:espresso-contrib:3.5.1")
-                // for intent mocking
-                implementation("androidx.test.espresso:espresso-intents:3.5.1")
-                // for network testing to track idle state
-                implementation ("androidx.test.espresso.idling:idling-concurrent:3.5.1")
-                implementation ("androidx.test.espresso:espresso-idling-resource:3.5.1")
-                implementation("androidx.test.espresso:espresso-core:3.5.1")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+                    // androidTestImplementation 'androidx.test:support-annotations:24.0.0'
+                    implementation("androidx.test.espresso:espresso-contrib:3.5.1")
+                    // for intent mocking
+                    implementation("androidx.test.espresso:espresso-intents:3.5.1")
+                    // for network testing to track idle state
+                    implementation("androidx.test.espresso.idling:idling-concurrent:3.5.1")
+                    implementation("androidx.test.espresso:espresso-idling-resource:3.5.1")
+                    implementation("androidx.test.espresso:espresso-core:3.5.1")
+                    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
+                    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+                }
             }
         }
 
