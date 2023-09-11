@@ -10,6 +10,7 @@ import androidx.compose.material.*
 
 import androidx.compose.ui.window.rememberWindowState
 import info.bitcoinunlimited.www.wally.ui.DashboardScreen
+import info.bitcoinunlimited.www.wally.ui.NavigationRoot
 
 private val LogIt = GetLog("BU.wally.IdentityActivity")
 
@@ -45,8 +46,10 @@ fun guiNewPanel()
             )
             {
                 MaterialTheme()
-                {}
-                DashboardScreen((4 * 160).dp, WallyJvmApp.accounts)
+                {
+                    NavigationRoot(WallyJvmApp.accounts)
+                }
+               // DashboardScreen((4 * 160).dp, WallyJvmApp.accounts)
             }
         }
     }
