@@ -1,4 +1,4 @@
-package info.bitcoinunlimited.www.wally
+package info.bitcoinunlimited.www.wally.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -13,6 +13,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
+import info.bitcoinunlimited.www.wally.S
+import info.bitcoinunlimited.www.wally.i18n
 import org.nexa.libnexakotlin.Bip44Wallet
 import org.nexa.libnexakotlin.blockchains
 
@@ -26,7 +28,7 @@ fun _x_(s:String): String = s
 
 var dashboardFontSize = 14.sp
 @Composable
-fun DashboardPanel(dashWidth: Dp, accounts: MutableMap<String, Bip44Wallet>)
+fun DashboardScreen(dashWidth: Dp, accounts: MutableMap<String, Bip44Wallet>)
 {
     var walletInfo by mutableStateOf("")
     var blockchainInfo by mutableStateOf("")
