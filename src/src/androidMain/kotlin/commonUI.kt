@@ -99,11 +99,6 @@ fun String.toSet():Set<String>
     return split(","," ").map({it.trim()}).filter({it.length > 0}).toSet()
 }
 
-fun String.urlEncode():String
-{
-    return URLEncoder.encode(this, "utf-8")
-}
-
 fun PayAddress.urlEncode():String
 {
     return toString().urlEncode()
@@ -131,9 +126,9 @@ fun Spinner.setSelection(v: String): Boolean
 
 fun dbgAssertGuiThread()
 {
-    val tname = Thread.currentThread().name
-    if (tname != "main")
+    if (!isUiThread())
     {
+        val tname = "" // TODO this thread's name
         LogIt.warning("ASSERT GUI operations in thread " + tname)
         val e = AssertException("Executing GUI operations in thread " + tname)
         LogIt.warning(e.stackTraceToString())
@@ -143,9 +138,9 @@ fun dbgAssertGuiThread()
 
 fun dbgAssertNotGuiThread()
 {
-    val tname = Thread.currentThread().name
-    if (tname == "main")
+    if (isUiThread())
     {
+        val tname = "" // TODO this thread's name
         LogIt.warning("ASSERT blocking operations in GUI thread " + tname)
         val e = AssertException("Executing blocking operations in GUI thread " + tname)
         LogIt.warning(e.stackTraceToString())

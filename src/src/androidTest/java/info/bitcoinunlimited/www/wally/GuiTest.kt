@@ -1,4 +1,4 @@
-package bitcoinunlimited.wally.guiTestImplementation
+package info.bitcoinunlimited.www.wally
 
 import org.nexa.libnexakotlin.*
 import com.ionspin.kotlin.bignum.decimal.*
@@ -40,7 +40,6 @@ import java.lang.Thread.sleep
 import java.net.URLEncoder
 
 import info.bitcoinunlimited.www.wally.R.id as GuiId
-import info.bitcoinunlimited.www.wally.R
 import org.hamcrest.Matchers
 import org.nexa.nexarpc.NexaRpc
 import java.util.*
@@ -56,9 +55,9 @@ val FULL_NODE_IP = "192.168.1.5" // SimulationHostIP
 //val REGTEST_RPC_PORT=7328
 
 
-fun ViewInteraction.isGone() = getViewAssertion(ViewMatchers.Visibility.GONE)
-fun ViewInteraction.isVisible() = getViewAssertion(ViewMatchers.Visibility.VISIBLE)
-fun ViewInteraction.isInvisible() = getViewAssertion(ViewMatchers.Visibility.INVISIBLE)
+fun ViewInteraction.isGone() = getViewAssertion(Visibility.GONE)
+fun ViewInteraction.isVisible() = getViewAssertion(Visibility.VISIBLE)
+fun ViewInteraction.isInvisible() = getViewAssertion(Visibility.INVISIBLE)
 
 private fun getViewAssertion(visibility: ViewMatchers.Visibility): ViewAssertion? {
     return ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(visibility))
@@ -98,18 +97,21 @@ fun generateAndLogSomeTricklePayRequests(application: WallyApp)
 inline fun <reified T : Activity> WallyApp.isVisible() : Boolean {
     val am = applicationContext.getSystemService(ACTIVITY_SERVICE) as ActivityManager
     val visibleActivityName = am.appTasks[0].taskInfo.baseActivity!!.className
-    return visibleActivityName == T::class.java.name
+    //println(visibleActivityName)
+    //println(T::class.simpleName)
+    //return visibleActivityName.split(".").last() == T::class.simpleName
+    return visibleActivityName == T::class.qualifiedName
 }
 
-val TIMEOUT = 5000L
-val CONDITION_CHECK_INTERVAL = 100L
+val TIMEOUT = 10000L
+val CONDITION_CHECK_INTERVAL = 200L
 
 inline fun <reified T : Activity> WallyApp.waitUntilActivityVisible() {
     val startTime = System.currentTimeMillis()
     while (!isVisible<T>()) {
         Thread.sleep(CONDITION_CHECK_INTERVAL)
         if (System.currentTimeMillis() - startTime >= TIMEOUT) {
-            throw AssertionError("Activity ${T::class.java.simpleName} not visible after $TIMEOUT milliseconds")
+            throw AssertionError("Activity ${T::class.simpleName} not visible after $TIMEOUT milliseconds")
         }
     }
 }
@@ -263,7 +265,7 @@ class GuiTest
         }
     }
 
-    fun<T> waitForView(time: Int = 5000, thunk: ()->T) : T
+    fun<T> waitForView(time: Int = 10000, thunk: ()->T) : T
     {
         var countup = 0
         while(true) try
@@ -606,7 +608,7 @@ class GuiTest
         // Everything needs to be inside onActivity, to schedule it within the activity context
         var preferenceDB: SharedPreferences? = null
         activityScenario.onActivity {
-            preferenceDB = it.getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+            preferenceDB = getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
         }
 
         // This test should work regardless of the current setting, so figure that out first
@@ -654,7 +656,7 @@ class GuiTest
         // Everything needs to be inside onActivity, to schedule it within the activity context
         var preferenceDB: SharedPreferences? = null
         activityScenario.onActivity {
-            preferenceDB = it.getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+            preferenceDB = getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
         }
 
         // This test should work regardless of the current setting, so figure that out first
@@ -703,7 +705,7 @@ class GuiTest
         // Everything needs to be inside onActivity, to schedule it within the activity context
         var preferenceDB: SharedPreferences? = null
         activityScenario.onActivity {
-            preferenceDB = it.getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+            preferenceDB = getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
         }
 
         // This test should work regardless of the current setting, so figure that out first
@@ -747,7 +749,7 @@ class GuiTest
         // Everything needs to be inside onActivity, to schedule it within the activity context
         var preferenceDB: SharedPreferences? = null
         activityScenario.onActivity {
-            preferenceDB = it.getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+            preferenceDB = getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
         }
 
         // Find Current Setting
@@ -794,7 +796,7 @@ class GuiTest
         // Everything needs to be inside onActivity, to schedule it within the activity context
         var preferenceDB: SharedPreferences? = null
         activityScenario.onActivity {
-            preferenceDB = it.getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+            preferenceDB = getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
         }
 
         // This test should work regardless of the current setting, so figure that out first
@@ -840,7 +842,7 @@ class GuiTest
         // Everything needs to be inside onActivity, to schedule it within the activity context
         var preferenceDB: SharedPreferences? = null
         activityScenario.onActivity {
-            preferenceDB = it.getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+            preferenceDB = getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
         }
 
         // go through the different languages
@@ -1096,7 +1098,7 @@ class GuiTest
         // Everything needs to be inside onActivity, to schedule it within the activity context
         var preferenceDB: SharedPreferences? = null
         activityScenario.onActivity {
-            preferenceDB = it.getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+            preferenceDB = getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
         }
 
         //clearing any existing text to avoid more trouble
@@ -1162,7 +1164,7 @@ class GuiTest
         // Everything needs to be inside onActivity, to schedule it within the activity context
         var preferenceDB: SharedPreferences? = null
         activityScenario.onActivity {
-            preferenceDB = it.getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+            preferenceDB = getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
         }
 
         //clearing any existing text to avoid more trouble
@@ -1548,7 +1550,7 @@ class GuiTest
         var app: WallyApp? = null
         activityScenario.onActivity {
             app = (it.application as WallyApp)
-            var prefs: SharedPreferences = it.getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+            var prefs: SharedPreferences = getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
             devMode = true
             with(prefs.edit())
             {

@@ -1,9 +1,7 @@
 package info.bitcoinunlimited.www.wally
 
 import android.content.Context
-import android.content.ContextWrapper.*
-import android.content.SharedPreferences
-import org.nexa.libnexakotlin.*
+import org.nexa.libnexakotlin.androidContext
 
 actual val PREF_MODE_PRIVATE:Int = Context.MODE_PRIVATE
 
@@ -35,7 +33,7 @@ class AndroidPrefsEdit(prefs:AndroidPrefs): PreferencesEdit
 
 class AndroidPrefs(prefDbName: String, mode: Int): info.bitcoinunlimited.www.wally.SharedPreferences
 {
-    val db = context!!.getSharedPreferences(prefDbName, mode)
+    val db = androidContext!!.getSharedPreferences(prefDbName, mode)
     override fun edit(): PreferencesEdit = AndroidPrefsEdit(this)
 
     override fun getBoolean(key: String, defaultValue: Boolean): Boolean = db.getBoolean(key, defaultValue)

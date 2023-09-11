@@ -7,7 +7,7 @@ import java.net.URL
 // Dependency versions
 val mpThreadsVersion = "0.1.7"
 val nexaRpcVersion = "1.1.3"
-val libNexaKotlinVersion = "0.0.15"
+val libNexaKotlinVersion = "0.0.18"
 
 val serializationVersion = "1.6.0"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.7.3"     // https://github.com/Kotlin/kotlinx.coroutines
@@ -15,6 +15,7 @@ val ktorVersion = "2.3.3"           // https://github.com/ktorio/ktor
 val bigNumVersion = "0.3.8"
 val composeVersion = "1.5.0"
 val androidxActivityComposeVersion = "1.7.2"
+val uriKmpVersion = "0.0.14"
 
 val secSinceEpoch = Instant.now().epochSecond
 
@@ -48,7 +49,7 @@ val LINUX_NATIVE_TARGETS = false // not supported in compose
 val MAC_TARGETS = MAC // || LINUX
 // ktor network does not support ms windows so we cannot produce MSWIN right now
 var MSWIN_TARGETS = false
-var ANDROID_TARGETS = false
+var ANDROID_TARGETS = LINUX
 
 if (MAC) println("Host is a MAC, MacOS and iOS targets are enabled")
 if (LINUX) println("Host is LINUX, Android, JVM, and LinuxNative targets are enabled")
@@ -236,6 +237,7 @@ kotlin {
                 implementation("com.ionspin.kotlin:bignum-serialization-kotlinx:$bigNumVersion")
 
                 // for network
+                implementation("com.eygraber:uri-kmp:$uriKmpVersion")
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
                 // implementation("io.ktor:ktor-client-websockets:$ktorVersion")
                 // implementation("io.ktor:ktor-client-logging:$ktorVersion")

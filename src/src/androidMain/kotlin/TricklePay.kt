@@ -6,19 +6,19 @@ import android.app.Activity
 import android.content.*
 import android.content.Intent.CATEGORY_BROWSABLE
 import android.content.Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.Keep
 import androidx.core.app.NavUtils
-import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import info.bitcoinunlimited.www.wally.databinding.*
+import io.ktor.http.*
 import org.nexa.libnexakotlin.libnexa
 
+import com.eygraber.uri.*
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
 
@@ -101,8 +101,18 @@ class TricklePayRegFragment : Fragment()
 
     override fun onResume()
     {
-        updateUI()
         super.onResume()
+        try
+        {
+            updateUI()
+        }
+        catch(e: WalletInvalidException)
+        {
+            val tpAct = getActivity() as TricklePayActivity
+            wallyApp?.displayError(R.string.NoAccounts)
+            tpAct.finish()
+        }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
@@ -385,7 +395,7 @@ class TricklePaySendToFragment : Fragment()
 
         try
         {
-        val u: Uri = sess.proposalUri ?: return
+        val u: Uri = sess.proposalUrl ?: return
         val sa: List<Pair<PayAddress, Long>> = sess.proposedDestinations ?: return
 
         val tpc = sess.topic.let {
@@ -856,7 +866,8 @@ class TricklePayActivity : CommonNavActivity()
         }
         else false
 
-        val iuri = receivedIntent.toUri(0).toUri()
+        //val iuri = receivedIntent.toUri(0).toUri()
+        val iuri = Uri.parse(receivedIntent.toUri(0).toString())
 
         if ((receivedIntent.flags and FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0) goHomeWhenDone = true
 
@@ -868,7 +879,7 @@ class TricklePayActivity : CommonNavActivity()
                 var sess = if (tpSession != null)
                 {
                     // Get the current session if the uri matches
-                    if (tpSession?.proposalUri != iuri) tpSession = null
+                    if (tpSession?.proposalUrl != iuri) tpSession = null
                     tpSession
                 } else null
 
@@ -881,7 +892,7 @@ class TricklePayActivity : CommonNavActivity()
 
                 val h = sess.host
                 val t = sess.topic
-                val path = iuri.getPath()
+                val path = iuri.path
                 LogIt.info(sourceLoc() + "Trickle Pay Intent host=${h} path=${path}")
                 LogIt.info(sourceLoc() + "Full Intent=${iuri.toString()}")
                 if (h == null)

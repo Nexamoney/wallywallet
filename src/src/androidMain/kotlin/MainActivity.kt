@@ -25,6 +25,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.ParseException
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.eygraber.uri.Uri
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
@@ -1266,22 +1267,26 @@ class MainActivity : CommonNavActivity()
     }
 
     /** Process a BIP21 URI */
-    fun handleSendURI(iuri: String)
+    fun handleSendURI(suri: String)
     {
+        val uri = Uri.parse(suri)
+
         // replace the scheme with http so we can use URL to parse it
-        val index = iuri.indexOf(':')
-        if (index == -1) throw NotUriException() // Can't be a URI if no colon
-        val scheme = iuri.take(index)
+        //val index = iuri.indexOf(':')
+        //if (index == -1) throw NotUriException() // Can't be a URI if no colon
+        //val scheme = iuri.take(index)
         // To decode the parameters, we drop our scheme (blockchain identifier) and replace with http, so the standard Url parser will do the job for us.
-        val u = Url("http" + iuri.drop(index))
-        val attribs = u.queryMap()
-        if (u.pathSegments.size!=1)  // path segments are the parts separated by /.  But in BIP21 there must be only an address
+        //val u = Uri("http" + iuri.drop(index))
+        val attribs = uri.queryMap()
+        val scheme = uri.scheme
+        val body = uri.body()
+        if (body.contains("/"))  // But in BIP21 there must be only an address, not a path
         {
-            displayError(R.string.badAddress, scheme)
+            displayError(R.string.badAddress, suri)
             return
         }
         // Now put our scheme back in, dropping the parameters.  So we should have something like "nexa:<address>"
-        val sta = scheme + ":" + u.pathSegments[0]
+        val sta = scheme + ":" + body
 
         val bip72 = attribs["r"]
         val stramt = attribs["amount"]
@@ -1348,7 +1353,7 @@ class MainActivity : CommonNavActivity()
         }
         catch (e: UnknownBlockchainException)
         {
-            displayError(R.string.badAddress, scheme)
+            displayError(R.string.badAddress, suri)
             return
         }
 
@@ -1642,6 +1647,7 @@ class MainActivity : CommonNavActivity()
                     }
                     catch (e: Exception)  // I can't handle it as plain text
                     {
+                        logThreadException(e)
                         LogIt.info(sourceLoc() + ": QR contents invalid: " + QRstring)
                         displayError(R.string.badAddress, QRstring)
                     }

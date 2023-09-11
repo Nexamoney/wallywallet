@@ -1,9 +1,4 @@
 package info.bitcoinunlimited.www.wally
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toUri
 
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
@@ -14,13 +9,16 @@ import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
-import org.nexa.libnexakotlin.libnexa
-import java.net.SocketTimeoutException
-import java.net.URL
-import java.net.URLEncoder
 import kotlin.random.Random
 import org.nexa.libnexakotlin.*
 import org.nexa.libnexakotlin.simpleapi.NexaScript
+
+import com.eygraber.uri.*
+import androidx.core.net.toUri
+import io.ktor.http.*
+import java.net.SocketTimeoutException
+import java.net.URL
+import java.net.URLEncoder
 
 private val LogIt = GetLog("BU.wally.tpsess")
 
@@ -33,6 +31,7 @@ const val TDPP_FLAG_NOPOST = 2
 const val TDPP_FLAG_NOSHUFFLE = 4
 const val TDPP_FLAG_PARTIAL = 8
 const val TDPP_FLAG_FUND_GROUPS = 16
+
 
 fun makeChallengeTx(sp: Spendable, challengerId: ByteArray, chalby: ByteArray): iTransaction?
 {
@@ -225,7 +224,7 @@ data class TdppDomain(
     /* pick the bigger of what I've chosen and what is requested by the URI */
     fun merge(uri: Uri)
     {
-        domain = uri.getHost() ?: throw NotUriException()
+        domain = uri.host ?: throw NotUriException()
         topic = uri.getQueryParameter("topic") ?: ""
         addr = uri.getQueryParameter("addr") ?: ""
         getParam(uri, "maxper", "descper").let { if (maxper < it.first) maxper = it.first; descper = it.second }
@@ -236,7 +235,7 @@ data class TdppDomain(
 
     fun load(uri: Uri)
     {
-        domain = uri.getHost() ?: throw NotUriException()
+        domain = uri.host ?: throw NotUriException()
         topic = uri.getQueryParameter("topic") ?: ""
         addr = uri.getQueryParameter("addr") ?: ""
         getParam(uri, "maxper", "descper").let { maxper = it.first; descper = it.second }
@@ -377,7 +376,7 @@ fun VerifyTdppSignature(uri: Uri, addressParam:String? = null): Boolean?
     suri.scheme(uri.scheme)
     suri.encodedAuthority(uri.authority)
     suri.path(uri.path)
-    val orderedParams = uri.queryParameterNames.toList().sorted()
+    val orderedParams = uri.queryMap().keys.toList().sorted()
     val queryParam = mutableListOf<String>()
     for (p in orderedParams)
     {
@@ -420,7 +419,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
 {
     var accepted: Boolean = false  // did the user accept this payment request
     var newDomain: Boolean = false // was a domain created during this session?
-    var proposalUri: Uri? = null
+    var proposalUrl: Uri? = null
     var host: String? = null
     var port: Int = 80
     var topic: String? = null
@@ -449,7 +448,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
             // If a signature was provided, then that decides it.
             sigOk?.let { return it }
             // Otherwise look at the protocol
-            if (proposalUri?.scheme == "https") return true
+            if (proposalUrl?.scheme == "https") return true
             return false
         }
 
@@ -458,7 +457,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         get()
         {
             rproto?.let {return it }
-            proposalUri?.let {
+            proposalUrl?.let {
                 val scheme = it.scheme
                 if ((scheme!=null)&&(scheme != TDPP_URI_SCHEME)) return scheme
             }
@@ -492,8 +491,8 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
 
     fun parseCommonFields(uri: Uri, autoCreateDomain: Boolean = true)
     {
-        proposalUri = uri
-        val h = uri.getHost()
+        proposalUrl = uri
+        val h = uri.host
         if (h == null) throw TdppException(R.string.UnknownDomainRegisterFirst, "no domain specified")
         host = h
         port = uri.port
@@ -709,7 +708,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
             }
 
             proposedTx = null
-            proposalUri = null
+            proposalUrl = null
             LogIt.info("sign trickle pay special transaction")
 
             // TODO: put a record of this transaction somewhere so when it is completed by the server we can annotate the history with a reason.
@@ -795,7 +794,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
     /* Process a tx completion proposal, and decide what to do about it */
     fun handleTxAutopay(uri: Uri): TdppAction
     {
-        proposalUri = uri
+        proposalUrl = uri
         proposedTx = null
         proposedDestinations = null
 
@@ -974,10 +973,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         }
         else if (whatInfo == "clipboard")
         {
-            var clip: ClipData? = null // wallyApp?.currentClip
-            if (clip == null)
-            {
-                laterUI {
+            laterUI {
                     //  Because background apps monitor the clipboard and steal data, you can no longer access the clipboard unless you are foreground.
                     //  However, (and this is probably a bug) if you are becoming foreground, like an activity just completed and returned to you
                     //  in onActivityResult, then your activity hasn't been foregrounded yet :-(.  So I need to delay
@@ -988,36 +984,23 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
                     // We need to be in the foreground to read the clipboard which is why I prefer the cached clipboard
                     try
                     {
+                        /*
                         //var myClipboard = getSystemService(wallyApp!!, AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager
                         var myClipboard = wallyApp?.currentActivity?.getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager
                         clip = myClipboard.getPrimaryClip()
                         val item = if (clip?.itemCount != 0) clip?.getItemAt(0) else null
+
                         val text = item?.text?.toString() ?: i18n(R.string.pasteIsEmpty)
+                        */
+                        val clips = getTextClipboard()
+                        val text = if (clips.size == 0) i18n(R.string.pasteIsEmpty) else clips[0]
                         wallyApp?.post(url, { it.setBody(text) })
                         then?.invoke(R.string.clipboard)
                     }
                     catch (e: Exception)
                     {
                     }
-
                 }
-            }
-            /*
-            val item = if (clip?.itemCount != 0) clip?.getItemAt(0) else null
-            val text = item?.text?.toString() ?: i18n(R.string.pasteIsEmpty)
-            wallyApp?.post(url, { it.setBody(text) })
-                then?.invoke(R.string.clipboard)
-
-             */
-            /*
-            laterUI {  // We need to be in the foreground to read the clipboard
-                var myClipboard = wallyApp?.currentActivity?.getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager
-                val clip: ClipData? = myClipboard.getPrimaryClip()
-                val item = if (clip?.itemCount != 0) clip?.getItemAt(0) else null
-                val text = item?.text?.toString() ?: i18n(R.string.pasteIsEmpty)
-                wallyApp?.post(url, { it.setBody(text) })
-                then?.invoke()
-            } */
         }
         else
         {
@@ -1030,7 +1013,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
      * no need to ask and the request was accepted or denied.*/
     fun attemptAutopay(req: String): TdppAction
     {
-        val iuri: Uri = req.toUri()
+        val iuri: Uri = Uri.parse(req)
         try
         {
             parseCommonFields(iuri, false)
@@ -1049,7 +1032,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
      * no need to ask and the request was accepted or denied.*/
     fun attemptSpecialTx(req: String): TdppAction
     {
-        val iuri: Uri = req.toUri()
+        val iuri: Uri = Uri.parse(req)
         try
         {
             parseCommonFields(iuri, false)

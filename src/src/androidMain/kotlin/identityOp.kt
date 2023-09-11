@@ -3,23 +3,18 @@
 package info.bitcoinunlimited.www.wally
 
 import android.app.Activity
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.net.HttpURLConnection
-import java.net.URL
-import java.net.URLEncoder
+import com.eygraber.uri.*
 
 import info.bitcoinunlimited.www.wally.databinding.ActivityIdentityOpBinding
 import io.ktor.http.*
 import org.nexa.libnexakotlin.libnexa
-import java.io.DataOutputStream
-import java.net.URLDecoder
+import kotlin.text.StringBuilder
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.IdentityOp")
@@ -33,7 +28,7 @@ class IdentityOpActivity : CommonNavActivity()
     private lateinit var ui:ActivityIdentityOpBinding
     override var navActivityId = -1
 
-    var displayedLoginRequest: Url? = null
+    var displayedLoginRequest: Uri? = null
 
     var queries: Map<String, String> = mapOf()
     val perms = mutableMapOf<String, Boolean>()
@@ -103,15 +98,22 @@ class IdentityOpActivity : CommonNavActivity()
         val uri = receivedIntent.data
         if (uri == null) return
 
-        val kUrl = Url(receivedIntent.toUri(0))
+        val iuri = Uri.parse(receivedIntent.toUri(0))
 
         if (receivedIntent.scheme == IDENTITY_URI_SCHEME)
         {
-            val h = kUrl.host
+            val h = uri.host
             host = h
+            if (h == null)
+            {
+                blankActivity()
+                wallyApp?.displayError(R.string.badLink)
+                finish()
+                return
+            }
 
             // val path = iuri.getPath()
-            val attribs = kUrl.queryMap()
+            val attribs = iuri.queryMap()
             queries = attribs
 
             val context = this
@@ -268,7 +270,7 @@ class IdentityOpActivity : CommonNavActivity()
     fun handleNewIntent(receivedIntent: Intent)
     {
         //val iuri = receivedIntent.toUri(0).toUrl()  // URI_ANDROID_APP_SCHEME | URI_INTENT_SCHEME
-        val kuri = Url(receivedIntent.toUri(0))
+        val kuri = Uri.parse(receivedIntent.toUri(0))
         LogIt.info(sourceLoc() + " Identity OP new Intent: " + kuri.toString())
 
         // Received bogus intent, or a repeat one that was already cleared
@@ -328,7 +330,7 @@ class IdentityOpActivity : CommonNavActivity()
             if (signText != null)
             {
                 ui.identityOpDetailsHeader.text = i18n(R.string.textToSign)
-                val s = URLDecoder.decode(signText,"utf-8")
+                val s = signText.urlDecode()
                 ui.identityInformation.text = s
                 msgToSign = signText.toByteArray()
             }
@@ -364,115 +366,120 @@ class IdentityOpActivity : CommonNavActivity()
     {
         val iuri = displayedLoginRequest
         launch {
-            if (iuri != null)
+            try
             {
-                val tmpHost = iuri.host
-                host = tmpHost
-                val port = iuri.port
-                val path = iuri.encodedPath
-                val attribs = iuri.queryMap()
-                val challenge = attribs["chal"]
-                val cookie = attribs["cookie"]
-                val op = attribs["op"]
-                val responseProtocol = attribs["proto"]
-                val protocol = responseProtocol ?: iuri.protocol.name  // Prefer the protocol requested by the other side, otherwise use the same protocol we got the request from
-
-                val portStr = if ((port > 0) && (port != 80) && (port != 443)) ":" + port.toString() else ""
-
-                val act = account ?: try
+                if (iuri != null)
                 {
-                    (application as WallyApp).primaryAccount
-                } catch (e: PrimaryWalletInvalidException)
-                {
-                    clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to (chainToURI[PRIMARY_CRYPTO] ?: "")), i18n(R.string.primaryAccountRequiredDetails))
-                    return@launch
-                }
-                if (act.locked)
-                {
-                    displayError(R.string.NoAccounts)
-                    return@launch
-                }
+                    val tmpHost = iuri.host
+                    if (tmpHost == null)
+                    {
+                        wallyApp?.displayError(R.string.badLink)
+                        finish()
+                        return@launch
+                    }
+                    host = tmpHost
+                    val port = iuri.port
+                    val path = iuri.encodedPath
+                    val attribs = iuri.queryMap()
+                    val challenge = attribs["chal"]
+                    val cookie = attribs["cookie"]
+                    val op = attribs["op"]
+                    val responseProtocol = attribs["proto"]
+                    val protocol = responseProtocol ?: iuri.scheme  // Prefer the protocol requested by the other side, otherwise use the same protocol we got the request from
 
-                val wallet = act.wallet
-                val idData = wallet.lookupIdentityDomain(tmpHost)
+                    val portStr = if ((port > 0) && (port != 80) && (port != 443)) ":" + port.toString() else ""
 
-                val seed = if (idData != null)
-                {
-                    if (idData.useIdentity == IdentityDomain.COMMON_IDENTITY)
-                        Bip44Wallet.COMMON_IDENTITY_SEED
-                    else if (idData.useIdentity == IdentityDomain.IDENTITY_BY_HASH)
-                        tmpHost + path
+                    val act = account ?: try
+                    {
+                        (application as WallyApp).primaryAccount
+                    }
+                    catch (e: PrimaryWalletInvalidException)
+                    {
+                        clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to (chainToURI[PRIMARY_CRYPTO] ?: "")), i18n(R.string.primaryAccountRequiredDetails))
+                        return@launch
+                    }
+                    if (act.locked)
+                    {
+                        displayError(R.string.NoAccounts)
+                        return@launch
+                    }
+
+                    val wallet = act.wallet
+                    val idData = wallet.lookupIdentityDomain(tmpHost)
+
+                    val seed = if (idData != null)
+                    {
+                        if (idData.useIdentity == IdentityDomain.COMMON_IDENTITY)
+                            Bip44Wallet.COMMON_IDENTITY_SEED
+                        else if (idData.useIdentity == IdentityDomain.IDENTITY_BY_HASH)
+                            tmpHost + path
+                        else
+                        {
+                            LogIt.severe("Invalid identity selector; corrupt?")
+                            Bip44Wallet.COMMON_IDENTITY_SEED
+                        }
+                    }
                     else
-                    {
-                        LogIt.severe("Invalid identity selector; corrupt?")
                         Bip44Wallet.COMMON_IDENTITY_SEED
-                    }
-                }
-                else
-                    Bip44Wallet.COMMON_IDENTITY_SEED
 
-                val identityDest: PayDestination = wallet.destinationFor(seed)
+                    val identityDest: PayDestination = wallet.destinationFor(seed)
 
-                // This is a coding bug in the wallet
-                val secret = identityDest.secret ?: throw IdentityException("Wallet failed to provide an identity with a secret", "bad wallet", ErrorSeverity.Severe)
-                val address = identityDest.address ?: throw IdentityException("Wallet failed to provide an identity with an address", "bad wallet", ErrorSeverity.Severe)
+                    // This is a coding bug in the wallet
+                    val secret = identityDest.secret ?: throw IdentityException("Wallet failed to provide an identity with a secret", "bad wallet", ErrorSeverity.Severe)
+                    val address = identityDest.address ?: throw IdentityException("Wallet failed to provide an identity with an address", "bad wallet", ErrorSeverity.Severe)
 
-                if (op == "login")
-                {
-                    val chalToSign = tmpHost + portStr + "_nexid_" + op + "_" + challenge
-                    LogIt.info("challenge: " + chalToSign + " cookie: " + cookie)
-
-                    if (challenge == null) // intent was previously cleared by someone throw IdentityException("challenge string was not provided", "no challenge")
+                    if (op == "login")
                     {
+                        val chalToSign = tmpHost + portStr + "_nexid_" + op + "_" + challenge
+                        LogIt.info("challenge: " + chalToSign + " cookie: " + cookie)
+
+                        if (challenge == null || cookie == null) // intent was previously cleared by someone throw IdentityException("challenge string was not provided", "no challenge")
+                        {
+                            finish()
+                            return@launch
+                        }
+
+                        val sig = libnexa.signMessage(chalToSign.toByteArray(), secret.getSecret())
+                        if (sig == null || sig.size == 0) throw IdentityException("Wallet failed to provide a signable identity", "bad wallet", ErrorSeverity.Severe)
+                        val sigStr = Codec.encode64(sig)
+                        LogIt.info("signature is: " + sigStr)
+
+                        var loginReq = protocol + "://" + tmpHost + portStr + path
+                        loginReq += "?op=login&addr=" + address.urlEncode() + "&sig=" + sigStr.urlEncode() + "&cookie=" + cookie.urlEncode()
+
+                        wallyApp?.handleLogin(loginReq)
                         finish()
-                        return@launch
+
                     }
-
-                    val sig = libnexa.signMessage(chalToSign.toByteArray(), secret.getSecret())
-                    if (sig == null || sig.size == 0) throw IdentityException("Wallet failed to provide a signable identity", "bad wallet", ErrorSeverity.Severe)
-                    val sigStr = Codec.encode64(sig)
-                    LogIt.info("signature is: " + sigStr)
-
-                    var loginReq = protocol + "://" + tmpHost + portStr + path
-                    loginReq += "?op=login&addr=" + address.urlEncode() + "&sig=" + sigStr.urlEncode() + "&cookie=" + URLEncoder.encode(cookie, "UTF-8")
-
-                    wallyApp?.handleLogin(loginReq)
-                    finish()
-
-                }
-                else if ((op == "reg") || (op == "info"))
-                {
-                    val chalToSign = tmpHost + portStr + "_nexid_" + op + "_" + challenge
-                    LogIt.info("challenge: " + chalToSign + " cookie: " + cookie)
-
-                    if (challenge == null) // intent was previously cleared by someone throw IdentityException("challenge string was not provided", "no challenge")
+                    else if ((op == "reg") || (op == "info"))
                     {
-                        finish()
-                        return@launch
-                    }
+                        val chalToSign = tmpHost + portStr + "_nexid_" + op + "_" + challenge
+                        LogIt.info("Identity operstion: reg or info: challenge: " + chalToSign + " cookie: " + cookie)
 
-                    val sig = libnexa.signMessage(chalToSign.toByteArray(), secret.getSecret())
-                    if (sig == null || sig.size == 0) throw IdentityException("Wallet failed to provide a signable identity", "bad wallet", ErrorSeverity.Severe)
-                    val sigStr = Codec.encode64(sig)
-                    LogIt.info("signature is: " + sigStr)
+                        if (challenge == null) // intent was previously cleared by someone throw IdentityException("challenge string was not provided", "no challenge")
+                        {
+                            finish()
+                            return@launch
+                        }
 
-                    var forwarded = 0
+                        val sig = libnexa.signMessage(chalToSign.toByteArray(), secret.getSecret())
+                        if (sig == null || sig.size == 0) throw IdentityException("Wallet failed to provide a signable identity", "bad wallet", ErrorSeverity.Severe)
+                        val sigStr = Codec.encode64(sig)
+                        LogIt.info("signature is: " + sigStr)
 
-                    val identityInfo = wallet.lookupIdentityInfo(address)
-                    if (identityInfo == null)
-                    {
-                        throw IdentityException("Wallet did not provide identity information", "bad wallet", ErrorSeverity.Severe)
-                    }
+                        var forwarded = 0
 
-                    var loginReq = protocol + "://" + tmpHost + portStr + path
+                        val identityInfo = wallet.lookupIdentityInfo(address)
 
-                    val params = mutableMapOf<String, String>()
-                    params["op"] = op
-                    params["addr"] = address.toString()
-                    params["sig"] = sigStr
-                    params["cookie"] = cookie.toString()
+                        var loginReq = protocol + "://" + tmpHost + portStr + path
 
-                    // Supply additional requested data
+                        val params = mutableMapOf<String, String>()
+                        params["op"] = op
+                        params["addr"] = address.toString()
+                        params["sig"] = sigStr
+                        params["cookie"] = cookie.toString()
+
+                        // Supply additional requested data
                         if (idData != null)
                         {
                             val perms = mutableMapOf<String, Boolean>()
@@ -485,7 +492,7 @@ class IdentityOpActivity : CommonNavActivity()
 
                                     if (perms[i] == true)
                                     {
-                                        val info = identityInfo.getString(i, null)
+                                        val info = identityInfo?.getString(i, null) ?: null
                                         if (info == null || info == "")  // missing some info that is needed
                                         {
                                             var intent = Intent(this, IdentitySettings::class.java)
@@ -512,10 +519,10 @@ class IdentityOpActivity : CommonNavActivity()
                             }
                         }
 
-                    val jsonBody = StringBuilder("{")
-                    var firstTime = true
-                    for ((k, value) in params)
-                    {
+                        val jsonBody = StringBuilder("{")
+                        var firstTime = true
+                        for ((k, value) in params)
+                        {
                             if (!firstTime) jsonBody.append(',')
                             else firstTime = false
                             jsonBody.append('"')
@@ -523,53 +530,52 @@ class IdentityOpActivity : CommonNavActivity()
                             jsonBody.append("""":"""")
                             jsonBody.append(value)
                             jsonBody.append('"')
-                    }
-                    jsonBody.append('}')
+                        }
+                        jsonBody.append('}')
 
-                    wallyApp?.handlePostLogin(loginReq, jsonBody.toString())
-                    clearIntentAndFinish()
-                }
-                else if (op == "sign")
-                {
-                    val msg = msgToSign
-                    if (msg == null)
-                    {
-                        wallyApp?.displayError(R.string.nothingToSign)
+                        wallyApp?.handlePostLogin(loginReq, jsonBody.toString())
                         clearIntentAndFinish()
                     }
-                    else
+                    else if (op == "sign")
                     {
-                        val msgSig = libnexa.signMessage(msg, secret.getSecret())
-                        if (msgSig == null || msgSig.size == 0)
+                        val msg = msgToSign
+                        if (msg == null)
                         {
-                            wallyApp?.displayError(R.string.badSignature)
+                            wallyApp?.displayError(R.string.nothingToSign)
                             clearIntentAndFinish()
                         }
                         else
                         {
-                            val sigStr = Codec.encode64(msgSig)
-                            laterUI {
-                                val msgStr = String(msg)
-                                var clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                                val s = """{ "message":"${msgStr}", "address":"${address.toString()}", "signature": "${sigStr}" }"""
-                                var clip = ClipData.newPlainText("text", s)
-                                LogIt.info(s)
-                                clipboard.setPrimaryClip(clip)
-                            }
-                            wallyApp?.displayNotice(R.string.sigInClipboard)
-
-                            val reply = attribs["reply"]
-                            if (reply == null || reply == "true")
+                            val msgSig = libnexa.signMessage(msg, secret.getSecret())
+                            if (msgSig == null || msgSig.size == 0)
                             {
-                                var sigReq = protocol + "://" + tmpHost + portStr + path
-                                sigReq += "?op=sign&addr=" + address.toString() + "&sig=" + URLEncoder.encode(sigStr, "UTF-8") + "&cookie=" + URLEncoder.encode(cookie, "UTF-8")
+                                wallyApp?.displayError(R.string.badSignature)
+                                clearIntentAndFinish()
+                            }
+                            else
+                            {
+                                val sigStr = Codec.encode64(msgSig)
+                                laterUI {
+                                    val msgStr = String(msg)
+                                    val s = """{ "message":"${msgStr}", "address":"${address.toString()}", "signature": "${sigStr}" }"""
+                                    LogIt.info(s)
+                                    setTextClipboard(s)
+                                }
+                                wallyApp?.displayNotice(R.string.sigInClipboard)
 
-                                var forwarded = 0  // Handle URL forwarding
-                                getloop@ while (forwarded < 3)
+                                val reply = attribs["reply"]
+                                if (reply == null || reply == "true")
                                 {
-                                    LogIt.info("signature reply: " + sigReq)
-                                    try
+                                    var sigReq = protocol + "://" + tmpHost + portStr + path
+                                    sigReq += "?op=sign&addr=" + address.toString() + "&sig=" + sigStr.urlEncode() + if (cookie == null) "" else "&cookie=" + cookie.urlEncode()
+
+                                    var forwarded = 0  // Handle URL forwarding
+                                    getloop@ while (forwarded < 3)
                                     {
+                                        LogIt.info("signature reply: " + sigReq)
+                                        try
+                                        {
+                                            /*
                                         val req: HttpURLConnection = URL(sigReq).openConnection() as HttpURLConnection
                                         req.setConnectTimeout(HTTP_REQ_TIMEOUT_MS)
                                         val resp = req.inputStream.bufferedReader().readText()
@@ -590,30 +596,61 @@ class IdentityOpActivity : CommonNavActivity()
                                             wallyApp?.displayNotice(resp)
                                             clearIntentAndFinish()
                                         }
-                                    } catch (e: FileNotFoundException)
-                                    {
-                                        wallyApp?.displayError(R.string.badLink)
-                                        clearIntentAndFinish()
-                                    } catch (e: IOException)
-                                    {
-                                        wallyApp?.displayError(R.string.connectionAborted)
-                                        clearIntentAndFinish()
-                                    } catch (e: java.net.ConnectException)
-                                    {
-                                        wallyApp?.displayError(R.string.connectionException)
-                                        clearIntentAndFinish()
+                                         */
+
+                                            LogIt.info(sigReq)
+                                            val (resp, status) = Uri.parse(sigReq).loadTextAndStatus(HTTP_REQ_TIMEOUT_MS)
+                                            LogIt.info("signature response code:" + status.toString() + " response: " + resp)
+                                            if ((status >= 200) and (status < 250))
+                                            {
+                                                wallyApp?.displayNotice(resp)
+                                                clearIntentAndFinish()
+                                            }
+                                            else if ((status == 301) or (status == 302))  // Handle URL forwarding (often switching from http to https)
+                                            {
+                                                sigReq = resp
+                                                forwarded += 1
+                                                continue@getloop
+                                            }
+                                            else
+                                            {
+                                                wallyApp?.displayNotice(resp)
+                                                clearIntentAndFinish()
+                                            }
+
+                                        }
+                                        catch (e: FileNotFoundException)
+                                        {
+                                            wallyApp?.displayError(R.string.badLink)
+                                            clearIntentAndFinish()
+                                        }
+                                        catch (e: IOException)
+                                        {
+                                            logThreadException(e)
+                                            wallyApp?.displayError(R.string.connectionAborted)
+                                            clearIntentAndFinish()
+                                        }
+                                        catch (e: java.net.ConnectException)
+                                        {
+                                            wallyApp?.displayError(R.string.connectionException)
+                                            clearIntentAndFinish()
+                                        }
+                                        break@getloop  // only way to actually loop is to hit a 301 or 302
                                     }
-                                    break@getloop  // only way to actually loop is to hit a 301 or 302
                                 }
                             }
                         }
-                    }
 
+                    }
+                }
+                else  // uri was null
+                {
+                    clearIntentAndFinish()
                 }
             }
-            else  // uri was null
+            catch (e: IdentityException)
             {
-                clearIntentAndFinish()
+                logThreadException(e)
             }
         }
 
@@ -642,8 +679,8 @@ class IdentityOpActivity : CommonNavActivity()
     fun clearIntentAndFinish(error: String? = null, details: String? = null)
     {
         intent.putExtra("repeat", "true")
-        if (error != null) intent.putExtra("error", error)
-        if (details != null) intent.putExtra("details", details)
+        if (error != null) wallyApp?.displayError(S.reject, error)
+        else if (details != null) wallyApp?.displayNotice(details)
         setResult(Activity.RESULT_OK, intent)
         finish()
     }

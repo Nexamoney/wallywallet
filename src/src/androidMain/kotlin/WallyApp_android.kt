@@ -7,7 +7,6 @@ import android.app.*
 import android.app.PendingIntent.CanceledException
 import android.content.Intent
 import android.content.res.Configuration
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -43,6 +42,8 @@ import java.security.spec.InvalidKeySpecException
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
+
+import com.eygraber.uri.*
 
 val LAST_RESORT_BCH_ELECTRS = "bch2.bitcoinunlimited.net"
 val LAST_RESORT_NEXA_ELECTRS = "electrum.nexa.org"
@@ -692,7 +693,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         var forwarded = 0
         getloop@ while (forwarded < 3)
         {
-            LogIt.info("login reply: " + loginReq)
+            LogIt.info(sourceLoc() +": login reply: " + loginReq)
             try
             {
                 val req: HttpURLConnection = URL(loginReq).openConnection() as HttpURLConnection
@@ -1059,9 +1060,9 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     var autoPayNotificationId = -1
     fun autoHandle(intentUri: String): Boolean
     {
-        val iuri: Uri = intentUri.toUri()
+        val iuri: Uri = Uri.parse(intentUri) //intentUri.toUri()
         val scheme = iuri.scheme // intentUri.split(":")[0]
-        val path = iuri.getPath()
+        val path = iuri.path
         if (scheme == TDPP_URI_SCHEME)
         {
             val tp = TricklePaySession(tpDomains)
@@ -1078,7 +1079,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
                         TdppAction.ASK ->
                         {
                             var intent = Intent(this, TricklePayActivity::class.java)
-                            intent.data = Uri.parse(intentUri)
+                            intent.data = android.net.Uri.parse(intentUri)
                             if (act != null) autoPayNotificationId =
                               notifyPopup(intent, i18n(R.string.PaymentRequest), i18n(R.string.AuthAutopay) % mapOf("domain" to tp.domainAndTopic, "amt" to amtS), act, false, autoPayNotificationId)
                             return false
@@ -1157,7 +1158,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
                     TdppAction.ASK ->  // ASSETS
                     {
                         var intent = Intent(this, TricklePayActivity::class.java)
-                        intent.data = Uri.parse(intentUri)
+                        intent.data = android.net.Uri.parse(intentUri)
                         if (act != null) autoPayNotificationId =
                           notifyPopup(intent, i18n(R.string.TpAssetInfoRequest), i18n(R.string.fromColon) + tp.domainAndTopic, act, false, autoPayNotificationId)
                         return false
@@ -1181,7 +1182,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
                     TdppAction.ASK ->  // special tx
                     {
                         var intent = Intent(this, TricklePayActivity::class.java)
-                        intent.data = Uri.parse(intentUri)
+                        intent.data = android.net.Uri.parse(intentUri)
                         if (act != null) autoPayNotificationId =
                             notifyPopup(intent, i18n(R.string.PaymentRequest), i18n(R.string.SpecialTpTransactionFrom) + " " + tp.domainAndTopic, act, false, autoPayNotificationId)
                         return false

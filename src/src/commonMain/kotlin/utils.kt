@@ -3,6 +3,13 @@ package info.bitcoinunlimited.www.wally
 import io.ktor.http.*
 import kotlinx.coroutines.*
 import org.nexa.libnexakotlin.*
+import com.eygraber.uri.*
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.plugins.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+
 private val LogIt = GetLog("BU.wally.utils")
 
 /** dig through text looking for addresses */
@@ -51,21 +58,6 @@ fun isCashAddrScheme(s: String): Boolean
     return chain != null
 }
 
-/** Return the parameters in this Url.  If a parameter name is repeated, return only the first instance.
- */
-fun Url.queryMap(): Map<String, String>
-{
-    // The parameters property of Ktor's Url class already provides parsed and decoded query parameters.
-    val parameters = mutableMapOf<String, String>()
-    this.parameters.forEach { name, values ->
-        if (values.size > 0)
-            parameters[name] = values[0]
-        else
-            parameters[name] = ""
-    }
-    return parameters
-}
-
 // This extension function is used to convert List to a single value, considering only the first element.
 fun List<String>.first(): String = this[0]
 
@@ -86,3 +78,111 @@ fun later(fn: suspend () -> Unit): Unit
         }
     }
 }
+
+/** load this Uri (blocking).
+ * @return The Uri body contents as a string, and the status code.  If status code 301 or 302 is returned (forwarding) then return the forwarding Uri in the first parameter.
+ */
+fun Uri.loadTextAndStatus(timeoutInMs: Number): Pair<String,Int>
+{
+    var err:Int = 0
+    val client = HttpClient() {
+        install(HttpTimeout) {
+            requestTimeoutMillis = timeoutInMs.toLong()
+            // connectTimeoutMillis  // time to connect
+            // socketTimeoutMillis   // time between 2 data packets
+        }
+    }
+
+    return runBlocking {
+        val resp = client.get(this.toString())
+        val status = resp.status.value
+        if ((status == 301) or (status == 302))  // Handle URL forwarding (often switching from http to https)
+        {
+            Pair(resp.request.headers.get("Location") ?: "", status)
+        }
+        else Pair(resp.bodyAsText(), status)
+    }
+}
+
+/*
+fun Uri.accessWithError(): Pair<String,Int>
+{
+    var err:Int = 0
+    val client = HttpClient() {
+        HttpResponseValidator {
+            validateResponse {
+                err = it.status.value
+            }
+        }
+    }
+    return Pair(runBlocking {
+        val resp = client.get(this.toString())
+        val rbody = resp.status.value
+
+
+        resp.bodyAsText()
+    }, err)
+}
+
+ */
+
+suspend fun Uri.coaccess(): String
+{
+    val client = HttpClient()
+    return client.get(this.toString()).bodyAsText()
+}
+
+fun Uri.body(): String
+{
+    val suri = toString()
+    var start = suri.indexOf(':')
+    var end = suri.indexOf('?')
+    if (end == -1) end = suri.length
+    return suri.slice(start + 1 .. end - 1)
+}
+
+/** Return the parameters in this Url.  If a parameter name is repeated, return only the first instance.
+ */
+fun Uri.queryMap(): Map<String, String>
+{
+    // painful, but we need to trick the standard code into seeing this as a "hierarchial" URI so that it will parse parameters.
+    val suri = toString()
+    val index = suri.indexOf('?')
+    if (index == -1) return mapOf()
+    val fakeHeirarchicalUri = "http://a.b/_" + suri.drop(index)
+    // To decode the parameters, we drop our scheme (blockchain identifier) and replace with http, so the standard Url parser will do the job for us.
+    val u = Uri.parse(fakeHeirarchicalUri)
+
+    // The parameters property of Ktor's Url class already provides parsed and decoded query parameters.
+    val parameters = mutableMapOf<String, String>()
+    val keys = u.getQueryParameterNames()
+    keys.forEach { name ->
+        val values = u.getQueryParameters(name)
+        if (values.size > 0)
+            parameters[name] = values[0]
+        else
+            parameters[name] = ""
+    }
+    return parameters
+}
+
+// Add functions to ktor URL that is like Android Uri
+// fun Uri.getQueryParameter(param: String): String? = parameters.get(param)
+
+/** Converts an encoded URL to a raw string */
+expect fun String.urlDecode():String
+
+/** Converts a string to a string that can be put into a URL */
+expect fun String.urlEncode():String
+
+/** Get the clipboard.  Platforms that have a clipboard history should return that history, with the primary clip in index 0 */
+expect fun getTextClipboard(): List<String>
+
+/** Sets the clipboard, potentially asynchronously. */
+expect fun setTextClipboard(msg: String)
+
+
+/** Returns true if this function is called within the UI thread
+ * Many platforms have specific restrictions on what can be run within the UI (often the "main") thread.
+ */
+expect fun isUiThread(): Boolean

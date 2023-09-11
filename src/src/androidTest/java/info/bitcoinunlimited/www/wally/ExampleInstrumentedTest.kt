@@ -15,7 +15,6 @@ import org.junit.Before
 import org.junit.Assert.*
 
 import info.bitcoinunlimited.www.wally.*
-import bitcoinunlimited.wally.*
 import kotlinx.coroutines.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
