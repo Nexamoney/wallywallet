@@ -159,7 +159,6 @@ class GuiTest
 {
     init {
         runningTheTests = true
-        runningTheUnitTests = false
         dbPrefix = "guitest_"
     }
 
@@ -168,8 +167,8 @@ class GuiTest
         val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size > 0)
+        var bc = rpc.getblockcount()  // just try anything
+        check(bc >= 101)  // well, I'm pretty much certainly going to need some coins so the person setting this up ought to have moved us forward
         return rpc
     }
 
@@ -1540,8 +1539,8 @@ class GuiTest
 
     @Test fun backForthTest()
     {
+        forTestingDoNotAutoCreateWallets = true
         check(runningTheTests == true)
-        check(runningTheUnitTests == false)
         cleanupWallets()
 
         val cs = ChainSelector.NEXAREGTEST

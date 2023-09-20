@@ -17,7 +17,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.net.toUri
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.*
@@ -55,7 +54,7 @@ const val HTTP_REQ_TIMEOUT_MS: Int = 7000
 
 private val LogIt = GetLog("BU.wally.app")
 
-var runningTheUnitTests = false
+var forTestingDoNotAutoCreateWallets = false
 var coinsCreated = false
 
 /** Currently selected fiat currency code */
@@ -896,7 +895,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         registerActivityLifecycleCallbacks(ActivityLifecycleHandler(this))  // track the current activity
         createNotificationChannel()
 
-        if (!runningTheUnitTests)  // If I'm running the unit tests, don't auto-create any wallets since the tests will do so
+        if (!forTestingDoNotAutoCreateWallets)  // If I'm running the unit tests, don't auto-create any wallets since the tests will do so
         {
             // Initialize the currencies supported by this wallet
             launch(coMiscScope)

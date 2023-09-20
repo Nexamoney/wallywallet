@@ -41,4 +41,4 @@ RUN while read -r package; do PACKAGES="${PACKAGES}${package} "; done < /opt/adk
 RUN mkdir /root/.vnc; x11vnc -storepasswd test /root/.vnc/passwd
 
 # create a basic android image
-RUN /opt/adk/tools/bin/avdmanager create avd -n a28_1 -d 1 -k "system-images;android-28;default;x86_64"
+RUN /opt/adk/tools/bin/avdmanager create avd -n a28_1 -d 1 -k "system-images;android-29;default;x86_64"

@@ -3,7 +3,7 @@ package info.bitcoinunlimited.www.wally
 import android.content.res.Resources
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.decodeUtf8
-import org.nexa.libnexakotlin.androidContext
+import org.nexa.libnexakotlin.appContext
 
 private val LogIt = GetLog("BU.wally.i18n")
 var LocaleStrings = listOf<String>()
@@ -36,7 +36,7 @@ actual fun i18n(id: Int): String
 
 actual fun setLocale():Boolean
 {
-    val locales = androidContext!!.resources.configuration.locales
+    val locales = (appContext() as android.content.Context)!!.resources.configuration.locales
     for (idx in 0 until locales.size())
     {
         val loc = locales[idx]
@@ -48,9 +48,10 @@ actual fun setLocale():Boolean
 
 actual fun setLocale(language: String, country: String):Boolean
 {
-    var id = androidContext!!.resources.getIdentifier("strings_${language}", "raw", androidContext!!.packageName)
-    if (id == 0) id = androidContext!!.resources.getIdentifier("strings_${language}_${country}", "raw", androidContext!!.packageName)
-    val strs = androidContext!!.resources.openRawResource(id).readBytes()
+    val androidContext = (appContext() as android.content.Context)!!
+    var id = androidContext.resources.getIdentifier("strings_${language}", "raw", androidContext.packageName)
+    if (id == 0) id = androidContext.resources.getIdentifier("strings_${language}_${country}", "raw", androidContext.packageName)
+    val strs = androidContext.resources.openRawResource(id).readBytes()
 
     val chopSpots = mutableListOf<Int>(0)
     strs.forEachIndexed { index, byte -> if (byte==0.toByte()) chopSpots.add(index+1)  }

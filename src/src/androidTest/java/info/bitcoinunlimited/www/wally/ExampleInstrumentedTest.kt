@@ -4,13 +4,11 @@ import org.nexa.libnexakotlin.*
 import android.content.Context
 import android.util.Log
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.filters.SmallTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 
 
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.Before
 
 import org.junit.Assert.*
 
@@ -21,18 +19,14 @@ import kotlinx.serialization.json.*
 import org.nexa.libnexakotlin.initializeLibNexa
 import org.nexa.libnexakotlin.libnexa
 import java.lang.AssertionError
-import java.lang.Exception
 import com.ionspin.kotlin.bignum.decimal.*
 import org.nexa.threads.Gate
-import java.math.BigInteger
-import java.security.MessageDigest
 
-import java.util.Random
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
 // The IP address of the host machine: Android sets up a fake network with the host hardcoded to this IP
-val EMULATOR_HOST_IP = "192.168.1.5" //"10.0.2.2"
+val EMULATOR_HOST_IP = "192.168.1.5" // "127.0.0.1" //"10.0.2.2"
 
 val LogIt = GetLog("AndroidTest")
 
@@ -202,7 +196,7 @@ class UnitTest
     init {
         initializeLibNexa()
         runningTheTests = true
-        runningTheUnitTests = true
+        forTestingDoNotAutoCreateWallets = true
         dbPrefix = "test_"
     }
 
@@ -814,9 +808,8 @@ class UnitTest
         assertEquals(type1, PayAddressType.P2PKH)
         check(params1[0].contentEquals(fakepubkey))
 
-        // P2SH
-
-        val P2SH = SatoshiScript(ch) + OP.HASH160 + OP.push(fakepubkey) + OP.EQUAL
+        // P2SH (must be BCHREGTEST becase P2SH removed in Nexa)
+        val P2SH = SatoshiScript(ChainSelector.BCHREGTEST) + OP.HASH160 + OP.push(fakepubkey) + OP.EQUAL
         check(P2SH.match() != null)
         val (type2, params2) = P2SH.match() ?: throw AssertionError("should have matched P2SH template")
 

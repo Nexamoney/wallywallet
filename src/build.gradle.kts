@@ -7,7 +7,7 @@ import java.net.URL
 // Dependency versions
 val mpThreadsVersion = "0.1.7"
 val nexaRpcVersion = "1.1.3"
-val libNexaKotlinVersion = "0.0.18"
+val libNexaKotlinVersion = "0.0.20"
 
 val serializationVersion = "1.6.0"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.7.3"     // https://github.com/Kotlin/kotlinx.coroutines
@@ -265,7 +265,7 @@ kotlin {
                 implementation(kotlin("test"))
                 //implementation(kotlin("LibNexaTests"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
-                // implementation("org.nexa:NexaRpc:1.1.0")
+                implementation("org.nexa:nexarpc:$nexaRpcVersion")
             }
         }
 

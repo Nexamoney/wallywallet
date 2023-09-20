@@ -6,4 +6,4 @@
 Xvfb :1 -screen 0 1024x1024x24 &
 export DISPLAY=:1
 # start it up clean -- this assumes that an avd (android virtual device) was already created named a28_1
-(cd /opt/adk/tools; emulator -no-audio -gpu off -no-snapshot -wipe-data -avd a28_1 &)
+(cd /opt/adk/tools; emulator -no-audio -gpu off -no-snapshot -wipe-data -avd a30_1 &)
