@@ -13,7 +13,7 @@ val serializationVersion = "1.6.0"  // https://github.com/Kotlin/kotlinx.seriali
 val coroutinesVersion = "1.7.3"     // https://github.com/Kotlin/kotlinx.coroutines
 val ktorVersion = "2.3.3"           // https://github.com/ktorio/ktor
 val bigNumVersion = "0.3.8"
-val composeVersion = "1.5.0"
+val composeVersion = "1.5.1"
 val androidxActivityComposeVersion = "1.7.2"
 val uriKmpVersion = "0.0.14"
 
@@ -21,13 +21,13 @@ val secSinceEpoch = Instant.now().epochSecond
 
 plugins {
     //trick: for the same plugin versions in all sub-modules
-    kotlin("multiplatform").version("1.9.0")
+    kotlin("multiplatform").version("1.9.10")
     id("com.android.application") // .version("8.1.1")
     //id("com.android.library").version("8.1.1")
     //id("org.jetbrains.kotlin.native.cocoapods") version "1.9.0"
     //kotlin("native.cocoapods")
     kotlin("plugin.serialization").version("1.9.0")
-    id("org.jetbrains.compose").version("1.5.0")
+    id("org.jetbrains.compose").version("1.5.1")
     //id("maven-publish")
     id("org.jetbrains.dokka").version("1.8.20").apply(false)
     // id("com.github.johnrengelman.shadow").version("8.1.1")
@@ -338,11 +338,11 @@ kotlin {
                     implementation(kotlin("stdlib-jdk8"))
                     implementation("androidx.activity:activity-compose:$androidxActivityComposeVersion")
 
-                    implementation("androidx.compose.ui:ui:1.5.0")
-                    implementation("androidx.compose.ui:ui-tooling:1.5.0")
-                    implementation("androidx.compose.ui:ui-tooling-preview:1.5.0")
-                    implementation("androidx.compose.foundation:foundation:1.5.0")
-                    implementation("androidx.compose.material:material:1.5.0")
+                    implementation("androidx.compose.ui:ui:$composeVersion")
+                    implementation("androidx.compose.ui:ui-tooling:$composeVersion")
+                    implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")
+                    implementation("androidx.compose.foundation:foundation:$composeVersion")
+                    implementation("androidx.compose.material:material:$composeVersion")
                     implementation("androidx.activity:activity-compose:1.7.2")
                     implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.5.1")
                     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.0")
@@ -446,8 +446,8 @@ kotlin {
                 dependencies {
                     implementation(kotlin("test-junit"))
                     implementation("org.nexa:nexarpc:$nexaRpcVersion")
-                    implementation("androidx.test:core:1.5.0")
-                    implementation("androidx.test:core-ktx:1.5.0")
+                    implementation("androidx.test:core:$composeVersion")
+                    implementation("androidx.test:core-ktx:$composeVersion")
                     implementation("androidx.test.ext:junit:1.1.5")
                     implementation("androidx.test.ext:junit-ktx:1.1.5")
 
