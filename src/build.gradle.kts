@@ -14,6 +14,7 @@ val coroutinesVersion = "1.7.3"     // https://github.com/Kotlin/kotlinx.corouti
 val ktorVersion = "2.3.3"           // https://github.com/ktorio/ktor
 val bigNumVersion = "0.3.8"
 val composeVersion = "1.5.1"
+val androidTestCoreVersion = "1.5.0"
 val androidxActivityComposeVersion = "1.7.2"
 val uriKmpVersion = "0.0.14"
 
@@ -446,8 +447,8 @@ kotlin {
                 dependencies {
                     implementation(kotlin("test-junit"))
                     implementation("org.nexa:nexarpc:$nexaRpcVersion")
-                    implementation("androidx.test:core:$composeVersion")
-                    implementation("androidx.test:core-ktx:$composeVersion")
+                    implementation("androidx.test:core:$androidTestCoreVersion")
+                    implementation("androidx.test:core-ktx:$androidTestCoreVersion")
                     implementation("androidx.test.ext:junit:1.1.5")
                     implementation("androidx.test.ext:junit-ktx:1.1.5")
 

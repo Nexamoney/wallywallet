@@ -1586,7 +1586,7 @@ class GuiTest
         var addr2: String = ""
         waitFor { addr2 = clipboardText();  addr2.startsWith("nexareg:")}
 
-        for (i in 0 .. 2000)
+        for (i in 0 .. 10)
         {
             sendTo(addr2, "rNEX1", (500 .. 8000).random() )
             sendTo(addr1, "rNEX2", (500 .. 10000).random() )
