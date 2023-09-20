@@ -38,8 +38,6 @@ fun MainViewController() = ComposeUIViewController {
         wal.blockchain.req.net.exclusiveNodes(setOf("192.168.1.5"))
         accounts[wal.name] = wal
     }
-    MaterialTheme {
-        NavigationRoot(accounts)
-    }
+    NavigationRoot(accounts)
 }
 
