@@ -28,6 +28,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
 
 
 @Composable
@@ -48,10 +49,7 @@ fun SettingsScreen()
         DevMode()
         AreYouSureAmt()
 
-        Divider(
-          color = Color.Red,
-          thickness = 2.dp
-        )
+        WallyDivider()
         Text(text  = "Blockchain Sources", fontSize = 24.sp)
 
         NexaOption("Nexa")

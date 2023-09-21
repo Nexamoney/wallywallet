@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 val colorPrimary = Color(0xFFD0A6FF)
 val colorPrimaryDark = Color(0xFF5B276B)
+val colorDefault = Color(0xFF808080)  // gray
 val splashBackground = Color(0xFF5B276B)
 val colorAccent = Color(0xFFC01BD0)
 val defaultSpinnerBkg = Color(0xFFffffffff)
@@ -34,8 +35,7 @@ val white = Color(0xFFFFffffff)
 val WallyBorder = Color(0xFFFFefddff)
 val BaseBkg = Color(0xFFFFFCF0D9)
 val BrightBkg = Color(0xFFFFFFFAF0)
-
-val navBarBkg = Color(0xFFFFF5EBC8)
+val NavBarBkg = Color(0xFFFFF5EBC8)
 
 val listDividerFg = Color(0xFFFF906EB0)
 val unconfirmedBalanceIncomingColor = Color(0xFFFFa19120)

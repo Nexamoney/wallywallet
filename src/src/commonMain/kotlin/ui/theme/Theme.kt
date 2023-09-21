@@ -1,7 +1,10 @@
 package info.bitcoinunlimited.www.wally.ui.theme
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.ui.Modifier
 
 // TODO: Implement dark mode
 val DarkColorPalette = darkColorScheme(
@@ -9,6 +12,8 @@ val DarkColorPalette = darkColorScheme(
   inversePrimary = colorPrimaryDark,
   secondary = colorAccent
 )
+
+val WallyPageBase = Modifier.fillMaxSize().background(BaseBkg)
 
 val LightColorPalette = lightColorScheme(
     primary = colorPrimary,

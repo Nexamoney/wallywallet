@@ -13,16 +13,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import info.bitcoinunlimited.www.wally.S
+import info.bitcoinunlimited.www.wally.i18n
+import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
+import info.bitcoinunlimited.www.wally.ui.theme.WallyPageBase
 
 @Composable
 fun HomeScreen()
 {
     var isSending by remember { mutableStateOf(false) }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = WallyPageBase) {
         Column {
             Text("HomeScreen")
-            Divider()
+            WallyDivider()
             if(isSending)
             {
                 SendFormView(
@@ -32,14 +36,14 @@ fun HomeScreen()
             else if(!isSending)
             {
                 Button(onClick = { isSending = true }) {
-                    Text("Send")
+                    Text(i18n(S.Send))
                 }
-                Divider()
+                WallyDivider()
                 ReceiveView()
-                Divider()
+                WallyDivider()
             }
             AccountListView()
-            Divider()
+            WallyDivider()
             QrCodeScannerView()
         }
     }

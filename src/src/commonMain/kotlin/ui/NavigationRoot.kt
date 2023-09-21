@@ -8,14 +8,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import info.bitcoinunlimited.www.wally.ui.theme.WallyTheme
-import info.bitcoinunlimited.www.wally.ui.theme.defaultListHighlight
+import info.bitcoinunlimited.www.wally.S
+import info.bitcoinunlimited.www.wally.i18n
+import info.bitcoinunlimited.www.wally.ui.theme.*
 import org.nexa.libnexakotlin.Bip44Wallet
 
 enum class ScreenNav
@@ -32,7 +34,7 @@ fun NavigationRoot(accounts: MutableMap<String, Bip44Wallet>)
     val scrollState = rememberScrollState()
 
     WallyTheme(darkTheme = false, dynamicColor = false) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = WallyPageBase) {
             Column(
               modifier = Modifier.fillMaxSize()
             ) {
@@ -53,7 +55,7 @@ fun NavigationRoot(accounts: MutableMap<String, Bip44Wallet>)
 
                 // This will always be at the bottom and won't overlap with the content above
                 Box(
-                  modifier = Modifier.fillMaxWidth().background(defaultListHighlight)
+                  modifier = Modifier.fillMaxWidth().background(NavBarBkg)
                 ) {
                     NavigationMenu(currentScreen)
                 }
@@ -62,40 +64,41 @@ fun NavigationRoot(accounts: MutableMap<String, Bip44Wallet>)
     }
 }
 
+data class NavChoice(val location: ScreenNav, val textId: Int)  // TODO add icon
+
+var bottomNavChoices = mutableListOf<NavChoice>(
+  NavChoice(ScreenNav.Home, S.title_home),
+  NavChoice(ScreenNav.Dashboard, S.title_dashboard),
+  NavChoice(ScreenNav.Settings, S.title_activity_settings))
+
 @Composable
 fun NavigationMenu(currentScreen: MutableState<ScreenNav>) {
     // Horizontal row to layout navigation buttons
     Row(
-        modifier = Modifier.padding(16.dp).background(defaultListHighlight)
+        modifier = Modifier.padding(4.dp)
     ) {
-        // Home Button
-        Button(
-          onClick = { currentScreen.value = ScreenNav.Home },
-          // Change button appearance based on current screen
-          enabled = currentScreen.value != ScreenNav.Home
-        ) {
-            Text("Home")
+        for (ch in bottomNavChoices)
+        {
+            // This is opposite of normal: The disabled button is our current screen, so should have the highlight
+            Button(
+              colors = ButtonDefaults.textButtonColors(
+                disabledContainerColor = colorPrimary,
+                disabledContentColor = colorPrimaryDark,
+                containerColor = BaseBkg,
+                contentColor = colorDefault,
+              ),
+              contentPadding = PaddingValues(2.dp),
+              //Modifier.padding(2.dp, 0.dp),
+              onClick = { currentScreen.value = ch.location },
+              // Change button appearance based on current screen
+              enabled = currentScreen.value != ch.location
+            ) {
+                Text(i18n(ch.textId), modifier = Modifier.padding(0.dp)
+                )
+            }
+            // Some space between buttons
+            Spacer(modifier = Modifier.width(8.dp))
         }
 
-        // Some space between buttons
-        Spacer(modifier = Modifier.width(8.dp))
-
-        Button(
-            onClick = { currentScreen.value = ScreenNav.Dashboard },
-            // Change button appearance based on current screen
-            enabled = currentScreen.value != ScreenNav.Dashboard
-        ) {
-            Text("Dashboard")
-        }
-
-        // Some space between buttons
-        Spacer(modifier = Modifier.width(8.dp))
-
-        Button(
-            onClick = { currentScreen.value = ScreenNav.Settings },
-            enabled = currentScreen.value != ScreenNav.Settings
-        ) {
-            Text("Settings")
-        }
     }
 }
