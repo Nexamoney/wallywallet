@@ -29,6 +29,8 @@ val WallyRowBbkg1 = Color(0xFF8FF4e0ec)
 val WallyRowAbkg2 = Color(0xFFBFfff5f0)
 val WallyRowBbkg2 = Color(0xFFBFf5f5ff)
 
+var WallyShoppingRowColors = arrayOf(Color(0x4Ff5f8ff), Color(0x4Fd0d0ef))
+
 val black = Color(0xFFFF000000)
 val white = Color(0xFFFFffffff)
 val WallyButtonBackground = Color(0xFFFFDEDEDE)

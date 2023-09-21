@@ -18,42 +18,30 @@ import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.shoppingActivity")
 
-class ShoppingDestination(var buttonText: String = "", var explain: String = "", var url: String = "", var androidPackage: String = "", var icon: Int = 0)
+
+fun ShoppingDestination.launch(view: View)
 {
-    fun launch(view: View)
+    val activity: Activity = getActivity(view) ?: return
+    val pm: PackageManager = activity.packageManager
+
+    if (androidPackage != "")
     {
-        val activity: Activity = getActivity(view) ?: return
-        val pm: PackageManager = activity.packageManager
-
-        if (androidPackage != "")
-        {
-            val launchIntent: Intent? = pm.getLaunchIntentForPackage(androidPackage)
-            launchIntent?.let {
-                activity.startActivity(it)
-                return
-            }
-        }
-
-        if (url != "")
-        {
-            if (!url.startsWith("http")) url = "https://" + url
-            val webIntent: Intent = Uri.parse(url).let { webpage -> Intent(Intent.ACTION_VIEW, webpage) }
-            activity.startActivity(webIntent)
+        val launchIntent: Intent? = pm.getLaunchIntentForPackage(androidPackage)
+        launchIntent?.let {
+            activity.startActivity(it)
             return
         }
     }
+
+    if (url != "")
+    {
+        if (!url.startsWith("http")) url = "https://" + url
+        val webIntent: Intent = Uri.parse(url).let { webpage -> Intent(Intent.ACTION_VIEW, webpage) }
+        activity.startActivity(webIntent)
+        return
+    }
 }
 
-val initialShopping: ArrayList<ShoppingDestination> = arrayListOf(
-  /*
-  ShoppingDestination(i18n(R.string.GiftCardButton), i18n(R.string.ExplainGiftCards), i18n(R.string.GiftCardUrl), i18n(R.string.GiftCardAppPackage), R.mipmap.ic_egifter),
-  ShoppingDestination(i18n(R.string.RestaurantButton), i18n(R.string.ExplainRestaurant), i18n(R.string.RestaurantUrl), i18n(R.string.RestaurantAppPackage), R.mipmap.ic_menufy),
-  ShoppingDestination(i18n(R.string.StoreMapButton), i18n(R.string.ExplainStoreMap), i18n(R.string.StoreMapUrl), i18n(R.string.StoreMapAppPackage))
-   */
-  ShoppingDestination(i18n(R.string.NFTs), i18n(R.string.ExplainNFTs), i18n(R.string.NftUrl), "", R.drawable.ic_niftyart_logo_plain),
-  ShoppingDestination(i18n(R.string.CexButton), i18n(R.string.ExplainTxBit), "https://txbit.io/Trade/NEXA/USDT", "", R.drawable.txbit_io),
-  ShoppingDestination(i18n(R.string.CexButton), i18n(R.string.ExplainMexc), "https://www.mexc.com/exchange/NEXA_USDT", "", R.drawable.ic_mexc)
-)
 
 
 class ShoppingListBinder(val ui: ShoppingListItemBinding): GuiListItemBinder<ShoppingDestination>(ui.root)

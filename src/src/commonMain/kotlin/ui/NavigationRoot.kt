@@ -36,7 +36,14 @@ enum class ScreenNav
     Assets,
     Shopping,
     Settings,
-    Dashboard,
+    Dashboard;
+
+    val isEntirelyScrollable:Boolean
+        get()
+    {
+        if (this == Settings) return true
+        return false
+    }
 }
 
 
@@ -52,11 +59,16 @@ fun NavigationRoot(accounts: MutableMap<String, Bip44Wallet>)
               modifier = Modifier.fillMaxSize()
             ) {
                 // This will take up the most space but leave enough for the navigation menu
+                val mod = if (currentScreen.value.isEntirelyScrollable)
+                {
+                    Modifier.weight(1f).verticalScroll(scrollState).fillMaxWidth()
+                }
+                else
+                {
+                   Modifier.weight(1f).fillMaxWidth()
+                }
                 Box(
-                  modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(scrollState)
-                    .fillMaxWidth()
+                  modifier = mod
                 ) {
                     when (currentScreen.value)
                     {
@@ -64,7 +76,7 @@ fun NavigationRoot(accounts: MutableMap<String, Bip44Wallet>)
                         ScreenNav.Dashboard -> DashboardScreen(400.dp, accounts)
                         ScreenNav.Settings -> SettingsScreen()
                         ScreenNav.Assets -> TODO()
-                        ScreenNav.Shopping -> TODO()
+                        ScreenNav.Shopping -> ShoppingScreen()
                         ScreenNav.TricklePay -> TODO()
                         ScreenNav.Identity -> TODO()
                     }
@@ -86,7 +98,7 @@ var bottomNavChoices = mutableListOf<NavChoice>(
   NavChoice(ScreenNav.Identity, S.title_activity_identity, Icons.Default.Home),
   NavChoice(ScreenNav.TricklePay, S.title_activity_trickle_pay, Icons.Default.Home),
   NavChoice(ScreenNav.Assets, S.title_activity_assets, Icons.Default.Home),
-  NavChoice(ScreenNav.Assets, S.title_activity_shopping, Icons.Default.Home),
+  NavChoice(ScreenNav.Shopping, S.title_activity_shopping, Icons.Default.Home),
   NavChoice(ScreenNav.Dashboard, S.title_dashboard, null),
   NavChoice(ScreenNav.Settings, S.title_activity_settings, Icons.Default.Settings),
   )

@@ -4,6 +4,7 @@ import org.xml.sax.InputSource
 import org.xml.sax.XMLReader
 import org.xml.sax.helpers.DefaultHandler
 import javax.xml.parsers.DocumentBuilderFactory
+import kotlin.text.*
 import kotlin.io.*
 import java.io.*
 import org.w3c.dom.*
@@ -44,7 +45,10 @@ fun writeXlatBin(localeCode: String, keys:List<String>, langXlat:Map<String,Stri
 {
     val vs = keys.map { langXlat[it]?.toByteArray() ?: {
         println("WARNING: ${localeCode} is missing a translation for $it")
-        defaultXlat[it]!!.toByteArray()
+        var tmp = defaultXlat[it]
+        tmp = tmp!!.replace("\\n", "\n")
+        println(tmp)
+        tmp.encodeToByteArray()
         }()
     }
 

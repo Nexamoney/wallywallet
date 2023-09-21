@@ -95,7 +95,7 @@ fun WallyBoringTextButton(textRes: Int, enabled: Boolean=true,  interactionSourc
 @Composable
 fun WallyBoringTextButton(text: String, enabled: Boolean=true,  interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
 {
-    WallyRoundedButton(onClick, enabled, interactionSource) { WallyButtonText(text)}
+    WallyBoringButton(onClick, enabled, interactionSource) { WallyButtonText(text)}
 }
 
 
@@ -105,6 +105,16 @@ fun WallyBoringTextButton(text: String, enabled: Boolean=true,  interactionSourc
       lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.Both), fontWeight = FontWeight.Bold)
     Text(text = text, modifier = Modifier.padding(0.dp, 0.dp).wrapContentWidth(Alignment.CenterHorizontally,true),
       style = tmp, textAlign = TextAlign.Center, softWrap = false, maxLines = 1 )
+}
+
+@Composable fun WallyBoldText(textRes: Int)
+{
+    val textstyle = TextStyle.Default.copy(lineHeight = 0.em, lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.Both), fontWeight = FontWeight.Bold)
+    var s = i18n(textRes)
+    s = s.replace("\\n", "\n")
+
+    Text(text = s, modifier = Modifier.padding(0.dp, 0.dp).wrapContentWidth(Alignment.CenterHorizontally,false),
+      style = textstyle, textAlign = TextAlign.Center, softWrap = true)
 }
 
 //val WallyTextStyle = LocalTextStyle.current.copy()

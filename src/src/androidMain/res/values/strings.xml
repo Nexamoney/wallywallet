@@ -530,7 +530,7 @@ Good luck!
 
     <string name="OpenWebsite" formatted="false">Access %siteName</string>
     <string name="WebsiteUnavailable" formatted="false">Website unavailable</string>
-    <string name="ExplainTxBit">txbit.io: Trade NEXA for other cryptocurrencies</string>
+    <string name="ExplainBitmart">bitmart.com: Trade NEXA for other cryptocurrencies</string>
     <string name="ExplainMexc">mexc.com: Trade NEXA for other cryptocurrencies</string>
     <string name="CexButton">exchange</string>
 
