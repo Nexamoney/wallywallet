@@ -16,54 +16,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import org.nexa.libnexakotlin.Bip44Wallet
-import androidx.compose.ui.res.*
-import androidx.compose.ui.text.PlatformParagraphStyle
-import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-
-/*
-class IconResource(
-  val resID: Int?,
-  imageVector: ImageVector?
-)
-{
-
-    @Composable
-    fun asPainterResource(): Painter
-    {
-        resID?.let {
-            return painterResource(id = resID)
-        }
-        return rememberVectorPainter(image = imageVector!!)
-    }
-
-    companion object {
-        fun fromDrawableResource(@DrawableRes resID: Int): IconResource {
-            return IconResource(resID, null)
-        }
-
-        fun fromImageVector(imageVector: ImageVector?): IconResource {
-            return IconResource(null, imageVector)
-        }
-    }
-}
-
- */
 
 enum class ScreenNav
 {
@@ -117,15 +80,6 @@ fun NavigationRoot(accounts: MutableMap<String, Bip44Wallet>)
 }
 
 data class NavChoice(val location: ScreenNav, val textId: Int, val image: ImageVector?)  // TODO add icon
-
-/*
-@Composable
-fun loadImage(id: Int)
-{
-    Icon(painterResource(id = id),"")
-}
-
- */
 
 var bottomNavChoices = mutableListOf<NavChoice>(
   NavChoice(ScreenNav.Home, S.title_home, Icons.Default.Home),
