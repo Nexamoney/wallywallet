@@ -1,22 +1,19 @@
 package info.bitcoinunlimited.www.wally.ui
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
-import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
-import info.bitcoinunlimited.www.wally.ui.theme.WallyPageBase
+import info.bitcoinunlimited.www.wally.ui.theme.*
+import info.bitcoinunlimited.www.wally.ui.theme.WallyRoundedButton
 
 @Composable
 fun HomeScreen()
@@ -35,9 +32,7 @@ fun HomeScreen()
             }
             else if(!isSending)
             {
-                Button(onClick = { isSending = true }) {
-                    Text(i18n(S.Send))
-                }
+                WallyRoundedTextButton(S.Send) { isSending = true }
                 WallyDivider()
                 ReceiveView()
                 WallyDivider()
@@ -56,17 +51,16 @@ fun SendFormView(onComplete: () -> Unit)
     Text("To:...")
     Text("Amount..")
     Row {
-        Button(onClick = { onComplete() }) {
-            Text("Send")
+        WallyRoundedTextButton(S.Send) {
             // TODO: Send...
             // TODO: Display success/failure AlertDialog
+            onComplete()
         }
-        Button(onClick = {
+        Spacer(Modifier.width(10.dp))
+        WallyBoringTextButton(S.SendCancel) {
             // TODO: Clear text in "To" field
             // TODO: Clear quantity in "Amount" field
             onComplete()
-        }) {
-            Text("Cancel")
         }
     }
 }
@@ -87,14 +81,11 @@ fun AccountListView()
 fun QrCodeScannerView()
 {
     var isDialogOpen by remember { mutableStateOf(false) }
-    Button(
-      onClick = {
+    WallyRoundedTextButton("Scan QR code") {
           isDialogOpen = true
           // TODO: Implement QR-code scanner
       }
-    ) {
-        Text("Scan QR code")
-    }
+
     if (isDialogOpen) {
         AlertDialog(
           onDismissRequest = { },

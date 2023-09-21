@@ -31,7 +31,10 @@ val WallyRowBbkg2 = Color(0xFFBFf5f5ff)
 
 val black = Color(0xFFFF000000)
 val white = Color(0xFFFFffffff)
-
+val WallyButtonBackground = Color(0xFFFFDEDEDE)
+val WallyButtonBackgroundDisabled = Color(0xFFFF9E9E9E)
+val WallyBoringButtonShadow = Color(0xFFFF6E6E6E)
+val WallyButtonForeground = black
 val WallyBorder = Color(0xFFFFefddff)
 val BaseBkg = Color(0xFFFFFCF0D9)
 val BrightBkg = Color(0xFFFFFFFAF0)
