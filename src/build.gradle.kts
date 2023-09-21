@@ -333,6 +333,7 @@ kotlin {
         {
             val androidMain by getting {
                 //dependsOn(sourceSets.named("commonJvm").get())
+
                 dependencies {
                     //implementation(project(":shared"))
 
@@ -506,6 +507,8 @@ kotlin {
 
 android {
     namespace = "info.bitcoinunlimited.www.wally"
+    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+    //sourceSets.main.manifest.srcFile = './AndroidManifest.xml'
     compileSdk = 34
     defaultConfig {
         applicationId = "info.bitcoinunlimited.www.wally"

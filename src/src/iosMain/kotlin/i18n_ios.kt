@@ -18,7 +18,8 @@ actual fun i18n(id: Int): String
 actual fun setLocale():Boolean
 {
     // we want whatever the phone is set to, not where the user is currently located, so system locale.
-    var locale = NSLocale.systemLocale()
+    var locale = NSLocale.autoupdatingCurrentLocale
+    //var locale = NSLocale.systemLocale()
     if (locale.languageCode == null)
     {
         locale = NSLocale.currentLocale()

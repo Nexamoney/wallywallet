@@ -1,5 +1,5 @@
 package info.bitcoinunlimited.www.wally.ui
-
+import info.bitcoinunlimited.www.wally.*
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,7 +29,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
-
+import info.bitcoinunlimited.www.wally.S
 
 @Composable
 fun SettingsScreen()
@@ -50,7 +50,7 @@ fun SettingsScreen()
         AreYouSureAmt()
 
         WallyDivider()
-        Text(text  = "Blockchain Sources", fontSize = 24.sp)
+        Text(text  = i18n(S.BlockchainSettings), fontSize = 24.sp)
 
         NexaOption("Nexa")
         NexaOption("NexaTest")
