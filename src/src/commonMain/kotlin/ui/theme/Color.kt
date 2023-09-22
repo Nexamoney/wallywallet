@@ -40,7 +40,10 @@ val WallyButtonForeground = black
 val WallyBorder = Color(0xFFFFefddff)
 val BaseBkg = Color(0xFFFFFCF0D9)
 val BrightBkg = Color(0xFFFFFFFAF0)
+val SelectedBkg = Color(0xFFFF8F8A80)
 val NavBarBkg = Color(0xFFFFF5EBC8)
+val ModalBkg = BrightBkg
+val ModalItemBkg = BrightBkg
 
 val listDividerFg = Color(0xFFFF906EB0)
 val unconfirmedBalanceIncomingColor = Color(0xFFFFa19120)

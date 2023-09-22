@@ -5,9 +5,9 @@ import java.time.Instant
 import java.net.URL
 
 // Dependency versions
-val mpThreadsVersion = "0.1.7"
+val mpThreadsVersion = "0.1.8"
 val nexaRpcVersion = "1.1.3"
-val libNexaKotlinVersion = "0.0.20"
+val libNexaKotlinVersion = "0.0.21"
 
 val serializationVersion = "1.6.0"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.7.3"     // https://github.com/Kotlin/kotlinx.coroutines

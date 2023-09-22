@@ -40,8 +40,6 @@ val chainToDisplayCurrencyCode: Map<ChainSelector, String> = mapOf(
   ChainSelector.BCH to "uBCH", ChainSelector.BCHTESTNET to "tuBCH", ChainSelector.BCHREGTEST to "ruBCH"
 )
 
-
-
 val ChainSelector.currencyDecimals: Int
   get()
 {

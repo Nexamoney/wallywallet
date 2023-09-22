@@ -31,6 +31,7 @@ val WallyRoundedButtonOutline = BorderStroke(1.dp, WallyBorder)
 
 val WallyBoringButtonOutline = BorderStroke(0.5.dp, WallyBoringButtonShadow)
 
+val WallyModalOutline = BorderStroke(2.dp, WallyBorder)
 
 /** This is the basic Wally "fancy" button */
 @Composable
