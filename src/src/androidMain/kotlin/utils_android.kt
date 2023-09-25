@@ -4,9 +4,18 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.VectorPainter
 import org.nexa.libnexakotlin.*
 import java.net.URLDecoder
 import java.net.URLEncoder
+
+import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import java.io.InputStream
 
 /** Converts an encoded URL to a raw string */
 actual fun String.urlDecode():String
@@ -53,4 +62,23 @@ actual fun isUiThread(): Boolean
 {
     val tname = Thread.currentThread().name
     return (tname == "main")
+}
+
+/** Access a file from the resource area */
+actual fun readResourceFile(filename: String): InputStream
+{
+    TODO()
+}
+
+@Composable
+actual fun loadImage(filename: String): ImageContainer?
+{
+    val res = when(filename)
+    {
+        "ic_faucet_drip.xml" -> R.drawable.ic_faucet_drip
+        else -> null
+    }
+
+    if (res == null) return null
+    return ImageContainer(painterResource(id = res))
 }

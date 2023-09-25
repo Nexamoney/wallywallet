@@ -1,5 +1,18 @@
 package info.bitcoinunlimited.www.wally
 
+import androidx.compose.foundation.Image
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.DefaultAlpha
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import io.ktor.http.*
 import kotlinx.coroutines.*
 import org.nexa.libnexakotlin.*
@@ -9,8 +22,45 @@ import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import java.io.InputStream
 
 private val LogIt = GetLog("BU.wally.utils")
+
+class ImageContainer
+{
+    var iv:ImageVector? = null
+    var ib:ImageBitmap? = null
+    var painter:Painter? = null
+
+    constructor(imv:ImageVector) { iv = imv}
+    constructor(imb:ImageBitmap) { ib = imb}
+    constructor(pt: Painter) { painter = pt}
+
+    @Composable
+    fun image(contentDescription: String?=null,
+        modifier: Modifier = Modifier,
+        alignment: Alignment = Alignment.Center,
+        contentScale: ContentScale = ContentScale.Fit,
+        alpha: Float = DefaultAlpha,
+        colorFilter: ColorFilter? = null)
+    {
+        iv?.let { Image(it, contentDescription, modifier, alignment, contentScale, alpha, colorFilter ) }
+        ib?.let { Image(it, contentDescription, modifier, alignment, contentScale, alpha, colorFilter ) }
+        painter?.let { Image(it, contentDescription, modifier, alignment, contentScale, alpha, colorFilter ) }
+    }
+
+
+    @Composable
+    fun icon(contentDescription: String?=null,
+      modifier: Modifier = Modifier,
+      tint: Color = LocalContentColor.current)
+    {
+        iv?.let { Icon(it, contentDescription, modifier, tint) }
+        ib?.let { return Icon(it, contentDescription, modifier, tint) }
+        painter?.let { return Icon(it, contentDescription, modifier, tint) }
+    }
+}
+
 
 /** dig through text looking for addresses */
 fun scanForFirstAddress(s: String):PayAddress?
@@ -184,3 +234,9 @@ expect fun setTextClipboard(msg: String)
  * Many platforms have specific restrictions on what can be run within the UI (often the "main") thread.
  */
 expect fun isUiThread(): Boolean
+
+/** Access a file from the resource area */
+expect fun readResourceFile(filename: String): InputStream
+
+@Composable
+expect fun loadImage(filename: String): ImageContainer?

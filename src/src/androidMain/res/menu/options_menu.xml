@@ -20,4 +20,9 @@
         android:icon="@drawable/ic_help"
         android:title="@string/help"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/compose"
+        android:icon="@drawable/ic_help"
+        android:title="Compose"
+        app:showAsAction="ifRoom" />
 </menu>

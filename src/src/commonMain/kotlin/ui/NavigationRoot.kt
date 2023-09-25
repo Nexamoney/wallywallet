@@ -16,7 +16,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
@@ -27,6 +26,18 @@ import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+
+
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.foundation.Image
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.*
+import androidx.compose.ui.unit.Density
+import org.xml.sax.InputSource
+import java.io.File
+import java.io.InputStream
 
 enum class ScreenNav
 {
@@ -91,7 +102,9 @@ fun NavigationRoot(accounts: MutableMap<String, Bip44Wallet>)
     }
 }
 
-data class NavChoice(val location: ScreenNav, val textId: Int, val image: ImageVector?)  // TODO add icon
+
+
+data class NavChoice(val location: ScreenNav, val textId: Int, val image: ImageVector?)
 
 var bottomNavChoices = mutableListOf<NavChoice>(
   NavChoice(ScreenNav.Home, S.title_home, Icons.Default.Home),

@@ -1,5 +1,6 @@
 package info.bitcoinunlimited.www.wally.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.S
+import info.bitcoinunlimited.www.wally.loadImage
 import info.bitcoinunlimited.www.wally.ui.theme.*
 
 
@@ -48,6 +50,10 @@ fun HomeScreen()
     Box(modifier = WallyPageBase) {
         Column {
             Text("HomeScreen")
+            val pic = loadImage("ic_faucet_drip.xml")!!
+            pic.image(modifier = Modifier.size(40.dp))
+            pic.icon(modifier = Modifier.size(40.dp), tint = Color.Blue)
+            pic.icon(modifier = Modifier.size(40.dp))
 
             //Row() {  // bug leaves a big gap
             Row(modifier = Modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically) {

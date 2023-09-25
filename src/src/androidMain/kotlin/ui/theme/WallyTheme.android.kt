@@ -29,20 +29,23 @@ actual fun WallyTheme(
         else -> LightColorPalette
     }
 
-    // If not in Android Studio's preview then update also the system bars
-    val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            (view.context as Activity).window.apply {
-                statusBarColor = colorScheme.primary.toArgb()
-                WindowCompat
-                  .getInsetsController(this, view).apply {
-                      isAppearanceLightStatusBars = darkTheme
-                      isAppearanceLightNavigationBars = darkTheme
-                  }
+        // If not in Android Studio's preview then update also the system bars
+        val view = LocalView.current
+        if (!view.isInEditMode)
+        {
+            val activity = view.context as? Activity
+            SideEffect {
+                activity?.window?.apply {
+                    statusBarColor = colorScheme.primary.toArgb()
+                    WindowCompat
+                      .getInsetsController(this, view).apply {
+                          isAppearanceLightStatusBars = darkTheme
+                          isAppearanceLightNavigationBars = darkTheme
+                      }
+                }
             }
         }
-    }
+
 
     MaterialTheme(
       colorScheme = colorScheme,
