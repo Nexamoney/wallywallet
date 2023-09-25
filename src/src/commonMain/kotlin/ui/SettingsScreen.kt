@@ -7,22 +7,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.material3.TextFieldDefaults.textFieldColors
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.S
+import info.bitcoinunlimited.www.wally.ui.theme.WallySwitch
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.SettingsScreen")
@@ -37,11 +32,22 @@ const val EXCLUSIVE_NODE_SWITCH = "exclusiveNodeSwitch"
 const val CONFIGURED_NODE = "NodeAddress"
 const val PREFER_NODE_SWITCH = "preferNodeSwitch"
 
+data class GeneralSettingsSwitch(
+  val prefKey: String,
+  val textRes: Int
+)
+
 @Composable
 fun SettingsScreen()
 {
     val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
-    var devMode by remember { mutableStateOf( preferenceDB.getBoolean(DEV_MODE_PREF, false))}
+    val devMode = remember { mutableStateOf( preferenceDB.getBoolean(DEV_MODE_PREF, false))}
+    val generalSettingsSwitches = listOf(
+      GeneralSettingsSwitch(ACCESS_PRICE_DATA_PREF, S.AccessPriceData),
+      GeneralSettingsSwitch(SHOW_IDENTITY_PREF, S.enableIdentityMenu),
+      GeneralSettingsSwitch(SHOW_TRICKLEPAY_PREF, S.enableTricklePayMenu),
+      GeneralSettingsSwitch(SHOW_ASSETS_PREF, S.enableAssetsMenu),
+    )
 
     Column(
       modifier = Modifier
@@ -60,21 +66,18 @@ fun SettingsScreen()
         Column(
           modifier = Modifier.padding(start = 16.dp)
         ) {
-            AccessPriceData(preferenceDB)
-            Identity(preferenceDB)
-            TricklePay(preferenceDB)
-            Assets(preferenceDB)
+            generalSettingsSwitches.forEach { GeneralSettingsSwitchView(it) }
             DevMode(devMode) {
                 preferenceDB.edit().putBoolean(DEV_MODE_PREF, it)
-                devMode = it
+                devMode.value = it
             }
             ConfirmAbove(preferenceDB)
         }
-        Spacer(Modifier.height(16.dp))
 
+        Spacer(Modifier.height(16.dp))
         WallyDivider()
-
         Spacer(Modifier.height(16.dp))
+
         Box(
           modifier = Modifier.fillMaxWidth(),
           contentAlignment = Alignment.Center
@@ -85,14 +88,14 @@ fun SettingsScreen()
           modifier = Modifier.padding(start = 4.dp, end = 4.dp)
         ) {
             BlockchainSource(ChainSelector.NEXA, preferenceDB)
-            if(devMode)
+            if(devMode.value)
             {
                 BlockchainSource(ChainSelector.NEXATESTNET, preferenceDB)
                 BlockchainSource(ChainSelector.NEXAREGTEST, preferenceDB)
 
             }
             BlockchainSource(ChainSelector.BCH, preferenceDB)
-            if(devMode)
+            if(devMode.value)
             {
                 Spacer(Modifier.height(32.dp))
                 Box(modifier = Modifier.fillMaxWidth()) {
@@ -166,133 +169,21 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
     }
 }
 
-@Composable
-fun AccessPriceData(preferenceDB: SharedPreferences)
+@Composable fun GeneralSettingsSwitchView(generalSettingsSwitch: GeneralSettingsSwitch)
 {
-    val isChecked = remember { mutableStateOf(preferenceDB.getBoolean(ACCESS_PRICE_DATA_PREF, true)) }
+    val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
+    val isChecked = remember { mutableStateOf(preferenceDB.getBoolean(generalSettingsSwitch.prefKey, true)) }
 
-    Row(
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically
-    ) {
-        Switch(
-          checked = isChecked.value,
-          onCheckedChange = {
-              isChecked.value = it
-              preferenceDB.edit().putBoolean(ACCESS_PRICE_DATA_PREF, it)
-          },
-          modifier = Modifier.graphicsLayer(scaleX = 0.7f, scaleY = 0.7f),
-          colors = SwitchDefaults.colors(
-            checkedBorderColor = Color.Transparent,
-            uncheckedBorderColor = Color.Transparent,
-          )
-        )
-        Text( i18n(S.AccessPriceData) )
+    WallySwitch(isChecked, generalSettingsSwitch.textRes) {
+        isChecked.value = it
+        preferenceDB.edit().putBoolean(generalSettingsSwitch.prefKey, it)
     }
 }
 
 @Composable
-fun Identity(preferenceDB: SharedPreferences)
+fun DevMode(devMode: MutableState<Boolean>, onClick: (Boolean) -> Unit)
 {
-    val isChecked = remember { mutableStateOf(preferenceDB.getBoolean(SHOW_IDENTITY_PREF, false)) }  // initial value is true
-
-    Row(
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically
-    ) {
-        Switch(
-          checked = isChecked.value,
-          onCheckedChange = {
-              isChecked.value = it
-              preferenceDB.edit().putBoolean(SHOW_IDENTITY_PREF, it)
-          },
-          modifier = Modifier.graphicsLayer(scaleX = 0.7f, scaleY = 0.7f),
-          colors = SwitchDefaults.colors(
-            checkedBorderColor = Color.Transparent,
-            uncheckedBorderColor = Color.Transparent,
-          )
-        )
-        Text(
-          text = i18n(S.enableIdentityMenu),
-        )
-    }
-}
-
-@Composable
-fun TricklePay(preferenceDB: SharedPreferences)
-{
-    val isChecked = remember { mutableStateOf(preferenceDB.getBoolean(SHOW_TRICKLEPAY_PREF, false)) }  // initial value is true
-
-    Row(
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically
-    ) {
-        Switch(
-          checked = isChecked.value,
-          onCheckedChange = {
-              isChecked.value = it
-              preferenceDB.edit().putBoolean(SHOW_TRICKLEPAY_PREF, it)
-          },
-          modifier = Modifier.graphicsLayer(scaleX = 0.7f, scaleY = 0.7f),
-          colors = SwitchDefaults.colors(
-            checkedBorderColor = Color.Transparent,
-            uncheckedBorderColor = Color.Transparent,
-          )
-        )
-        Text(
-          text = i18n(S.enableTricklePayMenu),
-        )
-    }
-}
-
-@Composable
-fun Assets(preferenceDB: SharedPreferences)
-{
-    val isChecked = remember { mutableStateOf(preferenceDB.getBoolean(SHOW_ASSETS_PREF,false)) }  // initial value is true
-
-    Row(
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically
-    ) {
-        Switch(
-          checked = isChecked.value,
-          onCheckedChange = {
-              isChecked.value = it
-              preferenceDB.edit().putBoolean(SHOW_ASSETS_PREF, it)
-          },
-          modifier = Modifier.graphicsLayer(scaleX = 0.7f, scaleY = 0.7f),
-          colors = SwitchDefaults.colors(
-            checkedBorderColor = Color.Transparent,
-            uncheckedBorderColor = Color.Transparent,
-          )
-        )
-        Text(
-          text = i18n(S.enableAssetsMenu),
-        )
-    }
-}
-
-@Composable
-fun DevMode(devMode: Boolean, onClick: (Boolean) -> Unit)
-{
-
-    Row(
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically
-    ) {
-        Switch(
-          checked = devMode,
-          onCheckedChange = onClick,
-          modifier = Modifier.graphicsLayer(scaleX = 0.7f, scaleY = 0.7f),
-          colors = SwitchDefaults.colors(
-            checkedBorderColor = Color.Transparent,
-            uncheckedBorderColor = Color.Transparent,
-          )
-        )
-        Text(
-          text = i18n(S.enableDeveloperView),
-        )
-    }
+    WallySwitch(devMode, S.enableDeveloperView, onClick)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -367,40 +258,13 @@ fun BlockchainSource(chain: ChainSelector, preferenceDB: SharedPreferences)
           colors = textFieldColors(containerColor = Color.Transparent),
           textStyle = TextStyle(fontSize = 12.sp)
         )
-        Switch(
-          checked = onlyChecked.value,
-          onCheckedChange = {
-              onlyChecked.value = it
-              preferenceDB.edit().putBoolean(exclusiveNodeKey, it)
-          },
-          modifier = Modifier.graphicsLayer(scaleX = 0.7f, scaleY = 0.7f),
-          colors = SwitchDefaults.colors(
-            checkedBorderColor = Color.Transparent,
-            uncheckedBorderColor = Color.Transparent,
-          )
-        )
-
-        Text(
-          text = i18n(S.only),
-          fontSize = 12.sp
-        )
-
-        Switch(
-          checked = preferChecked.value,
-          onCheckedChange = {
-              preferChecked.value = it
-              preferenceDB.edit().putBoolean(preferNodeKey, it)
-          },
-          modifier = Modifier.graphicsLayer(scaleX = 0.7f, scaleY = 0.7f),
-          colors = SwitchDefaults.colors(
-            checkedBorderColor = Color.Transparent,
-            uncheckedBorderColor = Color.Transparent,
-          )
-        )
-
-        Text(
-          text = i18n(S.prefer),
-          fontSize = 12.sp
-        )
+        WallySwitch(onlyChecked, S.only) {
+            onlyChecked.value = it
+            preferenceDB.edit().putBoolean(exclusiveNodeKey, it)
+        }
+        WallySwitch(preferChecked, S.prefer) {
+            preferChecked.value = it
+            preferenceDB.edit().putBoolean(preferNodeKey, it)
+        }
     }
 }
