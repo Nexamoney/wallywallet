@@ -1,8 +1,24 @@
 package info.bitcoinunlimited.www.wally
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.readBytes
+import org.nexa.libnexakotlin.GetLog
+import platform.Foundation.NSBundle
+import platform.Foundation.NSData
 import platform.Foundation.NSThread
+import platform.Foundation.create
 import platform.UIKit.UIApplication
+import platform.UIKit.UIImage
 import platform.UIKit.UIPasteboard
+
+private val LogIt = GetLog("BU.wally.utils_ios")
 
 /** Converts an encoded URL to a raw string */
 actual fun String.urlDecode():String
@@ -38,3 +54,31 @@ actual fun isUiThread(): Boolean
 {
     return NSThread.isMainThread
 }
+
+actual fun loadImage(filename: String, density: Density): ImageContainer?
+{
+    when (filename)
+    {
+        "icons/check.xml" -> return ImageContainer(Icons.Default.Check)
+        else -> return null
+    }
+    return null
+}
+
+    /*
+    val split = filename.lastIndexOf('.')
+    val name = filename.take(split)
+    val ext = filename.drop(split+1)
+    LogIt.info("name/ext: $name $ext")
+    val url = NSBundle.mainBundle.URLForResource(name, ext)
+    if (url == null) throw NotUriException()
+    val data = NSData.create(url!!)
+    if (data == null) throw NotUriException()
+    //val bytes = data.bytes?.readBytes(data.length.toInt()) ?: throw NotUriException()
+
+    // Works but how to get it into a compose image?
+    // val uiIm = UIImage.imageWithData(data)
+
+    //loadXmlImageVector
+}
+     */

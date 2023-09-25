@@ -64,12 +64,13 @@ actual fun isUiThread(): Boolean
 }
 
 /** Access a file from the resource area */
-actual fun readResourceFile(filename: String): InputStream
+fun readResourceFile(filename: String): InputStream
 {
     val nothing = Objectify<Int>(0)
 
     val loadTries = listOf<()->InputStream> (
       { nothing::class.java.getClassLoader().getResourceAsStream(filename) },
+      { nothing::class.java.getClassLoader().getResourceAsStream("icons/" + filename) },
       { File(filename).inputStream() },
     )
     for (i in loadTries)
@@ -109,13 +110,18 @@ fun loadIcon(ins: InputStream): ImageVector?
 }
 
 
-@Composable
-actual fun loadImage(filename: String): ImageContainer?
+actual fun loadImage(filename: String, density: Density): ImageContainer?
 {
-    val density = LocalDensity.current
-    //val inStrm: InputStream = null
-    //val painter = loadSvgPainter(inStrm, density)
+    // look for the file as a resource
+    try {
+        val ins = readResourceFile(filename).buffered()
+        return ImageContainer(androidx.compose.ui.res.loadXmlImageVector(InputSource(ins), density))
+    }
+    catch (e: java.io.FileNotFoundException)
+    {
+    }
 
+    // Not a resource, try a file
     val iv = loadXmlImageVector(File(filename), density)
     if (iv == null) return null
     return ImageContainer(iv)

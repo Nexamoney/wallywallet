@@ -13,6 +13,8 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import io.ktor.http.*
 import kotlinx.coroutines.*
 import org.nexa.libnexakotlin.*
@@ -22,16 +24,18 @@ import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import java.io.InputStream
+//import java.io.InputStream
 
 private val LogIt = GetLog("BU.wally.utils")
 
 class ImageContainer
 {
+    var defp: (@Composable ()->Painter)? = null
     var iv:ImageVector? = null
     var ib:ImageBitmap? = null
     var painter:Painter? = null
 
+    constructor(dp:(@Composable ()->Painter)) { defp = dp }
     constructor(imv:ImageVector) { iv = imv}
     constructor(imb:ImageBitmap) { ib = imb}
     constructor(pt: Painter) { painter = pt}
@@ -44,9 +48,10 @@ class ImageContainer
         alpha: Float = DefaultAlpha,
         colorFilter: ColorFilter? = null)
     {
-        iv?.let { Image(it, contentDescription, modifier, alignment, contentScale, alpha, colorFilter ) }
-        ib?.let { Image(it, contentDescription, modifier, alignment, contentScale, alpha, colorFilter ) }
-        painter?.let { Image(it, contentDescription, modifier, alignment, contentScale, alpha, colorFilter ) }
+        defp?.let { Image(it(), contentDescription, modifier, alignment, contentScale, alpha, colorFilter ); return }
+        iv?.let { Image(it, contentDescription, modifier, alignment, contentScale, alpha, colorFilter ); return }
+        ib?.let { Image(it, contentDescription, modifier, alignment, contentScale, alpha, colorFilter ); return }
+        painter?.let { Image(it, contentDescription, modifier, alignment, contentScale, alpha, colorFilter); return }
     }
 
 
@@ -55,9 +60,10 @@ class ImageContainer
       modifier: Modifier = Modifier,
       tint: Color = LocalContentColor.current)
     {
-        iv?.let { Icon(it, contentDescription, modifier, tint) }
-        ib?.let { return Icon(it, contentDescription, modifier, tint) }
-        painter?.let { return Icon(it, contentDescription, modifier, tint) }
+        defp?.let { Icon(it(), contentDescription, modifier, tint ); return }
+        iv?.let { Icon(it, contentDescription, modifier, tint); return }
+        ib?.let { return Icon(it, contentDescription, modifier, tint); return }
+        painter?.let { return Icon(it, contentDescription, modifier, tint); return }
     }
 }
 
@@ -236,7 +242,6 @@ expect fun setTextClipboard(msg: String)
 expect fun isUiThread(): Boolean
 
 /** Access a file from the resource area */
-expect fun readResourceFile(filename: String): InputStream
+// expect fun readResourceFile(filename: String): InputStream
 
-@Composable
-expect fun loadImage(filename: String): ImageContainer?
+expect fun loadImage(filename: String, density: Density): ImageContainer?

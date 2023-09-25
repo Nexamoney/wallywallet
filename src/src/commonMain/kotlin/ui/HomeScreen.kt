@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.loadImage
@@ -43,17 +44,35 @@ val testDropDown = listOf("big","list","here","and", "there",
 fun HomeScreen()
 {
     var isSending by remember { mutableStateOf(false) }
-
     var expanded by remember { mutableStateOf(false) }
     var selected by remember { mutableStateOf("any") }
 
     Box(modifier = WallyPageBase) {
         Column {
             Text("HomeScreen")
-            val pic = loadImage("ic_faucet_drip.xml")!!
-            pic.image(modifier = Modifier.size(40.dp))
-            pic.icon(modifier = Modifier.size(40.dp), tint = Color.Blue)
-            pic.icon(modifier = Modifier.size(40.dp))
+            println("loadImage")
+            Row {
+                val pic = loadImage("icons/faucet_drip.xml", LocalDensity.current)
+                println("loadImage completed")
+                if (pic != null)
+                {
+                    println("loaded a picture")
+                    pic.image(modifier = Modifier.size(40.dp))
+                    pic.icon(modifier = Modifier.size(40.dp), tint = Color.Blue)
+                    pic.icon(modifier = Modifier.size(40.dp))
+                }
+            }
+            Row {
+                val pic = loadImage("icons/check.xml", LocalDensity.current)
+                println("loadImage completed")
+                if (pic != null)
+                {
+                    println("loaded a picture")
+                    pic.image(modifier = Modifier.size(40.dp))
+                    pic.icon(modifier = Modifier.size(40.dp), tint = Color.Blue)
+                    pic.icon(modifier = Modifier.size(40.dp))
+                }
+            }
 
             //Row() {  // bug leaves a big gap
             Row(modifier = Modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically) {

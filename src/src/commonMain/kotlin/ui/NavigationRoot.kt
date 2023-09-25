@@ -33,11 +33,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.*
 import androidx.compose.ui.unit.Density
-import org.xml.sax.InputSource
-import java.io.File
-import java.io.InputStream
 
 enum class ScreenNav
 {

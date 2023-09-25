@@ -4,7 +4,9 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionContext
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.VectorPainter
 import org.nexa.libnexakotlin.*
@@ -15,6 +17,7 @@ import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.Density
 import java.io.InputStream
 
 /** Converts an encoded URL to a raw string */
@@ -64,21 +67,20 @@ actual fun isUiThread(): Boolean
     return (tname == "main")
 }
 
-/** Access a file from the resource area */
-actual fun readResourceFile(filename: String): InputStream
-{
-    TODO()
-}
 
-@Composable
-actual fun loadImage(filename: String): ImageContainer?
+actual fun loadImage(filename: String,  density: Density): ImageContainer?
 {
     val res = when(filename)
     {
-        "ic_faucet_drip.xml" -> R.drawable.ic_faucet_drip
+        "icons/faucet_drip.xml" -> R.drawable.ic_faucet_drip
+        "icons/check.xml" -> R.drawable.ic_check
         else -> null
     }
 
     if (res == null) return null
-    return ImageContainer(painterResource(id = res))
+
+    return ImageContainer({
+        val pt = painterResource(id = res)
+        pt
+    })
 }
