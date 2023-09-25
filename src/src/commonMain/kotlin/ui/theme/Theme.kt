@@ -7,22 +7,42 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
+import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
+import info.bitcoinunlimited.www.wally.ui.SHOW_TRICKLEPAY_PREF
 
 // TODO: Implement dark mode
 val DarkColorPalette = darkColorScheme(
   primary = colorPrimary,
   inversePrimary = colorPrimaryDark,
   secondary = colorAccent
+)
+
+val LightColorPalette = lightColorScheme(
+  primary = colorPrimary,
+  inversePrimary = colorPrimaryDark,
+  secondary = colorAccent
+  // background = defaultListHighlight
+
+  // Other default colors to override
+  //
+  // background = Color.White,
+  // surface = Color.White,
+  // onPrimary = Color.White,
+  // onSecondary = Color.Black,
+  // onBackground = Color.Black,
+  // onSurface = Color.Black,
 )
 
 val WallyPageBase = Modifier.fillMaxSize().background(BaseBkg)
@@ -117,20 +137,32 @@ fun WallyBoringTextButton(text: String, enabled: Boolean=true,  interactionSourc
       style = textstyle, textAlign = TextAlign.Center, softWrap = true)
 }
 
+@Composable fun WallySwitch(isChecked: MutableState<Boolean>, onCheckedChange: (Boolean) -> Unit)
+{
+    Switch(
+      checked = isChecked.value,
+      onCheckedChange = onCheckedChange,
+      modifier = Modifier.graphicsLayer(scaleX = 0.7f, scaleY = 0.7f),
+      colors = SwitchDefaults.colors(
+        checkedBorderColor = Color.Transparent,
+        uncheckedBorderColor = Color.Transparent,
+      )
+    )
+}
+
+@Composable fun WallySwitch(isChecked: MutableState<Boolean>, textRes: Int, onCheckedChange: (Boolean) -> Unit)
+{
+    Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+        WallySwitch(isChecked, onCheckedChange)
+        Text(
+          text = i18n(textRes),
+        )
+    }
+}
+
+
 //val WallyTextStyle = LocalTextStyle.current.copy()
 
-val LightColorPalette = lightColorScheme(
-    primary = colorPrimary,
-    inversePrimary = colorPrimaryDark,
-    secondary = colorAccent
-    // background = defaultListHighlight
-
-    // Other default colors to override
-    //
-    // background = Color.White,
-    // surface = Color.White,
-    // onPrimary = Color.White,
-    // onSecondary = Color.Black,
-    // onBackground = Color.Black,
-    // onSurface = Color.Black,
-)
