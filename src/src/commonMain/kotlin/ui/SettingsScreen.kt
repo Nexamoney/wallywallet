@@ -26,6 +26,7 @@ const val ACCESS_PRICE_DATA_PREF = "accessPriceData"
 const val SHOW_IDENTITY_PREF = "showIdentityMenu"
 const val SHOW_TRICKLEPAY_PREF = "showTricklePayMenu"
 const val SHOW_ASSETS_PREF = "showAssetsMenu"
+const val DARK_MODE_PREF = "darkModeMenu"
 const val DEV_MODE_PREF = "devinfo"
 const val CONFIRM_ABOVE_PREF = "confirmAbove"
 const val EXCLUSIVE_NODE_SWITCH = "exclusiveNodeSwitch"
@@ -41,7 +42,8 @@ data class GeneralSettingsSwitch(
 fun SettingsScreen()
 {
     val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
-    val devMode = remember { mutableStateOf( preferenceDB.getBoolean(DEV_MODE_PREF, false))}
+    val devMode = remember { mutableStateOf( preferenceDB.getBoolean(DEV_MODE_PREF, false)) }
+    val darkMode = remember { mutableStateOf( preferenceDB.getBoolean(DARK_MODE_PREF, false)) }
     val generalSettingsSwitches = listOf(
       GeneralSettingsSwitch(ACCESS_PRICE_DATA_PREF, S.AccessPriceData),
       GeneralSettingsSwitch(SHOW_IDENTITY_PREF, S.enableIdentityMenu),
@@ -67,6 +69,10 @@ fun SettingsScreen()
           modifier = Modifier.padding(start = 16.dp)
         ) {
             generalSettingsSwitches.forEach { GeneralSettingsSwitchView(it) }
+            DarkMode(darkMode) {
+                preferenceDB.edit().putBoolean(DARK_MODE_PREF, it)
+                darkMode.value = it
+            }
             DevMode(devMode) {
                 preferenceDB.edit().putBoolean(DEV_MODE_PREF, it)
                 devMode.value = it
@@ -177,6 +183,19 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
     WallySwitch(isChecked, generalSettingsSwitch.textRes) {
         isChecked.value = it
         preferenceDB.edit().putBoolean(generalSettingsSwitch.prefKey, it)
+    }
+}
+
+@Composable fun DarkMode(darkMode: MutableState<Boolean>, onClick: (Boolean) -> Unit)
+{
+    Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+        WallySwitch(darkMode, onClick)
+        Text(
+          text = "Enable dark mode",
+        )
     }
 }
 
