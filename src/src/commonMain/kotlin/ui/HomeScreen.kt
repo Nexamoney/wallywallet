@@ -14,11 +14,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.S
-import info.bitcoinunlimited.www.wally.loadImage
 import info.bitcoinunlimited.www.wally.ui.theme.*
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 
 
 val testDropDown = listOf("big","list","here","and", "there",
@@ -40,6 +40,24 @@ val testDropDown = listOf("big","list","here","and", "there",
   "any", "big","list","here","and", "there",
   )
 
+@OptIn(ExperimentalResourceApi::class)
+@Composable fun ImagesFromSharedResources()
+{
+    Row {
+        Image(
+          painterResource("icons/check.xml"),
+          null,
+          modifier = Modifier.size(40.dp),
+        )
+        Image(
+          painterResource("icons/faucet_drip.xml"),
+          null,
+          modifier = Modifier.size(40.dp),
+        )
+    }
+}
+
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun HomeScreen()
 {
@@ -50,29 +68,8 @@ fun HomeScreen()
     Box(modifier = WallyPageBase) {
         Column {
             Text("HomeScreen")
-            println("loadImage")
-            Row {
-                val pic = loadImage("icons/faucet_drip.xml", LocalDensity.current)
-                println("loadImage completed")
-                if (pic != null)
-                {
-                    println("loaded a picture")
-                    pic.image(modifier = Modifier.size(40.dp))
-                    pic.icon(modifier = Modifier.size(40.dp), tint = Color.Blue)
-                    pic.icon(modifier = Modifier.size(40.dp))
-                }
-            }
-            Row {
-                val pic = loadImage("icons/check.xml", LocalDensity.current)
-                println("loadImage completed")
-                if (pic != null)
-                {
-                    println("loaded a picture")
-                    pic.image(modifier = Modifier.size(40.dp))
-                    pic.icon(modifier = Modifier.size(40.dp), tint = Color.Blue)
-                    pic.icon(modifier = Modifier.size(40.dp))
-                }
-            }
+
+            ImagesFromSharedResources()
 
             //Row() {  // bug leaves a big gap
             Row(modifier = Modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically) {

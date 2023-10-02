@@ -243,5 +243,3 @@ expect fun isUiThread(): Boolean
 
 /** Access a file from the resource area */
 // expect fun readResourceFile(filename: String): InputStream
-
-expect fun loadImage(filename: String, density: Density): ImageContainer?

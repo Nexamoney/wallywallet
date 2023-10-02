@@ -230,6 +230,8 @@ kotlin {
                 implementation("org.jetbrains.compose.runtime:runtime:$composeVersion")
                 implementation("org.jetbrains.compose.foundation:foundation:$composeVersion")
                 implementation("org.jetbrains.compose.material3:material3:$composeVersion")
+                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+                implementation(compose.components.resources)
 
                 // multiplatform replacements
 
@@ -508,7 +510,7 @@ kotlin {
 android {
     namespace = "info.bitcoinunlimited.www.wally"
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    //sourceSets.main.manifest.srcFile = './AndroidManifest.xml'
+    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
     compileSdk = 34
     defaultConfig {
         applicationId = "info.bitcoinunlimited.www.wally"
