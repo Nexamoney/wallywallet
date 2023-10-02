@@ -7,7 +7,7 @@ import java.net.URL
 // Dependency versions
 val mpThreadsVersion = "0.1.8"
 val nexaRpcVersion = "1.1.3"
-val libNexaKotlinVersion = "0.0.21"
+val libNexaKotlinVersion = "0.0.22"
 
 val serializationVersion = "1.6.0"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.7.3"     // https://github.com/Kotlin/kotlinx.coroutines
@@ -50,7 +50,7 @@ val LINUX_NATIVE_TARGETS = false // not supported in compose
 val MAC_TARGETS = MAC // || LINUX
 // ktor network does not support ms windows so we cannot produce MSWIN right now
 var MSWIN_TARGETS = false
-var ANDROID_TARGETS = LINUX
+var ANDROID_TARGETS = LINUX || MAC
 
 if (MAC) println("Host is a MAC, MacOS and iOS targets are enabled")
 if (LINUX) println("Host is LINUX, Android, JVM, and LinuxNative targets are enabled")
