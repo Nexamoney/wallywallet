@@ -55,16 +55,6 @@ actual fun isUiThread(): Boolean
     return NSThread.isMainThread
 }
 
-actual fun loadImage(filename: String, density: Density): ImageContainer?
-{
-    when (filename)
-    {
-        "icons/check.xml" -> return ImageContainer(Icons.Default.Check)
-        else -> return null
-    }
-    return null
-}
-
     /*
     val split = filename.lastIndexOf('.')
     val name = filename.take(split)

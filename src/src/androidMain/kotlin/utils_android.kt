@@ -66,21 +66,3 @@ actual fun isUiThread(): Boolean
     val tname = Thread.currentThread().name
     return (tname == "main")
 }
-
-
-actual fun loadImage(filename: String,  density: Density): ImageContainer?
-{
-    val res = when(filename)
-    {
-        "icons/faucet_drip.xml" -> R.drawable.ic_faucet_drip
-        "icons/check.xml" -> R.drawable.ic_check
-        else -> null
-    }
-
-    if (res == null) return null
-
-    return ImageContainer({
-        val pt = painterResource(id = res)
-        pt
-    })
-}

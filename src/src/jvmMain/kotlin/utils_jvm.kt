@@ -108,21 +108,3 @@ fun loadIcon(ins: InputStream): ImageVector?
     val density = LocalDensity.current
     return ins.buffered().use { androidx.compose.ui.res.loadXmlImageVector(InputSource(it), density) }
 }
-
-
-actual fun loadImage(filename: String, density: Density): ImageContainer?
-{
-    // look for the file as a resource
-    try {
-        val ins = readResourceFile(filename).buffered()
-        return ImageContainer(androidx.compose.ui.res.loadXmlImageVector(InputSource(ins), density))
-    }
-    catch (e: java.io.FileNotFoundException)
-    {
-    }
-
-    // Not a resource, try a file
-    val iv = loadXmlImageVector(File(filename), density)
-    if (iv == null) return null
-    return ImageContainer(iv)
-}
