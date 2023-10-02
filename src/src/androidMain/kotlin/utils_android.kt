@@ -34,7 +34,7 @@ actual fun String.urlEncode():String
 /** Get the clipboard.  Platforms that have a clipboard history should return that history, with the primary clip in index 0 */
 actual fun getTextClipboard(): List<String>
 {
-    val c = androidContext ?: return listOf()
+    val c = (appContext() as? android.content.Context) ?: return listOf()
     var myClipboard = c.getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager
     var clip = myClipboard.getPrimaryClip()
     val ret = mutableListOf<String>()
@@ -52,7 +52,7 @@ actual fun getTextClipboard(): List<String>
 /** Sets the clipboard, potentially asynchronously. */
 actual fun setTextClipboard(msg: String)
 {
-    val c = androidContext ?: return
+    val c = (appContext() as? android.content.Context) ?: return
     var clipboard = c.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
     var clip = ClipData.newPlainText("text", msg)
     clipboard.setPrimaryClip(clip)
