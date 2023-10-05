@@ -39,6 +39,15 @@ lintVitalRelease:
   script:
     - ./gradlew :src:lintVitalRelease
 
+lint:
+  stage: lint
+  tags:
+    - m1-baremetal
+  variables:
+    ANDROID_HOME: "/opt/homebrew/share/android-commandlinetools"
+  script:
+    - ./gradlew lint -x :src:lintDebug # Skips android linter with 356 errors, 500 warnings.
+
 assemble:
   stage: assemble
   tags:
