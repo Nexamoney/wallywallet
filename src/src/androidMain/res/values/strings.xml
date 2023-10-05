@@ -616,4 +616,42 @@ Good luck!
     <string name="IssuedToConnection">Launched in connected site</string>
     <!-- this message tells users that some assets will be part of a proposed transaction -->
     <string name="AndSomeAssets">and some assets</string>
+
+    <!-- the following strings are often not used and need translation into English and other languages. This resolves lintVitalRelease -->
+    <string name="ExplainRestaurant">Online restaurant ordering services (for delivery or pickup) may accept cryptocurrency even if the physical location does not.</string>
+    <string name="RestaurantButton">Menufy restaurant ordering</string>
+    <string name="RestaurantUrl">https://www.menufy.com</string>
+    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
+    <string name="ExplainStoreMap">Find locations near you that accept cryptocurrency.</string>
+    <string name="StoreMapButton">store map</string>
+    <string name="StoreMapUrl">https://map.bitcoin.com</string>
+    <string name="StoreMapAppPackage"></string>
+    <string name="ExplainTxBit">txbit.io: Exchange NEXA for other cryptocurrencies</string>
+    <string name="welcome1Label">Welcome</string>
+    <string name="welcome1">Welcome to Wally, a cryptocurrency wallet!\n\nOn the following screens, you will set up your first Nexa blockchain account (NEX) and configure other services like password management.\n\nOr you can press the back arrow to skip this guided setup.</string>
+    <string name="welcome2_title">NEXA account settings</string>
+    <string name="welcome2">On the next page, you will set up your first Nexa account.\n\nThis account contains your Nexa money and your identities. Identities are a new feature of the Wally Wallet, which allows you to automatically log in to supported websites.\n\nYou can choose to protect your accounts with a Personal Identification Number (PIN), however, we recommend new users not to use a PIN (and keep a low balance) for their first account. For user protection, accounts protected by PINs are not visible until the correct PIN has been entered (it is not indicated if a wrong PIN has been entered).\n\nIf you want to restore an existing NEXA account, provide the recovery phrase. If this line remains empty, a new account is created.</string>
+    <string name="welcome3_title" formatted="false">Nexa account recovery phrase</string>
+    <string name="welcome3">Welcome 3 ! (This welcome text can be improved)</string>
+    <string name="welcome4_title">Identity</string>
+    <string name="welcome4">Next, you will be taken to the identity information screen.  This information is used when you use Wally as an identity and login manager (to automatically log in to various websites or provide information at purchase). Wally is extremely focused on privacy!
+This information will not be shared  with any website without your explicit permission, and NO information from this wallet is ever sent to the authors of this app.  You can also choose to leave all fields blank.
+When you are done, press the back arrow (top left).</string>
+    <string name="welcomeComplete">This completes the setup.  If you did not complete any of the steps in this welcome, all fields are available from the app itself.
+Thank you and enjoy your new wallet!</string>
+    <string name="ExplainGiftCards">Buying gift cards gives you access to hundreds of stores that do not directly accept cryptocurrency.</string>
+    <string name="GiftCardButton">eGifter gift card</string>
+    <string name="GiftCardUrl">https://www.egifter.com</string>
+    <string name="GiftCardAppPackage">com.groupgifting.android</string>
+    <string name="Pinförslag">
+    <font size="15">This secret number is needed to access the account</font>
+</string>
+    <string name="sync_title">Sync email at regular intervals</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Download email attachments automatically</string>
+    <string name="attachment_summary_off">Only download attachments upon request</string>
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default action when replying</string>
+    <string name="Kirim">Send</string>
+
 </resources>
