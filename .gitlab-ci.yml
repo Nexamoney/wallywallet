@@ -1,5 +1,8 @@
+
+# These "stages" are actually separately initiated VMs, so better used for different configurations, etc
 stages:
   - lint
+  - assemble
 
 lintVitalRelease:
   stage: lint
@@ -12,4 +15,17 @@ lintVitalRelease:
     - brew install --cask temurin # android-commandlinetools requires Java
     - brew install --cask android-commandlinetools
     - echo y | sdkmanager "platforms;android-34" "build-tools;34.0.0" >/dev/null
-    - ./gradlew src:lintVitalRelease
+    - ./gradlew :src:lintVitalRelease
+
+assemble:
+  stage: assemble
+  tags:
+    - saas-macos-medium-m1
+  image: macos-13-xcode-14
+  variables:
+    ANDROID_HOME: "/opt/homebrew/share/android-commandlinetools"
+  script:
+    - brew install --cask temurin # android-commandlinetools requires Java
+    - brew install --cask android-commandlinetools
+    - echo y | sdkmanager "platforms;android-34" "build-tools;34.0.0" >/dev/null
+    - ./gradlew assemble
