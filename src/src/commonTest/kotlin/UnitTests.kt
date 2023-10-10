@@ -1,9 +1,9 @@
-import kotlin.test.Test
-import kotlin.test.assertContains
-import kotlin.test.assertEquals
+import kotlin.test.*
 
-class GrepTest {
-    companion object {
+class CommonTest
+{
+    companion object
+    {
         val sampleData = listOf(
           "123 abc",
           "abc 123",
@@ -12,14 +12,15 @@ class GrepTest {
         )
     }
 
-    fun grep(lines: List<String>, pattern: String, action: (String) -> Unit) {
+    fun grep(lines: List<String>, pattern: String, action: (String) -> Unit)
+    {
         val regex = pattern.toRegex()
-        lines.filter(regex::containsMatchIn)
-          .forEach(action)
+        lines.filter(regex::containsMatchIn).forEach(action)
     }
 
     @Test
-    fun shouldFindMatches() {
+    fun shouldFindMatches()
+    {
         val results = mutableListOf<String>()
         grep(sampleData, "[a-z]+") {
             results.add(it)

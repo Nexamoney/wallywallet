@@ -48,7 +48,7 @@ class NonGuiTests
         }
     }
 
-    @org.junit.Test
+    @Test
     fun testNexaTransaction()
     {
         val cs = ChainSelector.NEXAREGTEST
