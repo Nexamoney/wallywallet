@@ -48,11 +48,12 @@ commonMacosArm64Test:
   script:
     - ./gradlew :src:cleanMacosArm64Test :src:macosArm64Test
 
-# TODO: Implement
-# commonIosArm64Test:
-#  stage: test
-#  tags:
-#    - saas-macos-medium-m1
-#  image: macos-13-xcode-14
-#  script:
-#    - ./gradlew :src:cleanIosSimulatorArm64Test, :src:iosSimulatorArm64Test
+commonIOSArm64Test:
+  stage: test
+  tags:
+    - saas-macos-medium-m1
+  image: macos-13-xcode-14
+  script:
+    - xcrun simctl list runtimes
+    - xcrun simctl list devices
+    - ./gradlew :src:cleanIosSimulatorArm64Test :src:iosSimulatorArm64Test
