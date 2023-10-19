@@ -34,7 +34,6 @@ import info.bitcoinunlimited.www.wally.databinding.AssetSuccinctListItemBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import com.ionspin.kotlin.bignum.decimal.*
-import io.ktor.http.*
 import java.util.*
 
 
@@ -779,7 +778,7 @@ class MainActivity : CommonNavActivity()
                 for (c in accounts.values)
                 {
                     c.updateReceiveAddressUI = { it -> updateReceiveAddressUI(it) }
-                    c.onResume()
+                    c.onResumeAndroid()
                 }
 
                 val tl = app?.assetManager?.transferList

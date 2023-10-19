@@ -59,8 +59,6 @@ var WallyRowColors = arrayOf(0x4Ff5f8ff.toInt(), 0x4Fd0d0ef.toInt())
 // Assign this in your App.onCreate
 var displayMetrics = DisplayMetrics()
 
-var dbPrefix = ""
-
 
 private val LogIt = GetLog("BU.wally.commonUI")
 fun RunningTheUnitTests(): Boolean

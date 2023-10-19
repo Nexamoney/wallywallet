@@ -367,9 +367,6 @@ class NewAccount : CommonNavActivity()
         return ret
     }
 
-    // Note that this returns the last time and block when a new address was FIRST USED, so this may not be what you wanted
-    data class HDActivityBracket(val startTime: Long, val startBlockHeight: Int, val lastTime: Long, val lastBlockHeight: Int, val lastAddressIndex: Int)
-
     fun bracketActivity(ec: ElectrumClient, chainSelector: ChainSelector, giveUpGap: Int, secretDerivation: (Int) -> ByteArray): HDActivityBracket?
     {
         var index = 0
