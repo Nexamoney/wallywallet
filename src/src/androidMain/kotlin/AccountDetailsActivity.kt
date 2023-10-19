@@ -289,7 +289,7 @@ class AccountDetailsActivity: CommonNavActivity()
                 act.wallet.stop()
                 launch { // cannot access db in UI thread
                     wallyApp?.saveActiveAccountList()
-                    selectedAccount?.delete()
+                    selectedAccount?.deleteAndroid()
                 }
                 app.displayNotice(i18n(R.string.accountDeleteNotice))
                 finish()  // since account is deleted end this activity

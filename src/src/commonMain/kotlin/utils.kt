@@ -243,3 +243,8 @@ expect fun isUiThread(): Boolean
 
 /** Access a file from the resource area */
 // expect fun readResourceFile(filename: String): InputStream
+
+fun String.splitIntoSet():Set<String>
+{
+    return split(","," ").map({it.trim()}).filter({it.length > 0}).toSet()
+}

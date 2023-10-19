@@ -377,7 +377,7 @@ class SplitBillActivity : CommonNavActivity()
         }
     }
 
-    fun updateQR(v: Account.ReceiveInfoResult)
+    fun updateQR(v: ReceiveInfoResult)
     {
         laterUI {
             if (v.qr != null)

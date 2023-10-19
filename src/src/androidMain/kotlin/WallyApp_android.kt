@@ -57,9 +57,6 @@ private val LogIt = GetLog("BU.wally.app")
 var forTestingDoNotAutoCreateWallets = false
 var coinsCreated = false
 
-/** Currently selected fiat currency code */
-var fiatCurrencyCode: String = "USD"
-
 val SupportedBlockchains =
     mapOf(
       "NEXA" to ChainSelector.NEXA,
@@ -84,23 +81,10 @@ var wallyApp: WallyApp? = null
 var devMode: Boolean = false
 var brokenMode: Boolean = false
 
-const val RETRIEVE_ONLY_ADDITIONAL_ADDRESSES = 10
-
 fun epochMilliSeconds(): Long
 {
     return Date().time
     // return System.currentTimeMillis()/1000
-}
-
-fun WallyGetCnxnMgr(chain: ChainSelector, name: String? = null, start:Boolean = true): CnxnMgr
-{
-    val ret = GetCnxnMgr(chain, name, start)
-    if (chain == ChainSelector.NEXA)
-    {
-        ret.add("nexa.wallywallet.org", NexaPort, 100, true)
-        ret.add("p2p.wallywallet.org", NexaPort, 90, true)
-    }
-    return ret
 }
 
 data class LongPollInfo(val proto: String, val hostPort: String, val cookie: String?, var active: Boolean = true)
@@ -775,7 +759,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
             if (nullablePrimaryAccount == act) nullablePrimaryAccount = null
             launch { // cannot access db in UI thread
                 saveActiveAccountList()
-                act.delete()
+                act.deleteAndroid()
             }
 
             /* stopping the blockchain is handled by the wallet/ blockchain
@@ -803,7 +787,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
       chainSelector: ChainSelector,
       earliestActivity: Long?,
       earliestHeight: Long?,
-      nonstandardActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, NewAccount.HDActivityBracket>>?
+      nonstandardActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, HDActivityBracket>>?
     )
     {
         // If the account is being restored from a recovery key, then the user must have it saved somewhere already
@@ -909,7 +893,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
                         accounts.getOrPut("RKEX") {
                             try
                             {
-                                val c = Account("RKEX");
+                                val c = Account("RKEX")
                                 c
                             }
                             catch (e: DataMissingException)
