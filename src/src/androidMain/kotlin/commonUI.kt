@@ -92,11 +92,6 @@ fun View.visOrInvis(vis: Boolean)
     else visibility = View.INVISIBLE
 }
 
-fun String.toSet():Set<String>
-{
-    return split(","," ").map({it.trim()}).filter({it.length > 0}).toSet()
-}
-
 fun PayAddress.urlEncode():String
 {
     return toString().urlEncode()

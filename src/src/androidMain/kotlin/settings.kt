@@ -208,7 +208,7 @@ class Settings : CommonActivity()
                 {
                     if (account.chain.chainSelector == chain.key)
                     {
-                        val nodeSet: Set<String> = nodeAddr?.toSet() ?: setOf()
+                        val nodeSet: Set<String> = nodeAddr?.splitIntoSet() ?: setOf()
                         if (!excl || (nodeSet.size == 0)) account.cnxnMgr.exclusiveNodes(null)
                         else account.cnxnMgr.exclusiveNodes(nodeSet)
                         if (!prefd || (nodeSet.size == 0)) account.cnxnMgr.preferNodes(null)
