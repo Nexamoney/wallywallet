@@ -28,12 +28,10 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 
 
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.foundation.Image
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.Density
+import info.bitcoinunlimited.www.wally.Account
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 enum class ScreenNav
 {
@@ -53,11 +51,10 @@ enum class ScreenNav
     }
 }
 
-
 @Composable
 fun NavigationRoot(accounts: MutableMap<String, Bip44Wallet>)
 {
-    val currentScreen = remember { mutableStateOf(ScreenNav.Home) }
+    val currentRootScreen = remember { mutableStateOf(ScreenNav.Home) }
     val scrollState = rememberScrollState()
 
     WallyTheme(darkTheme = false, dynamicColor = false) {
@@ -66,7 +63,7 @@ fun NavigationRoot(accounts: MutableMap<String, Bip44Wallet>)
               modifier = Modifier.fillMaxSize()
             ) {
                 // This will take up the most space but leave enough for the navigation menu
-                val mod = if (currentScreen.value.isEntirelyScrollable)
+                val mod = if (currentRootScreen.value.isEntirelyScrollable)
                 {
                     Modifier.weight(1f).verticalScroll(scrollState).fillMaxWidth()
                 }
@@ -77,9 +74,9 @@ fun NavigationRoot(accounts: MutableMap<String, Bip44Wallet>)
                 Box(
                   modifier = mod
                 ) {
-                    when (currentScreen.value)
+                    when (currentRootScreen.value)
                     {
-                        ScreenNav.Home -> HomeScreen()
+                        ScreenNav.Home -> HomeScreen(accounts, ChildNav)
                         ScreenNav.Dashboard -> DashboardScreen(400.dp, accounts)
                         ScreenNav.Settings -> SettingsScreen()
                         ScreenNav.Assets -> TODO()
@@ -91,14 +88,24 @@ fun NavigationRoot(accounts: MutableMap<String, Bip44Wallet>)
 
                 // This will always be at the bottom and won't overlap with the content above
                 Box(modifier = Modifier.fillMaxWidth().background(NavBarBkg).height(IntrinsicSize.Min).padding(0.dp)) {
-                    NavigationMenu(currentScreen)
+                    NavigationMenu(currentRootScreen)
                 }
             }
         }
     }
 }
 
+object ChildNav {
+    private val _displayAccountDetailScreen = MutableStateFlow<Account?>(null)
+    val displayAccountDetailScreen: StateFlow<Account?> get() = _displayAccountDetailScreen
 
+    /**
+     * Input Account object to display or null to hide
+     */
+    fun displayAccount(account: Account?) {
+        _displayAccountDetailScreen.value = account
+    }
+}
 
 data class NavChoice(val location: ScreenNav, val textId: Int, val image: ImageVector?)
 

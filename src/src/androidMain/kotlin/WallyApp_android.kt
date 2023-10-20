@@ -78,7 +78,6 @@ val WALLY_DATA_VERSION = byteArrayOf(1, 0, 0)
 var walletDb: KvpDatabase? = null
 var wallyApp: WallyApp? = null
 
-var devMode: Boolean = false
 var brokenMode: Boolean = false
 
 fun epochMilliSeconds(): Long
@@ -873,7 +872,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         nexaElectrum.add(0, IpPort("rostrum.wallywallet.org", DEFAULT_NEXA_TCP_ELECTRUM_PORT))
 
         val prefs = getSharedPreferences(getString(R.string.preferenceFileName), PREF_MODE_PRIVATE)
-        devMode = prefs.getBoolean(DEV_MODE_PREF, false)
+        devMode.value = prefs.getBoolean(DEV_MODE_PREF, false)
         allowAccessPriceData = prefs.getBoolean(ACCESS_PRICE_DATA_PREF, true)
 
         registerActivityLifecycleCallbacks(ActivityLifecycleHandler(this))  // track the current activity

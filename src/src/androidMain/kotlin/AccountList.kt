@@ -75,7 +75,7 @@ class AccountListBinder(val ui: AccountListItemBinding, val guiList: GuiAccountL
 {
     override fun populate()
     {
-        if (devMode) ui.devInfo.visibility = View.VISIBLE
+        if (devMode.value) ui.devInfo.visibility = View.VISIBLE
         else ui.devInfo.visibility = View.GONE
         val d = data
 

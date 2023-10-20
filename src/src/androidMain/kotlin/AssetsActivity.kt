@@ -809,7 +809,7 @@ class AssetBinder(val ui: AssetListItemBinding, val activity: AssetsActivity): G
             {
                 d.ui = this
                 ui.GuiAssetId.text = d.groupInfo.groupId.toString()
-                ui.GuiAssetId.visibility = if (devMode) View.VISIBLE else View.GONE
+                ui.GuiAssetId.visibility = if (devMode.value) View.VISIBLE else View.GONE
 
                 val nft = d.nft
                 if (nft == null)

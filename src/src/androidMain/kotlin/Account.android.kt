@@ -255,7 +255,7 @@ fun Account.updateUI(force: Boolean)
     }
 
     // Decide whether to show the assets nav
-    if (!devMode)  // because always shown in dev mode
+    if (!devMode.value)  // because always shown in dev mode
     {
         val now: Long = Instant.now().toEpochMilli()
         if (lastAssetCheck + (8L * 1000L) < now)  // Don't check too often

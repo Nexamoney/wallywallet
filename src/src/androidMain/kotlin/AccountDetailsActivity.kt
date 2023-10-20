@@ -149,7 +149,7 @@ class AccountDetailsActivity: CommonNavActivity()
 
         val primVis = if (wallyApp?.nullablePrimaryAccount == acc) View.GONE     // its already primary
         else if (acc.chain.chainSelector == ChainSelector.NEXA) View.VISIBLE     // All nexa accounts are candidates
-        else if (devMode && acc.chain.chainSelector.isNexaFamily) View.VISIBLE   // all nexa family accounts are candidates in dev mode
+        else if (devMode.value && acc.chain.chainSelector.isNexaFamily) View.VISIBLE   // all nexa family accounts are candidates in dev mode
         else View.GONE
         ui.GuiPrimaryAccountButton.visibility = primVis
 

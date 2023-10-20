@@ -89,7 +89,7 @@ class AlertBinder(val ui: AlertListItemBinding, val activity: AlertActivity): Gu
                     i18n(R.string.noAdditionalDetails)
                 }
 
-                if (devMode)
+                if (devMode.value)
                 {
                     val traceString = d.trace.map { "[" + it.fileName + ":" + it.lineNumber + "] " + it.className.split(".").last() + "." + it.methodName }.joinToString("\n")
                     detailsText = detailsText + "\n\n" + traceString
