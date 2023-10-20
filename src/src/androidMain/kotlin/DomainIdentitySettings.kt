@@ -40,7 +40,7 @@ class DomainIdentitySettings : CommonNavActivity()
     {
         super.onStart()
 
-        if (devMode) ui.uniqueIdentitySwitch.visibility=View.VISIBLE
+        if (devMode.value) ui.uniqueIdentitySwitch.visibility=View.VISIBLE
 
         val intent = getIntent()
         val domain = intent.getStringExtra("domainName")

@@ -103,7 +103,7 @@ class NewAccount : CommonNavActivity()
         ui = ActivityNewAccountBinding.inflate(layoutInflater)
         setContentView(ui.root)
 
-        val blockchains = ArrayAdapter(this, R.layout.blockchain_selection_spinner, SupportedBlockchains.filter { devMode || it.value.isMainNet }.keys.toTypedArray())
+        val blockchains = ArrayAdapter(this, R.layout.blockchain_selection_spinner, SupportedBlockchains.filter { devMode.value || it.value.isMainNet }.keys.toTypedArray())
         ui.GuiBlockchainSelector.setAdapter(blockchains)
 
         val adapter: ArrayAdapter<String> = ArrayAdapter<String>(this, R.layout.recovery_phrase_selection_spinner, englishWordList)

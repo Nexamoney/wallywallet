@@ -1,6 +1,5 @@
 package info.bitcoinunlimited.www.wally.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,10 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import info.bitcoinunlimited.www.wally.S
+import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
+import info.bitcoinunlimited.www.wally.ui.views.AccountListView
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.painterResource
+import org.nexa.libnexakotlin.Bip44Wallet
 
 
 val testDropDown = listOf("big","list","here","and", "there",
@@ -41,35 +41,20 @@ val testDropDown = listOf("big","list","here","and", "there",
   )
 
 @OptIn(ExperimentalResourceApi::class)
-@Composable fun ImagesFromSharedResources()
-{
-    Row {
-        Image(
-          painterResource("icons/check.xml"),
-          null,
-          modifier = Modifier.size(40.dp),
-        )
-        Image(
-          painterResource("icons/faucet_drip.xml"),
-          null,
-          modifier = Modifier.size(40.dp),
-        )
-    }
-}
-
-@OptIn(ExperimentalResourceApi::class)
 @Composable
-fun HomeScreen()
+fun HomeScreen(accounts: MutableMap<String, Bip44Wallet>, navigation: ChildNav)
 {
+    val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
     var isSending by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
     var selected by remember { mutableStateOf("any") }
+    val selectedAccount = remember { mutableStateOf<Account?>(null) }
+    val displayAccountDetailScreen = navigation.displayAccountDetailScreen.collectAsState()
 
-    Box(modifier = WallyPageBase) {
+    if(displayAccountDetailScreen.value == null)
+        Box(modifier = WallyPageBase) {
         Column {
             Text("HomeScreen")
-
-            ImagesFromSharedResources()
 
             //Row() {  // bug leaves a big gap
             Row(modifier = Modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically) {
@@ -147,11 +132,18 @@ fun HomeScreen()
                 ReceiveView()
                 WallyDivider()
             }
-            AccountListView()
+            AccountListView(
+              accounts.map { Account(it.value.name, chainSelector = it.value.chainSelector) },
+              selectedAccount,
+              preferenceDB,
+              navigation,
+            )
             WallyDivider()
             QrCodeScannerView()
         }
     }
+    else if(displayAccountDetailScreen.value is Account)
+        AccountDetailScreen(navigation, displayAccountDetailScreen.value!!)
 }
 
 @Composable
@@ -179,12 +171,6 @@ fun SendFormView(onComplete: () -> Unit)
 fun ReceiveView()
 {
     Text("ReceiveView")
-}
-
-@Composable
-fun AccountListView()
-{
-    Text("AccountListView")
 }
 
 @Composable

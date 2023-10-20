@@ -103,7 +103,7 @@ class Settings : CommonActivity()
         val preferenceDB: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), PREF_MODE_PRIVATE)
 
         if (SetupBooleanPreferenceGui(DEV_MODE_PREF, preferenceDB, false, ui.GuiDeveloperInfoSwitch) { _, isChecked ->
-              devMode = isChecked
+              devMode.value = isChecked
               if (isChecked)
               {
                   //ui.GuiClearIdentityDomains.visibility = VISIBLE
