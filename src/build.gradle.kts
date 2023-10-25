@@ -13,7 +13,7 @@ val serializationVersion = "1.6.0"  // https://github.com/Kotlin/kotlinx.seriali
 val coroutinesVersion = "1.7.3"     // https://github.com/Kotlin/kotlinx.coroutines
 val ktorVersion = "2.3.3"           // https://github.com/ktorio/ktor
 val bigNumVersion = "0.3.8"
-val composeVersion = "1.5.1"
+val composeVersion = "1.5.3"
 val androidTestCoreVersion = "1.5.0"
 val androidxActivityComposeVersion = "1.7.2"
 val uriKmpVersion = "0.0.14"
@@ -528,7 +528,7 @@ android {
         buildConfig = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.2"
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
     packaging {
         resources {
@@ -686,7 +686,6 @@ tasks.register<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("appJ
     }
 }
  */
-
 
 fun mustExist(dir:String):File
 {
