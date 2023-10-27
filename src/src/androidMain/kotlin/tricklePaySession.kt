@@ -961,7 +961,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
             val addr = getRelevantAccount().currentReceive?.address?.toString()
             if (addr != null)
             {
-                wallyApp?.post(url, {
+                wallyAndroidApp?.post(url, {
                     it.setBody(addr.toString())
                 })
                 then?.invoke(R.string.Address)
@@ -994,7 +994,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
                         */
                         val clips = getTextClipboard()
                         val text = if (clips.size == 0) i18n(R.string.pasteIsEmpty) else clips[0]
-                        wallyApp?.post(url, { it.setBody(text) })
+                        wallyAndroidApp?.post(url, { it.setBody(text) })
                         then?.invoke(R.string.clipboard)
                     }
                     catch (e: Exception)

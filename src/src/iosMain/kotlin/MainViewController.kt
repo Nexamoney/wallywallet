@@ -18,9 +18,13 @@ fun OnAppStartup()
     println("APP STARTUP")
     //setLocale("sl","")
     setLocale()
+    /*
     val wal = openOrNewWallet("reg", ChainSelector.NEXAREGTEST)
     wal.blockchain.req.net.exclusiveNodes(setOf("192.168.1.5"))
     accounts[wal.name] = wal
+     */
+    wallyApp = CommonApp()
+    wallyApp!!.onCreate()
 }
 
 enum class ScreenNav {
@@ -28,16 +32,8 @@ enum class ScreenNav {
     Something
 }
 
-fun MainViewController() = ComposeUIViewController {
-    val currentScreen = remember { mutableStateOf(ScreenNav.Settings) }
 
-    // TODO call some other startup function
-    if (accounts.isEmpty() ) {
-        initializeLibNexa()
-        val wal = openOrNewWallet("reg", ChainSelector.NEXAREGTEST)
-        wal.blockchain.req.net.exclusiveNodes(setOf("192.168.1.5"))
-        accounts[wal.name] = wal
-    }
-    NavigationRoot(accounts)
+fun MainViewController() = ComposeUIViewController {
+    NavigationRoot()
 }
 

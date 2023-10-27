@@ -189,9 +189,9 @@ open class CommonNavActivity : CommonActivity()
 
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
         val prefDB = getSharedPreferences(i18n(R.string.preferenceFileName), PREF_MODE_PRIVATE)
-        val showIdentity = if (devMode.value) devMode.value else prefDB.getBoolean(SHOW_IDENTITY_PREF, false)
-        val showTrickePay = if (devMode.value) devMode.value else prefDB.getBoolean(SHOW_TRICKLEPAY_PREF, false)
-        val showAssets = if (devMode.value) devMode.value else prefDB.getBoolean(SHOW_ASSETS_PREF, false)
+        val showIdentity = if (devMode) devMode else prefDB.getBoolean(SHOW_IDENTITY_PREF, false)
+        val showTrickePay = if (devMode) devMode else prefDB.getBoolean(SHOW_TRICKLEPAY_PREF, false)
+        val showAssets = if (devMode) devMode else prefDB.getBoolean(SHOW_ASSETS_PREF, false)
         val menu = navView.getMenu()
         menu.findItem(R.id.navigation_identity)?.setVisible(showIdentity)
         menu.findItem(R.id.navigation_trickle_pay)?.setVisible(showTrickePay)
@@ -406,7 +406,7 @@ open class CommonActivity : AppCompatActivity()
         // spawns a child activity of wally's main activity, but upon completion of that child we want to drop back to the
         // spawner not to wally's main screen
         var finishNow = false
-        wallyApp?.let {
+        wallyAndroidApp?.let {
             val fp = it.finishParent
             if (fp > 0)
             {
@@ -706,7 +706,7 @@ open class CommonActivity : AppCompatActivity()
                 intent.data = Uri.parse(intentUri)
                 if (notify)
                 {
-                    val nid = app.notifyPopup(intent, i18n(R.string.sendRequestNotification), i18n(R.string.toColon) + intentUri, this, false)
+                    val nid = wallyAndroidApp!!.notifyPopup(intent, i18n(R.string.sendRequestNotification), i18n(R.string.toColon) + intentUri, this, false)
                     intent.extras?.putIntegerArrayList("notificationId", arrayListOf(nid))
                 }
                 else startActivityForResult(intent, IDENTITY_OP_RESULT)
@@ -719,7 +719,7 @@ open class CommonActivity : AppCompatActivity()
             intent.data = Uri.parse(intentUri)
             if (notify)
             {
-                val nid = app.notifyPopup(intent, i18n(R.string.identityRequestNotification), i18n(R.string.fromColon) + uri.host, this)
+                val nid = wallyAndroidApp!!.notifyPopup(intent, i18n(R.string.identityRequestNotification), i18n(R.string.fromColon) + uri.host, this)
                 intent.extras?.putIntegerArrayList("notificationId", arrayListOf(nid))
             }
             else startActivityForResult(intent, IDENTITY_OP_RESULT)
@@ -730,7 +730,7 @@ open class CommonActivity : AppCompatActivity()
             intent.data = Uri.parse(intentUri)
             if (notify)
             {
-                app.autoHandle(intentUri)
+                wallyAndroidApp!!.autoHandle(intentUri)
             }
             else startActivityForResult(intent, TRICKLEPAY_RESULT)
         }

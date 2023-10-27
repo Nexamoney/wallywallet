@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
@@ -15,14 +17,16 @@ import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.DEV_MODE_PREF
 import info.bitcoinunlimited.www.wally.ui.LOCAL_CURRENCY_PREF
 import info.bitcoinunlimited.www.wally.ui.ChildNav
-import info.bitcoinunlimited.www.wally.ui.theme.WallyRowAbkg2
-import info.bitcoinunlimited.www.wally.ui.theme.colorDebit
-import info.bitcoinunlimited.www.wally.ui.theme.defaultListHighlight
+import info.bitcoinunlimited.www.wally.ui.theme.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.nexa.libnexakotlin.*
 
-@Composable fun AccountListView(accounts: List<Account>, selectedAccount: MutableState<Account?>, preferenceDB: SharedPreferences, nav: ChildNav)
+val triggerRecompose: MutableState<Int> = mutableStateOf(0)
+
+@Composable fun AccountListView(accounts: List<Account>, selectedAccount: MutableState<Account?>, nav: ChildNav)
 {
+    key(triggerRecompose.value)
+    {
     Box(
       modifier = Modifier
         .fillMaxWidth()
@@ -32,56 +36,193 @@ import org.nexa.libnexakotlin.*
         LazyColumn(
           horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            accounts.forEach {
-                item {
-                    val fiatCurrencyCode by remember { mutableStateOf(preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD")) }
-                    // TODO: Get FIAT balance instead of using BigDecimal.ZERO directly
-                    val fiatValue by remember { mutableStateOf("${i18n(S.approximatelyT)}  ${it.format(BigDecimal.ZERO)}  $fiatCurrencyCode") }
-                    val balanceFormatted by remember { mutableStateOf(it.format(it.fromFinestUnit(it.wallet.balance))) }
-                    val lockable by remember { mutableStateOf(it.lockable) }
-                    val locked by remember { mutableStateOf(it.locked) }
-                    val devMode by remember { mutableStateOf( preferenceDB.getBoolean(DEV_MODE_PREF, false)) }
-                    val devInfoMock = "mock:devInfoMockdevInfoMockdevInfoMockdevInfoMockdevInfoMockdevInfoMockdevInfoMockdevInfoMockdevInfoMock"
-                    val isSelected = selectedAccount.value?.name == it.name
-                    val chain = it.wallet.chainSelector
-                    val currencyCode = chainToDisplayCurrencyCode[chain]?: throw Exception("Cannot get currencyCode in AccountListView")
-                    val unconfirmedMock = 10000L // TODO: observe unconfirmed balance
-                    val unconfirmedText = if(unconfirmedMock > 0)
-                    {
-                        // Format i18n to format string with params unconfirmedFormattedMock and currencyCode?
-                        // val unconfirmedFormattedMock =it.format(it.fromFinestUnit(10000L))
-                        // "includes + $unconfirmedFormattedMock $currencyCode pending (mock)"
-                        i18n(S.incoming)
+            accounts.forEachIndexed { idx, it ->
+                    item(key=it.name) {
+                        // I would think that capturing this data would control redraw of each item, but it appears to not do so.
+                        // Redraw is controlled of the entire AccountListView, or not at all.
+                        // val anyChanges: MutableState<AccountUIData> = remember { mutableStateOf(it.uiData()) }
+                        val anyChanges = it.uiData()
+                        AccountItemView(anyChanges, idx, selectedAccount.value == it, onClickAccount = {
+                              selectedAccount.value = it
+                          },
+                          onClickGearIcon = {
+                              nav.displayAccount(it)
+                          })
                     }
-                    else
-                    {
-                        ""
-                    }
-
-                    AccountItemView(
-                      it.name,
-                      balanceFormatted,
-                      chain,
-                      currencyCode,
-                      lockable,
-                      locked,
-                      isSelected,
-                      fiatValue,
-                      devInfoMock,
-                      devMode,
-                      unconfirmedText,
-                      onClickAccount = {
-                          selectedAccount.value = it
-                    },
-                      onClickGearIcon = {
-                          nav.displayAccount(it)
-                    })
                 }
             }
         }
     }
 }
 
+
+data class AccountUIData(
+  var name: String = "",
+  var chainSelector: ChainSelector = ChainSelector.NEXA,
+  var currencyCode: String = "",
+  var balance: String = "",
+  var balFontWeight: FontWeight = FontWeight.Normal,
+  var balColor: Color = colorCredit,
+  var unconfBal: String="",
+  var unconfBalColor: Color = colorCredit,
+  var approximately: String? = null,
+  var devinfo: String="",
+  var locked: Boolean = false,
+  var lockable: Boolean = false)
+
+/** Look into this account and produce the strings and modifications needed to display it */
+fun Account.uiData():AccountUIData
+{
+    val ret = AccountUIData()
+    var delta = balance - confirmedBalance
+
+    ret.name = name
+    ret.lockable = lockable
+    ret.locked = locked
+    ret.chainSelector = wallet.chainSelector
+    val chainstate = wallet.chainstate
+    if (chainstate != null)
+    {
+        if (chainstate.isSynchronized(1, 60 * 60))  // ignore 1 block desync or this displays every time a new block is found
+        {
+            ret.unconfBal =
+              if (CURRENCY_ZERO == unconfirmedBalance)
+                  ""
+              else
+                  i18n(S.incoming) % mapOf(
+                    "delta" to (if (delta > BigDecimal.ZERO) "+" else "") + format(delta),
+                    "unit" to currencyCode
+                  )
+
+            ret.balFontWeight = FontWeight.Normal
+            ret.unconfBalColor = if (delta > BigDecimal.ZERO) colorCredit else colorDebit
+        }
+        else
+        {
+            ret.unconfBal = if (chainstate.syncedDate <= 1231416000) i18n(S.unsynced)  // for fun: bitcoin genesis block
+            else i18n(S.balanceOnTheDate) % mapOf("date" to epochToDate(chainstate.syncedDate))
+
+            ret.balFontWeight = FontWeight.Light
+            ret.unconfBalColor = unsyncedStatusColor
+        }
+    }
+    else
+    {
+        ret.balFontWeight = FontWeight.Light
+        ret.unconfBal = i18n(S.walletDisconnectedFromBlockchain)
+    }
+
+    ret.balance = format(balance)
+
+    if (chainstate != null)
+    {
+        val cnxnLst = wallet.chainstate?.chain?.net?.mapConnections() { it.name }
+
+        val trying: List<String> = if (chainstate.chain.net is MultiNodeCnxnMgr) (chainstate.chain.net as MultiNodeCnxnMgr).initializingCnxns.map { it.name } else listOf()
+        val peers = cnxnLst?.joinToString(", ") + (if (trying.isNotEmpty()) (" " + i18n(S.trying) + " " + trying.joinToString(", ")) else "")
+
+        ret.devinfo = i18n(S.at) + " " + (wallet.chainstate?.syncedHash?.toHex()?.take(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight
+          ?: "") + " " + i18n(S.of) + " " + (wallet.chainstate?.chain?.curHeight
+          ?: "") + " blocks, " + (wallet.chainstate?.chain?.net?.size ?: "") + " peers\n" + peers
+    }
+    else
+    {
+        ret.devinfo = i18n(S.walletDisconnectedFromBlockchain)
+    }
+
+    if (fiatPerCoin > BigDecimal.ZERO)
+    {
+        var fiatDisplay = balance * fiatPerCoin
+        ret.approximately = i18n(S.approximatelyT) % mapOf("qty" to fiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode)
+    }
+    else ret.approximately = null
+    return ret
+}
+
+
+@OptIn(ExperimentalResourceApi::class)
+@Composable
+fun AccountItemView(
+  // anyChanges: MutableState<AccountUIData>,
+  anyChanges: AccountUIData,
+  index: Int,
+  isSelected: Boolean,
+  onClickAccount: () -> Unit,
+  onClickGearIcon: () -> Unit
+) {
+    if (true)
+    {
+        val uidata = anyChanges //.value
+        val backgroundColor = if (isSelected) defaultListHighlight else if (index and 1 == 0) WallyRowAbkg1 else WallyRowAbkg2
+        Box(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(2.dp)
+            .background(backgroundColor)
+            .clickable(onClick = onClickAccount),
+          contentAlignment = Alignment.Center
+        ) {
+            Row(modifier = Modifier.fillMaxHeight()) {
+                Column(modifier = Modifier.fillMaxHeight())
+                {
+                    ResImageView(getAccountIconResPath(uidata.chainSelector), Modifier.size(32.dp), "Blockchain icon")
+                    if (isSelected) ResImageView("icons/gear.xml", Modifier.padding(0.dp, 20.dp).size(32.dp).clickable(onClick = onClickGearIcon))
+                }
+                Column(
+                  modifier = Modifier
+                    .fillMaxSize()
+                    .padding(2.dp),
+                  verticalArrangement = Arrangement.Top,
+                ) {
+                    Row(
+                      verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = uidata.name, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                        if (uidata.lockable)
+                        {
+                            ResImageView(if (uidata.locked) "icons/lock.xml" else "icons/unlock.xml",
+                              modifier = Modifier.size(26.dp).absoluteOffset(0.dp, -8.dp).clickable {
+                                  // TODO lock clicked
+                              })
+                        }
+                        Spacer(Modifier.width(16.dp))
+                        Row(
+                          verticalAlignment = Alignment.Bottom
+                        ) {
+                            Text(text = uidata.balance, fontSize = 28.sp, color = colorDebit)
+                            Text(text = uidata.currencyCode, fontSize = 14.sp)
+                        }
+                    }
+
+                    Row(
+                      modifier = Modifier.fillMaxWidth(),
+                      horizontalArrangement = Arrangement.Center
+                    ) {
+                        uidata.approximately?.let {
+                            Text(text = it, fontSize = 16.sp)
+                        }
+                    }
+                    if (uidata.unconfBal.isNotEmpty())
+                        Row(
+                          modifier = Modifier.fillMaxWidth(),
+                          horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(text = uidata.unconfBal, color = uidata.unconfBalColor)
+                        }
+                    if (devMode) Row(
+                      modifier = Modifier.fillMaxWidth(),
+                      horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(text = uidata.devinfo, fontSize = 12.sp)
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+/*
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun AccountItemView(
@@ -110,8 +251,8 @@ fun AccountItemView(
         Column(
           modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-          verticalArrangement = Arrangement.SpaceBetween,
+            .padding(4.dp),
+          verticalArrangement = Arrangement.Top  , // SpaceBetween,
         ) {
             Row {
 
@@ -168,6 +309,8 @@ fun AccountItemView(
         }
     }
 }
+
+ */
 
 private fun getAccountIconResPath(chainSelector: ChainSelector): String
 {

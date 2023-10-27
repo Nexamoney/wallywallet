@@ -1,8 +1,12 @@
 package info.bitcoinunlimited.www.wally
 
+import info.bitcoinunlimited.www.wally.ui.views.triggerRecompose
+import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.toByteArray
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
+
+private val LogIt = GetLog("BU.wally.account.jvm")
 
 actual fun EncodePIN(actName: String, pin: String, size: Int): ByteArray
 {
@@ -11,4 +15,10 @@ actual fun EncodePIN(actName: String, pin: String, size: Int): ByteArray
     val secretkey = PBEKeySpec(pin.toCharArray(), salt.toByteArray(), 2048, 512)
     val seed = skf.generateSecret(secretkey)
     return seed.encoded.slice(IntRange(0, size - 1)).toByteArray()
+}
+
+actual fun onChanged(account: Account, force: Boolean)
+{
+    LogIt.info("Account ${account.name} changed!")
+    triggerRecompose.value = triggerRecompose.value + 1
 }

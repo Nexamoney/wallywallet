@@ -18,7 +18,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.Density
+import io.ktor.client.*
+import io.ktor.client.engine.*
+import io.ktor.client.engine.android.*
+import io.ktor.client.plugins.*
 import java.io.InputStream
+
+/** Gets the ktor http client for this platform */
+actual fun GetHttpClient(timeoutInMs: Number): HttpClient = HttpClient(Android) {
+    install(HttpTimeout) { requestTimeoutMillis = timeoutInMs.toLong() } // Long timeout because we don't expect a response right away; its a long poll
+}
 
 /** Converts an encoded URL to a raw string */
 actual fun String.urlDecode():String

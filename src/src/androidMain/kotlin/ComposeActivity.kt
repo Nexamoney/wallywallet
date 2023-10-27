@@ -13,11 +13,8 @@ class ComposeActivity: CommonActivity()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        // TODO navigation root should take Accounts
-        val acts = mutableMapOf<String, Bip44Wallet>()
-        for (a in wallyApp!!.accounts) acts[a.key] = a.value.wallet
         setContent {
-            NavigationRoot(acts)
+            NavigationRoot()
         }
     }
 }

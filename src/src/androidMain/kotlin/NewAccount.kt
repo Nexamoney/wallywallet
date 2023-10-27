@@ -103,7 +103,7 @@ class NewAccount : CommonNavActivity()
         ui = ActivityNewAccountBinding.inflate(layoutInflater)
         setContentView(ui.root)
 
-        val blockchains = ArrayAdapter(this, R.layout.blockchain_selection_spinner, SupportedBlockchains.filter { devMode.value || it.value.isMainNet }.keys.toTypedArray())
+        val blockchains = ArrayAdapter(this, R.layout.blockchain_selection_spinner, SupportedBlockchains.filter { devMode || it.value.isMainNet }.keys.toTypedArray())
         ui.GuiBlockchainSelector.setAdapter(blockchains)
 
         val adapter: ArrayAdapter<String> = ArrayAdapter<String>(this, R.layout.recovery_phrase_selection_spinner, englishWordList)
@@ -124,7 +124,7 @@ class NewAccount : CommonNavActivity()
                 launchPeekActivity(words, SupportedBlockchains[ui.GuiBlockchainSelector.selectedItem]!!)
                 if (!nameChangedByUser)  // If the user has already put something in, then don't touch it
                 {
-                    val a = app
+                    val a = wallyApp
                     if ((bc != null)&&(a != null))
                     {
                         val proposedName =  chainToName[bc]
@@ -173,7 +173,7 @@ class NewAccount : CommonNavActivity()
                 }
 
                 val proposedName = p0.toString()
-                if (app?.accounts?.contains(proposedName) ?: false == true)
+                if (wallyApp?.accounts?.contains(proposedName) ?: false == true)
                 {
                     ui.GuiAccountNameOk.setImageResource(android.R.drawable.ic_delete)
                     nameOk = false
@@ -428,7 +428,7 @@ class NewAccount : CommonNavActivity()
     {
         val (svr, port) = try
         {
-            wallyApp!!.getElectrumServerOn(chainSelector)
+            getElectrumServerOn(chainSelector)
         } catch (e: BadCryptoException)
         {
             LogIt.info("peek not supported for this blockchain")
@@ -609,7 +609,7 @@ class NewAccount : CommonNavActivity()
                 return
             }
             val cleanedSecretWords = words.joinToString(" ")
-            app!!.recoverAccount(name, flags, pin, cleanedSecretWords, chainSelector, ea, eah.toLong(), nonstandardActivity)
+            wallyApp!!.recoverAccount(name, flags, pin, cleanedSecretWords, chainSelector, ea, eah.toLong(), nonstandardActivity)
             finish()
         }
     }
@@ -645,7 +645,7 @@ class NewAccount : CommonNavActivity()
         else
         {
             later {
-                app!!.newAccount(name, flags, pin, chainSelector)
+                wallyApp!!.newAccount(name, flags, pin, chainSelector)
                 finish()
             }  // Can't happen in GUI thread
             // TODO some OK feedback

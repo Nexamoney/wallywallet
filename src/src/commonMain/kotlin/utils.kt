@@ -13,20 +13,18 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
-import io.ktor.http.*
 import kotlinx.coroutines.*
 import org.nexa.libnexakotlin.*
 import com.eygraber.uri.*
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-//import java.io.InputStream
 
 private val LogIt = GetLog("BU.wally.utils")
+
+/** Gets the ktor http client for this platform */
+expect fun GetHttpClient(timeoutInMs: Number):HttpClient
 
 class ImageContainer
 {
@@ -56,14 +54,12 @@ class ImageContainer
 
 
     @Composable
-    fun icon(contentDescription: String?=null,
-      modifier: Modifier = Modifier,
-      tint: Color = LocalContentColor.current)
+    fun icon(contentDescription: String?=null, modifier: Modifier = Modifier, tint: Color = LocalContentColor.current)
     {
         defp?.let { Icon(it(), contentDescription, modifier, tint ); return }
         iv?.let { Icon(it, contentDescription, modifier, tint); return }
-        ib?.let { return Icon(it, contentDescription, modifier, tint); return }
-        painter?.let { return Icon(it, contentDescription, modifier, tint); return }
+        ib?.let { Icon(it, contentDescription, modifier, tint); return }
+        painter?.let { Icon(it, contentDescription, modifier, tint); return }
     }
 }
 
@@ -133,12 +129,36 @@ fun later(fn: suspend () -> Unit): Unit
     }
 }
 
+fun dbgAssertGuiThread()
+{
+    if (!isUiThread())
+    {
+        val tname = "" // TODO this thread's name
+        LogIt.warning("ASSERT GUI operations in thread " + tname)
+        val e = AssertException("Executing GUI operations in thread " + tname)
+        LogIt.warning(e.stackTraceToString())
+        throw e
+    }
+}
+
+fun dbgAssertNotGuiThread()
+{
+    if (isUiThread())
+    {
+        val tname = "" // TODO this thread's name
+        LogIt.warning("ASSERT blocking operations in GUI thread " + tname)
+        val e = AssertException("Executing blocking operations in GUI thread " + tname)
+        LogIt.warning(e.stackTraceToString())
+        throw e
+    }
+}
+
+
 /** load this Uri (blocking).
  * @return The Uri body contents as a string, and the status code.  If status code 301 or 302 is returned (forwarding) then return the forwarding Uri in the first parameter.
  */
 fun Uri.loadTextAndStatus(timeoutInMs: Number): Pair<String,Int>
 {
-    var err:Int = 0
     val client = HttpClient() {
         install(HttpTimeout) {
             requestTimeoutMillis = timeoutInMs.toLong()

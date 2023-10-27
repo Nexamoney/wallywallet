@@ -18,8 +18,6 @@ import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.AccountListView
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.nexa.libnexakotlin.Bip44Wallet
-
 
 val testDropDown = listOf("big","list","here","and", "there",
   "any", "big","list","here","and", "there",
@@ -40,9 +38,36 @@ val testDropDown = listOf("big","list","here","and", "there",
   "any", "big","list","here","and", "there",
   )
 
+fun assignWalletsGuiSlots(): ListifyMap<String, Account>
+{
+    // We have a Map of account names to values, but we need a list
+    // Sort the accounts based on account name
+    val lm: ListifyMap<String, Account> = ListifyMap(wallyApp!!.accounts, { it.value.visible }, object : Comparator<String>
+    {
+        override fun compare(p0: String, p1: String): Int
+        {
+            if (wallyApp?.nullablePrimaryAccount?.name == p0) return Int.MIN_VALUE
+            if (wallyApp?.nullablePrimaryAccount?.name == p1) return Int.MAX_VALUE
+            return p0.compareTo(p1)
+        }
+    })
+
+    /*  TODO set up change notifications moving upwards from the wallets
+    for (c in wallyApp!!.accounts.values)
+    {
+        c.wallet.setOnWalletChange({ it -> onWalletChange(it) })
+        c.wallet.blockchain.onChange = { it -> onBlockchainChange(it) }
+        c.wallet.blockchain.net.changeCallback = { _, _ -> onWalletChange(c.wallet) }  // right now the wallet GUI update function also updates the cnxn mgr GUI display
+        c.onChange()  // update all wallet UI fields since just starting up
+    }
+     */
+
+    return lm
+}
+
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun HomeScreen(accounts: MutableMap<String, Bip44Wallet>, navigation: ChildNav)
+fun HomeScreen(navigation: ChildNav)
 {
     val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
     var isSending by remember { mutableStateOf(false) }
@@ -133,9 +158,8 @@ fun HomeScreen(accounts: MutableMap<String, Bip44Wallet>, navigation: ChildNav)
                 WallyDivider()
             }
             AccountListView(
-              accounts.map { Account(it.value.name, chainSelector = it.value.chainSelector) },
+              assignWalletsGuiSlots(),
               selectedAccount,
-              preferenceDB,
               navigation,
             )
             WallyDivider()

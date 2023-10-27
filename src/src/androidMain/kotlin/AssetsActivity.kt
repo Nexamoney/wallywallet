@@ -294,7 +294,7 @@ fun openElectrum(chainSelector: ChainSelector): ElectrumClient
     // TODO we need to wrap all electrum access into a retrier
     // val ec = chain.net.getElectrum()
 
-    val (svr, port) = wallyApp!!.getElectrumServerOn(chainSelector)
+    val (svr, port) = getElectrumServerOn(chainSelector)
 
     val ec = try
     {
@@ -809,7 +809,7 @@ class AssetBinder(val ui: AssetListItemBinding, val activity: AssetsActivity): G
             {
                 d.ui = this
                 ui.GuiAssetId.text = d.groupInfo.groupId.toString()
-                ui.GuiAssetId.visibility = if (devMode.value) View.VISIBLE else View.GONE
+                ui.GuiAssetId.visibility = if (devMode) View.VISIBLE else View.GONE
 
                 val nft = d.nft
                 if (nft == null)
@@ -977,6 +977,9 @@ class AssetsActivity : CommonNavActivity()
     var currentlyViewing = -1
     var asset: AssetInfo? = null
 
+    val assetManager
+        get() = wallyAndroidApp!!.assetManager
+
     lateinit var adapter: GuiList<AssetInfo, AssetBinder>
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -1025,7 +1028,7 @@ class AssetsActivity : CommonNavActivity()
 
 
         laterUI {
-            wallyApp?.let { app ->
+            wallyAndroidApp?.let { app ->
                 if (app !is WallyApp)
                 {
                     finish()
@@ -1086,7 +1089,7 @@ class AssetsActivity : CommonNavActivity()
         for (asset in ast.values)
         {
             laterAssets {
-                asset.load(acc.wallet.blockchain, wallyApp!!.assetManager)
+                asset.load(acc.wallet.blockchain, assetManager)
             }
         }
         return ast.values.toList()
@@ -1118,7 +1121,7 @@ class AssetsActivity : CommonNavActivity()
         if (a!=null)
         {
             a.displayAmount = 1  // The default send is to transfer a single one (for safety)
-            if (wallyApp!!.assetManager.addAssetToTransferList(a))
+            if (assetManager.addAssetToTransferList(a))
             {
                 displayNotice(R.string.AssetAddedToTransferList)
             }
@@ -1281,7 +1284,7 @@ class AssetsActivity : CommonNavActivity()
 
         // Cache any large NFT files, and once we have inventoried what's available show the buttons
         later {
-            val nftZipData = a.nftFile(wallyApp!!.assetManager)
+            val nftZipData = a.nftFile(assetManager)
             if (nftZipData != null)
             {
                 val nftZip = nftZipData.second
@@ -1311,7 +1314,7 @@ class AssetsActivity : CommonNavActivity()
 
     fun cacheNftMedia(groupId: GroupId, media: Pair<String?, ByteArray?>): Pair<String?, ByteArray?>
     {
-        val cacheDir = wallyApp!!.cacheDir
+        val cacheDir = wallyAndroidApp!!.cacheDir
         var uriStr = media.first
         var b = media.second
         if (b != null)
@@ -1388,7 +1391,7 @@ class AssetsActivity : CommonNavActivity()
         else
         {
             later {
-                val nftZipData = a.nftFile(wallyApp!!.assetManager)
+                val nftZipData = a.nftFile(assetManager)
                 if (nftZipData == null) {  }
                 else
                 {
@@ -1416,7 +1419,7 @@ class AssetsActivity : CommonNavActivity()
         {
 
             later {
-                val nftZip = a.nftFile(wallyApp!!.assetManager)
+                val nftZip = a.nftFile(assetManager)
                 if (nftZip == null) {  }
                 else
                 {

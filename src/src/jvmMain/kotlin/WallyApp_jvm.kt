@@ -17,7 +17,6 @@ private val LogIt = GetLog("BU.wally.IdentityActivity")
 val WallyTitle = "Wally Enterprise Wallet"
 object WallyJvmApp
 {
-    val accounts: MutableMap<String, Bip44Wallet> = mutableMapOf()
     @JvmStatic
     fun main(args: Array<String>)
     {
@@ -26,7 +25,18 @@ object WallyJvmApp
         LogIt.warning("Starting Wally Enterprise Wallet")
         val wal = openOrNewWallet("reg", ChainSelector.NEXAREGTEST)
         wal.blockchain.req.net.exclusiveNodes(setOf("192.168.1.5"))
-        accounts[wal.name] = wal
+        wallyApp = CommonApp()
+        wallyApp!!.onCreate()
+        // TODO REMOVE THIS:  This creates 2 dummy accounts if there are no accounts (until the account creation screen is done)
+        launch {
+            LogIt.info("Have ${wallyApp!!.accounts.size} accounts")
+            if (wallyApp!!.accounts.size == 0)
+            {
+                LogIt.info("Creating new accounts")
+                wallyApp!!.newAccount("test1", 0UL, "", ChainSelector.NEXAREGTEST)
+                wallyApp!!.newAccount("test2", 0UL, "", ChainSelector.NEXAREGTEST)
+            }
+        }
         guiNewPanel()
     }
 }
@@ -47,7 +57,7 @@ fun guiNewPanel()
             {
                 MaterialTheme()
                 {
-                    NavigationRoot(WallyJvmApp.accounts)
+                    NavigationRoot()
                 }
                // DashboardScreen((4 * 160).dp, WallyJvmApp.accounts)
             }

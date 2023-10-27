@@ -76,7 +76,7 @@ class TricklePayMainFragment : Fragment()
 
     fun populate()
     {
-        val app = wallyApp
+        val app = wallyAndroidApp  // TODO move tpDomains to common
         if (app!=null)
         {
             val domains = ArrayList(app.tpDomains.domains.values)
@@ -562,7 +562,7 @@ class TricklePayActivity : CommonNavActivity()
     var pinTries = 0
 
     // We must have an app by the time an activity is created
-    val tpDomains = wallyApp!!.tpDomains
+    val tpDomains = wallyAndroidApp!!.tpDomains
 
     fun setSelectedInfoDomain(d: TdppDomain)
     {
@@ -582,7 +582,7 @@ class TricklePayActivity : CommonNavActivity()
         setContentView(ui.root)
 
         notInUI {
-            wallyApp?.tpDomains?.load()
+            tpDomains?.load()
             (fragment(R.id.GuiTricklePayMain) as TricklePayMainFragment).populate()
         }
 
@@ -871,7 +871,7 @@ class TricklePayActivity : CommonNavActivity()
 
         if ((receivedIntent.flags and FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0) goHomeWhenDone = true
 
-        wallyApp?.denotify(receivedIntent)
+        wallyAndroidApp?.denotify(receivedIntent)
         try
         {
             if (receivedIntent.scheme == TDPP_URI_SCHEME)
@@ -954,19 +954,19 @@ class TricklePayActivity : CommonNavActivity()
                             else if (path == "/assets")
                             {
                                 LogIt.info(sourceLoc() + ": asset request")
-                                if (autoClose) wallyApp?.finishParent = 1
+                                if (autoClose) wallyAndroidApp?.finishParent = 1
                                 handleAssetInfoRequest(iuri)
                             }
                             else if (path == "/address")
                             {
                                 LogIt.info(sourceLoc() + ": address request")
-                                if (autoClose) wallyApp?.finishParent = 1
+                                if (autoClose) wallyAndroidApp?.finishParent = 1
                                 handleAddressInfoRequest(iuri)
                             }
                             else if (path == "/share")
                             {
                                 LogIt.info(sourceLoc() + ": info request (reverse QR)")
-                                if (autoClose) wallyApp?.finishParent = 1
+                                if (autoClose) wallyAndroidApp?.finishParent = 1
                                 handleShareRequest(iuri)
                             }
                             else if (path == "/jsonpay")
@@ -977,7 +977,7 @@ class TricklePayActivity : CommonNavActivity()
                             {
                                 LogIt.info(sourceLoc() + ": Start long Poll to ${h}")
                                 wallyApp?.accessHandler?.startLongPolling(sess.replyProtocol, sess.hostAndPort, sess.cookie)
-                                if (autoClose) wallyApp?.finishParent = 1
+                                if (autoClose) wallyAndroidApp?.finishParent = 1
                                 clearIntentAndFinish(null, R.string.connectionEstablished, details = "Connected to ${h}")
                                 return@later
                             }
@@ -1050,7 +1050,7 @@ class TricklePayActivity : CommonNavActivity()
 
     fun clearIntentAndFinish(error: Int? = null, notice: Int? = null, up: Boolean = false, details: String? = null )
     {
-        wallyApp?.denotify(intent)
+        wallyAndroidApp?.denotify(intent)
         if (error != null) if (details != null) wallyApp?.displayError(error, details) else wallyApp?.displayError(error)
         if (notice != null) if (details != null) wallyApp?.displayNotice(notice, details) else wallyApp?.displayNotice(notice)
         setResult(Activity.RESULT_OK, intent)

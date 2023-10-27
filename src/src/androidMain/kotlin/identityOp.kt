@@ -123,7 +123,7 @@ class IdentityOpActivity : CommonNavActivity()
                 // Run blocking so the IdentityOp activity does not momentarily appear
                 val act = account ?: try
                 {
-                    val tmp = (application as WallyApp).primaryAccount
+                    val tmp = wallyApp!!.primaryAccount
                     if (tmp == null) throw PrimaryWalletInvalidException()
                     tmp
                 }
@@ -283,7 +283,7 @@ class IdentityOpActivity : CommonNavActivity()
         if (account == null)
             try
             {
-                account = (application as WallyApp).primaryAccount
+                account = wallyApp!!.primaryAccount
             }
             catch (e: PrimaryWalletInvalidException)
             {
@@ -391,7 +391,7 @@ class IdentityOpActivity : CommonNavActivity()
 
                     val act = account ?: try
                     {
-                        (application as WallyApp).primaryAccount
+                        wallyApp!!.primaryAccount
                     }
                     catch (e: PrimaryWalletInvalidException)
                     {
@@ -447,7 +447,7 @@ class IdentityOpActivity : CommonNavActivity()
                         var loginReq = protocol + "://" + tmpHost + portStr + path
                         loginReq += "?op=login&addr=" + address.urlEncode() + "&sig=" + sigStr.urlEncode() + "&cookie=" + cookie.urlEncode()
 
-                        wallyApp?.handleLogin(loginReq)
+                        wallyAndroidApp?.handleLogin(loginReq)
                         finish()
 
                     }
@@ -533,7 +533,7 @@ class IdentityOpActivity : CommonNavActivity()
                         }
                         jsonBody.append('}')
 
-                        wallyApp?.handlePostLogin(loginReq, jsonBody.toString())
+                        wallyAndroidApp?.handlePostLogin(loginReq, jsonBody.toString())
                         clearIntentAndFinish()
                     }
                     else if (op == "sign")
