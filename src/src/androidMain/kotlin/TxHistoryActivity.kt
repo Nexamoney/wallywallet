@@ -501,14 +501,8 @@ class TxHistoryActivity : CommonNavActivity()
 
         laterUI {
             walletName?.let { walName ->
-                if (application !is WallyApp)
-                {
-                    finish()
-                }
-                else
-                {
-                    val app = (application as WallyApp)
-                    val coin = app.accounts[walName]
+
+                    val coin = wallyApp!!.accounts[walName]
                     if (coin != null)
                     {
                         setTitle(i18n(R.string.title_activity_tx_history) % mapOf("account" to walName))
@@ -580,7 +574,6 @@ class TxHistoryActivity : CommonNavActivity()
                     }
                     else  // coin disappeared out of under this activity
                         finish()
-                }
             }
         }
     }

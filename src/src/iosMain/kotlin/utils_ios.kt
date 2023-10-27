@@ -7,6 +7,9 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.readBytes
 import org.nexa.libnexakotlin.GetLog
@@ -20,6 +23,10 @@ import platform.UIKit.UIPasteboard
 
 private val LogIt = GetLog("BU.wally.utils_ios")
 
+actual fun GetHttpClient(timeoutInMs: Number): HttpClient = HttpClient(CIO)
+{
+    install(HttpTimeout) { requestTimeoutMillis = timeoutInMs.toLong() }
+}
 /** Converts an encoded URL to a raw string */
 actual fun String.urlDecode():String
 {

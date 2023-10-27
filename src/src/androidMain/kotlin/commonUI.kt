@@ -116,31 +116,6 @@ fun Spinner.setSelection(v: String): Boolean
     return false
 }
 
-
-fun dbgAssertGuiThread()
-{
-    if (!isUiThread())
-    {
-        val tname = "" // TODO this thread's name
-        LogIt.warning("ASSERT GUI operations in thread " + tname)
-        val e = AssertException("Executing GUI operations in thread " + tname)
-        LogIt.warning(e.stackTraceToString())
-        throw e
-    }
-}
-
-fun dbgAssertNotGuiThread()
-{
-    if (isUiThread())
-    {
-        val tname = "" // TODO this thread's name
-        LogIt.warning("ASSERT blocking operations in GUI thread " + tname)
-        val e = AssertException("Executing blocking operations in GUI thread " + tname)
-        LogIt.warning(e.stackTraceToString())
-        throw e
-    }
-}
-
 /** Do whatever you pass within the user interface context, asynchronously */
 fun laterUI(fn: suspend () -> Unit): Unit
 {

@@ -48,7 +48,7 @@ class SplitBillActivity : CommonNavActivity()
 
         if (true)
         {
-            val acts = ((getApplication() as WallyApp).accounts)
+            val acts = wallyApp!!.accounts
             if (!acts.isEmpty())
             {
                 acct = acts[currentlySelectedAccount] ?: acts.values.first()

@@ -242,7 +242,10 @@ fun ConfirmAbove(preferenceDB: SharedPreferences)
               }
               textState = it
           },
-          colors = textFieldColors(containerColor = Color.Transparent),
+          //colors = textFieldColors(containerColor = Color.Transparent),
+          colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent
+          ),
           modifier = Modifier.width(175.dp)
         )
         Text(i18n(S.WhenAskSure))

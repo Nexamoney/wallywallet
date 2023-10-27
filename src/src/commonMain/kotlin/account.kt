@@ -11,6 +11,13 @@ const val ACCOUNT_FLAG_NONE = 0UL
 const val ACCOUNT_FLAG_HIDE_UNTIL_PIN = 1UL
 const val RETRIEVE_ONLY_ADDITIONAL_ADDRESSES = 10
 
+const val ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY = 2UL
+const val ACCOUNT_FLAG_REUSE_ADDRESSES = 4UL
+
+/** Do not warn about not having backed up the recovery key until balance exceeds this amount (satoshis) */
+const val MAX_NO_RECOVERY_WARN_BALANCE = 1000000 * 10
+
+
 private val LogIt = GetLog("BU.wally.Account")
 
 var dbPrefix = ""
@@ -31,6 +38,13 @@ fun WallyGetCnxnMgr(chain: ChainSelector, name: String? = null, start:Boolean = 
         ret.add("p2p.wallywallet.org", NexaPort, 90, true)
     }
     return ret
+}
+
+/** Save the PIN of an account to the database */
+fun SaveAccountPin(actName: String, epin: ByteArray)
+{
+    val db = walletDb!!
+    db.set("accountPin_" + actName, epin)
 }
 
 class Account(
@@ -148,6 +162,21 @@ class Account(
 
         setBlockchainAccessModeFromPrefs()
         loadAccountAddress()
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    fun start()
+    {
+        if (!started)
+        {
+            cnxnMgr.start()
+            chain.start()
+            started=true
+            // Set all the underlying change callbacks to trigger the account update
+            wallet.setOnWalletChange { onChange() }
+            wallet.blockchain.onChange = { onChange() }
+            wallet.blockchain.net.changeCallback = { _, _ -> onChange() }
+        }
     }
 
     /**
@@ -442,11 +471,11 @@ class Account(
     }
 
     /** Completely delete this wallet, rendering any money you may have in it inaccessible unless the wallet is restored from backup words
-     *
-     *  Use deleteAndroid() to call delete() + delete QR-code in Android target.
-     * */
+     */
     fun delete()
     {
+        // TODO clear out QR code in android: currentReceiveQR = null
+
         currentReceive = null
         wallet.stop()
         wallet.delete()
@@ -461,4 +490,8 @@ class Account(
         unconfirmedBalance = fromFinestUnit(wallet.balanceUnconfirmed)
         confirmedBalance = fromFinestUnit(wallet.balanceConfirmed)
     }
+
+    fun onChange(force: Boolean = false) = onChanged(this, force)
 }
+
+expect fun onChanged(account: Account, force: Boolean = false)

@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 
 import androidx.compose.ui.graphics.vector.ImageVector
 import info.bitcoinunlimited.www.wally.Account
+import info.bitcoinunlimited.www.wally.wallyApp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -52,7 +53,7 @@ enum class ScreenNav
 }
 
 @Composable
-fun NavigationRoot(accounts: MutableMap<String, Bip44Wallet>)
+fun NavigationRoot()
 {
     val currentRootScreen = remember { mutableStateOf(ScreenNav.Home) }
     val scrollState = rememberScrollState()
@@ -76,8 +77,8 @@ fun NavigationRoot(accounts: MutableMap<String, Bip44Wallet>)
                 ) {
                     when (currentRootScreen.value)
                     {
-                        ScreenNav.Home -> HomeScreen(accounts, ChildNav)
-                        ScreenNav.Dashboard -> DashboardScreen(400.dp, accounts)
+                        ScreenNav.Home -> HomeScreen(ChildNav)
+                        ScreenNav.Dashboard -> DashboardScreen(400.dp)
                         ScreenNav.Settings -> SettingsScreen()
                         ScreenNav.Assets -> TODO()
                         ScreenNav.Shopping -> ShoppingScreen()

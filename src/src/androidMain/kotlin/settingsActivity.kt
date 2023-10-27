@@ -17,22 +17,6 @@ import com.ionspin.kotlin.bignum.decimal.*
 import org.nexa.libnexakotlin.*
 import org.nexa.libnexakotlin.rem
 
-val LOCAL_CURRENCY_PREF = "localCurrency"
-val PRIMARY_ACT_PREF = "primaryAccount"
-val DEV_MODE_PREF = "devinfo"
-val SHOW_IDENTITY_PREF = "showIdentityMenu"
-val SHOW_TRICKLEPAY_PREF = "showTricklePayMenu"
-val SHOW_ASSETS_PREF = "showAssetsMenu"
-val CONFIRM_ABOVE_PREF = "confirmAbove"
-
-val ACCESS_PRICE_DATA_PREF = "accessPriceData"
-
-val EXCLUSIVE_NODE_SWITCH = "exclusiveNodeSwitch"
-val CONFIGURED_NODE = "NodeAddress"
-val PREFER_NODE_SWITCH = "preferNodeSwitch"
-
-var currentlySelectedAccount = chainToURI[ChainSelector.NEXA]  // The default crypto I'm using
-
 private val LogIt = GetLog("BU.wally.settings")
 
 
@@ -60,7 +44,7 @@ class Settings : CommonActivity()
     var devModeChecks = 0
 
     val accounts: MutableMap<String, Account>
-        get() = app!!.accounts
+        get() = wallyApp!!.accounts
 
     @Suppress("UNUSED_PARAMETER")
     fun onFiatChange(guiElem: View?): Boolean
@@ -73,15 +57,11 @@ class Settings : CommonActivity()
         }
 
         // wipe out all the exchange rate info, so we know that new info needs to be loaded for the new fiat currency
-        val a = app
-        if (a != null)
+        for (i in accounts)
         {
-            for (i in a.accounts)
-            {
-                i.value.fiatPerCoin = BigDecimal.ZERO
-
-            }
+            i.value.fiatPerCoin = BigDecimal.ZERO
         }
+
         return true
     }
 
@@ -103,7 +83,7 @@ class Settings : CommonActivity()
         val preferenceDB: SharedPreferences = getSharedPreferences(getString(R.string.preferenceFileName), PREF_MODE_PRIVATE)
 
         if (SetupBooleanPreferenceGui(DEV_MODE_PREF, preferenceDB, false, ui.GuiDeveloperInfoSwitch) { _, isChecked ->
-              devMode.value = isChecked
+              devMode = isChecked
               if (isChecked)
               {
                   //ui.GuiClearIdentityDomains.visibility = VISIBLE
@@ -202,19 +182,18 @@ class Settings : CommonActivity()
             val excl = prefs.getBoolean(name + "." + EXCLUSIVE_NODE_SWITCH, false)
             val prefd = prefs.getBoolean(name + "." + PREFER_NODE_SWITCH, false)
 
-            val appv = app
-            if (appv != null)  // for every account on this blockchain, install the exclusive node or send a null saying not exclusive anymore
-                for (account in appv.accounts.values)
+            // for every account on this blockchain, install the exclusive node or send a null saying not exclusive anymore
+            for (account in accounts.values)
+            {
+                if (account.chain.chainSelector == chain.key)
                 {
-                    if (account.chain.chainSelector == chain.key)
-                    {
-                        val nodeSet: Set<String> = nodeAddr?.splitIntoSet() ?: setOf()
-                        if (!excl || (nodeSet.size == 0)) account.cnxnMgr.exclusiveNodes(null)
-                        else account.cnxnMgr.exclusiveNodes(nodeSet)
-                        if (!prefd || (nodeSet.size == 0)) account.cnxnMgr.preferNodes(null)
-                        else account.cnxnMgr.preferNodes(nodeSet)
-                    }
+                    val nodeSet: Set<String> = nodeAddr?.splitIntoSet() ?: setOf()
+                    if (!excl || (nodeSet.size == 0)) account.cnxnMgr.exclusiveNodes(null)
+                    else account.cnxnMgr.exclusiveNodes(nodeSet)
+                    if (!prefd || (nodeSet.size == 0)) account.cnxnMgr.preferNodes(null)
+                    else account.cnxnMgr.preferNodes(nodeSet)
                 }
+            }
         }
 
         super.onStop()
@@ -224,7 +203,7 @@ class Settings : CommonActivity()
     fun onLogDebugData(v: View?)
     {
         launch {
-            val coins: MutableMap<String, Account> = (getApplication() as WallyApp).accounts
+            val coins: MutableMap<String, Account> = accounts
 
             LogIt.info("LOG DEBUG BUTTON")
             for (c in coins)

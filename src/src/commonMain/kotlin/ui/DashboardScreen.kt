@@ -13,8 +13,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
+import info.bitcoinunlimited.www.wally.Account
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
+import info.bitcoinunlimited.www.wally.wallyApp
 import org.nexa.libnexakotlin.Bip44Wallet
 import org.nexa.libnexakotlin.blockchains
 
@@ -28,24 +30,25 @@ fun _x_(s:String): String = s
 
 var dashboardFontSize = 14.sp
 @Composable
-fun DashboardScreen(dashWidth: Dp, accounts: MutableMap<String, Bip44Wallet>)
+fun DashboardScreen(dashWidth: Dp)
 {
     var walletInfo by mutableStateOf("")
     var blockchainInfo by mutableStateOf("")
-    for ((k,v) in accounts)
+    val accounts = wallyApp!!.accounts
+    for ((_,v) in accounts)
     {
-        v.setOnWalletChange {
+        v.wallet.setOnWalletChange {
             walletInfo = updateWalletDashboard(accounts)
         }
     }
     for (b in blockchains.values)
     {
         b.onChange = {
-            blockchainInfo = updateBlockchainDashboard(accounts)
+            blockchainInfo = updateBlockchainDashboard()
         }
     }
     walletInfo = updateWalletDashboard(accounts)
-    blockchainInfo = updateBlockchainDashboard(accounts)
+    blockchainInfo = updateBlockchainDashboard()
 
     SelectionContainer()
     {
@@ -73,7 +76,7 @@ fun DashboardScreen(dashWidth: Dp, accounts: MutableMap<String, Bip44Wallet>)
 }
 
 /** Update the dashboard blockchain text */
-fun updateBlockchainDashboard(accounts: MutableMap<String, Bip44Wallet>):String
+fun updateBlockchainDashboard():String
 {
     val result = StringBuilder()
     for (b in blockchains.values)
@@ -84,17 +87,18 @@ fun updateBlockchainDashboard(accounts: MutableMap<String, Bip44Wallet>):String
 }
 
 
-fun updateWalletDashboard(accounts: MutableMap<String, Bip44Wallet>):String
+fun updateWalletDashboard(accounts: MutableMap<String, Account>):String
 {
     val result = StringBuilder()
 
-    for (w in accounts)
+    for (a in accounts)
     {
-        val curHeight = w.value.syncedHeight
+        val w = a.value.wallet
+        val curHeight = w.syncedHeight
         var nOutUnconf = 0
         var nInUnconf = 0
-        result.append(w.key + " on " + w.value.blockchain.chainSelector + " at " + w.value.syncedHeight + " balance " + w.value.balance + ":" + w.value.balanceUnconfirmed + "\n" )
-        for (txo in w.value.txos)
+        result.append(a.key + " on " + w.blockchain.chainSelector + " at " + w.syncedHeight + " balance " + w.balance + ":" + w.balanceUnconfirmed + "\n" )
+        for (txo in w.txos)
         {
             if (txo.value.spentUnconfirmed)
             {
@@ -108,7 +112,7 @@ fun updateWalletDashboard(accounts: MutableMap<String, Bip44Wallet>):String
         }
         result.append("  " + nOutUnconf + " outgoing unconfirmed transactions\n")
         result.append("  " + nInUnconf + " incoming unconfirmed transactions\n")
-        for (txo in w.value.txos)
+        for (txo in w.txos)
         {
             if (txo.value.isUnspent)
             {

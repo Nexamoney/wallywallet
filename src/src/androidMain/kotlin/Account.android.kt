@@ -1,5 +1,7 @@
 package info.bitcoinunlimited.www.wally
 
+import info.bitcoinunlimited.www.wally.ui.views.triggerRecompose
+
 import android.graphics.Bitmap
 import android.graphics.Paint
 import android.view.View
@@ -12,16 +14,11 @@ import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 
 import com.ionspin.kotlin.bignum.decimal.*
+import kotlinx.coroutines.delay
 import org.nexa.libnexakotlin.*
 //import org.nexa.walletoperations.*
 
 private val LogIt = GetLog("BU.wally.AccountAndroid")
-
-const val ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY = 2UL
-const val ACCOUNT_FLAG_REUSE_ADDRESSES = 4UL
-
-/** Do not warn about not having backed up the recovery key until balance exceeds this amount (satoshis) */
-const val MAX_NO_RECOVERY_WARN_BALANCE = 1000000 * 10
 
 private val uiBindingMap = mutableMapOf<Account, AccountListItemBinding?>()
 private val currentReceiveQRMap = mutableMapOf<Account, Bitmap?>()
@@ -37,13 +34,6 @@ actual fun EncodePIN(actName: String, pin: String, size: Int): ByteArray
     return seed.encoded.slice(IntRange(0, size - 1)).toByteArray()
 }
 
-
-/** Save the PIN of an account to the database */
-fun SaveAccountPin(actName: String, epin: ByteArray)
-{
-    val db = walletDb!!
-    db.set("accountPin_" + actName, epin)
-}
 
 var Account.uiBinding: AccountListItemBinding?
     get() = uiBindingMap[this]
@@ -67,13 +57,6 @@ var Account.updateReceiveAddressUI: ((Account) -> Unit)?
 fun Account.saveAccountAddress()
 {
     notInUI { walletDb!!.set("accountAddress_" + name, (currentReceive?.address?.toString() ?: "").toByteArray()) }
-}
-
-/** Completely delete this wallet, rendering any money you may have in it inaccessible unless the wallet is restored from backup words */
-fun Account.deleteAndroid()
-{
-    currentReceiveQR = null
-    delete()
 }
 
 /** Disconnect from the UI and clear the UI */
@@ -255,7 +238,7 @@ fun Account.updateUI(force: Boolean)
     }
 
     // Decide whether to show the assets nav
-    if (!devMode.value)  // because always shown in dev mode
+    if (!devMode)  // because always shown in dev mode
     {
         val now: Long = Instant.now().toEpochMilli()
         if (lastAssetCheck + (8L * 1000L) < now)  // Don't check too often
@@ -305,14 +288,32 @@ fun Account.onResumeAndroid()
 }
 
 /** Call whenever the state of this account has changed so needs to be redrawn.  Or on first draw (with force = true) */
-fun Account.onChange(force: Boolean = false)
+var accountOnChangedLater = false
+actual fun onChanged(account: Account, force: Boolean)
 {
+    // While I'm updating the screen is not responsive (e.g. onclick does not work).  This is probably a compose bug.  But regardless
+    // updating only 3 times a second is fast enough and consumes a lot less CPU which results in lower battery drain.
+    triggerRecompose.value = (millinow()/333).toInt()
+    // I need to make sure that the last change gets updated.  so if this change didn't cause an update
+    // I need to schedule an update to trigger later in case this is the last update for awhile.
+    // But I don't want to launch 100s of coroutines to do this...
+    if (!accountOnChangedLater)
+    {
+        accountOnChangedLater = true
+        later {
+            delay(500L)
+            accountOnChangedLater = false
+            triggerRecompose.value = (millinow()/333).toInt()
+        }
+    }
+
+
     laterUI {
-        uiBinding?.let {
-            if (lockable)
+        account.uiBinding?.let {
+            if (account.lockable)
             {
                 it.lockIcon.visibility = View.VISIBLE
-                if (locked)
+                if (account.locked)
                     it.lockIcon.setImageResource(R.drawable.ic_lock)
                 else
                     it.lockIcon.setImageResource(R.drawable.ic_unlock)
@@ -322,20 +323,9 @@ fun Account.onChange(force: Boolean = false)
         }
     }
     later {
-        changeAsyncProcessing()
-        updateUI(force)
+        account.changeAsyncProcessing()
+        account.updateUI(force)
     }
 
 }
 
-@Suppress("UNUSED_PARAMETER")
-@Synchronized
-fun Account.start()
-{
-    if (!started)
-    {
-        cnxnMgr.start()
-        chain.start()
-        started=true
-    }
-}

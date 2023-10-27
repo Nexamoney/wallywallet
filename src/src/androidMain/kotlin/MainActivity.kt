@@ -99,7 +99,7 @@ class SleepMonitor(val activity: MainActivity) : BroadcastReceiver()
             screenOn = true
             if (sleepDuration >= RELOCK_TIME)
             {
-                activity.app?.lockAccounts()
+                wallyApp?.lockAccounts()
                 activity.laterUI {
                     activity.assignWalletsGuiSlots()
                     activity.assignCryptoSpinnerValues()
@@ -123,7 +123,7 @@ class MainActivity : CommonNavActivity()
     var dynOrStaticOrientation: Int = -1  // Used to remember the screen orientation when temporarily disabling int
 
     val accounts: MutableMap<String, Account>
-        get() = app!!.accounts
+        get() = wallyApp!!.accounts
 
     //* last paste so we don't try to paste the same thing again
     var lastPaste: String = ""
@@ -154,6 +154,9 @@ class MainActivity : CommonNavActivity()
 
     /** track a 2 phase send operation */
     var askedForConfirmation = false
+
+    val assetManager
+        get() = wallyAndroidApp!!.assetManager
 
     fun onBlockchainChange(blockchain: Blockchain)
     {
@@ -314,7 +317,7 @@ class MainActivity : CommonNavActivity()
                 val c = accounts[sct]
                 if (c != null) try
                 {
-                    setAssetsToTransfer(wallyApp!!.assetManager.transferList, c)
+                    setAssetsToTransfer(assetManager.transferList, c)
                     mainActivityModel.lastSendFromAccount = sct
                     val sendAddr = PayAddress(ui.sendToAddress.text.toString().trim())
                     if (c.wallet.chainSelector != sendAddr.blockchain)
@@ -528,7 +531,7 @@ class MainActivity : CommonNavActivity()
         {
             ui.recvIntoAccount.setSelection(account.name)
             ui.sendAccount.setSelection(account.name)
-            setAssetsToTransfer(wallyApp!!.assetManager.transferList, account)
+            setAssetsToTransfer(assetManager.transferList, account)
             updateReceiveAddressUI(account)
         }
     }
@@ -545,7 +548,7 @@ class MainActivity : CommonNavActivity()
 
         // We have a Map of account names to values, but we need a list
         // Sort the accounts based on account name
-        val lm = ListifyMap(app!!.accounts, { it.value.visible }, object : Comparator<String>
+        val lm = ListifyMap(wallyApp!!.accounts, { it.value.visible }, object : Comparator<String>
         {
             override fun compare(p0: String, p1: String): Int
             {
@@ -569,7 +572,7 @@ class MainActivity : CommonNavActivity()
     fun assignCryptoSpinnerValues()
     {
         // Set up the crypto spinners to contain all the cryptos this wallet supports
-        val a = app
+        val a = wallyApp
         if (a != null)
         {
             val coinSpinData = a.visibleAccountNames()
@@ -608,11 +611,11 @@ class MainActivity : CommonNavActivity()
             while (!coinsCreated) Thread.sleep(50)
             LogIt.info("coins created")
 
-            val a = app
+            val a = wallyApp
             if (a != null)
             {
                 // Ok coins were loaded and guess what no accounts exist.  So create one to help out new users.
-                if (runningTheTests == false && devMode.value == false && a.firstRun == true && a.accounts.isEmpty())
+                if (runningTheTests == false && devMode == false && a.firstRun == true && a.accounts.isEmpty())
                 {
                     // Automatically create a Nexa wallet and put up some info
                     val ac = a.newAccount("nexa", ACCOUNT_FLAG_NONE, "", ChainSelector.NEXA)
@@ -653,15 +656,11 @@ class MainActivity : CommonNavActivity()
 
         laterUI {
             delay(500)
-            val a = app
-            if (a != null)
+            val warnBackupRecoveryKey = wallyApp?.warnBackupRecoveryKey?.receive()
+            if (warnBackupRecoveryKey == true)
             {
-                val warnBackupRecoveryKey = a.warnBackupRecoveryKey.receive()
-                if (warnBackupRecoveryKey == true)
-                {
-                    laterUI {
-                        displayRecoveryKeyNotBackedUpWarning()
-                    }
+                laterUI {
+                    displayRecoveryKeyNotBackedUpWarning()
                 }
             }
         }
@@ -728,7 +727,7 @@ class MainActivity : CommonNavActivity()
         val tnt = intent
         if (tnt == null || tnt.action == Intent.ACTION_MAIN)
         {
-            val newI = wallyApp?.getNotificationIntent()
+            val newI = app?.getNotificationIntent()
             if (newI != null)
             {
                 LogIt.info(sourceLoc() + "onResume handle local intent")
@@ -781,7 +780,7 @@ class MainActivity : CommonNavActivity()
                     c.onResumeAndroid()
                 }
 
-                val tl = app?.assetManager?.transferList
+                val tl = assetManager?.transferList
                 if (tl != null && tl.size > 0)
                 {
                     setAssetsToTransfer(tl)
@@ -797,7 +796,8 @@ class MainActivity : CommonNavActivity()
             {
                 Thread.sleep(1000)
                 var tmp = true
-                for (c in accounts)
+                val acts = wallyApp?.accounts
+                if (acts!= null) for (c in acts)
                 {
                         if (c.value.visible && !c.value.wallet.synced()) tmp = false
                 }
@@ -1019,7 +1019,7 @@ class MainActivity : CommonNavActivity()
                     var intent = Intent(this, MainActivity::class.java)
                     val addrString = a.toString() ?: ""
                     intent.data = addrString.toUri()
-                    val nid = wallyApp?.notifyPopup(intent, i18n(R.string.sendRequestNotification), i18n(R.string.toColon) + addrString, this, false)
+                    val nid = app?.notifyPopup(intent, i18n(R.string.sendRequestNotification), i18n(R.string.toColon) + addrString, this, false)
                     intent.extras?.putIntegerArrayList("notificationId", arrayListOf(nid))
                 }
             }
@@ -1056,7 +1056,7 @@ class MainActivity : CommonNavActivity()
         val curAccount = accounts[sc]
         if (curAccount?.wallet?.chainSelector != chainSelector)  // Its not so find one that is
         {
-            val matches = app!!.accountsFor(chainSelector)
+            val matches = wallyApp!!.accountsFor(chainSelector)
             if (matches.size > 1)
             {
                 ui.sendAccount.setSelection(i18n(R.string.choose))
@@ -1065,7 +1065,7 @@ class MainActivity : CommonNavActivity()
             else if (matches.size == 1)
             {
                 ui.sendAccount.setSelection(matches[0].name)
-                setAssetsToTransfer(wallyApp!!.assetManager.transferList, matches[0])
+                setAssetsToTransfer(assetManager.transferList, matches[0])
             }
         }
     }
@@ -1193,7 +1193,7 @@ class MainActivity : CommonNavActivity()
                     displayError(R.string.badCryptoCode, pip.toString())
                     return
                 }
-                val a = app
+                val a = wallyApp
                 if (a == null) return
                 val acts = a.accountsFor(chainSelector)
 
@@ -1340,7 +1340,7 @@ class MainActivity : CommonNavActivity()
         try
         {
             pa = PayAddress(lc)
-            val acts = app?.accountsFor(pa.blockchain)
+            val acts = wallyApp?.accountsFor(pa.blockchain)
             if ((acts == null)|| acts.isEmpty())
             {
                 displayError(R.string.NoAccounts)
@@ -1716,7 +1716,7 @@ class MainActivity : CommonNavActivity()
     fun onNewAccount(view: View)
     {
         LogIt.info("new account")
-        if (app?.accounts?.size ?: 1000 >= MAX_ACCOUNTS)
+        if (wallyApp?.accounts?.size ?: 1000 >= MAX_ACCOUNTS)
         {
             displayError(R.string.accountLimitReached)
             return
@@ -2076,7 +2076,7 @@ class MainActivity : CommonNavActivity()
         askedForConfirmation = false
 
         // Clear out any assets lined up to be transferred if the send is cancelled
-        wallyApp?.assetManager?.transferList?.clear()
+        assetManager?.transferList?.clear()
         setAssetsToTransfer(null)
     }
 
@@ -2339,7 +2339,7 @@ class MainActivity : CommonNavActivity()
                     }
                     LogIt.info("Sending TX: ${tx.toHex()}")
                     onSendSuccess(atomAmt, sendAddr, tx)
-                    wallyApp?.assetManager?.transferList?.removeAll(sendAssetList)
+                    assetManager?.transferList?.removeAll(sendAssetList)
                     laterUI {
                         setAssetsToTransfer(null)
                         sendVisibility(false)

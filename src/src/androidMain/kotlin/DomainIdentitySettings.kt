@@ -40,7 +40,7 @@ class DomainIdentitySettings : CommonNavActivity()
     {
         super.onStart()
 
-        if (devMode.value) ui.uniqueIdentitySwitch.visibility=View.VISIBLE
+        if (devMode) ui.uniqueIdentitySwitch.visibility=View.VISIBLE
 
         val intent = getIntent()
         val domain = intent.getStringExtra("domainName")
@@ -99,8 +99,7 @@ class DomainIdentitySettings : CommonNavActivity()
     {
         try
         {
-
-            val wallet = (application as WallyApp).primaryAccount.wallet
+            val wallet = wallyApp!!.primaryAccount.wallet
             wallet.removeIdentityDomain(ui.domainName.text.toString())
             ui.domainName.text = ""
             launch { wallet.save() }
@@ -119,7 +118,7 @@ class DomainIdentitySettings : CommonNavActivity()
             if (ui.domainName.text.toString().length == 0) return
 
             var changed = false
-            val wallet = (application as WallyApp).primaryAccount.wallet
+            val wallet = wallyApp!!.primaryAccount.wallet
             val id: Long = if (ui.uniqueIdentitySwitch.isChecked) IdentityDomain.IDENTITY_BY_HASH else IdentityDomain.COMMON_IDENTITY
             var idData = wallet.lookupIdentityDomain(ui.domainName.text.toString())
 

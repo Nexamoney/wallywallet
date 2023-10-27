@@ -87,8 +87,7 @@ class IdentityActivity : CommonNavActivity()
         linearLayoutManager = LinearLayoutManager(this)
         ui.identityList.layoutManager = linearLayoutManager
 
-        val app = (getApplication() as WallyApp)
-        app.interestedInAccountUnlock.add(actUnlockCb)
+        wallyApp!!.interestedInAccountUnlock.add(actUnlockCb)
 
         laterUI {
             val name = try
@@ -106,8 +105,7 @@ class IdentityActivity : CommonNavActivity()
 
     override fun onDestroy()
     {
-        val app = (getApplication() as WallyApp)
-        app.interestedInAccountUnlock.remove(actUnlockCb)
+        wallyApp!!.interestedInAccountUnlock.remove(actUnlockCb)
         super.onDestroy()
     }
 
@@ -118,7 +116,7 @@ class IdentityActivity : CommonNavActivity()
         {
             try
             {
-                val account = (application as WallyApp).primaryAccount
+                val account = wallyApp!!.primaryAccount
                 if ((account == null) || (!account.visible))
                 {
                     throw PrimaryWalletInvalidException()

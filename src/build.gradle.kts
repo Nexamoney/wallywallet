@@ -673,6 +673,41 @@ tasks {
     register<Exec>("runJvmApp") {
         commandLine("java", "-classpath", "build/libs/wpw.jar", "info.bitcoinunlimited.www.wally.WallyJvmApp")
     }
+
+    /* TODO attempt to clean up file attributes before signing */
+    /*
+    named("embedAndSignAppleFrameworkForXcode") {
+            doFirst {
+                exec {
+                    workingDir("/Users/stone/Desktop/git.nosync/wpw/build")
+                    commandLine("xattr", "-rl", ".")
+                }
+                exec {
+                    workingDir("/Users/stone/Desktop/git.nosync/wpw/build")
+                    commandLine("echo", "Cleaning file attributes")
+                }
+                exec {
+                    workingDir("/Users/stone/Desktop/git.nosync/wpw/build")
+                    commandLine("xattr", "-rc", ".")
+                }
+                exec {
+                    workingDir("/Users/stone/Desktop/git.nosync/wpw/build")
+                    commandLine("xattr", "-rl", ".")
+                }
+            }
+
+        doLast {
+            exec {
+                workingDir("/Users/stone/Desktop/git.nosync/wpw/build")
+                commandLine("echo", "POST SIGN")
+            }
+            exec {
+                workingDir("/Users/stone/Desktop/git.nosync/wpw/build")
+                commandLine("xattr", "-rl", ".")
+            }
+        }
+    }
+     */
 }
 
 /* same as the above but uses some plugin

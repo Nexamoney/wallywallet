@@ -10,3 +10,4 @@ open class AssertException(why: String) : LibNexaException(why, "Assertion", Err
 // TODO xlat
 open class PasteUnintelligibleException() : LibNexaExceptionI(S.pasteUnintelligible, null, ErrorSeverity.Expected)
 open class NotUriException() : PasteUnintelligibleException()
+

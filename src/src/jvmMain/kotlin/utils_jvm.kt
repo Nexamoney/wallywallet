@@ -8,6 +8,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.res.loadSvgPainter
 import androidx.compose.ui.unit.Density
+import io.ktor.client.*
+import io.ktor.client.engine.*
+import io.ktor.client.plugins.*
 import okio.FileNotFoundException
 import org.xml.sax.InputSource
 import java.awt.Toolkit
@@ -16,6 +19,10 @@ import java.io.File
 import java.io.InputStream
 import java.net.URLDecoder
 import java.net.URLEncoder
+
+actual fun GetHttpClient(timeoutInMs: Number): HttpClient = HttpClient(io.ktor.client.engine.cio.CIO) {
+    install(HttpTimeout) { requestTimeoutMillis = timeoutInMs.toLong() }
+}
 
 /** Converts an encoded URL to a raw string */
 actual fun String.urlDecode():String

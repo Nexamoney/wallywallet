@@ -611,7 +611,7 @@ class GuiTest
         }
 
         // This test should work regardless of the current setting, so figure that out first
-        var origDevMode = devMode.value
+        var origDevMode = devMode
 
         // check that the global matches the switch state
         if (origDevMode)
@@ -626,9 +626,9 @@ class GuiTest
         // I'm going to check both the global variable and the preferences database in this case because
         // the dev mode switch should modify both of them.
         activityScenario.onActivity {
-            check(devMode.value != origDevMode )
+            check(devMode != origDevMode )
             val ret = preferenceDB!!.getBoolean(DEV_MODE_PREF, false)
-            check(ret == devMode.value)
+            check(ret == devMode)
         }
 
         // Set it back to whatever it was
@@ -1550,7 +1550,7 @@ class GuiTest
         activityScenario.onActivity {
             app = (it.application as WallyApp)
             var prefs: SharedPreferences = getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
-            devMode.value = true
+            devMode = true
             with(prefs.edit())
             {
                 putBoolean(DEV_MODE_PREF, true)

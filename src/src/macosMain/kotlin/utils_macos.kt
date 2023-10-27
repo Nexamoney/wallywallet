@@ -1,6 +1,13 @@
 package info.bitcoinunlimited.www.wally
 
+import io.ktor.client.*
+import io.ktor.client.plugins.*
 //import platform.UIKit.UIApplication
+
+actual fun GetHttpClient(timeoutInMs: Number): HttpClient = HttpClient(io.ktor.client.engine.cio.CIO)
+{
+    install(HttpTimeout) { requestTimeoutMillis = timeoutInMs.toLong() }
+}
 
 /** Returns true if this function is called within the UI thread
  * Many platforms have specific restrictions on what can be run within the UI (often the "main") thread.

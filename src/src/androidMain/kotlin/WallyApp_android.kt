@@ -54,9 +54,6 @@ const val HTTP_REQ_TIMEOUT_MS: Int = 7000
 
 private val LogIt = GetLog("BU.wally.app")
 
-var forTestingDoNotAutoCreateWallets = false
-var coinsCreated = false
-
 val SupportedBlockchains =
     mapOf(
       "NEXA" to ChainSelector.NEXA,
@@ -72,153 +69,9 @@ val ChainSelectorToSupportedBlockchains = SupportedBlockchains.entries.associate
 // What is the default wallet and blockchain to use for most functions (like identity)
 val PRIMARY_CRYPTO = if (REG_TEST_ONLY) ChainSelector.NEXAREGTEST else ChainSelector.NEXA
 
-/** incompatible changes, extra fields added, fields and field sizes are the same, but content may be extended (that is, addtl bits in enums) */
-val WALLY_DATA_VERSION = byteArrayOf(1, 0, 0)
-
-var walletDb: KvpDatabase? = null
-var wallyApp: WallyApp? = null
+var wallyAndroidApp: WallyApp? = null
 
 var brokenMode: Boolean = false
-
-fun epochMilliSeconds(): Long
-{
-    return Date().time
-    // return System.currentTimeMillis()/1000
-}
-
-data class LongPollInfo(val proto: String, val hostPort: String, val cookie: String?, var active: Boolean = true)
-
-class AccessHandler(val app: WallyApp)
-{
-    var done: Boolean = false
-
-    val activeLongPolls = mutableMapOf<String, LongPollInfo>()
-
-/* How to know that the app is shutting down in android?
-    fun endAll()
-    {
-        for (lp in longPollInfo)
-        {
-            launch {
-                endLongPolling(lp.proto, lp.hostPort, lp.cookie)
-            }
-        }
-    }
-    */
-
-    fun startLongPolling(proto: String, hostPort: String, cookie: String?)
-    {
-        app.later { longPolling(proto, hostPort, cookie) }
-    }
-
-    fun endLongPolling(url: String)
-    {
-        synchronized(activeLongPolls)
-        {
-            activeLongPolls.remove(url)
-        }
-    }
-
-    /** Searches for an active connection to this host.  If the host is provided without a port, any connection to that host is used
-     * */
-    fun activeTo(host: String): LongPollInfo?
-    {
-        if (host.contains(":") )
-        {
-            val lpi = activeLongPolls[host]
-            if (lpi != null && lpi.active) return activeLongPolls[host]
-        }
-        // Search for only host (not port)
-        for (lpi in activeLongPolls)
-        {
-            if (lpi.value.hostPort.split(":")[0] == host.split(":")[0])
-            {
-                if (lpi.value.active)
-                    return lpi.value
-            }
-        }
-        return null
-    }
-
-    suspend fun longPolling(scheme: String, hostPort: String, cookie: String?)
-    {
-        var connectProblems = 0
-        val cookieString = if (cookie != null) "?cookie=$cookie" else ""
-        val url = scheme + "://" + hostPort + "/_lp" + cookieString
-
-        val lpInfo = synchronized(activeLongPolls)
-        {
-            if (activeLongPolls.contains(hostPort))
-            {
-                LogIt.info("Already long polling to $hostPort, replacing it with $url.")
-                activeLongPolls[hostPort]?.active = false
-            }
-            activeLongPolls.put(hostPort, LongPollInfo(scheme, hostPort, cookie))
-            activeLongPolls[hostPort]!!
-        }
-
-        val client = HttpClient(Android)
-        {
-            install(HttpTimeout) { requestTimeoutMillis = 60000 } // Long timeout because we don't expect a response right away; its a long poll
-        }
-
-        var count = 0
-        var avgResponse = 0.0f
-        while (!done && lpInfo.active)
-        {
-            val start = epochMilliSeconds()
-            try
-            {
-
-                val response: HttpResponse = client.get(url + "&i=${count}") {}
-                val respText = response.bodyAsText()
-                connectProblems = 0
-                LogIt.info(sourceLoc() + ": Long poll to $url returned with this request: $respText")
-                if (respText == "Q")
-                {
-                    LogIt.info(sourceLoc() + ": Long poll to $url ended (server request).")
-                    endLongPolling(hostPort)
-                    return // Server tells us to quit long polling
-                }
-                if (respText != "")
-                {
-                    val ci = app.currentActivity
-                    if (ci != null) ci.handleAnyIntent(respText)
-                    else LogIt.info("cannot handle long poll response, no current activity")
-                    count += 1
-                }
-                else
-                {
-                    LogIt.info(sourceLoc() + ": Long poll to $url finished with no activity.")
-                }
-            }
-            catch (e: ConnectException)  // network error?  TODO retry a few times
-            {
-                if (connectProblems > 500)
-                {
-                    LogIt.info(sourceLoc() + ": Long poll to $url connection exception $e, stopping.")
-                    endLongPolling(hostPort)
-                    return
-                }
-                connectProblems += 1
-                delay(1000)
-            }
-            catch (e: Throwable)
-            {
-                LogIt.info(sourceLoc() + ": Long poll to $url error, stopping: ")
-                //handleThreadException(e, "Long poll to $url error, stopping.", sourceLoc())
-                endLongPolling(hostPort)
-                return
-            }
-            val end = epochMilliSeconds()
-            avgResponse = ((avgResponse*49f)+(end-start))/50.0f
-            if (avgResponse<1000)
-                delay(500) // limit runaway polling, if the server misbehaves by responding right away
-        }
-        LogIt.info(sourceLoc() + ": Long poll to $hostPort ($url) ended (done).")
-        endLongPolling(hostPort)
-    }
-}
 
 // in app init, we change the lbbc integers to our own resource ids.  So this translation is likely unnecessary
 val i18nLbc = mapOf(
@@ -245,6 +98,17 @@ val i18nLbc = mapOf(
   RunknownCryptoCurrency to S.unknownCryptoCurrency,
   RsendMoreTokensThanBalance to S.insufficentTokenBalance
 )
+
+fun getElectrumServerOn(cs: ChainSelector):IpPort
+{
+    val prefDB = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
+
+    // Return our configured node if we have one
+    var name = chainToURI[cs]
+    val node = prefDB.getString(name + "." + CONFIGURED_NODE, null)
+    if (node != null) return splitIpPort(node, DefaultElectrumTCP[cs] ?: -1)
+    return ElectrumServerOn(cs)
+}
 
 class ActivityLifecycleHandler(private val app: WallyApp) : Application.ActivityLifecycleCallbacks
 {
@@ -322,16 +186,16 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         RsendMoreTokensThanBalance = S.sendMoreTokensThanBalance
     }
 
+    var commonApp = CommonApp()
+    val focusedAccount
+      get() = commonApp.focusedAccount
 
     // Set to true if this is the first time this app has ever been run
     var firstRun = false
-    // Set to true if some wallet has a nontrivial balance and its recovery key has not been viewed (and we have not warned since app instantiation)
-    var warnBackupRecoveryKey = Channel<Boolean>() // false
     // Current notification ID
     var notifId = 0
 
     protected val coMiscCtxt: CoroutineContext = Executors.newFixedThreadPool(6).asCoroutineDispatcher()
-
     protected val coMiscScope: CoroutineScope = kotlinx.coroutines.CoroutineScope(coMiscCtxt)
 
     companion object
@@ -350,84 +214,12 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
 
     val init = org.nexa.libnexakotlin.initializeLibNexa()
 
-    val accountLock = org.nexa.threads.Mutex()
-    val accounts: MutableMap<String, Account> = mutableMapOf()
-    val accessHandler = AccessHandler(this)
     var currentActivity: CommonNavActivity? = null
 
     // Track notifications
     val notifs: MutableList<Triple<Int, PendingIntent, Intent>> = mutableListOf()
 
-    // You can access the primary account object in a manner that throws an exception or returns a null, your choice
-    var nullablePrimaryAccount: Account? = null
-    var primaryAccount: Account
-        get()
-        {
-            synchronized(this)
-            {
-                var tmp = nullablePrimaryAccount
-                if (tmp == null)
-                {
-                    tmp = defaultPrimaryAccount()
-                    nullablePrimaryAccount = tmp
-                }
-                return tmp
-            }
-        }
-        set(act: Account)
-        {
-            synchronized(this)
-            {
-                val prefs = getSharedPreferences(getString(R.string.preferenceFileName), PREF_MODE_PRIVATE)
-                with(prefs.edit())
-                {
-                    putString(PRIMARY_ACT_PREF, act.name)
-                    commit()
-                }
-                nullablePrimaryAccount = act
-            }
-        }
-
-    // The currently selected account
-    var focusedAccount: Account? = null
-
     val tpDomains: TricklePayDomains = TricklePayDomains(this)
-
-    fun defaultPrimaryAccount(): Account
-    {
-        return accountLock.lock {
-            // return the first Nexa wallet
-            for (i in accounts.values)
-            {
-                LogIt.info("looking for primary at wallet " + i.name + "blockchain: " + i.chain.name)
-                if (i.wallet.chainSelector == ChainSelector.NEXA) return@lock i
-            }
-            for (i in accounts.values)
-            {
-                LogIt.info("falling back to testnet")
-                if (i.wallet.chainSelector == ChainSelector.NEXATESTNET) return@lock i
-            }
-            for (i in accounts.values)
-            {
-                LogIt.info("falling back to regtest")
-                if (i.wallet.chainSelector == ChainSelector.NEXAREGTEST) return@lock i
-            }
-            throw PrimaryWalletInvalidException()
-        }
-    }
-
-    /** Iterate through all the accounts, looping */
-    fun nextAccount(accountIdx: Int):Pair<Int, Account?>
-    {
-        var actIdx = accountIdx
-        val ret = accountLock.lock {
-            val actList = visibleAccountNames()
-            actIdx++
-            if (actIdx >= actList.size) actIdx=0
-            accounts[actList[actIdx]]
-        }
-        return Pair(actIdx, ret)
-    }
 
     /** Activity stacks don't quite work.  If task A uses an implicit intent launches a child wally activity, then finish() returns to A
      * if wally wasn't previously running.  But if wally was currently running, it returns to wally's Main activity.
@@ -435,131 +227,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
      * Whenever wally resumes, if finishParent > 0, it will immediately finish. */
     var finishParent = 0
 
-    var lastError:Int? = null
-    var lastErrorDetails:String? = null
-    var lastNotice:Int? = null
-    var lastNoticeDetails:String? = null
-
-    /** Display an short error string on the title bar, and then clear it after a bit.  The common activity will check for errors coming from other activities */
-    fun displayError(resource: Int, details: Int? = null)
-    {
-        lastError = resource
-        lastErrorDetails = if (details != null) i18n(details) else null
-    }
-
-    fun displayError(resource: Int, details: String)
-    {
-        lastError = resource
-        lastErrorDetails = details
-    }
-
-    /** Display an short error string on the title bar, and then clear it after a bit.  The common activity will check for errors coming from other activities */
-    fun displayNotice(resource: Int, details: Int? = null)
-    {
-        lastNotice = resource
-        lastNoticeDetails = if (details != null) i18n(details) else null
-    }
-    fun displayNotice(resource: Int, details: String)
-    {
-        lastNotice = resource
-        lastNoticeDetails = details
-    }
-
-    /** Use the resource id version of displayNotice, unless you really only have a string (response from a server, etc) */
-    fun displayNotice(notice: String)
-    {
-        lastNotice = -1
-        lastNoticeDetails = notice
-    }
-
-    fun displayException(e: LibNexaExceptionI)
-    {
-        lastError = e.errCode
-        lastErrorDetails = e.message
-    }
-
-
-    /** Do whatever you pass but not within the user interface context, asynchronously.
-     * Launching into these threads means your task will outlast the activity it was launched in */
-    fun later(fn: suspend () -> Unit): Unit
-    {
-        coMiscScope.launch {
-            try
-            {
-                fn()
-            } catch (e: Exception) // Uncaught exceptions will end the app
-            {
-                handleThreadException(e)
-            }
-        }
-    }
-
-    /** lock all previously unlocked accounts */
-    fun lockAccounts()
-    {
-        accountLock.lock {
-            for (account in accounts.values)
-            {
-                account.pinEntered = false
-            }
-        }
-    }
-
-    /** Submit this PIN to all accounts, unlocking any that match */
-    fun unlockAccounts(pin: String): Int
-    {
-        var unlocked = 0
-        accountLock.lock {
-            for (account in accounts.values)
-            {
-                unlocked += account.submitAccountPin(pin)
-            }
-        }
-        if (unlocked > 0) notifyAccountUnlocked()
-        return unlocked
-    }
-
-    val interestedInAccountUnlock = mutableListOf<() -> Unit>()
-    fun notifyAccountUnlocked()
-    {
-        for (f in interestedInAccountUnlock) f()
-    }
-
-    fun visibleAccountNames(): Array<String>
-    {
-        val ret = mutableListOf<String>()
-        accountLock.lock {
-            for (ac in accounts)
-            {
-                if (ac.value.visible) ret.add(ac.key)
-            }
-        }
-        return ret.toTypedArray()
-    }
-
-    fun accountsFor(currencyType: String) = accountsFor(currencyCodeToChain[currencyType]!!)
-
-    fun accountsFor(chain: ChainSelector): MutableList<Account>
-    {
-        val ret = mutableListOf<Account>()
-
-        // put the primary account first
-        nullablePrimaryAccount?.let {
-            if (chain == it.chain.chainSelector && it.visible) ret.add(it)
-        }
-
-        accountLock.lock {
-            // Look for any other match
-            for (account in accounts.values)
-            {
-                if (account.visible && (chain == account.wallet.chainSelector) && (nullablePrimaryAccount != account))
-                {
-                    ret.add(account)
-                }
-            }
-        }
-        return ret
-    }
 
     /** Return what account a particular GUI element is bound to or null if its not bound */
     fun accountFromGui(view: View): Account?
@@ -567,8 +234,8 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         var act:Account? = null
         try
         {
-            act = accountLock.lock {
-                for (a in accounts.values)
+            act = commonApp.accountLock.lock {
+                for (a in commonApp.accounts.values)
                 {
                     if ((a.tickerGUI.reactor is TextViewReactor<String>) && (a.tickerGUI.reactor as TextViewReactor<String>).gui == view) return@lock a
                     if ((a.balanceGUI.reactor is TextViewReactor<String>) && (a.balanceGUI.reactor as TextViewReactor<String>).gui == view) return@lock a
@@ -585,16 +252,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         return act
     }
 
-    /** Save the account list to the database */
-    fun saveActiveAccountList()
-    {
-        val s: String = accounts.keys.joinToString(",")
-
-        val db = walletDb!!
-
-        db.set("activeAccountNames", s.toByteArray())
-        db.set("wallyDataVersion", WALLY_DATA_VERSION)
-    }
 
     fun handlePostLogin(loginReqParam: String, jsonBody: String)
     {
@@ -624,7 +281,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
                 LogIt.info("reg response code:" + req.responseCode.toString() + " response: " + resp)
                 if ((req.responseCode >= 200) and (req.responseCode < 300))
                 {
-                    displayNotice(resp)
+                    commonApp.displayNotice(resp)
                     return
                 }
                 else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding
@@ -684,7 +341,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
                 LogIt.info("login response code:" + req.responseCode.toString() + " response: " + resp)
                 if ((req.responseCode >= 200) and (req.responseCode < 250))
                 {
-                    displayNotice(resp)
+                    commonApp.displayNotice(resp)
                     return
                 }
                 else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding (often switching from http to https)
@@ -695,136 +352,24 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
                 }
                 else
                 {
-                    displayNotice(resp)
+                    commonApp.displayNotice(resp)
                     return
                 }
             } catch (e: FileNotFoundException)
             {
-                displayError(R.string.badLink, loginReq)
+                commonApp.displayError(R.string.badLink, loginReq)
             } catch (e: IOException)
             {
-                displayError(R.string.connectionAborted, loginReq)
+                commonApp.displayError(R.string.connectionAborted, loginReq)
             } catch (e: java.net.ConnectException)
             {
-                displayError(R.string.connectionException)
+                commonApp.displayError(R.string.connectionException)
             }
 
             break@getloop  // only way to actually loop is to hit a 301 or 302
         }
     }
 
-    /** Create a new account */
-    fun newAccount(name: String, flags: ULong, pin: String, chainSelector: ChainSelector): Account?
-    {
-        dbgAssertNotGuiThread()
-        val ctxt = applicationContext
-
-        // I only want to write the PIN once when the account is first created
-
-        val epin = if (pin.length > 0) EncodePIN(name, pin) else byteArrayOf()
-        SaveAccountPin(name, epin)
-
-        return accountLock.lock {
-            val ac = try
-            {
-                val prehistoryDate = (Date().time / 1000L) - PREHISTORY_SAFEFTY_FACTOR // Set prehistory to 2 hours ago to account for block timestamp variations
-                Account(name, flags, chainSelector, startPlace = prehistoryDate)
-            } catch (e: IllegalStateException)
-            {
-                LogIt.warning("Error creating account: ${e.message}")
-                return@lock null
-            }
-
-            ac.pinEntered = true  // for convenience, new accounts begin as if the pin has been entered
-            ac.start()
-            ac.onChange()
-            ac.wallet.save(true)
-
-            accounts[name] = ac
-            // Write the list of existing accounts, so we know what to load
-            saveActiveAccountList()
-            // wallet is saved in wallet constructor so no need to: ac.wallet.SaveBip44Wallet()
-            return@lock ac
-        }
-    }
-
-
-    /** Remove an account from this app (note its still available for restoration via recovery key) */
-    fun deleteAccount(act: Account)
-    {
-        accountLock.lock {
-            accounts.remove(act.name)  // remove this coin from any global access before we delete it
-            // clean up the a reference to this account, if its the primary
-            if (nullablePrimaryAccount == act) nullablePrimaryAccount = null
-            launch { // cannot access db in UI thread
-                saveActiveAccountList()
-                act.deleteAndroid()
-            }
-
-            /* stopping the blockchain is handled by the wallet/ blockchain
-            val bc = act.chain.chainSelector
-            var anythingUsingThisBlockchain = false
-            for (a in accounts.values)
-            {
-                if (a.chain.chainSelector == bc)
-                {
-                    anythingUsingThisBlockchain = true
-                    break
-                }
-            }
-            if (!anythingUsingThisBlockchain) blockchains[bc]?.stop()
-             */
-        }
-    }
-
-    /** Create an account given a recovery key and the account's earliest activity */
-    fun recoverAccount(
-      name: String,
-      flags_p: ULong,
-      pin: String,
-      secretWords: String,
-      chainSelector: ChainSelector,
-      earliestActivity: Long?,
-      earliestHeight: Long?,
-      nonstandardActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, HDActivityBracket>>?
-    )
-    {
-        // If the account is being restored from a recovery key, then the user must have it saved somewhere already
-        val flags = flags_p or ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY
-        dbgAssertNotGuiThread()
-
-        // I only want to write the PIN once when the account is first created
-        val epin = try
-        {
-            EncodePIN(name, pin.trim())
-        } catch (e: InvalidKeySpecException)  // If the pin is bad (generally whitespace or null) ignore it
-        {
-            byteArrayOf()
-        }
-        SaveAccountPin(name, epin)
-
-        var veryEarly = earliestActivity
-        if (nonstandardActivity != null)
-        {
-            for (n in nonstandardActivity)
-            {
-                veryEarly = min(n.second.startTime, veryEarly ?: n.second.startTime)
-            }
-        }
-        if (veryEarly != null) veryEarly = veryEarly - 1  // Must be earlier than the first activity
-
-        accountLock.lock {
-            val ac = Account(name, flags, chainSelector, secretWords, veryEarly, earliestHeight, nonstandardActivity)
-            ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
-            ac.start()
-            ac.onChange()
-
-            accounts[name] = ac
-            // Write the list of existing accounts, so we know what to load
-            saveActiveAccountList()
-            // wallet is saved in wallet constructor so no need to: ac.wallet.SaveBip44Wallet()
-        }
-    }
 
     private fun createNotificationChannel()
     {
@@ -856,7 +401,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     {
         LogIt.info("------------  WALLY APP CREATED  ---------------")
         super.onCreate()
-        notInUIscope = coMiscScope
         appResources = getResources()
         displayMetrics = getResources().getDisplayMetrics()
         val locales = resources.configuration.locales
@@ -866,113 +410,17 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
             LogIt.info("Locale: ${loc.language} ${loc.country}")
             if (setLocale(loc.language, loc.country)) break
         }
-        wallyApp = this
+        wallyAndroidApp = this
+        wallyApp = commonApp
+        commonApp.onCreate()
 
         // Add the Wally Wallet server to our list of Electrum/Rostrum connection points
         nexaElectrum.add(0, IpPort("rostrum.wallywallet.org", DEFAULT_NEXA_TCP_ELECTRUM_PORT))
 
-        val prefs = getSharedPreferences(getString(R.string.preferenceFileName), PREF_MODE_PRIVATE)
-        devMode.value = prefs.getBoolean(DEV_MODE_PREF, false)
-        allowAccessPriceData = prefs.getBoolean(ACCESS_PRICE_DATA_PREF, true)
-
         registerActivityLifecycleCallbacks(ActivityLifecycleHandler(this))  // track the current activity
         createNotificationChannel()
 
-        if (!forTestingDoNotAutoCreateWallets)  // If I'm running the unit tests, don't auto-create any wallets since the tests will do so
-        {
-            // Initialize the currencies supported by this wallet
-            launch(coMiscScope)
-            {
-                LogIt.info(sourceLoc() + " Wally Wallet App Started")
-                walletDb = openKvpDB(dbPrefix + "bip44walletdb")
-                
-                if (REG_TEST_ONLY)  // If I want a regtest only wallet for manual debugging, just create it directly
-                {
-                    accountLock.lock {
-                        accounts.getOrPut("RKEX") {
-                            try
-                            {
-                                val c = Account("RKEX")
-                                c
-                            }
-                            catch (e: DataMissingException)
-                            {
-                                val c = Account("RKEX", ACCOUNT_FLAG_NONE, ChainSelector.NEXAREGTEST)
-                                c
-                            }
-                        }
-                    }
-                }
-                else  // OK, recreate the wallets saved on this phone
-                {
-                    val db = walletDb!!
-
-                    LogIt.info(sourceLoc() + " Loading account names")
-                    val accountNames = try
-                    {
-                        db.get("activeAccountNames")
-                    } catch (e: DataMissingException)
-                    {
-                        firstRun = true
-                        byteArrayOf()
-                    }
-                    if (accountNames.size == 0) firstRun = true // Ok maybe not first run but no wallets
-
-                    val accountNameList = String(accountNames).split(",")
-                    for (name in accountNameList)
-                    {
-                        LogIt.info(sourceLoc() + " " + name + ": Loading account")
-                        try
-                        {
-                            val ac = Account(name)
-                            accountLock.lock { accounts[ac.name] = ac }
-                        } catch (e: DataMissingException)
-                        {
-                            LogIt.warning(sourceLoc() + " " + name + ": Active account $name was not found in the database")
-                            // Nothing to really do but ignore the missing account
-                        }
-                        LogIt.info(sourceLoc() + " " + name + ": Loaded account")
-                    }
-                }
-
-                coinsCreated = true
-
-                var warning = false
-                accountLock.lock {
-                    for (c in accounts.values)
-                    {
-                        if (((c.flags and ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY) == 0UL) && (c.wallet.balance > MAX_NO_RECOVERY_WARN_BALANCE))
-                        {
-                            warning = true
-                            break
-                        }
-                    }
-                }
-                warnBackupRecoveryKey.send(warning)
-
-                // Cannot pick the primary account until accounts are loaded
-                val primaryActName = prefs.getString(PRIMARY_ACT_PREF, null)
-                nullablePrimaryAccount = accountLock.lock { if (primaryActName != null) accounts[primaryActName] else null }
-                try
-                {
-                    if (nullablePrimaryAccount == null) primaryAccount = defaultPrimaryAccount()
-                }
-                catch(e:PrimaryWalletInvalidException)
-                {
-                    // nothing to do in the case where there is no account to pick
-                }
-
-                val alist = accountLock.lock { accounts.values }
-                for (c in alist)
-                {
-                    c.setBlockchainAccessModeFromPrefs()
-                    c.start()
-                    c.onChange()  // update all wallet UI fields since just starting up
-                }
-
-            }
-        }
-
+        walletDb
 
         /*
         var myClipboard = getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager
@@ -1036,7 +484,8 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     }
 
 
-    /** Automatically handle this intent if its something that can be done without user intervention.
+    /** TODO: Move to commonApp
+     * Automatically handle this intent if its something that can be done without user intervention.
     Returns true if it was handled, false if user-intervention needed.
     * */
     var autoPayNotificationId = -1
@@ -1344,11 +793,11 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
             {
                 val response: HttpResponse = client.post(url, contents)
                 val respText = response.bodyAsText()
-                displayNotice(respText)
+                commonApp.displayNotice(respText)
             }
             catch (e: SocketTimeoutException)
             {
-                displayError(R.string.connectionException)
+                commonApp.displayError(R.string.connectionException)
             }
             client.close()
         }
@@ -1376,21 +825,10 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
             }
             catch (e: SocketTimeoutException)
             {
-                displayError(R.string.connectionException)
+                commonApp.displayError(R.string.connectionException)
             }
             client.close()
         }
-    }
-
-    fun getElectrumServerOn(cs: ChainSelector):IpPort
-    {
-        val prefDB = getSharedPreferences(getString(R.string.preferenceFileName), PREF_MODE_PRIVATE)
-
-        // Return our configured node if we have one
-        var name = chainToURI[cs]
-        val node = prefDB.getString(name + "." + CONFIGURED_NODE, null)
-        if (node != null) return splitIpPort(node, DefaultElectrumTCP[cs] ?: -1)
-        return ElectrumServerOn(cs)
     }
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?)

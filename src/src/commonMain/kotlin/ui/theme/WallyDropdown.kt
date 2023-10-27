@@ -52,7 +52,6 @@ fun <T> WallyDropdownMenu(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    var m = Modifier.height(IntrinsicSize.Min).then(modalModifier)
     var topOffset = 0.dp
     Box(modifier = modifier) {
         if (style == WallyDropdownStyle.Outlined)
