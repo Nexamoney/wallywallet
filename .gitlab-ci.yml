@@ -5,6 +5,16 @@ stages:
   - assemble
   - test
 
+testflight:
+  allow_failure: true # Draft for mp branch fastlane testflight deployment
+  stage: qa
+  tags:
+   - saas-macos-medium-m1
+  image: macos-13-xcode-14
+  script:
+   # - TODO: Install fastlane
+   - bundle exec fastlane ios beta --verbose
+
 lintVitalRelease:
   stage: lint
   tags:
