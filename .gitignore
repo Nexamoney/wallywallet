@@ -8,3 +8,10 @@ dwally.log*
 src/dwally.log*
 src/*.db
 *.db
+src/release/
+/iosApp/iosApp.app.dSYM.zip
+/iosApp/fastlane/report.xml
+/iosApp/iosApp.xcodeproj/xcuserdata/
+/iosApp/fastlane/keys/
+/iosApp/iosApp.ipa
+/iosApp/.env
