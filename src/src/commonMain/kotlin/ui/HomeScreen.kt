@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.AccountListView
+import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 val testDropDown = listOf("big","list","here","and", "there",
@@ -69,14 +70,21 @@ fun assignWalletsGuiSlots(): ListifyMap<String, Account>
 @Composable
 fun HomeScreen(navigation: ChildNav)
 {
-    val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
     var isSending by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
     var selected by remember { mutableStateOf("any") }
+    var isCreatingNewAccount by remember { mutableStateOf(false) }
     val selectedAccount = remember { mutableStateOf<Account?>(null) }
     val displayAccountDetailScreen = navigation.displayAccountDetailScreen.collectAsState()
 
-    if(displayAccountDetailScreen.value == null)
+    if (isCreatingNewAccount)
+    {
+        NewAccountScreen(assignWalletsGuiSlots(), devMode) {
+            isCreatingNewAccount = it
+        }
+    }
+
+    if(displayAccountDetailScreen.value == null && !isCreatingNewAccount)
         Box(modifier = WallyPageBase) {
         Column {
             Text("HomeScreen")
@@ -156,6 +164,11 @@ fun HomeScreen(navigation: ChildNav)
                 WallyDivider()
                 ReceiveView()
                 WallyDivider()
+                Spacer(modifier = Modifier.height(8.dp))
+                ResImageView("icons/plus.xml",
+                  modifier = Modifier.size(26.dp).absoluteOffset(0.dp, -8.dp).clickable {
+                      isCreatingNewAccount = true
+                  })
             }
             AccountListView(
               assignWalletsGuiSlots(),
@@ -166,7 +179,7 @@ fun HomeScreen(navigation: ChildNav)
             QrCodeScannerView()
         }
     }
-    else if(displayAccountDetailScreen.value is Account)
+    else if(displayAccountDetailScreen.value is Account && !isCreatingNewAccount)
         AccountDetailScreen(navigation, displayAccountDetailScreen.value!!)
 }
 

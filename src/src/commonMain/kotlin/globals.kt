@@ -4,7 +4,7 @@ import androidx.compose.runtime.MutableState
 import kotlinx.coroutines.flow.MutableStateFlow
 
 var allowAccessPriceData: Boolean = true
-var devMode: Boolean = false
+var devMode = false
 
 /** Make some type (probably a primitive type) into an object that holds one of them */
 class Objectify<T>(var obj: T)

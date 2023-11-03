@@ -43,8 +43,15 @@ fun WallyGetCnxnMgr(chain: ChainSelector, name: String? = null, start:Boolean = 
 /** Save the PIN of an account to the database */
 fun SaveAccountPin(actName: String, epin: ByteArray)
 {
+    val finalEpin = if (epin.isEmpty()) // Bug workaround: SQLDelight crashes on ios with 0-length arrays on iOS
+    {
+        byteArrayOf(0)
+    }
+    else
+        epin
+
     val db = walletDb!!
-    db.set("accountPin_" + actName, epin)
+    db.set("accountPin_" + actName, finalEpin)
 }
 
 class Account(
@@ -215,6 +222,7 @@ class Account(
         try
         {
             val storedEpin = db.get("accountPin_" + name)
+            if (storedEpin.size == 1 && storedEpin[0] == 0.toByte()) return null // Bug workaround: SQLDelight crashes on ios with 0-length arrays on iOS
             if (storedEpin.size > 0) return storedEpin
             return null
         }
@@ -495,3 +503,13 @@ class Account(
 }
 
 expect fun onChanged(account: Account, force: Boolean = false)
+
+fun containsAccountWithName(accounts: List<Account>, name: String): Boolean
+{
+    for (acc in accounts)
+    {
+        if (acc.name == name)
+            return true
+    }
+    return false
+}
