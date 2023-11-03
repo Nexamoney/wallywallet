@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.ui.theme.WallySwitch
+import info.bitcoinunlimited.www.wally.ui.theme.WallySwitchRow
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.SettingsScreen")
@@ -42,8 +43,8 @@ data class GeneralSettingsSwitch(
 fun SettingsScreen()
 {
     val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
-    val devMode = remember { mutableStateOf( preferenceDB.getBoolean(DEV_MODE_PREF, false)) }
     val darkMode = remember { mutableStateOf( preferenceDB.getBoolean(DARK_MODE_PREF, false)) }
+    var devModeView by mutableStateOf(devMode)
     val generalSettingsSwitches = listOf(
       GeneralSettingsSwitch(ACCESS_PRICE_DATA_PREF, S.AccessPriceData),
       GeneralSettingsSwitch(SHOW_IDENTITY_PREF, S.enableIdentityMenu),
@@ -73,9 +74,11 @@ fun SettingsScreen()
                 preferenceDB.edit().putBoolean(DARK_MODE_PREF, it)
                 darkMode.value = it
             }
-            DevMode(devMode) {
+            WallySwitchRow(devModeView, S.enableDeveloperView) {
+                LogIt.info("devmode $it")
                 preferenceDB.edit().putBoolean(DEV_MODE_PREF, it)
-                devMode.value = it
+                devModeView = it
+                devMode = it
             }
             ConfirmAbove(preferenceDB)
         }
@@ -94,14 +97,14 @@ fun SettingsScreen()
           modifier = Modifier.padding(start = 4.dp, end = 4.dp)
         ) {
             BlockchainSource(ChainSelector.NEXA, preferenceDB)
-            if(devMode.value)
+            if(devMode)
             {
                 BlockchainSource(ChainSelector.NEXATESTNET, preferenceDB)
                 BlockchainSource(ChainSelector.NEXAREGTEST, preferenceDB)
 
             }
             BlockchainSource(ChainSelector.BCH, preferenceDB)
-            if(devMode.value)
+            if(devMode)
             {
                 Spacer(Modifier.height(32.dp))
                 Box(modifier = Modifier.fillMaxWidth()) {
@@ -205,7 +208,6 @@ fun DevMode(devMode: MutableState<Boolean>, onClick: (Boolean) -> Unit)
     WallySwitch(devMode, S.enableDeveloperView, onClick)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConfirmAbove(preferenceDB: SharedPreferences)
 {

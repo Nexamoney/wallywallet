@@ -164,6 +164,53 @@ fun WallyBoringTextButton(text: String, enabled: Boolean=true,  interactionSourc
     }
 }
 
+@Composable fun WallySwitchRow(isChecked: Boolean, textRes: Int, onCheckedChange: (Boolean) -> Unit)
+{
+    Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+        WallySwitch(isChecked, onCheckedChange)
+        Text(
+          text = i18n(textRes),
+        )
+    }
+}
+
+@Composable fun WallySwitch(isChecked: Boolean, onCheckedChange: (Boolean) -> Unit)
+{
+    Switch(
+      checked = isChecked,
+      onCheckedChange = onCheckedChange,
+      modifier = Modifier.graphicsLayer(scaleX = 0.7f, scaleY = 0.7f),
+      colors = SwitchDefaults.colors(
+        checkedBorderColor = Color.Transparent,
+        uncheckedBorderColor = Color.Transparent,
+      )
+    )
+}
+
+@Composable fun WallySwitch(isChecked: Boolean, textRes: Int, onCheckedChange: (Boolean) -> Unit)
+{
+    Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+        WallySwitch(isChecked, onCheckedChange)
+        Text(
+          text = i18n(textRes),
+        )
+    }
+}
+
+@Composable fun WallyError(message: String)
+{
+    Text(
+      text = message,
+      color = Color.Red
+    )
+}
+
 
 //val WallyTextStyle = LocalTextStyle.current.copy()
 

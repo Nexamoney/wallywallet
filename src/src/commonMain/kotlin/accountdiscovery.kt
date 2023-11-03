@@ -13,6 +13,15 @@ fun processSecretWords(secretWords: String): List<String>
     return junkDropped
 }
 
+fun isValidOrEmptyRecoveryPhrase(words: List<String>): Boolean {
+    if(words.isEmpty()) return true
+    if (words.size != 12)
+    {
+        return false
+    }
+    val incorrectWords = Bip39InvalidWords(words)
+    return incorrectWords.isEmpty()
+}
 
 /*
 fun peekActivity(secretWords: String, chainSelector: ChainSelector, aborter: Objectify<Boolean>)

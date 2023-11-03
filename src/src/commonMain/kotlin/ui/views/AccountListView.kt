@@ -14,7 +14,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.DEV_MODE_PREF
 import info.bitcoinunlimited.www.wally.ui.LOCAL_CURRENCY_PREF
 import info.bitcoinunlimited.www.wally.ui.ChildNav
 import info.bitcoinunlimited.www.wally.ui.theme.*
@@ -42,7 +41,8 @@ val triggerRecompose: MutableState<Int> = mutableStateOf(0)
                         // Redraw is controlled of the entire AccountListView, or not at all.
                         // val anyChanges: MutableState<AccountUIData> = remember { mutableStateOf(it.uiData()) }
                         val anyChanges = it.uiData()
-                        AccountItemView(anyChanges, idx, selectedAccount.value == it, onClickAccount = {
+                        AccountItemView(anyChanges, idx, selectedAccount.value == it, devMode,
+                          onClickAccount = {
                               selectedAccount.value = it
                           },
                           onClickGearIcon = {
@@ -140,81 +140,77 @@ fun Account.uiData():AccountUIData
 }
 
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun AccountItemView(
-  // anyChanges: MutableState<AccountUIData>,
   anyChanges: AccountUIData,
   index: Int,
   isSelected: Boolean,
+  devMode: Boolean,
   onClickAccount: () -> Unit,
   onClickGearIcon: () -> Unit
 ) {
-    if (true)
-    {
-        val uidata = anyChanges //.value
-        val backgroundColor = if (isSelected) defaultListHighlight else if (index and 1 == 0) WallyRowAbkg1 else WallyRowAbkg2
-        Box(
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(2.dp)
-            .background(backgroundColor)
-            .clickable(onClick = onClickAccount),
-          contentAlignment = Alignment.Center
-        ) {
-            Row(modifier = Modifier.fillMaxHeight()) {
-                Column(modifier = Modifier.fillMaxHeight())
-                {
-                    ResImageView(getAccountIconResPath(uidata.chainSelector), Modifier.size(32.dp), "Blockchain icon")
-                    if (isSelected) ResImageView("icons/gear.xml", Modifier.padding(0.dp, 20.dp).size(32.dp).clickable(onClick = onClickGearIcon))
-                }
-                Column(
-                  modifier = Modifier
-                    .fillMaxSize()
-                    .padding(2.dp),
-                  verticalArrangement = Arrangement.Top,
+    val uidata = anyChanges //.value
+    val backgroundColor = if (isSelected) defaultListHighlight else if (index and 1 == 0) WallyRowAbkg1 else WallyRowAbkg2
+    Box(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(2.dp)
+        .background(backgroundColor)
+        .clickable(onClick = onClickAccount),
+      contentAlignment = Alignment.Center
+    ) {
+        Row(modifier = Modifier.fillMaxHeight()) {
+            Column(modifier = Modifier.fillMaxHeight())
+            {
+                ResImageView(getAccountIconResPath(uidata.chainSelector), Modifier.size(32.dp), "Blockchain icon")
+                if (isSelected) ResImageView("icons/gear.xml", Modifier.padding(0.dp, 20.dp).size(32.dp).clickable(onClick = onClickGearIcon))
+            }
+            Column(
+              modifier = Modifier
+                .fillMaxSize()
+                .padding(2.dp),
+              verticalArrangement = Arrangement.Top,
+            ) {
+                Row(
+                  verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                      verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = uidata.name, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                        if (uidata.lockable)
-                        {
-                            ResImageView(if (uidata.locked) "icons/lock.xml" else "icons/unlock.xml",
-                              modifier = Modifier.size(26.dp).absoluteOffset(0.dp, -8.dp).clickable {
-                                  // TODO lock clicked
-                              })
-                        }
-                        Spacer(Modifier.width(16.dp))
-                        Row(
-                          verticalAlignment = Alignment.Bottom
-                        ) {
-                            Text(text = uidata.balance, fontSize = 28.sp, color = colorDebit)
-                            Text(text = uidata.currencyCode, fontSize = 14.sp)
-                        }
+                    Text(text = uidata.name, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    if (uidata.lockable)
+                    {
+                        ResImageView(if (uidata.locked) "icons/lock.xml" else "icons/unlock.xml",
+                          modifier = Modifier.size(26.dp).absoluteOffset(0.dp, -8.dp).clickable {
+                              // TODO lock clicked
+                          })
                     }
+                    Spacer(Modifier.width(16.dp))
+                    Row(
+                      verticalAlignment = Alignment.Bottom
+                    ) {
+                        Text(text = uidata.balance, fontSize = 28.sp, color = colorDebit)
+                        Text(text = uidata.currencyCode, fontSize = 14.sp)
+                    }
+                }
 
+                Row(
+                  modifier = Modifier.fillMaxWidth(),
+                  horizontalArrangement = Arrangement.Center
+                ) {
+                    uidata.approximately?.let {
+                        Text(text = it, fontSize = 16.sp)
+                    }
+                }
+                if (uidata.unconfBal.isNotEmpty())
                     Row(
                       modifier = Modifier.fillMaxWidth(),
                       horizontalArrangement = Arrangement.Center
                     ) {
-                        uidata.approximately?.let {
-                            Text(text = it, fontSize = 16.sp)
-                        }
+                        Text(text = uidata.unconfBal, color = uidata.unconfBalColor)
                     }
-                    if (uidata.unconfBal.isNotEmpty())
-                        Row(
-                          modifier = Modifier.fillMaxWidth(),
-                          horizontalArrangement = Arrangement.Center
-                        ) {
-                            Text(text = uidata.unconfBal, color = uidata.unconfBalColor)
-                        }
-                    if (devMode) Row(
-                      modifier = Modifier.fillMaxWidth(),
-                      horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(text = uidata.devinfo, fontSize = 12.sp)
-                    }
+                if (devMode) Row(
+                  modifier = Modifier.fillMaxWidth(),
+                  horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(text = uidata.devinfo, fontSize = 12.sp)
                 }
             }
         }

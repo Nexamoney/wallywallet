@@ -3,7 +3,6 @@ package info.bitcoinunlimited.www.wally.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Column
-import androidx.compose.runtime.Composable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -11,16 +10,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import info.bitcoinunlimited.www.wally.S
-import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.ui.theme.*
-import org.nexa.libnexakotlin.Bip44Wallet
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -29,8 +23,7 @@ import androidx.compose.ui.unit.sp
 
 
 import androidx.compose.ui.graphics.vector.ImageVector
-import info.bitcoinunlimited.www.wally.Account
-import info.bitcoinunlimited.www.wally.wallyApp
+import info.bitcoinunlimited.www.wally.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -80,10 +73,10 @@ fun NavigationRoot()
                         ScreenNav.Home -> HomeScreen(ChildNav)
                         ScreenNav.Dashboard -> DashboardScreen(400.dp)
                         ScreenNav.Settings -> SettingsScreen()
-                        ScreenNav.Assets -> TODO()
+                        ScreenNav.Assets -> Text("TODO: Implement AssetsScreen")
                         ScreenNav.Shopping -> ShoppingScreen()
-                        ScreenNav.TricklePay -> TODO()
-                        ScreenNav.Identity -> TODO()
+                        ScreenNav.TricklePay -> Text("TODO: Implement TricklePayScreen")
+                        ScreenNav.Identity -> Text("TODO: Implement IdentityScreen")
                     }
                 }
 

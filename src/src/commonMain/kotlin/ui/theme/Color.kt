@@ -13,7 +13,7 @@ val softKeyboardTop = Color(0xFFFFF6F6F6)
 val defaultListHighlight = Color(0xFFECE1B6)
 val defaultListHighlight2 = Color(0xFFe3d395)
 
-val colorCredit = Color(0xFF70A01E)
+val colorCredit = Color(0xFFB43200)
 val colorDebit = Color(0xFF70A01E)
 val colorConfirm = Color(0xFFE48864)
 
