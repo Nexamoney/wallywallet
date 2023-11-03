@@ -1,13 +1,16 @@
 package info.bitcoinunlimited.www.wally.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.runtime.Composable
-import androidx.compose.material3.Text
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -16,9 +19,30 @@ import androidx.compose.ui.unit.sp
 import info.bitcoinunlimited.www.wally.Account
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
+import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
+import info.bitcoinunlimited.www.wally.ui.theme.WallyDropdownMenu
+import info.bitcoinunlimited.www.wally.ui.theme.WallyDropdownStyle
 import info.bitcoinunlimited.www.wally.wallyApp
-import org.nexa.libnexakotlin.Bip44Wallet
 import org.nexa.libnexakotlin.blockchains
+
+val testDropDown = listOf("big","list","here","and", "there",
+  "any", "big","list","here","and", "there",
+  "any", "big","list","here","and", "there",
+  "any", "big","list","here","and", "there",
+  "any", "big","list","here","and", "there",
+  "any", "big","list","here","and", "there",
+  "this_is_a_test_of_a_long_string",
+  "any", "big","list","here","and", "there",
+  "any", "big","list","here","and", "there",
+  "any", "big","list","here","and", "there",
+  "any", "big","list","here","and", "there",
+  "any", "big","list","here","and", "there",
+  "any", "big","list","here","and", "there",
+  "any", "big","list","here","and", "there",
+  "any", "big","list","here","and", "there",
+  "any", "big","list","here","and", "there",
+  "any", "big","list","here","and", "there",
+  )
 
 fun _x_(s:String): String = s
 
@@ -30,8 +54,78 @@ fun _x_(s:String): String = s
 
 var dashboardFontSize = 14.sp
 @Composable
-fun DashboardScreen(dashWidth: Dp)
+fun TestScreen(dashWidth: Dp)
 {
+    Text("HomeScreen")
+
+    var expanded by remember { mutableStateOf(false) }
+    var selected by remember { mutableStateOf("any") }
+
+    //Row() {  // bug leaves a big gap
+    Row(modifier = Modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically) {
+        Text("Drop boxes: ")
+        var selectedIndex by remember { mutableStateOf(-1) }
+        WallyDropdownMenu(
+          modifier = Modifier.width(IntrinsicSize.Min),
+          label = "Succinct",
+          items = testDropDown,
+          selectedIndex = selectedIndex,
+          style = WallyDropdownStyle.Succinct,
+          onItemSelected = { index, _ -> selectedIndex = index },
+        )
+
+        Text(", ")
+        var selectedIndex2 by remember { mutableStateOf(-1) }
+        WallyDropdownMenu(
+          modifier = Modifier.width(IntrinsicSize.Min).weight(1f),
+          label = "Field",
+          items = testDropDown,
+          selectedIndex = selectedIndex2,
+          style = WallyDropdownStyle.Field,
+          onItemSelected = { index, _ -> selectedIndex2 = index },
+        )
+
+        Text(", and ")
+        var selectedIndex3 by remember { mutableStateOf(-1) }
+        WallyDropdownMenu(
+          modifier = Modifier.width(IntrinsicSize.Min).weight(1f),
+          label = "Outlined",
+          items = testDropDown,
+          selectedIndex = selectedIndex3,
+          style = WallyDropdownStyle.Outlined,
+          onItemSelected = { index, _ -> selectedIndex3 = index },
+        )
+    }
+
+    Row(
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+          text = selected,
+          modifier = Modifier.clickable(onClick = { expanded = true })
+        )
+        IconButton(onClick = {expanded = true}) {
+            Icon(Icons.Default.ArrowDropDown, contentDescription = "")
+        }
+    }
+    DropdownMenu(
+      expanded = expanded,
+      onDismissRequest = { expanded = false },
+      modifier = Modifier.background(Color.Magenta)
+    ) {
+        testDropDown.forEachIndexed { _, s ->
+            DropdownMenuItem(
+              onClick = {
+                  expanded = false
+                  selected = s
+              },
+              text = { Text(text = s) }
+            )
+        }
+    }
+    WallyDivider()
+
+
     var walletInfo by mutableStateOf("")
     var blockchainInfo by mutableStateOf("")
     val accounts = wallyApp!!.accounts

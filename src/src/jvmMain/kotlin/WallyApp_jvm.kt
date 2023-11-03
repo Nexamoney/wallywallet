@@ -9,7 +9,6 @@ import androidx.compose.ui.unit.*
 import androidx.compose.material.*
 
 import androidx.compose.ui.window.rememberWindowState
-import info.bitcoinunlimited.www.wally.ui.DashboardScreen
 import info.bitcoinunlimited.www.wally.ui.NavigationRoot
 
 private val LogIt = GetLog("BU.wally.IdentityActivity")
