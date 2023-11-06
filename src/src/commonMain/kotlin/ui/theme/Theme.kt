@@ -12,15 +12,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.ui.SHOW_TRICKLEPAY_PREF
+
+// https://stackoverflow.com/questions/65893939/how-to-convert-textunit-to-dp-in-jetpack-compose
+val Int.dpTextUnit: TextUnit
+    @Composable
+    get() = with(LocalDensity.current) { this@dpTextUnit.dp.toSp() }
+
 
 // TODO: Implement dark mode
 val DarkColorPalette = darkColorScheme(
@@ -117,6 +125,21 @@ fun WallyBoringTextButton(textRes: Int, enabled: Boolean=true,  interactionSourc
 fun WallyBoringTextButton(text: String, enabled: Boolean=true,  interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
 {
     WallyBoringButton(onClick, enabled, interactionSource) { WallyButtonText(text)}
+}
+
+@Composable
+fun WallyBoringLargeTextButton(textRes: Int, enabled: Boolean=true,  interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
+{
+    WallyBoringButton(onClick, enabled, interactionSource) { WallyLargeButtonText(i18n(textRes))}
+}
+
+
+@Composable fun WallyLargeButtonText(text: String)
+{
+    val tmp = TextStyle.Default.copy(lineHeight = 0.em, fontSize = 24.dpTextUnit, // TextStyle.Default.fontSize, //*2,
+      lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.Both), fontWeight = FontWeight.Bold)
+    Text(text = text, modifier = Modifier.padding(0.dp, 0.dp).wrapContentWidth(Alignment.CenterHorizontally,true),
+      style = tmp, textAlign = TextAlign.Center, softWrap = false, maxLines = 1 )
 }
 
 

@@ -20,24 +20,6 @@ import info.bitcoinunlimited.www.wally.ui.views.AccountListView
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
-val testDropDown = listOf("big","list","here","and", "there",
-  "any", "big","list","here","and", "there",
-  "any", "big","list","here","and", "there",
-  "any", "big","list","here","and", "there",
-  "any", "big","list","here","and", "there",
-  "any", "big","list","here","and", "there",
-  "this_is_a_test_of_a_long_string",
-  "any", "big","list","here","and", "there",
-  "any", "big","list","here","and", "there",
-  "any", "big","list","here","and", "there",
-  "any", "big","list","here","and", "there",
-  "any", "big","list","here","and", "there",
-  "any", "big","list","here","and", "there",
-  "any", "big","list","here","and", "there",
-  "any", "big","list","here","and", "there",
-  "any", "big","list","here","and", "there",
-  "any", "big","list","here","and", "there",
-  )
 
 fun assignWalletsGuiSlots(): ListifyMap<String, Account>
 {
@@ -68,11 +50,9 @@ fun assignWalletsGuiSlots(): ListifyMap<String, Account>
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun HomeScreen(navigation: ChildNav)
+fun HomeScreen(nav: ScreenNav, navigation: ChildNav)
 {
     var isSending by remember { mutableStateOf(false) }
-    var expanded by remember { mutableStateOf(false) }
-    var selected by remember { mutableStateOf("any") }
     var isCreatingNewAccount by remember { mutableStateOf(false) }
     val selectedAccount = remember { mutableStateOf<Account?>(null) }
     val displayAccountDetailScreen = navigation.displayAccountDetailScreen.collectAsState()
@@ -87,71 +67,6 @@ fun HomeScreen(navigation: ChildNav)
     if(displayAccountDetailScreen.value == null && !isCreatingNewAccount)
         Box(modifier = WallyPageBase) {
         Column {
-            Text("HomeScreen")
-
-            //Row() {  // bug leaves a big gap
-            Row(modifier = Modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically) {
-                Text("Drop boxes: ")
-                var selectedIndex by remember { mutableStateOf(-1) }
-                WallyDropdownMenu(
-                  modifier = Modifier.width(IntrinsicSize.Min),
-                  label = "Succinct",
-                  items = testDropDown,
-                  selectedIndex = selectedIndex,
-                  style = WallyDropdownStyle.Succinct,
-                  onItemSelected = { index, _ -> selectedIndex = index },
-                )
-
-                Text(", ")
-                var selectedIndex2 by remember { mutableStateOf(-1) }
-                WallyDropdownMenu(
-                  modifier = Modifier.width(IntrinsicSize.Min).weight(1f),
-                  label = "Field",
-                  items = testDropDown,
-                  selectedIndex = selectedIndex2,
-                  style = WallyDropdownStyle.Field,
-                  onItemSelected = { index, _ -> selectedIndex2 = index },
-                )
-
-                Text(", and ")
-                var selectedIndex3 by remember { mutableStateOf(-1) }
-                WallyDropdownMenu(
-                  modifier = Modifier.width(IntrinsicSize.Min).weight(1f),
-                  label = "Outlined",
-                  items = testDropDown,
-                  selectedIndex = selectedIndex3,
-                  style = WallyDropdownStyle.Outlined,
-                  onItemSelected = { index, _ -> selectedIndex3 = index },
-                )
-            }
-
-            Row(
-              verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                  text = selected,
-                  modifier = Modifier.clickable(onClick = { expanded = true })
-                )
-                IconButton(onClick = {expanded = true}) {
-                    Icon(Icons.Default.ArrowDropDown, contentDescription = "")
-                }
-            }
-            DropdownMenu(
-              expanded = expanded,
-              onDismissRequest = { expanded = false },
-              modifier = Modifier.background(Color.Magenta)
-            ) {
-                testDropDown.forEachIndexed { _, s ->
-                    DropdownMenuItem(
-                      onClick = {
-                          expanded = false
-                          selected = s
-                      },
-                      text = { Text(text = s) }
-                    )
-                }
-            }
-            WallyDivider()
             if(isSending)
             {
                 SendFormView(
@@ -160,15 +75,24 @@ fun HomeScreen(navigation: ChildNav)
             }
             else if(!isSending)
             {
-                WallyRoundedTextButton(S.Send) { isSending = true }
+                Row(modifier = Modifier.fillMaxWidth().padding(0.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
+                    WallyBoringLargeTextButton(S.Send) { isSending = true }
+                    WallyBoringLargeTextButton(S.title_split_bill) { nav.go(ScreenId.SplitBill) }
+                }
                 WallyDivider()
                 ReceiveView()
                 WallyDivider()
                 Spacer(modifier = Modifier.height(8.dp))
-                ResImageView("icons/plus.xml",
-                  modifier = Modifier.size(26.dp).absoluteOffset(0.dp, -8.dp).clickable {
-                      isCreatingNewAccount = true
-                  })
+                Row(modifier = Modifier.fillMaxWidth().padding(0.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
+
+                    ResImageView("icons/check.xml", // "icons/ani_syncing.xml"
+                      modifier = Modifier.size(26.dp).absoluteOffset(0.dp, -8.dp))
+                    Text(i18n(S.AccountListHeader))
+                    ResImageView("icons/plus.xml",
+                      modifier = Modifier.size(26.dp).absoluteOffset(0.dp, -8.dp).clickable {
+                          isCreatingNewAccount = true
+                      })
+                }
             }
             AccountListView(
               assignWalletsGuiSlots(),
