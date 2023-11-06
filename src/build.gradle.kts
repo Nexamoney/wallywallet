@@ -22,16 +22,11 @@ val secSinceEpoch = Instant.now().epochSecond
 
 plugins {
     //trick: for the same plugin versions in all sub-modules
-    kotlin("multiplatform").version("1.9.10")
-    id("com.android.application") // .version("8.1.1")
-    //id("com.android.library").version("8.1.1")
-    //id("org.jetbrains.kotlin.native.cocoapods") version "1.9.0"
-    //kotlin("native.cocoapods")
+    kotlin("multiplatform")
+    id("com.android.application")
     kotlin("plugin.serialization").version("1.9.0")
-    id("org.jetbrains.compose").version("1.5.1")
-    //id("maven-publish")
+    id("org.jetbrains.compose").version("1.5.10")
     id("org.jetbrains.dokka").version("1.8.20").apply(false)
-    // id("com.github.johnrengelman.shadow").version("8.1.1")
     idea
     // application  // for JVM executables, but not compatible with android, have to do it by hand
 }
