@@ -237,3 +237,26 @@ fun WallyBoringLargeTextButton(textRes: Int, enabled: Boolean=true,  interaction
 
 //val WallyTextStyle = LocalTextStyle.current.copy()
 
+
+/**
+ * Displays a notice with the given text
+ */
+@Composable
+fun NoticeText(noticeText: String)
+{
+    Box(
+        modifier = Modifier
+            .background(color = Color.Green)
+            .fillMaxWidth()
+            .padding(16.dp)
+            .wrapContentWidth(align = Alignment.CenterHorizontally)
+    ) {
+        Text(
+            text = noticeText,
+            style = LocalTextStyle.current.copy(
+                color = Color.Black,
+                fontWeight = FontWeight.Bold
+            )
+        )
+    }
+}

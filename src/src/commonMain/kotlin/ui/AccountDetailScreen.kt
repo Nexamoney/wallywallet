@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import info.bitcoinunlimited.www.wally.*
+import info.bitcoinunlimited.www.wally.ui.theme.NoticeText
 import info.bitcoinunlimited.www.wally.ui.theme.WallyBoringTextButton
 import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.ui.theme.WallySwitch
@@ -238,26 +239,6 @@ fun ErrorText(errorText: String)
           text = errorText,
           style = LocalTextStyle.current.copy(
             color = Color.White,
-            fontWeight = FontWeight.Bold
-          )
-        )
-    }
-}
-
-@Composable
-fun NoticeText(noticeText: String)
-{
-    Box(
-      modifier = Modifier
-        .background(color = Color.Green)
-        .fillMaxWidth()
-        .padding(16.dp)
-        .wrapContentWidth(align = Alignment.CenterHorizontally)
-    ) {
-        Text(
-          text = noticeText,
-          style = LocalTextStyle.current.copy(
-            color = Color.Black,
             fontWeight = FontWeight.Bold
           )
         )

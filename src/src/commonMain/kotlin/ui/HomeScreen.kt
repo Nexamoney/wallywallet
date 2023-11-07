@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.AccountListView
+import info.bitcoinunlimited.www.wally.ui.views.ReceiveView
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
@@ -53,6 +54,9 @@ fun HomeScreen(nav: ScreenNav, navigation: ChildNav)
     val selectedAccount = remember { mutableStateOf<Account?>(null) }
     val displayAccountDetailScreen = navigation.displayAccountDetailScreen.collectAsState()
 
+
+    selectedAccount.value?.onUpdatedReceiveInfoCommon { recvAddrStr -> }
+
     if (isCreatingNewAccount)
     {
         NewAccountScreen(assignWalletsGuiSlots(), devMode) {
@@ -76,7 +80,16 @@ fun HomeScreen(nav: ScreenNav, navigation: ChildNav)
                     WallyBoringLargeTextButton(S.title_split_bill) { nav.go(ScreenId.SplitBill) }
                 }
                 WallyDivider()
-                ReceiveView()
+                ReceiveView(
+                  selectedAccount.value?.name ?: "",
+                  selectedAccount.value?.currentReceive?.address?.toString() ?: "",
+                  assignWalletsGuiSlots().map { it.name },
+                  onAccountNameSelected = { accountName ->
+                    assignWalletsGuiSlots().forEach {
+                        if(it.name == accountName)
+                            selectedAccount.value = it
+                    }
+                })
                 WallyDivider()
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(modifier = Modifier.fillMaxWidth().padding(0.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
@@ -122,12 +135,6 @@ fun SendFormView(onComplete: () -> Unit)
             onComplete()
         }
     }
-}
-
-@Composable
-fun ReceiveView()
-{
-    Text("ReceiveView")
 }
 
 @Composable

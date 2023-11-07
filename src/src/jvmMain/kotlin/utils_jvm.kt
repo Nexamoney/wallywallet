@@ -54,7 +54,7 @@ actual fun getTextClipboard(): List<String>
 /** Sets the clipboard, potentially asynchronously. */
 actual fun setTextClipboard(msg: String)
 {
-    val c: Clipboard = Toolkit.getDefaultToolkit().getSystemClipboard()
+    val c: Clipboard = Toolkit.getDefaultToolkit().systemClipboard
     val sel = StringSelection(msg)
     c.setContents(sel, sel)
 }
