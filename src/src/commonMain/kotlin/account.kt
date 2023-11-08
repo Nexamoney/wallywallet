@@ -10,9 +10,8 @@ import org.nexa.libnexakotlin.*
 const val ACCOUNT_FLAG_NONE = 0UL
 const val ACCOUNT_FLAG_HIDE_UNTIL_PIN = 1UL
 const val RETRIEVE_ONLY_ADDITIONAL_ADDRESSES = 10
-
-const val ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY = 2UL
 const val ACCOUNT_FLAG_REUSE_ADDRESSES = 4UL
+const val ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY = 2UL
 
 /** Do not warn about not having backed up the recovery key until balance exceeds this amount (satoshis) */
 const val MAX_NO_RECOVERY_WARN_BALANCE = 1000000 * 10
