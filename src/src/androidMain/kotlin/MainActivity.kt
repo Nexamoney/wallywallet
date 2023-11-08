@@ -42,10 +42,6 @@ import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.mainActivity")
 
-val ERROR_DISPLAY_TIME = 10000L
-val NOTICE_DISPLAY_TIME = 4000L
-val NORMAL_NOTICE_DISPLAY_TIME = 2000L
-
 /** if phone is asleep for this time, lock wallets */
 val RELOCK_TIME = 5000L
 

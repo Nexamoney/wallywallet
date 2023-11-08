@@ -158,4 +158,7 @@
     <string name="attachment_summary_off">Bare last ned vedlegg ved forespørsel</string>
     <string name="localCurrency">Lokal valuta</string>
 
+    <!-- Primary Account -->
+    <string name="primaryAccountSuccess">Primærkonto: %name</string>
+
 </resources>
