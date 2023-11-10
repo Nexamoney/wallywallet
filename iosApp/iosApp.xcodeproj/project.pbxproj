@@ -9,6 +9,74 @@
 /* Begin PBXBuildFile section */
 		058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557BA273AAA24004C7B11 /* Assets.xcassets */; };
 		058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */; };
+		0B551C2B2AFE910D00BA0052 /* utils_ios.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BDE2AFE910D00BA0052 /* utils_ios.kt */; };
+		0B551C2C2AFE910D00BA0052 /* baseexception.native.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BDF2AFE910D00BA0052 /* baseexception.native.kt */; };
+		0B551C2D2AFE910D00BA0052 /* WallyTheme.ios.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BE22AFE910D00BA0052 /* WallyTheme.ios.kt */; };
+		0B551C2E2AFE910D00BA0052 /* preferences.ios.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BE32AFE910D00BA0052 /* preferences.ios.kt */; };
+		0B551C2F2AFE910D00BA0052 /* MainViewController.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BE42AFE910D00BA0052 /* MainViewController.kt */; };
+		0B551C302AFE910D00BA0052 /* i18n_ios.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BE52AFE910D00BA0052 /* i18n_ios.kt */; };
+		0B551C312AFE910D00BA0052 /* strings_nb.bin in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BE82AFE910D00BA0052 /* strings_nb.bin */; };
+		0B551C322AFE910D00BA0052 /* strings_ca.bin in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BE92AFE910D00BA0052 /* strings_ca.bin */; };
+		0B551C332AFE910D00BA0052 /* strings_es.bin in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BEA2AFE910D00BA0052 /* strings_es.bin */; };
+		0B551C342AFE910D00BA0052 /* strings_ko.bin in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BEB2AFE910D00BA0052 /* strings_ko.bin */; };
+		0B551C352AFE910D00BA0052 /* strings_sl.bin in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BEC2AFE910D00BA0052 /* strings_sl.bin */; };
+		0B551C362AFE910D00BA0052 /* strings_de.bin in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BED2AFE910D00BA0052 /* strings_de.bin */; };
+		0B551C372AFE910D00BA0052 /* strings_it.bin in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BEE2AFE910D00BA0052 /* strings_it.bin */; };
+		0B551C382AFE910D00BA0052 /* strings_et.bin in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BEF2AFE910D00BA0052 /* strings_et.bin */; };
+		0B551C392AFE910D00BA0052 /* strings_en.bin in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BF02AFE910D00BA0052 /* strings_en.bin */; };
+		0B551C3A2AFE910D00BA0052 /* strings_hi.bin in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BF12AFE910D00BA0052 /* strings_hi.bin */; };
+		0B551C3B2AFE910D00BA0052 /* strings_in.bin in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BF22AFE910D00BA0052 /* strings_in.bin */; };
+		0B551C3C2AFE910D00BA0052 /* strings_round.bin in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BF32AFE910D00BA0052 /* strings_round.bin */; };
+		0B551C3D2AFE910D00BA0052 /* strings_sv.bin in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BF42AFE910D00BA0052 /* strings_sv.bin */; };
+		0B551C3E2AFE910D00BA0052 /* gear.xml in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BF62AFE910D00BA0052 /* gear.xml */; };
+		0B551C3F2AFE910D00BA0052 /* plus.xml in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BF72AFE910D00BA0052 /* plus.xml */; };
+		0B551C402AFE910D00BA0052 /* check.xml in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BF82AFE910D00BA0052 /* check.xml */; };
+		0B551C412AFE910D00BA0052 /* nexareg_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BF92AFE910D00BA0052 /* nexareg_icon.png */; };
+		0B551C422AFE910D00BA0052 /* lock.xml in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BFA2AFE910D00BA0052 /* lock.xml */; };
+		0B551C432AFE910D00BA0052 /* faucet_drip.xml in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BFB2AFE910D00BA0052 /* faucet_drip.xml */; };
+		0B551C442AFE910D00BA0052 /* W_1024.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BFC2AFE910D00BA0052 /* W_1024.png */; };
+		0B551C452AFE910D00BA0052 /* nexatest_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BFD2AFE910D00BA0052 /* nexatest_icon.png */; };
+		0B551C462AFE910D00BA0052 /* W_152.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BFE2AFE910D00BA0052 /* W_152.png */; };
+		0B551C472AFE910D00BA0052 /* ani_syncing.xml in Resources */ = {isa = PBXBuildFile; fileRef = 0B551BFF2AFE910D00BA0052 /* ani_syncing.xml */; };
+		0B551C482AFE910D00BA0052 /* nexa_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C002AFE910D00BA0052 /* nexa_icon.png */; };
+		0B551C492AFE910D00BA0052 /* unlock.xml in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C012AFE910D00BA0052 /* unlock.xml */; };
+		0B551C4A2AFE910D00BA0052 /* W_120.png in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C022AFE910D00BA0052 /* W_120.png */; };
+		0B551C4B2AFE910D00BA0052 /* bitcoin_cash_token.xml in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C032AFE910D00BA0052 /* bitcoin_cash_token.xml */; };
+		0B551C4C2AFE910D00BA0052 /* strings_tr.bin in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C042AFE910D00BA0052 /* strings_tr.bin */; };
+		0B551C4D2AFE910D00BA0052 /* strings_no.bin in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C052AFE910D00BA0052 /* strings_no.bin */; };
+		0B551C4E2AFE910D00BA0052 /* SplitBillScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C082AFE910D00BA0052 /* SplitBillScreen.kt */; };
+		0B551C4F2AFE910D00BA0052 /* NewAccountScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C092AFE910D00BA0052 /* NewAccountScreen.kt */; };
+		0B551C502AFE910D00BA0052 /* NavigationRoot.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C0A2AFE910D00BA0052 /* NavigationRoot.kt */; };
+		0B551C512AFE910D00BA0052 /* SettingsScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C0B2AFE910D00BA0052 /* SettingsScreen.kt */; };
+		0B551C522AFE910D00BA0052 /* AccountDetailScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C0C2AFE910D00BA0052 /* AccountDetailScreen.kt */; };
+		0B551C532AFE910D00BA0052 /* DashboardScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C0D2AFE910D00BA0052 /* DashboardScreen.kt */; };
+		0B551C542AFE910D00BA0052 /* WallyDropdown.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C0F2AFE910D00BA0052 /* WallyDropdown.kt */; };
+		0B551C552AFE910D00BA0052 /* WallyTheme.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C102AFE910D00BA0052 /* WallyTheme.kt */; };
+		0B551C562AFE910D00BA0052 /* Color.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C112AFE910D00BA0052 /* Color.kt */; };
+		0B551C572AFE910D00BA0052 /* Shapes.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C122AFE910D00BA0052 /* Shapes.kt */; };
+		0B551C582AFE910D00BA0052 /* Theme.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C132AFE910D00BA0052 /* Theme.kt */; };
+		0B551C592AFE910D00BA0052 /* Typography.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C142AFE910D00BA0052 /* Typography.kt */; };
+		0B551C5A2AFE910D00BA0052 /* HomeScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C152AFE910D00BA0052 /* HomeScreen.kt */; };
+		0B551C5B2AFE910D00BA0052 /* AccountListView.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C172AFE910D00BA0052 /* AccountListView.kt */; };
+		0B551C5C2AFE910D00BA0052 /* ResImageView.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C182AFE910D00BA0052 /* ResImageView.kt */; };
+		0B551C5D2AFE910D00BA0052 /* ShoppingScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C192AFE910D00BA0052 /* ShoppingScreen.kt */; };
+		0B551C5E2AFE910D00BA0052 /* i18n.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C1A2AFE910D00BA0052 /* i18n.kt */; };
+		0B551C5F2AFE910D00BA0052 /* exceptions.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C1B2AFE910D00BA0052 /* exceptions.kt */; };
+		0B551C602AFE910D00BA0052 /* app.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C1C2AFE910D00BA0052 /* app.kt */; };
+		0B551C612AFE910D00BA0052 /* settings.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C1D2AFE910D00BA0052 /* settings.kt */; };
+		0B551C622AFE910D00BA0052 /* accountdiscovery.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C1E2AFE910D00BA0052 /* accountdiscovery.kt */; };
+		0B551C632AFE910D00BA0052 /* bitcoincomapi.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C1F2AFE910D00BA0052 /* bitcoincomapi.kt */; };
+		0B551C642AFE910D00BA0052 /* utils.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C202AFE910D00BA0052 /* utils.kt */; };
+		0B551C652AFE910D00BA0052 /* strings.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C212AFE910D00BA0052 /* strings.kt */; };
+		0B551C662AFE910D00BA0052 /* account.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C222AFE910D00BA0052 /* account.kt */; };
+		0B551C672AFE910D00BA0052 /* wallywalletorgapi.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C232AFE910D00BA0052 /* wallywalletorgapi.kt */; };
+		0B551C682AFE910D00BA0052 /* reactor.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C242AFE910D00BA0052 /* reactor.kt */; };
+		0B551C692AFE910D00BA0052 /* baseexception.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C252AFE910D00BA0052 /* baseexception.kt */; };
+		0B551C6A2AFE910D00BA0052 /* shopping.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C262AFE910D00BA0052 /* shopping.kt */; };
+		0B551C6B2AFE910D00BA0052 /* listifyMap.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C272AFE910D00BA0052 /* listifyMap.kt */; };
+		0B551C6C2AFE910D00BA0052 /* preferences.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C282AFE910D00BA0052 /* preferences.kt */; };
+		0B551C6D2AFE910D00BA0052 /* payproto_21_72.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C292AFE910D00BA0052 /* payproto_21_72.kt */; };
+		0B551C6E2AFE910D00BA0052 /* globals.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C2A2AFE910D00BA0052 /* globals.kt */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 		8E1ECA662AA957D300759B4F /* strings_en.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA652AA957D200759B4F /* strings_en.bin */; };
@@ -43,6 +111,74 @@
 /* Begin PBXFileReference section */
 		058557BA273AAA24004C7B11 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		0B551BDE2AFE910D00BA0052 /* utils_ios.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = utils_ios.kt; sourceTree = "<group>"; };
+		0B551BDF2AFE910D00BA0052 /* baseexception.native.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = baseexception.native.kt; sourceTree = "<group>"; };
+		0B551BE22AFE910D00BA0052 /* WallyTheme.ios.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = WallyTheme.ios.kt; sourceTree = "<group>"; };
+		0B551BE32AFE910D00BA0052 /* preferences.ios.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = preferences.ios.kt; sourceTree = "<group>"; };
+		0B551BE42AFE910D00BA0052 /* MainViewController.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MainViewController.kt; sourceTree = "<group>"; };
+		0B551BE52AFE910D00BA0052 /* i18n_ios.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = i18n_ios.kt; sourceTree = "<group>"; };
+		0B551BE82AFE910D00BA0052 /* strings_nb.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = strings_nb.bin; sourceTree = "<group>"; };
+		0B551BE92AFE910D00BA0052 /* strings_ca.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = strings_ca.bin; sourceTree = "<group>"; };
+		0B551BEA2AFE910D00BA0052 /* strings_es.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = strings_es.bin; sourceTree = "<group>"; };
+		0B551BEB2AFE910D00BA0052 /* strings_ko.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = strings_ko.bin; sourceTree = "<group>"; };
+		0B551BEC2AFE910D00BA0052 /* strings_sl.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = strings_sl.bin; sourceTree = "<group>"; };
+		0B551BED2AFE910D00BA0052 /* strings_de.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = strings_de.bin; sourceTree = "<group>"; };
+		0B551BEE2AFE910D00BA0052 /* strings_it.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = strings_it.bin; sourceTree = "<group>"; };
+		0B551BEF2AFE910D00BA0052 /* strings_et.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = strings_et.bin; sourceTree = "<group>"; };
+		0B551BF02AFE910D00BA0052 /* strings_en.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = strings_en.bin; sourceTree = "<group>"; };
+		0B551BF12AFE910D00BA0052 /* strings_hi.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = strings_hi.bin; sourceTree = "<group>"; };
+		0B551BF22AFE910D00BA0052 /* strings_in.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = strings_in.bin; sourceTree = "<group>"; };
+		0B551BF32AFE910D00BA0052 /* strings_round.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = strings_round.bin; sourceTree = "<group>"; };
+		0B551BF42AFE910D00BA0052 /* strings_sv.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = strings_sv.bin; sourceTree = "<group>"; };
+		0B551BF62AFE910D00BA0052 /* gear.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = gear.xml; sourceTree = "<group>"; };
+		0B551BF72AFE910D00BA0052 /* plus.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = plus.xml; sourceTree = "<group>"; };
+		0B551BF82AFE910D00BA0052 /* check.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = check.xml; sourceTree = "<group>"; };
+		0B551BF92AFE910D00BA0052 /* nexareg_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = nexareg_icon.png; sourceTree = "<group>"; };
+		0B551BFA2AFE910D00BA0052 /* lock.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = lock.xml; sourceTree = "<group>"; };
+		0B551BFB2AFE910D00BA0052 /* faucet_drip.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = faucet_drip.xml; sourceTree = "<group>"; };
+		0B551BFC2AFE910D00BA0052 /* W_1024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = W_1024.png; sourceTree = "<group>"; };
+		0B551BFD2AFE910D00BA0052 /* nexatest_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = nexatest_icon.png; sourceTree = "<group>"; };
+		0B551BFE2AFE910D00BA0052 /* W_152.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = W_152.png; sourceTree = "<group>"; };
+		0B551BFF2AFE910D00BA0052 /* ani_syncing.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = ani_syncing.xml; sourceTree = "<group>"; };
+		0B551C002AFE910D00BA0052 /* nexa_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = nexa_icon.png; sourceTree = "<group>"; };
+		0B551C012AFE910D00BA0052 /* unlock.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = unlock.xml; sourceTree = "<group>"; };
+		0B551C022AFE910D00BA0052 /* W_120.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = W_120.png; sourceTree = "<group>"; };
+		0B551C032AFE910D00BA0052 /* bitcoin_cash_token.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = bitcoin_cash_token.xml; sourceTree = "<group>"; };
+		0B551C042AFE910D00BA0052 /* strings_tr.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = strings_tr.bin; sourceTree = "<group>"; };
+		0B551C052AFE910D00BA0052 /* strings_no.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = strings_no.bin; sourceTree = "<group>"; };
+		0B551C082AFE910D00BA0052 /* SplitBillScreen.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SplitBillScreen.kt; sourceTree = "<group>"; };
+		0B551C092AFE910D00BA0052 /* NewAccountScreen.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NewAccountScreen.kt; sourceTree = "<group>"; };
+		0B551C0A2AFE910D00BA0052 /* NavigationRoot.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NavigationRoot.kt; sourceTree = "<group>"; };
+		0B551C0B2AFE910D00BA0052 /* SettingsScreen.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SettingsScreen.kt; sourceTree = "<group>"; };
+		0B551C0C2AFE910D00BA0052 /* AccountDetailScreen.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AccountDetailScreen.kt; sourceTree = "<group>"; };
+		0B551C0D2AFE910D00BA0052 /* DashboardScreen.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DashboardScreen.kt; sourceTree = "<group>"; };
+		0B551C0F2AFE910D00BA0052 /* WallyDropdown.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = WallyDropdown.kt; sourceTree = "<group>"; };
+		0B551C102AFE910D00BA0052 /* WallyTheme.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = WallyTheme.kt; sourceTree = "<group>"; };
+		0B551C112AFE910D00BA0052 /* Color.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Color.kt; sourceTree = "<group>"; };
+		0B551C122AFE910D00BA0052 /* Shapes.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Shapes.kt; sourceTree = "<group>"; };
+		0B551C132AFE910D00BA0052 /* Theme.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Theme.kt; sourceTree = "<group>"; };
+		0B551C142AFE910D00BA0052 /* Typography.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Typography.kt; sourceTree = "<group>"; };
+		0B551C152AFE910D00BA0052 /* HomeScreen.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = HomeScreen.kt; sourceTree = "<group>"; };
+		0B551C172AFE910D00BA0052 /* AccountListView.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AccountListView.kt; sourceTree = "<group>"; };
+		0B551C182AFE910D00BA0052 /* ResImageView.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ResImageView.kt; sourceTree = "<group>"; };
+		0B551C192AFE910D00BA0052 /* ShoppingScreen.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ShoppingScreen.kt; sourceTree = "<group>"; };
+		0B551C1A2AFE910D00BA0052 /* i18n.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = i18n.kt; sourceTree = "<group>"; };
+		0B551C1B2AFE910D00BA0052 /* exceptions.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = exceptions.kt; sourceTree = "<group>"; };
+		0B551C1C2AFE910D00BA0052 /* app.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = app.kt; sourceTree = "<group>"; };
+		0B551C1D2AFE910D00BA0052 /* settings.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = settings.kt; sourceTree = "<group>"; };
+		0B551C1E2AFE910D00BA0052 /* accountdiscovery.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = accountdiscovery.kt; sourceTree = "<group>"; };
+		0B551C1F2AFE910D00BA0052 /* bitcoincomapi.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bitcoincomapi.kt; sourceTree = "<group>"; };
+		0B551C202AFE910D00BA0052 /* utils.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = utils.kt; sourceTree = "<group>"; };
+		0B551C212AFE910D00BA0052 /* strings.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = strings.kt; sourceTree = "<group>"; };
+		0B551C222AFE910D00BA0052 /* account.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = account.kt; sourceTree = "<group>"; };
+		0B551C232AFE910D00BA0052 /* wallywalletorgapi.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wallywalletorgapi.kt; sourceTree = "<group>"; };
+		0B551C242AFE910D00BA0052 /* reactor.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = reactor.kt; sourceTree = "<group>"; };
+		0B551C252AFE910D00BA0052 /* baseexception.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = baseexception.kt; sourceTree = "<group>"; };
+		0B551C262AFE910D00BA0052 /* shopping.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = shopping.kt; sourceTree = "<group>"; };
+		0B551C272AFE910D00BA0052 /* listifyMap.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = listifyMap.kt; sourceTree = "<group>"; };
+		0B551C282AFE910D00BA0052 /* preferences.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = preferences.kt; sourceTree = "<group>"; };
+		0B551C292AFE910D00BA0052 /* payproto_21_72.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = payproto_21_72.kt; sourceTree = "<group>"; };
+		0B551C2A2AFE910D00BA0052 /* globals.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = globals.kt; sourceTree = "<group>"; };
 		2152FB032600AC8F00CF470E /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
 		7555FF7B242A565900829871 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -82,9 +218,175 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		0B551BDB2AFE90C900BA0052 /* Kotlin Debug */ = {
+			isa = PBXGroup;
+			children = (
+				0B551BE62AFE910D00BA0052 /* commonMain */,
+				0B551BDC2AFE910D00BA0052 /* iosMain */,
+			);
+			path = "Kotlin Debug";
+			sourceTree = "<group>";
+		};
+		0B551BDC2AFE910D00BA0052 /* iosMain */ = {
+			isa = PBXGroup;
+			children = (
+				0B551BDD2AFE910D00BA0052 /* kotlin */,
+			);
+			name = iosMain;
+			path = ../../src/src/iosMain;
+			sourceTree = "<group>";
+		};
+		0B551BDD2AFE910D00BA0052 /* kotlin */ = {
+			isa = PBXGroup;
+			children = (
+				0B551BDE2AFE910D00BA0052 /* utils_ios.kt */,
+				0B551BDF2AFE910D00BA0052 /* baseexception.native.kt */,
+				0B551BE02AFE910D00BA0052 /* ui */,
+				0B551BE32AFE910D00BA0052 /* preferences.ios.kt */,
+				0B551BE42AFE910D00BA0052 /* MainViewController.kt */,
+				0B551BE52AFE910D00BA0052 /* i18n_ios.kt */,
+			);
+			path = kotlin;
+			sourceTree = "<group>";
+		};
+		0B551BE02AFE910D00BA0052 /* ui */ = {
+			isa = PBXGroup;
+			children = (
+				0B551BE12AFE910D00BA0052 /* theme */,
+			);
+			path = ui;
+			sourceTree = "<group>";
+		};
+		0B551BE12AFE910D00BA0052 /* theme */ = {
+			isa = PBXGroup;
+			children = (
+				0B551BE22AFE910D00BA0052 /* WallyTheme.ios.kt */,
+			);
+			path = theme;
+			sourceTree = "<group>";
+		};
+		0B551BE62AFE910D00BA0052 /* commonMain */ = {
+			isa = PBXGroup;
+			children = (
+				0B551BE72AFE910D00BA0052 /* resources */,
+				0B551C062AFE910D00BA0052 /* kotlin */,
+			);
+			name = commonMain;
+			path = ../../src/src/commonMain;
+			sourceTree = "<group>";
+		};
+		0B551BE72AFE910D00BA0052 /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				0B551BE82AFE910D00BA0052 /* strings_nb.bin */,
+				0B551BE92AFE910D00BA0052 /* strings_ca.bin */,
+				0B551BEA2AFE910D00BA0052 /* strings_es.bin */,
+				0B551BEB2AFE910D00BA0052 /* strings_ko.bin */,
+				0B551BEC2AFE910D00BA0052 /* strings_sl.bin */,
+				0B551BED2AFE910D00BA0052 /* strings_de.bin */,
+				0B551BEE2AFE910D00BA0052 /* strings_it.bin */,
+				0B551BEF2AFE910D00BA0052 /* strings_et.bin */,
+				0B551BF02AFE910D00BA0052 /* strings_en.bin */,
+				0B551BF12AFE910D00BA0052 /* strings_hi.bin */,
+				0B551BF22AFE910D00BA0052 /* strings_in.bin */,
+				0B551BF32AFE910D00BA0052 /* strings_round.bin */,
+				0B551BF42AFE910D00BA0052 /* strings_sv.bin */,
+				0B551BF52AFE910D00BA0052 /* icons */,
+				0B551C042AFE910D00BA0052 /* strings_tr.bin */,
+				0B551C052AFE910D00BA0052 /* strings_no.bin */,
+			);
+			path = resources;
+			sourceTree = "<group>";
+		};
+		0B551BF52AFE910D00BA0052 /* icons */ = {
+			isa = PBXGroup;
+			children = (
+				0B551BF62AFE910D00BA0052 /* gear.xml */,
+				0B551BF72AFE910D00BA0052 /* plus.xml */,
+				0B551BF82AFE910D00BA0052 /* check.xml */,
+				0B551BF92AFE910D00BA0052 /* nexareg_icon.png */,
+				0B551BFA2AFE910D00BA0052 /* lock.xml */,
+				0B551BFB2AFE910D00BA0052 /* faucet_drip.xml */,
+				0B551BFC2AFE910D00BA0052 /* W_1024.png */,
+				0B551BFD2AFE910D00BA0052 /* nexatest_icon.png */,
+				0B551BFE2AFE910D00BA0052 /* W_152.png */,
+				0B551BFF2AFE910D00BA0052 /* ani_syncing.xml */,
+				0B551C002AFE910D00BA0052 /* nexa_icon.png */,
+				0B551C012AFE910D00BA0052 /* unlock.xml */,
+				0B551C022AFE910D00BA0052 /* W_120.png */,
+				0B551C032AFE910D00BA0052 /* bitcoin_cash_token.xml */,
+			);
+			path = icons;
+			sourceTree = "<group>";
+		};
+		0B551C062AFE910D00BA0052 /* kotlin */ = {
+			isa = PBXGroup;
+			children = (
+				0B551C072AFE910D00BA0052 /* ui */,
+				0B551C1A2AFE910D00BA0052 /* i18n.kt */,
+				0B551C1B2AFE910D00BA0052 /* exceptions.kt */,
+				0B551C1C2AFE910D00BA0052 /* app.kt */,
+				0B551C1D2AFE910D00BA0052 /* settings.kt */,
+				0B551C1E2AFE910D00BA0052 /* accountdiscovery.kt */,
+				0B551C1F2AFE910D00BA0052 /* bitcoincomapi.kt */,
+				0B551C202AFE910D00BA0052 /* utils.kt */,
+				0B551C212AFE910D00BA0052 /* strings.kt */,
+				0B551C222AFE910D00BA0052 /* account.kt */,
+				0B551C232AFE910D00BA0052 /* wallywalletorgapi.kt */,
+				0B551C242AFE910D00BA0052 /* reactor.kt */,
+				0B551C252AFE910D00BA0052 /* baseexception.kt */,
+				0B551C262AFE910D00BA0052 /* shopping.kt */,
+				0B551C272AFE910D00BA0052 /* listifyMap.kt */,
+				0B551C282AFE910D00BA0052 /* preferences.kt */,
+				0B551C292AFE910D00BA0052 /* payproto_21_72.kt */,
+				0B551C2A2AFE910D00BA0052 /* globals.kt */,
+			);
+			path = kotlin;
+			sourceTree = "<group>";
+		};
+		0B551C072AFE910D00BA0052 /* ui */ = {
+			isa = PBXGroup;
+			children = (
+				0B551C082AFE910D00BA0052 /* SplitBillScreen.kt */,
+				0B551C092AFE910D00BA0052 /* NewAccountScreen.kt */,
+				0B551C0A2AFE910D00BA0052 /* NavigationRoot.kt */,
+				0B551C0B2AFE910D00BA0052 /* SettingsScreen.kt */,
+				0B551C0C2AFE910D00BA0052 /* AccountDetailScreen.kt */,
+				0B551C0D2AFE910D00BA0052 /* DashboardScreen.kt */,
+				0B551C0E2AFE910D00BA0052 /* theme */,
+				0B551C152AFE910D00BA0052 /* HomeScreen.kt */,
+				0B551C162AFE910D00BA0052 /* views */,
+				0B551C192AFE910D00BA0052 /* ShoppingScreen.kt */,
+			);
+			path = ui;
+			sourceTree = "<group>";
+		};
+		0B551C0E2AFE910D00BA0052 /* theme */ = {
+			isa = PBXGroup;
+			children = (
+				0B551C0F2AFE910D00BA0052 /* WallyDropdown.kt */,
+				0B551C102AFE910D00BA0052 /* WallyTheme.kt */,
+				0B551C112AFE910D00BA0052 /* Color.kt */,
+				0B551C122AFE910D00BA0052 /* Shapes.kt */,
+				0B551C132AFE910D00BA0052 /* Theme.kt */,
+				0B551C142AFE910D00BA0052 /* Typography.kt */,
+			);
+			path = theme;
+			sourceTree = "<group>";
+		};
+		0B551C162AFE910D00BA0052 /* views */ = {
+			isa = PBXGroup;
+			children = (
+				0B551C172AFE910D00BA0052 /* AccountListView.kt */,
+				0B551C182AFE910D00BA0052 /* ResImageView.kt */,
+			);
+			path = views;
+			sourceTree = "<group>";
+		};
 		7555FF72242A565900829871 = {
 			isa = PBXGroup;
 			children = (
+				0B551BDB2AFE90C900BA0052 /* Kotlin Debug */,
 				8E1ECA6D2AAA001D00759B4F /* strings_ca.bin */,
 				8E1ECA722AAA001F00759B4F /* strings_de.bin */,
 				8E1ECA672AAA001B00759B4F /* strings_es.bin */,
@@ -192,21 +494,89 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B551C602AFE910D00BA0052 /* app.kt in Resources */,
+				0B551C432AFE910D00BA0052 /* faucet_drip.xml in Resources */,
+				0B551C612AFE910D00BA0052 /* settings.kt in Resources */,
+				0B551C392AFE910D00BA0052 /* strings_en.bin in Resources */,
+				0B551C472AFE910D00BA0052 /* ani_syncing.xml in Resources */,
+				0B551C5A2AFE910D00BA0052 /* HomeScreen.kt in Resources */,
 				8E1ECA662AA957D300759B4F /* strings_en.bin in Resources */,
+				0B551C2D2AFE910D00BA0052 /* WallyTheme.ios.kt in Resources */,
+				0B551C662AFE910D00BA0052 /* account.kt in Resources */,
+				0B551C322AFE910D00BA0052 /* strings_ca.bin in Resources */,
+				0B551C502AFE910D00BA0052 /* NavigationRoot.kt in Resources */,
+				0B551C5E2AFE910D00BA0052 /* i18n.kt in Resources */,
+				0B551C452AFE910D00BA0052 /* nexatest_icon.png in Resources */,
+				0B551C462AFE910D00BA0052 /* W_152.png in Resources */,
+				0B551C4D2AFE910D00BA0052 /* strings_no.bin in Resources */,
+				0B551C2E2AFE910D00BA0052 /* preferences.ios.kt in Resources */,
 				8E1ECA7D2AAA002000759B4F /* strings_tr.bin in Resources */,
 				8E1ECA772AAA002000759B4F /* strings_sl.bin in Resources */,
+				0B551C332AFE910D00BA0052 /* strings_es.bin in Resources */,
+				0B551C362AFE910D00BA0052 /* strings_de.bin in Resources */,
 				8E1ECA752AAA002000759B4F /* strings_hi.bin in Resources */,
+				0B551C562AFE910D00BA0052 /* Color.kt in Resources */,
+				0B551C402AFE910D00BA0052 /* check.xml in Resources */,
 				8E1ECA7C2AAA002000759B4F /* strings_sv.bin in Resources */,
+				0B551C5B2AFE910D00BA0052 /* AccountListView.kt in Resources */,
+				0B551C642AFE910D00BA0052 /* utils.kt in Resources */,
+				0B551C592AFE910D00BA0052 /* Typography.kt in Resources */,
+				0B551C552AFE910D00BA0052 /* WallyTheme.kt in Resources */,
+				0B551C482AFE910D00BA0052 /* nexa_icon.png in Resources */,
+				0B551C522AFE910D00BA0052 /* AccountDetailScreen.kt in Resources */,
 				8E1ECA802AAA002000759B4F /* strings_in.bin in Resources */,
+				0B551C342AFE910D00BA0052 /* strings_ko.bin in Resources */,
+				0B551C692AFE910D00BA0052 /* baseexception.kt in Resources */,
 				8E1ECA7E2AAA002000759B4F /* strings_no.bin in Resources */,
+				0B551C4B2AFE910D00BA0052 /* bitcoin_cash_token.xml in Resources */,
+				0B551C6D2AFE910D00BA0052 /* payproto_21_72.kt in Resources */,
+				0B551C4E2AFE910D00BA0052 /* SplitBillScreen.kt in Resources */,
 				8E1ECA7B2AAA002000759B4F /* strings_it.bin in Resources */,
+				0B551C532AFE910D00BA0052 /* DashboardScreen.kt in Resources */,
+				0B551C4A2AFE910D00BA0052 /* W_120.png in Resources */,
+				0B551C422AFE910D00BA0052 /* lock.xml in Resources */,
+				0B551C5F2AFE910D00BA0052 /* exceptions.kt in Resources */,
+				0B551C512AFE910D00BA0052 /* SettingsScreen.kt in Resources */,
+				0B551C3A2AFE910D00BA0052 /* strings_hi.bin in Resources */,
+				0B551C3B2AFE910D00BA0052 /* strings_in.bin in Resources */,
+				0B551C302AFE910D00BA0052 /* i18n_ios.kt in Resources */,
+				0B551C2F2AFE910D00BA0052 /* MainViewController.kt in Resources */,
+				0B551C312AFE910D00BA0052 /* strings_nb.bin in Resources */,
+				0B551C2B2AFE910D00BA0052 /* utils_ios.kt in Resources */,
+				0B551C6A2AFE910D00BA0052 /* shopping.kt in Resources */,
 				8E1ECA792AAA002000759B4F /* strings_nb.bin in Resources */,
+				0B551C372AFE910D00BA0052 /* strings_it.bin in Resources */,
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
+				0B551C382AFE910D00BA0052 /* strings_et.bin in Resources */,
+				0B551C352AFE910D00BA0052 /* strings_sl.bin in Resources */,
+				0B551C5C2AFE910D00BA0052 /* ResImageView.kt in Resources */,
+				0B551C492AFE910D00BA0052 /* unlock.xml in Resources */,
+				0B551C652AFE910D00BA0052 /* strings.kt in Resources */,
+				0B551C572AFE910D00BA0052 /* Shapes.kt in Resources */,
+				0B551C4F2AFE910D00BA0052 /* NewAccountScreen.kt in Resources */,
+				0B551C542AFE910D00BA0052 /* WallyDropdown.kt in Resources */,
+				0B551C2C2AFE910D00BA0052 /* baseexception.native.kt in Resources */,
 				8E1ECA742AAA002000759B4F /* strings_es.bin in Resources */,
 				8E1ECA7A2AAA002000759B4F /* strings_ca.bin in Resources */,
 				8E1ECA7F2AAA002000759B4F /* strings_de.bin in Resources */,
+				0B551C3E2AFE910D00BA0052 /* gear.xml in Resources */,
+				0B551C5D2AFE910D00BA0052 /* ShoppingScreen.kt in Resources */,
+				0B551C3F2AFE910D00BA0052 /* plus.xml in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
+				0B551C442AFE910D00BA0052 /* W_1024.png in Resources */,
+				0B551C3D2AFE910D00BA0052 /* strings_sv.bin in Resources */,
+				0B551C3C2AFE910D00BA0052 /* strings_round.bin in Resources */,
+				0B551C672AFE910D00BA0052 /* wallywalletorgapi.kt in Resources */,
+				0B551C4C2AFE910D00BA0052 /* strings_tr.bin in Resources */,
+				0B551C682AFE910D00BA0052 /* reactor.kt in Resources */,
+				0B551C632AFE910D00BA0052 /* bitcoincomapi.kt in Resources */,
+				0B551C6C2AFE910D00BA0052 /* preferences.kt in Resources */,
+				0B551C412AFE910D00BA0052 /* nexareg_icon.png in Resources */,
 				8E1ECA762AAA002000759B4F /* strings_round.bin in Resources */,
+				0B551C6E2AFE910D00BA0052 /* globals.kt in Resources */,
+				0B551C622AFE910D00BA0052 /* accountdiscovery.kt in Resources */,
+				0B551C6B2AFE910D00BA0052 /* listifyMap.kt in Resources */,
+				0B551C582AFE910D00BA0052 /* Theme.kt in Resources */,
 				8E1ECA782AAA002000759B4F /* strings_et.bin in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -367,8 +737,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Apple Development";
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
 				DEVELOPMENT_TEAM = 8A87667ULD;
@@ -401,8 +771,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Apple Development";
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
 				DEVELOPMENT_TEAM = 8A87667ULD;
