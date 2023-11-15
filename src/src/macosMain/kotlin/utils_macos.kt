@@ -2,6 +2,11 @@ package info.bitcoinunlimited.www.wally
 
 import io.ktor.client.*
 import io.ktor.client.plugins.*
+import platform.AppKit.NSPasteboard
+import platform.AppKit.NSPasteboardType
+import platform.AppKit.NSPasteboardTypeString
+import platform.Foundation.NSData
+
 //import platform.UIKit.UIApplication
 
 actual fun GetHttpClient(timeoutInMs: Number): HttpClient = HttpClient(io.ktor.client.engine.cio.CIO)
@@ -29,13 +34,25 @@ actual fun String.urlEncode(): String
     TODO("Not yet implemented")
 }
 
-/** Get the clipboard.  Platforms that have a clipboard history should return that history, with the primary clip in index 0 */
-actual fun getTextClipboard(): List<String>
-{
-    TODO("Not yet implemented")
+/**
+ß * Get the clipboard for MacOs
+ * */
+actual fun getTextClipboard(): List<String> {
+    val generalPB = NSPasteboard.generalPasteboard
+
+    return generalPB.types?.mapNotNull { it as? String }?.filter { type ->
+        // Check if the type corresponds to a string type
+        type == NSPasteboardTypeString
+    }?.mapNotNull { stringType ->
+        // Retrieve the string value for the string type
+        generalPB.stringForType(stringType)
+    }.orEmpty() // Return an empty list if there are no string types
 }
 
 /** Sets the clipboard, potentially asynchronously. */
 actual fun setTextClipboard(msg: String)
 {
+    val pasteboard = NSPasteboard.generalPasteboard()
+    pasteboard.clearContents()
+    pasteboard.setString(msg, NSPasteboardTypeString)
 }

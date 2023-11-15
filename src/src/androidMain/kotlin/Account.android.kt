@@ -54,11 +54,6 @@ var Account.updateReceiveAddressUI: ((Account) -> Unit)?
         updateReceiveAddressUIMap[this] = value
     }
 
-fun Account.saveAccountAddress()
-{
-    notInUI { walletDb!!.set("accountAddress_" + name, (currentReceive?.address?.toString() ?: "").toByteArray()) }
-}
-
 /** Disconnect from the UI and clear the UI */
 fun Account.detachUI()
 {

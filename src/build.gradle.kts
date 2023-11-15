@@ -259,6 +259,9 @@ kotlin {
                 implementation("org.nexa:mpthreads:$mpThreadsVersion")
                 implementation("org.nexa:libnexakotlin:$libNexaKotlinVersion")
                 //implementation("org.nexa:walletoperations:0.0.1")
+
+                // Generate and display Compose Multiplaform QR code
+                implementation("io.github.alexzhirkevich:qrose:1.0.0-beta02")
             }
         }
         val commonTest by getting {
@@ -300,7 +303,15 @@ kotlin {
                 implementation(compose.desktop.windows_x64)
                 implementation(compose.desktop.macos_x64)
                 implementation(compose.desktop.macos_arm64)
-                implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
+                implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.20")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$coroutinesVersion")
+
+                // Required for Dispatchers.Main
+                // https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-dispatchers/-main.html
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:$coroutinesVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:$coroutinesVersion")
+
             }
         }
 

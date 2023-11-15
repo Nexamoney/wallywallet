@@ -5,6 +5,7 @@ import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import info.bitcoinunlimited.www.wally.ui.CONFIGURED_NODE
 import info.bitcoinunlimited.www.wally.ui.EXCLUSIVE_NODE_SWITCH
 import info.bitcoinunlimited.www.wally.ui.PREFER_NODE_SWITCH
+import kotlinx.coroutines.*
 import org.nexa.libnexakotlin.*
 
 const val ACCOUNT_FLAG_NONE = 0UL
@@ -64,6 +65,9 @@ class Account(
   val prefDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
 )
 {
+    val handler = CoroutineExceptionHandler {
+        context, exception -> LogIt.error("Caught in Account CoroutineExceptionHandler: $exception")
+    }
     val walletDb = openKvpDB(dbPrefix + "bip44walletdb")
     val tickerGUI = Reactive<String>("") // Where to show the crypto's ticker
     val balanceGUI = Reactive<String>("")
@@ -353,6 +357,7 @@ class Account(
         }
         catch(e: DataMissingException)
         {
+            LogIt.error(e.message ?: "loadAccountAddress:DataMissingException")
             // its fine we'll grab a new one
         }
 
@@ -499,6 +504,51 @@ class Account(
     }
 
     fun onChange(force: Boolean = false) = onChanged(this, force)
+
+    /**
+     * Common implementatin of onUpdateReceiveInfo from androidMain
+     */
+    fun onUpdatedReceiveInfoCommon(refresh: ((String) -> Unit)): Unit
+    {
+        currentReceive.let {
+            var addr: PayAddress? = it?.address
+
+            // var qr = currentReceiveQR
+            val genNew: Boolean = if (addr == null)
+                true
+            else
+            {
+                var genNewTmp = false
+                // If we have an address, then if re-use is true don't get another one
+                if ((flags and ACCOUNT_FLAG_REUSE_ADDRESSES) > 0U) false
+                // Otherwise get another one if our balance on this address is nonzero
+                else addr.let { GlobalScope.launch(Dispatchers.IO + handler) { genNewTmp = (wallet.getBalanceIn(it) > 0) } }
+                genNewTmp
+            }
+
+            if (genNew)
+            {
+                runBlocking(Dispatchers.IO + handler) {
+                    val ret = wallet.newDestination()
+                    currentReceive = ret
+                    saveAccountAddress()
+                    addr = ret.address
+                }
+            }
+
+            if ((addr != null))  // Should always be true if we get here
+                refresh.invoke(addr.toString())
+
+        }
+    }
+
+    fun saveAccountAddress()
+    {
+        GlobalScope.launch(Dispatchers.IO + CoroutineExceptionHandler { context, throwable ->
+            LogIt.error(throwable.message + " Something went wrong in saveAccountAddress()")
+            LogIt.error(context.toString())
+        }) { walletDb!!.set("accountAddress_" + name, (currentReceive?.address?.toString() ?: "").toByteArray()) }
+    }
 }
 
 expect fun onChanged(account: Account, force: Boolean = false)
@@ -512,3 +562,4 @@ fun containsAccountWithName(accounts: List<Account>, name: String): Boolean
     }
     return false
 }
+
