@@ -4,16 +4,7 @@ stages:
   - lint
   - assemble
   - test
-
-testflight:
-  allow_failure: true # Draft for mp branch fastlane testflight deployment
-  stage: qa
-  tags:
-   - saas-macos-medium-m1
-  image: macos-13-xcode-14
-  script:
-   # - TODO: Install fastlane
-   - bundle exec fastlane ios beta --verbose
+  - deploy_internally
 
 lintVitalRelease:
   stage: lint
@@ -67,3 +58,13 @@ commonIOSArm64Test:
     - xcrun simctl list runtimes
     - xcrun simctl list devices
     - ./gradlew :src:cleanIosSimulatorArm64Test :src:iosSimulatorArm64Test
+
+testflight:
+  allow_failure: true # Draft for mp branch fastlane testflight deployment
+  stage: deploy_internally
+  tags:
+    - saas-macos-medium-m1
+  image: macos-13-xcode-14
+  script:
+    # - TODO: Install fastlane
+    - bundle exec fastlane ios beta --verbose
