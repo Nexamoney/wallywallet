@@ -1,22 +1,10 @@
 package info.bitcoinunlimited.www.wally
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
-import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.readBytes
 import org.nexa.libnexakotlin.GetLog
-import platform.Foundation.NSBundle
-import platform.Foundation.NSData
 import platform.Foundation.NSThread
-import platform.Foundation.create
-import platform.UIKit.UIApplication
-import platform.UIKit.UIImage
 import platform.UIKit.UIPasteboard
 
 private val LogIt = GetLog("BU.wally.utils_ios")

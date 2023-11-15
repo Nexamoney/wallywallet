@@ -20,9 +20,10 @@ import info.bitcoinunlimited.www.wally.ui.theme.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.nexa.libnexakotlin.*
 
+// Antipattern? Use MutableStateFlow<Int> outside of composables
 val triggerRecompose: MutableState<Int> = mutableStateOf(0)
 
-@Composable fun AccountListView(accounts: List<Account>, selectedAccount: MutableState<Account?>, nav: ChildNav)
+@Composable fun AccountListView(accounts: List<Account>, selectedAccount: MutableState<Account?>, nav: ChildNav, onAccountSelected: (Account) -> Unit)
 {
     key(triggerRecompose.value)
     {
@@ -43,7 +44,7 @@ val triggerRecompose: MutableState<Int> = mutableStateOf(0)
                         val anyChanges = it.uiData()
                         AccountItemView(anyChanges, idx, selectedAccount.value == it, devMode,
                           onClickAccount = {
-                              selectedAccount.value = it
+                              onAccountSelected(it)
                           },
                           onClickGearIcon = {
                               nav.displayAccount(it)
