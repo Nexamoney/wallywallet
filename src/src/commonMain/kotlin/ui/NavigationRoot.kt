@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 
 import androidx.compose.ui.graphics.vector.ImageVector
 import info.bitcoinunlimited.www.wally.*
+import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -145,16 +146,16 @@ object ChildNav {
     }
 }
 
-data class NavChoice(val location: ScreenId, val textId: Int, val image: ImageVector?)
+data class NavChoice(val location: ScreenId, val textId: Int, val imagePath: String)
 
 var bottomNavChoices = mutableListOf<NavChoice>(
-  NavChoice(ScreenId.Home, S.title_home, Icons.Default.Home),
-  NavChoice(ScreenId.Identity, S.title_activity_identity, Icons.Default.Home),
-  NavChoice(ScreenId.TricklePay, S.title_activity_trickle_pay, Icons.Default.Home),
-  NavChoice(ScreenId.Assets, S.title_activity_assets, Icons.Default.Home),
-  NavChoice(ScreenId.Shopping, S.title_activity_shopping, Icons.Default.Home),
-  NavChoice(ScreenId.Settings, S.title_activity_settings, Icons.Default.Settings),
-  NavChoice(ScreenId.Test, S.title_test, null),
+  NavChoice(ScreenId.Home, S.title_home, "icons/home.xml"),
+  NavChoice(ScreenId.Identity, S.title_activity_identity, "icons/person.xml"),
+  NavChoice(ScreenId.TricklePay, S.title_activity_trickle_pay, "icons/faucet_drip.xml"),
+  NavChoice(ScreenId.Assets, S.title_activity_assets, "icons/invoice.xml"),
+  NavChoice(ScreenId.Shopping, S.title_activity_shopping, "icons/shopping.xml"),
+  NavChoice(ScreenId.Settings, S.title_activity_settings, "icons/gear.xml"),
+  NavChoice(ScreenId.Test, S.title_test, "icons/gear.xml"),
   )
 
 @Composable
@@ -165,7 +166,7 @@ fun NavigationMenu(nav: ScreenNav)
         Row(modifier = Modifier.padding(0.dp, 0.dp).height(IntrinsicSize.Min)) {
             for (ch in bottomNavChoices)
             {
-                if (ch.image != null)
+                if (ch.imagePath != null)
                 {
                     Button(
                       onClick = { nav.go(ch.location) },
@@ -182,10 +183,11 @@ fun NavigationMenu(nav: ScreenNav)
                       //modifier = Modifier.padding(4.dp, 0.dp)
                       modifier = Modifier.width(IntrinsicSize.Max).height(IntrinsicSize.Min).padding(0.dp, 0.dp).defaultMinSize(1.dp, 1.dp)  //width(100.dp)
                     ) {
-                        Column(verticalArrangement = Arrangement.spacedBy(0.dp),
-                          modifier = Modifier.width(IntrinsicSize.Max).height(IntrinsicSize.Min)
+                        Column(verticalArrangement = Arrangement.spacedBy(0.dp), horizontalAlignment = Alignment.CenterHorizontally,
+                          modifier = Modifier.width(IntrinsicSize.Max).height(IntrinsicSize.Min).padding(4.dp)
                         ) {
-                            Icon(ch.image, i18n(ch.textId), Modifier.padding(0.dp).fillMaxWidth())  // .background(Color.Blue) for debugging
+                            ResImageView(ch.imagePath, Modifier.width(30.dp).height(30.dp), description = ch.imagePath)
+                            // Icon(ch.image, i18n(ch.textId), Modifier.padding(0.dp).fillMaxWidth())  // .background(Color.Blue) for debugging
                             val tmp = TextStyle.Default.copy(lineHeight = 0.em,
                               lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.None))
                             // I want this text to be able to push the button larger.  But that appears to not be happening
