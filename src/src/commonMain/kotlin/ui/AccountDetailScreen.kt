@@ -264,7 +264,7 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, allAc
         notice = text
         GlobalScope.launch(Dispatchers.IO + exceptionHandler) {
             delay(NORMAL_NOTICE_DISPLAY_TIME)  // Delay of 5 seconds
-            withContext(Dispatchers.Main + exceptionHandler) {
+            withContext(Dispatchers.Default + exceptionHandler) {
                 notice = ""
             }
         }
@@ -287,7 +287,7 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, allAc
         errorText = message
         GlobalScope.launch(Dispatchers.IO + exceptionHandler) {
             delay(ERROR_DISPLAY_TIME)  // Delay of 5 seconds
-            withContext(Dispatchers.Main + exceptionHandler) {
+            withContext(Dispatchers.Default + exceptionHandler) {
                 errorText = ""
             }
         }
