@@ -20,6 +20,7 @@ import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import kotlinx.datetime.LocalDateTime
 
 private val LogIt = GetLog("BU.wally.utils")
 
@@ -267,4 +268,16 @@ expect fun isUiThread(): Boolean
 fun String.splitIntoSet():Set<String>
 {
     return split(","," ").map({it.trim()}).filter({it.length > 0}).toSet()
+}
+
+fun formatLocalDateTime(ldt: LocalDateTime): String {
+    val year = ldt.year.toString()
+    val month = ldt.monthNumber.toString().padStart(2, '0')
+    val day = ldt.dayOfMonth.toString().padStart(2, '0')
+    val hour = ldt.hour.toString().padStart(2, '0')
+    val minute = ldt.minute.toString().padStart(2, '0')
+    val second = ldt.second.toString().padStart(2, '0')
+
+    // Format: YYYY-MM-DD HH:MM:SS
+    return "$year-$month-$day $hour:$minute:$second"
 }
