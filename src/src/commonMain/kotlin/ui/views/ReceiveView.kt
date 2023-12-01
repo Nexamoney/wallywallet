@@ -105,7 +105,7 @@ fun AddressQrCode(address: String)
         displayCopiedNotice = true
         GlobalScope.launch(Dispatchers.IO + exceptionHandler) {
             delay(NORMAL_NOTICE_DISPLAY_TIME)  // Delay of 5 seconds
-            withContext(Dispatchers.Main + exceptionHandler) {
+            withContext(Dispatchers.Default + exceptionHandler) {
                 displayCopiedNotice = false
             }
         }
