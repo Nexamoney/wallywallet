@@ -141,14 +141,14 @@ kotlin {
         val iosX64def = iosX64 {
             compilations.getByName("main") {
                 compilerOptions.options.freeCompilerArgs.add("-verbose")
-                compilerOptions.options.freeCompilerArgs.add("-Xopt-in=kotlin.experimental.ExperimentalNativeApi")
+                compilerOptions.options.freeCompilerArgs.add("-opt-in=kotlin.experimental.ExperimentalNativeApi")
                 //binaries.libnexaBinCfg()
             }
         }
         val iosArm64def = iosArm64 {
             compilations.getByName("main") {
                 compilerOptions.options.freeCompilerArgs.add("-verbose")
-                compilerOptions.options.freeCompilerArgs.add("-Xopt-in=kotlin.experimental.ExperimentalNativeApi")
+                compilerOptions.options.freeCompilerArgs.add("-opt-in=kotlin.experimental.ExperimentalNativeApi")
                 //binaries.libnexaBinCfg()
             }
         }
@@ -157,7 +157,7 @@ kotlin {
         val iosSimArm64def = iosSimulatorArm64 {
             compilations.getByName("main") {
                 compilerOptions.options.freeCompilerArgs.add("-verbose")
-                compilerOptions.options.freeCompilerArgs.add("-Xopt-in=kotlin.experimental.ExperimentalNativeApi")
+                compilerOptions.options.freeCompilerArgs.add("-opt-in=kotlin.experimental.ExperimentalNativeApi")
                 //binaries.libnexaBinCfg()
             }
         }
