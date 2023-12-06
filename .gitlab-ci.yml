@@ -1,6 +1,7 @@
 
 # These "stages" are actually separately initiated VMs, so better used for different configurations, etc
 stages:
+  - docs
   - lint
   - assemble
   - build
@@ -10,6 +11,13 @@ stages:
 workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+
+docs:
+  stage: docs
+  tags:
+    - m1-baremetal
+  script:
+    - ./gradlew tasks
 
 lintVitalRelease:
   stage: lint
