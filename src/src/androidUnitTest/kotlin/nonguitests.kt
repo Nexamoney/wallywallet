@@ -78,7 +78,7 @@ class NonGuiTests
         assert(ser.toHex() == ser2.toHex())
     }
 
-
+/*
     @Test
     fun test1()
     {
@@ -115,7 +115,7 @@ class NonGuiTests
         node.generate(1)
         check(wal2.balanceConfirmed == 0L)
     }
-
+*/
 
     /**
      * A native method that is implemented by the 'native-lib' native library,

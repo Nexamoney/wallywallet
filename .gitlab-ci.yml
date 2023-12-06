@@ -3,68 +3,68 @@
 stages:
   - lint
   - assemble
+  - build
   - test
   - deploy_internally
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
 
 lintVitalRelease:
   stage: lint
   tags:
-    - saas-macos-medium-m1
-  image: macos-13-xcode-14
+    - m1-baremetal
   variables:
     ANDROID_HOME: "/opt/homebrew/share/android-commandlinetools"
   script:
-    - brew install --cask temurin # android-commandlinetools requires Java
-    - brew install --cask android-commandlinetools
-    - echo y | sdkmanager "platforms;android-34" "build-tools;34.0.0" >/dev/null
     - ./gradlew :src:lintVitalRelease
 
 assemble:
   stage: assemble
   tags:
-    - saas-macos-medium-m1
-  image: macos-13-xcode-14
+    - m1-baremetal
   variables:
     ANDROID_HOME: "/opt/homebrew/share/android-commandlinetools"
   script:
-    - brew install --cask temurin # android-commandlinetools requires Java
-    - brew install --cask android-commandlinetools
-    - echo y | sdkmanager "platforms;android-34" "build-tools;34.0.0" >/dev/null
     - ./gradlew assemble
+
+mp_build:
+  stage: build
+  tags:
+    - m1-baremetal
+  variables:
+    ANDROID_HOME: "/opt/homebrew/share/android-commandlinetools"
+  script:
+    - ./gradlew build -x :src:lintDebug # Skips android linter with 356 errors, 500 warnings.
 
 commonJvmTest: #
   stage: test
   tags:
-    - saas-macos-medium-m1
-  image: macos-13-xcode-14
+    - m1-baremetal
   script:
-    - brew install --cask temurin # Java
     - ./gradlew :src:cleanJvmTest :src:jvmTest
 
 commonMacosArm64Test:
   stage: test
   tags:
-    - saas-macos-medium-m1
-  image: macos-13-xcode-14
+    - m1-baremetal
   script:
     - ./gradlew :src:cleanMacosArm64Test :src:macosArm64Test
 
 commonIOSArm64Test:
   stage: test
   tags:
-    - saas-macos-medium-m1
+    - m1-baremetal
   image: macos-13-xcode-14
   script:
-    - xcrun simctl list runtimes
-    - xcrun simctl list devices
     - ./gradlew :src:cleanIosSimulatorArm64Test :src:iosSimulatorArm64Test
 
 testflight:
   allow_failure: true # Draft for mp branch fastlane testflight deployment
   stage: deploy_internally
   tags:
-    - saas-macos-medium-m1
-  image: macos-13-xcode-14
+    - m1-baremetal
   script:
     # - TODO: Install fastlane
     - bundle exec fastlane ios beta --verbose
