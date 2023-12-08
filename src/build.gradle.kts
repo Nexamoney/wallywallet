@@ -5,13 +5,13 @@ import java.time.Instant
 import java.net.URL
 
 // Dependency versions
-val mpThreadsVersion = "0.1.8"
-val nexaRpcVersion = "1.1.3"
-val libNexaKotlinVersion = "0.0.24"
+val mpThreadsVersion = "0.1.9"
+val nexaRpcVersion = "1.1.4"
+val libNexaKotlinVersion = "0.1.22_wdb"
 
-val serializationVersion = "1.6.0"  // https://github.com/Kotlin/kotlinx.serialization
+val serializationVersion = "1.6.2"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.7.3"     // https://github.com/Kotlin/kotlinx.coroutines
-val ktorVersion = "2.3.3"           // https://github.com/ktorio/ktor
+val ktorVersion = "2.3.7"           // https://github.com/ktorio/ktor
 val bigNumVersion = "0.3.8"
 val composeVersion = "1.5.3"
 val androidTestCoreVersion = "1.5.0"
@@ -21,10 +21,10 @@ val uriKmpVersion = "0.0.14"
 val secSinceEpoch = Instant.now().epochSecond
 
 plugins {
-    //trick: for the same plugin versions in all sub-modules
+    //trick: for the same plugin versions in all sub-modulesly
     kotlin("multiplatform")
     id("com.android.application")
-    kotlin("plugin.serialization").version("1.9.0")
+    kotlin("plugin.serialization").version("1.9.20")
     id("org.jetbrains.compose").version("1.5.10")
     id("org.jetbrains.dokka").version("1.8.20").apply(false)
     idea
@@ -253,7 +253,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-cio:$ktorVersion")
 
                 implementation("com.squareup.okio:okio:3.1.0")
-                implementation("org.jetbrains.kotlinx:atomicfu:0.21.0")
+                implementation("org.jetbrains.kotlinx:atomicfu:0.22.0")
 
                 // nexa
                 implementation("org.nexa:mpthreads:$mpThreadsVersion")
@@ -311,7 +311,6 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:$coroutinesVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:$coroutinesVersion")
-
             }
         }
 
@@ -358,18 +357,18 @@ kotlin {
                     implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")
                     implementation("androidx.compose.foundation:foundation:$composeVersion")
                     implementation("androidx.compose.material:material:$composeVersion")
-                    implementation("androidx.activity:activity-compose:1.7.2")
+                    implementation("androidx.activity:activity-compose:1.8.0")
                     implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.5.1")
                     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.0")
 
                     // android layout dependencies
                     implementation("com.google.android.flexbox:flexbox:3.0.0")  // https://github.com/google/flexbox-layout/tags
-                    implementation("androidx.activity:activity:1.7.2")
-                    implementation("androidx.navigation:navigation-fragment-ktx:2.7.1")  // https://developer.android.com/jetpack/androidx/releases/navigation
-                    implementation("androidx.navigation:navigation-ui-ktx:2.7.1")
+                    implementation("androidx.activity:activity:1.8.0")
+                    implementation("androidx.navigation:navigation-fragment-ktx:2.7.5")  // https://developer.android.com/jetpack/androidx/releases/navigation
+                    implementation("androidx.navigation:navigation-ui-ktx:2.7.5")
                     implementation("androidx.wear:wear:1.3.0")
                     implementation("com.android.support.constraint:constraint-layout:2.1.4") // https://developer.android.com/jetpack/androidx/releases/constraintlayout
-                    implementation("com.google.android.material:material:1.9.0")
+                    implementation("com.google.android.material:material:1.10.0")
                     implementation("androidx.preference:preference:1.2.1")  // https://developer.android.com/jetpack/androidx/releases/preference
 
                     // network access

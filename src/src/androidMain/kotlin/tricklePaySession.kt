@@ -168,13 +168,12 @@ data class TdppDomain(
 
     override fun BCHserialize(format: SerializationType): BCHserialized //!< Serializer
     {
-        return BCHserialized(format) + domain + topic + addr + uoa +
-          maxper + maxday + maxweek + maxmonth +
-          descper + descday + descweek + descmonth +
-          automaticEnabled +
-          maxperExceeded.v + maxdayExceeded.v + maxweekExceeded.v + maxmonthExceeded.v +
-          assetInfo.v + balanceInfo.v +
-          mainPayAddress + lastPayAddress + accountName
+        return BCHserialized(format).add(domain).add(topic).add(addr).add(uoa)
+          .addInt64(maxper).addInt64(maxday).addInt64(maxweek).addInt64( maxmonth)
+          .add(descper).add(descday).add(descweek).add(descmonth)
+          .add(automaticEnabled).add(maxperExceeded.v).add(maxdayExceeded.v).add(maxweekExceeded.v).add(maxmonthExceeded.v)
+          .add(assetInfo.v).add(balanceInfo.v)
+          .add(mainPayAddress).add(lastPayAddress).add(accountName)
     }
 
     override fun BCHdeserialize(stream: BCHserialized): BCHserialized //!< Deserializer
@@ -355,7 +354,7 @@ class TricklePayDomains(val app: WallyApp)
                           it.BCHserialize()
                       }, SerializationType.DISK))
                     db?.let {
-                        it.set("tdppDomains", ser.flatten())
+                        it.set("tdppDomains", ser.toByteArray())
                     }
                 }
             }
@@ -720,7 +719,16 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
                 // (And I'm not deliberately creating a bad transaction)
                 if (((tflags and TDPP_FLAG_NOPOST) == 0)&&(!breakIt)) try
                     {
-                        getRelevantAccount(domain?.accountName).wallet.send(pTx)
+                        var completed = true
+                        for (inp in pTx.inputs)
+                        {
+                            if (inp.script == null || inp.script.size == 0)
+                            {
+                                LogIt.warning("TDPP special transaction: Counterparty indicated that I could post the completed transaction, but they still need to sign")
+                                completed = false
+                            }
+                        }
+                        if (completed) getRelevantAccount(domain?.accountName).wallet.send(pTx)
                     }
                     catch(e:Exception)  // Its possible that the tx is partial but the caller didn't set the bit, so if the tx is rejected ignore
                     {
@@ -908,13 +916,14 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         val challengerId = host?.toByteArray()
 
         var matches = mutableListOf<TricklePayAssetInfo>()
-        for ((outpoint, spendable) in wal.txos)
-        {
+        //for ((outpoint, spendable) in wal.txos)
+        wal.forEachTxo { spendable ->
             if (spendable.spentHeight < 0)  // unspent
             {
                 val constraint = spendable.priorOutScript
                 if (constraint.matches(stemplate, true) != null)
                 {
+                    val outpoint = spendable.outpoint!!
                     val serPrevout = spendable.prevout.BCHserialize(SerializationType.NETWORK).toHex()
                     matches.add(
                       TricklePayAssetInfo(
@@ -930,6 +939,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
                     LogIt.info(tryAgain.toString())
                 }
             }
+            false
         }
         assetInfoList = TricklePayAssetList(matches)
 
@@ -1076,10 +1086,9 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         }
 
         // Look at the inputs and match with UTXOs that I have, so I have the additional info required to sign this input
-        val txos = wal.txos
         for ((idx, inp) in tx.inputs.withIndex())
         {
-            val utxo = txos[inp.spendable.outpoint]
+            val utxo = wal.getTxo(inp.spendable.outpoint!!)
             if (utxo != null)
             {
                 tx.inputs[idx].spendable = utxo

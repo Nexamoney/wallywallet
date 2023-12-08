@@ -88,12 +88,19 @@ class AssetManager(val app: WallyApp)
     {
         val context = app
 
+        /*
         val dir = context.getDir("card", Context.MODE_PRIVATE)
         val file = File(dir, filename)
         FileOutputStream(file).use {
             it.write(data)
         }
-        return file.absolutePath
+         */
+
+        val file = context.openFileOutput(filename, Context.MODE_PRIVATE)
+        file.use {
+            it.write(data)
+        }
+        return context.getFileStreamPath(filename).path  //.absolutePath
     }
 
     fun loadCardFile(filename: String): Pair<String, ByteArray>
@@ -300,7 +307,7 @@ fun openElectrum(chainSelector: ChainSelector): ElectrumClient
     {
         ElectrumClient(chainSelector, svr, port, useSSL=true)
     }
-    catch (e: java.io.IOException) // covers java.net.ConnectException, UnknownHostException and a few others that could trigger
+    catch (e: ElectrumException) // covers java.net.ConnectException, UnknownHostException and a few others that could trigger
     {
         try  // If the port is given, it might be a p2p port so try the default electrum port
         {
@@ -312,7 +319,7 @@ fun openElectrum(chainSelector: ChainSelector): ElectrumClient
             {
                 ElectrumClient(chainSelector, svr, port, useSSL = false)
             }
-            catch (e: java.io.IOException)
+            catch (e: ElectrumException)
             {
                 if (chainSelector == ChainSelector.BCH)
                     ElectrumClient(chainSelector, LAST_RESORT_BCH_ELECTRS)
@@ -329,60 +336,89 @@ fun openElectrum(chainSelector: ChainSelector): ElectrumClient
 /** shows this image in the passed imageview.  Returns true if imageView chosen, else false */
 fun showMedia(iui: ImageView, vui: VideoView?, uri: Uri?, bytes: ByteArray? = null): Boolean
 {
-    if (uri == null)
+    try
     {
-        iui.setImageDrawable(null)
-        return true
-    }
-    if (bytes == null)  throw UnimplementedException("load from uri")
-    val name = uri.toString().lowercase()
-
-    if (name.endsWith(".svg", true))
-    {
-        val svg = SVG.getFromInputStream(ByteArrayInputStream(bytes))
-        val drawable = PictureDrawable(svg.renderToPicture())
-        iui.setImageDrawable(drawable)
-        iui.visibility=View.VISIBLE
-        vui?.visibility=View.GONE
-        return true
-    }
-    else if (name.endsWith(".jpg", true) ||
-      name.endsWith(".jpeg", true) ||
-      name.endsWith(".png", true) ||
-      name.endsWith(".webp",true) ||
-      name.endsWith(".gif",true) ||
-      name.endsWith(".heic",true) ||
-      name.endsWith(".heif",true)
-    )
-    {
-        val bmp = BitmapFactory.decodeStream(ByteArrayInputStream(bytes))
-        iui.setImageBitmap(bmp)
-        iui.visibility=View.VISIBLE
-        vui?.visibility=View.GONE
-        return true
-    }
-    else
-    {
-        if ((vui != null) && (name.endsWith(".mp4", true) ||
-          name.endsWith(".webm", true) ||
-          name.endsWith(".3gp", true) ||
-          name.endsWith(".mkv", true)))
+        if (uri == null)
         {
-            LogIt.info("Video URI: ${uri.toString()}")
-            vui.setVideoPath(uri.toString())
-            vui.start()
-            iui.visibility=View.INVISIBLE  // Can't be GONE because other stuff is positioned against it
-            vui?.visibility=View.VISIBLE
-            return false
+            iui.setImageDrawable(null)
+            return true
+        }
+        val name = uri.toString().lowercase()
+
+        if (name.endsWith(".svg", true))
+        {
+            val svg = if (bytes == null)
+            {
+                if (uri.scheme == null)
+                {
+                    SVG.getFromInputStream(FileInputStream(name))
+                }
+                else throw UnimplementedException("non-local data in NFT")
+            }
+            else
+            {
+                SVG.getFromInputStream(ByteArrayInputStream(bytes))
+            }
+            val drawable = PictureDrawable(svg.renderToPicture())
+            iui.setImageDrawable(drawable)
+            iui.visibility = View.VISIBLE
+            vui?.visibility = View.GONE
+            return true
+        }
+        else if (name.endsWith(".jpg", true) ||
+          name.endsWith(".jpeg", true) ||
+          name.endsWith(".png", true) ||
+          name.endsWith(".webp", true) ||
+          name.endsWith(".gif", true) ||
+          name.endsWith(".heic", true) ||
+          name.endsWith(".heif", true)
+        )
+        {
+            if (bytes == null)
+            {
+                if (uri.scheme == null)
+                {
+                    val bmp = BitmapFactory.decodeFile(name)
+                    iui.setImageBitmap(bmp)
+                }
+                else throw UnimplementedException("non-local data in NFT")
+            }
+            else
+            {
+                val bmp = BitmapFactory.decodeStream(ByteArrayInputStream(bytes))
+                iui.setImageBitmap(bmp)
+            }
+            iui.visibility = View.VISIBLE
+            vui?.visibility = View.GONE
+            return true
         }
         else
         {
-            // TODO: pick a better cannot load image
-            iui.setImageResource(R.drawable.asset_cannot_show_icon)
-            iui.visibility=View.VISIBLE
-            vui?.visibility=View.GONE
-            return true
+            if ((vui != null) && (name.endsWith(".mp4", true) ||
+                name.endsWith(".webm", true) ||
+                name.endsWith(".3gp", true) ||
+                name.endsWith(".mkv", true)))
+            {
+                LogIt.info("Video URI: ${uri.toString()}")
+                vui.setVideoPath(uri.toString())
+                vui.start()
+                iui.visibility = View.INVISIBLE  // Can't be GONE because other stuff is positioned against it
+                vui?.visibility = View.VISIBLE
+                return false
+            }
+            else
+            {
+                throw UnimplementedException("unsupported video format")
+            }
         }
+    }
+    catch(e: UnimplementedException)
+    {
+        // TODO: pick a better cannot load image
+        iui.setImageResource(R.drawable.asset_cannot_show_icon)
+        iui.visibility = View.VISIBLE
+        vui?.visibility = View.GONE
+        return true
     }
 }
 
@@ -779,6 +815,7 @@ class AssetSuccinctBinder(val ui: AssetSuccinctListItemBinding, val activity: Co
     }
 }
 
+
 class AssetBinder(val ui: AssetListItemBinding, val activity: AssetsActivity): GuiListItemBinder<AssetInfo>(ui.root)
 {
     var showFront = true
@@ -816,9 +853,7 @@ class AssetBinder(val ui: AssetListItemBinding, val activity: AssetsActivity): G
                 {
                     ui.GuiAssetId.text = d.groupInfo.groupId.toString()
                     ui.GuiAssetName.text = d.name ?: ""
-                    var tmp = BigDecimal.fromLong(d.groupInfo.tokenAmt,DecimalMode(TOKEN_PRECISION, scale = (d.tokenInfo?.genesisInfo?.decimal_places ?: 0).toLong()))
-                    tmp = tmp/(BigDecimal.fromInt(10).pow(d.tokenInfo?.genesisInfo?.decimal_places ?: 0))
-                    ui.GuiAssetQuantity.text = tmp.toString()
+                    ui.GuiAssetQuantity.text = tokenAmountString(d.groupInfo.tokenAmt, d.tokenInfo?.genesisInfo?.decimal_places)
                     ui.GuiAssetQuantity.visibility = View.VISIBLE
                     ui.GuiAssetAuthor.visibility = View.GONE
                     ui.GuiAssetSeries.visibility = View.GONE
@@ -833,9 +868,7 @@ class AssetBinder(val ui: AssetListItemBinding, val activity: AssetsActivity): G
                     else
                     {
                         ui.GuiAssetQuantity.visibility = View.VISIBLE
-                        var tmp = BigDecimal.fromLong(d.groupInfo.tokenAmt,DecimalMode(TOKEN_PRECISION, scale = (d.tokenInfo?.genesisInfo?.decimal_places ?: 0).toLong()))
-                        tmp = tmp/(BigDecimal.fromInt(10).pow(d.tokenInfo?.genesisInfo?.decimal_places ?: 0))
-                        ui.GuiAssetQuantity.text = tmp.toString()
+                        ui.GuiAssetQuantity.text = tokenAmountString(d.groupInfo.tokenAmt, d.tokenInfo?.genesisInfo?.decimal_places)
                     }
 
                     if ((nft.author != null) && (nft.author.length > 0))
@@ -1062,13 +1095,17 @@ class AssetsActivity : CommonNavActivity()
     {
         LogIt.info(sourceLoc() + acc.name + ": Construct assets")
         val ast = mutableMapOf<GroupId, AssetInfo>()
-        for (txo in acc.wallet.txos)
-        {
-            val sp = txo.value
+        acc.wallet.forEachTxo { sp ->
             if (sp.isUnspent)
             {
-                val grp = sp.groupInfo()
+                // TODO: this is a workaround for a bug where the script chain is incorrect
+                if (sp.priorOutScript.chainSelector != sp.chainSelector)
+                {
+                    LogIt.warning("BUG fixup: Script chain is ${sp.priorOutScript.chainSelector} but chain is ${sp.chainSelector}")
+                    sp.priorOutScript = SatoshiScript(sp.chainSelector, sp.priorOutScript.type, sp.priorOutScript.flatten())
+                }
 
+                val grp = sp.groupInfo()
                 if (grp != null)
                 {
                     LogIt.info(sourceLoc() + acc.name + ": unspent asset ${grp.groupId.toHex()}")
@@ -1083,6 +1120,7 @@ class AssetsActivity : CommonNavActivity()
                     }
                 }
             }
+            false
         }
 
         // Start grabbing the data for all assets (asynchronously)
@@ -1379,7 +1417,7 @@ class AssetsActivity : CommonNavActivity()
     fun showCardFront()
     {
         val a = asset ?: return
-        showDetailMediaUri(a.iconUri ?: null, a.iconBytes)
+        showDetailMediaUri(a.iconUri, a.iconBytes)
         ui.GuiAssetMediaRole.text = i18n(R.string.NftCardFront)
     }
 
@@ -1450,9 +1488,28 @@ class AssetsActivity : CommonNavActivity()
     }
 
 
-    fun showDetailMediaUri(uri: Uri?, bytes: ByteArray? = null): ByteArray? = showDetailMedia(uri.toString().lowercase(), bytes)
+    fun showDetailMediaUri(uri: Uri?, bytes: ByteArray? = null): ByteArray?
+    {
+        ui.GuiAssetVideo.visibility = View.GONE
+        ui.GuiAssetWeb.visibility = View.GONE
+        ui.GuiAssetImage.visibility = View.GONE
+
+        if (bytes == null && uri?.scheme == "http")  throw UnimplementedException("load from uri")
+        when (showMedia(ui.GuiAssetImageBox, ui.GuiAssetVideoBox, uri, bytes))
+        {
+            true -> { ui.GuiAssetImage.visibility = View.VISIBLE }
+            false -> { ui.GuiAssetVideo.visibility = View.VISIBLE }
+        }
+        return bytes
+    }
 
     fun showDetailMedia(name: String?, bytes: ByteArray? = null): ByteArray?
+    {
+        if (name != null) return showDetailMediaUri(Uri.parse(name), bytes)
+        else return showDetailMediaUri(null, bytes)
+    }
+
+    /*
     {
         ui.GuiAssetVideo.visibility = View.GONE
         ui.GuiAssetWeb.visibility = View.GONE
@@ -1510,6 +1567,8 @@ class AssetsActivity : CommonNavActivity()
 
         return bytes
     }
+
+     */
 
 
 

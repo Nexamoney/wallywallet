@@ -20,6 +20,7 @@ const val MAX_NO_RECOVERY_WARN_BALANCE = 1000000 * 10
 
 private val LogIt = GetLog("BU.wally.Account")
 
+/** You can prefix every database (to isolate testing from production, for example) with this string */
 var dbPrefix = ""
 /** Currently selected fiat currency code */
 var fiatCurrencyCode: String = "USD"
@@ -40,19 +41,6 @@ fun WallyGetCnxnMgr(chain: ChainSelector, name: String? = null, start:Boolean = 
     return ret
 }
 
-/** Save the PIN of an account to the database */
-fun SaveAccountPin(actName: String, epin: ByteArray)
-{
-    val finalEpin = if (epin.isEmpty()) // Bug workaround: SQLDelight crashes on ios with 0-length arrays on iOS
-    {
-        byteArrayOf(0)
-    }
-    else
-        epin
-
-    val db = walletDb!!
-    db.set("accountPin_" + actName, finalEpin)
-}
 
 class Account(
   val name: String, //* The name of this account
@@ -68,7 +56,7 @@ class Account(
     val handler = CoroutineExceptionHandler {
         context, exception -> LogIt.error("Caught in Account CoroutineExceptionHandler: $exception")
     }
-    val walletDb = openKvpDB(dbPrefix + "bip44walletdb")
+    val walletDb = openWalletDB(dbPrefix + name + "_wallet", chainSelector)
     val tickerGUI = Reactive<String>("") // Where to show the crypto's ticker
     val balanceGUI = Reactive<String>("")
     val unconfirmedBalanceGUI = Reactive<String>("")
@@ -76,6 +64,7 @@ class Account(
 
     var encodedPin: ByteArray? = loadEncodedPin()
 
+    @Volatile
     var started = false  // Have the cnxnmgr and blockchain services been started or are we in initialization?
 
     //? Was the PIN entered properly since the last 15 second sleep?
@@ -111,10 +100,17 @@ class Account(
             // support older wallets by allowing empty account flags
         }
         LogIt.info(sourceLoc() + " " + ": Loading wallet " + name)
-        val t = Bip44Wallet(walletDb!!, name)  // Load a saved wallet
+        val t = try {
+            Bip44Wallet(walletDb!!, name)
+        }  // Load a saved wallet
+        catch (e:Exception)
+        {
+            LogIt.error("exception creating wallet: $e")
+            throw e
+        }
         LogIt.info(sourceLoc() + " " + ": Loaded wallet " + name)
         val stats = t.statistics()
-        LogIt.info(sourceLoc() + " " + name + ": Used Addresses: " + stats.numUsedAddrs + " Unused Addresses: " + stats.numUnusedAddrs + " Num UTXOs: " + stats.numUnspentTxos + " Num wallet events: " + t.txHistory.size)
+        LogIt.info(sourceLoc() + " " + name + ": Used Addresses: " + stats.numUsedAddrs + " Unused Addresses: " + stats.numUnusedAddrs + " Num UTXOs: " + stats.numUnspentTxos + " Num wallet events: " + t.numTx())
         t
     }
     else  // New account
@@ -174,11 +170,18 @@ class Account(
         loadAccountAddress()
     }
 
+    /** Save the PIN of an account to the database */
+    fun saveAccountPin(actName: String, epin: ByteArray)
+    {
+        walletDb!!.set("accountPin_" + actName, epin)
+    }
+
     @Suppress("UNUSED_PARAMETER")
     fun start()
     {
         if (!started)
         {
+            LogIt.info(sourceLoc() + " " + name + ": Account startup: starting threads")
             cnxnMgr.start()
             chain.start()
             started=true
@@ -197,15 +200,14 @@ class Account(
     {
         if (started)
         {
-            LogIt.info(sourceLoc() + ": App resuming: Restarting threads if needed")
+            LogIt.info(sourceLoc() + " " + name + ": Account resuming: Restarting threads if needed")
             wallet.restart()
             wallet.chainstate?.chain?.restart()
             wallet.chainstate?.chain?.net?.restart()
         }
         else
         {
-            LogIt.error(sourceLoc() + ": App resuming: Not started")
-            throw IllegalStateException(": App resuming: Not started")
+            LogIt.warning(sourceLoc() + " " + name + ": Account resuming but was not yet started")
         }
     }
 
@@ -330,19 +332,21 @@ class Account(
     /** Returns true if this account has unspent assets (grouped UTXOs) in it */
     fun hasAssets(): Boolean
     {
-        for (txo in wallet.txos)
-        {
-            val sp = txo.value
-            if (sp.isUnspent)
+        var ret = false
+
+        // TODO switch to a find function
+        wallet.forEachTxo { sp ->
+            if ((!ret) && sp.isUnspent)
             {
                 val grp = sp.groupInfo()
                 if ((grp != null) && !grp.isAuthority())  // TODO not dealing with authority txos in Wally mobile
                 {
-                    return true
+                    ret = true
                 }
             }
+            ret// stop looking as soon as we find one
         }
-        return false
+        return ret
     }
 
     fun loadAccountAddress()
@@ -455,7 +459,7 @@ class Account(
 
     fun saveAccountFlags()
     {
-        walletDb!!.set("accountFlags_" + name, BCHserialized.uint32(flags.toLong()).flatten())
+        walletDb!!.set("accountFlags_" + name, BCHserialized.uint32(flags.toLong()).toByteArray())
     }
 
     // Load the exchange rate

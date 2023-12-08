@@ -11,6 +11,7 @@ import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
 import kotlin.io.path.Path
 import kotlin.io.path.copyTo
+import com.ionspin.kotlin.bignum.decimal.*
 
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.deleteIfExists
@@ -52,6 +53,23 @@ var NFTY_DEFAULT_VIDEO_SUFFIX = ".mp4"
 var NFTY_MINT_CARD_PIX = 300
 var NFTY_PREFERRED_BITMAP_EXTENSION = "png" // convert svg card images that are too large into this format
 
+fun tokenDecimalMode(decimalPlaces: Int?): DecimalMode
+{
+    return DecimalMode(TOKEN_PRECISION, roundingMode = RoundingMode.TOWARDS_ZERO, scale = (decimalPlaces ?: 0).toLong())
+}
+
+fun tokenDecimalFromFinestUnit(finestAmount: Long, decimalPlaces: Int?): BigDecimal
+{
+    var tmp = BigDecimal.fromLong(finestAmount,tokenDecimalMode(decimalPlaces))
+    tmp = tmp/(BigDecimal.fromInt(10).pow(decimalPlaces ?: 0))
+    return tmp
+}
+
+fun tokenAmountString(finestAmount: Long, decimalPlaces: Int?): String
+{
+    if (decimalPlaces == 0 || decimalPlaces == null) return finestAmount.toString()
+    return tokenDecimalFromFinestUnit(finestAmount, decimalPlaces).toPlainString()
+}
 
 // Escapes double quotes and backslashes so this string is a valid json string
 fun String.jsonString(): String
@@ -190,7 +208,7 @@ fun nftData(nftyZip: ByteArray): NexaNFTv2?
             val s = String(data, Charsets.UTF_8)
             val js = Json { ignoreUnknownKeys = true }
             //val nftInfo = js.decodeFromString<NexaNFTv2>(s)  // DOES NOT WORK IN MINIFIED RELEASE BUILD
-            val nftInfo = js.decodeFromString(NexaNFTv2.serializer(),s)
+            val nftInfo = js.decodeFromString<NexaNFTv2>(NexaNFTv2.serializer(),s)
             zipIn.close()
             return nftInfo
         }

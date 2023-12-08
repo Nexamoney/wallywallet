@@ -327,10 +327,10 @@ class NewAccount : CommonNavActivity()
             val newSecret = secretDerivation(index)
             val us = UnsecuredSecret(newSecret)
 
-            val dests = mutableListOf<SatoshiScript>(Pay2PubKeyHashDestination(chainSelector, us).outputScript())  // Note, if multiple destination types are allowed, the wallet load/save routines must be updated
+            val dests = mutableListOf<SatoshiScript>(Pay2PubKeyHashDestination(chainSelector, us, index.toLong()).outputScript())  // Note, if multiple destination types are allowed, the wallet load/save routines must be updated
             //LogIt.info(sourceLoc() + " " + name + ": New Destination " + tmp.toString() + ": " + dest.address.toString())
             if (chainSelector.hasTemplates)
-                dests.add(Pay2PubKeyTemplateDestination(chainSelector, us).ungroupedOutputScript())
+                dests.add(Pay2PubKeyTemplateDestination(chainSelector, us, index.toLong()).ungroupedOutputScript())
 
             for (dest in dests)
             {
@@ -380,7 +380,7 @@ class NewAccount : CommonNavActivity()
         {
             val newSecret = secretDerivation(index)
 
-            val dest = Pay2PubKeyHashDestination(chainSelector, UnsecuredSecret(newSecret))  // Note, if multiple destination types are allowed, the wallet load/save routines must be updated
+            val dest = Pay2PubKeyHashDestination(chainSelector, UnsecuredSecret(newSecret), index.toLong())  // Note, if multiple destination types are allowed, the wallet load/save routines must be updated
 
             try
             {

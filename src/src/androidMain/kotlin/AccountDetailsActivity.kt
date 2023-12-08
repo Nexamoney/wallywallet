@@ -323,13 +323,13 @@ class AccountDetailsActivity: CommonNavActivity()
                         {
                             val epin = EncodePIN(name, newPin)
                             selectedAccount?.encodedPin = epin
-                            later { SaveAccountPin(name, epin) }
+                            later { selectedAccount?.saveAccountPin(name, epin) }
                             displayNotice(i18n(R.string.PinChanged))
                         }
                         else
                         {
                             selectedAccount?.encodedPin = null
-                            later { SaveAccountPin(name, byteArrayOf()) }
+                            later { selectedAccount?.saveAccountPin(name, byteArrayOf()) }
                             displayNotice(i18n(R.string.PinRemoved))
                         }
 

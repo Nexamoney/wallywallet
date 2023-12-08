@@ -28,6 +28,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 // import androidx.test.espresso.screenshot.captureToBitmap
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import info.bitcoinunlimited.www.wally.*
+import io.ktor.client.network.sockets.*
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import org.hamcrest.CoreMatchers.instanceOf
@@ -152,6 +153,59 @@ fun clickId(id: Int): ViewAction
             v.performClick()
         }
     }
+}
+
+fun setUpSettTests() : Pair<SharedPreferences?,ActivityScenario<Settings>>
+{
+    // Start up a particular Activity.  In this case "Settings"
+    val activityScenario: ActivityScenario<Settings> = ActivityScenario.launch(Settings::class.java)
+    activityScenario.moveToState(Lifecycle.State.RESUMED)
+
+    // Grab the instance of our app
+    var app: WallyApp? = null
+    activityScenario.onActivity { app = (it.application as WallyApp) }
+    kotlin.assert(app != null)
+
+    // Get access to what is happening in the back end
+    // Everything needs to be inside onActivity, to schedule it within the activity context
+    var preferenceDB: SharedPreferences? = null
+    activityScenario.onActivity {
+        preferenceDB = it.getSharedPreferences(it.getString(R.string.preferenceFileName), Context.MODE_PRIVATE)
+    }
+    return Pair(preferenceDB,activityScenario)
+}
+
+inline fun<reified T : Activity> setUp(vararg names:String) : Triple<ChainSelector,ActivityScenario<T>,WallyApp?>
+{
+
+    val cs = ChainSelector.NEXAREGTEST
+    val activityScenario: ActivityScenario<T> = ActivityScenario.launch(T::class.java)
+    activityScenario.moveToState(Lifecycle.State.RESUMED);
+    var app: WallyApp? = null
+    activityScenario.onActivity { app = (it.application as WallyApp) }
+    kotlin.assert(app != null)
+
+    //val ctxt = PlatformContext(app!!.applicationContext)
+    val wdb = openWalletDB(dbPrefix + "bip44walletdb")!!
+    for (name in names) {
+        deleteWallet(wdb, name, cs)
+    }
+    return Triple(cs,activityScenario,app!!)
+}
+
+
+fun giveWalletCoins() : NexaRpc
+{
+    val rpcConnection = "http://" + SimulationHostIP + ":" + REGTEST_RPC_PORT
+    LogIt.info("Connecting to: " + rpcConnection)
+    var rpc = NexaRpcFactory.create(rpcConnection)
+    var peerInfo = try {
+        rpc.getpeerinfo()
+    } catch (e: ConnectTimeoutException) {
+        throw ConnectTimeoutException("ATTENTION! You haven't run the nexa-qt.exe. Please go do that!")
+    }
+    check(peerInfo.size >= 0 && peerInfo.size <= 10)
+    return rpc
 }
 
 @RunWith(AndroidJUnit4::class)
@@ -330,6 +384,8 @@ class GuiTest
     /** This expects that you are in the main activity */
     fun createNewAccount(name: String, app: WallyApp, chainSelector: ChainSelector, pin:String? = null, hidden:Boolean = false, recoveryPhrase: String? = null, doubleOk:Boolean = false)
     {
+        if (!chainSelector.isMainNet) devMode = true  // Switch into dev mode if using a devmode chain
+
         // Switch to a different activity
         while(true) try {
             onView(withId(GuiId.GuiNewAccount)).perform(click())

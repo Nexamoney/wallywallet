@@ -192,27 +192,26 @@ fun updateWalletDashboard(accounts: MutableMap<String, Account>):String
         var nOutUnconf = 0
         var nInUnconf = 0
         result.append(a.key + " on " + w.blockchain.chainSelector + " at " + w.syncedHeight + " balance " + w.balance + ":" + w.balanceUnconfirmed + "\n" )
-        for (txo in w.txos)
-        {
-            if (txo.value.spentUnconfirmed)
+        w.forEachTxo { sp ->
+            if (sp.spentUnconfirmed)
             {
                 nOutUnconf++
             }
             // count the incoming ignoring change
-            if (txo.value.spendableUnconfirmed > 0 && !txo.value.spentUnconfirmed)
+            if (sp.commitUnconfirmed > 0 && !sp.spentUnconfirmed)
             {
                 nInUnconf++
             }
+            false
         }
         result.append("  " + nOutUnconf + " outgoing unconfirmed transactions\n")
         result.append("  " + nInUnconf + " incoming unconfirmed transactions\n")
-        for (txo in w.txos)
-        {
-            if (txo.value.isUnspent)
+        w.forEachTxo { sp ->
+            if (sp.isUnspent)
             {
-                result.append("  " + txo.value.amount + " on " + txo.value.addr + " (" + (curHeight - txo.value.commitHeight) + "confs)  tx: ${txo.value.commitTxIdem.toHex()}\n")
+                result.append("  " + sp.amount + " on " + sp.addr + " (" + (curHeight - sp.commitHeight) + "confs)  tx: ${sp.commitTxIdem.toHex()}\n")
             }
-
+            false
         }
     }
     return result.toString()

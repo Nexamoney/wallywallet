@@ -77,10 +77,9 @@ fun AddressHistoryScreen(acc: Account, back: () -> Unit)
             val os = a.outputScript()
             var first = Long.MAX_VALUE
             var last = Long.MIN_VALUE
-            for (txh in acc.wallet.txHistory)
-            {
+            acc.wallet.forEachTx {
                 var amt = 0L
-                for (out in txh.value.tx.outputs)
+                for (out in it.tx.outputs)
                 {
                     if (os contentEquals out.script)
                     {
@@ -90,9 +89,10 @@ fun AddressHistoryScreen(acc: Account, back: () -> Unit)
                 }
                 if (amt > 0)
                 {
-                    if (first > txh.value.date) first = txh.value.date
-                    if (last < txh.value.date) last = txh.value.date
+                    if (first > it.date) first = it.date
+                    if (last < it.date) last = it.date
                 }
+                false
             }
 
             if (used)

@@ -16,6 +16,8 @@ import androidx.compose.ui.layout.ContentScale
 import kotlinx.coroutines.*
 import org.nexa.libnexakotlin.*
 import com.eygraber.uri.*
+import com.ionspin.kotlin.bignum.decimal.DecimalMode
+import com.ionspin.kotlin.bignum.decimal.RoundingMode
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*

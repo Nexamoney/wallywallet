@@ -25,7 +25,8 @@ private val LogIt = GetLog("BU.wally.app")
 
 var wallyApp: CommonApp? = null
 var forTestingDoNotAutoCreateWallets = false
-var walletDb: KvpDatabase? = null
+var kvpDb: KvpDatabase? = null
+@Volatile
 var coinsCreated = false
 
 data class LongPollInfo(val proto: String, val hostPort: String, val cookie: String?, var active: Boolean = true)
@@ -336,9 +337,7 @@ open class CommonApp
     fun saveActiveAccountList()
     {
         val s: String = accounts.keys.joinToString(",")
-
-        val db = walletDb!!
-
+        val db = kvpDb!!
         db.set("activeAccountNames", s.toByteArray())
         db.set("wallyDataVersion", WALLY_DATA_VERSION)
     }
@@ -350,7 +349,6 @@ open class CommonApp
 
         // I only want to write the PIN once when the account is first created
         val epin = if (pin.length > 0) EncodePIN(name, pin) else byteArrayOf()
-        SaveAccountPin(name, epin)
 
         return accountLock.lock {
             val ac = try
@@ -366,6 +364,7 @@ open class CommonApp
             ac.pinEntered = true  // for convenience, new accounts begin as if the pin has been entered
             ac.start()
             ac.onChange()
+            ac.saveAccountPin(name, epin)
             ac.wallet.save(true)
 
             accounts[name] = ac
@@ -431,7 +430,6 @@ open class CommonApp
         {
             byteArrayOf()
         }
-        SaveAccountPin(name, epin)
 
         var veryEarly = earliestActivity
         if (nonstandardActivity != null)
@@ -448,6 +446,7 @@ open class CommonApp
             ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
             ac.start()
             ac.onChange()
+            ac.saveAccountPin(name, epin)
 
             accounts[name] = ac
             // Write the list of existing accounts, so we know what to load
@@ -465,7 +464,7 @@ open class CommonApp
             {
                 val prefs = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
                 LogIt.info(sourceLoc() + " Wally Wallet App Started")
-                walletDb = openKvpDB(dbPrefix + "bip44walletdb")
+                kvpDb = openKvpDB(dbPrefix + "wpw")
 
                 if (REG_TEST_ONLY)  // If I want a regtest only wallet for manual debugging, just create it directly
                 {
@@ -486,7 +485,7 @@ open class CommonApp
                 }
                 else  // OK, recreate the wallets saved on this phone
                 {
-                    val db = walletDb!!
+                    val db = kvpDb!!
 
                     LogIt.info(sourceLoc() + " Loading account names")
                     val accountNames = try
@@ -505,11 +504,11 @@ open class CommonApp
                         LogIt.info(sourceLoc() + " " + name + ": Loading account")
                         try
                         {
-                            val ac = Account(name)
+                            val ac = Account(name, prefDB = prefs)
                             accountLock.lock { accounts[ac.name] = ac }
                         } catch (e: DataMissingException)
                         {
-                            LogIt.warning(sourceLoc() + " " + name + ": Active account $name was not found in the database")
+                            LogIt.warning(sourceLoc() + " " + name + ": Active account $name was not found in the database. Error $e")
                             // Nothing to really do but ignore the missing account
                         }
                         LogIt.info(sourceLoc() + " " + name + ": Loaded account")

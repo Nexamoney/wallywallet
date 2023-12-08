@@ -507,7 +507,10 @@ class TxHistoryActivity : CommonNavActivity()
                     {
                         setTitle(i18n(R.string.title_activity_tx_history) % mapOf("account" to walName))
                         val wallet = coin.wallet
-                        val historyList: List<TransactionHistory> = wallet.txHistory.values.sortedBy { it.date }.reversed()
+                        val historyList: MutableList<TransactionHistory> = mutableListOf() // = wallet.txHistory.values.sortedBy { it.date }.reversed()
+                        wallet.forEachTxByDate {
+                            historyList.add(it)
+                        }
                         account = coin
                         adapter = GuiList(ui.GuiTxHistoryList, historyList, this, {
                             val ui = TxHistoryListItemBinding.inflate(LayoutInflater.from(it.context), it, false)
@@ -644,10 +647,9 @@ class TxHistoryActivity : CommonNavActivity()
             val os = a.outputScript()
             var first = Long.MAX_VALUE
             var last = Long.MIN_VALUE
-            for (txh in acc.wallet.txHistory)
-            {
+            acc.wallet.forEachTx { txh ->
                 var amt = 0L
-                for (out in txh.value.tx.outputs)
+                for (out in txh.tx.outputs)
                 {
                     if (os contentEquals out.script)
                     {
@@ -657,9 +659,10 @@ class TxHistoryActivity : CommonNavActivity()
                 }
                 if (amt > 0)
                 {
-                    if (first > txh.value.date) first = txh.value.date
-                    if (last < txh.value.date) last = txh.value.date
+                    if (first > txh.date) first = txh.date
+                    if (last < txh.date) last = txh.date
                 }
+                false
             }
 
             if (used)

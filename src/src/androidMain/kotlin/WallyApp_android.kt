@@ -420,8 +420,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         registerActivityLifecycleCallbacks(ActivityLifecycleHandler(this))  // track the current activity
         createNotificationChannel()
 
-        walletDb
-
         /*
         var myClipboard = getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager
         myClipboard.addPrimaryClipChangedListener(object:  ClipboardManager.OnPrimaryClipChangedListener {

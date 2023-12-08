@@ -445,13 +445,13 @@ fun AccountDetailChangePinView(acc: Account, displayError: (String) -> Unit, dis
             val epin = EncodePIN(name, newPin)
             acc.encodedPin = epin
             displayNotice(S.PinChanged)
-            later { SaveAccountPin(name, epin) }
+            later { acc.saveAccountPin(name, epin) }
             pinChangedOrCancelled()
         }
         else
         {
             acc.encodedPin = null
-            later { SaveAccountPin(name, byteArrayOf()) }
+            later { acc.saveAccountPin(name, byteArrayOf()) }
             displayNotice(S.PinRemoved)
             pinChangedOrCancelled()
         }
