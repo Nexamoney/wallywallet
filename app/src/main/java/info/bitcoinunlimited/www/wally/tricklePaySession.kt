@@ -724,7 +724,16 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
                 // (And I'm not deliberately creating a bad transaction)
                 if (((tflags and TDPP_FLAG_NOPOST) == 0)&&(!breakIt)) try
                     {
-                        getRelevantAccount(domain?.accountName).wallet.send(pTx)
+                        var completed = true
+                        for (inp in pTx.inputs)
+                        {
+                            if (inp.script == null || inp.script.size == 0)
+                            {
+                                LogIt.warning("TDPP special transaction: Counterparty indicated that I could post the completed transaction, but they still need to sign")
+                                completed = false
+                            }
+                        }
+                        if (completed) getRelevantAccount(domain?.accountName).wallet.send(pTx)
                     }
                     catch(e:Exception)  // Its possible that the tx is partial but the caller didn't set the bit, so if the tx is rejected ignore
                     {

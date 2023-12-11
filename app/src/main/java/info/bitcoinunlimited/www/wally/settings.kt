@@ -94,7 +94,7 @@ class Settings : CommonActivity()
         app = (getApplication() as WallyApp)
 
         origTitle = title.toString()
-        var titlebar: View = findViewById(R.id.action_bar)
+        var titlebar: View = findViewById(androidx.appcompat.R.id.action_bar)
         origTitleBackground = ColorDrawable(ContextCompat.getColor(applicationContext, R.color.titleBackground))
         origTitleBackground?.let { titlebar.background = it }  // Set the title background color here, so we don't need to match the background defined in some resource file
 

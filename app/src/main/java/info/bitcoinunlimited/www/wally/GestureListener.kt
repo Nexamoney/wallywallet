@@ -66,13 +66,13 @@ open class OnSwipeTouchListener(val view: View, var claimIfUsed: Boolean=true) :
         }
 
         // Determines the fling velocity and then fires the appropriate swipe event accordingly
-        override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean
+        override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean
         {
             val result = false
             try
             {
-                val diffY = e2.y - e1.y
-                val diffX = e2.x - e1.x
+                val diffY = if (e1 != null) e2.y - e1.y else velocityY
+                val diffX = if (e1 != null) e2.x - e1.x else velocityX
                 if (Math.abs(diffX) > Math.abs(diffY))
                 {
                     if (Math.abs(diffY) < MAX_ANGLED_SWIPE)
@@ -110,6 +110,8 @@ open class OnSwipeTouchListener(val view: View, var claimIfUsed: Boolean=true) :
 
                 // Radiate gesture starts from the middle and goes outwards to one of the other quadrants
                 // Note that it will only be valid if a prior gesture did not match.  Therefore radiating vertically or horizontally probably won't work
+                // Aug 29, 2023 onFling fn def changed so e1 can be a null, but no docs explain what that means.  I need to see the fling direction...
+                if (e1 == null) return false
                 val st = nonarant(e1)
                 val end = nonarant(e2)
                 if (st.first == 1 && st.second == 1 && end.first != 1 && end.second != 1)

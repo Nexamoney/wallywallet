@@ -88,12 +88,19 @@ class AssetManager(val app: WallyApp)
     {
         val context = app
 
+        /*
         val dir = context.getDir("card", Context.MODE_PRIVATE)
         val file = File(dir, filename)
         FileOutputStream(file).use {
             it.write(data)
         }
-        return file.absolutePath
+         */
+
+        val file = context.openFileOutput(filename, Context.MODE_PRIVATE)
+        file.use {
+            it.write(data)
+        }
+        return context.getFileStreamPath(filename).path  //.absolutePath
     }
 
     fun loadCardFile(filename: String): Pair<String, ByteArray>
@@ -334,11 +341,11 @@ fun showMedia(iui: ImageView, vui: VideoView?, uri: Uri?, bytes: ByteArray? = nu
         iui.setImageDrawable(null)
         return true
     }
-    if (bytes == null)  throw UnimplementedException("load from uri")
     val name = uri.toString().lowercase()
 
     if (name.endsWith(".svg", true))
     {
+        if (bytes == null)  throw UnimplementedException("load from uri")
         val svg = SVG.getFromInputStream(ByteArrayInputStream(bytes))
         val drawable = PictureDrawable(svg.renderToPicture())
         iui.setImageDrawable(drawable)
@@ -355,6 +362,7 @@ fun showMedia(iui: ImageView, vui: VideoView?, uri: Uri?, bytes: ByteArray? = nu
       name.endsWith(".heif",true)
     )
     {
+        if (bytes == null)  throw UnimplementedException("load from uri")
         val bmp = BitmapFactory.decodeStream(ByteArrayInputStream(bytes))
         iui.setImageBitmap(bmp)
         iui.visibility=View.VISIBLE
@@ -1447,9 +1455,28 @@ class AssetsActivity : CommonNavActivity()
     }
 
 
-    fun showDetailMediaUri(uri: Uri?, bytes: ByteArray? = null): ByteArray? = showDetailMedia(uri.toString().lowercase(), bytes)
+    fun showDetailMediaUri(uri: Uri?, bytes: ByteArray? = null): ByteArray?
+    {
+        ui.GuiAssetVideo.visibility = View.GONE
+        ui.GuiAssetWeb.visibility = View.GONE
+        ui.GuiAssetImage.visibility = View.GONE
+
+        if (bytes == null && uri?.scheme == "http")  throw UnimplementedException("load from uri")
+        when (showMedia(ui.GuiAssetImageBox, ui.GuiAssetVideoBox, uri, bytes))
+        {
+            true -> { ui.GuiAssetImage.visibility = View.VISIBLE }
+            false -> { ui.GuiAssetVideo.visibility = View.VISIBLE }
+        }
+        return bytes
+    }
 
     fun showDetailMedia(name: String?, bytes: ByteArray? = null): ByteArray?
+    {
+        if (name != null) return showDetailMediaUri(Uri.parse(name), bytes)
+        else return showDetailMediaUri(null, bytes)
+    }
+
+    /*
     {
         ui.GuiAssetVideo.visibility = View.GONE
         ui.GuiAssetWeb.visibility = View.GONE
@@ -1507,6 +1534,8 @@ class AssetsActivity : CommonNavActivity()
 
         return bytes
     }
+
+     */
 
 
 

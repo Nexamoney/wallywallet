@@ -125,7 +125,7 @@ class AlertActivity : CommonNavActivity()
       .withLocale(Locale.getDefault())
       .withZone(ZoneId.systemDefault())
 
-    override var navActivityId = R.id.home
+    override var navActivityId = R.id.navigation_home
 
     val viewSync = ThreadCond()
     var showingDetails = false

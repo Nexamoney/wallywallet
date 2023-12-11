@@ -53,7 +53,8 @@ val initialShopping: ArrayList<ShoppingDestination> = arrayListOf(
   ShoppingDestination(i18n(R.string.StoreMapButton), i18n(R.string.ExplainStoreMap), i18n(R.string.StoreMapUrl), i18n(R.string.StoreMapAppPackage))
    */
   ShoppingDestination(i18n(R.string.NFTs), i18n(R.string.ExplainNFTs), i18n(R.string.NftUrl), "", R.drawable.ic_niftyart_logo_plain),
-  ShoppingDestination(i18n(R.string.CexButton), i18n(R.string.ExplainTxBit), "https://txbit.io/Trade/NEXA/USDT", "", R.drawable.txbit_io),
+ // ShoppingDestination(i18n(R.string.CexButton), i18n(R.string.ExplainTxBit), "https://txbit.io/Trade/NEXA/USDT", "", R.drawable.txbit_io),
+  ShoppingDestination(i18n(R.string.CexButton), i18n(R.string.ExplainBitmart), "https://www.bitmart.com/trade/en-US?symbol=NEXA_USDT", "", R.drawable.bitmart_icon),
   ShoppingDestination(i18n(R.string.CexButton), i18n(R.string.ExplainMexc), "https://www.mexc.com/exchange/NEXA_USDT", "", R.drawable.ic_mexc)
 )
 

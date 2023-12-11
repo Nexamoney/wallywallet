@@ -341,7 +341,7 @@ open class CommonActivity : AppCompatActivity()
         super.onCreate(savedInstanceState)
 
         origTitle = title.toString()
-        val titlebar: View = findViewById(R.id.action_bar)
+        val titlebar: View = findViewById(androidx.appcompat.R.id.action_bar)
         origTitleBackground = ColorDrawable(ContextCompat.getColor(applicationContext, R.color.titleBackground))
 
         origTitleBackground?.let { titlebar.background = it }  // Set the title background color here, so we don't need to match the background defined in some resource file
@@ -595,7 +595,7 @@ open class CommonActivity : AppCompatActivity()
         laterUI {
             synchronized(errorSync)
             {
-                val titlebar: View = findViewById(R.id.action_bar)
+                val titlebar: View = findViewById(androidx.appcompat.R.id.action_bar)
                 if (menuHidden > 0) menuHidden -= 1
                 if (errNo == 0)
                 {
@@ -618,7 +618,7 @@ open class CommonActivity : AppCompatActivity()
         laterUI {
             // This coroutine has to be limited to this thread because only the main thread can touch UI views
             // Display the error by changing the title and title bar color temporarily
-            val titlebar: View = findViewById(R.id.action_bar)
+            val titlebar: View = findViewById(androidx.appcompat.R.id.action_bar)
             val myError = synchronized(errorSync)
             {
                 super.setTitle(err)
@@ -659,7 +659,7 @@ open class CommonActivity : AppCompatActivity()
         laterUI {
             // This coroutine has to be limited to this thread because only the main thread can touch UI views
             // Display the error by changing the title and title bar color temporarily
-            var titlebar: View = findViewById(R.id.action_bar)
+            var titlebar: View = findViewById(androidx.appcompat.R.id.action_bar)
             val errorColor = ContextCompat.getColor(applicationContext, R.color.notice)
             val myError = synchronized(errorSync)
             {
