@@ -27,21 +27,28 @@ class ShoppingDestination(var buttonText: String = "", var explain: String = "",
         val activity: Activity = getActivity(view) ?: return
         val pm: PackageManager = activity.packageManager
 
-        if (androidPackage != "")
+        try
         {
-            val launchIntent: Intent? = pm.getLaunchIntentForPackage(androidPackage)
-            launchIntent?.let {
-                activity.startActivity(it)
+            if (androidPackage != "")
+            {
+                val launchIntent: Intent? = pm.getLaunchIntentForPackage(androidPackage)
+                launchIntent?.let {
+                    activity.startActivity(it)
+                    return
+                }
+            }
+
+            if (url != "")
+            {
+                if (!url.startsWith("http")) url = "https://" + url
+                val webIntent: Intent = Uri.parse(url).let { webpage -> Intent(Intent.ACTION_VIEW, webpage) }
+                activity.startActivity(webIntent)
                 return
             }
         }
-
-        if (url != "")
+        catch(e: SecurityException)
         {
-            if (!url.startsWith("http")) url = "https://" + url
-            val webIntent: Intent = Uri.parse(url).let { webpage -> Intent(Intent.ACTION_VIEW, webpage) }
-            activity.startActivity(webIntent)
-            return
+            (activity as CommonActivity)?.displayError(R.string.NoPermission)
         }
     }
 }
