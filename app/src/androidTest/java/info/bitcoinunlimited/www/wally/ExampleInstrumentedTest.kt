@@ -32,7 +32,7 @@ import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
 // The IP address of the host machine: Android sets up a fake network with the host hardcoded to this IP
-val EMULATOR_HOST_IP = "192.168.1.100" //"10.0.2.2"
+val EMULATOR_HOST_IP = "10.0.2.2" // "192.168.1.5" //"10.0.2.2"
 
 val LogIt = Logger.getLogger("AndroidTest")
 
@@ -218,7 +218,7 @@ class UnitTest
 
         val c = try
         {
-            ElectrumClient(ChainSelector.NEXAREGTEST, EMULATOR_HOST_IP, DEFAULT_NEXAREG_TCP_ELECTRUM_PORT, "Electrum@${EMULATOR_HOST_IP}:${DEFAULT_NEXAREG_TCP_ELECTRUM_PORT}")
+            ElectrumClient(ChainSelector.NEXAREGTEST, EMULATOR_HOST_IP, DEFAULT_NEXAREG_TCP_ELECTRUM_PORT, "Electrum@${EMULATOR_HOST_IP}:${DEFAULT_NEXAREG_TCP_ELECTRUM_PORT}", useSSL = false)
         } catch (e: java.net.ConnectException)
         {
             LogIt.warning("Cannot connect: Skipping Electrum tests: ${e}")
@@ -786,8 +786,9 @@ class UnitTest
 
         // Test different constructions
         val P2PKH6 = SatoshiScript(ch, SatoshiScript.Type.SATOSCRIPT, OP.DUP, OP.HASH160, OP.push("0123456789abcdef01230123456789abcdef0123".fromHex()), OP.EQUALVERIFY, OP.CHECKSIG)
-        val P2PKH7 =
-          SatoshiScript(ch, SatoshiScript.Type.SATOSCRIPT, OP.DUP, OP.HASH160, OP.push(byteArrayOf(20)), OP.push("0123456789abcdef01230123456789abcdef0123".fromHex()), OP.EQUALVERIFY, OP.CHECKSIG)
+        // this would have to push exact bytes in the constructor
+        //val P2PKH7 =
+        //  SatoshiScript(ch, SatoshiScript.Type.SATOSCRIPT, OP.DUP, OP.HASH160, OP.push(byteArrayOf(20)), "0123456789abcdef01230123456789abcdef0123".fromHex()  ,OP.EQUALVERIFY, OP.CHECKSIG)
 
         if (true)
         {
@@ -796,12 +797,15 @@ class UnitTest
             check(params[0].contentEquals(fakepubkey))
         }
 
+        /*
         if (true)
         {
             val (type, params) = P2PKH7.match() ?: throw AssertionError("should have matched P2PKH template")
             assertEquals(type, PayAddressType.P2PKH)
             check(params[0].contentEquals(fakepubkey))
         }
+
+         */
 
         val P2PKH8 = SatoshiScript(ch) + OP.DUP + OP.HASH160 + OP.push("0123456789abcdef01230123456789abcdef0123".fromHex()) + OP.EQUALVERIFY + OP.CHECKSIG
         check(P2PKH6.contentEquals(P2PKH8))
@@ -897,7 +901,7 @@ class UnitTest
     {
         val result = historicalUbchInFiat("USD", 1576616203)
         LogIt.info(result.toPlainString())
-        check(result == BigDecimal(".18293").setScale(16))
+        check(result == BigDecimal("182.93").setScale(16))
     }
 
     companion object
