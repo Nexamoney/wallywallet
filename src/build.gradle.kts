@@ -7,7 +7,7 @@ import java.net.URL
 // Dependency versions
 val mpThreadsVersion = "0.1.9"
 val nexaRpcVersion = "1.1.4"
-val libNexaKotlinVersion = "0.1.22_wdb"
+val libNexaKotlinVersion = "0.1.23_wdb"
 
 val serializationVersion = "1.6.2"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.7.3"     // https://github.com/Kotlin/kotlinx.coroutines

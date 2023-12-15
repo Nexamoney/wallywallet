@@ -70,10 +70,10 @@ class NonGuiTests
         LogIt.info("tx: " + ser.toHex())
         Assert.assertEquals(4, 2 + 2)
 
-        ser.flatten()
+        ser.toByteArray()
         var tx2 = NexaTransaction(cs, ser)
         var ser2 = tx2.BCHserialize(SerializationType.NETWORK)
-        ser2.flatten()
+        ser2.toByteArray()
         LogIt.info("tx: " + ser2.toHex())
         assert(ser.toHex() == ser2.toHex())
     }
