@@ -1,5 +1,7 @@
 package info.bitcoinunlimited.www.wally.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -9,62 +11,38 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.AccountListView
 import info.bitcoinunlimited.www.wally.ui.views.ReceiveView
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-
-
-fun assignWalletsGuiSlots(): ListifyMap<String, Account>
-{
-    // We have a Map of account names to values, but we need a list
-    // Sort the accounts based on account name
-    val lm: ListifyMap<String, Account> = ListifyMap(wallyApp!!.accounts, { it.value.visible }, object : Comparator<String>
-    {
-        override fun compare(p0: String, p1: String): Int
-        {
-            if (wallyApp?.nullablePrimaryAccount?.name == p0) return Int.MIN_VALUE
-            if (wallyApp?.nullablePrimaryAccount?.name == p1) return Int.MAX_VALUE
-            return p0.compareTo(p1)
-        }
-    })
-
-    /*  TODO set up change notifications moving upwards from the wallets
-    for (c in wallyApp!!.accounts.values)
-    {
-        c.wallet.setOnWalletChange({ it -> onWalletChange(it) })
-        c.wallet.blockchain.onChange = { it -> onBlockchainChange(it) }
-        c.wallet.blockchain.net.changeCallback = { _, _ -> onWalletChange(c.wallet) }  // right now the wallet GUI update function also updates the cnxn mgr GUI display
-        c.onChange()  // update all wallet UI fields since just starting up
-    }
-     */
-
-    return lm
-}
+import org.nexa.libnexakotlin.launch
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun HomeScreen(nav: ScreenNav, navigation: ChildNav)
+fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, nav: ScreenNav, navigation: ChildNav)
 {
     var isSending by remember { mutableStateOf(false) }
-    var isCreatingNewAccount by remember { mutableStateOf(false) }
-    val selectedAccount = remember { mutableStateOf<Account?>(null) }
+    val selectedAccount = remember { mutableStateOf<Account?>(wallyApp?.primaryAccount) }
     val displayAccountDetailScreen = navigation.displayAccountDetailScreen.collectAsState()
-
+    val synced = remember { mutableStateOf(wallyApp!!.isSynced()) }
 
     selectedAccount.value?.onUpdatedReceiveInfoCommon { recvAddrStr -> }
 
-    if (isCreatingNewAccount)
-    {
-        NewAccountScreen(assignWalletsGuiSlots(), devMode) {
-            isCreatingNewAccount = it
+    // TODO: When this HomeScreen is repeatedly called, how do I exit old coroutine launches?
+    launch {
+        while(true)
+        {
+            synced.value = wallyApp!!.isSynced()
+            delay(1000)
         }
     }
 
-    if(displayAccountDetailScreen.value == null && !isCreatingNewAccount)
+    if (displayAccountDetailScreen.value == null)
         Box(modifier = WallyPageBase) {
         Column {
             if(isSending)
@@ -83,28 +61,41 @@ fun HomeScreen(nav: ScreenNav, navigation: ChildNav)
                 ReceiveView(
                   selectedAccount.value?.name ?: "",
                   selectedAccount.value?.currentReceive?.address?.toString() ?: "",
-                  assignWalletsGuiSlots().map { it.name },
+                  accountGuiSlots.value.map { it.name },
                   onAccountNameSelected = { accountName ->
-                    assignWalletsGuiSlots().forEach {
-                        if(it.name == accountName)
-                            selectedAccount.value = it
-                    }
-                })
-                WallyDivider()
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(modifier = Modifier.fillMaxWidth().padding(0.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
+                      accountGuiSlots.value.forEach {
+                          if (it.name == accountName)
+                              selectedAccount.value = it
+                      }
+                  })
+            }
 
-                    ResImageView("icons/check.xml", // "icons/ani_syncing.xml"
-                      modifier = Modifier.size(26.dp).absoluteOffset(0.dp, -8.dp))
-                    Text(i18n(S.AccountListHeader))
-                    ResImageView("icons/plus.xml",
-                      modifier = Modifier.size(26.dp).absoluteOffset(0.dp, -8.dp).clickable {
-                          isCreatingNewAccount = true
-                      })
+            WallyDivider()
+            Row(horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically,
+              modifier = Modifier
+                // .background(Color.Red)
+                .padding(0.dp)
+                .fillMaxWidth().padding(0.dp, 0.dp))
+            {
+                //Spacer(Modifier.padding(10.dp, 0.dp))
+                ResImageView(if (synced.value) "icons/check.xml" else "icons/syncing.xml", // MP doesn't support animation drawables "icons/ani_syncing.xml",
+                      modifier = Modifier.size(30.dp)) // .background(Color.Blue)) //.absoluteOffset(0.dp, -8.dp))
+                SectionText(S.AccountListHeader, Modifier.weight(1f)) // .background(Color.Green))
+
+                // BUG this button is padding out vertically
+                WallyImageButton("icons/plus.xml", true, Modifier.size(26.dp)) {
+                    nav.go(ScreenId.NewAccount)
                 }
+
+
+                //ResImageView("icons/plus.xml",
+                //      modifier = Modifier.size(26.dp).clickable {
+                //          nav.go(ScreenId.NewAccount)
+                //      })
+                //Spacer(Modifier.padding(10.dp, 0.dp))
             }
             AccountListView(
-              assignWalletsGuiSlots(),
+              accountGuiSlots,
               selectedAccount,
               navigation,
             )
@@ -112,8 +103,8 @@ fun HomeScreen(nav: ScreenNav, navigation: ChildNav)
             QrCodeScannerView()
         }
     }
-    else if(displayAccountDetailScreen.value is Account && !isCreatingNewAccount)
-        AccountDetailScreenNav(navigation, displayAccountDetailScreen.value!!, assignWalletsGuiSlots())
+    else if(displayAccountDetailScreen.value is Account)
+        AccountDetailScreenNav(navigation, displayAccountDetailScreen.value!!, accountGuiSlots)
 }
 
 @Composable

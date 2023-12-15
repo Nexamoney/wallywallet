@@ -207,7 +207,7 @@ class NewAccount : CommonNavActivity()
                 }
 
                 ui.PinProtectsSpending.text = i18n(R.string.PinSpendingProtected)
-                if (p0.length < 4)
+                if (p0.length > 0 && p0.length < 4)
                 {
                     ui.GuiPINOk.setImageResource(android.R.drawable.ic_delete)
                     pinOk = false

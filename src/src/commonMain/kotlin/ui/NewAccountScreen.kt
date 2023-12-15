@@ -33,13 +33,17 @@ const val ACCOUNT_FLAG_NONE = 0UL
 const val ACCOUNT_FLAG_HIDE_UNTIL_PIN = 1UL
 const val ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY = 2UL
 const val ACCOUNT_FLAG_REUSE_ADDRESSES = 4UL
+
+const val MAX_NAME_LEN = 8
+const val MIN_PIN_LEN = 4
+
 private val LogIt = GetLog("BU.wally.NewAccountScreen")
 
 data class NewAccountState(
   val hideUntilPinEnter: Boolean = false,
   val errorMessage: String = "",
   val accountName: String = "",
-  val validAccountName: Boolean = accountName.length in 1..8,
+  val validAccountName: Boolean = accountName.length.let { it > 0 && it <= MAX_NAME_LEN },
   val recoveryPhrase: String = "",
   val validOrNoRecoveryPhrase: Boolean = true,
   val pin: String = "",
@@ -47,22 +51,56 @@ data class NewAccountState(
   val isSuccessDialogOpen: Boolean = false
 )
 
-@Composable fun NewAccountScreen(accounts: List<Account>, devMode: Boolean, creatingAccount: (Boolean) -> Unit)
+val chainToName: Map<ChainSelector, String> = mapOf(
+  ChainSelector.NEXATESTNET to "tNexa", ChainSelector.NEXAREGTEST to "rNexa", ChainSelector.NEXA to "nexa",
+  ChainSelector.BCH to "bch", ChainSelector.BCHTESTNET to "tBch", ChainSelector.BCHREGTEST to "rBch"
+)
+fun ProposeAccountName(cs: ChainSelector):String?
+{
+    val a = wallyApp
+    if ((cs != null) && (a != null))
+    {
+        var count = 0
+        var countS = ""
+        while(true)
+        {
+            val proposedName = chainToName[cs] + countS  // countS should be empty string if 0, otherwise a number
+            if ((proposedName != null) && !a.accounts.contains(proposedName))  // If there's already a default choice, then don't offer one
+            {
+                return (proposedName)
+            }
+            count+=1
+            countS = count.toString()
+        }
+    }
+    return null
+}
+
+@Composable fun NewAccountScreen(accounts: MutableState<ListifyMap<String, Account>>, devMode: Boolean, nav: ScreenNav)
 {
     val blockchains = supportedBlockchains.filter { devMode || it.value.isMainNet }
     var selectedBlockChain by remember { mutableStateOf(blockchains.entries.first()) }
-    var newAcState by remember { mutableStateOf( NewAccountState() ) }
+    var newAcState by remember { mutableStateOf( NewAccountState(accountName = ProposeAccountName(selectedBlockChain.value) ?: "") ) }
 
     NewAccountScreenContent(
       newAcState,
       selectedBlockChain,
       blockchains,
-      onBackButton = { creatingAccount(false) },
-      onChainSelected = { selectedBlockChain = it },
+      onBackButton = { nav.back() },
+      onChainSelected = {
+          val oldname = ProposeAccountName(selectedBlockChain.value)
+          selectedBlockChain = it
+          if (oldname == newAcState.accountName)  // name remains the proposed default, so propose a different one
+          {
+              val name = ProposeAccountName(selectedBlockChain.value)
+              if (name != null) newAcState = newAcState.copy(accountName = name)
+          }
+                        },
       onNewAccountName = {
+          val actNameValid = (it.length > 0 && it.length <= MAX_NAME_LEN) && (!containsAccountWithName(accounts.value, it))
           newAcState = newAcState.copy(
             accountName = it,
-            validAccountName = it.length in 1..8,
+            validAccountName = actNameValid,
           )
       },
       onNewRecoveryPhrase = {
@@ -73,22 +111,14 @@ data class NewAccountState(
           )
       },
       onPinChange = {
-          val validOrNoPin = if (it.isEmpty())
-          {
-              true
-          }
-          else if (it.length < 4)
-          {
-              false
-          }
-          else it.length >= 4
+          val validOrNoPin = (it.isEmpty() || (it.length >= MIN_PIN_LEN))
           newAcState = newAcState.copy(pin = it, validOrNoPin = validOrNoPin)
       },
       onHideUntilPinEnterChanged = {
           newAcState =  newAcState.copy(hideUntilPinEnter = it)
       },
       onClickCreateAccount =  {
-          var inputValid = true
+          var inputValid = false
           val words = processSecretWords(newAcState.recoveryPhrase)
           val incorrectWords = Bip39InvalidWords(words)
           newAcState = newAcState.copy(
@@ -98,33 +128,27 @@ data class NewAccountState(
           if (newAcState.accountName.isEmpty() || newAcState.accountName.length > 8)
           {
               newAcState = newAcState.copy(errorMessage = (newAcState.errorMessage + i18n(S.invalidAccountName)))
-              inputValid = false
-          }
-          else if (containsAccountWithName(accounts, newAcState.accountName)) {
-              newAcState = newAcState.copy(errorMessage = (newAcState.errorMessage + i18n(S.invalidAccountName)))
-              inputValid = false
-          }
 
-          if (words.size > 12)
+          }
+          else if (containsAccountWithName(accounts.value, newAcState.accountName)) {
+              newAcState = newAcState.copy(errorMessage = (newAcState.errorMessage + i18n(S.invalidAccountName)))
+          }
+          else if (words.size > 12)
           {
               newAcState = newAcState.copy(errorMessage = i18n(S.TooManyRecoveryWords))
-              inputValid = false
           }
           else if (words.size in 1..11)
           {
               newAcState = newAcState.copy(errorMessage = i18n(S.NotEnoughRecoveryWords))
-              inputValid = false
           }
           else if (incorrectWords.isNotEmpty())
           {
               newAcState = newAcState.copy(errorMessage = i18n(S.invalidRecoveryPhrase))
-              inputValid = false
           }
-
-          if (newAcState.pin.isNotEmpty() && newAcState.pin.length < 4) {
+          else if (newAcState.pin.isNotEmpty() && newAcState.pin.length < MIN_PIN_LEN) {
               newAcState = newAcState.copy(errorMessage = i18n(S.InvalidPIN))
-              inputValid = false
           }
+          else inputValid = true
 
           val flags: ULong = if (newAcState.hideUntilPinEnter) ACCOUNT_FLAG_HIDE_UNTIL_PIN else ACCOUNT_FLAG_NONE
 
@@ -133,7 +157,9 @@ data class NewAccountState(
               Thread("recoverAccount") {
                   newAcState = try {
                       wallyApp!!.recoverAccount(newAcState.accountName, flags, newAcState.pin, words.joinToString(" "), selectedBlockChain.value, null, null, null)
-                      newAcState.copy(isSuccessDialogOpen = true)
+                      accounts.value = assignAccountsGuiSlots()
+                      nav.back()
+                      newAcState.copy(isSuccessDialogOpen = false)
                   }
                   catch (e: Error)
                   {
@@ -141,24 +167,24 @@ data class NewAccountState(
                   }
               }
           }
-          if (inputValid && words.isEmpty()) {
+          if (inputValid && words.isEmpty())
+          {
               later {
                   val account = wallyApp!!.newAccount(newAcState.accountName, flags, newAcState.pin, selectedBlockChain.value)
+                  accounts.value = assignAccountsGuiSlots()
                   newAcState = if (account == null)
                   {
                       newAcState.copy(errorMessage = i18n(S.unknownError))
                   }
                   else
                   {
-                      newAcState.copy(isSuccessDialogOpen = true)
+                      nav.back()
+                      newAcState.copy(isSuccessDialogOpen = false)
                   }
               } // Can't happen in GUI thread
           }
       },
-      onDismissAccountCreatedSuccessDialog = {
-          newAcState = newAcState.copy(isSuccessDialogOpen = false)
-          creatingAccount(false)
-      }
+      nav
     )
 }
 
@@ -188,15 +214,13 @@ data class NewAccountState(
   onPinChange: (String) -> Unit,
   onHideUntilPinEnterChanged: (Boolean) -> Unit,
   onClickCreateAccount: () -> Unit,
-  onDismissAccountCreatedSuccessDialog: () -> Unit
+  nav: ScreenNav
 )
 {
     Column(
       modifier = Modifier.padding(4.dp).fillMaxSize()
     ) {
-        IconButton(onClick = onBackButton) {
-            Icon(Icons.Default.ArrowBack, contentDescription = null)
-        }
+        ConstructTitleBar(nav, S.title_activity_new_account)
         if (newAcState.errorMessage.isNotEmpty())
         {
             WallyError(newAcState.errorMessage)
@@ -208,7 +232,6 @@ data class NewAccountState(
         Text(i18n(S.PinSpendingUnprotected), fontSize = 12.sp)
         WallySwitch(newAcState.hideUntilPinEnter, S.PinHidesAccount, onHideUntilPinEnterChanged)
         WallyRoundedTextButton(i18n(S.createAccount), onClick = onClickCreateAccount)
-        AccountCreatedSuccessDialog(newAcState.isSuccessDialogOpen, newAcState.accountName, onDismissAccountCreatedSuccessDialog)
     }
 }
 
@@ -258,6 +281,14 @@ data class NewAccountState(
     }
 }
 
+@Composable fun CheckOrX(valid: Boolean)
+{
+    if (valid)
+        Icon(imageVector = Icons.Default.Check, tint = colorValid, contentDescription = null)
+    else
+        Icon(Icons.Default.Clear, tint = colorError, contentDescription = null)
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun AccountNameInput(accountName: String, validAccountName: Boolean, onNewAccountName: (String) -> Unit)
 {
@@ -265,16 +296,9 @@ data class NewAccountState(
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(i18n(S.AccountName))
+        CheckOrX(validAccountName)
         Spacer(Modifier.width(8.dp))
-        if (validAccountName)
-        {
-            Icon(imageVector = Icons.Default.Check, tint = colorDebit, contentDescription = null)
-        }
-        else
-        {
-            Icon(Icons.Default.Clear, tint = colorCredit, contentDescription = null)
-        }
+        Text(i18n(S.AccountName))
         Spacer(Modifier.width(8.dp))
         TextField(
           value = accountName,
@@ -296,14 +320,7 @@ data class NewAccountState(
           horizontalArrangement = Arrangement.SpaceBetween,
           verticalAlignment = Alignment.CenterVertically
         ) {
-            if (validOrNoRecoveryPhrase)
-            {
-                Icon(Icons.Default.Check, tint = colorDebit ,contentDescription = null)
-            }
-            else
-            {
-                Icon(Icons.Default.Clear, tint = colorCredit ,contentDescription = null)
-            }
+            CheckOrX(validOrNoRecoveryPhrase)
             TextField(
               value = recoveryPhrase,
               onValueChange = onValueChange,
@@ -327,14 +344,7 @@ data class NewAccountState(
           horizontalArrangement = Arrangement.SpaceBetween,
           verticalAlignment = Alignment.CenterVertically
         ) {
-            if(validOrNoPin)
-            {
-                Icon(Icons.Default.Check, tint = colorDebit, contentDescription = null)
-            }
-            else
-            {
-                Icon(Icons.Default.Clear, tint = colorCredit, contentDescription = null)
-            }
+            CheckOrX(validOrNoPin)
             TextField(
               value = pin,
               onValueChange = onPinChange,

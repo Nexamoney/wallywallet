@@ -242,6 +242,19 @@ open class CommonApp
         // TODO call platform specific?
     }
 
+    /** Returns true if accounts are synced */
+    fun isSynced(visibleOnly: Boolean = true): Boolean
+    {
+        val ret = accountLock.lock {
+            for (ac in accounts)
+            {
+                if ((!visibleOnly || ac.value.visible) && (!ac.value.wallet.synced())) return@lock false
+            }
+            true
+        }
+        return ret
+    }
+
     fun onCreate()
     {
         notInUIscope = coMiscScope

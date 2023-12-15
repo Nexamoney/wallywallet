@@ -17,6 +17,7 @@ val composeVersion = "1.5.3"
 val androidTestCoreVersion = "1.5.0"
 val androidxActivityComposeVersion = "1.7.2"
 val uriKmpVersion = "0.0.14"
+val skikoVersion = "0.7.85.4" // https://github.com/JetBrains/skiko/releases
 
 val secSinceEpoch = Instant.now().epochSecond
 
@@ -289,7 +290,6 @@ kotlin {
             else -> error("Unsupported arch: $osArch")
         }
 
-        val skikoVersion = "0.7.77" // or any more recent version
         val skikoTarget = "${targetOs}-${targetArch}"
 
         val jvmMain by getting {

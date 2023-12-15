@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
@@ -27,6 +28,11 @@ import info.bitcoinunlimited.www.wally.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
+/** return true if this platform has a native title bar.
+ TODO: this should be an expect/actual.  But for now its useful to manually force for testing the behavior on a single platform
+*/
+fun hasNativeTitleBar() = false
+
 enum class ScreenId
 {
     None,
@@ -37,6 +43,7 @@ enum class ScreenId
     Shopping,
     Settings,
     SplitBill,
+    NewAccount,
     AccountDetails,
     Test;
 
@@ -53,6 +60,7 @@ enum class ScreenId
         {
             SplitBill -> Home
             AccountDetails -> Home
+            NewAccount -> Home
             else -> None
         }
     }
@@ -83,13 +91,56 @@ class ScreenNav(val currentScreen: MutableState<ScreenId>)
     }
 }
 
+fun assignAccountsGuiSlots(): ListifyMap<String, Account>
+{
+    // We have a Map of account names to values, but we need a list
+    // Sort the accounts based on account name
+    val lm: ListifyMap<String, Account> = ListifyMap(wallyApp!!.accounts, { it.value.visible }, object : Comparator<String>
+    {
+        override fun compare(p0: String, p1: String): Int
+        {
+            if (wallyApp?.nullablePrimaryAccount?.name == p0) return Int.MIN_VALUE
+            if (wallyApp?.nullablePrimaryAccount?.name == p1) return Int.MAX_VALUE
+            return p0.compareTo(p1)
+        }
+    })
+
+    /*  TODO set up change notifications moving upwards from the wallets
+    for (c in wallyApp!!.accounts.values)
+    {
+        c.wallet.setOnWalletChange({ it -> onWalletChange(it) })
+        c.wallet.blockchain.onChange = { it -> onBlockchainChange(it) }
+        c.wallet.blockchain.net.changeCallback = { _, _ -> onWalletChange(c.wallet) }  // right now the wallet GUI update function also updates the cnxn mgr GUI display
+        c.onChange()  // update all wallet UI fields since just starting up
+    }
+     */
+
+    return lm
+}
+
+// This function should build a title bar (with a back button) if the platform doesn't already have one.  Otherwise it should
+// set up the platform's title bar
+@Composable fun ConstructTitleBar(nav: ScreenNav, title: Int)
+{
+    if (!hasNativeTitleBar())
+    {
+        Row(verticalAlignment = Alignment.CenterVertically)
+        {
+            IconButton(onClick = { nav.back() }) {
+                Icon(Icons.Default.ArrowBack, contentDescription = null)
+            }
+            TitleText(title, Modifier.weight(2f))
+        }
+    }
+}
+
 @Composable
 fun NavigationRoot():ScreenNav
 {
     val currentRootScreen = remember { mutableStateOf(ScreenId.Home) }
     val scrollState = rememberScrollState()
-
     val nav = ScreenNav(currentRootScreen)
+    val accountGuiSlots = mutableStateOf(assignAccountsGuiSlots())
 
     WallyTheme(darkTheme = false, dynamicColor = false) {
         Box(modifier = WallyPageBase) {
@@ -110,9 +161,10 @@ fun NavigationRoot():ScreenNav
                 ) {
                     when (currentRootScreen.value)
                     {
-                        ScreenId.None -> HomeScreen(nav, ChildNav)
-                        ScreenId.Home -> HomeScreen(nav, ChildNav)
+                        ScreenId.None -> HomeScreen(accountGuiSlots, nav, ChildNav)
+                        ScreenId.Home -> HomeScreen(accountGuiSlots, nav, ChildNav)
                         ScreenId.SplitBill -> SplitBillScreen()
+                        ScreenId.NewAccount -> NewAccountScreen(accountGuiSlots, devMode, nav)
                         ScreenId.Test -> TestScreen(400.dp)
                         ScreenId.Settings -> SettingsScreen()
                         ScreenId.AccountDetails -> Text("TODO: Unexpected top level account details")

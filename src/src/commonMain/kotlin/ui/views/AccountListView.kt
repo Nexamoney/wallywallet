@@ -22,7 +22,7 @@ import org.nexa.libnexakotlin.*
 
 val triggerRecompose: MutableState<Int> = mutableStateOf(0)
 
-@Composable fun AccountListView(accounts: List<Account>, selectedAccount: MutableState<Account?>, nav: ChildNav)
+@Composable fun AccountListView(accounts: MutableState<ListifyMap<String,Account>>, selectedAccount: MutableState<Account?>, nav: ChildNav)
 {
     key(triggerRecompose.value)
     {
@@ -35,7 +35,7 @@ val triggerRecompose: MutableState<Int> = mutableStateOf(0)
         LazyColumn(
           horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            accounts.forEachIndexed { idx, it ->
+            accounts.value.forEachIndexed { idx, it ->
                     item(key=it.name) {
                         // I would think that capturing this data would control redraw of each item, but it appears to not do so.
                         // Redraw is controlled of the entire AccountListView, or not at all.

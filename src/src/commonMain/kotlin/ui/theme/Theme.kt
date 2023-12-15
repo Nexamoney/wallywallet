@@ -2,6 +2,7 @@ package info.bitcoinunlimited.www.wally.ui.theme
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +24,8 @@ import androidx.compose.ui.unit.em
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.ui.SHOW_TRICKLEPAY_PREF
+import info.bitcoinunlimited.www.wally.ui.ScreenId
+import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 
 // https://stackoverflow.com/questions/65893939/how-to-convert-textunit-to-dp-in-jetpack-compose
 val Int.dpTextUnit: TextUnit
@@ -65,19 +68,21 @@ val WallyModalOutline = BorderStroke(2.dp, WallyBorder)
 @Composable
 fun WallyRoundedButton(onClick: () -> Unit, enabled: Boolean=true,  interactionSource: MutableInteractionSource= MutableInteractionSource(), content: @Composable() (RowScope.() -> Unit))
 {
+    // BUG this button pads out vertically
     OutlinedButton(
       onClick = onClick,
       // Change button appearance based on current screen
       enabled = enabled,
-      shape = RoundedCornerShape(50),
-      contentPadding = PaddingValues(2.dp, 2.dp),
+      shape = RoundedCornerShape(40),
+      contentPadding = PaddingValues(3.dp, 3.dp),
       border = WallyRoundedButtonOutline,
       colors = ButtonDefaults.buttonColors(
         disabledContainerColor = WallyButtonBackgroundDisabled,
         disabledContentColor = WallyButtonForeground,
         containerColor = WallyButtonBackground,
         contentColor = WallyButtonForeground),
-      modifier = Modifier.width(IntrinsicSize.Max).padding(0.dp).defaultMinSize(1.dp, 1.dp),
+      modifier = Modifier.width(IntrinsicSize.Max).padding(0.dp).defaultMinSize(1.dp, 1.dp),  // height(IntrinsicSize.Min)
+        // .background(Color.Magenta),
       interactionSource = interactionSource,
       content = content
     )
@@ -133,6 +138,13 @@ fun WallyBoringLargeTextButton(textRes: Int, enabled: Boolean=true,  interaction
     WallyBoringButton(onClick, enabled, interactionSource) { WallyLargeButtonText(i18n(textRes))}
 }
 
+@Composable
+fun WallyImageButton(resPath: String, enabled: Boolean=true, modifier: Modifier, onClick: () -> Unit)
+{
+    WallyRoundedButton(onClick, enabled) { ResImageView("icons/plus.xml",
+      modifier = modifier.clickable { onClick() }
+        )  }
+}
 
 @Composable fun WallyLargeButtonText(text: String)
 {
@@ -259,4 +271,39 @@ fun NoticeText(noticeText: String)
             )
         )
     }
+}
+
+
+/* Styling for the text of page titles */
+@Composable
+fun TitleText(textRes: Int, modifier: Modifier)
+{
+    Text(
+      text = i18n(textRes),
+      modifier = modifier,
+        //.background(Color.Red),  // for layout debugging
+      style = LocalTextStyle.current.copy(
+        color = Color.Black,
+        textAlign = TextAlign.Center,  // To make this actually work, you need to pass a modifier where the space given to the title is greedy using .weight()
+        fontWeight = FontWeight.Bold,
+        fontSize = LocalTextStyle.current.fontSize.times(1.5)
+      )
+    )
+}
+
+/* Styling for the text of titles that appear within a page */
+@Composable
+fun SectionText(textRes: Int, modifier: Modifier)
+{
+    Text(
+      text = i18n(textRes),
+      modifier = modifier.padding(0.dp),
+       //.background(Color.Red),  // for layout debugging
+      style = LocalTextStyle.current.copy(
+        color = Color.Black,
+        textAlign = TextAlign.Center,
+        fontWeight = FontWeight.Bold,
+        fontSize = LocalTextStyle.current.fontSize.times(1.25)
+      )
+    )
 }

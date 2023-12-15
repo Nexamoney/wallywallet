@@ -38,7 +38,7 @@ enum class AccountNav
 }
 
 @Composable
-fun AccountDetailScreenNav(nav: ChildNav, account: Account, allAccounts: List<Account>)
+fun AccountDetailScreenNav(nav: ChildNav, account: Account, allAccounts: MutableState<ListifyMap<String,Account>>)
 {
     var accountNav by remember { mutableStateOf(AccountNav.AccountDetail) }
 
@@ -66,7 +66,7 @@ fun AccountDetailScreenNav(nav: ChildNav, account: Account, allAccounts: List<Ac
 }
 
 @Composable
-fun AccountDetailScreen(account: Account, allAccounts: List<Account>, onTxHistoryButtonClicked: () -> Unit, onAddressesButtonClicked: () -> Unit, onBackButton: () -> Unit)
+fun AccountDetailScreen(account: Account, allAccounts: MutableState<ListifyMap<String,Account>>, onTxHistoryButtonClicked: () -> Unit, onAddressesButtonClicked: () -> Unit, onBackButton: () -> Unit)
 {
     Column(
       modifier = Modifier.verticalScroll(rememberScrollState())
@@ -198,7 +198,7 @@ fun AccountFirstLastSend(stat: CommonWallet.WalletStatistics,)
 }
 
 @Composable
-fun AccountActions(acc: Account, txHistoryButtonClicked: () -> Unit, allAccounts: List<Account>, accountDeleted: () -> Unit)
+fun AccountActions(acc: Account, txHistoryButtonClicked: () -> Unit, allAccounts: MutableState<ListifyMap<String,Account>>, accountDeleted: () -> Unit)
 {
 
     Column(
@@ -247,7 +247,7 @@ fun ErrorText(errorText: String)
 
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
-fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, allAccounts: List<Account>, accountDeleted: () -> Unit)
+fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, allAccounts: MutableState<ListifyMap<String,Account>>, accountDeleted: () -> Unit)
 {
     val accountAction: MutableState<AccountAction?> = remember { mutableStateOf(null) }
     var errorText by remember { mutableStateOf("") }
@@ -366,10 +366,11 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, allAc
                     val bc = acc.wallet.blockchain
                     // If you reset the wallet first, it'll start rediscovering the existing blockchain before it gets reset.
                     bc.rediscover()
-                    for (c in allAccounts)  // Rediscover tx for EVERY wallet using this blockchain
+                    for (c in wallyApp!!.accounts)  // Rediscover tx for EVERY account using this blockchain
                     {
-                        if (c.wallet.blockchain == bc)
-                            c.wallet.rediscover(true, true)
+                        val act = c.value
+                        if (act.wallet.blockchain == bc)
+                            act.wallet.rediscover(true, true)
                     }
                 }
                 displayNotice(S.rediscoverNotice)
