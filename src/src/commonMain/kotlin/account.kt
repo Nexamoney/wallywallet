@@ -5,6 +5,7 @@ import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import info.bitcoinunlimited.www.wally.ui.CONFIGURED_NODE
 import info.bitcoinunlimited.www.wally.ui.EXCLUSIVE_NODE_SWITCH
 import info.bitcoinunlimited.www.wally.ui.PREFER_NODE_SWITCH
+import kotlin.concurrent.Volatile
 import kotlinx.coroutines.*
 import org.nexa.libnexakotlin.*
 
@@ -524,7 +525,7 @@ class Account(
             {
                 var genNewTmp = false
                 // If we have an address, then if re-use is true don't get another one
-                if ((flags and ACCOUNT_FLAG_REUSE_ADDRESSES) > 0U) false
+                if ((flags and ACCOUNT_FLAG_REUSE_ADDRESSES) > 0U) genNewTemp = false
                 // Otherwise get another one if our balance on this address is nonzero
                 else addr.let { GlobalScope.launch(Dispatchers.IO + handler) { genNewTmp = (wallet.getBalanceIn(it) > 0) } }
                 genNewTmp

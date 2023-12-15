@@ -16,6 +16,7 @@ import kotlinx.coroutines.newFixedThreadPoolContext
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
 import org.nexa.threads.iMutex
+import kotlin.concurrent.Volatile
 //import java.net.ConnectException
 //import java.security.spec.InvalidKeySpecException
 //import java.util.*
