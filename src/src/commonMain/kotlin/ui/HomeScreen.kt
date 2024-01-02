@@ -27,7 +27,7 @@ import org.nexa.libnexakotlin.launch
 fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, nav: ScreenNav, navigation: ChildNav)
 {
     var isSending by remember { mutableStateOf(false) }
-    val selectedAccount = remember { mutableStateOf<Account?>(wallyApp?.primaryAccount) }
+    val selectedAccount = remember { mutableStateOf<Account?>(wallyApp?.nullablePrimaryAccount) }
     val displayAccountDetailScreen = navigation.displayAccountDetailScreen.collectAsState()
     val synced = remember { mutableStateOf(wallyApp!!.isSynced()) }
 
@@ -35,16 +35,25 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, nav: 
 
     // TODO: When this HomeScreen is repeatedly called, how do I exit old coroutine launches?
     launch {
-        while(true)
+        try
         {
-            synced.value = wallyApp!!.isSynced()
-            delay(1000)
+            while (true)
+            {
+                synced.value = wallyApp!!.isSynced()
+                delay(1000)
+            }
+        }
+        catch(e: IllegalStateException)
+        {
+            // When the mutableState is stale, this exception is thrown.
+            // Stale state means we just want to stop checking; a different launch is checking the new state
         }
     }
 
     if (displayAccountDetailScreen.value == null)
         Box(modifier = WallyPageBase) {
         Column {
+            ConstructTitleBar(nav, S.app_name)
             if(isSending)
             {
                 SendFormView(

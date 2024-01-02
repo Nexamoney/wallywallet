@@ -359,7 +359,6 @@ versuchen Sie es nochmal.
 	<string name="welcomeComplete">Das Setup ist beendet. Sollten Sie einige dieser Schritte nicht ausgeführt haben, können Sie jederzeit auf alle Felder von innerhalb der App zugreifen.\n\nDanke und viel Vergnügen mit Ihrem neuen Wallet!</string>
 	<string name="EnterPIN">PIN eingeben</string>
 	<string name="EnterPINorBlankToRemove">Neue PIN (Leerzeile entfernt)</string>
-	<string name="title_activity_shoppng">Einkaufsaktivitäten</string>
 	<string name="ButtonTextHere">Buttontext eingeben</string>
 	<string name="ButtonLinkHere">Weblink einfügen</string>
 	<string name="ShoppingWarning">ACHTUNG: Die Artikel auf dieser Seite sind Services und Websites von Drittanbietern, für Sie hier bereitgestellt. Diese Seiten/Services wurden nicht von Wally Wallet überprüft.\n\nBenutzen auf eigene Gefahr!</string>

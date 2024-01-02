@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.StateFlow
 /** return true if this platform has a native title bar.
  TODO: this should be an expect/actual.  But for now its useful to manually force for testing the behavior on a single platform
 */
-fun hasNativeTitleBar() = false
+fun hasNativeTitleBar() = true
 
 enum class ScreenId
 {
@@ -64,14 +64,40 @@ enum class ScreenId
             else -> None
         }
     }
+
+    fun title(): String
+    {
+        return when (this)
+        {
+            None -> ""
+            Home -> i18n(S.app_name)
+            Identity -> i18n(S.title_activity_identity)
+            TricklePay -> i18n(S.title_activity_trickle_pay)
+            Assets -> i18n(S.title_activity_assets)
+            Shopping -> i18n(S.title_activity_shopping)
+            Settings -> i18n(S.title_activity_settings)
+            SplitBill -> i18n(S.title_split_bill)
+            NewAccount -> i18n(S.title_activity_new_account)
+            AccountDetails -> i18n(S.title_activity_account_details)
+            Test -> "Test"
+        }
+    }
 }
 
-class ScreenNav(val currentScreen: MutableState<ScreenId>)
+class ScreenNav()
 {
+    var currentScreen: MutableState<ScreenId> = mutableStateOf(ScreenId.Home)
     val path = ArrayDeque<ScreenId>(10)
+
+    /** If everything is recomposed, we may have a new mutable screenid tracker */
+    fun reset(newMutable: MutableState<ScreenId>)
+    {
+        currentScreen = newMutable
+    }
 
     /** Add a screen onto the stack */
     fun push(screen: ScreenId) = path.add(screen)
+
 
     /* push the current screen onto the stack, and set the passed screen to be the current one */
     fun go(screen: ScreenId)
@@ -80,12 +106,15 @@ class ScreenNav(val currentScreen: MutableState<ScreenId>)
         currentScreen.value = screen
     }
 
-
+    fun title() = currentScreen.value.title()
 
     /* pop the current screen from the stack and go there */
     fun back():ScreenId?
     {
-        val prior = path.removeLastOrNull()
+        // See if there is anything in the back stack.
+        var prior = path.removeLastOrNull()
+        // If I can't go back, go up
+        if (prior == null) prior = currentScreen.value.up()
         if (prior != null) currentScreen.value = prior
         return prior
     }
@@ -135,11 +164,9 @@ fun assignAccountsGuiSlots(): ListifyMap<String, Account>
 }
 
 @Composable
-fun NavigationRoot():ScreenNav
+fun NavigationRoot(nav: ScreenNav)
 {
-    val currentRootScreen = remember { mutableStateOf(ScreenId.Home) }
     val scrollState = rememberScrollState()
-    val nav = ScreenNav(currentRootScreen)
     val accountGuiSlots = mutableStateOf(assignAccountsGuiSlots())
 
     WallyTheme(darkTheme = false, dynamicColor = false) {
@@ -148,7 +175,7 @@ fun NavigationRoot():ScreenNav
               modifier = Modifier.fillMaxSize()
             ) {
                 // This will take up the most space but leave enough for the navigation menu
-                val mod = if (currentRootScreen.value.isEntirelyScrollable)
+                val mod = if (nav.currentScreen.value.isEntirelyScrollable)
                 {
                     Modifier.weight(1f).verticalScroll(scrollState).fillMaxWidth()
                 }
@@ -159,17 +186,17 @@ fun NavigationRoot():ScreenNav
                 Box(
                   modifier = mod
                 ) {
-                    when (currentRootScreen.value)
+                    when (nav.currentScreen.value)
                     {
                         ScreenId.None -> HomeScreen(accountGuiSlots, nav, ChildNav)
                         ScreenId.Home -> HomeScreen(accountGuiSlots, nav, ChildNav)
-                        ScreenId.SplitBill -> SplitBillScreen()
+                        ScreenId.SplitBill -> SplitBillScreen(nav)
                         ScreenId.NewAccount -> NewAccountScreen(accountGuiSlots, devMode, nav)
                         ScreenId.Test -> TestScreen(400.dp)
-                        ScreenId.Settings -> SettingsScreen()
+                        ScreenId.Settings -> SettingsScreen(nav)
                         ScreenId.AccountDetails -> Text("TODO: Unexpected top level account details")
                         ScreenId.Assets -> Text("TODO: Implement AssetsScreen")
-                        ScreenId.Shopping -> ShoppingScreen()
+                        ScreenId.Shopping -> ShoppingScreen(nav)
                         ScreenId.TricklePay -> Text("TODO: Implement TricklePayScreen")
                         ScreenId.Identity -> Text("TODO: Implement IdentityScreen")
                     }
@@ -182,7 +209,6 @@ fun NavigationRoot():ScreenNav
             }
         }
     }
-    return nav
 }
 
 object ChildNav {

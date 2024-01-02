@@ -39,12 +39,14 @@ fun ShoppingDestination.compose()
 
 
 @Composable
-fun ShoppingScreen()
+fun ShoppingScreen(nav: ScreenNav)
 {
     Column(
       modifier = Modifier.fillMaxWidth().fillMaxHeight(1f),
       horizontalAlignment = Alignment.Start,
-      verticalArrangement = Arrangement.SpaceEvenly) {
+      verticalArrangement = Arrangement.SpaceEvenly)
+    {
+        ConstructTitleBar(nav, S.title_activity_shopping)
         WallyBoldText(S.ShoppingWarning)
         WallyDivider()
 

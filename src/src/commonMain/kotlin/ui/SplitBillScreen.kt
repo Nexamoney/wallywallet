@@ -25,7 +25,8 @@ private val LogIt = GetLog("BU.wally.SplitBillScreen")
 
 
 @Composable
-fun SplitBillScreen()
+fun SplitBillScreen(nav: ScreenNav)
 {
+    ConstructTitleBar(nav, S.title_split_bill)
     Text("TODO: Split bill screen")
 }

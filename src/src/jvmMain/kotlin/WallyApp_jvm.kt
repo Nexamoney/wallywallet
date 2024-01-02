@@ -10,10 +10,11 @@ import androidx.compose.material.*
 
 import androidx.compose.ui.window.rememberWindowState
 import info.bitcoinunlimited.www.wally.ui.NavigationRoot
+import info.bitcoinunlimited.www.wally.ui.ScreenId
+import info.bitcoinunlimited.www.wally.ui.ScreenNav
 
 private val LogIt = GetLog("BU.wally.IdentityActivity")
 
-val WallyTitle = "Wally Enterprise Wallet"
 object WallyJvmApp
 {
     @JvmStatic
@@ -38,25 +39,37 @@ object WallyJvmApp
         }
         guiNewPanel()
     }
+
+    var topWindow = mutableStateOf(i18n(S.app_name))
 }
 
 
 fun guiNewPanel()
 {
+    val nav = ScreenNav()
+    val currentRootScreen = mutableStateOf(ScreenId.Home)
+
     application(true)
     {
         var isOpen by remember { mutableStateOf(true) }
+        //var w = mutableStateOf(i18n(S.app_name))
+        //WallyJvmApp.topWindow = remember { w }
+        //var windowTitle by remember { w }
+        //val currentRootScreen = remember { mutableStateOf(ScreenId.Home) }
+        nav.reset(currentRootScreen)
+
         if (isOpen)
         {
             val w = Window(
               onCloseRequest = { isOpen = false },
-              title = WallyTitle,
+              title = nav.title(),
               state = rememberWindowState(width = (4 * 160).dp, height = (5 * 160).dp)
             )
             {
+                //WallyJvmApp.topWindow = w
                 MaterialTheme()
                 {
-                    NavigationRoot()
+                    NavigationRoot(nav)
                 }
                // DashboardScreen((4 * 160).dp, WallyJvmApp.accounts)
             }

@@ -40,7 +40,7 @@ data class GeneralSettingsSwitch(
 )
 
 @Composable
-fun SettingsScreen()
+fun SettingsScreen(nav: ScreenNav)
 {
     val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
     val darkMode = remember { mutableStateOf( preferenceDB.getBoolean(DARK_MODE_PREF, false)) }
@@ -58,6 +58,7 @@ fun SettingsScreen()
       horizontalAlignment = Alignment.Start,
       verticalArrangement = Arrangement.SpaceEvenly
     ) {
+        ConstructTitleBar(nav, S.title_activity_settings)
         Column(
           modifier = Modifier.fillMaxWidth(),
           horizontalAlignment = Alignment.CenterHorizontally
