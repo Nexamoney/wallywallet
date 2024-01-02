@@ -28,10 +28,8 @@ import info.bitcoinunlimited.www.wally.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-/** return true if this platform has a native title bar.
- TODO: this should be an expect/actual.  But for now its useful to manually force for testing the behavior on a single platform
-*/
-fun hasNativeTitleBar() = true
+/** return true if this platform has a native title bar (and therefore do not generate one). */
+var hasNativeTitleBar = true
 
 enum class ScreenId
 {
@@ -151,7 +149,7 @@ fun assignAccountsGuiSlots(): ListifyMap<String, Account>
 // set up the platform's title bar
 @Composable fun ConstructTitleBar(nav: ScreenNav, title: Int)
 {
-    if (!hasNativeTitleBar())
+    if (!hasNativeTitleBar)
     {
         Row(verticalAlignment = Alignment.CenterVertically)
         {
