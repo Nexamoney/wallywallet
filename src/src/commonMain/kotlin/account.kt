@@ -73,8 +73,9 @@ class Account(
 
     var currentReceive: PayDestination? = null //? This receive address appears on the main screen for quickly receiving coins
 
-    /** Current exchange rate between this currency (in this account's default unit -- NOT the finest unit or blockchain unit) and your selected fiat currency */
-    var fiatPerCoin: BigDecimal = CurrencyDecimal(0)
+    /** Current exchange rate between this currency (in this account's default unit -- NOT the finest unit or blockchain unit) and your selected fiat currency.
+     * -1 means that the exchange rate cannot be determined */
+    var fiatPerCoin: BigDecimal = CurrencyDecimal(-1)
 
     var lastAssetCheck = 0L
 
@@ -517,8 +518,6 @@ class Account(
     {
         currentReceive.let {
             var addr: PayAddress? = it?.address
-
-            // var qr = currentReceiveQR
             val genNew: Boolean = if (addr == null)
                 true
             else
@@ -541,9 +540,8 @@ class Account(
                 }
             }
 
-            if ((addr != null))  // Should always be true if we get here
+            if (addr != null)  // Should always be true if we get here
                 refresh.invoke(addr.toString())
-
         }
     }
 

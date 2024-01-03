@@ -207,7 +207,7 @@ Good luck!
     <!-- not used right now string name="AccessPriceDataHint">This option allows the wallet to display the value of your cryptocurrency.  However, this data may not be accurate.  And the access uses more data and divulges your IP address to the service providing the data.</string -->
 
     <!-- Split bill -->
-    <string name="SplitBillDescription">You pay the bill (in fiat), your friends pay you their portion via the QR code below</string>
+    <string name="SplitBillDescription">You pay the bill (in fiat), then your friends pay you their portion via the QR code below.  Include yourself in the count of ways to split, unless your friends are buying!</string>
     <string name="Total">Total:</string>
     <!-- Ways refers to how many equal portions a bill is being split into -->
     <string name="Ways">Ways:</string>

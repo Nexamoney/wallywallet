@@ -17,12 +17,13 @@ import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.LOCAL_CURRENCY_PREF
 import info.bitcoinunlimited.www.wally.ui.ChildNav
 import info.bitcoinunlimited.www.wally.ui.theme.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.nexa.libnexakotlin.*
 
 val triggerRecompose: MutableState<Int> = mutableStateOf(0)
 
-@Composable fun AccountListView(accounts: MutableState<ListifyMap<String,Account>>, selectedAccount: MutableState<Account?>, nav: ChildNav)
+@Composable fun AccountListView(accounts: MutableState<ListifyMap<String,Account>>, selectedAccount: MutableStateFlow<Account?>, nav: ChildNav)
 {
     key(triggerRecompose.value)
     {

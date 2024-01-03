@@ -529,8 +529,6 @@ open class CommonApp
                     }
                 }
 
-                coinsCreated = true
-
                 var warning = false
                 accountLock.lock {
                     for (c in accounts.values)
@@ -542,7 +540,6 @@ open class CommonApp
                         }
                     }
                 }
-                warnBackupRecoveryKey.send(warning)
 
                 // Cannot pick the primary account until accounts are loaded
                 val primaryActName = prefs.getString(PRIMARY_ACT_PREF, null)
@@ -550,11 +547,15 @@ open class CommonApp
                 try
                 {
                     if (nullablePrimaryAccount == null) primaryAccount = defaultPrimaryAccount()
+                    focusedAccount = nullablePrimaryAccount ?: defaultPrimaryAccount()
                 }
                 catch(e:PrimaryWalletInvalidException)
                 {
                     // nothing to do in the case where there is no account to pick
                 }
+
+                coinsCreated = true
+                warnBackupRecoveryKey.send(warning)
 
                 val alist = accountLock.lock { accounts.values }
                 for (c in alist)

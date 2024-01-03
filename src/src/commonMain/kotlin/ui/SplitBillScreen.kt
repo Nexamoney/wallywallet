@@ -1,4 +1,5 @@
 package info.bitcoinunlimited.www.wally.ui
+import androidx.compose.foundation.background
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.*
 
@@ -31,13 +32,17 @@ private val LogIt = GetLog("BU.wally.SplitBillScreen")
 
 private val tipAmounts = listOf(-1, 0, 5, 10, 15, 20, 25, 30,50)
 
+fun CurrencyDecimal(b: BigDecimal): BigDecimal
+{
+    return BigDecimal.fromBigDecimal(b, currencyMath)
+}
 
 @Composable
 fun SplitBillScreen(nav: ScreenNav)
 {
    //  fiatCurrencyCode = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD")
-    val acct = wallyApp?.nullablePrimaryAccount
-    val cryptoCurrencyCode = wallyApp?.nullablePrimaryAccount?.currencyCode ?: chainToCurrencyCode[ChainSelector.NEXA] ?: "NEXA"
+    val acct = wallyApp?.focusedAccount
+    val cryptoCurrencyCode = acct?.currencyCode ?: chainToCurrencyCode[ChainSelector.NEXA] ?: "NEXA"
     var currencyTypeExpanded by remember { mutableStateOf(false) }
     var usingCurrency by remember { mutableStateOf(fiatCurrencyCode) }
     var usingFiatCurrency by remember { mutableStateOf(true) }
@@ -56,6 +61,7 @@ fun SplitBillScreen(nav: ScreenNav)
 
     var finalSplit by remember { mutableStateOf(BigDecimal.ZERO) }
     var finalSplitCrypto by remember { mutableStateOf(BigDecimal.ZERO) }
+    var finalSplitString by remember { mutableStateOf("") }
 
     val rowSpacer = 20.dp
 
@@ -130,7 +136,27 @@ fun SplitBillScreen(nav: ScreenNav)
         }
         total = amount + tipAmount
 
-        finalSplit = total/CurrencyDecimal(waysSelectedIndex+1)
+        finalSplit = CurrencyDecimal(total)/CurrencyDecimal(waysSelectedIndex+1)
+
+        val qty = toCrypto(finalSplit)
+
+        var fiatStr: String =""
+        if (acct != null)
+        {
+            val fpc = acct!!.fiatPerCoin
+            if (fpc == -1.toBigDecimal())
+            {
+                fiatStr = " (" + i18n(S.unavailableExchangeRate) + ")"
+            }
+            else
+            {
+                val fiatQty: BigDecimal = qty * fpc
+                fiatStr = " " + i18n(S.or) + " " + fiatFormat.format(fiatQty) + " " + fiatCurrencyCode
+            }
+        }
+
+        finalSplitString  = (acct?.format(qty) ?: nexFormat.format(qty)) + " " + cryptoCurrencyCode + fiatStr
+
         val a = acct
         if (a != null)
         {
@@ -146,9 +172,10 @@ fun SplitBillScreen(nav: ScreenNav)
     ) {
         ConstructTitleBar(nav, S.title_split_bill)
         Text(i18n(S.SplitBillDescription))
-        Spacer(Modifier.height(20.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(i18n(S.Amount))
+        Spacer(Modifier.height(10.dp))
+        // Amount row:
+        Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+            SectionText(S.Amount)
             WallyTextEntry(
               value = amountString,
               onValueChange = {
@@ -163,10 +190,10 @@ fun SplitBillScreen(nav: ScreenNav)
                       // X it
                   }
               },
-              modifier = Modifier.width(100.dp))
-            Spacer(Modifier.width(rowSpacer))
+              modifier = Modifier.weight(1.0f, false))
+            Spacer(Modifier.width(rowSpacer/5))
             WallyDropdownMenu(
-              modifier = Modifier.width(IntrinsicSize.Min).weight(1f),
+              modifier = Modifier.weight(0.75f, false),
               label = "",
               items = listOf(fiatCurrencyCode, cryptoCurrencyCode),
               selectedIndex = usingCurrencySelectedIndex,
@@ -183,6 +210,7 @@ fun SplitBillScreen(nav: ScreenNav)
                       usingFiatCurrency = false
                       usingCurrency = cryptoCurrencyCode
                   }
+                  updateNumbers()
                                },
             )
         }
@@ -190,10 +218,10 @@ fun SplitBillScreen(nav: ScreenNav)
 
         // TIP line
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(i18n(S.Tip))
+            SectionText(S.Tip)
             Spacer(Modifier.width(rowSpacer))
             WallyDropdownMenu(
-              modifier = Modifier.width(IntrinsicSize.Min).weight(1f),
+              modifier = Modifier.width(IntrinsicSize.Min).weight(0.75f),
               label = "",
               items = tipAmounts.map { if (it == -1) "--" else it.toString() + "%"},
               selectedIndex = tipSelectedIndex,
@@ -221,23 +249,26 @@ fun SplitBillScreen(nav: ScreenNav)
                       tipAmount = CURRENCY_ZERO
                   }
               },
-              modifier = Modifier.width(100.dp))
+              modifier = Modifier.width(IntrinsicSize.Min).weight(1f))
         }
-        Spacer(Modifier.height(5.dp))
-        // show this line: "Total: <amount> NEX"
+        Spacer(Modifier.height(10.dp))
+
+        // Total line: "Total: <amount> NEX"
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(i18n(S.Total))
+            SectionText(S.Total)
             Spacer(Modifier.width(rowSpacer))
-            if (usingFiatCurrency) Text(fiatFormat.format(total))
-            else Text(nexFormat.format(total))
+            if (usingFiatCurrency) SectionText(fiatFormat.format(total))
+            else SectionText(nexFormat.format(total))
             Spacer(Modifier.width(rowSpacer))
-            Text(usingCurrency)
+            SectionText(usingCurrency)
         }
-        Spacer(Modifier.height(5.dp))
+        // space commented out because text entry is so big
+        // Spacer(Modifier.height(5.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(i18n(S.Ways))
+            SectionText(S.Ways)
             WallyDropdownMenu(
-              modifier = Modifier.width(IntrinsicSize.Min).weight(1f),
+              modifier = Modifier.width(IntrinsicSize.Min),
+              modalModifier = Modifier.width(IntrinsicSize.Min),
               label = "",
               items = List(10, { it+1 }),
               selectedIndex = waysSelectedIndex,
@@ -250,27 +281,9 @@ fun SplitBillScreen(nav: ScreenNav)
         }
         Spacer(Modifier.height(30.dp))
 
-        val qty = toCrypto(finalSplit)
 
-        var fiatStr: String =""
-        if (acct != null)
-        {
-            val fpc = acct!!.fiatPerCoin
-            if (fpc == -1.toBigDecimal())
-            {
-                fiatStr = " (" + i18n(S.unavailableExchangeRate) + ")"
-            }
-            else
-            {
-                val fiatQty: BigDecimal = qty * fpc
-                fiatStr = " " + i18n(S.or) + " " + fiatFormat.format(fiatQty) + " " + fiatCurrencyCode
-            }
-        }
-
-        val st  = (acct?.format(qty) ?: nexFormat.format(qty)) + " " + cryptoCurrencyCode + fiatStr
-
-        Text(st,
-          modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally),
+        Text(finalSplitString,
+          modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally), //.background(Color.Magenta),
           style = LocalTextStyle.current.copy(
             color = Color.Black,
             textAlign = TextAlign.Center,
@@ -281,7 +294,9 @@ fun SplitBillScreen(nav: ScreenNav)
         val s = qrString
         if (s != null)
         {
-            QrCode(s, Modifier.size(300.dp).padding(24.dp).fillMaxWidth().align(Alignment.CenterHorizontally))
+            Box(Modifier.padding(20.dp).fillMaxWidth().fillMaxHeight().align(Alignment.CenterHorizontally)) {
+                QrCode(s, Modifier.background(Color.White).width(300.dp).height(300.dp).align(Alignment.Center))
+            }
         }
     }
 }

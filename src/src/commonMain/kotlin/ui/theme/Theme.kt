@@ -1,16 +1,21 @@
 package info.bitcoinunlimited.www.wally.ui.theme
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.animation.Animatable
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
+import androidx.compose.material3.OutlinedTextFieldDefaults.DecorationBox
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
@@ -21,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.NORMAL_NOTICE_DISPLAY_TIME
 import info.bitcoinunlimited.www.wally.S
@@ -32,10 +38,9 @@ import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.*
-import org.nexa.libnexakotlin.CurrencyDecimal
-import org.nexa.libnexakotlin.exceptionHandler
-import org.nexa.libnexakotlin.logThreadException
-import org.nexa.libnexakotlin.serializeFormat
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import org.nexa.libnexakotlin.*
 
 // https://stackoverflow.com/questions/65893939/how-to-convert-textunit-to-dp-in-jetpack-compose
 val Int.dpTextUnit: TextUnit
@@ -303,12 +308,16 @@ fun TitleText(textRes: Int, modifier: Modifier)
 
 /* Styling for the text of titles that appear within a page */
 @Composable
-fun SectionText(textRes: Int, modifier: Modifier)
+fun SectionText(textRes: Int, modifier: Modifier = Modifier) = SectionText(i18n(textRes), modifier)
+
+/* Styling for the text of titles that appear within a page */
+@Composable
+fun SectionText(text: String, modifier: Modifier = Modifier)
 {
     Text(
-      text = i18n(textRes),
+      text = text,
       modifier = modifier.padding(0.dp),
-       //.background(Color.Red),  // for layout debugging
+      //.background(Color.Red),  // for layout debugging
       style = LocalTextStyle.current.copy(
         color = Color.Black,
         textAlign = TextAlign.Center,
@@ -318,16 +327,79 @@ fun SectionText(textRes: Int, modifier: Modifier)
     )
 }
 
+
+/** Standard Wally text entry field.
+ */
 @Composable
-fun WallyTextEntry(value: String,  onValueChange: (String) -> Unit, modifier: Modifier)
+fun WallyTextEntry(value: String,  onValueChange: (String) -> Unit, modifier: Modifier, textStyle: TextStyle? = null)
 {
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent,
-        unfocusedContainerColor = Color.Transparent
-    ),
-    modifier = modifier
+    val ts2 = LocalTextStyle.current.copy(
+        fontSize = LocalTextStyle.current.fontSize.times(1.25))
+    val ts = ts2.merge(textStyle)
+    val scope = rememberCoroutineScope()
+    val interact = remember { object: HoverInteraction, InteractionSource
+    {
+        override val interactions: Flow<Interaction>
+            get() = TODO("Not yet implemented")
+
+    } }
+
+    val bkgColor = remember { Animatable(BaseBkg) }
+    val ia = remember { MutableInteractionSource() }
+
+    LaunchedEffect(ia) {
+        ia.interactions.collect {
+            when(it) {
+                // Hover for mouse platforms, Focus for touch platforms
+                is HoverInteraction.Enter, is FocusInteraction.Focus -> {
+                    scope.launch {
+                        bkgColor.animateTo(SelectedBkg, animationSpec = tween(500))
+                        }
+                }
+                is HoverInteraction.Exit, is FocusInteraction.Unfocus -> {
+                    scope.launch {
+                        bkgColor.animateTo(BaseBkg, animationSpec = tween(500))
+                    }
+                }
+
+            }
+        }
+    }
+
+    BasicTextField(
+        value,
+        onValueChange,
+        textStyle = ts,
+      interactionSource = ia,
+        modifier = modifier,
+      decorationBox = { tf ->
+          Box(Modifier.hoverable(ia, true)
+          .background(bkgColor.value)
+          .drawBehind {
+              val strokeWidthPx = 1.dp.toPx()
+              val verticalOffset = size.height - 2.sp.toPx()
+            drawLine(
+              color = Color.Black,
+                strokeWidth = strokeWidthPx,
+                start = Offset(0f, verticalOffset),
+                end = Offset(size.width, verticalOffset))
+          })
+          {
+              Box(Modifier.padding(0.dp,0.dp, 0.dp, 2.dp)) {
+              tf()
+              }
+          }
+      }
+    )
+}
+
+@Composable
+fun WallyIncognitoTextEntry(value: String,  onValueChange: (String) -> Unit, modifier: Modifier)
+{
+    BasicTextField(
+      value,
+      onValueChange,
+      modifier = modifier
     )
 }
 
@@ -338,11 +410,8 @@ fun QrCode(qrText: String, modifier: Modifier)
     var displayCopiedNotice by remember { mutableStateOf(false) }
     val qrcodePainter = rememberQrCodePainter(qrText)
 
-    Box(modifier = Modifier.padding(16.dp).background(color = Color.White)) {
-        Image(painter = qrcodePainter,
+    //Box(modifier = Modifier.padding(16.dp).background(color = Color.White)) {
+    Image(painter = qrcodePainter,
               contentDescription = null,
-              modifier = modifier
-        )
-    }
-
+              modifier = modifier.padding(16.dp))
 }

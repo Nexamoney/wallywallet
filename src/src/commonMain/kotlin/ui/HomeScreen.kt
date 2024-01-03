@@ -19,6 +19,7 @@ import info.bitcoinunlimited.www.wally.ui.views.AccountListView
 import info.bitcoinunlimited.www.wally.ui.views.ReceiveView
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.nexa.libnexakotlin.launch
 
@@ -27,11 +28,31 @@ import org.nexa.libnexakotlin.launch
 fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, nav: ScreenNav, navigation: ChildNav)
 {
     var isSending by remember { mutableStateOf(false) }
-    val selectedAccount = remember { mutableStateOf<Account?>(wallyApp?.nullablePrimaryAccount) }
+    //val selectedAccount = remember { mutableStateOf<Account?>(wallyApp?.focusedAccount) }
+    val selectedAccount = remember { MutableStateFlow<Account?>(wallyApp?.focusedAccount) }
     val displayAccountDetailScreen = navigation.displayAccountDetailScreen.collectAsState()
     val synced = remember { mutableStateOf(wallyApp!!.isSynced()) }
 
-    selectedAccount.value?.onUpdatedReceiveInfoCommon { recvAddrStr -> }
+    var currentReceive by remember { mutableStateOf<String?>(null) }
+
+    // TODO actually show the warning
+    var warnBackupRecoveryKey = remember { mutableStateOf(false) }
+
+    LaunchedEffect(selectedAccount) {
+    selectedAccount.collect {
+            selectedAccount.value?.onUpdatedReceiveInfoCommon { recvAddrStr -> currentReceive = recvAddrStr}
+        }
+     }
+
+    launch {
+        delay(500)
+        val wbk = wallyApp?.warnBackupRecoveryKey?.receive()
+        if (wbk == true) warnBackupRecoveryKey.value = true
+        if ((selectedAccount.value == null) && (wallyApp?.focusedAccount != null))
+        {
+            selectedAccount.value = wallyApp?.focusedAccount
+        }
+    }
 
     // TODO: When this HomeScreen is repeatedly called, how do I exit old coroutine launches?
     launch {
@@ -69,12 +90,16 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, nav: 
                 WallyDivider()
                 ReceiveView(
                   selectedAccount.value?.name ?: "",
-                  selectedAccount.value?.currentReceive?.address?.toString() ?: "",
+                  currentReceive ?: "",
                   accountGuiSlots.value.map { it.name },
                   onAccountNameSelected = { accountName ->
                       accountGuiSlots.value.forEach {
                           if (it.name == accountName)
+                          {
                               selectedAccount.value = it
+                              wallyApp?.focusedAccount = it
+                          }
+
                       }
                   })
             }

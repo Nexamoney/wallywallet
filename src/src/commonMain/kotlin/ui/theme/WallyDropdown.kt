@@ -110,7 +110,7 @@ fun <T> WallyDropdownMenu(
 
         // Transparent clickable surface on top of OutlinedTextField
         Surface(
-              modifier = Modifier
+              modifier = modalModifier
                 .matchParentSize()
                 .padding(top = topOffset)
                 .clip(MaterialTheme.shapes.extraSmall)
