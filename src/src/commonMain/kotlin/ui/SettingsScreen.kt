@@ -109,11 +109,26 @@ fun SettingsScreen(nav: ScreenNav)
             {
                 Spacer(Modifier.height(32.dp))
                 Box(modifier = Modifier.fillMaxWidth()) {
-                    Button(onClick = { onLogDebugData() }, modifier = Modifier.align(Alignment.CenterEnd)) {
-                        Text("LOG DEBUG DATA")
+                    Row(horizontalArrangement = Arrangement.SpaceEvenly) {
+                        Button(onClick = { onLogDebugData() }) {
+                            Text("LOG DEBUG DATA")
+                        }
+                        Button(onClick = { onWipeDatabase() }) {
+                            Text("WIPE DATABASE")
+                        }
                     }
                 }
             }
+        }
+    }
+}
+
+fun onWipeDatabase()
+{
+    launch {
+        wallyApp?.accounts?.forEach {
+            it.value.delete()
+            deleteWallet(it.key, it.value.chain.chainSelector)
         }
     }
 }
@@ -227,7 +242,7 @@ fun ConfirmAbove(preferenceDB: SharedPreferences)
       verticalAlignment = Alignment.CenterVertically
     ) {
         TextField(
-          value = textState ?: throw Exception("ConfirmAbove TextField value cannot be null"),
+          value = textState ?: "0",
           onValueChange = {
               try {
                   val newStr = it.ifEmpty {

@@ -470,7 +470,7 @@ class Account(
         {
             if (fiatCurrencyCode == "USD")
             {
-                NexInFiat(fiatCurrencyCode) { fiatPerCoin = it }
+                NexInFiat(fiatCurrencyCode) { fiatPerCoin = CurrencyDecimal(it.toPlainString()) }
             }
             else fiatPerCoin = CURRENCY_NEG1  // Indicates that the exchange rate is unavailable
             return

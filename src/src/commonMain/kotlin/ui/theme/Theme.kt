@@ -1,14 +1,14 @@
 package info.bitcoinunlimited.www.wally.ui.theme
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,11 +21,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
+import info.bitcoinunlimited.www.wally.NORMAL_NOTICE_DISPLAY_TIME
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
+import info.bitcoinunlimited.www.wally.setTextClipboard
+import info.bitcoinunlimited.www.wally.ui.CONFIRM_ABOVE_PREF
 import info.bitcoinunlimited.www.wally.ui.SHOW_TRICKLEPAY_PREF
 import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
+import io.github.alexzhirkevich.qrose.rememberQrCodePainter
+import kotlinx.coroutines.*
+import org.nexa.libnexakotlin.CurrencyDecimal
+import org.nexa.libnexakotlin.exceptionHandler
+import org.nexa.libnexakotlin.logThreadException
+import org.nexa.libnexakotlin.serializeFormat
 
 // https://stackoverflow.com/questions/65893939/how-to-convert-textunit-to-dp-in-jetpack-compose
 val Int.dpTextUnit: TextUnit
@@ -306,4 +316,33 @@ fun SectionText(textRes: Int, modifier: Modifier)
         fontSize = LocalTextStyle.current.fontSize.times(1.25)
       )
     )
+}
+
+@Composable
+fun WallyTextEntry(value: String,  onValueChange: (String) -> Unit, modifier: Modifier)
+{
+    TextField(
+        value = value,
+        onValueChange = onValueChange,
+        colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent,
+        unfocusedContainerColor = Color.Transparent
+    ),
+    modifier = modifier
+    )
+}
+
+
+@Composable
+fun QrCode(qrText: String, modifier: Modifier)
+{
+    var displayCopiedNotice by remember { mutableStateOf(false) }
+    val qrcodePainter = rememberQrCodePainter(qrText)
+
+    Box(modifier = Modifier.padding(16.dp).background(color = Color.White)) {
+        Image(painter = qrcodePainter,
+              contentDescription = null,
+              modifier = modifier
+        )
+    }
+
 }
