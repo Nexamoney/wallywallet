@@ -96,10 +96,6 @@ fun SplitBillScreen(nav: ScreenNav)
             {
                 amt = CurrencyDecimal(0)
             }
-            catch(e: java.lang.ArithmeticException)
-            {
-                amt = CurrencyDecimal(0)
-            }
         }
         return amt
     }
