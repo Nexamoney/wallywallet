@@ -73,7 +73,7 @@ fun SplitBillScreen(nav: ScreenNav)
     fun toCrypto(inQty: BigDecimal): BigDecimal
     {
         var amt = inQty
-        amt = CurrencyDecimal(inQty.toPlainString())
+        amt = CurrencyDecimal(inQty)
 
 
         if (usingCurrency == fiatCurrencyCode)
@@ -90,7 +90,7 @@ fun SplitBillScreen(nav: ScreenNav)
                 {
                     amt = CurrencyDecimal(0)
                 }
-                else amt = amt / fpc
+                else amt = amt / CurrencyDecimal(fpc)
             }
             catch(e: ArithmeticException)
             {
