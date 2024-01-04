@@ -188,12 +188,12 @@ fun WallyImageButton(resPath: String, enabled: Boolean=true, modifier: Modifier,
       style = textstyle, textAlign = TextAlign.Center, softWrap = true)
 }
 
-@Composable fun WallySwitch(isChecked: MutableState<Boolean>, onCheckedChange: (Boolean) -> Unit)
+@Composable fun WallySwitch(isChecked: MutableState<Boolean>, modifier: Modifier = Modifier, onCheckedChange: (Boolean) -> Unit)
 {
     Switch(
       checked = isChecked.value,
       onCheckedChange = onCheckedChange,
-      modifier = Modifier.graphicsLayer(scaleX = 0.7f, scaleY = 0.7f),
+      modifier = Modifier.graphicsLayer(scaleX = 0.7f, scaleY = 0.7f).then(modifier),
       colors = SwitchDefaults.colors(
         checkedBorderColor = Color.Transparent,
         uncheckedBorderColor = Color.Transparent,
@@ -201,7 +201,9 @@ fun WallyImageButton(resPath: String, enabled: Boolean=true, modifier: Modifier,
     )
 }
 
-@Composable fun WallySwitch(isChecked: MutableState<Boolean>, textRes: Int, onCheckedChange: (Boolean) -> Unit)
+@Composable fun WallySwitch(isChecked: MutableState<Boolean>, onCheckedChange: (Boolean) -> Unit) = WallySwitch(isChecked, Modifier, onCheckedChange)
+
+@Composable fun WallySwitch(isChecked: MutableState<Boolean>, textRes: Int, modifier: Modifier, onCheckedChange: (Boolean) -> Unit)
 {
     Row(
       horizontalArrangement = Arrangement.SpaceBetween,
@@ -210,9 +212,12 @@ fun WallyImageButton(resPath: String, enabled: Boolean=true, modifier: Modifier,
         WallySwitch(isChecked, onCheckedChange)
         Text(
           text = i18n(textRes),
+          modifier = modifier
         )
     }
 }
+
+@Composable fun WallySwitch(isChecked: MutableState<Boolean>, textRes: Int, onCheckedChange: (Boolean) -> Unit) = WallySwitch(isChecked, textRes, Modifier, onCheckedChange)
 
 @Composable fun WallySwitchRow(isChecked: Boolean, textRes: Int, onCheckedChange: (Boolean) -> Unit)
 {
@@ -227,12 +232,12 @@ fun WallyImageButton(resPath: String, enabled: Boolean=true, modifier: Modifier,
     }
 }
 
-@Composable fun WallySwitch(isChecked: Boolean, onCheckedChange: (Boolean) -> Unit)
+@Composable fun WallySwitch(isChecked: Boolean,  modifier: Modifier, onCheckedChange: (Boolean) -> Unit)
 {
     Switch(
       checked = isChecked,
       onCheckedChange = onCheckedChange,
-      modifier = Modifier.graphicsLayer(scaleX = 0.7f, scaleY = 0.7f),
+      modifier = Modifier.graphicsLayer(scaleX = 0.7f, scaleY = 0.7f).then(modifier),
       colors = SwitchDefaults.colors(
         checkedBorderColor = Color.Transparent,
         uncheckedBorderColor = Color.Transparent,
@@ -240,18 +245,21 @@ fun WallyImageButton(resPath: String, enabled: Boolean=true, modifier: Modifier,
     )
 }
 
-@Composable fun WallySwitch(isChecked: Boolean, textRes: Int, onCheckedChange: (Boolean) -> Unit)
+@Composable fun WallySwitch(isChecked: Boolean, onCheckedChange: (Boolean) -> Unit) = WallySwitch(isChecked, Modifier, onCheckedChange)
+
+@Composable fun WallySwitch(isChecked: Boolean, textRes: Int,  modifier: Modifier, onCheckedChange: (Boolean) -> Unit)
 {
     Row(
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically
     ) {
-        WallySwitch(isChecked, onCheckedChange)
+        WallySwitch(isChecked, modifier, onCheckedChange)
         Text(
           text = i18n(textRes),
         )
     }
 }
+@Composable fun WallySwitch(isChecked: Boolean, textRes: Int, onCheckedChange: (Boolean) -> Unit) = WallySwitch(isChecked, textRes,  Modifier, onCheckedChange)
 
 @Composable fun WallyError(message: String)
 {
@@ -331,7 +339,7 @@ fun SectionText(text: String, modifier: Modifier = Modifier)
 /** Standard Wally text entry field.
  */
 @Composable
-fun WallyTextEntry(value: String,  onValueChange: (String) -> Unit, modifier: Modifier, textStyle: TextStyle? = null)
+fun WallyTextEntry(value: String,  onValueChange: (String) -> Unit, modifier: Modifier = Modifier, textStyle: TextStyle? = null)
 {
     val ts2 = LocalTextStyle.current.copy(
         fontSize = LocalTextStyle.current.fontSize.times(1.25))

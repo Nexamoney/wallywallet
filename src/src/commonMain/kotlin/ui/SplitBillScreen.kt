@@ -34,7 +34,7 @@ private val tipAmounts = listOf(-1, 0, 5, 10, 15, 20, 25, 30,50)
 
 fun CurrencyDecimal(b: BigDecimal): BigDecimal
 {
-    return BigDecimal.fromBigDecimal(b, currencyMath)
+    return BigDecimal.fromBigDecimal(b, CurrencyMath)
 }
 
 @Composable
@@ -51,11 +51,11 @@ fun SplitBillScreen(nav: ScreenNav)
     var total by remember { mutableStateOf(CurrencyDecimal(0)) }
 
     var amount by remember { mutableStateOf(CurrencyDecimal(0)) }
-    var amountString by remember { mutableStateOf(fiatFormat.format(amount)) }
+    var amountString by remember { mutableStateOf(FiatFormat.format(amount)) }
 
     var tipSelectedIndex by remember { mutableStateOf(0) }
     var tipAmount = CurrencyDecimal(0)
-    var tipAmountString by remember { mutableStateOf(fiatFormat.format(tipAmount)) }
+    var tipAmountString by remember { mutableStateOf(FiatFormat.format(tipAmount)) }
 
     var waysSelectedIndex by remember { mutableStateOf(0) }
 
@@ -104,13 +104,13 @@ fun SplitBillScreen(nav: ScreenNav)
     {
         if (usingCurrency == fiatCurrencyCode)
         {
-            return fiatFormat.format(qty) + " " + fiatCurrencyCode
+            return FiatFormat.format(qty) + " " + fiatCurrencyCode
         }
         else
         {
             if (acct == null)
             {
-                return nexFormat.format(qty) + " " + cryptoCurrencyCode
+                return NexaFormat.format(qty) + " " + cryptoCurrencyCode
             }
             else
             {
@@ -128,7 +128,7 @@ fun SplitBillScreen(nav: ScreenNav)
         {
             val pct = tipAmounts[tipSelectedIndex]
             tipAmount = (amount*pct)/100
-            tipAmountString = fiatFormat.format(tipAmount)
+            tipAmountString = FiatFormat.format(tipAmount)
         }
         total = amount + tipAmount
 
@@ -147,18 +147,18 @@ fun SplitBillScreen(nav: ScreenNav)
             else
             {
                 val fiatQty: BigDecimal = qty * fpc
-                fiatStr = " " + i18n(S.or) + " " + fiatFormat.format(fiatQty) + " " + fiatCurrencyCode
+                fiatStr = " " + i18n(S.or) + " " + FiatFormat.format(fiatQty) + " " + fiatCurrencyCode
             }
         }
 
-        finalSplitString  = (acct?.format(qty) ?: nexFormat.format(qty)) + " " + cryptoCurrencyCode + fiatStr
+        finalSplitString  = (acct?.format(qty) ?: NexaFormat.format(qty)) + " " + cryptoCurrencyCode + fiatStr
 
         val a = acct
         if (a != null)
         {
             finalSplitCrypto = a.toPrimaryUnit(toCrypto(finalSplit))
             val tmp = addr?.address?.toString()
-            qrString = if (tmp != null) tmp + "?amount=" + nexFormat.format(finalSplitCrypto) else null
+            qrString = if (tmp != null) tmp + "?amount=" + NexaFormat.format(finalSplitCrypto) else null
         }
         else qrString = null
     }
@@ -253,8 +253,8 @@ fun SplitBillScreen(nav: ScreenNav)
         Row(verticalAlignment = Alignment.CenterVertically) {
             SectionText(S.Total)
             Spacer(Modifier.width(rowSpacer))
-            if (usingFiatCurrency) SectionText(fiatFormat.format(total))
-            else SectionText(nexFormat.format(total))
+            if (usingFiatCurrency) SectionText(FiatFormat.format(total))
+            else SectionText(NexaFormat.format(total))
             Spacer(Modifier.width(rowSpacer))
             SectionText(usingCurrency)
         }

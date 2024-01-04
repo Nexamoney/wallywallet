@@ -7,13 +7,13 @@ import java.net.URL
 // Dependency versions
 val mpThreadsVersion = "0.1.9"
 val nexaRpcVersion = "1.1.4"
-val libNexaKotlinVersion = "0.1.23_wdb"
+val libNexaKotlinVersion = "0.1.25"
 
 val serializationVersion = "1.6.2"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.7.3"     // https://github.com/Kotlin/kotlinx.coroutines
 val ktorVersion = "2.3.7"           // https://github.com/ktorio/ktor
-val bigNumVersion = "0.3.8"
-val composeVersion = "1.5.3"
+val bigNumVersion = "0.3.8"         // https://github.com/ionspin/kotlin-multiplatform-bignum
+val composeVersion = "1.5.11"        // https://github.com/JetBrains/compose-multiplatform/releases
 val androidTestCoreVersion = "1.5.0"
 val androidxActivityComposeVersion = "1.7.2"
 val uriKmpVersion = "0.0.14"
@@ -26,7 +26,7 @@ plugins {
     kotlin("multiplatform")
     id("com.android.application")
     kotlin("plugin.serialization").version("1.9.20")
-    id("org.jetbrains.compose").version("1.5.10")
+    id("org.jetbrains.compose").version("1.5.11")   // https://github.com/JetBrains/compose-multiplatform/releases
     id("org.jetbrains.dokka").version("1.8.20").apply(false)
     idea
     // application  // for JVM executables, but not compatible with android, have to do it by hand
@@ -223,7 +223,7 @@ kotlin {
                 // core language features
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
                 implementation(kotlin("stdlib-common"))
-                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.5.0")
 
                 // Compose
                 implementation("org.jetbrains.compose.runtime:runtime:$composeVersion")
@@ -253,8 +253,8 @@ kotlin {
                 // implementation("io.ktor:ktor-network-tls:$ktorVersion")
                 implementation("io.ktor:ktor-client-cio:$ktorVersion")
 
-                implementation("com.squareup.okio:okio:3.1.0")
-                implementation("org.jetbrains.kotlinx:atomicfu:0.22.0")
+                implementation("com.squareup.okio:okio:3.7.0")
+                implementation("org.jetbrains.kotlinx:atomicfu:0.23.1")
 
                 // nexa
                 implementation("org.nexa:mpthreads:$mpThreadsVersion")
@@ -262,7 +262,7 @@ kotlin {
                 //implementation("org.nexa:walletoperations:0.0.1")
 
                 // Generate and display Compose Multiplaform QR code
-                implementation("io.github.alexzhirkevich:qrose:1.0.0-beta02")
+                implementation("io.github.alexzhirkevich:qrose:1.0.0-beta02")  // https://github.com/alexzhirkevich/qrose/releases
             }
         }
         val commonTest by getting {
@@ -303,7 +303,7 @@ kotlin {
                 implementation(compose.desktop.windows_x64)
                 implementation(compose.desktop.macos_x64)
                 implementation(compose.desktop.macos_arm64)
-                implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.20")
+                implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.21")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$coroutinesVersion")
 
                 // Required for Dispatchers.Main
@@ -352,23 +352,23 @@ kotlin {
                     implementation(kotlin("stdlib-jdk8"))
                     implementation("androidx.activity:activity-compose:$androidxActivityComposeVersion")
 
-                    implementation("androidx.compose.ui:ui:$composeVersion")
-                    implementation("androidx.compose.ui:ui-tooling:$composeVersion")
-                    implementation("androidx.compose.ui:ui-tooling-preview:$composeVersion")
-                    implementation("androidx.compose.foundation:foundation:$composeVersion")
-                    implementation("androidx.compose.material:material:$composeVersion")
-                    implementation("androidx.activity:activity-compose:1.8.0")
-                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.5.1")
-                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.0")
+                    implementation("androidx.compose.ui:ui:1.5.4")
+                    implementation("androidx.compose.ui:ui-tooling:1.5.4")
+                    implementation("androidx.compose.ui:ui-tooling-preview:1.5.4")
+                    implementation("androidx.compose.foundation:foundation:1.5.4")
+                    implementation("androidx.compose.material:material:1.5.4")
+                    implementation("androidx.activity:activity-compose:1.8.2")
+                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.6.2")
+                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.2")
 
                     // android layout dependencies
                     implementation("com.google.android.flexbox:flexbox:3.0.0")  // https://github.com/google/flexbox-layout/tags
-                    implementation("androidx.activity:activity:1.8.0")
-                    implementation("androidx.navigation:navigation-fragment-ktx:2.7.5")  // https://developer.android.com/jetpack/androidx/releases/navigation
-                    implementation("androidx.navigation:navigation-ui-ktx:2.7.5")
+                    implementation("androidx.activity:activity:1.8.2")
+                    implementation("androidx.navigation:navigation-fragment-ktx:2.7.6")  // https://developer.android.com/jetpack/androidx/releases/navigation
+                    implementation("androidx.navigation:navigation-ui-ktx:2.7.6")
                     implementation("androidx.wear:wear:1.3.0")
                     implementation("com.android.support.constraint:constraint-layout:2.1.4") // https://developer.android.com/jetpack/androidx/releases/constraintlayout
-                    implementation("com.google.android.material:material:1.10.0")
+                    implementation("com.google.android.material:material:1.11.0")
                     implementation("androidx.preference:preference:1.2.1")  // https://developer.android.com/jetpack/androidx/releases/preference
 
                     // network access
@@ -448,7 +448,7 @@ kotlin {
         {
             val mingwMain by getting {
                 dependencies {
-                    implementation("app.cash.sqldelight:native-driver:2.0.0")
+                    implementation("app.cash.sqldelight:native-driver:2.0.1")
                 }
             }
         }

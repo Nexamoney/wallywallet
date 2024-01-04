@@ -1,7 +1,9 @@
 package info.bitcoinunlimited.www.wally
 
-import info.bitcoinunlimited.www.wally.ui.views.triggerRecompose
+import info.bitcoinunlimited.www.wally.ui.accountChangedNotification
+import info.bitcoinunlimited.www.wally.ui.views.uiData
 import org.nexa.libnexakotlin.GetLog
+import org.nexa.libnexakotlin.launch
 import org.nexa.libnexakotlin.toByteArray
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
@@ -20,5 +22,8 @@ actual fun EncodePIN(actName: String, pin: String, size: Int): ByteArray
 actual fun onChanged(account: Account, force: Boolean)
 {
     LogIt.info("Account ${account.name} changed!")
-    triggerRecompose.value = triggerRecompose.value + 1
+    account.uiData()
+    launch { accountChangedNotification.send(account.name) }
+
+    //launch { reassignAccountGuiSlots.send(true) }
 }

@@ -558,8 +558,8 @@ class MainActivity : CommonNavActivity()
         for (c in accounts.values)
         {
             c.wallet.setOnWalletChange({ it -> onWalletChange(it) })
-            c.wallet.blockchain.onChange = { it -> onBlockchainChange(it) }
-            c.wallet.blockchain.net.changeCallback = { _, _ -> onWalletChange(c.wallet) }  // right now the wallet GUI update function also updates the cnxn mgr GUI display
+            c.wallet.blockchain.onChange.add({ it -> onBlockchainChange(it) })
+            c.wallet.blockchain.net.changeCallback.add({ _, _ -> onWalletChange(c.wallet) })  // right now the wallet GUI update function also updates the cnxn mgr GUI display
             c.onChange()  // update all wallet UI fields since just starting up
         }
          ui.AccountList?.visibility = View.VISIBLE
@@ -1314,7 +1314,6 @@ class MainActivity : CommonNavActivity()
             amt = try
             {
                 stramt.toCurrency()
-                //stramt.toBigDecimal(currencyMath).setScale(currencyScale)  // currencyScale because BCH may have more decimals than mBCH
             }
             catch (e: NumberFormatException)
             {
@@ -1324,7 +1323,7 @@ class MainActivity : CommonNavActivity()
             {
                 // If someone is asking for sub-satoshi quantities, round up and overpay them
                 LogIt.warning("Sub-satoshi quantity ${stramt} requested.  Rounding up")
-                BigDecimal.fromString(stramt, nexaMathMode)
+                BigDecimal.fromString(stramt, NexaMathMode)
             }
         }
 
@@ -1527,7 +1526,7 @@ class MainActivity : CommonNavActivity()
                     var fiatDisplay = qty * fpc
                     val coinPerFiat = CURRENCY_1 / fpc
                     if (ui.approximatelyText.text == "")
-                        ui.approximatelyText.text = i18n(R.string.approximatelyT) % mapOf("qty" to fiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode) + availabilityWarning(coin, qty)
+                        ui.approximatelyText.text = i18n(R.string.approximatelyT) % mapOf("qty" to FiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode) + availabilityWarning(coin, qty)
                     ui.xchgRateText.text = i18n(R.string.exchangeRate) % mapOf("amt" to coin.format(coinPerFiat), "crypto" to coin.currencyCode, "fiat" to fiatCurrencyCode)
                     return true
                 }
@@ -2262,7 +2261,7 @@ class MainActivity : CommonNavActivity()
             val fiatAmt = if (account.fiatPerCoin > BigDecimal.ZERO)
             {
                 var fiatDisplay = amount * account.fiatPerCoin
-                i18n(R.string.approximatelyT) % mapOf("qty" to fiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode)
+                i18n(R.string.approximatelyT) % mapOf("qty" to FiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode)
             }
             else
             {

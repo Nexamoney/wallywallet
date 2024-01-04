@@ -378,11 +378,7 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, allAc
             AccountAction.Delete -> AccountDetailAcceptDeclineTextView(i18n(S.deleteConfirmation) % mapOf("accountName" to acc.name, "blockchain" to acc.currencyCode)) {
 
                 wallyApp?.deleteAccount(acc)
-                wallyApp?.accounts?.remove(acc.name)  // remove this coin from any global access before we delete it
-                acc.wallet.stop()
-                launch {
-                    wallyApp?.saveActiveAccountList()
-                }
+                allAccounts.value = assignAccountsGuiSlots()
                 displayNotice(S.accountDeleteNotice)
                 accountDeleted()
             }
@@ -565,7 +561,7 @@ fun RecoveryPhraseView(account: Account, done: () -> Unit)
 @Composable
 fun AccountDetailAcceptDeclineRow(accept: (Boolean) -> Unit)
 {
-    Row {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
         WallyBoringTextButton(S.accept) {
             accept(true)
         }

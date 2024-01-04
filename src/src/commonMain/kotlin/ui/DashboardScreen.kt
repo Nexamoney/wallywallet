@@ -137,9 +137,7 @@ fun TestScreen(dashWidth: Dp)
     }
     for (b in blockchains.values)
     {
-        b.onChange = {
-            blockchainInfo = updateBlockchainDashboard()
-        }
+        b.onChange.add({ blockchainInfo = updateBlockchainDashboard() })
     }
     walletInfo = updateWalletDashboard(accounts)
     blockchainInfo = updateBlockchainDashboard()

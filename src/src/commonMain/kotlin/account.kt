@@ -9,11 +9,16 @@ import kotlin.concurrent.Volatile
 import kotlinx.coroutines.*
 import org.nexa.libnexakotlin.*
 
+/** Account flags: No flag */
 const val ACCOUNT_FLAG_NONE = 0UL
+/** Account flags: hide this account until pin is entered */
 const val ACCOUNT_FLAG_HIDE_UNTIL_PIN = 1UL
-const val RETRIEVE_ONLY_ADDITIONAL_ADDRESSES = 10
-const val ACCOUNT_FLAG_REUSE_ADDRESSES = 4UL
+/** Account flags: User affirms they've backed up the recovery secret */
 const val ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY = 2UL
+/** Account flags: Reuse addresses rather than generate a new address each time */
+const val ACCOUNT_FLAG_REUSE_ADDRESSES = 4UL
+
+const val RETRIEVE_ONLY_ADDITIONAL_ADDRESSES = 10
 
 /** Do not warn about not having backed up the recovery key until balance exceeds this amount (satoshis) */
 const val MAX_NO_RECOVERY_WARN_BALANCE = 1000000 * 10
@@ -189,8 +194,8 @@ class Account(
             started=true
             // Set all the underlying change callbacks to trigger the account update
             wallet.setOnWalletChange { onChange() }
-            wallet.blockchain.onChange = { onChange() }
-            wallet.blockchain.net.changeCallback = { _, _ -> onChange() }
+            wallet.blockchain.onChange.add({ onChange() })
+            wallet.blockchain.net.changeCallback.add({ _, _ -> onChange() })
         }
     }
 
@@ -447,7 +452,7 @@ class Account(
     {
         return when (chain.chainSelector)
         {
-            ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> nexFormat.format(qty)
+            ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> NexaFormat.format(qty)
             ChainSelector.BCH, ChainSelector.BCHREGTEST, ChainSelector.BCHTESTNET -> uBchFormat.format(qty)
         }
     }
@@ -504,12 +509,16 @@ class Account(
     fun changeAsyncProcessing()
     {
         // Update our cache of the balances
-        balance = fromFinestUnit(wallet.balance)
         unconfirmedBalance = fromFinestUnit(wallet.balanceUnconfirmed)
         confirmedBalance = fromFinestUnit(wallet.balanceConfirmed)
+        balance = unconfirmedBalance + confirmedBalance
     }
 
-    fun onChange(force: Boolean = false) = onChanged(this, force)
+    fun onChange(force: Boolean = false)
+    {
+        changeAsyncProcessing()
+        onChanged(this, force)
+    }
 
     /**
      * Common implementatin of onUpdateReceiveInfo from androidMain

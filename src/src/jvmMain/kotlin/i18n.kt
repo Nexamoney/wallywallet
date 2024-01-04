@@ -11,7 +11,8 @@ var LocaleStrings = listOf<String>()
 actual fun i18n(id: Int): String
 {
     if (id > LocaleStrings.size) return("STR$id")
-    else return LocaleStrings[id]
+    val s = LocaleStrings[id].replace("\\n","\n")
+    return s
 }
 
 

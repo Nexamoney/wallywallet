@@ -6,11 +6,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
-import androidx.compose.material3.TextFieldDefaults.textFieldColors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -19,6 +17,7 @@ import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.ui.theme.WallySwitch
 import info.bitcoinunlimited.www.wally.ui.theme.WallySwitchRow
+import info.bitcoinunlimited.www.wally.ui.theme.WallyTextEntry
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.SettingsScreen")
@@ -52,9 +51,35 @@ fun SettingsScreen(nav: ScreenNav)
       GeneralSettingsSwitch(SHOW_ASSETS_PREF, S.enableAssetsMenu),
     )
 
+    nav.onDepart {
+        var nodeAddr: String? = null
+
+        allowAccessPriceData = preferenceDB.getBoolean(ACCESS_PRICE_DATA_PREF, true)
+
+        for (chain in chainToURI)
+        {
+            val name = chain.value
+            nodeAddr = preferenceDB.getString(name + "." + CONFIGURED_NODE, null)
+            val excl = preferenceDB.getBoolean(name + "." + EXCLUSIVE_NODE_SWITCH, false)
+            val prefd = preferenceDB.getBoolean(name + "." + PREFER_NODE_SWITCH, false)
+
+            // for every account on this blockchain, install the exclusive node or send a null saying not exclusive anymore
+            for (account in wallyApp!!.accounts.values)
+            {
+                if (account.chain.chainSelector == chain.key)
+                {
+                    val nodeSet: Set<String> = nodeAddr?.splitIntoSet() ?: setOf()
+                    if (!excl || (nodeSet.size == 0)) account.cnxnMgr.exclusiveNodes(null)
+                    else account.cnxnMgr.exclusiveNodes(nodeSet)
+                    if (!prefd || (nodeSet.size == 0)) account.cnxnMgr.preferNodes(null)
+                    else account.cnxnMgr.preferNodes(nodeSet)
+                }
+            }
+        }
+    }
+
     Column(
-      modifier = Modifier
-        .fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth(),
       horizontalAlignment = Alignment.Start,
       verticalArrangement = Arrangement.SpaceEvenly
     ) {
@@ -64,20 +89,23 @@ fun SettingsScreen(nav: ScreenNav)
           horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(i18n(S.GeneralSettings), fontSize = 18.sp, fontWeight = FontWeight.Bold)
-            Text(i18n(S.version)) // TODO: Display version with multiplatform...
+            Text(i18n(S.version) % mapOf("ver" to BuildInfo.VERSION_NAME))
             LocalCurrency(preferenceDB)
         }
         Column(
           modifier = Modifier.padding(start = 16.dp)
         ) {
             generalSettingsSwitches.forEach { GeneralSettingsSwitchView(it) }
+            /* TODO
             DarkMode(darkMode) {
-                preferenceDB.edit().putBoolean(DARK_MODE_PREF, it)
+                preferenceDB.edit().putBoolean(DARK_MODE_PREF, it).commit()
                 darkMode.value = it
             }
+
+             */
             WallySwitchRow(devModeView, S.enableDeveloperView) {
                 LogIt.info("devmode $it")
-                preferenceDB.edit().putBoolean(DEV_MODE_PREF, it)
+                preferenceDB.edit().putBoolean(DEV_MODE_PREF, it).commit()
                 devModeView = it
                 devMode = it
             }
@@ -86,7 +114,6 @@ fun SettingsScreen(nav: ScreenNav)
 
         Spacer(Modifier.height(16.dp))
         WallyDivider()
-        Spacer(Modifier.height(16.dp))
 
         Box(
           modifier = Modifier.fillMaxWidth(),
@@ -109,13 +136,15 @@ fun SettingsScreen(nav: ScreenNav)
             {
                 Spacer(Modifier.height(32.dp))
                 Box(modifier = Modifier.fillMaxWidth()) {
-                    Row(horizontalArrangement = Arrangement.SpaceEvenly) {
+                    Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
                         Button(onClick = { onLogDebugData() }) {
                             Text("LOG DEBUG DATA")
                         }
+                        /*  uncomment if you need this for dev
                         Button(onClick = { onWipeDatabase() }) {
                             Text("WIPE DATABASE")
                         }
+                         */
                     }
                 }
             }
@@ -136,17 +165,10 @@ fun onWipeDatabase()
 fun onLogDebugData()
 {
     launch {
-        LogIt.warning("TODO: Implement LOG DEBUG BUTTON")
-
-        /*
-        val coins: MutableMap<String, Account> = (getApplication() as WallyApp).accounts
-
+        val coins: MutableMap<String, Account> = wallyApp!!.accounts
         LogIt.info("LOG DEBUG BUTTON")
         for (c in coins)
-        {
             c.value.wallet.debugDump()
-        }
-         */
     }
 }
 
@@ -182,7 +204,7 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
                 fiatCurrencies.forEachIndexed { _, s ->
                     DropdownMenuItem(
                       onClick = {
-                          preferenceDB.edit().putString(LOCAL_CURRENCY_PREF, s)
+                          preferenceDB.edit().putString(LOCAL_CURRENCY_PREF, s).commit()
                           selectedFiatCurrency.value = s
                           expanded = false
                       },
@@ -201,7 +223,7 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
 
     WallySwitch(isChecked, generalSettingsSwitch.textRes) {
         isChecked.value = it
-        preferenceDB.edit().putBoolean(generalSettingsSwitch.prefKey, it)
+        preferenceDB.edit().putBoolean(generalSettingsSwitch.prefKey, it).commit()
     }
 }
 
@@ -211,7 +233,7 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically
     ) {
-        WallySwitch(darkMode, onClick)
+        WallySwitch(darkMode, Modifier, onClick)
         Text(
           text = "Enable dark mode",
         )
@@ -221,7 +243,7 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
 @Composable
 fun DevMode(devMode: MutableState<Boolean>, onClick: (Boolean) -> Unit)
 {
-    WallySwitch(devMode, S.enableDeveloperView, onClick)
+    WallySwitch(devMode, S.enableDeveloperView, Modifier, onClick)
 }
 
 @Composable
@@ -235,13 +257,13 @@ fun ConfirmAbove(preferenceDB: SharedPreferences)
     {
         CurrencyDecimal(0)
     }
-    var textState by remember { mutableStateOf(preferenceDB.getString(CONFIRM_ABOVE_PREF, nexFormat.format(dec))) }
+    var textState by remember { mutableStateOf(preferenceDB.getString(CONFIRM_ABOVE_PREF, NexaFormat.format(dec))) }
 
     Row(
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically
     ) {
-        TextField(
+        WallyTextEntry(
           value = textState ?: "0",
           onValueChange = {
               try {
@@ -251,7 +273,8 @@ fun ConfirmAbove(preferenceDB: SharedPreferences)
                   val newDec = CurrencyDecimal(newStr)
                   with(preferenceDB.edit())
                   {
-                      putString(CONFIRM_ABOVE_PREF, serializeFormat.format(newDec))
+                      putString(CONFIRM_ABOVE_PREF, CurrencySerializeFormat.format(newDec))
+                      commit()
                   }
               }
               catch (e:Exception) // number format exception, for one
@@ -259,14 +282,14 @@ fun ConfirmAbove(preferenceDB: SharedPreferences)
                   logThreadException(e)
               }
               textState = it
-          },
+          }
           //colors = textFieldColors(containerColor = Color.Transparent),
-          colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent
-          ),
-          modifier = Modifier.width(175.dp)
+          //colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent,
+          //  unfocusedContainerColor = Color.Transparent
+          ,
+          modifier = Modifier.weight(0.5f)
         )
-        Text(i18n(S.WhenAskSure))
+        Text(i18n(S.WhenAskSure),Modifier.weight(1.0f))
     }
 }
 
@@ -274,37 +297,44 @@ fun ConfirmAbove(preferenceDB: SharedPreferences)
 @Composable
 fun BlockchainSource(chain: ChainSelector, preferenceDB: SharedPreferences)
 {
-    val name = chainToURI[chain] ?: throw Exception("Cannot get chain URI in BlockchainSource")
+    val name = chainToName[chain]?.replaceFirstChar { it.uppercase() } ?: ""
     val exclusiveNodeKey = "$name.$EXCLUSIVE_NODE_SWITCH"
     val preferNodeKey = "$name.$PREFER_NODE_SWITCH"
-    val textPreferenceKey = "$name.$CONFIGURED_NODE"
+    val configuredNodeKey = "$name.$CONFIGURED_NODE"
     val onlyChecked = remember { mutableStateOf(preferenceDB.getBoolean(exclusiveNodeKey, false)) }
     val preferChecked = remember { mutableStateOf(preferenceDB.getBoolean(preferNodeKey, false)) }
-    var textState by remember { mutableStateOf(preferenceDB.getString(textPreferenceKey, "") ?: "") }
+    var textState by remember { mutableStateOf(preferenceDB.getString(configuredNodeKey, "") ?: "") }
 
     Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(5.dp, 0.dp),
     ) {
-        TextField(
+        Text(name)
+        Spacer(modifier = Modifier.width(8.dp))
+        WallyTextEntry(
           value = textState,
           onValueChange = {
               textState = it
-              preferenceDB.edit().putString(textPreferenceKey, it)
+              LogIt.info(configuredNodeKey)
+              with(preferenceDB.edit())
+            {
+                putString(configuredNodeKey, it)
+                commit()
+            }
           },
-          label = { Text(name) },
-          singleLine = true,
-          modifier = Modifier.width(180.dp),
-          colors = textFieldColors(containerColor = Color.Transparent),
-          textStyle = TextStyle(fontSize = 12.sp)
+          //label = { Text(name) },
+          //singleLine = true,
+          modifier = Modifier.width(125.dp),
+          //colors = textFieldColors(containerColor = Color.Transparent),
+          textStyle = TextStyle(fontSize = 14.sp)
         )
         WallySwitch(onlyChecked, S.only) {
             onlyChecked.value = it
-            preferenceDB.edit().putBoolean(exclusiveNodeKey, it)
+            preferenceDB.edit().putBoolean(exclusiveNodeKey, it).commit()
         }
         WallySwitch(preferChecked, S.prefer) {
             preferChecked.value = it
-            preferenceDB.edit().putBoolean(preferNodeKey, it)
+            preferenceDB.edit().putBoolean(preferNodeKey, it).commit()
         }
     }
 }

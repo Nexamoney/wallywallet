@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 
 import androidx.compose.ui.graphics.vector.ImageVector
 import info.bitcoinunlimited.www.wally.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -84,8 +85,16 @@ enum class ScreenId
 
 class ScreenNav()
 {
+    data class ScreenState(val id: ScreenId, val departFn: (() -> Unit)?)
+
     var currentScreen: MutableState<ScreenId> = mutableStateOf(ScreenId.Home)
-    val path = ArrayDeque<ScreenId>(10)
+    var currentScreenDepart: (() -> Unit)? = null
+    val path = ArrayDeque<ScreenState>(10)
+
+    fun onDepart(fn: () -> Unit)
+    {
+        currentScreenDepart = fn
+    }
 
     /** If everything is recomposed, we may have a new mutable screenid tracker */
     fun reset(newMutable: MutableState<ScreenId>)
@@ -94,14 +103,16 @@ class ScreenNav()
     }
 
     /** Add a screen onto the stack */
-    fun push(screen: ScreenId) = path.add(screen)
+    fun push(screen: ScreenId) = path.add(ScreenState(screen,null))
 
 
     /* push the current screen onto the stack, and set the passed screen to be the current one */
     fun go(screen: ScreenId)
     {
-        path.add(currentScreen.value)
+        currentScreenDepart?.invoke()
+        path.add(ScreenState(currentScreen.value,currentScreenDepart))
         currentScreen.value = screen
+        currentScreenDepart = null
     }
 
     fun title() = currentScreen.value.title()
@@ -109,17 +120,28 @@ class ScreenNav()
     /* pop the current screen from the stack and go there */
     fun back():ScreenId?
     {
+        currentScreenDepart?.invoke()
+        currentScreenDepart = null
         // See if there is anything in the back stack.
-        var prior = path.removeLastOrNull()
+        var priorId:ScreenId? = null
+        val prior = path.removeLastOrNull()
         // If I can't go back, go up
-        if (prior == null) prior = currentScreen.value.up()
-        if (prior != null) currentScreen.value = prior
-        return prior
+        if (prior == null) priorId = currentScreen.value.up()
+        if (prior != null)
+        {
+            priorId = prior.id
+            currentScreen.value = prior.id
+            currentScreenDepart = prior.departFn
+        }
+        return priorId
     }
 }
 
+
+//val GUI_CALLBACK_ID = 4733
 fun assignAccountsGuiSlots(): ListifyMap<String, Account>
 {
+
     // We have a Map of account names to values, but we need a list
     // Sort the accounts based on account name
     val lm: ListifyMap<String, Account> = ListifyMap(wallyApp!!.accounts, { it.value.visible }, object : Comparator<String>
@@ -131,16 +153,6 @@ fun assignAccountsGuiSlots(): ListifyMap<String, Account>
             return p0.compareTo(p1)
         }
     })
-
-    /*  TODO set up change notifications moving upwards from the wallets
-    for (c in wallyApp!!.accounts.values)
-    {
-        c.wallet.setOnWalletChange({ it -> onWalletChange(it) })
-        c.wallet.blockchain.onChange = { it -> onBlockchainChange(it) }
-        c.wallet.blockchain.net.changeCallback = { _, _ -> onWalletChange(c.wallet) }  // right now the wallet GUI update function also updates the cnxn mgr GUI display
-        c.onChange()  // update all wallet UI fields since just starting up
-    }
-     */
 
     return lm
 }
@@ -161,11 +173,22 @@ fun assignAccountsGuiSlots(): ListifyMap<String, Account>
     }
 }
 
+// Only needed if we need to reassign the account slots outside of the GUI's control
+// val reassignAccountGuiSlots = Channel<Boolean>()
+val accountChangedNotification = Channel<String>()
 @Composable
 fun NavigationRoot(nav: ScreenNav)
 {
     val scrollState = rememberScrollState()
     val accountGuiSlots = mutableStateOf(assignAccountsGuiSlots())
+
+    /* Only needed if we need to reassign the account slots outside of the GUI's control
+    LaunchedEffect(true)
+    {
+        for(c in reassignAccountGuiSlots)
+            accountGuiSlots.value = assignAccountsGuiSlots()
+    }
+     */
 
     WallyTheme(darkTheme = false, dynamicColor = false) {
         Box(modifier = WallyPageBase) {

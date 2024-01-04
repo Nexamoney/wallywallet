@@ -223,7 +223,7 @@ class SplitBillActivity : CommonNavActivity()
         val currencyCode = if (!includeCurrencyCode) "" else ctype
         if (ctype == fiatCurrencyCode)
         {
-            return fiatFormat.format(qty) + " " + currencyCode
+            return FiatFormat.format(qty) + " " + currencyCode
         }
         else
         {
@@ -361,7 +361,7 @@ class SplitBillActivity : CommonNavActivity()
                 else
                 {
                     val fiatQty: BigDecimal = qty * fpc
-                    fiatStr = " " + i18n(R.string.or) + " " + fiatFormat.format(fiatQty) + " " + fiatCurrencyCode
+                    fiatStr = " " + i18n(R.string.or) + " " + FiatFormat.format(fiatQty) + " " + fiatCurrencyCode
                 }
                 acct!!.receiveInfoWithQuantity(qty, 200, { updateQR(it) })
             }

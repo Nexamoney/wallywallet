@@ -668,7 +668,7 @@ fun SetupNexCurrencyPreferenceGui(key: String, db: SharedPreferences, view: Edit
         {
             CurrencyDecimal(0)
         }
-        view.text.append(db.getString(key, nexFormat.format(dec)))
+        view.text.append(db.getString(key, NexaFormat.format(dec)))
     }
 
     view.addTextChangedListener(object : TextWatcher
@@ -683,7 +683,7 @@ fun SetupNexCurrencyPreferenceGui(key: String, db: SharedPreferences, view: Edit
                 val dec = CurrencyDecimal(text)
                 with(db.edit())
                 {
-                    putString(key, serializeFormat.format(dec))
+                    putString(key, CurrencySerializeFormat.format(dec))
                     commit()
                 }
             }

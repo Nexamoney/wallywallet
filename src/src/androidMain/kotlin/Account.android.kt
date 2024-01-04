@@ -1,7 +1,5 @@
 package info.bitcoinunlimited.www.wally
 
-import info.bitcoinunlimited.www.wally.ui.views.triggerRecompose
-
 import android.graphics.Bitmap
 import android.graphics.Paint
 import android.view.View
@@ -14,6 +12,8 @@ import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 
 import com.ionspin.kotlin.bignum.decimal.*
+import info.bitcoinunlimited.www.wally.ui.views.accountUIData
+import info.bitcoinunlimited.www.wally.ui.views.uiData
 import kotlinx.coroutines.delay
 import org.nexa.libnexakotlin.*
 //import org.nexa.walletoperations.*
@@ -147,7 +147,7 @@ fun Account.receiveInfoWithQuantity(qty: BigDecimal, sz: Int, refresh: ((Receive
 {
     launch {
         val addr = currentReceive?.address
-        val uri = addr.toString() + "?amount=" + bchFormat.format(toPrimaryUnit(qty))
+        val uri:String = addr.toString() + "?amount=" + (if (wallet.chainSelector.isBchFamily) BchFormat.format(toPrimaryUnit(qty)) else NexaFormat.format(toPrimaryUnit(qty)))
         val qr = textToQREncode(uri, sz)
         refresh(ReceiveInfoResult(uri, qr))
     }
@@ -227,7 +227,7 @@ fun Account.updateUI(force: Boolean)
         if (fiatPerCoin > BigDecimal.ZERO)
         {
             var fiatDisplay = balance * fiatPerCoin
-            uiBinding?.info?.let { it.visibility = View.VISIBLE; it.text = i18n(R.string.approximatelyT) % mapOf("qty" to fiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode) }
+            uiBinding?.info?.let { it.visibility = View.VISIBLE; it.text = i18n(R.string.approximatelyT) % mapOf("qty" to FiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode) }
         }
         else uiBinding?.info?.let { it.visibility = View.GONE }
     }
@@ -286,6 +286,7 @@ fun Account.onResumeAndroid()
 var accountOnChangedLater = false
 actual fun onChanged(account: Account, force: Boolean)
 {
+    /*
     // While I'm updating the screen is not responsive (e.g. onclick does not work).  This is probably a compose bug.  But regardless
     // updating only 3 times a second is fast enough and consumes a lot less CPU which results in lower battery drain.
     triggerRecompose.value = (millinow()/333).toInt()
@@ -301,7 +302,7 @@ actual fun onChanged(account: Account, force: Boolean)
             triggerRecompose.value = (millinow()/333).toInt()
         }
     }
-
+     */
 
     laterUI {
         account.uiBinding?.let {
@@ -320,6 +321,7 @@ actual fun onChanged(account: Account, force: Boolean)
     later {
         account.changeAsyncProcessing()
         account.updateUI(force)
+        accountUIData[account.name]?.value = account.uiData()
     }
 
 }

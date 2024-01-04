@@ -82,11 +82,11 @@ fun TransactionHistory.toCSV(): String
     ret.append(",")
     ret.append(tx.idem.toHex())
     ret.append(",")
-    ret.append(basisOverride?.let { serializeFormat.format(it) } ?: "")
+    ret.append(basisOverride?.let { CurrencySerializeFormat.format(it) } ?: "")
     ret.append(",")
-    ret.append(saleOverride?.let { serializeFormat.format(it) } ?: "")
+    ret.append(saleOverride?.let { CurrencySerializeFormat.format(it) } ?: "")
     ret.append(",")
-    ret.append(priceWhenIssued.let { serializeFormat.format(it) } ?: "")
+    ret.append(priceWhenIssued.let { CurrencySerializeFormat.format(it) } ?: "")
     ret.append(",")
     ret.append(priceWhatFiat)
     ret.append(",")
@@ -207,22 +207,22 @@ class TxHistoryBinder(val ui: TxHistoryListItemBinding): GuiListItemBinder<Trans
             if (obj.priceWhatFiat != "")
             {
                 val netFiat = CurrencyDecimal(amt) * obj.priceWhenIssued
-                ui.GuiValueFiat.text = fiatFormat.format(netFiat) + " " + obj.priceWhatFiat
+                ui.GuiValueFiat.text = FiatFormat.format(netFiat) + " " + obj.priceWhatFiat
 
                 ui.GuiTxCostBasisOrProfitLoss.text.clear()
                 if (amt > 0)
                 {
                     val tmp = obj.basisOverride
                     if (tmp != null)
-                        ui.GuiTxCostBasisOrProfitLoss.text.append(fiatFormat.format(tmp))
+                        ui.GuiTxCostBasisOrProfitLoss.text.append(FiatFormat.format(tmp))
                     else
-                        ui.GuiTxCostBasisOrProfitLoss.text.append(fiatFormat.format(netFiat))
+                        ui.GuiTxCostBasisOrProfitLoss.text.append(FiatFormat.format(netFiat))
                     ui.GuiBasisText.text = appResources?.getText(R.string.CostBasis)
                 }
                 else
                 {
                     val capgain = obj.capGains()
-                    ui.GuiTxCostBasisOrProfitLoss.text.append(fiatFormat.format(capgain))
+                    ui.GuiTxCostBasisOrProfitLoss.text.append(FiatFormat.format(capgain))
                     if (capgain >= BigDecimal.ZERO)
                     {
                         ui.GuiBasisText.text = appResources?.getText(R.string.CapitalGain)

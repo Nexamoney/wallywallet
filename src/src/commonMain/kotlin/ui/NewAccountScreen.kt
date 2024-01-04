@@ -227,11 +227,16 @@ fun ProposeAccountName(cs: ChainSelector):String?
         }
         BlockchainDropDownMenu(selectedChain, blockchains, onChainSelected)
         AccountNameInput(newAcState.accountName, newAcState.validAccountName, onNewAccountName)
+        Spacer(Modifier.height(10.dp))
         RecoveryPhraseInput(newAcState.recoveryPhrase, newAcState.validOrNoRecoveryPhrase, onNewRecoveryPhrase)
+        Spacer(Modifier.height(10.dp))
         pinInput(newAcState.pin, newAcState.validOrNoPin, onPinChange)
-        Text(i18n(S.PinSpendingUnprotected), fontSize = 12.sp)
+        Text(i18n(S.PinSpendingUnprotected), fontSize = 14.sp)
+        Spacer(Modifier.height(10.dp))
         WallySwitch(newAcState.hideUntilPinEnter, S.PinHidesAccount, onHideUntilPinEnterChanged)
-        WallyRoundedTextButton(i18n(S.createAccount), onClick = onClickCreateAccount)
+        Spacer(Modifier.height(20.dp))
+        Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth())
+            { WallyRoundedTextButton(i18n(S.createAccount), onClick = onClickCreateAccount) }
     }
 }
 
@@ -300,12 +305,13 @@ fun ProposeAccountName(cs: ChainSelector):String?
         Spacer(Modifier.width(8.dp))
         Text(i18n(S.AccountName))
         Spacer(Modifier.width(8.dp))
-        TextField(
+        WallyTextEntry(
           value = accountName,
           onValueChange = onNewAccountName,
-          colors = TextFieldDefaults.textFieldColors(containerColor = Color.Transparent),
-          placeholder = { Text(i18n(S.AccountNameHint)) },
-          singleLine = true
+          //colors = TextFieldDefaults.textFieldColors(containerColor = Color.Transparent),
+          //placeholder = { Text(i18n(S.AccountNameHint)) },
+          //singleLine = true
+          modifier = Modifier.weight(1f)
         )
     }
 }

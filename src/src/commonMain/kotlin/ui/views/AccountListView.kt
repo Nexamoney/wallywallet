@@ -16,23 +16,37 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.LOCAL_CURRENCY_PREF
 import info.bitcoinunlimited.www.wally.ui.ChildNav
+import info.bitcoinunlimited.www.wally.ui.accountChangedNotification
+import info.bitcoinunlimited.www.wally.ui.assignAccountsGuiSlots
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.nexa.libnexakotlin.*
 
-val triggerRecompose: MutableState<Int> = mutableStateOf(0)
+//val triggerRecompose = MutableStateFlow(0)
+val accountUIData = mutableMapOf<String,MutableState<AccountUIData>>()
 
 @Composable fun AccountListView(accounts: MutableState<ListifyMap<String,Account>>, selectedAccount: MutableStateFlow<Account?>, nav: ChildNav)
 {
-    key(triggerRecompose.value)
-    {
     Box(
       modifier = Modifier
         .fillMaxWidth()
-        .padding(vertical = 1.dp, horizontal = 4.dp)
+        .padding(vertical = 1.dp, horizontal = 0.dp)
         .height(350.dp), // TODO: Position relative to parent view
     ) {
+
+        LaunchedEffect(true)
+        {
+            for(c in accountChangedNotification)
+            {
+                val act = wallyApp?.accounts?.get(c)
+                if (act != null)
+                {
+                    accountUIData[c]?.value = act.uiData()
+                }
+            }
+        }
+
         LazyColumn(
           horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -40,9 +54,9 @@ val triggerRecompose: MutableState<Int> = mutableStateOf(0)
                     item(key=it.name) {
                         // I would think that capturing this data would control redraw of each item, but it appears to not do so.
                         // Redraw is controlled of the entire AccountListView, or not at all.
-                        // val anyChanges: MutableState<AccountUIData> = remember { mutableStateOf(it.uiData()) }
-                        val anyChanges = it.uiData()
-                        AccountItemView(anyChanges, idx, selectedAccount.value == it, devMode,
+                        val anyChanges: MutableState<AccountUIData> = remember { mutableStateOf(it.uiData()) }
+                        accountUIData[it.name] = anyChanges
+                        AccountItemView(anyChanges.value, idx, selectedAccount.value == it, devMode,
                           onClickAccount = {
                               selectedAccount.value = it
                           },
@@ -53,7 +67,6 @@ val triggerRecompose: MutableState<Int> = mutableStateOf(0)
                 }
             }
         }
-    }
 }
 
 
@@ -75,6 +88,7 @@ data class AccountUIData(
 fun Account.uiData():AccountUIData
 {
     val ret = AccountUIData()
+
     var delta = balance - confirmedBalance
 
     ret.name = name
@@ -134,7 +148,7 @@ fun Account.uiData():AccountUIData
     if (fiatPerCoin > BigDecimal.ZERO)
     {
         var fiatDisplay = balance * fiatPerCoin
-        ret.approximately = i18n(S.approximatelyT) % mapOf("qty" to fiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode)
+        ret.approximately = i18n(S.approximatelyT) % mapOf("qty" to FiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode)
     }
     else ret.approximately = null
     return ret

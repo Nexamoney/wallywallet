@@ -356,7 +356,12 @@ open class CommonApp
         db.set("wallyDataVersion", WALLY_DATA_VERSION)
     }
 
-    /** Create a new account */
+    /** Create a new account
+     * @param name Account name 8 chars or less
+     * @param flags
+     * @param pin Account pin.  Should be numeric.  Pass "" for no PIN.
+     * @param chainSelector What blockchain this account uses.
+     * */
     fun newAccount(name: String, flags: ULong, pin: String, chainSelector: ChainSelector): Account?
     {
         dbgAssertNotGuiThread()
@@ -512,20 +517,26 @@ open class CommonApp
                     }
                     if (accountNames.size == 0) firstRun = true // Ok maybe not first run but no wallets
 
-                    val accountNameList = accountNames.decodeUtf8().split(",")
+                    val accountNameStr = accountNames.decodeUtf8()
+                    LogIt.info("Loading active accounts: $accountNameStr")
+                    val accountNameList = accountNameStr.split(",")
                     for (name in accountNameList)
                     {
-                        LogIt.info(sourceLoc() + " " + name + ": Loading account")
-                        try
+                        if (name.length > 0)  // Note in kotlin "".split(",") results in a list of one element containing ""
                         {
-                            val ac = Account(name, prefDB = prefs)
-                            accountLock.lock { accounts[ac.name] = ac }
-                        } catch (e: DataMissingException)
-                        {
-                            LogIt.warning(sourceLoc() + " " + name + ": Active account $name was not found in the database. Error $e")
-                            // Nothing to really do but ignore the missing account
+                            LogIt.info(sourceLoc() + " " + name + ": Loading account")
+                            try
+                            {
+                                val ac = Account(name, prefDB = prefs)
+                                accountLock.lock { accounts[ac.name] = ac }
+                            }
+                            catch (e: DataMissingException)
+                            {
+                                LogIt.warning(sourceLoc() + " " + name + ": Active account $name was not found in the database. Error $e")
+                                // Nothing to really do but ignore the missing account
+                            }
+                            LogIt.info(sourceLoc() + " " + name + ": Loaded account")
                         }
-                        LogIt.info(sourceLoc() + " " + name + ": Loaded account")
                     }
                 }
 
@@ -539,6 +550,11 @@ open class CommonApp
                             break
                         }
                     }
+                }
+
+                if (firstRun == true)
+                {
+                    newAccount("nexa", ACCOUNT_FLAG_NONE,"", ChainSelector.NEXA)
                 }
 
                 // Cannot pick the primary account until accounts are loaded
