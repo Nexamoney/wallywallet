@@ -14,19 +14,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.LOCAL_CURRENCY_PREF
-import info.bitcoinunlimited.www.wally.ui.ChildNav
-import info.bitcoinunlimited.www.wally.ui.accountChangedNotification
-import info.bitcoinunlimited.www.wally.ui.assignAccountsGuiSlots
+import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.nexa.libnexakotlin.*
 
 //val triggerRecompose = MutableStateFlow(0)
 val accountUIData = mutableMapOf<String,MutableState<AccountUIData>>()
 
-@Composable fun AccountListView(accounts: MutableState<ListifyMap<String,Account>>, selectedAccount: MutableStateFlow<Account?>, nav: ChildNav)
+@Composable fun AccountListView(
+  nav: ScreenNav,
+  selectedAccount: MutableStateFlow<Account?>,
+  accounts: MutableState<ListifyMap<String,Account>>,
+  onClickAccount: (Account) -> Unit)
 {
     Box(
       modifier = Modifier
@@ -57,11 +59,9 @@ val accountUIData = mutableMapOf<String,MutableState<AccountUIData>>()
                         val anyChanges: MutableState<AccountUIData> = remember { mutableStateOf(it.uiData()) }
                         accountUIData[it.name] = anyChanges
                         AccountItemView(anyChanges.value, idx, selectedAccount.value == it, devMode,
-                          onClickAccount = {
-                              selectedAccount.value = it
-                          },
+                          onClickAccount = { onClickAccount(it) },
                           onClickGearIcon = {
-                              nav.displayAccount(it)
+                              nav.go(ScreenId.AccountDetails)
                           })
                     }
                 }

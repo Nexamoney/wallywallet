@@ -8,13 +8,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
-import androidx.compose.material3.OutlinedTextFieldDefaults.DecorationBox
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -27,20 +24,11 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import com.ionspin.kotlin.bignum.decimal.BigDecimal
-import info.bitcoinunlimited.www.wally.NORMAL_NOTICE_DISPLAY_TIME
-import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
-import info.bitcoinunlimited.www.wally.setTextClipboard
-import info.bitcoinunlimited.www.wally.ui.CONFIRM_ABOVE_PREF
-import info.bitcoinunlimited.www.wally.ui.SHOW_TRICKLEPAY_PREF
-import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import org.nexa.libnexakotlin.*
 
 // https://stackoverflow.com/questions/65893939/how-to-convert-textunit-to-dp-in-jetpack-compose
 val Int.dpTextUnit: TextUnit
@@ -269,6 +257,17 @@ fun WallyImageButton(resPath: String, enabled: Boolean=true, modifier: Modifier,
     )
 }
 
+@Composable fun WallyEmphasisBox(modifier: Modifier = Modifier, content: @Composable () -> Unit)
+{
+    val surfShape = RoundedCornerShape(20.dp)
+    Surface(
+      shape = surfShape,
+      contentColor = BrightBkg,
+      modifier = Modifier.border(WallyModalOutline, surfShape).then(modifier)
+    ) {
+        Box(Modifier.fillMaxSize().padding(8.dp)) { content() }
+    }
+}
 
 //val WallyTextStyle = LocalTextStyle.current.copy()
 
@@ -297,14 +296,22 @@ fun NoticeText(noticeText: String)
 }
 
 
+@Composable fun FontScale(amt: Double): TextUnit
+{
+    return LocalTextStyle.current.fontSize.times(amt)
+}
+
 /* Styling for the text of page titles */
 @Composable
-fun TitleText(textRes: Int, modifier: Modifier)
+fun TitleText(textRes: Int, modifier: Modifier) = TitleText(i18n(textRes), modifier)
+
+@Composable
+fun TitleText(text: String, modifier: Modifier)
 {
     Text(
-      text = i18n(textRes),
+      text = text,
       modifier = modifier,
-        //.background(Color.Red),  // for layout debugging
+      //.background(Color.Red),  // for layout debugging
       style = LocalTextStyle.current.copy(
         color = Color.Black,
         textAlign = TextAlign.Center,  // To make this actually work, you need to pass a modifier where the space given to the title is greedy using .weight()
@@ -339,7 +346,7 @@ fun SectionText(text: String, modifier: Modifier = Modifier)
 /** Standard Wally text entry field.
  */
 @Composable
-fun WallyTextEntry(value: String,  onValueChange: (String) -> Unit, modifier: Modifier = Modifier, textStyle: TextStyle? = null)
+fun WallyTextEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, onValueChange: ((String) -> Unit)? = null)
 {
     val ts2 = LocalTextStyle.current.copy(
         fontSize = LocalTextStyle.current.fontSize.times(1.25))
@@ -376,7 +383,7 @@ fun WallyTextEntry(value: String,  onValueChange: (String) -> Unit, modifier: Mo
 
     BasicTextField(
         value,
-        onValueChange,
+        onValueChange ?: {},
         textStyle = ts,
       interactionSource = ia,
         modifier = modifier,
@@ -402,7 +409,7 @@ fun WallyTextEntry(value: String,  onValueChange: (String) -> Unit, modifier: Mo
 }
 
 @Composable
-fun WallyIncognitoTextEntry(value: String,  onValueChange: (String) -> Unit, modifier: Modifier)
+fun WallyIncognitoTextEntry(value: String, modifier: Modifier, onValueChange: (String) -> Unit)
 {
     BasicTextField(
       value,

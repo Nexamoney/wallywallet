@@ -128,7 +128,7 @@ fun <T> WallyDropdownMenu(
                 val surfShape = RoundedCornerShape(32.dp)
                 Surface(
                   shape = surfShape,
-                  modifier = Modifier.border(WallyModalOutline, surfShape)  // background(ModalBkg) BUG: loses the shape
+                  modifier = Modifier.background(ModalBkg).border(WallyModalOutline, surfShape)  // background(ModalBkg) BUG: loses the shape
                 ) {
                     val listState = rememberLazyListState()
                     if (selectedIndex > -1) {

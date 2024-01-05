@@ -28,6 +28,7 @@ import info.bitcoinunlimited.www.wally.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import org.nexa.libnexakotlin.rem
 
 /** return true if this platform has a native title bar (and therefore do not generate one). */
 var hasNativeTitleBar = true
@@ -77,7 +78,7 @@ enum class ScreenId
             Settings -> i18n(S.title_activity_settings)
             SplitBill -> i18n(S.title_split_bill)
             NewAccount -> i18n(S.title_activity_new_account)
-            AccountDetails -> i18n(S.title_activity_account_details)
+            AccountDetails -> i18n(S.title_activity_account_details) % mapOf("account" to (wallyApp?.focusedAccount?.name ?: ""))
             Test -> "Test"
         }
     }
@@ -173,6 +174,22 @@ fun assignAccountsGuiSlots(): ListifyMap<String, Account>
     }
 }
 
+// This function should build a title bar (with a back button) if the platform doesn't already have one.  Otherwise it should
+// set up the platform's title bar
+@Composable fun ConstructTitleBar(nav: ScreenNav)
+{
+    if (!hasNativeTitleBar)
+    {
+        Row(verticalAlignment = Alignment.CenterVertically)
+        {
+            IconButton(onClick = { nav.back() }) {
+                Icon(Icons.Default.ArrowBack, contentDescription = null)
+            }
+            TitleText(nav.title(), Modifier.weight(2f))
+        }
+    }
+}
+
 // Only needed if we need to reassign the account slots outside of the GUI's control
 // val reassignAccountGuiSlots = Channel<Boolean>()
 val accountChangedNotification = Channel<String>()
@@ -215,7 +232,7 @@ fun NavigationRoot(nav: ScreenNav)
                         ScreenId.NewAccount -> NewAccountScreen(accountGuiSlots, devMode, nav)
                         ScreenId.Test -> TestScreen(400.dp)
                         ScreenId.Settings -> SettingsScreen(nav)
-                        ScreenId.AccountDetails -> Text("TODO: Unexpected top level account details")
+                        ScreenId.AccountDetails -> AccountDetailScreenNav(accountGuiSlots, nav)
                         ScreenId.Assets -> Text("TODO: Implement AssetsScreen")
                         ScreenId.Shopping -> ShoppingScreen(nav)
                         ScreenId.TricklePay -> Text("TODO: Implement TricklePayScreen")

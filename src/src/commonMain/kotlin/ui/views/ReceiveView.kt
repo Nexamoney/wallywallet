@@ -12,82 +12,43 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.theme.NoticeText
 import kotlinx.coroutines.*
 import org.nexa.libnexakotlin.exceptionHandler
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
+import info.bitcoinunlimited.www.wally.ui.HomeScreen
+import info.bitcoinunlimited.www.wally.ui.testDropDown
+import info.bitcoinunlimited.www.wally.ui.theme.*
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
-
-/**
- * View for receiving funds
- */
-@Composable
-fun ReceiveView(selectedAccountName: String, address: String, accountNames: List<String>, onAccountNameSelected: (String) -> Unit)
-{
-
-    Column(
-      Modifier.fillMaxWidth()
-    ) {
-        AccountDropDownSelector(
-          accountNames,
-          selectedAccountName,
-          onAccountNameSelected = onAccountNameSelected,
-        )
-
-        AddressQrCode(address)
-    }
-}
 
 /**
  * Select which account you want to receive into
  */
 @Composable
 fun AccountDropDownSelector(
-  accountNames: List<String>,
-  selectedAccountName: String,
-  onAccountNameSelected: (String) -> Unit,
-)
+  accountGuiSlots:  MutableState<ListifyMap<String, Account>>,
+  selectedAccountName: String?,
+  onAccountNameSelected: (Int) -> Unit)
 {
-    var expanded by remember { mutableStateOf(false) }
+    var selectedIndex by remember { mutableStateOf(0) }
+    val accountNames = accountGuiSlots.value.map { it.name }
+    accountGuiSlots.value.forEachIndexed { index, account -> if (account.name == selectedAccountName) selectedIndex = index }
 
-    if (accountNames.isNotEmpty())
-        Row(
-          horizontalArrangement = Arrangement.SpaceEvenly,
-          verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = i18n(S.Receive))
-            Spacer(modifier = Modifier.width(8.dp))
-            Box {
-                Row(
-                  verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                      text = selectedAccountName,
-                      modifier = Modifier.clickable(onClick = { expanded = true })
-                    )
-                    IconButton(onClick = { expanded = true }) {
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                    }
-                }
-                DropdownMenu(
-                  expanded = expanded,
-                  onDismissRequest = { expanded = false },
-                ) {
-                    accountNames.forEach { name ->
-                        DropdownMenuItem(
-                          onClick = {
-                              onAccountNameSelected(name)
-                              expanded = false
-                          },
-                          text = { Text(text = name) }
-                        )
-                    }
-                }
-            }
-        }
+    WallyDropdownMenu(
+              modifier = Modifier.width(IntrinsicSize.Min),
+              label = "",
+              items = accountNames,
+              selectedIndex = selectedIndex,
+              style = WallyDropdownStyle.Succinct,
+              onItemSelected = { index, s ->
+                  selectedIndex = index
+                  // selectedAccountName = s
+                  onAccountNameSelected(index)
+                               },
+            )
 }
 
 /**
@@ -112,9 +73,9 @@ fun AddressQrCode(address: String)
     }
 
     Row(
-      modifier = Modifier.clickable { onAddressCopied() }
+      modifier = Modifier.padding(2.dp).height(IntrinsicSize.Min).clickable { onAddressCopied() }
     ) {
-        Box(modifier = Modifier.padding(8.dp).background(color = Color.White)) {
+        Box(modifier = Modifier.background(color = Color.White).padding(8.dp)) {
             if (address.isNotEmpty())
             {
                 Image(
@@ -125,12 +86,14 @@ fun AddressQrCode(address: String)
                 )
             }
         }
+        Spacer(Modifier.width(4.dp))
 
-        Box {
+        WallyEmphasisBox(Modifier.fillMaxHeight()) {
             if(displayCopiedNotice)
                 NoticeText(i18n(S.copiedToClipboard))
             else
-                Text(address)
+                Text(address, fontWeight = FontWeight.Bold, fontSize = FontScale(1.4),color = WallyAddressColor,
+                  modifier = Modifier.wrapContentHeight(align = Alignment.CenterVertically))
         }
     }
 }

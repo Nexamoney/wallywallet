@@ -38,42 +38,48 @@ enum class AccountNav
 }
 
 @Composable
-fun AccountDetailScreenNav(nav: ChildNav, account: Account, allAccounts: MutableState<ListifyMap<String,Account>>)
+fun AccountDetailScreenNav(allAccounts: MutableState<ListifyMap<String,Account>>, nav: ScreenNav)
 {
-    var accountNav by remember { mutableStateOf(AccountNav.AccountDetail) }
-
-    when (accountNav)
+    val account = wallyApp!!.focusedAccount
+    if (account == null) nav.back()
+    else
     {
-        AccountNav.AccountDetail -> {
-            AccountDetailScreen(account, allAccounts, onTxHistoryButtonClicked = {
-                accountNav = AccountNav.AddressHistory
-                },
-                onAddressesButtonClicked = {
+        var accountNav by remember { mutableStateOf(AccountNav.AccountDetail) }
+
+        when (accountNav)
+        {
+            AccountNav.AccountDetail ->
+            {
+                AccountDetailScreen(nav, account, allAccounts, onTxHistoryButtonClicked = {
                     accountNav = AccountNav.AddressHistory
                 },
-                onBackButton = {
-                    nav.displayAccount(null)
-                }
-            )
-        }
-        AccountNav.TxHistory -> TxHistoryScreen(account) {
-            accountNav = AccountNav.AccountDetail
-        }
-        AccountNav.AddressHistory -> AddressHistoryScreen(account) {
-            accountNav = AccountNav.AccountDetail
+                  onAddressesButtonClicked = {
+                      accountNav = AccountNav.AddressHistory
+                  },
+                  onBackButton = {
+                      nav.back()
+                  }
+                )
+            }
+
+            AccountNav.TxHistory -> TxHistoryScreen(account) {
+                accountNav = AccountNav.AccountDetail
+            }
+
+            AccountNav.AddressHistory -> AddressHistoryScreen(account) {
+                accountNav = AccountNav.AccountDetail
+            }
         }
     }
 }
 
 @Composable
-fun AccountDetailScreen(account: Account, allAccounts: MutableState<ListifyMap<String,Account>>, onTxHistoryButtonClicked: () -> Unit, onAddressesButtonClicked: () -> Unit, onBackButton: () -> Unit)
+fun AccountDetailScreen(nav: ScreenNav, account: Account, allAccounts: MutableState<ListifyMap<String,Account>>, onTxHistoryButtonClicked: () -> Unit, onAddressesButtonClicked: () -> Unit, onBackButton: () -> Unit)
 {
     Column(
       modifier = Modifier.verticalScroll(rememberScrollState())
     ) {
-        IconButton(onClick = onBackButton) {
-            Icon(Icons.Default.ArrowBack, contentDescription = i18n(S.title_home))
-        }
+        ConstructTitleBar(nav)
         AccountStatisticsHeader()
         AccountBlockchainDetail(account)
         AccountFirstLastSend(account.wallet.statistics())
