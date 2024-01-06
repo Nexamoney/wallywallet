@@ -19,7 +19,7 @@ import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.IdentityOp")
 
-val IDENTITY_URI_SCHEME = "nexid"
+// val IDENTITY_URI_SCHEME = "nexid"
 
 open class IdentityOpException(msg: String, shortMsg: String? = null, severity: ErrorSeverity = ErrorSeverity.Abnormal) : LibNexaException(msg, shortMsg, severity)
 

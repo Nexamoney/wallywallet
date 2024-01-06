@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 
 
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -193,11 +194,18 @@ fun assignAccountsGuiSlots(): ListifyMap<String, Account>
 // Only needed if we need to reassign the account slots outside of the GUI's control
 // val reassignAccountGuiSlots = Channel<Boolean>()
 val accountChangedNotification = Channel<String>()
+
+// Add other information as needed to drive each page
+data class GuiDriver(val gotoPage: ScreenId, val sendAddress: String?=null, val amount: BigDecimal?=null)
+
+val externalDriver = Channel<GuiDriver>()
 @Composable
 fun NavigationRoot(nav: ScreenNav)
 {
     val scrollState = rememberScrollState()
     val accountGuiSlots = mutableStateOf(assignAccountsGuiSlots())
+    var driver = mutableStateOf<GuiDriver?>(null)
+    //var driver:GuiDriver? = null
 
     /* Only needed if we need to reassign the account slots outside of the GUI's control
     LaunchedEffect(true)
@@ -206,6 +214,17 @@ fun NavigationRoot(nav: ScreenNav)
             accountGuiSlots.value = assignAccountsGuiSlots()
     }
      */
+
+    LaunchedEffect(true)
+    {
+        for(c in externalDriver)
+        {
+            driver.value = c
+            //driver = c
+            nav.go(c.gotoPage)
+        }
+    }
+
 
     WallyTheme(darkTheme = false, dynamicColor = false) {
         Box(modifier = WallyPageBase) {
@@ -226,8 +245,8 @@ fun NavigationRoot(nav: ScreenNav)
                 ) {
                     when (nav.currentScreen.value)
                     {
-                        ScreenId.None -> HomeScreen(accountGuiSlots, nav, ChildNav)
-                        ScreenId.Home -> HomeScreen(accountGuiSlots, nav, ChildNav)
+                        ScreenId.None -> HomeScreen(accountGuiSlots, driver, nav, ChildNav)
+                        ScreenId.Home -> HomeScreen(accountGuiSlots, driver, nav, ChildNav)
                         ScreenId.SplitBill -> SplitBillScreen(nav)
                         ScreenId.NewAccount -> NewAccountScreen(accountGuiSlots, devMode, nav)
                         ScreenId.Test -> TestScreen(400.dp)

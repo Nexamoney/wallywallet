@@ -29,6 +29,9 @@ private val LogIt = GetLog("BU.wally.utils")
 /** Gets the ktor http client for this platform */
 expect fun GetHttpClient(timeoutInMs: Number):HttpClient
 
+/** Scan a QR code, and call the scanDone function when finished.  Returns false if QR scanning is not available */
+expect fun ScanQrCode(scanDone: (String)->Unit): Boolean
+
 class ImageContainer
 {
     var defp: (@Composable ()->Painter)? = null

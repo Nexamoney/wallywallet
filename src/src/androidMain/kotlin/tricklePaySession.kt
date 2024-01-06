@@ -22,7 +22,7 @@ import java.net.URLEncoder
 
 private val LogIt = GetLog("BU.wally.tpsess")
 
-val TDPP_URI_SCHEME = "tdpp"
+// val TDPP_URI_SCHEME = "tdpp"
 val TDPP_DEFAULT_UOA = "NEX"
 val TDPP_DEFAULT_PROTOCOL = "http"
 

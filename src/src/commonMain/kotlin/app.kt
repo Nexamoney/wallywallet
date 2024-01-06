@@ -1,6 +1,9 @@
 // Copyright (c) 2023 Bitcoin Unlimited
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
+import com.eygraber.uri.Uri
+import com.eygraber.uri.Url
+import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.ACCESS_PRICE_DATA_PREF
 import info.bitcoinunlimited.www.wally.ui.DEV_MODE_PREF
 import io.ktor.client.*
@@ -11,7 +14,6 @@ import io.ktor.client.statement.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.newFixedThreadPoolContext
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
@@ -115,7 +117,7 @@ class AccessHandler(val app: CommonApp)
                 }
                 if (respText != "")
                 {
-                    app.handleAnyIntent(respText)
+                    app.handleAnyUrl(respText)
                     count += 1
                 }
                 else
@@ -222,6 +224,11 @@ open class CommonApp
         }
     }
 
+    fun amIbackground():Boolean  // TODO return true if the app is in the background
+    {
+        return false
+    }
+
     /** Do whatever you pass but not within the user interface context, asynchronously.
      * Launching into these threads means your task will outlast the activity it was launched in */
     fun later(fn: suspend () -> Unit): Unit
@@ -237,10 +244,89 @@ open class CommonApp
         }
     }
 
-    fun handleAnyIntent(url: String)
+    // We wouldn't notify if this app produced the Intent from active user input (like QR scan)
+    // but if it came from a long poll, then notify.
+    // Notifying and startActivityForResult produces a double call to that intent
+    fun handleAnyUrl(urlStr: String): Boolean
     {
-        // TODO call platform specific?
+        //val scheme = intentUri.split(":")[0]
+        val uri = Uri.parse(urlStr)
+        val scheme = uri.scheme
+        val notify = amIbackground()
+        val app = wallyApp
+        if (app == null) return false // should never occur
+
+        val isChain = uriToChain[scheme]
+        if (isChain != null)  // handle a blockchain address (by preparing the send to)
+        {
+            // Inject a change into the GUI
+            launch {
+                externalDriver.send(GuiDriver(ScreenId.Home, uri.scheme + ":" + uri.body()))
+            }
+        }
+        else if (scheme == IDENTITY_URI_SCHEME)
+        {
+            LogIt.info("starting identity operation activity")
+
+        }
+        else if (scheme == TDPP_URI_SCHEME)
+        {
+            LogIt.info("starting TDPP operation activity")
+        }
+        else
+        {
+            return false
+        }
+        return true
     }
+
+    fun handleNonIntentText(text: String)
+    {
+        // NOTE: in certain contexts (app is background), the UI thread may not even be running so do not require completion of any laterUI tasks
+        LogIt.info(sourceLoc() + "TODO: handleNonIntentText: " + text)
+
+        /*
+        // Clean out an old payment protocol if you are pasting a new send in
+        paymentInProgress = null
+        laterUI {
+            updateSendBasedOnPaymentInProgress()
+        }
+
+        lastPaste = text
+        if (text.contains('?'))  // BIP21 or BIP70
+        {
+            for (c in accounts.values)
+            {
+                if (text.contains(c.chain.uriScheme))  // TODO: prefix not contains
+                {
+                    handleSendURI(text)
+                    return
+                }
+            }
+        }
+        else
+        {
+            val notify = amIbackground()
+            laterUI {
+                val a = updateSendAddress(text, !notify)
+                if (notify)
+                {
+                    LogIt.info("Wally in background, sending notification")
+                    var intent = Intent(this, MainActivity::class.java)
+                    val addrString = a.toString() ?: ""
+                    intent.data = addrString.toUri()
+                    val nid = app?.notifyPopup(intent, i18n(R.string.sendRequestNotification), i18n(R.string.toColon) + addrString, this, false)
+                    intent.extras?.putIntegerArrayList("notificationId", arrayListOf(nid))
+                }
+            }
+            return
+        }
+        throw PasteUnintelligibleException()
+
+         */
+    }
+
+
 
     /** Returns true if accounts are synced */
     fun isSynced(visibleOnly: Boolean = true): Boolean

@@ -6,6 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.*
@@ -13,6 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.nexa.libnexakotlin.NexaFormat
 import org.nexa.libnexakotlin.launch
 
 @OptIn(ExperimentalResourceApi::class)
@@ -22,7 +24,7 @@ with member variables and member functions defined in it.
 We could use a composable "State Holder" (in theory) to capture all the state needed by the member functions, but creating a state holder appears to entail
 writing a vast amount of inscrutible garbage rather than actual useful code.
 * */
-fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, nav: ScreenNav, navigation: ChildNav)
+fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, driver: MutableState<GuiDriver?>, nav: ScreenNav, navigation: ChildNav)
 {
     var isSending by remember { mutableStateOf(false) }
 
@@ -31,15 +33,47 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, nav: 
     val displayAccountDetailScreen = navigation.displayAccountDetailScreen.collectAsState()
     val synced = remember { mutableStateOf(wallyApp!!.isSynced()) }
     var currentReceive by remember { mutableStateOf<String?>(null) }
+    var sendToAddress = remember { mutableStateOf<String>("") }
+    var sendAmount by remember { mutableStateOf<String>("") }
 
     var warnBackupRecoveryKey = remember { mutableStateOf(false) }
 
+    val tmp = driver.value
+    if (tmp != null)
+    {
+        if (tmp.sendAddress != null) isSending = true
+        tmp.sendAddress?.let { sendToAddress.value = it }
+        tmp.amount?.let { sendAmount = NexaFormat.format(it) }
+        driver.value = null  // If I don't clear this mutable state, it'll set every single time, rendering these fields uneditable
+    }
+
+    /** If some unknown text comes from the UX, maybe QR code, maybe clipboard this function handles it by trying to figure out what it is and
+    then updating the appropriate fields in the UX */
+    fun handleInputedText(text: String)
+    {
+        if (text != "")
+        {
+            if (!wallyApp!!.handleAnyUrl(text)) wallyApp!!.handleNonIntentText(text)
+        }
+        else
+        {
+            throw PasteEmptyException()
+        }
+    }
+
+    @Composable
+    fun QrCodeScannerView()
+    {
+        WallyRoundedTextButton("Scan QR code") {
+            val qrScanningAvailable = ScanQrCode { it ->
+                handleInputedText(it)
+            }
+        }
+    }
 
     @Composable
     fun SendFromView(onComplete: () -> Unit)
     {
-        val sendToAddress = remember { MutableStateFlow<String>("") }  // TODO populate this
-
         Row(modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.SpaceEvenly,
           verticalAlignment = Alignment.CenterVertically
@@ -55,14 +89,14 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, nav: 
         }
         Row(modifier = Modifier.fillMaxWidth()) {
             Text(i18n(S.toColon))
-            WallyTextEntry(sendToAddress.value, Modifier.weight(1f)) {
+            WallyTextEntry(sendToAddress.value, Modifier.weight(1f),FontScaleStyle(0.75)) {
                 sendToAddress.value = it
             }
         }
         Row(modifier = Modifier.fillMaxWidth()) {
             Text(i18n(S.Amount))
-            WallyTextEntry(sendToAddress.value, Modifier.weight(1f)) {
-                sendToAddress.value = it
+            WallyTextEntry(sendAmount, Modifier.weight(1f)) {
+                sendAmount = it
             }
         }
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -206,27 +240,3 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, nav: 
     }
 }
 
-
-@Composable
-fun QrCodeScannerView()
-{
-    var isDialogOpen by remember { mutableStateOf(false) }
-    WallyRoundedTextButton("Scan QR code") {
-        isDialogOpen = true
-        // TODO: Implement QR-code scanner
-    }
-
-    if (isDialogOpen)
-    {
-        AlertDialog(
-          onDismissRequest = { },
-          confirmButton = {
-              Button(onClick = { isDialogOpen = false }) {
-                  Text("OK")
-              }
-          },
-          title = { Text("Qr scanner") },
-          text = { Text("...not implemented") },
-        )
-    }
-}

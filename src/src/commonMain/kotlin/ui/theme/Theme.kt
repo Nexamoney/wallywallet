@@ -301,6 +301,13 @@ fun NoticeText(noticeText: String)
     return LocalTextStyle.current.fontSize.times(amt)
 }
 
+@Composable fun FontScaleStyle(amt: Double): TextStyle
+{
+    return LocalTextStyle.current.copy(
+      fontSize = LocalTextStyle.current.fontSize.times(amt)
+    )
+}
+
 /* Styling for the text of page titles */
 @Composable
 fun TitleText(textRes: Int, modifier: Modifier) = TitleText(i18n(textRes), modifier)
@@ -348,8 +355,7 @@ fun SectionText(text: String, modifier: Modifier = Modifier)
 @Composable
 fun WallyTextEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, onValueChange: ((String) -> Unit)? = null)
 {
-    val ts2 = LocalTextStyle.current.copy(
-        fontSize = LocalTextStyle.current.fontSize.times(1.25))
+    val ts2 = LocalTextStyle.current.copy(fontSize = LocalTextStyle.current.fontSize.times(1.25))
     val ts = ts2.merge(textStyle)
     val scope = rememberCoroutineScope()
     val interact = remember { object: HoverInteraction, InteractionSource
@@ -383,7 +389,7 @@ fun WallyTextEntry(value: String, modifier: Modifier = Modifier, textStyle: Text
 
     BasicTextField(
         value,
-        onValueChange ?: {},
+        onValueChange ?: { },
         textStyle = ts,
       interactionSource = ia,
         modifier = modifier,
