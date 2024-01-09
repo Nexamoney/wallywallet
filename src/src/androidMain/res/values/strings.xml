@@ -281,9 +281,9 @@ Good luck!
     <string name="approximatelyT" formatted="false">approximately %qty %fiat</string>
     <string name="exchangeRate" formatted="false">(exchange rate: 1 %fiat is worth %amt %crypto)</string>
     <!-- user is attempting to send more cryptocurrency than the wallet contains.  The payment cannot happen -->
-    <string name="moreThanAvailable">"(more than available)"</string>
+    <string name="moreThanAvailable">(more than available)</string>
     <!-- This is a warning or informational message.  It says that the user is sending recently received coins, which is perfectly OK but slightly increases the chance of payment failure -->
-    <string name="moreThanConfirmedAvailable">"(more than confirmed)"</string>
+    <string name="moreThanConfirmedAvailable">(more than confirmed)</string>
     <string name="actuallySendingT" formatted="false">actually sending %qty %crypto</string>
     <string name="copiedToClipboard">...copied to clipboard...</string>
     <string name="cannotCopyToClipboard">Cannot copy to clipboard</string>

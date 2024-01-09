@@ -1,17 +1,12 @@
 package info.bitcoinunlimited.www.wally
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.window.ComposeUIViewController
 import info.bitcoinunlimited.www.wally.ui.NavigationRoot
 import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.ScreenNav
 import info.bitcoinunlimited.www.wally.ui.hasNativeTitleBar
 import org.nexa.libnexakotlin.Bip44Wallet
-import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.initializeLibNexa
-import org.nexa.libnexakotlin.openOrNewWallet
 
 val accounts = mutableMapOf<String, Bip44Wallet>()
 

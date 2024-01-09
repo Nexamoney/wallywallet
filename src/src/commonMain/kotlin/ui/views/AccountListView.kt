@@ -21,14 +21,9 @@ import kotlinx.coroutines.flow.collect
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.nexa.libnexakotlin.*
 
-//val triggerRecompose = MutableStateFlow(0)
 val accountUIData = mutableMapOf<String,MutableState<AccountUIData>>()
 
-@Composable fun AccountListView(
-  nav: ScreenNav,
-  selectedAccount: MutableStateFlow<Account?>,
-  accounts: MutableState<ListifyMap<String,Account>>,
-  onClickAccount: (Account) -> Unit)
+@Composable fun AccountListView(nav: ScreenNav, selectedAccount: MutableStateFlow<Account?>, accounts: MutableState<ListifyMap<String,Account>>, onAccountSelected: (Account) -> Unit)
 {
     Box(
       modifier = Modifier
@@ -59,7 +54,7 @@ val accountUIData = mutableMapOf<String,MutableState<AccountUIData>>()
                         val anyChanges: MutableState<AccountUIData> = remember { mutableStateOf(it.uiData()) }
                         accountUIData[it.name] = anyChanges
                         AccountItemView(anyChanges.value, idx, selectedAccount.value == it, devMode,
-                          onClickAccount = { onClickAccount(it) },
+                          onClickAccount = { onAccountSelected(it) },
                           onClickGearIcon = {
                               nav.go(ScreenId.AccountDetails)
                           })

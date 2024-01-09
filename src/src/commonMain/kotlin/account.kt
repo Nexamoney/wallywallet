@@ -7,6 +7,8 @@ import info.bitcoinunlimited.www.wally.ui.EXCLUSIVE_NODE_SWITCH
 import info.bitcoinunlimited.www.wally.ui.PREFER_NODE_SWITCH
 import kotlin.concurrent.Volatile
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.nexa.libnexakotlin.*
 
 /** Account flags: No flag */
@@ -81,6 +83,12 @@ class Account(
     /** Current exchange rate between this currency (in this account's default unit -- NOT the finest unit or blockchain unit) and your selected fiat currency.
      * -1 means that the exchange rate cannot be determined */
     var fiatPerCoin: BigDecimal = CurrencyDecimal(-1)
+        set(value) {
+            _fiatPerCoinState.value = value
+            field = value // 'field' refers to the property itself
+        }
+    private val _fiatPerCoinState = MutableStateFlow(fiatPerCoin)
+    val fiatPerCoinObservable: StateFlow<BigDecimal> = _fiatPerCoinState
 
     var lastAssetCheck = 0L
 
@@ -476,7 +484,7 @@ class Account(
         {
             if (fiatCurrencyCode == "USD")
             {
-                NexInFiat(fiatCurrencyCode) { fiatPerCoin = CurrencyDecimal(it.toPlainString()) }
+                NexInFiat(fiatCurrencyCode) { fiatPerCoin = CurrencyDecimal(it) }
             }
             else fiatPerCoin = CURRENCY_NEG1  // Indicates that the exchange rate is unavailable
             return
@@ -574,4 +582,3 @@ fun containsAccountWithName(accounts: List<Account>, name: String): Boolean
     }
     return false
 }
-

@@ -305,7 +305,6 @@ kotlin {
                 implementation(compose.desktop.macos_arm64)
                 implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.21")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$coroutinesVersion")
-
                 // Required for Dispatchers.Main
                 // https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-dispatchers/-main.html
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
@@ -349,6 +348,9 @@ kotlin {
                 dependencies {
                     //implementation(project(":shared"))
 
+                    // CameraX core library using the camera2 implementation
+                    val camerax_version = "1.4.0-alpha02"
+
                     implementation(kotlin("stdlib-jdk8"))
                     implementation("androidx.activity:activity-compose:$androidxActivityComposeVersion")
 
@@ -391,6 +393,12 @@ kotlin {
 
                     // This calls your own startup code with the app context (see AndroidManifest.xml)
                     //implementation("androidx.startup:startup-runtime:1.1.1")
+
+                    // Camera
+                    implementation("androidx.camera:camera-camera2:${camerax_version}")
+                    implementation("androidx.camera:camera-lifecycle:${camerax_version}")
+                    implementation("androidx.camera:camera-view:${camerax_version}")
+                    implementation("com.google.mlkit:barcode-scanning:17.2.0")
                 }
             }
         }
