@@ -106,7 +106,7 @@ class ComposeActivity: CommonActivity()
         })
 
         // Wait for accounts to be loaded before we show the screen
-        launch {
+        laterUI {
             while(!coinsCreated) delay(250)
             setContent {
                 val currentRootScreen = remember { mutableStateOf(ScreenId.Home) }

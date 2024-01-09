@@ -289,7 +289,7 @@ var bottomNavChoices = mutableListOf<NavChoice>(
   NavChoice(ScreenId.Assets, S.title_activity_assets, Icons.Default.Home),
   NavChoice(ScreenId.Shopping, S.title_activity_shopping, Icons.Default.Home),
   NavChoice(ScreenId.Settings, S.title_activity_settings, Icons.Default.Settings),
-  NavChoice(ScreenId.Test, S.title_test, null),
+  // NavChoice(ScreenId.Test, S.title_test, null),
   )
 
 @Composable

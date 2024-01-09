@@ -177,12 +177,6 @@
             android:launchMode="singleTask"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".ComposeActivity"
-            android:label="Compose"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTask"
-            android:parentActivityName=".MainActivity" />
-        <activity
             android:name=".AlertActivity"
             android:label="@string/title_activity_alert_history"
             android:launchMode="singleTask"
@@ -195,10 +189,13 @@
             android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".MainActivity"
-            android:launchMode="singleTask"
+            android:name=".ComposeActivity"
+            android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:exported="true">
+            android:launchMode="singleTask"
+            android:parentActivityName=".MainActivity"
+            android:exported="true"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.EDIT" />
@@ -264,6 +261,12 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:exported="true">
         </activity>
     </application>
 
