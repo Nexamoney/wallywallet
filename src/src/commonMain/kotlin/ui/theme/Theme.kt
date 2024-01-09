@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -170,6 +171,11 @@ fun WallyBoringIconButton(iconRes: String, modifier: Modifier, enabled: Boolean=
     WallyBoringButton(onClick, enabled, interactionSource) { ResImageView(iconRes, modifier.clickable { onClick() }) }
 }
 
+@Composable
+fun WallyBoringIconButton(icon: ImageVector, modifier: Modifier, enabled: Boolean=true, description:String? = null, interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
+{
+    WallyBoringButton(onClick, enabled, interactionSource) { Image(icon,description,modifier.clickable { onClick() }) }
+}
 
 @Composable fun WallyLargeButtonText(text: String)
 {
@@ -329,6 +335,13 @@ fun NoticeText(noticeText: String)
     )
 }
 
+@Composable fun WallyDropdownItemFontStyle(): TextStyle
+{
+    return LocalTextStyle.current.copy(
+      fontSize = LocalTextStyle.current.fontSize.times(1.5)
+    )
+}
+
 /* Styling for the text of page titles */
 @Composable
 fun TitleText(textRes: Int, modifier: Modifier) = TitleText(i18n(textRes), modifier)
@@ -374,10 +387,20 @@ fun SectionText(text: String, modifier: Modifier = Modifier)
 }
 
 
-/** Standard Wally text entry field.
+/** Standard Wally text entry field.*/
+@Composable
+fun WallyTextEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, onValueChange: ((String) -> Unit)? = null) = WallyDataEntry(value, modifier, textStyle, null, onValueChange)
+
+/** Standard Wally text entry field.*/
+@Composable
+fun WallyDecimalEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, onValueChange: ((String) -> Unit)? = null) =
+  WallyDataEntry(value, modifier, textStyle, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done), onValueChange)
+
+
+/** Standard Wally data entry field.
  */
 @Composable
-fun WallyTextEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, onValueChange: ((String) -> Unit)? = null)
+fun WallyDataEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, keyboardOptions: KeyboardOptions?=null, onValueChange: ((String) -> Unit)? = null)
 {
     val ts2 = LocalTextStyle.current.copy(fontSize = LocalTextStyle.current.fontSize.times(1.25))
     val ts = ts2.merge(textStyle)
@@ -415,9 +438,10 @@ fun WallyTextEntry(value: String, modifier: Modifier = Modifier, textStyle: Text
         value,
         onValueChange ?: { },
         textStyle = ts,
-      interactionSource = ia,
+        interactionSource = ia,
         modifier = modifier,
-      decorationBox = { tf ->
+        keyboardOptions = keyboardOptions ?: KeyboardOptions.Default,
+        decorationBox = { tf ->
           Box(Modifier.hoverable(ia, true)
           .background(bkgColor.value)
           .drawBehind {
@@ -587,22 +611,22 @@ fun DecimalInputField(descriptionRes: Int, labelRes: Int, text: String, style: T
         Text(i18n(descriptionRes), style = style)
         Spacer(modifier = Modifier.width(8.dp))
         TextField(
-      value = text,
-      onValueChange = onChange,
-      label = { Text(i18n(labelRes)) },
-      singleLine = true,
-      modifier = Modifier.fillMaxWidth().wrapContentWidth(),
+            value = text,
+            onValueChange = onChange,
+            label = { Text(i18n(labelRes)) },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth().wrapContentWidth(),
 
-      colors = TextFieldDefaults.colors(
-        focusedContainerColor = Color.Transparent,
-        unfocusedContainerColor = Color.Transparent,
-        disabledContainerColor = Color.Transparent,
-      ),
-      textStyle = TextStyle(fontSize = 12.sp),
-          keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number,
-            imeAction = ImeAction.Done
-          )
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                disabledContainerColor = Color.Transparent,
+            ),
+            textStyle = TextStyle(fontSize = 12.sp),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            )
     )
     }
 }

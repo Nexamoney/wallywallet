@@ -2,10 +2,16 @@ package info.bitcoinunlimited.www.wally.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
+//import androidx.compose.ui.platform.ClipboardManager
+//import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.ui.views.*
 import kotlinx.coroutines.delay
@@ -84,16 +90,6 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
         else
         {
             throw PasteEmptyException()
-        }
-    }
-
-    @Composable
-    fun QrCodeScannerView()
-    {
-        WallyRoundedTextButton("Scan QR code") {
-            val qrScanningAvailable = ScanQrCode { it ->
-                handleInputedText(it)
-            }
         }
     }
 
@@ -307,13 +303,13 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
                 try
                 {
                     approximatelyText = ""
-                    val mbchToSend = qty / fiatPerCoin
+                    val cryptoToSend = qty / fiatPerCoin
                     val coinPerFiat = CURRENCY_1 / fiatPerCoin
-                    val sats = account.toFinestUnit(mbchToSend)
+                    val sats = account.toFinestUnit(cryptoToSend)
                     approximatelyText = if (sats <= dust(account.chain.chainSelector))
                         i18n(S.sendingDustWarning)
                     else
-                        i18n(S.actuallySendingT) % mapOf("qty" to mBchFormat.format(mbchToSend), "crypto" to account.currencyCode) + availabilityWarning(account, mbchToSend)
+                        i18n(S.actuallySendingT) % mapOf("qty" to mBchFormat.format(cryptoToSend), "crypto" to account.currencyCode) + availabilityWarning(account, cryptoToSend)
                     xchgRateText = i18n(S.exchangeRate) % mapOf("amt" to account.format(coinPerFiat), "crypto" to account.currencyCode, "fiat" to fiatCurrencyCode)
                     return true
                 }
@@ -330,6 +326,14 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
                 i18n(S.sendingDustWarning)
             else
                 ""
+
+
+            val doIhaveEnough = availabilityWarning(account, qty)
+            if (doIhaveEnough != "")
+            {
+                approximatelyText = doIhaveEnough
+                return true
+            }
 
             val fpc = account.fiatPerCoin
 
@@ -678,23 +682,35 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
         }
     }
 
+
+    val clipmgr: ClipboardManager = LocalClipboardManager.current
+    val cliptext = clipmgr.getText()?.text
+
     Box(modifier = WallyPageBase) {
-        if (accountGuiSlots.value.size > 0)
-            Row(Modifier.align(Alignment.BottomCenter).zIndex(1f).padding(16.dp).clickable {
-                    isScanningQr = true
-                }) {
-                    WallyBoringIconButton("icons/scanqr2.xml", Modifier.width(48.dp)){
+        if (platform().hasQrScanner)
+            Row(Modifier.fillMaxWidth().align(Alignment.BottomCenter).zIndex(1f).padding(8.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+                    WallyBoringIconButton("icons/scanqr2.xml", Modifier.width(48.dp).zIndex(1f)) {
+                        // TODO
+                    }
+                    WallyBoringIconButton("icons/scanqr2.xml", Modifier.width(48.dp).zIndex(1f)){
                         isScanningQr = true
+                    }
+                    WallyBoringIconButton("icons/scanqr2.xml", Modifier.width(48.dp).zIndex(1f)){
+                        if (cliptext != null && cliptext != "")
+                        {
+                            if (!wallyApp!!.handleAnyUrl(cliptext)) wallyApp!!.handleNonIntentText(cliptext)
+                        }
+                        else
+                        {
+                            displayNotice(S.pasteIsEmpty)
+                        }
                     }
                 }
 
-        Column {
-            val account = selectedAccount.value
-
-            if(isSending && account != null)
+        Column(modifier = Modifier.fillMaxSize()) {
+            if(isSending)
             {
                 SendView(
-                      account = account,
                       selectedAccountName = sendFromAccount,
                       accountNames = accountGuiSlots.value.map { it.name },
                       currencyCode = currencyCode,
@@ -772,6 +788,7 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
                   nav,
                   selectedAccount,
                   accountGuiSlots,
+                  modifier = Modifier.weight(1f),
                   onAccountSelected = {
                       selectedAccount.value = it
                       sendFromAccount = it.name  // if an account is selected in the account list, the send from account is updated
@@ -779,7 +796,7 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
                       onAccountSelected(it)
                   }
                 )
-                if (isScanningQr)
+                if (isScanningQr && platform().hasQrScanner)
                     QrScannerDialog(
                       onDismiss = {
                           isScanningQr = false

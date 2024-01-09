@@ -65,3 +65,6 @@ actual fun isUiThread(): Boolean
     //loadXmlImageVector
 }
      */
+
+val iosPlatformCharacteristics = PlatformCharacteristics(hasQrScanner = true, usesMouse = false)
+actual fun platform(): PlatformCharacteristics = iosPlatformCharacteristics

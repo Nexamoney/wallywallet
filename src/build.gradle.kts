@@ -17,7 +17,7 @@ val composeVersion = "1.5.11"        // https://github.com/JetBrains/compose-mul
 val androidTestCoreVersion = "1.5.0"
 val androidxActivityComposeVersion = "1.7.2"
 val uriKmpVersion = "0.0.14"
-val skikoVersion = "0.7.85.4" // https://github.com/JetBrains/skiko/releases
+val skikoVersion = "0.7.90" // https://github.com/JetBrains/skiko/releases
 
 val secSinceEpoch = Instant.now().epochSecond
 
@@ -60,6 +60,7 @@ if (!MSWIN_TARGETS) println("Ms-windows Mingw64 target is disabled")
 if (!ANDROID_TARGETS) println("Android target is disabled")
 
 val NATIVE_BUILD_CHOICE: NativeBuildType = NativeBuildType.DEBUG
+
 
 fun org.jetbrains.kotlin.gradle.dsl.KotlinNativeBinaryContainer.libnexaBinCfg()
 {
@@ -328,7 +329,6 @@ kotlin {
             }
         }
 
-
         /*  don't know if I need this yet
         // Common to all JVM targets
         create("commonJvm") {
@@ -372,6 +372,10 @@ kotlin {
                     implementation("com.android.support.constraint:constraint-layout:2.1.4") // https://developer.android.com/jetpack/androidx/releases/constraintlayout
                     implementation("com.google.android.material:material:1.11.0")
                     implementation("androidx.preference:preference:1.2.1")  // https://developer.android.com/jetpack/androidx/releases/preference
+
+                    //implementation("org.jetbrains.skiko:skiko-android:$skikoVersion")
+                    //implementation("org.jetbrains.skiko:skiko-android-runtime-x64:$skikoVersion")
+                    //implementation("org.jetbrains.skiko:skiko-android-runtime-arm64:$skikoVersion")
 
                     // network access
                     implementation("io.ktor:ktor-client-core:$ktorVersion")

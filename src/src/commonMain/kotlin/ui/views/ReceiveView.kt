@@ -88,12 +88,9 @@ fun AddressQrCode(address: String)
         }
         Spacer(Modifier.width(4.dp))
 
-        WallyEmphasisBox(Modifier.fillMaxHeight()) {
-            if(displayCopiedNotice)
-                NoticeText(i18n(S.copiedToClipboard))
-            else
-                Text(address, fontWeight = FontWeight.Bold, fontSize = FontScale(1.4),color = WallyAddressColor,
-                  modifier = Modifier.wrapContentHeight(align = Alignment.CenterVertically))
+        WallyEmphasisBox(Modifier.fillMaxHeight().fillMaxWidth()) {
+            Text(if (displayCopiedNotice) i18n(S.copiedToClipboard) else address, fontWeight = FontWeight.Bold, fontSize = FontScale(1.4),color = WallyAddressColor,
+              modifier = Modifier.wrapContentHeight(align = Alignment.CenterVertically))
         }
     }
 }

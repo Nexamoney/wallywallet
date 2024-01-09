@@ -27,12 +27,14 @@ fun SetTitle(title: String)
     }
 }
 
+/*
 actual fun ScanQrCode(scanDone: (String)->Unit): Boolean
 {
     val ca = currentActivity
     (ca as ComposeActivity).scanQrCode(scanDone)
     return true
 }
+ */
 
 class ComposeActivity: CommonActivity()
 {
@@ -41,6 +43,7 @@ class ComposeActivity: CommonActivity()
     var dynOrStaticOrientation: Int = -1  // Used to remember the screen orientation when temporarily disabling int
     var scanDoneFn: ((String)->Unit)? = null
 
+    /* Not needed unless we decide we like the xzing QR scanner better
     fun scanQrCode(scanDone: (String)->Unit)
     {
         scanDoneFn = scanDone
@@ -50,6 +53,7 @@ class ComposeActivity: CommonActivity()
         v.setPrompt(i18n(R.string.scanPaymentQRcode)).setBeepEnabled(false).setDesiredBarcodeFormats(BarcodeFormat.QR_CODE.name).setOrientationLocked(true).setCameraId(0).initiateScan()
 
     }
+     */
 
     /** this handles the result of variety of launched subactivities including:
      * a QR code scan.  We want to accept QR codes of any different format and "do what I mean" based on the QR code's contents

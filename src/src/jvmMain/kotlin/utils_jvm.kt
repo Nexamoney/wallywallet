@@ -115,3 +115,6 @@ fun loadIcon(ins: InputStream): ImageVector?
     val density = LocalDensity.current
     return ins.buffered().use { androidx.compose.ui.res.loadXmlImageVector(InputSource(it), density) }
 }
+
+val jvmPlatformCharacteristics = PlatformCharacteristics(hasQrScanner = false, usesMouse = true)
+actual fun platform(): PlatformCharacteristics = jvmPlatformCharacteristics

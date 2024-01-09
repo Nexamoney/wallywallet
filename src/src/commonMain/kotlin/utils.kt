@@ -29,8 +29,14 @@ private val LogIt = GetLog("BU.wally.utils")
 /** Gets the ktor http client for this platform */
 expect fun GetHttpClient(timeoutInMs: Number):HttpClient
 
-/** Scan a QR code, and call the scanDone function when finished.  Returns false if QR scanning is not available */
-expect fun ScanQrCode(scanDone: (String)->Unit): Boolean
+data class PlatformCharacteristics(
+  /** Does this platform support QR code scanning */
+  val hasQrScanner: Boolean,
+  /** Is this primarily a mouse device (or is it touch).  WRT laptops with touch: This affects the UX styles so the platform should guess based on
+   * what people mostly use on that platform, and then the UX can allow a persistent override. */
+  val usesMouse: Boolean)
+
+expect fun platform(): PlatformCharacteristics
 
 class ImageContainer
 {

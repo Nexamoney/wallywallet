@@ -1,15 +1,13 @@
 package info.bitcoinunlimited.www.wally.ui.views
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -17,7 +15,6 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.DecimalMode
 import com.ionspin.kotlin.bignum.decimal.RoundingMode
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.ErrorText
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import kotlinx.coroutines.*
 import okio.utf8Size
@@ -46,7 +43,6 @@ val coMiscScope = CoroutineScope(coMiscCtxt)
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun SendView(
-  account: Account,
   selectedAccountName: String,
   accountNames: List<String>,
   currencyCode: String,
@@ -68,13 +64,15 @@ fun SendView(
   onAccountNameSelected: (name: String) -> Unit
 )
 {
+    var account: Account = wallyApp!!.accounts[selectedAccountName] ?: run {
+        displayNotice(S.NoAccounts, null)
+        return
+    }
     var accountExpanded by remember { mutableStateOf(false) }
-    var currencyExpanded by remember { mutableStateOf(false) }
     var displayNoteInput by remember { mutableStateOf(false) }
     var note by remember { mutableStateOf("") }
     var sendConfirm by remember { mutableStateOf("") }
     var spendAll by remember { mutableStateOf(false) }
-    val amount: MutableState<BigDecimal?> = remember { mutableStateOf(null) }
     val sendToAddress: MutableState<PayAddress?> = remember { mutableStateOf(null) }
     val fpcState = account.fiatPerCoinObservable.collectAsState()
     val amountState: MutableState<BigDecimal?> = remember { mutableStateOf(null) }
@@ -189,6 +187,12 @@ fun SendView(
             return
         }
 
+        if (amount > account.wallet.balance)
+        {
+            displayError(S.insufficentBalance, "Account contains ${account.wallet.balance}.  Attempted to send ${amount}.")
+            return
+        }
+
         // Make sure the address is consistent with the selected coin to send
         val addrText = toAddress.trim()
 
@@ -213,6 +217,7 @@ fun SendView(
             displayError(S.badAddress, details)
             return
         }
+
         if (account.wallet.chainSelector != sendAddr.blockchain)
         {
             displayError(S.chainIncompatibleWithAddress, toAddress)
@@ -224,7 +229,8 @@ fun SendView(
             return
         }
 
-        when (currencyCode) {
+        when (currencyCode)
+        {
             account.currencyCode ->
             {
             }
@@ -329,7 +335,6 @@ fun SendView(
                 sendConfirm = ""  // Force reconfirm is there is any error with the send
             }
         }
-
         sendConfirm = ""  // We are done with a send so reset state machine
     }
 
@@ -350,12 +355,15 @@ fun SendView(
             })
         }
 
+    var ccIndex by remember { mutableStateOf(0) }
+
+    ccIndex = currencies.indexOf(currencyCode)
+
     SendViewContent(
       selectedAccountName,
       accountNames,
       accountExpanded,
-      currencyCode,
-      currencyExpanded,
+      ccIndex,
       toAddress,
       sendQuantity,
       xchgRateText,
@@ -365,11 +373,23 @@ fun SendView(
       getApproximatelyText = { checkSendQuantity(sendQuantity, account) },
       onAccountExpanded = { accountExpanded = it },
       onCurrencySelected = {
-          onCurrencySelectedCode(it)
-          onCurrencySelected()
+          if (it < currencies.size)
+          {
+              ccIndex = it
+              onCurrencySelectedCode(currencies[it])
+              onCurrencySelected()
+              afterTextChanged()
+          }
       },
-      onCurrencyExpanded = { currencyExpanded = it },
-      onAccountNameSelected = { onAccountNameSelected(it) },
+      onAccountNameSelected = {
+          val act = wallyApp!!.accounts[it]
+          if (act != null)
+          {
+              account = act
+              onAccountNameSelected(account.name)
+              afterTextChanged()
+          }
+                              },
       onToAddressChange = { setToAddress(it) },
       onSendQuantityChanged = {
           setSendQuantity(it)
@@ -393,8 +413,7 @@ fun SendViewContent(
   primaryAccountName: String,
   accountNames: List<String>,
   accountExpanded: Boolean,
-  currencyCode: String,
-  currencyExpanded: Boolean,
+  currencyCodeIndex: Int,
   toAddress: String,
   sendQty: String,
   xchgRateText: String,
@@ -404,8 +423,7 @@ fun SendViewContent(
   getApproximatelyText: () -> Unit,
   onAccountNameSelected: (String) -> Unit,
   onAccountExpanded: (Boolean) -> Unit,
-  onCurrencySelected: (String) -> Unit,
-  onCurrencyExpanded: (Boolean) -> Unit,
+  onCurrencySelected: (Int) -> Unit,
   onToAddressChange: (String) -> Unit,
   onSendQuantityChanged: (String) -> Unit,
   onDisplayNoteInput: (Boolean) -> Unit,
@@ -434,22 +452,19 @@ fun SendViewContent(
     if (displayNoteInput)
         StringInputTextField(S.editSendNoteHint, note, onNoteChange)
 
+    Spacer(Modifier.height(4.dp))
     Row(
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
     ) {
+        SectionText(S.Amount)
         // Send quantity input
-        DecimalInputField(S.Amount, S.empty, sendQty, WallySectionTextStyle(), Modifier.weight(0.5f)) {
+        WallyDecimalEntry(sendQty, Modifier.weight(1f)) {
             onSendQuantityChanged(it)
             getApproximatelyText()
         }
-        SelectStringDropDown(
-          currencyCode,
-          currencies,
-          currencyExpanded,
-          onSelect = onCurrencySelected,
-          onExpand = onCurrencyExpanded,
-          Modifier
-        )
+        WallyDropdownMenu(modifier = Modifier.wrapContentSize().weight(0.5f), label = "", items = currencies, selectedIndex = currencyCodeIndex, onItemSelected = { index, item ->
+            onCurrencySelected(index)
+        })
     }
 
     OptionalInfoText(approximatelyText)

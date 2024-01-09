@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.Dialog
@@ -41,6 +42,7 @@ fun <T> WallyDropdownMenu(
   onItemSelected: (index: Int, item: T) -> Unit,
   selectedItemToString: (T) -> String = { it.toString() },
   style: WallyDropdownStyle = WallyDropdownStyle.Succinct,
+  labelFontStyle: FontStyle? = null,
   itemDivider: (@Composable () -> Unit)? = null,
   drawItem: @Composable (T, Boolean, Boolean, () -> Unit) -> Unit = { item, selected, itemEnabled, onClick ->
       WallyDropdownMenuItem(
@@ -58,7 +60,7 @@ fun <T> WallyDropdownMenu(
         {
             topOffset = 8.dp
             OutlinedTextField(
-              label = { Text(label) },
+              label = { Text(label, fontStyle = labelFontStyle) },
               value = items.getOrNull(selectedIndex)?.let { selectedItemToString(it) } ?: "",
               enabled = enabled,
               modifier = modifier,
@@ -128,7 +130,7 @@ fun <T> WallyDropdownMenu(
                 val surfShape = RoundedCornerShape(32.dp)
                 Surface(
                   shape = surfShape,
-                  modifier = Modifier.background(ModalBkg).border(WallyModalOutline, surfShape)  // background(ModalBkg) BUG: loses the shape
+                  modifier = Modifier.border(WallyModalOutline, surfShape)  // background(ModalBkg) BUG: loses the shape
                 ) {
                     val listState = rememberLazyListState()
                     if (selectedIndex > -1) {
@@ -209,7 +211,7 @@ fun WallyDropdownMenuItem(
           .padding(3.dp)) {
             Text(
               text = text,
-              style = MaterialTheme.typography.titleSmall,
+              style = WallyDropdownItemFontStyle(),
               modifier = Modifier.align(Alignment.Center),
               maxLines = 1,
               softWrap = false,

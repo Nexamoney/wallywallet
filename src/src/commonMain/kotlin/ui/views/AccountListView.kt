@@ -23,16 +23,11 @@ import org.nexa.libnexakotlin.*
 
 val accountUIData = mutableMapOf<String,MutableState<AccountUIData>>()
 
-@Composable fun AccountListView(nav: ScreenNav, selectedAccount: MutableStateFlow<Account?>, accounts: MutableState<ListifyMap<String,Account>>, onAccountSelected: (Account) -> Unit)
+@Composable fun AccountListView(nav: ScreenNav, selectedAccount: MutableStateFlow<Account?>, accounts: MutableState<ListifyMap<String,Account>>,
+  modifier: Modifier = Modifier,
+  onAccountSelected: (Account) -> Unit)
 {
-    Box(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 1.dp, horizontal = 0.dp)
-        .height(350.dp), // TODO: Position relative to parent view
-    ) {
-
-        LaunchedEffect(true)
+    LaunchedEffect(true)
         {
             for(c in accountChangedNotification)
             {
@@ -44,9 +39,7 @@ val accountUIData = mutableMapOf<String,MutableState<AccountUIData>>()
             }
         }
 
-        LazyColumn(
-          horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
+    LazyColumn(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
             accounts.value.forEachIndexed { idx, it ->
                     item(key=it.name) {
                         // I would think that capturing this data would control redraw of each item, but it appears to not do so.
@@ -61,7 +54,6 @@ val accountUIData = mutableMapOf<String,MutableState<AccountUIData>>()
                     }
                 }
             }
-        }
 }
 
 
