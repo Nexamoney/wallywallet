@@ -17,7 +17,7 @@ actual fun i18n(id: Int): String
     if (id == -1) return ""
     if (id < LocaleStrings.size)
     {
-        return LocaleStrings[id].replace("\\n","\n")
+        return LocaleStrings[id].replace("\\n","\n").replace("\\'","\'").replace("\\\"","\"")
     }
 
     try

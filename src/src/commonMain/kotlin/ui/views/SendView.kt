@@ -65,15 +65,12 @@ fun SendView(
   onApproximatelyText: (String) -> Unit,
   checkSendQuantity: (s: String, account: Account) -> Unit,
   onSendSuccess: () -> Unit,
-  displayNotice: (res: Int, message: String?) -> Unit,
   onAccountNameSelected: (name: String) -> Unit
 )
 {
     var accountExpanded by remember { mutableStateOf(false) }
     var currencyExpanded by remember { mutableStateOf(false) }
     var displayNoteInput by remember { mutableStateOf(false) }
-    var errorText by remember { mutableStateOf("") }
-    var errorMessageText by remember { mutableStateOf("") }
     var note by remember { mutableStateOf("") }
     var sendConfirm by remember { mutableStateOf("") }
     var spendAll by remember { mutableStateOf(false) }
@@ -84,42 +81,12 @@ fun SendView(
 
     account.getXchgRates("USD")
 
-    fun displayError(message: String)
-    {
-        errorText = message
-        GlobalScope.launch(Dispatchers.IO + exceptionHandler) {
-            delay(ERROR_DISPLAY_TIME)  // Delay of 5 seconds
-            withContext(Dispatchers.Default + exceptionHandler) {
-                errorText = ""
-            }
-        }
-    }
-
-    fun displayError(res: Int, message: String)
-    {
-        displayError(i18n(res))
-        errorMessageText = message
-        GlobalScope.launch(Dispatchers.IO + exceptionHandler) {
-            delay(ERROR_DISPLAY_TIME)  // Delay of 5 seconds
-            withContext(Dispatchers.Default + exceptionHandler) {
-                errorMessageText = ""
-            }
-        }
-    }
-
     val coroutineExceptionHandler = CoroutineExceptionHandler { context, throwable ->
         LogIt.error(context.toString())
         LogIt.error(throwable.message ?: throwable.toString())
         GlobalScope.launch(Dispatchers.Main) {
             displayError(S.unknownError, throwable.message ?: throwable.toString())
         }
-    }
-
-    fun displayException(e: Exception, res: Int? = null)
-    {
-        displayError(e.message ?: "")
-        if (res != null)
-            displayError(i18n(res))
     }
 
     fun onCurrencySelected()
@@ -275,14 +242,14 @@ fun SendView(
                     }
                     else
                     {
-                        displayException(UnavailableException(), S.retrievingExchangeRate)
+                        displayError(S.unavailable, S.retrievingExchangeRate, persistAcrossScreens = false)
                         return
                     }
                 }
                 catch (e: ArithmeticException)
                 {
                     LogIt.error(e.message ?: e.toString())
-                    displayException(UnavailableException(), S.retrievingExchangeRate)
+                    displayError(S.unavailable, S.retrievingExchangeRate, persistAcrossScreens = false)
                     return
                 }
             }
@@ -373,12 +340,6 @@ fun SendView(
         checkSendQuantity(sendQuantity, account)
     }
 
-    if (approximatelyText.isNotEmpty())
-        NoticeText(approximatelyText)
-    if (errorText.isNotEmpty())
-        ErrorText(errorText)
-    if (errorMessageText.isNotEmpty())
-        ErrorText(errorMessageText)
     if (sendConfirm.isNotEmpty())
         amountState.value?.let { amt ->
             ConfirmDismissNoteDialog(amt, sendConfirm.isNotEmpty(), S.confirm, sendConfirm, note, S.cancel, S.confirm, onDismiss = {

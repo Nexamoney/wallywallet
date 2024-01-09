@@ -32,8 +32,6 @@ We could use a composable "State Holder" (in theory) to capture all the state ne
 writing a vast amount of inscrutible garbage rather than actual useful code.
 * */
 fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, driver: MutableState<GuiDriver?>, nav: ScreenNav, navigation: ChildNav)
-
-// fun assignWalletsGuiSlots(): ListifyMap<String, Account>
 {
     var isSending by remember { mutableStateOf(false) }
     var isScanningQr by remember { mutableStateOf(false) }
@@ -47,10 +45,7 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
 
     var warnBackupRecoveryKey = remember { mutableStateOf(false) }
 
-    val displayAccountDetailScreen = navigation.displayAccountDetailScreen.collectAsState()
     var topInformation by remember { mutableStateOf("") }
-    var notice by remember { mutableStateOf("") }
-    var noticeDetails by remember { mutableStateOf("") }
     var approximatelyText by remember { mutableStateOf("") }
     var xchgRateText by remember { mutableStateOf("") }
 
@@ -58,7 +53,6 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
     val paymentInProgress: MutableState<ProspectivePayment?> = remember { mutableStateOf(null) }
     var currencyCode by remember { mutableStateOf(i18n(S.choose)) } // TODO: get from local db
 
-    var errorText by remember { mutableStateOf("") }
     var sendToAddress by remember { mutableStateOf("") }
     val currencies: MutableState<List<String>> = remember { mutableStateOf(listOf()) }
     var sendQuantity by remember { mutableStateOf("") }
@@ -75,6 +69,7 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
         if (tmp.sendAddress != null) isSending = true
         tmp.sendAddress?.let { sendToAddress = it }
         tmp.amount?.let { sendAmount = NexaFormat.format(it) }
+        if (tmp.show?.contains(ShowIt.WARN_BACKUP_RECOVERY_KEY) == true) warnBackupRecoveryKey.value = true
         driver.value = null  // If I don't clear this mutable state, it'll set every single time, rendering these fields uneditable
     }
 
@@ -162,60 +157,6 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
             }
             AddressQrCode(currentReceive ?: "")
         }
-    }
-
-    fun displayNotice(res: Int, message: String?)
-    {
-        notice = i18n(res)
-        if (message != null)
-            noticeDetails = message
-        GlobalScope.launch(Dispatchers.IO + exceptionHandler) {
-            delay(ERROR_DISPLAY_TIME)  // Delay of 5 seconds
-            withContext(Dispatchers.Default + exceptionHandler) {
-                notice = ""
-                noticeDetails = ""
-            }
-        }
-    }
-
-    fun displayError(message: String)
-    {
-        errorText = message
-        GlobalScope.launch(Dispatchers.IO + exceptionHandler) {
-            delay(ERROR_DISPLAY_TIME)  // Delay of 5 seconds
-            withContext(Dispatchers.Default + exceptionHandler) {
-                errorText = ""
-            }
-        }
-    }
-
-    fun displayError(res: Int)
-    {
-        errorText = i18n(res)
-        GlobalScope.launch(Dispatchers.IO + exceptionHandler) {
-            delay(ERROR_DISPLAY_TIME)  // Delay of 5 seconds
-            withContext(Dispatchers.Default + exceptionHandler) {
-                errorText = ""
-            }
-        }
-    }
-
-    fun displayError(res: Int, message: String)
-    {
-        displayError(res)
-        errorText = message
-        GlobalScope.launch(Dispatchers.IO + exceptionHandler) {
-            delay(ERROR_DISPLAY_TIME)  // Delay of 5 seconds
-            withContext(Dispatchers.Default + exceptionHandler) {
-                errorText = ""
-            }
-        }
-    }
-
-
-    fun displayException(e: Exception)
-    {
-        displayError(e.message ?: "")
     }
 
 
@@ -710,8 +651,6 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
         while(selectedAccount.value == null)
         {
             delay(50)
-            val wbk = wallyApp?.warnBackupRecoveryKey?.receive()
-            if (wbk == true) warnBackupRecoveryKey.value = true
             val tmp = wallyApp?.focusedAccount
             if ((selectedAccount.value == null) && (tmp != null))
             {
@@ -751,15 +690,6 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
 
         Column {
             val account = selectedAccount.value
-            ConstructTitleBar(nav, S.app_name)
-            if (topInformation.isNotEmpty())
-                NoticeText(topInformation)
-            if (errorText.isNotEmpty())
-                ErrorText(errorText)
-            if (notice.isNotEmpty())
-                NoticeText(notice)
-            if (noticeDetails.isNotEmpty())
-                NoticeText(noticeDetails)
 
             if(isSending && account != null)
             {
@@ -798,9 +728,6 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
                           sendToAddress = ""
                           sendQuantity = ""
                           isSending = false
-                      },
-                      displayNotice = { res, message ->
-                          displayNotice(res, message)
                       },
                       onAccountNameSelected = {
                           sendFromAccount = it

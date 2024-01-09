@@ -650,6 +650,7 @@ class MainActivity : CommonNavActivity()
              */
         }
 
+        /*
         laterUI {
             delay(500)
             val warnBackupRecoveryKey = wallyApp?.warnBackupRecoveryKey?.receive()
@@ -660,6 +661,8 @@ class MainActivity : CommonNavActivity()
                 }
             }
         }
+         */
+        displayRecoveryKeyNotBackedUpWarning()
 
         laterUI {
             delay(5000)  // give a little time to start up

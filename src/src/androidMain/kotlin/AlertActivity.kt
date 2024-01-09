@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import info.bitcoinunlimited.www.wally.databinding.ActivityAlertsBinding
 import info.bitcoinunlimited.www.wally.databinding.AlertListItemBinding
 import info.bitcoinunlimited.www.wally.databinding.InfoeditrowBinding
+import kotlinx.datetime.toJavaInstant
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -24,7 +25,6 @@ import java.time.format.FormatStyle
 import java.util.*
 
 import kotlin.collections.ArrayList
-
 
 private val LogIt = GetLog("BU.wally.Alert")
 
@@ -37,7 +37,7 @@ class AlertBinder(val ui: AlertListItemBinding, val activity: AlertActivity): Gu
         if (a != null)
         {
             ui.GuiAlertText.text = a.msg
-            ui.GuiAlertDate.text = activity.formatter.format(a.date)
+            ui.GuiAlertDate.text = activity.formatter.format(kotlinx.datetime.Instant.fromEpochMilliseconds(a.date).toJavaInstant())
         }
     }
 
@@ -45,9 +45,9 @@ class AlertBinder(val ui: AlertListItemBinding, val activity: AlertActivity): Gu
     {
         val a = data
         var col = if (a == null) 0xFF808080
-        else if (a.level >= EXCEPTION_LEVEL)
+        else if (a.level >= AlertLevel.EXCEPTION)
             if (highlight) 0xFFFFC080 else 0xFFFF8080
-        else if (a.level >= ERROR_LEVEL)
+        else if (a.level >= AlertLevel.ERROR)
             if (highlight) 0xFFFFE080 else 0xFFFFD080
         else if ((pos and 1) == 0)
             if (highlight) 0xFFFFFFEE else 0xFFEEEEEE
@@ -91,7 +91,7 @@ class AlertBinder(val ui: AlertListItemBinding, val activity: AlertActivity): Gu
 
                 if (devMode)
                 {
-                    val traceString = d.trace.map { "[" + it.fileName + ":" + it.lineNumber + "] " + it.className.split(".").last() + "." + it.methodName }.joinToString("\n")
+                    val traceString = (d.trace?.map { "[" + it.fileName + ":" + it.lineNumber + "] " + it.className.split(".").last() + "." + it.methodName }?.joinToString("\n")) ?: ""
                     detailsText = detailsText + "\n\n" + traceString
                 }
                 activity.ui.GuiAlertView.text = detailsText

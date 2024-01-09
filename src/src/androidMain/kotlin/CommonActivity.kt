@@ -57,30 +57,6 @@ infix fun SoftKeys.allOf(other: SoftKeys) = this.containsAll(other)
 infix fun SoftKeys.or(other: SoftKey) = SoftKeys.of(other, *this.toTypedArray())
 
 
-
-// TODO translate libbitcoincash error codes to our i18n strings
-val lbcMap = mapOf<Int, Int>(RinsufficentBalance to R.string.insufficentBalance)
-
-const val EXCEPTION_LEVEL = 200
-const val ERROR_LEVEL = 100
-const val NOTICE_LEVEL = 50
-
-data class Alert(val msg: String, val details: String?, val level: Int, val trace:Array<StackTraceElement>, val date: Instant = Instant.now())
-
-val alerts = arrayListOf<Alert>()
-
-val defaultIgnoreFiles = mutableListOf<String>("ZygoteInit.java", "RuntimeInit.java", "ActivityThread.java", "Looper.java", "Handler.java", "DispatchedTask.kt")
-fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: MutableSet<String>?=null): Array<StackTraceElement>
-{
-    skipFirst.add("stackTraceWithout")
-    skipFirst.add("stackTraceWithout\$default")
-    val igf = ignoreFiles ?: defaultIgnoreFiles
-    val st = Exception().stackTrace.toMutableList()
-    while (st.isNotEmpty() && skipFirst.contains(st.first().methodName)) st.removeAt(0)
-    st.removeAll { igf.contains(it.fileName) }
-    return st.toTypedArray()
-}
-
 fun isKeyboardShown(root: View): Boolean
 {
     val rect = Rect()
@@ -610,7 +586,7 @@ open class CommonActivity : AppCompatActivity()
                 lastErrorString = err
                 errorCount += 1
                 menuHidden += 1
-                alerts.add(Alert(err, details, ERROR_LEVEL, trace))
+                alerts.add(Alert(err, details, AlertLevel.ERROR, trace))
                 invalidateOptionsMenu()
                 val errorColor = ContextCompat.getColor(applicationContext, R.color.error)
                 titlebar.background = ColorDrawable(errorColor)
@@ -650,7 +626,7 @@ open class CommonActivity : AppCompatActivity()
             {
                 super.setTitle(msg)
 
-                alerts.add(Alert(msg, details, NOTICE_LEVEL, trace))
+                alerts.add(Alert(msg, details, AlertLevel.NOTICE, trace))
                 menuHidden += 1
                 invalidateOptionsMenu()
                 titlebar.background = ColorDrawable(errorColor)

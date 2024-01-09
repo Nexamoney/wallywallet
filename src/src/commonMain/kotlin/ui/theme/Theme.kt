@@ -287,7 +287,7 @@ fun WallyBoringIconButton(iconRes: String, modifier: Modifier, enabled: Boolean=
       contentColor = BrightBkg,
       modifier = Modifier.border(WallyModalOutline, surfShape).then(modifier)
     ) {
-        Box(Modifier.fillMaxSize().padding(8.dp)) { content() }
+        Box(Modifier.wrapContentSize().padding(8.dp)) { content() }
     }
 }
 

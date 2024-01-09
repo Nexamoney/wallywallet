@@ -158,8 +158,6 @@ open class CommonApp
 {
     // Set to true if this is the first time this app has ever been run
     var firstRun = false
-    // Set to true if some wallet has a nontrivial balance and its recovery key has not been viewed (and we have not warned since app instantiation)
-    var warnBackupRecoveryKey = Channel<Boolean>() // false
 
     val accessHandler = AccessHandler(this)
 
@@ -261,7 +259,7 @@ open class CommonApp
         {
             // Inject a change into the GUI
             launch {
-                externalDriver.send(GuiDriver(ScreenId.Home, uri.scheme + ":" + uri.body()))
+                externalDriver.send(GuiDriver(ScreenId.Home, sendAddress = uri.scheme + ":" + uri.body()))
             }
         }
         else if (scheme == IDENTITY_URI_SCHEME)
@@ -657,7 +655,6 @@ open class CommonApp
                 }
 
                 coinsCreated = true
-                warnBackupRecoveryKey.send(warning)
 
                 val alist = accountLock.lock { accounts.values }
                 for (c in alist)
@@ -667,6 +664,8 @@ open class CommonApp
                     c.onChange()  // update all wallet UI fields since just starting up
                 }
 
+                // Going to block here until the GUI asks for this field
+                if (warning) externalDriver.send(GuiDriver(show = setOf(ShowIt.WARN_BACKUP_RECOVERY_KEY)))
             }
         }
 

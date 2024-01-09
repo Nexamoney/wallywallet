@@ -601,6 +601,7 @@ Good luck!
     <string name="TpExceededMaxMonthly">Exceeds per month maximum</string>
 
     <string name="title_activity_alert_history">Recent Messages</string>
+    <string name="IssueReportInstructions">Provide this information to developers:</string>
 
     <string name="AssetApplication">Invoke</string>
     <string name="AssetMarketplace">Trade</string>

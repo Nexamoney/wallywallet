@@ -110,7 +110,6 @@ class ComposeActivity: CommonActivity()
             while(!coinsCreated) delay(250)
             setContent {
                 val currentRootScreen = remember { mutableStateOf(ScreenId.Home) }
-                //val n = ScreenNav(currentRootScreen)
                 nav.reset(currentRootScreen)
                 SetTitle(nav.title())
                 NavigationRoot(nav)

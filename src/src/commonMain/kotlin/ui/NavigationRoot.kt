@@ -1,11 +1,9 @@
 package info.bitcoinunlimited.www.wally.ui
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
@@ -26,9 +24,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import org.nexa.libnexakotlin.exceptionHandler
 import org.nexa.libnexakotlin.rem
 
 /** return true if this platform has a native title bar (and therefore do not generate one). */
@@ -83,6 +83,12 @@ enum class ScreenId
             Test -> "Test"
         }
     }
+}
+
+enum class NoticeLevel
+{
+    Info,
+    Error;
 }
 
 class ScreenNav()
@@ -196,16 +202,40 @@ fun assignAccountsGuiSlots(): ListifyMap<String, Account>
 val accountChangedNotification = Channel<String>()
 
 // Add other information as needed to drive each page
-data class GuiDriver(val gotoPage: ScreenId, val sendAddress: String?=null, val amount: BigDecimal?=null)
+enum class ShowIt
+{
+    NONE,
+    WARN_BACKUP_RECOVERY_KEY
+}
+data class GuiDriver(val gotoPage: ScreenId? = null, val show: Set<ShowIt>? = null, val noshow: Set<ShowIt>? = null, val sendAddress: String?=null, val amount: BigDecimal?=null)
+
 
 val externalDriver = Channel<GuiDriver>()
+
+@Composable fun RecoveryPhraseWarning()
+{
+    Column {
+        Text(i18n(S.WriteDownRecoveryPhraseWarning), Modifier.fillMaxWidth().wrapContentHeight(), colorPrimaryDark, maxLines = 10, textAlign = TextAlign.Center,
+          fontSize = FontScale(1.25))
+        WallyRoundedButton({
+            externalDriver.trySend(GuiDriver(ScreenId.AccountDetails, noshow = setOf(ShowIt.WARN_BACKUP_RECOVERY_KEY)))
+        }) {
+            Text("Do It")
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NavigationRoot(nav: ScreenNav)
 {
     val scrollState = rememberScrollState()
     val accountGuiSlots = mutableStateOf(assignAccountsGuiSlots())
     var driver = mutableStateOf<GuiDriver?>(null)
-    //var driver:GuiDriver? = null
+    var errorText by remember { mutableStateOf("") }
+    var noticeText by remember { mutableStateOf("") }
+    var clickDismiss = remember { mutableStateOf<(@Composable () -> Unit)?>(null) }
+
 
     /* Only needed if we need to reassign the account slots outside of the GUI's control
     LaunchedEffect(true)
@@ -215,22 +245,65 @@ fun NavigationRoot(nav: ScreenNav)
     }
      */
 
+    // Allow an external (non-compose) source to "drive" the GUI to a particular state.
+    // This implements functionality like scanning/pasting/receiving via a connection a payment request.
     LaunchedEffect(true)
     {
         for(c in externalDriver)
         {
             driver.value = c
-            //driver = c
-            nav.go(c.gotoPage)
+            c.gotoPage?.let { nav.go(it) }
+            c.show?.forEach {
+                if (it == ShowIt.WARN_BACKUP_RECOVERY_KEY)
+                {
+                    clickDismiss.value = { RecoveryPhraseWarning() }
+                }
+            }
+            c.noshow?.forEach {
+                if (it == ShowIt.WARN_BACKUP_RECOVERY_KEY)
+                {
+                    clickDismiss.value = null
+                }
+            }
         }
     }
 
+    LaunchedEffect(true)
+    {
+        for(alert in alertChannel)
+        {
+            if (alert.level >= AlertLevel.ERROR)
+            {
+                errorText = alert.msg
+                launch {
+                    delay(alert.longevity ?: ERROR_DISPLAY_TIME)
+                    if (errorText == alert.msg) errorText = ""  // do not erase if the error has changed
+                }
+            }
+            else if (alert.level >= AlertLevel.NOTICE)
+            {
+                noticeText = alert.msg
+                launch {
+                    delay(alert.longevity ?: NOTICE_DISPLAY_TIME)
+                    if (errorText == alert.msg) errorText = ""  // do not erase if the error has changed
+                }
+            }
+        }
+    }
 
     WallyTheme(darkTheme = false, dynamicColor = false) {
         Box(modifier = WallyPageBase) {
-            Column(
-              modifier = Modifier.fillMaxSize()
-            ) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                ConstructTitleBar(nav, S.app_name)
+                if (errorText.isNotEmpty())
+                    ErrorText(errorText)
+                else if (noticeText.isNotEmpty())
+                    NoticeText(noticeText)
+
+                clickDismiss.value?.let {
+                    WallyEmphasisBox(Modifier.fillMaxWidth().wrapContentSize().clickable { clickDismiss.value = null }) { it() }
+                }
+
                 // This will take up the most space but leave enough for the navigation menu
                 val mod = if (nav.currentScreen.value.isEntirelyScrollable)
                 {
