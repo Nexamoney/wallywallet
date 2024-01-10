@@ -91,8 +91,8 @@ class AlertBinder(val ui: AlertListItemBinding, val activity: AlertActivity): Gu
 
                 if (devMode)
                 {
-                    val traceString = (d.trace?.map { "[" + it.fileName + ":" + it.lineNumber + "] " + it.className.split(".").last() + "." + it.methodName }?.joinToString("\n")) ?: ""
-                    detailsText = detailsText + "\n\n" + traceString
+                    val traceString = d.trace?.let { "\n\n" + it } ?: ""
+                    detailsText = detailsText + traceString
                 }
                 activity.ui.GuiAlertView.text = detailsText
                 activity.ui.container.requestLayout()

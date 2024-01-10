@@ -23,6 +23,7 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
+import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.HomeScreen")
@@ -65,19 +66,8 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
     /** remember last send coin selected */
     var lastSendFromAccountName by remember { mutableStateOf("") }
 
-    /** If some unknown text comes from the UX, maybe QR code, maybe clipboard this function handles it by trying to figure out what it is and
-    then updating the appropriate fields in the UX */
-    fun handleInputedText(text: String)
-    {
-        if (text != "")
-        {
-            if (!wallyApp!!.handlePaste(text)) wallyApp!!.handleNonIntentText(text)
-        }
-        else
-        {
-            throw PasteEmptyException()
-        }
-    }
+    val clipmgr: ClipboardManager = LocalClipboardManager.current
+
 
     @Composable
     fun SendFromView(onComplete: () -> Unit)
@@ -582,9 +572,6 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
     }
 
 
-    val clipmgr: ClipboardManager = LocalClipboardManager.current
-    val cliptext = clipmgr.getText()?.text
-
     Box(modifier = WallyPageBase) {
             Row(Modifier.fillMaxWidth().align(Alignment.BottomCenter).zIndex(1f).padding(8.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
                 if (platform().hasGallery)
@@ -594,15 +581,18 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
                         }
                     }
                 if (platform().hasQrScanner)
-                    WallyBoringIconButton("icons/scanqr2.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)){
+                    WallyBoringIconButton("icons/scanqr2.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
                         isScanningQr = true
                     }
 
                 if (!platform().usesMouse)
-                    WallyBoringIconButton("icons/clipboard.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)){
+                {
+                    val scope = rememberCoroutineScope()
+                    WallyBoringIconButton("icons/clipboard.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
+                        val cliptext = clipmgr.getText()?.text
                         if (cliptext != null && cliptext != "")
                         {
-                            if (!wallyApp!!.handlePaste(cliptext)) wallyApp!!.handleNonIntentText(cliptext)
+                            if (!wallyApp!!.handlePaste(cliptext)) displayNotice(S.pasteUnintelligible)
                         }
                         else
                         {
@@ -610,6 +600,7 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
                         }
                     }
                 }
+            }
 
         Column(modifier = Modifier.fillMaxSize()) {
             if(isSending)
@@ -659,9 +650,10 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
                     Row(modifier = Modifier.fillMaxWidth().padding(0.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
                         if (platform().usesMouse)
                             WallyBoringLargeIconButton("icons/clipboard.xml") {
+                                val cliptext = clipmgr.getText()?.text
                                 if (cliptext != null && cliptext != "")
                                 {
-                                    if (!wallyApp!!.handlePaste(cliptext)) wallyApp!!.handleNonIntentText(cliptext)
+                                    if (!wallyApp!!.handlePaste(cliptext)) displayNotice(S.pasteUnintelligible)
                                 }
                                 else
                                 {

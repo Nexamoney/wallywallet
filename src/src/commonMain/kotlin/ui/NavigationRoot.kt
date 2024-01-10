@@ -20,8 +20,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 
-
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
 import kotlinx.coroutines.*
@@ -217,7 +215,6 @@ data class GuiDriver(val gotoPage: ScreenId? = null,
   val chainSelector: ChainSelector?=null,
   val account: Account? = null)
 
-
 val externalDriver = Channel<GuiDriver>()
 
 @Composable fun RecoveryPhraseWarning()
@@ -252,6 +249,7 @@ fun NavigationRoot(nav: ScreenNav)
             accountGuiSlots.value = assignAccountsGuiSlots()
     }
      */
+
 
     // Allow an external (non-compose) source to "drive" the GUI to a particular state.
     // This implements functionality like scanning/pasting/receiving via a connection a payment request.
