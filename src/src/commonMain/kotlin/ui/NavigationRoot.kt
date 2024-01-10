@@ -300,7 +300,7 @@ fun NavigationRoot(nav: ScreenNav)
     WallyTheme(darkTheme = false, dynamicColor = false) {
         Box(modifier = WallyPageBase) {
             Column(modifier = Modifier.fillMaxSize()) {
-                ConstructTitleBar(nav, S.app_name)
+                ConstructTitleBar(nav)
                 if (errorText.isNotEmpty())
                     ErrorText(errorText)
                 else if (noticeText.isNotEmpty())

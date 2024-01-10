@@ -86,7 +86,6 @@ fun ProposeAccountName(cs: ChainSelector):String?
       newAcState,
       selectedBlockChain,
       blockchains,
-      onBackButton = { nav.back() },
       onChainSelected = {
           val oldname = ProposeAccountName(selectedBlockChain.value)
           selectedBlockChain = it
@@ -207,7 +206,6 @@ fun ProposeAccountName(cs: ChainSelector):String?
   newAcState: NewAccountState,
   selectedChain: Map.Entry<String, ChainSelector>,
   blockchains: Map<String, ChainSelector>,
-  onBackButton: () -> Unit,
   onChainSelected: (Map.Entry<String, ChainSelector>) -> Unit,
   onNewAccountName: (String) -> Unit,
   onNewRecoveryPhrase: (String) -> Unit,
@@ -220,7 +218,6 @@ fun ProposeAccountName(cs: ChainSelector):String?
     Column(
       modifier = Modifier.padding(4.dp).fillMaxSize()
     ) {
-        ConstructTitleBar(nav, S.title_activity_new_account)
         if (newAcState.errorMessage.isNotEmpty())
         {
             WallyError(newAcState.errorMessage)

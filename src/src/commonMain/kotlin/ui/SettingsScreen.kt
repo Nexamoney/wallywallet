@@ -83,7 +83,6 @@ fun SettingsScreen(nav: ScreenNav)
       horizontalAlignment = Alignment.Start,
       verticalArrangement = Arrangement.SpaceEvenly
     ) {
-        ConstructTitleBar(nav, S.title_activity_settings)
         Column(
           modifier = Modifier.fillMaxWidth(),
           horizontalAlignment = Alignment.CenterHorizontally
