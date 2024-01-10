@@ -47,7 +47,7 @@ fun SendView(
   accountNames: List<String>,
   currencyCode: String,
   toAddress: String,
-  sendQuantity: String,
+  sendQuantity: MutableState<String>,
   paymentInProgress: ProspectivePayment?,
   approximatelyText: String,
   xchgRateText: String,
@@ -89,7 +89,7 @@ fun SendView(
 
     fun onCurrencySelected()
     {
-        val sendQty = sendQuantity.toString()
+        val sendQty = sendQuantity.value
         checkSendQuantity(sendQty, account)
     }
 
@@ -130,6 +130,47 @@ fun SendView(
         }
     }
 
+    fun onSendSuccess(amt: Long, addr: PayAddress, tx: iTransaction)
+    {
+        displayNotice(S.sendSuccess, "$amt -> $addr: ${tx.idem}")
+        sendToAddress.value = null
+        note = ""
+        onSendSuccess()
+    }
+
+    fun actuallySend(sendAddress: PayAddress, qty: BigDecimal)
+    {
+        displayNotice(S.Processing, null)
+
+        // avoid network on main thread exception
+        coMiscScope.launch {
+            val cs = account.wallet.chainSelector
+            var tx: iTransaction = txFor(cs)
+            try
+            {
+                val atomAmt = account.toFinestUnit(qty)
+                // If we are spending all, then deduct the fee from the amount (which was set above to the full ungrouped balance)
+                tx = account.wallet.send(atomAmt, sendAddress, spendAll, false, note = note)
+                LogIt.info("Sending TX: ${tx.toHex()}")
+                onSendSuccess(atomAmt, sendAddress, tx)
+            }
+            catch (e: WalletNotEnoughBalanceException)
+            {
+                displayError(i18n(S.insufficentBalance))
+                LogIt.info("Failed transaction is: ${tx.toHex()}")
+                sendConfirm = ""  // Force reconfirm is there is any error with the send
+            }
+            catch (e: Exception)  // We don't want to crash, we want to tell the user what went wrong
+            {
+                displayException(e)
+                handleThreadException(e)
+                LogIt.info("Failed transaction is: ${tx.toHex()}")
+                sendConfirm = ""  // Force reconfirm is there is any error with the send
+            }
+        }
+        sendConfirm = ""  // We are done with a send so reset state machine
+    }
+
     /** Create and post a transaction when the send button is pressed */
     fun onSendButtonClicked()
     {
@@ -150,7 +191,7 @@ fun SendView(
             return
         }
 
-        val amountString: String = sendQuantity
+        val amountString: String = sendQuantity.value
 
         spendAll = false
         var amount = try
@@ -259,7 +300,10 @@ fun SendView(
                     return
                 }
             }
-            else -> throw BadUnitException()
+            else -> {
+                displayError(S.badCurrencyUnit)
+                return
+            }
         }
 
         val preferenceDB = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
@@ -273,6 +317,7 @@ fun SendView(
             CURRENCY_ZERO
         }
 
+        // If sending a large amount, ask to confirm
         if (amount >= confirmAmt)
         {
             val fiatAmt = if (account.fiatPerCoin > BigDecimal.ZERO)
@@ -294,55 +339,18 @@ fun SendView(
               "assets" to "",
             )
         }
-        amountState.value = amount
-    }
-
-    fun onSendSuccess(amt: Long, addr: PayAddress, tx: iTransaction)
-    {
-        displayNotice(S.sendSuccess, "$amt -> $addr: ${tx.idem}")
-        sendToAddress.value = null
-        note = ""
-        onSendSuccess()
-    }
-
-    fun actuallySend(sendAddress: PayAddress, qty: BigDecimal)
-    {
-        displayNotice(S.Processing, null)
-
-        // avoid network on main thread exception
-        coMiscScope.launch {
-            val cs = account.wallet.chainSelector
-            var tx: iTransaction = txFor(cs)
-            try
-            {
-                val atomAmt = account.toFinestUnit(qty)
-                // If we are spending all, then deduct the fee from the amount (which was set above to the full ungrouped balance)
-                tx = account.wallet.send(atomAmt, sendAddress, spendAll, false, note = note)
-                LogIt.info("Sending TX: ${tx.toHex()}")
-                onSendSuccess(atomAmt, sendAddress, tx)
-            }
-            catch (e: WalletNotEnoughBalanceException)
-            {
-                displayError(i18n(S.insufficentBalance))
-                LogIt.info("Failed transaction is: ${tx.toHex()}")
-                sendConfirm = ""  // Force reconfirm is there is any error with the send
-            }
-            catch (e: Exception)  // We don't want to crash, we want to tell the user what went wrong
-            {
-                displayException(e)
-                handleThreadException(e)
-                LogIt.info("Failed transaction is: ${tx.toHex()}")
-                sendConfirm = ""  // Force reconfirm is there is any error with the send
-            }
+        else  // otherwise just send it
+        {
+            actuallySend(sendAddr, amount)
         }
-        sendConfirm = ""  // We are done with a send so reset state machine
+        amountState.value = amount
     }
 
     fun afterTextChanged()
     {
         onPaymentInProgress(null)
         updateSendBasedOnPaymentInProgress()
-        checkSendQuantity(sendQuantity, account)
+        checkSendQuantity(sendQuantity.value, account)
     }
 
     if (sendConfirm.isNotEmpty())
@@ -359,98 +367,27 @@ fun SendView(
 
     ccIndex = currencies.indexOf(currencyCode)
 
-    SendViewContent(
-      selectedAccountName,
-      accountNames,
-      accountExpanded,
-      ccIndex,
-      toAddress,
-      sendQuantity,
-      xchgRateText,
-      approximatelyText,
-      displayNoteInput,
-      note,
-      getApproximatelyText = { checkSendQuantity(sendQuantity, account) },
-      onAccountExpanded = { accountExpanded = it },
-      onCurrencySelected = {
-          if (it < currencies.size)
-          {
-              ccIndex = it
-              onCurrencySelectedCode(currencies[it])
-              onCurrencySelected()
-              afterTextChanged()
-          }
-      },
-      onAccountNameSelected = {
-          val act = wallyApp!!.accounts[it]
-          if (act != null)
-          {
-              account = act
-              onAccountNameSelected(account.name)
-              afterTextChanged()
-          }
-                              },
-      onToAddressChange = { setToAddress(it) },
-      onSendQuantityChanged = {
-          setSendQuantity(it)
-          afterTextChanged()
-      },
-      onDisplayNoteInput = { displayNoteInput = it },
-      onNoteChange = { note = it },
-      onCancel = {
-          onCancel()
-      },
-      onSend = { onSendButtonClicked() },
-      currencies = currencies,
-    )
-}
-
-/**
- * The content of Send view
- */
-@Composable
-fun SendViewContent(
-  primaryAccountName: String,
-  accountNames: List<String>,
-  accountExpanded: Boolean,
-  currencyCodeIndex: Int,
-  toAddress: String,
-  sendQty: String,
-  xchgRateText: String,
-  approximatelyText: String,
-  displayNoteInput: Boolean,
-  note: String,
-  getApproximatelyText: () -> Unit,
-  onAccountNameSelected: (String) -> Unit,
-  onAccountExpanded: (Boolean) -> Unit,
-  onCurrencySelected: (Int) -> Unit,
-  onToAddressChange: (String) -> Unit,
-  onSendQuantityChanged: (String) -> Unit,
-  onDisplayNoteInput: (Boolean) -> Unit,
-  onNoteChange: (String) -> Unit,
-  onCancel: () -> Unit,
-  onSend: () -> Unit,
-  currencies: List<String>,
-)
-{
+    // Now show the actual content:
     // Select from account
     SelectStringDropdownRes(
       S.fromAccountColon,
-      primaryAccountName,
+      selectedAccountName,
       accountNames,
       accountExpanded,
       WallySectionTextStyle(),
       onSelect = onAccountNameSelected,
-      onExpand = onAccountExpanded,
+      onExpand = { accountExpanded = it },
     )
 
 
     // Input address to send to
-    StringInputField(S.toColon, S.sendToAddressHint, toAddress, WallySectionTextStyle(), Modifier, onToAddressChange)
+    StringInputField(S.toColon, S.sendToAddressHint, toAddress, WallySectionTextStyle(), Modifier) {
+        setToAddress(it)
+    }
 
     // Display note input
     if (displayNoteInput)
-        StringInputTextField(S.editSendNoteHint, note, onNoteChange)
+        StringInputTextField(S.editSendNoteHint, note, { note = it })
 
     Spacer(Modifier.height(4.dp))
     Row(
@@ -458,12 +395,19 @@ fun SendViewContent(
     ) {
         SectionText(S.Amount)
         // Send quantity input
-        WallyDecimalEntry(sendQty, Modifier.weight(1f)) {
-            onSendQuantityChanged(it)
-            getApproximatelyText()
+        WallyDecimalEntry(sendQuantity.value, Modifier.weight(1f)) {
+            setSendQuantity(it)
+            afterTextChanged()
+            checkSendQuantity(sendQuantity.value, account)
         }
-        WallyDropdownMenu(modifier = Modifier.wrapContentSize().weight(0.5f), label = "", items = currencies, selectedIndex = currencyCodeIndex, onItemSelected = { index, item ->
-            onCurrencySelected(index)
+        WallyDropdownMenu(modifier = Modifier.wrapContentSize().weight(0.5f), label = "", items = currencies, selectedIndex = ccIndex, onItemSelected = { index, item ->
+            if (index < currencies.size)
+            {
+                ccIndex = index
+                onCurrencySelectedCode(currencies[index])
+                onCurrencySelected()
+                afterTextChanged()
+            }
         })
     }
 
@@ -474,16 +418,13 @@ fun SendViewContent(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.SpaceEvenly,
 
-    ) {
+      ) {
         WallyBoringLargeIconButton("icons/menu_edit.png", interactionSource = MutableInteractionSource(),
-          onClick = {
-              onDisplayNoteInput(!displayNoteInput)
-          }
+          onClick = { displayNoteInput = !displayNoteInput }
         )
-        WallyBoringLargeTextButton(S.Send, onClick = onSend)
+        WallyBoringLargeTextButton(S.Send, onClick = { onSendButtonClicked()})
         WallyBoringLargeTextButton(S.SendCancel, onClick = onCancel)
     }
-
 }
 
 /**

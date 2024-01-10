@@ -21,7 +21,6 @@ actual fun EncodePIN(actName: String, pin: String, size: Int): ByteArray
 
 actual fun onChanged(account: Account, force: Boolean)
 {
-    LogIt.info("Account ${account.name} changed!")
     account.uiData()
     launch { accountChangedNotification.send(account.name) }
 }

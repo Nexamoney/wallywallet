@@ -29,6 +29,7 @@ import kotlinx.coroutines.channels.Channel
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.exceptionHandler
 import org.nexa.libnexakotlin.rem
 
@@ -208,7 +209,13 @@ enum class ShowIt
     NONE,
     WARN_BACKUP_RECOVERY_KEY
 }
-data class GuiDriver(val gotoPage: ScreenId? = null, val show: Set<ShowIt>? = null, val noshow: Set<ShowIt>? = null, val sendAddress: String?=null, val amount: BigDecimal?=null)
+data class GuiDriver(val gotoPage: ScreenId? = null,
+  val show: Set<ShowIt>? = null,
+  val noshow: Set<ShowIt>? = null,
+  val sendAddress: String?=null,
+  val amount: BigDecimal?=null,
+  val chainSelector: ChainSelector?=null,
+  val account: Account? = null)
 
 
 val externalDriver = Channel<GuiDriver>()
@@ -273,7 +280,7 @@ fun NavigationRoot(nav: ScreenNav)
     {
         for(alert in alertChannel)
         {
-            if (alert.level >= AlertLevel.ERROR)
+            if (alert.level.level >= AlertLevel.ERROR.level)
             {
                 errorText = alert.msg
                 launch {
@@ -281,12 +288,12 @@ fun NavigationRoot(nav: ScreenNav)
                     if (errorText == alert.msg) errorText = ""  // do not erase if the error has changed
                 }
             }
-            else if (alert.level >= AlertLevel.NOTICE)
+            else if (alert.level.level >= AlertLevel.NOTICE.level)
             {
                 noticeText = alert.msg
                 launch {
                     delay(alert.longevity ?: NOTICE_DISPLAY_TIME)
-                    if (errorText == alert.msg) errorText = ""  // do not erase if the error has changed
+                    if (noticeText == alert.msg) noticeText = ""  // do not erase if the error has changed
                 }
             }
         }
@@ -371,7 +378,7 @@ fun NavigationMenu(nav: ScreenNav)
 {
     Column {
         // Horizontal row to layout navigation buttons
-        Row(modifier = Modifier.padding(0.dp, 0.dp).height(IntrinsicSize.Min)) {
+        Row(modifier = Modifier.padding(0.dp, 0.dp).fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.SpaceEvenly) {
             for (ch in bottomNavChoices)
             {
                 if (ch.imagePath != null)
@@ -426,7 +433,7 @@ fun NavigationMenu(nav: ScreenNav)
                     }
                 }
                 // Some space between buttons
-                Spacer(modifier = Modifier.width(4.dp).height(1.dp))
+                //Spacer(modifier = Modifier.width(4.dp).height(1.dp))
             }
 
         }

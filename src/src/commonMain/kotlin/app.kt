@@ -2,17 +2,13 @@
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
 import com.eygraber.uri.Uri
-import com.eygraber.uri.Url
 import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.ACCESS_PRICE_DATA_PREF
 import info.bitcoinunlimited.www.wally.ui.DEV_MODE_PREF
-import io.ktor.client.*
 import io.ktor.client.network.sockets.*
-import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.newFixedThreadPoolContext
 import org.nexa.libnexakotlin.*
@@ -117,7 +113,7 @@ class AccessHandler(val app: CommonApp)
                 }
                 if (respText != "")
                 {
-                    app.handleAnyUrl(respText)
+                    app.handlePaste(respText)
                     count += 1
                 }
                 else
@@ -245,7 +241,7 @@ open class CommonApp
     // We wouldn't notify if this app produced the Intent from active user input (like QR scan)
     // but if it came from a long poll, then notify.
     // Notifying and startActivityForResult produces a double call to that intent
-    fun handleAnyUrl(urlStr: String): Boolean
+    fun handlePaste(urlStr: String): Boolean
     {
         //val scheme = intentUri.split(":")[0]
         val uri = Uri.parse(urlStr)
@@ -254,12 +250,27 @@ open class CommonApp
         val app = wallyApp
         if (app == null) return false // should never occur
 
-        val isChain = uriToChain[scheme]
-        if (isChain != null)  // handle a blockchain address (by preparing the send to)
+        // see if this is an address without the prefix
+        val whichChain = if (scheme == null)
         {
+            try
+            {
+                ChainSelectorFromAddress(urlStr)
+            }
+            catch(e: UnknownBlockchainException)
+            {
+                displayError(S.unknownCryptoCurrency)
+                return false
+            }
+        }
+        else uriToChain[scheme]
+
+        if (whichChain != null)  // handle a blockchain address (by preparing the send to)
+        {
+            val act = accountsFor(whichChain).firstOrNull()
             // Inject a change into the GUI
             launch {
-                externalDriver.send(GuiDriver(ScreenId.Home, sendAddress = uri.scheme + ":" + uri.body()))
+                externalDriver.send(GuiDriver(ScreenId.Home, sendAddress = chainToURI[whichChain] + ":" + uri.body(), chainSelector = whichChain, account = act))
             }
         }
         else if (scheme == IDENTITY_URI_SCHEME)

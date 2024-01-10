@@ -165,12 +165,9 @@ fun AccountItemView(
             Column(modifier = Modifier.fillMaxHeight())
             {
                 ResImageView(getAccountIconResPath(uidata.chainSelector), Modifier.size(32.dp), "Blockchain icon")
-                if (isSelected) ResImageView("icons/gear.xml", Modifier.padding(0.dp, 20.dp).size(32.dp).clickable(onClick = onClickGearIcon))
             }
             Column(
-              modifier = Modifier
-                .fillMaxSize()
-                .padding(2.dp),
+              modifier = Modifier.weight(1f).padding(2.dp),
               verticalArrangement = Arrangement.Top,
             ) {
                 Row(
@@ -215,6 +212,8 @@ fun AccountItemView(
                     Text(text = uidata.devinfo, fontSize = 12.sp)
                 }
             }
+            // Show the account settings gear at the end
+            if (isSelected) ResImageView("icons/gear.xml", Modifier.align(Alignment.CenterVertically).padding(0.dp, 0.dp).size(32.dp).clickable(onClick = onClickGearIcon))
         }
     }
 }

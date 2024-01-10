@@ -2,8 +2,6 @@ package info.bitcoinunlimited.www.wally.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,8 +23,6 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
-import info.bitcoinunlimited.www.wally.ui.views.*
-import kotlinx.coroutines.*
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.HomeScreen")
@@ -41,7 +37,6 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
 {
     var isSending by remember { mutableStateOf(false) }
     var isScanningQr by remember { mutableStateOf(false) }
-    var isCreatingNewAccount by remember { mutableStateOf(false) }
 
     val selectedAccount = remember { MutableStateFlow<Account?>(wallyApp?.focusedAccount) }
     var sendFromAccount by remember { mutableStateOf<String>(wallyApp?.focusedAccount?.name ?: "") }
@@ -60,8 +55,9 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
     var currencyCode by remember { mutableStateOf(i18n(S.choose)) } // TODO: get from local db
 
     var sendToAddress by remember { mutableStateOf("") }
-    val currencies: MutableState<List<String>> = remember { mutableStateOf(listOf()) }
-    var sendQuantity by remember { mutableStateOf("") }
+    val sendCurrencyChoices: MutableState<List<String>> = remember { mutableStateOf(listOf()) }
+    // var sendQuantity by remember { mutableStateOf("") }
+    var sendQuantity = remember { mutableStateOf("") }
 
     /** If we've already put up an error for this address, don't do it again */
     var alreadyErroredAddress: MutableState<PayAddress?> = remember { mutableStateOf(null) }
@@ -69,23 +65,13 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
     /** remember last send coin selected */
     var lastSendFromAccountName by remember { mutableStateOf("") }
 
-    val tmp = driver.value
-    if (tmp != null)
-    {
-        if (tmp.sendAddress != null) isSending = true
-        tmp.sendAddress?.let { sendToAddress = it }
-        tmp.amount?.let { sendAmount = NexaFormat.format(it) }
-        if (tmp.show?.contains(ShowIt.WARN_BACKUP_RECOVERY_KEY) == true) warnBackupRecoveryKey.value = true
-        driver.value = null  // If I don't clear this mutable state, it'll set every single time, rendering these fields uneditable
-    }
-
     /** If some unknown text comes from the UX, maybe QR code, maybe clipboard this function handles it by trying to figure out what it is and
     then updating the appropriate fields in the UX */
     fun handleInputedText(text: String)
     {
         if (text != "")
         {
-            if (!wallyApp!!.handleAnyUrl(text)) wallyApp!!.handleNonIntentText(text)
+            if (!wallyApp!!.handlePaste(text)) wallyApp!!.handleNonIntentText(text)
         }
         else
         {
@@ -155,18 +141,33 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
         }
     }
 
+    /** Get the account we are currently sending from out of the GUI.
+     * This function will default to (and set sendFromAccount) the selected account if the sendFromAccount variable is invalid */
+    fun getSendFromAccount(): Account?
+    {
+        // Get an account from the sendFromAccount string
+        var account = wallyApp!!.accounts[sendFromAccount]
+        if (account == null)   // if no sendFromAccount, grab the selected account
+        {
+            account = selectedAccount.value
+            account?.let { sendFromAccount = it.name }
+        }
+        return account
+    }
 
     /** Find an account that can send to this blockchain and switch the send account to it */
     fun updateSendAccount(chainSelector: ChainSelector)
     {
+        val account = getSendFromAccount()
+
         // First see if the current selection is compatible with what we want.
         // This keeps the user's selection if multiple accounts are compatible
-        if (selectedAccount.value?.wallet?.chainSelector != chainSelector)  // Its not so find one that is
+        if (account?.wallet?.chainSelector != chainSelector)  // Its not so find one that is
         {
             val matches = wallyApp!!.accountsFor(chainSelector)
-            if (matches.size > 1)
+            if (matches.size > 0)
             {
-                selectedAccount.value = matches.first()
+                sendFromAccount = matches.first().name
             }
         }
     }
@@ -182,10 +183,10 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
     Might change if the user changes the default fiat or crypto */
     fun updateSendCurrencyType()
     {
-        val account = selectedAccount.value ?: throw Exception("no account in updateSendCurrencyType")
-        account.let { acc ->
+        val account = getSendFromAccount()
+        account?.let { acc ->
             // If we don't know the exchange rate, we can't offer fiat entry
-            currencies.value = if (account.fiatPerCoin != -1.toBigDecimal()) listOf(acc.currencyCode, fiatCurrencyCode) else listOf(acc.currencyCode)
+            sendCurrencyChoices.value = if (acc.fiatPerCoin != -1.toBigDecimal()) listOf(acc.currencyCode, fiatCurrencyCode) else listOf(acc.currencyCode)
         }
     }
 
@@ -416,10 +417,10 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
                     // Update the sendCurrencyType field to contain our coin selection
                     updateSendCurrencyType()
 
-                    sendQuantity = mBchFormat.format(amt)
+                    sendQuantity.value = mBchFormat.format(amt)
 
                     selectedAccount.value?.let {
-                        checkSendQuantity(sendQuantity, it)
+                        checkSendQuantity(sendQuantity.value, it)
                     }
 
                     pip.memo?.let {
@@ -463,141 +464,6 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
         }
     }
 
-    /** Process a BIP21 URI */
-    fun handleSendURI(suri: String)
-    {
-        val uri = Uri.parse(suri)
-
-        // replace the scheme with http so we can use URL to parse it
-        //val index = iuri.indexOf(':')
-        //if (index == -1) throw NotUriException() // Can't be a URI if no colon
-        //val scheme = iuri.take(index)
-        // To decode the parameters, we drop our scheme (blockchain identifier) and replace with http, so the standard Url parser will do the job for us.
-        //val u = Uri("http" + iuri.drop(index))
-        val attribs = uri.queryMap()
-        val scheme = uri.scheme
-        val body = uri.body()
-        if (body.contains("/"))  // But in BIP21 there must be only an address, not a path
-        {
-            displayError(S.badAddress, suri)
-            return
-        }
-        // Now put our scheme back in, dropping the parameters.  So we should have something like "nexa:<address>"
-        val sta = scheme + ":" + body
-
-        val bip72 = attribs["r"]
-        val stramt = attribs["amount"]
-        var amt: BigDecimal = CURRENCY_NEG1
-        if (bip72 != null)
-        {
-            later {
-                try
-                {
-                    paymentInProgress.value = processJsonPay(bip72)
-                    // laterUI {
-                        updateSendBasedOnPaymentInProgress()
-                    //    sendVisibility(true)
-                    //    receiveVisibility(false)
-                    // }
-                }
-                catch (e: Bip70Exception)
-                {
-                    displayException(e)
-                } catch (e: Exception)
-                {
-                    displayException(e)
-                }
-            }
-            return
-        }
-
-        if (stramt != null)
-        {
-            amt = try
-            {
-                stramt.toCurrency()
-                //stramt.toBigDecimal(currencyMath).setScale(currencyScale)  // currencyScale because BCH may have more decimals than mBCH
-            }
-            catch (e: NumberFormatException)
-            {
-                throw BadAmountException(S.detailsOfBadAmountFromIntent)
-            }
-            catch (e: ArithmeticException)  // Rounding error
-            {
-                // If someone is asking for sub-satoshi quantities, round up and overpay them
-                LogIt.warning("Sub-satoshi quantity ${stramt} requested.  Rounding up")
-                BigDecimal.fromString(stramt, NexaMathMode)
-            }
-        }
-
-        val lc = sta.lowercase()
-
-        val pa:PayAddress?
-        var amtString = "0"
-        val act: Account?
-        try
-        {
-            pa = PayAddress(lc)
-            val acts = wallyApp?.accountsFor(pa.blockchain)
-            if ((acts == null)|| acts.isEmpty())
-            {
-                displayError(S.NoAccounts)
-                return
-            }
-            act = acts[0]
-            amt = act.fromPrimaryUnit(amt)
-            amtString = act.format(amt)
-        }
-        catch (e: UnknownBlockchainException)
-        {
-            displayError(S.badAddress, suri)
-            return
-        }
-
-
-        // TODO label and message
-        updateSendAddress(pa) // This also updates the send account
-
-        if (amt >= BigDecimal.ZERO)
-        {
-            sendQuantity = amtString
-            // ui.sendQuantity.text.append(amtString)
-            selectedAccount.value?.let {
-                checkSendQuantity(sendQuantity.toString(), it)
-            }
-        }
-    }
-
-    fun handleNonIntentText(text: String)
-    {
-        // NOTE: in certain contexts (app is background), the UI thread may not even be running so do not require completion of any laterUI tasks
-        LogIt.info(sourceLoc() + "handleNonIntentText: " + text)
-        // Clean out an old payment protocol if you are pasting a new send in
-        paymentInProgress.value = null
-        // laterUI {
-        updateSendBasedOnPaymentInProgress()
-        // }
-
-        // lastPaste = text
-        if (text.contains('?'))  // BIP21 or BIP70
-        {
-            for (c in wallyApp!!.accounts.values)
-            {
-                if (text.contains(c.chain.uriScheme))  // TODO: prefix not contains
-                {
-                    handleSendURI(text)
-                    return
-                }
-            }
-        }
-        else
-        {
-            updateSendAddress(text)
-            return
-        }
-        throw PasteUnintelligibleException()
-    }
-
     fun onAccountSelected(c: Account)
     {
         try
@@ -635,6 +501,39 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
             if (acc.name == name)
                 selectedAccount.value = acc
         }
+    }
+
+    // Handle incoming GUI changes
+    val tmp = driver.value
+    if (tmp != null)
+    {
+        if (tmp.sendAddress != null)  // If we are driving send data, fill all the fields
+        {
+            isSending = true
+            tmp.sendAddress?.let { sendToAddress = it }
+            tmp.amount?.let { sendAmount = NexaFormat.format(it) }
+            val act:Account? = if (tmp.account != null)
+            {
+                tmp.account
+            }
+            else if (tmp.chainSelector != null)
+            {
+                val acts = wallyApp!!.accountsFor(tmp.chainSelector)
+                if (acts.size > 0) acts[0]
+                else null
+            }
+            else null
+
+            if (act != null)
+            {
+                sendFromAccount = act.name
+                currencyCode = act.currencyCode
+                updateSendCurrencyType()
+            }
+        }
+
+        if (tmp.show?.contains(ShowIt.WARN_BACKUP_RECOVERY_KEY) == true) warnBackupRecoveryKey.value = true
+        driver.value = null  // If I don't clear this mutable state, it'll set every single time, rendering these fields uneditable
     }
 
 
@@ -691,7 +590,7 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
                 if (platform().hasGallery)
                     WallyBoringIconButton("icons/gallery.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
                         ImageQrCode {
-                            it?.let { if (!wallyApp!!.handleAnyUrl(it)) wallyApp!!.handleNonIntentText(it) }
+                            it?.let { if (!wallyApp!!.handlePaste(it)) wallyApp!!.handleNonIntentText(it) }
                         }
                     }
                 if (platform().hasQrScanner)
@@ -699,10 +598,11 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
                         isScanningQr = true
                     }
 
-                WallyBoringIconButton("icons/clipboard.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)){
+                if (!platform().usesMouse)
+                    WallyBoringIconButton("icons/clipboard.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)){
                         if (cliptext != null && cliptext != "")
                         {
-                            if (!wallyApp!!.handleAnyUrl(cliptext)) wallyApp!!.handleNonIntentText(cliptext)
+                            if (!wallyApp!!.handlePaste(cliptext)) wallyApp!!.handleNonIntentText(cliptext)
                         }
                         else
                         {
@@ -722,7 +622,7 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
                       sendQuantity = sendQuantity,
                       paymentInProgress = paymentInProgress.value,
                       setSendQuantity = {
-                          sendQuantity = it
+                          sendQuantity.value = it
                       },
                       onCurrencySelectedCode = {
                           currencyCode = it
@@ -730,7 +630,7 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
                       setToAddress = { sendToAddress = it },
                       onCancel = { isSending = false},
                       approximatelyText = approximatelyText,
-                      currencies = currencies.value,
+                      currencies = sendCurrencyChoices.value,
                       xchgRateText = xchgRateText,
                       onPaymentInProgress = {
                           paymentInProgress.value = it
@@ -746,7 +646,7 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
                       },
                       onSendSuccess = {
                           sendToAddress = ""
-                          sendQuantity = ""
+                          sendQuantity.value = ""
                           isSending = false
                       },
                       onAccountNameSelected = {
@@ -757,6 +657,17 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
                 else if (!isSending)
                 {
                     Row(modifier = Modifier.fillMaxWidth().padding(0.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
+                        if (platform().usesMouse)
+                            WallyBoringLargeIconButton("icons/clipboard.xml") {
+                                if (cliptext != null && cliptext != "")
+                                {
+                                    if (!wallyApp!!.handlePaste(cliptext)) wallyApp!!.handleNonIntentText(cliptext)
+                                }
+                                else
+                                {
+                                    displayNotice(S.pasteIsEmpty)
+                                }
+                            }
                         WallyBoringLargeTextButton(S.Send) { isSending = true }
                         WallyBoringLargeTextButton(S.title_split_bill) { nav.go(ScreenId.SplitBill) }
                     }
@@ -809,10 +720,11 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
                           if (it.isNotEmpty() && isScanningQr)
                           {
                               // Clean out an old payment protocol if you are pasting a new send in
-                              paymentInProgress.value = null
+                              // paymentInProgress.value = null
                               isScanningQr = false
-                              isSending = true
-                              handleNonIntentText(it)
+                              //isSending = true
+                              //handleNonIntentText(it)
+                              wallyApp!!.handlePaste(it)
                           }
                       }
                     )

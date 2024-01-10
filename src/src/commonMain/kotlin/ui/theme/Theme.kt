@@ -129,7 +129,7 @@ fun WallyBoringButton(onClick: () -> Unit, enabled: Boolean=true,  interactionSo
         disabledContentColor = WallyButtonForeground,
         containerColor = WallyButtonBackground,
         contentColor = WallyButtonForeground),
-      modifier = Modifier.width(IntrinsicSize.Max).padding(0.dp).defaultMinSize(1.dp, 1.dp),
+      modifier = Modifier.wrapContentSize().padding(0.dp).defaultMinSize(1.dp, 1.dp),
       interactionSource = interactionSource,
       content = content
     )
@@ -143,36 +143,37 @@ fun WallyImageButton(resPath: String, enabled: Boolean=true, modifier: Modifier,
         )  }
 }
 @Composable
-fun WallyBoringTextButton(textRes: Int, enabled: Boolean=true,  interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
+fun WallyBoringTextButton(textRes: Int, enabled: Boolean=true, modifier: Modifier = Modifier, interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
 {
     WallyBoringButton(onClick, enabled, interactionSource) { WallyButtonText(i18n(textRes))}
 }
 @Composable
-fun WallyBoringTextButton(text: String, enabled: Boolean=true,  interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
+fun WallyBoringTextButton(text: String, enabled: Boolean=true, modifier: Modifier = Modifier, interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
 {
     WallyBoringButton(onClick, enabled, interactionSource) { WallyButtonText(text)}
 }
 
 @Composable
-fun WallyBoringLargeTextButton(textRes: Int, enabled: Boolean=true,  interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
+fun WallyBoringLargeTextButton(textRes: Int, enabled: Boolean=true, modifier: Modifier = Modifier, interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
 {
     WallyBoringButton(onClick, enabled, interactionSource) { WallyLargeButtonText(i18n(textRes))}
 }
 
 @Composable
-fun WallyBoringLargeIconButton(iconRes: String, enabled: Boolean=true,  interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
+fun WallyBoringLargeIconButton(iconRes: String, enabled: Boolean=true, modifier: Modifier = Modifier, interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
 {
-    WallyBoringButton(onClick, enabled, interactionSource) { ResImageView(iconRes, Modifier.clickable { onClick() }) }
+    // chosen height is comparable to the large text button
+    WallyBoringButton(onClick, enabled, interactionSource) { ResImageView(iconRes, Modifier.wrapContentWidth().height(32.dp).defaultMinSize(32.dp, 32.dp).clickable { onClick() }.then(modifier)) }
 }
 
 @Composable
-fun WallyBoringIconButton(iconRes: String, modifier: Modifier, enabled: Boolean=true,  interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
+fun WallyBoringIconButton(iconRes: String, modifier: Modifier = Modifier, enabled: Boolean=true,  interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
 {
     WallyBoringButton(onClick, enabled, interactionSource) { ResImageView(iconRes, modifier.clickable { onClick() }) }
 }
 
 @Composable
-fun WallyBoringIconButton(icon: ImageVector, modifier: Modifier, enabled: Boolean=true, description:String? = null, interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
+fun WallyBoringIconButton(icon: ImageVector, modifier: Modifier = Modifier, enabled: Boolean=true, description:String? = null, interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
 {
     WallyBoringButton(onClick, enabled, interactionSource) { Image(icon,description,modifier.clickable { onClick() }) }
 }
@@ -196,9 +197,8 @@ fun WallyBoringIconButton(icon: ImageVector, modifier: Modifier, enabled: Boolea
 
 @Composable fun WallyBoldText(textRes: Int)
 {
-    val textstyle = TextStyle.Default.copy(lineHeight = 0.em, lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.Both), fontWeight = FontWeight.Bold)
+    val textstyle = TextStyle.Default.copy(lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.Both), fontWeight = FontWeight.Bold)
     var s = i18n(textRes)
-    s = s.replace("\\n", "\n")
 
     Text(text = s, modifier = Modifier.padding(0.dp, 0.dp).wrapContentWidth(Alignment.CenterHorizontally,false),
       style = textstyle, textAlign = TextAlign.Center, softWrap = true)

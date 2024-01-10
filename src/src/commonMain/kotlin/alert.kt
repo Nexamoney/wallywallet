@@ -8,9 +8,10 @@ import org.nexa.libnexakotlin.millinow
 
 enum class AlertLevel(val level: Int)
 {
-    EXCEPTION(200),
-    ERROR(100),
-    NOTICE(50);
+    NOTICE(10),  // Green
+    WARN(50),    // yellow
+    ERROR(100),  // red
+    EXCEPTION(200); // red
 }
 
 data class Alert(val msg: String, val details: String?, val level: AlertLevel, val trace:Array<StackTraceElement>? = stackTraceWithout(mutableSetOf("displayError\$default","displayError","displayNotice")), val persistAcrossScreens:Boolean = true, val longevity:Long? = null, val date: Long = millinow())
