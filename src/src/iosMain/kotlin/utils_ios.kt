@@ -66,5 +66,5 @@ actual fun isUiThread(): Boolean
 }
      */
 
-val iosPlatformCharacteristics = PlatformCharacteristics(hasQrScanner = true, usesMouse = false)
+val iosPlatformCharacteristics = PlatformCharacteristics(hasQrScanner = true, hasGallery = true, usesMouse = false, hasAlert = false, hasBack = false)
 actual fun platform(): PlatformCharacteristics = iosPlatformCharacteristics

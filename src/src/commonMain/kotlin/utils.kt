@@ -29,12 +29,21 @@ private val LogIt = GetLog("BU.wally.utils")
 /** Gets the ktor http client for this platform */
 expect fun GetHttpClient(timeoutInMs: Number):HttpClient
 
+/** Get a image from the file system (probably a QR code) and get a wally command string from it */
+expect fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
+
 data class PlatformCharacteristics(
   /** Does this platform support QR code scanning */
   val hasQrScanner: Boolean,
+  val hasGallery: Boolean,
   /** Is this primarily a mouse device (or is it touch).  WRT laptops with touch: This affects the UX styles so the platform should guess based on
    * what people mostly use on that platform, and then the UX can allow a persistent override. */
-  val usesMouse: Boolean)
+  val usesMouse: Boolean,
+  /** True if the frame (or other non-compose) portion this application is capable of displaying alerts */
+  val hasAlert: Boolean,
+  /** True if the frame (or other non-compose) portion this application or device has a back button */
+  val hasBack: Boolean,
+)
 
 expect fun platform(): PlatformCharacteristics
 

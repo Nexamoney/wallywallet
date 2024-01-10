@@ -16,6 +16,7 @@ import org.nexa.libnexakotlin.GetLog
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.io.InputStream
 import java.lang.Double.min
 
 
@@ -67,6 +68,23 @@ class BitmapLuminance(val bmp: Bitmap):LuminanceSource(bmp.width, bmp.height)
         }
         return b
     }
+}
+
+fun readQRcode(strm: InputStream): String
+{
+    val reader = MultiFormatReader()
+    reader.setHints(mapOf(DecodeHintType.POSSIBLE_FORMATS to listOf(BarcodeFormat.QR_CODE)))
+
+    var bmp: Bitmap = BitmapFactory.decodeStream(strm)
+    if (bmp.height > 2000 || bmp.width > 2000)  // Keep things sane for the analysis code
+    {
+        bmp = getResizedBitmap(bmp, 2000, 2000) ?: bmp
+    }
+    val lsource = BitmapLuminance(bmp)
+    val binarizer = HybridBinarizer(lsource)
+    val imbin = BinaryBitmap(binarizer)
+    val result = reader.decode(imbin)
+    return result.text
 }
 
 fun readQRcode(imageName: String): String

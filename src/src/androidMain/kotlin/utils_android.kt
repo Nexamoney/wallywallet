@@ -76,5 +76,5 @@ actual fun isUiThread(): Boolean
     return (tname == "main")
 }
 
-val androidPlatformCharacteristics = PlatformCharacteristics(hasQrScanner = true, usesMouse = false)
+val androidPlatformCharacteristics = PlatformCharacteristics(hasQrScanner = true, hasGallery = true, usesMouse = false, hasAlert = true, hasBack = true)
 actual fun platform(): PlatformCharacteristics = androidPlatformCharacteristics

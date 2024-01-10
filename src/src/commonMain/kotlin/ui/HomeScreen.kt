@@ -687,15 +687,19 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
     val cliptext = clipmgr.getText()?.text
 
     Box(modifier = WallyPageBase) {
-        if (platform().hasQrScanner)
             Row(Modifier.fillMaxWidth().align(Alignment.BottomCenter).zIndex(1f).padding(8.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
-                    WallyBoringIconButton("icons/scanqr2.xml", Modifier.width(48.dp).zIndex(1f)) {
-                        // TODO
+                if (platform().hasGallery)
+                    WallyBoringIconButton("icons/gallery.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
+                        ImageQrCode {
+                            it?.let { if (!wallyApp!!.handleAnyUrl(it)) wallyApp!!.handleNonIntentText(it) }
+                        }
                     }
-                    WallyBoringIconButton("icons/scanqr2.xml", Modifier.width(48.dp).zIndex(1f)){
+                if (platform().hasQrScanner)
+                    WallyBoringIconButton("icons/scanqr2.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)){
                         isScanningQr = true
                     }
-                    WallyBoringIconButton("icons/scanqr2.xml", Modifier.width(48.dp).zIndex(1f)){
+
+                WallyBoringIconButton("icons/clipboard.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)){
                         if (cliptext != null && cliptext != "")
                         {
                             if (!wallyApp!!.handleAnyUrl(cliptext)) wallyApp!!.handleNonIntentText(cliptext)

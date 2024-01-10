@@ -116,5 +116,10 @@ fun loadIcon(ins: InputStream): ImageVector?
     return ins.buffered().use { androidx.compose.ui.res.loadXmlImageVector(InputSource(it), density) }
 }
 
-val jvmPlatformCharacteristics = PlatformCharacteristics(hasQrScanner = false, usesMouse = true)
+val jvmPlatformCharacteristics = PlatformCharacteristics(hasQrScanner = false, hasGallery = true, usesMouse = true, hasAlert = false, hasBack = false)
 actual fun platform(): PlatformCharacteristics = jvmPlatformCharacteristics
+
+actual fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
+{
+    return false
+}
