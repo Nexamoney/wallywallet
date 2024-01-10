@@ -9,6 +9,17 @@ import platform.UIKit.UIPasteboard
 
 private val LogIt = GetLog("BU.wally.utils_ios")
 
+actual fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: MutableSet<String>?): String
+{
+    skipFirst.add("stackTraceWithout")
+    skipFirst.add("stackTraceWithout\$default")
+    val igf = ignoreFiles ?: defaultIgnoreFiles
+    val st = Exception().stackTraceToString()
+    //while (st.isNotEmpty() && skipFirst.contains(st.first().methodName)) st.removeAt(0)
+    //st.removeAll { igf.contains(it.fileName) }
+    return st //.toTypedArray()
+}
+
 actual fun GetHttpClient(timeoutInMs: Number): HttpClient = HttpClient(CIO)
 {
     install(HttpTimeout) { requestTimeoutMillis = timeoutInMs.toLong() }
@@ -48,23 +59,12 @@ actual fun isUiThread(): Boolean
     return NSThread.isMainThread
 }
 
-    /*
-    val split = filename.lastIndexOf('.')
-    val name = filename.take(split)
-    val ext = filename.drop(split+1)
-    LogIt.info("name/ext: $name $ext")
-    val url = NSBundle.mainBundle.URLForResource(name, ext)
-    if (url == null) throw NotUriException()
-    val data = NSData.create(url!!)
-    if (data == null) throw NotUriException()
-    //val bytes = data.bytes?.readBytes(data.length.toInt()) ?: throw NotUriException()
-
-    // Works but how to get it into a compose image?
-    // val uiIm = UIImage.imageWithData(data)
-
-    //loadXmlImageVector
+/** Get a QR code from an image (request file from user), and call the scanDone function when finished.  Returns false if QR scanning is not available */
+actual fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
+{
+    return false
 }
-     */
 
 val iosPlatformCharacteristics = PlatformCharacteristics(hasQrScanner = true, hasGallery = true, usesMouse = false, hasAlert = false, hasBack = false)
 actual fun platform(): PlatformCharacteristics = iosPlatformCharacteristics
+

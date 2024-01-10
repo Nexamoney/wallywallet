@@ -32,6 +32,8 @@ expect fun GetHttpClient(timeoutInMs: Number):HttpClient
 /** Get a image from the file system (probably a QR code) and get a wally command string from it */
 expect fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
 
+expect fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: MutableSet<String>?=null): String
+
 data class PlatformCharacteristics(
   /** Does this platform support QR code scanning */
   val hasQrScanner: Boolean,

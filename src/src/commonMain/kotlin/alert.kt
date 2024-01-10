@@ -14,7 +14,7 @@ enum class AlertLevel(val level: Int)
     EXCEPTION(200); // red
 }
 
-data class Alert(val msg: String, val details: String?, val level: AlertLevel, val trace:Array<StackTraceElement>? = stackTraceWithout(mutableSetOf("displayError\$default","displayError","displayNotice")), val persistAcrossScreens:Boolean = true, val longevity:Long? = null, val date: Long = millinow())
+data class Alert(val msg: String, val details: String?, val level: AlertLevel, val trace:String? = stackTraceWithout(mutableSetOf("displayError\$default","displayError","displayNotice")), val persistAcrossScreens:Boolean = true, val longevity:Long? = null, val date: Long = millinow())
 
 /** Communicate incoming alerts to the GUI */
 val alertChannel = Channel<Alert>()
@@ -23,16 +23,7 @@ val alertChannel = Channel<Alert>()
 val alerts = arrayListOf<Alert>()
 
 val defaultIgnoreFiles = mutableListOf<String>("ZygoteInit.java", "RuntimeInit.java", "ActivityThread.java", "Looper.java", "Handler.java", "DispatchedTask.kt")
-fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: MutableSet<String>?=null): Array<StackTraceElement>
-{
-    skipFirst.add("stackTraceWithout")
-    skipFirst.add("stackTraceWithout\$default")
-    val igf = ignoreFiles ?: defaultIgnoreFiles
-    val st = Exception().stackTrace.toMutableList()
-    while (st.isNotEmpty() && skipFirst.contains(st.first().methodName)) st.removeAt(0)
-    st.removeAll { igf.contains(it.fileName) }
-    return st.toTypedArray()
-}
+
 
 /** Display a notice message, and add it to the list of alerts */
 fun displayNotice(summary: Int, message: String?=null, persistAcrossScreens: Boolean=true)
@@ -72,7 +63,8 @@ fun displayError(summary: String, message: String?=null, persistAcrossScreens: B
 /** LAST RESORT: display an exception (and put it into the alert log, so the user can submit an issue report) */
 fun displayException(e: Exception)
 {
-    val summary = try { e.localizedMessage } catch (e: Exception) { e.message ?: e.toString()}
+    val summary = e.message ?: e.toString()
+    // Android/JVM only: val summary = try { e.localizedMessage } catch (e: Exception) { e.message ?: e.toString()}
     val message = i18n(S.IssueReportInstructions) + "\n" + e.stackTraceToString()   // TODO also display the thread name
     val alert = Alert(summary, message, AlertLevel.EXCEPTION, null, false, ERROR_DISPLAY_TIME)
     alerts.add(alert)

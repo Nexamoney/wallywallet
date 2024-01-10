@@ -24,6 +24,19 @@ import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.*
 import java.io.InputStream
 
+actual fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: MutableSet<String>?): String
+{
+    skipFirst.add("stackTraceWithout")
+    skipFirst.add("stackTraceWithout\$default")
+    val igf = ignoreFiles ?: defaultIgnoreFiles
+    val st = Exception().stackTrace.toMutableList()
+    while (st.isNotEmpty() && skipFirst.contains(st.first().methodName)) st.removeAt(0)
+    st.removeAll { igf.contains(it.fileName) }
+    val sb = StringBuilder()
+    st.forEach { sb.append(it.toString()).append("\n") }
+    return st.toString()
+}
+
 /** Gets the ktor http client for this platform */
 actual fun GetHttpClient(timeoutInMs: Number): HttpClient = HttpClient(Android) {
     install(HttpTimeout) { requestTimeoutMillis = timeoutInMs.toLong() } // Long timeout because we don't expect a response right away; its a long poll

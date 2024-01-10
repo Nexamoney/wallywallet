@@ -1,10 +1,8 @@
 package info.bitcoinunlimited.www.wally
 
-import info.bitcoinunlimited.www.wally.ui.views.triggerRecompose
-import org.nexa.libnexakotlin.FallbackProvider
-import org.nexa.libnexakotlin.PBEKeySpecCommon
-import org.nexa.libnexakotlin.SecretKeyFactoryCommon
-import org.nexa.libnexakotlin.toByteArray
+import info.bitcoinunlimited.www.wally.ui.accountChangedNotification
+import info.bitcoinunlimited.www.wally.ui.views.uiData
+import org.nexa.libnexakotlin.*
 
 actual fun EncodePIN(actName: String, pin: String, size: Int): ByteArray {
     val salt = "wally pin " + actName
@@ -16,5 +14,6 @@ actual fun EncodePIN(actName: String, pin: String, size: Int): ByteArray {
 
 actual fun onChanged(account: Account, force: Boolean)
 {
-    triggerRecompose.value = triggerRecompose.value + 1
+    account.uiData()
+    launch { accountChangedNotification.send(account.name) }
 }

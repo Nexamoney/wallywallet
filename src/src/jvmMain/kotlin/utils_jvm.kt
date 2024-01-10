@@ -20,6 +20,18 @@ import java.io.InputStream
 import java.net.URLDecoder
 import java.net.URLEncoder
 
+actual fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: MutableSet<String>?): String
+{
+    skipFirst.add("stackTraceWithout")
+    skipFirst.add("stackTraceWithout\$default")
+    val igf = ignoreFiles ?: defaultIgnoreFiles
+    val st = Exception().stackTrace.toMutableList()
+    while (st.isNotEmpty() && skipFirst.contains(st.first().methodName)) st.removeAt(0)
+    st.removeAll { igf.contains(it.fileName) }
+    val sb = StringBuilder()
+    st.forEach { sb.append(it.toString()).append("\n") }
+    return st.toString()
+}
 actual fun GetHttpClient(timeoutInMs: Number): HttpClient = HttpClient(io.ktor.client.engine.cio.CIO) {
     install(HttpTimeout) { requestTimeoutMillis = timeoutInMs.toLong() }
 }
