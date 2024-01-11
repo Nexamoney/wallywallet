@@ -316,7 +316,7 @@ fun BlockchainSource(chain: ChainSelector, preferenceDB: SharedPreferences, swit
         verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(5.dp, 0.dp),
     ) {
         Text(name)
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(4.dp))
         WallyTextEntry(
           value = textState,
           onValueChange = {
@@ -330,16 +330,16 @@ fun BlockchainSource(chain: ChainSelector, preferenceDB: SharedPreferences, swit
           },
           //label = { Text(name) },
           //singleLine = true,
-          modifier = Modifier.width(125.dp),
+          modifier = Modifier.weight(1f),
           //colors = textFieldColors(containerColor = Color.Transparent),
           textStyle = TextStyle(fontSize = 14.sp)
         )
-        Spacer(modifier = Modifier.width(8.dp).alignBy(switchAlignment))
+        Spacer(modifier = Modifier.weight(0.01f).alignBy(switchAlignment))
         WallySwitch(onlyChecked, S.only) {
             onlyChecked.value = it
             preferenceDB.edit().putBoolean(exclusiveNodeKey, it).commit()
         }
-        Spacer(modifier = Modifier.width(4.dp))
+        Spacer(modifier = Modifier.weight(0.01f))
         WallySwitch(preferChecked, S.prefer) {
             preferChecked.value = it
             preferenceDB.edit().putBoolean(preferNodeKey, it).commit()

@@ -27,6 +27,7 @@ import kotlinx.coroutines.channels.Channel
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.exceptionHandler
 import org.nexa.libnexakotlin.rem
@@ -46,6 +47,7 @@ enum class ScreenId
     SplitBill,
     NewAccount,
     AccountDetails,
+    AddressHistory,
     Test;
 
     val isEntirelyScrollable:Boolean
@@ -80,6 +82,7 @@ enum class ScreenId
             SplitBill -> i18n(S.title_split_bill)
             NewAccount -> i18n(S.title_activity_new_account)
             AccountDetails -> i18n(S.title_activity_account_details) % mapOf("account" to (wallyApp?.focusedAccount?.name ?: ""))
+            AddressHistory -> i18n(S.title_activity_tx_history) % mapOf("account" to (wallyApp?.focusedAccount?.name ?: ""))
             Test -> "Test"
         }
     }
@@ -183,7 +186,7 @@ fun assignAccountsGuiSlots(): ListifyMap<String, Account>
 
 // This function should build a title bar (with a back button) if the platform doesn't already have one.  Otherwise it should
 // set up the platform's title bar
-@Composable fun ConstructTitleBar(nav: ScreenNav)
+@Composable fun ConstructTitleBar(nav: ScreenNav, errorText: String, warningText: String, noticeText: String)
 {
     if (!hasNativeTitleBar)
     {
@@ -192,7 +195,14 @@ fun assignAccountsGuiSlots(): ListifyMap<String, Account>
             IconButton(onClick = { nav.back() }) {
                 Icon(Icons.Default.ArrowBack, contentDescription = null)
             }
-            TitleText(nav.title(), Modifier.weight(2f))
+            if (errorText.isNotEmpty())
+                ErrorText(errorText)
+            else if (warningText.isNotEmpty())
+                ErrorText(errorText)
+            else if (noticeText.isNotEmpty())
+                NoticeText(noticeText)
+            //NoticeText(i18n(S.copiedToClipboard))
+            else TitleText(nav.title(), Modifier.weight(2f))
         }
     }
 }
@@ -238,18 +248,11 @@ fun NavigationRoot(nav: ScreenNav)
     val accountGuiSlots = mutableStateOf(assignAccountsGuiSlots())
     var driver = mutableStateOf<GuiDriver?>(null)
     var errorText by remember { mutableStateOf("") }
+    var warningText by remember { mutableStateOf("") }
     var noticeText by remember { mutableStateOf("") }
     var clickDismiss = remember { mutableStateOf<(@Composable () -> Unit)?>(null) }
 
-
-    /* Only needed if we need to reassign the account slots outside of the GUI's control
-    LaunchedEffect(true)
-    {
-        for(c in reassignAccountGuiSlots)
-            accountGuiSlots.value = assignAccountsGuiSlots()
-    }
-     */
-
+    val selectedAccount = remember { MutableStateFlow<Account?>(wallyApp?.focusedAccount) }
 
     // Allow an external (non-compose) source to "drive" the GUI to a particular state.
     // This implements functionality like scanning/pasting/receiving via a connection a payment request.
@@ -300,15 +303,13 @@ fun NavigationRoot(nav: ScreenNav)
     WallyTheme(darkTheme = false, dynamicColor = false) {
         Box(modifier = WallyPageBase) {
             Column(modifier = Modifier.fillMaxSize()) {
-                ConstructTitleBar(nav)
-                if (errorText.isNotEmpty())
-                    ErrorText(errorText)
-                else if (noticeText.isNotEmpty())
-                    NoticeText(noticeText)
+                ConstructTitleBar(nav, errorText, warningText, noticeText)
 
                 clickDismiss.value?.let {
                     WallyEmphasisBox(Modifier.fillMaxWidth().wrapContentSize().clickable { clickDismiss.value = null }) { it() }
                 }
+
+                val pa = selectedAccount.value
 
                 // This will take up the most space but leave enough for the navigation menu
                 val mod = if (nav.currentScreen.value.isEntirelyScrollable)
@@ -324,17 +325,32 @@ fun NavigationRoot(nav: ScreenNav)
                 ) {
                     when (nav.currentScreen.value)
                     {
-                        ScreenId.None -> HomeScreen(accountGuiSlots, driver, nav, ChildNav)
-                        ScreenId.Home -> HomeScreen(accountGuiSlots, driver, nav, ChildNav)
+                        ScreenId.None -> HomeScreen(selectedAccount, accountGuiSlots, driver, nav, ChildNav)
+                        ScreenId.Home -> HomeScreen(selectedAccount, accountGuiSlots, driver, nav, ChildNav)
                         ScreenId.SplitBill -> SplitBillScreen(nav)
                         ScreenId.NewAccount -> NewAccountScreen(accountGuiSlots, devMode, nav)
                         ScreenId.Test -> TestScreen(400.dp)
                         ScreenId.Settings -> SettingsScreen(nav)
-                        ScreenId.AccountDetails -> AccountDetailScreenNav(accountGuiSlots, nav)
+                        ScreenId.AccountDetails -> {
+                            if (pa == null)
+                            {
+                                displayError(S.NoAccounts)
+                                nav.back()
+                            }
+                            else AccountDetailScreen(accountGuiSlots, pa, nav)
+                        }
                         ScreenId.Assets -> Text("TODO: Implement AssetsScreen")
                         ScreenId.Shopping -> ShoppingScreen(nav)
                         ScreenId.TricklePay -> Text("TODO: Implement TricklePayScreen")
                         ScreenId.Identity -> Text("TODO: Implement IdentityScreen")
+                        ScreenId.AddressHistory -> run {
+                            if (pa == null)
+                            {
+                                displayError(S.NoAccounts)
+                                nav.back()
+                            }
+                            else AddressHistoryScreen(pa, nav)
+                        }
                     }
                 }
 

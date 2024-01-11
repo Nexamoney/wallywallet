@@ -34,12 +34,11 @@ with member variables and member functions defined in it.
 We could use a composable "State Holder" (in theory) to capture all the state needed by the member functions, but creating a state holder appears to entail
 writing a vast amount of inscrutible garbage rather than actual useful code.
 * */
-fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, driver: MutableState<GuiDriver?>, nav: ScreenNav, navigation: ChildNav)
+fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: MutableState<ListifyMap<String, Account>>, driver: MutableState<GuiDriver?>, nav: ScreenNav, navigation: ChildNav)
 {
     var isSending by remember { mutableStateOf(false) }
     var isScanningQr by remember { mutableStateOf(false) }
 
-    val selectedAccount = remember { MutableStateFlow<Account?>(wallyApp?.focusedAccount) }
     var sendFromAccount by remember { mutableStateOf<String>(wallyApp?.focusedAccount?.name ?: "") }
     val synced = remember { mutableStateOf(wallyApp!!.isSynced()) }
     var currentReceive by remember { mutableStateOf<String?>(null) }

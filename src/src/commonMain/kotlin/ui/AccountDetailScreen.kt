@@ -30,49 +30,9 @@ enum class AccountAction
 {
     Delete, Rediscover, RediscoverBlockchain, Reassess, RecoveryPhrase, PrimaryAccount, PinChange
 }
-enum class AccountNav
-{
-    AccountDetail, TxHistory, AddressHistory
-}
 
 @Composable
-fun AccountDetailScreenNav(allAccounts: MutableState<ListifyMap<String,Account>>, nav: ScreenNav)
-{
-    val account = wallyApp!!.focusedAccount
-    if (account == null) nav.back()
-    else
-    {
-        var accountNav by remember { mutableStateOf(AccountNav.AccountDetail) }
-
-        when (accountNav)
-        {
-            AccountNav.AccountDetail ->
-            {
-                AccountDetailScreen(nav, account, allAccounts, onTxHistoryButtonClicked = {
-                    accountNav = AccountNav.AddressHistory
-                },
-                  onAddressesButtonClicked = {
-                      accountNav = AccountNav.AddressHistory
-                  },
-                  onBackButton = {
-                      nav.back()
-                  }
-                )
-            }
-
-            AccountNav.TxHistory -> TxHistoryScreen(account) {
-                accountNav = AccountNav.AccountDetail
-            }
-
-            AccountNav.AddressHistory -> AddressHistoryScreen(account) {
-                accountNav = AccountNav.AccountDetail
-            }
-        }
-    }
-}
-
-@Composable
-fun AccountDetailScreen(nav: ScreenNav, account: Account, allAccounts: MutableState<ListifyMap<String,Account>>, onTxHistoryButtonClicked: () -> Unit, onAddressesButtonClicked: () -> Unit, onBackButton: () -> Unit)
+fun AccountDetailScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, account: Account, nav: ScreenNav)
 {
     Column(
       modifier = Modifier.verticalScroll(rememberScrollState())
@@ -80,10 +40,13 @@ fun AccountDetailScreen(nav: ScreenNav, account: Account, allAccounts: MutableSt
         CenteredSectionText(i18n(S.AccountStatistics))
         AccountBlockchainDetail(account)
         AccountFirstLastSend(account.wallet.statistics())
-        GuiAccountTxStatisticsRow(account.wallet.statistics(), onTxHistoryButtonClicked, onAddressesButtonClicked)
+        GuiAccountTxStatisticsRow(account.wallet.statistics(), { nav.go(ScreenId.AddressHistory) }, { nav.go(ScreenId.AddressHistory) } )
         Spacer(modifier = Modifier.padding(4.dp))
         WallyDivider()
-        AccountActions(account, onTxHistoryButtonClicked, allAccounts, accountDeleted = onBackButton)
+        AccountActions(account, { nav.go(ScreenId.AddressHistory) }, accountDeleted = {
+            assignAccountsGuiSlots()
+            nav.back()
+        })
     }
 }
 
@@ -184,7 +147,7 @@ fun AccountFirstLastSend(stat: CommonWallet.WalletStatistics,)
 }
 
 @Composable
-fun AccountActions(acc: Account, txHistoryButtonClicked: () -> Unit, allAccounts: MutableState<ListifyMap<String,Account>>, accountDeleted: () -> Unit)
+fun AccountActions(acc: Account, txHistoryButtonClicked: () -> Unit, accountDeleted: () -> Unit)
 {
 
     Column(
@@ -207,7 +170,7 @@ fun AccountActions(acc: Account, txHistoryButtonClicked: () -> Unit, allAccounts
             }
         }
 
-        AccountActionButtons(acc, txHistoryButtonClicked = txHistoryButtonClicked, allAccounts, accountDeleted)
+        AccountActionButtons(acc, txHistoryButtonClicked = txHistoryButtonClicked, accountDeleted)
     }
 }
 
@@ -233,7 +196,7 @@ fun ErrorText(errorText: String)
 
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
-fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, allAccounts: MutableState<ListifyMap<String,Account>>, accountDeleted: () -> Unit)
+fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accountDeleted: () -> Unit)
 {
     val accountAction: MutableState<AccountAction?> = remember { mutableStateOf(null) }
     var errorText by remember { mutableStateOf("") }
@@ -332,7 +295,6 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, allAc
             AccountAction.Delete -> AccountDetailAcceptDeclineTextView(i18n(S.deleteConfirmation) % mapOf("accountName" to acc.name, "blockchain" to acc.currencyCode)) {
 
                 wallyApp?.deleteAccount(acc)
-                allAccounts.value = assignAccountsGuiSlots()
                 displayNotice(S.accountDeleteNotice)
                 accountDeleted()
             }

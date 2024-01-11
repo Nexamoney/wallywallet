@@ -55,9 +55,8 @@ val addressInfoComparator = object:  Comparator<AddressInfo> {
  */
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
-fun AddressHistoryScreen(acc: Account, back: () -> Unit)
+fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
 {
-    val title = i18n(S.title_activity_tx_history) % mapOf("account" to acc.name)
     val addresses: MutableState<MutableList<AddressInfo>> = remember { mutableStateOf(mutableListOf()) }
     val timeZone = TimeZone.currentSystemDefault()
     var displayCopiedNotice by remember { mutableStateOf(false) }
@@ -116,19 +115,7 @@ fun AddressHistoryScreen(acc: Account, back: () -> Unit)
         }
     }
 
-    Column {
-        if(displayCopiedNotice)
-            NoticeText(i18n(S.copiedToClipboard))
-        else
-            Row(
-              verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = back) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = null)
-                }
-                Text(title, fontWeight = FontWeight.Bold)
-            }
-        LazyColumn {
+    LazyColumn {
             addresses.value.forEachIndexed {idx, it ->
                 item(key=it.address.toString()) {
                     val color = if (idx % 2 == 1) { WallyRowAbkg1 } else WallyRowAbkg2
@@ -187,5 +174,4 @@ fun AddressHistoryScreen(acc: Account, back: () -> Unit)
                 }
             }
         }
-    }
 }
