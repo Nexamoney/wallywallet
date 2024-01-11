@@ -118,6 +118,7 @@ class ActivityLifecycleHandler(private val app: WallyApp) : Application.Activity
 
     override fun onActivityStarted(act: Activity)
     {
+        /*
         //if (app.currentActivity is CommonActivity)
         try
         {
@@ -125,6 +126,8 @@ class ActivityLifecycleHandler(private val app: WallyApp) : Application.Activity
         } catch (e: Throwable)  // Some other activity (QR scanner)
         {
         }
+
+         */
     }
 
     override fun onActivityDestroyed(act: Activity)
@@ -146,6 +149,7 @@ class ActivityLifecycleHandler(private val app: WallyApp) : Application.Activity
 
     override fun onActivityResumed(act: Activity)
     {
+        /*
         //if (app.currentActivity is CommonActivity)
         try
         {
@@ -153,6 +157,8 @@ class ActivityLifecycleHandler(private val app: WallyApp) : Application.Activity
         } catch (e: Throwable)  // Some other activity (QR scanner)
         {
         }
+
+         */
     }
 }
 
@@ -214,7 +220,8 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
 
     val init = org.nexa.libnexakotlin.initializeLibNexa()
 
-    var currentActivity: CommonNavActivity? = null
+    // Use currentActivity global
+    //var currentActivity: CommonNavActivity? = null
 
     // Track notifications
     val notifs: MutableList<Triple<Int, PendingIntent, Intent>> = mutableListOf()

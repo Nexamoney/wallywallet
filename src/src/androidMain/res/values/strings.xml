@@ -500,7 +500,8 @@ Good luck!
     <string name="title_activity_identity">Identity</string>
     <string name="title_activity_identity_op">Identity</string>
     <string name="title_activity_domain_identity_settings">Domain Identity Settings</string>
-    <string name="title_activity_tx_history" formatted="false">Account History: %account</string>
+    <string name="title_activity_tx_history" formatted="false">Address History: %account</string>
+    <string name="title_activity_address_history" formatted="false">Transaction History: %account</string>
     <string name="title_activity_account_details" formatted="false">Account Details: %account</string>
     <string name="title_test">Test</string>
 

@@ -573,6 +573,32 @@ open class CommonActivity : AppCompatActivity()
     }
 
     /** Display an short error string on the title bar, and then clear it after a bit */
+    fun displayAlert(alert: Alert)
+    {
+        // val trace = stackTraceWithout(mutableSetOf("displayError\$default","displayError","displayNotice"))
+        laterUI {
+            // This coroutine has to be limited to this thread because only the main thread can touch UI views
+            // Display the error by changing the title and title bar color temporarily
+            val titlebar: View = findViewById(actionBarId)
+            val myError = synchronized(errorSync)
+            {
+                super.setTitle(alert.msg)
+                lastErrorString = alert.msg
+                errorCount += 1
+                menuHidden += 1
+                invalidateOptionsMenu()
+
+                val errorColor = ContextCompat.getColor(applicationContext, alert.level.color())
+                titlebar.background = ColorDrawable(errorColor)
+                errorCount
+            }
+            delay(alert.longevity ?: alert.level.longevity())
+            finishShowingNotice(myError)
+        }
+
+    }
+
+    /** Display an short error string on the title bar, and then clear it after a bit */
     fun displayError(err: String, details: String? = null, then: (() -> Unit)? = null)
     {
         val trace = stackTraceWithout(mutableSetOf("displayError\$default","displayError","displayNotice"))

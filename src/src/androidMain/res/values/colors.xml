@@ -15,8 +15,10 @@
     <color name="colorDebit">#B43200</color>
     <color name="Confirm">#E48864</color>
 
-    <color name="error">#FF6050</color>
-    <color name="notice">#FFD040</color>
+    <color name="exception">#FF5080</color>
+    <color name="error">#CF6050</color>
+    <color name="warn">#FFD040</color>
+    <color name="notice">#40A040</color>
     <color name="titleBackground">#725092</color>
 
     <color name="rowA">#FFEFEFEF</color>

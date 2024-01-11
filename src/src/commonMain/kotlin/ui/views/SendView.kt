@@ -1,6 +1,5 @@
 package info.bitcoinunlimited.www.wally.ui.views
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -51,7 +50,7 @@ fun SendView(
   paymentInProgress: ProspectivePayment?,
   approximatelyText: String,
   xchgRateText: String,
-  currencies: List<String>,
+  currencies: MutableState<List<String>>,
   setSendQuantity: (String) -> Unit,
   onCurrencySelectedCode: (String) -> Unit,
   setToAddress: (String) -> Unit,
@@ -126,7 +125,7 @@ fun SendView(
             }
         } catch (e: Exception)
         {
-            displayException(e)
+            displayUnexpectedException(e)
         }
     }
 
@@ -162,7 +161,7 @@ fun SendView(
             }
             catch (e: Exception)  // We don't want to crash, we want to tell the user what went wrong
             {
-                displayException(e)
+                displayUnexpectedException(e)
                 handleThreadException(e)
                 LogIt.info("Failed transaction is: ${tx.toHex()}")
                 sendConfirm = ""  // Force reconfirm is there is any error with the send
@@ -365,65 +364,70 @@ fun SendView(
 
     var ccIndex by remember { mutableStateOf(0) }
 
-    ccIndex = currencies.indexOf(currencyCode)
+    ccIndex = currencies.value.indexOf(currencyCode)
 
-    // Now show the actual content:
-    // Select from account
-    SelectStringDropdownRes(
-      S.fromAccountColon,
-      selectedAccountName,
-      accountNames,
-      accountExpanded,
-      WallySectionTextStyle(),
-      onSelect = onAccountNameSelected,
-      onExpand = { accountExpanded = it },
-    )
+    // give some side margins if the platform supports it
+    val sendPadding = if (platform().spaceConstrained) 0.dp else 8.dp
+    Column(modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(sendPadding, 0.dp, sendPadding, 0.dp)) {
+        // Now show the actual content:
 
-
-    // Input address to send to
-    StringInputField(S.toColon, S.sendToAddressHint, toAddress, WallySectionTextStyle(), Modifier) {
-        setToAddress(it)
-    }
-
-    // Display note input
-    if (displayNoteInput)
-        StringInputTextField(S.editSendNoteHint, note, { note = it })
-
-    Spacer(Modifier.height(4.dp))
-    Row(
-      modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
-    ) {
-        SectionText(S.Amount)
-        // Send quantity input
-        WallyDecimalEntry(sendQuantity.value, Modifier.weight(1f)) {
-            setSendQuantity(it)
-            afterTextChanged()
-            checkSendQuantity(sendQuantity.value, account)
-        }
-        WallyDropdownMenu(modifier = Modifier.wrapContentSize().weight(0.5f), label = "", items = currencies, selectedIndex = ccIndex, onItemSelected = { index, item ->
-            if (index < currencies.size)
-            {
-                ccIndex = index
-                onCurrencySelectedCode(currencies[index])
-                onCurrencySelected()
-                afterTextChanged()
-            }
-        })
-    }
-
-    OptionalInfoText(approximatelyText)
-    OptionalInfoText(xchgRateText)
-    Spacer(modifier = Modifier.size(16.dp))
-    Row(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.SpaceEvenly,
-
-      ) {
-        WallyBoringLargeIconButton("icons/menu_edit.png", interactionSource = MutableInteractionSource(),
-          onClick = { displayNoteInput = !displayNoteInput }
+        // Send from account:
+        SelectStringDropdownRes(
+          S.fromAccountColon,
+          selectedAccountName,
+          accountNames,
+          accountExpanded,
+          WallySectionTextStyle(),
+          onSelect = onAccountNameSelected,
+          onExpand = { accountExpanded = it },
         )
-        WallyBoringLargeTextButton(S.Send, onClick = { onSendButtonClicked()})
-        WallyBoringLargeTextButton(S.SendCancel, onClick = onCancel)
+
+
+        // Input address to send to
+        StringInputField(S.toColon, S.sendToAddressHint, toAddress, WallySectionTextStyle(), Modifier) {
+            setToAddress(it)
+        }
+
+        // Display note input
+        if (displayNoteInput)
+            StringInputTextField(S.editSendNoteHint, note, { note = it })
+
+        Spacer(Modifier.height(4.dp))
+        Row(
+          modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+        ) {
+            SectionText(S.Amount)
+            // Send quantity input
+            WallyDecimalEntry(sendQuantity.value, Modifier.weight(1f)) {
+                setSendQuantity(it)
+                afterTextChanged()
+                checkSendQuantity(sendQuantity.value, account)
+            }
+            WallyDropdownMenu(modifier = Modifier.wrapContentSize().weight(0.5f), label = "", items = currencies.value, selectedIndex = ccIndex, onItemSelected = { index, item ->
+                if (index < currencies.value.size)
+                {
+                    ccIndex = index
+                    onCurrencySelectedCode(currencies.value[index])
+                    onCurrencySelected()
+                    afterTextChanged()
+                }
+            })
+        }
+
+        OptionalInfoText(approximatelyText)
+        OptionalInfoText(xchgRateText)
+        Spacer(modifier = Modifier.size(16.dp))
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.SpaceEvenly,
+
+          ) {
+            WallyBoringLargeIconButton("icons/menu_edit.png", interactionSource = MutableInteractionSource(),
+              onClick = { displayNoteInput = !displayNoteInput }
+            )
+            WallyBoringLargeTextButton(S.Send, onClick = { onSendButtonClicked() })
+            WallyBoringLargeTextButton(S.SendCancel, onClick = onCancel)
+        }
     }
 }
 

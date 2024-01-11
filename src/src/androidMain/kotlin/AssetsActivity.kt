@@ -161,7 +161,7 @@ class AssetManager(val app: WallyApp)
             ec.getTokenGenesisInfo(groupId, 30 * 1000)
         } catch (e: ElectrumRequestTimeout)
         {
-            app.currentActivity?.displayException(R.string.ElectrumNetworkUnavailable, e)
+            displayError(R.string.ElectrumNetworkUnavailable, e.message)
             LogIt.info(sourceLoc() + ": Rostrum is inaccessible loading token info for ${groupId.toHex()}")
             TokenGenesisInfo(null, null, -1, null, null, "", "", "")
         }

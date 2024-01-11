@@ -45,6 +45,15 @@ data class PlatformCharacteristics(
   val hasAlert: Boolean,
   /** True if the frame (or other non-compose) portion this application or device has a back button */
   val hasBack: Boolean,
+  /** True if the frame (or other non-compose) portion this application or device has a title bar */
+  val hasNativeTitleBar: Boolean,
+  /** True if this platform is typically space constrained (phones), verses tablets or desktops.  This will drive large UI changes like
+   * collapsing subsections of the UX */
+  val spaceConstrained: Boolean,
+  /** True if this platform is landscape (wider than it is tall).  This will drive large UI layout changes.
+   * If you don't want to the app to dynamically change when rotating your device, just return the same value regardless of orientation
+   * (and as part of your native set-up, turn off rotating) */
+  val landscape: Boolean,
 )
 
 expect fun platform(): PlatformCharacteristics
@@ -278,6 +287,8 @@ expect fun getTextClipboard(): List<String>
 /** Sets the clipboard, potentially asynchronously. */
 expect fun setTextClipboard(msg: String)
 
+/** Display an alert in the native manner (if it exists, see @platform()).  If there is no native manner, just return */
+expect fun displayAlert(alert: Alert)
 
 /** Returns true if this function is called within the UI thread
  * Many platforms have specific restrictions on what can be run within the UI (often the "main") thread.

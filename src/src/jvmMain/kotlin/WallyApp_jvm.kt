@@ -51,7 +51,7 @@ fun guiNewPanel()
             val w = Window(
               onCloseRequest = { isOpen = false },
               title = nav.title(),
-              state = rememberWindowState(width = (4 * 160).dp, height = (5 * 160).dp)
+              state = rememberWindowState(width = (5 * 160).dp, height = (7 * 160).dp)
             )
             {
                 //WallyJvmApp.topWindow = w

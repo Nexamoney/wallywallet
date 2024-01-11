@@ -174,26 +174,6 @@ fun AccountActions(acc: Account, txHistoryButtonClicked: () -> Unit, accountDele
     }
 }
 
-@Composable
-fun ErrorText(errorText: String)
-{
-    Box(
-      modifier = Modifier
-        .background(color = Color.Red)
-        .fillMaxWidth()
-        .padding(16.dp)
-        .wrapContentWidth(align = Alignment.CenterHorizontally)
-    ) {
-        Text(
-          text = errorText,
-          style = LocalTextStyle.current.copy(
-            color = Color.White,
-            fontWeight = FontWeight.Bold
-          )
-        )
-    }
-}
-
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accountDeleted: () -> Unit)

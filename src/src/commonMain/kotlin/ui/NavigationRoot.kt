@@ -27,13 +27,8 @@ import kotlinx.coroutines.channels.Channel
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import org.nexa.libnexakotlin.ChainSelector
-import org.nexa.libnexakotlin.exceptionHandler
 import org.nexa.libnexakotlin.rem
-
-/** return true if this platform has a native title bar (and therefore do not generate one). */
-var hasNativeTitleBar = true
 
 enum class ScreenId
 {
@@ -48,6 +43,7 @@ enum class ScreenId
     NewAccount,
     AccountDetails,
     AddressHistory,
+    TxHistory,
     Test;
 
     val isEntirelyScrollable:Boolean
@@ -82,7 +78,8 @@ enum class ScreenId
             SplitBill -> i18n(S.title_split_bill)
             NewAccount -> i18n(S.title_activity_new_account)
             AccountDetails -> i18n(S.title_activity_account_details) % mapOf("account" to (wallyApp?.focusedAccount?.name ?: ""))
-            AddressHistory -> i18n(S.title_activity_tx_history) % mapOf("account" to (wallyApp?.focusedAccount?.name ?: ""))
+            AddressHistory -> i18n(S.title_activity_address_history) % mapOf("account" to (wallyApp?.focusedAccount?.name ?: ""))
+            TxHistory -> i18n(S.title_activity_tx_history) % mapOf("account" to (wallyApp?.focusedAccount?.name ?: ""))
             Test -> "Test"
         }
     }
@@ -128,7 +125,17 @@ class ScreenNav()
 
     fun title() = currentScreen.value.title()
 
-    /* pop the current screen from the stack and go there */
+    /** return the destination screenId if you can go back from here, otherwise null */
+    fun hasBack(): ScreenId?
+    {
+        var priorId:ScreenId? = null
+        val prior = path.removeLastOrNull()
+        // If I can't go back, go up
+        if (prior == null) priorId = currentScreen.value.up()
+        return priorId
+    }
+
+    /** pop the current screen from the stack and go there */
     fun back():ScreenId?
     {
         currentScreenDepart?.invoke()
@@ -168,43 +175,34 @@ fun assignAccountsGuiSlots(): ListifyMap<String, Account>
     return lm
 }
 
-// This function should build a title bar (with a back button) if the platform doesn't already have one.  Otherwise it should
-// set up the platform's title bar
-@Composable fun ConstructTitleBar(nav: ScreenNav, title: Int)
-{
-    if (!hasNativeTitleBar)
-    {
-        Row(verticalAlignment = Alignment.CenterVertically)
-        {
-            IconButton(onClick = { nav.back() }) {
-                Icon(Icons.Default.ArrowBack, contentDescription = null)
-            }
-            TitleText(title, Modifier.weight(2f))
-        }
-    }
-}
 
 // This function should build a title bar (with a back button) if the platform doesn't already have one.  Otherwise it should
 // set up the platform's title bar
 @Composable fun ConstructTitleBar(nav: ScreenNav, errorText: String, warningText: String, noticeText: String)
 {
-    if (!hasNativeTitleBar)
+    if (!platform().hasNativeTitleBar)
     {
-        Row(verticalAlignment = Alignment.CenterVertically)
+        // Specifying the row height stops changes header bar content to change its height causing the entire window to jerk up or down
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(0.dp).height(32.dp))
         {
-            IconButton(onClick = { nav.back() }) {
-                Icon(Icons.Default.ArrowBack, contentDescription = null)
+            if (nav.hasBack() != null)
+            {
+                IconButton(onClick = { nav.back() }) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = null)
+                }
             }
+            // We can only fillMaxSize() here because we constrained the height of the row
             if (errorText.isNotEmpty())
-                ErrorText(errorText)
+                ErrorText(errorText, Modifier.weight(1f).fillMaxSize())
             else if (warningText.isNotEmpty())
-                ErrorText(errorText)
+                ErrorText(errorText, Modifier.weight(1f).fillMaxSize())
             else if (noticeText.isNotEmpty())
-                NoticeText(noticeText)
+                NoticeText(noticeText, Modifier.weight(1f).fillMaxSize())
             //NoticeText(i18n(S.copiedToClipboard))
-            else TitleText(nav.title(), Modifier.weight(2f))
+            else TitleText(nav.title(), Modifier.weight(1f).fillMaxSize())
         }
     }
+
 }
 
 // Only needed if we need to reassign the account slots outside of the GUI's control
@@ -350,6 +348,14 @@ fun NavigationRoot(nav: ScreenNav)
                                 nav.back()
                             }
                             else AddressHistoryScreen(pa, nav)
+                        }
+                        ScreenId.TxHistory -> run {
+                            if (pa == null)
+                            {
+                                displayError(S.NoAccounts)
+                                nav.back()
+                            }
+                            else TxHistoryScreen(pa, nav)
                         }
                     }
                 }

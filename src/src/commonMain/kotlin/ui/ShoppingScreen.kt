@@ -46,7 +46,6 @@ fun ShoppingScreen(nav: ScreenNav)
       horizontalAlignment = Alignment.Start,
       verticalArrangement = Arrangement.SpaceEvenly)
     {
-        ConstructTitleBar(nav, S.title_activity_shopping)
         WallyBoldText(S.ShoppingWarning)
         WallyDivider()
 

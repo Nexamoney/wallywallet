@@ -1,7 +1,6 @@
 package info.bitcoinunlimited.www.wally
-import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import org.nexa.libnexakotlin.exceptionHandler
+import org.nexa.libnexakotlin.launch
 import org.nexa.libnexakotlin.millinow
 
 // Alerts are something that you want to show to the user
@@ -12,6 +11,18 @@ enum class AlertLevel(val level: Int)
     WARN(50),    // yellow
     ERROR(100),  // red
     EXCEPTION(200); // red
+
+    fun longevity(): Long
+    {
+        return when
+        {
+            level >= EXCEPTION.level -> ERROR_DISPLAY_TIME
+            level >= ERROR.level -> ERROR_DISPLAY_TIME
+            level >= WARN.level -> NOTICE_DISPLAY_TIME
+            level >= NOTICE.level -> NORMAL_NOTICE_DISPLAY_TIME
+            else -> NORMAL_NOTICE_DISPLAY_TIME
+        }
+    }
 }
 
 data class Alert(val msg: String, val details: String?, val level: AlertLevel, val trace:String? = stackTraceWithout(mutableSetOf("displayError\$default","displayError","displayNotice")), val persistAcrossScreens:Boolean = true, val longevity:Long? = null, val date: Long = millinow())
@@ -24,37 +35,39 @@ val alerts = arrayListOf<Alert>()
 
 val defaultIgnoreFiles = mutableListOf<String>("ZygoteInit.java", "RuntimeInit.java", "ActivityThread.java", "Looper.java", "Handler.java", "DispatchedTask.kt")
 
-
 /** Display a notice message, and add it to the list of alerts */
-fun displayNotice(summary: Int, message: String?=null, persistAcrossScreens: Boolean=true)
-{
-    val alert = Alert(i18n(summary), message, AlertLevel.NOTICE, null, persistAcrossScreens, NOTICE_DISPLAY_TIME)
-    alerts.add(alert)
-    alertChannel.trySend(alert)  // If nobody is listening, no need to show it
-}
+fun displayNotice(summary: Int, message: String?=null, persistAcrossScreens: Boolean=true) = displayNotice(i18n(summary), message, persistAcrossScreens)
 
 fun displayNotice(summary: String, message: String?=null, persistAcrossScreens: Boolean=true)
 {
     val alert = Alert(summary, message, AlertLevel.NOTICE, null, persistAcrossScreens, NOTICE_DISPLAY_TIME)
-    alerts.add(alert)
-    alertChannel.trySend(alert)  // If nobody is listening, no need to show it
+
+    if (platform().hasNativeTitleBar)
+        displayAlert(alert)
+    else
+    {
+        alerts.add(alert)
+        launch { alertChannel.send(alert) }
+    }
 }
 
 /** Display an error message, and add it to the list of alerts */
 fun displayError(summary: Int, message: String?=null, persistAcrossScreens: Boolean=true)
 {
     val alert = Alert(i18n(summary), message, AlertLevel.ERROR, null, persistAcrossScreens, ERROR_DISPLAY_TIME)
-    alerts.add(alert)
-    alertChannel.trySend(alert)  // If nobody is listening, no need to show it
+
+    if (platform().hasNativeTitleBar)
+        displayAlert(alert)
+    else
+    {
+        alerts.add(alert)
+        launch { alertChannel.send(alert)  }
+    }
 }
 
 /** Display an error message, and add it to the list of alerts */
-fun displayError(summary: Int, message: Int, persistAcrossScreens: Boolean=true)
-{
-    val alert = Alert(i18n(summary), i18n(message), AlertLevel.ERROR, null, persistAcrossScreens, ERROR_DISPLAY_TIME)
-    alerts.add(alert)
-    alertChannel.trySend(alert)  // If nobody is listening, no need to show it
-}
+fun displayError(summary: Int, message: Int, persistAcrossScreens: Boolean=true) = displayError(i18n(summary), i18n(message), persistAcrossScreens)
+
 
 
 /** Display an error message, and add it to the list of alerts.
@@ -63,17 +76,32 @@ fun displayError(summary: Int, message: Int, persistAcrossScreens: Boolean=true)
 fun displayError(summary: String, message: String?=null, persistAcrossScreens: Boolean=true)
 {
     val alert = Alert(summary, message, AlertLevel.ERROR, null, persistAcrossScreens, ERROR_DISPLAY_TIME)
-    alerts.add(alert)
-    alertChannel.trySend(alert)  // If nobody is listening, no need to show it
+
+    if (platform().hasNativeTitleBar)
+        displayAlert(alert)
+    else
+    {
+        alerts.add(alert)
+        launch { alertChannel.send(alert) }
+    }
 }
 
-/** LAST RESORT: display an exception (and put it into the alert log, so the user can submit an issue report) */
-fun displayException(e: Exception)
+
+
+/** LAST RESORT: display an exception (and put it into the alert log, so the user can submit an issue report).
+ * This should not ever be called in "normal" operation. */
+fun displayUnexpectedException(e: Exception)
 {
     val summary = e.message ?: e.toString()
     // Android/JVM only: val summary = try { e.localizedMessage } catch (e: Exception) { e.message ?: e.toString()}
-    val message = i18n(S.IssueReportInstructions) + "\n" + e.stackTraceToString()   // TODO also display the thread name
-    val alert = Alert(summary, message, AlertLevel.EXCEPTION, null, false, ERROR_DISPLAY_TIME)
-    alerts.add(alert)
-    alertChannel.trySend(alert)  // If nobody is listening, no need to show it
+    val message = i18n(S.IssueReportInstructions)
+    val alert = Alert(summary, message, AlertLevel.EXCEPTION, e.stackTraceToString(), false, ERROR_DISPLAY_TIME)
+
+    if (platform().hasNativeTitleBar)
+        displayAlert(alert)
+    else
+    {
+        alerts.add(alert)
+        launch { alertChannel.send(alert) }
+    }
 }

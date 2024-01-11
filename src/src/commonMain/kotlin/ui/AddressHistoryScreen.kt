@@ -27,7 +27,8 @@ import org.nexa.libnexakotlin.*
  */
 data class AddressInfo(val address: PayAddress, val givenOut: Boolean, val amountHeld: Long, val totalReceived: Long, val firstRecv: Long, val lastRecv: Long)
 
-val addressInfoComparator = object:  Comparator<AddressInfo> {
+val addressInfoComparator = object:  Comparator<AddressInfo>
+{
 
     override fun compare(a: AddressInfo, b: AddressInfo): Int
     {

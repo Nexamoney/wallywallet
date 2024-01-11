@@ -166,7 +166,6 @@ fun SplitBillScreen(nav: ScreenNav)
     Column(
       modifier = Modifier.padding(16.dp).fillMaxSize()
     ) {
-        ConstructTitleBar(nav, S.title_split_bill)
         Text(i18n(S.SplitBillDescription))
         Spacer(Modifier.height(10.dp))
         // Amount row:

@@ -317,23 +317,31 @@ fun WallyBoringIconButton(icon: ImageVector, modifier: Modifier = Modifier, enab
  * Displays a notice with the given text
  */
 @Composable
-fun NoticeText(noticeText: String)
+fun NoticeText(noticeText: String, modifier: Modifier)
 {
-    Box(
-        modifier = Modifier
-            .background(color = Color.Green)
-            .fillMaxWidth()
-            .padding(16.dp)
-            .wrapContentWidth(align = Alignment.CenterHorizontally)
-    ) {
-        Text(
-            text = noticeText,
+    Text(text = noticeText,
             style = LocalTextStyle.current.copy(
                 color = Color.Black,
                 fontWeight = FontWeight.Bold
-            )
+            ),
+            modifier = Modifier
+                .background(color = Color.Green).then(modifier)
+                .wrapContentWidth(align = Alignment.CenterHorizontally)
         )
-    }
+}
+
+@Composable
+fun ErrorText(errorText: String, modifier: Modifier)
+{
+   Text(text = errorText,
+          style = LocalTextStyle.current.copy(
+            color = Color.White,
+            fontWeight = FontWeight.Bold
+          ),
+          modifier = Modifier
+            .background(color = Color.Red).then(modifier)
+            .wrapContentWidth(align = Alignment.CenterHorizontally)
+        )
 }
 
 @Composable fun FontScale(amt: Double): TextUnit

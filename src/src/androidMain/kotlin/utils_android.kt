@@ -89,5 +89,35 @@ actual fun isUiThread(): Boolean
     return (tname == "main")
 }
 
-val androidPlatformCharacteristics = PlatformCharacteristics(hasQrScanner = true, hasGallery = true, usesMouse = false, hasAlert = true, hasBack = true)
+actual fun displayAlert(alert: Alert)
+{
+    val act = currentActivity
+    if (act != null)
+    {
+        act.displayAlert(alert)
+    }
+
+}
+
+fun AlertLevel.color(): Int
+{
+    return when
+    {
+        level >= AlertLevel.EXCEPTION.level -> R.color.exception
+        level >= AlertLevel.ERROR.level -> R.color.error
+        level >= AlertLevel.WARN.level -> R.color.warn
+        level >= AlertLevel.NOTICE.level -> R.color.notice
+        else -> R.color.white
+    }
+}
+
+val androidPlatformCharacteristics = PlatformCharacteristics(
+  hasQrScanner = true,
+  hasGallery = true,
+  usesMouse = false,
+  hasAlert = true,
+  hasBack = true,
+  hasNativeTitleBar = true,
+  spaceConstrained = true,
+  landscape = false)
 actual fun platform(): PlatformCharacteristics = androidPlatformCharacteristics

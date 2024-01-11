@@ -39,10 +39,10 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
     var isSending by remember { mutableStateOf(false) }
     var isScanningQr by remember { mutableStateOf(false) }
 
-    var sendFromAccount by remember { mutableStateOf<String>(wallyApp?.focusedAccount?.name ?: "") }
     val synced = remember { mutableStateOf(wallyApp!!.isSynced()) }
     var currentReceive by remember { mutableStateOf<String?>(null) }
     var sendAmount by remember { mutableStateOf<String>("") }
+    var sendFromAccount by remember { mutableStateOf<String>(selectedAccount.value?.name ?: wallyApp?.focusedAccount?.name ?: "") }
 
     var warnBackupRecoveryKey = remember { mutableStateOf(false) }
 
@@ -67,49 +67,6 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
 
     val clipmgr: ClipboardManager = LocalClipboardManager.current
 
-
-    @Composable
-    fun SendFromView(onComplete: () -> Unit)
-    {
-        Row(modifier = Modifier.fillMaxWidth(),
-          horizontalArrangement = Arrangement.SpaceEvenly,
-          verticalAlignment = Alignment.CenterVertically
-        ) {
-            SectionText(i18n(S.fromAccountColon))
-            AccountDropDownSelector(
-              accountGuiSlots,
-              sendFromAccount,
-              onAccountNameSelected = {
-                  //sendFromAccount.value = accountGuiSlots.value[it].name
-              },
-            )
-        }
-        Row(modifier = Modifier.fillMaxWidth()) {
-            Text(i18n(S.toColon))
-            WallyTextEntry(sendToAddress, Modifier.weight(1f),FontScaleStyle(0.75)) {
-                sendToAddress = it
-            }
-        }
-        Row(modifier = Modifier.fillMaxWidth()) {
-            Text(i18n(S.Amount))
-            WallyTextEntry(sendAmount, Modifier.weight(1f)) {
-                sendAmount = it
-            }
-        }
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            WallyBoringLargeTextButton(S.Send) {
-                // TODO: Send...
-                // TODO: Display success/failure AlertDialog
-                onComplete()
-            }
-            WallyBoringLargeTextButton(S.SendCancel) {
-                // TODO: Clear text in "To" field
-                // TODO: Clear quantity in "Amount" field
-                onComplete()
-            }
-        }
-    }
-
     /**
      * View for receiving funds
      */
@@ -130,6 +87,29 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
         }
     }
 
+
+    /** Set the send currency type spinner options to your default fiat currency or your currently selected crypto
+    Might change if the user changes the default fiat or crypto */
+    fun updateSendCurrencyType(account: Account?)
+    {
+        account?.let { acc ->
+            // If we don't know the exchange rate, we can't offer fiat entry
+            sendCurrencyChoices.value = if (acc.fiatPerCoin != -1.toBigDecimal()) listOf(acc.currencyCode, fiatCurrencyCode) else listOf(acc.currencyCode)
+
+            // If we switched to a currency code we don't have, set it to the first one we support
+            if (!sendCurrencyChoices.value.contains(currencyCode)) currencyCode = sendCurrencyChoices.value.first()
+        }
+    }
+
+    fun updateSendAccount(account: Account?)
+    {
+        if (account != null)
+        {
+            sendFromAccount = account.name
+            updateSendCurrencyType(account)
+        }
+    }
+
     /** Get the account we are currently sending from out of the GUI.
      * This function will default to (and set sendFromAccount) the selected account if the sendFromAccount variable is invalid */
     fun getSendFromAccount(): Account?
@@ -139,13 +119,19 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
         if (account == null)   // if no sendFromAccount, grab the selected account
         {
             account = selectedAccount.value
-            account?.let { sendFromAccount = it.name }
+            if (account == null)
+            {
+                selectedAccount.value = wallyApp!!.nullablePrimaryAccount
+                account = selectedAccount.value
+            }
+            updateSendAccount(account)
         }
         return account
     }
 
+
     /** Find an account that can send to this blockchain and switch the send account to it */
-    fun updateSendAccount(chainSelector: ChainSelector)
+    fun updateSendAccount(chainSelector: ChainSelector): Account?
     {
         val account = getSendFromAccount()
 
@@ -156,27 +142,19 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
             val matches = wallyApp!!.accountsFor(chainSelector)
             if (matches.size > 0)
             {
-                sendFromAccount = matches.first().name
+                updateSendAccount(matches.first())
+                return matches.first()
             }
         }
+        updateSendAccount(account)
+        return account
     }
 
     /** Find an account that can send to this PayAddress and switch the send account to it */
-    fun updateSendAccount(pa: PayAddress)
+    fun updateSendAccount(pa: PayAddress): Account?
     {
-        if (pa.type == PayAddressType.NONE) return  // nothing to update
-        updateSendAccount(pa.blockchain)
-    }
-
-    /** Set the send currency type spinner options to your default fiat currency or your currently selected crypto
-    Might change if the user changes the default fiat or crypto */
-    fun updateSendCurrencyType()
-    {
-        val account = getSendFromAccount()
-        account?.let { acc ->
-            // If we don't know the exchange rate, we can't offer fiat entry
-            sendCurrencyChoices.value = if (acc.fiatPerCoin != -1.toBigDecimal()) listOf(acc.currencyCode, fiatCurrencyCode) else listOf(acc.currencyCode)
-        }
+        if (pa.type == PayAddressType.NONE) return getSendFromAccount() // nothing to update
+        return updateSendAccount(pa.blockchain)
     }
 
     /** Update the GUI send address field, and all related GUI elements based on the provided payment address */
@@ -185,14 +163,11 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
         if (pa.type == PayAddressType.NONE) return  // nothing to update
         dbgAssertGuiThread()
 
-
         sendToAddress = pa.toString()
         paymentInProgress.value = null
 
         // Change the send currency type to reflect the pasted data if I need to
         updateSendAccount(pa)
-        // Update the sendCurrencyType field to contain our coin selection
-        updateSendCurrencyType()
     }
 
     fun updateSendAddress(text: String, updateIfNonAddress:Boolean = false): PayAddress
@@ -402,9 +377,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
                 // This payment in progress looks ok, set up the UX to show it
                 if (true)
                 {
-                    updateSendAccount(chainSelector)
-                    // Update the sendCurrencyType field to contain our coin selection
-                    updateSendCurrencyType()
+                    val act = updateSendAccount(chainSelector)
 
                     sendQuantity.value = mBchFormat.format(amt)
 
@@ -482,7 +455,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
         {
             if (DEBUG) throw e
         } // ignore all problems from user input, unless in debug mode when we should analyze them
-        updateSendCurrencyType()
+
     }
 
     fun onAccountNameSelected(name: String)
@@ -516,9 +489,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
 
             if (act != null)
             {
-                sendFromAccount = act.name
-                currencyCode = act.currencyCode
-                updateSendCurrencyType()
+                updateSendAccount(act)
             }
         }
 
@@ -603,7 +574,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
             }
 
         Column(modifier = Modifier.fillMaxSize()) {
-            if(isSending)
+            if (isSending)
             {
                 SendView(
                       selectedAccountName = sendFromAccount,
@@ -621,7 +592,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
                       setToAddress = { sendToAddress = it },
                       onCancel = { isSending = false},
                       approximatelyText = approximatelyText,
-                      currencies = sendCurrencyChoices.value,
+                      currencies = sendCurrencyChoices,
                       xchgRateText = xchgRateText,
                       onPaymentInProgress = {
                           paymentInProgress.value = it
@@ -641,11 +612,12 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
                           isSending = false
                       },
                       onAccountNameSelected = {
-                          sendFromAccount = it
+                          val act = wallyApp!!.accounts[it]
+                          act?.let { updateSendAccount(it) }
                       }
                     )
                 }
-                else if (!isSending)
+                if (!isSending)
                 {
                     Row(modifier = Modifier.fillMaxWidth().padding(0.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
                         if (platform().usesMouse)
@@ -698,8 +670,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
                   modifier = Modifier.weight(1f),
                   onAccountSelected = {
                       selectedAccount.value = it
-                      sendFromAccount = it.name  // if an account is selected in the account list, the send from account is updated
-                      currencyCode = it.currencyCode
+                      updateSendAccount(it) // if an account is selected in the account list, the send from account is updated
                       onAccountSelected(it)
                   }
                 )
