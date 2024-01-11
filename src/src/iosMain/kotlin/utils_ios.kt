@@ -65,6 +65,18 @@ actual fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
     return false
 }
 
-val iosPlatformCharacteristics = PlatformCharacteristics(hasQrScanner = true, hasGallery = true, usesMouse = false, hasAlert = false, hasBack = false)
+/** No banner in iOS so no native way to display alerts */
+actual fun displayAlert(alert: Alert) {}
+
+val iosPlatformCharacteristics = PlatformCharacteristics(
+  hasQrScanner = true,
+  hasGallery = true,
+  usesMouse = false,
+  hasAlert = false,
+  hasBack = false,
+  hasNativeTitleBar = false,
+  spaceConstrained = true,
+  landscape = false
+  )
 actual fun platform(): PlatformCharacteristics = iosPlatformCharacteristics
 
