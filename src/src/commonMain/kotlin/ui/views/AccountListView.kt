@@ -40,8 +40,8 @@ val accountUIData = mutableMapOf<String,MutableState<AccountUIData>>()
         }
 
     LazyColumn(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
-            accounts.value.forEachIndexed { idx, it ->
-                    item(key=it.name) {
+        accounts.value.forEachIndexed { idx, it ->
+            item(key=it.name) {
                         // I would think that capturing this data would control redraw of each item, but it appears to not do so.
                         // Redraw is controlled of the entire AccountListView, or not at all.
                         val anyChanges: MutableState<AccountUIData> = remember { mutableStateOf(it.uiData()) }
@@ -51,9 +51,19 @@ val accountUIData = mutableMapOf<String,MutableState<AccountUIData>>()
                           onClickGearIcon = {
                               nav.go(ScreenId.AccountDetails)
                           })
-                    }
-                }
             }
+        }
+        // Since the thumb buttons cover the bottom most row, this blank bottom row allows the user to scroll the account list upwards enough to
+        // uncover the last account.  Its not necessary if there are just a few accounts though.
+        if (accounts.value.size > 3)
+        {
+            item(key = "") {
+                Spacer(Modifier.height(150.dp))
+            }
+        }
+
+    }
+
 }
 
 
@@ -217,97 +227,6 @@ fun AccountItemView(
         }
     }
 }
-
-
-/*
-@OptIn(ExperimentalResourceApi::class)
-@Composable
-fun AccountItemView(
-  accountName: String,
-  balance: String,
-  chainSelector: ChainSelector,
-  currencyCode: String,
-  lockable: Boolean,
-  locked: Boolean,
-  isSelected: Boolean,
-  info: String,
-  devInfo: String,
-  devMode: Boolean,
-  unconfirmedValue: String,
-  onClickAccount: () -> Unit,
-  onClickGearIcon: () -> Unit
-) {
-    val backgroundColor = if(isSelected) defaultListHighlight else WallyRowAbkg2
-    Box(
-      modifier = Modifier
-        .fillMaxWidth()
-        .background(backgroundColor)
-        .clickable(onClick = onClickAccount),
-      contentAlignment = Alignment.Center
-    ) {
-        Column(
-          modifier = Modifier
-            .fillMaxSize()
-            .padding(4.dp),
-          verticalArrangement = Arrangement.Top  , // SpaceBetween,
-        ) {
-            Row {
-
-                Row(
-                  verticalAlignment = Alignment.Bottom
-                ) {
-                    ResImageView(getAccountIconResPath(chainSelector), Modifier.size(32.dp), "Blockchain icon")
-                    Spacer(Modifier.width(32.dp))
-                    Text(text = accountName, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                    Spacer(Modifier.width(16.dp))
-                    Row(
-                      verticalAlignment = Alignment.Bottom
-                    ) {
-                        Text(text = balance, fontSize = 28.sp, color = colorDebit)
-                        Text(text = currencyCode, fontSize = 14.sp)
-                    }
-                    Spacer(Modifier.width(16.dp))
-
-                    if(lockable)
-                    {
-                        ResImageView(if (locked) "icons/lock.xml" else "icons/unlock.xml", modifier = Modifier.size(26.dp))
-                    }
-                }
-
-                Row(
-                  horizontalArrangement = Arrangement.End,
-                  verticalAlignment = Alignment.Bottom,
-                  modifier = Modifier.fillMaxWidth()
-                ) {
-                    if(isSelected)
-                        ResImageView("icons/gear.xml", Modifier.size(26.dp).clickable(onClick = onClickGearIcon))
-                }
-            }
-            Row(
-              modifier = Modifier.fillMaxWidth(),
-              horizontalArrangement = Arrangement.Center
-            ) {
-                Text(text = info, fontSize = 16.sp)
-            }
-            if(unconfirmedValue.isNotEmpty())
-                Row(
-                  modifier = Modifier.fillMaxWidth(),
-                  horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(text = unconfirmedValue, )
-                }
-            if(devMode)
-                Row(
-                  modifier = Modifier.fillMaxWidth(),
-                  horizontalArrangement = Arrangement.Center
-                ){
-                    Text(text = devInfo, fontSize = 12.sp)
-                }
-        }
-    }
-}
-
- */
 
 private fun getAccountIconResPath(chainSelector: ChainSelector): String
 {

@@ -1,4 +1,5 @@
 package info.bitcoinunlimited.www.wally.ui
+import androidx.compose.foundation.background
 import info.bitcoinunlimited.www.wally.*
 
 import androidx.compose.foundation.clickable
@@ -9,15 +10,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.HorizontalAlignmentLine
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.S
-import info.bitcoinunlimited.www.wally.ui.theme.WallySwitch
-import info.bitcoinunlimited.www.wally.ui.theme.WallySwitchRow
-import info.bitcoinunlimited.www.wally.ui.theme.WallyTextEntry
+import info.bitcoinunlimited.www.wally.ui.theme.*
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.SettingsScreen")
@@ -42,7 +43,7 @@ data class GeneralSettingsSwitch(
 fun SettingsScreen(nav: ScreenNav)
 {
     val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
-    val darkMode = remember { mutableStateOf( preferenceDB.getBoolean(DARK_MODE_PREF, false)) }
+    // TODO val darkMode = remember { mutableStateOf( preferenceDB.getBoolean(DARK_MODE_PREF, false)) }
     var devModeView by mutableStateOf(devMode)
     val generalSettingsSwitches = listOf(
       GeneralSettingsSwitch(ACCESS_PRICE_DATA_PREF, S.AccessPriceData),
@@ -85,22 +86,22 @@ fun SettingsScreen(nav: ScreenNav)
     ) {
         Column(
           modifier = Modifier.fillMaxWidth(),
-          horizontalAlignment = Alignment.CenterHorizontally
+          horizontalAlignment = Alignment.Start
         ) {
-            Text(i18n(S.GeneralSettings), fontSize = 18.sp, fontWeight = FontWeight.Bold)
-            Text(i18n(S.version) % mapOf("ver" to BuildInfo.VERSION_NAME))
-            LocalCurrency(preferenceDB)
+            CenteredSectionText(i18n(S.GeneralSettings))
+            Text(i18n(S.version) % mapOf("ver" to BuildInfo.VERSION_NAME), modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally), textAlign = TextAlign.Center)
         }
         Column(
-          modifier = Modifier.padding(start = 16.dp)
+          modifier = Modifier.padding(start = 32.dp)
         ) {
+            LocalCurrency(preferenceDB)
+            ConfirmAbove(preferenceDB)
             generalSettingsSwitches.forEach { GeneralSettingsSwitchView(it) }
             /* TODO
             DarkMode(darkMode) {
                 preferenceDB.edit().putBoolean(DARK_MODE_PREF, it).commit()
                 darkMode.value = it
             }
-
              */
             WallySwitchRow(devModeView, S.enableDeveloperView) {
                 LogIt.info("devmode $it")
@@ -108,7 +109,6 @@ fun SettingsScreen(nav: ScreenNav)
                 devModeView = it
                 devMode = it
             }
-            ConfirmAbove(preferenceDB)
         }
 
         Spacer(Modifier.height(16.dp))
@@ -123,14 +123,20 @@ fun SettingsScreen(nav: ScreenNav)
         Column(
           modifier = Modifier.padding(start = 4.dp, end = 4.dp)
         ) {
-            BlockchainSource(ChainSelector.NEXA, preferenceDB)
-            if(devMode)
-            {
-                BlockchainSource(ChainSelector.NEXATESTNET, preferenceDB)
-                BlockchainSource(ChainSelector.NEXAREGTEST, preferenceDB)
+            val horizontalAlignmentLine = HorizontalAlignmentLine(merger = { old, new -> max(old, new)})
 
+            // Wrap a column around this so we can then drop all the sources in the center of the page
+            Column( modifier = Modifier.wrapContentSize().align(Alignment.CenterHorizontally))
+            {
+                BlockchainSource(ChainSelector.NEXA, preferenceDB, horizontalAlignmentLine)
+                if (devMode)
+                {
+                    BlockchainSource(ChainSelector.NEXATESTNET, preferenceDB, horizontalAlignmentLine)
+                    BlockchainSource(ChainSelector.NEXAREGTEST, preferenceDB, horizontalAlignmentLine)
+                }
+                BlockchainSource(ChainSelector.BCH, preferenceDB, horizontalAlignmentLine)
             }
-            BlockchainSource(ChainSelector.BCH, preferenceDB)
+
             if(devMode)
             {
                 Spacer(Modifier.height(32.dp))
@@ -262,6 +268,7 @@ fun ConfirmAbove(preferenceDB: SharedPreferences)
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically
     ) {
+        Text(i18n(S.WhenAskSure))
         WallyTextEntry(
           value = textState ?: "0",
           onValueChange = {
@@ -286,15 +293,15 @@ fun ConfirmAbove(preferenceDB: SharedPreferences)
           //colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent,
           //  unfocusedContainerColor = Color.Transparent
           ,
-          modifier = Modifier.weight(0.5f)
+          modifier = Modifier.weight(1f).padding(4.dp,0.dp,0.dp,0.dp)
         )
-        Text(i18n(S.WhenAskSure),Modifier.weight(1.0f))
+        Text(chainToCurrencyCode[ChainSelector.NEXA]!!)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BlockchainSource(chain: ChainSelector, preferenceDB: SharedPreferences)
+fun BlockchainSource(chain: ChainSelector, preferenceDB: SharedPreferences, switchAlignment: HorizontalAlignmentLine)
 {
     val name = chainToName[chain]?.replaceFirstChar { it.uppercase() } ?: ""
     val exclusiveNodeKey = "$name.$EXCLUSIVE_NODE_SWITCH"
@@ -306,7 +313,7 @@ fun BlockchainSource(chain: ChainSelector, preferenceDB: SharedPreferences)
 
     Row(
         horizontalArrangement = Arrangement.End,
-        verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(5.dp, 0.dp),
+        verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(5.dp, 0.dp),
     ) {
         Text(name)
         Spacer(modifier = Modifier.width(8.dp))
@@ -327,10 +334,12 @@ fun BlockchainSource(chain: ChainSelector, preferenceDB: SharedPreferences)
           //colors = textFieldColors(containerColor = Color.Transparent),
           textStyle = TextStyle(fontSize = 14.sp)
         )
+        Spacer(modifier = Modifier.width(8.dp).alignBy(switchAlignment))
         WallySwitch(onlyChecked, S.only) {
             onlyChecked.value = it
             preferenceDB.edit().putBoolean(exclusiveNodeKey, it).commit()
         }
+        Spacer(modifier = Modifier.width(4.dp))
         WallySwitch(preferChecked, S.prefer) {
             preferChecked.value = it
             preferenceDB.edit().putBoolean(preferNodeKey, it).commit()

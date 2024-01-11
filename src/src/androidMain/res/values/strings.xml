@@ -357,7 +357,7 @@ Good luck!
     <string name="IdentityAssociatedWith">Associated Identity Info</string>
 
     <string name="areYouSure">Are you sure?</string>
-    <string name="WhenAskSure">Confirm transfers above (in NEX)</string>
+    <string name="WhenAskSure">Confirm above:</string>
     <string name="SendConfirmSummary">Confirm send of %amt %currency %inFiat %assets to address %dest</string>
     <string name="firstName">first name</string>
     <string name="lastName">last name</string>

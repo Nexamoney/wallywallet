@@ -33,6 +33,13 @@ fun displayNotice(summary: Int, message: String?=null, persistAcrossScreens: Boo
     alertChannel.trySend(alert)  // If nobody is listening, no need to show it
 }
 
+fun displayNotice(summary: String, message: String?=null, persistAcrossScreens: Boolean=true)
+{
+    val alert = Alert(summary, message, AlertLevel.NOTICE, null, persistAcrossScreens, NOTICE_DISPLAY_TIME)
+    alerts.add(alert)
+    alertChannel.trySend(alert)  // If nobody is listening, no need to show it
+}
+
 /** Display an error message, and add it to the list of alerts */
 fun displayError(summary: Int, message: String?=null, persistAcrossScreens: Boolean=true)
 {

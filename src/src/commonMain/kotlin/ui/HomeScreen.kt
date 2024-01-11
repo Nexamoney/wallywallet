@@ -456,6 +456,7 @@ fun HomeScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, drive
 
     fun onAccountSelected(c: Account)
     {
+        wallyApp!!.focusedAccount = c
         try
         {
             lastSendFromAccountName = c.name

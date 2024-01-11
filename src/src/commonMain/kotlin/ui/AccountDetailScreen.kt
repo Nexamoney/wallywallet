@@ -8,6 +8,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,10 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.theme.NoticeText
-import info.bitcoinunlimited.www.wally.ui.theme.WallyBoringTextButton
-import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
-import info.bitcoinunlimited.www.wally.ui.theme.WallySwitch
+import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import kotlinx.coroutines.*
 import org.nexa.libnexakotlin.*
@@ -79,8 +77,7 @@ fun AccountDetailScreen(nav: ScreenNav, account: Account, allAccounts: MutableSt
     Column(
       modifier = Modifier.verticalScroll(rememberScrollState())
     ) {
-        ConstructTitleBar(nav)
-        AccountStatisticsHeader()
+        CenteredSectionText(i18n(S.AccountStatistics))
         AccountBlockchainDetail(account)
         AccountFirstLastSend(account.wallet.statistics())
         GuiAccountTxStatisticsRow(account.wallet.statistics(), onTxHistoryButtonClicked, onAddressesButtonClicked)
@@ -88,17 +85,6 @@ fun AccountDetailScreen(nav: ScreenNav, account: Account, allAccounts: MutableSt
         WallyDivider()
         AccountActions(account, onTxHistoryButtonClicked, allAccounts, accountDeleted = onBackButton)
     }
-}
-
-@Composable
-fun AccountStatisticsHeader() {
-    Text(
-      text = i18n(S.AccountStatistics), // replace with your string resource
-      fontSize = 20.sp,
-      fontWeight = FontWeight.Bold,
-      textAlign = TextAlign.Center,
-      modifier = Modifier.fillMaxWidth()
-    )
 }
 
 
@@ -139,13 +125,7 @@ fun AccountBlockchainBlockDetails(chainState: GlueWalletBlockchain)
       "chainBlockCount" to chainState.chain.curHeight.toString()
     )
 
-    Text(
-      text = text,
-      fontSize = 16.sp,
-      fontWeight = FontWeight.Normal,
-      textAlign = TextAlign.Center,
-      maxLines = 2
-    )
+    Text(text = text, maxLines = 2)
 }
 
 @Composable
@@ -213,7 +193,7 @@ fun AccountActions(acc: Account, txHistoryButtonClicked: () -> Unit, allAccounts
     ) {
         var checked by remember { mutableStateOf(acc.flags and ACCOUNT_FLAG_REUSE_ADDRESSES == 0UL) }
 
-        Text(text = i18n(S.AccountActions),modifier = Modifier.align(Alignment.CenterHorizontally), fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        CenteredSectionText(i18n(S.AccountActions))
         WallySwitch(checked, S.AutomaticNewAddress)
         {
             checked = it
@@ -259,69 +239,37 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, allAc
     var errorText by remember { mutableStateOf("") }
     var notice by remember { mutableStateOf("") }
 
-    if (errorText.isNotEmpty())
-        ErrorText(errorText)
-    if (notice.isNotEmpty())
-        NoticeText(notice)
-
-
-    fun displayNotice(text: String)
-    {
-        notice = text
-        GlobalScope.launch(Dispatchers.IO + exceptionHandler) {
-            delay(NORMAL_NOTICE_DISPLAY_TIME)  // Delay of 5 seconds
-            withContext(Dispatchers.Default + exceptionHandler) {
-                notice = ""
-            }
-        }
-    }
-
-    fun displayNotice(textRes: Int)
-    {
-        notice = i18n(textRes)
-        displayNotice(text = notice)
-    }
-
     fun displayNoticePrimaryAccount(name: String)
     {
         notice = i18n(S.primaryAccountSuccess) % mapOf("name" to name)
-        displayNotice(text = notice)
+        displayNotice(notice)
     }
 
-    fun displayError(message: String)
-    {
-        errorText = message
-        GlobalScope.launch(Dispatchers.IO + exceptionHandler) {
-            delay(ERROR_DISPLAY_TIME)  // Delay of 5 seconds
-            withContext(Dispatchers.Default + exceptionHandler) {
-                errorText = ""
-            }
-        }
-    }
 
     if (accountAction.value == null)
     {
-        WallyBoringTextButton(S.SetChangePin) {
+        WallyBoringMediumTextButton(S.SetChangePin) {
             accountAction.value = AccountAction.PinChange
         }
-        WallyBoringTextButton(S.ViewRecoveryPhrase) {
+        WallyBoringMediumTextButton(S.ViewRecoveryPhrase) {
             accountAction.value = AccountAction.RecoveryPhrase
         }
-        WallyBoringTextButton(S.txHistoryButton, onClick = txHistoryButtonClicked)
+        WallyBoringMediumTextButton(S.txHistoryButton, onClick = txHistoryButtonClicked)
+
         if(wallyApp?.nullablePrimaryAccount != acc)    // it not primary
-            WallyBoringTextButton(S.setAsPrimaryAccountButton) {
+            WallyBoringMediumTextButton(S.setAsPrimaryAccountButton) {
                 accountAction.value = AccountAction.PrimaryAccount
             }
-        WallyBoringTextButton(S.assessUnconfirmed) {
+        WallyBoringMediumTextButton(S.assessUnconfirmed) {
             accountAction.value = AccountAction.Reassess
         }
-        WallyBoringTextButton(S.rediscoverWalletTx) {
+        WallyBoringMediumTextButton(S.rediscoverWalletTx) {
             accountAction.value = AccountAction.Rediscover
         }
-        WallyBoringTextButton(S.rediscoverBlockchain) {
+        WallyBoringMediumTextButton(S.rediscoverBlockchain) {
             accountAction.value = AccountAction.RediscoverBlockchain
         }
-        WallyBoringTextButton(S.deleteWalletAccount) {
+        WallyBoringMediumTextButton(S.deleteWalletAccount) {
             accountAction.value = AccountAction.Delete
         }
     }

@@ -129,7 +129,7 @@ fun WallyBoringButton(onClick: () -> Unit, enabled: Boolean=true,  interactionSo
         disabledContentColor = WallyButtonForeground,
         containerColor = WallyButtonBackground,
         contentColor = WallyButtonForeground),
-      modifier = Modifier.wrapContentSize().padding(0.dp).defaultMinSize(1.dp, 1.dp),
+      modifier = Modifier.padding(0.dp).defaultMinSize(1.dp, 1.dp),
       interactionSource = interactionSource,
       content = content
     )
@@ -167,6 +167,12 @@ fun WallyBoringLargeIconButton(iconRes: String, enabled: Boolean=true, modifier:
 }
 
 @Composable
+fun WallyBoringMediumTextButton(textRes: Int, enabled: Boolean=true, modifier: Modifier = Modifier, interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
+{
+    WallyBoringButton(onClick, enabled, interactionSource) { WallyMediumButtonText(i18n(textRes))}
+}
+
+@Composable
 fun WallyBoringIconButton(iconRes: String, modifier: Modifier = Modifier, enabled: Boolean=true,  interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
 {
     WallyBoringButton(onClick, enabled, interactionSource) { ResImageView(iconRes, modifier.clickable { onClick() }) }
@@ -180,7 +186,15 @@ fun WallyBoringIconButton(icon: ImageVector, modifier: Modifier = Modifier, enab
 
 @Composable fun WallyLargeButtonText(text: String)
 {
-    val tmp = TextStyle.Default.copy(lineHeight = 0.em, fontSize = 24.dpTextUnit, // TextStyle.Default.fontSize, //*2,
+    val tmp = TextStyle.Default.copy(lineHeight = 0.em, fontSize = FontScale(1.5),
+      lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.Both), fontWeight = FontWeight.Bold)
+    Text(text = text, modifier = Modifier.padding(0.dp, 0.dp).wrapContentWidth(Alignment.CenterHorizontally,true),
+      style = tmp, textAlign = TextAlign.Center, softWrap = false, maxLines = 1 )
+}
+
+@Composable fun WallyMediumButtonText(text: String)
+{
+    val tmp = TextStyle.Default.copy(lineHeight = 0.em, fontSize = FontScale(1.25),
       lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.Both), fontWeight = FontWeight.Bold)
     Text(text = text, modifier = Modifier.padding(0.dp, 0.dp).wrapContentWidth(Alignment.CenterHorizontally,true),
       style = tmp, textAlign = TextAlign.Center, softWrap = false, maxLines = 1 )
@@ -209,7 +223,7 @@ fun WallyBoringIconButton(icon: ImageVector, modifier: Modifier = Modifier, enab
     Switch(
       checked = isChecked.value,
       onCheckedChange = onCheckedChange,
-      modifier = Modifier.graphicsLayer(scaleX = 0.7f, scaleY = 0.7f).then(modifier),
+      modifier = Modifier.then(modifier),  // graphicsLayer(scaleX = 0.7f, scaleY = 0.7f)
       colors = SwitchDefaults.colors(
         checkedBorderColor = Color.Transparent,
         uncheckedBorderColor = Color.Transparent,
@@ -228,7 +242,7 @@ fun WallyBoringIconButton(icon: ImageVector, modifier: Modifier = Modifier, enab
         WallySwitch(isChecked, onCheckedChange)
         Text(
           text = i18n(textRes),
-          modifier = modifier
+          modifier = Modifier.padding(4.dp, 0.dp, 0.dp, 0.dp).then(modifier)
         )
     }
 }
@@ -253,7 +267,7 @@ fun WallyBoringIconButton(icon: ImageVector, modifier: Modifier = Modifier, enab
     Switch(
       checked = isChecked,
       onCheckedChange = onCheckedChange,
-      modifier = Modifier.graphicsLayer(scaleX = 0.7f, scaleY = 0.7f).then(modifier),
+      modifier = Modifier.defaultMinSize(1.dp,1.dp).padding(0.dp).wrapContentHeight().then(modifier),
       colors = SwitchDefaults.colors(
         checkedBorderColor = Color.Transparent,
         uncheckedBorderColor = Color.Transparent,
@@ -267,12 +281,11 @@ fun WallyBoringIconButton(icon: ImageVector, modifier: Modifier = Modifier, enab
 {
     Row(
       horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.defaultMinSize(1.dp, 1.dp).wrapContentHeight()
     ) {
-        WallySwitch(isChecked, modifier, onCheckedChange)
-        Text(
-          text = i18n(textRes),
-        )
+        //WallySwitch(isChecked, modifier, onCheckedChange)
+        Text(text = i18n(textRes))
     }
 }
 @Composable fun WallySwitch(isChecked: Boolean, textRes: Int, onCheckedChange: (Boolean) -> Unit) = WallySwitch(isChecked, textRes,  Modifier, onCheckedChange)
@@ -384,6 +397,19 @@ fun SectionText(text: String, modifier: Modifier = Modifier)
       //.background(Color.Red),  // for layout debugging
       style = WallySectionTextStyle()
     )
+}
+
+/* Styling for the text of titles that appear within a page */
+@Composable
+fun CenteredSectionText(text: String, modifier: Modifier = Modifier)
+{
+    Box(Modifier.fillMaxWidth())
+    {
+        Text(text = text, modifier = modifier.padding(0.dp).fillMaxWidth().align(Alignment.Center),
+          //.background(Color.Red),  // for layout debugging
+          style = WallySectionTextStyle()
+        )
+    }
 }
 
 
