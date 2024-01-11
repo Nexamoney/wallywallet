@@ -129,7 +129,7 @@ class ScreenNav()
     fun hasBack(): ScreenId?
     {
         var priorId:ScreenId? = null
-        val prior = path.removeLastOrNull()
+        val prior = path.lastOrNull()
         // If I can't go back, go up
         if (prior == null) priorId = currentScreen.value.up()
         return priorId
@@ -148,9 +148,9 @@ class ScreenNav()
         if (prior != null)
         {
             priorId = prior.id
-            currentScreen.value = prior.id
             currentScreenDepart = prior.departFn
         }
+        if (priorId != null) currentScreen.value = priorId  // actually trigger going back
         return priorId
     }
 }
@@ -173,6 +173,11 @@ fun assignAccountsGuiSlots(): ListifyMap<String, Account>
     })
 
     return lm
+}
+
+fun triggerAssignAccountsGuiSlots()
+{
+    later { externalDriver.send(GuiDriver(regenAccountGui = true)) }
 }
 
 
@@ -221,7 +226,8 @@ data class GuiDriver(val gotoPage: ScreenId? = null,
   val sendAddress: String?=null,
   val amount: BigDecimal?=null,
   val chainSelector: ChainSelector?=null,
-  val account: Account? = null)
+  val account: Account? = null,
+  val regenAccountGui: Boolean? = null)
 
 val externalDriver = Channel<GuiDriver>()
 
@@ -271,6 +277,11 @@ fun NavigationRoot(nav: ScreenNav)
                 {
                     clickDismiss.value = null
                 }
+            }
+            if (c.regenAccountGui == true)
+            {
+                val tmp = assignAccountsGuiSlots()
+                accountGuiSlots.value = tmp
             }
         }
     }
@@ -335,7 +346,7 @@ fun NavigationRoot(nav: ScreenNav)
                                 displayError(S.NoAccounts)
                                 nav.back()
                             }
-                            else AccountDetailScreen(accountGuiSlots, pa, nav)
+                            else AccountDetailScreen(pa, nav)
                         }
                         ScreenId.Assets -> Text("TODO: Implement AssetsScreen")
                         ScreenId.Shopping -> ShoppingScreen(nav)

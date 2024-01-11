@@ -64,7 +64,7 @@ class Account(
     val handler = CoroutineExceptionHandler {
         context, exception -> LogIt.error("Caught in Account CoroutineExceptionHandler: $exception")
     }
-    val walletDb = openWalletDB(dbPrefix + name + "_wallet", chainSelector)
+    var walletDb: WalletDatabase? = openWalletDB(dbPrefix + name + "_wallet", chainSelector)
     val tickerGUI = Reactive<String>("") // Where to show the crypto's ticker
     val balanceGUI = Reactive<String>("")
     val unconfirmedBalanceGUI = Reactive<String>("")
@@ -188,7 +188,7 @@ class Account(
     /** Save the PIN of an account to the database */
     fun saveAccountPin(actName: String, epin: ByteArray)
     {
-        walletDb!!.set("accountPin_" + actName, epin)
+        walletDb?.set("accountPin_" + actName, epin)
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -238,17 +238,20 @@ class Account(
     /** Get the locking PIN from storage */
     fun loadEncodedPin(): ByteArray?
     {
-        val db = walletDb!!
-        try
+        val db = walletDb
+        if (db != null)
         {
-            val storedEpin = db.get("accountPin_" + name)
-            if (storedEpin.size == 1 && storedEpin[0] == 0.toByte()) return null // Bug workaround: SQLDelight crashes on ios with 0-length arrays on iOS
-            if (storedEpin.size > 0) return storedEpin
-            return null
-        }
-        catch (e: Exception)
-        {
-            LogIt.info("DB missing PIN for: " + name + ". " + e.message)
+            try
+            {
+                val storedEpin = db.get("accountPin_" + name)
+                if (storedEpin.size == 1 && storedEpin[0] == 0.toByte()) return null // Bug workaround: SQLDelight crashes on ios with 0-length arrays on iOS
+                if (storedEpin.size > 0) return storedEpin
+                return null
+            }
+            catch (e: Exception)
+            {
+                LogIt.info("DB missing PIN for: " + name + ". " + e.message)
+            }
         }
         return null
     }
@@ -366,18 +369,22 @@ class Account(
 
     fun loadAccountAddress()
     {
-        try
+        val wdb = walletDb
+        if (wdb != null)
         {
-            val ser = walletDb!!.get("accountAddress_" + name)
-            if (ser.size != 0)
+            try
             {
-                currentReceive = wallet.walletDestination(PayAddress(ser.decodeToString()))
+                val ser = wdb.get("accountAddress_" + name)
+                if (ser.size != 0)
+                {
+                    currentReceive = wallet.walletDestination(PayAddress(ser.decodeToString()))
+                }
             }
-        }
-        catch(e: DataMissingException)
-        {
-            LogIt.error(e.message ?: "loadAccountAddress:DataMissingException")
-            // its fine we'll grab a new one
+            catch (e: DataMissingException)
+            {
+                LogIt.error(e.message ?: "loadAccountAddress:DataMissingException")
+                // its fine we'll grab a new one
+            }
         }
 
     }
@@ -467,14 +474,18 @@ class Account(
 
     fun loadAccountFlags()
     {
-        val serFlags = walletDb!!.get("accountFlags_" + name)
-        val ser = BCHserialized(serFlags, SerializationType.NETWORK)
-        flags = ser.deuint32().toULong()
+        val wdb = walletDb
+        if (wdb != null)
+        {
+            val serFlags = wdb.get("accountFlags_" + name)
+            val ser = BCHserialized(serFlags, SerializationType.NETWORK)
+            flags = ser.deuint32().toULong()
+        }
     }
 
     fun saveAccountFlags()
     {
-        walletDb!!.set("accountFlags_" + name, BCHserialized.uint32(flags.toLong()).toByteArray())
+        walletDb?.set("accountFlags_" + name, BCHserialized.uint32(flags.toLong()).toByteArray())
     }
 
     // Load the exchange rate
@@ -509,6 +520,7 @@ class Account(
 
         currentReceive = null
         wallet.stop()
+        walletDb = null
         wallet.delete()
         balance = BigDecimal.ZERO
         unconfirmedBalance = BigDecimal.ZERO
@@ -564,10 +576,14 @@ class Account(
 
     fun saveAccountAddress()
     {
-        GlobalScope.launch(Dispatchers.IO + CoroutineExceptionHandler { context, throwable ->
-            LogIt.error(throwable.message + " Something went wrong in saveAccountAddress()")
-            LogIt.error(context.toString())
-        }) { walletDb!!.set("accountAddress_" + name, (currentReceive?.address?.toString() ?: "").toByteArray()) }
+        val wdb = walletDb
+        if (wdb != null)
+        {
+            GlobalScope.launch(Dispatchers.IO + CoroutineExceptionHandler { context, throwable ->
+                LogIt.error(throwable.message + " Something went wrong in saveAccountAddress()")
+                LogIt.error(context.toString())
+            }) { wdb.set("accountAddress_" + name, (currentReceive?.address?.toString() ?: "").toByteArray()) }
+        }
     }
 }
 

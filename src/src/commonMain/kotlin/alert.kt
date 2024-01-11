@@ -105,3 +105,21 @@ fun displayUnexpectedException(e: Exception)
         launch { alertChannel.send(alert) }
     }
 }
+
+/** LAST RESORT: display an exception (and put it into the alert log, so the user can submit an issue report).
+ * This should not ever be called in "normal" operation. */
+fun displayUnexpectedError(e: Error)
+{
+    val summary = e.message ?: e.toString()
+    // Android/JVM only: val summary = try { e.localizedMessage } catch (e: Exception) { e.message ?: e.toString()}
+    val message = i18n(S.IssueReportInstructions)
+    val alert = Alert(summary, message, AlertLevel.EXCEPTION, e.stackTraceToString(), false, ERROR_DISPLAY_TIME)
+
+    if (platform().hasNativeTitleBar)
+        displayAlert(alert)
+    else
+    {
+        alerts.add(alert)
+        launch { alertChannel.send(alert) }
+    }
+}

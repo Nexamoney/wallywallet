@@ -153,37 +153,45 @@ fun ProposeAccountName(cs: ChainSelector):String?
 
           if (inputValid && words.size == 12) // account recovery
           {
-              Thread("recoverAccount") {
+              Thread("recoverAccount")
+              {
                   newAcState = try {
                       wallyApp!!.recoverAccount(newAcState.accountName, flags, newAcState.pin, words.joinToString(" "), selectedBlockChain.value, null, null, null)
-                      accounts.value = assignAccountsGuiSlots()
+                      triggerAssignAccountsGuiSlots()
                       nav.back()
                       newAcState.copy(isSuccessDialogOpen = false)
                   }
                   catch (e: Error)
                   {
+                      displayUnexpectedError(e)
                       newAcState.copy(errorMessage = i18n(S.unknownError))
                   }
+                  catch (e: Exception)
+                  {
+                      displayUnexpectedException(e)
+                      newAcState.copy(errorMessage = i18n(S.unknownError))
+                  }
+
               }
           }
           if (inputValid && words.isEmpty())
           {
               later {
                   val account = wallyApp!!.newAccount(newAcState.accountName, flags, newAcState.pin, selectedBlockChain.value)
-                  accounts.value = assignAccountsGuiSlots()
                   newAcState = if (account == null)
                   {
+                      displayError(i18n(S.unknownError))
                       newAcState.copy(errorMessage = i18n(S.unknownError))
                   }
                   else
                   {
+                      triggerAssignAccountsGuiSlots()
                       nav.back()
                       newAcState.copy(isSuccessDialogOpen = false)
                   }
               } // Can't happen in GUI thread
           }
-      },
-      nav
+      }
     )
 }
 
@@ -211,8 +219,7 @@ fun ProposeAccountName(cs: ChainSelector):String?
   onNewRecoveryPhrase: (String) -> Unit,
   onPinChange: (String) -> Unit,
   onHideUntilPinEnterChanged: (Boolean) -> Unit,
-  onClickCreateAccount: () -> Unit,
-  nav: ScreenNav
+  onClickCreateAccount: () -> Unit
 )
 {
     Column(

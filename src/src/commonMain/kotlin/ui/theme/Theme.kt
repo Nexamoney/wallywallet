@@ -284,7 +284,7 @@ fun WallyBoringIconButton(icon: ImageVector, modifier: Modifier = Modifier, enab
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier.defaultMinSize(1.dp, 1.dp).wrapContentHeight()
     ) {
-        //WallySwitch(isChecked, modifier, onCheckedChange)
+        WallySwitch(isChecked, modifier, onCheckedChange)
         Text(text = i18n(textRes))
     }
 }

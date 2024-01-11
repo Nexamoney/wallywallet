@@ -32,20 +32,21 @@ enum class AccountAction
 }
 
 @Composable
-fun AccountDetailScreen(accountGuiSlots: MutableState<ListifyMap<String, Account>>, account: Account, nav: ScreenNav)
+fun AccountDetailScreen(account: Account, nav: ScreenNav)
 {
-    Column(
-      modifier = Modifier.verticalScroll(rememberScrollState())
-    ) {
+    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         CenteredSectionText(i18n(S.AccountStatistics))
-        AccountBlockchainDetail(account)
-        AccountFirstLastSend(account.wallet.statistics())
-        GuiAccountTxStatisticsRow(account.wallet.statistics(), { nav.go(ScreenId.AddressHistory) }, { nav.go(ScreenId.AddressHistory) } )
+        if (!account.wallet.isDeleted)
+        {
+            AccountBlockchainDetail(account)
+            AccountFirstLastSend(account.wallet.statistics())
+            GuiAccountTxStatisticsRow(account.wallet.statistics(), { nav.go(ScreenId.AddressHistory) }, { nav.go(ScreenId.AddressHistory) })
+        }
         Spacer(modifier = Modifier.padding(4.dp))
         WallyDivider()
         AccountActions(account, { nav.go(ScreenId.AddressHistory) }, accountDeleted = {
-            assignAccountsGuiSlots()
             nav.back()
+            triggerAssignAccountsGuiSlots()
         })
     }
 }
@@ -75,8 +76,10 @@ fun AccountBlockchainSync(chainState: GlueWalletBlockchain)
     val text = i18n(S.AccountBlockchainSync) % mapOf(
       "sync" to i18n(synced),
       "chain" to chainState.chain.name,
+
     )
-    Text(text)
+    val fontSize = if (platform().spaceConstrained && !platform().landscape) FontScale(0.90) else FontScale(1.0)
+    Text(text, fontSize = fontSize)
 }
 
 @Composable
@@ -88,7 +91,8 @@ fun AccountBlockchainBlockDetails(chainState: GlueWalletBlockchain)
       "chainBlockCount" to chainState.chain.curHeight.toString()
     )
 
-    Text(text = text, maxLines = 2)
+    val fontSize = if (platform().spaceConstrained && !platform().landscape) FontScale(0.90) else FontScale(1.0)
+    Text(text = text, maxLines = 2, fontSize = fontSize)
 }
 
 @Composable
@@ -101,36 +105,8 @@ fun AccountBlockchainConnectionDetails(chainState: GlueWalletBlockchain)
       "num" to cnxnLst.size.toString(),
       "names" to peers
     )
-    Text(text)
-}
-
-@Composable
-fun GuiAccountTxStatisticsRow(stat: CommonWallet.WalletStatistics, onAddressesButtonClicked: () -> Unit, onTxHistoryButtonClicked: () -> Unit)
-{
-    Row(
-      modifier = Modifier.padding(horizontal = 2.dp).fillMaxWidth(),
-      horizontalArrangement = Arrangement.Center,
-      verticalAlignment = Alignment.CenterVertically
-    ) {
-        WallyBoringTextButton(
-          text = "  " + (i18n(S.AccountNumAddresses) % mapOf("num" to stat.numUsedAddrs.toString())) + "  ",
-          onClick = { onAddressesButtonClicked() }
-        )
-
-        Spacer(Modifier.width(4.dp))
-
-        WallyBoringTextButton(
-          text = "  " +  (i18n(S.AccountNumTx) % mapOf("num" to stat.numTransactions.toString()))  + "  ",
-          onClick = { onTxHistoryButtonClicked() }
-        )
-
-        Spacer(Modifier.width(4.dp))
-
-        WallyBoringTextButton(
-          text = "  " + (i18n(S.AccountNumUtxos) % mapOf("num" to stat.numUnspentTxos.toString())) + "  ",
-          onClick = { }
-        )
-    }
+    val fontSize = if (platform().spaceConstrained && !platform().landscape) FontScale(0.80) else FontScale(1.0)
+    Text(text, maxLines = 2, fontSize = fontSize)
 }
 
 @Composable
@@ -142,8 +118,35 @@ fun AccountFirstLastSend(stat: CommonWallet.WalletStatistics,)
     val firstLastReceive = i18n(S.FirstLastReceive) % mapOf(
       "first" to (if (stat.firstReceiveHeight == Long.MAX_VALUE) "never" else stat.firstReceiveHeight.toString()),
       "last" to (if (stat.lastReceiveHeight == 0L) "never" else stat.lastReceiveHeight.toString()))
-    Text(firstLastSend)
-    Text(firstLastReceive)
+    val fontSize = if (platform().spaceConstrained && !platform().landscape) FontScale(0.80) else FontScale(1.0)
+    Text(firstLastSend, fontSize = fontSize)
+    Text(firstLastReceive, fontSize = fontSize)
+}
+
+
+@Composable
+fun GuiAccountTxStatisticsRow(stat: CommonWallet.WalletStatistics, onAddressesButtonClicked: () -> Unit, onTxHistoryButtonClicked: () -> Unit)
+{
+    Row(
+      modifier = Modifier.padding(0.dp).fillMaxWidth(),
+      horizontalArrangement = Arrangement.SpaceEvenly,
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+        WallyBoringTextButton(
+          text = "  " + (i18n(S.AccountNumAddresses) % mapOf("num" to stat.numUsedAddrs.toString())) + "  ",
+          onClick = { onAddressesButtonClicked() }
+        )
+
+        WallyBoringTextButton(
+          text = "  " +  (i18n(S.AccountNumTx) % mapOf("num" to stat.numTransactions.toString()))  + "  ",
+          onClick = { onTxHistoryButtonClicked() }
+        )
+
+        WallyBoringTextButton(
+          text = "  " + (i18n(S.AccountNumUtxos) % mapOf("num" to stat.numUnspentTxos.toString())) + "  ",
+          onClick = { }
+        )
+    }
 }
 
 @Composable
@@ -179,13 +182,10 @@ fun AccountActions(acc: Account, txHistoryButtonClicked: () -> Unit, accountDele
 fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accountDeleted: () -> Unit)
 {
     val accountAction: MutableState<AccountAction?> = remember { mutableStateOf(null) }
-    var errorText by remember { mutableStateOf("") }
-    var notice by remember { mutableStateOf("") }
 
     fun displayNoticePrimaryAccount(name: String)
     {
-        notice = i18n(S.primaryAccountSuccess) % mapOf("name" to name)
-        displayNotice(notice)
+        displayNotice(i18n(S.primaryAccountSuccess) % mapOf("name" to name))
     }
 
 
