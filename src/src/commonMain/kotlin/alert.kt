@@ -35,6 +35,12 @@ val alerts = arrayListOf<Alert>()
 
 val defaultIgnoreFiles = mutableListOf<String>("ZygoteInit.java", "RuntimeInit.java", "ActivityThread.java", "Looper.java", "Handler.java", "DispatchedTask.kt")
 
+fun clearAlerts(maxLevel: AlertLevel = AlertLevel.EXCEPTION)
+{
+    val alert = Alert("", null, maxLevel, null, false, 0)
+    launch { alertChannel.send(alert) }
+}
+
 /** Display a notice message, and add it to the list of alerts */
 fun displayNotice(summary: Int, message: String?=null, persistAcrossScreens: Boolean=true) = displayNotice(i18n(summary), message, persistAcrossScreens)
 

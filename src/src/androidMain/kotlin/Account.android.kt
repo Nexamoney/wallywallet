@@ -12,9 +12,8 @@ import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 
 import com.ionspin.kotlin.bignum.decimal.*
-import info.bitcoinunlimited.www.wally.ui.views.accountUIData
+import info.bitcoinunlimited.www.wally.ui.triggerAccountsChanged
 import info.bitcoinunlimited.www.wally.ui.views.uiData
-import kotlinx.coroutines.delay
 import org.nexa.libnexakotlin.*
 //import org.nexa.walletoperations.*
 
@@ -321,7 +320,7 @@ actual fun onChanged(account: Account, force: Boolean)
     later {
         account.changeAsyncProcessing()
         account.updateUI(force)
-        accountUIData[account.name]?.value = account.uiData()
+        triggerAccountsChanged(account)
     }
 
 }

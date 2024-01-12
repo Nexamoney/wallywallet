@@ -9,9 +9,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.google.zxing.integration.android.IntentIntegrator
-import info.bitcoinunlimited.www.wally.ui.NavigationRoot
-import info.bitcoinunlimited.www.wally.ui.ScreenId
-import info.bitcoinunlimited.www.wally.ui.ScreenNav
 import kotlinx.coroutines.delay
 import org.nexa.libnexakotlin.launch
 import android.content.pm.ActivityInfo
@@ -22,7 +19,7 @@ import android.view.MenuInflater
 import androidx.core.content.ContextCompat
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.integration.android.IntentResult
-import info.bitcoinunlimited.www.wally.ui.onShareButton
+import info.bitcoinunlimited.www.wally.ui.*
 import org.nexa.libnexakotlin.logThreadException
 import org.nexa.libnexakotlin.rem
 import org.nexa.libnexakotlin.sourceLoc
@@ -36,7 +33,7 @@ fun SetTitle(title: String)
     }
 }
 
-actual  fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
+actual fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
 {
     val ca = currentActivity
     (ca as ComposeActivity).ImageQrCode(imageParsed)
@@ -260,14 +257,20 @@ class ComposeActivity: CommonActivity()
             true
         }
 
-        val item2 = menu.findItem(R.id.settings)
-        item2.intent = Intent(this, Settings::class.java)  // .apply { putExtra(SETTINGS_MESSAGE, "") }
+        val settingsItem = menu.findItem(R.id.settings)
+        settingsItem.setOnMenuItemClickListener {
+            nav.go(ScreenId.Settings)
+            true
+        }
 
-        val item3 = menu.findItem(R.id.unlock)
-        item3.intent = Intent(this, UnlockActivity::class.java)
+        val unlockItem = menu.findItem(R.id.unlock)
+        unlockItem.setOnMenuItemClickListener {
+            triggerUnlockDialog()
+            true
+        }
 
         val item4 = menu.findItem(R.id.compose)
-        item4.intent = Intent(this, ComposeActivity::class.java)
+        item4.intent = Intent(this, MainActivity::class.java)
 
         initializeHelpOption(menu)
         return super.onCreateOptionsMenu(menu)

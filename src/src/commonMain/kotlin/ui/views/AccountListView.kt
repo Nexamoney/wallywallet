@@ -21,20 +21,30 @@ import kotlinx.coroutines.flow.collect
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.nexa.libnexakotlin.*
 
-val accountUIData = mutableMapOf<String,MutableState<AccountUIData>>()
-
 @Composable fun AccountListView(nav: ScreenNav, selectedAccount: MutableStateFlow<Account?>, accounts: MutableState<ListifyMap<String,Account>>,
   modifier: Modifier = Modifier,
   onAccountSelected: (Account) -> Unit)
 {
+    val accountUIData = remember { mutableStateMapOf<String,AccountUIData>() }
+
     LaunchedEffect(true)
         {
             for(c in accountChangedNotification)
             {
-                val act = wallyApp?.accounts?.get(c)
-                if (act != null)
+                if (c == "*all changed*")  // this is too long to be a valid account name
                 {
-                    accountUIData[c]?.value = act.uiData()
+                    wallyApp?.accounts?.forEach {
+                        val uid = it.value.uiData()
+                        accountUIData[it.value.name] = uid
+                    }
+                }
+                else
+                {
+                    val act = wallyApp?.accounts?.get(c)
+                    if (act != null)
+                    {
+                        accountUIData[c] = act.uiData()
+                    }
                 }
             }
         }
@@ -44,9 +54,9 @@ val accountUIData = mutableMapOf<String,MutableState<AccountUIData>>()
             item(key=it.name) {
                         // I would think that capturing this data would control redraw of each item, but it appears to not do so.
                         // Redraw is controlled of the entire AccountListView, or not at all.
-                        val anyChanges: MutableState<AccountUIData> = remember { mutableStateOf(it.uiData()) }
-                        accountUIData[it.name] = anyChanges
-                        AccountItemView(anyChanges.value, idx, selectedAccount.value == it, devMode,
+                        //val anyChanges: MutableState<AccountUIData> = remember { mutableStateOf(it.uiData()) }
+                        if (accountUIData[it.name] == null) accountUIData[it.name] = it.uiData()
+                        AccountItemView(accountUIData[it.name]!!, idx, selectedAccount.value == it, devMode,
                           onClickAccount = { onAccountSelected(it) },
                           onClickGearIcon = {
                               nav.go(ScreenId.AccountDetails)
@@ -68,6 +78,7 @@ val accountUIData = mutableMapOf<String,MutableState<AccountUIData>>()
 
 
 data class AccountUIData(
+  val account: Account,
   var name: String = "",
   var chainSelector: ChainSelector = ChainSelector.NEXA,
   var currencyCode: String = "",
@@ -84,7 +95,7 @@ data class AccountUIData(
 /** Look into this account and produce the strings and modifications needed to display it */
 fun Account.uiData():AccountUIData
 {
-    val ret = AccountUIData()
+    val ret = AccountUIData(this)
 
     var delta = balance - confirmedBalance
 
@@ -188,7 +199,12 @@ fun AccountItemView(
                     {
                         ResImageView(if (uidata.locked) "icons/lock.xml" else "icons/unlock.xml",
                           modifier = Modifier.size(26.dp).absoluteOffset(0.dp, -8.dp).clickable {
-                              // TODO lock clicked
+                              if (uidata.locked) triggerUnlockDialog()
+                              else
+                              {
+                                  uidata.account.pinEntered = false
+                                  launch { accountChangedNotification.send(uidata.name) }
+                              }
                           })
                     }
                     Spacer(Modifier.width(16.dp))

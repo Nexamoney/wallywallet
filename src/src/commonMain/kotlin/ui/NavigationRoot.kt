@@ -6,20 +6,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.ui.theme.*
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
@@ -96,12 +90,6 @@ enum class ScreenId
         }
     }
 
-}
-
-enum class NoticeLevel
-{
-    Info,
-    Error;
 }
 
 class ScreenNav()
@@ -194,6 +182,13 @@ fun triggerAssignAccountsGuiSlots()
     later { externalDriver.send(GuiDriver(regenAccountGui = true)) }
 }
 
+fun triggerUnlockDialog(show: Boolean = true)
+{
+    if (show)
+      later { externalDriver.send(GuiDriver(show = setOf(ShowIt.ENTER_PIN))) }
+    else later { externalDriver.send(GuiDriver(noshow = setOf(ShowIt.ENTER_PIN))) }
+}
+
 // implement a share button (whose behavior may change based on what screen we are on)
 
 // As part of your recompose, update this callback function so that the proper data will be constructed to be shared based on the GUI context
@@ -238,18 +233,31 @@ fun onShareButton()
 
         }
     }
-
 }
 
 // Only needed if we need to reassign the account slots outside of the GUI's control
 // val reassignAccountGuiSlots = Channel<Boolean>()
 val accountChangedNotification = Channel<String>()
 
+/** Call this function to cause the GUI to update any view of any accounts.  Provide no arguments to update all of them */
+fun triggerAccountsChanged(vararg accounts: Account)
+{
+    if (accounts.size == 0)
+        later { accountChangedNotification.send("*all changed*") }
+    else for (account in accounts)
+    {
+        later { accountChangedNotification.send(account.name) }
+    }
+}
+
+
+
 // Add other information as needed to drive each page
 enum class ShowIt
 {
     NONE,
-    WARN_BACKUP_RECOVERY_KEY
+    WARN_BACKUP_RECOVERY_KEY,
+    ENTER_PIN
 }
 data class GuiDriver(val gotoPage: ScreenId? = null,
   val show: Set<ShowIt>? = null,
@@ -289,6 +297,9 @@ fun NavigationRoot(nav: ScreenNav)
 
     val selectedAccount = remember { MutableStateFlow<Account?>(wallyApp?.focusedAccount) }
 
+    var unlockDialog by remember { mutableStateOf(false) }
+
+
     // Allow an external (non-compose) source to "drive" the GUI to a particular state.
     // This implements functionality like scanning/pasting/receiving via a connection a payment request.
     LaunchedEffect(true)
@@ -302,12 +313,14 @@ fun NavigationRoot(nav: ScreenNav)
                 {
                     clickDismiss.value = { RecoveryPhraseWarning() }
                 }
+                if (it == ShowIt.ENTER_PIN) unlockDialog = true
             }
             c.noshow?.forEach {
                 if (it == ShowIt.WARN_BACKUP_RECOVERY_KEY)
                 {
                     clickDismiss.value = null
                 }
+                if (it == ShowIt.ENTER_PIN) unlockDialog = false
             }
             if (c.regenAccountGui == true)
             {
@@ -323,18 +336,50 @@ fun NavigationRoot(nav: ScreenNav)
         {
             if (alert.level.level >= AlertLevel.ERROR.level)
             {
-                errorText = alert.msg
-                launch {
-                    delay(alert.longevity ?: ERROR_DISPLAY_TIME)
-                    if (errorText == alert.msg) errorText = ""  // do not erase if the error has changed
+                if (alert.msg == "") // clear all alerts this level or below
+                {
+                    errorText = ""
+                    noticeText = ""
+                    warningText = ""
+                }
+                else
+                {
+                    errorText = alert.msg
+                    launch {
+                        delay(alert.longevity ?: ERROR_DISPLAY_TIME)
+                        if (errorText == alert.msg) errorText = ""  // do not erase if the error has changed
+                    }
+                }
+            }
+            else if (alert.level.level >= AlertLevel.WARN.level)
+            {
+                if (alert.msg == "") // clear all alerts this level or below
+                {
+                    warningText = ""
+                    noticeText = ""
+                }
+                else
+                {
+                    warningText = alert.msg
+                    launch {
+                        delay(alert.longevity ?: NORMAL_NOTICE_DISPLAY_TIME)
+                        if (warningText == alert.msg) warningText = ""  // do not erase if the error has changed
+                    }
                 }
             }
             else if (alert.level.level >= AlertLevel.NOTICE.level)
             {
-                noticeText = alert.msg
-                launch {
-                    delay(alert.longevity ?: NOTICE_DISPLAY_TIME)
-                    if (noticeText == alert.msg) noticeText = ""  // do not erase if the error has changed
+                if (alert.msg == "") // clear all alerts this level or below
+                {
+                    warningText = ""
+                }
+                else
+                {
+                    noticeText = alert.msg
+                    launch {
+                        delay(alert.longevity ?: NOTICE_DISPLAY_TIME)
+                        if (noticeText == alert.msg) noticeText = ""  // do not erase if the error has changed
+                    }
                 }
             }
         }
@@ -342,6 +387,7 @@ fun NavigationRoot(nav: ScreenNav)
 
     WallyTheme(darkTheme = false, dynamicColor = false) {
         Box(modifier = WallyPageBase) {
+            if (unlockDialog) UnlockDialog {  }
             Column(modifier = Modifier.fillMaxSize()) {
                 ConstructTitleBar(nav, errorText, warningText, noticeText)
 

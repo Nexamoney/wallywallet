@@ -22,7 +22,7 @@
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/compose"
-        android:icon="@drawable/ic_help"
-        android:title="Compose"
+        android:icon="@drawable/ic_home"
+        android:title="Toggle Compose"
         app:showAsAction="ifRoom" />
 </menu>
