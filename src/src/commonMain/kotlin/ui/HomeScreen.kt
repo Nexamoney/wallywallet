@@ -84,6 +84,8 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
                 )
             }
             AddressQrCode(currentReceive ?: "")
+            // update the share function based on whatever my current receive is
+            ToBeShared = { currentReceive ?: "" }
         }
     }
 

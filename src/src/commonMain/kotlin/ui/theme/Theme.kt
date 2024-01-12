@@ -375,7 +375,7 @@ fun TitleText(text: String, modifier: Modifier)
       modifier = modifier,
       //.background(Color.Red),  // for layout debugging
       style = LocalTextStyle.current.copy(
-        color = Color.Black,
+        color = colorTitleForeground,
         textAlign = TextAlign.Center,  // To make this actually work, you need to pass a modifier where the space given to the title is greedy using .weight()
         fontWeight = FontWeight.Bold,
         fontSize = LocalTextStyle.current.fontSize.times(1.5)

@@ -68,6 +68,12 @@ actual fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
 /** No banner in iOS so no native way to display alerts */
 actual fun displayAlert(alert: Alert) {}
 
+/** Actually share this text using the platform's share functionality */
+actual fun platformShare(textToShare: String)
+{
+    // TODO
+}
+
 val iosPlatformCharacteristics = PlatformCharacteristics(
   hasQrScanner = true,
   hasGallery = true,
@@ -76,7 +82,8 @@ val iosPlatformCharacteristics = PlatformCharacteristics(
   hasBack = false,
   hasNativeTitleBar = false,
   spaceConstrained = true,
-  landscape = false
+  landscape = false,
+  hasShare = true
   )
 actual fun platform(): PlatformCharacteristics = iosPlatformCharacteristics
 
