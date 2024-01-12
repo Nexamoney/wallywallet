@@ -168,7 +168,6 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
                                     Text(balance)
                                     Text(totalReceived)
                                 }
-                                ResImageView("icons/receivearrow.xml", Modifier.width(40.dp))
                             }
                         }
                     }
