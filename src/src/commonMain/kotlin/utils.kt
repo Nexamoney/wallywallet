@@ -23,6 +23,7 @@ import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.datetime.LocalDateTime
+import okio.utf8Size
 
 private val LogIt = GetLog("BU.wally.utils")
 
@@ -54,9 +55,17 @@ data class PlatformCharacteristics(
    * If you don't want to the app to dynamically change when rotating your device, just return the same value regardless of orientation
    * (and as part of your native set-up, turn off rotating) */
   val landscape: Boolean,
+  /** Return true if the platform supports the concept of "sharing" (setting to true adds a share button in various places in the UX) */
+  val hasShare: Boolean,
 )
 
+/** Return details about this platform */
 expect fun platform(): PlatformCharacteristics
+
+/** Actually share this text using the platform's share functionality */
+expect fun platformShare(textToShare: String)
+
+
 
 class ImageContainer
 {

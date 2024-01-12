@@ -57,5 +57,15 @@ actual fun setTextClipboard(msg: String)
     pasteboard.setString(msg, NSPasteboardTypeString)
 }
 
-val macosPlatformCharacteristics = PlatformCharacteristics(hasQrScanner = false, hasGallery = true, usesMouse = true, hasAlert = false, hasBack = false)
+val macosPlatformCharacteristics = PlatformCharacteristics(
+  hasQrScanner = false,
+  hasGallery = true,
+  usesMouse = true,
+  hasAlert = false,
+  hasBack = false,
+  hasNativeTitleBar = false,
+  spaceConstrained = false,
+  landscape = true,
+  hasShare = false)
+
 actual fun platform(): PlatformCharacteristics = macosPlatformCharacteristics

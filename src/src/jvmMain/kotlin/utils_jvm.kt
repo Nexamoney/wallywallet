@@ -136,7 +136,8 @@ val jvmPlatformCharacteristics = PlatformCharacteristics(
   hasBack = false,
   hasNativeTitleBar = false,
   spaceConstrained = false,
-  landscape = true)
+  landscape = true,
+  hasShare = true)
 
 actual fun displayAlert(alert: Alert)
 {}

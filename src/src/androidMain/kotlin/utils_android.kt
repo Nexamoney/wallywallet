@@ -22,6 +22,7 @@ import io.ktor.client.*
 import io.ktor.client.engine.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.*
+import okio.utf8Size
 import java.io.InputStream
 
 actual fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: MutableSet<String>?): String
@@ -119,5 +120,16 @@ val androidPlatformCharacteristics = PlatformCharacteristics(
   hasBack = true,
   hasNativeTitleBar = true,
   spaceConstrained = true,
-  landscape = false)
+  landscape = false,
+  hasShare = true)
+
 actual fun platform(): PlatformCharacteristics = androidPlatformCharacteristics
+
+actual fun platformShare(textToShare: String)
+{
+    val act = currentActivity as? ComposeActivity
+    if (act != null)
+    {
+        act.share(textToShare)
+    }
+}

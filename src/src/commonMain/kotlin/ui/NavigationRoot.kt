@@ -8,10 +8,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import androidx.compose.ui.text.TextStyle
@@ -28,7 +30,10 @@ import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.nexa.libnexakotlin.ChainSelector
+import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.rem
+
+private val LogIt = GetLog("wally.NavRoot")
 
 enum class ScreenId
 {
@@ -50,6 +55,13 @@ enum class ScreenId
         get()
     {
         if (this == Settings) return true
+        return false
+    }
+
+    val hasShare:Boolean
+        get()
+    {
+        if (this == Home) return true
         return false
     }
 
@@ -83,6 +95,7 @@ enum class ScreenId
             Test -> "Test"
         }
     }
+
 }
 
 enum class NoticeLevel
@@ -125,13 +138,14 @@ class ScreenNav()
 
     fun title() = currentScreen.value.title()
 
-    /** return the destination screenId if you can go back from here, otherwise null */
-    fun hasBack(): ScreenId?
+    /** return the destination screenId if you can go back from here, otherwise ScreenId.None */
+    fun hasBack(): ScreenId
     {
-        var priorId:ScreenId? = null
+        var priorId:ScreenId = ScreenId.None
         val prior = path.lastOrNull()
         // If I can't go back, go up
         if (prior == null) priorId = currentScreen.value.up()
+        else priorId = prior.id
         return priorId
     }
 
@@ -180,6 +194,15 @@ fun triggerAssignAccountsGuiSlots()
     later { externalDriver.send(GuiDriver(regenAccountGui = true)) }
 }
 
+// implement a share button (whose behavior may change based on what screen we are on)
+
+// As part of your recompose, update this callback function so that the proper data will be constructed to be shared based on the GUI context
+var ToBeShared:(()->String)? = null
+fun onShareButton()
+{
+    ToBeShared?.let { platformShare(it()) }
+    LogIt.info("Share Button pressed")
+}
 
 // This function should build a title bar (with a back button) if the platform doesn't already have one.  Otherwise it should
 // set up the platform's title bar
@@ -188,12 +211,12 @@ fun triggerAssignAccountsGuiSlots()
     if (!platform().hasNativeTitleBar)
     {
         // Specifying the row height stops changes header bar content to change its height causing the entire window to jerk up or down
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(0.dp).height(32.dp))
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.background(colorTitleBackground).padding(0.dp).height(32.dp))
         {
-            if (nav.hasBack() != null)
+            if (nav.hasBack() != ScreenId.None)
             {
                 IconButton(onClick = { nav.back() }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = null)
+                    Icon(Icons.Default.ArrowBack, tint = colorTitleForeground, contentDescription = null)
                 }
             }
             // We can only fillMaxSize() here because we constrained the height of the row
@@ -204,7 +227,15 @@ fun triggerAssignAccountsGuiSlots()
             else if (noticeText.isNotEmpty())
                 NoticeText(noticeText, Modifier.weight(1f).fillMaxSize())
             //NoticeText(i18n(S.copiedToClipboard))
-            else TitleText(nav.title(), Modifier.weight(1f).fillMaxSize())
+            else
+            {
+                TitleText(nav.title(), Modifier.weight(1f).fillMaxSize())
+                if (platform().hasShare && nav.currentScreen.value.hasShare) IconButton(onClick = { onShareButton() }) {
+                    Icon(Icons.Default.Share, tint = colorTitleForeground, contentDescription = null)
+                }
+            }
+
+
         }
     }
 
@@ -418,7 +449,7 @@ fun NavigationMenu(nav: ScreenNav)
                       onClick = { nav.go(ch.location) },
                       // Change button appearance based on current screen
                       enabled = nav.currentScreen.value != ch.location,
-                      shape = RoundedCornerShape(50),
+                      shape = RoundedCornerShape(30),
                       contentPadding = PaddingValues(0.dp, 0.dp),
                       // This is opposite of normal: The disabled button is our current screen, so should have the highlight
                       colors = ButtonDefaults.buttonColors(
@@ -430,15 +461,11 @@ fun NavigationMenu(nav: ScreenNav)
                       modifier = Modifier.width(IntrinsicSize.Max).height(IntrinsicSize.Min).padding(0.dp, 0.dp).defaultMinSize(1.dp, 1.dp)  //width(100.dp)
                     ) {
                         Column(verticalArrangement = Arrangement.spacedBy(0.dp), horizontalAlignment = Alignment.CenterHorizontally,
-                          modifier = Modifier.width(IntrinsicSize.Max).height(IntrinsicSize.Min).padding(4.dp)
+                          modifier = Modifier.width(IntrinsicSize.Max).height(IntrinsicSize.Min).padding(0.dp,4.dp,0.dp,0.dp)
                         ) {
                             ResImageView(ch.imagePath, Modifier.width(30.dp).height(30.dp), description = ch.imagePath)
-                            // Icon(ch.image, i18n(ch.textId), Modifier.padding(0.dp).fillMaxWidth())  // .background(Color.Blue) for debugging
-                            val tmp = TextStyle.Default.copy(lineHeight = 0.em,
-                              lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.None))
-                            // I want this text to be able to push the button larger.  But that appears to not be happening
-                            Text(text = i18n(ch.textId), fontSize = 9.sp, modifier = Modifier.padding(4.dp, 0.dp).wrapContentWidth(Alignment.CenterHorizontally, true), // .background(Color.Red),
-                              style = tmp, textAlign = TextAlign.Center, softWrap = false, maxLines = 1)
+                            Text(text = i18n(ch.textId), fontSize = 9.sp, modifier = Modifier.padding(0.dp, 0.dp,0.dp, 2.dp).wrapContentWidth(Alignment.CenterHorizontally, true),
+                              textAlign = TextAlign.Center, softWrap = false, maxLines = 1)
                         }
                     }
                 }

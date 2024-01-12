@@ -7,6 +7,7 @@ val colorPrimaryDark = Color(0xFF5B276B)
 val colorDefault = Color(0xFF808080)  // gray
 val splashBackground = Color(0xFF5B276B)
 val colorAccent = Color(0xFFC01BD0)
+
 val defaultSpinnerBkg = Color(0xFFffffffff)
 val defaultSpinnerBorder = Color(0xFFefddff)
 val softKeyboardTop = Color(0xFFFFF6F6F6)
@@ -20,7 +21,8 @@ val colorConfirm = Color(0xFFE48864)
 val colorValid = Color(0xFF70A01E)
 val colorError = Color(0xFFFF6050)
 val colorNotice = Color(0xFFFFD040)
-val titleBackground = Color(0xFF725092)
+val colorTitleBackground = Color(0xFF725092)
+val colorTitleForeground = Color.White
 
 val rowA = Color(0xFFFFEFEFEF)
 val rowB = Color(0xFFFFC0C0C0)

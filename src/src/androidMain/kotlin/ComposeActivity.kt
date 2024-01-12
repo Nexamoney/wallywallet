@@ -17,9 +17,12 @@ import org.nexa.libnexakotlin.launch
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.provider.MediaStore
+import android.view.Menu
+import android.view.MenuInflater
 import androidx.core.content.ContextCompat
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.integration.android.IntentResult
+import info.bitcoinunlimited.www.wally.ui.onShareButton
 import org.nexa.libnexakotlin.logThreadException
 import org.nexa.libnexakotlin.rem
 import org.nexa.libnexakotlin.sourceLoc
@@ -243,6 +246,34 @@ class ComposeActivity: CommonActivity()
 
     }
 
+    /** Inflate the options menu */
+    override fun onCreateOptionsMenu(menu: Menu): Boolean
+    {
+        val inflater: MenuInflater = menuInflater
+
+        inflater.inflate(R.menu.options_menu, menu);
+
+        // Locate MenuItem with ShareActionProvider
+        val shareItem = menu.findItem(R.id.menu_item_share)
+        shareItem.setOnMenuItemClickListener {
+            onShareButton()
+            true
+        }
+
+        val item2 = menu.findItem(R.id.settings)
+        item2.intent = Intent(this, Settings::class.java)  // .apply { putExtra(SETTINGS_MESSAGE, "") }
+
+        val item3 = menu.findItem(R.id.unlock)
+        item3.intent = Intent(this, UnlockActivity::class.java)
+
+        val item4 = menu.findItem(R.id.compose)
+        item4.intent = Intent(this, ComposeActivity::class.java)
+
+        initializeHelpOption(menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -265,6 +296,16 @@ class ComposeActivity: CommonActivity()
                 NavigationRoot(nav)
             }
         }
+    }
+
+    fun share(text:String)
+    {
+        val receiveAddrSendIntent: Intent = Intent(Intent.ACTION_SEND).apply {
+            putExtra(Intent.EXTRA_TEXT, text)
+            type = "text/plain"
+        }
+        val shareIntent = Intent.createChooser(receiveAddrSendIntent, null)
+        startActivity(shareIntent)
     }
 }
 
