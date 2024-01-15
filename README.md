@@ -97,3 +97,18 @@ Search the Bitcoin Unlimited source tree for this file and remove any copies exc
 ## Localization
 
 WallyWallet text is internationalized in the Android standard manner, via specialization of app/src/main/res/values/strings.xml.  See https://developer.android.com/guide/topics/resources/localization.
+
+## libnexa.dylib 
+
+### versioning
+
+Current version: 1.4.0.0
+
+From release: https://gitlab.com/nexa/nexa/-/releases/nexa1.4.0.0
+
+### Installation for JVM Mac m1
+
+1. Download nexa-<version>-macos-arm64-unsigned.tar.gz
+2. Uncompress
+3. Copy nexa-1.4.0.0/lib/libnexa.0.dylib into wally root as libnexa.dylib
+4. codesign --deep --force --sign - ./libnexa.dylib
