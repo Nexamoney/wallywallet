@@ -44,6 +44,7 @@ mp_build:
   variables:
     ANDROID_HOME: "/opt/homebrew/share/android-commandlinetools"
   script:
+    - codesign --deep --force --sign - libnexa.dylib
     - ./gradlew build -x :src:lintDebug # Skips android linter with 356 errors, 500 warnings.
 
 commonJvmTest: #

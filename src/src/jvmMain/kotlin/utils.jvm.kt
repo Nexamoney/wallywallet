@@ -9,7 +9,6 @@ import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.res.loadSvgPainter
 import androidx.compose.ui.unit.Density
 import io.ktor.client.*
-import io.ktor.client.engine.*
 import io.ktor.client.plugins.*
 import okio.FileNotFoundException
 import org.xml.sax.InputSource
@@ -147,4 +146,10 @@ actual fun platform(): PlatformCharacteristics = jvmPlatformCharacteristics
 actual fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
 {
     return false
+}
+
+/** Actually share this text using the platform's share functionality */
+actual fun platformShare(textToShare: String)
+{
+    return
 }
