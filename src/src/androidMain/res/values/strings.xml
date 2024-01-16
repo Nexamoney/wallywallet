@@ -519,6 +519,7 @@ Good luck!
     <!-- PIN Entry -->
     <string name="EnterPIN">Enter PIN</string>
     <string name="EnterPINorBlankToRemove">New PIN (blank removes)</string>
+    <string name="title_activity_shoppng">ShoppingActivity</string>
 
     <!-- Shopping -->
     <string name="ButtonTextHere">Set button text</string>
