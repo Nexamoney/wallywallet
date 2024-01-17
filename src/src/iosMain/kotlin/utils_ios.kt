@@ -76,7 +76,7 @@ actual fun platformShare(textToShare: String)
 
 val iosPlatformCharacteristics = PlatformCharacteristics(
   hasQrScanner = true,
-  hasGallery = true,
+  hasGallery = false,
   usesMouse = false,
   hasAlert = false,
   hasBack = false,
