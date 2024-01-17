@@ -5,7 +5,7 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import org.nexa.libnexakotlin.GetLog
 import platform.Foundation.NSThread
-import platform.UIKit.UIPasteboard
+import platform.UIKit.*
 
 private val LogIt = GetLog("BU.wally.utils_ios")
 
@@ -71,7 +71,19 @@ actual fun displayAlert(alert: Alert) {}
 /** Actually share this text using the platform's share functionality */
 actual fun platformShare(textToShare: String)
 {
-    // TODO
+    val activityController = UIActivityViewController(
+      activityItems = listOf(textToShare),
+      applicationActivities = null,
+    )
+    val window = UIApplication.sharedApplication.windows().first() as UIWindow?
+    activityController.popoverPresentationController()?.sourceView =
+      window
+    window?.rootViewController?.presentViewController(
+      activityController as UIViewController,
+      animated = true,
+      completion = null,
+    )
+
 }
 
 val iosPlatformCharacteristics = PlatformCharacteristics(
