@@ -4,7 +4,6 @@ stages:
   - docs
   - lint
   - assemble
-  - build
   - test
   - deploy_internally
 
@@ -12,12 +11,21 @@ workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
 
-docs:
+tasks:
   stage: docs
   tags:
     - m1-baremetal
   script:
     - ./gradlew tasks
+
+taskTree:
+  stage: docs
+  variables:
+    ANDROID_HOME: "/opt/homebrew/share/android-commandlinetools"
+  tags:
+    - m1-baremetal
+  script:
+    - ./gradlew build taskTree # Print taskTree for ./gradlew build
 
 lintVitalRelease:
   stage: lint
@@ -35,39 +43,102 @@ assemble:
   variables:
     ANDROID_HOME: "/opt/homebrew/share/android-commandlinetools"
   script:
-    - ./gradlew assemble
+    - ./gradlew :src:allMetadataJar
+    - ./gradlew :src:assembleDebug
+    - ./gradlew :src:assembleRelease
 
-mp_build:
-  stage: build
+compileIos:
+  stage: assemble
   tags:
     - m1-baremetal
-  variables:
-    ANDROID_HOME: "/opt/homebrew/share/android-commandlinetools"
   script:
-    - codesign --deep --force --sign - libnexa.dylib
-    - ./gradlew build -x :src:lintDebug # Skips android linter with 356 errors, 500 warnings.
+    - ./gradlew :src:compileKotlinIosArm64
+    - ./gradlew :src:compileKotlinIosSimulatorArm64
+    - ./gradlew :src:compileKotlinIosX64
+    - ./gradlew :src:iosArm64MetadataJar
+    - ./gradlew :src:iosSimulatorArm64MetadataJar
+    - ./gradlew :src:iosX64MetadataJar
 
-commonJvmTest: #
+compileMac:
+  stage: assemble
+  tags:
+    - m1-baremetal
+  script:
+    - ./gradlew :src:compileKotlinMacosArm64
+    - ./gradlew :src:compileKotlinMacosX64
+
+jvmJar:
+  stage: assemble
+  tags:
+    - m1-baremetal
+  script:
+    - ./gradlew :src:jvmJar
+
+linkFrameworkIos:
+  stage: assemble
+  tags:
+    - m1-baremetal
+  script:
+    - ./gradlew :src:linkDebugFrameworkIosArm64
+    - ./gradlew :src:linkDebugFrameworkIosFat
+    - ./gradlew :src:linkDebugFrameworkIosSimulatorArm64
+    - ./gradlew :src:linkDebugFrameworkIosX64
+    - ./gradlew :src:linkReleaseFrameworkIosArm64
+    - ./gradlew :src:linkReleaseFrameworkIosFat
+    - ./gradlew :src:linkReleaseFrameworkIosSimulatorArm64
+    - ./gradlew :src:linkReleaseFrameworkIosX64
+
+macMetadataJar:
+  stage: assemble
+  tags:
+    - m1-baremetal
+  script:
+    - ./gradlew :src:macosArm64MetadataJar
+    - ./gradlew :src:macosX64MetadataJar
+
+iosArm64Test:
+  stage: test
+  tags:
+    - m1-baremetal
+  script:
+    - ./gradlew :src:cleanIosSimulatorArm64Test :src:iosSimulatorArm64Test
+
+iosX64Test:
+  stage: test
+  tags:
+    - m1-baremetal
+  script:
+    - ./gradlew :src:iosX64Test
+
+jvmTest: #
   stage: test
   tags:
     - m1-baremetal
   script:
     - ./gradlew :src:cleanJvmTest :src:jvmTest
 
-commonMacosArm64Test:
+macArm64Test:
   stage: test
   tags:
     - m1-baremetal
   script:
     - ./gradlew :src:cleanMacosArm64Test :src:macosArm64Test
 
-commonIOSArm64Test:
+macX64Test:
   stage: test
   tags:
     - m1-baremetal
-  image: macos-13-xcode-14
   script:
     - ./gradlew :src:cleanIosSimulatorArm64Test :src:iosSimulatorArm64Test
+
+# I'm assuming that this only runs Android tests
+androidTest:
+  image: inovex/gitlab-ci-android
+  stage: test
+  before_script:
+    - export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+  script:
+    - ./gradlew src:test
 
 testflight:
   allow_failure: true # Draft for mp branch fastlane testflight deployment
