@@ -153,3 +153,11 @@ actual fun platformShare(textToShare: String)
 {
     return
 }
+
+/** Initiate a platform-level notification message.  Note that these messages visually disrupt the user's potentially unrelated task
+ * and may play a sound, so this must be used sparingly.
+ */
+actual fun platformNotification(message:String, title: String?, onclickUrl:String?)
+{
+
+}

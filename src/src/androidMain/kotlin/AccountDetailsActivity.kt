@@ -120,7 +120,7 @@ class AccountDetailsActivity: CommonNavActivity()
         val acc = selectedAccount
         if (acc == null)
         {
-            wallyApp?.displayError(R.string.NoAccounts)
+            displayError(R.string.NoAccounts)
             finish()
             return
         }
@@ -135,7 +135,7 @@ class AccountDetailsActivity: CommonNavActivity()
             }
             else
             {
-                wallyApp?.displayError(R.string.InvalidPIN)
+                displayError(R.string.InvalidPIN)
                 finish()
                 return
             }
@@ -288,10 +288,10 @@ class AccountDetailsActivity: CommonNavActivity()
                 wallyApp?.accounts?.remove(act.name)  // remove this coin from any global access before we delete it
                 act.wallet.stop()
                 launch { // cannot access db in UI thread
-                    wallyApp?.saveActiveAccountList()
+                    app.saveActiveAccountList()
                     selectedAccount?.delete()
                 }
-                app.displayNotice(i18n(R.string.accountDeleteNotice))
+                displayNotice(i18n(R.string.accountDeleteNotice))
                 finish()  // since account is deleted end this activity
             }
             ConfirmationFor.RecoveryPhrase ->

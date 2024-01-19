@@ -1,5 +1,4 @@
 package info.bitcoinunlimited.www.wally.ui
-import androidx.compose.foundation.background
 import info.bitcoinunlimited.www.wally.*
 
 import androidx.compose.foundation.clickable
@@ -10,7 +9,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.HorizontalAlignmentLine
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -303,7 +301,7 @@ fun ConfirmAbove(preferenceDB: SharedPreferences)
 @Composable
 fun BlockchainSource(chain: ChainSelector, preferenceDB: SharedPreferences, switchAlignment: HorizontalAlignmentLine)
 {
-    val name = chainToName[chain]?.replaceFirstChar { it.uppercase() } ?: ""
+    val name = chainToURI[chain] ?: ""
     val exclusiveNodeKey = "$name.$EXCLUSIVE_NODE_SWITCH"
     val preferNodeKey = "$name.$PREFER_NODE_SWITCH"
     val configuredNodeKey = "$name.$CONFIGURED_NODE"
@@ -311,11 +309,12 @@ fun BlockchainSource(chain: ChainSelector, preferenceDB: SharedPreferences, swit
     val preferChecked = remember { mutableStateOf(preferenceDB.getBoolean(preferNodeKey, false)) }
     var textState by remember { mutableStateOf(preferenceDB.getString(configuredNodeKey, "") ?: "") }
 
+    val dispName = chainToName[chain]?.replaceFirstChar { it.uppercase() } ?: ""
     Row(
         horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(5.dp, 0.dp),
     ) {
-        Text(name)
+        Text(dispName)
         Spacer(modifier = Modifier.width(4.dp))
         WallyTextEntry(
           value = textState,

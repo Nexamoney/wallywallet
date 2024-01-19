@@ -58,14 +58,14 @@ val chainToName: Map<ChainSelector, String> = mapOf(
 fun ProposeAccountName(cs: ChainSelector):String?
 {
     val a = wallyApp
-    if ((cs != null) && (a != null))
+    if (a != null)
     {
         var count = 0
         var countS = ""
         while(true)
         {
             val proposedName = chainToName[cs] + countS  // countS should be empty string if 0, otherwise a number
-            if ((proposedName != null) && !a.accounts.contains(proposedName))  // If there's already a default choice, then don't offer one
+            if (!a.accounts.contains(proposedName))  // If there's already a default choice, then don't offer one
             {
                 return (proposedName)
             }

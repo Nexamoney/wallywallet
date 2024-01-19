@@ -40,7 +40,7 @@ class UnlockActivity : CommonActivity()
     fun submitPIN(pin: String)
     {
         val ret = wallyApp!!.unlockAccounts(pin)
-        if (ret == 0) wallyApp!!.displayError(R.string.InvalidPIN)
+        if (ret == 0) displayError(R.string.InvalidPIN)
         finish()
     }
 

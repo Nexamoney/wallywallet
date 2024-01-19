@@ -9,8 +9,13 @@ open class PasteEmptyException() : LibNexaExceptionI(S.pasteIsEmpty, null, Error
 open class BadAmountException(msg: Int) : LibNexaExceptionI(S.badAmount, i18n(msg))
 open class BadCryptoException(msg: Int = -1) : LibNexaExceptionI(S.badCryptoCode, i18n(msg))
 open class BadUnitException(msg: Int = -1) : LibNexaExceptionI(S.badCurrencyUnit, i18n(msg))
-open class UnavailableException(msg: Int = -1) : LibNexaExceptionI(S.unavailable, i18n(msg))
+open class UnavailableException(msg: String? = null) : LibNexaExceptionI(S.unavailable, msg)
+{
+    constructor(msg: Int):this(i18n(msg)) {}
+}
 open class UiUnavailableException(msg: Int = -1) : LibNexaExceptionI(S.unavailable, i18n(msg))
+
+open class CannotLoadException:UnavailableException(S.unavailable)
 
 open class TdppException(err: Int? = null, details: String?) : LibNexaExceptionI(if (err != null) err else S.unknownError, details, ErrorSeverity.Abnormal)
 
@@ -29,3 +34,5 @@ fun<T> exceptNull(logTest:((e:Exception)->Boolean)? = null,doit: ()->T?):T?
     }
     return null
 }
+
+open class IdentityException(msg: String, shortMsg: String? = null, severity: ErrorSeverity = ErrorSeverity.Abnormal) : LibNexaException(msg, shortMsg, severity)

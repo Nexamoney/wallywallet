@@ -15,13 +15,17 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import kotlinx.coroutines.*
 import org.nexa.libnexakotlin.*
-import com.eygraber.uri.*
 import com.ionspin.kotlin.bignum.decimal.DecimalMode
 import com.ionspin.kotlin.bignum.decimal.RoundingMode
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.client.request.*
+import io.ktor.http.*
+import io.ktor.util.*
+import io.ktor.util.cio.*
 import kotlinx.datetime.LocalDateTime
 import okio.utf8Size
 
@@ -34,6 +38,8 @@ expect fun GetHttpClient(timeoutInMs: Number):HttpClient
 expect fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
 
 expect fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: MutableSet<String>?=null): String
+
+
 
 data class PlatformCharacteristics(
   /** Does this platform support QR code scanning */
@@ -56,7 +62,7 @@ data class PlatformCharacteristics(
    * (and as part of your native set-up, turn off rotating) */
   val landscape: Boolean,
   /** Return true if the platform supports the concept of "sharing" (setting to true adds a share button in various places in the UX) */
-  val hasShare: Boolean,
+  val hasShare: Boolean
 )
 
 /** Return details about this platform */
@@ -65,6 +71,13 @@ expect fun platform(): PlatformCharacteristics
 /** Actually share this text using the platform's share functionality */
 expect fun platformShare(textToShare: String)
 
+
+/** Initiate a platform-level notification message.  Note that these messages visually disrupt the user's potentially unrelated task
+ * and may play a sound, so this must be used sparingly.
+ */
+expect fun platformNotification(message:String, title: String? = null, onclickUrl:String? = null)
+
+expect fun assetManagerStorage(): AssetManagerStorage
 
 
 class ImageContainer
@@ -198,7 +211,40 @@ fun dbgAssertNotGuiThread()
 /** load this Uri (blocking).
  * @return The Uri body contents as a string, and the status code.  If status code 301 or 302 is returned (forwarding) then return the forwarding Uri in the first parameter.
  */
-fun Uri.loadTextAndStatus(timeoutInMs: Number): Pair<String,Int>
+fun com.eygraber.uri.Uri.loadTextAndStatus(timeoutInMs: Number): Pair<String,Int>
+{
+    val client = HttpClient() {
+        install(HttpTimeout) {
+            requestTimeoutMillis = timeoutInMs.toLong()
+            // connectTimeoutMillis  // time to connect
+            // socketTimeoutMillis   // time between 2 data packets
+        }
+    }
+    var access = this.toString()
+
+    return runBlocking {
+        var tries = 0
+        while (tries < 10)
+        {
+            tries++
+            val resp = client.get(access)
+            val status = resp.status.value
+            if ((status == 301) or (status == 302))  // Handle URL forwarding (often switching from http to https)
+            {
+                val newLoc = resp.request.headers.get("Location")
+                if (newLoc != null) access = newLoc
+                else throw CannotLoadException()
+            }
+            else return@runBlocking Pair(resp.bodyAsText(), status)
+        }
+        throw CannotLoadException()
+    }
+}
+
+/** load this Uri (blocking).
+ * @return The Uri body contents as a string, and the status code.  If status code 301 or 302 is returned (forwarding) then return the forwarding Uri in the first parameter.
+ */
+fun io.ktor.http.Url.readText(timeoutInMs: Number, maxReadSize: Number = 250000000): String
 {
     val client = HttpClient() {
         install(HttpTimeout) {
@@ -208,7 +254,27 @@ fun Uri.loadTextAndStatus(timeoutInMs: Number): Pair<String,Int>
         }
     }
 
+    var url:io.ktor.http.Url = this
     return runBlocking {
+        var tries = 0
+        while (tries < 10)
+        {
+            tries++
+            val resp: HttpResponse = client.get(url) {
+                // Configure request parameters exposed by HttpRequestBuilder
+            }
+            val status = resp.status.value
+            if ((status == 301) or (status == 302))  // Handle URL forwarding (often switching from http to https)
+            {
+                val newLoc = resp.request.headers.get("Location")
+                if (newLoc != null) url = io.ktor.http.Url(newLoc)
+                else throw CannotLoadException()
+            }
+            return@runBlocking resp.bodyAsText()
+        }
+        throw CannotLoadException()
+
+        /*
         val resp = client.get(this.toString())
         val status = resp.status.value
         if ((status == 301) or (status == 302))  // Handle URL forwarding (often switching from http to https)
@@ -216,7 +282,53 @@ fun Uri.loadTextAndStatus(timeoutInMs: Number): Pair<String,Int>
             Pair(resp.request.headers.get("Location") ?: "", status)
         }
         else Pair(resp.bodyAsText(), status)
+
+         */
     }
+}
+
+/** This helper function reads the contents of the URL.  This duplicates the API of other URL classes */
+fun io.ktor.http.Url.readBytes(timeoutInMs: Number = 10000, maxReadSize: Number = 250000000): ByteArray
+{
+    val client = HttpClient() {
+        install(HttpTimeout) {
+            requestTimeoutMillis = timeoutInMs.toLong()
+            // connectTimeoutMillis  // time to connect
+            // socketTimeoutMillis   // time between 2 data packets
+        }
+    }
+    var url:io.ktor.http.Url = this
+
+    return runBlocking {
+        var tries = 0
+        while (tries < 10)
+        {
+            val resp: HttpResponse = client.get(url) {
+                // Configure request parameters exposed by HttpRequestBuilder
+            }
+            val status = resp.status.value
+            if ((status == 301) or (status == 302))  // Handle URL forwarding (often switching from http to https)
+            {
+                val newLoc = resp.request.headers.get("Location")
+                if (newLoc != null) url = io.ktor.http.Url(newLoc)
+                else throw CannotLoadException()
+            }
+            return@runBlocking resp.bodyAsChannel().toByteArray(maxReadSize.toInt())
+        }
+        throw CannotLoadException()
+    }
+}
+
+fun io.ktor.http.Url.resolve(relativeUrl: io.ktor.http.Url): io.ktor.http.Url
+{
+    TODO()
+    // return io.ktor.http.Url(this.toURI().resolve(relativeUrl.toURI()).toString())
+}
+
+fun io.ktor.http.Url.resolve(relativeUrl: String): io.ktor.http.Url
+{
+    TODO()
+    //return io.ktor.http.Url(this.toURI().resolve(relativeUrl).toString())
 }
 
 /*
@@ -241,13 +353,13 @@ fun Uri.accessWithError(): Pair<String,Int>
 
  */
 
-suspend fun Uri.coaccess(): String
+suspend fun com.eygraber.uri.Uri.coaccess(): String
 {
     val client = HttpClient()
     return client.get(this.toString()).bodyAsText()
 }
 
-fun Uri.body(): String
+fun com.eygraber.uri.Uri.body(): String
 {
     val suri = toString()
     var start = suri.indexOf(':')
@@ -258,7 +370,7 @@ fun Uri.body(): String
 
 /** Return the parameters in this Url.  If a parameter name is repeated, return only the first instance.
  */
-fun Uri.queryMap(): Map<String, String>
+fun com.eygraber.uri.Uri.queryMap(): Map<String, String>
 {
     // painful, but we need to trick the standard code into seeing this as a "hierarchial" URI so that it will parse parameters.
     val suri = toString()
@@ -266,7 +378,7 @@ fun Uri.queryMap(): Map<String, String>
     if (index == -1) return mapOf()
     val fakeHeirarchicalUri = "http://a.b/_" + suri.drop(index)
     // To decode the parameters, we drop our scheme (blockchain identifier) and replace with http, so the standard Url parser will do the job for us.
-    val u = Uri.parse(fakeHeirarchicalUri)
+    val u = com.eygraber.uri.Uri.parse(fakeHeirarchicalUri)
 
     // The parameters property of Ktor's Url class already provides parsed and decoded query parameters.
     val parameters = mutableMapOf<String, String>()

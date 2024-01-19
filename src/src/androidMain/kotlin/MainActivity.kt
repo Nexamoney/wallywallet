@@ -152,7 +152,7 @@ class MainActivity : CommonNavActivity()
     var askedForConfirmation = false
 
     val assetManager
-        get() = wallyAndroidApp!!.assetManager
+        get() = wallyApp!!.assetManager
 
     fun onBlockchainChange(blockchain: Blockchain)
     {

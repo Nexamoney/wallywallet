@@ -2,7 +2,6 @@ package info.bitcoinunlimited.www.wally.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,12 +17,10 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.nexa.libnexakotlin.NexaFormat
 import org.nexa.libnexakotlin.launch
 import androidx.compose.ui.zIndex
-import com.eygraber.uri.Uri
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
-import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.HomeScreen")
@@ -34,14 +31,14 @@ with member variables and member functions defined in it.
 We could use a composable "State Holder" (in theory) to capture all the state needed by the member functions, but creating a state holder appears to entail
 writing a vast amount of inscrutible garbage rather than actual useful code.
 * */
-fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: MutableState<ListifyMap<String, Account>>, driver: MutableState<GuiDriver?>, nav: ScreenNav, navigation: ChildNav)
+fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: MutableState<ListifyMap<String, Account>>, driver: MutableState<GuiDriver?>, nav: ScreenNav)
 {
     var isSending by remember { mutableStateOf(false) }
     var isScanningQr by remember { mutableStateOf(false) }
 
     val synced = remember { mutableStateOf(wallyApp!!.isSynced()) }
     var currentReceive by remember { mutableStateOf<String?>(null) }
-    var sendAmount by remember { mutableStateOf<String>("") }
+    var sendQuantity = remember { mutableStateOf<String>("") }
     var sendFromAccount by remember { mutableStateOf<String>(selectedAccount.value?.name ?: wallyApp?.focusedAccount?.name ?: "") }
 
     var warnBackupRecoveryKey = remember { mutableStateOf(false) }
@@ -55,9 +52,8 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
     var currencyCode by remember { mutableStateOf(i18n(S.choose)) } // TODO: get from local db
 
     var sendToAddress by remember { mutableStateOf("") }
+    var sendNote = remember { mutableStateOf("") }
     val sendCurrencyChoices: MutableState<List<String>> = remember { mutableStateOf(listOf()) }
-    // var sendQuantity by remember { mutableStateOf("") }
-    var sendQuantity = remember { mutableStateOf("") }
 
     /** If we've already put up an error for this address, don't do it again */
     var alreadyErroredAddress: MutableState<PayAddress?> = remember { mutableStateOf(null) }
@@ -66,6 +62,8 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
     var lastSendFromAccountName by remember { mutableStateOf("") }
 
     val clipmgr: ClipboardManager = LocalClipboardManager.current
+
+    var oldDriver = remember { mutableStateOf<GuiDriver?>(null) }
 
     /**
      * View for receiving funds
@@ -379,14 +377,11 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
                 // This payment in progress looks ok, set up the UX to show it
                 if (true)
                 {
-                    val act = updateSendAccount(chainSelector)
-
+                    updateSendAccount(chainSelector)
                     sendQuantity.value = mBchFormat.format(amt)
-
                     selectedAccount.value?.let {
                         checkSendQuantity(sendQuantity.value, it)
                     }
-
                     pip.memo?.let {
                         topInformation = it
                     }
@@ -400,7 +395,6 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
                      */
 
                     sendToAddress = ""
-
                     var count = 0
                     paymentInProgress.value?.outputs?.let {
                         for (out in it)
@@ -469,14 +463,15 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
     }
 
     // Handle incoming GUI changes
-    val tmp = driver.value
-    if (tmp != null)
+    if (driver.value != oldDriver.value)
     {
-        if (tmp.sendAddress != null)  // If we are driving send data, fill all the fields
+        val tmp = driver.value
+        if (tmp?.sendAddress != null)  // If we are driving send data, fill all the fields
         {
             isSending = true
             tmp.sendAddress?.let { sendToAddress = it }
-            tmp.amount?.let { sendAmount = NexaFormat.format(it) }
+            tmp.amount?.let { sendQuantity.value = NexaFormat.format(it) }
+            tmp.note?.let { sendNote.value = it }
             val act:Account? = if (tmp.account != null)
             {
                 tmp.account
@@ -495,8 +490,8 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
             }
         }
 
-        if (tmp.show?.contains(ShowIt.WARN_BACKUP_RECOVERY_KEY) == true) warnBackupRecoveryKey.value = true
-        driver.value = null  // If I don't clear this mutable state, it'll set every single time, rendering these fields uneditable
+        if (tmp?.show?.contains(ShowIt.WARN_BACKUP_RECOVERY_KEY) == true) warnBackupRecoveryKey.value = true
+        oldDriver.value = driver.value  // If I don't clear this mutable state, it'll set every single time, rendering these fields uneditable
     }
 
 
@@ -560,7 +555,6 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
 
                 if (!platform().usesMouse)
                 {
-                    val scope = rememberCoroutineScope()
                     WallyBoringIconButton("icons/clipboard.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
                         val cliptext = clipmgr.getText()?.text
                         if (cliptext != null && cliptext != "")
@@ -583,6 +577,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
                       accountNames = accountGuiSlots.value.map { it.name },
                       currencyCode = currencyCode,
                       toAddress = sendToAddress,
+                      note = sendNote,
                       sendQuantity = sendQuantity,
                       paymentInProgress = paymentInProgress.value,
                       setSendQuantity = {

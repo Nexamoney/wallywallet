@@ -1,20 +1,22 @@
 // This should become a library
 package info.bitcoinunlimited.www.wally
 
+// TODO multiplatform Zip parsing
+//import java.util.zip.ZipEntry
+//import java.util.zip.ZipInputStream
+//import java.util.zip.ZipOutputStream
+
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.Json
-import java.io.*
-import java.nio.file.Path
-import java.util.zip.ZipEntry
-import java.util.zip.ZipInputStream
-import java.util.zip.ZipOutputStream
-import kotlin.io.path.Path
-import kotlin.io.path.copyTo
+//import kotlin.io.path.Path
+//import kotlin.io.path.copyTo
 import com.ionspin.kotlin.bignum.decimal.*
-
-import kotlin.io.path.absolutePathString
-import kotlin.io.path.deleteIfExists
+import okio.FileSystem
+import okio.Path
+import okio.Path.Companion.toPath
+//import kotlin.io.path.absolutePathString
+//import kotlin.io.path.deleteIfExists
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("nifty.nftTools")
@@ -45,7 +47,7 @@ var IMMAG = "/usr/bin/convert"
 
 // And create a scratch space for temporary files
 var BASE_DIR = ""
-var NFTY_TMP_PATH = Path(BASE_DIR + "/tmp")
+var NFTY_TMP_PATH = (BASE_DIR + "/tmp").toPath()
 var NFTY_TMP_PREFIX = "nfty"
 
 // If we have to transcode, this is what we convert to
@@ -121,6 +123,8 @@ data class NexaNFTv2(
 /** return filename and data of the public card front */
 fun nftCardFront(nftyZip: ByteArray):Pair<String?, ByteArray?>
 {
+    TODO()
+    /*
     val zipIn = ZipInputStream(ByteArrayInputStream(nftyZip))
     var entry = zipIn.nextEntry
 
@@ -136,10 +140,14 @@ fun nftCardFront(nftyZip: ByteArray):Pair<String?, ByteArray?>
     }
     zipIn.close()
     return Pair(null,null)
+
+     */
 }
 
 fun nftCardBack(nftyZip: ByteArray):Pair<String?, ByteArray?>
 {
+    TODO()
+    /*
     val zipIn = ZipInputStream(ByteArrayInputStream(nftyZip))
     var entry = zipIn.nextEntry
 
@@ -155,10 +163,13 @@ fun nftCardBack(nftyZip: ByteArray):Pair<String?, ByteArray?>
     }
     zipIn.close()
     return Pair(null,null)
+     */
 }
 
 fun nftPublicMedia(nftyZip: ByteArray):Pair<String?, ByteArray?>
 {
+    TODO()
+    /*
     val zipIn = ZipInputStream(ByteArrayInputStream(nftyZip))
     var entry = zipIn.nextEntry
 
@@ -174,10 +185,14 @@ fun nftPublicMedia(nftyZip: ByteArray):Pair<String?, ByteArray?>
     }
     zipIn.close()
     return Pair(null,null)
+
+     */
 }
 
 fun nftOwnerMedia(nftyZip: ByteArray):Pair<String?, ByteArray?>
 {
+     TODO()
+    /*
     val zipIn = ZipInputStream(ByteArrayInputStream(nftyZip))
     var entry = zipIn.nextEntry
 
@@ -193,10 +208,14 @@ fun nftOwnerMedia(nftyZip: ByteArray):Pair<String?, ByteArray?>
     }
     zipIn.close()
     return Pair(null,null)
+
+     */
 }
 
 fun nftData(nftyZip: ByteArray): NexaNFTv2?
 {
+     TODO()
+    /*
     val zipIn = ZipInputStream(ByteArrayInputStream(nftyZip))
     var entry = zipIn.nextEntry
 
@@ -217,6 +236,8 @@ fun nftData(nftyZip: ByteArray): NexaNFTv2?
     }
     zipIn.close()
     return null
+
+     */
 }
 
 // dataFile includes the extension, and mediaType is the "canonicalExtension()" so they are a little redundant
@@ -230,6 +251,8 @@ data class NFTCreationData(val dataFile: String, val mediaType: String,
 
 fun makeNftyZip(outFile: Path, data: NFTCreationData, outputPrefix: String, parentGroupId: GroupId): GroupId
 {
+    TODO()
+    /*
     if (true)
     {
         val zout = ZipOutputStream(BufferedOutputStream(FileOutputStream(outFile.toFile())))
@@ -332,15 +355,28 @@ fun makeNftyZip(outFile: Path, data: NFTCreationData, outputPrefix: String, pare
 
     LogIt.info("created: " + finalName)
     return nftGroup
+
+     */
 }
 
-fun generateCardFile(preferred: String?, backup: String?): File?
+fun Path.extension(): String
 {
+    return this.name.substringAfterLast(".")
+}
+
+fun generateCardFile(preferred: String?, backup: String?): Path?
+{
+    TODO()
+    /*
     val origfname = preferred ?: backup
     if (origfname == null) return null
 
+    val fileMetadata = FileSystem.SYSTEM.metadata(origfname.toPath())
+    val fpath = origfname.toPath()
+
+
     // If the file is too big to show as a card, then convert it to a smaller one
-    val ret = if (File(origfname).length() > NFTY_MINT_MAX_CARD_SIZE)
+    val ret = if (fileMetadata.size ?: 0 > NFTY_MINT_MAX_CARD_SIZE)
     {
         // So createTempFile is carefully made to not allow it to overlap with some other newly created file
         // But we NEED that to happen because ffmpeg is going to generate the file
@@ -361,7 +397,7 @@ fun generateCardFile(preferred: String?, backup: String?): File?
         }
         else
         {
-            val newExt = if (File(origfname).extension == "svg") NFTY_PREFERRED_BITMAP_EXTENSION else File(origfname).extension
+            val newExt = if (fpath.extension() == "svg") NFTY_PREFERRED_BITMAP_EXTENSION else fpath.extension()
             val tfile = kotlin.io.path.createTempFile(NFTY_TMP_PATH, NFTY_TMP_PREFIX, "." + newExt)
             tfile.deleteIfExists()
             fname = tfile.absolutePathString()
@@ -372,9 +408,11 @@ fun generateCardFile(preferred: String?, backup: String?): File?
             val result = exec.runCommand()
             LogIt.info(result ?: "null")
         }
-        File(fname)
+        fname.toPath()
     }
-    else File(origfname)
+    else fpath
 
     return ret
+
+     */
 }

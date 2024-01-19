@@ -7,7 +7,8 @@ import org.nexa.libnexakotlin.millinow
 
 enum class AlertLevel(val level: Int)
 {
-    NOTICE(10),  // Green
+    SUCCESS(1), // Green
+    NOTICE(10),  // yellow
     WARN(50),    // yellow
     ERROR(100),  // red
     EXCEPTION(200); // red
@@ -39,6 +40,22 @@ fun clearAlerts(maxLevel: AlertLevel = AlertLevel.EXCEPTION)
 {
     val alert = Alert("", null, maxLevel, null, false, 0)
     launch { alertChannel.send(alert) }
+}
+
+/** Display a notice message, and add it to the list of alerts */
+fun displaySuccess(summary: Int, message: String?=null, persistAcrossScreens: Boolean=true) = displayNotice(i18n(summary), message, persistAcrossScreens)
+
+fun displaySuccess(summary: String, message: String?=null, persistAcrossScreens: Boolean=true)
+{
+    val alert = Alert(summary, message, AlertLevel.SUCCESS, null, persistAcrossScreens, NORMAL_NOTICE_DISPLAY_TIME)
+
+    if (platform().hasNativeTitleBar)
+        displayAlert(alert)
+    else
+    {
+        alerts.add(alert)
+        launch { alertChannel.send(alert) }
+    }
 }
 
 /** Display a notice message, and add it to the list of alerts */

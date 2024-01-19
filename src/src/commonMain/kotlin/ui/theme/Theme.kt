@@ -365,10 +365,10 @@ fun ErrorText(errorText: String, modifier: Modifier)
 
 /* Styling for the text of page titles */
 @Composable
-fun TitleText(textRes: Int, modifier: Modifier) = TitleText(i18n(textRes), modifier)
+fun TitleText(textRes: Int, modifier: Modifier = Modifier) = TitleText(i18n(textRes), modifier)
 
 @Composable
-fun TitleText(text: String, modifier: Modifier)
+fun TitleText(text: String, modifier: Modifier = Modifier)
 {
     Text(
       text = text,
@@ -406,6 +406,11 @@ fun SectionText(text: String, modifier: Modifier = Modifier)
       style = WallySectionTextStyle()
     )
 }
+
+/* Styling for the text of titles that appear within a page */
+@Composable
+fun CenteredSectionText(text: Int, modifier: Modifier = Modifier) =
+  CenteredSectionText(i18n(text), modifier)
 
 /* Styling for the text of titles that appear within a page */
 @Composable

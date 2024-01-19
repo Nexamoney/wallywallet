@@ -107,7 +107,7 @@ class IdentityOpActivity : CommonNavActivity()
             if (h == null)
             {
                 blankActivity()
-                wallyApp?.displayError(R.string.badLink)
+                displayError(R.string.badLink)
                 finish()
                 return
             }
@@ -155,7 +155,7 @@ class IdentityOpActivity : CommonNavActivity()
                         if (op != "reg")
                         {
                             blankActivity()
-                            wallyApp?.displayError(R.string.UnknownDomainRegisterFirst)
+                            displayError(R.string.UnknownDomainRegisterFirst)
                             finish()
                             return
                         }
@@ -306,7 +306,7 @@ class IdentityOpActivity : CommonNavActivity()
             }
             else
             {
-                wallyApp?.displayError(R.string.NoAccounts)
+                displayError(R.string.NoAccounts)
                 finish()
                 return
             }
@@ -373,7 +373,7 @@ class IdentityOpActivity : CommonNavActivity()
                     val tmpHost = iuri.host
                     if (tmpHost == null)
                     {
-                        wallyApp?.displayError(R.string.badLink)
+                        displayError(R.string.badLink)
                         finish()
                         return@launch
                     }
@@ -541,7 +541,7 @@ class IdentityOpActivity : CommonNavActivity()
                         val msg = msgToSign
                         if (msg == null)
                         {
-                            wallyApp?.displayError(R.string.nothingToSign)
+                            displayError(R.string.nothingToSign)
                             clearIntentAndFinish()
                         }
                         else
@@ -549,7 +549,7 @@ class IdentityOpActivity : CommonNavActivity()
                             val msgSig = libnexa.signMessage(msg, secret.getSecret())
                             if (msgSig == null || msgSig.size == 0)
                             {
-                                wallyApp?.displayError(R.string.badSignature)
+                                displayError(R.string.badSignature)
                                 clearIntentAndFinish()
                             }
                             else
@@ -561,7 +561,7 @@ class IdentityOpActivity : CommonNavActivity()
                                     LogIt.info(s)
                                     setTextClipboard(s)
                                 }
-                                wallyApp?.displayNotice(R.string.sigInClipboard)
+                                displayNotice(R.string.sigInClipboard)
 
                                 val reply = attribs["reply"]
                                 if (reply == null || reply == "true")
@@ -603,7 +603,7 @@ class IdentityOpActivity : CommonNavActivity()
                                             LogIt.info("signature response code:" + status.toString() + " response: " + resp)
                                             if ((status >= 200) and (status < 250))
                                             {
-                                                wallyApp?.displayNotice(resp)
+                                                displayNotice(resp)
                                                 clearIntentAndFinish()
                                             }
                                             else if ((status == 301) or (status == 302))  // Handle URL forwarding (often switching from http to https)
@@ -614,25 +614,25 @@ class IdentityOpActivity : CommonNavActivity()
                                             }
                                             else
                                             {
-                                                wallyApp?.displayNotice(resp)
+                                                displayNotice(resp)
                                                 clearIntentAndFinish()
                                             }
 
                                         }
                                         catch (e: FileNotFoundException)
                                         {
-                                            wallyApp?.displayError(R.string.badLink)
+                                            displayError(R.string.badLink)
                                             clearIntentAndFinish()
                                         }
                                         catch (e: IOException)
                                         {
                                             logThreadException(e)
-                                            wallyApp?.displayError(R.string.connectionAborted)
+                                            displayError(R.string.connectionAborted)
                                             clearIntentAndFinish()
                                         }
                                         catch (e: java.net.ConnectException)
                                         {
-                                            wallyApp?.displayError(R.string.connectionException)
+                                            displayError(R.string.connectionException)
                                             clearIntentAndFinish()
                                         }
                                         break@getloop  // only way to actually loop is to hit a 301 or 302
@@ -679,8 +679,8 @@ class IdentityOpActivity : CommonNavActivity()
     fun clearIntentAndFinish(error: String? = null, details: String? = null)
     {
         intent.putExtra("repeat", "true")
-        if (error != null) wallyApp?.displayError(S.reject, error)
-        else if (details != null) wallyApp?.displayNotice(details)
+        if (error != null) displayError(S.reject, error)
+        else if (details != null) displayNotice(details)
         setResult(Activity.RESULT_OK, intent)
         finish()
     }
