@@ -24,17 +24,6 @@ import org.nexa.threads.Mutex
 
 private val LogIt = GetLog("BU.wally.TricklePay")
 
-
-// Must be top level for the serializer to handle it
-@Keep
-@kotlinx.serialization.Serializable
-data class TricklePayAssetInfo(val outpointHash: String, val amt: Long, val prevout: String, val proof: String? = null)
-
-@Keep
-@kotlinx.serialization.Serializable
-data class TricklePayAssetList(val assets: List<TricklePayAssetInfo>)
-
-
 class TricklePayEmptyFragment : Fragment()
 {
     public lateinit var ui:TricklePayEmptyBinding
@@ -76,7 +65,7 @@ class TricklePayMainFragment : Fragment()
 
     fun populate()
     {
-        val app = wallyAndroidApp  // TODO move tpDomains to common
+        val app = wallyApp
         if (app!=null)
         {
             val domains = ArrayList(app.tpDomains.domains.values)
@@ -109,7 +98,7 @@ class TricklePayRegFragment : Fragment()
         catch(e: WalletInvalidException)
         {
             val tpAct = getActivity() as TricklePayActivity
-            wallyApp?.displayError(R.string.NoAccounts)
+            displayError(R.string.NoAccounts)
             tpAct.finish()
         }
 
@@ -562,7 +551,7 @@ class TricklePayActivity : CommonNavActivity()
     var pinTries = 0
 
     // We must have an app by the time an activity is created
-    val tpDomains = wallyAndroidApp!!.tpDomains
+    val tpDomains = wallyApp!!.tpDomains
 
     fun setSelectedInfoDomain(d: TdppDomain)
     {
@@ -668,7 +657,7 @@ class TricklePayActivity : CommonNavActivity()
         }
         catch(e:LibNexaExceptionI)
         {
-            wallyApp?.displayException(e)
+            displayException(e)
             finish()
             return
         }
@@ -722,7 +711,7 @@ class TricklePayActivity : CommonNavActivity()
         catch(e:LibNexaExceptionI)
         {
             displayFragment(R.id.GuiTricklePayEmpty)
-            wallyApp?.displayException(e)
+            displayException(e)
             clearIntentAndFinish()
             return
         }
@@ -762,7 +751,7 @@ class TricklePayActivity : CommonNavActivity()
         catch(e:LibNexaExceptionI)
         {
             displayFragment(R.id.GuiTricklePayEmpty)
-            wallyApp?.displayException(e)
+            displayException(e)
             clearIntentAndFinish()
             return
         }
@@ -897,20 +886,20 @@ class TricklePayActivity : CommonNavActivity()
                 LogIt.info(sourceLoc() + "Full Intent=${iuri.toString()}")
                 if (h == null)
                 {
-                    wallyApp?.displayError(R.string.BadWebLink, "no host provided")
+                    displayError(R.string.BadWebLink, "no host provided")
                     clearIntentAndFinish()
                     return
                 }
                 if (path == null)
                 {
-                    wallyApp?.displayError(R.string.badLink,i18n(R.string.unknownOperation) % mapOf("op" to "no operation"))
+                    displayError(R.string.badLink,i18n(R.string.unknownOperation) % mapOf("op" to "no operation"))
                     clearIntentAndFinish()
                     return
                 }
 
                 if (sess.sigOk == false)  // it is never correct to send a bad signature, even if signatures are optional
                 {
-                    wallyApp?.displayError(R.string.badSignature)
+                    displayError(R.string.badSignature)
                     clearIntentAndFinish()
                     return
                 }
@@ -983,21 +972,21 @@ class TricklePayActivity : CommonNavActivity()
                             }
                             else
                             {
-                                wallyApp?.displayError(R.string.badLink,i18n(R.string.unknownOperation) % mapOf("op" to path))
+                                displayError(R.string.badLink,i18n(R.string.unknownOperation) % mapOf("op" to path))
                                 clearIntentAndFinish()
                                 return@later
                             }
                         }
                         else
                         {
-                            wallyApp?.displayError(R.string.badLink, i18n(R.string.unknownOperation) % mapOf("op" to "no operation"))
+                            displayError(R.string.badLink, i18n(R.string.unknownOperation) % mapOf("op" to "no operation"))
                             clearIntentAndFinish()
                             return@later
                         }
                     }
                     catch (e: WalletInvalidException)
                     {
-                        wallyApp?.displayError(R.string.NoAccounts, R.string.badCryptoCode)
+                        displayError(R.string.NoAccounts, R.string.badCryptoCode)
                         clearIntentAndFinish()
                         return@later
                     }
@@ -1005,26 +994,26 @@ class TricklePayActivity : CommonNavActivity()
             }
             else  // This should never happen because the AndroidManifest.xml Intent filter should match the URIs that we handle
             {
-                wallyApp?.displayError(R.string.badLink,sourceLoc() + ": bad link " + receivedIntent.scheme)
+                displayError(R.string.badLink,sourceLoc() + ": bad link " + receivedIntent.scheme)
                 clearIntentAndFinish()
                 return
             }
         }
         catch (e: LibNexaExceptionI)
         {
-            wallyApp?.displayException(e)
+            displayException(e)
             clearIntentAndFinish()
         }
         catch (e: LibNexaException)
         {
             handleThreadException(e)
-            wallyApp?.displayError(R.string.unknownError, e.toString())
+            displayError(R.string.unknownError, e.toString())
             clearIntentAndFinish()
         }
         catch (e: Exception)
         {
             handleThreadException(e)
-            wallyApp?.displayError(R.string.unknownError, e.toString())
+            displayError(R.string.unknownError, e.toString())
             clearIntentAndFinish()
         }
     }
@@ -1051,8 +1040,8 @@ class TricklePayActivity : CommonNavActivity()
     fun clearIntentAndFinish(error: Int? = null, notice: Int? = null, up: Boolean = false, details: String? = null )
     {
         wallyAndroidApp?.denotify(intent)
-        if (error != null) if (details != null) wallyApp?.displayError(error, details) else wallyApp?.displayError(error)
-        if (notice != null) if (details != null) wallyApp?.displayNotice(notice, details) else wallyApp?.displayNotice(notice)
+        if (error != null) if (details != null) displayError(error, details) else displayError(error)
+        if (notice != null) if (details != null) displayNotice(notice, details) else displayNotice(notice)
         setResult(Activity.RESULT_OK, intent)
         tpSession = null
         if (goHomeWhenDone)
@@ -1204,14 +1193,14 @@ class TricklePayActivity : CommonNavActivity()
     {
         if (pinTries < 2)
         {
-            if (pinTries > 0) wallyApp?.displayError(R.string.InvalidPIN)
+            if (pinTries > 0) displayError(R.string.InvalidPIN)
             val intent = Intent(this, UnlockActivity::class.java)
             pinTries += 1
             startActivity(intent)
         }
         else
         {
-            wallyApp?.displayError(R.string.InvalidPIN)
+            displayError(R.string.InvalidPIN)
             finish()
         }
     }
@@ -1250,13 +1239,13 @@ class TricklePayActivity : CommonNavActivity()
         }
         catch (e: LibNexaExceptionI)
         {
-            wallyApp?.displayException(e)
+            displayException(e)
             finish()
         }
         catch (e: LibNexaException)
         {
             handleThreadException(e)
-            wallyApp?.displayError(R.string.unknownError, e.toString())
+            displayError(R.string.unknownError, e.toString())
             finish()
         }
     }
@@ -1291,7 +1280,7 @@ class TricklePayActivity : CommonNavActivity()
         }
         catch (e: LibNexaExceptionI)
         {
-            wallyApp?.displayException(e)
+            displayException(e)
             clearIntentAndFinish()
         }
         catch (e: LibNexaException)
@@ -1299,11 +1288,11 @@ class TricklePayActivity : CommonNavActivity()
             handleThreadException(e)
             if (e.errCode != -1)
             {
-                wallyApp?.displayError(e.errCode, e.message ?: "")
+                displayError(e.errCode, e.message ?: "")
             }
             else
             {
-                 wallyApp?.displayError(R.string.unknownError, e.toString())
+                 displayError(R.string.unknownError, e.toString())
             }
             clearIntentAndFinish()
         }

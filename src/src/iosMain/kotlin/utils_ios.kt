@@ -27,6 +27,7 @@ actual fun GetHttpClient(timeoutInMs: Number): HttpClient = HttpClient(CIO)
 /** Converts an encoded URL to a raw string */
 actual fun String.urlDecode():String
 {
+    //decodeURLParameter()
     TODO()
 }
 
@@ -34,6 +35,7 @@ actual fun String.urlDecode():String
 actual fun String.urlEncode():String
 {
     TODO()
+    //encodeURLParameter(true)
 }
 
 /** Get the clipboard.  Platforms that have a clipboard history should return that history, with the primary clip in index 0 */
@@ -99,3 +101,7 @@ val iosPlatformCharacteristics = PlatformCharacteristics(
   )
 actual fun platform(): PlatformCharacteristics = iosPlatformCharacteristics
 
+actual fun platformNotification(message:String, title: String?, onclickUrl:String?)
+{
+    // TODO issue an ios notification
+}

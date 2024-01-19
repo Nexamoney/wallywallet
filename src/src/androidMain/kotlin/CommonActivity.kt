@@ -347,36 +347,12 @@ open class CommonActivity : AppCompatActivity()
 
     fun displayPendingTopbarMessages()
     {
-        // show anything provided by the other activity
-        val err = wallyApp?.lastError
-        val errDetails = wallyApp?.lastErrorDetails
-        wallyApp?.lastError = null
-        wallyApp?.lastErrorDetails = null
-
-        if (err != null) displayError(err, errDetails ?: "")
-        else  // If there's an error, it takes precedence to warnings
-        {
-            val notice = wallyApp?.lastNotice
-            val noticeDetails = wallyApp?.lastNoticeDetails
-            if (notice != null)
-            {
-                if ((notice == -1) && (noticeDetails != null)) displayNotice(noticeDetails, "", NORMAL_NOTICE_DISPLAY_TIME)
-                else displayNotice(notice, noticeDetails ?: "", NORMAL_NOTICE_DISPLAY_TIME)
-            }
-        }
-        wallyApp?.lastNotice = null
-        wallyApp?.lastNoticeDetails = null
     }
 
     override fun onResume()
     {
         super.onResume()
         finishShowingNotice()
-        // show anything provided by the other activity
-        val err = wallyApp?.lastError
-        val errDetails = wallyApp?.lastErrorDetails
-        wallyApp?.lastError = null
-        wallyApp?.lastErrorDetails = null
 
         // This code pops out of this activity if the child requested it.  This is needed when an external intent directly
         // spawns a child activity of wally's main activity, but upon completion of that child we want to drop back to the
@@ -390,26 +366,6 @@ open class CommonActivity : AppCompatActivity()
                 finishNow = true
             }
         }
-
-        // I want to display any message before finishing even if the child wants to go back more
-        if (err != null) displayError(err, errDetails ?: "", { if (finishNow) finish()})
-        else  // If there's an error, it takes precedence to warnings
-        {
-            val notice = wallyApp?.lastNotice
-            val noticeDetails = wallyApp?.lastNoticeDetails
-            if (notice != null)
-            {
-                if ((notice == -1) && (noticeDetails != null)) displayNotice(noticeDetails, "", NORMAL_NOTICE_DISPLAY_TIME, { if (finishNow) finish()})
-                else displayNotice(notice, noticeDetails ?: "", NORMAL_NOTICE_DISPLAY_TIME, { if (finishNow) finish()})
-            }
-            else
-            {
-                if (finishNow) finish()
-            }
-
-        }
-        wallyApp?.lastNotice = null
-        wallyApp?.lastNoticeDetails = null
 
         isRunning = true
     }

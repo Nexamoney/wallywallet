@@ -25,6 +25,7 @@ import com.caverock.androidsvg.SVG
 import info.bitcoinunlimited.www.wally.databinding.ActivityAssetsBinding
 import info.bitcoinunlimited.www.wally.databinding.AssetListItemBinding
 import info.bitcoinunlimited.www.wally.databinding.AssetSuccinctListItemBinding
+import io.ktor.http.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -36,320 +37,26 @@ import java.util.concurrent.Executors
 import java.util.zip.ZipInputStream
 import kotlin.coroutines.CoroutineContext
 
+private val LogIt = GetLog("BU.wally.assetactivity")
 
-private val LogIt = GetLog("BU.wally.assets")
-
-var WallyAssetRowColors = arrayOf(0x4Ff5f8ff.toInt(), 0x4Fd0d0ef.toInt())
-
-// If true, do not cache asset info locally -- load it every time
-var DBG_NO_ASSET_CACHE = false
-
-open class IncorrectTokenDescriptionDoc(details: String) : LibNexaException(details, "Incorrect token description document", ErrorSeverity.Expected)
-
-val NIFTY_ART_IP = mapOf(
-  ChainSelector.NEXA to "niftyart.cash",
-  ChainSelector.NEXAREGTEST to "192.168.1.5:8988"
-)
-
-fun String.runCommand(): String?
-{
-    throw UnimplementedException("cannot run executables on Android")
-}
-
-class AssetManager(val app: WallyApp)
-{
-    val transferList = mutableListOf<AssetInfo>()
-
-    fun storeAssetFile(filename: String, data: ByteArray): String
-    {
-        val context = app
-
-        val dir = context.getDir("asset", Context.MODE_PRIVATE)
-        val file = File(dir, filename)
-        FileOutputStream(file).use {
-            it.write(data)
-        }
-        return file.absolutePath
-    }
-
-    fun loadAssetFile(filename: String): Pair<String, ByteArray>
-    {
-        if (DBG_NO_ASSET_CACHE) throw Exception()
-        val context = app
-        val dir = context.getDir("asset", Context.MODE_PRIVATE)
-        val file = File(dir, filename)
-        val name = file.absolutePath
-        FileInputStream(file).use {
-            return Pair(name,it.readBytes())
-        }
-    }
-
-    fun storeCardFile(filename: String, data: ByteArray): String
-    {
-        val context = app
-
-        /*
-        val dir = context.getDir("card", Context.MODE_PRIVATE)
-        val file = File(dir, filename)
-        FileOutputStream(file).use {
-            it.write(data)
-        }
-         */
-
-        val file = context.openFileOutput(filename, Context.MODE_PRIVATE)
-        file.use {
-            it.write(data)
-        }
-        return context.getFileStreamPath(filename).path  //.absolutePath
-    }
-
-    fun loadCardFile(filename: String): Pair<String, ByteArray>
-    {
-        if (DBG_NO_ASSET_CACHE) throw Exception()
-        val context = app
-        val dir = context.getDir("card", Context.MODE_PRIVATE)
-        val file = File(dir, filename)
-        val name = file.absolutePath
-        FileInputStream(file).use {
-            return Pair(name,it.readBytes())
-        }
-    }
-
-    fun nftUrl(s: String?, groupId: GroupId):String?
-    {
-        if (s == null)
-        {
-            return("http://" + NIFTY_ART_IP[groupId.blockchain] + "/_public/" + groupId.toStringNoPrefix())
-        }
-        // TODO many more ways to get it
-        return null
-    }
-
-    /** Adds this asset to the list of assets to be transferred in the next send */
-    fun addAssetToTransferList(a: AssetInfo): Boolean
-    {
-        if (transferList.contains(a)) return false
-        transferList.add(a)
-        return true
-    }
-
-    fun storeTokenDesc(groupId: GroupId, td: TokenDesc)
-    {
-        val ser = kotlinx.serialization.json.Json.encodeToString(TokenDesc.serializer(), td)
-        storeAssetFile(groupId.toHex() + ".td", ser.toByteArray())
-    }
-
-    fun getTokenDesc(chain: Blockchain, groupId: GroupId, forceReload:Boolean = false): TokenDesc
-    {
-        try
-        {
-            if (DBG_NO_ASSET_CACHE) throw Exception()
-            if (forceReload) throw Exception()
-            val data = loadAssetFile(groupId.toHex() + ".td").second
-            val ret = kotlinx.serialization.json.Json.decodeFromString(TokenDesc.serializer(), String(data))
-            if (ret.genesisInfo?.height ?: 0 >= 0)  // If the data is valid in the asset file
-                return ret
-        } catch (e: Exception) // file not found, so grab it
-        {
-        }
-
-        LogIt.info("Genesis Info for ${groupId.toHex()} not in cache")
-        // first load the token description doc (TDD)
-        val ec = openElectrum(chain.chainSelector)
-        val tg = try
-        {
-            ec.getTokenGenesisInfo(groupId, 30 * 1000)
-        } catch (e: ElectrumRequestTimeout)
-        {
-            displayError(R.string.ElectrumNetworkUnavailable, e.message)
-            LogIt.info(sourceLoc() + ": Rostrum is inaccessible loading token info for ${groupId.toHex()}")
-            TokenGenesisInfo(null, null, -1, null, null, "", "", "")
-        }
-
-        val docUrl = tg.document_url
-        if (docUrl != null)
-        {
-            var doc: String? = null
-            try
-            {
-                LogIt.info(sourceLoc() + ": Accessing TDD from " + docUrl)
-                doc = URL(docUrl).readText()
-            } catch (e: java.io.FileNotFoundException)
-            {
-            } catch (e: Exception)
-            {
-                LogIt.info(sourceLoc() + ": Error retrieving token description document: " + e.message)
-            }
-
-            if (doc != null)  // got the TDD
-            {
-                val tx = ec.getTx(tg.txid)
-                var addr: PayAddress? = null
-                for (out in tx.outputs)
-                {
-                    val gi = out.script.groupInfo(out.amount)
-                    if (gi != null)
-                    {
-                        if (gi.groupId == groupId)  // genesis of group must only produce 1 authority output so just match the groupid
-                        {
-                            //assert(gi.isAuthority()) // possibly but double check subgroup creation
-                            addr = out.script.address
-                            break
-                        }
-                    }
-                }
-
-                val td: TokenDesc = decodeTokenDescDoc(doc, addr)
-                val tddHash = td.tddHash
-                if ((tddHash != null) && (tg.document_hash == Hash256(tddHash).toHex()))
-                {
-                    td.genesisInfo = tg
-                    storeTokenDesc(groupId, td)  // We got good data, so cache it
-                    return td
-                }
-                else
-                {
-                    LogIt.info("Incorrect token desc document")
-                    val tderr = TokenDesc(tg.ticker ?: "", tg.name, "token description document is invalid")
-                    tderr.genesisInfo = tg
-                    return tderr
-                }
-            }
-            else  // Could not access the doc for some reason, don't cache it so we retry next time we load the token
-            {
-                val td = TokenDesc(tg.ticker ?: "", tg.name)
-                td.genesisInfo = tg
-                return td
-            }
-        }
-        else // There is no token doc, cache what we have since its everything known about this token
-        {
-            val td = TokenDesc(tg.ticker ?: "", tg.name)
-            td.genesisInfo = tg
-            storeTokenDesc(groupId, td)
-            return td
-        }
-    }
-
-
-    fun getNftFile(td: TokenDesc?, groupId: GroupId):Pair<String,ByteArray>?
-    {
-        try
-        {
-            return loadAssetFile(groupId.toHex() + ".zip")
-        }
-        catch(e: Exception) // file not found
-        {
-            LogIt.info("NFT ${groupId.toHex()} not in cache")
-        }
-
-        var url = td?.nftUrl ?: nftUrl(td?.genesisInfo?.document_url, groupId)
-        LogIt.info(sourceLoc() + ": nft URL: " + url)
-
-        var zipBytes:ByteArray? = null
-        if (url != null)
-        {
-            try
-            {
-                zipBytes = URL(url).readBytes()
-            }
-            catch(e:java.net.MalformedURLException)
-            {
-            }
-            catch(e:java.net.ConnectException)
-            {
-            }
-        }
-
-        // Try well known locations
-        if (zipBytes == null)
-        {
-            try
-            {
-                url = "https://niftyart.cash/_public/${groupId.toHex()}"
-                zipBytes = URL(url).readBytes()
-            }
-            catch(e: Exception)
-            {
-            }
-        }
-
-        if (zipBytes != null)
-        {
-            val zf = ZipInputStream(ByteArrayInputStream(zipBytes))
-            // Just try to go thru the zip dir to see if its basically a valid file
-            val files = generateSequence { zf.nextEntry }.map { it.name }.toList()
-            LogIt.info(sourceLoc() + ": nft zip contents " + files.joinToString(" "))
-            val hash = libnexa.hash256(zipBytes)
-            if (groupId.subgroupData() contentEquals  hash)
-            {
-                storeAssetFile(groupId.toHex() + ".zip", zipBytes)
-                return Pair(url!!, zipBytes)
-            }
-            else
-            {
-                LogIt.info(sourceLoc() + ": nft zip file does not match hash")
-            }
-        }
-        return null
-    }
-
-}
-
-fun openElectrum(chainSelector: ChainSelector): ElectrumClient
-{
-    // TODO we need to wrap all electrum access into a retrier
-    // val ec = chain.net.getElectrum()
-
-    val (svr, port) = getElectrumServerOn(chainSelector)
-
-    val ec = try
-    {
-        ElectrumClient(chainSelector, svr, port, useSSL=true)
-    }
-    catch (e: ElectrumException) // covers java.net.ConnectException, UnknownHostException and a few others that could trigger
-    {
-        try  // If the port is given, it might be a p2p port so try the default electrum port
-        {
-            ElectrumClient(chainSelector, svr, DefaultElectrumTCP[chainSelector] ?: -1, useSSL=false)
-        }
-        catch (e: java.io.IOException) // covers java.net.ConnectException, UnknownHostException and a few others that could trigger
-        {
-            try
-            {
-                ElectrumClient(chainSelector, svr, port, useSSL = false)
-            }
-            catch (e: ElectrumException)
-            {
-                if (chainSelector == ChainSelector.BCH)
-                    ElectrumClient(chainSelector, LAST_RESORT_BCH_ELECTRS)
-                else if (chainSelector == ChainSelector.NEXA)
-                    ElectrumClient(chainSelector, LAST_RESORT_NEXA_ELECTRS, DEFAULT_NEXA_TCP_ELECTRUM_PORT, useSSL = false)
-                else throw e
-            }
-        }
-    }
-    ec.start()
-    return ec
-}
 
 /** shows this image in the passed imageview.  Returns true if imageView chosen, else false */
-fun showMedia(iui: ImageView, vui: VideoView?, uri: Uri?, bytes: ByteArray? = null): Boolean
+fun showMedia(iui: ImageView, vui: VideoView?, url: Url?, bytes: ByteArray? = null): Boolean
 {
     try
     {
-        if (uri == null)
+        if (url == null)
         {
             iui.setImageDrawable(null)
             return true
         }
-        val name = uri.toString().lowercase()
+        val name = url.toString().lowercase()
 
         if (name.endsWith(".svg", true))
         {
             val svg = if (bytes == null)
             {
-                if (uri.scheme == null)
+                if (url.protocol == null)
                 {
                     SVG.getFromInputStream(FileInputStream(name))
                 }
@@ -376,7 +83,7 @@ fun showMedia(iui: ImageView, vui: VideoView?, uri: Uri?, bytes: ByteArray? = nu
         {
             if (bytes == null)
             {
-                if (uri.scheme == null)
+                if (url.protocol == null)
                 {
                     val bmp = BitmapFactory.decodeFile(name)
                     iui.setImageBitmap(bmp)
@@ -399,8 +106,8 @@ fun showMedia(iui: ImageView, vui: VideoView?, uri: Uri?, bytes: ByteArray? = nu
                 name.endsWith(".3gp", true) ||
                 name.endsWith(".mkv", true)))
             {
-                LogIt.info("Video URI: ${uri.toString()}")
-                vui.setVideoPath(uri.toString())
+                LogIt.info("Video URI: ${url.toString()}")
+                vui.setVideoPath(url.toString())
                 vui.start()
                 iui.visibility = View.INVISIBLE  // Can't be GONE because other stuff is positioned against it
                 vui?.visibility = View.VISIBLE
@@ -421,213 +128,6 @@ fun showMedia(iui: ImageView, vui: VideoView?, uri: Uri?, bytes: ByteArray? = nu
         return true
     }
 }
-
-
-class AssetInfo(val groupInfo: GroupInfo)
-{
-    var name:String? = null
-    var ticker:String? = null
-    var genesisHeight:Long = 0
-    var genesisTxidem: Hash256? = null
-    var docHash: Hash256? = null
-    var docUrl: String? = null
-    var tokenInfo: TokenDesc? = null
-    var iconBytes: ByteArray? = null
-    var iconUri: Uri? = null
-    var iconBackBytes: ByteArray? = null
-    var iconBackUri: Uri? = null
-
-    var nft: NexaNFTv2? = null
-
-    var publicMediaCache: String? = null
-    var publicMediaBytes: ByteArray? = null
-    var ownerMediaCache: String? = null
-    var ownerMediaBytes: ByteArray? = null
-
-    // Connection to the UI if shown on screen
-    var ui:AssetBinder? = null
-    var sui:AssetSuccinctBinder? = null
-
-    // display this amount if set (for quantity selection during send)
-    var displayAmount: Long? = null
-
-    var account: Account? = null
-
-    /** Get the file associated with this NFT (if this is an NFT), or null
-     * This function may retrieve this data from a local cache or remotely.
-     * This is a function rather than a val with a getter to emphasize that this might be an expensive operation
-     * */
-    fun nftFile(am: AssetManager):Pair<String,ByteArray>?
-    {
-        // TODO: cache both in RAM and on disk
-        return am.getNftFile(tokenInfo, groupInfo.groupId)
-    }
-
-
-    fun extractNftData(am: AssetManager, grpId: GroupId, nftZip:ByteArray)
-    {
-        // grab image from zip file
-        val (fname, data) = nftCardFront(nftZip)
-        if (fname != null)
-        {
-            iconBytes = data
-            // Note caching is NEEDED to show video (because videoview can only take a file)
-            if (data != null) iconUri = Uri.parse(am.storeCardFile(grpId.toHex() + fname, data))
-            else iconUri = Uri.parse(fname)
-        }
-        val (bname, bdata) = nftCardBack(nftZip)
-        if (bname != null)
-        {
-            iconBackBytes = bdata
-            // Note caching is NEEDED to show video (because videoview can only take a file)
-            if (bdata != null) iconBackUri = Uri.parse(am.storeCardFile(grpId.toHex() + bname, bdata))
-            else iconBackUri = Uri.parse(bname)
-        }
-
-        // grab NFT text data
-        val nfti = nftData(nftZip)
-        if (nfti != null)
-        {
-            nft = nfti
-        }
-    }
-
-    /** returns the Uri and the bytes, or null if nonexistent, cannot be loaded */
-    fun getTddIcon(): Pair<Uri?, ByteArray?>
-    {
-        val iconUrl = tokenInfo?.icon
-        if (iconUrl != null)
-        {
-            try
-            {
-                val data = URL(iconUrl).readBytes()
-                return Pair(Uri.parse(URL(iconUrl).toString()), data)
-            }
-            catch (e: java.net.MalformedURLException)
-            {
-                try
-                {
-                    val data = URI(docUrl).resolve(iconUrl).toURL().readBytes()
-                    return Pair(Uri.parse(URI(docUrl).resolve(iconUrl).toString()), data)
-                }
-                catch(e: Exception)
-                {
-                    // link is dead
-                    return Pair(null, null)
-                }
-            }
-        }
-        return Pair(null,null)
-    }
-
-    fun load(chain: Blockchain, am: AssetManager)  // Attempt to find all asset info from a variety of data sources
-    {
-        var td = am.getTokenDesc(chain, groupInfo.groupId)
-        synchronized(this)
-        {
-            var tg = td.genesisInfo
-            var dataChanged = false
-
-            if (tg == null)
-            {
-                td = am.getTokenDesc(chain, groupInfo.groupId, true)
-                tg = td.genesisInfo
-                if (tg == null) return // can't load
-            }
-
-            LogIt.info(sourceLoc() + chain.name + ": loaded: " + tg.name)
-
-            name = tg.name
-            ticker = tg.ticker
-            genesisHeight = tg.height
-            genesisTxidem = if (tg.txidem.length > 0) Hash256(tg.txidem) else null
-
-            docUrl = tg.document_url
-
-            if (docUrl != null)
-            {
-                // Ok find the NFT description
-                val nftZipData = am.getNftFile(td, groupInfo.groupId)
-                if (nftZipData != null)
-                {
-                    tokenInfo = td
-                    if (td.marketUri == null)
-                    {
-                        val u: URI = URI(nftZipData.first)
-                        if (u.isAbsolute)  // This is a real URI, not a local path
-                        {
-                            td.marketUri = u.resolve("/token/" + groupInfo.groupId.toHex()).toString()
-                            am.storeTokenDesc(groupInfo.groupId, td)
-                        }
-                        else
-                        {
-                            td.marketUri = URI(docUrl).resolve("/token/" + groupInfo.groupId.toHex()).toString()
-                        }
-                        tokenInfo = td
-                        am.storeTokenDesc(groupInfo.groupId, td)
-                    }
-                    extractNftData(am, groupInfo.groupId, nftZipData.second)
-                    if (iconBackUri == null) getTddIcon().let { iconBackUri = it.first; iconBackBytes = it.second }
-                    dataChanged = true
-                }
-                else  // Not an NFT, so fill in the data from the TDD
-                {
-                    LogIt.info(sourceLoc() + ": $name == ${td.name}, $ticker == ${td.ticker} ")
-                    if (ticker != td.ticker)
-                    {
-                        throw IncorrectTokenDescriptionDoc("ticker does not match asset genesis transaction")
-                    }
-
-                    if (td.pubkey != null)  // the document signature passed
-                    {
-                        name = td.name
-                        ticker = td.ticker
-                    }
-                    // Guess one location for the market
-                    td.marketUri = URI(docUrl).resolve("/token/" + groupInfo.groupId.toHex()).toString()
-                    tokenInfo = td  // ok save all the info
-                    am.storeTokenDesc(groupInfo.groupId, td)
-                    val iconUrl = tokenInfo?.icon
-                    if (iconUrl != null)
-                    {
-                        getTddIcon().let { iconUri = it.first; iconBytes = it.second }
-                        dataChanged = true
-                    }
-                }
-            }
-            else // Missing some standard token info, look around for an NFT file
-            {
-                val nftZipData = am.getNftFile(null, groupInfo.groupId)
-                if (nftZipData != null)
-                {
-                    tokenInfo = td
-                    if (td.marketUri == null)
-                    {
-                        val u: URI = URI(nftZipData.first)
-                        if (u.isAbsolute)  // This is a real URI, not a local path
-                        {
-                            td.marketUri = u.resolve("/token/" + groupInfo.groupId.toHex()).toString()
-                            am.storeTokenDesc(groupInfo.groupId, td)
-                        }
-                    }
-                    extractNftData(am, groupInfo.groupId, nftZipData.second)
-                    dataChanged = true
-                }
-            }
-
-            laterUI {
-                if (dataChanged)
-                {
-                    ui?.repopulate()
-                    sui?.repopulate()
-                }
-            }
-        }
-    }
-
-}
-
-
 
 
 class AssetSuccinctBinder(val ui: AssetSuccinctListItemBinding, val activity: CommonNavActivity): GuiListItemBinder<AssetInfo>(ui.root)
@@ -660,7 +160,7 @@ class AssetSuccinctBinder(val ui: AssetSuccinctListItemBinding, val activity: Co
             val d = data
             if (d != null)
             {
-                d.sui = this
+                //d.sui = this
 
                 val nft = d.nft
                 if (nft == null)
@@ -801,7 +301,7 @@ class AssetSuccinctBinder(val ui: AssetSuccinctListItemBinding, val activity: Co
 
     override fun unpopulate()
     {
-        data?.ui = null
+        // data?.ui = null
         ui.GuiAssetVideoIcon.visibility = View.GONE
         ui.GuiAssetIcon.visibility = View.INVISIBLE
         ui.GuiAssetVideoIcon.stopPlayback()
@@ -844,7 +344,7 @@ class AssetBinder(val ui: AssetListItemBinding, val activity: AssetsActivity): G
         {
             synchronized(d)
             {
-                d.ui = this
+                // d.ui = this
                 ui.GuiAssetId.text = d.groupInfo.groupId.toString()
                 ui.GuiAssetId.visibility = if (devMode) View.VISIBLE else View.GONE
 
@@ -933,7 +433,7 @@ class AssetBinder(val ui: AssetListItemBinding, val activity: AssetsActivity): G
     override fun unpopulate()
     {
         LogIt.info("unpopulate $this")
-        data?.ui = null
+        // data?.ui = null
         ui.GuiAssetVideoIcon.visibility = View.GONE
         ui.GuiAssetIcon.visibility = View.INVISIBLE
         //ui.GuiAssetVideoIcon.stopPlayback()
@@ -1011,7 +511,7 @@ class AssetsActivity : CommonNavActivity()
     var asset: AssetInfo? = null
 
     val assetManager
-        get() = wallyAndroidApp!!.assetManager
+        get() = wallyApp!!.assetManager
 
     lateinit var adapter: GuiList<AssetInfo, AssetBinder>
 
@@ -1076,7 +576,7 @@ class AssetsActivity : CommonNavActivity()
                     catch(e: PrimaryWalletInvalidException)
                     {
                         LogIt.info(sourceLoc() + "No focused or primary account")
-                        wallyApp?.displayError(R.string.NoAccounts)
+                        displayError(R.string.NoAccounts)
                         finish()
                     }
                 }
@@ -1488,14 +988,14 @@ class AssetsActivity : CommonNavActivity()
     }
 
 
-    fun showDetailMediaUri(uri: Uri?, bytes: ByteArray? = null): ByteArray?
+    fun showDetailMediaUri(url: Url?, bytes: ByteArray? = null): ByteArray?
     {
         ui.GuiAssetVideo.visibility = View.GONE
         ui.GuiAssetWeb.visibility = View.GONE
         ui.GuiAssetImage.visibility = View.GONE
 
-        if (bytes == null && uri?.scheme == "http")  throw UnimplementedException("load from uri")
-        when (showMedia(ui.GuiAssetImageBox, ui.GuiAssetVideoBox, uri, bytes))
+        if (bytes == null && (url?.protocol == URLProtocol.HTTP || url?.protocol == URLProtocol.HTTPS)) throw UnimplementedException("load from URL")
+        when (showMedia(ui.GuiAssetImageBox, ui.GuiAssetVideoBox, url, bytes))
         {
             true -> { ui.GuiAssetImage.visibility = View.VISIBLE }
             false -> { ui.GuiAssetVideo.visibility = View.VISIBLE }
@@ -1505,7 +1005,7 @@ class AssetsActivity : CommonNavActivity()
 
     fun showDetailMedia(name: String?, bytes: ByteArray? = null): ByteArray?
     {
-        if (name != null) return showDetailMediaUri(Uri.parse(name), bytes)
+        if (name != null) return showDetailMediaUri(Url(name), bytes)
         else return showDetailMediaUri(null, bytes)
     }
 
@@ -1610,7 +1110,7 @@ class AssetsActivity : CommonNavActivity()
             val (acti, account) = it.nextAccount(accountIdx)
             if (account == null)  // all accounts mysteriously disappeared!
             {
-                wallyApp?.displayNotice(R.string.NoAccounts)
+                displayNotice(R.string.NoAccounts)
                 finish()
             }
             else

@@ -131,7 +131,7 @@ class IdentitySettings(var address: PayAddress?=null) : CommonNavActivity()
 
     fun clearIntentAndFinish(error: Int, details: String)
     {
-        wallyApp?.displayError(error, details)
+        displayError(error, details)
         setResult(Activity.RESULT_OK, intent)
         finish()
     }

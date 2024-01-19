@@ -46,6 +46,7 @@ fun SendView(
   accountNames: List<String>,
   currencyCode: String,
   toAddress: String,
+  note: MutableState<String>,
   sendQuantity: MutableState<String>,
   paymentInProgress: ProspectivePayment?,
   approximatelyText: String,
@@ -69,7 +70,6 @@ fun SendView(
     }
     var accountExpanded by remember { mutableStateOf(false) }
     var displayNoteInput by remember { mutableStateOf(false) }
-    var note by remember { mutableStateOf("") }
     var sendConfirm by remember { mutableStateOf("") }
     var spendAll by remember { mutableStateOf(false) }
     val sendToAddress: MutableState<PayAddress?> = remember { mutableStateOf(null) }
@@ -133,7 +133,6 @@ fun SendView(
     {
         displayNotice(S.sendSuccess, "$amt -> $addr: ${tx.idem}")
         sendToAddress.value = null
-        note = ""
         onSendSuccess()
     }
 
@@ -149,7 +148,8 @@ fun SendView(
             {
                 val atomAmt = account.toFinestUnit(qty)
                 // If we are spending all, then deduct the fee from the amount (which was set above to the full ungrouped balance)
-                tx = account.wallet.send(atomAmt, sendAddress, spendAll, false, note = note)
+                tx = account.wallet.send(atomAmt, sendAddress, spendAll, false, note = note.value)
+                note.value = ""
                 LogIt.info("Sending TX: ${tx.toHex()}")
                 onSendSuccess(atomAmt, sendAddress, tx)
             }
@@ -354,7 +354,7 @@ fun SendView(
 
     if (sendConfirm.isNotEmpty())
         amountState.value?.let { amt ->
-            ConfirmDismissNoteDialog(amt, sendConfirm.isNotEmpty(), S.confirm, sendConfirm, note, S.cancel, S.confirm, onDismiss = {
+            ConfirmDismissNoteDialog(amt, sendConfirm.isNotEmpty(), S.confirm, sendConfirm, note.value, S.cancel, S.confirm, onDismiss = {
                 sendConfirm = ""
             }, onConfirm = {
                 actuallySend(sendToAddress.value ?: throw Exception("address is null"), it)
@@ -389,8 +389,8 @@ fun SendView(
         }
 
         // Display note input
-        if (displayNoteInput)
-            StringInputTextField(S.editSendNoteHint, note, { note = it })
+        if (displayNoteInput || note.value.utf8Size() > 0)
+            StringInputTextField(S.editSendNoteHint, note.value, { note.value = it })
 
         Spacer(Modifier.height(4.dp))
         Row(

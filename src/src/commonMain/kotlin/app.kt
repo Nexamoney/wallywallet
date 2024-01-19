@@ -2,12 +2,19 @@
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
 import com.eygraber.uri.Uri
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.ACCESS_PRICE_DATA_PREF
 import info.bitcoinunlimited.www.wally.ui.DEV_MODE_PREF
+import io.ktor.client.*
 import io.ktor.client.network.sockets.*
+import io.ktor.client.network.sockets.SocketTimeoutException
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.serialization.kotlinx.json.*
+import io.ktor.utils.io.errors.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.newFixedThreadPoolContext
@@ -15,9 +22,6 @@ import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
 import org.nexa.threads.iMutex
 import kotlin.concurrent.Volatile
-//import java.net.ConnectException
-//import java.security.spec.InvalidKeySpecException
-//import java.util.*
 import kotlin.coroutines.CoroutineContext
 
 private val LogIt = GetLog("BU.wally.app")
@@ -168,6 +172,10 @@ open class CommonApp
 
     // You can access the primary account object in a manner that throws an exception or returns a null, your choice
     var nullablePrimaryAccount: Account? = null
+
+    val assetManager = AssetManager(this)
+    val tpDomains: TricklePayDomains = TricklePayDomains(this)
+
     var primaryAccount: Account
         get()
         {
@@ -243,50 +251,231 @@ open class CommonApp
     // Notifying and startActivityForResult produces a double call to that intent
     fun handlePaste(urlStr: String): Boolean
     {
-        //val scheme = intentUri.split(":")[0]
-        val uri = Uri.parse(urlStr)
-        val scheme = uri.scheme
-        val notify = amIbackground()
-        val app = wallyApp
-        if (app == null) return false // should never occur
-
-        // see if this is an address without the prefix
-        val whichChain = if (scheme == null)
+        try
         {
-            try
+            val uri = Uri.parse(urlStr)
+            val scheme = uri.scheme
+            val notify = amIbackground()
+            val app = wallyApp
+            if (app == null) return false // should never occur
+
+            // see if this is an address without the prefix
+            val whichChain = if (scheme == null)
             {
-                ChainSelectorFromAddress(urlStr)
+                try
+                {
+                    ChainSelectorFromAddress(urlStr)
+                }
+                catch (e: UnknownBlockchainException)
+                {
+                    displayError(S.unknownCryptoCurrency)
+                    return false
+                }
             }
-            catch(e: UnknownBlockchainException)
+            else uriToChain[scheme]
+
+            if (whichChain != null)  // handle a blockchain address (by preparing the send to)
             {
-                displayError(S.unknownCryptoCurrency)
+                val attribs = uri.queryMap()
+                val act = accountsFor(whichChain).firstOrNull()
+
+                val stramt = attribs["amount"]
+                var amt: BigDecimal? = null
+
+                if (stramt != null)
+                {
+                    amt = try
+                    {
+                        stramt.toCurrency()
+                    }
+                    catch (e: NumberFormatException)
+                    {
+                        throw BadAmountException(S.detailsOfBadAmountFromIntent)
+                    }
+                    catch (e: ArithmeticException)  // Rounding error
+                    {
+                        // If someone is asking for sub-satoshi quantities, round up and overpay them
+                        LogIt.warning("Sub-satoshi quantity ${stramt} requested.  Rounding up")
+                        BigDecimal.fromString(stramt, NexaMathMode)
+                    }
+                }
+
+                // Inject a change into the GUI
+                launch {
+                    externalDriver.send(GuiDriver(ScreenId.Home, sendAddress = chainToURI[whichChain] + ":" + uri.body(), amount = amt, note = attribs["label"], chainSelector = whichChain, account = act))
+                }
+            }
+            else if (scheme == IDENTITY_URI_SCHEME)
+            {
+                LogIt.info("starting identity operation activity")
+                // Inject a change into the GUI
+                launch {
+                    externalDriver.send(GuiDriver(ScreenId.IdentityOp, uri = uri))
+                }
+
+            }
+            else if (scheme == TDPP_URI_SCHEME)
+            {
+                handleTdpp(uri)
+            }
+            else
+            {
                 return false
             }
+            return true
         }
-        else uriToChain[scheme]
-
-        if (whichChain != null)  // handle a blockchain address (by preparing the send to)
+        catch (e: TdppException)
         {
-            val act = accountsFor(whichChain).firstOrNull()
-            // Inject a change into the GUI
-            launch {
-                externalDriver.send(GuiDriver(ScreenId.Home, sendAddress = chainToURI[whichChain] + ":" + uri.body(), chainSelector = whichChain, account = act))
+            displayError(e.message ?: e.toString())
+        }
+        catch(e: Exception)
+        {
+            displayUnexpectedException(e)
+        }
+        return false
+    }
+
+    /** Automatically handle this intent if its something that can be done without user intervention.
+    Returns true if it was handled, false if user-intervention needed.
+     */
+    var autoPayNotificationId = -1
+    fun handleTdpp(iuri: Uri): Boolean
+    {
+        val bkg = amIbackground()  // if the app is backgrounded, we need to notify and not just change the GUI
+        val scheme = iuri.scheme
+        val path = iuri.path
+        if (scheme == TDPP_URI_SCHEME)
+        {
+            val tp = TricklePaySession(tpDomains)
+            if (path == "/sendto")
+            {
+                try
+                {
+                    val result = tp.attemptAutopay(iuri.toString())
+                    val acc = tp.getRelevantAccount()
+                    val amtS: String = acc.format(acc.fromFinestUnit(tp.totalNexaSpent)) + " " + acc.currencyCode
+                    when(result)
+                    {
+                        TdppAction.ASK ->
+                        {
+                            if (bkg) platformNotification(i18n(S.PaymentRequest), i18n(S.AuthAutopay) % mapOf("domain" to tp.domainAndTopic, "amt" to amtS), iuri.toString())
+                            // TODO: drive UX into tricklepay
+                            return false
+                        }
+                        TdppAction.ACCEPT ->
+                        {
+                            // TODO since this was auto-accepted, uri should go to the configuration page to stop auto-accepting
+                            platformNotification(i18n(S.AuthAutopayTitle), i18n(S.AuthAutopay) % mapOf("domain" to tp.domainAndTopic, "amt" to amtS))
+                            return true
+                        }
+
+                        TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
+                    }
+                }
+                catch (e:WalletNotEnoughBalanceException)
+                {
+                    // TODO where to go when clicked
+                    platformNotification(i18n(S.insufficentBalance), e.shortMsg ?: e.message ?: i18n(S.unknownError), null)
+                }
             }
-        }
-        else if (scheme == IDENTITY_URI_SCHEME)
-        {
-            LogIt.info("starting identity operation activity")
+            if (path == "/lp")  // we are already connected which is how this being called in the app context
+            {
+                displayNotice(S.connected)
+                return true
+            }
+            if (path == "/share")
+            {
+                tp.handleShareRequest(iuri) {
+                    if (it != -1)
+                    {
+                        val msg: String = i18n(S.SharedNotification) % mapOf("what" to i18n(it))
+                        displayNotice(msg)
+                    }
+                    else displayError(S.badQR)
+                }
+            }
+            else if (path == "/address")
+            {
+                val result = tp.handleAddressInfoRequest(iuri)
+                val acc = tp.getRelevantAccount()
+
+                when(result)
+                {
+                    TdppAction.ASK ->  // ADDRESS
+                    {
+                        TODO("always accept for now")
+                        /*
+                        var intent = Intent(this, TricklePayActivity::class.java)
+                        intent.data = Uri.parse(intentUri)
+                        if (act != null) autoPayNotificationId =
+                          notifyPopup(intent, i18n(R.string.TpAssetInfoRequest), i18n(R.string.fromColon) + tp.domainAndTopic, act, false, autoPayNotificationId)
+                        return false
+
+                         */
+                    }
+                    TdppAction.ACCEPT -> // ADDRESS
+                    {
+                        tp.acceptAssetRequest()
+                        return true
+                    }
+
+                    TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
+                }
+            }
+            else if (path == "/assets")
+            {
+                val result = tp.handleAssetInfoRequest(iuri)
+
+                when(result)
+                {
+                    TdppAction.ASK ->  // ASSETS
+                    {
+                        //var intent = Intent(this, TricklePayActivity::class.java)
+                        //intent.data = android.net.Uri.parse(intentUri)
+                        //if (act != null) autoPayNotificationId =
+                        //  notifyPopup(intent, i18n(R.string.TpAssetInfoRequest), i18n(R.string.fromColon) + tp.domainAndTopic, act, false, autoPayNotificationId)
+                        TODO()
+                        return false
+                    }
+                    TdppAction.ACCEPT -> // ASSETS
+                    {
+                        tp.acceptAssetRequest()
+                        return true
+                    }
+
+                    TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
+                }
+            }
+            else if (path == "/tx")
+            {
+                val result = tp.attemptSpecialTx(iuri)
+                when(result)
+                {
+                    TdppAction.ASK ->  // special tx
+                    {
+                        later { externalDriver.send(GuiDriver(gotoPage = ScreenId.SpecialTxPerm, tpSession = tp))}
+                        //var intent = Intent(this, TricklePayActivity::class.java)
+                        //intent.data = android.net.Uri.parse(intentUri)
+                        //if (act != null) autoPayNotificationId =
+                        //  notifyPopup(intent, i18n(R.string.PaymentRequest), i18n(R.string.SpecialTpTransactionFrom) + " " + tp.domainAndTopic, act, false, autoPayNotificationId)
+                        return false
+                    }
+                    TdppAction.ACCEPT ->  // special tx auto accepted
+                    {
+                        // Intent() means unclickable -- change to pop up configuration if clicked
+                        TODO()
+                        //if (act != null) autoPayNotificationId =
+                        //  notifyPopup(Intent(), i18n(R.string.AuthAutopayTitle), tp.domainAndTopic, act, false, autoPayNotificationId)
+                        return true
+                    }
+
+                    // special tx auto-deny
+                    TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
+                }
+            }
 
         }
-        else if (scheme == TDPP_URI_SCHEME)
-        {
-            LogIt.info("starting TDPP operation activity")
-        }
-        else
-        {
-            return false
-        }
-        return true
+        return false
     }
 
     fun handleNonIntentText(text: String)
@@ -334,6 +523,8 @@ open class CommonApp
 
          */
     }
+
+
 
 
 
@@ -682,48 +873,64 @@ open class CommonApp
 
     }
 
-
-    var lastError:Int? = null
-    var lastErrorDetails:String? = null
-    var lastNotice:Int? = null
-    var lastNoticeDetails:String? = null
-
-    /** Display an short error string on the title bar, and then clear it after a bit.  The common activity will check for errors coming from other activities */
-    fun displayError(resource: Int, details: Int? = null)
+    /** If you need to do a POST operation within the App context (because you are ending the activity) call these functions */
+    fun post(url: String, contents: (HttpRequestBuilder) -> Unit)
     {
-        lastError = resource
-        lastErrorDetails = if (details != null) i18n(details) else null
+        info.bitcoinunlimited.www.wally.later()
+        {
+            LogIt.info(sourceLoc() + ": POST response to server: $url")
+            val client = HttpClient()
+            {
+                install(ContentNegotiation) {
+                    json()
+                }
+                install(HttpTimeout) { requestTimeoutMillis = HTTP_REQ_TIMEOUT_MS.toLong() }
+            }
+
+            try
+            {
+                val response: HttpResponse = client.post(url, contents)
+                val respText = response.bodyAsText()
+                displayNotice(respText)
+            }
+            catch (e: IOException)
+            {
+                displayError(S.connectionException)
+            }
+            catch (e: Exception)
+            {
+                displayError(S.connectionException)
+            }
+            client.close()
+        }
     }
 
-    fun displayError(resource: Int, details: String)
+    fun postThen(url: String, contents: (HttpRequestBuilder) -> Unit, next: ()->Unit)
     {
-        lastError = resource
-        lastErrorDetails = details
-    }
+        info.bitcoinunlimited.www.wally.later()
+        {
+            LogIt.info(sourceLoc() + ": POST response to server: $url")
+            val client = HttpClient()
+            {
+                install(ContentNegotiation) {
+                    json()
+                }
+                install(HttpTimeout) { requestTimeoutMillis = 5000 }
+            }
 
-    /** Display an short error string on the title bar, and then clear it after a bit.  The common activity will check for errors coming from other activities */
-    fun displayNotice(resource: Int, details: Int? = null)
-    {
-        lastNotice = resource
-        lastNoticeDetails = if (details != null) i18n(details) else null
-    }
-    fun displayNotice(resource: Int, details: String)
-    {
-        lastNotice = resource
-        lastNoticeDetails = details
-    }
-
-    /** Use the resource id version of displayNotice, unless you really only have a string (response from a server, etc) */
-    fun displayNotice(notice: String)
-    {
-        lastNotice = -1
-        lastNoticeDetails = notice
-    }
-
-    fun displayException(e: LibNexaExceptionI)
-    {
-        lastError = e.errCode
-        lastErrorDetails = e.message
+            try
+            {
+                val response: HttpResponse = client.post(url, contents)
+                val respText = response.bodyAsText()
+                displayNotice(respText)
+                next()
+            }
+            catch (e: SocketTimeoutException)
+            {
+                displayError(S.connectionException)
+            }
+            client.close()
+        }
     }
 }
 

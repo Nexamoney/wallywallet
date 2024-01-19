@@ -11,10 +11,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import com.eygraber.uri.Uri
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
@@ -34,6 +37,7 @@ enum class ScreenId
     None,
     Home,
     Identity,
+    IdentityOp,
     TricklePay,
     Assets,
     Shopping,
@@ -43,6 +47,12 @@ enum class ScreenId
     AccountDetails,
     AddressHistory,
     TxHistory,
+
+    TpSettings,
+    SpecialTxPerm,
+    AssetInfoPerm,
+    SendToPerm,
+
     Test;
 
     val isEntirelyScrollable:Boolean
@@ -66,6 +76,10 @@ enum class ScreenId
             SplitBill -> Home
             AccountDetails -> Home
             NewAccount -> Home
+            SpecialTxPerm -> Home
+            AssetInfoPerm -> Home
+            SendToPerm -> Home
+            TpSettings -> TricklePay
             else -> None
         }
     }
@@ -77,6 +91,7 @@ enum class ScreenId
             None -> ""
             Home -> i18n(S.app_name)
             Identity -> i18n(S.title_activity_identity)
+            IdentityOp -> i18n(S.title_activity_identity_op)
             TricklePay -> i18n(S.title_activity_trickle_pay)
             Assets -> i18n(S.title_activity_assets)
             Shopping -> i18n(S.title_activity_shopping)
@@ -86,6 +101,14 @@ enum class ScreenId
             AccountDetails -> i18n(S.title_activity_account_details) % mapOf("account" to (wallyApp?.focusedAccount?.name ?: ""))
             AddressHistory -> i18n(S.title_activity_address_history) % mapOf("account" to (wallyApp?.focusedAccount?.name ?: ""))
             TxHistory -> i18n(S.title_activity_tx_history) % mapOf("account" to (wallyApp?.focusedAccount?.name ?: ""))
+
+            TpSettings -> i18n(S.title_activity_trickle_pay)
+
+            // TODO make a better title for these permissions screens
+            SpecialTxPerm -> i18n(S.title_activity_trickle_pay)
+            AssetInfoPerm -> i18n(S.title_activity_trickle_pay)
+            SendToPerm -> i18n(S.title_activity_trickle_pay)
+
             Test -> "Test"
         }
     }
@@ -182,11 +205,17 @@ fun triggerAssignAccountsGuiSlots()
     later { externalDriver.send(GuiDriver(regenAccountGui = true)) }
 }
 
-fun triggerUnlockDialog(show: Boolean = true)
+fun triggerUnlockDialog(show: Boolean = true, then: (()->Unit)? = null)
 {
     if (show)
-      later { externalDriver.send(GuiDriver(show = setOf(ShowIt.ENTER_PIN))) }
+      later { externalDriver.send(GuiDriver(show = setOf(ShowIt.ENTER_PIN), afterUnlock = then)) }
     else later { externalDriver.send(GuiDriver(noshow = setOf(ShowIt.ENTER_PIN))) }
+}
+
+fun triggerClipboardAction(doit: (String?) -> Unit)
+{
+    later { externalDriver.send(GuiDriver(withClipboard = doit))}
+
 }
 
 // implement a share button (whose behavior may change based on what screen we are on)
@@ -259,14 +288,32 @@ enum class ShowIt
     WARN_BACKUP_RECOVERY_KEY,
     ENTER_PIN
 }
+
+var curEventNum = 0L
+fun NextEvent(): Long
+{
+    curEventNum++
+    return curEventNum
+}
+
 data class GuiDriver(val gotoPage: ScreenId? = null,
   val show: Set<ShowIt>? = null,
   val noshow: Set<ShowIt>? = null,
   val sendAddress: String?=null,
   val amount: BigDecimal?=null,
+  val note: String? = null,
   val chainSelector: ChainSelector?=null,
   val account: Account? = null,
-  val regenAccountGui: Boolean? = null)
+  val regenAccountGui: Boolean? = null,
+  val withClipboard: ((String?) -> Unit)? = null,
+  val tpSession: TricklePaySession? = null,
+  val afterUnlock: (()->Unit)? = null,
+  val uri: Uri? = null,
+
+  // This is used when the event itself is a recomposable trigger.  Generally this is true, so NextEvent automatically increments.
+  // But if you choose this number to be the same as a prior object, the screen will not recompose unless some other state changed.
+  val eventNum: Long = NextEvent()
+)
 
 val externalDriver = Channel<GuiDriver>()
 
@@ -283,13 +330,14 @@ val externalDriver = Channel<GuiDriver>()
     }
 }
 
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NavigationRoot(nav: ScreenNav)
 {
     val scrollState = rememberScrollState()
     val accountGuiSlots = mutableStateOf(assignAccountsGuiSlots())
-    var driver = mutableStateOf<GuiDriver?>(null)
+    var driver = remember { mutableStateOf<GuiDriver?>(null) }
     var errorText by remember { mutableStateOf("") }
     var warningText by remember { mutableStateOf("") }
     var noticeText by remember { mutableStateOf("") }
@@ -297,7 +345,41 @@ fun NavigationRoot(nav: ScreenNav)
 
     val selectedAccount = remember { MutableStateFlow<Account?>(wallyApp?.focusedAccount) }
 
-    var unlockDialog by remember { mutableStateOf(false) }
+    var unlockDialog by remember { mutableStateOf<(()->Unit)?>(null) }
+
+    val clipmgr: ClipboardManager = LocalClipboardManager.current
+
+    var currentTpSession by remember { mutableStateOf<TricklePaySession?>(null) }
+    var currentUri by remember { mutableStateOf<Uri?>(null) }
+
+    @Composable fun withAccount(then: @Composable (acc: Account) -> Unit)
+    {
+        val pa = selectedAccount.value
+        if (pa == null)
+        {
+            displayError(S.NoAccounts)
+            nav.back()
+        }
+        else then(pa)
+    }
+
+    @Composable fun withTp(then: @Composable (acc: Account, ctp: TricklePaySession) -> Unit)
+    {
+        val ctp = currentTpSession
+        if (ctp == null)
+        {
+            displayError(S.TpNoRegistrations)  // TODO make this no TP session
+            return
+        }
+
+        val pa = ctp.getRelevantAccount(selectedAccount?.value?.name)
+        if (pa == null)
+        {
+            displayError(S.NoAccounts)
+            nav.back()
+        }
+        else then(pa, ctp)
+    }
 
 
     // Allow an external (non-compose) source to "drive" the GUI to a particular state.
@@ -313,20 +395,34 @@ fun NavigationRoot(nav: ScreenNav)
                 {
                     clickDismiss.value = { RecoveryPhraseWarning() }
                 }
-                if (it == ShowIt.ENTER_PIN) unlockDialog = true
+                if (it == ShowIt.ENTER_PIN)
+                {
+                    unlockDialog = c.afterUnlock ?: {}
+                }
             }
             c.noshow?.forEach {
                 if (it == ShowIt.WARN_BACKUP_RECOVERY_KEY)
                 {
                     clickDismiss.value = null
                 }
-                if (it == ShowIt.ENTER_PIN) unlockDialog = false
+                if (it == ShowIt.ENTER_PIN)
+                {
+                    unlockDialog?.invoke()
+                    unlockDialog = null
+                }
             }
             if (c.regenAccountGui == true)
             {
                 val tmp = assignAccountsGuiSlots()
                 accountGuiSlots.value = tmp
             }
+            if (c.withClipboard != null)
+            {
+                val s = clipmgr.getText()
+                c.withClipboard?.invoke(s?.text)
+            }
+            if (c.tpSession != null) currentTpSession = c.tpSession
+            if (c.uri != null) currentUri = c.uri
         }
     }
 
@@ -385,9 +481,10 @@ fun NavigationRoot(nav: ScreenNav)
         }
     }
 
+
     WallyTheme(darkTheme = false, dynamicColor = false) {
         Box(modifier = WallyPageBase) {
-            if (unlockDialog) UnlockDialog {  }
+            if (unlockDialog != null) UnlockDialog {  }
             Column(modifier = Modifier.fillMaxSize()) {
                 ConstructTitleBar(nav, errorText, warningText, noticeText)
 
@@ -411,40 +508,24 @@ fun NavigationRoot(nav: ScreenNav)
                 ) {
                     when (nav.currentScreen.value)
                     {
-                        ScreenId.None -> HomeScreen(selectedAccount, accountGuiSlots, driver, nav, ChildNav)
-                        ScreenId.Home -> HomeScreen(selectedAccount, accountGuiSlots, driver, nav, ChildNav)
+                        ScreenId.None -> HomeScreen(selectedAccount, accountGuiSlots, driver, nav)
+                        ScreenId.Home -> HomeScreen(selectedAccount, accountGuiSlots, driver, nav)
                         ScreenId.SplitBill -> SplitBillScreen(nav)
                         ScreenId.NewAccount -> NewAccountScreen(accountGuiSlots, devMode, nav)
                         ScreenId.Test -> TestScreen(400.dp)
                         ScreenId.Settings -> SettingsScreen(nav)
-                        ScreenId.AccountDetails -> {
-                            if (pa == null)
-                            {
-                                displayError(S.NoAccounts)
-                                nav.back()
-                            }
-                            else AccountDetailScreen(pa, nav)
-                        }
+                        ScreenId.AccountDetails -> withAccount { AccountDetailScreen(it, nav) }
                         ScreenId.Assets -> Text("TODO: Implement AssetsScreen")
                         ScreenId.Shopping -> ShoppingScreen(nav)
                         ScreenId.TricklePay -> Text("TODO: Implement TricklePayScreen")
                         ScreenId.Identity -> Text("TODO: Implement IdentityScreen")
-                        ScreenId.AddressHistory -> run {
-                            if (pa == null)
-                            {
-                                displayError(S.NoAccounts)
-                                nav.back()
-                            }
-                            else AddressHistoryScreen(pa, nav)
-                        }
-                        ScreenId.TxHistory -> run {
-                            if (pa == null)
-                            {
-                                displayError(S.NoAccounts)
-                                nav.back()
-                            }
-                            else TxHistoryScreen(pa, nav)
-                        }
+                        ScreenId.AddressHistory ->  withAccount { AddressHistoryScreen(it, nav) }
+                        ScreenId.TxHistory -> withAccount { TxHistoryScreen(it, nav) }
+                        ScreenId.TpSettings -> withTp { act, ctp -> TpSettingsScreen(act, ctp, nav) }
+                        ScreenId.SpecialTxPerm -> withTp { act, ctp -> SpecialTxPermScreen(act, ctp, nav) }
+                        ScreenId.AssetInfoPerm -> withTp { act, ctp -> AssetInfoPermScreen(act, ctp, nav) }
+                        ScreenId.SendToPerm -> withTp { act, ctp -> SendToPermScreen(act, ctp, nav) }
+                        ScreenId.IdentityOp -> IdentityPermScreen(currentUri, nav)
                     }
                 }
 

@@ -9,6 +9,28 @@ import platform.Foundation.NSData
 
 //import platform.UIKit.UIApplication
 
+/** Display an alert in the native manner (if it exists, see @platform()).  If there is no native manner, just return */
+actual fun displayAlert(alert: Alert)
+{
+    return
+}
+
+/** Actually share this text using the platform's share functionality */
+actual fun platformShare(textToShare: String)
+{
+    return
+}
+
+/** Get a image from the file system (probably a QR code) and get a wally command string from it */
+actual fun ImageQrCode(imageParsed: (String?) -> Unit): Boolean
+{
+    return false
+}
+
+actual fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: MutableSet<String>?): String
+{
+    return ""
+}
 actual fun GetHttpClient(timeoutInMs: Number): HttpClient = HttpClient(io.ktor.client.engine.cio.CIO)
 {
     install(HttpTimeout) { requestTimeoutMillis = timeoutInMs.toLong() }
@@ -69,3 +91,11 @@ val macosPlatformCharacteristics = PlatformCharacteristics(
   hasShare = false)
 
 actual fun platform(): PlatformCharacteristics = macosPlatformCharacteristics
+
+/** Initiate a platform-level notification message.  Note that these messages visually disrupt the user's potentially unrelated task
+ * and may play a sound, so this must be used sparingly.
+ */
+actual fun platformNotification(message:String, title: String?, onclickUrl:String?)
+{
+
+}

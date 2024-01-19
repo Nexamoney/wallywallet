@@ -44,13 +44,8 @@ import kotlin.coroutines.CoroutineContext
 
 import com.eygraber.uri.*
 
-val LAST_RESORT_BCH_ELECTRS = "bch2.bitcoinunlimited.net"
-val LAST_RESORT_NEXA_ELECTRS = "electrum.nexa.org"
-
-
 const val NORMAL_NOTIFICATION_CHANNEL_ID = "n"
 const val PRIORITY_NOTIFICATION_CHANNEL_ID = "p"
-const val HTTP_REQ_TIMEOUT_MS: Int = 7000
 
 private val LogIt = GetLog("BU.wally.app")
 
@@ -99,15 +94,9 @@ val i18nLbc = mapOf(
   RsendMoreTokensThanBalance to S.insufficentTokenBalance
 )
 
-fun getElectrumServerOn(cs: ChainSelector):IpPort
+actual fun platformNotification(message:String, title: String?, onclickUrl:String?)
 {
-    val prefDB = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
-
-    // Return our configured node if we have one
-    var name = chainToURI[cs]
-    val node = prefDB.getString(name + "." + CONFIGURED_NODE, null)
-    if (node != null) return splitIpPort(node, DefaultElectrumTCP[cs] ?: -1)
-    return ElectrumServerOn(cs)
+    // TODO
 }
 
 class ActivityLifecycleHandler(private val app: WallyApp) : Application.ActivityLifecycleCallbacks
@@ -215,9 +204,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         }
     }
 
-
-    val assetManager = AssetManager(this)
-
     val init = org.nexa.libnexakotlin.initializeLibNexa()
 
     // Use currentActivity global
@@ -225,8 +211,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
 
     // Track notifications
     val notifs: MutableList<Triple<Int, PendingIntent, Intent>> = mutableListOf()
-
-    val tpDomains: TricklePayDomains = TricklePayDomains(this)
 
     /** Activity stacks don't quite work.  If task A uses an implicit intent launches a child wally activity, then finish() returns to A
      * if wally wasn't previously running.  But if wally was currently running, it returns to wally's Main activity.
@@ -288,7 +272,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
                 LogIt.info("reg response code:" + req.responseCode.toString() + " response: " + resp)
                 if ((req.responseCode >= 200) and (req.responseCode < 300))
                 {
-                    commonApp.displayNotice(resp)
+                    displayNotice(resp)
                     return
                 }
                 else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding
@@ -299,31 +283,31 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
                 }
                 else
                 {
-                    wallyApp?.displayNotice(resp)
+                    displayNotice(resp)
                     return
                 }
             } catch (e: java.net.SocketTimeoutException)
             {
                 LogIt.info("SOCKET TIMEOUT:  If development, check phone's network.  Ensure you can route from phone to target!  " + e.toString())
-                wallyApp?.displayError(R.string.connectionException)
+                displayError(R.string.connectionException)
                 return
             } catch (e: IOException)
             {
                 LogIt.info("registration IOException: " + e.toString())
-                wallyApp?.displayError(R.string.connectionAborted)
+                displayError(R.string.connectionAborted)
                 return
             } catch (e: FileNotFoundException)
             {
                 LogIt.info("registration FileNotFoundException: " + e.toString())
-                wallyApp?.displayError(R.string.badLink)
+                displayError(R.string.badLink)
                 return
             } catch (e: java.net.ConnectException)
             {
-                wallyApp?.displayError(R.string.connectionException)
+                displayError(R.string.connectionException)
                 return
             } catch (e: Throwable)
             {
-                wallyApp?.displayError(R.string.unknownError)
+                displayError(R.string.unknownError)
                 return
             }
             break@postloop  // Only way to actually loop is to get a http 301 or 302
@@ -348,7 +332,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
                 LogIt.info("login response code:" + req.responseCode.toString() + " response: " + resp)
                 if ((req.responseCode >= 200) and (req.responseCode < 250))
                 {
-                    commonApp.displayNotice(resp)
+                    displayNotice(resp)
                     return
                 }
                 else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding (often switching from http to https)
@@ -359,18 +343,18 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
                 }
                 else
                 {
-                    commonApp.displayNotice(resp)
+                    displayNotice(resp)
                     return
                 }
             } catch (e: FileNotFoundException)
             {
-                commonApp.displayError(R.string.badLink, loginReq)
+                displayError(R.string.badLink, loginReq)
             } catch (e: IOException)
             {
-                commonApp.displayError(R.string.connectionAborted, loginReq)
+                displayError(R.string.connectionAborted, loginReq)
             } catch (e: java.net.ConnectException)
             {
-                commonApp.displayError(R.string.connectionException)
+                displayError(R.string.connectionException)
             }
 
             break@getloop  // only way to actually loop is to hit a 301 or 302
@@ -496,148 +480,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     var autoPayNotificationId = -1
     fun autoHandle(intentUri: String): Boolean
     {
-        val iuri: Uri = Uri.parse(intentUri) //intentUri.toUri()
-        val scheme = iuri.scheme // intentUri.split(":")[0]
-        val path = iuri.path
-        if (scheme == TDPP_URI_SCHEME)
-        {
-            val tp = TricklePaySession(tpDomains)
-            if (path == "/sendto")
-            {
-                try
-                {
-                    val result = tp.attemptAutopay(intentUri)
-                    val acc = tp.getRelevantAccount()
-                    val amtS: String = acc.format(acc.fromFinestUnit(tp.totalNexaSpent)) + " " + acc.currencyCode
-                    val act = currentActivity
-                    when(result)
-                    {
-                        TdppAction.ASK ->
-                        {
-                            var intent = Intent(this, TricklePayActivity::class.java)
-                            intent.data = android.net.Uri.parse(intentUri)
-                            if (act != null) autoPayNotificationId =
-                              notifyPopup(intent, i18n(R.string.PaymentRequest), i18n(R.string.AuthAutopay) % mapOf("domain" to tp.domainAndTopic, "amt" to amtS), act, false, autoPayNotificationId)
-                            return false
-                        }
-                        TdppAction.ACCEPT ->
-                        {
-                            // Intent() means unclickable -- change to pop up configuration if clicked
-                            if (act != null) autoPayNotificationId =
-                                  notifyPopup(Intent(), i18n(R.string.AuthAutopayTitle), i18n(R.string.AuthAutopay) % mapOf("domain" to tp.domainAndTopic, "amt" to amtS), act, false, autoPayNotificationId)
-                            return true
-                        }
-
-                        TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
-                    }
-                }
-                catch (e:WalletNotEnoughBalanceException)
-                {
-                    val act = currentActivity
-                    if (act != null)
-                        autoPayNotificationId = notifyPopup(Intent(), i18n(R.string.insufficentBalance), e.shortMsg ?: e.message ?: i18n(R.string.unknownError), act, false, autoPayNotificationId)
-                }
-            }
-            if (path == "/lp")  // we are already connected which is how this being called in the app context
-            {
-                toast(R.string.connected)
-                return true
-            }
-            if (path == "/share")
-            {
-                tp.handleShareRequest(iuri) {
-                    if (it != -1)
-                    {
-                        val msg: String = i18n(R.string.SharedNotification) % mapOf("what" to i18n(it))
-                        toast(msg)
-                    }
-                    else toast(R.string.badQR)
-                }
-            }
-            else if (path == "/address")
-            {
-                val result = tp.handleAddressInfoRequest(iuri)
-                val acc = tp.getRelevantAccount()
-                val act = currentActivity
-
-                when(result)
-                {
-                    TdppAction.ASK ->  // ADDRESS
-                    {
-                        TODO("always accept for now")
-                        /*
-                        var intent = Intent(this, TricklePayActivity::class.java)
-                        intent.data = Uri.parse(intentUri)
-                        if (act != null) autoPayNotificationId =
-                          notifyPopup(intent, i18n(R.string.TpAssetInfoRequest), i18n(R.string.fromColon) + tp.domainAndTopic, act, false, autoPayNotificationId)
-                        return false
-
-                         */
-                    }
-                    TdppAction.ACCEPT -> // ADDRESS
-                    {
-                        tp.acceptAssetRequest()
-                        return true
-                    }
-
-                    TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
-                }
-            }
-            else if (path == "/assets")
-            {
-                val result = tp.handleAssetInfoRequest(iuri)
-                val acc = tp.getRelevantAccount()
-                val act = currentActivity
-
-                when(result)
-                {
-                    TdppAction.ASK ->  // ASSETS
-                    {
-                        var intent = Intent(this, TricklePayActivity::class.java)
-                        intent.data = android.net.Uri.parse(intentUri)
-                        if (act != null) autoPayNotificationId =
-                          notifyPopup(intent, i18n(R.string.TpAssetInfoRequest), i18n(R.string.fromColon) + tp.domainAndTopic, act, false, autoPayNotificationId)
-                        return false
-                    }
-                    TdppAction.ACCEPT -> // ASSETS
-                    {
-                        tp.acceptAssetRequest()
-                        return true
-                    }
-
-                    TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
-                }
-            }
-            else if (path == "/tx")
-            {
-                val result = tp.attemptSpecialTx(intentUri)
-                val acc = tp.getRelevantAccount()
-                val act = currentActivity
-                when(result)
-                {
-                    TdppAction.ASK ->  // special tx
-                    {
-                        var intent = Intent(this, TricklePayActivity::class.java)
-                        intent.data = android.net.Uri.parse(intentUri)
-                        if (act != null) autoPayNotificationId =
-                            notifyPopup(intent, i18n(R.string.PaymentRequest), i18n(R.string.SpecialTpTransactionFrom) + " " + tp.domainAndTopic, act, false, autoPayNotificationId)
-                        return false
-                    }
-                    TdppAction.ACCEPT ->  // special tx auto accepted
-                    {
-                        // Intent() means unclickable -- change to pop up configuration if clicked
-                        if (act != null) autoPayNotificationId =
-                            notifyPopup(Intent(), i18n(R.string.AuthAutopayTitle), tp.domainAndTopic, act, false, autoPayNotificationId)
-                        return true
-                    }
-
-                    // special tx auto-deny
-                    TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
-                }
-            }
-
-        }
-        return false
+        return commonApp.handleTdpp(Uri.parse(intentUri))
     }
 
 
@@ -777,62 +620,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
                 // We don't have permission to send notifications
             }
             return nid
-        }
-    }
-
-    /** If you need to do a POST operation within the App context (because you are ending the activity) call these functions */
-    fun post(url: String, contents: (HttpRequestBuilder) -> Unit)
-    {
-        later()
-        {
-            LogIt.info(sourceLoc() + ": POST response to server: $url")
-            val client = HttpClient(Android)
-            {
-                install(ContentNegotiation) {
-                    json()
-                }
-                install(HttpTimeout) { requestTimeoutMillis = 5000 }
-            }
-
-            try
-            {
-                val response: HttpResponse = client.post(url, contents)
-                val respText = response.bodyAsText()
-                commonApp.displayNotice(respText)
-            }
-            catch (e: SocketTimeoutException)
-            {
-                commonApp.displayError(R.string.connectionException)
-            }
-            client.close()
-        }
-    }
-
-    fun postThen(url: String, contents: (HttpRequestBuilder) -> Unit, next: ()->Unit)
-    {
-        later()
-        {
-            LogIt.info(sourceLoc() + ": POST response to server: $url")
-            val client = HttpClient(Android)
-            {
-                install(ContentNegotiation) {
-                    json()
-                }
-                install(HttpTimeout) { requestTimeoutMillis = 5000 }
-            }
-
-            try
-            {
-                val response: HttpResponse = client.post(url, contents)
-                val respText = response.bodyAsText()
-                wallyApp?.displayNotice(respText)
-                next()
-            }
-            catch (e: SocketTimeoutException)
-            {
-                commonApp.displayError(R.string.connectionException)
-            }
-            client.close()
         }
     }
 

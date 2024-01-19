@@ -17,8 +17,6 @@ import java.net.URLEncoder
 
 private val LogIt = GetLog("BU.wally.IdentityActivity")
 
-open class IdentityException(msg: String, shortMsg: String? = null, severity: ErrorSeverity = ErrorSeverity.Abnormal) : LibNexaException(msg, shortMsg, severity)
-
 fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): View
 {
     return LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)

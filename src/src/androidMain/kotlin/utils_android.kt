@@ -54,6 +54,7 @@ actual fun String.urlEncode():String
     return URLEncoder.encode(this, "utf-8")
 }
 
+
 /** Get the clipboard.  Platforms that have a clipboard history should return that history, with the primary clip in index 0 */
 actual fun getTextClipboard(): List<String>
 {
@@ -133,3 +134,4 @@ actual fun platformShare(textToShare: String)
         act.share(textToShare)
     }
 }
+

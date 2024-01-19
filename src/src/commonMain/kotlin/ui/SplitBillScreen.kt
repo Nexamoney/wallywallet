@@ -40,10 +40,8 @@ fun CurrencyDecimal(b: BigDecimal): BigDecimal
 @Composable
 fun SplitBillScreen(nav: ScreenNav)
 {
-   //  fiatCurrencyCode = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD")
     val acct = wallyApp?.focusedAccount
     val cryptoCurrencyCode = acct?.currencyCode ?: chainToCurrencyCode[ChainSelector.NEXA] ?: "NEXA"
-    var currencyTypeExpanded by remember { mutableStateOf(false) }
     var usingCurrency by remember { mutableStateOf(fiatCurrencyCode) }
     var usingFiatCurrency by remember { mutableStateOf(true) }
     var usingCurrencySelectedIndex by remember { mutableStateOf(0) }
@@ -72,10 +70,7 @@ fun SplitBillScreen(nav: ScreenNav)
     //? Converts an input quantity to its value in crypto, if its not ALREADY in crypto based on the selected splitCurrencyType
     fun toCrypto(inQty: BigDecimal): BigDecimal
     {
-        var amt = inQty
-        amt = CurrencyDecimal(inQty)
-
-
+        var amt = CurrencyDecimal(inQty)
         if (usingCurrency == fiatCurrencyCode)
         {
             if (acct == null)
@@ -83,7 +78,7 @@ fun SplitBillScreen(nav: ScreenNav)
                 // TODO better error report
                 return CurrencyDecimal(0)
             }
-            val fpc = acct!!.fiatPerCoin
+            val fpc = acct.fiatPerCoin
             try
             {
                 if (fpc == -1.toBigDecimal())  // No conversion
