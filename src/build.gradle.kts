@@ -264,9 +264,6 @@ kotlin {
 
                 // Generate and display Compose Multiplaform QR code
                 implementation("io.github.alexzhirkevich:qrose:1.0.0-beta02")  // https://github.com/alexzhirkevich/qrose/releases
-
-                // Animation library binding
-                implementation("org.jetbrains.skiko:skiko:0.7.90")
             }
         }
         val commonTest by getting {
@@ -353,7 +350,6 @@ kotlin {
 
                     // CameraX core library using the camera2 implementation
                     val camerax_version = "1.4.0-alpha02"
-                    val lottieVersion = "6.3.0"
 
                     implementation(kotlin("stdlib-jdk8"))
                     implementation("androidx.activity:activity-compose:$androidxActivityComposeVersion")
@@ -407,9 +403,6 @@ kotlin {
                     implementation("androidx.camera:camera-lifecycle:${camerax_version}")
                     implementation("androidx.camera:camera-view:${camerax_version}")
                     implementation("com.google.mlkit:barcode-scanning:17.2.0")
-
-                    // Animation
-                    implementation("com.airbnb.android:lottie-compose:$lottieVersion")
                 }
             }
         }
