@@ -652,10 +652,8 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(modifier = Modifier.fillMaxWidth().padding(0.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
                     Spacer(Modifier.width(8.dp))
-                    if(synced.value)
-                        ResImageView("icons/check.xml", modifier = Modifier.size(50.dp))
-                    else
-                        LoadingAnimation()
+                    ResImageView(if (synced.value) "icons/check.xml" else "icons/syncing.xml", // MP doesn't support animation drawables "icons/ani_syncing.xml",
+                        modifier = Modifier.size(30.dp))
                     SectionText(S.AccountListHeader, Modifier.weight(1f))
                     ResImageView("icons/plus.xml", modifier = Modifier.size(26.dp).clickable {
                         nav.go(ScreenId.NewAccount)
