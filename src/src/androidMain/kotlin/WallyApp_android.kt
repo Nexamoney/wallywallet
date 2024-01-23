@@ -14,35 +14,23 @@ import android.os.Looper
 import android.service.notification.StatusBarNotification
 import android.view.View
 import android.widget.Toast
+import androidx.annotation.RawRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import io.ktor.client.*
-import io.ktor.client.engine.android.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.*
 import java.io.DataOutputStream
 import java.io.FileNotFoundException
 import java.io.IOException
-import java.net.ConnectException
 import java.net.HttpURLConnection
-import java.net.SocketTimeoutException
 import java.net.URL
-import java.security.spec.InvalidKeySpecException
-import java.util.*
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
 import com.eygraber.uri.*
+import info.bitcoinunlimited.www.wally.ui.views.loadingAnimation
 
 const val NORMAL_NOTIFICATION_CHANNEL_ID = "n"
 const val PRIORITY_NOTIFICATION_CHANNEL_ID = "p"
@@ -97,6 +85,32 @@ val i18nLbc = mapOf(
 actual fun platformNotification(message:String, title: String?, onclickUrl:String?)
 {
     // TODO
+}
+
+fun loadTextResource(resFile: String):String?
+{
+    val androidContext = (appContext() as android.content.Context)!!
+    var id = androidContext.resources.getIdentifier(resFile, "raw", androidContext.packageName)
+    val strs = androidContext.resources.openRawResource(id).readBytes()
+    if (strs.size == 0) return null
+    else return strs.decodeUtf8()
+}
+
+fun loadTextResource(@RawRes resId: Int):String?
+{
+    val androidContext = (appContext() as android.content.Context)!!
+    val strs = androidContext.resources.openRawResource(resId).readBytes()
+    if (strs.size == 0) return null
+    else return strs.decodeUtf8()
+}
+
+/** Load all graphics resources (images, animations, etc) */
+fun initializeGraphicsResources()
+{
+    launch {
+        // loadingAnimation = loadTextResource("loading_animation.json")
+        loadingAnimation = loadTextResource(R.raw.loading_animation)
+    }
 }
 
 class ActivityLifecycleHandler(private val app: WallyApp) : Application.ActivityLifecycleCallbacks
@@ -401,6 +415,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
             LogIt.info("Locale: ${loc.language} ${loc.country}")
             if (setLocale(loc.language, loc.country)) break
         }
+        initializeGraphicsResources()
         wallyAndroidApp = this
         wallyApp = commonApp
         commonApp.onCreate()
