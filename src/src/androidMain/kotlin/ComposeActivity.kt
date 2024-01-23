@@ -10,19 +10,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.google.zxing.integration.android.IntentIntegrator
 import kotlinx.coroutines.delay
-import org.nexa.libnexakotlin.launch
-import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuInflater
 import androidx.core.content.ContextCompat
-import com.google.zxing.BarcodeFormat
 import com.google.zxing.integration.android.IntentResult
 import info.bitcoinunlimited.www.wally.ui.*
 import org.nexa.libnexakotlin.logThreadException
 import org.nexa.libnexakotlin.rem
-import org.nexa.libnexakotlin.sourceLoc
 
 fun SetTitle(title: String)
 {
@@ -289,8 +285,11 @@ class ComposeActivity: CommonActivity()
 
         })
 
+        initializeGraphicsResources()
+
         // Wait for accounts to be loaded before we show the screen
         laterUI {
+
             while(!coinsCreated) delay(250)
             setContent {
                 val currentRootScreen = remember { mutableStateOf(ScreenId.Home) }

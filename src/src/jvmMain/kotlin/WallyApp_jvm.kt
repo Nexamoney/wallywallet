@@ -12,8 +12,41 @@ import androidx.compose.ui.window.rememberWindowState
 import info.bitcoinunlimited.www.wally.ui.NavigationRoot
 import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.ScreenNav
+import info.bitcoinunlimited.www.wally.ui.views.loadingAnimation
+import java.io.File
 
 private val LogIt = GetLog("BU.wally.IdentityActivity")
+
+fun loadTextResource(resFile: String):String?
+{
+    val nothing = Objectify<Int>(0)
+    val loadTries = listOf<() -> ByteArray>(
+      { nothing::class.java.getClassLoader().getResourceAsStream(resFile).readBytes() },
+      { File(resFile).readBytes() }
+    )
+
+    var strs = byteArrayOf()
+    for (i in loadTries)
+    {
+        try
+        {
+            strs = i()
+            break
+        }
+        catch (e: Exception)
+        {
+        }
+    }
+    if (strs.size == 0) return null
+    else return strs.decodeUtf8()
+}
+
+
+fun initializeGraphicsResources()
+{
+    loadingAnimation = loadTextResource("loading_animation.json")
+}
+
 
 object WallyJvmApp
 {
@@ -21,6 +54,7 @@ object WallyJvmApp
     fun main(args: Array<String>)
     {
         initializeLibNexa()
+        initializeGraphicsResources()
         setLocale()
         LogIt.warning("Starting Wally Enterprise Wallet")
         wallyApp = CommonApp()
