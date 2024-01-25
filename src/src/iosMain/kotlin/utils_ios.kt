@@ -3,11 +3,39 @@ package info.bitcoinunlimited.www.wally
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
+import kotlinx.cinterop.*
 import org.nexa.libnexakotlin.GetLog
-import platform.Foundation.NSThread
+import platform.Foundation.*
 import platform.UIKit.*
 
 private val LogIt = GetLog("BU.wally.utils_ios")
+
+@OptIn(ExperimentalForeignApi::class)
+fun ByteArray.toNSData(): NSData
+{
+    return usePinned { pinned ->
+        NSData.create(bytes = pinned.addressOf(0), length = size.toULong())
+    }
+}
+@OptIn(ExperimentalForeignApi::class)
+fun NSData.toByteArray(): ByteArray
+{
+    val len = length.toInt()
+    val ba = ByteArray(len)
+    ba.usePinned {
+        this.getBytes(it.addressOf(0))
+    }
+    return ba
+}
+
+
+@OptIn(ExperimentalForeignApi::class)
+actual fun inflateRfc1951(compressedBytes: ByteArray, expectedfinalSize: Long): ByteArray
+{
+    val nsd = compressedBytes.toNSData()
+    val dec = nsd.decompressedDataUsingAlgorithm(NSDataCompressionAlgorithmZlib, null)
+    return dec?.toByteArray() ?: byteArrayOf()
+}
 
 actual fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: MutableSet<String>?): String
 {
@@ -23,19 +51,6 @@ actual fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: Mutable
 actual fun GetHttpClient(timeoutInMs: Number): HttpClient = HttpClient(CIO)
 {
     install(HttpTimeout) { requestTimeoutMillis = timeoutInMs.toLong() }
-}
-/** Converts an encoded URL to a raw string */
-actual fun String.urlDecode():String
-{
-    //decodeURLParameter()
-    TODO()
-}
-
-/** Converts a string to a string that can be put into a URL */
-actual fun String.urlEncode():String
-{
-    TODO()
-    //encodeURLParameter(true)
 }
 
 /** Get the clipboard.  Platforms that have a clipboard history should return that history, with the primary clip in index 0 */

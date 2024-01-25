@@ -7,7 +7,7 @@ import java.net.URL
 // Dependency versions
 val mpThreadsVersion = "0.1.9"
 val nexaRpcVersion = "1.1.4"
-val libNexaKotlinVersion = "0.1.26"
+val libNexaKotlinVersion = "0.1.27"
 
 val serializationVersion = "1.6.2"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.7.3"     // https://github.com/Kotlin/kotlinx.coroutines
@@ -171,18 +171,11 @@ kotlin {
         }
 
         macosX64 {
-            /*
-            binaries {
-                executable {
-                    entryPoint = "main"
-                }
-            }*/
             compilations.getByName("main") {
                 compilerOptions.options.freeCompilerArgs.add("-verbose")
                 //binaries.libnexaBinCfg()
             }
         }
-
         macosArm64 {
             compilations.getByName("main") {
                 compilerOptions.options.freeCompilerArgs.add("-verbose")
@@ -254,6 +247,7 @@ kotlin {
                 // implementation("io.ktor:ktor-network-tls:$ktorVersion")
                 implementation("io.ktor:ktor-client-cio:$ktorVersion")
 
+                // IO
                 implementation("com.squareup.okio:okio:3.7.0")
                 implementation("org.jetbrains.kotlinx:atomicfu:0.23.1")
 
@@ -424,24 +418,14 @@ kotlin {
 
         if (MAC_TARGETS)
         {
-            val macosX64Main by getting {
-                // dependsOn(sourceSets.named("commonNative").get())
-                dependencies {
-                    // implementation("app.cash.sqldelight:native-driver:2.0.0")
-                }
-            }
-
             val iosX64Main by getting {
                 //dependsOn(sourceSets.named("commonNative").get())
                 dependencies {
-                    // implementation("app.cash.sqldelight:native-driver:2.0.0")
                 }
             }
 
             val iosMain by getting {
                 dependencies {
-                    // implementation("app.cash.sqldelight:native-driver:2.0.0")
-                    // implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-ios:$coroutinesVersion")
                 }
             }
         }

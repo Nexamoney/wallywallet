@@ -259,7 +259,7 @@ fun io.ktor.http.Url.readText(timeoutInMs: Number, maxReadSize: Number = 2500000
         var tries = 0
         while (tries < 10)
         {
-            tries++
+            tries = tries + 1
             val resp: HttpResponse = client.get(url) {
                 // Configure request parameters exposed by HttpRequestBuilder
             }
@@ -270,20 +270,9 @@ fun io.ktor.http.Url.readText(timeoutInMs: Number, maxReadSize: Number = 2500000
                 if (newLoc != null) url = io.ktor.http.Url(newLoc)
                 else throw CannotLoadException()
             }
-            return@runBlocking resp.bodyAsText()
+            else return@runBlocking resp.bodyAsText()
         }
         throw CannotLoadException()
-
-        /*
-        val resp = client.get(this.toString())
-        val status = resp.status.value
-        if ((status == 301) or (status == 302))  // Handle URL forwarding (often switching from http to https)
-        {
-            Pair(resp.request.headers.get("Location") ?: "", status)
-        }
-        else Pair(resp.bodyAsText(), status)
-
-         */
     }
 }
 
@@ -297,12 +286,13 @@ fun io.ktor.http.Url.readBytes(timeoutInMs: Number = 10000, maxReadSize: Number 
             // socketTimeoutMillis   // time between 2 data packets
         }
     }
-    var url:io.ktor.http.Url = this
 
+    var url:io.ktor.http.Url = this
     return runBlocking {
         var tries = 0
         while (tries < 10)
         {
+            tries = tries + 1
             val resp: HttpResponse = client.get(url) {
                 // Configure request parameters exposed by HttpRequestBuilder
             }
@@ -313,7 +303,7 @@ fun io.ktor.http.Url.readBytes(timeoutInMs: Number = 10000, maxReadSize: Number 
                 if (newLoc != null) url = io.ktor.http.Url(newLoc)
                 else throw CannotLoadException()
             }
-            return@runBlocking resp.bodyAsChannel().toByteArray(maxReadSize.toInt())
+            else return@runBlocking resp.bodyAsChannel().toByteArray(maxReadSize.toInt())
         }
         throw CannotLoadException()
     }
@@ -397,10 +387,10 @@ fun com.eygraber.uri.Uri.queryMap(): Map<String, String>
 // fun Uri.getQueryParameter(param: String): String? = parameters.get(param)
 
 /** Converts an encoded URL to a raw string */
-expect fun String.urlDecode():String
+// in libnexakotlin expect fun String.urlDecode():String
 
 /** Converts a string to a string that can be put into a URL */
-expect fun String.urlEncode():String
+// in libnexakotlin expect fun String.urlEncode():String
 
 /** Get the clipboard.  Platforms that have a clipboard history should return that history, with the primary clip in index 0 */
 expect fun getTextClipboard(): List<String>

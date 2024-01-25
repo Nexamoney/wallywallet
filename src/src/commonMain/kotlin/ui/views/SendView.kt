@@ -403,7 +403,7 @@ fun SendView(
                 afterTextChanged()
                 checkSendQuantity(sendQuantity.value, account)
             }
-            WallyDropdownMenu(modifier = Modifier.wrapContentSize().weight(0.5f), label = "", items = currencies.value, selectedIndex = ccIndex, onItemSelected = { index, item ->
+            WallyDropdownMenu(modifier = Modifier.wrapContentSize().weight(0.5f), label = "", items = currencies.value, selectedIndex = ccIndex, onItemSelected = { index, _ ->
                 if (index < currencies.value.size)
                 {
                     ccIndex = index

@@ -43,6 +43,7 @@ assemble:
   variables:
     ANDROID_HOME: "/opt/homebrew/share/android-commandlinetools"
   script:
+    - ./gradlew assemble  
     - ./gradlew :src:allMetadataJar
     - ./gradlew :src:assembleDebug
     - ./gradlew :src:assembleRelease

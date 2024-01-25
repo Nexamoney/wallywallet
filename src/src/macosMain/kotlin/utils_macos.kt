@@ -1,13 +1,39 @@
 package info.bitcoinunlimited.www.wally
 
+import kotlinx.cinterop.*
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import platform.AppKit.NSPasteboard
 import platform.AppKit.NSPasteboardType
 import platform.AppKit.NSPasteboardTypeString
 import platform.Foundation.NSData
+import platform.Foundation.create
+import platform.Foundation.*
+@OptIn(ExperimentalForeignApi::class)
+fun ByteArray.toNSData(): NSData
+{
+    return usePinned { pinned ->
+        NSData.create(bytes = pinned.addressOf(0), length = size.toULong())
+    }
+}
+@OptIn(ExperimentalForeignApi::class)
+fun NSData.toByteArray(): ByteArray
+{
+    val len = length.toInt()
+    val ba = ByteArray(len)
+    ba.usePinned {
+        this.getBytes(it.addressOf(0))
+    }
+    return ba
+}
 
-//import platform.UIKit.UIApplication
+@OptIn(ExperimentalForeignApi::class)
+actual fun inflateRfc1951(compressedBytes: ByteArray, expectedfinalSize: Long): ByteArray
+{
+    val nsd = compressedBytes.toNSData()
+    val dec = nsd.decompressedDataUsingAlgorithm(NSDataCompressionAlgorithmZlib, null)
+    return dec?.toByteArray() ?: byteArrayOf()
+}
 
 /** Display an alert in the native manner (if it exists, see @platform()).  If there is no native manner, just return */
 actual fun displayAlert(alert: Alert)
@@ -45,19 +71,8 @@ actual fun isUiThread(): Boolean
     //return UIApplication.sharedApplication.isMainThread
 }
 
-/** Converts an encoded URL to a raw string */
-actual fun String.urlDecode(): String {
-    TODO("Not yet implemented")
-}
-
-/** Converts a string to a string that can be put into a URL */
-actual fun String.urlEncode(): String
-{
-    TODO("Not yet implemented")
-}
-
 /**
-ß * Get the clipboard for MacOs
+ * Get the clipboard for MacOs
  * */
 actual fun getTextClipboard(): List<String> {
     val generalPB = NSPasteboard.generalPasteboard

@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
@@ -36,7 +35,6 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
@@ -80,7 +78,7 @@ val WallyModalOutline = BorderStroke(2.dp, WallyBorder)
 
 /** This is the basic Wally "fancy" button */
 @Composable
-fun WallyRoundedButton(onClick: () -> Unit, enabled: Boolean=true,  interactionSource: MutableInteractionSource= MutableInteractionSource(), content: @Composable() (RowScope.() -> Unit))
+fun WallyRoundedButton(onClick: () -> Unit, enabled: Boolean=true,  interactionSource: MutableInteractionSource= MutableInteractionSource(), content: @Composable() RowScope.() -> Unit)
 {
     // BUG this button pads out vertically
     OutlinedButton(
@@ -115,7 +113,7 @@ fun WallyRoundedTextButton(text: String, enabled: Boolean=true,  interactionSour
 
 /** This is a button meant to look very very button-like */
 @Composable
-fun WallyBoringButton(onClick: () -> Unit, enabled: Boolean=true,  interactionSource: MutableInteractionSource= MutableInteractionSource(), content: @Composable() (RowScope.() -> Unit))
+fun WallyBoringButton(onClick: () -> Unit, enabled: Boolean=true,  modifier: Modifier = Modifier, interactionSource: MutableInteractionSource = MutableInteractionSource(), content: @Composable() RowScope.() -> Unit)
 {
     OutlinedButton(
       onClick = onClick,
@@ -129,7 +127,7 @@ fun WallyBoringButton(onClick: () -> Unit, enabled: Boolean=true,  interactionSo
         disabledContentColor = WallyButtonForeground,
         containerColor = WallyButtonBackground,
         contentColor = WallyButtonForeground),
-      modifier = Modifier.padding(0.dp).defaultMinSize(1.dp, 1.dp),
+      modifier = Modifier.padding(0.dp).defaultMinSize(1.dp, 1.dp).then(modifier),
       interactionSource = interactionSource,
       content = content
     )
@@ -138,50 +136,48 @@ fun WallyBoringButton(onClick: () -> Unit, enabled: Boolean=true,  interactionSo
 @Composable
 fun WallyImageButton(resPath: String, enabled: Boolean=true, modifier: Modifier, onClick: () -> Unit)
 {
-    WallyRoundedButton(onClick, enabled) { ResImageView("icons/plus.xml",
-      modifier = modifier.clickable { onClick() }
-        )  }
+    WallyRoundedButton(onClick, enabled) { ResImageView(resPath, modifier = modifier.clickable { onClick() })  }
 }
 @Composable
 fun WallyBoringTextButton(textRes: Int, enabled: Boolean=true, modifier: Modifier = Modifier, interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
 {
-    WallyBoringButton(onClick, enabled, interactionSource) { WallyButtonText(i18n(textRes))}
+    WallyBoringButton(onClick, enabled, modifier, interactionSource) { WallyButtonText(i18n(textRes))}
 }
 @Composable
 fun WallyBoringTextButton(text: String, enabled: Boolean=true, modifier: Modifier = Modifier, interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
 {
-    WallyBoringButton(onClick, enabled, interactionSource) { WallyButtonText(text)}
+    WallyBoringButton(onClick, enabled, modifier, interactionSource) { WallyButtonText(text)}
 }
 
 @Composable
 fun WallyBoringLargeTextButton(textRes: Int, enabled: Boolean=true, modifier: Modifier = Modifier, interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
 {
-    WallyBoringButton(onClick, enabled, interactionSource) { WallyLargeButtonText(i18n(textRes))}
+    WallyBoringButton(onClick, enabled, modifier, interactionSource) { WallyLargeButtonText(i18n(textRes))}
 }
 
 @Composable
 fun WallyBoringLargeIconButton(iconRes: String, enabled: Boolean=true, modifier: Modifier = Modifier, interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
 {
     // chosen height is comparable to the large text button
-    WallyBoringButton(onClick, enabled, interactionSource) { ResImageView(iconRes, Modifier.wrapContentWidth().height(32.dp).defaultMinSize(32.dp, 32.dp).clickable { onClick() }.then(modifier)) }
+    WallyBoringButton(onClick, enabled, modifier, interactionSource) { ResImageView(iconRes, Modifier.wrapContentWidth().height(32.dp).defaultMinSize(32.dp, 32.dp).clickable { onClick() }.then(modifier)) }
 }
 
 @Composable
 fun WallyBoringMediumTextButton(textRes: Int, enabled: Boolean=true, modifier: Modifier = Modifier, interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
 {
-    WallyBoringButton(onClick, enabled, interactionSource) { WallyMediumButtonText(i18n(textRes))}
+    WallyBoringButton(onClick, enabled, modifier, interactionSource) { WallyMediumButtonText(i18n(textRes))}
 }
 
 @Composable
 fun WallyBoringIconButton(iconRes: String, modifier: Modifier = Modifier, enabled: Boolean=true,  interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
 {
-    WallyBoringButton(onClick, enabled, interactionSource) { ResImageView(iconRes, modifier.clickable { onClick() }) }
+    WallyBoringButton(onClick, enabled, modifier, interactionSource) { ResImageView(iconRes, modifier.clickable { onClick() }) }
 }
 
 @Composable
 fun WallyBoringIconButton(icon: ImageVector, modifier: Modifier = Modifier, enabled: Boolean=true, description:String? = null, interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
 {
-    WallyBoringButton(onClick, enabled, interactionSource) { Image(icon,description,modifier.clickable { onClick() }) }
+    WallyBoringButton(onClick, enabled, modifier, interactionSource) { Image(icon,description,modifier.clickable { onClick() }) }
 }
 
 @Composable fun WallyLargeButtonText(text: String)
@@ -212,7 +208,7 @@ fun WallyBoringIconButton(icon: ImageVector, modifier: Modifier = Modifier, enab
 @Composable fun WallyBoldText(textRes: Int)
 {
     val textstyle = TextStyle.Default.copy(lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.Both), fontWeight = FontWeight.Bold)
-    var s = i18n(textRes)
+    val s = i18n(textRes)
 
     Text(text = s, modifier = Modifier.padding(0.dp, 0.dp).wrapContentWidth(Alignment.CenterHorizontally,false),
       style = textstyle, textAlign = TextAlign.Center, softWrap = true)
@@ -444,12 +440,14 @@ fun WallyDataEntry(value: String, modifier: Modifier = Modifier, textStyle: Text
     val ts2 = LocalTextStyle.current.copy(fontSize = LocalTextStyle.current.fontSize.times(1.25))
     val ts = ts2.merge(textStyle)
     val scope = rememberCoroutineScope()
+    /*
     val interact = remember { object: HoverInteraction, InteractionSource
     {
         override val interactions: Flow<Interaction>
             get() = TODO("Not yet implemented")
 
     } }
+     */
 
     val bkgColor = remember { Animatable(BaseBkg) }
     val ia = remember { MutableInteractionSource() }
@@ -515,13 +513,8 @@ fun WallyIncognitoTextEntry(value: String, modifier: Modifier, onValueChange: (S
 @Composable
 fun QrCode(qrText: String, modifier: Modifier)
 {
-    var displayCopiedNotice by remember { mutableStateOf(false) }
     val qrcodePainter = rememberQrCodePainter(qrText)
-
-    //Box(modifier = Modifier.padding(16.dp).background(color = Color.White)) {
-    Image(painter = qrcodePainter,
-      contentDescription = null,
-      modifier = modifier.padding(16.dp))
+    Image(painter = qrcodePainter, contentDescription = null, modifier = modifier.padding(16.dp))
 }
 
 /**
@@ -673,7 +666,6 @@ fun DecimalInputField(descriptionRes: Int, labelRes: Int, text: String, style: T
 /**
  * Input field that returns a String
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StringInputTextField(labelRes: Int, text: String, onChange: (String) -> Unit)
 {

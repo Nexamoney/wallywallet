@@ -1,17 +1,30 @@
 // This should become a library
 package info.bitcoinunlimited.www.wally
 
-// TODO multiplatform Zip parsing
+// Zip parsing: java implementation
 //import java.util.zip.ZipEntry
 //import java.util.zip.ZipInputStream
 //import java.util.zip.ZipOutputStream
 
+// multiplatform Zip parsing: Korge implementation
+//import korlibs.io.file.baseName
+//import korlibs.io.file.fullName
+//import korlibs.io.file.std.openAsZip
+//import korlibs.io.stream.AsyncStream
+//import korlibs.io.stream.openAsync
+
+// KmpIO (https://github.com/skolson/KmpIO)
+//import com.oldguy.common.io.File
+//import com.oldguy.common.io.ZipFile
+
+
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.Json
-//import kotlin.io.path.Path
-//import kotlin.io.path.copyTo
 import com.ionspin.kotlin.bignum.decimal.*
+
+
+import kotlinx.coroutines.runBlocking
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
@@ -120,11 +133,84 @@ data class NexaNFTv2(
   val license: String?=null,
 )
 
+// Korge implementation
+private fun getFileByPrefix(nftyZip: ByteArray, namePrefix:String):Pair<String?, ByteArray?>
+{
+    var data:ByteArray? = null
+    var name:String? = null
+
+    zipForeach(nftyZip) { header, d ->
+        if (header.fileName.startsWith(namePrefix))
+        {
+            name = header.fileName
+            if (d != null) data = d.readByteArray()
+            true
+        }
+        else false
+    }
+
+    /*
+    runBlocking {
+        val astrm = nftyZip.openAsync()
+        astrm.openAsZip() {
+            for (f in it.listRecursiveSimple())
+            {
+                if (f.isFile() && f.baseName.startsWith(namePrefix))
+                {
+                    name = f.baseName
+                    data = f.readBytes()
+                    break
+                }
+            }
+        }
+    }
+
+     */
+    return Pair(name, data)
+}
+
+private fun getFile(nftyZip: ByteArray, fname:String):Pair<String?, ByteArray?>
+{
+    var data:ByteArray? = null
+    var name:String? = null
+
+    zipForeach(nftyZip) { header, d ->
+        if (header.fileName == fname)
+        {
+            name = header.fileName
+            if (d != null) data = d.readByteArray()
+            true
+        }
+        else false
+    }
+
+    /*
+    runBlocking {
+        val astrm = nftyZip.openAsync()
+        astrm.openAsZip() {
+            for (f in it.listRecursiveSimple())
+            {
+                if (f.isFile() && f.baseName == fname)
+                {
+                    name = f.baseName
+                    data = f.readBytes()
+                    break
+                }
+            }
+        }
+    }
+     */
+    return Pair(name, data)
+}
+
+
+
 /** return filename and data of the public card front */
 fun nftCardFront(nftyZip: ByteArray):Pair<String?, ByteArray?>
 {
-    TODO()
-    /*
+    return getFileByPrefix(nftyZip, "cardf")
+
+    /* import java.util.zip
     val zipIn = ZipInputStream(ByteArrayInputStream(nftyZip))
     var entry = zipIn.nextEntry
 
@@ -146,8 +232,8 @@ fun nftCardFront(nftyZip: ByteArray):Pair<String?, ByteArray?>
 
 fun nftCardBack(nftyZip: ByteArray):Pair<String?, ByteArray?>
 {
-    TODO()
-    /*
+    return getFileByPrefix(nftyZip, "cardb")
+    /*  and
     val zipIn = ZipInputStream(ByteArrayInputStream(nftyZip))
     var entry = zipIn.nextEntry
 
@@ -168,8 +254,8 @@ fun nftCardBack(nftyZip: ByteArray):Pair<String?, ByteArray?>
 
 fun nftPublicMedia(nftyZip: ByteArray):Pair<String?, ByteArray?>
 {
-    TODO()
-    /*
+    return getFileByPrefix(nftyZip, "public")
+    /* //import java.util.zip
     val zipIn = ZipInputStream(ByteArrayInputStream(nftyZip))
     var entry = zipIn.nextEntry
 
@@ -191,8 +277,8 @@ fun nftPublicMedia(nftyZip: ByteArray):Pair<String?, ByteArray?>
 
 fun nftOwnerMedia(nftyZip: ByteArray):Pair<String?, ByteArray?>
 {
-     TODO()
-    /*
+    return getFileByPrefix(nftyZip, "owner")
+    /* java.util.zip
     val zipIn = ZipInputStream(ByteArrayInputStream(nftyZip))
     var entry = zipIn.nextEntry
 
@@ -214,8 +300,14 @@ fun nftOwnerMedia(nftyZip: ByteArray):Pair<String?, ByteArray?>
 
 fun nftData(nftyZip: ByteArray): NexaNFTv2?
 {
-     TODO()
-    /*
+    val (_, contents) = getFile(nftyZip, "info.json")
+    if (contents == null) return null
+    val s = contents.decodeUtf8()
+    val js = Json { ignoreUnknownKeys = true }
+    val nftInfo = js.decodeFromString<NexaNFTv2>(NexaNFTv2.serializer(),s)
+    return nftInfo
+
+    /* java.util.zip
     val zipIn = ZipInputStream(ByteArrayInputStream(nftyZip))
     var entry = zipIn.nextEntry
 
@@ -236,7 +328,6 @@ fun nftData(nftyZip: ByteArray): NexaNFTv2?
     }
     zipIn.close()
     return null
-
      */
 }
 

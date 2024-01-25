@@ -18,6 +18,19 @@ import java.io.File
 import java.io.InputStream
 import java.net.URLDecoder
 import java.net.URLEncoder
+import java.util.zip.Inflater
+
+actual fun inflateRfc1951(compressedBytes: ByteArray, expectedfinalSize: Long): ByteArray
+{
+    val inf = Inflater(true)  // true means do not wrap in the gzip header
+
+    inf.setInput(compressedBytes)
+    val ba = ByteArray(expectedfinalSize.toInt())
+    val sz = inf.inflate(ba)
+    if (sz != expectedfinalSize.toInt()) throw Exception("inflate wrong size")
+    inf.end()
+    return ba
+}
 
 actual fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: MutableSet<String>?): String
 {
@@ -34,18 +47,6 @@ actual fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: Mutable
 actual fun GetHttpClient(timeoutInMs: Number): HttpClient = HttpClient(io.ktor.client.engine.cio.CIO) {
     install(HttpTimeout) { requestTimeoutMillis = timeoutInMs.toLong() }
 }
-
-/** Converts an encoded URL to a raw string */
-actual fun String.urlDecode():String
-{
-    return URLDecoder.decode(this,"utf-8")
-}
-
-actual fun String.urlEncode():String
-{
-    return URLEncoder.encode(this, "utf-8")
-}
-
 
 /** Get the clipboard.  Platforms that have a clipboard history should return that history, with the primary clip in index 0 */
 actual fun getTextClipboard(): List<String>

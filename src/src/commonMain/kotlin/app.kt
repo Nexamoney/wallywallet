@@ -255,7 +255,7 @@ open class CommonApp
         {
             val uri = Uri.parse(urlStr)
             val scheme = uri.scheme
-            val notify = amIbackground()
+            // TODO val notify = amIbackground()
             val app = wallyApp
             if (app == null) return false // should never occur
 
@@ -347,6 +347,26 @@ open class CommonApp
         if (scheme == TDPP_URI_SCHEME)
         {
             val tp = TricklePaySession(tpDomains)
+            tp.parseCommonFields(iuri, true)
+            val address = iuri.getQueryParameter("addr")
+            if (path == "/reg")  // Handle registration
+            {
+                if (tp.sigOk == true)  // Registration requires a good signature
+                {
+                    val d = TdppDomain(iuri)
+                    tp.proposedDomainChanges = d
+                }
+                else
+                {
+                    displayError(S.badSignature)
+                    return false
+                }
+
+                launch {
+                    externalDriver.send(GuiDriver(ScreenId.TpSettings, tpSession = tp))
+                }
+                return true
+            }
             if (path == "/sendto")
             {
                 try
@@ -397,7 +417,6 @@ open class CommonApp
             else if (path == "/address")
             {
                 val result = tp.handleAddressInfoRequest(iuri)
-                val acc = tp.getRelevantAccount()
 
                 when(result)
                 {
@@ -435,7 +454,6 @@ open class CommonApp
                         //if (act != null) autoPayNotificationId =
                         //  notifyPopup(intent, i18n(R.string.TpAssetInfoRequest), i18n(R.string.fromColon) + tp.domainAndTopic, act, false, autoPayNotificationId)
                         TODO()
-                        return false
                     }
                     TdppAction.ACCEPT -> // ASSETS
                     {
@@ -466,7 +484,6 @@ open class CommonApp
                         TODO()
                         //if (act != null) autoPayNotificationId =
                         //  notifyPopup(Intent(), i18n(R.string.AuthAutopayTitle), tp.domainAndTopic, act, false, autoPayNotificationId)
-                        return true
                     }
 
                     // special tx auto-deny

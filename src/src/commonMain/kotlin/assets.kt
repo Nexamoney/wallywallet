@@ -417,26 +417,28 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
             }
         }
 
-        TODO("ASSET ZIP FILE")
-        /*
         if (zipBytes != null)
         {
-            val zf = ZipInputStream(ByteArrayInputStream(zipBytes))
-            // Just try to go thru the zip dir to see if its basically a valid file
-            val files = generateSequence { zf.nextEntry }.map { it.name }.toList()
-            LogIt.info(sourceLoc() + ": nft zip contents " + files.joinToString(" "))
-            val hash = libnexa.hash256(zipBytes)
-            if (groupId.subgroupData() contentEquals  hash)
+            val nftData = nftData(zipBytes)  // Sanity check the file
+            if (nftData == null)
             {
-                storeAssetFile(groupId.toHex() + ".zip", zipBytes)
-                return Pair(url!!, zipBytes)
+                return null
             }
             else
             {
-                LogIt.info(sourceLoc() + ": nft zip file does not match hash")
+                val hash = libnexa.hash256(zipBytes)
+                if (groupId.subgroupData() contentEquals hash)
+                {
+                    storeAssetFile(groupId.toHex() + ".zip", zipBytes)
+                    return Pair(url!!, zipBytes)
+                }
+                else
+                {
+                    LogIt.info(sourceLoc() + ": nft zip file does not match hash")
+                }
             }
         }
-         */
+
         return null
     }
 

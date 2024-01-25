@@ -43,11 +43,9 @@ fun AccountDropDownSelector(
               items = accountNames,
               selectedIndex = selectedIndex,
               style = WallyDropdownStyle.Succinct,
-              onItemSelected = { index, s ->
+              onItemSelected = { index, _ ->
                   selectedIndex = index
-                  // selectedAccountName = s
-                  onAccountNameSelected(index)
-                               },
+                  onAccountNameSelected(index) },
             )
 }
 

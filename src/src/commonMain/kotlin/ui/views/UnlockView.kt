@@ -43,6 +43,7 @@ fun UnlockDialog(onPinEntered: (String) -> Unit)
                                 displayError(S.InvalidPIN)
                             else triggerAccountsChanged()  // We don't know what accounts got unlocked so just redraw them all in this non-performance change
                             triggerUnlockDialog(false)
+                            onPinEntered(pin.value)
                         }
                     ),
                   )
