@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.unit.dp
@@ -368,11 +369,11 @@ fun NavigationRoot(nav: ScreenNav)
         val ctp = currentTpSession
         if (ctp == null)
         {
-            displayError(S.TpNoRegistrations)  // TODO make this no TP session
+            displayError(S.TpNoSession)  // TODO make this no TP session
             return
         }
 
-        val pa = ctp.getRelevantAccount(selectedAccount?.value?.name)
+        val pa = ctp.getRelevantAccount(selectedAccount.value?.name)
         if (pa == null)
         {
             displayError(S.NoAccounts)
@@ -492,8 +493,6 @@ fun NavigationRoot(nav: ScreenNav)
                     WallyEmphasisBox(Modifier.fillMaxWidth().wrapContentSize().clickable { clickDismiss.value = null }) { it() }
                 }
 
-                val pa = selectedAccount.value
-
                 // This will take up the most space but leave enough for the navigation menu
                 val mod = if (nav.currentScreen.value.isEntirelyScrollable)
                 {
@@ -501,7 +500,7 @@ fun NavigationRoot(nav: ScreenNav)
                 }
                 else
                 {
-                   Modifier.weight(1f).fillMaxWidth()
+                   Modifier.weight(1f).fillMaxWidth().fillMaxHeight()
                 }
                 Box(
                   modifier = mod
@@ -517,11 +516,11 @@ fun NavigationRoot(nav: ScreenNav)
                         ScreenId.AccountDetails -> withAccount { AccountDetailScreen(it, nav) }
                         ScreenId.Assets -> Text("TODO: Implement AssetsScreen")
                         ScreenId.Shopping -> ShoppingScreen(nav)
-                        ScreenId.TricklePay -> Text("TODO: Implement TricklePayScreen")
+                        ScreenId.TricklePay -> withAccount { act -> TricklePayScreen(act, null, nav) }
                         ScreenId.Identity -> Text("TODO: Implement IdentityScreen")
                         ScreenId.AddressHistory ->  withAccount { AddressHistoryScreen(it, nav) }
                         ScreenId.TxHistory -> withAccount { TxHistoryScreen(it, nav) }
-                        ScreenId.TpSettings -> withTp { act, ctp -> TpSettingsScreen(act, ctp, nav) }
+                        ScreenId.TpSettings -> withTp { act, ctp -> TricklePayScreen(act, ctp, nav) }
                         ScreenId.SpecialTxPerm -> withTp { act, ctp -> SpecialTxPermScreen(act, ctp, nav) }
                         ScreenId.AssetInfoPerm -> withTp { act, ctp -> AssetInfoPermScreen(act, ctp, nav) }
                         ScreenId.SendToPerm -> withTp { act, ctp -> SendToPermScreen(act, ctp, nav) }

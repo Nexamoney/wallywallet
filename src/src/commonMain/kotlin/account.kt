@@ -62,7 +62,7 @@ class Account(
 )
 {
     val handler = CoroutineExceptionHandler {
-        context, exception -> LogIt.error("Caught in Account CoroutineExceptionHandler: $exception")
+        _, exception -> LogIt.error("Caught in Account CoroutineExceptionHandler: $exception")
     }
     var walletDb: WalletDatabase? = openWalletDB(dbPrefix + name + "_wallet", chainSelector)
     val tickerGUI = Reactive<String>("") // Where to show the crypto's ticker
@@ -528,10 +528,17 @@ class Account(
 
     fun changeAsyncProcessing()
     {
-        // Update our cache of the balances
-        unconfirmedBalance = fromFinestUnit(wallet.balanceUnconfirmed)
-        confirmedBalance = fromFinestUnit(wallet.balanceConfirmed)
-        balance = unconfirmedBalance + confirmedBalance
+        try
+        {
+            // Update our cache of the balances
+            unconfirmedBalance = fromFinestUnit(wallet.balanceUnconfirmed)
+            confirmedBalance = fromFinestUnit(wallet.balanceConfirmed)
+            balance = unconfirmedBalance + confirmedBalance
+        }
+        catch (e: WalletDisconnectedException)
+        {
+            // I cannot update the balance if the wallet is not connected, but it will update once the connected so benign
+        }
     }
 
     fun onChange(force: Boolean = false)
@@ -555,7 +562,7 @@ class Account(
                 // If we have an address, then if re-use is true don't get another one
                 if ((flags and ACCOUNT_FLAG_REUSE_ADDRESSES) > 0U) genNewTmp = false
                 // Otherwise get another one if our balance on this address is nonzero
-                else addr.let { GlobalScope.launch(Dispatchers.IO + handler) { genNewTmp = (wallet.getBalanceIn(it) > 0) } }
+                else addr.let { launch { genNewTmp = (wallet.getBalanceIn(it) > 0) } }
                 genNewTmp
             }
 

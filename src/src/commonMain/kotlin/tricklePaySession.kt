@@ -367,6 +367,7 @@ fun makeChallengeTx(sp: Spendable, challengerId: ByteArray, chalby: ByteArray): 
     return tx
 }
 
+@OptIn(ExperimentalUnsignedTypes::class)
 fun VerifyTdppSignature(uri: Uri, addressParam:String? = null): Boolean?
 {
     val addressStr = if ((addressParam==null) || (addressParam=="")) uri.getQueryParameter("addr") else addressParam
@@ -445,6 +446,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
     var uniqueAddress: Boolean = false
 
     var domain: TdppDomain? = null
+    var proposedDomainChanges: TdppDomain? = null
 
     val isSecureRequest:Boolean
         get()
@@ -504,6 +506,8 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         cookie = uri.getQueryParameter("cookie")
         reason = uri.getQueryParameter("reason")
 
+        val addr = uri.getQueryParameter("addr")
+
         val chain = uri.getQueryParameter("chain")
         if (chain != null)
         {
@@ -515,10 +519,24 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         }
 
         tpDomains.load()
-        if (autoCreateDomain)
-            domain = tpDomains.loadCreateDomain(h,topic ?: "")
+        domain = if (autoCreateDomain)
+        {
+            val d = tpDomains.loadCreateDomain(h, topic ?: "")
+            d.addr = addr ?: ""
+            newDomain = true
+            d
+        }
         else
-            domain = tpDomains.loadDomain(h,topic ?: "")
+        {
+            val d = tpDomains.loadDomain(h, topic ?: "")
+            if (d == null) throw TdppException(S.UnknownDomainRegisterFirst, "no domain specified")
+            if (addr != null && addr != d.addr)
+            {
+                throw TdppException(S.badAddress, "Domain signing address is inconsistent with what was registered.")
+            }
+            newDomain = false
+            d
+        }
 
         sigOk = VerifyTdppSignature(uri, domain?.addr)
     }
@@ -541,12 +559,13 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
             if (chainSelector == null || act.chain.chainSelector == chainSelector) return act
         }
 
-        act = wallyApp!!.primaryAccount
-        if (act != null)
+        try
         {
+            act = wallyApp!!.primaryAccount
             if (chainSelector == null || act.chain.chainSelector == chainSelector) return act
         }
-
+        catch(e:PrimaryWalletInvalidException)
+        {}
 
         val walChoices = wallyApp!!.accountsFor(chainSelector ?: ChainSelector.NEXA)
         if (walChoices.size == 0)
@@ -698,17 +717,17 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
                 when (choice)
                 {
                     // remove an input
-                    0 ->  pTx!!.inputs.removeAt((0 until pTx!!.inputs.size).random())
+                    0 ->  pTx.inputs.removeAt((0 until pTx.inputs.size).random())
                     // remove a signature
                     1 ->
                     {
-                        val inp = pTx!!.inputs.random()
+                        val inp = pTx.inputs.random()
                         inp.script = NexaScript()
                     }
                     // remove an output; this should work because some sig should have signed the whole tx (up to this point if partial)
                     2 ->
                     {
-                        pTx!!.outputs.removeAt((0 until pTx!!.outputs.size).random())
+                        pTx.outputs.removeAt((0 until pTx.outputs.size).random())
                     }
                 }
                 LogIt.info("Breaking this TDPP special transaction response: ${pTx.toHex()}")

@@ -564,6 +564,8 @@ Good luck!
     <string name="asciiArrow"><![CDATA[=>]]></string>
 
     <string name="TpNoRegistrations">No Trickle Pay registrations</string>
+    <string name="TpNoSession">No Trickle Pay request</string>
+    <string name="TpRegistrations">Registrations</string>
     <string name="TpRegDenied">Denied registration</string>
     <string name="TpRegAccepted">Accepted registration</string>
     <string name="TpRegUnchanged">Registration unchanged</string>

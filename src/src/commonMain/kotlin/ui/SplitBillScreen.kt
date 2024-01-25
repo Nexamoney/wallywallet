@@ -99,17 +99,17 @@ fun SplitBillScreen(nav: ScreenNav)
     {
         if (usingCurrency == fiatCurrencyCode)
         {
-            return FiatFormat.format(qty) + " " + fiatCurrencyCode
+            return FiatFormat.format(qty) + if (includeCurrencyCode) (" " + fiatCurrencyCode) else ""
         }
         else
         {
             if (acct == null)
             {
-                return NexaFormat.format(qty) + " " + cryptoCurrencyCode
+                return NexaFormat.format(qty) + if (includeCurrencyCode) (" " + cryptoCurrencyCode) else ""
             }
             else
             {
-                return acct!!.format(qty) + " " + cryptoCurrencyCode
+                return acct.format(qty) + if (includeCurrencyCode) (" " + cryptoCurrencyCode) else ""
             }
         }
     }
@@ -134,7 +134,7 @@ fun SplitBillScreen(nav: ScreenNav)
         var fiatStr: String =""
         if (acct != null)
         {
-            val fpc = acct!!.fiatPerCoin
+            val fpc = acct.fiatPerCoin
             if (fpc == -1.toBigDecimal())
             {
                 fiatStr = " (" + i18n(S.unavailableExchangeRate) + ")"
