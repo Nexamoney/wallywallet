@@ -1,5 +1,6 @@
 package info.bitcoinunlimited.www.wally.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
@@ -12,12 +13,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import info.bitcoinunlimited.www.wally.*
+import info.bitcoinunlimited.www.wally.ui.theme.BrightBkg
 
 /**
  * Displays a confirm/dismiss dialog to users with optional confirm/dismiss button text and description
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UnlockDialog(onPinEntered: (String) -> Unit)
 {
@@ -30,9 +34,16 @@ fun UnlockDialog(onPinEntered: (String) -> Unit)
     clearAlerts()
 
     AlertDialog(title = { Text(i18n(S.EnterPIN)) },
+      containerColor = BrightBkg,
       text = {
               Column {
                   TextField(pin.value,
+                    colors = TextFieldDefaults.textFieldColors(
+                      cursorColor = Color.Black,
+                      containerColor = Color.Transparent,
+                      focusedIndicatorColor = Color.Black,
+                      unfocusedIndicatorColor = Color.Black
+                    ),
                     onValueChange = { pin.value = it },
                     //label = { Text("Enter PIN") },
                     modifier = Modifier.focusRequester(focusRequester),
