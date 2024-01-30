@@ -31,7 +31,6 @@ private val supportedBlockchains =
   )
 const val ACCOUNT_FLAG_NONE = 0UL
 const val ACCOUNT_FLAG_HIDE_UNTIL_PIN = 1UL
-const val ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY = 2UL
 const val ACCOUNT_FLAG_REUSE_ADDRESSES = 4UL
 
 const val MAX_NAME_LEN = 8

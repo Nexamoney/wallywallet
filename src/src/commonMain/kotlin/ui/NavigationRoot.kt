@@ -323,11 +323,13 @@ val externalDriver = Channel<GuiDriver>()
     Column {
         Text(i18n(S.WriteDownRecoveryPhraseWarning), Modifier.fillMaxWidth().wrapContentHeight(), colorPrimaryDark, maxLines = 10, textAlign = TextAlign.Center,
           fontSize = FontScale(1.25))
+        /*
         WallyRoundedButton({
             externalDriver.trySend(GuiDriver(ScreenId.AccountDetails, noshow = setOf(ShowIt.WARN_BACKUP_RECOVERY_KEY)))
         }) {
             Text("Do It")
         }
+         */
     }
 }
 
