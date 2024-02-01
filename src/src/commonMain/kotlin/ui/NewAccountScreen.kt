@@ -3,7 +3,6 @@ package info.bitcoinunlimited.www.wally.ui
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
@@ -79,19 +78,19 @@ fun ProposeAccountName(cs: ChainSelector):String?
 @Composable fun NewAccountScreen(accounts: MutableState<ListifyMap<String, Account>>, devMode: Boolean, nav: ScreenNav)
 {
     val blockchains = supportedBlockchains.filter { devMode || it.value.isMainNet }
-    var selectedBlockChain by remember { mutableStateOf(blockchains.entries.first()) }
-    var newAcState by remember { mutableStateOf( NewAccountState(accountName = ProposeAccountName(selectedBlockChain.value) ?: "") ) }
+    var selectedBlockChain by remember { mutableStateOf(blockchains.entries.first().toPair()) }
+    var newAcState by remember { mutableStateOf( NewAccountState(accountName = ProposeAccountName(selectedBlockChain.second) ?: "") ) }
 
     NewAccountScreenContent(
       newAcState,
       selectedBlockChain,
       blockchains,
       onChainSelected = {
-          val oldname = ProposeAccountName(selectedBlockChain.value)
+          val oldname = ProposeAccountName(selectedBlockChain.second)
           selectedBlockChain = it
           if (oldname == newAcState.accountName)  // name remains the proposed default, so propose a different one
           {
-              val name = ProposeAccountName(selectedBlockChain.value)
+              val name = ProposeAccountName(selectedBlockChain.second)
               if (name != null) newAcState = newAcState.copy(accountName = name)
           }
                         },
@@ -156,7 +155,7 @@ fun ProposeAccountName(cs: ChainSelector):String?
               Thread("recoverAccount")
               {
                   newAcState = try {
-                      wallyApp!!.recoverAccount(newAcState.accountName, flags, newAcState.pin, words.joinToString(" "), selectedBlockChain.value, null, null, null)
+                      wallyApp!!.recoverAccount(newAcState.accountName, flags, newAcState.pin, words.joinToString(" "), selectedBlockChain.second, null, null, null)
                       triggerAssignAccountsGuiSlots()
                       nav.back()
                       newAcState.copy(isSuccessDialogOpen = false)
@@ -177,7 +176,7 @@ fun ProposeAccountName(cs: ChainSelector):String?
           if (inputValid && words.isEmpty())
           {
               later {
-                  val account = wallyApp!!.newAccount(newAcState.accountName, flags, newAcState.pin, selectedBlockChain.value)
+                  val account = wallyApp!!.newAccount(newAcState.accountName, flags, newAcState.pin, selectedBlockChain.second)
                   newAcState = if (account == null)
                   {
                       displayError(i18n(S.unknownError))
@@ -212,9 +211,9 @@ fun ProposeAccountName(cs: ChainSelector):String?
 
 @Composable fun NewAccountScreenContent(
   newAcState: NewAccountState,
-  selectedChain: Map.Entry<String, ChainSelector>,
+  selectedChain: Pair<String, ChainSelector>,
   blockchains: Map<String, ChainSelector>,
-  onChainSelected: (Map.Entry<String, ChainSelector>) -> Unit,
+  onChainSelected: (Pair<String, ChainSelector>) -> Unit,
   onNewAccountName: (String) -> Unit,
   onNewRecoveryPhrase: (String) -> Unit,
   onPinChange: (String) -> Unit,
@@ -229,7 +228,7 @@ fun ProposeAccountName(cs: ChainSelector):String?
         {
             WallyError(newAcState.errorMessage)
         }
-        BlockchainDropDownMenu(selectedChain, blockchains, onChainSelected)
+        WallyDropDownMenuUnidirectional<ChainSelector>(selectedChain, blockchains, onChainSelected)
         AccountNameInput(newAcState.accountName, newAcState.validAccountName, onNewAccountName)
         Spacer(Modifier.height(10.dp))
         RecoveryPhraseInput(newAcState.recoveryPhrase, newAcState.validOrNoRecoveryPhrase, onNewRecoveryPhrase)
