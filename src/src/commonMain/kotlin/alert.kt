@@ -8,7 +8,7 @@ import org.nexa.libnexakotlin.millinow
 enum class AlertLevel(val level: Int)
 {
     SUCCESS(1), // Green
-    NOTICE(10),  // yellow
+    NOTICE(10),  // Just informative -- neutral color
     WARN(50),    // yellow
     ERROR(100),  // red
     EXCEPTION(200); // red
@@ -26,7 +26,7 @@ enum class AlertLevel(val level: Int)
     }
 }
 
-data class Alert(val msg: String, val details: String?, val level: AlertLevel, val trace:String? = stackTraceWithout(mutableSetOf("displayError\$default","displayError","displayNotice")), val persistAcrossScreens:Boolean = true, val longevity:Long? = null, val date: Long = millinow())
+data class Alert(val msg: String, val details: String?, val level: AlertLevel, val trace:String? = stackTraceWithout(mutableSetOf("displayError\$default","displayError","displayNotice")), var persistAcrossScreens:Int = 1, val longevity:Long? = null, val date: Long = millinow())
 
 /** Communicate incoming alerts to the GUI */
 val alertChannel = Channel<Alert>()
@@ -38,14 +38,14 @@ val defaultIgnoreFiles = mutableListOf<String>("ZygoteInit.java", "RuntimeInit.j
 
 fun clearAlerts(maxLevel: AlertLevel = AlertLevel.EXCEPTION)
 {
-    val alert = Alert("", null, maxLevel, null, false, 0)
+    val alert = Alert("", null, maxLevel, null, 0, 0)
     launch { alertChannel.send(alert) }
 }
 
 /** Display a notice message, and add it to the list of alerts */
-fun displaySuccess(summary: Int, message: String?=null, persistAcrossScreens: Boolean=true) = displayNotice(i18n(summary), message, persistAcrossScreens)
+fun displaySuccess(summary: Int, message: String?=null, persistAcrossScreens: Int = 1) = displayNotice(i18n(summary), message, persistAcrossScreens)
 
-fun displaySuccess(summary: String, message: String?=null, persistAcrossScreens: Boolean=true)
+fun displaySuccess(summary: String, message: String?=null, persistAcrossScreens: Int = 1)
 {
     val alert = Alert(summary, message, AlertLevel.SUCCESS, null, persistAcrossScreens, NORMAL_NOTICE_DISPLAY_TIME)
 
@@ -59,9 +59,9 @@ fun displaySuccess(summary: String, message: String?=null, persistAcrossScreens:
 }
 
 /** Display a notice message, and add it to the list of alerts */
-fun displayNotice(summary: Int, message: String?=null, persistAcrossScreens: Boolean=true) = displayNotice(i18n(summary), message, persistAcrossScreens)
+fun displayNotice(summary: Int, message: String?=null, persistAcrossScreens: Int = 1) = displayNotice(i18n(summary), message, persistAcrossScreens)
 
-fun displayNotice(summary: String, message: String?=null, persistAcrossScreens: Boolean=true)
+fun displayNotice(summary: String, message: String?=null, persistAcrossScreens: Int = 1)
 {
     val alert = Alert(summary, message, AlertLevel.NOTICE, null, persistAcrossScreens, NOTICE_DISPLAY_TIME)
 
@@ -74,8 +74,25 @@ fun displayNotice(summary: String, message: String?=null, persistAcrossScreens: 
     }
 }
 
+/** Display an error message, and add it to the list of alerts.
+ * you MUST i18n every summary message!  Only use this string based API if you have to parameterize your summary.
+ * */
+fun displayWarning(summary: String, message: String?=null, persistAcrossScreens: Int = 1)
+{
+    val alert = Alert(summary, message, AlertLevel.WARN, null, persistAcrossScreens, NORMAL_NOTICE_DISPLAY_TIME)
+
+    if (platform().hasNativeTitleBar)
+        displayAlert(alert)
+    else
+    {
+        alerts.add(alert)
+        launch { alertChannel.send(alert) }
+    }
+}
+
+
 /** Display an error message, and add it to the list of alerts */
-fun displayError(summary: Int, message: String?=null, persistAcrossScreens: Boolean=true)
+fun displayError(summary: Int, message: String?=null, persistAcrossScreens: Int = 1)
 {
     val alert = Alert(i18n(summary), message, AlertLevel.ERROR, null, persistAcrossScreens, ERROR_DISPLAY_TIME)
 
@@ -89,14 +106,14 @@ fun displayError(summary: Int, message: String?=null, persistAcrossScreens: Bool
 }
 
 /** Display an error message, and add it to the list of alerts */
-fun displayError(summary: Int, message: Int, persistAcrossScreens: Boolean=true) = displayError(i18n(summary), i18n(message), persistAcrossScreens)
+fun displayError(summary: Int, message: Int, persistAcrossScreens: Int = 1) = displayError(i18n(summary), i18n(message), persistAcrossScreens)
 
 
 
 /** Display an error message, and add it to the list of alerts.
  * you MUST i18n every summary message!  Only use this string based API if you have to parameterize your summary.
  * */
-fun displayError(summary: String, message: String?=null, persistAcrossScreens: Boolean=true)
+fun displayError(summary: String, message: String?=null, persistAcrossScreens: Int = 1)
 {
     val alert = Alert(summary, message, AlertLevel.ERROR, null, persistAcrossScreens, ERROR_DISPLAY_TIME)
 
@@ -118,7 +135,7 @@ fun displayUnexpectedException(e: Exception)
     val summary = e.message ?: e.toString()
     // Android/JVM only: val summary = try { e.localizedMessage } catch (e: Exception) { e.message ?: e.toString()}
     val message = i18n(S.IssueReportInstructions)
-    val alert = Alert(summary, message, AlertLevel.EXCEPTION, e.stackTraceToString(), false, ERROR_DISPLAY_TIME)
+    val alert = Alert(summary, message, AlertLevel.EXCEPTION, e.stackTraceToString(), 0, ERROR_DISPLAY_TIME)
 
     if (platform().hasNativeTitleBar)
         displayAlert(alert)
@@ -136,7 +153,7 @@ fun displayUnexpectedError(e: Error)
     val summary = e.message ?: e.toString()
     // Android/JVM only: val summary = try { e.localizedMessage } catch (e: Exception) { e.message ?: e.toString()}
     val message = i18n(S.IssueReportInstructions)
-    val alert = Alert(summary, message, AlertLevel.EXCEPTION, e.stackTraceToString(), false, ERROR_DISPLAY_TIME)
+    val alert = Alert(summary, message, AlertLevel.EXCEPTION, e.stackTraceToString(), 0, ERROR_DISPLAY_TIME)
 
     if (platform().hasNativeTitleBar)
         displayAlert(alert)

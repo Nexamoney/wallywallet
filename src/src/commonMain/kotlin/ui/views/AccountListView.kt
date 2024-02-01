@@ -203,7 +203,7 @@ fun AccountItemView(
                               else
                               {
                                   uidata.account.pinEntered = false
-                                  launch { accountChangedNotification.send(uidata.name) }
+                                  later { accountChangedNotification.send(uidata.name) }
                               }
                           })
                     }

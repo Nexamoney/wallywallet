@@ -102,7 +102,7 @@ class DomainIdentitySettings : CommonNavActivity()
             val wallet = wallyApp!!.primaryAccount.wallet
             wallet.removeIdentityDomain(ui.domainName.text.toString())
             ui.domainName.text = ""
-            launch { wallet.save() }
+            later { wallet.save() }
         }
         catch(e:PrimaryWalletInvalidException)
         {

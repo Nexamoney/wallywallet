@@ -19,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -67,6 +68,10 @@ val LightColorPalette = lightColorScheme(
   // onBackground = Color.Black,
   // onSurface = Color.Black,
 )
+
+@Composable fun WallyTextStyle(fontScale: Double=1.0) = TextStyle.Default.copy(lineHeight = 0.em, fontSize = FontScale(fontScale),
+  lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.Both), fontWeight = FontWeight.Normal)
+
 
 val WallyPageBase = Modifier.fillMaxSize().background(BaseBkg)
 
@@ -188,6 +193,7 @@ fun WallyBoringIconButton(icon: ImageVector, modifier: Modifier = Modifier, enab
       style = tmp, textAlign = TextAlign.Center, softWrap = false, maxLines = 1 )
 }
 
+
 @Composable fun WallyMediumButtonText(text: String)
 {
     val tmp = TextStyle.Default.copy(lineHeight = 0.em, fontSize = FontScale(1.25),
@@ -204,6 +210,7 @@ fun WallyBoringIconButton(icon: ImageVector, modifier: Modifier = Modifier, enab
     Text(text = text, modifier = Modifier.padding(0.dp, 0.dp).wrapContentWidth(Alignment.CenterHorizontally,true),
       style = tmp, textAlign = TextAlign.Center, softWrap = false, maxLines = 1 )
 }
+
 
 @Composable fun WallyBoldText(textRes: Int)
 {
@@ -258,10 +265,11 @@ fun WallyBoringIconButton(icon: ImageVector, modifier: Modifier = Modifier, enab
     }
 }
 
-@Composable fun WallySwitch(isChecked: Boolean,  modifier: Modifier, onCheckedChange: (Boolean) -> Unit)
+@Composable fun WallySwitch(isChecked: Boolean, enabled: Boolean = true, modifier: Modifier=Modifier, onCheckedChange: (Boolean) -> Unit)
 {
     Switch(
       checked = isChecked,
+      enabled = enabled,
       onCheckedChange = onCheckedChange,
       modifier = Modifier.defaultMinSize(1.dp,1.dp).padding(0.dp).wrapContentHeight().then(modifier),
       colors = SwitchDefaults.colors(
@@ -271,20 +279,33 @@ fun WallyBoringIconButton(icon: ImageVector, modifier: Modifier = Modifier, enab
     )
 }
 
-@Composable fun WallySwitch(isChecked: Boolean, onCheckedChange: (Boolean) -> Unit) = WallySwitch(isChecked, Modifier, onCheckedChange)
+@Composable fun WallySwitch(isChecked: Boolean, onCheckedChange: (Boolean) -> Unit) = WallySwitch(isChecked, true, Modifier, onCheckedChange)
 
-@Composable fun WallySwitch(isChecked: Boolean, textRes: Int,  modifier: Modifier, onCheckedChange: (Boolean) -> Unit)
+@Composable fun WallySwitch(isChecked: Boolean, textRes: Int, enabled: Boolean = true, modifier: Modifier=Modifier, onCheckedChange: (Boolean) -> Unit)
 {
     Row(
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier.defaultMinSize(1.dp, 1.dp).wrapContentHeight()
     ) {
-        WallySwitch(isChecked, modifier, onCheckedChange)
+        WallySwitch(isChecked, enabled, modifier, onCheckedChange)
         Text(text = i18n(textRes))
     }
 }
-@Composable fun WallySwitch(isChecked: Boolean, textRes: Int, onCheckedChange: (Boolean) -> Unit) = WallySwitch(isChecked, textRes,  Modifier, onCheckedChange)
+
+@Composable fun WallySwitch(isChecked: Boolean, text: String, enabled: Boolean = true, modifier: Modifier=Modifier, onCheckedChange: (Boolean) -> Unit)
+{
+    Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.defaultMinSize(1.dp, 1.dp).wrapContentHeight()
+    ) {
+        WallySwitch(isChecked, enabled, modifier, onCheckedChange)
+        Text(text = text)
+    }
+}
+
+@Composable fun WallySwitch(isChecked: Boolean, textRes: Int, enabled: Boolean = true, onCheckedChange: (Boolean) -> Unit) = WallySwitch(isChecked, textRes, enabled,  Modifier, onCheckedChange)
 
 @Composable fun WallyError(message: String)
 {
@@ -305,8 +326,6 @@ fun WallyBoringIconButton(icon: ImageVector, modifier: Modifier = Modifier, enab
         Box(Modifier.wrapContentSize().padding(8.dp)) { content() }
     }
 }
-
-//val WallyTextStyle = LocalTextStyle.current.copy()
 
 
 /**
@@ -414,28 +433,54 @@ fun CenteredSectionText(text: String, modifier: Modifier = Modifier)
 {
     Box(Modifier.fillMaxWidth())
     {
-        Text(text = text, modifier = modifier.padding(0.dp).fillMaxWidth().align(Alignment.Center),
+        Text(text = text, modifier = Modifier.padding(0.dp).fillMaxWidth().align(Alignment.Center).then(modifier),
           //.background(Color.Red),  // for layout debugging
-          style = WallySectionTextStyle()
+          style = WallySectionTextStyle(),
+          textAlign = TextAlign.Center
         )
     }
+}
+
+/* Styling for the text of titles that appear within a page */
+@Composable
+fun CenteredText(text: String, modifier: Modifier = Modifier)
+{
+    Text(text = text, modifier = Modifier.padding(0.dp).fillMaxWidth().then(modifier), textAlign = TextAlign.Center)
+}
+
+@Composable fun CenteredFittedText(text: Int, startingFontScale: Double=1.0, modifier: Modifier = Modifier) =
+  CenteredFittedText(i18n(text), startingFontScale, modifier)
+
+@Composable fun CenteredFittedText(text: String, startingFontScale: Double=1.0, modifier: Modifier = Modifier)
+{
+    // see https://stackoverflow.com/questions/63971569/androidautosizetexttype-in-jetpack-compose
+    val tmp = WallyTextStyle(startingFontScale)
+    var textStyle by remember { mutableStateOf(tmp) }
+    var drawIt by remember { mutableStateOf(false) }
+    Text(text = text, style = textStyle, modifier = Modifier.padding(0.dp).fillMaxWidth().drawWithContent { if (drawIt) drawContent() }. then(modifier), textAlign = TextAlign.Center, maxLines = 1, softWrap = false,
+      onTextLayout = {
+          textLayoutResult ->
+        if (textLayoutResult.didOverflowWidth)
+            textStyle = textStyle.copy(fontSize = textStyle.fontSize * 0.9)
+        else drawIt = true
+      })
 }
 
 
 /** Standard Wally text entry field.*/
 @Composable
-fun WallyTextEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, onValueChange: ((String) -> Unit)? = null) = WallyDataEntry(value, modifier, textStyle, null, onValueChange)
+fun WallyTextEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, bkgCol: Color? = null, onValueChange: ((String) -> Unit)? = null) = WallyDataEntry(value, modifier, textStyle, null, bkgCol, onValueChange)
 
 /** Standard Wally text entry field.*/
 @Composable
-fun WallyDecimalEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, onValueChange: ((String) -> Unit)? = null) =
-  WallyDataEntry(value, modifier, textStyle, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done), onValueChange)
+fun WallyDecimalEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, bkgCol: Color? = null, onValueChange: ((String) -> Unit)? = null) =
+  WallyDataEntry(value, modifier, textStyle, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done), bkgCol, onValueChange)
 
 
 /** Standard Wally data entry field.
  */
 @Composable
-fun WallyDataEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, keyboardOptions: KeyboardOptions?=null, onValueChange: ((String) -> Unit)? = null)
+fun WallyDataEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, keyboardOptions: KeyboardOptions?=null, bkgCol: Color? = null, onValueChange: ((String) -> Unit)? = null)
 {
     val ts2 = LocalTextStyle.current.copy(fontSize = LocalTextStyle.current.fontSize.times(1.25))
     val ts = ts2.merge(textStyle)
@@ -458,12 +503,12 @@ fun WallyDataEntry(value: String, modifier: Modifier = Modifier, textStyle: Text
                 // Hover for mouse platforms, Focus for touch platforms
                 is HoverInteraction.Enter, is FocusInteraction.Focus -> {
                     scope.launch {
-                        bkgColor.animateTo(SelectedBkg, animationSpec = tween(500))
+                        bkgColor.animateTo(bkgCol ?: SelectedBkg, animationSpec = tween(500))
                         }
                 }
                 is HoverInteraction.Exit, is FocusInteraction.Unfocus -> {
                     scope.launch {
-                        bkgColor.animateTo(BaseBkg, animationSpec = tween(500))
+                        bkgColor.animateTo(bkgCol ?: BaseBkg, animationSpec = tween(500))
                     }
                 }
 
@@ -480,7 +525,7 @@ fun WallyDataEntry(value: String, modifier: Modifier = Modifier, textStyle: Text
         keyboardOptions = keyboardOptions ?: KeyboardOptions.Default,
         decorationBox = { tf ->
           Box(Modifier.hoverable(ia, true)
-          .background(bkgColor.value)
+          .background(bkgCol ?: bkgColor.value)
           .drawBehind {
               val strokeWidthPx = 1.dp.toPx()
               val verticalOffset = size.height - 2.sp.toPx()

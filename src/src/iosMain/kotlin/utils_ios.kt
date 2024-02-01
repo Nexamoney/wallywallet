@@ -116,7 +116,7 @@ val iosPlatformCharacteristics = PlatformCharacteristics(
   )
 actual fun platform(): PlatformCharacteristics = iosPlatformCharacteristics
 
-actual fun platformNotification(message:String, title: String?, onclickUrl:String?)
+actual fun platformNotification(message:String, title: String?, onclickUrl:String?, severity: AlertLevel)
 {
     // TODO issue an ios notification
 }

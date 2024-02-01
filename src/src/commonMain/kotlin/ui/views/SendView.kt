@@ -288,14 +288,14 @@ fun SendView(
                     }
                     else
                     {
-                        displayError(S.unavailable, S.retrievingExchangeRate, persistAcrossScreens = false)
+                        displayError(S.unavailable, S.retrievingExchangeRate, persistAcrossScreens = 0)
                         return
                     }
                 }
                 catch (e: ArithmeticException)
                 {
                     LogIt.error(e.message ?: e.toString())
-                    displayError(S.unavailable, S.retrievingExchangeRate, persistAcrossScreens = false)
+                    displayError(S.unavailable, S.retrievingExchangeRate, persistAcrossScreens = 0)
                     return
                 }
             }

@@ -157,7 +157,7 @@ fun SettingsScreen(nav: ScreenNav)
 
 fun onWipeDatabase()
 {
-    launch {
+    later {
         wallyApp?.accounts?.forEach {
             it.value.delete()
             deleteWallet(it.key, it.value.chain.chainSelector)
@@ -167,7 +167,7 @@ fun onWipeDatabase()
 
 fun onLogDebugData()
 {
-    launch {
+    later {
         val coins: MutableMap<String, Account> = wallyApp!!.accounts
         LogIt.info("LOG DEBUG BUTTON")
         for (c in coins)

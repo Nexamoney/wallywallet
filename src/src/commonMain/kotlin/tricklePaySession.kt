@@ -13,6 +13,9 @@ import org.nexa.libnexakotlin.*
 import org.nexa.libnexakotlin.simpleapi.NexaScript
 
 import com.eygraber.uri.*
+import info.bitcoinunlimited.www.wally.ui.GuiDriver
+import info.bitcoinunlimited.www.wally.ui.ScreenId
+import info.bitcoinunlimited.www.wally.ui.externalDriver
 import info.bitcoinunlimited.www.wally.ui.triggerClipboardAction
 import io.ktor.http.*
 import io.ktor.http.Url
@@ -424,6 +427,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
 {
     var accepted: Boolean = false  // did the user accept this payment request
     var newDomain: Boolean = false // was a domain created during this session?
+    var editDomain: Boolean = false // user just wants to look at and edit this domain (no changes are coming from the outside!)
     var proposalUrl: Uri? = null
     var host: String? = null
     var port: Int = 80
@@ -519,20 +523,13 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         }
 
         tpDomains.load()
-        domain = if (autoCreateDomain)
-        {
-            val d = tpDomains.loadCreateDomain(h, topic ?: "")
-            d.addr = addr ?: ""
-            newDomain = true
-            d
-        }
-        else
-        {
-            val d = tpDomains.loadDomain(h, topic ?: "")
-            if (d == null) throw TdppException(S.UnknownDomainRegisterFirst, "no domain specified")
-            if (addr != null && addr != d.addr)
-            {
-                throw TdppException(S.badAddress, "Domain signing address is inconsistent with what was registered.")
+        domain = run {
+            val d = tpDomains.loadDomain(h, topic ?: "") ?: run {
+                if (!autoCreateDomain) throw TdppException(S.UnknownDomainRegisterFirst, "no domain specified")
+                val d2 = tpDomains.loadCreateDomain(h, topic ?: "")
+                d2.addr = addr ?: ""
+                newDomain = true
+                d2
             }
             newDomain = false
             d
@@ -689,7 +686,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
                     setBody(tmp)
                 }
                 val respText = response.bodyAsText()
-                displayNotice(S.accept, respText)
+                // notice shown right when button pressed: displayNotice(S.TpAssetRequestAccepted, respText)
             }
             catch (e: IOException)
             {
@@ -1036,9 +1033,9 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
 
     /** Will parse the string request and attempt an autopay.  Returns ASK if user needs to be asked.  Returns ACCEPT or DENY if
      * no need to ask and the request was accepted or denied.*/
-    fun attemptAutopay(req: String): TdppAction
+    fun attemptAutopay(iuri: Uri): TdppAction
     {
-        val iuri: Uri = Uri.parse(req)
+        //val iuri: Uri = Uri.parse(req)
         try
         {
             parseCommonFields(iuri, false)
@@ -1185,9 +1182,180 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
             myNetTokenInfo[k] = (myNetTokenInfo.get(k) ?: 0L) - v
         }
 
-
-
         return TxAnalysisResults(act, receivingSats, sendingSats, receivingTokenTypes, sendingTokenTypes, imSpendingTokenTypes, inputSatoshis, iFunded, myInputTokenInfo, sendingTokenInfo, receivingTokenInfo, myNetTokenInfo, completionException)
     }
 
+}
+
+
+fun HandleTdpp(iuri: Uri): Boolean
+{
+    val bkg = wallyApp!!.amIbackground()  // if the app is backgrounded, we need to notify and not just change the GUI
+    val scheme = iuri.scheme
+    val path = iuri.path
+    if (scheme == TDPP_URI_SCHEME)
+    {
+        val tp = TricklePaySession(wallyApp!!.tpDomains)
+        tp.parseCommonFields(iuri, true)
+        val address = iuri.getQueryParameter("addr")
+        if (path == "/reg")  // Handle registration
+        {
+            tp.proposedDomainChanges?.addr?.let {paddr ->
+                tp.domain?.addr?.let {
+                    if (it != paddr)  // If we have all this info, they better be the same
+                    {
+                        throw TdppException(S.badAddress, "Domain signing address is inconsistent with what was registered.")
+                    }
+                }
+            }
+
+            if (tp.sigOk == true)  // Registration requires a good signature
+            {
+                val d = TdppDomain(iuri)
+                tp.proposedDomainChanges = d
+            }
+            else
+            {
+                displayError(S.badSignature)
+                return false
+            }
+
+            launch {
+                externalDriver.send(GuiDriver(ScreenId.TpSettings, tpSession = tp))
+            }
+            return true
+        }
+        if (path == "/sendto")
+        {
+            try
+            {
+                val result = tp.attemptAutopay(iuri)
+                val acc = tp.getRelevantAccount()
+                val amtS: String = acc.format(acc.fromFinestUnit(tp.totalNexaSpent)) + " " + acc.currencyCode
+                when(result)
+                {
+                    TdppAction.ASK ->
+                    {
+                        if (bkg) platformNotification(i18n(S.PaymentRequest), i18n(S.AuthAutopay) % mapOf("domain" to tp.domainAndTopic, "amt" to amtS), iuri.toString())
+                        later { externalDriver.send(GuiDriver(ScreenId.SendToPerm, tpSession = tp)) }
+                        return false
+                    }
+                    TdppAction.ACCEPT ->
+                    {
+                        // TODO since this was auto-accepted, uri should go to the configuration page to stop auto-accepting
+                        platformNotification(i18n(S.AuthAutopayTitle), i18n(S.AuthAutopay) % mapOf("domain" to tp.domainAndTopic, "amt" to amtS))
+                        return true
+                    }
+
+                    TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
+                }
+            }
+            catch (e:WalletNotEnoughBalanceException)
+            {
+                // TODO where to go when clicked
+                platformNotification(i18n(S.insufficentBalance), e.shortMsg ?: e.message ?: i18n(S.unknownError), null, AlertLevel.ERROR)
+            }
+            catch (e:WalletNotEnoughTokenBalanceException)
+            {
+                // TODO where to go when clicked
+                platformNotification(i18n(S.insufficentBalance), e.shortMsg ?: e.message ?: i18n(S.unknownError), null, AlertLevel.ERROR)
+            }
+            catch (e:WalletException)
+            {
+                displayUnexpectedException(e)
+            }
+        }
+        if (path == "/lp")  // we are already connected which is how this being called in the app context
+        {
+            //displayNotice(S.connected)
+            wallyApp?.accessHandler?.startLongPolling(tp.replyProtocol, tp.hostAndPort, tp.cookie)
+            displaySuccess(S.connectionEstablished)
+            return true
+        }
+        if (path == "/share")
+        {
+            tp.handleShareRequest(iuri) {
+                if (it != -1)
+                {
+                    val msg: String = i18n(S.SharedNotification) % mapOf("what" to i18n(it))
+                    displayNotice(msg)
+                }
+                else displayError(S.badQR)
+            }
+        }
+        else if (path == "/address")
+        {
+            val result = tp.handleAddressInfoRequest(iuri)
+
+            when(result)
+            {
+                TdppAction.ASK ->  // ADDRESS
+                {
+                    TODO("always accept for now")
+                    /*
+                    var intent = Intent(this, TricklePayActivity::class.java)
+                    intent.data = Uri.parse(intentUri)
+                    if (act != null) autoPayNotificationId =
+                      notifyPopup(intent, i18n(R.string.TpAssetInfoRequest), i18n(R.string.fromColon) + tp.domainAndTopic, act, false, autoPayNotificationId)
+                    return false
+
+                     */
+                }
+                TdppAction.ACCEPT -> // ADDRESS
+                {
+                    tp.acceptAssetRequest()
+                    return true
+                }
+
+                TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
+            }
+        }
+        else if (path == "/assets")
+        {
+            val result = tp.handleAssetInfoRequest(iuri)
+
+            when(result)
+            {
+                TdppAction.ASK ->  // ASSETS
+                {
+                    later { externalDriver.send(GuiDriver(ScreenId.AssetInfoPerm, tpSession = tp)) }
+                }
+                TdppAction.ACCEPT -> // ASSETS
+                {
+                    tp.acceptAssetRequest()
+                    return true
+                }
+
+                TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
+            }
+        }
+        else if (path == "/tx")
+        {
+            val result = tp.attemptSpecialTx(iuri)
+            when(result)
+            {
+                TdppAction.ASK ->  // special tx
+                {
+                    later { externalDriver.send(GuiDriver(gotoPage = ScreenId.SpecialTxPerm, tpSession = tp))}
+                    //var intent = Intent(this, TricklePayActivity::class.java)
+                    //intent.data = android.net.Uri.parse(intentUri)
+                    //if (act != null) autoPayNotificationId =
+                    //  notifyPopup(intent, i18n(R.string.PaymentRequest), i18n(R.string.SpecialTpTransactionFrom) + " " + tp.domainAndTopic, act, false, autoPayNotificationId)
+                    return false
+                }
+                TdppAction.ACCEPT ->  // special tx auto accepted
+                {
+                    // Intent() means unclickable -- change to pop up configuration if clicked
+                    TODO()
+                    //if (act != null) autoPayNotificationId =
+                    //  notifyPopup(Intent(), i18n(R.string.AuthAutopayTitle), tp.domainAndTopic, act, false, autoPayNotificationId)
+                }
+
+                // special tx auto-deny
+                TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
+            }
+        }
+
+    }
+    return false
 }

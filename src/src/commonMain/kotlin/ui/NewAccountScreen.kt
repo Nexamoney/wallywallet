@@ -236,7 +236,7 @@ fun ProposeAccountName(cs: ChainSelector):String?
         pinInput(newAcState.pin, newAcState.validOrNoPin, onPinChange)
         Text(i18n(S.PinSpendingUnprotected), fontSize = 14.sp)
         Spacer(Modifier.height(10.dp))
-        WallySwitch(newAcState.hideUntilPinEnter, S.PinHidesAccount, onHideUntilPinEnterChanged)
+        WallySwitch(newAcState.hideUntilPinEnter, S.PinHidesAccount, true, onHideUntilPinEnterChanged)
         Spacer(Modifier.height(20.dp))
         Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth())
             { WallyRoundedTextButton(i18n(S.createAccount), onClick = onClickCreateAccount) }

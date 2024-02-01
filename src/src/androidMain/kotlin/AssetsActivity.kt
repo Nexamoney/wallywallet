@@ -110,7 +110,7 @@ fun showMedia(iui: ImageView, vui: VideoView?, url: Url?, bytes: ByteArray? = nu
                 vui.setVideoPath(url.toString())
                 vui.start()
                 iui.visibility = View.INVISIBLE  // Can't be GONE because other stuff is positioned against it
-                vui?.visibility = View.VISIBLE
+                vui.visibility = View.VISIBLE
                 return false
             }
             else

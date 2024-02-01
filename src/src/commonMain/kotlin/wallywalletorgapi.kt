@@ -112,7 +112,7 @@ fun NexInFiat(fiat: String, setter: (BigDecimal) -> Unit)
     }
 
 
-    launch {
+    later {
         val data = try
         {
                 val client = HttpClient()
@@ -121,7 +121,7 @@ fun NexInFiat(fiat: String, setter: (BigDecimal) -> Unit)
         catch (e: Exception)
         {
                 LogIt.info("Error retrieving price: " + e.message)
-                return@launch
+                return@later
         }
 
         LogIt.info(sourceLoc() + " " + data)

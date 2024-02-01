@@ -15,5 +15,5 @@ actual fun EncodePIN(actName: String, pin: String, size: Int): ByteArray {
 actual fun onChanged(account: Account, force: Boolean)
 {
     account.uiData()
-    launch { accountChangedNotification.send(account.name) }
+    later { accountChangedNotification.send(account.name) }
 }

@@ -267,23 +267,23 @@ class MainActivity : CommonNavActivity()
             }
         })
 
-        ui.sendQuantity.setOnFocusChangeListener(OnFocusChangeListener { view, hasFocus ->
+        ui.sendQuantity.setOnFocusChangeListener(OnFocusChangeListener { _, hasFocus ->
             // show all helper buttons
             val sqvis = if (hasFocus) View.VISIBLE else View.GONE
-            ui.amountAllButton?.visibility = sqvis
-            ui.amountThousandButton?.visibility = sqvis
-            ui.amountMillionButton?.visibility = sqvis
-            ui.amountClearButton?.visibility = sqvis
+            ui.amountAllButton.visibility = sqvis
+            ui.amountThousandButton.visibility = sqvis
+            ui.amountMillionButton.visibility = sqvis
+            ui.amountClearButton.visibility = sqvis
         })
 
          ui.sendToAddress.setOnFocusChangeListener(OnFocusChangeListener { view, hasFocus ->
              // only helper button for sendToAddress is clear
              val sqnovis = if (hasFocus) View.GONE else View.VISIBLE
              val sqvis = if (hasFocus) View.VISIBLE else View.GONE
-             ui.amountAllButton?.visibility = sqnovis
-             ui.amountThousandButton?.visibility = sqnovis
-             ui.amountMillionButton?.visibility = sqnovis
-             ui.amountClearButton?.visibility = sqvis
+             ui.amountAllButton.visibility = sqnovis
+             ui.amountThousandButton.visibility = sqnovis
+             ui.amountMillionButton.visibility = sqnovis
+             ui.amountClearButton.visibility = sqvis
         })
 
         // When the send currency type is updated, we need to also update the "approximately" line
@@ -293,7 +293,7 @@ class MainActivity : CommonNavActivity()
             {
                 dbgAssertGuiThread()
                 mainActivityModel.lastSendCurrencyType = ui.sendCurrencyType.selectedItem.toString()  // Remember our last selection so we can prefer it after various update operations
-                val sendQty = ui.sendQuantity?.text?.toString()
+                val sendQty = ui.sendQuantity.text?.toString()
                 if (sendQty != null) this@MainActivity.checkSendQuantity(sendQty)
             }
 
@@ -553,7 +553,7 @@ class MainActivity : CommonNavActivity()
                 return p0.compareTo(p1)
             }
         })
-        guiAccountList.inflate(this, ui.AccountList!!, lm)
+        guiAccountList.inflate(this, ui.AccountList, lm)
 
         for (c in accounts.values)
         {
@@ -562,7 +562,7 @@ class MainActivity : CommonNavActivity()
             c.wallet.blockchain.net.changeCallback.add({ _, _ -> onWalletChange(c.wallet) })  // right now the wallet GUI update function also updates the cnxn mgr GUI display
             c.onChange()  // update all wallet UI fields since just starting up
         }
-         ui.AccountList?.visibility = View.VISIBLE
+         ui.AccountList.visibility = View.VISIBLE
     }
 
     fun assignCryptoSpinnerValues()
@@ -614,7 +614,7 @@ class MainActivity : CommonNavActivity()
                 if (runningTheTests == false && devMode == false && a.firstRun == true && a.accounts.isEmpty())
                 {
                     // Automatically create a Nexa wallet and put up some info
-                    val ac = a.newAccount("nexa", ACCOUNT_FLAG_NONE, "", ChainSelector.NEXA)
+                    a.newAccount("nexa", ACCOUNT_FLAG_NONE, "", ChainSelector.NEXA)
                 }
             }
 
@@ -1016,7 +1016,7 @@ class MainActivity : CommonNavActivity()
                 {
                     LogIt.info("Wally in background, sending notification")
                     var intent = Intent(this, MainActivity::class.java)
-                    val addrString = a.toString() ?: ""
+                    val addrString = a.toString()
                     intent.data = addrString.toUri()
                     val nid = app?.notifyPopup(intent, i18n(R.string.sendRequestNotification), i18n(R.string.toColon) + addrString, this, false)
                     intent.extras?.putIntegerArrayList("notificationId", arrayListOf(nid))

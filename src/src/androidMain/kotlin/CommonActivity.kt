@@ -20,6 +20,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat.setWindowInsetsAnimationCallback
@@ -283,6 +284,7 @@ open class CommonActivity : AppCompatActivity()
     var origTitle = String()  //* The app's actual title (I will sometimes overwrite it with a temporary error message)
     var origTitleBackground: ColorDrawable? = null  //* The app's title background color (I will sometimes overwrite it with a temporary error message)
     var errorCount = 0 // Used to make sure one error's clear doesn't prematurely clear out a different problem
+    var currentNumShowing = 0
 
     protected val coGuiScope = MainScope()
     protected val coMiscCtxt: CoroutineContext = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
@@ -314,8 +316,11 @@ open class CommonActivity : AppCompatActivity()
 
     override fun setTitle(title: CharSequence?)
     {
-        origTitle = title.toString()
-        super.setTitle(title)
+        synchronized(errorSync)
+        {
+            origTitle = title.toString()
+            if (currentNumShowing == 0) super.setTitle(title)
+        }
     }
     open fun onTitleBarTouched()
     {
@@ -352,18 +357,15 @@ open class CommonActivity : AppCompatActivity()
     override fun onResume()
     {
         super.onResume()
-        finishShowingNotice()
 
         // This code pops out of this activity if the child requested it.  This is needed when an external intent directly
         // spawns a child activity of wally's main activity, but upon completion of that child we want to drop back to the
         // spawner not to wally's main screen
-        var finishNow = false
         wallyAndroidApp?.let {
             val fp = it.finishParent
             if (fp > 0)
             {
                 it.finishParent = fp -1
-                finishNow = true
             }
         }
 
@@ -373,7 +375,6 @@ open class CommonActivity : AppCompatActivity()
     override fun onPause()
     {
         super.onPause()
-        finishShowingNotice()
         isRunning = false
     }
 
@@ -403,7 +404,7 @@ open class CommonActivity : AppCompatActivity()
 
     private fun prepareDisplayExceptionString(exc: Exception): Pair<String,String>
     {
-        var details: String = ""
+        var details = ""
         var displayString: String
         var stack: String? = null
         val buExc = exc as? LibNexaException
@@ -512,6 +513,7 @@ open class CommonActivity : AppCompatActivity()
         laterUI {
             synchronized(errorSync)
             {
+                currentNumShowing -= 1
                 val titlebar: View = findViewById(actionBarId)
                 if (menuHidden > 0) menuHidden -= 1
                 if (errNo == 0)
@@ -542,10 +544,9 @@ open class CommonActivity : AppCompatActivity()
                 lastErrorString = alert.msg
                 errorCount += 1
                 menuHidden += 1
+                currentNumShowing += 1
                 invalidateOptionsMenu()
-
-                val errorColor = ContextCompat.getColor(applicationContext, alert.level.color())
-                titlebar.background = ColorDrawable(errorColor)
+                titlebar.background = ColorDrawable(alert.level.color().toArgb())
                 errorCount
             }
             delay(alert.longevity ?: alert.level.longevity())
@@ -568,6 +569,7 @@ open class CommonActivity : AppCompatActivity()
                 lastErrorString = err
                 errorCount += 1
                 menuHidden += 1
+                currentNumShowing += 1
                 alerts.add(Alert(err, details, AlertLevel.ERROR, trace))
                 invalidateOptionsMenu()
                 val errorColor = ContextCompat.getColor(applicationContext, R.color.error)
@@ -613,6 +615,7 @@ open class CommonActivity : AppCompatActivity()
                 invalidateOptionsMenu()
                 titlebar.background = ColorDrawable(errorColor)
                 errorCount += 1
+                currentNumShowing += 1
                 errorCount
             }
             delay(time)

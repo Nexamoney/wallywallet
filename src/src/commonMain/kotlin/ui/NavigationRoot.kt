@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.StateFlow
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.rem
+import org.nexa.libnexakotlin.sourceLoc
 
 private val LogIt = GetLog("wally.NavRoot")
 
@@ -39,6 +40,7 @@ enum class ScreenId
     Home,
     Identity,
     IdentityOp,
+    IdentityEdit,
     TricklePay,
     Assets,
     Shopping,
@@ -81,6 +83,7 @@ enum class ScreenId
             AssetInfoPerm -> Home
             SendToPerm -> Home
             TpSettings -> TricklePay
+            IdentityEdit -> Identity
             else -> None
         }
     }
@@ -91,6 +94,7 @@ enum class ScreenId
         {
             None -> ""
             Home -> i18n(S.app_name)
+            IdentityEdit -> i18n(S.title_activity_identity)
             Identity -> i18n(S.title_activity_identity)
             IdentityOp -> i18n(S.title_activity_identity_op)
             TricklePay -> i18n(S.title_activity_trickle_pay)
@@ -121,7 +125,7 @@ class ScreenNav()
     data class ScreenState(val id: ScreenId, val departFn: (() -> Unit)?)
 
     var currentScreen: MutableState<ScreenId> = mutableStateOf(ScreenId.Home)
-    var currentScreenDepart: (() -> Unit)? = null
+    protected var currentScreenDepart: (() -> Unit)? = null
     val path = ArrayDeque<ScreenState>(10)
 
     fun onDepart(fn: () -> Unit)
@@ -389,6 +393,7 @@ fun NavigationRoot(nav: ScreenNav)
     {
         for(c in externalDriver)
         {
+            LogIt.info(sourceLoc() +": external screen driver received")
             driver.value = c
             c.gotoPage?.let { nav.go(it) }
             c.show?.forEach {
@@ -442,7 +447,7 @@ fun NavigationRoot(nav: ScreenNav)
                 else
                 {
                     errorText = alert.msg
-                    launch {
+                    later {
                         delay(alert.longevity ?: ERROR_DISPLAY_TIME)
                         if (errorText == alert.msg) errorText = ""  // do not erase if the error has changed
                     }
@@ -458,7 +463,7 @@ fun NavigationRoot(nav: ScreenNav)
                 else
                 {
                     warningText = alert.msg
-                    launch {
+                    later {
                         delay(alert.longevity ?: NORMAL_NOTICE_DISPLAY_TIME)
                         if (warningText == alert.msg) warningText = ""  // do not erase if the error has changed
                     }
@@ -473,7 +478,7 @@ fun NavigationRoot(nav: ScreenNav)
                 else
                 {
                     noticeText = alert.msg
-                    launch {
+                    later {
                         delay(alert.longevity ?: NOTICE_DISPLAY_TIME)
                         if (noticeText == alert.msg) noticeText = ""  // do not erase if the error has changed
                     }
@@ -517,14 +522,20 @@ fun NavigationRoot(nav: ScreenNav)
                         ScreenId.Assets -> Text("TODO: Implement AssetsScreen")
                         ScreenId.Shopping -> ShoppingScreen(nav)
                         ScreenId.TricklePay -> withAccount { act -> TricklePayScreen(act, null, nav) }
-                        ScreenId.Identity -> Text("TODO: Implement IdentityScreen")
+                        ScreenId.Identity -> withAccount { act ->
+                            nav.onDepart { currentUri = null }
+                            IdentityScreen(act, currentUri, nav);
+                        }
+                        ScreenId.IdentityEdit -> withAccount { act ->
+                            IdentityEditScreen(act, nav);
+                        }
                         ScreenId.AddressHistory ->  withAccount { AddressHistoryScreen(it, nav) }
                         ScreenId.TxHistory -> withAccount { TxHistoryScreen(it, nav) }
                         ScreenId.TpSettings -> withTp { act, ctp -> TricklePayScreen(act, ctp, nav) }
                         ScreenId.SpecialTxPerm -> withTp { act, ctp -> SpecialTxPermScreen(act, ctp, nav) }
                         ScreenId.AssetInfoPerm -> withTp { act, ctp -> AssetInfoPermScreen(act, ctp, nav) }
                         ScreenId.SendToPerm -> withTp { act, ctp -> SendToPermScreen(act, ctp, nav) }
-                        ScreenId.IdentityOp -> IdentityPermScreen(currentUri, nav)
+                        ScreenId.IdentityOp -> withAccount { act -> IdentityPermScreen(act, currentUri, nav); }
                     }
                 }
 

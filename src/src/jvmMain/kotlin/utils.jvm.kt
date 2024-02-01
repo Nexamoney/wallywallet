@@ -158,7 +158,30 @@ actual fun platformShare(textToShare: String)
 /** Initiate a platform-level notification message.  Note that these messages visually disrupt the user's potentially unrelated task
  * and may play a sound, so this must be used sparingly.
  */
-actual fun platformNotification(message:String, title: String?, onclickUrl:String?)
+actual fun platformNotification(message:String, title: String?, onclickUrl:String?, severity: AlertLevel)
 {
-
+    when (severity)
+    {
+        AlertLevel.SUCCESS ->
+        {
+            if (title != null) displaySuccess(title, message)
+            else displaySuccess(message)
+        }
+        AlertLevel.NOTICE ->
+        {
+            if (title != null) displayNotice(title, message)
+            else displayNotice(message)
+        }
+        AlertLevel.WARN ->
+        {
+            if (title != null) displayWarning(title, message)
+            else displayWarning(message)
+        }
+        AlertLevel.ERROR, AlertLevel.EXCEPTION ->
+        {
+            if (title != null) displayError(title, message)
+            else displayError(message)
+        }
+    }
+    // TODO actually use platform level notifications
 }

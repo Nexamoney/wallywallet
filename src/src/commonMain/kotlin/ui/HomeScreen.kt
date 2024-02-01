@@ -15,7 +15,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.nexa.libnexakotlin.NexaFormat
-import org.nexa.libnexakotlin.launch
 import androidx.compose.ui.zIndex
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
@@ -469,7 +468,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
         if (tmp?.sendAddress != null)  // If we are driving send data, fill all the fields
         {
             isSending = true
-            tmp.sendAddress?.let { sendToAddress = it }
+            tmp.sendAddress.let { sendToAddress = it }
             tmp.amount?.let { sendQuantity.value = NexaFormat.format(it) }
             tmp.note?.let { sendNote.value = it }
             val act:Account? = if (tmp.account != null)
@@ -508,7 +507,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
 
     // During startup, there is a race condition between loading the accounts and the display of this screen.
     // So if the selectedAccount is null, wait for some accounts to appear
-    launch {
+    wallyApp?.later {
         while(selectedAccount.value == null)
         {
             delay(50)
@@ -523,7 +522,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
     }
 
     // Update the syncronization icon based on the underlying synced status
-    launch {
+    wallyApp?.later {
         try
         {
             while (true)
