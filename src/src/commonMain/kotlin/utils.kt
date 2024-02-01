@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import kotlinx.coroutines.*
 import org.nexa.libnexakotlin.*
 import com.ionspin.kotlin.bignum.decimal.DecimalMode
@@ -38,6 +39,38 @@ expect fun GetHttpClient(timeoutInMs: Number):HttpClient
 expect fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
 
 expect fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: MutableSet<String>?=null): String
+
+
+// Note this code might not work (to properly use the i18n number characters) because DecimalFormat might force the use of US ones
+private var numberGroupingSeparator: String? = null
+val NumberGroupingSeparator:String
+    get()
+    {
+        // This code assumes that the language's number grouping separator will be between the hundreds and thousands
+        return numberGroupingSeparator ?: run {
+
+            val mode = DecimalMode(4L, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 0L)  //!< tell the system details about how we want bigdecimal math handled
+            val test = DecimalFormat("#,###").format(BigDecimal.fromInt(1111, mode))
+            val r:String = test.replace("1","")
+            numberGroupingSeparator = r
+            r
+        }
+
+    }
+
+// Note this code might not work (to properly use the i18n number characters) because NexaFormat might force the use of US ones
+private var numberDecimalCharacter: String? = null
+val NumberDecimalCharacter:String
+    get()
+    {
+        // This code assumes that the language's number grouping separator will be between the hundreds and thousands
+        return  numberDecimalCharacter?: run {
+            val test = DecimalFormat("#.#").format(BigDecimal.fromFloat(1.1f))
+            val r:String = test.replace("1","")
+            numberDecimalCharacter = r
+            r
+        }
+    }
 
 
 
@@ -75,7 +108,7 @@ expect fun platformShare(textToShare: String)
 /** Initiate a platform-level notification message.  Note that these messages visually disrupt the user's potentially unrelated task
  * and may play a sound, so this must be used sparingly.
  */
-expect fun platformNotification(message:String, title: String? = null, onclickUrl:String? = null)
+expect fun platformNotification(message:String, title: String? = null, onclickUrl:String? = null, severity: AlertLevel = AlertLevel.NOTICE)
 
 expect fun assetManagerStorage(): AssetManagerStorage
 
@@ -295,6 +328,40 @@ fun io.ktor.http.Url.readBytes(timeoutInMs: Number = 10000, maxReadSize: Number 
             tries = tries + 1
             val resp: HttpResponse = client.get(url) {
                 // Configure request parameters exposed by HttpRequestBuilder
+            }
+            val status = resp.status.value
+            if ((status == 301) or (status == 302))  // Handle URL forwarding (often switching from http to https)
+            {
+                val newLoc = resp.request.headers.get("Location")
+                if (newLoc != null) url = io.ktor.http.Url(newLoc)
+                else throw CannotLoadException()
+            }
+            else return@runBlocking resp.bodyAsChannel().toByteArray(maxReadSize.toInt())
+        }
+        throw CannotLoadException()
+    }
+}
+
+/** This helper function reads the contents of the URL.  This duplicates the API of other URL classes */
+fun io.ktor.http.Url.readPostBytes(jsonBody: String, timeoutInMs: Number = 10000, maxReadSize: Number = 250000000): ByteArray
+{
+    val client = HttpClient() {
+        install(HttpTimeout) {
+            requestTimeoutMillis = timeoutInMs.toLong()
+            // connectTimeoutMillis  // time to connect
+            // socketTimeoutMillis   // time between 2 data packets
+        }
+    }
+
+    var url:io.ktor.http.Url = this
+    return runBlocking {
+        var tries = 0
+        while (tries < 10)
+        {
+            tries = tries + 1
+            val resp: HttpResponse = client.post(url) {
+                // Configure request parameters exposed by HttpRequestBuilder
+                setBody(jsonBody)
             }
             val status = resp.status.value
             if ((status == 301) or (status == 302))  // Handle URL forwarding (often switching from http to https)

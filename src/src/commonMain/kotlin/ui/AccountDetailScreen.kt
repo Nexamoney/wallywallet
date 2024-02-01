@@ -242,7 +242,7 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                 accountAction.value = null
 
                 if(accepted)
-                    launch {
+                    later {
                         try
                         {
                             // TODO while we don't have Rostrum (electrum) we can't reassess, so just forget them under the assumption that they will be confirmed and accounted for, or are bad.
@@ -257,7 +257,7 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                     }
             }
             AccountAction.RediscoverBlockchain -> AccountDetailAcceptDeclineTextView(S.rediscoverConfirmation) {
-                launch {
+                later {
                     val bc = acc.wallet.blockchain
                     // If you reset the wallet first, it'll start rediscovering the existing blockchain before it gets reset.
                     bc.rediscover()
@@ -277,7 +277,7 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                 accountDeleted()
             }
             AccountAction.Rediscover -> AccountDetailAcceptDeclineTextView(S.rediscoverConfirmation) {
-                launch {
+                later {
                     acc.wallet.rediscover(true, false)
                     displayNotice(S.rediscoverNotice)
                 }

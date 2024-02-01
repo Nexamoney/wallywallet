@@ -82,9 +82,33 @@ val i18nLbc = mapOf(
   RsendMoreTokensThanBalance to S.insufficentTokenBalance
 )
 
-actual fun platformNotification(message:String, title: String?, onclickUrl:String?)
+actual fun platformNotification(message:String, title: String?, onclickUrl:String?, severity: AlertLevel)
 {
-    // TODO
+    when (severity)
+    {
+        AlertLevel.SUCCESS ->
+        {
+            if (title != null) displaySuccess(title, message)
+            else displaySuccess(message)
+        }
+        AlertLevel.NOTICE ->
+        {
+            if (title != null) displayNotice(title, message)
+            else displayNotice(message)
+        }
+        AlertLevel.WARN ->
+        {
+            if (title != null) displayWarning(title, message)
+            else displayWarning(message)
+        }
+        AlertLevel.ERROR, AlertLevel.EXCEPTION ->
+        {
+            if (title != null) displayError(title, message)
+            else displayError(message)
+        }
+    }
+
+    // TODO actually use platform level notifications
 }
 
 fun loadTextResource(resFile: String):String?
@@ -258,124 +282,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     }
 
 
-    fun handlePostLogin(loginReqParam: String, jsonBody: String)
-    {
-        var loginReq = loginReqParam
-        var forwarded = 0
-
-        postloop@ while (forwarded < 3)
-        {
-            LogIt.info("sending registration reply: " + loginReq)
-            try
-            {
-                //val body = """[1,2,3]"""  // URLEncoder.encode("""[1,2,3]""","UTF-8")
-                val req: HttpURLConnection = URL(loginReq).openConnection() as HttpURLConnection
-                req.requestMethod = "POST"
-                req.setRequestProperty("Content-Type", "application/json")
-                req.setRequestProperty("Accept", "*/*")
-                req.setRequestProperty("Content-Length", jsonBody.length.toString())
-                req.setConnectTimeout(HTTP_REQ_TIMEOUT_MS)
-                req.doOutput = true
-                req.useCaches = false
-                val os = DataOutputStream(req.outputStream)
-                //os.write(jsonBody.toByteArray())
-                os.writeBytes(jsonBody.toString())
-                os.flush()
-                os.close()
-                val resp = req.inputStream.bufferedReader().readText()
-                LogIt.info("reg response code:" + req.responseCode.toString() + " response: " + resp)
-                if ((req.responseCode >= 200) and (req.responseCode < 300))
-                {
-                    displayNotice(resp)
-                    return
-                }
-                else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding
-                {
-                    loginReq = req.getHeaderField("Location")
-                    forwarded += 1
-                    continue@postloop
-                }
-                else
-                {
-                    displayNotice(resp)
-                    return
-                }
-            } catch (e: java.net.SocketTimeoutException)
-            {
-                LogIt.info("SOCKET TIMEOUT:  If development, check phone's network.  Ensure you can route from phone to target!  " + e.toString())
-                displayError(R.string.connectionException)
-                return
-            } catch (e: IOException)
-            {
-                LogIt.info("registration IOException: " + e.toString())
-                displayError(R.string.connectionAborted)
-                return
-            } catch (e: FileNotFoundException)
-            {
-                LogIt.info("registration FileNotFoundException: " + e.toString())
-                displayError(R.string.badLink)
-                return
-            } catch (e: java.net.ConnectException)
-            {
-                displayError(R.string.connectionException)
-                return
-            } catch (e: Throwable)
-            {
-                displayError(R.string.unknownError)
-                return
-            }
-            break@postloop  // Only way to actually loop is to get a http 301 or 302
-        }
-    }
-
-    /** Execute a login request to a 3rd party web site via the nexid protocl.  This is done within the app context so that the login activity can return before the async login process
-     * is completed.
-     */
-    fun handleLogin(loginReqParam: String)
-    {
-        var loginReq = loginReqParam
-        var forwarded = 0
-        getloop@ while (forwarded < 3)
-        {
-            LogIt.info(sourceLoc() +": login reply: " + loginReq)
-            try
-            {
-                val req: HttpURLConnection = URL(loginReq).openConnection() as HttpURLConnection
-                req.setConnectTimeout(HTTP_REQ_TIMEOUT_MS)
-                val resp = req.inputStream.bufferedReader().readText()
-                LogIt.info("login response code:" + req.responseCode.toString() + " response: " + resp)
-                if ((req.responseCode >= 200) and (req.responseCode < 250))
-                {
-                    displayNotice(resp)
-                    return
-                }
-                else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding (often switching from http to https)
-                {
-                    loginReq = req.getHeaderField("Location")
-                    forwarded += 1
-                    continue@getloop
-                }
-                else
-                {
-                    displayNotice(resp)
-                    return
-                }
-            } catch (e: FileNotFoundException)
-            {
-                displayError(R.string.badLink, loginReq)
-            } catch (e: IOException)
-            {
-                displayError(R.string.connectionAborted, loginReq)
-            } catch (e: java.net.ConnectException)
-            {
-                displayError(R.string.connectionException)
-            }
-
-            break@getloop  // only way to actually loop is to hit a 301 or 302
-        }
-    }
-
-
     private fun createNotificationChannel()
     {
         // Create the NotificationChannel, but only on API 26+ because
@@ -495,7 +401,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     var autoPayNotificationId = -1
     fun autoHandle(intentUri: String): Boolean
     {
-        return commonApp.handleTdpp(Uri.parse(intentUri))
+        return HandleTdpp(Uri.parse(intentUri))
     }
 
 

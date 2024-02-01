@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionContext
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.VectorPainter
 import org.nexa.libnexakotlin.*
@@ -18,6 +19,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.Density
+import info.bitcoinunlimited.www.wally.ui.theme.colorError
+import info.bitcoinunlimited.www.wally.ui.theme.colorNotice
+import info.bitcoinunlimited.www.wally.ui.theme.colorWarning
 import io.ktor.client.*
 import io.ktor.client.engine.*
 import io.ktor.client.engine.android.*
@@ -102,15 +106,15 @@ actual fun displayAlert(alert: Alert)
 
 }
 
-fun AlertLevel.color(): Int
+fun AlertLevel.color(): Color
 {
     return when
     {
-        level >= AlertLevel.EXCEPTION.level -> R.color.exception
-        level >= AlertLevel.ERROR.level -> R.color.error
-        level >= AlertLevel.WARN.level -> R.color.warn
-        level >= AlertLevel.NOTICE.level -> R.color.notice
-        else -> R.color.white
+        level >= AlertLevel.EXCEPTION.level -> colorError
+        level >= AlertLevel.ERROR.level -> colorError
+        level >= AlertLevel.WARN.level -> colorWarning
+        level >= AlertLevel.NOTICE.level -> colorNotice
+        else -> Color.White
     }
 }
 

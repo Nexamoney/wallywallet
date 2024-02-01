@@ -20,7 +20,8 @@ val colorConfirm = Color(0xFFE48864)
 
 val colorValid = Color(0xFF70A01E)
 val colorError = Color(0xFFFF6050)
-val colorNotice = Color(0xFFFFD040)
+val colorNotice = Color(0xFF503070)
+val colorWarning = Color(0xFFF0B000)
 val colorTitleBackground = Color(0xFF725092)
 val colorTitleForeground = Color.White
 

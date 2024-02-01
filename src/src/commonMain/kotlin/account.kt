@@ -98,7 +98,8 @@ class Account(
     var confirmedBalance: BigDecimal = CurrencyDecimal(0)
 
     //? specify how quantities should be formatted for display
-    val cryptoFormat = mBchFormat
+    val cryptoFormat = NexaFormat
+    val cryptoInputFormat = DecimalFormat("##########.##")  // I can't handle commas in field entry
 
     /** This is a common account display descriptor it returns "<account name> on <blockchain>", e.g. "myaccount on nexa" */
     val nameAndChain: String

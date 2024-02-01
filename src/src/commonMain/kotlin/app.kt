@@ -13,6 +13,7 @@ import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.utils.io.errors.*
 import kotlinx.coroutines.CoroutineScope
@@ -161,7 +162,7 @@ open class CommonApp
 
     val accessHandler = AccessHandler(this)
 
-    protected val coMiscCtxt: CoroutineContext = newFixedThreadPoolContext(4, "app")
+    protected val coMiscCtxt: CoroutineContext = newFixedThreadPoolContext(6, "app")
     protected val coMiscScope: CoroutineScope = kotlinx.coroutines.CoroutineScope(coMiscCtxt)
 
     val accountLock = org.nexa.threads.Mutex()
@@ -307,16 +308,11 @@ open class CommonApp
             }
             else if (scheme == IDENTITY_URI_SCHEME)
             {
-                LogIt.info("starting identity operation activity")
-                // Inject a change into the GUI
-                launch {
-                    externalDriver.send(GuiDriver(ScreenId.IdentityOp, uri = uri))
-                }
-
+                HandleIdentity(uri)
             }
             else if (scheme == TDPP_URI_SCHEME)
             {
-                handleTdpp(uri)
+                HandleTdpp(uri)
             }
             else
             {
@@ -335,165 +331,6 @@ open class CommonApp
         return false
     }
 
-    /** Automatically handle this intent if its something that can be done without user intervention.
-    Returns true if it was handled, false if user-intervention needed.
-     */
-    var autoPayNotificationId = -1
-    fun handleTdpp(iuri: Uri): Boolean
-    {
-        val bkg = amIbackground()  // if the app is backgrounded, we need to notify and not just change the GUI
-        val scheme = iuri.scheme
-        val path = iuri.path
-        if (scheme == TDPP_URI_SCHEME)
-        {
-            val tp = TricklePaySession(tpDomains)
-            tp.parseCommonFields(iuri, true)
-            val address = iuri.getQueryParameter("addr")
-            if (path == "/reg")  // Handle registration
-            {
-                if (tp.sigOk == true)  // Registration requires a good signature
-                {
-                    val d = TdppDomain(iuri)
-                    tp.proposedDomainChanges = d
-                }
-                else
-                {
-                    displayError(S.badSignature)
-                    return false
-                }
-
-                launch {
-                    externalDriver.send(GuiDriver(ScreenId.TpSettings, tpSession = tp))
-                }
-                return true
-            }
-            if (path == "/sendto")
-            {
-                try
-                {
-                    val result = tp.attemptAutopay(iuri.toString())
-                    val acc = tp.getRelevantAccount()
-                    val amtS: String = acc.format(acc.fromFinestUnit(tp.totalNexaSpent)) + " " + acc.currencyCode
-                    when(result)
-                    {
-                        TdppAction.ASK ->
-                        {
-                            if (bkg) platformNotification(i18n(S.PaymentRequest), i18n(S.AuthAutopay) % mapOf("domain" to tp.domainAndTopic, "amt" to amtS), iuri.toString())
-                            // TODO: drive UX into tricklepay
-                            return false
-                        }
-                        TdppAction.ACCEPT ->
-                        {
-                            // TODO since this was auto-accepted, uri should go to the configuration page to stop auto-accepting
-                            platformNotification(i18n(S.AuthAutopayTitle), i18n(S.AuthAutopay) % mapOf("domain" to tp.domainAndTopic, "amt" to amtS))
-                            return true
-                        }
-
-                        TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
-                    }
-                }
-                catch (e:WalletNotEnoughBalanceException)
-                {
-                    // TODO where to go when clicked
-                    platformNotification(i18n(S.insufficentBalance), e.shortMsg ?: e.message ?: i18n(S.unknownError), null)
-                }
-            }
-            if (path == "/lp")  // we are already connected which is how this being called in the app context
-            {
-                displayNotice(S.connected)
-                return true
-            }
-            if (path == "/share")
-            {
-                tp.handleShareRequest(iuri) {
-                    if (it != -1)
-                    {
-                        val msg: String = i18n(S.SharedNotification) % mapOf("what" to i18n(it))
-                        displayNotice(msg)
-                    }
-                    else displayError(S.badQR)
-                }
-            }
-            else if (path == "/address")
-            {
-                val result = tp.handleAddressInfoRequest(iuri)
-
-                when(result)
-                {
-                    TdppAction.ASK ->  // ADDRESS
-                    {
-                        TODO("always accept for now")
-                        /*
-                        var intent = Intent(this, TricklePayActivity::class.java)
-                        intent.data = Uri.parse(intentUri)
-                        if (act != null) autoPayNotificationId =
-                          notifyPopup(intent, i18n(R.string.TpAssetInfoRequest), i18n(R.string.fromColon) + tp.domainAndTopic, act, false, autoPayNotificationId)
-                        return false
-
-                         */
-                    }
-                    TdppAction.ACCEPT -> // ADDRESS
-                    {
-                        tp.acceptAssetRequest()
-                        return true
-                    }
-
-                    TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
-                }
-            }
-            else if (path == "/assets")
-            {
-                val result = tp.handleAssetInfoRequest(iuri)
-
-                when(result)
-                {
-                    TdppAction.ASK ->  // ASSETS
-                    {
-                        //var intent = Intent(this, TricklePayActivity::class.java)
-                        //intent.data = android.net.Uri.parse(intentUri)
-                        //if (act != null) autoPayNotificationId =
-                        //  notifyPopup(intent, i18n(R.string.TpAssetInfoRequest), i18n(R.string.fromColon) + tp.domainAndTopic, act, false, autoPayNotificationId)
-                        TODO()
-                    }
-                    TdppAction.ACCEPT -> // ASSETS
-                    {
-                        tp.acceptAssetRequest()
-                        return true
-                    }
-
-                    TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
-                }
-            }
-            else if (path == "/tx")
-            {
-                val result = tp.attemptSpecialTx(iuri)
-                when(result)
-                {
-                    TdppAction.ASK ->  // special tx
-                    {
-                        later { externalDriver.send(GuiDriver(gotoPage = ScreenId.SpecialTxPerm, tpSession = tp))}
-                        //var intent = Intent(this, TricklePayActivity::class.java)
-                        //intent.data = android.net.Uri.parse(intentUri)
-                        //if (act != null) autoPayNotificationId =
-                        //  notifyPopup(intent, i18n(R.string.PaymentRequest), i18n(R.string.SpecialTpTransactionFrom) + " " + tp.domainAndTopic, act, false, autoPayNotificationId)
-                        return false
-                    }
-                    TdppAction.ACCEPT ->  // special tx auto accepted
-                    {
-                        // Intent() means unclickable -- change to pop up configuration if clicked
-                        TODO()
-                        //if (act != null) autoPayNotificationId =
-                        //  notifyPopup(Intent(), i18n(R.string.AuthAutopayTitle), tp.domainAndTopic, act, false, autoPayNotificationId)
-                    }
-
-                    // special tx auto-deny
-                    TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
-                }
-            }
-
-        }
-        return false
-    }
 
     fun handleNonIntentText(text: String)
     {
@@ -542,7 +379,155 @@ open class CommonApp
     }
 
 
+    /** Execute a login request to a 3rd party web site via the nexid protocl.  This is done within the app context so that the login activity can return before the async login process
+     * is completed.
+     */
+    fun handleLogin(loginReqParam: String)
+    {
+        val url = Url(loginReqParam)
+        try
+        {
+            val result = url.readBytes()
+            if (result.size < 100) displayNotice(result.decodeUtf8())  // sanity check result then display it
+        }
+        catch(e: CannotLoadException)
+        {
+            displayError(S.connectionException)
+        }
 
+        /*
+        var loginReq = loginReqParam
+        var forwarded = 0
+        getloop@ while (forwarded < 3)
+        {
+            LogIt.info(sourceLoc() +": login reply: " + loginReq)
+            try
+            {
+                val req: HttpURLConnection = URL(loginReq).openConnection() as HttpURLConnection
+                req.setConnectTimeout(HTTP_REQ_TIMEOUT_MS)
+                val resp = req.inputStream.bufferedReader().readText()
+                LogIt.info("login response code:" + req.responseCode.toString() + " response: " + resp)
+                if ((req.responseCode >= 200) and (req.responseCode < 250))
+                {
+                    displayNotice(resp)
+                    return
+                }
+                else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding (often switching from http to https)
+                {
+                    loginReq = req.getHeaderField("Location")
+                    forwarded += 1
+                    continue@getloop
+                }
+                else
+                {
+                    displayNotice(resp)
+                    return
+                }
+            } catch (e: FileNotFoundException)
+            {
+                displayError(S.badLink, loginReq)
+            } catch (e: java.io.IOException)
+            {
+                displayError(S.connectionAborted, loginReq)
+            } catch (e: java.net.ConnectException)
+            {
+                displayError(S.connectionException)
+            }
+
+            break@getloop  // only way to actually loop is to hit a 301 or 302
+        }
+        */
+    }
+
+    fun handlePostLogin(loginReqParam: String, jsonBody: String)
+    {
+        val url = Url(loginReqParam)
+        try
+        {
+            val result = url.readPostBytes(jsonBody)
+            if (result.size < 100) displayNotice(result.decodeUtf8())  // sanity check result then display it
+        }
+        catch(e: CannotLoadException)
+        {
+            displayError(S.connectionException)
+        }
+
+
+        /*
+        var loginReq = loginReqParam
+        var forwarded = 0
+
+        postloop@ while (forwarded < 3)
+        {
+            val url = Url(loginReq)
+            LogIt.info("sending registration reply: " + loginReq)
+            try
+            {
+                //val body = """[1,2,3]"""  // URLEncoder.encode("""[1,2,3]""","UTF-8")
+                val req: HttpURLConnection = URL(loginReq).openConnection() as HttpURLConnection
+                req.requestMethod = "POST"
+                req.setRequestProperty("Content-Type", "application/json")
+                req.setRequestProperty("Accept", "xxx") // should be: star slash star but that doesn't work in a comment
+                req.setRequestProperty("Content-Length", jsonBody.length.toString())
+                req.setConnectTimeout(HTTP_REQ_TIMEOUT_MS)
+                req.doOutput = true
+                req.useCaches = false
+                val os = DataOutputStream(req.outputStream)
+                //os.write(jsonBody.toByteArray())
+                os.writeBytes(jsonBody.toString())
+                os.flush()
+                os.close()
+                val resp = req.inputStream.bufferedReader().readText()
+                LogIt.info("reg response code:" + req.responseCode.toString() + " response: " + resp)
+                if ((req.responseCode >= 200) and (req.responseCode < 300))
+                {
+                    displayNotice(resp)
+                    return
+                }
+                else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding
+                {
+                    loginReq = req.getHeaderField("Location")
+                    forwarded += 1
+                    continue@postloop
+                }
+                else
+                {
+                    displayNotice(resp)
+                    return
+                }
+            }
+            catch (e: java.net.SocketTimeoutException)
+            {
+                LogIt.info("SOCKET TIMEOUT:  If development, check phone's network.  Ensure you can route from phone to target!  " + e.toString())
+                displayError(S.connectionException)
+                return
+            }
+            catch (e: java.io.IOException)
+            {
+                LogIt.info("registration IOException: " + e.toString())
+                displayError(S.connectionAborted)
+                return
+            }
+            catch (e: FileNotFoundException)
+            {
+                LogIt.info("registration FileNotFoundException: " + e.toString())
+                displayError(S.badLink)
+                return
+            }
+            catch (e: java.net.ConnectException)
+            {
+                displayError(S.connectionException)
+                return
+            }
+            catch (e: Throwable)
+            {
+                displayError(S.unknownError)
+                return
+            }
+            break@postloop  // Only way to actually loop is to get a http 301 or 302
+        }
+*/
+    }
 
 
     /** Returns true if accounts are synced */
@@ -566,7 +551,7 @@ open class CommonApp
         devMode = prefs.getBoolean(DEV_MODE_PREF, false)
         allowAccessPriceData = prefs.getBoolean(ACCESS_PRICE_DATA_PREF, true)
         openAllAccounts()
-
+        tpDomains.load()
     }
 
     /** Iterate through all the accounts, looping */

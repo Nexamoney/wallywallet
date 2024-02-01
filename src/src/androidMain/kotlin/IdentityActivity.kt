@@ -114,7 +114,7 @@ class IdentityActivity : CommonNavActivity()
         {
             try
             {
-                val account = wallyApp!!.primaryAccount
+                val account = wallyApp!!.nullablePrimaryAccount
                 if ((account == null) || (!account.visible))
                 {
                     throw PrimaryWalletInvalidException()

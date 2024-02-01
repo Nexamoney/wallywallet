@@ -6,13 +6,12 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import java.io.FileNotFoundException
-import java.io.IOException
-import java.net.HttpURLConnection
 import com.eygraber.uri.*
 
 import info.bitcoinunlimited.www.wally.databinding.ActivityIdentityOpBinding
 import io.ktor.http.*
+import io.ktor.utils.io.errors.*
+import okio.FileNotFoundException
 import org.nexa.libnexakotlin.libnexa
 import kotlin.text.StringBuilder
 import org.nexa.libnexakotlin.*
@@ -365,7 +364,7 @@ class IdentityOpActivity : CommonNavActivity()
     fun onProvideIdentity(v: View?)
     {
         val iuri = displayedLoginRequest
-        launch {
+        later {
             try
             {
                 if (iuri != null)
@@ -375,7 +374,7 @@ class IdentityOpActivity : CommonNavActivity()
                     {
                         displayError(R.string.badLink)
                         finish()
-                        return@launch
+                        return@later
                     }
                     host = tmpHost
                     val port = iuri.port
@@ -396,12 +395,12 @@ class IdentityOpActivity : CommonNavActivity()
                     catch (e: PrimaryWalletInvalidException)
                     {
                         clearIntentAndFinish(i18n(R.string.primaryAccountRequired) % mapOf("primCurrency" to (chainToURI[PRIMARY_CRYPTO] ?: "")), i18n(R.string.primaryAccountRequiredDetails))
-                        return@launch
+                        return@later
                     }
                     if (act.locked)
                     {
                         displayError(R.string.NoAccounts)
-                        return@launch
+                        return@later
                     }
 
                     val wallet = act.wallet
@@ -436,7 +435,7 @@ class IdentityOpActivity : CommonNavActivity()
                         if (challenge == null || cookie == null) // intent was previously cleared by someone throw IdentityException("challenge string was not provided", "no challenge")
                         {
                             finish()
-                            return@launch
+                            return@later
                         }
 
                         val sig = libnexa.signMessage(chalToSign.toByteArray(), secret.getSecret())
@@ -447,7 +446,7 @@ class IdentityOpActivity : CommonNavActivity()
                         var loginReq = protocol + "://" + tmpHost + portStr + path
                         loginReq += "?op=login&addr=" + address.urlEncode() + "&sig=" + sigStr.urlEncode() + "&cookie=" + cookie.urlEncode()
 
-                        wallyAndroidApp?.handleLogin(loginReq)
+                        wallyApp?.handleLogin(loginReq)
                         finish()
 
                     }
@@ -459,7 +458,7 @@ class IdentityOpActivity : CommonNavActivity()
                         if (challenge == null) // intent was previously cleared by someone throw IdentityException("challenge string was not provided", "no challenge")
                         {
                             finish()
-                            return@launch
+                            return@later
                         }
 
                         val sig = libnexa.signMessage(chalToSign.toByteArray(), secret.getSecret())
@@ -533,7 +532,7 @@ class IdentityOpActivity : CommonNavActivity()
                         }
                         jsonBody.append('}')
 
-                        wallyAndroidApp?.handlePostLogin(loginReq, jsonBody.toString())
+                        wallyApp?.handlePostLogin(loginReq, jsonBody.toString())
                         clearIntentAndFinish()
                     }
                     else if (op == "sign")
@@ -569,35 +568,8 @@ class IdentityOpActivity : CommonNavActivity()
                                     var sigReq = protocol + "://" + tmpHost + portStr + path
                                     sigReq += "?op=sign&addr=" + address.toString() + "&sig=" + sigStr.urlEncode() + if (cookie == null) "" else "&cookie=" + cookie.urlEncode()
 
-                                    var forwarded = 0  // Handle URL forwarding
-                                    getloop@ while (forwarded < 3)
+                                    try
                                     {
-                                        LogIt.info("signature reply: " + sigReq)
-                                        try
-                                        {
-                                            /*
-                                        val req: HttpURLConnection = URL(sigReq).openConnection() as HttpURLConnection
-                                        req.setConnectTimeout(HTTP_REQ_TIMEOUT_MS)
-                                        val resp = req.inputStream.bufferedReader().readText()
-                                        LogIt.info("signature response code:" + req.responseCode.toString() + " response: " + resp)
-                                        if ((req.responseCode >= 200) and (req.responseCode < 250))
-                                        {
-                                            wallyApp?.displayNotice(resp)
-                                            clearIntentAndFinish()
-                                        }
-                                        else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding (often switching from http to https)
-                                        {
-                                            sigReq = req.getHeaderField("Location")
-                                            forwarded += 1
-                                            continue@getloop
-                                        }
-                                        else
-                                        {
-                                            wallyApp?.displayNotice(resp)
-                                            clearIntentAndFinish()
-                                        }
-                                         */
-
                                             LogIt.info(sigReq)
                                             val (resp, status) = Uri.parse(sigReq).loadTextAndStatus(HTTP_REQ_TIMEOUT_MS)
                                             LogIt.info("signature response code:" + status.toString() + " response: " + resp)
@@ -606,19 +578,13 @@ class IdentityOpActivity : CommonNavActivity()
                                                 displayNotice(resp)
                                                 clearIntentAndFinish()
                                             }
-                                            else if ((status == 301) or (status == 302))  // Handle URL forwarding (often switching from http to https)
-                                            {
-                                                sigReq = resp
-                                                forwarded += 1
-                                                continue@getloop
-                                            }
                                             else
                                             {
                                                 displayNotice(resp)
                                                 clearIntentAndFinish()
                                             }
 
-                                        }
+                                    }
                                         catch (e: FileNotFoundException)
                                         {
                                             displayError(R.string.badLink)
@@ -635,9 +601,7 @@ class IdentityOpActivity : CommonNavActivity()
                                             displayError(R.string.connectionException)
                                             clearIntentAndFinish()
                                         }
-                                        break@getloop  // only way to actually loop is to hit a 301 or 302
                                     }
-                                }
                             }
                         }
 

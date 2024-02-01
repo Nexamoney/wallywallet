@@ -182,7 +182,7 @@ class AccountListBinder(val ui: AccountListItemBinding, val guiList: GuiAccountL
             }
             else  // We don't have the data to draw the background (not loaded yet)
             {
-                launch {
+                later {
                     var count = 0
                     while (count < 3)  // don't want to be leaving spinner code around forever
                     {

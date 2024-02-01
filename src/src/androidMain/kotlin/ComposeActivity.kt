@@ -280,7 +280,7 @@ class ComposeActivity: CommonActivity()
         onBackPressedDispatcher.addCallback(object: OnBackPressedCallback(true) {
             override fun handleOnBackPressed()
             {
-                if (nav?.back() == null) finish()
+                if (nav.back() == null) finish()
             }
 
         })

@@ -20,6 +20,8 @@ enum class ConfirmationFor
     Delete, Rediscover, RediscoverBlockchain, Reassess, RecoveryPhrase, PrimaryAccount, PinChange
 }
 
+
+
 class AccountDetailsActivity: CommonNavActivity()
 {
     private lateinit var ui: ActivityAccountDetailsBinding
@@ -50,7 +52,7 @@ class AccountDetailsActivity: CommonNavActivity()
                     coin.flags = coin.flags or ACCOUNT_FLAG_HIDE_UNTIL_PIN
                 else
                     coin.flags = coin.flags and ACCOUNT_FLAG_HIDE_UNTIL_PIN.inv()
-                launch {  // Can't be in UI thread
+                later {  // Can't be in UI thread
                     coin.saveAccountFlags()
                 }
             }
@@ -65,7 +67,7 @@ class AccountDetailsActivity: CommonNavActivity()
                     coin.flags = coin.flags or ACCOUNT_FLAG_REUSE_ADDRESSES
                 else
                     coin.flags = coin.flags and ACCOUNT_FLAG_REUSE_ADDRESSES.inv()
-                launch {  // Can't be in UI thread
+                later {  // Can't be in UI thread
                     coin.saveAccountFlags()
                 }
             }
@@ -211,7 +213,7 @@ class AccountDetailsActivity: CommonNavActivity()
     fun onClearIdentityDomains(v: View)
     {
         val act = selectedAccount
-        launch {
+        later {
             if (act!=null) act.wallet.identityDomain.clear()
         }
     }
@@ -237,7 +239,7 @@ class AccountDetailsActivity: CommonNavActivity()
             ConfirmationFor.RediscoverBlockchain ->
             {
                 if (act == null) return
-                launch {
+                later {
                     val bc = act.wallet.blockchain
                     // If you reset the wallet first, it'll start rediscovering the existing blockchain before it gets reset.
                     bc.rediscover()
@@ -255,7 +257,7 @@ class AccountDetailsActivity: CommonNavActivity()
             ConfirmationFor.Rediscover ->
             {
                 if (act == null) return
-                launch {
+                later {
                     act.wallet.rediscover(true, false)
                     displayNotice(i18n(R.string.rediscoverNotice))
                 }
@@ -263,7 +265,7 @@ class AccountDetailsActivity: CommonNavActivity()
             ConfirmationFor.Reassess ->
             {
                 if (act == null) return
-                launch {
+                later {
                     try
                     {
                         // TODO while we don't have Rostrum (electrum) we can't reassess, so just forget them under the assumption that they will be confirmed and accounted for, or are bad.
@@ -287,7 +289,7 @@ class AccountDetailsActivity: CommonNavActivity()
                 wallyApp?.deleteAccount(act)
                 wallyApp?.accounts?.remove(act.name)  // remove this coin from any global access before we delete it
                 act.wallet.stop()
-                launch { // cannot access db in UI thread
+                later { // cannot access db in UI thread
                     app.saveActiveAccountList()
                     selectedAccount?.delete()
                 }
