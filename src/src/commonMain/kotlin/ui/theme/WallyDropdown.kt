@@ -16,9 +16,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.Dialog
+import info.bitcoinunlimited.www.wally.S
+import info.bitcoinunlimited.www.wally.i18n
+import info.bitcoinunlimited.www.wally.platform
 import org.nexa.libnexakotlin.GetLog
 
 private val LogIt = GetLog("BU.wally.dropdown")
@@ -219,4 +223,91 @@ fun WallyDropdownMenuItem(
             )
         }
 
+}
+
+@Composable
+fun <T> WallyDropDownMenuUnidirectional(
+  selected: Pair<String, T>,
+  options: Map<String, T>,
+  onSelect: (Pair<String, T>) -> Unit,
+  usesMouse: Boolean = platform().usesMouse
+)
+{
+    var expanded by remember { mutableStateOf(false) }
+
+    @Composable
+    fun DialogMenu()
+    {
+        Dialog(onDismissRequest = { expanded = false }) {
+            LazyColumn (
+              modifier = Modifier.background(color = BrightBkg, shape = RoundedCornerShape(32.dp)).border(WallyModalOutline, RoundedCornerShape(32.dp)).padding(16.dp)
+            ) {
+                itemsIndexed(options.keys.toList()) {_, key ->
+                    Row(modifier = Modifier.padding(2.dp).clickable {
+                        expanded = false
+                        val value = options[key] ?: return@clickable
+                        onSelect(key to value)
+                    }) {
+                        val fontWeight: FontWeight = if (selected.first == key) FontWeight.Bold else FontWeight.Normal
+                        val color = if (selected.first == key) MaterialTheme.colorScheme.primary.copy(alpha = 1.0f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 1.0f)
+                        Text(
+                          fontWeight = fontWeight,
+                          color = color,
+                          fontSize = LocalTextStyle.current.fontSize.times(1.3),
+                          text = key
+                        )
+                    }
+                }
+                options.forEach {
+                }
+            }
+        }
+    }
+
+    @Composable
+    fun DropDownMenu()
+    {
+        DropdownMenu(
+          expanded = expanded,
+          onDismissRequest = { expanded = false },
+        ) {
+            options.forEach {
+                DropdownMenuItem(
+                  onClick = {
+                      onSelect(it.toPair())
+                      expanded = false
+                  },
+                  text = { Text(text = it.key) }
+                )
+            }
+        }
+    }
+
+    Row(
+      horizontalArrangement = Arrangement.SpaceEvenly,
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(Icons.Default.Check, tint = colorDebit ,contentDescription = "Check or not check")
+        Spacer(Modifier.width(8.dp))
+        Text(i18n(S.Blockchain))
+        Spacer(Modifier.width(8.dp))
+        Box {
+            Row(
+              verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                  text = selected.first,
+                  modifier = Modifier.clickable(onClick = { expanded = true })
+                )
+                IconButton(onClick = {expanded = true}) {
+                    Icon(Icons.Default.ArrowDropDown, null)
+                }
+            }
+
+            if (usesMouse)
+                DropDownMenu()
+            else if(!usesMouse && expanded)
+                DialogMenu()
+        }
+    }
 }
