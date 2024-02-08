@@ -847,7 +847,7 @@ open class CommonApp
                 accountLock.lock {
                     for (c in accounts.values)
                     {
-                        if (((c.flags and ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY) == 0UL) && (c.wallet.balance > MAX_NO_RECOVERY_WARN_BALANCE))tatus
+                        if (((c.flags and ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY) == 0UL) && (c.wallet.balance > MAX_NO_RECOVERY_WARN_BALANCE))
                         {
                             recoveryWarning = c
                             break
