@@ -40,6 +40,8 @@ expect fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
 
 expect fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: MutableSet<String>?=null): String
 
+// For platforms that ktor can't do https on (ios)
+// expect fun loadhttps(url: String):ByteArray
 
 // Note this code might not work (to properly use the i18n number characters) because DecimalFormat might force the use of US ones
 private var numberGroupingSeparator: String? = null
@@ -288,7 +290,7 @@ fun io.ktor.http.Url.readText(timeoutInMs: Number, maxReadSize: Number = 2500000
     }
 
     var url:io.ktor.http.Url = this
-    return runBlocking {
+    return runBlocking(wallyApp!!.coMiscCtxt) {
         var tries = 0
         while (tries < 10)
         {
@@ -310,33 +312,55 @@ fun io.ktor.http.Url.readText(timeoutInMs: Number, maxReadSize: Number = 2500000
 }
 
 /** This helper function reads the contents of the URL.  This duplicates the API of other URL classes */
-fun io.ktor.http.Url.readBytes(timeoutInMs: Number = 10000, maxReadSize: Number = 250000000): ByteArray
+fun io.ktor.http.Url.readBytes(timeoutInMs: Number = 30000, maxReadSize: Number = 250000000): ByteArray
 {
     val client = HttpClient() {
         install(HttpTimeout) {
             requestTimeoutMillis = timeoutInMs.toLong()
-            // connectTimeoutMillis  // time to connect
+            connectTimeoutMillis = timeoutInMs.toLong() // time to connect
             // socketTimeoutMillis   // time between 2 data packets
         }
     }
 
-    var url:io.ktor.http.Url = this
-    return runBlocking {
+    var url:Url = this
+    return runBlocking(wallyApp!!.coMiscCtxt) {
         var tries = 0
         while (tries < 10)
         {
             tries = tries + 1
-            val resp: HttpResponse = client.get(url) {
-                // Configure request parameters exposed by HttpRequestBuilder
-            }
-            val status = resp.status.value
-            if ((status == 301) or (status == 302))  // Handle URL forwarding (often switching from http to https)
+            try
             {
-                val newLoc = resp.request.headers.get("Location")
-                if (newLoc != null) url = io.ktor.http.Url(newLoc)
-                else throw CannotLoadException()
+                val resp: HttpResponse = client.get(url) {
+                    // Configure request parameters exposed by HttpRequestBuilder
+                }
+                val status = resp.status.value
+                if ((status == 301) or (status == 302))  // Handle URL forwarding (often switching from http to https)
+                {
+                    val newLoc = resp.request.headers.get("Location")
+                    if (newLoc != null) url = io.ktor.http.Url(newLoc)
+                    else throw CannotLoadException()
+                    LogIt.info("forwarded to $url")
+                }
+                else return@runBlocking resp.bodyAsChannel().toByteArray(maxReadSize.toInt())
             }
-            else return@runBlocking resp.bodyAsChannel().toByteArray(maxReadSize.toInt())
+            catch(e: IllegalStateException)
+            {
+                // IOS limitation: kotlin.IllegalStateException: TLS sessions are not supported on Native platform.
+                if (e.message?.contains("TLS sessions") == true)
+                {
+                    // Note this won't work if your web site just responds with every HTTP request with a forward to HTTPS.  In this case, the code will eventually throw a CannotLoadException
+                    val ub = URLBuilder(url)
+                    ub.protocol = URLProtocol.HTTP
+                    url = ub.build()
+                    LogIt.info("trying $url")
+                }
+                else LogIt.error("Cannot access $url, error $e")
+            }
+            catch(e:Exception)
+            {
+                LogIt.error("Cannot access $url, error $e")
+                throw e
+            }
         }
         throw CannotLoadException()
     }
@@ -378,14 +402,14 @@ fun io.ktor.http.Url.readPostBytes(jsonBody: String, timeoutInMs: Number = 10000
 
 fun io.ktor.http.Url.resolve(relativeUrl: io.ktor.http.Url): io.ktor.http.Url
 {
-    TODO()
-    // return io.ktor.http.Url(this.toURI().resolve(relativeUrl.toURI()).toString())
+    val urb = URLBuilder(this).takeFrom(relativeUrl)
+    return urb.build()
 }
 
 fun io.ktor.http.Url.resolve(relativeUrl: String): io.ktor.http.Url
 {
-    TODO()
-    //return io.ktor.http.Url(this.toURI().resolve(relativeUrl).toString())
+    val urb = URLBuilder(this).takeFrom(relativeUrl)
+    return urb.build()
 }
 
 /*

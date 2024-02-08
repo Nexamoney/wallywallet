@@ -24,7 +24,7 @@ fun OnAppStartup()
 val nav = ScreenNav()
 fun MainViewController() = ComposeUIViewController {
 
-        while (!coinsCreated) millisleep(250UL)
+        // while (!coinsCreated) millisleep(250UL)
         val currentRootScreen = remember { mutableStateOf(ScreenId.Home) }
         nav.reset(currentRootScreen)
         NavigationRoot(nav)

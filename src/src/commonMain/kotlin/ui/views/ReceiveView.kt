@@ -5,8 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,8 +17,6 @@ import kotlinx.coroutines.*
 import org.nexa.libnexakotlin.exceptionHandler
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
-import info.bitcoinunlimited.www.wally.ui.HomeScreen
-import info.bitcoinunlimited.www.wally.ui.testDropDown
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 
@@ -86,7 +82,7 @@ fun AddressQrCode(address: String)
         }
         Spacer(Modifier.width(4.dp))
 
-        WallyEmphasisBox(Modifier.fillMaxHeight().fillMaxWidth()) {
+        WallyBrightEmphasisBox(Modifier.fillMaxHeight().fillMaxWidth()) {
             Text(if (displayCopiedNotice) i18n(S.copiedToClipboard) else address, fontWeight = FontWeight.Bold, fontSize = FontScale(1.4),color = WallyAddressColor,
               modifier = Modifier.wrapContentHeight(align = Alignment.CenterVertically))
         }

@@ -604,7 +604,7 @@ class MainActivity : CommonNavActivity()
         thread(true, true, null, "startup")
         {
             // Wait until stuff comes up
-            while (!coinsCreated) Thread.sleep(50)
+            // while (!coinsCreated) Thread.sleep(50)
             LogIt.info("coins created")
 
             val a = wallyApp
@@ -766,7 +766,7 @@ class MainActivity : CommonNavActivity()
 
         later {
             // Thread.sleep(100)  // Wait for accounts to be loaded
-            while (!coinsCreated) Thread.sleep(50)
+            // while (!coinsCreated) Thread.sleep(50)
             laterUI {
 
                 assignWalletsGuiSlots()
@@ -1961,7 +1961,7 @@ class MainActivity : CommonNavActivity()
                     val ui = AssetSuccinctListItemBinding.inflate(LayoutInflater.from(it.context), it, false)
                     AssetSuccinctBinder(ui, this)
                 })
-                sendAssetsAdapter.rowBackgroundColors = WallyAssetRowColors
+                sendAssetsAdapter.rowBackgroundColors = AndroidWallyAssetRowColors
                 sendAssetsAdapter.layout()
                 sendAssetsLayoutManager.requestLayout()
             }

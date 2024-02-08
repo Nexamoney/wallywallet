@@ -43,8 +43,10 @@ fun WallyGetCnxnMgr(chain: ChainSelector, name: String? = null, start:Boolean = 
     val ret = GetCnxnMgr(chain, name, start)
     if (chain == ChainSelector.NEXA)
     {
-        ret.add("nexa.wallywallet.org", NexaPort, 100, true)
-        ret.add("p2p.wallywallet.org", NexaPort, 90, true)
+        later {
+            ret.add("nexa.wallywallet.org", NexaPort, 100, true)
+            ret.add("p2p.wallywallet.org", NexaPort, 90, true)
+        }
     }
     return ret
 }
@@ -144,6 +146,8 @@ class Account(
     /** A string denoting this wallet's currency units.  That is, the units that this wallet should use in display, in its BigDecimal amount representations, and is converted to and from in fromFinestUnit() and toFinestUnit() respectively */
     val currencyCode: String = chainToDisplayCurrencyCode[wallet.chainSelector]!!
 
+    var assets = mutableMapOf<GroupId, AssetInfo>()
+
     init
     {
 
@@ -184,6 +188,15 @@ class Account(
 
         setBlockchainAccessModeFromPrefs()
         loadAccountAddress()
+
+        later {
+            delay(500)  // Constructing the asset list can use a lot of disk which interferes with startup
+            while(true)
+            {
+                constructAssetMap()
+                delay(15000)
+            }
+        }
     }
 
     /** Save the PIN of an account to the database */
@@ -366,6 +379,67 @@ class Account(
             ret// stop looking as soon as we find one
         }
         return ret
+    }
+
+    fun constructAssetMap()
+    {
+        LogIt.info(sourceLoc() + name + ": Construct assets")
+        val ast = mutableMapOf<GroupId, AssetInfo>()
+        wallet.forEachTxo { sp ->
+            if (sp.isUnspent)
+            {
+                // TODO: this is a workaround for a bug where the script chain is incorrect
+                if (sp.priorOutScript.chainSelector != sp.chainSelector)
+                {
+                    LogIt.warning("BUG fixup: Script chain is ${sp.priorOutScript.chainSelector} but chain is ${sp.chainSelector}")
+                    sp.priorOutScript = SatoshiScript(sp.chainSelector, sp.priorOutScript.type, sp.priorOutScript.flatten())
+                }
+
+                val grp = sp.groupInfo()
+                if (grp != null)
+                {
+                    LogIt.info(sourceLoc() + name + ": unspent asset ${grp.groupId.toHex()}")
+
+                    if (!grp.isAuthority())  // TODO not dealing with authority txos in Wally mobile
+                    {
+                        val tmp = grp.tokenAmt  // Set the tokenAmt to 0 and than add it back in once we grab or create the AssetInfo
+                        grp.tokenAmt = 0
+                        val ai: AssetInfo = ast[grp.groupId] ?: AssetInfo(grp)
+                        ai.groupInfo.tokenAmt += tmp
+                        ai.account = this
+                        ast[grp.groupId] = ai
+                    }
+                }
+            }
+            false
+        }
+
+        // Check if this asset is new, and if so start grabbing the data for all assets (asynchronously)
+        // otherwise update the existing entry for amount changes
+        for (asset in ast.values)
+        {
+            // If we don't have it at all, add it to our dictionary
+            val assetSaved = assets[asset.groupInfo.groupId]
+            if (assetSaved == null)
+            {
+                assets[asset.groupInfo.groupId] = asset
+                later {
+                    wallyApp?.let { asset.load(wallet.blockchain, it.assetManager) }
+                }
+            }
+            else
+            {
+                // otherwise update the existing entry for amount changes
+                assetSaved.groupInfo.tokenAmt = asset.groupInfo.tokenAmt
+                if (assetSaved.iconUri == null)  // We failed to load this asset up, so try again
+                {
+                    later {
+                        wallyApp?.let { asset.load(wallet.blockchain, it.assetManager) }
+                    }
+                }
+            }
+
+        }
     }
 
     fun loadAccountAddress()

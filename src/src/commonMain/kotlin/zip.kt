@@ -1,10 +1,8 @@
 package info.bitcoinunlimited.www.wally
 import okio.*
-import org.nexa.libnexakotlin.decodeUtf8
-import org.nexa.libnexakotlin.toHex
-import org.nexa.libnexakotlin.toPositiveInt
-import org.nexa.libnexakotlin.toPositiveLong
+import org.nexa.libnexakotlin.*
 
+private val LogIt = GetLog("wally.zip")
 
 expect fun inflateRfc1951(compressedBytes: ByteArray, expectedfinalSize: Long):ByteArray
 
@@ -51,6 +49,7 @@ class ZipRecordException(val id: ByteArray):ZipException()
 val ZipFileHeaderId = byteArrayOf(0x50, 0x4b, 0x03, 0x04)
 val ZipDirRecordId = byteArrayOf(0x50, 0x4b, 0x01, 0x02)
 val ZipDirEndId = byteArrayOf(0x50, 0x4b, 0x05, 0x06)
+val ZipDataDescriptorId = byteArrayOf(0x50, 0x4b, 0x07, 0x08)
 
 enum class ZipCompressionMethods(v: Int)
 {
@@ -74,6 +73,32 @@ enum class ZipCompressionMethods(v: Int)
     PPMdVi_1(98)
 }
 
+data class ZipDataDescriptor(
+  val structureId: ByteArray,
+  val crc32: Long,
+  val compressedSize: Long,
+  val uncompressedSize: Long,
+)
+{
+    companion object
+    {
+        fun from(ds: BufferedSource): ZipDataDescriptor
+        {
+            val structId: ByteArray = ds.peek().readByteArray(4)
+            if (!(structId contentEquals ZipDataDescriptorId))
+            {
+                LogIt.info("ZipDataDescriptor: Incorrect zip record: ${structId.toHex()}")
+                throw ZipRecordException(structId)
+            }
+            ds.readByteArray(4)  // drop what I peeked
+            val crc32: Long = ds.readLE4()
+            val compressedSize: Long = ds.readLE4()
+            val uncompressedSize: Long = ds.readLE4()
+            return ZipDataDescriptor(structId, crc32, compressedSize, uncompressedSize)
+        }
+    }
+}
+
 data class ZipDirRecord(
   val structureId: ByteArray,
   val versionMadeBy: Int,
@@ -83,8 +108,8 @@ data class ZipDirRecord(
   val lastModTime: Int,
   val lastModDate: Int,
   val crc32: Long,
-  val compressedSize: Long,
-  val uncompressedSize: Long,
+  var compressedSize: Long,
+  var uncompressedSize: Long,
   val fileNameLength: Int,
   val extraFieldLength: Int,
   val fileCommentLength: Int,
@@ -104,6 +129,7 @@ data class ZipDirRecord(
             val structId: ByteArray = ds.peek().readByteArray(4)
             if (!(structId contentEquals ZipDirRecordId))
             {
+                LogIt.info("ZipDirRecord: Incorrect zip record: ${structId.toHex()}")
                 throw ZipRecordException(structId)
             }
             ds.readByteArray(4)  // drop what I peeked
@@ -131,6 +157,12 @@ data class ZipDirRecord(
               internalFileAttrs,extFileAttrs,localHeaderOffset, fileName, extraField, fileComment)
         }
     }
+
+    fun patch(hdr: ZipFileHeader)
+    {
+        if (compressedSize == 0L) compressedSize = hdr.compressedSize
+        if (uncompressedSize == 0L) uncompressedSize = hdr.uncompressedSize
+    }
 }
 
 data class ZipFileHeader(
@@ -156,6 +188,7 @@ data class ZipFileHeader(
             val structId: ByteArray = ds.peek().readByteArray(4)
             if (!(structId contentEquals ZipFileHeaderId))
             {
+                LogIt.info("ZipFileHeader: Incorrect zip record: ${structId.toHex()}")
                 throw ZipRecordException(structId)
             }
             ds.readByteArray(4)  // drop what I peeked
@@ -192,11 +225,13 @@ data class ZipDirEndRecord(
 {
     companion object
     {
+        // SIZE = 4 + 2 + 2 + 2 + 2 + 4 + 4 + 2
         fun from(ds: BufferedSource): ZipDirEndRecord
         {
             val structId: ByteArray = ds.peek().readByteArray(4)
             if (!(structId contentEquals ZipDirEndId))
             {
+                LogIt.info("ZipDirEndRecord: Incorrect zip record: ${structId.toHex()}")
                 throw ZipRecordException(structId)
             }
             ds.readByteArray(4)  // drop what I peeked
@@ -217,18 +252,200 @@ data class ZipDirEndRecord(
 /** look at @ba as a zip file and call handler for every file in it.
  * @handler should return true to abort the for each loop
  */
-fun zipForeach(ba: ByteArray, handler: (ZipFileHeader, BufferedSource?) -> Boolean)
+fun zipForeach(ba: ByteArray, handler: (ZipDirRecord, BufferedSource?) -> Boolean)
 {
     val b = Buffer()
     b.write(ba)
     zipForeach(b, handler)
 }
 
+infix fun Int.spans (sz: Int): IntRange
+{
+    return IntRange(this, this+sz-1)
+}
+
+/*
+infix fun Long.spans (sz: Long): IntRange
+{
+    return IntRange(this.toInt(), (this+sz-1).toInt())
+}
+ */
+
+fun ByteArray.findLastOf(tgt: ByteArray, startAt:Int=size-1 - tgt.size): Int
+{
+    var idx = startAt
+    while (idx >= 0)
+    {
+        if (this[idx] == tgt[0])
+        {
+            if (tgt contentEquals sliceArray(idx spans tgt.size))
+                return idx
+        }
+        idx--
+    }
+    return -1
+}
+
+
+// return the index of the dirend record
+fun zipFindDirEnd(ba: ByteArray): ZipDirEndRecord?
+{
+    var idx = ba.size-1-4
+    while(idx>=0)
+    {
+        idx = ba.findLastOf(ZipDirEndId, idx)
+        if (idx == -1) return null  // No dirend in the data
+        val b = Buffer()
+        b.write(ba.takeLast(ba.size-idx).toByteArray())
+        val dirEnd = ZipDirEndRecord.from(b)
+        // Sanity check a bunch of fields to ignore spurious bytes that happen to be equal to ZipDirEndId
+        if ((dirEnd.dirSize < ba.size) &&
+          (dirEnd.dirOffset < ba.size-ZipDirRecordId.size) &&
+          (dirEnd.diskNumRecords < ba.size) &&
+          // Check that the dirOffset location actually contains a ZipDirRecordId
+          (ZipDirRecordId contentEquals ba.sliceArray( IntRange(dirEnd.dirOffset.toInt(),dirEnd.dirOffset.toInt() + ZipDirRecordId.size - 1)))
+        )
+        {
+            // OK its incrediably unlikely that a zip end comment contained this exact data, unless the comment is itself another zip file,
+            // in which case, guess what? the .zip format is ancient and poorly designed and we are screwed :-)
+            return dirEnd
+        }
+        idx--  // If we found something but it was not a valid record, then keep looking
+    }
+    return null
+}
+
 /** look at @ds as a zip file and call handler for every file in it.
  * @handler should return true to abort the for each loop
  */
-fun zipForeach(ds: BufferedSource, handler: (ZipFileHeader, BufferedSource?) -> Boolean)
+fun zipForeach(ds: BufferedSource, handler: (ZipDirRecord, BufferedSource?) -> Boolean)
 {
+    // Zip has to be read from the end first, so in these modern times with streams we need to pull in the entire thing to get the end.
+    val zbytes = ds.readByteArray()
+
+    val dirend = zipFindDirEnd(zbytes)
+    if (dirend == null) return
+
+    val b = Buffer()
+    b.write(zbytes.takeLast((zbytes.size-dirend.dirOffset).toInt()).toByteArray())
+
+    var recordCount = 0
+
+    val dirRecords = mutableMapOf<String, ZipDirRecord>()
+
+    while(!b.exhausted() && (recordCount < dirend.numRecords))
+    {
+        try
+        {
+            val hdr = ZipDirRecord.from(b)
+            dirRecords[hdr.fileName] = hdr
+            recordCount++
+        }
+        catch(e: ZipRecordException)
+        {
+            if (e.id contentEquals ZipDirEndId)
+            {
+                val dirEnd = ZipDirEndRecord.from(ds)
+            }
+            else
+            {
+                logThreadException(e)
+                throw e
+            }
+        }
+        catch(e:EOFException)
+        {
+            break
+        }
+    }
+
+    // Sometimes the central directory records don't actually point to the correct local dir record offset.
+    // They might just point to 0 (experienced, not specced), which is a correct local offset
+
+    // Go through every central dir record, loading all files available from every specified offset.
+
+    val alreadyDid = mutableSetOf<Long>()
+    val alreadyDidFile = mutableSetOf<String>()
+
+    for (crec in dirRecords.values)
+    {
+        // If we already searched local records starting at this offset, then skip doing it again
+        if (alreadyDid.contains(crec.localHeaderOffset)) continue
+        alreadyDid.add(crec.localHeaderOffset)
+
+        // Grab the data we need to search
+        val ds = Buffer()
+        ds.write(zbytes.takeLast((zbytes.size-crec.localHeaderOffset).toInt()).toByteArray())
+        try
+        {
+            while (!ds.exhausted())
+            {
+                val hdr = ZipFileHeader.from(ds)  // Get the first local record
+
+                val crecHdr = dirRecords[hdr.fileName]  // find the corresponding central record (if it exists)
+
+                // I'm not sure which to prefer for common fields in the central dir and the local.  However, in cases I've seen the one to not use
+                // has always been zero, unless they are both zero, and then that's where it really starts.  So this will work.
+
+                // prefer the central record data if it exists and is non-zero
+                var compressedSize = hdr.compressedSize
+                if ((crecHdr != null) && (crecHdr.compressedSize != 0L)) compressedSize = crecHdr.compressedSize
+
+                // prefer the central record data if it exists and is non-zero
+                var uncompressedSize = hdr.uncompressedSize
+                if ((crecHdr != null) && (crecHdr.uncompressedSize != 0L)) uncompressedSize = crecHdr.uncompressedSize
+
+                if (!alreadyDidFile.contains(hdr.fileName))  // advance, calling the file handler for this new file
+                {
+                    val bs: BufferedSource? = if (hdr.compression == ZipCompressionMethods.NoCompression.ordinal)
+                    {
+                        val b = Buffer()
+                        b.write(ds.readByteArray(compressedSize))
+                    }
+                    else if (hdr.compression == ZipCompressionMethods.Deflated.ordinal)
+                    {
+                        val tmp = ds.readByteArray(compressedSize)
+                        val uncompressed: ByteArray = inflateRfc1951(tmp, uncompressedSize)
+                        val b = Buffer()
+                        b.write(uncompressed)
+                    }
+                    else null
+
+                    alreadyDidFile.add(hdr.fileName)
+
+                    if (crecHdr != null) // If there is not central record, this is an old, deleted file.  Skip (for now)
+                    {
+                        crecHdr.patch(hdr)
+                        if (handler(crecHdr, bs) == true) return
+                    }
+                }
+                else  // just advance
+                {
+                    ds.readByteArray(compressedSize)
+                }
+
+            }
+        }
+        catch(e: ZipRecordException)
+        {
+            if (e.id contentEquals ZipDataDescriptorId)  // this is info pertaining to the prior record, so not useful unless we read backwards
+            {
+                ZipDataDescriptor.from(ds)
+            }
+            else if (e.id contentEquals ZipDirRecordId)
+            {
+                // We are done iteration through records, because all the central dir records must be at the end.  so just fall thru.
+            }
+            else
+            {
+                logThreadException(e)
+                throw e
+            }
+        }
+
+    }
+
+    /*
     while(!ds.exhausted())
     {
         try
@@ -263,6 +480,8 @@ fun zipForeach(ds: BufferedSource, handler: (ZipFileHeader, BufferedSource?) -> 
             else throw e
         }
     }
+
+     */
 }
 
 /*

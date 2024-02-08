@@ -30,8 +30,9 @@ private val LogIt = GetLog("BU.wally.app")
 var wallyApp: CommonApp? = null
 var forTestingDoNotAutoCreateWallets = false
 var kvpDb: KvpDatabase? = null
-@Volatile
-var coinsCreated = false
+
+//@Volatile
+//var coinsCreated = false
 
 data class LongPollInfo(val proto: String, val hostPort: String, val cookie: String?, var active: Boolean = true)
 
@@ -162,8 +163,8 @@ open class CommonApp
 
     val accessHandler = AccessHandler(this)
 
-    protected val coMiscCtxt: CoroutineContext = newFixedThreadPoolContext(6, "app")
-    protected val coMiscScope: CoroutineScope = kotlinx.coroutines.CoroutineScope(coMiscCtxt)
+    val coMiscCtxt: CoroutineContext = newFixedThreadPoolContext(6, "app")
+    val coMiscScope: CoroutineScope = kotlinx.coroutines.CoroutineScope(coMiscCtxt)
 
     val accountLock = org.nexa.threads.Mutex()
     val accounts: MutableMap<String, Account> = mutableMapOf()
@@ -767,8 +768,7 @@ open class CommonApp
         if (!forTestingDoNotAutoCreateWallets)  // If I'm running the unit tests, don't auto-create any wallets since the tests will do so
         {
             // Initialize the currencies supported by this wallet
-            launch(coMiscScope)
-            {
+            later {
                 val prefs = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
                 LogIt.info(sourceLoc() + " Wally Wallet App Started")
                 kvpDb = openKvpDB(dbPrefix + "wpw")
@@ -858,7 +858,7 @@ open class CommonApp
                     // nothing to do in the case where there is no account to pick
                 }
 
-                coinsCreated = true
+                triggerAssignAccountsGuiSlots()
 
                 val alist = accountLock.lock { accounts.values }
                 for (c in alist)

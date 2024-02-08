@@ -1,5 +1,7 @@
 package info.bitcoinunlimited.www.wally
 
+import org.nexa.libnexakotlin.GroupId
+
 object MacosAssetManagerStorage:AssetManagerStorage
 {
     override fun storeAssetFile(filename: String, data: ByteArray): String
@@ -17,6 +19,11 @@ object MacosAssetManagerStorage:AssetManagerStorage
     override fun loadCardFile(filename: String): Pair<String, ByteArray>
     {
         TODO()
+    }
+
+    override fun cacheNftMedia(groupId: GroupId, media: Pair<String?, ByteArray?>): Pair<String?, ByteArray?>
+    {
+        TODO("Not yet implemented")
     }
 }
 
