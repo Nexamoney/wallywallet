@@ -5,10 +5,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.eygraber.uri.Uri
@@ -192,7 +190,7 @@ fun IdentityPermScreen(account: Account, uri: Uri?, nav: ScreenNav)
             if (signText != null)
             {
                 CenteredSectionText(S.textToSign)
-                WallyEmphasisBox(Modifier.weight(1f).fillMaxWidth()) {
+                WallyBrightEmphasisBox(Modifier.weight(1f).fillMaxWidth()) {
                     Text(signText, modifier = Modifier.wrapContentHeight(align = Alignment.CenterVertically), colorPrimaryDark)
                 }
                 msgToSign = signText.toByteArray()
@@ -200,7 +198,7 @@ fun IdentityPermScreen(account: Account, uri: Uri?, nav: ScreenNav)
             else if (signHex != null)
             {
                 CenteredSectionText(S.binaryToSign)
-                WallyEmphasisBox(Modifier.weight(1f).fillMaxWidth()) {
+                WallyBrightEmphasisBox(Modifier.weight(1f).fillMaxWidth()) {
                     Text(signHex, modifier = Modifier.wrapContentHeight(align = Alignment.CenterVertically), colorPrimaryDark)
                 }
                 msgToSign = signHex.fromHex()

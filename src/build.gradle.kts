@@ -5,18 +5,18 @@ import java.time.Instant
 import java.net.URL
 
 // Dependency versions
-val mpThreadsVersion = "0.1.9"
+val mpThreadsVersion = "0.2.0"
 val nexaRpcVersion = "1.1.4"
-val libNexaKotlinVersion = "0.1.28"
+val libNexaKotlinVersion = "0.1.29"
 
 val serializationVersion = "1.6.2"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.7.3"     // https://github.com/Kotlin/kotlinx.coroutines
-val ktorVersion = "2.3.7"           // https://github.com/ktorio/ktor
-val bigNumVersion = "0.3.8"         // https://github.com/ionspin/kotlin-multiplatform-bignum
-val composeVersion = "1.5.11"        // https://github.com/JetBrains/compose-multiplatform/releases
+val ktorVersion = "2.3.8"           // https://github.com/ktorio/ktor
+val bigNumVersion = "0.3.9"         // https://github.com/ionspin/kotlin-multiplatform-bignum
+val composeVersion = "1.5.12"        // https://github.com/JetBrains/compose-multiplatform/releases
 val androidTestCoreVersion = "1.5.0"
 val androidxActivityComposeVersion = "1.7.2"
-val uriKmpVersion = "0.0.14"
+val uriKmpVersion = "0.0.16"  // https://github.com/eygraber/uri-kmp
 val skikoVersion = "0.7.90" // https://github.com/JetBrains/skiko/releases
 
 val secSinceEpoch = Instant.now().epochSecond
@@ -26,8 +26,9 @@ plugins {
     kotlin("multiplatform")
     id("com.android.application")
     kotlin("plugin.serialization").version("1.9.20")
-    id("org.jetbrains.compose").version("1.5.11")   // https://github.com/JetBrains/compose-multiplatform/releases
+    id("org.jetbrains.compose").version("1.5.12")   // https://github.com/JetBrains/compose-multiplatform/releases
     id("org.jetbrains.dokka").version("1.8.20").apply(false)
+    id("org.openjfx.javafxplugin") version "0.1.0"
     idea
     // application  // for JVM executables, but not compatible with android, have to do it by hand
 }
@@ -308,6 +309,12 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:$coroutinesVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:$coroutinesVersion")
+
+                // https://mvnrepository.com/artifact/org.openjfx/javafx-media
+                implementation("org.openjfx:javafx-media:17.0.10")
+                implementation("org.openjfx:javafx-graphics:17.0.10")
+                //implementation("org.jetbrains.compose.ui:ui-compose-javafx:$composeVersion")
+                //implementation("com.github.almasb:fxgl:21")
             }
         }
 
@@ -401,6 +408,10 @@ kotlin {
                     implementation("androidx.camera:camera-lifecycle:${camerax_version}")
                     implementation("androidx.camera:camera-view:${camerax_version}")
                     implementation("com.google.mlkit:barcode-scanning:17.2.0")
+
+                    implementation("androidx.media3:media3-exoplayer:1.2.1")
+                    // Dynamic Adaptive Streaming over HTTP: implementation("androidx.media3:media3-exoplayer-dash:1.X.X")
+                    implementation("androidx.media3:media3-ui:1.2.1")
 
                     // Animation
                     implementation("com.airbnb.android:lottie-compose:$lottieVersion")

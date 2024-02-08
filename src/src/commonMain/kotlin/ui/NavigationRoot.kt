@@ -11,7 +11,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.unit.dp
@@ -270,7 +269,6 @@ fun onShareButton()
 }
 
 // Only needed if we need to reassign the account slots outside of the GUI's control
-// val reassignAccountGuiSlots = Channel<Boolean>()
 val accountChangedNotification = Channel<String>()
 
 /** Call this function to cause the GUI to update any view of any accounts.  Provide no arguments to update all of them */
@@ -495,7 +493,7 @@ fun NavigationRoot(nav: ScreenNav)
                 ConstructTitleBar(nav, errorText, warningText, noticeText)
 
                 clickDismiss.value?.let {
-                    WallyEmphasisBox(Modifier.fillMaxWidth().wrapContentSize().clickable { clickDismiss.value = null }) { it() }
+                    WallyBrightEmphasisBox(Modifier.fillMaxWidth().wrapContentSize().clickable { clickDismiss.value = null }) { it() }
                 }
 
                 // This will take up the most space but leave enough for the navigation menu
@@ -519,7 +517,7 @@ fun NavigationRoot(nav: ScreenNav)
                         ScreenId.Test -> TestScreen(400.dp)
                         ScreenId.Settings -> SettingsScreen(nav)
                         ScreenId.AccountDetails -> withAccount { AccountDetailScreen(it, nav) }
-                        ScreenId.Assets -> Text("TODO: Implement AssetsScreen")
+                        ScreenId.Assets -> withAccount { AssetScreen(it, nav) }
                         ScreenId.Shopping -> ShoppingScreen(nav)
                         ScreenId.TricklePay -> withAccount { act -> TricklePayScreen(act, null, nav) }
                         ScreenId.Identity -> withAccount { act ->

@@ -144,16 +144,50 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
                             {
                                 if (it.firstRecv == it.lastRecv)  // only one receive
                                 {
-                                    val firstRecv = Instant.fromEpochMilliseconds(it.firstRecv).toLocalDateTime(timeZone)
-                                    val guiTxDate = formatLocalDateTime(firstRecv)
+                                    val guiTxDate = try
+                                    {
+                                        val firstRecv = Instant.fromEpochMilliseconds(it.firstRecv).toLocalDateTime(timeZone)
+                                        formatLocalDateTime(firstRecv)
+                                    }
+                                    catch(e:IllegalArgumentException)  // happens if date is invalid
+                                    {
+                                        i18n(S.unavailable)
+                                    }
+                                    catch(e:DateTimeArithmeticException)  // happens if date is invalid
+                                    {
+                                        i18n(S.unavailable)
+                                    }
                                     Text(guiTxDate)
                                 }
                                 else
                                 {
-                                    val firstRecv = Instant.fromEpochMilliseconds(it.firstRecv).toLocalDateTime(timeZone)
-                                    val guiTxDate = formatLocalDateTime(firstRecv)
-                                    val lastRecv = Instant.fromEpochMilliseconds(it.lastRecv).toLocalDateTime(timeZone)
-                                    val guiTxDateLast = formatLocalDateTime(lastRecv)
+                                    val guiTxDate = try
+                                    {
+                                        val firstRecv = Instant.fromEpochMilliseconds(it.firstRecv).toLocalDateTime(timeZone)
+                                        formatLocalDateTime(firstRecv)
+                                    }
+                                    catch(e:IllegalArgumentException)  // happens if date is invalid
+                                    {
+                                        i18n(S.unavailable)
+                                    }
+                                    catch(e:DateTimeArithmeticException)  // happens if date is invalid
+                                    {
+                                        i18n(S.unavailable)
+                                    }
+
+                                    val guiTxDateLast = try
+                                    {
+                                        val lastRecv = Instant.fromEpochMilliseconds(it.lastRecv).toLocalDateTime(timeZone)
+                                        formatLocalDateTime(lastRecv)
+                                    }
+                                    catch(e:IllegalArgumentException)  // happens if date is invalid
+                                    {
+                                        i18n(S.unavailable)
+                                    }
+                                    catch(e:DateTimeArithmeticException)  // happens if date is invalid
+                                    {
+                                        i18n(S.unavailable)
+                                    }
                                     Text(guiTxDate)
                                     Text(guiTxDateLast)
                                 }

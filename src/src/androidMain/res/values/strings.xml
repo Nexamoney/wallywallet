@@ -243,6 +243,7 @@ Good luck!
     <!-- As in "Send to" -->
     <string name="toColon">To:</string>
     <string name="assetsColon">Assets:</string>
+    <string name="NoAssets">No Assets Available</string>
     <!-- As in what entity is requesting information -->
     <string name="fromColon">From:</string>
     <string name="Receive">Receive into account</string>

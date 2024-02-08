@@ -72,6 +72,7 @@ val LightColorPalette = lightColorScheme(
 @Composable fun WallyTextStyle(fontScale: Double=1.0) = TextStyle.Default.copy(lineHeight = 0.em, fontSize = FontScale(fontScale),
   lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.Both), fontWeight = FontWeight.Normal)
 
+var WallyAssetRowColors = arrayOf(Color(0x4Ff5f8ff), Color(0x4Fd0d0ef))
 
 val WallyPageBase = Modifier.fillMaxSize().background(BaseBkg)
 
@@ -103,6 +104,29 @@ fun WallyRoundedButton(onClick: () -> Unit, enabled: Boolean=true,  interactionS
       interactionSource = interactionSource,
       content = content
     )
+}
+
+@Composable
+fun WallySmallTextButton(textRes: Int, enabled: Boolean=true,  interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
+{
+    val tmp = TextStyle.Default.copy(lineHeight = 0.em, fontSize = FontScale(0.75),
+      lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.Both), fontWeight = FontWeight.Normal)
+    OutlinedButton(
+      onClick = onClick,
+      // Change button appearance based on current screen
+      enabled = enabled,
+      shape = RoundedCornerShape(50),
+      contentPadding = PaddingValues(1.dp, 1.dp),
+      border = WallyRoundedButtonOutline,
+      colors = ButtonDefaults.buttonColors(
+        disabledContainerColor = WallyButtonBackgroundDisabled,
+        disabledContentColor = WallyButtonForeground,
+        containerColor = WallyButtonBackground,
+        contentColor = WallyButtonForeground),
+      modifier = Modifier.width(IntrinsicSize.Max).padding(0.dp).defaultMinSize(1.dp, 1.dp),
+      interactionSource = interactionSource
+    )
+    { Text(i18n(textRes), Modifier.padding(0.dp), style = tmp)}
 }
 
 @Composable
@@ -201,6 +225,9 @@ fun WallyBoringIconButton(icon: ImageVector, modifier: Modifier = Modifier, enab
     Text(text = text, modifier = Modifier.padding(0.dp, 0.dp).wrapContentWidth(Alignment.CenterHorizontally,true),
       style = tmp, textAlign = TextAlign.Center, softWrap = false, maxLines = 1 )
 }
+
+@Composable fun WallyMediumButtonText(text: Int) = WallyMediumButtonText(i18n(text))
+
 
 
 @Composable fun WallyButtonText(text: String)
@@ -315,7 +342,7 @@ fun WallyBoringIconButton(icon: ImageVector, modifier: Modifier = Modifier, enab
     )
 }
 
-@Composable fun WallyEmphasisBox(modifier: Modifier = Modifier, content: @Composable () -> Unit)
+@Composable fun WallyBrightEmphasisBox(modifier: Modifier = Modifier, content: @Composable () -> Unit)
 {
     val surfShape = RoundedCornerShape(20.dp)
     Surface(
@@ -324,6 +351,18 @@ fun WallyBoringIconButton(icon: ImageVector, modifier: Modifier = Modifier, enab
       modifier = Modifier.border(WallyModalOutline, surfShape).then(modifier)
     ) {
         Box(Modifier.wrapContentSize().padding(8.dp)) { content() }
+    }
+}
+
+@Composable fun WallyEmphasisBox(modifier: Modifier = Modifier, bkgCol: Color = Color.Transparent, content: @Composable () -> Unit)
+{
+    val surfShape = RoundedCornerShape(20.dp)
+    Surface(
+      shape = surfShape,
+      contentColor = bkgCol,
+      modifier = Modifier.border(WallyModalOutline, surfShape).then(modifier)
+    ) {
+        Box(Modifier.wrapContentSize().padding(0.dp)) { content() }
     }
 }
 

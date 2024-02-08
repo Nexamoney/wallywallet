@@ -39,6 +39,7 @@ import kotlin.coroutines.CoroutineContext
 
 private val LogIt = GetLog("BU.wally.assetactivity")
 
+val AndroidWallyAssetRowColors = arrayOf(0x4Ff5f8ff,0x4Fd0d0ef)
 
 /** shows this image in the passed imageview.  Returns true if imageView chosen, else false */
 fun showMedia(iui: ImageView, vui: VideoView?, url: Url?, bytes: ByteArray? = null): Boolean
@@ -1087,7 +1088,7 @@ class AssetsActivity : CommonNavActivity()
                 val ui = AssetListItemBinding.inflate(LayoutInflater.from(it.context), it, false)
                 AssetBinder(ui, this)
             })
-            adapter.rowBackgroundColors = WallyAssetRowColors
+            adapter.rowBackgroundColors = AndroidWallyAssetRowColors
 
             currentlyViewing = -1
             ui.GuiAssetDetail.visibility = View.GONE

@@ -1,10 +1,10 @@
 import info.bitcoinunlimited.www.wally.nftCardFront
 import info.bitcoinunlimited.www.wally.nftData
 import info.bitcoinunlimited.www.wally.zipForeach
-import okio.Buffer
-import org.nexa.libnexakotlin.assert
-import org.nexa.libnexakotlin.decodeUtf8
-import org.nexa.libnexakotlin.fromHex
+import io.ktor.http.ContentDisposition.Companion.File
+import okio.*
+import okio.Path.Companion.toPath
+import org.nexa.libnexakotlin.*
 import kotlin.test.*
 
 class CommonTest
@@ -38,6 +38,71 @@ class CommonTest
             assertContains(result, "abc")
         }
     }
+
+    @Test
+    fun testManyNfts()
+    {
+        initializeLibNexa()
+        val ProjectDir = "../" // Note that this is not correct on macos/ios
+        /* for debugging specific zip files
+        if (true)
+        {
+            val nftyZip = FileSystem.SYSTEM.source("../exampleNft/cacf3d958161a925c28a970d3c40deec1a3fe06796fe1b4a7b68f377cdb900004ca0f7b7cde2254e62907c1656cf997091c7a92dc98635a372c51b98d4daaf9a.zip".toPath()).buffer()
+            zipForeach(nftyZip) { info, data ->
+                println("${info.fileName}: ${info.uncompressedSize}")
+                false
+            }
+        }
+         */
+        try
+        {
+
+            val fname = (ProjectDir + "/exampleNft/tr9v70v4s9s6jfwz32ts60zqmmkp50lqv7t0ux620d50xa7dhyqqqx9r0ktuypj5t6sj7gplp7tl50lwr893e9y6vf33gmn4tmt3agjdr7nd0lhk.zip").toPath()
+            println("file: ${fname}")
+            val nftyZip = FileSystem.SYSTEM.source(fname).buffer()
+            zipForeach(nftyZip) { info, data ->
+                println("${info.fileName}: ${info.uncompressedSize}")
+                if (info.fileName == "cardf.jpg")
+                {
+                    check(libnexa.sha256(data!!.readByteArray()) contentEquals "6338e378724ac0822921b8b2ef791457b2bcb69ba153492fdb10276c22e134db".fromHex())
+                }
+                else if (info.fileName == "public.jpg")
+                {
+                    check(libnexa.sha256(data!!.readByteArray()) contentEquals "53e9fc54356b3e276f9009941207f2b2f294ea4fe0abec9189a1d43f30efa269".fromHex())
+                }
+                else if (info.fileName == "info.json")
+                {
+                    check(libnexa.sha256(data!!.readByteArray()) contentEquals "b200e71bdedd7b81eb8b2f95e402fced7e0dde2470a593db7e09588d8a6aafa8".fromHex())
+                }
+                else
+                {
+                    check(false) // should be no other files
+                }
+
+                false
+            }
+
+
+            if (true)
+            {
+                for (file in FileSystem.SYSTEM.list((ProjectDir + "/exampleNft").toPath()))
+                {
+                    val nftyZip2 = FileSystem.SYSTEM.source(file).buffer()
+                    println("file: ${file.name}")
+                    zipForeach(nftyZip2) { info, datastrm: BufferedSource? ->
+                        val d = datastrm?.readByteArray() ?: byteArrayOf()
+                        println("${info.fileName}: ${info.uncompressedSize} actual size: ${d.size}")
+                        false
+                    }
+                }
+            }
+        }
+        catch(e: FileNotFoundException)
+        {
+            println("UnitTests.kt: testManyNfts [You did not provide the correct path to run this test]")
+        }
+    }
+
 
     @Test
     fun testParseZip()

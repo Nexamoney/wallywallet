@@ -540,33 +540,34 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
 
 
     Box(modifier = WallyPageBase) {
-            Row(Modifier.fillMaxWidth().align(Alignment.BottomCenter).zIndex(1f).padding(8.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
-                if (platform().hasGallery)
-                    WallyBoringIconButton("icons/gallery.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
-                        ImageQrCode {
-                            it?.let { if (!wallyApp!!.handlePaste(it)) wallyApp!!.handleNonIntentText(it) }
-                        }
+        // pad these buttons on the bottom to be convenient to press with your thumb
+        Row(Modifier.fillMaxWidth().align(Alignment.BottomCenter).zIndex(1f).padding(8.dp,8.dp,8.dp,50.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+            if (platform().hasGallery)
+                WallyBoringIconButton("icons/gallery.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
+                    ImageQrCode {
+                        it?.let { if (!wallyApp!!.handlePaste(it)) wallyApp!!.handleNonIntentText(it) }
                     }
-                if (platform().hasQrScanner)
-                    WallyBoringIconButton("icons/scanqr2.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
-                        isScanningQr = true
-                    }
+                }
+            if (platform().hasQrScanner)
+                WallyBoringIconButton("icons/scanqr2.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
+                    isScanningQr = true
+                }
 
-                if (!platform().usesMouse)
-                {
-                    WallyBoringIconButton("icons/clipboard.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
-                        val cliptext = clipmgr.getText()?.text
-                        if (cliptext != null && cliptext != "")
-                        {
-                            if (!wallyApp!!.handlePaste(cliptext)) displayNotice(S.pasteUnintelligible)
-                        }
-                        else
-                        {
-                            displayNotice(S.pasteIsEmpty)
-                        }
+            if (!platform().usesMouse)
+            {
+                WallyBoringIconButton("icons/clipboard.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
+                    val cliptext = clipmgr.getText()?.text
+                    if (cliptext != null && cliptext != "")
+                    {
+                        if (!wallyApp!!.handlePaste(cliptext)) displayNotice(S.pasteUnintelligible)
+                    }
+                    else
+                    {
+                        displayNotice(S.pasteIsEmpty)
                     }
                 }
             }
+        }
 
         Column(modifier = Modifier.fillMaxSize()) {
             if (isSending)

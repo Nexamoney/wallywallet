@@ -6,8 +6,6 @@ import org.nexa.threads.Gate
 
 private val LogIt = GetLog("BU.wally.assets")
 
-var WallyAssetRowColors = arrayOf(0x4Ff5f8ff.toInt(), 0x4Fd0d0ef.toInt())
-
 // If true, do not cache asset info locally -- load it every time
 var DBG_NO_ASSET_CACHE = false
 
@@ -42,9 +40,12 @@ class AssetInfo(val groupInfo: GroupInfo)
 
     var nft: NexaNFTv2? = null
 
-    var publicMediaCache: String? = null
+    var publicMediaCache: String? = null   // local storage location (if it exists)
+    var publicMediaUri: Url? = null        // canonical location (needed to find the file extension to get its type  at a minimum)
     var publicMediaBytes: ByteArray? = null
+
     var ownerMediaCache: String? = null
+    var ownerMediaUri: Url? = null        // canonical location (needed to find the file extension to get its type at a minimum)
     var ownerMediaBytes: ByteArray? = null
 
     // Connection to the UI if shown on screen
@@ -66,26 +67,48 @@ class AssetInfo(val groupInfo: GroupInfo)
         return am.getNftFile(tokenInfo, groupInfo.groupId)
     }
 
-
     fun extractNftData(am: AssetManager, grpId: GroupId, nftZip:ByteArray)
     {
+        // TODO rewrite using zip.foreach to grab every piece of data at once for efficiency
+
         // grab image from zip file
         val (fname, data) = nftCardFront(nftZip)
         if (fname != null)
         {
             iconBytes = data
             // Note caching is NEEDED to show video (because videoview can only take a file)
-            if (data != null) iconUri = Url(am.storeCardFile(grpId.toHex() + fname, data))
-            else iconUri = Url(fname)
+            if (data != null)
+            {
+                val tmp = am.storeCardFile(grpId.toStringNoPrefix() + "_" + fname, data)
+                iconUri = Url("file://" + tmp)
+            }
+            else iconUri = Url("file://" + fname)
         }
         val (bname, bdata) = nftCardBack(nftZip)
         if (bname != null)
         {
             iconBackBytes = bdata
             // Note caching is NEEDED to show video (because videoview can only take a file)
-            if (bdata != null) iconBackUri = Url(am.storeCardFile(grpId.toHex() + bname, bdata))
-            else iconBackUri = Url(bname)
+            if (bdata != null) iconBackUri = Url("file://" + am.storeCardFile(grpId.toStringNoPrefix() + "_" + bname, bdata))
+            else iconBackUri = Url("file://" + bname)
         }
+
+        // For the public and owner media, indicate that its there and possibly put it into the cache
+        val pub = nftPublicMedia(nftZip)
+        pub.first?.let {// I need to know the filename so I know the file formant (how to decode the file).  So make a Uri with the filename
+            publicMediaUri = Url("file://" + (if (!it.startsWith("/")) "/" else "") + it)
+        }
+        val ptmp = am.cacheNftMedia(grpId, pub)
+        publicMediaCache = ptmp.first
+        publicMediaBytes = ptmp.second
+
+        val own = nftOwnerMedia(nftZip)
+        own.first?.let {// I need to know the filename so I know the file formant (how to decode the file).  So make a Uri with the filename
+            ownerMediaUri = Url("file://" + (if (!it.startsWith("/")) "/" else "") + own.first)
+        }
+        val otmp = am.cacheNftMedia(grpId, own)
+        ownerMediaCache = otmp.first
+        ownerMediaBytes = otmp.second
 
         // grab NFT text data
         val nfti = nftData(nftZip)
@@ -131,6 +154,7 @@ class AssetInfo(val groupInfo: GroupInfo)
         var td = am.getTokenDesc(chain, groupInfo.groupId)
         synchronized(dataLock)
         {
+            LogIt.info("Loading Asset ${groupInfo.groupId.toStringNoPrefix()}")
             var tg = td.genesisInfo
             var dataChanged = false
 
@@ -246,10 +270,26 @@ class AssetInfo(val groupInfo: GroupInfo)
 */
 interface AssetManagerStorage
 {
+    /** This should save data in a more permanent and possibly shared location; recommend "assets" directory */
     fun storeAssetFile(filename: String, data: ByteArray): String
+    /** Load a file from the @storeAssetFile location */
     fun loadAssetFile(filename: String): Pair<String, ByteArray>
+
+    /** Save data in a temporary/cache location; it is only expected that this data continue to exist while the program
+     * is running.  Recommend "wallyCache" directory.
+     */
     fun storeCardFile(filename: String, data: ByteArray): String
+
+    /** Load data from where it was stored using @storeCardFile */
     fun loadCardFile(filename: String): Pair<String, ByteArray>
+
+    /** Chooses to cache the media or not depending on platform capabilities and the media size.
+     *  It is only expected that this data continue to exist while the program is running.
+     *  Note that some platforms CANNOT (due to API limitations) stream video from ByteArrays so on those platforms
+     *  the cache is always used for video.
+     *  If cached, must return a string Url that points to the local cached file in a path format appropriate for this platform, and null for bytearray
+     *  If not cached, returns the global Uri location, most importantly including the filename (for media type determination), and data in the bytearray */
+    fun cacheNftMedia(groupId: GroupId, media: Pair<String?, ByteArray?>): Pair<String?, ByteArray?>
 }
 
 class AssetManager(val app: CommonApp): AssetManagerStorage
@@ -390,7 +430,7 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
         }
 
         var url = td?.nftUrl ?: nftUrl(td?.genesisInfo?.document_url, groupId)
-        LogIt.info(sourceLoc() + ": nft URL: " + url)
+        LogIt.info(sourceLoc() + "nft URL: " + url)
 
         var zipBytes:ByteArray? = null
         if (url != null)
@@ -401,6 +441,7 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
             }
             catch(e:Exception)
             {
+                logThreadException(e, "(from token doc location) NFT not loaded ")
             }
         }
 
@@ -409,34 +450,37 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
         {
             try
             {
-                url = "https://niftyart.cash/_public/${groupId.toHex()}"
+                url = "https://niftyart.cash/_public/${groupId.toStringNoPrefix()}"
                 zipBytes = Url(url).readBytes()
             }
             catch(e: Exception)
             {
+                logThreadException(e, "(trying niftyart) NFT not loaded ")
             }
         }
 
         if (zipBytes != null)
         {
-            val nftData = nftData(zipBytes)  // Sanity check the file
-            if (nftData == null)
+            LogIt.info("NFT file loaded for ${groupId.toStringNoPrefix()}")
+
+            val hash = libnexa.hash256(zipBytes)
+            if (groupId.subgroupData() contentEquals hash)
             {
-                return null
+                LogIt.info(sourceLoc() + "nft zip file matches hash for ${groupId.toStringNoPrefix()}")
             }
             else
             {
-                val hash = libnexa.hash256(zipBytes)
-                if (groupId.subgroupData() contentEquals hash)
-                {
-                    storeAssetFile(groupId.toHex() + ".zip", zipBytes)
-                    return Pair(url!!, zipBytes)
-                }
-                else
-                {
-                    LogIt.info(sourceLoc() + ": nft zip file does not match hash")
-                }
+                LogIt.info(sourceLoc() + "nft zip file does not match hash for ${groupId.toStringNoPrefix()}")
+                return null
             }
+            val nftData = nftData(zipBytes)  // Sanity check the file
+            if (nftData == null)
+            {
+                LogIt.info("But NOT an NFT file")
+                return null
+            }
+            storeAssetFile(groupId.toHex() + ".zip", zipBytes)
+            return Pair(url!!, zipBytes)
         }
 
         return null
@@ -453,6 +497,9 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
 
     override fun loadCardFile(filename: String): Pair<String, ByteArray>
         = assetManagerStorage().loadCardFile(filename)
+
+    override fun cacheNftMedia(groupId: GroupId, media: Pair<String?, ByteArray?>): Pair<String?, ByteArray?>
+        = assetManagerStorage().cacheNftMedia(groupId, media)
 
 }
 
