@@ -228,6 +228,7 @@ Good luck!
     <string name="badImageQR">bad image QR. more...</string>
     <string name="badImageQRhelp">Try taking a picture from farther away if you took a close up of the QR code.  The white border is part of the QR code, and you can get confusing moire patterns if photographing a screen up close.</string>
     <!-- as in unlock an account -->
+    <string name="GoThere">Go there</string>
     <string name="unlock">unlock</string>
     <string name="share">share</string>
     <string name="Send">Send</string>
@@ -502,7 +503,7 @@ Good luck!
     <string name="title_activity_domain_identity_settings">Domain Identity Settings</string>
     <string name="title_activity_tx_history" formatted="false">Address History: %account</string>
     <string name="title_activity_address_history" formatted="false">Transaction History: %account</string>
-    <string name="title_activity_account_details" formatted="false">Account Details: %account</string>
+    <string name="title_activity_account_details" formatted="false">Account: %account</string>
     <string name="title_test">Test</string>
 
     <!-- Not part of the UI -->

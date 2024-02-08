@@ -843,13 +843,13 @@ open class CommonApp
                     }
                 }
 
-                var warning = false
+                var recoveryWarning: Account? = null
                 accountLock.lock {
                     for (c in accounts.values)
                     {
-                        if (((c.flags and ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY) == 0UL) && (c.wallet.balance > MAX_NO_RECOVERY_WARN_BALANCE))
+                        if (((c.flags and ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY) == 0UL) && (c.wallet.balance > MAX_NO_RECOVERY_WARN_BALANCE))tatus
                         {
-                            warning = true
+                            recoveryWarning = c
                             break
                         }
                     }
@@ -884,7 +884,7 @@ open class CommonApp
                 }
 
                 // Going to block here until the GUI asks for this field
-                if (warning) externalDriver.send(GuiDriver(show = setOf(ShowIt.WARN_BACKUP_RECOVERY_KEY)))
+                if (recoveryWarning != null) externalDriver.send(GuiDriver(show = setOf(ShowIt.WARN_BACKUP_RECOVERY_KEY), account = recoveryWarning))
             }
         }
 

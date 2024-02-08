@@ -318,18 +318,17 @@ data class GuiDriver(val gotoPage: ScreenId? = null,
 
 val externalDriver = Channel<GuiDriver>()
 
-@Composable fun RecoveryPhraseWarning()
+@Composable fun RecoveryPhraseWarning(account:Account?=null)
 {
     Column {
         Text(i18n(S.WriteDownRecoveryPhraseWarning), Modifier.fillMaxWidth().wrapContentHeight(), colorPrimaryDark, maxLines = 10, textAlign = TextAlign.Center,
           fontSize = FontScale(1.25))
-        /*
+
         WallyRoundedButton({
-            externalDriver.trySend(GuiDriver(ScreenId.AccountDetails, noshow = setOf(ShowIt.WARN_BACKUP_RECOVERY_KEY)))
+            externalDriver.trySend(GuiDriver(ScreenId.AccountDetails, noshow = setOf(ShowIt.WARN_BACKUP_RECOVERY_KEY), account = account))
         }) {
-            Text("Do It")
+            Text(i18n(S.GoThere))
         }
-         */
     }
 }
 
@@ -392,11 +391,16 @@ fun NavigationRoot(nav: ScreenNav)
         for(c in externalDriver)
         {
             driver.value = c
+            // If the driver specifies an account, we want to switch to it
+            c.account?.let {
+                selectedAccount.value = it
+                wallyApp?.focusedAccount = it
+            }
             c.gotoPage?.let { nav.go(it) }
             c.show?.forEach {
                 if (it == ShowIt.WARN_BACKUP_RECOVERY_KEY)
                 {
-                    clickDismiss.value = { RecoveryPhraseWarning() }
+                    clickDismiss.value = { RecoveryPhraseWarning(c.account) }
                 }
                 if (it == ShowIt.ENTER_PIN)
                 {

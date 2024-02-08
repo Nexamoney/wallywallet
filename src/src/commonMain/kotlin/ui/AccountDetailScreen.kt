@@ -447,6 +447,9 @@ fun RecoveryPhraseView(account: Account, done: () -> Unit)
                 done()
             }
             WallyBoringTextButton(S.RecoveryPhraseKeepRemindingMe) {
+                // User wants to be reminded to back up the key again
+                account.flags = account.flags and ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY.inv()
+                later { account.saveAccountFlags() }
                 done()
             }
         }
