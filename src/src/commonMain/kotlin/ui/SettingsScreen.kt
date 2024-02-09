@@ -9,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.HorizontalAlignmentLine
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -17,14 +18,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.ui.theme.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.SettingsScreen")
 const val LOCAL_CURRENCY_PREF = "localCurrency"
 const val ACCESS_PRICE_DATA_PREF = "accessPriceData"
-const val SHOW_IDENTITY_PREF = "showIdentityMenu"
-const val SHOW_TRICKLEPAY_PREF = "showTricklePayMenu"
-const val SHOW_ASSETS_PREF = "showAssetsMenu"
 const val DARK_MODE_PREF = "darkModeMenu"
 const val DEV_MODE_PREF = "devinfo"
 const val CONFIRM_ABOVE_PREF = "confirmAbove"
@@ -37,6 +36,44 @@ data class GeneralSettingsSwitch(
   val textRes: Int
 )
 
+@Composable fun ShowScreenNavSwitch(preference: String, navChoice: NavChoice, textRes: Int, globalPref: MutableStateFlow<Boolean>)
+{
+    Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        Switch(
+          checked = globalPref.collectAsState().value,
+          onCheckedChange = {
+              globalPref.value = it
+              preferenceDB.edit().putBoolean(preference, it).commit()
+
+              if(it)
+              {
+                  val items = menuItems.value.toMutableSet()
+                  items.add(navChoice)
+                  menuItems.value = items.sortedBy { it.location }.toSet()
+              }
+              else
+              {
+                  val items = menuItems.value.toMutableSet()
+                  items.remove(navChoice)
+                  menuItems.value = items
+              }
+          },
+          colors = SwitchDefaults.colors(
+            checkedBorderColor = Color.Transparent,
+            uncheckedBorderColor = Color.Transparent,
+          )
+        )
+        Text(
+          text = i18n(textRes),
+          modifier = Modifier.padding(4.dp, 0.dp, 0.dp, 0.dp)
+        )
+    }
+}
+
 @Composable
 fun SettingsScreen(nav: ScreenNav)
 {
@@ -44,10 +81,7 @@ fun SettingsScreen(nav: ScreenNav)
     // TODO val darkMode = remember { mutableStateOf( preferenceDB.getBoolean(DARK_MODE_PREF, false)) }
     var devModeView by mutableStateOf(devMode)
     val generalSettingsSwitches = listOf(
-      GeneralSettingsSwitch(ACCESS_PRICE_DATA_PREF, S.AccessPriceData),
-      GeneralSettingsSwitch(SHOW_IDENTITY_PREF, S.enableIdentityMenu),
-      GeneralSettingsSwitch(SHOW_TRICKLEPAY_PREF, S.enableTricklePayMenu),
-      GeneralSettingsSwitch(SHOW_ASSETS_PREF, S.enableAssetsMenu),
+      GeneralSettingsSwitch(ACCESS_PRICE_DATA_PREF, S.AccessPriceData)
     )
 
     nav.onDepart {
@@ -94,6 +128,9 @@ fun SettingsScreen(nav: ScreenNav)
         ) {
             LocalCurrency(preferenceDB)
             ConfirmAbove(preferenceDB)
+            ShowScreenNavSwitch(SHOW_IDENTITY_PREF, NavChoice(ScreenId.Identity, S.title_activity_identity, "icons/person.xml"), S.enableIdentityMenu, identityPref)
+            ShowScreenNavSwitch(SHOW_TRICKLEPAY_PREF, NavChoice(ScreenId.TricklePay, S.title_activity_trickle_pay, "icons/faucet_drip.xml"), S.enableTricklePayMenu, showTricklePayPref)
+            ShowScreenNavSwitch(SHOW_ASSETS_PREF, NavChoice(ScreenId.Assets, S.title_activity_assets, "icons/invoice.xml"), S.enableAssetsMenu, showAssetsPref)
             generalSettingsSwitches.forEach { GeneralSettingsSwitchView(it) }
             /* TODO
             DarkMode(darkMode) {

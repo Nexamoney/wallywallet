@@ -334,6 +334,26 @@ val externalDriver = Channel<GuiDriver>()
     }
 }
 
+val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
+val identityPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_IDENTITY_PREF, true))
+val showTricklePayPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_TRICKLEPAY_PREF, true))
+val showAssetsPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_ASSETS_PREF, true))
+
+var menuItems: MutableStateFlow<Set<NavChoice>> = MutableStateFlow(setOf(
+  NavChoice(ScreenId.Home, S.title_home, "icons/home.xml"),
+  NavChoice(ScreenId.Shopping, S.title_activity_shopping, "icons/shopping.xml"),
+  NavChoice(ScreenId.Settings, S.title_activity_settings, "icons/gear.xml"),
+))
+
+fun initOptionalMenuItems()
+{
+    val items = menuItems.value.toMutableSet()
+
+    if(identityPref.value) items.add(NavChoice(ScreenId.Identity, S.title_activity_identity, "icons/person.xml"))
+    if(showTricklePayPref.value) items.add(NavChoice(ScreenId.TricklePay, S.title_activity_trickle_pay, "icons/faucet_drip.xml"))
+    if(showAssetsPref.value) items.add(NavChoice(ScreenId.Assets, S.title_activity_assets, "icons/invoice.xml"))
+    menuItems.value = items.sortedBy { it.location }.toSet()
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -355,6 +375,8 @@ fun NavigationRoot(nav: ScreenNav)
 
     var currentTpSession by remember { mutableStateOf<TricklePaySession?>(null) }
     var currentUri by remember { mutableStateOf<Uri?>(null) }
+
+    initOptionalMenuItems()
 
     @Composable fun withAccount(then: @Composable (acc: Account) -> Unit)
     {
@@ -566,23 +588,15 @@ object ChildNav {
 
 data class NavChoice(val location: ScreenId, val textId: Int, val imagePath: String)
 
-var bottomNavChoices = mutableListOf<NavChoice>(
-  NavChoice(ScreenId.Home, S.title_home, "icons/home.xml"),
-  NavChoice(ScreenId.Identity, S.title_activity_identity, "icons/person.xml"),
-  NavChoice(ScreenId.TricklePay, S.title_activity_trickle_pay, "icons/faucet_drip.xml"),
-  NavChoice(ScreenId.Assets, S.title_activity_assets, "icons/invoice.xml"),
-  NavChoice(ScreenId.Shopping, S.title_activity_shopping, "icons/shopping.xml"),
-  NavChoice(ScreenId.Settings, S.title_activity_settings, "icons/gear.xml"),
-  //NavChoice(ScreenId.Test, S.title_test, "icons/gear.xml"),
-  )
-
 @Composable
 fun NavigationMenu(nav: ScreenNav)
 {
+    val items by menuItems.collectAsState()
+
     Column {
         // Horizontal row to layout navigation buttons
         Row(modifier = Modifier.padding(0.dp, 0.dp).fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.SpaceEvenly) {
-            for (ch in bottomNavChoices)
+            for (ch in items)
             {
                 if (ch.imagePath != null)
                 {
