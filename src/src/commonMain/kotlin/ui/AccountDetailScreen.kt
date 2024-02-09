@@ -440,14 +440,18 @@ fun RecoveryPhraseView(account: Account, done: () -> Unit)
         val halfWords:Int = tmp.size/2
         val mnemonic = tmp.subList(0,halfWords).joinToString(" ") + "\n" + tmp.subList(halfWords, tmp.size).joinToString(" ")
         Text(mnemonic, color = Color.Red, fontWeight = FontWeight.Bold)
-        AccountDetailAcceptDeclineRow {
-            if (it)
-            {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+            WallyBoringTextButton(S.WroteRecoveryPhraseDown) {
+                account.flags = account.flags or ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY
+                later { account.saveAccountFlags() }
+                done()
+            }
+            WallyBoringTextButton(S.RecoveryPhraseKeepRemindingMe) {
                 // User wants to be reminded to back up the key again
                 account.flags = account.flags and ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY.inv()
                 later { account.saveAccountFlags() }
+                done()
             }
-            done()
         }
     }
 }
