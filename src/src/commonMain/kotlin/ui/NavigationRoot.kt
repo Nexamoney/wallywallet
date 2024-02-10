@@ -121,9 +121,13 @@ enum class ScreenId
 
 class ScreenNav()
 {
-    data class ScreenState(val id: ScreenId, val departFn: (() -> Unit)?)
+    // Screens can put anything into screenSubState to remember their context.
+    // This allows them to make the "back" button change subscreen state by pushing the current screenId with a different
+    // screenSubState.
+    data class ScreenState(val id: ScreenId, val departFn: (() -> Unit)?, val screenSubState: ByteArray?=null)
 
     var currentScreen: MutableState<ScreenId> = mutableStateOf(ScreenId.Home)
+    val currentSubState: MutableState<ByteArray?> = mutableStateOf(null)
     protected var currentScreenDepart: (() -> Unit)? = null
     val path = ArrayDeque<ScreenState>(10)
 
@@ -143,11 +147,12 @@ class ScreenNav()
 
 
     /* push the current screen onto the stack, and set the passed screen to be the current one */
-    fun go(screen: ScreenId)
+    fun go(screen: ScreenId, screenSubState: ByteArray?=null)
     {
         currentScreenDepart?.invoke()
-        path.add(ScreenState(currentScreen.value,currentScreenDepart))
+        path.add(ScreenState(currentScreen.value,currentScreenDepart, currentSubState.value ))
         currentScreen.value = screen
+        currentSubState.value = screenSubState
         currentScreenDepart = null
     }
 
@@ -178,8 +183,13 @@ class ScreenNav()
         {
             priorId = prior.id
             currentScreenDepart = prior.departFn
+            currentSubState.value = prior.screenSubState
         }
-        if (priorId != null) currentScreen.value = priorId  // actually trigger going back
+        else currentSubState.value = null
+        if (priorId != null)
+        {
+            currentScreen.value = priorId
+        }  // actually trigger going back
         return priorId
     }
 }
@@ -335,21 +345,55 @@ val externalDriver = Channel<GuiDriver>()
 }
 
 val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
-val identityPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_IDENTITY_PREF, true))
-val showTricklePayPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_TRICKLEPAY_PREF, true))
-val showAssetsPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_ASSETS_PREF, true))
+val showIdentityPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_IDENTITY_PREF, false))
+val showTricklePayPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_TRICKLEPAY_PREF, false))
+val showAssetsPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_ASSETS_PREF, false))
 
-var menuItems: MutableStateFlow<Set<NavChoice>> = MutableStateFlow(setOf(
+var permanentMenuItems: Set<NavChoice> = setOf(
   NavChoice(ScreenId.Home, S.title_home, "icons/home.xml"),
   NavChoice(ScreenId.Shopping, S.title_activity_shopping, "icons/shopping.xml"),
   NavChoice(ScreenId.Settings, S.title_activity_settings, "icons/gear.xml"),
-))
+)
 
-fun initOptionalMenuItems()
+var menuItems: MutableStateFlow<Set<NavChoice>> = MutableStateFlow(permanentMenuItems)
+
+/** Change showing or hiding a menu item */
+fun enableNavMenuItem(item: ScreenId, enable:Boolean=true)
 {
-    val items = menuItems.value.toMutableSet()
+    later {
+        var changed = false
+        val e = preferenceDB.edit()
+        if (item == ScreenId.Identity && showIdentityPref.value != enable)
+        {
+            changed = true
+            e.putBoolean(SHOW_IDENTITY_PREF, enable)
+            showIdentityPref.value = enable
+        }
+        if (item == ScreenId.TricklePay && showTricklePayPref.value != enable)
+        {
+            changed = true
+            e.putBoolean(SHOW_TRICKLEPAY_PREF, enable)
+            showTricklePayPref.value = enable
+        }
+        if (item == ScreenId.Assets && showAssetsPref.value != enable)
+        {
+            changed = true
+            e.putBoolean(SHOW_ASSETS_PREF, enable)
+            showAssetsPref.emit(enable)
+        }
+        if (changed)
+        {
+            buildMenuItems()
+            e.commit()
+        }
+    }
+}
 
-    if(identityPref.value) items.add(NavChoice(ScreenId.Identity, S.title_activity_identity, "icons/person.xml"))
+fun buildMenuItems()
+{
+    val items = permanentMenuItems.toMutableSet()
+
+    if(showIdentityPref.value) items.add(NavChoice(ScreenId.Identity, S.title_activity_identity, "icons/person.xml"))
     if(showTricklePayPref.value) items.add(NavChoice(ScreenId.TricklePay, S.title_activity_trickle_pay, "icons/faucet_drip.xml"))
     if(showAssetsPref.value) items.add(NavChoice(ScreenId.Assets, S.title_activity_assets, "icons/invoice.xml"))
     menuItems.value = items.sortedBy { it.location }.toSet()
@@ -368,6 +412,7 @@ fun NavigationRoot(nav: ScreenNav)
     var clickDismiss = remember { mutableStateOf<(@Composable () -> Unit)?>(null) }
 
     val selectedAccount = remember { MutableStateFlow<Account?>(wallyApp?.focusedAccount) }
+    var selectedAccountIsLocked by remember { mutableStateOf(wallyApp?.focusedAccount?.locked ?: false) }
 
     var unlockDialog by remember { mutableStateOf<(()->Unit)?>(null) }
 
@@ -376,7 +421,7 @@ fun NavigationRoot(nav: ScreenNav)
     var currentTpSession by remember { mutableStateOf<TricklePaySession?>(null) }
     var currentUri by remember { mutableStateOf<Uri?>(null) }
 
-    initOptionalMenuItems()
+    buildMenuItems()
 
     @Composable fun withAccount(then: @Composable (acc: Account) -> Unit)
     {
@@ -387,6 +432,28 @@ fun NavigationRoot(nav: ScreenNav)
             nav.back()
         }
         else then(pa)
+    }
+
+    @Composable fun withUnlockedAccount(then: @Composable (acc: Account) -> Unit)
+    {
+        val pa = selectedAccount.value
+        if (pa == null)
+        {
+            displayError(S.NoAccounts)
+            nav.back()
+        }
+        else if ((!selectedAccountIsLocked)&&(!pa.locked))
+        {
+            then(pa)
+        }
+        else
+        {
+            triggerUnlockDialog {
+                selectedAccountIsLocked = pa.locked
+                if (pa.locked) nav.back()  // fail
+                triggerUnlockDialog(false)
+            }
+        }
     }
 
     @Composable fun withTp(then: @Composable (acc: Account, ctp: TricklePaySession) -> Unit)
@@ -407,6 +474,19 @@ fun NavigationRoot(nav: ScreenNav)
         else then(pa, ctp)
     }
 
+    // Periodic checking
+    LaunchedEffect(true)
+    {
+        while (true)
+        {
+            // Check every 10 seconds to see if there are assets in this wallet & enable the menu item if there are
+            if (showAssetsPref.value == false && wallyApp?.hasAssets() == true)
+            {
+                enableNavMenuItem(ScreenId.Assets)
+            }
+            delay(10000)
+        }
+    }
 
     // Allow an external (non-compose) source to "drive" the GUI to a particular state.
     // This implements functionality like scanning/pasting/receiving via a connection a payment request.
@@ -544,7 +624,7 @@ fun NavigationRoot(nav: ScreenNav)
                         ScreenId.NewAccount -> NewAccountScreen(accountGuiSlots, devMode, nav)
                         ScreenId.Test -> TestScreen(400.dp)
                         ScreenId.Settings -> SettingsScreen(nav)
-                        ScreenId.AccountDetails -> withAccount { AccountDetailScreen(it, nav) }
+                        ScreenId.AccountDetails -> withUnlockedAccount { AccountDetailScreen(it, nav) }
                         ScreenId.Assets -> withAccount { AssetScreen(it, nav) }
                         ScreenId.Shopping -> ShoppingScreen(nav)
                         ScreenId.TricklePay -> withAccount { act -> TricklePayScreen(act, null, nav) }

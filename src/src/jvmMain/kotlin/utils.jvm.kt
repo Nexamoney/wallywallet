@@ -10,7 +10,10 @@ import androidx.compose.ui.res.loadSvgPainter
 import androidx.compose.ui.unit.Density
 import io.ktor.client.*
 import io.ktor.client.plugins.*
+import okio.BufferedSource
 import okio.FileNotFoundException
+import okio.buffer
+import okio.source
 import org.xml.sax.InputSource
 import java.awt.Toolkit
 import java.awt.datatransfer.*
@@ -89,7 +92,6 @@ fun readResourceFile(filename: String): InputStream
 
     val loadTries = listOf<()->InputStream> (
       { nothing::class.java.getClassLoader().getResourceAsStream(filename) },
-      { nothing::class.java.getClassLoader().getResourceAsStream("icons/" + filename) },
       { File(filename).inputStream() },
     )
     for (i in loadTries)
@@ -103,6 +105,11 @@ fun readResourceFile(filename: String): InputStream
         {}
     }
     throw FileNotFoundException()
+}
+
+actual fun getResourceFile(name: String): BufferedSource
+{
+    return readResourceFile(name).source().buffer()
 }
 
 
@@ -162,6 +169,7 @@ actual fun platformNotification(message:String, title: String?, onclickUrl:Strin
 {
     when (severity)
     {
+        AlertLevel.CLEAR -> {}
         AlertLevel.SUCCESS ->
         {
             if (title != null) displaySuccess(title, message)

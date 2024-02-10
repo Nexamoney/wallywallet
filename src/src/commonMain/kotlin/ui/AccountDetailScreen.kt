@@ -150,7 +150,6 @@ fun GuiAccountTxStatisticsRow(stat: CommonWallet.WalletStatistics, onAddressesBu
 @Composable
 fun AccountActions(acc: Account, txHistoryButtonClicked: () -> Unit, accountDeleted: () -> Unit)
 {
-
     Column(
       modifier = Modifier.fillMaxWidth(),
       horizontalAlignment = Alignment.CenterHorizontally
@@ -240,7 +239,6 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                 S.reassessConfirmation
             ) { accepted ->
                 accountAction.value = null
-
                 if(accepted)
                     later {
                         try
@@ -257,34 +255,48 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                     }
             }
             AccountAction.RediscoverBlockchain -> AccountDetailAcceptDeclineTextView(S.rediscoverConfirmation) {
-                later {
-                    val bc = acc.wallet.blockchain
-                    // If you reset the wallet first, it'll start rediscovering the existing blockchain before it gets reset.
-                    bc.rediscover()
-                    for (c in wallyApp!!.accounts)  // Rediscover tx for EVERY account using this blockchain
-                    {
-                        val act = c.value
-                        if (act.wallet.blockchain == bc)
-                            act.wallet.rediscover(true, true)
+                if (it)
+                {
+                    later {
+                        val bc = acc.wallet.blockchain
+                        // If you reset the wallet first, it'll start rediscovering the existing blockchain before it gets reset.
+                        bc.rediscover()
+                        for (c in wallyApp!!.accounts)  // Rediscover tx for EVERY account using this blockchain
+                        {
+                            val act = c.value
+                            if (act.wallet.blockchain == bc)
+                                act.wallet.rediscover(true, true)
+                        }
                     }
-                }
-                displayNotice(S.rediscoverNotice)
-            }
-            AccountAction.Delete -> AccountDetailAcceptDeclineTextView(i18n(S.deleteConfirmation) % mapOf("accountName" to acc.name, "blockchain" to acc.currencyCode)) {
-
-                wallyApp?.deleteAccount(acc)
-                displayNotice(S.accountDeleteNotice)
-                accountDeleted()
-            }
-            AccountAction.Rediscover -> AccountDetailAcceptDeclineTextView(S.rediscoverConfirmation) {
-                later {
-                    acc.wallet.rediscover(true, false)
                     displayNotice(S.rediscoverNotice)
                 }
+                accountAction.value = null
+            }
+            AccountAction.Delete -> AccountDetailAcceptDeclineTextView(i18n(S.deleteConfirmation) % mapOf("accountName" to acc.name, "blockchain" to acc.currencyCode)) {
+                if (it)
+                {
+                    wallyApp?.deleteAccount(acc)
+                    displayNotice(S.accountDeleteNotice)
+                    accountDeleted()
+                }
+                accountAction.value = null
+            }
+            AccountAction.Rediscover -> AccountDetailAcceptDeclineTextView(S.rediscoverConfirmation) {
+                if (it)
+                {
+                    later {
+                        acc.wallet.rediscover(true, false)
+                        displayNotice(S.rediscoverNotice)
+                    }
+                }
+                accountAction.value = null
             }
             AccountAction.PrimaryAccount -> AccountDetailAcceptDeclineTextView(S.primaryAccountConfirmation) {
-                wallyApp?.primaryAccount = acc
-                displayNoticePrimaryAccount(acc.name)
+                if (it)
+                {
+                    wallyApp?.primaryAccount = acc
+                    displayNoticePrimaryAccount(acc.name)
+                }
                 accountAction.value = null
             }
             else -> {}

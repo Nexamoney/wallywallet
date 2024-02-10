@@ -206,20 +206,19 @@ fun <T> WallyDropdownMenu(
 }
 
 @Composable
-fun WallyDropdownMenuItem(
-  text: String,
-  selected: Boolean,
-  enabled: Boolean,
-) {
-        Box(modifier = Modifier
+fun WallyDropdownMenuItem(text: String, selected: Boolean, enabled: Boolean)
+{
+    var style = WallyDropdownItemFontStyle()
+    if (!enabled) style = style.copy(color = style.color.copy(style.color.alpha/3.0f))
+    Box(modifier = Modifier
           .padding(3.dp)) {
             Text(
               text = text,
-              style = WallyDropdownItemFontStyle(),
+              style = style,
               modifier = Modifier.align(Alignment.Center),
               maxLines = 1,
               softWrap = false,
-              overflow = TextOverflow.Visible
+              overflow = TextOverflow.Visible,
             )
         }
 

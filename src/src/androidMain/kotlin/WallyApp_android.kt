@@ -86,6 +86,10 @@ actual fun platformNotification(message:String, title: String?, onclickUrl:Strin
 {
     when (severity)
     {
+        AlertLevel.CLEAR ->
+        {
+            // TODO remove the notification
+        }
         AlertLevel.SUCCESS ->
         {
             if (title != null) displaySuccess(title, message)

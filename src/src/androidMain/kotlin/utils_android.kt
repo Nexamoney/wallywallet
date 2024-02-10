@@ -26,7 +26,8 @@ import io.ktor.client.*
 import io.ktor.client.engine.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.*
-import okio.utf8Size
+import okio.*
+import java.io.File
 import java.io.InputStream
 import java.util.zip.Inflater
 
@@ -137,6 +138,44 @@ actual fun platformShare(textToShare: String)
     if (act != null)
     {
         act.share(textToShare)
+    }
+}
+
+
+/** Access a file from the resource area */
+fun readResourceFile(filename: String): InputStream
+{
+    val nothing = Objectify<Int>(0)
+
+    val loadTries = listOf<()->InputStream> (
+      { nothing::class.java.getClassLoader().getResourceAsStream(filename) },
+      { File(filename).inputStream() },
+    )
+    for (i in loadTries)
+    {
+        try
+        {
+            val ins = i()
+            return ins
+        }
+        catch (e:Exception)
+        {}
+    }
+    throw FileNotFoundException()
+}
+
+actual fun getResourceFile(name: String): BufferedSource
+{
+    val androidContext = (appContext() as android.content.Context)!!
+    var id = androidContext.resources.getIdentifier(name, "raw", androidContext.packageName)
+    if (id != 0)
+    {
+        val f = androidContext.resources.openRawResource(id)
+        return f.source().buffer()
+    }
+    else
+    {
+        return readResourceFile(name).source().buffer()  // throws FileNotFoundException(name
     }
 }
 

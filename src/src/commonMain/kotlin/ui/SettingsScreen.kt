@@ -128,9 +128,12 @@ fun SettingsScreen(nav: ScreenNav)
         ) {
             LocalCurrency(preferenceDB)
             ConfirmAbove(preferenceDB)
-            ShowScreenNavSwitch(SHOW_IDENTITY_PREF, NavChoice(ScreenId.Identity, S.title_activity_identity, "icons/person.xml"), S.enableIdentityMenu, identityPref)
+            ShowScreenNavSwitch(SHOW_IDENTITY_PREF, NavChoice(ScreenId.Identity, S.title_activity_identity, "icons/person.xml"), S.enableIdentityMenu, showIdentityPref)
             ShowScreenNavSwitch(SHOW_TRICKLEPAY_PREF, NavChoice(ScreenId.TricklePay, S.title_activity_trickle_pay, "icons/faucet_drip.xml"), S.enableTricklePayMenu, showTricklePayPref)
-            ShowScreenNavSwitch(SHOW_ASSETS_PREF, NavChoice(ScreenId.Assets, S.title_activity_assets, "icons/invoice.xml"), S.enableAssetsMenu, showAssetsPref)
+            // Only let them choose to not show assets if they don't have any assets
+            if (showAssetsPref.value == false || wallyApp?.hasAssets()==false)
+                ShowScreenNavSwitch(SHOW_ASSETS_PREF, NavChoice(ScreenId.Assets, S.title_activity_assets, "icons/invoice.xml"), S.enableAssetsMenu, showAssetsPref)
+            WallyHalfDivider()
             generalSettingsSwitches.forEach { GeneralSettingsSwitchView(it) }
             /* TODO
             DarkMode(darkMode) {

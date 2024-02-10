@@ -38,6 +38,7 @@ actual fun setLocale(language: String, country: String):Boolean
     //val nothing = Objectify<Int>(0)
     val loadTries = listOf<() -> ByteArray>(
       {
+          //NSBundle.GetPathsForResources()
           val url = NSBundle.mainBundle.URLForResource("strings_${language}_$country", "bin")
           if (url == null) throw NotUriException()
           val data = NSData.create(url!!)
