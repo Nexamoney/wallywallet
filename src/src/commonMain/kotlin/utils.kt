@@ -28,6 +28,7 @@ import io.ktor.http.*
 import io.ktor.util.*
 import io.ktor.util.cio.*
 import kotlinx.datetime.LocalDateTime
+import okio.BufferedSource
 import okio.utf8Size
 
 private val LogIt = GetLog("BU.wally.utils")
@@ -341,7 +342,13 @@ fun io.ktor.http.Url.readBytes(timeoutInMs: Number = 30000, maxReadSize: Number 
                     else throw CannotLoadException()
                     LogIt.info("forwarded to $url")
                 }
-                else return@runBlocking resp.bodyAsChannel().toByteArray(maxReadSize.toInt())
+                else
+                {
+                    val chan = resp.bodyAsChannel()
+                    val actualBytes = chan.toByteArray(maxReadSize.toInt())
+                    if (chan.isClosedForRead) return@runBlocking actualBytes
+                    else throw CannotLoadException("Resource is too large at $maxReadSize bytes")
+                }
             }
             catch(e: IllegalStateException)
             {
@@ -516,3 +523,5 @@ fun formatLocalDateTime(ldt: LocalDateTime): String {
     // Format: YYYY-MM-DD HH:MM:SS
     return "$year-$month-$day $hour:$minute:$second"
 }
+
+expect fun getResourceFile(name: String): BufferedSource

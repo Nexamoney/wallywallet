@@ -38,9 +38,20 @@ fun AssetListView(assetInfo: AssetInfo, verbosity: Int = 1, modifier: Modifier =
     Column(modifier = modifier) {
         if (devMode) CenteredFittedText(asset.groupInfo.groupId.toStringNoPrefix())
         Row {
-            //Image(Icons.Default.Warning, null, Modifier.defaultMinSize(64.dp, 64.dp))  // TODO thumbnail
+
+            // If its an NFT, don't show the quantity if they have just 1
+            if ((nft == null)||(asset.groupInfo.tokenAmt != 1L))
+            {
+                val amt = tokenAmountString(asset.groupInfo.tokenAmt, asset.tokenInfo?.genesisInfo?.decimal_places)
+                if (verbosity > 0) FontScale(2.0)
+                Text(amt, fontSize = if (verbosity > 0) FontScale(2.0) else FontScale(1.0))
+                Spacer(modifier.width(4.dp))
+            }
+
             MpMediaView(asset.iconBytes, asset.iconUri.toString()) { mi, draw ->
-                draw(Modifier.background(Color.Transparent).size(64.dp, 64.dp))
+                val m = if (verbosity > 0) Modifier.background(Color.Transparent).size(64.dp, 64.dp)
+                else  Modifier.background(Color.Transparent).size(26.dp, 26.dp)
+                draw(m)
             }
 
             Column(Modifier.weight(1f)) {
@@ -66,7 +77,6 @@ fun AssetListView(assetInfo: AssetInfo, verbosity: Int = 1, modifier: Modifier =
 fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
 {
     var asset by remember { mutableStateOf(assetInfo) }
-
     var showing by remember { mutableStateOf(S.NftCardFront) }  // Reuse the i18n int to indicate what subscreen is being shown
 
     Column(modifier = modifier) {
@@ -245,7 +255,9 @@ fun AssetScreen(account: Account, nav: ScreenNav)
 {
     var assetFocus by remember { mutableStateOf<AssetInfo?>(null) }
     var assetFocusIndex by remember { mutableStateOf<Int>(0) }
-    // TODO remember account.assets
+    // TODO remember account.assets so redraw happens if assets change
+
+    if (nav.currentSubState.value == null) assetFocus = null  // If I go back from a focused asset, the nav subscreenstate will be null
 
 
     Column(Modifier.fillMaxSize()) {
@@ -270,6 +282,7 @@ fun AssetScreen(account: Account, nav: ScreenNav)
                                 {
                                     assetFocus = account.assets[key]
                                     assetFocusIndex = index
+                                    nav.go(ScreenId.Assets, byteArrayOf(index.toByte()))
                                 }
                             }) {
                                 AssetListView(entry, 1)

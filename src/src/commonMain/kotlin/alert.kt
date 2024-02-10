@@ -1,4 +1,5 @@
 package info.bitcoinunlimited.www.wally
+import info.bitcoinunlimited.www.wally.ui.ScreenId
 import kotlinx.coroutines.channels.Channel
 import org.nexa.libnexakotlin.launch
 import org.nexa.libnexakotlin.millinow
@@ -7,6 +8,7 @@ import org.nexa.libnexakotlin.millinow
 
 enum class AlertLevel(val level: Int)
 {
+    CLEAR(-1),  // Not an alert level -- removes other alerts
     SUCCESS(1), // Green
     NOTICE(10),  // Just informative -- neutral color
     WARN(50),    // yellow
@@ -21,6 +23,7 @@ enum class AlertLevel(val level: Int)
             level >= ERROR.level -> ERROR_DISPLAY_TIME
             level >= WARN.level -> NOTICE_DISPLAY_TIME
             level >= NOTICE.level -> NORMAL_NOTICE_DISPLAY_TIME
+            level == CLEAR.level -> 0
             else -> NORMAL_NOTICE_DISPLAY_TIME
         }
     }
@@ -36,10 +39,20 @@ val alerts = arrayListOf<Alert>()
 
 val defaultIgnoreFiles = mutableListOf<String>("ZygoteInit.java", "RuntimeInit.java", "ActivityThread.java", "Looper.java", "Handler.java", "DispatchedTask.kt")
 
+fun clearAlert(msg: String)
+{
+    val alert = Alert(msg, null, AlertLevel.CLEAR, null, 0, 0)
+    launch { alertChannel.send(alert) }
+}
+
 fun clearAlerts(maxLevel: AlertLevel = AlertLevel.EXCEPTION)
 {
     val alert = Alert("", null, maxLevel, null, 0, 0)
-    launch { alertChannel.send(alert) }
+    if (platform().hasNativeTitleBar) displayAlert(alert)
+    else
+    {
+        launch { alertChannel.send(alert) }
+    }
 }
 
 /** Display a notice message, and add it to the list of alerts */

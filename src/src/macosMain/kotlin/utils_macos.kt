@@ -3,6 +3,12 @@ package info.bitcoinunlimited.www.wally
 import kotlinx.cinterop.*
 import io.ktor.client.*
 import io.ktor.client.plugins.*
+import kotlinx.coroutines.runBlocking
+import okio.Buffer
+import okio.BufferedSource
+import okio.FileNotFoundException
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.resource
 import platform.AppKit.NSPasteboard
 import platform.AppKit.NSPasteboardType
 import platform.AppKit.NSPasteboardTypeString
@@ -113,4 +119,60 @@ actual fun platform(): PlatformCharacteristics = macosPlatformCharacteristics
 actual fun platformNotification(message:String, title: String?, onclickUrl:String?, severity: AlertLevel)
 {
 
+}
+
+@OptIn(ExperimentalForeignApi::class, ExperimentalResourceApi::class)
+actual fun getResourceFile(name: String): BufferedSource
+{
+    /* uses the old URLForResource APIs
+    val dotSpot = name.lastIndexOf('.')
+    val ext = if (dotSpot == -1) null else name.takeLast(name.length-dotSpot-1)
+    val base = if (dotSpot == -1) name else name.take(dotSpot)
+
+    println("$base $ext")
+    val dirSpot = base.lastIndexOf('/')
+    val fname = if (dirSpot == -1) base else base.takeLast(base.length-dirSpot-1)
+    val subdir = if (dirSpot == -1) null else base.take(dirSpot)
+
+    println("RESOURCE: $subdir $fname  $ext")
+
+    var url = NSBundle.mainBundle.URLForResource(base, ext, subdir)
+    println("$url ${url?.absoluteURL}")
+    if (url == null) url = NSBundle.mainBundle.URLForResource(base, ext)
+    if ((url == null)&&(subdir != null))
+    {
+        //var tmp = NSBundle.bundleWithURL(NSURL("/icons"))
+        //println("bwURL: $tmp")
+        var tmp = NSBundle.bundleWithPath(subdir)
+        println("bwPath: $tmp")
+        if (tmp!=null)
+            url = tmp.URLForResource(base, ext)
+    }
+    println("$url ${url?.absoluteURL}")
+
+     */
+
+    val ba = try
+    {
+        val res = resource(name)
+        runBlocking { res.readBytes() }
+    }
+    catch(e: Exception)
+    {
+        val dirSpot = name.lastIndexOf('/')
+        val fname = if (dirSpot == -1) name else name.takeLast(name.length-dirSpot-1)
+        val subdir = if (dirSpot == -1) null else name.take(dirSpot)
+        try
+        {
+            val res = resource(fname)
+            runBlocking { res.readBytes() }
+        }
+        catch (e: Exception)
+        {
+            throw FileNotFoundException(name)
+        }
+    }
+    val buf = Buffer()
+    buf.write(ba)
+    return buf
 }

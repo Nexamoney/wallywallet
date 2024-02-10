@@ -215,6 +215,9 @@ fun IdentityScreen(account: Account, urip: Uri?, nav: ScreenNav)
                 if (uri == null)  // This is not a request to login; its just the user doing edits
                 {
                     WallyBoringLargeTextButton(S.done, onClick = {
+                        // Turn the menu on since user has accepted an operation of this type
+                        enableNavMenuItem(ScreenId.TricklePay)
+
                         val saveDomain = d.clone()
                         wallet.upsertIdentityDomain(saveDomain)
                         wallet.save(true)
@@ -228,9 +231,12 @@ fun IdentityScreen(account: Account, urip: Uri?, nav: ScreenNav)
                         domain = null
                     })
                 }
-                else  // this is a login request
+                else  // this is a login or registration request
                 {
                     WallyBoringLargeTextButton(S.accept, onClick = {
+                        // Turn the menu on since user has accepted an operation of this type
+                        enableNavMenuItem(ScreenId.TricklePay)
+
                         val saveDomain = d.clone()
                         wallet.upsertIdentityDomain(saveDomain)
                         wallet.save(true)

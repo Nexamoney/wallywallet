@@ -33,6 +33,7 @@ fun HandleIdentity(uri: Uri): Boolean
     var useOp = true
     if (operation.lowercase() == "login")
     {
+        // Identity always happens relative to your "primary" account
         val account = wallyApp?.nullablePrimaryAccount
         if (account == null) displayError(S.primaryAccountRequired)
         else
@@ -220,6 +221,10 @@ fun IdentityPermScreen(account: Account, uri: Uri?, nav: ScreenNav)
         Row(modifier = Modifier.fillMaxWidth().padding(0.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
             Spacer(Modifier.width(1.dp))
             if (error == "") WallyBoringLargeTextButton(S.yes) {
+                // If the user accepts this identity operation
+
+                // Turn the identity menu since user has done an identity operation
+                enableNavMenuItem(ScreenId.Identity)
 
                 if (op == "sign")
                 {
@@ -321,10 +326,6 @@ fun IdentityPermScreen(account: Account, uri: Uri?, nav: ScreenNav)
         }
         Spacer(Modifier.height(10.dp))
     }
-
-
-
-
 }
 
 
@@ -505,6 +506,9 @@ fun SpecialTxPermScreen(acc: Account, sess: TricklePaySession, nav: ScreenNav)
         Row(modifier = Modifier.fillMaxWidth().padding(0.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
             if (GuiCustomTxError == "") WallyBoringLargeTextButton(S.accept)
             {
+                // Turn the menu on since user has accepted an operation of this type
+                enableNavMenuItem(ScreenId.TricklePay)
+
                 try
                 {
                     LogIt.info("accept trickle pay special transaction")
@@ -599,6 +603,9 @@ fun AssetInfoPermScreen(acc: Account, sess: TricklePaySession , nav: ScreenNav)
         Row(modifier = Modifier.fillMaxWidth().padding(0.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
             WallyBoringLargeTextButton(S.accept)
             {
+                // Turn the menu on since user has accepted an operation of this type
+                enableNavMenuItem(ScreenId.TricklePay)
+
                 val details = sess.acceptAssetRequest()
                 displaySuccess(S.TpAssetRequestAccepted, details)
                 nav.back()

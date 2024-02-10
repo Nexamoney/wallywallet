@@ -51,8 +51,12 @@ fun UnlockDialog(onPinEntered: (String) -> Unit)
                     keyboardActions = KeyboardActions(
                         onDone = {
                             if (wallyApp!!.unlockAccounts(pin.value) == 0)  // nothing got unlocked
-                                displayError(S.InvalidPIN)
-                            else triggerAccountsChanged()  // We don't know what accounts got unlocked so just redraw them all in this non-performance change
+                                displayError(S.InvalidPIN, persistAcrossScreens = 0)
+                            else
+                            {
+                                triggerAccountsChanged()
+                                clearAlerts()
+                            }  // We don't know what accounts got unlocked so just redraw them all in this non-performance change
                             triggerUnlockDialog(false)
                             onPinEntered(pin.value)
                         }

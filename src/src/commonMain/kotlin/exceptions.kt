@@ -15,7 +15,7 @@ open class UnavailableException(msg: String? = null) : LibNexaExceptionI(S.unava
 }
 open class UiUnavailableException(msg: Int = -1) : LibNexaExceptionI(S.unavailable, i18n(msg))
 
-open class CannotLoadException:UnavailableException(S.unavailable)
+open class CannotLoadException(details: String?=null):UnavailableException(details)
 
 open class TdppException(err: Int? = null, details: String?) : LibNexaExceptionI(if (err != null) err else S.unknownError, details, ErrorSeverity.Abnormal)
 

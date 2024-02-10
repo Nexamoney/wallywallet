@@ -13,13 +13,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
-import info.bitcoinunlimited.www.wally.S
-import info.bitcoinunlimited.www.wally.ShoppingDestination
-import info.bitcoinunlimited.www.wally.i18n
-import info.bitcoinunlimited.www.wally.initialShopping
+import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
+import info.bitcoinunlimited.www.wally.ui.views.ResImageView
+import okio.FileNotFoundException
 
 @Composable
 fun ShoppingDestination.compose()
@@ -27,7 +27,26 @@ fun ShoppingDestination.compose()
     val uriHandler = LocalUriHandler.current
     val sd = this
     Row {
-        Image(Icons.Default.Home, null, Modifier.defaultMinSize(64.dp, 64.dp))
+        val name = sd.icon
+
+        if (name != null)
+        {
+            val imageBytes = try
+            {
+                getResourceFile(name)
+            }
+            catch(e: FileNotFoundException)
+            {
+                null
+            }
+            imageBytes?.let {
+                MpMediaView(it.readByteArray(), name) { mi, draw ->
+                    draw(Modifier.size(64.dp).background(Color.Transparent))
+                }
+            }
+        }
+        Spacer(Modifier.width(10.dp))
+
         Column {
             Text(explain, Modifier.fillMaxWidth())
             WallyBoringTextButton(sd.buttonText) {

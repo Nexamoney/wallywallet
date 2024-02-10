@@ -233,6 +233,17 @@ open class CommonApp
         return false
     }
 
+    /** Returns true if any account has any assets */
+    fun hasAssets():Boolean
+    {
+        for (a in accounts)
+        {
+            if (a.value.hasAssets())
+                return true
+        }
+        return false
+    }
+
     /** Do whatever you pass but not within the user interface context, asynchronously.
      * Launching into these threads means your task will outlast the activity it was launched in */
     fun later(fn: suspend () -> Unit): Unit

@@ -1,6 +1,11 @@
 package info.bitcoinunlimited.www.wally
 
+import okio.BufferedSource
+import okio.Okio
+import okio.buffer
+import okio.source
 import org.nexa.libnexakotlin.decodeUtf8
+import java.io.BufferedInputStream
 import java.io.File
 import java.io.InputStream
 import java.util.*

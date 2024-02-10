@@ -507,6 +507,7 @@ open class CommonActivity : AppCompatActivity()
         }
     }
 
+    /** If no parameter or null is passed, stop showing whatever is being shown */
     @Synchronized
     fun finishShowingNotice(errNo: Int? = null)
     {
@@ -538,6 +539,7 @@ open class CommonActivity : AppCompatActivity()
             // This coroutine has to be limited to this thread because only the main thread can touch UI views
             // Display the error by changing the title and title bar color temporarily
             val titlebar: View = findViewById(actionBarId)
+            if (alert.msg == "") finishShowingNotice()
             val myError = synchronized(errorSync)
             {
                 super.setTitle(alert.msg)

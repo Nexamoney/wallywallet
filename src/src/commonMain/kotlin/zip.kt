@@ -326,18 +326,18 @@ fun zipForeach(ds: BufferedSource, handler: (ZipDirRecord, BufferedSource?) -> B
     val dirend = zipFindDirEnd(zbytes)
     if (dirend == null) return
 
-    val b = Buffer()
-    b.write(zbytes.takeLast((zbytes.size-dirend.dirOffset).toInt()).toByteArray())
+    val fragment = Buffer()
+    fragment.write(zbytes.takeLast((zbytes.size-dirend.dirOffset).toInt()).toByteArray())
 
     var recordCount = 0
 
     val dirRecords = mutableMapOf<String, ZipDirRecord>()
 
-    while(!b.exhausted() && (recordCount < dirend.numRecords))
+    while(!fragment.exhausted() && (recordCount < dirend.numRecords))
     {
         try
         {
-            val hdr = ZipDirRecord.from(b)
+            val hdr = ZipDirRecord.from(fragment)
             dirRecords[hdr.fileName] = hdr
             recordCount++
         }
@@ -374,13 +374,13 @@ fun zipForeach(ds: BufferedSource, handler: (ZipDirRecord, BufferedSource?) -> B
         alreadyDid.add(crec.localHeaderOffset)
 
         // Grab the data we need to search
-        val ds = Buffer()
-        ds.write(zbytes.takeLast((zbytes.size-crec.localHeaderOffset).toInt()).toByteArray())
+        val fileEntryFrag = Buffer()
+        fileEntryFrag.write(zbytes.takeLast((zbytes.size-crec.localHeaderOffset).toInt()).toByteArray())
         try
         {
-            while (!ds.exhausted())
+            while (!fileEntryFrag.exhausted())
             {
-                val hdr = ZipFileHeader.from(ds)  // Get the first local record
+                val hdr = ZipFileHeader.from(fileEntryFrag)  // Get the first local record
 
                 val crecHdr = dirRecords[hdr.fileName]  // find the corresponding central record (if it exists)
 
@@ -400,11 +400,11 @@ fun zipForeach(ds: BufferedSource, handler: (ZipDirRecord, BufferedSource?) -> B
                     val bs: BufferedSource? = if (hdr.compression == ZipCompressionMethods.NoCompression.ordinal)
                     {
                         val b = Buffer()
-                        b.write(ds.readByteArray(compressedSize))
+                        b.write(fileEntryFrag.readByteArray(compressedSize))
                     }
                     else if (hdr.compression == ZipCompressionMethods.Deflated.ordinal)
                     {
-                        val tmp = ds.readByteArray(compressedSize)
+                        val tmp = fileEntryFrag.readByteArray(compressedSize)
                         val uncompressed: ByteArray = inflateRfc1951(tmp, uncompressedSize)
                         val b = Buffer()
                         b.write(uncompressed)
@@ -421,7 +421,7 @@ fun zipForeach(ds: BufferedSource, handler: (ZipDirRecord, BufferedSource?) -> B
                 }
                 else  // just advance
                 {
-                    ds.readByteArray(compressedSize)
+                    fileEntryFrag.readByteArray(compressedSize)
                 }
 
             }
@@ -430,7 +430,7 @@ fun zipForeach(ds: BufferedSource, handler: (ZipDirRecord, BufferedSource?) -> B
         {
             if (e.id contentEquals ZipDataDescriptorId)  // this is info pertaining to the prior record, so not useful unless we read backwards
             {
-                ZipDataDescriptor.from(ds)
+                ZipDataDescriptor.from(fileEntryFrag)
             }
             else if (e.id contentEquals ZipDirRecordId)
             {

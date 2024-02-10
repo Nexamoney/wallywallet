@@ -59,7 +59,7 @@ class ShoppingListBinder(val ui: ShoppingListItemBinding): GuiListItemBinder<Sho
         if (d != null)
         {
             ui.GuiShoppingButton.setText(d.buttonText)
-            if (d.icon != 0) ui.GuiShoppingIcon.setImageResource(d.icon)
+            // obsoleted by compose if (d.icon != null) ui.GuiShoppingIcon.setImageResource(d.icon)
             ui.GuiShoppingExplain.text = d.explain
         }
 
