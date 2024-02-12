@@ -7,7 +7,9 @@ open class WalletInvalidException() : LibNexaExceptionI(S.accountUnavailableDeta
 
 open class PasteEmptyException() : LibNexaExceptionI(S.pasteIsEmpty, null, ErrorSeverity.Expected)
 open class BadAmountException(msg: Int) : LibNexaExceptionI(S.badAmount, i18n(msg))
-open class BadCryptoException(msg: Int = -1) : LibNexaExceptionI(S.badCryptoCode, i18n(msg))
+
+// Defined in libnexakotlin
+//open class BadCryptoException(msg: Int = -1) : LibNexaExceptionI(S.badCryptoCode, i18n(msg))
 open class BadUnitException(msg: Int = -1) : LibNexaExceptionI(S.badCurrencyUnit, i18n(msg))
 open class UnavailableException(msg: String? = null) : LibNexaExceptionI(S.unavailable, msg)
 {

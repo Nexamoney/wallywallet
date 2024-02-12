@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.material3.Text
@@ -360,7 +361,7 @@ fun AccountDetailChangePinView(acc: Account, displayError: (String) -> Unit, dis
         }
     }
 
-    Row {
+    WallyButtonRow {
         WallyBoringTextButton(S.accept) {
             if (acc.lockable) // Replace pin
             {
@@ -451,8 +452,10 @@ fun RecoveryPhraseView(account: Account, done: () -> Unit)
         val tmp = account.wallet.secretWords.split(" ")
         val halfWords:Int = tmp.size/2
         val mnemonic = tmp.subList(0,halfWords).joinToString(" ") + "\n" + tmp.subList(halfWords, tmp.size).joinToString(" ")
-        Text(mnemonic, color = Color.Red, fontWeight = FontWeight.Bold)
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+        SelectionContainer {
+            Text(mnemonic, color = Color.Red, fontWeight = FontWeight.Bold)
+        }
+        WallyButtonRow {
             WallyBoringTextButton(S.WroteRecoveryPhraseDown) {
                 account.flags = account.flags or ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY
                 later { account.saveAccountFlags() }
@@ -471,7 +474,7 @@ fun RecoveryPhraseView(account: Account, done: () -> Unit)
 @Composable
 fun AccountDetailAcceptDeclineRow(accept: (Boolean) -> Unit)
 {
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+    WallyButtonRow {
         WallyBoringTextButton(S.accept) {
             accept(true)
         }
