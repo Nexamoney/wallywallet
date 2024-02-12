@@ -505,6 +505,13 @@ fun CenteredText(text: String, modifier: Modifier = Modifier)
       })
 }
 
+/** Creates a horizontal row of evenly spaced objects that you add.  Meant to be used to provide a consistent look for
+ * a row of buttons. */
+@Composable fun WallyButtonRow(modifier: Modifier = Modifier, content: @Composable() (RowScope.() -> Unit))
+{
+    Row(modifier = Modifier.fillMaxWidth().then(modifier), horizontalArrangement = Arrangement.SpaceEvenly,
+      verticalAlignment = Alignment.CenterVertically, content)
+}
 
 /** Standard Wally text entry field.*/
 @Composable

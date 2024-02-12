@@ -1732,7 +1732,7 @@ class MainActivity : CommonNavActivity()
         {
             var clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
             val account = accounts[currentlySelectedAccount]
-            if (account == null) throw BadCryptoException(R.string.badCryptoCode)
+            if (account == null) throw BadCryptoException(i18n(S.badCryptoCode))
 
             val recvAddrStr: String? = account.currentReceive?.address?.toString()
 

@@ -20,10 +20,6 @@ import org.nexa.threads.Mutex
 
 private val LogIt = GetLog("BU.wally.NewAccount")
 
-//* how many addresses to search in a particular derivation path
-val DERIVATION_PATH_SEARCH_DEPTH = 100
-val IDENTITY_DERIVATION_PATH_SEARCH_DEPTH = 10
-
 val chainToName: Map<ChainSelector, String> = mapOf(
   ChainSelector.NEXATESTNET to "tNexa", ChainSelector.NEXAREGTEST to "rNexa", ChainSelector.NEXA to "nexa",
   ChainSelector.BCH to "bch", ChainSelector.BCHTESTNET to "tBch", ChainSelector.BCHREGTEST to "rBch"
@@ -473,7 +469,7 @@ class NewAccount : CommonNavActivity()
 
         LogIt.info("Searching in ${addressDerivationCoin}")
         var earliestActivityP =
-          searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, {
+          searchActivity(ec, chainSelector, WALLET_RECOVERY_DERIVATION_PATH_SEARCH_DEPTH, {
               libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first }, { time, height -> laterUI {
               ui.GuiNewAccountStatus.text = i18n(R.string.Bip44ActivityNotice) + " " + (i18n(R.string.FirstUseDateHeightInfo) % mapOf(
               "date" to epochToDate(time),
@@ -491,7 +487,7 @@ class NewAccount : CommonNavActivity()
         LogIt.info("Searching in ${AddressDerivationKey.ANY}")
         // Look for activity in the identity and common location
         var earliestActivityId =
-          searchActivity(ec, chainSelector, IDENTITY_DERIVATION_PATH_SEARCH_DEPTH, {
+          searchActivity(ec, chainSelector, WALLET_RECOVERY_IDENTITY_DERIVATION_PATH_SEARCH_DEPTH, {
               libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, false, it).first })
         if (aborter.obj) return
 

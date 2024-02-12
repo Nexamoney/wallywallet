@@ -16,6 +16,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
+import info.bitcoinunlimited.www.wally.ui.views.LoadingAnimation
+import info.bitcoinunlimited.www.wally.ui.views.ResImageView
+import kotlinx.coroutines.channels.Channel
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Thread
 
@@ -28,9 +31,6 @@ private val supportedBlockchains =
     "TBCH (Bitcoin Cash)" to ChainSelector.BCHTESTNET,
     "RBCH (Bitcoin Cash)" to ChainSelector.BCHREGTEST
   )
-const val ACCOUNT_FLAG_NONE = 0UL
-const val ACCOUNT_FLAG_HIDE_UNTIL_PIN = 1UL
-const val ACCOUNT_FLAG_REUSE_ADDRESSES = 4UL
 
 const val MAX_NAME_LEN = 8
 const val MIN_PIN_LEN = 4
@@ -46,7 +46,9 @@ data class NewAccountState(
   val validOrNoRecoveryPhrase: Boolean = true,
   val pin: String = "",
   val validOrNoPin: Boolean = true,
-  val isSuccessDialogOpen: Boolean = false
+  val isSuccessDialogOpen: Boolean = false,
+  val earliestActivity: Long? = null,
+  val earliestActivityHeight: Int = 0
 )
 
 val chainToName: Map<ChainSelector, String> = mapOf(
@@ -74,14 +76,46 @@ fun ProposeAccountName(cs: ChainSelector):String?
     return null
 }
 
+data class NewAccountDriver(val peekText: String?= null, val earliestActivity:Long? = null, val earliestActivityHeight:Int? = null)
+val newAccountDriver = Channel<NewAccountDriver>()
+fun displayRecoveryInfo(s:String) = later { newAccountDriver.send(NewAccountDriver(s)) }
+
+fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:String? )
+{
+    later { newAccountDriver.send(NewAccountDriver(s, earliestActivity=earliestActivity, earliestActivityHeight=earliestActivityHeight)) }
+}
+
 @Composable fun NewAccountScreen(accounts: MutableState<ListifyMap<String, Account>>, devMode: Boolean, nav: ScreenNav)
 {
     val blockchains = supportedBlockchains.filter { devMode || it.value.isMainNet }
     var selectedBlockChain by remember { mutableStateOf(blockchains.entries.first().toPair()) }
     var newAcState by remember { mutableStateOf( NewAccountState(accountName = ProposeAccountName(selectedBlockChain.second) ?: "") ) }
 
+    var recoverySearchText by remember { mutableStateOf("") }
+
+    var aborter = remember { mutableStateOf(Objectify<Boolean>(false)) }
+    var createClicks by remember {mutableStateOf(0) }  // Some operations require you click create twice
+
+    LaunchedEffect(true)
+    {
+        for (c in newAccountDriver)
+        {
+            LogIt.info(sourceLoc() + ": external screen driver received")
+            c.peekText?.let {
+                recoverySearchText = it
+            }
+            c.earliestActivity?.let {
+                newAcState = newAcState.copy(earliestActivity = it)
+            }
+            c.earliestActivityHeight?.let {
+                newAcState = newAcState.copy(earliestActivityHeight = it)
+            }
+        }
+    }
+
     NewAccountScreenContent(
       newAcState,
+      recoverySearchText,
       selectedBlockChain,
       blockchains,
       onChainSelected = {
@@ -102,10 +136,39 @@ fun ProposeAccountName(cs: ChainSelector):String?
       },
       onNewRecoveryPhrase = {
           val words = processSecretWords(it)
-          newAcState = newAcState.copy(
-            recoveryPhrase = it,
-            validOrNoRecoveryPhrase = isValidOrEmptyRecoveryPhrase(words)
-          )
+          val valid = isValidOrEmptyRecoveryPhrase(words)
+          if (words != processSecretWords(newAcState.recoveryPhrase))  // If the recovery phrase is equivalent nothing to do, otherwise set the new one
+          {
+              recoverySearchText = ""  // phrase changed so need to search again
+              newAcState = newAcState.copy(
+                recoveryPhrase = it,
+                validOrNoRecoveryPhrase = valid,
+                earliestActivity = null,  // If the recovery phrase changes, we need to rediscover the wallet
+                earliestActivityHeight = 0
+              )
+              if (valid && words.size == 12) // Launch the wallet discoverer if the recovery phrase is ok
+              {
+                  // If the recovery phrase is good, let's peek at the blockchain to see if there's activity
+                  // thread(true, true, null, "peekWallet") // kotlin api does not offer stack size setting
+                  aborter.value.obj = true  // Abort the current peek
+                  aborter.value = Objectify<Boolean>(false)  // and create a new object for the next one
+                  recoverySearchText = i18n(S.NewAccountSearchingForTransactions)
+                  LogIt.severe("launching wallet peek")
+                  val th = Thread {
+                      try
+                      {
+                          peekActivity(words.joinToString(" "), selectedBlockChain.second, aborter.value)
+                      }
+                      catch (e: Exception)
+                      {
+                          recoverySearchText = i18n(S.NewAccountSearchFailure)
+                          LogIt.severe("wallet peek error: " + e.toString())
+                      }
+                  }
+              }
+              else
+                  recoverySearchText == ""
+          }
       },
       onPinChange = {
           val validOrNoPin = (it.isEmpty() || (it.length >= MIN_PIN_LEN))
@@ -151,25 +214,34 @@ fun ProposeAccountName(cs: ChainSelector):String?
 
           if (inputValid && words.size == 12) // account recovery
           {
-              Thread("recoverAccount")
+              if ((createClicks == 0) && (newAcState.earliestActivity == null))
               {
-                  newAcState = try {
-                      wallyApp!!.recoverAccount(newAcState.accountName, flags, newAcState.pin, words.joinToString(" "), selectedBlockChain.second, null, null, null)
-                      triggerAssignAccountsGuiSlots()
-                      nav.back()
-                      newAcState.copy(isSuccessDialogOpen = false)
-                  }
-                  catch (e: Error)
+                  createClicks += 1
+                  recoverySearchText = i18n(S.creatingNoHistoryAccountWarning)
+              }
+              else
+              {
+                  Thread("recoverAccount")
                   {
-                      displayUnexpectedError(e)
-                      newAcState.copy(errorMessage = i18n(S.unknownError))
-                  }
-                  catch (e: Exception)
-                  {
-                      displayUnexpectedException(e)
-                      newAcState.copy(errorMessage = i18n(S.unknownError))
-                  }
+                      newAcState = try
+                      {
+                          wallyApp!!.recoverAccount(newAcState.accountName, flags, newAcState.pin, words.joinToString(" "), selectedBlockChain.second, newAcState.earliestActivity, newAcState.earliestActivityHeight.toLong(), null)
+                          triggerAssignAccountsGuiSlots()
+                          nav.back()
+                          newAcState.copy(isSuccessDialogOpen = false)
+                      }
+                      catch (e: Error)
+                      {
+                          displayUnexpectedError(e)
+                          newAcState.copy(errorMessage = i18n(S.unknownError))
+                      }
+                      catch (e: Exception)
+                      {
+                          displayUnexpectedException(e)
+                          newAcState.copy(errorMessage = i18n(S.unknownError))
+                      }
 
+                  }
               }
           }
           if (inputValid && words.isEmpty())
@@ -210,6 +282,7 @@ fun ProposeAccountName(cs: ChainSelector):String?
 
 @Composable fun NewAccountScreenContent(
   newAcState: NewAccountState,
+  recoverySearchText: String,
   selectedChain: Pair<String, ChainSelector>,
   blockchains: Map<String, ChainSelector>,
   onChainSelected: (Pair<String, ChainSelector>) -> Unit,
@@ -220,6 +293,7 @@ fun ProposeAccountName(cs: ChainSelector):String?
   onClickCreateAccount: () -> Unit
 )
 {
+
     Column(
       modifier = Modifier.padding(4.dp).fillMaxSize()
     ) {
@@ -237,6 +311,21 @@ fun ProposeAccountName(cs: ChainSelector):String?
         Spacer(Modifier.height(10.dp))
         WallySwitch(newAcState.hideUntilPinEnter, S.PinHidesAccount, true, onHideUntilPinEnterChanged)
         Spacer(Modifier.height(20.dp))
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            // I'm cheating a bit here and using the contents of the recoverySearchText to pick what icon to show
+            if (recoverySearchText == i18n(S.NewAccountSearchingForTransactions))
+            {
+                LoadingAnimation()
+            }
+            else if (recoverySearchText == "")
+                Spacer(modifier = Modifier.size(50.dp))
+            else if (newAcState.earliestActivity != null)
+                ResImageView("icons/check.xml", modifier = Modifier.size(50.dp))
+            else if (recoverySearchText.length < 200)
+                Icon(Icons.Default.Clear, modifier = Modifier.size(50.dp), tint = colorError, contentDescription = null)
+
+            CenteredText(recoverySearchText)
+        }
         Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth())
             { WallyRoundedTextButton(i18n(S.createAccount), onClick = onClickCreateAccount) }
     }
@@ -292,7 +381,7 @@ fun ProposeAccountName(cs: ChainSelector):String?
 {
     if (valid)
         Icon(imageVector = Icons.Default.Check, tint = colorValid, contentDescription = null)
-    else
+    else  // For some reason Clear is a red X
         Icon(Icons.Default.Clear, tint = colorError, contentDescription = null)
 }
 
@@ -334,7 +423,9 @@ fun ProposeAccountName(cs: ChainSelector):String?
               onValueChange = onValueChange,
               colors = TextFieldDefaults.textFieldColors(containerColor = Color.Transparent),
               placeholder = { Text(i18n(S.LeaveEmptyNewWallet)) },
-              singleLine = true,
+              //singleLine = true,
+              minLines = 1,
+              maxLines = 4,
               modifier = Modifier.fillMaxWidth(),
               textStyle = TextStyle(fontSize = 12.sp)
             )
@@ -363,4 +454,239 @@ fun ProposeAccountName(cs: ChainSelector):String?
             )
         }
     }
+}
+
+
+fun searchActivity(ec: ElectrumClient, chainSelector: ChainSelector, count: Int, secretDerivation: (Int) -> ByteArray, activityFound: ((Long, Int) -> Boolean)? = null): Pair<Long, Int>?
+{
+    var index = 0
+    var ret: Pair<Long, Int>? = null
+    while (index < count)
+    {
+        val newSecret = secretDerivation(index)
+        val us = UnsecuredSecret(newSecret)
+
+        val dests = mutableListOf<SatoshiScript>(Pay2PubKeyHashDestination(chainSelector, us, index.toLong()).outputScript())  // Note, if multiple destination types are allowed, the wallet load/save routines must be updated
+        //LogIt.info(sourceLoc() + " " + name + ": New Destination " + tmp.toString() + ": " + dest.address.toString())
+        if (chainSelector.hasTemplates)
+            dests.add(Pay2PubKeyTemplateDestination(chainSelector, us, index.toLong()).ungroupedOutputScript())
+
+        for (dest in dests)
+        {
+            try
+            {
+                val use = ec.getFirstUse(dest, 10000)
+                if (use.block_hash != null)
+                {
+                    val bh = use.block_height
+                    if (bh != null)
+                    {
+                        LogIt.info("Found activity at index $index in ${dest.address.toString()}")
+                        val headerBin = ec.getHeader(bh)
+                        val blkHeader = blockHeaderFor(chainSelector, BCHserialized(headerBin, SerializationType.HASH))
+                        if (ret == null || blkHeader.time < ret.first)
+                        {
+                            activityFound?.invoke(blkHeader.time, bh)
+                            ret = Pair(blkHeader.time, bh)
+                        }
+                    }
+                }
+                else
+                {
+                    LogIt.info("didn't find activity at index $index in ${dest.address.toString()}")
+                }
+            }
+            catch (e: ElectrumNotFound)
+            {
+                LogIt.info("didn't find activity at index $index in ${dest.address.toString()}")
+            }
+        }
+        index++
+    }
+    return ret
+}
+
+fun bracketActivity(ec: ElectrumClient, chainSelector: ChainSelector, giveUpGap: Int, secretDerivation: (Int) -> ByteArray): HDActivityBracket?
+{
+    var index = 0
+    var lastFoundIndex = 0
+    var startTime = 0L
+    var startBlock = 0
+    var lastTime = 0L
+    var lastBlock = 0
+
+    while (index < lastFoundIndex + giveUpGap)
+    {
+        val newSecret = secretDerivation(index)
+
+        val dest = Pay2PubKeyHashDestination(chainSelector, UnsecuredSecret(newSecret), index.toLong())  // Note, if multiple destination types are allowed, the wallet load/save routines must be updated
+
+        try
+        {
+            val use = ec.getFirstUse(dest.outputScript(), 10000)
+            if (use.block_hash != null)
+            {
+                if (use.block_height != null)
+                {
+                    lastFoundIndex = index
+                    lastBlock = use.block_height!!
+                    if (startBlock == 0) startBlock = use.block_height!!
+                }
+            }
+            else
+            {
+                LogIt.info("didn't find activity")
+            }
+        } catch (e: ElectrumNotFound)
+        {
+            LogIt.info("didn't find activity")
+        }
+        index++
+    }
+
+    if (startBlock == 0) return null  // Safe to use 0 because no spendable tx in genesis block
+
+    if (true)
+    {
+        val headerBin = ec.getHeader(startBlock)
+        val blkHeader = blockHeaderFor(chainSelector, BCHserialized(headerBin, SerializationType.HASH))
+        startTime = blkHeader.time
+    }
+    if (true)
+    {
+        val headerBin = ec.getHeader(lastBlock)
+        val blkHeader = blockHeaderFor(chainSelector, BCHserialized(headerBin, SerializationType.HASH))
+        lastTime = blkHeader.time
+    }
+
+    return HDActivityBracket(startTime, startBlock, lastTime, lastBlock, lastFoundIndex)
+}
+
+
+fun peekActivity(secretWords: String, chainSelector: ChainSelector, aborter: Objectify<Boolean>)
+{
+    val (svr, port) = try
+    {
+        getElectrumServerOn(chainSelector)
+    } catch (e: BadCryptoException)
+    {
+        LogIt.info("peek not supported for this blockchain")
+        return
+    }
+
+    if (aborter.obj) return
+    val ec = try
+    {
+        ElectrumClient(chainSelector, svr, port, useSSL=true)
+    }
+    catch (e: ElectrumConnectError) // covers java.net.ConnectException, UnknownHostException and a few others that could trigger
+    {
+        try
+        {
+            ElectrumClient(chainSelector, svr, port, useSSL = false, accessTimeoutMs = 60000, connectTimeoutMs = 10000)
+        }
+        catch(e: ElectrumConnectError)
+        {
+            if (chainSelector == ChainSelector.BCH)
+                ElectrumClient(chainSelector, LAST_RESORT_BCH_ELECTRS)
+            else if (chainSelector == ChainSelector.NEXA)
+                ElectrumClient(chainSelector, LAST_RESORT_NEXA_ELECTRS, DEFAULT_NEXA_TCP_ELECTRUM_PORT, useSSL = false)
+            else throw e
+        }
+        catch (e: ElectrumConnectError)
+        {
+            displayRecoveryInfo(i18n(S.ElectrumNetworkUnavailable))
+            // TODO status checkmark    ui.GuiStatusOk.setImageResource(android.R.drawable.ic_delete)
+            return
+        }
+    }
+    ec.start()
+    if (aborter.obj) return
+
+    val passphrase = "" // TODO: support a passphrase
+    val secret = generateBip39Seed(secretWords, passphrase)
+
+    val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
+
+    LogIt.info("Searching in ${addressDerivationCoin}")
+    var earliestActivityP =
+      searchActivity(ec, chainSelector, WALLET_RECOVERY_DERIVATION_PATH_SEARCH_DEPTH, {
+          libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first }, { time, height ->
+              displayRecoveryInfo(i18n(S.Bip44ActivityNotice) + " " + (i18n(S.FirstUseDateHeightInfo) % mapOf(
+            "date" to epochToDate(time),
+            "height" to height.toString())
+            ))
+          updateRecoveryInfo(time, height, null)
+          true })
+
+    if (aborter.obj) return
+
+    LogIt.info("Searching in ${AddressDerivationKey.ANY}")
+    // Look for activity in the identity and common location
+    var earliestActivityId =
+      searchActivity(ec, chainSelector, WALLET_RECOVERY_IDENTITY_DERIVATION_PATH_SEARCH_DEPTH, {
+          libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, false, it).first })
+    if (aborter.obj) return
+
+    // Set earliestActivityP to the lesser of the two
+    if (earliestActivityP == null) earliestActivityP = earliestActivityId
+    else
+    {
+        if ((earliestActivityId != null) && (earliestActivityId.first < earliestActivityP.first)) earliestActivityP = earliestActivityId
+    }
+    if (aborter.obj) return
+
+    if (earliestActivityP != null)
+    {
+        updateRecoveryInfo(earliestActivityP.first - 1, earliestActivityP.second, // -1 so earliest activity is just before the activity
+        i18n(S.Bip44ActivityNotice) + " " + i18n(S.FirstUseDateHeightInfo) % mapOf(
+          "date" to epochToDate(earliestActivityP.first),
+          "height" to earliestActivityP.second.toString()
+        ))
+    }
+    else
+    {
+        updateRecoveryInfo(null,0, i18n(S.NoBip44ActivityNotice))
+    }
+
+    /*
+    // Look in non-standard places for activity
+    val BTCactivity =
+      bracketActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.BTC, 0, 0, it) })
+    var BTCchangeActivity: HDActivityBracket?
+
+    // This code checks whether coins exist on the Bitcoin derivation path to see if any prefork coins exist.  This is irrelevant for Nexa.
+    // I'm leaving the code in though because someday we might want to share pubkeys between BTC/BCH and Nexa and in that case we'd need to use their derivation path.
+
+    var Bip44BTCMsg = if (BTCactivity != null)
+    {
+        BTCchangeActivity =
+          bracketActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.BTC, 0, 1, it) })
+        nonstandardActivity.clear()  // clear because peek can be called multiple times if the user changes the secret
+        nonstandardActivity.add(Pair(Bip44Wallet.HdDerivationPath(null, AddressDerivationKey.BIP44, AddressDerivationKey.BTC, 0, 0, BTCactivity.lastAddressIndex), BTCactivity))
+        if (BTCchangeActivity != null)
+        {
+            nonstandardActivity.add(Pair(Bip44Wallet.HdDerivationPath(null, AddressDerivationKey.BIP44, AddressDerivationKey.BTC, 0, 1, BTCchangeActivity.lastAddressIndex), BTCchangeActivity))
+        }
+
+        i18n(R.string.Bip44BtcActivityNotice) + " " + i18n(R.string.FirstUseDateHeightInfo) % mapOf(
+          "date" to epochToDate(BTCactivity.startTime),
+          "height" to BTCactivity.startBlockHeight.toString()
+        )
+    }
+    else i18n(R.string.NoBip44BtcActivityNotice)
+    */
+
+    /*
+    earliestActivityP = searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, AddressDerivationKey.BTC, 0, 0, it) })
+    var Bip44BTCMsg = if (earliestActivityP != null)
+    {
+        earliestActivity = earliestActivityP.first-1 // -1 so earliest activity is just before the activity
+        i18n(R.string.Bip44BtcActivityNotice) + " " + i18n(R.string.FirstUseDateHeightInfo) % mapOf(
+            "date" to epochToDate(earliestActivityP.first),
+            "height" to earliestActivityP.second.toString())
+    }
+    else i18n(R.string.NoBip44BtcActivityNotice)
+     */
+
 }

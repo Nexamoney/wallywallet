@@ -241,7 +241,15 @@ class AssetInfo(val groupInfo: GroupInfo)
                             am.storeTokenDesc(groupInfo.groupId, td)
                         }
                     }
-                    extractNftData(am, groupInfo.groupId, nftZipData.second)
+                    try
+                    {
+                        extractNftData(am, groupInfo.groupId, nftZipData.second)
+                    }
+                    catch(e: Exception)
+                    {
+                        // Something went wrong (probably out of memory).
+                        logThreadException(e, "Exception opening NFT")
+                    }
                     dataChanged = true
                 }
             }

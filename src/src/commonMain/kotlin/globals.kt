@@ -1,7 +1,5 @@
 package info.bitcoinunlimited.www.wally
 
-import kotlinx.coroutines.flow.MutableStateFlow
-
 val IDENTITY_URI_SCHEME = "nexid"
 val TDPP_URI_SCHEME = "tdpp"
 
@@ -22,3 +20,9 @@ var devMode = false
 class Objectify<T>(var obj: T)
 {
 }
+
+// Search the first N addresses in a particular derivation path during wallet recovery.
+// Since wallets give out addresses in order, this will tend to find the activity.  The only reason we search a bunch of addresses
+// is because maybe some addresses were given out but payments weren't made.
+val WALLET_RECOVERY_DERIVATION_PATH_SEARCH_DEPTH = 15
+val WALLET_RECOVERY_IDENTITY_DERIVATION_PATH_SEARCH_DEPTH = 5
