@@ -15,7 +15,7 @@ open class IncorrectTokenDescriptionDoc(details: String) : LibNexaException(deta
 
 val NIFTY_ART_IP = mapOf(
   ChainSelector.NEXA to "niftyart.cash",
-  ChainSelector.NEXAREGTEST to "192.168.1.5:8988"
+  // Enable manually for niftyart development: ChainSelector.NEXAREGTEST to "192.168.1.5:8988"
 )
 
 fun String.runCommand(): String?
@@ -68,6 +68,69 @@ class AssetInfo(val groupInfo: GroupInfo)
     }
 
     fun extractNftData(am: AssetManager, grpId: GroupId, nftZip:ByteArray)
+    {
+        zipForeach(nftZip) { zipDirRecord, data ->
+            val fname = zipDirRecord.fileName
+            if (fname.startsWith("cardf"))
+            {
+                // Note caching is NEEDED to show video (because videoview can only take a file)
+                if (data != null)
+                {
+                    val bytes = data.readByteArray()
+                    iconBytes = bytes
+                    val tmp = am.storeCardFile(grpId.toStringNoPrefix() + "_" + fname, bytes)
+                    iconUri = Url("file://" + tmp)
+                }
+                else
+                {
+                    iconBytes = null
+                    iconUri = Url("file://" + fname)
+                }
+            }
+            else if (fname.startsWith("cardb"))
+            {
+                if (data != null)
+                {
+                    val bytes = data.readByteArray()
+                    iconBackBytes = bytes
+                    // Note caching is NEEDED to show video (because videoview can only take a file)
+                    if (iconBackBytes != null) iconBackUri = Url("file://" + am.storeCardFile(grpId.toStringNoPrefix() + "_" + fname, bytes))
+                    else iconBackUri = Url("file://" + fname)
+                }
+            }
+            else if (fname.startsWith("public"))
+            {
+                // I need to know the filename so I know the file format (how to decode the file).  So make a Uri with the filename
+                publicMediaUri = Url("file://" + (if (!fname.startsWith("/")) "/" else "") + fname)
+                val bytes = data?.readByteArray()
+                val ptmp = am.cacheNftMedia(grpId, Pair(fname, bytes))
+                publicMediaCache = ptmp.first
+                publicMediaBytes = ptmp.second
+            }
+            else if (fname.startsWith("owner"))
+            {
+                // I need to know the filename so I know the file formant (how to decode the file).  So make a Uri with the filename
+                ownerMediaUri = Url("file://" + (if (!fname.startsWith("/")) "/" else "") + fname)
+                val bytes = data?.readByteArray()
+                val otmp = am.cacheNftMedia(grpId, Pair(fname, bytes))
+                ownerMediaCache = otmp.first
+                ownerMediaBytes = otmp.second
+            }
+            else if (fname == "info.json")
+            {
+                val bytes = data?.readByteArray()
+
+                if (bytes != null)
+                {
+                    nftDataFromInfoFile(bytes)?.let { nft = it }
+                }
+            }
+            false
+        }
+
+    }
+
+    fun extractNftDataSlow(am: AssetManager, grpId: GroupId, nftZip:ByteArray)
     {
         // TODO rewrite using zip.foreach to grab every piece of data at once for efficiency
 
