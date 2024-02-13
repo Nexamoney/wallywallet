@@ -298,6 +298,14 @@ fun nftOwnerMedia(nftyZip: ByteArray):Pair<String?, ByteArray?>
      */
 }
 
+fun nftDataFromInfoFile(infoFile: ByteArray): NexaNFTv2?
+{
+    val s = infoFile.decodeUtf8()
+    val js = Json { ignoreUnknownKeys = true }
+    val nftInfo = js.decodeFromString<NexaNFTv2>(NexaNFTv2.serializer(), s)
+    return nftInfo
+}
+
 fun nftData(nftyZip: ByteArray): NexaNFTv2?
 {
     val (_, contents) = getFile(nftyZip, "info.json")

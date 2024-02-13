@@ -32,14 +32,16 @@ fun byteToIntLE(bytes: ByteArray): Int
 
 fun BufferedSource.readLE4():Long
 {
-    val tmp = this.readByteArray(4)
-    return byteToLongLE(tmp)
+    return readIntLe().toLong()
+    //val tmp = this.readByteArray(4)
+    //return byteToLongLE(tmp)
 }
 
 fun BufferedSource.readLE2():Int
 {
-    val tmp = this.readByteArray(2)
-    return byteToIntLE(tmp)
+    return readShortLe().toInt()
+    //val tmp = this.readByteArray(2)
+    //return byteToIntLE(tmp)
 }
 
 open class ZipException: Exception()
@@ -249,16 +251,6 @@ data class ZipDirEndRecord(
     }
 }
 
-/** look at @ba as a zip file and call handler for every file in it.
- * @handler should return true to abort the for each loop
- */
-fun zipForeach(ba: ByteArray, handler: (ZipDirRecord, BufferedSource?) -> Boolean)
-{
-    val b = Buffer()
-    b.write(ba)
-    zipForeach(b, handler)
-}
-
 infix fun Int.spans (sz: Int): IntRange
 {
     return IntRange(this, this+sz-1)
@@ -322,12 +314,24 @@ fun zipForeach(ds: BufferedSource, handler: (ZipDirRecord, BufferedSource?) -> B
 {
     // Zip has to be read from the end first, so in these modern times with streams we need to pull in the entire thing to get the end.
     val zbytes = ds.readByteArray()
+    zipForeach(zbytes, handler)
+}
 
+/** Look at @ba as a zip file and call handler for every file in it.
+ * @handler should return true to abort the for each loop
+ */
+fun zipForeach(zbytes: ByteArray, handler: (ZipDirRecord, BufferedSource?) -> Boolean)
+{
     val dirend = zipFindDirEnd(zbytes)
     if (dirend == null) return
 
-    val fragment = Buffer()
-    fragment.write(zbytes.takeLast((zbytes.size-dirend.dirOffset).toInt()).toByteArray())
+    val fullZip = Buffer()
+    fullZip.write(zbytes)
+
+    //val fragment = Buffer()
+    //fragment.write(zbytes.takeLast((zbytes.size-dirend.dirOffset).toInt()).toByteArray())
+    val fragment = fullZip.peek()
+    fragment.skip(dirend.dirOffset)
 
     var recordCount = 0
 
@@ -345,7 +349,7 @@ fun zipForeach(ds: BufferedSource, handler: (ZipDirRecord, BufferedSource?) -> B
         {
             if (e.id contentEquals ZipDirEndId)
             {
-                val dirEnd = ZipDirEndRecord.from(ds)
+                ZipDirEndRecord.from(fragment)
             }
             else
             {
@@ -401,6 +405,7 @@ fun zipForeach(ds: BufferedSource, handler: (ZipDirRecord, BufferedSource?) -> B
                     {
                         val b = Buffer()
                         b.write(fileEntryFrag.readByteArray(compressedSize))
+                        // not available on macos/ios: b.readFrom(fileEntryFrag.inputStream(), compressedSize)
                     }
                     else if (hdr.compression == ZipCompressionMethods.Deflated.ordinal)
                     {
