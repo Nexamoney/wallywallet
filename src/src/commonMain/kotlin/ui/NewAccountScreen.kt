@@ -22,11 +22,11 @@ import org.nexa.threads.Thread
 private val supportedBlockchains =
   mapOf(
     "NEXA" to ChainSelector.NEXA,
-    "BCH (Bitcoin Cash)" to ChainSelector.BCH,
+    // "BCH (Bitcoin Cash)" to ChainSelector.BCH,
     "TNEX (Testnet Nexa)" to ChainSelector.NEXATESTNET,
     "RNEX (Regtest Nexa)" to ChainSelector.NEXAREGTEST,
-    "TBCH (Bitcoin Cash)" to ChainSelector.BCHTESTNET,
-    "RBCH (Bitcoin Cash)" to ChainSelector.BCHREGTEST
+    // "TBCH (Bitcoin Cash)" to ChainSelector.BCHTESTNET,
+    // "RBCH (Bitcoin Cash)" to ChainSelector.BCHREGTEST
   )
 const val ACCOUNT_FLAG_NONE = 0UL
 const val ACCOUNT_FLAG_HIDE_UNTIL_PIN = 1UL
