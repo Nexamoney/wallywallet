@@ -172,7 +172,7 @@ fun SettingsScreen(nav: ScreenNav)
                     BlockchainSource(ChainSelector.NEXATESTNET, preferenceDB, horizontalAlignmentLine)
                     BlockchainSource(ChainSelector.NEXAREGTEST, preferenceDB, horizontalAlignmentLine)
                 }
-                BlockchainSource(ChainSelector.BCH, preferenceDB, horizontalAlignmentLine)
+                // BlockchainSource(ChainSelector.BCH, preferenceDB, horizontalAlignmentLine)
             }
 
             if(devMode)
