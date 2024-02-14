@@ -19,11 +19,9 @@ import info.bitcoinunlimited.www.wally.databinding.TxHistoryListItemBinding
 import kotlinx.coroutines.delay
 import java.lang.RuntimeException
 import com.ionspin.kotlin.bignum.decimal.*
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toLocalDateTime
 
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
@@ -70,9 +68,9 @@ fun TransactionHistory.toCSV(): String
         }
     }
 
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
-    val ldt = LocalDateTime.ofInstant(Instant.ofEpochMilli(date), ZoneId.systemDefault())
-    val fdate = ldt.format(formatter)
+    val instant = kotlinx.datetime.Instant.fromEpochMilliseconds(date)
+    val localTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+    val fdate = localTime.toString()
     val ret = StringBuilder()
     ret.append(fdate)
     ret.append(",")
@@ -145,8 +143,6 @@ class TxHistoryBinder(val ui: TxHistoryListItemBinding): GuiListItemBinder<Trans
     {
         // abstract fun getBalanceIn(dest: PayAddress): Long
 
-        val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withZone(ZoneId.systemDefault())
-
         val activity = (view.context as TxHistoryActivity)
         val act = activity.account
         if (act == null) return
@@ -154,8 +150,9 @@ class TxHistoryBinder(val ui: TxHistoryListItemBinding): GuiListItemBinder<Trans
         data?.let()
         { data ->
             val amt = data.incomingAmt - data.outgoingAmt
-            val ldt = LocalDateTime.ofInstant(Instant.ofEpochMilli(data.date), ZoneId.systemDefault())
-            val fdate = ldt.format(formatter)
+            val instant = kotlinx.datetime.Instant.fromEpochMilliseconds(data.date)
+            val localTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+            val fdate = localTime.toString()
             ui.GuiTxDate.text = fdate
             ui.GuiValueCrypto.text = act.cryptoFormat.format(act.fromFinestUnit(amt))
 
@@ -302,8 +299,6 @@ class AddressListBinder(val ui: AddressListItemBinding): GuiListItemBinder<Addre
     // Fill the view with this data
     override fun populate()
     {
-        val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withZone(ZoneId.systemDefault())
-
         val d = data
         val activity = (view.context as TxHistoryActivity)
         val act = activity.account
@@ -335,16 +330,19 @@ class AddressListBinder(val ui: AddressListItemBinding): GuiListItemBinder<Addre
             {
                 if (d.firstRecv == d.lastRecv)  // only one receive
                 {
-                    val ldt = LocalDateTime.ofInstant(Instant.ofEpochMilli(d.firstRecv), ZoneId.systemDefault())
-                    ui.GuiTxDate.text = ldt.format(formatter)
+                    val instant = kotlinx.datetime.Instant.fromEpochMilliseconds(d.firstRecv)
+                    val ldt = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+                    ui.GuiTxDate.text = ldt.toString()
                     ui.GuiTxDateLast.text = ""
                 }
                 else
                 {
-                    val fdt = LocalDateTime.ofInstant(Instant.ofEpochMilli(d.firstRecv), ZoneId.systemDefault())
-                    val ldt = LocalDateTime.ofInstant(Instant.ofEpochMilli(d.lastRecv), ZoneId.systemDefault())
-                    ui.GuiTxDate.text = ldt.format(formatter)
-                    ui.GuiTxDateLast.text = fdt.format(formatter)
+                    val fdtInstant = kotlinx.datetime.Instant.fromEpochMilliseconds(d.firstRecv)
+                    val ldtInstant = kotlinx.datetime.Instant.fromEpochMilliseconds(d.lastRecv)
+                    val fdt = fdtInstant.toLocalDateTime(TimeZone.currentSystemDefault())
+                    val ldt = ldtInstant.toLocalDateTime(TimeZone.currentSystemDefault())
+                    ui.GuiTxDate.text = ldt.toString()
+                    ui.GuiTxDateLast.text = fdt.toString()
                 }
             }
             else
