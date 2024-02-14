@@ -27,6 +27,14 @@ taskTree:
   script:
     - ./gradlew build taskTree # Print taskTree for ./gradlew build
 
+kDoctor:
+  stage: docs
+  tags:
+    - m1-baremetal
+  script:
+    - brew install kdoctor
+    - kdoctor
+
 lintVitalRelease:
   stage: lint
   tags:
