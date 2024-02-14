@@ -1,14 +1,11 @@
 package info.bitcoinunlimited.www.wally.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Surface
 
 import androidx.compose.material3.Text
@@ -30,7 +27,7 @@ import org.nexa.libnexakotlin.*
 private val LogIt = GetLog("wally.assets")
 
 @Composable
-fun AssetListView(assetInfo: AssetInfo, verbosity: Int = 1, modifier: Modifier = Modifier)
+fun AssetListItemView(assetInfo: AssetInfo, verbosity: Int = 1, modifier: Modifier = Modifier)
 {
     var asset by remember { mutableStateOf(assetInfo) }
     val nft = asset.nft
@@ -49,8 +46,8 @@ fun AssetListView(assetInfo: AssetInfo, verbosity: Int = 1, modifier: Modifier =
             }
 
             MpMediaView(asset.iconBytes, asset.iconUri.toString()) { mi, draw ->
-                val m = if (verbosity > 0) Modifier.background(Color.Transparent).size(64.dp, 64.dp)
-                else  Modifier.background(Color.Transparent).size(26.dp, 26.dp)
+                val m = (if (verbosity > 0) Modifier.background(Color.Transparent).size(64.dp, 64.dp)
+                else  Modifier.background(Color.Transparent).size(26.dp, 26.dp)).align(Alignment.CenterVertically)
                 draw(m)
             }
 
@@ -259,7 +256,6 @@ fun AssetScreen(account: Account, nav: ScreenNav)
 
     if (nav.currentSubState.value == null) assetFocus = null  // If I go back from a focused asset, the nav subscreenstate will be null
 
-
     Column(Modifier.fillMaxSize()) {
         val a = assetFocus
         if (a == null)
@@ -275,17 +271,18 @@ fun AssetScreen(account: Account, nav: ScreenNav)
                     account.assets.forEach {
                         val key = it.key
                         val entry = it.value
-                        item(key = index) {
-                            Box(Modifier.padding(4.dp, 2.dp).fillMaxWidth().background(WallyAssetRowColors[index % WallyAssetRowColors.size]).clickable {
+                        val indexFreezer = index  // To use this in the item composable, we need to freeze it to a val, because the composable is called out-of-scope
+                        item(key = indexFreezer) {
+                            Box(Modifier.padding(4.dp, 2.dp).fillMaxWidth().background(WallyAssetRowColors[indexFreezer % WallyAssetRowColors.size]).clickable {
                                 if (a == account.assets[key]) assetFocus = null
                                 else
                                 {
                                     assetFocus = account.assets[key]
-                                    assetFocusIndex = index
-                                    nav.go(ScreenId.Assets, byteArrayOf(index.toByte()))
+                                    assetFocusIndex = indexFreezer
+                                    nav.go(ScreenId.Assets, byteArrayOf(indexFreezer.toByte()))
                                 }
                             }) {
-                                AssetListView(entry, 1)
+                                AssetListItemView(entry, 1, Modifier.padding(0.dp, 2.dp))
                             }
                         }
                         index++
@@ -299,7 +296,7 @@ fun AssetScreen(account: Account, nav: ScreenNav)
                 assetFocus = null
                 assetFocusIndex = 0
             }) {
-                AssetListView(a, 1)
+                AssetListItemView(a, 1)
             }
 
             WallyDivider()

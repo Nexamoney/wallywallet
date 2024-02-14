@@ -1,5 +1,7 @@
 package info.bitcoinunlimited.www.wally
 
+import okio.FileSystem
+import okio.Path.Companion.toPath
 import org.nexa.libnexakotlin.GroupId
 import java.io.File
 import java.io.FileInputStream
@@ -20,14 +22,16 @@ object JvmAssetManagerStorage:AssetManagerStorage
         }
         return file.absolutePath
     }
-    override fun loadAssetFile(filename: String): Pair<String, ByteArray>
+    override fun loadAssetFile(filename: String): Pair<String, EfficientFile>
     {
         if (DBG_NO_ASSET_CACHE) throw Exception()
         val file = File("assets", filename)
         val name = file.absolutePath
-        FileInputStream(file).use {
-            return Pair(name, it.readBytes())
-        }
+        //FileInputStream(file).use {
+        //    return Pair(name, it.readBytes())
+        //}
+        val ef = EfficientFile(name.toPath(), FileSystem.SYSTEM)
+        return Pair(name, ef)
     }
     override fun storeCardFile(filename: String, data: ByteArray): String
     {
