@@ -1,6 +1,10 @@
 package info.bitcoinunlimited.www.wally
 
 import android.content.Context
+import okio.FileSystem
+import okio.Path.Companion.toPath
+import okio.buffer
+import okio.source
 import org.nexa.libnexakotlin.GroupId
 import java.io.File
 import java.io.FileInputStream
@@ -21,16 +25,24 @@ object AndroidAssetManagerStorage:AssetManagerStorage
         }
         return file.absolutePath
     }
-    override fun loadAssetFile(filename: String): Pair<String, ByteArray>
+    override fun loadAssetFile(filename: String): Pair<String, EfficientFile>
     {
         if (DBG_NO_ASSET_CACHE) throw Exception()
         val context = wallyAndroidApp
         val dir = context!!.getDir("asset", Context.MODE_PRIVATE)
         val file = File(dir, filename)
         val name = file.absolutePath
+        //val strm = FileSystem.SYSTEM.openReadOnly(name.toPath())
+        /*
         FileInputStream(file).use {
-            return Pair(name, it.readBytes())
+            val ef = EfficientFile(it.source().buffer())
+            return Pair(name, ef)
         }
+
+         */
+        //return Pair(name, EfficientFile(strm.source().buffer()))
+        val ef = EfficientFile(name.toPath(), FileSystem.SYSTEM)
+        return Pair(name, ef)
     }
     override fun storeCardFile(filename: String, data: ByteArray): String
     {

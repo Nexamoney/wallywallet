@@ -46,7 +46,7 @@ object IosAssetManagerStorage:AssetManagerStorage
         }
         return path.toString()
     }
-    override fun loadAssetFile(filename: String): Pair<String, ByteArray>
+    override fun loadAssetFile(filename: String): Pair<String, EfficientFile>
     {
         if (DBG_NO_ASSET_CACHE) throw Exception()
 
@@ -54,11 +54,13 @@ object IosAssetManagerStorage:AssetManagerStorage
         var path = if (dirs.size > 0) dirs[0].toString().toPath() / "assets" else "assets".toPath()
         if (!FileSystem.SYSTEM.exists(path)) FileSystem.SYSTEM.createDirectories(path)
         path = path / filename
-
+        /*
         FileSystem.SYSTEM.read(path) {
             val data = this.readByteArray()
-            return Pair(path.toString(), data)
+            return Pair(path.toString(), EfficientFile(data))
         }
+         */
+        return Pair(path.toString(), EfficientFile(path, FileSystem.SYSTEM))
     }
     override fun storeCardFile(filename: String, data: ByteArray): String
     {

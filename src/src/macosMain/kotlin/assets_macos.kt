@@ -8,7 +8,7 @@ object MacosAssetManagerStorage:AssetManagerStorage
     {
         TODO()
     }
-    override fun loadAssetFile(filename: String): Pair<String, ByteArray>
+    override fun loadAssetFile(filename: String): Pair<String, EfficientFile>
     {
         TODO()
     }

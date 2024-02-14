@@ -4,7 +4,68 @@ import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("wally.zip")
 
+fun ByteArray.toBuffer(): Buffer
+{
+    val b = Buffer()
+    b.write(this)
+    return b
+}
+
 expect fun inflateRfc1951(compressedBytes: ByteArray, expectedfinalSize: Long):ByteArray
+
+object Drain:Sink
+{
+    override fun close() {}
+    override fun flush() {}
+    override fun timeout(): Timeout = Timeout.NONE
+    override fun write(source: Buffer, byteCount: Long) {}
+}
+
+/** This class wraps a file object that attempts to save memory by reducing the number of copies of the data needed in order to
+ * run multiple random-access file operations.  Since okio is incapable of "rewinding", this can be hard to do */
+
+class EfficientFile(var openAt: ((Long) -> BufferedSource))
+{
+    var handle: FileHandle? = null
+    var sz:Long? = null
+
+    val size: Long
+        get() = sz!!  // You need to have inited the size during construction
+
+    constructor(bytes: BufferedSource): this({
+        val tmp = bytes.peek()
+        tmp.skip(it)
+        tmp
+    })
+    {
+        val bs = openAt(0)
+        sz = bs.readAll(Drain)
+    }
+
+    // If the entire file has been put into a buffer
+    constructor(bytes: Buffer): this({
+        val ret = bytes.peek()
+        ret.skip(it)
+        ret
+    })
+    {
+        sz = bytes.size
+    }
+    constructor(bytes: ByteArray): this(bytes.toBuffer()) {
+        sz = bytes.size.toLong()
+    }
+
+    constructor(filePath: Path, fileSystem: FileSystem): this({ Buffer() })
+    {
+        val tmp =  fileSystem.openReadOnly(filePath)
+        handle = tmp
+        sz = tmp.size()
+        openAt = { handle!!.source(it).buffer() }
+    }
+}
+
+
+
 
 private fun byteToLongLE(bytes: ByteArray): Long
 {
@@ -89,7 +150,7 @@ data class ZipDataDescriptor(
             val structId: ByteArray = ds.peek().readByteArray(4)
             if (!(structId contentEquals ZipDataDescriptorId))
             {
-                LogIt.info("ZipDataDescriptor: Incorrect zip record: ${structId.toHex()}")
+                // may be benign so not log: LogIt.info("ZipDataDescriptor: Incorrect zip record: ${structId.toHex()}")
                 throw ZipRecordException(structId)
             }
             ds.readByteArray(4)  // drop what I peeked
@@ -131,7 +192,7 @@ data class ZipDirRecord(
             val structId: ByteArray = ds.peek().readByteArray(4)
             if (!(structId contentEquals ZipDirRecordId))
             {
-                LogIt.info("ZipDirRecord: Incorrect zip record: ${structId.toHex()}")
+                // may be benign so not log:  LogIt.info("ZipDirRecord: Incorrect zip record: ${structId.toHex()}")
                 throw ZipRecordException(structId)
             }
             ds.readByteArray(4)  // drop what I peeked
@@ -190,7 +251,7 @@ data class ZipFileHeader(
             val structId: ByteArray = ds.peek().readByteArray(4)
             if (!(structId contentEquals ZipFileHeaderId))
             {
-                LogIt.info("ZipFileHeader: Incorrect zip record: ${structId.toHex()}")
+                // may be benign so not log: LogIt.info("ZipFileHeader: Incorrect zip record: ${structId.toHex()}")
                 throw ZipRecordException(structId)
             }
             ds.readByteArray(4)  // drop what I peeked
@@ -227,13 +288,13 @@ data class ZipDirEndRecord(
 {
     companion object
     {
-        // SIZE = 4 + 2 + 2 + 2 + 2 + 4 + 4 + 2
+        val SIZE = (4 + 2 + 2 + 2 + 2 + 4 + 4 + 2).toLong()
         fun from(ds: BufferedSource): ZipDirEndRecord
         {
             val structId: ByteArray = ds.peek().readByteArray(4)
             if (!(structId contentEquals ZipDirEndId))
             {
-                LogIt.info("ZipDirEndRecord: Incorrect zip record: ${structId.toHex()}")
+                // may be benign so not log: LogIt.info("ZipDirEndRecord: Incorrect zip record: ${structId.toHex()}")
                 throw ZipRecordException(structId)
             }
             ds.readByteArray(4)  // drop what I peeked
@@ -278,7 +339,7 @@ fun ByteArray.findLastOf(tgt: ByteArray, startAt:Int=size-1 - tgt.size): Int
     return -1
 }
 
-
+/*
 // return the index of the dirend record
 fun zipFindDirEnd(ba: ByteArray): ZipDirEndRecord?
 {
@@ -306,6 +367,53 @@ fun zipFindDirEnd(ba: ByteArray): ZipDirEndRecord?
     }
     return null
 }
+*/
+
+// return the index of the dirend record
+fun zipFindDirEnd(ef: EfficientFile): ZipDirEndRecord?
+{
+    val CHUNK_SIZE = 2048L
+    var srchidx = max(0, ef.size-CHUNK_SIZE)
+    while(true)
+    {
+        val ba = ef.openAt(srchidx).readByteArray(min(ef.size,CHUNK_SIZE))
+        val idx = ba.findLastOf(ZipDirEndId)
+        if (idx != -1)
+        {
+            // Now reposition to the beginning of the discovered ZipDirEndRecord.
+            // We have to do this because the record is variable sized, so might exceed the chunk we grabbed when searching
+            val b = ef.openAt(srchidx + idx)
+            //b.write(ba.takeLast(ba.size - idx).toByteArray())
+            val dirEnd = ZipDirEndRecord.from(b)
+            // Sanity check a bunch of fields to ignore spurious bytes that happen to be equal to ZipDirEndId
+            if ((dirEnd.dirSize < ef.size) &&
+              (dirEnd.dirOffset < ef.size - ZipDirRecordId.size) &&
+              (dirEnd.diskNumRecords < ef.size))
+              // Check that the dirOffset location actually contains a ZipDirRecordId -- SKIP this check because its another random-access seek
+              // (ZipDirRecordId contentEquals ba.sliceArray(IntRange(dirEnd.dirOffset.toInt(), dirEnd.dirOffset.toInt() + ZipDirRecordId.size - 1)))
+            {
+                // OK its incrediably unlikely that a zip end comment contained this exact data, unless the comment is itself another zip file,
+                // in which case, guess what? the .zip format is ancient and poorly designed and we are screwed :-)
+                return dirEnd
+            }
+        }
+        if (srchidx == 0L) break // Looked everywhere
+        srchidx -= CHUNK_SIZE  // keep looking if nothing found
+        if (srchidx < 0) srchidx = 0
+    }
+    return null
+}
+
+
+/** look at @ds as a zip file and call handler for every file in it.
+ * @handler should return true to abort the for each loop
+ */
+fun zipForeach(ds: Buffer, handler: (ZipDirRecord, BufferedSource?) -> Boolean)
+{
+    // Zip has to be read from the end first, so in these modern times with streams we need to pull in the entire thing to get the end.
+    //val zbytes = ds.readByteArray()
+    zipForeach(EfficientFile(ds), handler)
+}
 
 /** look at @ds as a zip file and call handler for every file in it.
  * @handler should return true to abort the for each loop
@@ -313,8 +421,8 @@ fun zipFindDirEnd(ba: ByteArray): ZipDirEndRecord?
 fun zipForeach(ds: BufferedSource, handler: (ZipDirRecord, BufferedSource?) -> Boolean)
 {
     // Zip has to be read from the end first, so in these modern times with streams we need to pull in the entire thing to get the end.
-    val zbytes = ds.readByteArray()
-    zipForeach(zbytes, handler)
+    //val zbytes = ds.readByteArray()
+    zipForeach(EfficientFile(ds.buffer), handler)
 }
 
 /** Look at @ba as a zip file and call handler for every file in it.
@@ -322,16 +430,26 @@ fun zipForeach(ds: BufferedSource, handler: (ZipDirRecord, BufferedSource?) -> B
  */
 fun zipForeach(zbytes: ByteArray, handler: (ZipDirRecord, BufferedSource?) -> Boolean)
 {
-    val dirend = zipFindDirEnd(zbytes)
+    zipForeach(EfficientFile(zbytes), handler)
+}
+
+fun zipForeach(zip: EfficientFile, handler: (ZipDirRecord, BufferedSource?) -> Boolean)
+{
+
+    val dirend = zipFindDirEnd(zip)
     if (dirend == null) return
 
-    val fullZip = Buffer()
-    fullZip.write(zbytes)
-
+    // Pull in the entire file as a byte array
+    //val zbytes = zip.openAt(0).readByteArray()
+    //val fullZip = Buffer()
+    //fullZip.write(zbytes)
     //val fragment = Buffer()
     //fragment.write(zbytes.takeLast((zbytes.size-dirend.dirOffset).toInt()).toByteArray())
-    val fragment = fullZip.peek()
-    fragment.skip(dirend.dirOffset)
+    //val fragment = fullZip.peek()
+    //fragment.skip(dirend.dirOffset)
+
+    // use the EfficientFile to just grab it where we need it
+    val fragment = zip.openAt(dirend.dirOffset)
 
     var recordCount = 0
 
@@ -378,13 +496,36 @@ fun zipForeach(zbytes: ByteArray, handler: (ZipDirRecord, BufferedSource?) -> Bo
         alreadyDid.add(crec.localHeaderOffset)
 
         // Grab the data we need to search
-        val fileEntryFrag = Buffer()
-        fileEntryFrag.write(zbytes.takeLast((zbytes.size-crec.localHeaderOffset).toInt()).toByteArray())
         try
         {
+            //val fileEntryFrag = Buffer()
+            //fileEntryFrag.write(zbytes.takeLast((zbytes.size - crec.localHeaderOffset).toInt()).toByteArray())
+            val fileEntryFrag = zip.openAt(crec.localHeaderOffset)
             while (!fileEntryFrag.exhausted())
             {
-                val hdr = ZipFileHeader.from(fileEntryFrag)  // Get the first local record
+                val hdr = try
+                {
+                    ZipFileHeader.from(fileEntryFrag)  // Get the first local record
+                }
+                catch(e: ZipRecordException)
+                {
+                    if (e.id contentEquals ZipDataDescriptorId)  // this is info pertaining to the prior record, so not useful unless we read backwards
+                    {
+                        ZipDataDescriptor.from(fileEntryFrag)
+                        continue
+                    }
+                    else if (e.id contentEquals ZipDirRecordId)
+                    {
+                        // We are done iteration through records, because all the central dir records must be at the end.  so just fall thru.
+                        break
+                    }
+                    else
+                    {
+                        logThreadException(e)
+                        throw e
+                    }
+                }
+
 
                 val crecHdr = dirRecords[hdr.fileName]  // find the corresponding central record (if it exists)
 
@@ -403,6 +544,7 @@ fun zipForeach(zbytes: ByteArray, handler: (ZipDirRecord, BufferedSource?) -> Bo
                 {
                     val bs: BufferedSource? = if (hdr.compression == ZipCompressionMethods.NoCompression.ordinal)
                     {
+                        // I have to do it with a copy, because I can't create a BufferedSource that only peeks N bytes.
                         val b = Buffer()
                         b.write(fileEntryFrag.readByteArray(compressedSize))
                         // not available on macos/ios: b.readFrom(fileEntryFrag.inputStream(), compressedSize)
@@ -426,26 +568,17 @@ fun zipForeach(zbytes: ByteArray, handler: (ZipDirRecord, BufferedSource?) -> Bo
                 }
                 else  // just advance
                 {
-                    fileEntryFrag.readByteArray(compressedSize)
+                    fileEntryFrag.skip(compressedSize)
                 }
 
             }
+            fileEntryFrag.close() // try to clean up memory sooner
         }
-        catch(e: ZipRecordException)
+        // Its easy to get memory errors because the entire file is being put into memory and then large chunks copied from it
+        // In this case, skip the file
+        catch(e: Throwable)  // java.lang.OutOfMemoryError does not appear to have a kotlin equivalent
         {
-            if (e.id contentEquals ZipDataDescriptorId)  // this is info pertaining to the prior record, so not useful unless we read backwards
-            {
-                ZipDataDescriptor.from(fileEntryFrag)
-            }
-            else if (e.id contentEquals ZipDirRecordId)
-            {
-                // We are done iteration through records, because all the central dir records must be at the end.  so just fall thru.
-            }
-            else
-            {
-                logThreadException(e)
-                throw e
-            }
+
         }
 
     }

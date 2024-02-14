@@ -1,6 +1,4 @@
-import info.bitcoinunlimited.www.wally.zipForeach
-import info.bitcoinunlimited.www.wally.nftCardFront
-import info.bitcoinunlimited.www.wally.nftData
+import info.bitcoinunlimited.www.wally.*
 import okio.*
 import okio.Path.Companion.toPath
 import org.junit.Assert
@@ -93,14 +91,37 @@ class NonGuiTests
 
         if (true)
         {
+            // for every example file, parse it using 3 different methods and check that each method gives the same results
+            // for every file within the zip.  This cannot test large files, because some of the methods pull the entire file
+            // into ram as a ByteArray
             for (file in FileSystem.SYSTEM.list("../exampleNft".toPath()))
             {
-                val nftyZip = FileSystem.SYSTEM.source(file).buffer()
-                println("file: ${file.name}")
-                zipForeach(nftyZip) { info, data ->
-                    println("${info.fileName}: ${info.uncompressedSize}")
+                val results = mutableMapOf<String, ByteArray>()
+                println("Trying file: ${file.name}")
+                println("  as file:")
+                zipForeach(EfficientFile(file, FileSystem.SYSTEM)) { info, data ->
+                    println("  ${info.fileName}: ${info.uncompressedSize}")
+                    results[info.fileName] = libnexa.sha256(data!!.readByteArray())
                     false
                 }
+                println("  as buffer:")
+                val nftyZip = FileSystem.SYSTEM.source(file).buffer()
+                zipForeach(nftyZip) { info, data ->
+                    println("${info.fileName}: ${info.uncompressedSize}")
+                    val tmp = libnexa.sha256(data!!.readByteArray())
+                    check(results[info.fileName] contentEquals  tmp)
+                    false
+                }
+
+                println("  as bytes:")
+                val nftyZipBytes = FileSystem.SYSTEM.source(file).buffer().readByteArray()
+                zipForeach(nftyZipBytes) { info, data ->
+                    println("${info.fileName}: ${info.uncompressedSize}")
+                    val tmp = libnexa.sha256(data!!.readByteArray())
+                    check(results[info.fileName] contentEquals  tmp)
+                    false
+                }
+
             }
         }
     }
@@ -129,9 +150,8 @@ class NonGuiTests
 }
 """
 
-        val b = Buffer()
-        b.write(nftyZip)
-        zipForeach(b) { info, data ->
+        fun checker(info: ZipDirRecord, data: BufferedSource?): Boolean
+        {
             if (info.fileName == "cardf.png")
             {
                 check(data!!.readByteArray() contentEquals  cardfPng)
@@ -141,8 +161,15 @@ class NonGuiTests
                 val json = data!!.readByteArray().decodeUtf8()
                 check(json == infoJson)
             }
-            false
+            return false
         }
+
+        // Try a bunch of different underlying data types
+        zipForeach(nftyZip) {info, data -> checker(info,data)}
+        val b = Buffer()
+        b.write(nftyZip)
+        zipForeach(b) {info, data -> checker(info,data)}
+        zipForeach(b.peek()) {info, data -> checker(info,data)}
     }
 
 
@@ -153,11 +180,11 @@ class NonGuiTests
         val nftyZip = "504b03040a00000000005c8333582f3d08f59e0100009e01000009001c0063617264662e706e6755540900031fe9aa65b2e8aa6575780b000104e803000004e803000089504e470d0a1a0a0000000d494844520000000a0000000a08060000008d32cfbd000001654944415418d335d0bf4b94711cc0f1f7e77bcf43c705a6965acf1d1ae2a4632e2d8f939b2e6781b438044a04de2e82d0e6a8a0706eb5393cfe0fe720482987884a461019fa44433e773eddf3f3e3a0bde7d7f416ee8bfd72550a2f6a6a8fbb0268f265378f0fd78acec50e80b943237578e4697ee92225544a6876e96a9c7b3747e53a80c4fef32af62b4fac49f2a889e4dba880f206d27ea28b65b25661c682bc661eccb27fda4babe53031d64173d83d99a4e2f431dc3740fcfbdda2111257cd008b1f3ed23cd8238acafcb91ee1ecf833ab1b1ea67b942c94090342d23e66e5fd34a5ee216ceb2b3dc513ccc30aafa75e12fe3c24fb6790c47fd6d05cdc8825447f61c927b40d9d708eb4f398ecc72649601a925c395504cff7952050061d431608df4fa118db74894d7ac38c00c4574e5d85f9b00de7cd94b46d187a52c40a0b2481d9aabc3d5f90ffc323dfa96a4c2d0bc44dae2dd2bf85461a98f5a7b3df76006e01b96e9d104f2eba150000000049454e44ae426082504b03041400000008000f878757428b8bb389000000b300000009001c00696e666f2e6a736f6e55540900038e3f72651ae8aa6575780b000104e803000004e8030000abe6525050cacb4c2ba90c4b2d52b25232d23350d20189956496e4a42a59292805e766e6a456820515401289a52519f9452019c7bc94a2d4728547d3f640b464a75696e717a51403e5a2151462c162c98925a9e9f9459540a3fddc4220ea120b0a4a8b32412640f8997969f9701e482025b1245149c14aa1ba162c9f93999c9a570c768c12572d1700504b01021e030a00000000005c8333582f3d08f59e0100009e010000090018000000000000000000b4810000000063617264662e706e6755540500031fe9aa6575780b000104e803000004e8030000504b01021e031400000008000f878757428b8bb389000000b3000000090018000000000001000000b481e1010000696e666f2e6a736f6e55540500038e3f726575780b000104e803000004e8030000504b050600000000020002009e000000ad0200000000".fromHex()
         // This is the image file it contains
         val cardfPng = "89504e470d0a1a0a0000000d494844520000000a0000000a08060000008d32cfbd000001654944415418d335d0bf4b94711cc0f1f7e77bcf43c705a6965acf1d1ae2a4632e2d8f939b2e6781b438044a04de2e82d0e6a8a0706eb5393cfe0fe720482987884a461019fa44433e773eddf3f3e3a0bde7d7f416ee8bfd72550a2f6a6a8fbb0268f265378f0fd78acec50e80b943237578e4697ee92225544a6876e96a9c7b3747e53a80c4fef32af62b4fac49f2a889e4dba880f206d27ea28b65b25661c682bc661eccb27fda4babe53031d64173d83d99a4e2f431dc3740fcfbdda2111257cd008b1f3ed23cd8238acafcb91ee1ecf833ab1b1ea67b942c94090342d23e66e5fd34a5ee216ceb2b3dc513ccc30aafa75e12fe3c24fb6790c47fd6d05cdc8825447f61c927b40d9d708eb4f398ecc72649601a925c395504cff7952050061d431608df4fa118db74894d7ac38c00c4574e5d85f9b00de7cd94b46d187a52c40a0b2481d9aabc3d5f90ffc323dfa96a4c2d0bc44dae2dd2bf85461a98f5a7b3df76006e01b96e9d104f2eba150000000049454e44ae426082".fromHex()
-        val (name, contents) = nftCardFront(nftyZip)
+        val (name, contents) = nftCardFront(EfficientFile(nftyZip))
         assert(name == "cardf.png")
         assert(contents contentEquals cardfPng)
 
-        val nftData = nftData(nftyZip)
+        val nftData = nftData(EfficientFile(nftyZip))
         assert(nftData != null)
         if (nftData != null)
         {

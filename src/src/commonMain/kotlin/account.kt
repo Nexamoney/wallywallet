@@ -58,8 +58,8 @@ class Account(
   chainSelector: ChainSelector? = null,
   secretWords: String? = null,
   startPlace: Long? = null, //* Where to start looking for transactions
-  val startHeight: Long? = null, //* block height of first activity
-  val retrieveOnlyActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, HDActivityBracket>>? = null,  //* jam in other derivation paths to grab coins from (but use addresses of) (if new account)
+  startHeight: Long? = null, //* block height of first activity
+  retrieveOnlyActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, HDActivityBracket>>? = null,  //* jam in other derivation paths to grab coins from (but use addresses of) (if new account)
   val prefDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
 )
 {

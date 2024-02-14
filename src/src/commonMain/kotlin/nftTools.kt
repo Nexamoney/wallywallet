@@ -134,7 +134,7 @@ data class NexaNFTv2(
 )
 
 // Korge implementation
-private fun getFileByPrefix(nftyZip: ByteArray, namePrefix:String):Pair<String?, ByteArray?>
+private fun getFileByPrefix(nftyZip: EfficientFile, namePrefix:String):Pair<String?, ByteArray?>
 {
     var data:ByteArray? = null
     var name:String? = null
@@ -169,7 +169,7 @@ private fun getFileByPrefix(nftyZip: ByteArray, namePrefix:String):Pair<String?,
     return Pair(name, data)
 }
 
-private fun getFile(nftyZip: ByteArray, fname:String):Pair<String?, ByteArray?>
+private fun getFile(nftyZip: EfficientFile, fname:String):Pair<String?, ByteArray?>
 {
     var data:ByteArray? = null
     var name:String? = null
@@ -206,7 +206,7 @@ private fun getFile(nftyZip: ByteArray, fname:String):Pair<String?, ByteArray?>
 
 
 /** return filename and data of the public card front */
-fun nftCardFront(nftyZip: ByteArray):Pair<String?, ByteArray?>
+fun nftCardFront(nftyZip: EfficientFile):Pair<String?, ByteArray?>
 {
     return getFileByPrefix(nftyZip, "cardf")
 
@@ -230,7 +230,7 @@ fun nftCardFront(nftyZip: ByteArray):Pair<String?, ByteArray?>
      */
 }
 
-fun nftCardBack(nftyZip: ByteArray):Pair<String?, ByteArray?>
+fun nftCardBack(nftyZip: EfficientFile):Pair<String?, ByteArray?>
 {
     return getFileByPrefix(nftyZip, "cardb")
     /*  and
@@ -252,7 +252,7 @@ fun nftCardBack(nftyZip: ByteArray):Pair<String?, ByteArray?>
      */
 }
 
-fun nftPublicMedia(nftyZip: ByteArray):Pair<String?, ByteArray?>
+fun nftPublicMedia(nftyZip: EfficientFile):Pair<String?, ByteArray?>
 {
     return getFileByPrefix(nftyZip, "public")
     /* //import java.util.zip
@@ -275,7 +275,7 @@ fun nftPublicMedia(nftyZip: ByteArray):Pair<String?, ByteArray?>
      */
 }
 
-fun nftOwnerMedia(nftyZip: ByteArray):Pair<String?, ByteArray?>
+fun nftOwnerMedia(nftyZip: EfficientFile):Pair<String?, ByteArray?>
 {
     return getFileByPrefix(nftyZip, "owner")
     /* java.util.zip
@@ -306,7 +306,7 @@ fun nftDataFromInfoFile(infoFile: ByteArray): NexaNFTv2?
     return nftInfo
 }
 
-fun nftData(nftyZip: ByteArray): NexaNFTv2?
+fun nftData(nftyZip: EfficientFile): NexaNFTv2?
 {
     val (_, contents) = getFile(nftyZip, "info.json")
     if (contents == null) return null

@@ -137,15 +137,13 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
       onNewRecoveryPhrase = {
           val words = processSecretWords(it)
           val valid = isValidOrEmptyRecoveryPhrase(words)
-          if (words != processSecretWords(newAcState.recoveryPhrase))  // If the recovery phrase is equivalent nothing to do, otherwise set the new one
+          val priorPhrase = newAcState.recoveryPhrase
+          newAcState = newAcState.copy(recoveryPhrase = it, validOrNoRecoveryPhrase = valid)
+          if (words != processSecretWords(priorPhrase))  // If the recovery phrase is equivalent nothing to do, otherwise set the new one
           {
               recoverySearchText = ""  // phrase changed so need to search again
-              newAcState = newAcState.copy(
-                recoveryPhrase = it,
-                validOrNoRecoveryPhrase = valid,
-                earliestActivity = null,  // If the recovery phrase changes, we need to rediscover the wallet
-                earliestActivityHeight = 0
-              )
+              // If the recovery phrase changes materially, we need to rediscover the wallet
+              newAcState = newAcState.copy(earliestActivity = null, earliestActivityHeight = 0)
               if (valid && words.size == 12) // Launch the wallet discoverer if the recovery phrase is ok
               {
                   // If the recovery phrase is good, let's peek at the blockchain to see if there's activity
@@ -153,7 +151,7 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
                   aborter.value.obj = true  // Abort the current peek
                   aborter.value = Objectify<Boolean>(false)  // and create a new object for the next one
                   recoverySearchText = i18n(S.NewAccountSearchingForTransactions)
-                  LogIt.severe("launching wallet peek")
+                  LogIt.info("launching wallet peek")
                   val th = Thread {
                       try
                       {

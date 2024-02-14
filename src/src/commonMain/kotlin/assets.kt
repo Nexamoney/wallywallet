@@ -1,6 +1,8 @@
 package info.bitcoinunlimited.www.wally
 
 import io.ktor.http.*
+import okio.Buffer
+import okio.BufferedSource
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Gate
 
@@ -61,13 +63,13 @@ class AssetInfo(val groupInfo: GroupInfo)
      * This function may retrieve this data from a local cache or remotely.
      * This is a function rather than a val with a getter to emphasize that this might be an expensive operation
      * */
-    fun nftFile(am: AssetManager):Pair<String,ByteArray>?
+    fun nftFile(am: AssetManager):Pair<String,EfficientFile>?
     {
         // TODO: cache both in RAM and on disk
         return am.getNftFile(tokenInfo, groupInfo.groupId)
     }
 
-    fun extractNftData(am: AssetManager, grpId: GroupId, nftZip:ByteArray)
+    fun extractNftData(am: AssetManager, grpId: GroupId, nftZip:EfficientFile)
     {
         zipForeach(nftZip) { zipDirRecord, data ->
             val fname = zipDirRecord.fileName
@@ -130,6 +132,7 @@ class AssetInfo(val groupInfo: GroupInfo)
 
     }
 
+    /*
     fun extractNftDataSlow(am: AssetManager, grpId: GroupId, nftZip:ByteArray)
     {
         // TODO rewrite using zip.foreach to grab every piece of data at once for efficiency
@@ -180,6 +183,8 @@ class AssetInfo(val groupInfo: GroupInfo)
             nft = nfti
         }
     }
+
+     */
 
     /** returns the Uri and the bytes, or null if nonexistent, cannot be loaded */
     fun getTddIcon(): Pair<Url?, ByteArray?>
@@ -344,7 +349,7 @@ interface AssetManagerStorage
     /** This should save data in a more permanent and possibly shared location; recommend "assets" directory */
     fun storeAssetFile(filename: String, data: ByteArray): String
     /** Load a file from the @storeAssetFile location */
-    fun loadAssetFile(filename: String): Pair<String, ByteArray>
+    fun loadAssetFile(filename: String): Pair<String, EfficientFile>
 
     /** Save data in a temporary/cache location; it is only expected that this data continue to exist while the program
      * is running.  Recommend "wallyCache" directory.
@@ -365,8 +370,6 @@ interface AssetManagerStorage
 
 class AssetManager(val app: CommonApp): AssetManagerStorage
 {
-
-
     val transferList = mutableListOf<AssetInfo>()
 
     fun nftUrl(s: String?, groupId: GroupId):String?
@@ -399,7 +402,8 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
         {
             if (DBG_NO_ASSET_CACHE) throw Exception()
             if (forceReload) throw Exception()
-            val data = assetManagerStorage().loadAssetFile(groupId.toHex() + ".td").second
+            val ef = assetManagerStorage().loadAssetFile(groupId.toHex() + ".td").second
+            val data = ef.openAt(0).readByteArray()
             val s = data.decodeUtf8()
             val ret = kotlinx.serialization.json.Json.decodeFromString(TokenDesc.serializer(), s)
             if (ret.genesisInfo?.height ?: 0 >= 0)  // If the data is valid in the asset file
@@ -475,6 +479,7 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
             else  // Could not access the doc for some reason, don't cache it so we retry next time we load the token
             {
                 val td = TokenDesc(tg.ticker ?: "", tg.name)
+                LogIt.info("Cannot access token desc document")
                 td.genesisInfo = tg
                 return td
             }
@@ -489,7 +494,7 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
     }
 
 
-    fun getNftFile(td: TokenDesc?, groupId: GroupId):Pair<String,ByteArray>?
+    fun getNftFile(td: TokenDesc?, groupId: GroupId):Pair<String, EfficientFile>?
     {
         try
         {
@@ -497,7 +502,7 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
         }
         catch(e: Exception) // file not found
         {
-            LogIt.info("NFT ${groupId.toHex()} not in cache")
+            LogIt.info(sourceLoc() +": NFT ${groupId.toHex()} not in cache")
         }
 
         var url = td?.nftUrl ?: nftUrl(td?.genesisInfo?.document_url, groupId)
@@ -544,14 +549,15 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
                 LogIt.info(sourceLoc() + "nft zip file does not match hash for ${groupId.toStringNoPrefix()}")
                 return null
             }
-            val nftData = nftData(zipBytes)  // Sanity check the file
+            val ef = EfficientFile(zipBytes)
+            val nftData = nftData(ef)  // Sanity check the file
             if (nftData == null)
             {
                 LogIt.info("But NOT an NFT file")
                 return null
             }
             storeAssetFile(groupId.toHex() + ".zip", zipBytes)
-            return Pair(url!!, zipBytes)
+            return Pair(url!!, ef)
         }
 
         return null
@@ -560,7 +566,7 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
     override fun storeAssetFile(filename: String, data: ByteArray): String
         = assetManagerStorage().storeAssetFile(filename, data)
 
-    override fun loadAssetFile(filename: String): Pair<String, ByteArray>
+    override fun loadAssetFile(filename: String): Pair<String, EfficientFile>
         = assetManagerStorage().loadAssetFile(filename)
 
     override fun storeCardFile(filename: String, data: ByteArray): String
