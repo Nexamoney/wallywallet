@@ -92,6 +92,7 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
     var newAcState by remember { mutableStateOf( NewAccountState(accountName = ProposeAccountName(selectedBlockChain.second) ?: "") ) }
 
     var recoverySearchText by remember { mutableStateOf("") }
+    var creatingAccountLoading by remember { mutableStateOf(false) }
 
     var aborter = remember { mutableStateOf(Objectify<Boolean>(false)) }
     var createClicks by remember {mutableStateOf(0) }  // Some operations require you click create twice
@@ -219,6 +220,7 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
               }
               else
               {
+                  creatingAccountLoading = true
                   Thread("recoverAccount")
                   {
                       newAcState = try
@@ -242,7 +244,7 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
                   }
               }
           }
-          if (inputValid && words.isEmpty())
+         if (inputValid && words.isEmpty())
           {
               later {
                   val account = wallyApp!!.newAccount(newAcState.accountName, flags, newAcState.pin, selectedBlockChain.second)
@@ -259,7 +261,8 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
                   }
               } // Can't happen in GUI thread
           }
-      }
+      },
+      creatingAccountLoading
     )
 }
 
@@ -288,10 +291,10 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
   onNewRecoveryPhrase: (String) -> Unit,
   onPinChange: (String) -> Unit,
   onHideUntilPinEnterChanged: (Boolean) -> Unit,
-  onClickCreateAccount: () -> Unit
+  onClickCreateAccount: () -> Unit,
+  creatingAccountLoading: Boolean
 )
 {
-
     Column(
       modifier = Modifier.padding(4.dp).fillMaxSize()
     ) {
@@ -309,23 +312,27 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
         Spacer(Modifier.height(10.dp))
         WallySwitch(newAcState.hideUntilPinEnter, S.PinHidesAccount, true, onHideUntilPinEnterChanged)
         Spacer(Modifier.height(20.dp))
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            // I'm cheating a bit here and using the contents of the recoverySearchText to pick what icon to show
-            if (recoverySearchText == i18n(S.NewAccountSearchingForTransactions))
-            {
-                LoadingAnimation()
-            }
-            else if (recoverySearchText == "")
-                Spacer(modifier = Modifier.size(50.dp))
-            else if (newAcState.earliestActivity != null)
-                ResImageView("icons/check.xml", modifier = Modifier.size(50.dp))
-            else if (recoverySearchText.length < 200)
-                Icon(Icons.Default.Clear, modifier = Modifier.size(50.dp), tint = colorError, contentDescription = null)
+        if (!creatingAccountLoading)
+        {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                // I'm cheating a bit here and using the contents of the recoverySearchText to pick what icon to show
+                if (recoverySearchText == i18n(S.NewAccountSearchingForTransactions))
+                {
+                    LoadingAnimation()
+                }
+                else if (recoverySearchText == "")
+                    Spacer(modifier = Modifier.size(50.dp))
+                else if (newAcState.earliestActivity != null)
+                    ResImageView("icons/check.xml", modifier = Modifier.size(50.dp))
+                else if (recoverySearchText.length < 200)
+                    Icon(Icons.Default.Clear, modifier = Modifier.size(50.dp), tint = colorError, contentDescription = null)
 
-            CenteredText(recoverySearchText)
+                CenteredText(recoverySearchText)
+            }
+            Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth())
+                { WallyRoundedTextButton(i18n(S.createAccount), onClick = onClickCreateAccount) }
         }
-        Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth())
-            { WallyRoundedTextButton(i18n(S.createAccount), onClick = onClickCreateAccount) }
+        else CenteredSectionText(i18n(S.Processing))
     }
 }
 
