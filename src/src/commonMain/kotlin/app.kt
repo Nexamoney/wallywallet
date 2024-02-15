@@ -22,6 +22,8 @@ import kotlinx.coroutines.newFixedThreadPoolContext
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
 import org.nexa.threads.iMutex
+import org.nexa.threads.iThread
+import org.nexa.threads.millisleep
 import kotlin.concurrent.Volatile
 import kotlin.coroutines.CoroutineContext
 
@@ -177,6 +179,8 @@ open class CommonApp
 
     val assetManager = AssetManager(this)
     val tpDomains: TricklePayDomains = TricklePayDomains(this)
+
+    var assetLoaderThread: iThread? = null
 
     var primaryAccount: Account
         get()
@@ -564,6 +568,16 @@ open class CommonApp
         allowAccessPriceData = prefs.getBoolean(ACCESS_PRICE_DATA_PREF, true)
         openAllAccounts()
         tpDomains.load()
+
+        assetLoaderThread = org.nexa.threads.Thread("assetLoader") {
+            millisleep(500UL)  // Constructing the asset list can use a lot of disk which interferes with startup
+            while(true)
+            {
+                for (a in accounts)
+                    a.value.constructAssetMap()
+                millisleep(15000UL)
+            }
+        }
     }
 
     /** Iterate through all the accounts, looping */

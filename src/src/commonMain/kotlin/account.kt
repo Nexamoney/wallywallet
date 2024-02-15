@@ -10,6 +10,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.nexa.libnexakotlin.*
+import org.nexa.threads.millisleep
 
 /** Account flags: No flag */
 const val ACCOUNT_FLAG_NONE = 0UL
@@ -188,15 +189,6 @@ class Account(
 
         setBlockchainAccessModeFromPrefs()
         loadAccountAddress()
-
-        later {
-            delay(500)  // Constructing the asset list can use a lot of disk which interferes with startup
-            while(true)
-            {
-                constructAssetMap()
-                delay(15000)
-            }
-        }
     }
 
     /** Save the PIN of an account to the database */
@@ -423,9 +415,7 @@ class Account(
             if (assetSaved == null)
             {
                 assets[asset.groupInfo.groupId] = asset
-                later {
-                    wallyApp?.let { asset.load(wallet.blockchain, it.assetManager) }
-                }
+                wallyApp?.let { asset.load(wallet.blockchain, it.assetManager) }
             }
             else
             {
@@ -433,9 +423,7 @@ class Account(
                 assetSaved.groupInfo.tokenAmt = asset.groupInfo.tokenAmt
                 if (assetSaved.iconUri == null)  // We failed to load this asset up, so try again
                 {
-                    later {
-                        wallyApp?.let { asset.load(wallet.blockchain, it.assetManager) }
-                    }
+                    wallyApp?.let { asset.load(wallet.blockchain, it.assetManager) }
                 }
             }
 
