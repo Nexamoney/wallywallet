@@ -222,7 +222,9 @@ fun triggerAssignAccountsGuiSlots()
 fun triggerUnlockDialog(show: Boolean = true, then: (()->Unit)? = null)
 {
     if (show)
-      later { externalDriver.send(GuiDriver(show = setOf(ShowIt.ENTER_PIN), afterUnlock = then)) }
+      later {
+          externalDriver.send(GuiDriver(show = setOf(ShowIt.ENTER_PIN), afterUnlock = then))
+      }
     else later { externalDriver.send(GuiDriver(noshow = setOf(ShowIt.ENTER_PIN))) }
 }
 

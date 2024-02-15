@@ -14,6 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.text.input.ImeAction
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.BrightBkg
@@ -33,6 +36,19 @@ fun UnlockDialog(onPinEntered: (String) -> Unit)
     }
     clearAlerts()
 
+    fun attemptUnlock()
+    {
+        if (wallyApp!!.unlockAccounts(pin.value) == 0)  // nothing got unlocked
+            displayError(S.InvalidPIN, persistAcrossScreens = 0)
+        else
+        {
+            triggerAccountsChanged()
+            clearAlerts()
+        }  // We don't know what accounts got unlocked so just redraw them all in this non-performance change
+        triggerUnlockDialog(false)
+        onPinEntered(pin.value)
+    }
+
     AlertDialog(title = { Text(i18n(S.EnterPIN)) },
       containerColor = BrightBkg,
       text = {
@@ -46,20 +62,18 @@ fun UnlockDialog(onPinEntered: (String) -> Unit)
                     ),
                     onValueChange = { pin.value = it },
                     //label = { Text("Enter PIN") },
-                    modifier = Modifier.focusRequester(focusRequester),
+                    modifier = Modifier.focusRequester(focusRequester).onKeyEvent {
+                        if ((it.key == Key.Enter)||(it.key == Key.NumPadEnter))
+                        {
+                            attemptUnlock()
+                            true
+                        }
+                        false// Do not accept this key
+                    },
+                    singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
-                        onDone = {
-                            if (wallyApp!!.unlockAccounts(pin.value) == 0)  // nothing got unlocked
-                                displayError(S.InvalidPIN, persistAcrossScreens = 0)
-                            else
-                            {
-                                triggerAccountsChanged()
-                                clearAlerts()
-                            }  // We don't know what accounts got unlocked so just redraw them all in this non-performance change
-                            triggerUnlockDialog(false)
-                            onPinEntered(pin.value)
-                        }
+                        onDone = { attemptUnlock() }
                     ),
                   )
               }
