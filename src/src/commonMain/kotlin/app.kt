@@ -681,7 +681,7 @@ open class CommonApp
         dbgAssertNotGuiThread()
 
         // I only want to write the PIN once when the account is first created
-        val epin = if (pin.length > 0) EncodePIN(name, pin) else byteArrayOf()
+        val epin = if (pin.length > 0) EncodePIN(name, pin) else null
 
         return accountLock.lock {
             val ac = try
@@ -694,10 +694,12 @@ open class CommonApp
                 return@lock null
             }
 
+            ac.encodedPin = epin
             ac.pinEntered = true  // for convenience, new accounts begin as if the pin has been entered
             ac.start()
             ac.onChange()
-            ac.saveAccountPin(name, epin)
+            // I save a blank if no pin just in case there's old data in the database
+            if (epin != null) ac.saveAccountPin(name, epin) else ac.saveAccountPin(name, byteArrayOf())
             ac.wallet.save(true)
 
             accounts[name] = ac

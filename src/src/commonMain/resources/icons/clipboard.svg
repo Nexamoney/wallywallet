@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="svg32935"
+   viewBox="0 0 474.66704 633.26605"
+   height="675.48383"
+   width="506.31149"
+   sodipodi:docname="clipboard.svg"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
+  <title
+     id="title834">clipboard</title>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="2163"
+     inkscape:window-height="1500"
+     id="namedview7"
+     showgrid="false"
+     inkscape:zoom="1.3858725"
+     inkscape:cx="353.75614"
+     inkscape:cy="390.47297"
+     inkscape:window-x="1430"
+     inkscape:window-y="420"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg32935"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     units="px" />
+  <defs
+     id="defs32937" />
+  <metadata
+     id="metadata32940">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>clipboard</dc:title>
+        <cc:license
+           rdf:resource="http://creativecommons.org/publicdomain/zero/1.0/" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Andrew Stone</dc:title>
+          </cc:Agent>
+        </dc:creator>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/publicdomain/zero/1.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <path
+     inkscape:connector-curvature="0"
+     style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:12.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 45.639712,625.47878 C 35.828152,623.37788 9.902519,613.83087 7.627221,594.46499 9.3331708,357.97234 9.6171769,357.57834 11.835122,115.79742 c 7.88514,-15.32345 22.91963,-22.995808 47.82509,-24.406028 12.855695,-1.718198 21.703872,3.773513 21.41752,16.998638 1.58334,21.76735 8.62216,34.88254 24.283658,41.93204 86.67676,2.89357 166.11741,3.40917 256.02819,3.40917 17.95222,-9.35516 31.41245,-26.41341 31.68352,-42.07944 0.059,-20.760368 -1.20263,-22.574152 23.6611,-20.266428 24.86373,2.307724 50.18547,6.860605 51.6828,32.112698 -0.77095,234.54755 -1.21678,234.18991 -1.37873,471.91207 -0.36006,7.90393 -15.04667,30.3438 -39.20495,31.41909 -11.22985,0.0701 -11.25512,-0.21725 -184.20316,0.14565 -104.03246,0.2184 -193.128128,-0.455 -197.990448,-1.4961 z M 114.40606,130.85037 c -15.296746,-17.04653 -17.225626,-35.353319 -1.4254,-54.875568 26.27923,-6.324057 34.58456,-6.89643 63.48757,-6.89643 -0.62269,-22.012738 6.65637,-45.111357 22.53202,-52.666282 15.87564,-7.5549241 66.26167,-7.2235548 81.44944,-0.0048 15.18777,7.218764 19.2405,21.098753 19.31698,38.763813 l 0.0604,13.90726 c 23.53605,-0.238626 31.9421,-0.904743 59.48402,4.73699 20.39419,22.183529 13.33432,45.065098 -4.23622,60.567698 -100.67088,0.0476 -130.92683,-0.35772 -240.66863,-3.53164 z M 263.03439,65.705502 c 9.69766,-4.840889 10.0742,-14.021425 0.91261,-20.27066 -9.16158,-6.249236 -41.38402,-4.503263 -48.30903,-0.209137 -6.925,4.294125 -8.15331,17.421404 0.37938,21.194422 8.5327,3.773019 37.31938,4.126265 47.01704,-0.714625 z"
+     id="path33558"
+     sodipodi:nodetypes="cccccccczcccccccczzcccccczzzzz"
+     inkscape:label="frame" />
+  <path
+     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:8.81249989;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="M 71.029259,203.03171 C 135.29383,289.61976 278.25059,169.96566 213.76424,239.56105 158.398,299.31378 51.939238,393.68168 151.52909,350.50198 c 65.97813,-28.6065 259.08768,-156.94083 155.58789,-52.08812 -103.49977,104.85272 -358.528633,273.97 -130.55854,149.49968 227.9701,-124.47032 288.85232,-86.58805 135.97029,-11.49998 -152.88202,75.08807 -188.05841,160.99965 -83.2057,103.49978 104.85272,-57.49988 160.32319,29.08817 160.32319,29.08817"
+     id="path836"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="cssssssc"
+     inkscape:label="swish" />
+</svg>

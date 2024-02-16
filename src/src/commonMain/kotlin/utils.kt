@@ -153,6 +153,18 @@ class ImageContainer
     }
 }
 
+fun String.onlyDigits(): Boolean
+{
+    var badChar = false
+    for (ch in this)
+    {
+        if (!ch.isDigit())
+        {
+            return false
+        }
+    }
+    return true
+}
 
 /** dig through text looking for addresses */
 fun scanForFirstAddress(s: String):PayAddress?

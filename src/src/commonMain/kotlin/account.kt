@@ -615,32 +615,39 @@ class Account(
      */
     fun onUpdatedReceiveInfoCommon(refresh: ((String) -> Unit)): Unit
     {
-        currentReceive.let {
-            var addr: PayAddress? = it?.address
-            val genNew: Boolean = if (addr == null)
-                true
-            else
-            {
-                var genNewTmp = false
-                // If we have an address, then if re-use is true don't get another one
-                if ((flags and ACCOUNT_FLAG_REUSE_ADDRESSES) > 0U) genNewTmp = false
-                // Otherwise get another one if our balance on this address is nonzero
-                else addr.let { launch { genNewTmp = (wallet.getBalanceIn(it) > 0) } }
-                genNewTmp
-            }
+        fun genNewAddress()
+        {
+            val ret = wallet.getNewDestination()
+            currentReceive = ret
+            saveAccountAddress()
+            refresh.invoke(ret.toString())
+        }
 
-            if (genNew)
+        val cr = currentReceive
+        if (cr == null)  later { genNewAddress() }
+        else
+        {
+            var addr: PayAddress? = cr.address
+
+            if (addr != null)
             {
-                runBlocking(Dispatchers.IO + handler) {
-                    val ret = wallet.newDestination()
-                    currentReceive = ret
-                    saveAccountAddress()
-                    addr = ret.address
+                // If we have an address, then if re-use is true don't get another one
+                if ((flags and ACCOUNT_FLAG_REUSE_ADDRESSES) > 0U)
+                    refresh.invoke(addr.toString())
+                // Otherwise get another one if our balance on this address is nonzero
+                else
+                {
+                    addr.let {
+                        later {
+                            if (wallet.getBalanceIn(it) > 0)
+                                genNewAddress()
+                            else
+                                refresh.invoke(addr.toString())
+                        }
+                    }
                 }
             }
-
-            if (addr != null)  // Should always be true if we get here
-                refresh.invoke(addr.toString())
+            else later { genNewAddress() }
         }
     }
 

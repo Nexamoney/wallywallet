@@ -214,23 +214,28 @@ fun assignAccountsGuiSlots(): ListifyMap<String, Account>
     return lm
 }
 
+
+const val TRIGGER_BUG_DELAY = 150L
+
 fun triggerAssignAccountsGuiSlots()
 {
-    later { externalDriver.send(GuiDriver(regenAccountGui = true)) }
+    later { delay(TRIGGER_BUG_DELAY); externalDriver.send(GuiDriver(regenAccountGui = true)) }
 }
 
 fun triggerUnlockDialog(show: Boolean = true, then: (()->Unit)? = null)
 {
     if (show)
-      later {
-          externalDriver.send(GuiDriver(show = setOf(ShowIt.ENTER_PIN), afterUnlock = then))
-      }
-    else later { externalDriver.send(GuiDriver(noshow = setOf(ShowIt.ENTER_PIN))) }
+    {
+        later {
+            delay(TRIGGER_BUG_DELAY); externalDriver.send(GuiDriver(show = setOf(ShowIt.ENTER_PIN), afterUnlock = then))
+        }
+    }
+    else later { delay(TRIGGER_BUG_DELAY); externalDriver.send(GuiDriver(noshow = setOf(ShowIt.ENTER_PIN))) }
 }
 
 fun triggerClipboardAction(doit: (String?) -> Unit)
 {
-    later { externalDriver.send(GuiDriver(withClipboard = doit))}
+    later { delay(TRIGGER_BUG_DELAY); externalDriver.send(GuiDriver(withClipboard = doit))}
 
 }
 
@@ -287,10 +292,10 @@ val accountChangedNotification = Channel<String>()
 fun triggerAccountsChanged(vararg accounts: Account)
 {
     if (accounts.size == 0)
-        later { accountChangedNotification.send("*all changed*") }
+        later { delay(100); accountChangedNotification.send("*all changed*") }
     else for (account in accounts)
     {
-        later { accountChangedNotification.send(account.name) }
+        later { delay(100); accountChangedNotification.send(account.name) }
     }
 }
 
@@ -500,6 +505,7 @@ fun NavigationRoot(nav: ScreenNav)
             driver.value = c
             // If the driver specifies an account, we want to switch to it
             c.account?.let {
+                selectedAccountIsLocked = it.locked
                 selectedAccount.value = it
                 wallyApp?.focusedAccount = it
             }
@@ -511,6 +517,7 @@ fun NavigationRoot(nav: ScreenNav)
                 }
                 if (it == ShowIt.ENTER_PIN)
                 {
+                    LogIt.info(sourceLoc() +": open PIN entry window")
                     unlockDialog = c.afterUnlock ?: {}
                 }
             }
@@ -521,6 +528,7 @@ fun NavigationRoot(nav: ScreenNav)
                 }
                 if (it == ShowIt.ENTER_PIN)
                 {
+                    LogIt.info(sourceLoc() +": close PIN entry window")
                     unlockDialog?.invoke()
                     unlockDialog = null
                 }

@@ -4,12 +4,8 @@ package info.bitcoinunlimited.www.wally.ui.theme
 import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.os.Build
-import android.view.View
-import android.widget.ImageView
-import android.widget.VideoView
 import androidx.annotation.OptIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,13 +19,9 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.*
-import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.WindowCompat
 import androidx.media3.common.C
@@ -42,17 +34,16 @@ import androidx.media3.datasource.DataSourceException
 import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.TransferListener
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.ui.PlayerView
-import androidx.media3.ui.PlayerView.ARTWORK_DISPLAY_MODE_FIT
 import com.caverock.androidsvg.SVG
+import info.bitcoinunlimited.www.wally.CannotLoadException
+import info.bitcoinunlimited.www.wally.getResourceFile
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import io.ktor.http.*
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.UnimplementedException
 import java.io.ByteArrayInputStream
 import java.io.FileInputStream
-import java.io.IOException
 import kotlin.math.min
 
 private val LogIt = GetLog("wally.theme.android")
@@ -112,6 +103,80 @@ class ByteArrayDataSource(val data:ByteArray, val url: Url): DataSource
     }
 }
 
+actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
+{
+    val bytes = try
+    {
+        getResourceFile(mediaUri)
+    }
+    catch (e: Exception)
+    {
+        null
+    }
+    val name = mediaUri.lowercase()
+    val url = Url(mediaUri)
+
+    if (name.endsWith(".svg", true))
+    {
+        val svg = if (bytes == null)
+        {
+            if (url.protocol == null)
+            {
+                SVG.getFromInputStream(FileInputStream(name))
+            }
+            else throw UnimplementedException("non-local data in NFT")
+        }
+        else
+        {
+            SVG.getFromInputStream(bytes.inputStream())
+        }
+
+        val winAR:Float = widthPx.toFloat()/heightPx.toFloat()
+
+
+
+        // window is wider than the doc
+        val bitmap =  if (winAR > svg.documentAspectRatio)
+            Bitmap.createBitmap((heightPx * svg.documentAspectRatio).toInt(), heightPx, Bitmap.Config.ARGB_8888)
+        else  // windows is narrower than the doc
+            Bitmap.createBitmap(widthPx, (widthPx/svg.documentAspectRatio).toInt(), Bitmap.Config.ARGB_8888)
+        val canvas = android.graphics.Canvas(bitmap)
+
+        svg.setDocumentWidth(bitmap.width.toFloat())
+        svg.setDocumentHeight(bitmap.height.toFloat())
+        svg.renderToCanvas(canvas)
+        val im: ImageBitmap = bitmap.asImageBitmap()
+        return im
+    }
+    else if (name.endsWith(".jpg", true) ||
+      name.endsWith(".jpeg", true) ||
+      name.endsWith(".png", true) ||
+      name.endsWith(".webp", true) ||
+      name.endsWith(".gif", true) ||
+      name.endsWith(".heic", true) ||
+      name.endsWith(".heif", true)
+    )
+    {
+        val bitmap = if (bytes == null)
+        {
+            if (url.protocol == null)
+            {
+                BitmapFactory.decodeFile(name)
+            }
+            else throw CannotLoadException("non-local data load: " + mediaUri)
+        }
+        else
+        {
+            BitmapFactory.decodeStream(bytes.inputStream())
+        }
+
+        val im: ImageBitmap = bitmap.asImageBitmap()
+        return im
+    }
+
+    throw UnimplementedException("video icons")
+}
+
 
 @OptIn(UnstableApi::class) @Composable actual fun MpMediaView(mediaData: ByteArray?, mediaUri: String?, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit): Boolean
 {
@@ -147,7 +212,9 @@ class ByteArrayDataSource(val data:ByteArray, val url: Url): DataSource
         svg.renderToCanvas(canvas)
         val im: ImageBitmap = bitmap.asImageBitmap()
         wrapper(MediaInfo(im.width, im.height, false)) { mod ->
-            val m = mod ?: Modifier.fillMaxSize().background(Color.Transparent)
+            val m = mod ?: Modifier
+              .fillMaxSize()
+              .background(Color.Transparent)
             Image(im, null, m, contentScale = ContentScale.Fit)
         }
     }
@@ -175,7 +242,9 @@ class ByteArrayDataSource(val data:ByteArray, val url: Url): DataSource
 
         val im: ImageBitmap = bitmap.asImageBitmap()
         wrapper(MediaInfo(im.width, im.height, false)) { mod ->
-            val m = mod ?: Modifier.fillMaxSize().background(Color.Transparent)
+            val m = mod ?: Modifier
+              .fillMaxSize()
+              .background(Color.Transparent)
             Image(im, null, m, contentScale = ContentScale.Fit)
         }
     }
@@ -214,7 +283,9 @@ class ByteArrayDataSource(val data:ByteArray, val url: Url): DataSource
         else MediaInfo(200, 200, true)  // No idea so pick something not crazy
 
         wrapper(mi) { mod ->
-            val m = mod ?: Modifier.fillMaxSize().background(Color.Transparent)
+            val m = mod ?: Modifier
+              .fillMaxSize()
+              .background(Color.Transparent)
             DisposableEffect(
               AndroidView(factory = {
                   PlayerView(context).apply {
@@ -234,7 +305,9 @@ class ByteArrayDataSource(val data:ByteArray, val url: Url): DataSource
     {
         val mi = MediaInfo(200, 200, false, false)
         wrapper(mi) { mod ->
-            val m = mod ?: Modifier.fillMaxSize().background(Color.Transparent)
+            val m = mod ?: Modifier
+              .fillMaxSize()
+              .background(Color.Transparent)
             ResImageView("icons/media_not_supported.xml", modifier = m)
         }
         return false

@@ -10,8 +10,14 @@ import androidx.compose.material3.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -316,33 +322,46 @@ fun AccountDetailChangePinView(acc: Account, displayError: (String) -> Unit, dis
     if (acc.lockable)
     {
         AccountDetailPinInput(i18n(S.CurrentPin), i18n(S.EnterPIN), currentPin, currentPinOk) {
-            currentPin = it
-
-            if (it.length < 4)
+            if(it.onlyDigits())
             {
-                currentPinOk = false
+                currentPin = it
+
+                if (it.length < 4)
+                {
+                    currentPinOk = false
+                }
+                currentPinOk = acc.submitAccountPin(it) != 0 // submitAccountPin returns 0 on wrong pin
             }
-            currentPinOk = acc.submitAccountPin(it) != 0 // submitAccountPin returns 0 on wrong pin
         }
         AccountDetailPinInput(i18n(S.NewPin), i18n(S.EnterPINorBlankToRemove), newPin, newPinOk) {
-            newPin = it
-            newPinOk = it.length >= 4 || it.isEmpty()
+            if(it.onlyDigits())
+            {
+                newPin = it
+                newPinOk = it.length >= 4 || it.isEmpty()
+            }
         }
     }
     else  // No current PIN
     {
         AccountDetailPinInput(i18n(S.NewPin), i18n(S.EnterPINorBlankToRemove), newPin, newPinOk) {
-            newPin = it
-            newPinOk = it.length >= 4 || it.isEmpty()
+            if(it.onlyDigits())
+            {
+                newPin = it
+                newPinOk = it.length >= 4 || it.isEmpty()
+            }
         }
     }
 
     fun processNewPin()
     {
         val name = acc.name
-        if (newPin.length in 2..3)
+        if (newPin.length > 0 && newPin.length < 4)
         {
             displayError(i18n(S.PinTooShort))
+        }
+        else if (!newPin.onlyDigits())
+        {
+            displayError(i18n(S.PinInvalid))
         }
         else if (newPin.isNotEmpty())
         {
@@ -363,13 +382,10 @@ fun AccountDetailChangePinView(acc: Account, displayError: (String) -> Unit, dis
 
     WallyButtonRow {
         WallyBoringTextButton(S.accept) {
+            clearAlerts()
             if (acc.lockable) // Replace pin
             {
-                if (currentPin.length < 4)
-                {
-                    displayError(i18n(S.PinTooShort))
-                }
-                else if (acc.submitAccountPin(currentPin) == 0) // submitAccountPin returns 0 on wrong pin
+                if (acc.submitAccountPin(currentPin) == 0) // submitAccountPin returns 0 on wrong pin
                     displayError(i18n(S.PinInvalid))
                 else
                     processNewPin()
@@ -385,9 +401,11 @@ fun AccountDetailChangePinView(acc: Account, displayError: (String) -> Unit, dis
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AccountDetailPinInput(description: String, placeholder: String, currentPin: String, currentPinOk: Boolean, onPinChanged: (String) -> Unit)
 {
+    val focusManager = LocalFocusManager.current
     Column {
         Row(
           modifier = Modifier
@@ -421,6 +439,7 @@ fun AccountDetailPinInput(description: String, placeholder: String, currentPin: 
             TextField(
               value = currentPin,
               onValueChange = onPinChanged,
+              singleLine = true,
               placeholder = { Text(placeholder) },
               keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number,
@@ -431,11 +450,19 @@ fun AccountDetailPinInput(description: String, placeholder: String, currentPin: 
                 unfocusedContainerColor = Color.Transparent,
                 disabledContainerColor = Color.Transparent,
               ),
-              visualTransformation = PasswordVisualTransformation(),
+              // visualTransformation = PasswordVisualTransformation(),
               modifier = Modifier
                 .padding(start = 8.dp, end = 8.dp)
                 .wrapContentWidth()
-                .wrapContentHeight()
+                .wrapContentHeight().onKeyEvent {
+                  if ((it.key == Key.Enter)||(it.key == Key.NumPadEnter))
+                  {
+                      //focusManager.moveFocus(FocusDirection.Enter)
+                      focusManager.moveFocus(FocusDirection.Next)
+                      true
+                  }
+                  else true// accept this key, and throw it away
+              },
             )
         }
     }
