@@ -23,6 +23,7 @@ import info.bitcoinunlimited.www.wally.ui.theme.*
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.HomeScreen")
+private val currentReceiveShared: MutableStateFlow<String> = MutableStateFlow("")
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 /* Since composable state needs to be defined within a composable, imagine this composable is actually a singleton class,
@@ -36,7 +37,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
     var isScanningQr by remember { mutableStateOf(false) }
 
     val synced = remember { mutableStateOf(wallyApp!!.isSynced()) }
-    var currentReceive by remember { mutableStateOf<String?>(null) }
+    var currentReceive = currentReceiveShared.collectAsState()
     var sendQuantity = remember { mutableStateOf<String>("") }
     var sendFromAccount by remember { mutableStateOf<String>(selectedAccount.value?.name ?: wallyApp?.focusedAccount?.name ?: "") }
 
@@ -80,9 +81,9 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
                   onAccountNameSelected = onAccountNameSelected,
                 )
             }
-            AddressQrCode(currentReceive ?: "")
+            AddressQrCode(currentReceive.value)
             // update the share function based on whatever my current receive is
-            ToBeShared = { currentReceive ?: "" }
+            ToBeShared = { currentReceive.value }
         }
     }
 
@@ -500,7 +501,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
     LaunchedEffect(selectedAccount) {
         selectedAccount.collect {
             selectedAccount.value?.onUpdatedReceiveInfoCommon { recvAddrStr ->
-                currentReceive = recvAddrStr
+                currentReceiveShared.value = recvAddrStr
             }
         }
     }
