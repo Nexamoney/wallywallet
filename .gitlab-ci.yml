@@ -1,4 +1,3 @@
-
 # These "stages" are actually separately initiated VMs, so better used for different configurations, etc
 stages:
   - docs
@@ -51,7 +50,7 @@ assemble:
   variables:
     ANDROID_HOME: "/opt/homebrew/share/android-commandlinetools"
   script:
-    - ./gradlew assemble  
+    - ./gradlew assemble
     - ./gradlew :src:allMetadataJar
     - ./gradlew :src:assembleDebug
     - ./gradlew :src:assembleRelease
@@ -150,10 +149,32 @@ androidTest:
     - ./gradlew src:test
 
 testflight:
-  allow_failure: true # Draft for mp branch fastlane testflight deployment
+  rules:
+        - if: $CI_COMMIT_REF_PROTECTED == "true"
   stage: deploy_internally
   tags:
     - m1-baremetal
   script:
-    # - TODO: Install fastlane
+    - mkdir iosApp/fastlane/keys
+    # setting up ".env" file
+    - echo "APP_STORE_CONNECT_API_KEY_PATH=$APP_STORE_CONNECT_API_KEY_PATH" >> iosApp/.env
+    - echo "APPLE_ID=$APPLE_ID" >> iosApp/.env
+    - echo "ITC_TEAM_ID=$ITC_TEAM_ID" >> iosApp/.env
+    - echo "TEAM_ID=$TEAM_ID" >> iosApp/.env
+    # setting up fastlane keys: json
+    # see this for the correct quoting
+    # https://docs.gitlab.com/ee/ci/yaml/script.html#use-special-characters-with-script
+    - echo $KEYSJSON | base64 --decode > iosApp/fastlane/keys/$key_id.json
+    # setting up fastlane keys: p8
+    - echo $KEYSP8 | base64 --decode > iosApp/fastlane/keys/$key_id.p8
+    # TODO remove the following cmds
+    - cp iosApp/.env /tmp
+    - cp iosApp/fastlane/keys/$key_id.json /tmp
+    - cp iosApp/fastlane/keys/$key_id.p8 /tmp
+    # Run fastlane
+    - cd iosApp/
+    - gem install bundler
+    - gem install fastlane
+    - bundle install
+    - bundle update
     - bundle exec fastlane ios beta --verbose
