@@ -79,6 +79,12 @@ fun AddressQrCode(address: String)
                     .size(144.dp)
                 )
             }
+            else
+            {
+                Box(
+                  modifier = Modifier.size(144.dp)
+                )
+            }
         }
         Spacer(Modifier.width(4.dp))
 
