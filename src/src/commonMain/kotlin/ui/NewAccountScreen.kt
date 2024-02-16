@@ -170,7 +170,7 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
           }
       },
       onPinChange = {
-          val validOrNoPin = (it.isEmpty() || (it.length >= MIN_PIN_LEN))
+          val validOrNoPin = (it.isEmpty() || ((it.length >= MIN_PIN_LEN) && it.onlyDigits()) )
           newAcState = newAcState.copy(pin = it, validOrNoPin = validOrNoPin)
       },
       onHideUntilPinEnterChanged = {

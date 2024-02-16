@@ -376,12 +376,14 @@ fun BlockchainSource(chain: ChainSelector, preferenceDB: SharedPreferences, swit
         Spacer(modifier = Modifier.weight(0.01f).alignBy(switchAlignment))
         WallySwitch(onlyChecked, S.only) {
             onlyChecked.value = it
-            preferenceDB.edit().putBoolean(exclusiveNodeKey, it).commit()
+            if (it) preferChecked.value = false  // if one is true the other must be false
+            preferenceDB.edit().putBoolean(exclusiveNodeKey, it).putBoolean(preferNodeKey, preferChecked.value).commit()
         }
         Spacer(modifier = Modifier.weight(0.01f))
         WallySwitch(preferChecked, S.prefer) {
             preferChecked.value = it
-            preferenceDB.edit().putBoolean(preferNodeKey, it).commit()
+            if (it) onlyChecked.value = false  // if one is true the other must be false
+            preferenceDB.edit().putBoolean(preferNodeKey, it).putBoolean(exclusiveNodeKey, onlyChecked.value).commit()
         }
     }
 }

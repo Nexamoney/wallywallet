@@ -20,6 +20,10 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.text.input.ImeAction
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.BrightBkg
+import kotlinx.coroutines.delay
+import org.nexa.libnexakotlin.GetLog
+
+private val LogIt = GetLog("BU.wally.unlockview")
 
 /**
  * Displays a confirm/dismiss dialog to users with optional confirm/dismiss button text and description
@@ -42,9 +46,11 @@ fun UnlockDialog(onPinEntered: (String) -> Unit)
             displayError(S.InvalidPIN, persistAcrossScreens = 0)
         else
         {
-            triggerAccountsChanged()
             clearAlerts()
+            triggerAccountsChanged()
+
         }  // We don't know what accounts got unlocked so just redraw them all in this non-performance change
+        LogIt.info("close unlock dialog")
         triggerUnlockDialog(false)
         onPinEntered(pin.value)
     }
@@ -66,7 +72,7 @@ fun UnlockDialog(onPinEntered: (String) -> Unit)
                         if ((it.key == Key.Enter)||(it.key == Key.NumPadEnter))
                         {
                             attemptUnlock()
-                            true
+                            false
                         }
                         false// Do not accept this key
                     },

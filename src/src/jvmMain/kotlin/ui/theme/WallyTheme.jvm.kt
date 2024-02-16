@@ -7,21 +7,25 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import com.github.weisj.jsvg.parser.SVGLoader
+import info.bitcoinunlimited.www.wally.CannotLoadException
+import info.bitcoinunlimited.www.wally.getResourceFile
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import io.ktor.http.*
 import org.nexa.libnexakotlin.UnimplementedException
+import org.nexa.libnexakotlin.logThreadException
+import java.awt.Graphics2D
+import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
-import java.io.FileInputStream
-
 import javax.imageio.ImageIO
+import kotlin.math.min
+
+
 //import javafx.scene.media.Media
 //import javafx.scene.media.MediaPlayer
 //import javafx.scene.media.MediaView
@@ -42,6 +46,71 @@ actual fun WallyTheme(
 }
 
 
+actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
+{
+    val bytes = try
+    {
+        getResourceFile(mediaUri)
+    }
+    catch (e: Exception)
+    {
+        null
+    }
+    val name = mediaUri.lowercase()
+
+    if (name.endsWith(".svg", true))
+    {
+        val loader = SVGLoader()
+        val svgdoc = if (bytes != null) loader.load(bytes.inputStream())
+        else try
+        {
+            loader.load(java.net.URL(mediaUri))
+        }
+        catch (e: Exception)
+        {
+            throw CannotLoadException("cannot load: " + mediaUri + " " + e.toString())
+        }
+        svgdoc?.let {
+            val size = it.size()
+            val im = BufferedImage(widthPx, heightPx, BufferedImage.TYPE_INT_ARGB)
+            val scalex = widthPx/size.width
+            val scaley = heightPx/size.height
+            val g: Graphics2D = im.createGraphics()
+            val fitScale = min(scalex,scaley).toDouble()
+            g.scale(fitScale,fitScale)
+            it.render(null, g)
+            g.dispose()
+            return im.toComposeImageBitmap()
+        }
+    }
+    else if (name.endsWith(".jpg", true) ||
+      name.endsWith(".jpeg", true) ||
+      name.endsWith(".png", true) ||
+      name.endsWith(".webp", true) ||
+      name.endsWith(".gif", true) ||
+      name.endsWith(".heic", true) ||
+      name.endsWith(".heif", true)
+    )
+    {
+        val bitmap = if (bytes == null)
+        {
+            val URL = java.net.URL(mediaUri)
+            if ((URL.protocol == null) || (URL.protocol == "file"))
+            {
+                ImageIO.read(URL)
+            }
+            else throw CannotLoadException("non-local data load: " + mediaUri)
+        }
+        else
+        {
+            ImageIO.read(bytes.inputStream())
+        }
+        return bitmap.toComposeImageBitmap()
+    }
+
+    throw UnimplementedException("video icons")
+}
+
 @Composable actual fun MpMediaView(mediaData: ByteArray?, mediaUri: String?, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit): Boolean
 {
     val bytes = mediaData
@@ -54,34 +123,30 @@ actual fun WallyTheme(
 
     if (name.endsWith(".svg", true))
     {
-        /*
-        val svg = if (bytes == null)
+        val loader = SVGLoader()
+        val svgdoc = if (mediaData != null) loader.load(ByteArrayInputStream(mediaData))
+        else try
         {
-            if (url.protocol == null)
-            {
-                SVG.getFromInputStream(FileInputStream(name))
+            loader.load(java.net.URL(mediaUri))
+        }
+        catch(e:Exception)
+        {
+            logThreadException(e, "loading svg image")
+            null
+        }
+        svgdoc?.let {
+            val size = it.size()
+            val x = min(1000, size.width.toInt())
+            val y = min(1000, size.height.toInt())
+            val im = BufferedImage(x, y, BufferedImage.TYPE_INT_ARGB)
+            val g: Graphics2D = im.createGraphics()
+            it.render(null, g)
+            g.dispose()
+            wrapper(MediaInfo(im.width,im.height,false)) { mod ->
+                val m = mod ?: Modifier.fillMaxSize().background(Color.Transparent)
+                Image(im.toComposeImageBitmap(), null, m, contentScale = ContentScale.Fit)
             }
-            else throw UnimplementedException("non-local data in NFT")
         }
-        else
-        {
-            SVG.getFromInputStream(ByteArrayInputStream(bytes))
-        }
-
-
-        // This doesn't make sense because SVG is generally scalable and might be given to us with crazy dimensions
-        // val bitmap = Bitmap.createBitmap(svg.documentWidth.toInt(), svg.documentHeight.toInt(), Bitmap.Config.ARGB_8888)
-
-        val bitmap = Bitmap.createBitmap((1000*svg.documentAspectRatio).toInt(), 1000, Bitmap.Config.ARGB_8888)
-        val canvas = android.graphics.Canvas(bitmap)
-        svg.renderToCanvas(canvas)
-        val im: ImageBitmap = bitmap.asImageBitmap()
-        wrapper(MediaInfo(im.width,im.height,false)) { mod ->
-            val m = mod ?: Modifier.fillMaxSize().background(Color.Transparent)
-            Image(im, null, m, contentScale = ContentScale.Fit)
-        }
-
-         */
     }
     else if (name.endsWith(".jpg", true) ||
       name.endsWith(".jpeg", true) ||

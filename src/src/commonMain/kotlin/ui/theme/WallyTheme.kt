@@ -2,6 +2,7 @@ package info.bitcoinunlimited.www.wally.ui.theme
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
 
 @Composable
 expect fun WallyTheme(
@@ -26,3 +27,6 @@ data class MediaInfo(val width: Int, val height: Int,
  * Modifier.fillMaxSize().background(Color.Transparent) is used.
  */
 @Composable expect fun MpMediaView(mediaData: ByteArray?, mediaUri: String?, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit):Boolean
+
+
+expect fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap

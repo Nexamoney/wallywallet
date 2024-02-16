@@ -35,8 +35,84 @@ import platform.CoreMedia.CMTimeMake
 import platform.CoreMedia.CMTimeRange
 import platform.CoreMedia.CMTimeRangeMake
 import platform.UIKit.*
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.toComposeImageBitmap
+import info.bitcoinunlimited.www.wally.getResourceFile
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.get
+import kotlinx.cinterop.usePinned
+import org.jetbrains.skia.ColorAlphaType
+import org.jetbrains.skia.ColorType
+import org.jetbrains.skia.Image
+import org.jetbrains.skia.ImageInfo
+import org.nexa.libnexakotlin.UnimplementedException
+import platform.CoreFoundation.CFDataGetBytePtr
+import platform.CoreFoundation.CFDataGetLength
+import platform.CoreFoundation.CFRelease
+import platform.CoreGraphics.CGColorSpaceCreateDeviceRGB
+import platform.CoreGraphics.CGDataProviderCopyData
+import platform.CoreGraphics.CGImageAlphaInfo
+import platform.CoreGraphics.CGImageCreateCopyWithColorSpace
+import platform.CoreGraphics.CGImageGetAlphaInfo
+import platform.CoreGraphics.CGImageGetBytesPerRow
+import platform.CoreGraphics.CGImageGetDataProvider
+import platform.CoreGraphics.CGImageGetHeight
+import platform.CoreGraphics.CGImageGetWidth
+import platform.UIKit.UIImage
+import platform.UIKit.UIImagePNGRepresentation
+import platform.posix.memcpy
 
 private val LogIt = GetLog("wally.theme.ios")
+
+// from https://slack-chats.kotlinlang.org/t/12086405/hi-all-how-to-convert-ios-uiimage-to-compose-imagebitmap-in-
+@OptIn(ExperimentalForeignApi::class)
+internal fun UIImage.toSkiaImage(): Image?
+{
+    val imageRef = CGImageCreateCopyWithColorSpace(this.CGImage, CGColorSpaceCreateDeviceRGB()) ?: return null
+
+    val width = CGImageGetWidth(imageRef).toInt()
+    val height = CGImageGetHeight(imageRef).toInt()
+
+    val bytesPerRow = CGImageGetBytesPerRow(imageRef)
+    val data = CGDataProviderCopyData(CGImageGetDataProvider(imageRef))
+    val bytePointer = CFDataGetBytePtr(data)
+    val length = CFDataGetLength(data)
+    val alphaInfo = CGImageGetAlphaInfo(imageRef)
+
+    val alphaType = when (alphaInfo) {
+        CGImageAlphaInfo.kCGImageAlphaPremultipliedFirst, CGImageAlphaInfo.kCGImageAlphaPremultipliedLast -> ColorAlphaType.PREMUL
+        CGImageAlphaInfo.kCGImageAlphaFirst, CGImageAlphaInfo.kCGImageAlphaLast -> ColorAlphaType.UNPREMUL
+        CGImageAlphaInfo.kCGImageAlphaNone, CGImageAlphaInfo.kCGImageAlphaNoneSkipFirst, CGImageAlphaInfo.kCGImageAlphaNoneSkipLast -> ColorAlphaType.OPAQUE
+        else -> ColorAlphaType.UNKNOWN
+    }
+
+    val byteArray = ByteArray(length.toInt()) { index ->
+        bytePointer!![index].toByte()
+    }
+    CFRelease(data)
+    CFRelease(imageRef)
+
+    return Image.makeRaster(
+      imageInfo = ImageInfo(width = width, height = height, colorType = ColorType.RGBA_8888, alphaType = alphaType),
+      bytes = byteArray,
+      rowBytes = bytesPerRow.toInt(),
+    )
+}
+
+@OptIn(ExperimentalForeignApi::class)
+fun UIImage.toImageBitmap(): ImageBitmap {
+    return this.toSkiaImage()!!.toComposeImageBitmap()
+    //todo <https://github.com/touchlab/DroidconKotlin/blob/fe5b7e8bb6cdf5d00eeaf7ee13f1f96b71857e8f/shared-ui/src/iosMain/kotlin/co/touchlab/droidcon/ui/util/ToSkiaImage.kt>
+    val pngRepresentation = UIImagePNGRepresentation(this)!!
+    val byteArray = ByteArray(pngRepresentation.length.toInt()).apply {
+        usePinned {
+            memcpy(it.addressOf(0), pngRepresentation.bytes, pngRepresentation.length)
+        }
+    }
+    return org.jetbrains.skia.Image.makeFromEncoded(byteArray).toComposeImageBitmap()
+}
+
+
 
 @Composable
 actual fun WallyTheme(
@@ -53,6 +129,49 @@ actual fun WallyTheme(
 }
 
 @OptIn(ExperimentalForeignApi::class)
+actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
+{
+    val name = mediaUri.lowercase()
+
+    val bytes = try
+    {
+        getResourceFile(mediaUri).readByteArray()
+    }
+    catch (e: Exception)
+    {
+        null
+    }
+
+    //if (name.endsWith(".svg", true)) // Note SVG appears to only be supported via a resource file.
+    if (
+      name.endsWith(".jpg", true) ||
+      name.endsWith(".jpeg", true) ||
+      name.endsWith(".png", true) ||
+      name.endsWith(".webp", true) ||
+      name.endsWith(".gif", true) ||
+      name.endsWith(".heic", true) ||
+      name.endsWith(".heif", true)
+    )
+    {
+        LogIt.info("Media icon $name")
+
+        val im = bytes?.usePinned { pinned ->
+            val b = NSData.create(bytes = pinned.addressOf(0), length = pinned.get().size.toULong())
+            UIImage(b)
+        }
+          ?: run {
+              val path = mediaUri.toPath()
+              // If mediaUri doesn't exist, program will crash
+              if (!FileSystem.SYSTEM.exists(path)) UIImage()
+              else UIImage(mediaUri)
+          }
+
+        return im.toImageBitmap()
+    }
+    throw UnimplementedException("other icon formats")
+}
+
+@OptIn(ExperimentalForeignApi::class)
 @Composable actual fun MpMediaView(mediaData: ByteArray?, mediaUri: String?, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit):Boolean
 {
     println("MpMediaView($mediaData, $mediaUri, $wrapper)")
@@ -63,11 +182,8 @@ actual fun WallyTheme(
     //val url = Url(mu)
     val name = mu.lowercase()
 
-    if (name.endsWith(".svg", true))
-    {
-
-    }
-    else if (name.endsWith(".jpg", true) ||
+    if (name.endsWith(".svg", true) ||
+      name.endsWith(".jpg", true) ||
       name.endsWith(".jpeg", true) ||
       name.endsWith(".png", true) ||
       name.endsWith(".webp", true) ||

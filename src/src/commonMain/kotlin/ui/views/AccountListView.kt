@@ -21,6 +21,8 @@ import kotlinx.coroutines.flow.collect
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.nexa.libnexakotlin.*
 
+private val LogIt = GetLog("BU.wally.accountlistview")
+
 @Composable fun AccountListView(nav: ScreenNav, selectedAccount: MutableStateFlow<Account?>, accounts: MutableState<ListifyMap<String,Account>>,
   modifier: Modifier = Modifier,
   onAccountSelected: (Account) -> Unit)
@@ -165,14 +167,14 @@ fun Account.uiData():AccountUIData
 
 @Composable
 fun AccountItemView(
-  anyChanges: AccountUIData,
+  uidata: AccountUIData,
   index: Int,
   isSelected: Boolean,
   devMode: Boolean,
   onClickAccount: () -> Unit,
   onClickGearIcon: () -> Unit
 ) {
-    val uidata = anyChanges //.value
+
     val backgroundColor = if (isSelected) defaultListHighlight else if (index and 1 == 0) WallyRowAbkg1 else WallyRowAbkg2
     Box(
       modifier = Modifier
@@ -199,7 +201,12 @@ fun AccountItemView(
                     {
                         ResImageView(if (uidata.locked) "icons/lock.xml" else "icons/unlock.xml",
                           modifier = Modifier.size(26.dp).absoluteOffset(0.dp, -8.dp).clickable {
-                              if (uidata.locked) triggerUnlockDialog()
+                              onClickAccount()  // I want to select the whole account & then try to unlock/lock
+                              if (uidata.locked)
+                              {
+
+                                  triggerUnlockDialog()
+                              }
                               else
                               {
                                   uidata.account.pinEntered = false
@@ -239,7 +246,11 @@ fun AccountItemView(
                 }
             }
             // Show the account settings gear at the end
-            if (isSelected) ResImageView("icons/gear.xml", Modifier.align(Alignment.CenterVertically).padding(0.dp, 0.dp).size(32.dp).clickable(onClick = onClickGearIcon))
+            if (isSelected)
+            {
+                ResImageView("icons/gear.xml", Modifier.align(Alignment.CenterVertically).padding(0.dp, 0.dp).size(32.dp).clickable(onClick = onClickGearIcon))
+            }
+            else Spacer(Modifier.align(Alignment.CenterVertically).padding(0.dp, 0.dp).size(32.dp))  // by putting a blank here, the other columns don't change
         }
     }
 }

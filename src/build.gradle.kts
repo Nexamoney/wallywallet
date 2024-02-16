@@ -17,7 +17,7 @@ val composeVersion = "1.5.12"        // https://github.com/JetBrains/compose-mul
 val androidTestCoreVersion = "1.5.0"
 val androidxActivityComposeVersion = "1.7.2"
 val uriKmpVersion = "0.0.16"  // https://github.com/eygraber/uri-kmp
-val skikoVersion = "0.7.90" // https://github.com/JetBrains/skiko/releases
+val skikoVersion = "0.7.93" // https://github.com/JetBrains/skiko/releases
 
 val secSinceEpoch = Instant.now().epochSecond
 
@@ -309,6 +309,9 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:$coroutinesVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:$coroutinesVersion")
+
+                // SVG rendering
+                implementation("com.github.weisj:jsvg:1.4.0")
 
                 // https://mvnrepository.com/artifact/org.openjfx/javafx-media
                 implementation("org.openjfx:javafx-media:17.0.10")

@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.*
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
+import info.bitcoinunlimited.www.wally.getResourceFile
 import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 
@@ -188,7 +189,18 @@ fun WallyBoringLargeTextButton(textRes: Int, enabled: Boolean=true, modifier: Mo
 fun WallyBoringLargeIconButton(iconRes: String, enabled: Boolean=true, modifier: Modifier = Modifier, interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
 {
     // chosen height is comparable to the large text button
-    WallyBoringButton(onClick, enabled, modifier, interactionSource) { ResImageView(iconRes, Modifier.wrapContentWidth().height(32.dp).defaultMinSize(32.dp, 32.dp).clickable { onClick() }.then(modifier)) }
+    WallyBoringButton(onClick, enabled, modifier, interactionSource)
+    {
+        if (iconRes.endsWith(".xml"))
+            ResImageView(iconRes, Modifier.wrapContentWidth().height(32.dp).defaultMinSize(32.dp, 32.dp).clickable { onClick() }.then(modifier))
+        else
+        {
+            val imbytes = getResourceFile(iconRes).readByteArray()
+            MpMediaView(imbytes, iconRes) { mediaInfo, drawer ->
+                drawer(Modifier.wrapContentWidth().height(32.dp).defaultMinSize(32.dp, 32.dp).clickable { onClick() }.then(modifier))
+            }
+        }
+    }
 }
 
 @Composable
