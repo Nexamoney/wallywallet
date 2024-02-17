@@ -48,6 +48,7 @@ fun UnlockDialog(onPinEntered: (String) -> Unit)
         {
             clearAlerts()
             triggerAccountsChanged()
+            triggerAssignAccountsGuiSlots()  // In case accounts should be showed
 
         }  // We don't know what accounts got unlocked so just redraw them all in this non-performance change
         LogIt.info("close unlock dialog")

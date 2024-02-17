@@ -227,8 +227,9 @@ fun SendView(
             return
         }
 
-        if (amount > account.wallet.balance)
+        if (account.toFinestUnit(amount) > account.wallet.balance)
         {
+            sendConfirm = ""
             displayError(S.insufficentBalance, "Account contains ${account.wallet.balance}.  Attempted to send ${amount}.")
             return
         }
@@ -331,12 +332,17 @@ fun SendView(
 
             sendToAddress.value = sendAddr
 
-            // When sendConfirm is not empty, a confirmation dialog is displayed
-            sendConfirm = i18n(S.SendConfirmSummary) % mapOf("amt" to account.format(amount), "currency" to account.currencyCode,
-              "dest" to sendAddr.toString(),
-              "inFiat" to fiatAmt,
-              "assets" to "",
-            )
+            LogIt.info("checking against ${account.name}")
+            if (account.toFinestUnit(amount) <= account.wallet.balance)
+            {
+                // When sendConfirm is not empty, a confirmation dialog is displayed
+                sendConfirm = i18n(S.SendConfirmSummary) % mapOf(
+                  "amt" to account.format(amount), "currency" to account.currencyCode,
+                  "dest" to sendAddr.toString(),
+                  "inFiat" to fiatAmt,
+                  "assets" to "",
+                )
+            }
         }
         else  // otherwise just send it
         {
@@ -399,6 +405,7 @@ fun SendView(
             SectionText(S.Amount)
             // Send quantity input
             WallyDecimalEntry(sendQuantity.value, Modifier.weight(1f)) {
+                // TODO need to serialize clearing vs new accounts: Serialize ALL alerts.  clearAlerts()
                 setSendQuantity(it)
                 afterTextChanged()
                 checkSendQuantity(sendQuantity.value, account)

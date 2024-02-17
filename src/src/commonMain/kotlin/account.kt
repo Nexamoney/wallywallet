@@ -620,7 +620,7 @@ class Account(
             val ret = wallet.getNewDestination()
             currentReceive = ret
             saveAccountAddress()
-            refresh.invoke(ret.toString())
+            refresh.invoke(ret.address.toString())
         }
 
         val cr = currentReceive

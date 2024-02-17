@@ -30,6 +30,7 @@ import io.ktor.util.cio.*
 import kotlinx.datetime.LocalDateTime
 import okio.BufferedSource
 import okio.utf8Size
+import java.time.format.TextStyle
 
 private val LogIt = GetLog("BU.wally.utils")
 
@@ -165,6 +166,20 @@ fun String.onlyDigits(): Boolean
     }
     return true
 }
+fun String.onlyDecimal(): Boolean
+{
+    var badChar = false
+    for (ch in this)
+    {
+        if (!(ch.isDigit() || ch == ',' || ch == '.'))
+        {
+            return false
+        }
+    }
+    return true
+}
+
+
 
 /** dig through text looking for addresses */
 fun scanForFirstAddress(s: String):PayAddress?

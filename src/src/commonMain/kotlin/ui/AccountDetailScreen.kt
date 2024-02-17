@@ -161,9 +161,27 @@ fun AccountActions(acc: Account, txHistoryButtonClicked: () -> Unit, accountDele
       modifier = Modifier.fillMaxWidth(),
       horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        var checked by remember { mutableStateOf(acc.flags and ACCOUNT_FLAG_REUSE_ADDRESSES == 0UL) }
-
         CenteredSectionText(i18n(S.AccountActions))
+        AccountActionButtons(acc, txHistoryButtonClicked = txHistoryButtonClicked, accountDeleted)
+    }
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+@Composable
+fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accountDeleted: () -> Unit)
+{
+    val accountAction: MutableState<AccountAction?> = remember { mutableStateOf(null) }
+    var checked by remember { mutableStateOf(acc.flags and ACCOUNT_FLAG_REUSE_ADDRESSES == 0UL) }
+
+
+    fun displayNoticePrimaryAccount(name: String)
+    {
+        displayNotice(i18n(S.primaryAccountSuccess) % mapOf("name" to name))
+    }
+
+
+    if (accountAction.value == null)
+    {
         WallySwitch(checked, S.AutomaticNewAddress)
         {
             checked = it
@@ -177,24 +195,6 @@ fun AccountActions(acc: Account, txHistoryButtonClicked: () -> Unit, accountDele
             }
         }
 
-        AccountActionButtons(acc, txHistoryButtonClicked = txHistoryButtonClicked, accountDeleted)
-    }
-}
-
-@OptIn(DelicateCoroutinesApi::class)
-@Composable
-fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accountDeleted: () -> Unit)
-{
-    val accountAction: MutableState<AccountAction?> = remember { mutableStateOf(null) }
-
-    fun displayNoticePrimaryAccount(name: String)
-    {
-        displayNotice(i18n(S.primaryAccountSuccess) % mapOf("name" to name))
-    }
-
-
-    if (accountAction.value == null)
-    {
         WallyBoringMediumTextButton(S.SetChangePin) {
             accountAction.value = AccountAction.PinChange
         }
@@ -318,9 +318,20 @@ fun AccountDetailChangePinView(acc: Account, displayError: (String) -> Unit, dis
     var currentPin by remember { mutableStateOf("") }
     var newPinOk by remember { mutableStateOf(true) }
     var newPin by remember { mutableStateOf("") }
+    var pinHidesAccount by remember { mutableStateOf((acc.flags and ACCOUNT_FLAG_HIDE_UNTIL_PIN) > 0u) }
+
+    WallySwitch(pinHidesAccount, S.PinHidesAccount)
+    {
+        pinHidesAccount = it
+        if (it) acc.flags = acc.flags or ACCOUNT_FLAG_HIDE_UNTIL_PIN
+        else acc.flags = (acc.flags and ACCOUNT_FLAG_HIDE_UNTIL_PIN.inv())
+
+        acc.saveAccountFlags()
+    }
 
     if (acc.lockable)
     {
+
         AccountDetailPinInput(i18n(S.CurrentPin), i18n(S.EnterPIN), currentPin, currentPinOk) {
             if(it.onlyDigits())
             {
@@ -461,7 +472,7 @@ fun AccountDetailPinInput(description: String, placeholder: String, currentPin: 
                       focusManager.moveFocus(FocusDirection.Next)
                       true
                   }
-                  else true// accept this key, and throw it away
+                  else false// do not accept this key
               },
             )
         }

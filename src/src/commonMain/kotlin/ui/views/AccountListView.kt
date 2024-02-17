@@ -6,6 +6,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
@@ -18,16 +20,20 @@ import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.accountlistview")
 
-@Composable fun AccountListView(nav: ScreenNav, selectedAccount: MutableStateFlow<Account?>, accounts: MutableState<ListifyMap<String,Account>>,
-  modifier: Modifier = Modifier,
-  onAccountSelected: (Account) -> Unit)
+
+private val accountListState:MutableStateFlow<LazyListState?> = MutableStateFlow(null)
+
+@Composable fun AccountListView(nav: ScreenNav, selectedAccount: MutableStateFlow<Account?>, accounts: ListifyMap<String,Account>,
+  modifier: Modifier = Modifier, onAccountSelected: (Account) -> Unit)
 {
     val accountUIData = remember { mutableStateMapOf<String,AccountUIData>() }
+    if (accountListState.value == null) accountListState.value = rememberLazyListState()
 
     LaunchedEffect(true)
         {
@@ -51,14 +57,18 @@ private val LogIt = GetLog("BU.wally.accountlistview")
             }
         }
 
-    LazyColumn(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
-        accounts.value.forEachIndexed { idx, it ->
+    val scope = rememberCoroutineScope()
+    val tmp = accountListState.collectAsState(scope.coroutineContext).value ?: rememberLazyListState()
+
+    LazyColumn(state=tmp, horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
+        accounts.forEachIndexed { idx, it ->
             item(key=it.name) {
                         // I would think that capturing this data would control redraw of each item, but it appears to not do so.
                         // Redraw is controlled of the entire AccountListView, or not at all.
                         //val anyChanges: MutableState<AccountUIData> = remember { mutableStateOf(it.uiData()) }
-                        if (accountUIData[it.name] == null) accountUIData[it.name] = it.uiData()
-                        AccountItemView(accountUIData[it.name]!!, idx, selectedAccount.value == it, devMode,
+                // scope.launch { listState.animateScrollToItem(idx, -1) }  // -1 puts our item more in the center
+                if (accountUIData[it.name] == null) accountUIData[it.name] = it.uiData()
+                AccountItemView(accountUIData[it.name]!!, idx, selectedAccount.value == it, devMode,
                           onClickAccount = { onAccountSelected(it) },
                           onClickGearIcon = {
                               nav.go(ScreenId.AccountDetails)
@@ -67,7 +77,7 @@ private val LogIt = GetLog("BU.wally.accountlistview")
         }
         // Since the thumb buttons cover the bottom most row, this blank bottom row allows the user to scroll the account list upwards enough to
         // uncover the last account.  Its not necessary if there are just a few accounts though.
-        if (accounts.value.size > 3)
+        if (accounts.size > 3)
         {
             item(key = "") {
                 Spacer(Modifier.height(150.dp))
@@ -204,13 +214,15 @@ fun AccountItemView(
                               onClickAccount()  // I want to select the whole account & then try to unlock/lock
                               if (uidata.locked)
                               {
-
                                   triggerUnlockDialog()
                               }
                               else
                               {
                                   uidata.account.pinEntered = false
-                                  later { accountChangedNotification.send(uidata.name) }
+                                  later {
+                                      triggerAssignAccountsGuiSlots()  // In case it should be hidden
+                                      accountChangedNotification.send(uidata.name)
+                                  }
                               }
                           })
                     }

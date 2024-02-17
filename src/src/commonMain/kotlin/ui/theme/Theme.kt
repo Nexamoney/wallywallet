@@ -20,10 +20,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -39,6 +44,7 @@ import kotlinx.coroutines.*
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.getResourceFile
 import info.bitcoinunlimited.www.wally.i18n
+import info.bitcoinunlimited.www.wally.onlyDecimal
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 
 // https://stackoverflow.com/questions/65893939/how-to-convert-textunit-to-dp-in-jetpack-compose
@@ -70,8 +76,8 @@ val LightColorPalette = lightColorScheme(
   // onSurface = Color.Black,
 )
 
-@Composable fun WallyTextStyle(fontScale: Double=1.0) = TextStyle.Default.copy(lineHeight = 0.em, fontSize = FontScale(fontScale),
-  lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.Both), fontWeight = FontWeight.Normal)
+@Composable fun WallyTextStyle(fontScale: Double=1.0, fw: FontWeight = FontWeight.Normal) = TextStyle.Default.copy(lineHeight = 0.em, fontSize = FontScale(fontScale),
+  lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.Both), fontWeight = fw)
 
 var WallyAssetRowColors = arrayOf(Color(0x4Ff5f8ff), Color(0x4Fd0d0ef))
 
@@ -191,7 +197,7 @@ fun WallyBoringLargeIconButton(iconRes: String, enabled: Boolean=true, modifier:
     // chosen height is comparable to the large text button
     WallyBoringButton(onClick, enabled, modifier, interactionSource)
     {
-        if (iconRes.endsWith(".xml"))
+        if (iconRes.endsWith(".xml") || iconRes.endsWith(".png"))
             ResImageView(iconRes, Modifier.wrapContentWidth().height(32.dp).defaultMinSize(32.dp, 32.dp).clickable { onClick() }.then(modifier))
         else
         {
@@ -266,6 +272,19 @@ fun WallyBoringIconButton(icon: ImageVector, modifier: Modifier = Modifier, enab
       checked = isChecked.value,
       onCheckedChange = onCheckedChange,
       modifier = Modifier.then(modifier),  // graphicsLayer(scaleX = 0.7f, scaleY = 0.7f)
+      colors = SwitchDefaults.colors(
+        checkedBorderColor = Color.Transparent,
+        uncheckedBorderColor = Color.Transparent,
+      )
+    )
+}
+
+@Composable fun WallySwitch(isChecked: Boolean, modifier: Modifier = Modifier, onCheckedChange: (Boolean) -> Unit)
+{
+    Switch(
+      checked = isChecked,
+      onCheckedChange = onCheckedChange,
+      modifier = Modifier.then(modifier),
       colors = SwitchDefaults.colors(
         checkedBorderColor = Color.Transparent,
         uncheckedBorderColor = Color.Transparent,
@@ -499,13 +518,13 @@ fun CenteredText(text: String, modifier: Modifier = Modifier)
     Text(text = text, modifier = Modifier.padding(0.dp).fillMaxWidth().then(modifier), textAlign = TextAlign.Center)
 }
 
-@Composable fun CenteredFittedText(text: Int, startingFontScale: Double=1.0, modifier: Modifier = Modifier) =
-  CenteredFittedText(i18n(text), startingFontScale, modifier)
+@Composable fun CenteredFittedText(text: Int, startingFontScale: Double=1.0, fontWeight: FontWeight = FontWeight.Normal, modifier: Modifier = Modifier) =
+  CenteredFittedText(i18n(text), startingFontScale, fontWeight, modifier)
 
-@Composable fun CenteredFittedText(text: String, startingFontScale: Double=1.0, modifier: Modifier = Modifier)
+@Composable fun CenteredFittedText(text: String, startingFontScale: Double=1.0, fontWeight: FontWeight = FontWeight.Normal, modifier: Modifier = Modifier)
 {
     // see https://stackoverflow.com/questions/63971569/androidautosizetexttype-in-jetpack-compose
-    val tmp = WallyTextStyle(startingFontScale)
+    val tmp = WallyTextStyle(startingFontScale, fontWeight)
     var textStyle by remember { mutableStateOf(tmp) }
     var drawIt by remember { mutableStateOf(false) }
     Text(text = text, style = textStyle, modifier = Modifier.padding(0.dp).fillMaxWidth().drawWithContent { if (drawIt) drawContent() }. then(modifier), textAlign = TextAlign.Center, maxLines = 1, softWrap = false,
@@ -531,9 +550,25 @@ fun WallyTextEntry(value: String, modifier: Modifier = Modifier, textStyle: Text
 
 /** Standard Wally text entry field.*/
 @Composable
-fun WallyDecimalEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, bkgCol: Color? = null, onValueChange: ((String) -> Unit)? = null) =
-  WallyDataEntry(value, modifier, textStyle, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done), bkgCol, onValueChange)
+fun WallyDecimalEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, bkgCol: Color? = null, onValueChange: ((String) -> Unit)? = null)
+{
+    val focusManager = LocalFocusManager.current
+    WallyDataEntry(value, modifier.onKeyEvent {
+        if ((it.key == Key.Enter) || (it.key == Key.NumPadEnter))
+        {
+            focusManager.moveFocus(FocusDirection.Next)
+            true
+        }
+        false// Do not accept this key
+    },
+      textStyle, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done), bkgCol,
+      {
+          if (it.onlyDecimal())  // Only allow characters to be entered that are part of decimal numbers
+              onValueChange?.invoke(it)
+      }
+    )
 
+}
 
 /** Standard Wally data entry field.
  */

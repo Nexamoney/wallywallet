@@ -85,7 +85,7 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
     later { newAccountDriver.send(NewAccountDriver(s, earliestActivity=earliestActivity, earliestActivityHeight=earliestActivityHeight)) }
 }
 
-@Composable fun NewAccountScreen(accounts: MutableState<ListifyMap<String, Account>>, devMode: Boolean, nav: ScreenNav)
+@Composable fun NewAccountScreen(accounts: State<ListifyMap<String, Account>>, devMode: Boolean, nav: ScreenNav)
 {
     val blockchains = supportedBlockchains.filter { devMode || it.value.isMainNet }
     var selectedBlockChain by remember { mutableStateOf(blockchains.entries.first().toPair()) }
