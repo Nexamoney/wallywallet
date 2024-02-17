@@ -31,15 +31,16 @@ with member variables and member functions defined in it.
 We could use a composable "State Holder" (in theory) to capture all the state needed by the member functions, but creating a state holder appears to entail
 writing a vast amount of inscrutible garbage rather than actual useful code.
 * */
-fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: MutableState<ListifyMap<String, Account>>, driver: MutableState<GuiDriver?>, nav: ScreenNav)
+fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState<GuiDriver?>, nav: ScreenNav)
 {
+    val ags = accountGuiSlots.collectAsState().value
     var isSending by remember { mutableStateOf(false) }
     var isScanningQr by remember { mutableStateOf(false) }
 
     val synced = remember { mutableStateOf(wallyApp!!.isSynced()) }
     var currentReceive = currentReceiveShared.collectAsState()
     var sendQuantity = remember { mutableStateOf<String>("") }
-    var sendFromAccount by remember { mutableStateOf<String>(selectedAccount.value?.name ?: wallyApp?.focusedAccount?.name ?: "") }
+    var sendFromAccount by remember { mutableStateOf<String>(selectedAccount.value?.name ?: wallyApp?.nullablePrimaryAccount?.name ?: "") }
 
     var warnBackupRecoveryKey = remember { mutableStateOf(false) }
 
@@ -76,7 +77,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
                 SectionText(text = i18n(S.Receive))  // Receive into account
                 Spacer(modifier = Modifier.width(8.dp))
                 AccountDropDownSelector(
-                  accountGuiSlots,
+                  ags,
                   selectedAccount.value?.name ?: "",
                   onAccountNameSelected = onAccountNameSelected,
                 )
@@ -458,7 +459,10 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
     {
        accountGuiSlots.value.forEach { acc ->
             if (acc.name == name)
+            {
                 selectedAccount.value = acc
+
+            }
         }
     }
 
@@ -666,12 +670,19 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, accountGuiSlots: Mut
                 AccountListView(
                   nav,
                   selectedAccount,
-                  accountGuiSlots,
+                  ags,
                   modifier = Modifier.weight(1f),
                   onAccountSelected = {
-                      selectedAccount.value = it
-                      updateSendAccount(it) // if an account is selected in the account list, the send from account is updated
-                      onAccountSelected(it)
+                      if (selectedAccount.value == it)
+                      {
+                          selectedAccount.value = null
+                      }
+                      else
+                      {
+                          selectedAccount.value = it
+                          updateSendAccount(it) // if an account is selected in the account list, the send from account is updated
+                          onAccountSelected(it)
+                      }
                   }
                 )
                 if (isScanningQr && platform().hasQrScanner)

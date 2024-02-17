@@ -307,7 +307,7 @@ fun ConfirmAbove(preferenceDB: SharedPreferences)
       verticalAlignment = Alignment.CenterVertically
     ) {
         Text(i18n(S.WhenAskSure))
-        WallyTextEntry(
+        WallyDecimalEntry(
           value = textState ?: "0",
           onValueChange = {
               try {

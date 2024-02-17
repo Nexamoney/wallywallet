@@ -215,11 +215,12 @@ fun assignAccountsGuiSlots(): ListifyMap<String, Account>
 }
 
 
-const val TRIGGER_BUG_DELAY = 150L
+const val TRIGGER_BUG_DELAY = 100L
 
 fun triggerAssignAccountsGuiSlots()
 {
-    later { delay(TRIGGER_BUG_DELAY); externalDriver.send(GuiDriver(regenAccountGui = true)) }
+    accountGuiSlots.value = assignAccountsGuiSlots()
+    // later { delay(TRIGGER_BUG_DELAY); externalDriver.send(GuiDriver(regenAccountGui = true)) }
 }
 
 fun triggerUnlockDialog(show: Boolean = true, then: (()->Unit)? = null)
@@ -406,12 +407,13 @@ fun buildMenuItems()
     menuItems.value = items.sortedBy { it.location }.toSet()
 }
 
+val accountGuiSlots = MutableStateFlow(assignAccountsGuiSlots())
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NavigationRoot(nav: ScreenNav)
 {
     val scrollState = rememberScrollState()
-    val accountGuiSlots = mutableStateOf(assignAccountsGuiSlots())
     var driver = remember { mutableStateOf<GuiDriver?>(null) }
     var errorText by remember { mutableStateOf("") }
     var warningText by remember { mutableStateOf("") }
@@ -419,7 +421,6 @@ fun NavigationRoot(nav: ScreenNav)
     var clickDismiss = remember { mutableStateOf<(@Composable () -> Unit)?>(null) }
 
     val selectedAccount = remember { MutableStateFlow<Account?>(wallyApp?.focusedAccount) }
-    var selectedAccountIsLocked by remember { mutableStateOf(wallyApp?.focusedAccount?.locked ?: false) }
 
     var unlockDialog by remember { mutableStateOf<(()->Unit)?>(null) }
 
@@ -443,22 +444,24 @@ fun NavigationRoot(nav: ScreenNav)
 
     @Composable fun withUnlockedAccount(then: @Composable (acc: Account) -> Unit)
     {
-        val pa = selectedAccount.value
+        val pa = selectedAccount.collectAsState().value
         if (pa == null)
         {
             displayError(S.NoAccounts)
             nav.back()
         }
-        else if ((!selectedAccountIsLocked)&&(!pa.locked))
-        {
-            then(pa)
-        }
         else
         {
-            triggerUnlockDialog {
-                selectedAccountIsLocked = pa.locked
-                if (pa.locked) nav.back()  // fail
-                triggerUnlockDialog(false)
+            if (!pa.locked)
+            {
+                then(pa)
+            }
+            else
+            {
+                triggerUnlockDialog {
+                    if (pa.locked) nav.back()  // fail
+                    triggerUnlockDialog(false)
+                }
             }
         }
     }
@@ -505,7 +508,6 @@ fun NavigationRoot(nav: ScreenNav)
             driver.value = c
             // If the driver specifies an account, we want to switch to it
             c.account?.let {
-                selectedAccountIsLocked = it.locked
                 selectedAccount.value = it
                 wallyApp?.focusedAccount = it
             }
@@ -535,8 +537,7 @@ fun NavigationRoot(nav: ScreenNav)
             }
             if (c.regenAccountGui == true)
             {
-                val tmp = assignAccountsGuiSlots()
-                accountGuiSlots.value = tmp
+                accountGuiSlots.value = assignAccountsGuiSlots()
             }
             if (c.withClipboard != null)
             {
@@ -628,10 +629,10 @@ fun NavigationRoot(nav: ScreenNav)
                 ) {
                     when (nav.currentScreen.value)
                     {
-                        ScreenId.None -> HomeScreen(selectedAccount, accountGuiSlots, driver, nav)
-                        ScreenId.Home -> HomeScreen(selectedAccount, accountGuiSlots, driver, nav)
+                        ScreenId.None -> HomeScreen(selectedAccount, driver, nav)
+                        ScreenId.Home -> HomeScreen(selectedAccount, driver, nav)
                         ScreenId.SplitBill -> SplitBillScreen(nav)
-                        ScreenId.NewAccount -> NewAccountScreen(accountGuiSlots, devMode, nav)
+                        ScreenId.NewAccount -> NewAccountScreen(accountGuiSlots.collectAsState(), devMode, nav)
                         ScreenId.Test -> TestScreen(400.dp)
                         ScreenId.Settings -> SettingsScreen(nav)
                         ScreenId.AccountDetails -> withUnlockedAccount { AccountDetailScreen(it, nav) }

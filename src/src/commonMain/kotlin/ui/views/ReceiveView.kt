@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.*
 import kotlinx.coroutines.*
@@ -25,13 +26,13 @@ import io.github.alexzhirkevich.qrose.rememberQrCodePainter
  */
 @Composable
 fun AccountDropDownSelector(
-  accountGuiSlots:  MutableState<ListifyMap<String, Account>>,
+  accountGuiSlots:  ListifyMap<String, Account>,
   selectedAccountName: String?,
   onAccountNameSelected: (Int) -> Unit)
 {
     var selectedIndex by remember { mutableStateOf(0) }
-    val accountNames = accountGuiSlots.value.map { it.name }
-    accountGuiSlots.value.forEachIndexed { index, account -> if (account.name == selectedAccountName) selectedIndex = index }
+    val accountNames = accountGuiSlots.map { it.name }
+    accountGuiSlots.forEachIndexed { index, account -> if (account.name == selectedAccountName) selectedIndex = index }
 
     WallyDropdownMenu(
               modifier = Modifier.width(IntrinsicSize.Min),
@@ -90,7 +91,7 @@ fun AddressQrCode(address: String)
 
         WallyBrightEmphasisBox(Modifier.fillMaxHeight().fillMaxWidth()) {
             Text(if (displayCopiedNotice) i18n(S.copiedToClipboard) else address, fontWeight = FontWeight.Bold, fontSize = FontScale(1.4),color = WallyAddressColor,
-              modifier = Modifier.wrapContentHeight(align = Alignment.CenterVertically))
+              modifier = Modifier.wrapContentHeight(align = Alignment.CenterVertically), textAlign = TextAlign.Center, minLines = 2)
         }
     }
 }

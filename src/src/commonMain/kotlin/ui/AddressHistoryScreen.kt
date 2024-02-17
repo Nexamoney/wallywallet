@@ -107,17 +107,39 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
     fun onAddressCopied(address: String)
     {
         setTextClipboard(address)
-        displayCopiedNotice = true
-        GlobalScope.launch(Dispatchers.IO + exceptionHandler) {
-            delay(NORMAL_NOTICE_DISPLAY_TIME)  // Delay of 5 seconds
-            withContext(Dispatchers.Default + exceptionHandler) {
-                displayCopiedNotice = false
-            }
-        }
+        displayNotice(S.copiedToClipboard)
     }
 
+    var inUsedSection = false
+    var inUnusedSection = false
     LazyColumn {
             addresses.value.forEachIndexed {idx, it ->
+                // This section display code assumes that the address list is sorted as above
+                if ((idx == 0) && (it.amountHeld > 0))
+                {
+                    item(key="aa") {
+                        CenteredSectionText(S.ActiveAddresses)
+                        WallyHalfDivider()
+                    }
+                }
+                else if ((it.amountHeld == 0L) && (it.totalReceived > 0) && (!inUsedSection))
+                {
+                    item(key="ua") {
+                        WallyDivider()
+                        CenteredSectionText(S.UsedAddresses)
+                        WallyHalfDivider()
+                    }
+                    inUsedSection = true
+                }
+                else if ((it.amountHeld == 0L) && (it.totalReceived == 0L) && (!inUnusedSection))
+                {
+                    item(key="unua") {
+                        WallyDivider()
+                        CenteredSectionText(S.UnusedAddresses)
+                        WallyHalfDivider()
+                    }
+                    inUnusedSection = true
+                }
                 item(key=it.address.toString()) {
                     val color = if (idx % 2 == 1) { WallyRowAbkg1 } else WallyRowAbkg2
                     val address = it.address.toString()
@@ -125,83 +147,77 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
                     if(idx != 1)
                         Spacer(modifier = Modifier.height(6.dp))
 
-                    Column (modifier = Modifier.fillMaxWidth().background(color).padding(4.dp).clickable {
+                    Column (modifier = Modifier.fillMaxWidth().background(color).padding(1.dp).clickable {
                         onAddressCopied(it.address.toString())
                     }) {
-                        Text(
-                          text = address,
-                          fontWeight = FontWeight.Bold,
-                          fontSize = 13.sp,
-                          modifier = Modifier.padding(4.dp)
-                        )
+                        CenteredFittedText(text = address, fontWeight = FontWeight.Bold, modifier = Modifier)
 
-                        if ((it.amountHeld > 0)||(it.totalReceived > 0))
-                        {
-                            val balance = i18n(S.balance) + " " + acc.cryptoFormat.format(acc.fromFinestUnit(it.amountHeld))
-                            val totalReceived = i18n(S.totalReceived) + " " + acc.cryptoFormat.format(acc.fromFinestUnit(it.totalReceived))
+                        Column (modifier = Modifier.fillMaxWidth().background(color).padding(8.dp)) {
 
-                            if (it.firstRecv != Long.MIN_VALUE)
+                            if ((it.amountHeld > 0) || (it.totalReceived > 0))
                             {
-                                if (it.firstRecv == it.lastRecv)  // only one receive
+                                val balance = i18n(S.balance) + " " + acc.cryptoFormat.format(acc.fromFinestUnit(it.amountHeld))
+                                val totalReceived = i18n(S.totalReceived) + " " + acc.cryptoFormat.format(acc.fromFinestUnit(it.totalReceived))
+
+                                if (it.firstRecv != Long.MIN_VALUE)
                                 {
-                                    val guiTxDate = try
+                                    if (it.firstRecv == it.lastRecv)  // only one receive
                                     {
-                                        val firstRecv = Instant.fromEpochMilliseconds(it.firstRecv).toLocalDateTime(timeZone)
-                                        formatLocalDateTime(firstRecv)
+                                        val guiTxDate = try
+                                        {
+                                            val firstRecv = Instant.fromEpochMilliseconds(it.firstRecv).toLocalDateTime(timeZone)
+                                            formatLocalDateTime(firstRecv)
+                                        }
+                                        catch (e: IllegalArgumentException)  // happens if date is invalid
+                                        {
+                                            i18n(S.unavailable)
+                                        }
+                                        catch (e: DateTimeArithmeticException)  // happens if date is invalid
+                                        {
+                                            i18n(S.unavailable)
+                                        }
+                                        Text(i18n(S.FirstUse) % mapOf("date" to guiTxDate))
                                     }
-                                    catch(e:IllegalArgumentException)  // happens if date is invalid
+                                    else
                                     {
-                                        i18n(S.unavailable)
+                                        val guiTxDate = try
+                                        {
+                                            val firstRecv = Instant.fromEpochMilliseconds(it.firstRecv).toLocalDateTime(timeZone)
+                                            formatLocalDateTime(firstRecv)
+                                        }
+                                        catch (e: IllegalArgumentException)  // happens if date is invalid
+                                        {
+                                            i18n(S.unavailable)
+                                        }
+                                        catch (e: DateTimeArithmeticException)  // happens if date is invalid
+                                        {
+                                            i18n(S.unavailable)
+                                        }
+
+                                        val guiTxDateLast = try
+                                        {
+                                            val lastRecv = Instant.fromEpochMilliseconds(it.lastRecv).toLocalDateTime(timeZone)
+                                            formatLocalDateTime(lastRecv)
+                                        }
+                                        catch (e: IllegalArgumentException)  // happens if date is invalid
+                                        {
+                                            i18n(S.unavailable)
+                                        }
+                                        catch (e: DateTimeArithmeticException)  // happens if date is invalid
+                                        {
+                                            i18n(S.unavailable)
+                                        }
+                                        Text(i18n(S.FirstUse) % mapOf("date" to guiTxDate))
+                                        Text(i18n(S.LastUse) % mapOf("date" to guiTxDateLast))
                                     }
-                                    catch(e:DateTimeArithmeticException)  // happens if date is invalid
-                                    {
-                                        i18n(S.unavailable)
-                                    }
-                                    Text(guiTxDate)
                                 }
                                 else
                                 {
-                                    val guiTxDate = try
-                                    {
-                                        val firstRecv = Instant.fromEpochMilliseconds(it.firstRecv).toLocalDateTime(timeZone)
-                                        formatLocalDateTime(firstRecv)
-                                    }
-                                    catch(e:IllegalArgumentException)  // happens if date is invalid
-                                    {
-                                        i18n(S.unavailable)
-                                    }
-                                    catch(e:DateTimeArithmeticException)  // happens if date is invalid
-                                    {
-                                        i18n(S.unavailable)
-                                    }
-
-                                    val guiTxDateLast = try
-                                    {
-                                        val lastRecv = Instant.fromEpochMilliseconds(it.lastRecv).toLocalDateTime(timeZone)
-                                        formatLocalDateTime(lastRecv)
-                                    }
-                                    catch(e:IllegalArgumentException)  // happens if date is invalid
-                                    {
-                                        i18n(S.unavailable)
-                                    }
-                                    catch(e:DateTimeArithmeticException)  // happens if date is invalid
-                                    {
-                                        i18n(S.unavailable)
-                                    }
-                                    Text(guiTxDate)
-                                    Text(guiTxDateLast)
+                                    assert(false)  // should never happen if some amount is held
                                 }
-                            }
-                            else
-                            {
-                                assert(false)  // should never happen if some amount is held
-                            }
 
-                            Row {
-                                Column(Modifier.weight(1f)) { // This makes the Column take up all available space
-                                    Text(balance)
-                                    Text(totalReceived)
-                                }
+                                Text(totalReceived)
+                                if (it.amountHeld > 0) Text(balance, fontWeight = FontWeight.Bold)
                             }
                         }
                     }

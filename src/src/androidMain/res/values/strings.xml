@@ -289,7 +289,7 @@ Good luck!
     <!-- This is a warning or informational message.  It says that the user is sending recently received coins, which is perfectly OK but slightly increases the chance of payment failure -->
     <string name="moreThanConfirmedAvailable">(more than confirmed)</string>
     <string name="actuallySendingT" formatted="false">actually sending %qty %crypto</string>
-    <string name="copiedToClipboard">...copied to clipboard...</string>
+    <string name="copiedToClipboard">copied to\nclipboard</string>
     <string name="cannotCopyToClipboard">Cannot copy to clipboard</string>
     <string name="tooLargeForClipboard">Too much data for clipboard</string>
     <string name="scanFailed">scan failed</string>
@@ -381,6 +381,9 @@ Good luck!
     <string name="OverrideSalesPrice">enter price when sold</string>
     <string name="AccountHistory">Transactions</string>
     <string name="AccountAddresses">Addresses</string>
+    <string name="ActiveAddresses">Active Addresses</string>
+    <string name="UsedAddresses">Used Addresses</string>
+    <string name="UnusedAddresses">Unused Addresses</string>
 
     <!-- Account details activity -->
     <string name="txHistoryButton">View or Export Account Activity</string>
@@ -392,6 +395,8 @@ Good luck!
     <string name="AccountNumAddresses">%num addresses</string>
     <string name="FirstLastReceive">First deposit in block %first, most recent in block %last.</string>
     <string name="FirstLastSend">First withdraw in block %first, most recent in block %last.</string>
+    <string name="FirstUse">First use: %date</string>
+    <string name="LastUse">Last use: %date</string>
     <string name="AccountNumTx">%num transactions</string>
     <string name="AccountNumUtxos">%num ledger entries</string>
     <!-- Assets activity -->
