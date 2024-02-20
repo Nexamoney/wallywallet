@@ -179,10 +179,6 @@ testflight:
     - echo $KEYSJSON | base64 --decode > iosApp/fastlane/keys/$key_id.json
     # setting up fastlane keys: p8
     - echo $KEYSP8 | base64 --decode > iosApp/fastlane/keys/$key_id.p8
-    # TODO remove the following cmds
-    - cp iosApp/.env /tmp
-    - cp iosApp/fastlane/keys/$key_id.json /tmp
-    - cp iosApp/fastlane/keys/$key_id.p8 /tmp
     # Run fastlane
     - cd iosApp/
     - gem install bundler
