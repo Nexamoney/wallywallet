@@ -1,5 +1,6 @@
 package info.bitcoinunlimited.www.wally.ui.views
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -421,7 +422,7 @@ fun SendView(
           horizontalArrangement = Arrangement.SpaceEvenly,
 
           ) {
-            WallyBoringLargeIconButton("icons/menu_edit.png", interactionSource = MutableInteractionSource(),
+            WallyBoringLargeIconButton("icons/edit_pencil.png", interactionSource = MutableInteractionSource(),
               onClick = { displayNoteInput = !displayNoteInput }
             )
             WallyBoringLargeTextButton(S.Send, onClick = { onSendButtonClicked() })
