@@ -14,7 +14,9 @@ import android.content.pm.PackageManager
 import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.View
 import androidx.core.content.ContextCompat
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.zxing.integration.android.IntentResult
 import info.bitcoinunlimited.www.wally.ui.*
 import org.nexa.libnexakotlin.logThreadException
@@ -82,6 +84,10 @@ class ComposeActivity: CommonActivity()
         return false
     }
 
+    override fun onSoftKeyboard(shown: Boolean)
+    {
+        isSoftKeyboardShowing.value = shown
+    }
 
     fun ImageQrCode(imageParsed: (String?) -> Unit)
     {
@@ -253,11 +259,11 @@ class ComposeActivity: CommonActivity()
             true
         }
 
-        val settingsItem = menu.findItem(R.id.settings)
-        settingsItem.setOnMenuItemClickListener {
-            nav.go(ScreenId.Settings)
-            true
-        }
+        //val settingsItem = menu.findItem(R.id.settings)
+        //settingsItem.setOnMenuItemClickListener {
+        //    nav.go(ScreenId.Settings)
+        //    true
+        //}
 
         val unlockItem = menu.findItem(R.id.unlock)
         unlockItem.setOnMenuItemClickListener {
@@ -265,8 +271,8 @@ class ComposeActivity: CommonActivity()
             true
         }
 
-        val item4 = menu.findItem(R.id.compose)
-        item4.intent = Intent(this, MainActivity::class.java)
+        //val item4 = menu.findItem(R.id.compose)
+        //item4.intent = Intent(this, MainActivity::class.java)
 
         initializeHelpOption(menu)
         return super.onCreateOptionsMenu(menu)

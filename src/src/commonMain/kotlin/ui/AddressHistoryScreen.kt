@@ -60,7 +60,6 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
 {
     val addresses: MutableState<MutableList<AddressInfo>> = remember { mutableStateOf(mutableListOf()) }
     val timeZone = TimeZone.currentSystemDefault()
-    var displayCopiedNotice by remember { mutableStateOf(false) }
 
     /**
      * Populates all addresses for one account with used, holding and received balance.

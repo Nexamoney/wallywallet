@@ -1,5 +1,6 @@
 package info.bitcoinunlimited.www.wally
 
+import androidx.compose.runtime.Composable
 import kotlinx.cinterop.*
 import io.ktor.client.*
 import io.ktor.client.plugins.*
@@ -175,4 +176,9 @@ actual fun getResourceFile(name: String): BufferedSource
     val buf = Buffer()
     buf.write(ba)
     return buf
+}
+
+@Composable actual fun isImeVisible(): Boolean
+{
+    return false
 }

@@ -300,7 +300,7 @@ fun ConfirmAbove(preferenceDB: SharedPreferences)
     {
         CurrencyDecimal(0)
     }
-    var textState by remember { mutableStateOf(preferenceDB.getString(CONFIRM_ABOVE_PREF, NexaFormat.format(dec))) }
+    var textState = remember { mutableStateOf<String>(preferenceDB.getString(CONFIRM_ABOVE_PREF, NexaFormat.format(dec)) ?: "0") }
 
     Row(
       horizontalArrangement = Arrangement.SpaceBetween,
@@ -308,7 +308,7 @@ fun ConfirmAbove(preferenceDB: SharedPreferences)
     ) {
         Text(i18n(S.WhenAskSure))
         WallyDecimalEntry(
-          value = textState ?: "0",
+          value = textState,
           onValueChange = {
               try {
                   val newStr = it.ifEmpty {
@@ -325,7 +325,8 @@ fun ConfirmAbove(preferenceDB: SharedPreferences)
               {
                   logThreadException(e)
               }
-              textState = it
+              textState.value = it
+              textState.value
           }
           //colors = textFieldColors(containerColor = Color.Transparent),
           //colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent,

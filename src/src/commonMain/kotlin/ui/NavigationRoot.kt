@@ -5,18 +5,21 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.eygraber.uri.Uri
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
@@ -32,6 +35,8 @@ import org.nexa.libnexakotlin.rem
 import org.nexa.libnexakotlin.sourceLoc
 
 private val LogIt = GetLog("wally.NavRoot")
+
+val softKeyboardBar:MutableStateFlow<(@Composable (Modifier)->Unit)?> = MutableStateFlow(null)
 
 enum class ScreenId
 {
@@ -194,11 +199,8 @@ class ScreenNav()
     }
 }
 
-
-//val GUI_CALLBACK_ID = 4733
 fun assignAccountsGuiSlots(): ListifyMap<String, Account>
 {
-
     // We have a Map of account names to values, but we need a list
     // Sort the accounts based on account name
     val lm: ListifyMap<String, Account> = ListifyMap(wallyApp!!.accounts, { it.value.visible }, object : Comparator<String>
@@ -210,7 +212,6 @@ fun assignAccountsGuiSlots(): ListifyMap<String, Account>
             return p0.compareTo(p1)
         }
     })
-
     return lm
 }
 
@@ -262,7 +263,7 @@ fun onShareButton()
             if (nav.hasBack() != ScreenId.None)
             {
                 IconButton(onClick = { nav.back() }) {
-                    Icon(Icons.Default.ArrowBack, tint = colorTitleForeground, contentDescription = null)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, tint = colorTitleForeground, contentDescription = null)
                 }
             }
             // We can only fillMaxSize() here because we constrained the height of the row
@@ -280,8 +281,6 @@ fun onShareButton()
                     Icon(Icons.Default.Share, tint = colorTitleForeground, contentDescription = null)
                 }
             }
-
-
         }
     }
 }
@@ -299,8 +298,6 @@ fun triggerAccountsChanged(vararg accounts: Account)
         later { delay(100); accountChangedNotification.send(account.name) }
     }
 }
-
-
 
 // Add other information as needed to drive each page
 enum class ShowIt
@@ -409,6 +406,8 @@ fun buildMenuItems()
 
 val accountGuiSlots = MutableStateFlow(assignAccountsGuiSlots())
 
+val isSoftKeyboardShowing = MutableStateFlow(false)
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NavigationRoot(nav: ScreenNav)
@@ -428,6 +427,8 @@ fun NavigationRoot(nav: ScreenNav)
 
     var currentTpSession by remember { mutableStateOf<TricklePaySession?>(null) }
     var currentUri by remember { mutableStateOf<Uri?>(null) }
+
+
 
     buildMenuItems()
 
@@ -542,7 +543,7 @@ fun NavigationRoot(nav: ScreenNav)
             if (c.withClipboard != null)
             {
                 val s = clipmgr.getText()
-                c.withClipboard?.invoke(s?.text)
+                c.withClipboard.invoke(s?.text)
             }
             if (c.tpSession != null) currentTpSession = c.tpSession
             if (c.uri != null) currentUri = c.uri
@@ -605,6 +606,23 @@ fun NavigationRoot(nav: ScreenNav)
     }
 
 
+
+    Box(modifier = Modifier.zIndex(1000f).fillMaxSize()) {
+
+        if (isSoftKeyboardShowing.collectAsState().value)
+        {
+            val keybar = softKeyboardBar.collectAsState().value
+            keybar?.invoke(Modifier.padding(0.dp).align(Alignment.BottomStart).fillMaxWidth().background(Color(0xe0d8d8d8)))
+        }
+        else
+        {
+
+            // This will always be at the bottom and won't overlap with the content above
+            Box(modifier = Modifier.align(Alignment.BottomStart).fillMaxWidth().background(NavBarBkg).height(IntrinsicSize.Min).padding(0.dp)) {
+                NavigationMenu(nav)
+            }
+        }
+    }
     WallyTheme(darkTheme = false, dynamicColor = false) {
         Box(modifier = WallyPageBase) {
             if (unlockDialog != null) UnlockDialog {  }
@@ -654,11 +672,6 @@ fun NavigationRoot(nav: ScreenNav)
                         ScreenId.SendToPerm -> withTp { act, ctp -> SendToPermScreen(act, ctp, nav) }
                         ScreenId.IdentityOp -> withAccount { act -> IdentityPermScreen(act, currentUri, nav); }
                     }
-                }
-
-                // This will always be at the bottom and won't overlap with the content above
-                Box(modifier = Modifier.fillMaxWidth().background(NavBarBkg).height(IntrinsicSize.Min).padding(0.dp)) {
-                    NavigationMenu(nav)
                 }
             }
         }

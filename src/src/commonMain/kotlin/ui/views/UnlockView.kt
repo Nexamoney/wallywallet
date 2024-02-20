@@ -75,7 +75,7 @@ fun UnlockDialog(onPinEntered: (String) -> Unit)
                             attemptUnlock()
                             false
                         }
-                        false// Do not accept this key
+                        else false// Do not accept this key
                     },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),

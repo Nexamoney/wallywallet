@@ -1691,8 +1691,8 @@ class MainActivity : CommonNavActivity()
         val item3 = menu.findItem(R.id.unlock)
         item3.intent = Intent(this, UnlockActivity::class.java)
 
-        val item4 = menu.findItem(R.id.compose)
-        item4.intent = Intent(this, ComposeActivity::class.java)
+        //val item4 = menu.findItem(R.id.compose)
+        //item4.intent = Intent(this, ComposeActivity::class.java)
 
         initializeHelpOption(menu)
         return super.onCreateOptionsMenu(menu)

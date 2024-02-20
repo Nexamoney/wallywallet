@@ -38,6 +38,7 @@ import platform.UIKit.*
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import info.bitcoinunlimited.www.wally.getResourceFile
+import info.bitcoinunlimited.www.wally.ui.isSoftKeyboardShowing
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.get
 import kotlinx.cinterop.usePinned
@@ -63,6 +64,11 @@ import platform.UIKit.UIImagePNGRepresentation
 import platform.posix.memcpy
 
 private val LogIt = GetLog("wally.theme.ios")
+
+actual fun UxInTextEntry(boolean: Boolean)
+{
+    isSoftKeyboardShowing.value = boolean
+}
 
 // from https://slack-chats.kotlinlang.org/t/12086405/hi-all-how-to-convert-ios-uiimage-to-compose-imagebitmap-in-
 @OptIn(ExperimentalForeignApi::class)
@@ -103,6 +109,7 @@ internal fun UIImage.toSkiaImage(): Image?
 fun UIImage.toImageBitmap(): ImageBitmap {
     return this.toSkiaImage()!!.toComposeImageBitmap()
     //todo <https://github.com/touchlab/DroidconKotlin/blob/fe5b7e8bb6cdf5d00eeaf7ee13f1f96b71857e8f/shared-ui/src/iosMain/kotlin/co/touchlab/droidcon/ui/util/ToSkiaImage.kt>
+    /*
     val pngRepresentation = UIImagePNGRepresentation(this)!!
     val byteArray = ByteArray(pngRepresentation.length.toInt()).apply {
         usePinned {
@@ -110,6 +117,8 @@ fun UIImage.toImageBitmap(): ImageBitmap {
         }
     }
     return org.jetbrains.skia.Image.makeFromEncoded(byteArray).toComposeImageBitmap()
+
+     */
 }
 
 

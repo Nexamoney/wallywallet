@@ -557,11 +557,8 @@ fun SpecialTxPermScreen(acc: Account, sess: TricklePaySession, nav: ScreenNav)
             {
                 //info.bitcoinunlimited.www.wally.LogIt.info("deny trickle pay special transaction")
                 // give back any inputs we grabbed to fulfill this tx
-                if (sess != null)
-                {
-                    sess.proposedTx?.let { acc.wallet.abortTransaction(it) }
-                    sess.proposedTx = null
-                }
+                sess.proposedTx?.let { acc.wallet.abortTransaction(it) }
+                sess.proposedTx = null
                 nav.back()
                 displayNotice(S.cancelled)
             }

@@ -89,10 +89,10 @@ fun TricklePayDomainView(from: TdppDomain?, to: TdppDomain, modifier: Modifier =
     }
 
     var assetInfo by remember { mutableStateOf(to.assetInfo)}
-    var maxper by remember { mutableStateOf(fmtMax(to.maxper)) }
-    var maxday by remember { mutableStateOf(fmtMax(to.maxday)) }
-    var maxweek by remember { mutableStateOf(fmtMax(to.maxweek)) }
-    var maxmonth by remember { mutableStateOf(fmtMax(to.maxmonth)) }
+    var maxper = remember { mutableStateOf(fmtMax(to.maxper)) }
+    var maxday = remember { mutableStateOf(fmtMax(to.maxday)) }
+    var maxweek = remember { mutableStateOf(fmtMax(to.maxweek)) }
+    var maxmonth = remember { mutableStateOf(fmtMax(to.maxmonth)) }
 
 
     var maxperBkg by remember { mutableStateOf<Color?>(null) }
@@ -135,7 +135,8 @@ fun TricklePayDomainView(from: TdppDomain?, to: TdppDomain, modifier: Modifier =
             Text(i18n(S.TpMaxPer), Modifier.defaultMinSize(150.dp))
             WallyDecimalEntry(maxper, Modifier.weight(1f), bkgCol = maxperBkg) {
                 val tmp = changeHandler(it, to.maxper)
-                maxper = tmp.first; to.maxper = tmp.second; maxperBkg = tmp.third
+                maxper.value = tmp.first; to.maxper = tmp.second; maxperBkg = tmp.third
+                it
             }
             Text(i18n(S.NEX))
         }
@@ -145,9 +146,10 @@ fun TricklePayDomainView(from: TdppDomain?, to: TdppDomain, modifier: Modifier =
             Text(i18n(S.TpMaxPerDay), Modifier.defaultMinSize(150.dp))
             WallyDecimalEntry(maxday, Modifier.weight(1f), bkgCol = maxdayBkg) {
                 val tmp = changeHandler(it, to.maxday)
-                maxday = tmp.first; to.maxday = tmp.second; maxdayBkg = tmp.third
+                maxday.value = tmp.first; to.maxday = tmp.second; maxdayBkg = tmp.third
                 //to.maxday = act.toFinestUnit(groupedCurrencyDecimal(it))
                 //maxday = it
+                 it
             }
             Text(i18n(S.NEX))
         }
@@ -157,7 +159,8 @@ fun TricklePayDomainView(from: TdppDomain?, to: TdppDomain, modifier: Modifier =
             Text(i18n(S.TpMaxPerWeek), Modifier.defaultMinSize(150.dp))
             WallyDecimalEntry(maxweek, Modifier.weight(1f), bkgCol = maxweekBkg) {
                 val tmp = changeHandler(it, to.maxweek)
-                maxweek = tmp.first; to.maxweek = tmp.second; maxweekBkg = tmp.third
+                maxweek.value = tmp.first; to.maxweek = tmp.second; maxweekBkg = tmp.third
+                it
             }
             Text(i18n(S.NEX))
         }
@@ -167,7 +170,8 @@ fun TricklePayDomainView(from: TdppDomain?, to: TdppDomain, modifier: Modifier =
             Text(i18n(S.TpMaxPerMonth), Modifier.defaultMinSize(150.dp))
             WallyDecimalEntry(maxmonth, Modifier.weight(1f), bkgCol = maxmonthBkg) {
                 val tmp = changeHandler(it, to.maxmonth)
-                maxmonth = tmp.first; to.maxmonth = tmp.second; maxmonthBkg = tmp.third
+                maxmonth.value = tmp.first; to.maxmonth = tmp.second; maxmonthBkg = tmp.third
+                it
             }
             Text(i18n(S.NEX))
         }

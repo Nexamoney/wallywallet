@@ -77,7 +77,7 @@ fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
     var showing by remember { mutableStateOf(S.NftCardFront) }  // Reuse the i18n int to indicate what subscreen is being shown
 
     Column(modifier = modifier) {
-        val a = asset ?: return
+        val a = asset
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
             if (a.iconUri != null) WallySmallTextButton(S.NftCardFront, onClick = {
@@ -233,13 +233,13 @@ fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
             S.NftInfo ->
             {
                 // TODO formatting (support minimal HTML)
-                Text(asset?.nft?.info ?: "")
+                Text(asset.nft?.info ?: "")
             }
 
             S.NftLegal ->
             {
                 // TODO formatting (support minimal HTML)
-                Text(asset?.nft?.license ?: "")
+                Text(asset.nft?.license ?: "")
             }
         }
 

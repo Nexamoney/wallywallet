@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -29,10 +30,12 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
@@ -42,10 +45,11 @@ import androidx.compose.ui.unit.sp
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.*
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
-import info.bitcoinunlimited.www.wally.getResourceFile
-import info.bitcoinunlimited.www.wally.i18n
-import info.bitcoinunlimited.www.wally.onlyDecimal
+import info.bitcoinunlimited.www.wally.*
+import info.bitcoinunlimited.www.wally.ui.softKeyboardBar
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
+import org.nexa.libnexakotlin.CURRENCY_1
+import org.nexa.libnexakotlin.CurrencyDecimal
 
 // https://stackoverflow.com/questions/65893939/how-to-convert-textunit-to-dp-in-jetpack-compose
 val Int.dpTextUnit: TextUnit
@@ -550,43 +554,99 @@ fun WallyTextEntry(value: String, modifier: Modifier = Modifier, textStyle: Text
 
 /** Standard Wally text entry field.*/
 @Composable
-fun WallyDecimalEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, bkgCol: Color? = null, onValueChange: ((String) -> Unit)? = null)
+fun WallyDecimalEntry(value: MutableState<String>, modifier: Modifier = Modifier, textStyle: TextStyle? = null, bkgCol: Color? = null, onValueChange: ((String) -> String) = { it })
 {
+    val tfv = remember { mutableStateOf(TextFieldValue(value.value)) }
     val focusManager = LocalFocusManager.current
-    WallyDataEntry(value, modifier.onKeyEvent {
+    WallyDataEntry(tfv, modifier.onKeyEvent {
         if ((it.key == Key.Enter) || (it.key == Key.NumPadEnter))
         {
             focusManager.moveFocus(FocusDirection.Next)
             true
         }
-        false// Do not accept this key
-    },
+        else false// Do not accept this key
+    }.onFocusChanged {
+        if (it.isFocused)
+        {
+            UxInTextEntry(true)
+            softKeyboardBar.value = { modifier ->
+                // imePadding() is not needed; the BottomStart is already just above the IME
+                Row(modifier, horizontalArrangement = Arrangement.SpaceEvenly) {
+                    WallyRoundedTextButton(S.sendAll) {
+                        val tmp = onValueChange.invoke("all")
+                        tfv.value = TextFieldValue(tmp, selection = TextRange(tmp.length))
+                    }
+                    WallyRoundedTextButton(S.thousand) {
+                        var amt = try
+                        {
+                            CurrencyDecimal(value.value)
+                        }
+                        catch (e: ArithmeticException)
+                        {
+                            if ((value.value.length == 0) || (value.value == "all")) CURRENCY_1
+                            else return@WallyRoundedTextButton
+                        }
+                        catch (e: NumberFormatException)
+                        {
+                            if ((value.value.length == 0) || (value.value == "all")) CURRENCY_1
+                            else return@WallyRoundedTextButton
+                        }
+                        amt *= BigDecimal.fromInt(1000)
+                        val tmp = onValueChange.invoke(amt.toPlainString())
+                        tfv.value = TextFieldValue(tmp, selection = TextRange(tmp.length))
+                    }
+                    WallyRoundedTextButton(S.million) {
+                        var amt = try
+                        {
+                            CurrencyDecimal(value.value)
+                        }
+                        catch (e: ArithmeticException)
+                        {
+                            if ((value.value.length == 0) || (value.value == "all")) CURRENCY_1
+                            else return@WallyRoundedTextButton
+                        }
+                        catch (e: NumberFormatException)
+                        {
+                            if ((value.value.length == 0) || (value.value == "all")) CURRENCY_1
+                            else return@WallyRoundedTextButton
+                        }
+                        amt *= BigDecimal.fromInt(1000000)
+                        val tmp = onValueChange.invoke(amt.toPlainString())
+                        tfv.value = TextFieldValue(tmp, selection = TextRange(tmp.length))
+                    }
+                    WallyRoundedTextButton(S.clear) {
+                        val tmp = onValueChange.invoke("")
+                        tfv.value = TextFieldValue(tmp, selection = TextRange(tmp.length))
+                    }
+                }
+            }
+        }
+        else
+        {
+            UxInTextEntry(false)
+            softKeyboardBar.value = null
+        }
+    }
+      ,
       textStyle, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done), bkgCol,
       {
-          if (it.onlyDecimal())  // Only allow characters to be entered that are part of decimal numbers
-              onValueChange?.invoke(it)
+          if (it.text.onlyDecimal())  // Only allow characters to be entered that are part of decimal numbers
+          {
+              val tmp = onValueChange.invoke(it.text)
+              tfv.value = TextFieldValue(tmp, selection = it.selection)
+          }
       }
     )
 
 }
 
-/** Standard Wally data entry field.
- */
+/** Standard Wally data entry field. */
 @Composable
 fun WallyDataEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, keyboardOptions: KeyboardOptions?=null, bkgCol: Color? = null, onValueChange: ((String) -> Unit)? = null)
 {
     val ts2 = LocalTextStyle.current.copy(fontSize = LocalTextStyle.current.fontSize.times(1.25))
     val ts = ts2.merge(textStyle)
     val scope = rememberCoroutineScope()
-    /*
-    val interact = remember { object: HoverInteraction, InteractionSource
-    {
-        override val interactions: Flow<Interaction>
-            get() = TODO("Not yet implemented")
-
-    } }
-     */
-
     val bkgColor = remember { Animatable(BaseBkg) }
     val ia = remember { MutableInteractionSource() }
 
@@ -636,6 +696,66 @@ fun WallyDataEntry(value: String, modifier: Modifier = Modifier, textStyle: Text
       }
     )
 }
+
+/** Standard Wally data entry field. */
+@Composable
+fun WallyDataEntry(value: MutableState<TextFieldValue>, modifier: Modifier = Modifier, textStyle: TextStyle? = null, keyboardOptions: KeyboardOptions?=null, bkgCol: Color? = null, onValueChange: ((TextFieldValue) -> Unit)? = null)
+{
+    val ts2 = LocalTextStyle.current.copy(fontSize = LocalTextStyle.current.fontSize.times(1.25))
+    val ts = ts2.merge(textStyle)
+    val scope = rememberCoroutineScope()
+    val bkgColor = remember { Animatable(BaseBkg) }
+    val ia = remember { MutableInteractionSource() }
+
+    LaunchedEffect(ia) {
+        ia.interactions.collect {
+            when(it) {
+                // Hover for mouse platforms, Focus for touch platforms
+                is HoverInteraction.Enter, is FocusInteraction.Focus -> {
+                    scope.launch {
+                        bkgColor.animateTo(bkgCol ?: SelectedBkg, animationSpec = tween(500))
+                    }
+                }
+                is HoverInteraction.Exit, is FocusInteraction.Unfocus -> {
+                    scope.launch {
+                        bkgColor.animateTo(bkgCol ?: BaseBkg, animationSpec = tween(500))
+                    }
+                }
+
+            }
+        }
+    }
+
+    BasicTextField(
+      value.value,
+      onValueChange ?: { },
+      textStyle = ts,
+      interactionSource = ia,
+      modifier = modifier,
+      keyboardOptions = keyboardOptions ?: KeyboardOptions.Default,
+      decorationBox = { tf ->
+          Box(Modifier.hoverable(ia, true)
+            .background(bkgCol ?: bkgColor.value)
+            .drawBehind {
+                val strokeWidthPx = 1.dp.toPx()
+                val verticalOffset = size.height - 2.sp.toPx()
+                drawLine(
+                  color = Color.Black,
+                  strokeWidth = strokeWidthPx,
+                  start = Offset(0f, verticalOffset),
+                  end = Offset(size.width, verticalOffset))
+            })
+          {
+              Box(Modifier.padding(0.dp,0.dp, 0.dp, 2.dp)) {
+                  tf()
+              }
+          }
+      }
+    )
+}
+
+
+
 
 @Composable
 fun WallyIncognitoTextEntry(value: String, modifier: Modifier, onValueChange: (String) -> Unit)

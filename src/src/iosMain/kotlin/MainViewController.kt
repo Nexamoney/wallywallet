@@ -1,15 +1,16 @@
 package info.bitcoinunlimited.www.wally
 
+import androidx.compose.runtime.InternalComposeApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.window.ComposeUIViewController
 import info.bitcoinunlimited.www.wally.ui.NavigationRoot
 import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.ScreenNav
-import kotlinx.coroutines.delay
+import kotlinx.cinterop.ExperimentalForeignApi
 import org.nexa.libnexakotlin.Bip44Wallet
 import org.nexa.libnexakotlin.initializeLibNexa
-import org.nexa.threads.millisleep
+import platform.UIKit.UIViewController
 
 val accounts = mutableMapOf<String, Bip44Wallet>()
 
@@ -22,11 +23,18 @@ fun OnAppStartup()
 }
 
 val nav = ScreenNav()
-fun MainViewController() = ComposeUIViewController {
-
-        // while (!coinsCreated) millisleep(250UL)
+@OptIn(ExperimentalForeignApi::class, InternalComposeApi::class)
+fun MainViewController(): UIViewController
+{
+    val view = ComposeUIViewController({
         val currentRootScreen = remember { mutableStateOf(ScreenId.Home) }
         nav.reset(currentRootScreen)
         NavigationRoot(nav)
+    })
+
+    // Wrong selector
+    //    val dc = NSNotificationCenter.defaultCenter
+    //    dc.addObserver(dc, selector = NSSelectorFromString("keyboardWillShow:"), name = UIKeyboardWillShowNotification, null)
+    return view
 }
 

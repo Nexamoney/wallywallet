@@ -6,7 +6,14 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
+import info.bitcoinunlimited.www.wally.ui.isSoftKeyboardShowing
 import org.nexa.libnexakotlin.UnimplementedException
+
+actual fun UxInTextEntry(boolean: Boolean)
+{
+    // macos has no soft keyboard
+}
+
 
 @Composable
 actual fun WallyTheme(
