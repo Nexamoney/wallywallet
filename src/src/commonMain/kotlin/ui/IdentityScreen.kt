@@ -144,7 +144,7 @@ fun IdentityScreen(account: Account, urip: Uri?, nav: ScreenNav)
                   style = WallySectionTextStyle(),
                   textAlign = TextAlign.Center
                 )
-                WallyBoringLargeIconButton("icons/menu_edit.png", onClick = {
+                WallyBoringLargeIconButton("icons/edit_pencil.png", onClick = {
                     nav.go(ScreenId.IdentityEdit)
                 })
             }
