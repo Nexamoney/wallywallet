@@ -193,3 +193,7 @@ actual fun platformNotification(message:String, title: String?, onclickUrl:Strin
     }
     // TODO actually use platform level notifications
 }
+
+
+// No IME (soft keyboard on desktop)
+@Composable actual fun isImeVisible(): Boolean = false

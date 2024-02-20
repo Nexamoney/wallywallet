@@ -1,6 +1,5 @@
 package info.bitcoinunlimited.www.wally.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -14,15 +13,12 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import info.bitcoinunlimited.www.wally.*
@@ -462,17 +458,14 @@ fun AccountDetailPinInput(description: String, placeholder: String, currentPin: 
                 disabledContainerColor = Color.Transparent,
               ),
               // visualTransformation = PasswordVisualTransformation(),
-              modifier = Modifier
-                .padding(start = 8.dp, end = 8.dp)
-                .wrapContentWidth()
-                .wrapContentHeight().onKeyEvent {
-                  if ((it.key == Key.Enter)||(it.key == Key.NumPadEnter))
-                  {
-                      //focusManager.moveFocus(FocusDirection.Enter)
-                      focusManager.moveFocus(FocusDirection.Next)
-                      true
-                  }
-                  else false// do not accept this key
+              modifier = Modifier.padding(start = 8.dp, end = 8.dp).wrapContentWidth().wrapContentHeight().onKeyEvent {
+                    val k = it.key
+                    if ((k == androidx.compose.ui.input.key.Key.Enter)||(k == androidx.compose.ui.input.key.Key.NumPadEnter))
+                    {
+                        focusManager.moveFocus(FocusDirection.Next)
+                        true
+                    }
+                    else false// do not accept this key
               },
             )
         }

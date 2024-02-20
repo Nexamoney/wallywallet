@@ -4,26 +4,16 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context.CLIPBOARD_SERVICE
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionContext
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.VectorPainter
 import org.nexa.libnexakotlin.*
-import java.net.URLDecoder
-import java.net.URLEncoder
-
-import androidx.compose.ui.res.imageResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.unit.Density
 import info.bitcoinunlimited.www.wally.ui.theme.colorError
 import info.bitcoinunlimited.www.wally.ui.theme.colorNotice
 import info.bitcoinunlimited.www.wally.ui.theme.colorWarning
 import io.ktor.client.*
-import io.ktor.client.engine.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.*
 import okio.*
@@ -179,3 +169,10 @@ actual fun getResourceFile(name: String): BufferedSource
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
+@Composable actual fun isImeVisible(): Boolean
+{
+    val act = currentActivity as? ComposeActivity
+    if (act != null) return act.isKeyboardShown()
+    return WindowInsets.isImeVisible  // Does not seem to work, but is the "compose" API
+}

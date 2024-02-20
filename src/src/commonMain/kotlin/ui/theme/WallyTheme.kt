@@ -11,6 +11,10 @@ expect fun WallyTheme(
   content: @Composable () -> Unit
 )
 
+/** Call this when text entry has the focus -- this works around issues on some platforms in gaining knowledge of what the
+ * system UX is doing.
+ */
+expect fun UxInTextEntry(boolean: Boolean)
 
 data class MediaInfo(val width: Int, val height: Int,
   /** Is this a video? */

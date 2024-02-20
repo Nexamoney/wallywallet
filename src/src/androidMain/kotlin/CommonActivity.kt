@@ -103,7 +103,7 @@ open class CommonNavActivity : CommonActivity()
     open var navActivityId: Int = -1 //* Change this in derived classes to identify which navBar item this activity is
     var navViewMenuId: Int? = null //* change this in derived classes to pick a different bottom nav menu
 
-    open fun onSoftKeyboard(shown: Boolean)
+    override fun onSoftKeyboard(shown: Boolean)
     {
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
         navView.visibility = if (shown) View.GONE else View.VISIBLE
@@ -130,34 +130,6 @@ open class CommonNavActivity : CommonActivity()
             navView.menu.clear()
             navView.inflateMenu(it)
         }
-
-        val rootView = navView.rootView
-
-        setWindowInsetsAnimationCallback(rootView, object : WindowInsetsAnimationCompat.Callback(DISPATCH_MODE_CONTINUE_ON_SUBTREE) {
-            override fun onProgress(insets: WindowInsetsCompat, runningAnimations: MutableList<WindowInsetsAnimationCompat>): WindowInsetsCompat
-            {
-                return insets
-            }
-
-            override fun onStart(animation: WindowInsetsAnimationCompat, bounds: WindowInsetsAnimationCompat.BoundsCompat): WindowInsetsAnimationCompat.BoundsCompat
-            {
-
-                if ((animation.typeMask and WindowInsetsCompat.Type.ime()) > 0)  // soft keyboard thing
-                {
-                    if (isKeyboardShown(rootView))
-                        onSoftKeyboard(true)
-                }
-                return super.onStart(animation, bounds)
-            }
-            override fun onEnd(animation: WindowInsetsAnimationCompat)
-            {
-                super.onEnd(animation)
-                //if (!isKeyboardShown(rootView))
-                onSoftKeyboard(isKeyboardShown(rootView))
-                // val showingKeyboard = rootView.rootWindowInsets.isVisible(WindowInsets.Type.ime())
-            }
-
-        })
     }
 
     override fun onResume()
@@ -314,6 +286,10 @@ open class CommonActivity : AppCompatActivity()
         }
     }
 
+    open fun onSoftKeyboard(shown: Boolean)
+    {
+    }
+
     override fun setTitle(title: CharSequence?)
     {
         synchronized(errorSync)
@@ -339,6 +315,36 @@ open class CommonActivity : AppCompatActivity()
     override fun onStart()
     {
         currentActivity = this
+
+        val view: View = findViewById(android.R.id.content)
+        val rootView = view.rootView
+
+        setWindowInsetsAnimationCallback(rootView, object : WindowInsetsAnimationCompat.Callback(DISPATCH_MODE_CONTINUE_ON_SUBTREE) {
+            override fun onProgress(insets: WindowInsetsCompat, runningAnimations: MutableList<WindowInsetsAnimationCompat>): WindowInsetsCompat
+            {
+                return insets
+            }
+
+            override fun onStart(animation: WindowInsetsAnimationCompat, bounds: WindowInsetsAnimationCompat.BoundsCompat): WindowInsetsAnimationCompat.BoundsCompat
+            {
+
+                if ((animation.typeMask and WindowInsetsCompat.Type.ime()) > 0)  // soft keyboard thing
+                {
+                    if (isKeyboardShown(rootView))
+                        onSoftKeyboard(true)
+                }
+                return super.onStart(animation, bounds)
+            }
+            override fun onEnd(animation: WindowInsetsAnimationCompat)
+            {
+                super.onEnd(animation)
+                //if (!isKeyboardShown(rootView))
+                onSoftKeyboard(isKeyboardShown(rootView))
+                // val showingKeyboard = rootView.rootWindowInsets.isVisible(WindowInsets.Type.ime())
+            }
+
+        })
+
         super.onStart()
     }
 

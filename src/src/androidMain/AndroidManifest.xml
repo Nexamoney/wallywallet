@@ -194,6 +194,7 @@
             android:screenOrientation="portrait"
             android:launchMode="singleTask"
             android:parentActivityName=".MainActivity"
+            android:windowSoftInputMode="adjustResize"
             android:exported="true"
             >
             <intent-filter>

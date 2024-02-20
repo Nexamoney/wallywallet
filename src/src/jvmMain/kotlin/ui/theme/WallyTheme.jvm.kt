@@ -30,6 +30,10 @@ import kotlin.math.min
 //import javafx.scene.media.MediaPlayer
 //import javafx.scene.media.MediaView
 
+actual fun UxInTextEntry(boolean: Boolean)
+{
+    // no soft keyboard
+}
 
 @Composable
 actual fun WallyTheme(

@@ -28,15 +28,6 @@ private val LogIt = GetLog("BU.wally.SenView")
 val SEND_ALL_TEXT: String = i18n(S.sendAll)
 
 /**
- * Coroutine context for send view
- */
-val coMiscCtxt: CoroutineContext = newFixedThreadPoolContext(4, "send")
-/**
- * Coroutine scope for send view
- */
-val coMiscScope = CoroutineScope(coMiscCtxt)
-
-/**
  * View for sending coins
  */
 @OptIn(DelicateCoroutinesApi::class)
@@ -64,7 +55,7 @@ fun SendView(
   onAccountNameSelected: (name: String) -> Unit
 )
 {
-    var account: Account = wallyApp!!.accounts[selectedAccountName] ?: run {
+    var account: Account = wallyApp!!.accounts[selectedAccountName] ?: wallyApp!!.nullablePrimaryAccount ?: run {
         displayNotice(S.NoAccounts, null)
         return
     }
@@ -141,7 +132,7 @@ fun SendView(
         displayNotice(S.Processing, null)
 
         // avoid network on main thread exception
-        coMiscScope.launch {
+        later {
             val cs = account.wallet.chainSelector
             var tx: iTransaction = txFor(cs)
             try
@@ -178,7 +169,7 @@ fun SendView(
         if (paymentInProgress != null)
         {
             displayNotice(S.Processing, null)
-            coMiscScope.launch {
+            later {
                 paymentInProgressSend()
             }
             return
@@ -404,11 +395,12 @@ fun SendView(
         ) {
             SectionText(S.Amount)
             // Send quantity input
-            WallyDecimalEntry(sendQuantity.value, Modifier.weight(1f)) {
+            WallyDecimalEntry(sendQuantity, Modifier.weight(1f)) {
                 // TODO need to serialize clearing vs new accounts: Serialize ALL alerts.  clearAlerts()
                 setSendQuantity(it)
                 afterTextChanged()
                 checkSendQuantity(sendQuantity.value, account)
+                sendQuantity.value
             }
             WallyDropdownMenu(modifier = Modifier.wrapContentSize().weight(0.5f), label = "", items = currencies.value, selectedIndex = ccIndex, onItemSelected = { index, _ ->
                 if (index < currencies.value.size)

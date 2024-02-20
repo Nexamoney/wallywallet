@@ -152,7 +152,6 @@ class ImageContainer
 
 fun String.onlyDigits(): Boolean
 {
-    var badChar = false
     for (ch in this)
     {
         if (!ch.isDigit())
@@ -164,7 +163,6 @@ fun String.onlyDigits(): Boolean
 }
 fun String.onlyDecimal(): Boolean
 {
-    var badChar = false
     for (ch in this)
     {
         if (!(ch.isDigit() || ch == ',' || ch == '.'))
@@ -529,6 +527,8 @@ expect fun isUiThread(): Boolean
 
 /** Access a file from the resource area */
 // expect fun readResourceFile(filename: String): InputStream
+
+@Composable expect fun isImeVisible(): Boolean
 
 fun String.splitIntoSet():Set<String>
 {

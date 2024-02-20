@@ -17,7 +17,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun ResImageView(resPath: String, modifier: Modifier, description: String? = null)
 {
-    if (resPath.endsWith(".xml", true))
+    if (resPath.endsWith(".xml", true) || resPath.endsWith(".png", true) )
     {
         val tmp = painterResource(resPath)
         Image(painter = tmp, contentDescription = description, modifier = modifier)

@@ -1,10 +1,12 @@
 package info.bitcoinunlimited.www.wally.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 //import androidx.compose.ui.platform.ClipboardManager
@@ -543,32 +545,35 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
         }
     }
 
-
     Box(modifier = WallyPageBase) {
-        // pad these buttons on the bottom to be convenient to press with your thumb
-        Row(Modifier.fillMaxWidth().align(Alignment.BottomCenter).zIndex(1f).padding(8.dp,8.dp,8.dp,50.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
-            if (platform().hasGallery)
-                WallyBoringIconButton("icons/gallery.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
-                    ImageQrCode {
-                        it?.let { if (!wallyApp!!.handlePaste(it)) wallyApp!!.handleNonIntentText(it) }
+        // Don't show the thumb buttons if the softkeyboard is up, because the user is keying something in, not one-handing the phone
+        if (!isSoftKeyboardShowing.collectAsState().value)
+        {
+            // pad these buttons on the bottom to be convenient to press with your thumb
+            Row(Modifier.fillMaxWidth().align(Alignment.BottomCenter).zIndex(2f).padding(8.dp, 8.dp, 8.dp, 100.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+                if (platform().hasGallery)
+                    WallyBoringIconButton("icons/gallery.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
+                        ImageQrCode {
+                            it?.let { if (!wallyApp!!.handlePaste(it)) wallyApp!!.handleNonIntentText(it) }
+                        }
                     }
-                }
-            if (platform().hasQrScanner)
-                WallyBoringIconButton("icons/scanqr2.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
-                    isScanningQr = true
-                }
+                if (platform().hasQrScanner)
+                    WallyBoringIconButton("icons/scanqr2.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
+                        isScanningQr = true
+                    }
 
-            if (!platform().usesMouse)
-            {
-                WallyBoringIconButton("icons/clipboard.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
-                    val cliptext = clipmgr.getText()?.text
-                    if (cliptext != null && cliptext != "")
-                    {
-                        if (!wallyApp!!.handlePaste(cliptext)) displayNotice(S.pasteUnintelligible)
-                    }
-                    else
-                    {
-                        displayNotice(S.pasteIsEmpty)
+                if (!platform().usesMouse)
+                {
+                    WallyBoringIconButton("icons/clipboard.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
+                        val cliptext = clipmgr.getText()?.text
+                        if (cliptext != null && cliptext != "")
+                        {
+                            if (!wallyApp!!.handlePaste(cliptext)) displayNotice(S.pasteUnintelligible)
+                        }
+                        else
+                        {
+                            displayNotice(S.pasteIsEmpty)
+                        }
                     }
                 }
             }
@@ -592,7 +597,10 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                           currencyCode = it
                       },
                       setToAddress = { sendToAddress = it },
-                      onCancel = { isSending = false},
+                      onCancel = {
+                          isSending = false
+                          clearAlerts()  // If user manually cancelled, they understood the problem
+                                 },
                       approximatelyText = approximatelyText,
                       currencies = sendCurrencyChoices,
                       xchgRateText = xchgRateText,
@@ -658,11 +666,11 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                 Row(modifier = Modifier.fillMaxWidth().padding(0.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
                     Spacer(Modifier.width(8.dp))
                     if(synced.value)
-                        ResImageView("icons/check.xml", modifier = Modifier.size(50.dp))
+                        ResImageView("icons/check.xml", modifier = Modifier.size(30.dp))
                     else
                         LoadingAnimation()
                     SectionText(S.AccountListHeader, Modifier.weight(1f))
-                    ResImageView("icons/plus.xml", modifier = Modifier.size(26.dp).clickable {
+                    ResImageView("icons/plus.xml", modifier = Modifier.size(30.dp).clickable {
                         nav.go(ScreenId.NewAccount)
                     })
                     Spacer(Modifier.width(8.dp))

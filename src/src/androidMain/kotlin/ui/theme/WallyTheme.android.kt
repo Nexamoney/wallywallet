@@ -48,6 +48,11 @@ import kotlin.math.min
 
 private val LogIt = GetLog("wally.theme.android")
 
+actual fun UxInTextEntry(boolean: Boolean)
+{
+    // nothing to do; we can learn about the soft keyboard from the os
+}
+
 @OptIn(UnstableApi::class)
 class ByteArrayDataSourceFactory(val bads: ByteArrayDataSource):DataSource.Factory
 {
@@ -102,6 +107,8 @@ class ByteArrayDataSource(val data:ByteArray, val url: Url): DataSource
 
     }
 }
+
+
 
 actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
 {
@@ -339,7 +346,7 @@ actual fun WallyTheme(
             val activity = view.context as? Activity
             SideEffect {
                 activity?.window?.apply {
-                    statusBarColor = colorScheme.primary.toArgb()
+                    statusBarColor = colorScheme.inversePrimary.toArgb()
                     WindowCompat
                       .getInsetsController(this, view).apply {
                           isAppearanceLightStatusBars = darkTheme
