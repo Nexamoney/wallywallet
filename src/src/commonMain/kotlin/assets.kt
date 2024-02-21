@@ -390,6 +390,20 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
         return true
     }
 
+    /** Clear all assets held by this account from the transfer list */
+    fun clearTransferListOfAssetsHeldBy(account: Account) = clearTransferListOfAssetsHeldBy(account.name)
+    /** Clear all assets held by this account from the transfer list */
+    fun clearTransferListOfAssetsHeldBy(accountName: String):Int
+    {
+        val forXferAssets = wallyApp!!.assetManager.transferList.filter { it.account?.name == accountName }
+        if (forXferAssets.isNotEmpty())
+        {
+            wallyApp!!.assetManager.transferList.removeAll(forXferAssets)
+        }
+        return forXferAssets.size
+    }
+
+
     fun storeTokenDesc(groupId: GroupId, td: TokenDesc)
     {
         val ser = kotlinx.serialization.json.Json.encodeToString(TokenDesc.serializer(), td)

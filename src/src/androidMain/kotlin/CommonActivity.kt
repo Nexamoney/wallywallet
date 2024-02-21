@@ -546,19 +546,22 @@ open class CommonActivity : AppCompatActivity()
             // Display the error by changing the title and title bar color temporarily
             val titlebar: View = findViewById(actionBarId)
             if (alert.msg == "") finishShowingNotice()
-            val myError = synchronized(errorSync)
+            else
             {
-                super.setTitle(alert.msg)
-                lastErrorString = alert.msg
-                errorCount += 1
-                menuHidden += 1
-                currentNumShowing += 1
-                invalidateOptionsMenu()
-                titlebar.background = ColorDrawable(alert.level.color().toArgb())
-                errorCount
+                val myError = synchronized(errorSync)
+                {
+                    super.setTitle(alert.msg)
+                    lastErrorString = alert.msg
+                    errorCount += 1
+                    menuHidden += 1
+                    currentNumShowing += 1
+                    invalidateOptionsMenu()
+                    titlebar.background = ColorDrawable(alert.level.color().toArgb())
+                    errorCount
+                }
+                delay(alert.longevity ?: alert.level.longevity())
+                finishShowingNotice(myError)
             }
-            delay(alert.longevity ?: alert.level.longevity())
-            finishShowingNotice(myError)
         }
 
     }

@@ -17,7 +17,8 @@ actual fun i18n(id: Int): String
     if (id == -1) return ""
     if (id < LocaleStrings.size)
     {
-        return LocaleStrings[id].replace("\\n","\n").replace("\\'","\'").replace("\\\"","\"")
+        return LocaleStrings[id]
+          // this is no longer needed; character xform is done when resource file is generated: .replace("\\n","\n").replace("\\'","\'").replace("\\\"","\"")
     }
 
     try

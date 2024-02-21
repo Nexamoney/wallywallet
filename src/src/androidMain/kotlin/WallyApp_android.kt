@@ -21,14 +21,8 @@ import androidx.core.app.NotificationManagerCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import org.nexa.libnexakotlin.*
-import java.io.DataOutputStream
-import java.io.FileNotFoundException
-import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.URL
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
-
 import com.eygraber.uri.*
 import info.bitcoinunlimited.www.wally.ui.views.loadingAnimation
 

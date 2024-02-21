@@ -9,13 +9,5 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 var loadingAnimation:String? = null
-
-@Composable
-fun LoadingAnimation()
-{
-    Box(Modifier.size(50.dp)) {
-        LoadingAnimationContent()
-    }
-}
 @Composable
 expect fun LoadingAnimationContent()

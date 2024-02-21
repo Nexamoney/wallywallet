@@ -12,6 +12,8 @@ const val HTTP_REQ_TIMEOUT_MS: Int = 7000
 val LAST_RESORT_BCH_ELECTRS = "bch2.bitcoinunlimited.net"
 val LAST_RESORT_NEXA_ELECTRS = "electrum.nexa.org"
 
+const val NEXA_EXPLORER_URL = "https://explorer.nexa.org"
+const val NEXA_TESTNET_EXPLORER_URL = "https://testnet-explorer.nexa.org"
 
 var allowAccessPriceData: Boolean = true
 var devMode = false

@@ -244,7 +244,7 @@ Good luck!
     <!-- As in "Send to" -->
     <string name="toColon">To:</string>
     <string name="assetsColon">Assets:</string>
-    <string name="NoAssets">No Assets Available</string>
+    <string name="NoAssets">No assets available in account %act</string>
     <!-- As in what entity is requesting information -->
     <string name="fromColon">From:</string>
     <string name="Receive">Receive into account</string>
@@ -503,8 +503,8 @@ Good luck!
     <string name="title_activity_identity">Identity</string>
     <string name="title_activity_identity_op">Identity</string>
     <string name="title_activity_domain_identity_settings">Domain Identity Settings</string>
-    <string name="title_activity_tx_history" formatted="false">Address History: %account</string>
-    <string name="title_activity_address_history" formatted="false">Transaction History: %account</string>
+    <string name="title_activity_tx_history" formatted="false">Transaction History: %account</string>
+    <string name="title_activity_address_history" formatted="false">Address History: %account</string>
     <string name="title_activity_account_details" formatted="false">Account: %account</string>
     <string name="title_test">Test</string>
 

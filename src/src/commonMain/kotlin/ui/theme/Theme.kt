@@ -540,6 +540,21 @@ fun CenteredText(text: String, modifier: Modifier = Modifier)
       })
 }
 
+@Composable fun CenteredFittedWithinSpaceText(text: String, startingFontScale: Double=1.0, fontWeight: FontWeight = FontWeight.Normal, modifier: Modifier = Modifier)
+{
+    // see https://stackoverflow.com/questions/63971569/androidautosizetexttype-in-jetpack-compose
+    val tmp = WallyTextStyle(startingFontScale, fontWeight)
+    var textStyle by remember { mutableStateOf(tmp) }
+    var drawIt by remember { mutableStateOf(false) }
+    Text(text = text, style = textStyle, modifier = modifier.padding(0.dp).drawWithContent { if (drawIt) drawContent() }. then(modifier), textAlign = TextAlign.Center, maxLines = 1, softWrap = false,
+      onTextLayout = {
+          textLayoutResult ->
+        if (textLayoutResult.didOverflowWidth)
+            textStyle = textStyle.copy(fontSize = textStyle.fontSize * 0.9)
+        else drawIt = true
+      })
+}
+
 /** Creates a horizontal row of evenly spaced objects that you add.  Meant to be used to provide a consistent look for
  * a row of buttons. */
 @Composable fun WallyButtonRow(modifier: Modifier = Modifier, content: @Composable() (RowScope.() -> Unit))

@@ -1920,7 +1920,6 @@ class MainActivity : CommonNavActivity()
                         hideKeyboard()
                         l?.remove()
                     }
-
                 }
                 )
             }

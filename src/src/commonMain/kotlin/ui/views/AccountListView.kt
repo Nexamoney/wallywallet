@@ -60,6 +60,7 @@ private val accountListState:MutableStateFlow<LazyListState?> = MutableStateFlow
     val scope = rememberCoroutineScope()
     val tmp = accountListState.collectAsState(scope.coroutineContext).value ?: rememberLazyListState()
 
+    val selAct = selectedAccount.collectAsState().value
     LazyColumn(state=tmp, horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
         accounts.forEachIndexed { idx, it ->
             item(key=it.name) {
@@ -68,7 +69,7 @@ private val accountListState:MutableStateFlow<LazyListState?> = MutableStateFlow
                         //val anyChanges: MutableState<AccountUIData> = remember { mutableStateOf(it.uiData()) }
                 // scope.launch { listState.animateScrollToItem(idx, -1) }  // -1 puts our item more in the center
                 if (accountUIData[it.name] == null) accountUIData[it.name] = it.uiData()
-                AccountItemView(accountUIData[it.name]!!, idx, selectedAccount.value == it, devMode,
+                AccountItemView(accountUIData[it.name]!!, idx, selAct == it, devMode,
                           onClickAccount = { onAccountSelected(it) },
                           onClickGearIcon = {
                               nav.go(ScreenId.AccountDetails)

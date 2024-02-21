@@ -570,12 +570,14 @@ open class CommonApp
         tpDomains.load()
 
         assetLoaderThread = org.nexa.threads.Thread("assetLoader") {
-            millisleep(500UL)  // Constructing the asset list can use a lot of disk which interferes with startup
+            // Constructing the asset list can use a lot of disk which interferes with startup
+            // This will wait until all the accounts are loaded
+            while(wallyApp!!.nullablePrimaryAccount == null) millisleep(500UL)
             while(true)
             {
                 for (a in accounts)
                     a.value.constructAssetMap()
-                millisleep(15000UL)
+                millisleep(10000UL)
             }
         }
     }

@@ -33,9 +33,9 @@ fun readStringsXml(filename: String):MutableMap<String,String>
             val attrs = s.attributes
             val name = attrs.getNamedItem("name").textContent
             val v = s.textContent
-            val xv = v.replace("\\n","\n").replace("\\'","\'").replace("\\\"","\"").replace("\\r","\r")
-            xlat[name] = v
-            println("$name -> $v")
+            val xv = v.replace("\\n","\n").replace("\\'","'").replace("\\\"","\"").replace("\\r","\r")
+            xlat[name] = xv
+            println("$name -> $xv")
         }
     }
 

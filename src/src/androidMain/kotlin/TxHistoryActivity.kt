@@ -30,109 +30,6 @@ val MAX_CLIPBOARD_SIZE = 10000  // Copying too much triggers an android bug on a
 
 private val LogIt = GetLog("BU.wally.TxHistory")
 
-fun TransactionHistory.toCSV(): String
-{
-    val rcvWalletAddr = StringBuilder()
-    val rcvForeignAddr = StringBuilder()
-    for (i in 0 until tx.outputs.size)
-    {
-        val out = tx.outputs[i]
-        if (incomingIdxes.contains(i.toLong()))
-        {
-            rcvWalletAddr.append(" " + (out.script.address?.toString() ?: ""))
-        }
-        else
-        {
-            rcvForeignAddr.append(" " + (out.script.address?.toString() ?: ""))
-        }
-    }
-
-    val spentWalletAddr = StringBuilder()
-    val spentForeignAddr = StringBuilder()
-    for (i in 0L until tx.inputs.size)
-    {
-        val inp = tx.inputs[i.toInt()]
-        val idx = outgoingIdxes.find({ it == i })
-        if (idx != null)
-        {
-            if (idx < spentTxos.size)
-                rcvWalletAddr.append(" " + (spentTxos[idx.toInt()].script.address?.toString() ?: "") )
-            else
-            {
-                LogIt.info(sourceLoc() + " data consistency error")
-            }
-        }
-        else
-        {
-            rcvForeignAddr.append(" " + inp)
-        }
-    }
-
-    val instant = kotlinx.datetime.Instant.fromEpochMilliseconds(date)
-    val localTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-    val fdate = localTime.toString()
-    val ret = StringBuilder()
-    ret.append(fdate)
-    ret.append(",")
-    ret.append(incomingAmt - outgoingAmt)
-    ret.append(",")
-    ret.append(if (incomingAmt > outgoingAmt) "received" else "payment")
-    ret.append(",")
-    ret.append(tx.idem.toHex())
-    ret.append(",")
-    ret.append(basisOverride?.let { CurrencySerializeFormat.format(it) } ?: "")
-    ret.append(",")
-    ret.append(saleOverride?.let { CurrencySerializeFormat.format(it) } ?: "")
-    ret.append(",")
-    ret.append(priceWhenIssued.let { CurrencySerializeFormat.format(it) } ?: "")
-    ret.append(",")
-    ret.append(priceWhatFiat)
-    ret.append(",")
-    ret.append(spentWalletAddr.toString())
-    ret.append(",")
-    ret.append(spentForeignAddr.toString())
-    ret.append(",")
-    ret.append(rcvWalletAddr.toString())
-    ret.append(",")
-    ret.append(rcvForeignAddr.toString())
-    ret.append(",")
-    ret.append("\"" + note + "\"")
-    ret.append(",\n")
-    return ret.toString()
-}
-
-fun TransactionHistoryHeaderCSV(): String
-{
-    val ret = StringBuilder()
-    ret.append("date")
-    ret.append(",")
-    ret.append("amount (Satoshi NEX)")
-    ret.append(",")
-    ret.append("change")
-    ret.append(",")
-    ret.append("transaction and index")
-    ret.append(",")
-    ret.append("basis")
-    ret.append(",")
-    ret.append("sale")
-    ret.append(",")
-    ret.append("price")
-    ret.append(",")
-    ret.append("fiat currency")
-    ret.append(",")
-    ret.append("spent wallet addresses")
-    ret.append(",")
-    ret.append("spent foreign addresses")
-    ret.append(",")
-    ret.append("received addresses")
-    ret.append(",")
-    ret.append("sent to addresses")
-    ret.append(",")
-
-    ret.append("note")
-    ret.append(",\n")
-    return ret.toString()
-}
 
 
 
@@ -517,10 +414,10 @@ class TxHistoryActivity : CommonNavActivity()
                         adapter.rowBackgroundColors = WallyRowColors
 
                         val csv = StringBuilder()
-                        csv.append(TransactionHistoryHeaderCSV())
+                        //csv.append(TransactionHistoryHeaderCSV())
                         for (h in historyList)
                         {
-                            csv.append(h.toCSV())
+                            //csv.append(h.toCSV())
                         }
 
                         // Set up the share intent

@@ -1,8 +1,10 @@
 package info.bitcoinunlimited.www.wally.ui.views
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,11 +17,11 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.DecimalMode
 import com.ionspin.kotlin.bignum.decimal.RoundingMode
 import info.bitcoinunlimited.www.wally.*
+import info.bitcoinunlimited.www.wally.ui.AssetListItemView
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import kotlinx.coroutines.*
 import okio.utf8Size
 import org.nexa.libnexakotlin.*
-import kotlin.coroutines.CoroutineContext
 
 private val LogIt = GetLog("BU.wally.SenView")
 
@@ -56,7 +58,7 @@ fun SendView(
   onAccountNameSelected: (name: String) -> Unit
 )
 {
-    var account: Account = wallyApp!!.accounts[selectedAccountName] ?: wallyApp!!.nullablePrimaryAccount ?: run {
+    val account = wallyApp!!.accounts[selectedAccountName] ?: wallyApp!!.nullablePrimaryAccount ?: run {
         displayNotice(S.NoAccounts, null)
         return
     }
@@ -67,6 +69,7 @@ fun SendView(
     val sendToAddress: MutableState<PayAddress?> = remember { mutableStateOf(null) }
     val fpcState = account.fiatPerCoinObservable.collectAsState()
     val amountState: MutableState<BigDecimal?> = remember { mutableStateOf(null) }
+    val sendingTheseAssets = wallyApp!!.assetManager.transferList.filter { it.account == account }
 
     account.getXchgRates("USD")
 
@@ -136,27 +139,93 @@ fun SendView(
         later {
             val cs = account.wallet.chainSelector
             var tx: iTransaction = txFor(cs)
-            try
+            if ((qty == BigDecimal.ZERO)&&sendingTheseAssets.isEmpty())  // Sending nothing
             {
-                val atomAmt = account.toFinestUnit(qty)
-                // If we are spending all, then deduct the fee from the amount (which was set above to the full ungrouped balance)
-                tx = account.wallet.send(atomAmt, sendAddress, spendAll, false, note = note.value)
-                note.value = ""
-                LogIt.info("Sending TX: ${tx.toHex()}")
-                onSendSuccess(atomAmt, sendAddress, tx)
+                displayError(i18n(S.badAmount))
             }
-            catch (e: WalletNotEnoughBalanceException)
+            else
             {
-                displayError(i18n(S.insufficentBalance))
-                LogIt.info("Failed transaction is: ${tx.toHex()}")
-                sendConfirm = ""  // Force reconfirm is there is any error with the send
-            }
-            catch (e: Exception)  // We don't want to crash, we want to tell the user what went wrong
-            {
-                displayUnexpectedException(e)
-                handleThreadException(e)
-                LogIt.info("Failed transaction is: ${tx.toHex()}")
-                sendConfirm = ""  // Force reconfirm is there is any error with the send
+                try
+                {
+                    // val atomAmt = account.toFinestUnit(qty)
+                    // If we are spending all, then deduct the fee from the amount (which was set above to the full ungrouped balance)
+                    //tx = account.wallet.send(atomAmt, sendAddress, spendAll, false, note = note.value)
+
+                    tx = txFor(cs)
+                    try
+                    {
+                        val atomAmt = account.toFinestUnit(qty)
+                        if (sendingTheseAssets.size == 0)
+                        {
+                            // If we are spending all, then deduct the fee from the amount (which was set above to the full ungrouped balance)
+                            tx = account.wallet.send(atomAmt, sendAddress, spendAll, false, note = note.value)
+                        }
+                        else
+                        {
+                            // TBD: It would be interesting to automatically use an authority, if one is sent to this account: TxCompletionFlags.USE_GROUP_AUTHORITIES
+                            var cflags = TxCompletionFlags.FUND_NATIVE or TxCompletionFlags.FUND_GROUPS or TxCompletionFlags.SIGN
+                            if (spendAll)
+                            {
+                                cflags = cflags or TxCompletionFlags.SPEND_ALL_NATIVE or TxCompletionFlags.DEDUCT_FEE_FROM_OUTPUT
+                            }
+                            // Construct outputs that send all selected assets
+                            var assetDustOut = 0L
+                            for (asset in sendingTheseAssets)
+                            {
+                                if (asset.account == account)
+                                {
+                                    val aout = txOutputFor(cs)
+                                    aout.amount = dust(cs)
+                                    assetDustOut += aout.amount
+                                    aout.script = sendAddress.groupedConstraintScript(asset.groupInfo.groupId, asset.displayAmount ?: 1)
+                                    tx.add(aout)
+                                }
+                                else
+                                {
+                                    LogIt.info("asset from the wrong account in sendAssetList!  (Should never happen)")
+                                }
+                            }
+                            //
+                            // Construct an output that sends the right amount of native coin
+                            if (atomAmt > 0)
+                            {
+                                val coinOut = txOutputFor(cs)
+                                coinOut.amount = atomAmt
+                                if (spendAll) coinOut.amount -= assetDustOut  // it doesn't matter because txCompleter will solve but needs to not be too much
+                                coinOut.script = sendAddress.outputScript()
+                                tx.add(coinOut)
+                            }
+
+                            // Attempt to pay for the constructed transaction
+                            account.wallet.txCompleter(tx, 0, cflags, null, if (spendAll) (tx.outputs.size-1) else null)
+                            account.wallet.send(tx,false, note = note.value)
+                        }
+                        note.value = ""
+                        LogIt.info("Sending TX: ${tx.toHex()}")
+                        onSendSuccess(atomAmt, sendAddress, tx)
+                        sendConfirm = "" // We are done with a send so reset state machine
+                    }
+                    catch (e: Exception)  // We don't want to crash, we want to tell the user what went wrong
+                    {
+                        displayUnexpectedException(e)
+                        handleThreadException(e)
+                        LogIt.info("Failed transaction is: ${tx.toHex()}")
+                        sendConfirm = ""  // Force reconfirm is there is any error with the send
+                    }
+                }
+                catch (e: WalletNotEnoughBalanceException)
+                {
+                    displayError(i18n(S.insufficentBalance))
+                    LogIt.info("Failed transaction is: ${tx.toHex()}")
+                    sendConfirm = ""  // Force reconfirm is there is any error with the send
+                }
+                catch (e: Exception)  // We don't want to crash, we want to tell the user what went wrong
+                {
+                    displayUnexpectedException(e)
+                    handleThreadException(e)
+                    LogIt.info("Failed transaction is: ${tx.toHex()}")
+                    sendConfirm = ""  // Force reconfirm is there is any error with the send
+                }
             }
         }
         sendConfirm = ""  // We are done with a send so reset state machine
@@ -165,8 +234,6 @@ fun SendView(
     /** Create and post a transaction when the send button is pressed */
     fun onSendButtonClicked()
     {
-        LogIt.info("send button clicked")
-
         if (paymentInProgress != null)
         {
             displayNotice(S.Processing, null)
@@ -332,7 +399,7 @@ fun SendView(
                   "amt" to account.format(amount), "currency" to account.currencyCode,
                   "dest" to sendAddr.toString(),
                   "inFiat" to fiatAmt,
-                  "assets" to "",
+                  "assets" to if (sendingTheseAssets.isEmpty()) "" else i18n(S.AndSomeAssets),
                 )
             }
         }
@@ -417,11 +484,30 @@ fun SendView(
         OptionalInfoText(approximatelyText)
         OptionalInfoText(xchgRateText)
         Spacer(modifier = Modifier.size(16.dp))
-        Row(
-          modifier = Modifier.fillMaxWidth(),
-          horizontalArrangement = Arrangement.SpaceEvenly,
 
-          ) {
+
+        if (sendingTheseAssets.size > 0)
+        {
+            CenteredSectionText(S.assetsColon)
+            LazyColumn(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                var index = 0
+                sendingTheseAssets.forEach {
+                    val entry = it
+                    val indexFreezer = index  // To use this in the item composable, we need to freeze it to a val, because the composable is called out-of-scope
+                    item(key = indexFreezer) {
+                        Box(Modifier.padding(4.dp, 1.dp).fillMaxWidth().background(WallyAssetRowColors[indexFreezer % WallyAssetRowColors.size]).clickable {
+                        }) {
+                            AssetListItemView(entry, 0, Modifier.padding(0.dp, 2.dp))
+                        }
+                    }
+                    index++
+                }
+            }
+
+        }
+
+
+        WallyButtonRow {
             WallyBoringLargeIconButton("icons/edit_pencil.png", interactionSource = MutableInteractionSource(),
               onClick = { displayNoteInput = !displayNoteInput }
             )
