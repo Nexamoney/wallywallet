@@ -25,4 +25,14 @@ platform :ios do
     build_app(scheme: "iosApp", xcargs: "-allowProvisioningUpdates")
     upload_to_testflight(api_key_path: app_store_connect_api_key_path)
   end
+
+  desc "Push a new beta build to public TestFlight"
+  lane :beta_public do
+    app_store_connect_api_key_path = ENV['APP_STORE_CONNECT_API_KEY_PATH']
+    build_app(scheme: "iosApp", xcargs: "-allowProvisioningUpdates")
+    upload_to_testflight(
+      api_key_path: app_store_connect_api_key_path,
+      groups: ["Wally iOS Beta"]
+    )
+  end
 end
