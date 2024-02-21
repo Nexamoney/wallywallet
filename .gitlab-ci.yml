@@ -190,8 +190,7 @@ testflight:
 
 testflight_public:
   rules:
-    - if: $CI_COMMIT_REF_PROTECTED == "true"
-    - if: $GITLAB_USER_ID == "2786309" # User: https://gitlab.com/gandrewstone
+    - if: $CI_COMMIT_REF_PROTECTED == "true" && $GITLAB_USER_ID == "2786309" # User: https://gitlab.com/gandrewstone
       when: manual
   stage: deploy_beta
   tags:
