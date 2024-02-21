@@ -33,7 +33,7 @@ fun AssetListItemView(assetInfo: AssetInfo, verbosity: Int = 1, modifier: Modifi
     val nft = asset.nft
 
     Column(modifier = modifier) {
-        if (devMode) CenteredFittedText(asset.groupInfo.groupId.toStringNoPrefix())
+        if ((devMode)&&(verbosity>0)) CenteredFittedText(asset.groupInfo.groupId.toStringNoPrefix())
         Row {
 
             // If its an NFT, don't show the quantity if they have just 1
@@ -53,15 +53,22 @@ fun AssetListItemView(assetInfo: AssetInfo, verbosity: Int = 1, modifier: Modifi
 
             Column(Modifier.weight(1f)) {
                 var name = (if ((nft != null) && (nft.title.length > 0)) nft.title else asset.name) ?: ""
-
-                CenteredSectionText(name)
-                if ((nft?.author != null) && (nft.author.length > 0))
+                if (verbosity > 0)
                 {
-                    CenteredText(i18n(S.NftAuthor) % mapOf("author" to nft.author))
+                    CenteredSectionText(name)
+                    if ((nft?.author != null) && (nft.author.length > 0))
+                    {
+                        CenteredText(i18n(S.NftAuthor) % mapOf("author" to nft.author))
+                    }
+                    if (nft?.series != null)
+                    {
+                        CenteredText(i18n(S.NftSeries) % mapOf("series" to nft.series))
+                    }
                 }
-                if (nft?.series != null)
+                else
                 {
-                    CenteredText(i18n(S.NftSeries) % mapOf("series" to nft.series))
+                    var author = if ((nft?.author != null) && (nft.author.length > 0)) ", " + nft.author else ""
+                    CenteredFittedText(name + author)
                 }
             }
 
@@ -262,7 +269,8 @@ fun AssetScreen(account: Account, nav: ScreenNav)
         {
             if (account.assets.size == 0)
             {
-                Text(i18n(S.NoAssets), Modifier.background(WallyRowBbkg1).fillMaxWidth())
+                Spacer(Modifier.height(10.dp))
+                CenteredFittedText(i18n(S.NoAssets) % mapOf("act" to account.name), 2.0, modifier=Modifier.background(WallyRowBbkg1).fillMaxWidth())
             }
             else
             {
@@ -303,7 +311,7 @@ fun AssetScreen(account: Account, nav: ScreenNav)
             val uriHandler = LocalUriHandler.current
 
             AssetView(a, modifier = Modifier.weight(1f).padding(8.dp, 0.dp))
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically) {
+            WallyButtonRow {
                 WallyBoringIconButton("icons/clipboard.xml", Modifier.width(26.dp).height(26.dp)) {
                     onCopyToClipboardButton(a)
                 }
@@ -325,7 +333,6 @@ fun AssetScreen(account: Account, nav: ScreenNav)
                 if ((a.tokenInfo?.marketUri ?: "") != "") WallyRoundedTextButton(S.AssetMarketplace, onClick = {
                     onTradeButton(a, uriHandler)
                 })
-
             }
         }
 

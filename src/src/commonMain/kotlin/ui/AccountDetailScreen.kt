@@ -41,11 +41,11 @@ fun AccountDetailScreen(account: Account, nav: ScreenNav)
         {
             AccountBlockchainDetail(account)
             AccountFirstLastSend(account.wallet.statistics())
-            GuiAccountTxStatisticsRow(account.wallet.statistics(), { nav.go(ScreenId.AddressHistory) }, { nav.go(ScreenId.AddressHistory) })
+            GuiAccountTxStatisticsRow(account.wallet.statistics(), { nav.go(ScreenId.AddressHistory) }, { nav.go(ScreenId.TxHistory) })
         }
         Spacer(modifier = Modifier.padding(4.dp))
         WallyDivider()
-        AccountActions(account, { nav.go(ScreenId.AddressHistory) }, accountDeleted = {
+        AccountActions(account, { nav.go(ScreenId.TxHistory) }, accountDeleted = {
             nav.back()
             triggerAssignAccountsGuiSlots()
         })

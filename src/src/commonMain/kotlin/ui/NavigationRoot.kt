@@ -102,7 +102,7 @@ enum class ScreenId
             Identity -> i18n(S.title_activity_identity)
             IdentityOp -> i18n(S.title_activity_identity_op)
             TricklePay -> i18n(S.title_activity_trickle_pay)
-            Assets -> i18n(S.title_activity_assets)
+            Assets -> i18n(S.assetsColon) + wallyApp?.focusedAccount?.name ?: ""
             Shopping -> i18n(S.title_activity_shopping)
             Settings -> i18n(S.title_activity_settings)
             SplitBill -> i18n(S.title_split_bill)
@@ -434,7 +434,14 @@ fun NavigationRoot(nav: ScreenNav)
 
     @Composable fun withAccount(then: @Composable (acc: Account) -> Unit)
     {
-        val pa = selectedAccount.value
+        // make sure the UX and the app are both tracking the correct focused account
+        if (selectedAccount.value != wallyApp!!.focusedAccount) {
+            // Pick the one the UX set preferentially
+            if(selectedAccount.value != null) wallyApp!!.focusedAccount = selectedAccount.value
+            else selectedAccount.value = wallyApp!!.focusedAccount
+        }
+        val pa = selectedAccount.value ?: wallyApp!!.focusedAccount ?: wallyApp?.nullablePrimaryAccount
+
         if (pa == null)
         {
             displayError(S.NoAccounts)
@@ -607,22 +614,15 @@ fun NavigationRoot(nav: ScreenNav)
 
 
 
+    // This box is on top of the main screen
     Box(modifier = Modifier.zIndex(1000f).fillMaxSize()) {
-
         if (isSoftKeyboardShowing.collectAsState().value)
         {
             val keybar = softKeyboardBar.collectAsState().value
             keybar?.invoke(Modifier.padding(0.dp).align(Alignment.BottomStart).fillMaxWidth().background(Color(0xe0d8d8d8)))
         }
-        else
-        {
-
-            // This will always be at the bottom and won't overlap with the content above
-            Box(modifier = Modifier.align(Alignment.BottomStart).fillMaxWidth().background(NavBarBkg).height(IntrinsicSize.Min).padding(0.dp)) {
-                NavigationMenu(nav)
-            }
-        }
     }
+    // The main screen
     WallyTheme(darkTheme = false, dynamicColor = false) {
         Box(modifier = WallyPageBase) {
             if (unlockDialog != null) UnlockDialog {  }
@@ -673,6 +673,15 @@ fun NavigationRoot(nav: ScreenNav)
                         ScreenId.IdentityOp -> withAccount { act -> IdentityPermScreen(act, currentUri, nav); }
                     }
                 }
+                if (!isSoftKeyboardShowing.collectAsState().value)
+                {
+                    //Box(modifier = Modifier.align(Alignment.BottomStart).fillMaxWidth().background(NavBarBkg).height(IntrinsicSize.Min).padding(0.dp)) {
+                    //    NavigationMenu(nav)
+                    val modifier = Modifier.fillMaxWidth().background(NavBarBkg).height(IntrinsicSize.Min).padding(0.dp)
+                    NavigationMenu(nav, modifier)
+
+                }
+
             }
         }
     }
@@ -693,11 +702,11 @@ object ChildNav {
 data class NavChoice(val location: ScreenId, val textId: Int, val imagePath: String)
 
 @Composable
-fun NavigationMenu(nav: ScreenNav)
+fun NavigationMenu(nav: ScreenNav, modifier: Modifier)
 {
     val items by menuItems.collectAsState()
 
-    Column {
+    Column(modifier = modifier) {
         // Horizontal row to layout navigation buttons
         Row(modifier = Modifier.padding(0.dp, 0.dp).fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.SpaceEvenly) {
             for (ch in items)

@@ -5,13 +5,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -149,6 +152,7 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
                     Column (modifier = Modifier.fillMaxWidth().background(color).padding(1.dp).clickable {
                         onAddressCopied(it.address.toString())
                     }) {
+                        val uriHandler = LocalUriHandler.current
                         CenteredFittedText(text = address, fontWeight = FontWeight.Bold, modifier = Modifier)
 
                         Column (modifier = Modifier.fillMaxWidth().background(color).padding(8.dp)) {
@@ -215,8 +219,26 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
                                     assert(false)  // should never happen if some amount is held
                                 }
 
-                                Text(totalReceived)
-                                if (it.amountHeld > 0) Text(balance, fontWeight = FontWeight.Bold)
+                                Row {
+                                    Column {
+                                        Text(totalReceived)
+                                        if (it.amountHeld > 0) Text(balance, fontWeight = FontWeight.Bold)
+                                    }
+                                    val uri = if (it.address.blockchain == ChainSelector.NEXA)
+                                            NEXA_EXPLORER_URL + "/address/${it.address.toString()}"
+                                        else if (it.address.blockchain == ChainSelector.NEXATESTNET)
+                                            NEXA_TESTNET_EXPLORER_URL + "/address/${it.address.toString()}"
+                                        else null
+
+                                    if (uri != null)
+                                    {
+                                        Spacer(Modifier.height(1.dp).weight(1f))
+                                        WallyBoringButton({ uriHandler.openUri(uri) }, modifier = Modifier.padding(0.dp, 0.dp, 10.dp, 0.dp)
+                                        ) {
+                                            Icon(Icons.AutoMirrored.Default.ExitToApp, tint = colorConfirm, contentDescription = "view address activity")
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

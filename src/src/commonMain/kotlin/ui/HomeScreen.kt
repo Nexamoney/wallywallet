@@ -26,6 +26,9 @@ import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.HomeScreen")
 private val currentReceiveShared: MutableStateFlow<String> = MutableStateFlow("")
+
+var sendToAddress: MutableStateFlow<String> = MutableStateFlow("")
+
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 /* Since composable state needs to be defined within a composable, imagine this composable is actually a singleton class,
@@ -54,7 +57,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
     val paymentInProgress: MutableState<ProspectivePayment?> = remember { mutableStateOf(null) }
     var currencyCode by remember { mutableStateOf(i18n(S.choose)) } // TODO: get from local db
 
-    var sendToAddress by remember { mutableStateOf("") }
+    val _sendToAddress:String = sendToAddress.collectAsState().value
     var sendNote = remember { mutableStateOf("") }
     val sendCurrencyChoices: MutableState<List<String>> = remember { mutableStateOf(listOf()) }
 
@@ -124,8 +127,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
             account = selectedAccount.value
             if (account == null)
             {
-                selectedAccount.value = wallyApp!!.nullablePrimaryAccount
-                account = selectedAccount.value
+                account = wallyApp!!.nullablePrimaryAccount
             }
             updateSendAccount(account)
         }
@@ -166,7 +168,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
         if (pa.type == PayAddressType.NONE) return  // nothing to update
         dbgAssertGuiThread()
 
-        sendToAddress = pa.toString()
+        sendToAddress.value = pa.toString()
         paymentInProgress.value = null
 
         // Change the send currency type to reflect the pasted data if I need to
@@ -194,7 +196,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
             {
                 if (updateIfNonAddress)
                 {
-                    sendToAddress = t
+                    sendToAddress.value = t
                 }
                 throw e
             }
@@ -397,24 +399,25 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                     }
                      */
 
-                    sendToAddress = ""
+                    sendToAddress.value = ""
                     var count = 0
                     paymentInProgress.value?.outputs?.let {
+                        var tmp = StringBuilder()
                         for (out in it)
                         {
                             val addr = out.script.address.toString()
-                            if (count > 0)
-                            {
-                                sendToAddress = "$sendToAddress "
-                            }
-                            sendToAddress = sendToAddress + addr
+                            val spacer = if (count > 0) " " else ""
+
+                            tmp.append(spacer)
+                            tmp.append(addr)
                             count += 1
                             if (count > 4)
                             {
-                                sendToAddress = "$sendToAddress..."
+                                tmp.append("...")
                                 break
                             }
                         }
+                        sendToAddress.value = tmp.toString()
                     }
                 }
             }
@@ -425,23 +428,27 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
         }
     }
 
-    fun onAccountSelected(c: Account)
+    fun onAccountSelected(c: Account?)
     {
         wallyApp!!.focusedAccount = c
         try
         {
-            lastSendFromAccountName = c.name
-            val sendAddr = PayAddress(sendToAddress.trim())
-            if (c.wallet.chainSelector != sendAddr.blockchain)
+            if (c != null)
             {
-                if (sendAddr != alreadyErroredAddress.value)
+                lastSendFromAccountName = c.name
+                val sendAddr = PayAddress(_sendToAddress.trim())
+                if (c.wallet.chainSelector != sendAddr.blockchain)
                 {
-                    displayError(S.chainIncompatibleWithAddress,
-                      i18n(S.chainIncompatibleWithAddressDetails) % mapOf("walletCrypto" to (chainToCurrencyCode[c.wallet.chainSelector] ?: i18n(S.unknownCurrency)), "addressCrypto" to (chainToCurrencyCode[sendAddr.blockchain] ?: i18n(S.unknownCurrency))))
+                    if (sendAddr != alreadyErroredAddress.value)
+                    {
+                        displayError(S.chainIncompatibleWithAddress,
+                          i18n(S.chainIncompatibleWithAddressDetails) % mapOf("walletCrypto" to (chainToCurrencyCode[c.wallet.chainSelector]
+                            ?: i18n(S.unknownCurrency)), "addressCrypto" to (chainToCurrencyCode[sendAddr.blockchain] ?: i18n(S.unknownCurrency))))
 
-                    alreadyErroredAddress.value = sendAddr
+                        alreadyErroredAddress.value = sendAddr
+                    }
+                    updateSendAccount(sendAddr)
                 }
-                updateSendAccount(sendAddr)
             }
         }
         catch (e: PayAddressBlankException)
@@ -463,7 +470,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
             if (acc.name == name)
             {
                 selectedAccount.value = acc
-
+                return@forEach
             }
         }
     }
@@ -475,7 +482,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
         if (tmp?.sendAddress != null)  // If we are driving send data, fill all the fields
         {
             isSending = true
-            tmp.sendAddress.let { sendToAddress = it }
+            tmp.sendAddress.let { sendToAddress.value = it }
             tmp.amount?.let { sendQuantity.value = NexaFormat.format(it) }
             tmp.note?.let { sendNote.value = it }
             val act:Account? = if (tmp.account != null)
@@ -524,6 +531,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                 selectedAccount.value = tmp
                 sendFromAccount = tmp.name
                 currencyCode = tmp.currencyCode
+                break
             }
         }
     }
@@ -586,7 +594,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                       selectedAccountName = sendFromAccount,
                       accountNames = accountGuiSlots.value.map { it.name },
                       currencyCode = currencyCode,
-                      toAddress = sendToAddress,
+                      toAddress = _sendToAddress,
                       note = sendNote,
                       sendQuantity = sendQuantity,
                       paymentInProgress = paymentInProgress.value,
@@ -596,10 +604,12 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                       onCurrencySelectedCode = {
                           currencyCode = it
                       },
-                      setToAddress = { sendToAddress = it },
+                      setToAddress = { sendToAddress.value = it },
                       onCancel = {
                           isSending = false
+                          driver.value = null // hack to fix send section reappearing on nav after an address is provided
                           clearAlerts()  // If user manually cancelled, they understood the problem
+                          wallyApp!!.assetManager.clearTransferListOfAssetsHeldBy(sendFromAccount)
                                  },
                       approximatelyText = approximatelyText,
                       currencies = sendCurrencyChoices,
@@ -617,7 +627,8 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                           checkSendQuantity(s, account)
                       },
                       onSendSuccess = {
-                          sendToAddress = ""
+                          wallyApp!!.assetManager.clearTransferListOfAssetsHeldBy(sendFromAccount)
+                          sendToAddress.value = ""
                           sendQuantity.value = ""
                           isSending = false
                       },
@@ -668,7 +679,11 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                     if(synced.value)
                         ResImageView("icons/check.xml", modifier = Modifier.size(30.dp))
                     else
-                        LoadingAnimation()
+                    {
+                        Box(Modifier.size(30.dp)) {
+                            LoadingAnimationContent()
+                        }
+                    }
                     SectionText(S.AccountListHeader, Modifier.weight(1f))
                     ResImageView("icons/plus.xml", modifier = Modifier.size(30.dp).clickable {
                         nav.go(ScreenId.NewAccount)
@@ -683,7 +698,10 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                   onAccountSelected = {
                       if (selectedAccount.value == it)
                       {
+                          // If you click on an already selected account, deselect it
+                          // This deselect functionality anticipates having the selected account's line item grow into a more detailed view.
                           selectedAccount.value = null
+                          onAccountSelected(null)
                       }
                       else
                       {
@@ -704,8 +722,6 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                               // Clean out an old payment protocol if you are pasting a new send in
                               // paymentInProgress.value = null
                               isScanningQr = false
-                              //isSending = true
-                              //handleNonIntentText(it)
                               wallyApp!!.handlePaste(it)
                           }
                       }

@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
-import info.bitcoinunlimited.www.wally.ui.views.LoadingAnimation
+import info.bitcoinunlimited.www.wally.ui.views.LoadingAnimationContent
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import kotlinx.coroutines.channels.Channel
 import org.nexa.libnexakotlin.*
@@ -318,7 +318,9 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
                 // I'm cheating a bit here and using the contents of the recoverySearchText to pick what icon to show
                 if (recoverySearchText == i18n(S.NewAccountSearchingForTransactions))
                 {
-                    LoadingAnimation()
+                    Box(Modifier.size(50.dp)) {
+                            LoadingAnimationContent()
+                        }
                 }
                 else if (recoverySearchText == "")
                     Spacer(modifier = Modifier.size(50.dp))
