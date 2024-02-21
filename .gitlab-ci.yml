@@ -5,6 +5,7 @@ stages:
   - assemble
   - test
   - deploy_internally
+  - deploy_beta
 
 workflow:
   rules:
@@ -186,3 +187,32 @@ testflight:
     - bundle install
     - bundle update
     - bundle exec fastlane ios beta --verbose
+
+testflight_public:
+  rules:
+    - if: $CI_COMMIT_REF_PROTECTED == "true"
+    - if: $GITLAB_USER_ID == "2786309" # User: https://gitlab.com/gandrewstone
+      when: manual
+  stage: deploy_beta
+  tags:
+    - m1-baremetal
+  script:
+    - mkdir iosApp/fastlane/keys
+    # setting up ".env" file
+    - echo "APP_STORE_CONNECT_API_KEY_PATH=$APP_STORE_CONNECT_API_KEY_PATH" >> iosApp/.env
+    - echo "APPLE_ID=$APPLE_ID" >> iosApp/.env
+    - echo "ITC_TEAM_ID=$ITC_TEAM_ID" >> iosApp/.env
+    - echo "TEAM_ID=$TEAM_ID" >> iosApp/.env
+    # setting up fastlane keys: json
+    # see this for the correct quoting
+    # https://docs.gitlab.com/ee/ci/yaml/script.html#use-special-characters-with-script
+    - echo $KEYSJSON | base64 --decode > iosApp/fastlane/keys/$key_id.json
+    # setting up fastlane keys: p8
+    - echo $KEYSP8 | base64 --decode > iosApp/fastlane/keys/$key_id.p8
+    # Run fastlane
+    - cd iosApp/
+    - gem install bundler
+    - gem install fastlane
+    - bundle install
+    - bundle update
+    - bundle exec fastlane ios beta_public --verbose
