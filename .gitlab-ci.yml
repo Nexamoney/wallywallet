@@ -191,7 +191,7 @@ testflight:
 testflight_public:
   rules:
     - if: $CI_COMMIT_REF_PROTECTED == "true"
-      when: manual
+  when: manual
   stage: deploy_beta
   tags:
     - m1-baremetal
