@@ -189,8 +189,12 @@ testflight:
     - bundle exec fastlane ios beta --verbose
 
 testflight_public:
-  rules:
-    - if: $CI_COMMIT_REF_PROTECTED == "true"
+  environment:
+    name: "beta deploy"
+  allow_failure: false
+  only:
+    - master
+    - mp
   when: manual
   stage: deploy_beta
   tags:
