@@ -1,7 +1,9 @@
 package info.bitcoinunlimited.www.wally
 
+import android.app.ActivityManager
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -9,7 +11,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import org.nexa.libnexakotlin.*
+import androidx.core.content.ContextCompat.getSystemService
 import info.bitcoinunlimited.www.wally.ui.theme.colorError
 import info.bitcoinunlimited.www.wally.ui.theme.colorNotice
 import info.bitcoinunlimited.www.wally.ui.theme.colorWarning
@@ -17,9 +19,29 @@ import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.*
 import okio.*
+import org.nexa.libnexakotlin.*
 import java.io.File
 import java.io.InputStream
 import java.util.zip.Inflater
+
+
+actual fun platformRam():Long?
+{
+    val appContext:Context? = wallyAndroidApp as? Context //  currentActivity?.applicationContext
+    if (appContext!=null)
+      {
+          val svc = appContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+          val memInfo = ActivityManager.MemoryInfo()
+          svc.getMemoryInfo(memInfo)
+          return memInfo.totalMem
+      }
+    return null
+}
+
+actual fun applicationState(): ApplicationState
+{
+    return ApplicationState(ApplicationState.RunState.ACTIVE)
+}
 
 actual fun inflateRfc1951(compressedBytes: ByteArray, expectedfinalSize: Long): ByteArray
 {

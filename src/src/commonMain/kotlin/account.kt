@@ -141,8 +141,9 @@ class Account(
             Bip44Wallet(walletDb!!, name, chainSelector, secretWords)  // Wallet recovery
     }
 
-    val cnxnMgr: CnxnMgr = WallyGetCnxnMgr(wallet.chainSelector, name, false)
-    val chain: Blockchain = GetBlockchain(wallet.chainSelector, cnxnMgr, chainToURI[wallet.chainSelector], false)  // do not start right away so we can configure exclusive/preferred nodes
+    var cnxnMgr: CnxnMgr = WallyGetCnxnMgr(wallet.chainSelector, name, false)
+    var chain: Blockchain = GetBlockchain(wallet.chainSelector, cnxnMgr, chainToURI[wallet.chainSelector], false) // do not start right away so we can configure exclusive/preferred no
+
 
     /** A string denoting this wallet's currency units.  That is, the units that this wallet should use in display, in its BigDecimal amount representations, and is converted to and from in fromFinestUnit() and toFinestUnit() respectively */
     val currencyCode: String = chainToDisplayCurrencyCode[wallet.chainSelector]!!
@@ -151,7 +152,6 @@ class Account(
 
     init
     {
-
         if (retrieveOnlyActivity != null)  // push in nonstandard addresses before we connect to the blockchain.
         {
             for (r in retrieveOnlyActivity)
@@ -163,32 +163,35 @@ class Account(
             }
         }
 
-        wallet.fillReceivingWithRetrieveOnly()
-        wallet.prepareDestinations(2, 2)  // Make sure that there is at least a few addresses before we hook into the network
-        LogIt.info(sourceLoc() + name +": wallet connect blockchain ${chain.name}")
-        wallet.addBlockchain(chain, startHeight, startPlace)
-        LogIt.info(sourceLoc() + name +": wallet blockchain ${chain.name} connection completed")
-        if (chainSelector != ChainSelector.NEXA)  // no fiat price for nextchain
-        {
-            val SatPerDisplayUnit = CurrencyDecimal(SATperUBCH)
-            wallet.spotPrice = { currencyCode ->
-                try
-                {
-                    assert(currencyCode == fiatCurrencyCode)
-                    fiatPerCoin * CurrencyDecimal(SATperBCH) / SatPerDisplayUnit
+        wallet.usesChain(chain)
+        later {
+            LogIt.info(sourceLoc() + name + ": wallet connect blockchain ${chain.name}")
+            wallet.startChain(startHeight, startPlace)
+            LogIt.info(sourceLoc() + name + ": wallet blockchain ${chain.name} connection completed")
+            wallet.fillReceivingWithRetrieveOnly()
+            wallet.prepareDestinations(2, 2)  // Make sure that there is at least a few addresses before we hook into the network
+            if (chainSelector != ChainSelector.NEXA)  // no fiat price for nextchain
+            {
+                val SatPerDisplayUnit = CurrencyDecimal(SATperUBCH)
+                wallet.spotPrice = { currencyCode ->
+                    try
+                    {
+                        assert(currencyCode == fiatCurrencyCode)
+                        fiatPerCoin * CurrencyDecimal(SATperBCH) / SatPerDisplayUnit
+                    }
+                    catch (e: ArithmeticException)
+                    {
+                        BigDecimal.ZERO
+                    }
                 }
-                catch(e: ArithmeticException)
-                {
-                    BigDecimal.ZERO
-                }
+                wallet.historicalPrice = { currencyCode: String, epochSec: Long -> historicalUbchInFiat(currencyCode, epochSec) }
             }
-            wallet.historicalPrice = { currencyCode: String, epochSec: Long -> historicalUbchInFiat(currencyCode, epochSec) }
+
+            (cnxnMgr as MultiNodeCnxnMgr).getElectrumServerCandidate = { this.getElectrumServerOn(it) }
+
+            setBlockchainAccessModeFromPrefs()
+            loadAccountAddress()
         }
-
-        (cnxnMgr as MultiNodeCnxnMgr).getElectrumServerCandidate = { this.getElectrumServerOn(it) }
-
-        setBlockchainAccessModeFromPrefs()
-        loadAccountAddress()
     }
 
     /** Save the PIN of an account to the database */
@@ -200,16 +203,18 @@ class Account(
     @Suppress("UNUSED_PARAMETER")
     fun start()
     {
-        if (!started)
-        {
-            LogIt.info(sourceLoc() + " " + name + ": Account startup: starting threads")
-            cnxnMgr.start()
-            chain.start()
-            started=true
-            // Set all the underlying change callbacks to trigger the account update
-            wallet.setOnWalletChange { onChange() }
-            wallet.blockchain.onChange.add({ onChange() })
-            wallet.blockchain.net.changeCallback.add({ _, _ -> onChange() })
+        later {
+            if (!started)
+            {
+                LogIt.info(sourceLoc() + " " + name + ": Account startup: starting threads")
+                cnxnMgr.start()
+                chain.start()
+                started = true
+                // Set all the underlying change callbacks to trigger the account update
+                wallet.setOnWalletChange { onChange() }
+                wallet.blockchain.onChange.add({ onChange() })
+                wallet.blockchain.net.changeCallback.add({ _, _ -> onChange() })
+            }
         }
     }
 
@@ -579,8 +584,6 @@ class Account(
      */
     fun delete()
     {
-        // TODO clear out QR code in android: currentReceiveQR = null
-
         currentReceive = null
         wallet.stop()
         walletDb = null
@@ -594,9 +597,9 @@ class Account(
         try
         {
             // Update our cache of the balances
-            unconfirmedBalance = fromFinestUnit(wallet.balanceUnconfirmed)
+            unconfirmedBalance = fromFinestUnit(wallet.unconfirmedBalanceDwim)
             confirmedBalance = fromFinestUnit(wallet.balanceConfirmed)
-            balance = unconfirmedBalance + confirmedBalance
+            balance = fromFinestUnit(wallet.balance)
         }
         catch (e: WalletDisconnectedException)
         {

@@ -265,7 +265,7 @@ fun AssetScreen(account: Account, nav: ScreenNav)
 
     Column(Modifier.fillMaxSize()) {
         val a = assetFocus
-        if (a == null)
+        if (a == null)  // Nothing is in focus, show the whole list
         {
             if (account.assets.size == 0)
             {
@@ -274,21 +274,20 @@ fun AssetScreen(account: Account, nav: ScreenNav)
             }
             else
             {
+                //LogIt.info("recomposing asset column")
                 LazyColumn(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(0.2f)) {
                     var index = 0
                     account.assets.forEach {
+                        //LogIt.info("asset for each")
                         val key = it.key
                         val entry = it.value
                         val indexFreezer = index  // To use this in the item composable, we need to freeze it to a val, because the composable is called out-of-scope
-                        item(key = indexFreezer) {
+                        item(key = it.key.toByteArray()) {
+                            //LogIt.info("asset item")
                             Box(Modifier.padding(4.dp, 2.dp).fillMaxWidth().background(WallyAssetRowColors[indexFreezer % WallyAssetRowColors.size]).clickable {
-                                if (a == account.assets[key]) assetFocus = null
-                                else
-                                {
-                                    assetFocus = account.assets[key]
-                                    assetFocusIndex = indexFreezer
-                                    nav.go(ScreenId.Assets, byteArrayOf(indexFreezer.toByte()))
-                                }
+                                assetFocus = account.assets[key]
+                                assetFocusIndex = indexFreezer
+                                nav.go(ScreenId.Assets, byteArrayOf(indexFreezer.toByte()))
                             }) {
                                 AssetListItemView(entry, 1, Modifier.padding(0.dp, 2.dp))
                             }
@@ -301,8 +300,10 @@ fun AssetScreen(account: Account, nav: ScreenNav)
         else
         {
             Box(Modifier.padding(4.dp, 2.dp).fillMaxWidth().background(WallyAssetRowColors[assetFocusIndex % WallyAssetRowColors.size]).clickable {
-                assetFocus = null
+                assetFocus = null  // If you touch the asset list when focused on an asset, then pop back out to the list
                 assetFocusIndex = 0
+                nav.back()
+
             }) {
                 AssetListItemView(a, 1)
             }

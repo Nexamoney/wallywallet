@@ -252,7 +252,7 @@ open class CommonApp
      * Launching into these threads means your task will outlast the activity it was launched in */
     fun later(fn: suspend () -> Unit): Unit
     {
-        launch(coMiscScope) {
+        launch(CoroutineScope(coMiscCtxt)) {
             try
             {
                 fn()
@@ -563,20 +563,38 @@ open class CommonApp
     {
         notInUIscope = coMiscScope
 
+        val availableRam = platformRam()
+        LogIt.info("Available RAM: $availableRam")
+        if (availableRam != null && availableRam < 2048L*1024L*1024L)
+        {
+            LogIt.info("Using low RAM settings")
+            DEFAULT_MAX_RECENT_BLOCK_CACHE = 2
+            DEFAULT_MAX_RECENT_MERKLE_BLOCK_CACHE = 3
+            DEFAULT_MAX_RECENT_TX_CACHE = 10
+            DEFAULT_MAX_RECENT_HEADER_CACHE = 25
+        }
+
         val prefs = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
         devMode = prefs.getBoolean(DEV_MODE_PREF, false)
         allowAccessPriceData = prefs.getBoolean(ACCESS_PRICE_DATA_PREF, true)
-        openAllAccounts()
-        tpDomains.load()
+        later {
+            openAllAccounts()
+            tpDomains.load()
+        }
 
         assetLoaderThread = org.nexa.threads.Thread("assetLoader") {
+
             // Constructing the asset list can use a lot of disk which interferes with startup
             // This will wait until all the accounts are loaded
             while(wallyApp!!.nullablePrimaryAccount == null) millisleep(500UL)
             while(true)
             {
                 for (a in accounts)
+                    a.value.getXchgRates("USD")
+
+                for (a in accounts)
                     a.value.constructAssetMap()
+
                 millisleep(10000UL)
             }
         }
@@ -841,18 +859,20 @@ open class CommonApp
                     {
                         if (name.length > 0)  // Note in kotlin "".split(",") results in a list of one element containing ""
                         {
-                            LogIt.info(sourceLoc() + " " + name + ": Loading account")
-                            try
-                            {
-                                val ac = Account(name, prefDB = prefs)
-                                accountLock.lock { accounts[ac.name] = ac }
-                            }
-                            catch (e: DataMissingException)
-                            {
-                                LogIt.warning(sourceLoc() + " " + name + ": Active account $name was not found in the database. Error $e")
-                                // Nothing to really do but ignore the missing account
-                            }
-                            LogIt.info(sourceLoc() + " " + name + ": Loaded account")
+                            // isolate disk access into a coroutine so this function can complete quickly
+                                LogIt.info(sourceLoc() + " " + name + ": Loading account")
+                                try
+                                {
+                                    val ac = Account(name, prefDB = prefs)
+                                    accountLock.lock { accounts[ac.name] = ac }
+                                    assignAccountsGuiSlots()
+                                }
+                                catch (e: DataMissingException)
+                                {
+                                    LogIt.warning(sourceLoc() + " " + name + ": Active account $name was not found in the database. Error $e")
+                                    // Nothing to really do but ignore the missing account
+                                }
+                                LogIt.info(sourceLoc() + " " + name + ": Loaded account")
                         }
                     }
                 }

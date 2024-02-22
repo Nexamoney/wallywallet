@@ -2,10 +2,7 @@ package info.bitcoinunlimited.www.wally.ui.views
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,8 +27,8 @@ actual fun LoadingAnimationContent() {
     // See:
     // - https://github.com/JetBrains/compose-multiplatform/issues/362
     // - https://github.com/JetBrains/compose-multiplatform/issues/3152
-    val animation = Animation.makeFromString(lottieData)
-    Text("Loading...")
+    // val animation = Animation.makeFromString(lottieData)
+    ResImageView("icons/cloudstatic.xml", modifier = Modifier.size(45.dp))
     // Lottie animations don't work properly on iOS yet (Freeze/lag)
     // Reference: https://github.com/JetBrains/compose-multiplatform-core/pull/560
     // InfiniteAnimation(animation, Modifier.fillMaxSize())

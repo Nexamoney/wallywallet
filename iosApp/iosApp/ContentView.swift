@@ -11,17 +11,16 @@ struct ComposeContentView: UIViewControllerRepresentable
     }
 }
 
+/*
 struct ContentView: View {
-	let greet = "hi" // Greeting().greet()
-
 	var body: some View {
 	    ComposeContentView()
-		//Text(greet)
 	}
 }
+ */
 
 struct ContentView_Previews: PreviewProvider {
 	static var previews: some View {
-		ContentView()
+		ComposeContentView()
 	}
 }

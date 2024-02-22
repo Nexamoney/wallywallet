@@ -16,6 +16,18 @@ import platform.AppKit.NSPasteboardTypeString
 import platform.Foundation.NSData
 import platform.Foundation.create
 import platform.Foundation.*
+
+actual fun applicationState(): ApplicationState
+{
+    return ApplicationState(ApplicationState.RunState.ACTIVE)
+}
+
+actual fun platformRam():Long?
+{
+    return null
+}
+
+
 @OptIn(ExperimentalForeignApi::class)
 fun ByteArray.toNSData(): NSData
 {

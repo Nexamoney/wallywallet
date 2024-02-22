@@ -23,6 +23,20 @@ import java.net.URLDecoder
 import java.net.URLEncoder
 import java.util.zip.Inflater
 
+
+
+actual fun applicationState(): ApplicationState
+{
+    return ApplicationState(ApplicationState.RunState.ACTIVE)
+}
+
+actual fun platformRam():Long?
+{
+    val mem = Runtime.getRuntime().maxMemory()
+    return mem
+}
+
+
 actual fun inflateRfc1951(compressedBytes: ByteArray, expectedfinalSize: Long): ByteArray
 {
     val inf = Inflater(true)  // true means do not wrap in the gzip header

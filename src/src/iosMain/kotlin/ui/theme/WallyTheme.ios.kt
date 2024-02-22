@@ -183,7 +183,7 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
 @OptIn(ExperimentalForeignApi::class)
 @Composable actual fun MpMediaView(mediaData: ByteArray?, mediaUri: String?, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit):Boolean
 {
-    println("MpMediaView($mediaData, $mediaUri, $wrapper)")
+    LogIt.info( "MpMediaView($mediaData, $mediaUri, $wrapper)")
 
     val mu = mediaUri
     if (mu == null) return false

@@ -257,8 +257,10 @@ fun onShareButton()
 {
     if (!platform().hasNativeTitleBar)
     {
+        val bkgCol = if (errorText.isNotEmpty()) colorError else if (warningText.isNotEmpty()) colorWarning else if (noticeText.isNotEmpty()) colorNotice else colorTitleBackground
+
         // Specifying the row height stops changes header bar content to change its height causing the entire window to jerk up or down
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.background(colorTitleBackground).padding(0.dp).height(32.dp))
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.background(bkgCol).padding(0.dp).height(32.dp))
         {
             if (nav.hasBack() != ScreenId.None)
             {
@@ -270,7 +272,7 @@ fun onShareButton()
             if (errorText.isNotEmpty())
                 ErrorText(errorText, Modifier.weight(1f).fillMaxSize())
             else if (warningText.isNotEmpty())
-                ErrorText(errorText, Modifier.weight(1f).fillMaxSize())
+                WarningText(warningText, Modifier.weight(1f).fillMaxSize())
             else if (noticeText.isNotEmpty())
                 NoticeText(noticeText, Modifier.weight(1f).fillMaxSize())
             //NoticeText(i18n(S.copiedToClipboard))
@@ -714,7 +716,10 @@ fun NavigationMenu(nav: ScreenNav, modifier: Modifier)
                 if (ch.imagePath != null)
                 {
                     Button(
-                      onClick = { nav.go(ch.location) },
+                      onClick = {
+                          clearAlerts()  // If the user explicitly moved to a different screen, they must be aware of the alert
+                          nav.go(ch.location)
+                                },
                       // Change button appearance based on current screen
                       enabled = nav.currentScreen.value != ch.location,
                       shape = RoundedCornerShape(30),
