@@ -93,8 +93,6 @@ class Account(
     private val _fiatPerCoinState = MutableStateFlow(fiatPerCoin)
     val fiatPerCoinObservable: StateFlow<BigDecimal> = _fiatPerCoinState
 
-    var lastAssetCheck = 0L
-
     //? Current bch balance (cached from accessing the wallet), in the display units
     var balance: BigDecimal = CurrencyDecimal(0)
     var unconfirmedBalance: BigDecimal = CurrencyDecimal(0)
@@ -380,7 +378,7 @@ class Account(
 
     fun constructAssetMap()
     {
-        LogIt.info(sourceLoc() + name + ": Construct assets")
+        // LogIt.info(sourceLoc() + name + ": Construct assets")
         val ast = mutableMapOf<GroupId, AssetInfo>()
         wallet.forEachTxo { sp ->
             if (sp.isUnspent)
@@ -388,14 +386,14 @@ class Account(
                 // TODO: this is a workaround for a bug where the script chain is incorrect
                 if (sp.priorOutScript.chainSelector != sp.chainSelector)
                 {
-                    LogIt.warning("BUG fixup: Script chain is ${sp.priorOutScript.chainSelector} but chain is ${sp.chainSelector}")
+                    // LogIt.warning("BUG fixup: Script chain is ${sp.priorOutScript.chainSelector} but chain is ${sp.chainSelector}")
                     sp.priorOutScript = SatoshiScript(sp.chainSelector, sp.priorOutScript.type, sp.priorOutScript.flatten())
                 }
 
                 val grp = sp.groupInfo()
                 if (grp != null)
                 {
-                    LogIt.info(sourceLoc() + name + ": unspent asset ${grp.groupId.toHex()}")
+                    // LogIt.info(sourceLoc() + name + ": unspent asset ${grp.groupId.toHex()}")
 
                     if (!grp.isAuthority())  // TODO not dealing with authority txos in Wally mobile
                     {
@@ -431,7 +429,6 @@ class Account(
                     wallyApp?.let { asset.load(wallet.blockchain, it.assetManager) }
                 }
             }
-
         }
     }
 

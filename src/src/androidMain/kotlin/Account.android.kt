@@ -231,6 +231,7 @@ fun Account.updateUI(force: Boolean)
         else uiBinding?.info?.let { it.visibility = View.GONE }
     }
 
+    /*
     // Decide whether to show the assets nav
     if (!devMode)  // because always shown in dev mode
     {
@@ -250,7 +251,10 @@ fun Account.updateUI(force: Boolean)
                 }
             }
         }
+
     }
+
+     */
 }
 
 fun Account.getReceiveQR(sz: Int): Bitmap
