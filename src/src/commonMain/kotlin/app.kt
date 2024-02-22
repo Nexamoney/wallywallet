@@ -583,7 +583,6 @@ open class CommonApp
         }
 
         assetLoaderThread = org.nexa.threads.Thread("assetLoader") {
-
             // Constructing the asset list can use a lot of disk which interferes with startup
             // This will wait until all the accounts are loaded
             while(wallyApp!!.nullablePrimaryAccount == null) millisleep(500UL)
@@ -594,7 +593,6 @@ open class CommonApp
 
                 for (a in accounts)
                     a.value.constructAssetMap()
-
                 millisleep(10000UL)
             }
         }

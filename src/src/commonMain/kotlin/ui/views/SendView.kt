@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -426,97 +427,102 @@ fun SendView(
 
 
     var ccIndex by remember { mutableStateOf(0) }
-
     ccIndex = currencies.value.indexOf(currencyCode)
+    val focusManager = LocalFocusManager.current
 
     // give some side margins if the platform supports it
     val sendPadding = if (platform().spaceConstrained) 0.dp else 8.dp
     Column(modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(sendPadding, 0.dp, sendPadding, 0.dp)) {
         // Now show the actual content:
 
-        // Send from account:
-        SelectStringDropdownRes(
-          S.fromAccountColon,
-          selectedAccountName,
-          accountNames,
-          accountExpanded,
-          WallySectionTextStyle(),
-          onSelect = onAccountNameSelected,
-          onExpand = { accountExpanded = it },
-        )
-
-
-        // Input address to send to
-        StringInputField(S.toColon, S.sendToAddressHint, toAddress, WallySectionTextStyle(), Modifier) {
-            setToAddress(it)
-        }
-
-        // Display note input
-        if (displayNoteInput || note.value.utf8Size() > 0)
-            StringInputTextField(S.editSendNoteHint, note.value, { note.value = it })
-
-        Spacer(Modifier.height(4.dp))
-        Row(
-          modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
-        ) {
-            SectionText(S.Amount)
-            // Send quantity input
-            WallyDecimalEntry(sendQuantity, Modifier.weight(1f)) {
-                // TODO need to serialize clearing vs new accounts: Serialize ALL alerts.  clearAlerts()
-                setSendQuantity(it)
-                afterTextChanged()
-                checkSendQuantity(sendQuantity.value, account)
-                sendQuantity.value
-            }
-            WallyDropdownMenu(modifier = Modifier.wrapContentSize().weight(0.5f), label = "", items = currencies.value, selectedIndex = ccIndex, onItemSelected = { index, _ ->
-                if (index < currencies.value.size)
-                {
-                    ccIndex = index
-                    onCurrencySelectedCode(currencies.value[index])
-                    onCurrencySelected()
-                    afterTextChanged()
-                }
-            })
-        }
-
-        OptionalInfoText(approximatelyText)
-        OptionalInfoText(xchgRateText)
-        Spacer(modifier = Modifier.size(16.dp))
-
-
-        if (sendingTheseAssets.size > 0)
-        {
-            CenteredSectionText(S.assetsColon)
-            LazyColumn(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-                var index = 0
-                sendingTheseAssets.forEach {
-                    val entry = it
-                    val indexFreezer = index  // To use this in the item composable, we need to freeze it to a val, because the composable is called out-of-scope
-                    item(key = indexFreezer) {
-                        Box(Modifier.padding(4.dp, 1.dp).fillMaxWidth().background(WallyAssetRowColors[indexFreezer % WallyAssetRowColors.size]).clickable {
-                        }) {
-                            AssetListItemView(entry, 0, Modifier.padding(0.dp, 2.dp))
-                        }
-                    }
-                    index++
-                }
-            }
-
-        }
-
         val sendConfirmMsg:String = sendConfirm
-        if (sendConfirmMsg.isNotEmpty())
+        if (sendConfirmMsg.isEmpty())
         {
-            /*
-            amountState.value?.let { amt ->
-                ConfirmDismissNoteDialog(amt, sendingTheseAssets, sendConfirm.isNotEmpty(), S.confirm, sendConfirm, note.value, S.cancel, S.confirm, onDismiss = {
-                    sendConfirm = ""
-                }, onConfirm = {
-                    actuallySend(sendToAddress.value ?: throw Exception("address is null"), it)
-                    sendConfirm = ""
+            // Send from account:
+            SelectStringDropdownRes(
+              S.fromAccountColon,
+              selectedAccountName,
+              accountNames,
+              accountExpanded,
+              WallySectionTextStyle(),
+              onSelect = onAccountNameSelected,
+              onExpand = { accountExpanded = it },
+            )
+
+
+            // Input address to send to
+            StringInputField(S.toColon, S.sendToAddressHint, toAddress, WallySectionTextStyle(), Modifier) {
+                setToAddress(it)
+            }
+
+            // Display note input
+            if (displayNoteInput || note.value.utf8Size() > 0)
+                StringInputTextField(S.editSendNoteHint, note.value, { note.value = it })
+
+            Spacer(Modifier.height(4.dp))
+            Row(
+              modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+            ) {
+                SectionText(S.Amount)
+                // Send quantity input
+                WallyDecimalEntry(sendQuantity, Modifier.weight(1f)) {
+                    // TODO need to serialize clearing vs new accounts: Serialize ALL alerts.  clearAlerts()
+                    setSendQuantity(it)
+                    afterTextChanged()
+                    checkSendQuantity(sendQuantity.value, account)
+                    sendQuantity.value
+                }
+                WallyDropdownMenu(modifier = Modifier.wrapContentSize().weight(0.5f), label = "", items = currencies.value, selectedIndex = ccIndex, onItemSelected = { index, _ ->
+                    if (index < currencies.value.size)
+                    {
+                        ccIndex = index
+                        onCurrencySelectedCode(currencies.value[index])
+                        onCurrencySelected()
+                        afterTextChanged()
+                    }
                 })
             }
-             */
+
+            OptionalInfoText(approximatelyText)
+            OptionalInfoText(xchgRateText)
+            Spacer(modifier = Modifier.size(16.dp))
+
+
+            if (sendingTheseAssets.size > 0)
+            {
+                CenteredSectionText(S.assetsColon)
+                LazyColumn(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                    var index = 0
+                    sendingTheseAssets.forEach {
+                        val entry = it
+                        val indexFreezer = index  // To use this in the item composable, we need to freeze it to a val, because the composable is called out-of-scope
+                        item(key = indexFreezer) {
+                            Box(Modifier.padding(4.dp, 1.dp).fillMaxWidth().background(WallyAssetRowColors[indexFreezer % WallyAssetRowColors.size]).clickable {
+                            }) {
+                                AssetListItemView(entry, 0, Modifier.padding(0.dp, 2.dp))
+                            }
+                        }
+                        index++
+                    }
+                }
+            }
+            WallyButtonRow {
+                WallyBoringLargeIconButton("icons/edit_pencil.png", interactionSource = MutableInteractionSource(),
+                  onClick = { displayNoteInput = !displayNoteInput }
+                )
+                WallyBoringLargeTextButton(S.Send, onClick = {
+                    focusManager.clearFocus()
+                    onSendButtonClicked()
+                })
+                WallyBoringLargeTextButton(S.SendCancel, onClick = {
+                    focusManager.clearFocus()
+                    onCancel()
+                })
+            }
+        }
+        else
+        {
+            Spacer(Modifier.height(10.dp))
             WallyEmphasisBox {
                 val amt = amountState.value
                 val addr = sendToAddress.value
@@ -538,17 +544,6 @@ fun SendView(
                 }
             }
             Spacer(Modifier.height(10.dp))
-        }
-        else
-        {
-
-            WallyButtonRow {
-                WallyBoringLargeIconButton("icons/edit_pencil.png", interactionSource = MutableInteractionSource(),
-                  onClick = { displayNoteInput = !displayNoteInput }
-                )
-                WallyBoringLargeTextButton(S.Send, onClick = { onSendButtonClicked() })
-                WallyBoringLargeTextButton(S.SendCancel, onClick = onCancel)
-            }
         }
     }
 }

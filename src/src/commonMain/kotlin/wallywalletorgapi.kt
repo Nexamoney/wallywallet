@@ -124,10 +124,10 @@ fun NexInFiat(fiat: String, setter: (BigDecimal) -> Unit)
                 return@later
         }
 
-        LogIt.info(sourceLoc() + " " + data)
+        //LogIt.info(sourceLoc() + " " + data)
         val parser: Json = Json { isLenient = true; ignoreUnknownKeys = true }  // nonstrict mode ignores extra fields
         val obj = parser.decodeFromString(WallyWalletOrgApiCurPrice.serializer(), data)
-        LogIt.info(sourceLoc() + " " + obj.toString())
+        //LogIt.info(sourceLoc() + " " + obj.toString())
         // Average the bid and ask prices
         val v = (obj.Bid + obj.Ask) / CurrencyDecimal(2)
         nexaPricePollSync.lock {
