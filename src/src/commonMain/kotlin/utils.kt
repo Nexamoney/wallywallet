@@ -104,6 +104,19 @@ expect fun platform(): PlatformCharacteristics
 /** Actually share this text using the platform's share functionality */
 expect fun platformShare(textToShare: String)
 
+expect fun platformRam():Long?
+
+
+class ApplicationState(val runState:RunState)
+{
+    enum class RunState
+    {
+        ACTIVE, INACTIVE, BACKGROUND
+    }
+
+}
+expect fun applicationState(): ApplicationState
+
 
 /** Initiate a platform-level notification message.  Note that these messages visually disrupt the user's potentially unrelated task
  * and may play a sound, so this must be used sparingly.

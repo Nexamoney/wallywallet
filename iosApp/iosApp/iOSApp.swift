@@ -14,6 +14,7 @@ extension KotlinByteArray {
     }
 }
 
+/*
 func loadLocaleFile() -> Data?
 {
     guard let fileURL = Bundle.main.url(forResource: "strings_no", withExtension: "bin") else {
@@ -29,6 +30,7 @@ func loadLocaleFile() -> Data?
         return nil
     }
 }
+ */
 
 @main
 struct iOSApp: App {
@@ -55,7 +57,7 @@ struct iOSApp: App {
 
 	var body: some Scene {
 		WindowGroup {
-			ContentView()
+			ComposeContentView()
 		}
 	}
 }

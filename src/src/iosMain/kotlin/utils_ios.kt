@@ -19,6 +19,21 @@ import platform.UIKit.*
 
 private val LogIt = GetLog("BU.wally.utils_ios")
 
+actual fun applicationState(): ApplicationState
+{
+    val state = UIApplication.sharedApplication.applicationState
+    val cvt = if (state == UIApplicationState.UIApplicationStateBackground) ApplicationState.RunState.BACKGROUND
+    else if (state == UIApplicationState.UIApplicationStateActive) ApplicationState.RunState.ACTIVE
+    else ApplicationState.RunState.INACTIVE
+    return ApplicationState(cvt)
+}
+
+actual fun platformRam():Long?
+{
+    val mem = NSProcessInfo.processInfo.physicalMemory
+    return mem.toLong()
+}
+
 @OptIn(ExperimentalForeignApi::class)
 fun ByteArray.toNSData(): NSData
 {

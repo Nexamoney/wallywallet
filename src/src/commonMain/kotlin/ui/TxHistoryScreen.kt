@@ -253,7 +253,7 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
                         val instant = kotlinx.datetime.Instant.fromEpochMilliseconds(it.date)
                         val localTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
                         Text(localTime.date.toString() + "\n" + localTime.time.toString())
-                        CenteredFittedWithinSpaceText(text = acc.cryptoFormat.format(acc.fromFinestUnit(amt)), startingFontScale = 2.0, fontWeight = FontWeight.Bold,
+                        CenteredFittedWithinSpaceText(text = acc.cryptoFormat.format(acc.fromFinestUnit(amt)), startingFontScale = 1.5, fontWeight = FontWeight.Bold,
                           modifier = Modifier.weight(1f))
                         val uri = if (it.chainSelector == ChainSelector.NEXA)
                             NEXA_EXPLORER_URL + "/tx/${it.tx.idem.toHex()}"

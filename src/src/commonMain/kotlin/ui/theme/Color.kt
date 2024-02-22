@@ -19,9 +19,10 @@ val colorDebit = Color(0xFF70A01E)
 val colorConfirm = Color(0xFFE48864)
 
 val colorValid = Color(0xFF70A01E)
-val colorError = Color(0xFFFF6050)
-val colorNotice = Color(0xFF503070)
-val colorWarning = Color(0xFFF0B000)
+val colorException = Color(0xFFFF5080)
+val colorError = Color(0xFFCF6050)
+val colorNotice = Color(0xFF408040)
+val colorWarning = Color(0xFFFFD040)
 val colorTitleBackground = Color(0xFF725092)
 val colorTitleForeground = Color.White
 

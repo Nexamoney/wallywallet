@@ -363,7 +363,7 @@ Good luck!
 
     <string name="areYouSure">Are you sure?</string>
     <string name="WhenAskSure">Confirm above:</string>
-    <string name="SendConfirmSummary">Confirm send of %amt %currency %inFiat %assets to address %dest</string>
+    <string name="SendConfirmSummary">Confirm send of %amt %currency %inFiat%assets to address %dest</string>
     <string name="firstName">first name</string>
     <string name="lastName">last name</string>
 
@@ -627,7 +627,7 @@ Good luck!
     <string name="NftNoInfoProvidedHTML"><![CDATA[<body><h1><center>...No Information Provided...</h1></center></body>]]></string>
     <string name="IssuedToConnection">Launched in connected site</string>
     <!-- this message tells users that some assets will be part of a proposed transaction -->
-    <string name="AndSomeAssets">and some assets</string>
+    <string name="AndSomeAssets"> and some assets</string>
 
     <!-- the following strings are often not used and need translation into English and other languages. This resolves lintVitalRelease -->
     <string name="ExplainRestaurant">Online restaurant ordering services (for delivery or pickup) may accept cryptocurrency even if the physical location does not.</string>

@@ -110,7 +110,7 @@ fun Account.uiData():AccountUIData
 {
     val ret = AccountUIData(this)
 
-    var delta = balance - confirmedBalance
+    var delta = unconfirmedBalance
 
     ret.name = name
     ret.lockable = lockable

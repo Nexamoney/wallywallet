@@ -1,6 +1,7 @@
 package info.bitcoinunlimited.www.wally.ui.views
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -70,8 +71,6 @@ fun SendView(
     val fpcState = account.fiatPerCoinObservable.collectAsState()
     val amountState: MutableState<BigDecimal?> = remember { mutableStateOf(null) }
     val sendingTheseAssets = wallyApp!!.assetManager.transferList.filter { it.account == account }
-
-    account.getXchgRates("USD")
 
     val coroutineExceptionHandler = CoroutineExceptionHandler { context, throwable ->
         LogIt.error(context.toString())
@@ -252,7 +251,8 @@ fun SendView(
         val amountString: String = sendQuantity.value
 
         spendAll = false
-        var amount = try
+        var amount = if (amountString.isBlank()) BigDecimal.ZERO  // zero is ok if we have assets (which will be checked later)
+        else try
         {
             // Special case transferring everything
             if (amountString.lowercase() == SEND_ALL_TEXT)
@@ -281,6 +281,13 @@ fun SendView(
             return
         }
         catch (e: Exception)
+        {
+            displayError(S.badAmount, amountString)
+            return
+        }
+
+        // make sure something is being sent
+        if ((amount == BigDecimal.ZERO)&&sendingTheseAssets.isEmpty())
         {
             displayError(S.badAmount, amountString)
             return
@@ -376,8 +383,8 @@ fun SendView(
             CURRENCY_ZERO
         }
 
-        // If sending a large amount, ask to confirm
-        if (amount >= confirmAmt)
+        // If sending a large amount, or any assets, ask to confirm
+        if ((amount >= confirmAmt)|| sendingTheseAssets.isNotEmpty())
         {
             val fiatAmt = if (account.fiatPerCoin > BigDecimal.ZERO)
             {
@@ -417,15 +424,6 @@ fun SendView(
         checkSendQuantity(sendQuantity.value, account)
     }
 
-    if (sendConfirm.isNotEmpty())
-        amountState.value?.let { amt ->
-            ConfirmDismissNoteDialog(amt, sendConfirm.isNotEmpty(), S.confirm, sendConfirm, note.value, S.cancel, S.confirm, onDismiss = {
-                sendConfirm = ""
-            }, onConfirm = {
-                actuallySend(sendToAddress.value ?: throw Exception("address is null"), it)
-                sendConfirm = ""
-            })
-        }
 
     var ccIndex by remember { mutableStateOf(0) }
 
@@ -506,13 +504,51 @@ fun SendView(
 
         }
 
+        val sendConfirmMsg:String = sendConfirm
+        if (sendConfirmMsg.isNotEmpty())
+        {
+            /*
+            amountState.value?.let { amt ->
+                ConfirmDismissNoteDialog(amt, sendingTheseAssets, sendConfirm.isNotEmpty(), S.confirm, sendConfirm, note.value, S.cancel, S.confirm, onDismiss = {
+                    sendConfirm = ""
+                }, onConfirm = {
+                    actuallySend(sendToAddress.value ?: throw Exception("address is null"), it)
+                    sendConfirm = ""
+                })
+            }
+             */
+            WallyEmphasisBox {
+                val amt = amountState.value
+                val addr = sendToAddress.value
+                if (amt!=null && addr!=null)
+                {
+                    Column {
+                        //Text(sendConfirmMsg, color = colorError, maxLines = 6, fontSize = FontScale(1.1), style = WallyTextStyle(1.1), modifier = Modifier.fillMaxWidth(), softWrap = true)
+                        Text(sendConfirmMsg, color = colorTitleBackground, maxLines = 6, fontSize = FontScale(1.2), modifier = Modifier.fillMaxWidth().padding(8.dp,10.dp), softWrap = true)
+                        WallyButtonRow {
+                            WallyBoringLargeTextButton(S.Send, onClick = {
+                                actuallySend(addr, amt)
+                                sendConfirm = ""
+                            })
+                            WallyBoringLargeTextButton(S.SendCancel, onClick = {
+                                sendConfirm = ""
+                            })
+                        }
+                    }
+                }
+            }
+            Spacer(Modifier.height(10.dp))
+        }
+        else
+        {
 
-        WallyButtonRow {
-            WallyBoringLargeIconButton("icons/edit_pencil.png", interactionSource = MutableInteractionSource(),
-              onClick = { displayNoteInput = !displayNoteInput }
-            )
-            WallyBoringLargeTextButton(S.Send, onClick = { onSendButtonClicked() })
-            WallyBoringLargeTextButton(S.SendCancel, onClick = onCancel)
+            WallyButtonRow {
+                WallyBoringLargeIconButton("icons/edit_pencil.png", interactionSource = MutableInteractionSource(),
+                  onClick = { displayNoteInput = !displayNoteInput }
+                )
+                WallyBoringLargeTextButton(S.Send, onClick = { onSendButtonClicked() })
+                WallyBoringLargeTextButton(S.SendCancel, onClick = onCancel)
+            }
         }
     }
 }

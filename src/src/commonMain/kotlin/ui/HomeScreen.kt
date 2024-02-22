@@ -38,7 +38,7 @@ writing a vast amount of inscrutible garbage rather than actual useful code.
 * */
 fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState<GuiDriver?>, nav: ScreenNav)
 {
-    val ags = accountGuiSlots.collectAsState().value
+    val ags = accountGuiSlots.collectAsState()
     var isSending by remember { mutableStateOf(false) }
     var isScanningQr by remember { mutableStateOf(false) }
 
@@ -82,7 +82,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                 SectionText(text = i18n(S.Receive))  // Receive into account
                 Spacer(modifier = Modifier.width(8.dp))
                 AccountDropDownSelector(
-                  ags,
+                  ags.value,
                   selectedAccount.value?.name ?: "",
                   onAccountNameSelected = onAccountNameSelected,
                 )
@@ -107,101 +107,6 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
         }
     }
 
-    fun updateSendAccount(account: Account?)
-    {
-        if (account != null)
-        {
-            sendFromAccount = account.name
-            updateSendCurrencyType(account)
-        }
-    }
-
-    /** Get the account we are currently sending from out of the GUI.
-     * This function will default to (and set sendFromAccount) the selected account if the sendFromAccount variable is invalid */
-    fun getSendFromAccount(): Account?
-    {
-        // Get an account from the sendFromAccount string
-        var account = wallyApp!!.accounts[sendFromAccount]
-        if (account == null)   // if no sendFromAccount, grab the selected account
-        {
-            account = selectedAccount.value
-            if (account == null)
-            {
-                account = wallyApp!!.nullablePrimaryAccount
-            }
-            updateSendAccount(account)
-        }
-        return account
-    }
-
-
-    /** Find an account that can send to this blockchain and switch the send account to it */
-    fun updateSendAccount(chainSelector: ChainSelector): Account?
-    {
-        val account = getSendFromAccount()
-
-        // First see if the current selection is compatible with what we want.
-        // This keeps the user's selection if multiple accounts are compatible
-        if (account?.wallet?.chainSelector != chainSelector)  // Its not so find one that is
-        {
-            val matches = wallyApp!!.accountsFor(chainSelector)
-            if (matches.size > 0)
-            {
-                updateSendAccount(matches.first())
-                return matches.first()
-            }
-        }
-        updateSendAccount(account)
-        return account
-    }
-
-    /** Find an account that can send to this PayAddress and switch the send account to it */
-    fun updateSendAccount(pa: PayAddress): Account?
-    {
-        if (pa.type == PayAddressType.NONE) return getSendFromAccount() // nothing to update
-        return updateSendAccount(pa.blockchain)
-    }
-
-    /** Update the GUI send address field, and all related GUI elements based on the provided payment address */
-    fun updateSendAddress(pa: PayAddress)
-    {
-        if (pa.type == PayAddressType.NONE) return  // nothing to update
-        dbgAssertGuiThread()
-
-        sendToAddress.value = pa.toString()
-        paymentInProgress.value = null
-
-        // Change the send currency type to reflect the pasted data if I need to
-        updateSendAccount(pa)
-    }
-
-    fun updateSendAddress(text: String, updateIfNonAddress:Boolean = false): PayAddress
-    {
-        val t = text.trim()
-        return try
-        {
-            val pa = PayAddress(t) // attempt to convert into an address to trigger an exception and a subsequent UI error if its bad
-            updateSendAddress(pa)
-            pa
-        }
-        catch (e: UnknownBlockchainException)
-        {
-            // ok let's try to pick an address out of a mess of text
-            val pa = scanForFirstAddress(t)
-            if (pa != null)
-            {
-                updateSendAddress(pa); pa
-            }
-            else
-            {
-                if (updateIfNonAddress)
-                {
-                    sendToAddress.value = t
-                }
-                throw e
-            }
-        }
-    }
 
     /** Calculate whether there is enough money available to make a payment and return an appropriate info string for the GUI. Does not need to be called within GUI context */
     fun availabilityWarning(account: Account, qty: BigDecimal): String
@@ -218,6 +123,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
         }
         return ""
     }
+
 
     /** This function both validates the quantity in the send field (return true/false) and updates the "approximately..." text
     It is therefore called both as an onchange validator and directly (when the local currency changes, for example).
@@ -338,6 +244,104 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
             }
         }
     }
+
+    fun updateSendAccount(account: Account?)
+    {
+        if (account != null)
+        {
+            sendFromAccount = account.name
+            updateSendCurrencyType(account)
+            checkSendQuantity(sendQuantity.value, account)
+        }
+    }
+
+    /** Get the account we are currently sending from out of the GUI.
+     * This function will default to (and set sendFromAccount) the selected account if the sendFromAccount variable is invalid */
+    fun getSendFromAccount(): Account?
+    {
+        // Get an account from the sendFromAccount string
+        var account = wallyApp!!.accounts[sendFromAccount]
+        if (account == null)   // if no sendFromAccount, grab the selected account
+        {
+            account = selectedAccount.value
+            if (account == null)
+            {
+                account = wallyApp!!.nullablePrimaryAccount
+            }
+            updateSendAccount(account)
+        }
+        return account
+    }
+
+
+    /** Find an account that can send to this blockchain and switch the send account to it */
+    fun updateSendAccount(chainSelector: ChainSelector): Account?
+    {
+        val account = getSendFromAccount()
+
+        // First see if the current selection is compatible with what we want.
+        // This keeps the user's selection if multiple accounts are compatible
+        if (account?.wallet?.chainSelector != chainSelector)  // Its not so find one that is
+        {
+            val matches = wallyApp!!.accountsFor(chainSelector)
+            if (matches.size > 0)
+            {
+                updateSendAccount(matches.first())
+                return matches.first()
+            }
+        }
+        updateSendAccount(account)
+        return account
+    }
+
+    /** Find an account that can send to this PayAddress and switch the send account to it */
+    fun updateSendAccount(pa: PayAddress): Account?
+    {
+        if (pa.type == PayAddressType.NONE) return getSendFromAccount() // nothing to update
+        return updateSendAccount(pa.blockchain)
+    }
+
+    /** Update the GUI send address field, and all related GUI elements based on the provided payment address */
+    fun updateSendAddress(pa: PayAddress)
+    {
+        if (pa.type == PayAddressType.NONE) return  // nothing to update
+        dbgAssertGuiThread()
+
+        sendToAddress.value = pa.toString()
+        paymentInProgress.value = null
+
+        // Change the send currency type to reflect the pasted data if I need to
+        updateSendAccount(pa)
+    }
+
+    fun updateSendAddress(text: String, updateIfNonAddress:Boolean = false): PayAddress
+    {
+        val t = text.trim()
+        return try
+        {
+            val pa = PayAddress(t) // attempt to convert into an address to trigger an exception and a subsequent UI error if its bad
+            updateSendAddress(pa)
+            pa
+        }
+        catch (e: UnknownBlockchainException)
+        {
+            // ok let's try to pick an address out of a mess of text
+            val pa = scanForFirstAddress(t)
+            if (pa != null)
+            {
+                updateSendAddress(pa); pa
+            }
+            else
+            {
+                if (updateIfNonAddress)
+                {
+                    sendToAddress.value = t
+                }
+                throw e
+            }
+        }
+    }
+
 
 
     fun updateSendBasedOnPaymentInProgress()
@@ -464,17 +468,6 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
 
     }
 
-    fun onAccountNameSelected(name: String)
-    {
-       accountGuiSlots.value.forEach { acc ->
-            if (acc.name == name)
-            {
-                selectedAccount.value = acc
-                return@forEach
-            }
-        }
-    }
-
     // Handle incoming GUI changes
     if (driver.value != oldDriver.value)
     {
@@ -524,7 +517,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
     wallyApp?.later {
         while(selectedAccount.value == null)
         {
-            delay(50)
+            delay(100)
             val tmp = wallyApp?.focusedAccount
             if ((selectedAccount.value == null) && (tmp != null))
             {
@@ -558,7 +551,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
         if (!isSoftKeyboardShowing.collectAsState().value)
         {
             // pad these buttons on the bottom to be convenient to press with your thumb
-            Row(Modifier.fillMaxWidth().align(Alignment.BottomCenter).zIndex(2f).padding(8.dp, 8.dp, 8.dp, 100.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+            Row(Modifier.fillMaxWidth().align(Alignment.BottomCenter).zIndex(2f).padding(8.dp, 8.dp, 8.dp, 60.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
                 if (platform().hasGallery)
                     WallyBoringIconButton("icons/gallery.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
                         ImageQrCode {
@@ -634,7 +627,9 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                       },
                       onAccountNameSelected = {
                           val act = wallyApp!!.accounts[it]
-                          act?.let { updateSendAccount(it) }
+                          act?.let {
+                              updateSendAccount(it)
+                          }
                       }
                     )
                 }
@@ -677,15 +672,13 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                 Row(modifier = Modifier.fillMaxWidth().padding(0.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
                     Spacer(Modifier.width(8.dp))
                     if(synced.value)
-                        ResImageView("icons/check.xml", modifier = Modifier.size(30.dp))
+                        ResImageView("icons/check.xml", modifier = Modifier.size(45.dp))
                     else
                     {
-                        Box(Modifier.size(30.dp)) {
-                            LoadingAnimationContent()
-                        }
+                        Box(Modifier.size(45.dp)) { LoadingAnimationContent() }
                     }
                     SectionText(S.AccountListHeader, Modifier.weight(1f))
-                    ResImageView("icons/plus.xml", modifier = Modifier.size(30.dp).clickable {
+                    ResImageView("icons/plus.xml", modifier = Modifier.size(45.dp).clickable {
                         nav.go(ScreenId.NewAccount)
                     })
                     Spacer(Modifier.width(8.dp))
@@ -693,7 +686,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                 AccountListView(
                   nav,
                   selectedAccount,
-                  ags,
+                  ags.value,
                   modifier = Modifier.weight(1f),
                   onAccountSelected = {
                       if (selectedAccount.value == it)

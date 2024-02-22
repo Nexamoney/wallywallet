@@ -411,11 +411,9 @@ fun NoticeText(noticeText: String, modifier: Modifier)
     Text(text = noticeText,
             style = LocalTextStyle.current.copy(
                 color = Color.Black,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Normal
             ),
-            modifier = Modifier
-                .background(color = Color.Green).then(modifier)
-                .wrapContentWidth(align = Alignment.CenterHorizontally)
+            modifier = modifier.wrapContentWidth(align = Alignment.CenterHorizontally)
         )
 }
 
@@ -425,12 +423,22 @@ fun ErrorText(errorText: String, modifier: Modifier)
    Text(text = errorText,
           style = LocalTextStyle.current.copy(
             color = Color.White,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Normal
           ),
-          modifier = Modifier
-            .background(color = Color.Red).then(modifier)
-            .wrapContentWidth(align = Alignment.CenterHorizontally)
+          modifier = modifier.wrapContentWidth(align = Alignment.CenterHorizontally)
         )
+}
+
+@Composable
+fun WarningText(errorText: String, modifier: Modifier)
+{
+    Text(text = errorText,
+      style = LocalTextStyle.current.copy(
+        color = Color.White,
+        fontWeight = FontWeight.Normal
+      ),
+      modifier = modifier.wrapContentWidth(align = Alignment.CenterHorizontally)
+    )
 }
 
 @Composable fun FontScale(amt: Double): TextUnit
@@ -1000,6 +1008,7 @@ fun LongInputField(descriptionRes: Int, labelRes: Int, amount: Long, onChange: (
  */
 @Composable fun ConfirmDismissNoteDialog(
   amount: BigDecimal,
+  assets: List<AssetInfo>,
   displayed: Boolean,
   titleRes: Int,
   text: String,
