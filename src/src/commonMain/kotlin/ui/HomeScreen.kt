@@ -25,8 +25,8 @@ import info.bitcoinunlimited.www.wally.ui.theme.*
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.HomeScreen")
-private val currentReceiveShared: MutableStateFlow<String> = MutableStateFlow("")
-
+// stores the account name we are receiving into and the receive address as a pair
+val currentReceiveShared: MutableStateFlow<Pair<String,String>> = MutableStateFlow(Pair("",""))
 var sendToAddress: MutableStateFlow<String> = MutableStateFlow("")
 
 @OptIn(ExperimentalResourceApi::class)
@@ -75,7 +75,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
      * View for receiving funds
      */
     @Composable
-    fun ReceiveView(onAccountNameSelected: (Int) -> Unit)
+    fun ReceiveView(onAccountNameSelected: (String) -> Unit)
     {
         Column(Modifier.fillMaxWidth()) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically) {
@@ -83,13 +83,13 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                 Spacer(modifier = Modifier.width(8.dp))
                 AccountDropDownSelector(
                   ags.value,
-                  selectedAccount.value?.name ?: "",
+                  currentReceive.value.first,
                   onAccountNameSelected = onAccountNameSelected,
                 )
             }
-            AddressQrCode(currentReceive.value)
+            AddressQrCode(currentReceive.value.second)
             // update the share function based on whatever my current receive is
-            ToBeShared = { currentReceive.value }
+            ToBeShared = { currentReceive.value.second }
         }
     }
 
@@ -439,6 +439,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
         {
             if (c != null)
             {
+                assert(c.visible)
                 lastSendFromAccountName = c.name
                 val sendAddr = PayAddress(_sendToAddress.trim())
                 if (c.wallet.chainSelector != sendAddr.blockchain)
@@ -506,8 +507,10 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
     // If the selected account changes, we need to update the receiving address
     LaunchedEffect(selectedAccount) {
         selectedAccount.collect {
-            selectedAccount.value?.onUpdatedReceiveInfoCommon { recvAddrStr ->
-                currentReceiveShared.value = recvAddrStr
+            selectedAccount.value?.let {
+                it.onUpdatedReceiveInfoCommon { recvAddrStr ->
+                    currentReceiveShared.value = Pair(it.name, recvAddrStr)
+                }
             }
         }
     }
@@ -653,11 +656,8 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                     }
                     WallyDivider()
                     ReceiveView(
-                      //selectedAccount.value?.name ?: "",
-                      //selectedAccount.value?.currentReceive?.address?.toString() ?: "",
-                      //accountGuiSlots.value.map { it.name },
-                      onAccountNameSelected = { accountIdx ->
-                          val act = accountGuiSlots.value[accountIdx]
+                      onAccountNameSelected = { accountName ->
+                          val act = wallyApp!!.accounts[accountName]
                           if (act != null)
                           {
                               selectedAccount.value = act

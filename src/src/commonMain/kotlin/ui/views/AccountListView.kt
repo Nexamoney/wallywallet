@@ -21,6 +21,8 @@ import info.bitcoinunlimited.www.wally.ui.theme.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.nexa.libnexakotlin.*
 
@@ -136,7 +138,12 @@ fun Account.uiData():AccountUIData
         else
         {
             ret.unconfBal = if (chainstate.syncedDate <= 1231416000) i18n(S.unsynced)  // for fun: bitcoin genesis block
-            else i18n(S.balanceOnTheDate) % mapOf("date" to epochToDate(chainstate.syncedDate))
+            else {
+                val instant = kotlinx.datetime.Instant.fromEpochSeconds(chainstate.syncedDate)
+                val localTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+                val td = localTime.date.toString() + " " + localTime.time.toString()
+                i18n(S.balanceOnTheDate) % mapOf("date" to td)  //epochToDate(chainstate.syncedDate))
+            }
 
             ret.balFontWeight = FontWeight.Light
             ret.unconfBalColor = unsyncedStatusColor
