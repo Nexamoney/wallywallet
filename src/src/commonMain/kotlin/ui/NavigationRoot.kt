@@ -221,6 +221,22 @@ const val TRIGGER_BUG_DELAY = 100L
 fun triggerAssignAccountsGuiSlots()
 {
     accountGuiSlots.value = assignAccountsGuiSlots()
+
+    // If the slots got shuffled around, maybe the current receive was deleted or hidden
+    val act = wallyApp!!.accounts[currentReceiveShared.value.first]
+    if (act == null || act.visible == false) try
+    {
+        wallyApp?.preferredVisibleAccount()?.let {
+            it.onUpdatedReceiveInfoCommon { recvAddrStr ->
+                    currentReceiveShared.value = Pair(it.name, recvAddrStr)
+                }
+        }
+    }
+    catch (e:PrimaryWalletInvalidException)
+    {
+        currentReceiveShared.value = Pair("", "")
+    }
+
     // later { delay(TRIGGER_BUG_DELAY); externalDriver.send(GuiDriver(regenAccountGui = true)) }
 }
 
@@ -279,6 +295,7 @@ fun onShareButton()
             else
             {
                 TitleText(nav.title(), Modifier.weight(1f).fillMaxSize())
+                ResImageView("icons/lock.xml", modifier = Modifier.clickable { triggerUnlockDialog() })
                 if (platform().hasShare && nav.currentScreen.value.hasShare) IconButton(onClick = { onShareButton() }) {
                     Icon(Icons.Default.Share, tint = colorTitleForeground, contentDescription = null)
                 }
@@ -430,26 +447,26 @@ fun NavigationRoot(nav: ScreenNav)
     var currentTpSession by remember { mutableStateOf<TricklePaySession?>(null) }
     var currentUri by remember { mutableStateOf<Uri?>(null) }
 
-
-
     buildMenuItems()
 
     @Composable fun withAccount(then: @Composable (acc: Account) -> Unit)
     {
         // make sure the UX and the app are both tracking the correct focused account
-        if (selectedAccount.value != wallyApp!!.focusedAccount) {
+        if (selectedAccount.value != wallyApp!!.focusedAccount)
+        {
             // Pick the one the UX set preferentially
             if(selectedAccount.value != null) wallyApp!!.focusedAccount = selectedAccount.value
             else selectedAccount.value = wallyApp!!.focusedAccount
         }
         val pa = selectedAccount.value ?: wallyApp!!.focusedAccount ?: wallyApp?.nullablePrimaryAccount
-
+        //assert(pa?.visible ?: true)
         if (pa == null)
         {
             displayError(S.NoAccounts)
             nav.back()
         }
         else then(pa)
+
     }
 
     @Composable fun withUnlockedAccount(then: @Composable (acc: Account) -> Unit)
@@ -518,6 +535,7 @@ fun NavigationRoot(nav: ScreenNav)
             driver.value = c
             // If the driver specifies an account, we want to switch to it
             c.account?.let {
+                // assert(it.visible)
                 selectedAccount.value = it
                 wallyApp?.focusedAccount = it
             }

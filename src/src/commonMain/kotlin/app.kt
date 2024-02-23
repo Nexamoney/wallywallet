@@ -209,6 +209,16 @@ open class CommonApp
             }
         }
 
+
+    /** Return some account that's visible in order of focused, primary, then any visible account starting with Nexa then testnet, regtest.
+     * Throws throw PrimaryWalletInvalidException() is there is nothing */
+    fun preferredVisibleAccount(): Account
+    {
+        focusedAccount?.let { if (it.visible) return it }
+        nullablePrimaryAccount?.let { if (it.visible) return it }
+        return defaultPrimaryAccount()
+    }
+
     fun defaultPrimaryAccount(): Account
     {
         return accountLock.lock {
@@ -216,17 +226,17 @@ open class CommonApp
             for (i in accounts.values)
             {
                 LogIt.info("looking for primary at wallet " + i.name + "blockchain: " + i.chain.name)
-                if (i.wallet.chainSelector == ChainSelector.NEXA) return@lock i
+                if ((i.wallet.chainSelector == ChainSelector.NEXA) && i.visible) return@lock i
             }
             for (i in accounts.values)
             {
                 LogIt.info("falling back to testnet")
-                if (i.wallet.chainSelector == ChainSelector.NEXATESTNET) return@lock i
+                if ((i.wallet.chainSelector == ChainSelector.NEXATESTNET) && i.visible) return@lock i
             }
             for (i in accounts.values)
             {
                 LogIt.info("falling back to regtest")
-                if (i.wallet.chainSelector == ChainSelector.NEXAREGTEST) return@lock i
+                if ((i.wallet.chainSelector == ChainSelector.NEXAREGTEST) && i.visible) return@lock i
             }
             throw PrimaryWalletInvalidException()
         }
@@ -898,7 +908,9 @@ open class CommonApp
                 try
                 {
                     if (nullablePrimaryAccount == null) primaryAccount = defaultPrimaryAccount()
-                    focusedAccount = nullablePrimaryAccount ?: defaultPrimaryAccount()
+                    if (nullablePrimaryAccount?.visible == true) focusedAccount = nullablePrimaryAccount
+                    else focusedAccount = defaultPrimaryAccount()
+                    assert(focusedAccount?.visible ?: true)
                 }
                 catch(e:PrimaryWalletInvalidException)
                 {

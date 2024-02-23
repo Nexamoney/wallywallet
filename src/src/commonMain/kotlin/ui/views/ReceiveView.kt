@@ -28,21 +28,26 @@ import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 fun AccountDropDownSelector(
   accountGuiSlots:  ListifyMap<String, Account>,
   selectedAccountName: String?,
-  onAccountNameSelected: (Int) -> Unit)
+  onAccountNameSelected: (String) -> Unit)
 {
-    var selectedIndex by remember { mutableStateOf(0) }
-    val accountNames = accountGuiSlots.map { it.name }
-    accountGuiSlots.forEachIndexed { index, account -> if (account.name == selectedAccountName) selectedIndex = index }
+    var selectedIndex = mutableStateOf(-1)  // we don't want to "remember" this; it MUST be specified by the selectedAccountName
+    accountGuiSlots.forEachIndexed { index, account -> if (account.name == selectedAccountName) selectedIndex.value = index }
+    val accountNames = accountGuiSlots.map { it.name }.toMutableList()
+    if (selectedIndex.value==-1) // If the selected account is not in our list, show a blank
+    {
+        accountNames.add(" ")
+        selectedIndex.value = accountNames.size-1
+    }
 
     WallyDropdownMenu(
               modifier = Modifier.width(IntrinsicSize.Min),
               label = "",
               items = accountNames,
-              selectedIndex = selectedIndex,
+              selectedIndex = selectedIndex.value,
               style = WallyDropdownStyle.Succinct,
-              onItemSelected = { index, _ ->
-                  selectedIndex = index
-                  onAccountNameSelected(index) },
+              onItemSelected = { index, item ->
+                  selectedIndex.value = index
+                  onAccountNameSelected(item) },
             )
 }
 
