@@ -182,6 +182,22 @@ open class CommonApp
 
     var assetLoaderThread: iThread? = null
 
+
+    /** Return an ordered map of the visible accounts (in display order) */
+    fun orderedAccounts(visibleOnly: Boolean = true):ListifyMap<String, Account>
+    {
+        val ret = ListifyMap(accounts, { if (visibleOnly) it.value.visible else true }, object : Comparator<String>
+        {
+            override fun compare(p0: String, p1: String): Int
+            {
+                if (wallyApp?.nullablePrimaryAccount?.name == p0) return Int.MIN_VALUE
+                if (wallyApp?.nullablePrimaryAccount?.name == p1) return Int.MAX_VALUE
+                return p0.compareTo(p1)
+            }
+        })
+        return ret
+    }
+
     var primaryAccount: Account
         get()
         {
@@ -304,7 +320,6 @@ open class CommonApp
             if (whichChain != null)  // handle a blockchain address (by preparing the send to)
             {
                 val attribs = uri.queryMap()
-                val act = accountsFor(whichChain).firstOrNull()
 
                 val stramt = attribs["amount"]
                 var amt: BigDecimal? = null
@@ -329,7 +344,7 @@ open class CommonApp
 
                 // Inject a change into the GUI
                 launch {
-                    externalDriver.send(GuiDriver(ScreenId.Home, sendAddress = chainToURI[whichChain] + ":" + uri.body(), amount = amt, note = attribs["label"], chainSelector = whichChain, account = act))
+                    externalDriver.send(GuiDriver(ScreenId.Home, sendAddress = chainToURI[whichChain] + ":" + uri.body(), amount = amt, note = attribs["label"], chainSelector = whichChain))
                 }
             }
             else if (scheme == IDENTITY_URI_SCHEME)
@@ -640,6 +655,10 @@ open class CommonApp
     {
         val ret = mutableListOf<Account>()
 
+        // put the selected account first
+        focusedAccount?.let {
+            if (chain == it.chain.chainSelector && it.visible) ret.add(it)
+        }
         // put the primary account first
         nullablePrimaryAccount?.let {
             if (chain == it.chain.chainSelector && it.visible) ret.add(it)
@@ -647,9 +666,9 @@ open class CommonApp
 
         accountLock.lock {
             // Look for any other match
-            for (account in accounts.values)
+            for (account in orderedAccounts(true))
             {
-                if (account.visible && (chain == account.wallet.chainSelector) && (nullablePrimaryAccount != account))
+                if ((chain == account.wallet.chainSelector) && (nullablePrimaryAccount != account) && (focusedAccount != account))
                 {
                     ret.add(account)
                 }
@@ -931,7 +950,6 @@ open class CommonApp
                 if (recoveryWarning != null) externalDriver.send(GuiDriver(show = setOf(ShowIt.WARN_BACKUP_RECOVERY_KEY), account = recoveryWarning))
             }
         }
-
     }
 
     /** If you need to do a POST operation within the App context (because you are ending the activity) call these functions */

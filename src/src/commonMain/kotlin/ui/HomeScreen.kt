@@ -22,6 +22,7 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
+import kotlinx.coroutines.flow.collect
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.HomeScreen")
@@ -29,14 +30,16 @@ private val LogIt = GetLog("BU.wally.HomeScreen")
 val currentReceiveShared: MutableStateFlow<Pair<String,String>> = MutableStateFlow(Pair("",""))
 var sendToAddress: MutableStateFlow<String> = MutableStateFlow("")
 
-@OptIn(ExperimentalResourceApi::class)
-@Composable
+
 /* Since composable state needs to be defined within a composable, imagine this composable is actually a singleton class,
 with member variables and member functions defined in it.
 We could use a composable "State Holder" (in theory) to capture all the state needed by the member functions, but creating a state holder appears to entail
 writing a vast amount of inscrutible garbage rather than actual useful code.
 * */
-fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState<GuiDriver?>, nav: ScreenNav)
+
+private val _sendFromAccount = MutableStateFlow<String>("")
+@OptIn(ExperimentalResourceApi::class)
+@Composable fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState<GuiDriver?>, nav: ScreenNav)
 {
     val ags = accountGuiSlots.collectAsState()
     var isSending by remember { mutableStateOf(false) }
@@ -45,7 +48,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
     val synced = remember { mutableStateOf(wallyApp!!.isSynced()) }
     var currentReceive = currentReceiveShared.collectAsState()
     var sendQuantity = remember { mutableStateOf<String>("") }
-    var sendFromAccount by remember { mutableStateOf<String>(selectedAccount.value?.name ?: wallyApp?.nullablePrimaryAccount?.name ?: "") }
+    val sendFromAccount = _sendFromAccount.collectAsState()
 
     var warnBackupRecoveryKey = remember { mutableStateOf(false) }
 
@@ -71,6 +74,8 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
 
     var oldDriver = remember { mutableStateOf<GuiDriver?>(null) }
 
+
+
     /**
      * View for receiving funds
      */
@@ -93,19 +98,6 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
         }
     }
 
-
-    /** Set the send currency type spinner options to your default fiat currency or your currently selected crypto
-    Might change if the user changes the default fiat or crypto */
-    fun updateSendCurrencyType(account: Account?)
-    {
-        account?.let { acc ->
-            // If we don't know the exchange rate, we can't offer fiat entry
-            sendCurrencyChoices.value = if (acc.fiatPerCoin != -1.toBigDecimal()) listOf(acc.currencyCode, fiatCurrencyCode) else listOf(acc.currencyCode)
-
-            // If we switched to a currency code we don't have, set it to the first one we support
-            if (!sendCurrencyChoices.value.contains(currencyCode)) currencyCode = sendCurrencyChoices.value.first()
-        }
-    }
 
 
     /** Calculate whether there is enough money available to make a payment and return an appropriate info string for the GUI. Does not need to be called within GUI context */
@@ -245,22 +237,36 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
         }
     }
 
+    /** Set the send currency type spinner options to your default fiat currency or your currently selected crypto
+    Might change if the user changes the default fiat or crypto */
+    fun updateSendCurrencyType(account: Account?)
+    {
+        account?.let { acc ->
+            // If we don't know the exchange rate, we can't offer fiat entry
+            sendCurrencyChoices.value = if (acc.fiatPerCoin != -1.toBigDecimal()) listOf(acc.currencyCode, fiatCurrencyCode) else listOf(acc.currencyCode)
+
+            // If we switched to a currency code we don't have, set it to the first one we support
+            if (!sendCurrencyChoices.value.contains(currencyCode)) currencyCode = sendCurrencyChoices.value.first()
+        }
+    }
+
     fun updateSendAccount(account: Account?)
     {
         if (account != null)
         {
-            sendFromAccount = account.name
+            _sendFromAccount.value = account.name
             updateSendCurrencyType(account)
             checkSendQuantity(sendQuantity.value, account)
         }
     }
+
 
     /** Get the account we are currently sending from out of the GUI.
      * This function will default to (and set sendFromAccount) the selected account if the sendFromAccount variable is invalid */
     fun getSendFromAccount(): Account?
     {
         // Get an account from the sendFromAccount string
-        var account = wallyApp!!.accounts[sendFromAccount]
+        var account = wallyApp!!.accounts[sendFromAccount.value]
         if (account == null)   // if no sendFromAccount, grab the selected account
         {
             account = selectedAccount.value
@@ -476,29 +482,36 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
         if (tmp?.sendAddress != null)  // If we are driving send data, fill all the fields
         {
             isSending = true
-            tmp.sendAddress.let { sendToAddress.value = it }
+            tmp.sendAddress.let {
+                sendToAddress.value = it
+                try // If the address blockchain does not match, auto-pick one that does.  But if it does match, don't touch it.
+                {
+                    val payAddress: PayAddress = PayAddress(tmp.sendAddress)
+                    val from = wallyApp!!.accounts[sendFromAccount.value]
+                    if (from != null)
+                    {
+                        if (from.chain.chainSelector != payAddress.blockchain)
+                        {
+                            val acts = wallyApp!!.accountsFor(payAddress.blockchain)
+                            if (acts.size > 0) updateSendAccount(acts[0])
+                        }
+                    }
+                }
+                catch (e: Exception) // not something we can turn into an address
+                {
+
+                }
+            }
             tmp.amount?.let { sendQuantity.value = NexaFormat.format(it) }
             tmp.note?.let { sendNote.value = it }
-            val act:Account? = if (tmp.account != null)
-            {
-                tmp.account
-            }
-            else if (tmp.chainSelector != null)
-            {
-                val acts = wallyApp!!.accountsFor(tmp.chainSelector)
-                if (acts.size > 0) acts[0]
-                else null
-            }
-            else null
 
-            if (act != null)
-            {
-                updateSendAccount(act)
-            }
+
+
+            tmp.account?.let { updateSendAccount(it) }
+
+            if (tmp?.show?.contains(ShowIt.WARN_BACKUP_RECOVERY_KEY) == true) warnBackupRecoveryKey.value = true
+            oldDriver.value = driver.value  // If I don't clear this mutable state, it'll set every single time, rendering these fields uneditable
         }
-
-        if (tmp?.show?.contains(ShowIt.WARN_BACKUP_RECOVERY_KEY) == true) warnBackupRecoveryKey.value = true
-        oldDriver.value = driver.value  // If I don't clear this mutable state, it'll set every single time, rendering these fields uneditable
     }
 
 
@@ -525,7 +538,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
             if ((selectedAccount.value == null) && (tmp != null))
             {
                 selectedAccount.value = tmp
-                sendFromAccount = tmp.name
+                updateSendAccount(tmp)
                 currencyCode = tmp.currencyCode
                 break
             }
@@ -549,6 +562,17 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
         }
     }
 
+    if (sendFromAccount.value == "")
+    {
+        try
+        {
+            val act = wallyApp!!.preferredVisibleAccount()
+            updateSendAccount(act)
+        }
+        catch(e:Exception) {}
+    }
+
+
     Box(modifier = WallyPageBase) {
         // Don't show the thumb buttons if the softkeyboard is up, because the user is keying something in, not one-handing the phone
         if (!isSoftKeyboardShowing.collectAsState().value)
@@ -558,17 +582,21 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                 if (platform().hasGallery)
                     WallyBoringIconButton("icons/gallery.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
                         ImageQrCode {
-                            it?.let { if (!wallyApp!!.handlePaste(it)) wallyApp!!.handleNonIntentText(it) }
+                            it?.let {
+                                clearAlerts()
+                                if (!wallyApp!!.handlePaste(it)) wallyApp!!.handleNonIntentText(it) }
                         }
                     }
                 if (platform().hasQrScanner)
                     WallyBoringIconButton("icons/scanqr2.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
+                        clearAlerts()
                         isScanningQr = true
                     }
 
                 if (!platform().usesMouse)
                 {
                     WallyBoringIconButton("icons/clipboard.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
+                        clearAlerts()
                         val cliptext = clipmgr.getText()?.text
                         if (cliptext != null && cliptext != "")
                         {
@@ -587,7 +615,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
             if (isSending)
             {
                 SendView(
-                      selectedAccountName = sendFromAccount,
+                      selectedAccountName = sendFromAccount.value,
                       accountNames = accountGuiSlots.value.map { it.name },
                       currencyCode = currencyCode,
                       toAddress = _sendToAddress,
@@ -605,7 +633,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                           isSending = false
                           driver.value = null // hack to fix send section reappearing on nav after an address is provided
                           clearAlerts()  // If user manually cancelled, they understood the problem
-                          wallyApp!!.assetManager.clearTransferListOfAssetsHeldBy(sendFromAccount)
+                          wallyApp!!.assetManager.clearTransferListOfAssetsHeldBy(sendFromAccount.value)
                                  },
                       approximatelyText = approximatelyText,
                       currencies = sendCurrencyChoices,
@@ -623,7 +651,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                           checkSendQuantity(s, account)
                       },
                       onSendSuccess = {
-                          wallyApp!!.assetManager.clearTransferListOfAssetsHeldBy(sendFromAccount)
+                          wallyApp!!.assetManager.clearTransferListOfAssetsHeldBy(sendFromAccount.value)
                           sendToAddress.value = ""
                           sendQuantity.value = ""
                           isSending = false
@@ -651,8 +679,14 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                                     displayNotice(S.pasteIsEmpty)
                                 }
                             }
-                        WallyBoringLargeTextButton(S.Send) { isSending = true }
-                        WallyBoringLargeTextButton(S.title_split_bill) { nav.go(ScreenId.SplitBill) }
+                        WallyBoringLargeTextButton(S.Send) {
+                            clearAlerts()
+                            isSending = true
+                        }
+                        WallyBoringLargeTextButton(S.title_split_bill) {
+                            clearAlerts()
+                            nav.go(ScreenId.SplitBill)
+                        }
                     }
                     WallyDivider()
                     ReceiveView(
@@ -679,6 +713,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                     }
                     SectionText(S.AccountListHeader, Modifier.weight(1f))
                     ResImageView("icons/plus.xml", modifier = Modifier.size(45.dp).clickable {
+                        clearAlerts()
                         nav.go(ScreenId.NewAccount)
                     })
                     Spacer(Modifier.width(8.dp))
@@ -705,8 +740,10 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                   }
                 )
                 if (isScanningQr && platform().hasQrScanner)
+                {
                     QrScannerDialog(
                       onDismiss = {
+                          clearAlerts()
                           isScanningQr = false
                       },
                       onScan = {
@@ -719,6 +756,7 @@ fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState
                           }
                       }
                     )
+                }
             }
         }
     }
