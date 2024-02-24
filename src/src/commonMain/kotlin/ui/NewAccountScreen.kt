@@ -1,6 +1,9 @@
 package info.bitcoinunlimited.www.wally.ui
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.FocusInteraction
+import androidx.compose.foundation.interaction.HoverInteraction
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -114,6 +117,15 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
         }
     }
 
+    // unfocus is not being called if the focused composable is destroyed
+    // so this catch-all puts the navbar, etc back up when the new account screen
+    // goes away.
+    DisposableEffect(Unit) {
+        onDispose {
+            UxInTextEntry(false)
+        }
+    }
+
     NewAccountScreenContent(
       newAcState,
       recoverySearchText,
@@ -171,7 +183,12 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
       },
       onPinChange = {
           val validOrNoPin = (it.isEmpty() || ((it.length >= MIN_PIN_LEN) && it.onlyDigits()) )
-          newAcState = newAcState.copy(pin = it, validOrNoPin = validOrNoPin)
+          if (it.onlyDigits())
+          {
+              newAcState = newAcState.copy(pin = it, validOrNoPin = validOrNoPin)
+              it
+          }
+          else newAcState.pin  // refuse to change if nondigits are in the field
       },
       onHideUntilPinEnterChanged = {
           newAcState =  newAcState.copy(hideUntilPinEnter = it)
@@ -289,7 +306,7 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
   onChainSelected: (Pair<String, ChainSelector>) -> Unit,
   onNewAccountName: (String) -> Unit,
   onNewRecoveryPhrase: (String) -> Unit,
-  onPinChange: (String) -> Unit,
+  onPinChange: (String) -> String,
   onHideUntilPinEnterChanged: (Boolean) -> Unit,
   onClickCreateAccount: () -> Unit,
   creatingAccountLoading: Boolean
@@ -406,9 +423,6 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
         WallyTextEntry(
           value = accountName,
           onValueChange = onNewAccountName,
-          //colors = TextFieldDefaults.textFieldColors(containerColor = Color.Transparent),
-          //placeholder = { Text(i18n(S.AccountNameHint)) },
-          //singleLine = true
           modifier = Modifier.weight(1f)
         )
     }
@@ -417,6 +431,23 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun RecoveryPhraseInput(recoveryPhrase: String, validOrNoRecoveryPhrase: Boolean, onValueChange: (String) -> Unit)
 {
+    val ia = remember { MutableInteractionSource() }
+
+    LaunchedEffect(ia) {
+        ia.interactions.collect {
+            when(it) {
+                // Hover for mouse platforms, Focus for touch platforms
+                is HoverInteraction.Enter, is FocusInteraction.Focus -> {
+                    UxInTextEntry(true)
+                }
+                is HoverInteraction.Exit, is FocusInteraction.Unfocus -> {
+                    UxInTextEntry(false)
+                }
+            }
+        }
+    }
+
+    val scale = if (platform().spaceConstrained) FontScale(0.75) else FontScale(1.0)
     Column {
         Text(i18n(S.AccountRecoveryPhrase))
         Spacer(Modifier.width(8.dp))
@@ -428,20 +459,20 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
             TextField(
               value = recoveryPhrase,
               onValueChange = onValueChange,
+              interactionSource = ia,
               colors = TextFieldDefaults.textFieldColors(containerColor = Color.Transparent),
               placeholder = { Text(i18n(S.LeaveEmptyNewWallet)) },
-              //singleLine = true,
               minLines = 1,
               maxLines = 4,
               modifier = Modifier.fillMaxWidth(),
-              textStyle = TextStyle(fontSize = 12.sp)
+              textStyle = TextStyle(fontSize = scale)
             )
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable fun pinInput(pin: String, validOrNoPin: Boolean, onPinChange : (String) -> Unit)
+@Composable fun pinInput(pin: String, validOrNoPin: Boolean, onPinChange : (String) -> String)
 {
     Column {
         Text(i18n(S.CreatePIN))
@@ -451,14 +482,23 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
           verticalAlignment = Alignment.CenterVertically
         ) {
             CheckOrX(validOrNoPin)
+            WallyDigitEntry(pin,modifier = Modifier.weight(1f), onValueChange = onPinChange)
+            /*
             TextField(
               value = pin,
               onValueChange = onPinChange,
               colors = TextFieldDefaults.textFieldColors(containerColor = Color.Transparent),
               placeholder = { Text(i18n(S.PinSuggestions), fontSize = 12.sp) },
               singleLine = true,
-              modifier = Modifier.fillMaxWidth()
+              modifier = Modifier.fillMaxWidth().onFocusChanged {
+                  if (it.hasFocus)
+                      UxInTextEntry(true)
+                  else
+                      UxInTextEntry(false)
+              }
             )
+
+             */
         }
     }
 }

@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+//import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
@@ -37,6 +37,8 @@ import org.nexa.libnexakotlin.sourceLoc
 private val LogIt = GetLog("wally.NavRoot")
 
 val softKeyboardBar:MutableStateFlow<(@Composable (Modifier)->Unit)?> = MutableStateFlow(null)
+val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())
+val isSoftKeyboardShowing = MutableStateFlow(false)
 
 enum class ScreenId
 {
@@ -66,6 +68,7 @@ enum class ScreenId
         get()
     {
         if (this == Settings) return true
+        if (this == NewAccount) return true
         return false
     }
 
@@ -199,20 +202,11 @@ class ScreenNav()
     }
 }
 
-fun assignAccountsGuiSlots(): ListifyMap<String, Account>
+fun assignAccountsGuiSlots()
 {
     // We have a Map of account names to values, but we need a list
     // Sort the accounts based on account name
-    val lm: ListifyMap<String, Account> = ListifyMap(wallyApp!!.accounts, { it.value.visible }, object : Comparator<String>
-    {
-        override fun compare(p0: String, p1: String): Int
-        {
-            if (wallyApp?.nullablePrimaryAccount?.name == p0) return Int.MIN_VALUE
-            if (wallyApp?.nullablePrimaryAccount?.name == p1) return Int.MAX_VALUE
-            return p0.compareTo(p1)
-        }
-    })
-    return lm
+    accountGuiSlots.value = wallyApp!!.orderedAccounts()
 }
 
 
@@ -220,9 +214,8 @@ const val TRIGGER_BUG_DELAY = 100L
 
 fun triggerAssignAccountsGuiSlots()
 {
-    accountGuiSlots.value = assignAccountsGuiSlots()
-
     // If the slots got shuffled around, maybe the current receive was deleted or hidden
+    assignAccountsGuiSlots()
     val act = wallyApp!!.accounts[currentReceiveShared.value.first]
     if (act == null || act.visible == false) try
     {
@@ -281,7 +274,7 @@ fun onShareButton()
             if (nav.hasBack() != ScreenId.None)
             {
                 IconButton(onClick = { nav.back() }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, tint = colorTitleForeground, contentDescription = null)
+                    Icon(Icons.Default.ArrowBack, tint = colorTitleForeground, contentDescription = null)
                 }
             }
             // We can only fillMaxSize() here because we constrained the height of the row
@@ -423,10 +416,6 @@ fun buildMenuItems()
     menuItems.value = items.sortedBy { it.location }.toSet()
 }
 
-val accountGuiSlots = MutableStateFlow(assignAccountsGuiSlots())
-
-val isSoftKeyboardShowing = MutableStateFlow(false)
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NavigationRoot(nav: ScreenNav)
@@ -565,7 +554,7 @@ fun NavigationRoot(nav: ScreenNav)
             }
             if (c.regenAccountGui == true)
             {
-                accountGuiSlots.value = assignAccountsGuiSlots()
+                assignAccountsGuiSlots()
             }
             if (c.withClipboard != null)
             {
@@ -633,7 +622,6 @@ fun NavigationRoot(nav: ScreenNav)
     }
 
 
-
     // This box is on top of the main screen
     Box(modifier = Modifier.zIndex(1000f).fillMaxSize()) {
         if (isSoftKeyboardShowing.collectAsState().value)
@@ -642,6 +630,7 @@ fun NavigationRoot(nav: ScreenNav)
             keybar?.invoke(Modifier.padding(0.dp).align(Alignment.BottomStart).fillMaxWidth().background(Color(0xe0d8d8d8)))
         }
     }
+
     // The main screen
     WallyTheme(darkTheme = false, dynamicColor = false) {
         Box(modifier = WallyPageBase) {

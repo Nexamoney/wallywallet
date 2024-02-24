@@ -591,7 +591,6 @@ fun WallyDecimalEntry(value: MutableState<String>, modifier: Modifier = Modifier
     }.onFocusChanged {
         if (it.isFocused)
         {
-            UxInTextEntry(true)
             softKeyboardBar.value = { modifier ->
                 // imePadding() is not needed; the BottomStart is already just above the IME
                 Row(modifier, horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -646,11 +645,9 @@ fun WallyDecimalEntry(value: MutableState<String>, modifier: Modifier = Modifier
         }
         else
         {
-            UxInTextEntry(false)
             softKeyboardBar.value = null
         }
-    }
-      ,
+    },
       textStyle, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done), bkgCol,
       {
           if (it.text.onlyDecimal())  // Only allow characters to be entered that are part of decimal numbers
@@ -660,7 +657,31 @@ fun WallyDecimalEntry(value: MutableState<String>, modifier: Modifier = Modifier
           }
       }
     )
+}
 
+/** Standard Wally text entry field.*/
+@Composable
+fun WallyDigitEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, bkgCol: Color? = null, onValueChange: ((String) -> String) = { it })
+{
+    val tfv = remember { mutableStateOf(TextFieldValue(value)) }
+    val focusManager = LocalFocusManager.current
+    WallyDataEntry(tfv, modifier.onKeyEvent {
+        if ((it.key == Key.Enter) || (it.key == Key.NumPadEnter))
+        {
+            focusManager.moveFocus(FocusDirection.Next)
+            true
+        }
+        else false// Do not accept this key
+    },
+      textStyle, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done), bkgCol,
+      {
+          if (it.text.onlyDigits())  // Only allow characters to be entered that digits
+          {
+              val tmp = onValueChange.invoke(it.text)
+              tfv.value = TextFieldValue(tmp, selection = it.selection)
+          }
+      }
+    )
 }
 
 /** Standard Wally data entry field. */
@@ -681,11 +702,13 @@ fun WallyDataEntry(value: String, modifier: Modifier = Modifier, textStyle: Text
                     scope.launch {
                         bkgColor.animateTo(bkgCol ?: SelectedBkg, animationSpec = tween(500))
                         }
+                    UxInTextEntry(true)
                 }
                 is HoverInteraction.Exit, is FocusInteraction.Unfocus -> {
                     scope.launch {
                         bkgColor.animateTo(bkgCol ?: BaseBkg, animationSpec = tween(500))
                     }
+                    UxInTextEntry(false)
                 }
 
             }
@@ -738,11 +761,13 @@ fun WallyDataEntry(value: MutableState<TextFieldValue>, modifier: Modifier = Mod
                     scope.launch {
                         bkgColor.animateTo(bkgCol ?: SelectedBkg, animationSpec = tween(500))
                     }
+                    UxInTextEntry(true)
                 }
                 is HoverInteraction.Exit, is FocusInteraction.Unfocus -> {
                     scope.launch {
                         bkgColor.animateTo(bkgCol ?: BaseBkg, animationSpec = tween(500))
                     }
+                    UxInTextEntry(false)
                 }
 
             }

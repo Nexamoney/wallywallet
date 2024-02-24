@@ -126,6 +126,7 @@ fun SendView(
 
     fun onSendSuccess(amt: Long, addr: PayAddress, tx: iTransaction)
     {
+        clearAlerts()
         displayNotice(S.sendSuccess, "$amt -> $addr: ${tx.idem}")
         sendToAddress.value = null
         onSendSuccess()

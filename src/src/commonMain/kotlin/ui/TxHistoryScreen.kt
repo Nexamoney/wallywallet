@@ -6,8 +6,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
+//import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -258,13 +259,13 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
                         val uri = if (it.chainSelector == ChainSelector.NEXA)
                             NEXA_EXPLORER_URL + "/tx/${it.tx.idem.toHex()}"
                         else if (it.chainSelector == ChainSelector.NEXATESTNET)
-                            NEXA_TESTNET_EXPLORER_URL + "/address/${it.tx.idem.toHex()}"
+                            NEXA_TESTNET_EXPLORER_URL + "/tx/${it.tx.idem.toHex()}"
                         else null
                         if (uri != null)
                         {
                             WallyBoringButton({ uriHandler.openUri(uri) }, modifier = Modifier.padding(0.dp, 0.dp, 10.dp, 0.dp)
                             ) {
-                                Icon(Icons.AutoMirrored.Default.ExitToApp, tint = colorConfirm, contentDescription = "view transaction")
+                                Icon(Icons.Default.ExitToApp, tint = colorConfirm, contentDescription = "view transaction")
                             }
                         }
                     }
