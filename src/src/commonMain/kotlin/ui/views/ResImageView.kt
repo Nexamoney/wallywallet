@@ -9,6 +9,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import info.bitcoinunlimited.www.wally.ui.theme.MpIcon
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
@@ -19,7 +20,8 @@ fun ResImageView(resPath: String, modifier: Modifier, description: String? = nul
 {
     if (resPath.endsWith(".xml", true) || resPath.endsWith(".png", true) )
     {
-        val tmp = painterResource(resPath)
+        val dr = DrawableResource(resPath)
+        val tmp = painterResource(dr)
         Image(painter = tmp, contentDescription = description, modifier = modifier)
     }
     else
