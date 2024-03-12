@@ -9,7 +9,8 @@ import okio.Buffer
 import okio.BufferedSource
 import okio.FileNotFoundException
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.resource
+import org.jetbrains.compose.resources.InternalResourceApi
+import org.jetbrains.compose.resources.readResourceBytes
 import platform.AppKit.NSPasteboard
 import platform.AppKit.NSPasteboardType
 import platform.AppKit.NSPasteboardTypeString
@@ -134,7 +135,7 @@ actual fun platformNotification(message:String, title: String?, onclickUrl:Strin
 
 }
 
-@OptIn(ExperimentalForeignApi::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalForeignApi::class, ExperimentalResourceApi::class, InternalResourceApi::class)
 actual fun getResourceFile(name: String): BufferedSource
 {
     /* uses the old URLForResource APIs
@@ -167,8 +168,7 @@ actual fun getResourceFile(name: String): BufferedSource
 
     val ba = try
     {
-        val res = resource(name)
-        runBlocking { res.readBytes() }
+        runBlocking { readResourceBytes(name) }
     }
     catch(e: Exception)
     {
@@ -177,8 +177,7 @@ actual fun getResourceFile(name: String): BufferedSource
         val subdir = if (dirSpot == -1) null else name.take(dirSpot)
         try
         {
-            val res = resource(fname)
-            runBlocking { res.readBytes() }
+            runBlocking { readResourceBytes(fname) }
         }
         catch (e: Exception)
         {
