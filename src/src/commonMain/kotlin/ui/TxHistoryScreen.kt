@@ -206,6 +206,7 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
     fun fillTxList()
     {
         //val txList = mutableListOf<TransactionHistory>()
+        txes.clear()
         acc.wallet.forEachTxByDate {
             //txList.add(it)
             txes.add(it)
