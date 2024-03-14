@@ -11,7 +11,6 @@ import kotlin.test.*
 
 val FULL_NODE_IP = "192.168.1.5"
 val REGTEST_RPC_PORT=18332
-val LogIt = GetLog("nonguitests")
 /**
  * Example local unit test, which will execute on the development machine (host).
  *
@@ -19,6 +18,7 @@ val LogIt = GetLog("nonguitests")
  */
 class NonGuiTests
 {
+    val LogIt = GetLog("nonguitests")
     init
     {
         initializeLibNexa()
@@ -226,44 +226,6 @@ class NonGuiTests
         assert(ser.toHex() == ser2.toHex())
     }
 
-/*
-    @Test
-    fun test1()
-    {
-        val wal1 = openOrNewWallet("reg1", ChainSelector.NEXAREGTEST)
-        val wal2 = openOrNewWallet("reg2", ChainSelector.NEXAREGTEST)
-        wal1.blockchain.req.net.exclusiveNodes(setOf(FULL_NODE_IP))
-
-        val addr1 = wal1.getnewaddress()
-        val addr2 = wal2.getnewaddress()
-
-        val node = openRpc()
-        val AMT = 5000L
-        val LOOP = 100
-
-        node.sendtoaddress(addr1.toString(), BigDecimal.fromLong(AMT*LOOP + (LOOP * 5)))
-        node.generate(1)
-        millisleep(1000U)
-
-
-        for (i in 1 .. LOOP)
-        {
-            println(i.toString() + ": Balance: ${wal1.balance} and ${wal2.balance}")
-            wal1.send(AMT, addr2, false, true)
-            if ((i % 10) == 0)
-            {
-                node.generate(1)
-                waitFor(5000, { wal2.balanceUnconfirmed + wal2.balanceConfirmed == (i.toLong() * AMT) },
-                  { "${wal2.balanceUnconfirmed} + ${wal2.balanceConfirmed} == ${(i * LOOP)}" })
-            }
-        }
-        node.generate(1)
-        check(wal2.balance == AMT * LOOP)
-        wal2.send(wal2.balance, addr1, true, true)
-        node.generate(1)
-        check(wal2.balanceConfirmed == 0L)
-    }
-*/
 
     /**
      * A native method that is implemented by the 'native-lib' native library,
