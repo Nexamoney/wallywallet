@@ -282,6 +282,7 @@ class ComposeActivity: CommonActivity()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
+        backgroundOnly = false
 
         onBackPressedDispatcher.addCallback(object: OnBackPressedCallback(true) {
             override fun handleOnBackPressed()
@@ -303,6 +304,12 @@ class ComposeActivity: CommonActivity()
                 NavigationRoot(nav)
             }
         }
+    }
+
+    override fun onDestroy()
+    {
+        backgroundOnly = true
+        super.onDestroy()
     }
 
     fun share(text:String)

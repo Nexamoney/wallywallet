@@ -24,8 +24,8 @@ import org.nexa.threads.Mutex
 import org.nexa.threads.iMutex
 import org.nexa.threads.iThread
 import org.nexa.threads.millisleep
-import kotlin.concurrent.Volatile
 import kotlin.coroutines.CoroutineContext
+import kotlin.concurrent.Volatile
 
 private val LogIt = GetLog("BU.wally.app")
 
@@ -40,6 +40,72 @@ data class LongPollInfo(val proto: String, val hostPort: String, val cookie: Str
 
 /** incompatible changes, extra fields added, fields and field sizes are the same, but content may be extended (that is, addtl bits in enums) */
 val WALLY_DATA_VERSION = byteArrayOf(1, 0, 0)
+
+
+@Volatile var backgroundStop = false   // If true, tell the background loop to stop processing -- reset to false whenever we enter backgroundSync
+@Volatile var backgroundOnly = true    // Set to false when the GUI is launched so we know that the app is also in the foreground
+/**
+    Execute a background sync.  Call the passed completion function when done, do not return until completed
+ */
+fun backgroundSync(completion: () -> Unit)
+{
+    // Perform your background synchronization work here
+    // ...
+    backgroundStop = false
+    LogIt.info("backgroundSync()")
+    wallyApp!!.openAllAccounts()  // Creating an account will automatically launch blockchain and wallet sync threads
+    millisleep(10000U)     // Give those threads time to connect to another node and get block headers.
+                                  // Otherwise the system may think accounts are synced simply because it doesn't have any up to date info.
+
+    // wait for all accounts to report being synced
+    if (wallyApp!!.accounts.size > 0)
+    {
+        var unsynced = 0
+        do
+        {
+            unsynced = 0
+            for (a in wallyApp!!.accounts)
+            {
+                val wal = a.value.wallet
+                if (!wal.synced())
+                {
+                    LogIt.info("${wal.name}: background syncing at ${wal.chainstate?.syncedHeight} of ${wal.blockchain.curHeight}")
+                    unsynced++
+                }
+            }
+            LogIt.info("Background work: Still syncing $unsynced accounts")
+            if (backgroundStop) break
+            millisleep(5000U)
+        } while(unsynced != 0 && !backgroundStop)
+    }
+    for (a in wallyApp!!.accounts)
+    {
+        a.value.wallet.save(true)
+    }
+    LogIt.info("Background sync completed")
+    // Once done, call completion()
+    completion()
+}
+
+/**
+    To be called shortly before the task’s background time expires.
+    Cancel any ongoing work and to do any required cleanup in as short a time as possible.
+    `cancelBackgroundSync()` is to be called by a background work expiration handler.
+    The time allocated by the system for expiration handlers to cancel ongoing work doesn’t vary with the number of background tasks.
+    `cancelBackgroundSync()` must complete before the allocated background task's time.
+ */
+fun cancelBackgroundSync()
+{
+    // DRAFT: Improve and test this function
+    backgroundStop = true
+    wallyApp!!.accountLock.lock {
+        for (c in wallyApp!!.accounts.values)
+        {
+            c.wallet.stop()
+            c.chain.stop()
+        }
+    }
+}
 
 
 class AccessHandler(val app: CommonApp)
@@ -181,7 +247,6 @@ open class CommonApp
     val tpDomains: TricklePayDomains = TricklePayDomains(this)
 
     var assetLoaderThread: iThread? = null
-
 
     /** Return an ordered map of the visible accounts (in display order) */
     fun orderedAccounts(visibleOnly: Boolean = true):ListifyMap<String, Account>
@@ -587,9 +652,11 @@ open class CommonApp
     fun onCreate()
     {
         notInUIscope = coMiscScope
+        LogIt.info(sourceLoc() + " Wally Wallet App Started")
 
         val availableRam = platformRam()
         LogIt.info("Available RAM: $availableRam")
+
         if (availableRam != null && availableRam < 2048L*1024L*1024L)
         {
             LogIt.info("Using low RAM settings")
@@ -603,7 +670,7 @@ open class CommonApp
         devMode = prefs.getBoolean(DEV_MODE_PREF, false)
         allowAccessPriceData = prefs.getBoolean(ACCESS_PRICE_DATA_PREF, true)
         later {
-            openAllAccounts()
+            openAccountsTriggerGui()
             tpDomains.load()
         }
 
@@ -839,70 +906,82 @@ open class CommonApp
 
     fun openAllAccounts()
     {
+        val prefs = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
+        accountLock.lock {
+            if (kvpDb == null) kvpDb = openKvpDB(dbPrefix + "wpw")
+        }
+
+        if (REG_TEST_ONLY)  // If I want a regtest only wallet for manual debugging, just create it directly
+        {
+            accountLock.lock {
+                accounts.getOrPut("RKEX") {
+                    try
+                    {
+                        val c = Account("RKEX")
+                        c
+                    }
+                    catch (e: DataMissingException)
+                    {
+                        val c = Account("RKEX", ACCOUNT_FLAG_NONE, ChainSelector.NEXAREGTEST)
+                        c
+                    }
+                }
+            }
+        }
+        else  // OK, recreate the wallets saved on this phone
+        {
+            val db = kvpDb!!
+
+            LogIt.info(sourceLoc() + " Loading account names")
+            val accountNames = try
+            {
+                db.get("activeAccountNames")
+            } catch (e: DataMissingException)
+            {
+                firstRun = true
+                byteArrayOf()
+            }
+            if (accountNames.size == 0) firstRun = true // Ok maybe not first run but no wallets
+
+            val accountNameStr = accountNames.decodeUtf8()
+            LogIt.info("Loading active accounts: $accountNameStr")
+            val accountNameList = accountNameStr.split(",")
+            for (name in accountNameList)
+            {
+                if (name.length > 0)  // Note in kotlin "".split(",") results in a list of one element containing ""
+                {
+                    // isolate disk access into a coroutine so this function can complete quickly
+                    LogIt.info(sourceLoc() + " " + name + ": Loading account")
+                    try
+                    {
+                        accountLock.lock {
+                            if (!accounts.containsKey(name))  // only create account if its not previously created
+                            {
+                                val ac = Account(name, prefDB = prefs)
+                                accounts[ac.name] = ac
+                            }
+                        }
+                    }
+                    catch (e: DataMissingException)
+                    {
+                        LogIt.warning(sourceLoc() + " " + name + ": Active account $name was not found in the database. Error $e")
+                        // Nothing to really do but ignore the missing account
+                    }
+                    LogIt.info(sourceLoc() + " " + name + ": Loaded account")
+                }
+            }
+        }
+    }
+
+    fun openAccountsTriggerGui()
+    {
         if (!forTestingDoNotAutoCreateWallets)  // If I'm running the unit tests, don't auto-create any wallets since the tests will do so
         {
             // Initialize the currencies supported by this wallet
             later {
-                val prefs = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
-                LogIt.info(sourceLoc() + " Wally Wallet App Started")
-                kvpDb = openKvpDB(dbPrefix + "wpw")
 
-                if (REG_TEST_ONLY)  // If I want a regtest only wallet for manual debugging, just create it directly
-                {
-                    accountLock.lock {
-                        accounts.getOrPut("RKEX") {
-                            try
-                            {
-                                val c = Account("RKEX")
-                                c
-                            }
-                            catch (e: DataMissingException)
-                            {
-                                val c = Account("RKEX", ACCOUNT_FLAG_NONE, ChainSelector.NEXAREGTEST)
-                                c
-                            }
-                        }
-                    }
-                }
-                else  // OK, recreate the wallets saved on this phone
-                {
-                    val db = kvpDb!!
-
-                    LogIt.info(sourceLoc() + " Loading account names")
-                    val accountNames = try
-                    {
-                        db.get("activeAccountNames")
-                    } catch (e: DataMissingException)
-                    {
-                        firstRun = true
-                        byteArrayOf()
-                    }
-                    if (accountNames.size == 0) firstRun = true // Ok maybe not first run but no wallets
-
-                    val accountNameStr = accountNames.decodeUtf8()
-                    LogIt.info("Loading active accounts: $accountNameStr")
-                    val accountNameList = accountNameStr.split(",")
-                    for (name in accountNameList)
-                    {
-                        if (name.length > 0)  // Note in kotlin "".split(",") results in a list of one element containing ""
-                        {
-                            // isolate disk access into a coroutine so this function can complete quickly
-                                LogIt.info(sourceLoc() + " " + name + ": Loading account")
-                                try
-                                {
-                                    val ac = Account(name, prefDB = prefs)
-                                    accountLock.lock { accounts[ac.name] = ac }
-                                    assignAccountsGuiSlots()
-                                }
-                                catch (e: DataMissingException)
-                                {
-                                    LogIt.warning(sourceLoc() + " " + name + ": Active account $name was not found in the database. Error $e")
-                                    // Nothing to really do but ignore the missing account
-                                }
-                                LogIt.info(sourceLoc() + " " + name + ": Loaded account")
-                        }
-                    }
-                }
+                openAllAccounts()
+                assignAccountsGuiSlots()
 
                 var recoveryWarning: Account? = null
                 accountLock.lock {
@@ -920,7 +999,7 @@ open class CommonApp
                 {
                     newAccount("nexa", ACCOUNT_FLAG_NONE,"", ChainSelector.NEXA)
                 }
-
+                val prefs = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
                 // Cannot pick the primary account until accounts are loaded
                 val primaryActName = prefs.getString(PRIMARY_ACT_PREF, null)
                 nullablePrimaryAccount = accountLock.lock { if (primaryActName != null) accounts[primaryActName] else null }
