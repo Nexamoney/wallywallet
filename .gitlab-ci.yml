@@ -121,6 +121,7 @@ iosArm64Test:
   stage: test
   tags:
     - m1-baremetal
+  resource_group: iphone_mac_emulators
   script:
     - ./gradlew :src:cleanIosSimulatorArm64Test :src:iosSimulatorArm64Test
 
@@ -142,6 +143,7 @@ macArm64Test:
   stage: test
   tags:
     - m1-baremetal
+  resource_group: iphone_mac_emulators
   script:
     - ./gradlew :src:cleanMacosArm64Test :src:macosArm64Test
 
