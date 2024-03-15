@@ -641,15 +641,6 @@ class MainActivity : CommonNavActivity()
             }
         }
 
-        if (app?.firstRun == true)
-        {
-            /*  Start up the welcome guided setup
-            LogIt.info("starting welcome activity")
-            var intent = Intent(this, Welcome::class.java)
-            startActivity(intent)
-             */
-        }
-
         /*
         laterUI {
             delay(500)

@@ -18,6 +18,8 @@ val androidTestCoreVersion = "1.5.0"
 val androidxActivityComposeVersion = "1.7.2"
 val uriKmpVersion = "0.0.16"  // https://github.com/eygraber/uri-kmp
 val skikoVersion = "0.7.93" // https://github.com/JetBrains/skiko/releases
+val workVersion = "2.9.0"
+
 
 val secSinceEpoch = Instant.now().epochSecond
 
@@ -398,6 +400,11 @@ kotlin {
                     // for bigintegers
                     implementation("com.ionspin.kotlin:bignum:0.3.8")
                     implementation("com.ionspin.kotlin:bignum-serialization-kotlinx:0.3.8")
+
+                    // Background syncing
+                    // java: implementation("androidx.work:work-runtime:$workVersion")
+                    implementation("androidx.work:work-runtime-ktx:$workVersion")
+
 
 
                     // QR scanning

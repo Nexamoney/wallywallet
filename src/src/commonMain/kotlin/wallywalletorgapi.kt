@@ -94,11 +94,9 @@ fun NexDaily(fiat: String): Array<BigDecimal>?
 @OptIn(ExperimentalTime::class)
 fun NexInFiat(fiat: String, setter: (BigDecimal) -> Unit)
 {
-    if (!allowAccessPriceData) return
+    if ((!allowAccessPriceData)||(backgroundOnly)) return
     // only usdt pair supported right now
     if (fiat != "USD") return
-
-    // TODO periodic update
 
     val prior = nexaPricePollSync.lock { lastNexaPricePoll[fiat] }
 
@@ -124,15 +122,29 @@ fun NexInFiat(fiat: String, setter: (BigDecimal) -> Unit)
                 return@later
         }
 
-        //LogIt.info(sourceLoc() + " " + data)
-        val parser: Json = Json { isLenient = true; ignoreUnknownKeys = true }  // nonstrict mode ignores extra fields
-        val obj = parser.decodeFromString(WallyWalletOrgApiCurPrice.serializer(), data)
-        //LogIt.info(sourceLoc() + " " + obj.toString())
-        // Average the bid and ask prices
-        val v = (obj.Bid + obj.Ask) / CurrencyDecimal(2)
-        nexaPricePollSync.lock {
-            lastNexaPricePoll[fiat] = Pair(Monotonic.markNow(), v)
+        if (data.startsWith("<!DOCTYPE HTML"))
+        {
+            LogIt.info("Error retrieving price, page is html not json (likely site offline)")
+            return@later
         }
-        setter(v)
+
+        try
+        {
+           val parser: Json = Json { isLenient = true; ignoreUnknownKeys = true }  // nonstrict mode ignores extra fields
+            val obj = parser.decodeFromString(WallyWalletOrgApiCurPrice.serializer(), data)
+                //LogIt.info(sourceLoc() + " " + obj.toString())
+                // Average the bid and ask prices
+            val v = (obj.Bid + obj.Ask) / CurrencyDecimal(2)
+            nexaPricePollSync.lock {
+                lastNexaPricePoll[fiat] = Pair(Monotonic.markNow(), v)
+            }
+            setter(v)
+        }
+        catch (e: Exception)
+        {
+            LogIt.info("Error retrieving price: " + e.message)
+            return@later
+        }
+
     }
 }

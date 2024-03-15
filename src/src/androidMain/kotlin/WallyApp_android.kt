@@ -5,6 +5,7 @@ package info.bitcoinunlimited.www.wally
 
 import android.app.*
 import android.app.PendingIntent.CanceledException
+import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
@@ -18,6 +19,8 @@ import androidx.annotation.RawRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.work.*
+import androidx.work.PeriodicWorkRequest.Companion.MIN_PERIODIC_INTERVAL_MILLIS
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import org.nexa.libnexakotlin.*
@@ -25,9 +28,14 @@ import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 import com.eygraber.uri.*
 import info.bitcoinunlimited.www.wally.ui.views.loadingAnimation
+import org.nexa.threads.Mutex
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.toJavaDuration
 
 const val NORMAL_NOTIFICATION_CHANNEL_ID = "n"
 const val PRIORITY_NOTIFICATION_CHANNEL_ID = "p"
+const val BACKGROUND_PERIOD_MSEC = MIN_PERIODIC_INTERVAL_MILLIS
 
 private val LogIt = GetLog("BU.wally.app")
 
@@ -135,6 +143,42 @@ fun initializeGraphicsResources()
     }
 }
 
+
+val backgroundLock = Mutex("background")
+var backgroundCount = 0
+
+class BackgroundSync(appContext: Context, workerParams: WorkerParameters): Worker(appContext, workerParams)
+{
+    var cancelled = false
+    override fun doWork(): Result
+    {
+        val skip = backgroundLock.lock {
+            if (backgroundCount > 0) true
+            else
+            {
+                backgroundCount++
+                false
+            }
+        }
+        if (skip) return Result.retry()
+        LogIt.info("Starting background work")
+        backgroundSync {}
+        backgroundLock.lock { backgroundCount-- }
+        if (cancelled) return Result.retry()
+        return Result.success()
+    }
+
+    override fun onStopped()
+    {
+        LogIt.info("Cancelled background work")
+        cancelled = true
+        // program will be unloaded, we don't actually want to stop syncing until then, so not going to call
+        // cancelBackgroundSync()
+        super.onStopped()
+    }
+}
+
+
 class ActivityLifecycleHandler(private val app: WallyApp) : Application.ActivityLifecycleCallbacks
 {
     override fun onActivityPaused(act: Activity)
@@ -221,8 +265,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     val focusedAccount
       get() = commonApp.focusedAccount
 
-    // Set to true if this is the first time this app has ever been run
-    var firstRun = false
     // Current notification ID
     var notifId = 0
 
@@ -323,6 +365,13 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         wallyAndroidApp = this
         wallyApp = commonApp
         commonApp.onCreate()
+
+        // This starts up every 15 min
+        val bkgSync = PeriodicWorkRequestBuilder<BackgroundSync>(BACKGROUND_PERIOD_MSEC.milliseconds.toJavaDuration()).build()
+        bkgSync?.let { WorkManager.getInstance(this).enqueueUniquePeriodicWork("WallySync",ExistingPeriodicWorkPolicy.UPDATE, it) }
+        // This will start up a few seconds after the app is closed, but only once (once it reports its finished)
+        val bkgSyncOnce = OneTimeWorkRequestBuilder<BackgroundSync>().build()
+        WorkManager.getInstance(this).enqueueUniqueWork("WallySyncOnce",ExistingWorkPolicy.REPLACE, bkgSyncOnce)
 
         // Add the Wally Wallet server to our list of Electrum/Rostrum connection points
         nexaElectrum.add(0, IpPort("rostrum.wallywallet.org", DEFAULT_NEXA_TCP_ELECTRUM_PORT))

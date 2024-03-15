@@ -22,9 +22,6 @@ class Welcome : CommonNavActivity()
         ui = ActivityWelcomeBinding.inflate(layoutInflater)
         setContentView(ui.root)
         val app = (getApplication() as WallyApp)
-        app.firstRun = false  // Stops jumping back into the welcome if we've left it
-
-        //loadFragment(WelcomeFragment1())
     }
 
     /*  Since I'm using the fragment nav, this isn't needed but keeping for possible use later

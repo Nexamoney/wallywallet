@@ -565,8 +565,7 @@ private val _sendFromAccount = MutableStateFlow<String>("")
     if (sendFromAccount.value == "")
     {
         try
-        {
-            val act = wallyApp!!.preferredVisibleAccount()
+        { val act = wallyApp!!.preferredVisibleAccount()
             updateSendAccount(act)
         }
         catch(e:Exception) {}
