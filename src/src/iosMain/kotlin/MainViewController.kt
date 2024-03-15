@@ -41,3 +41,12 @@ fun MainViewController(): UIViewController
     return view
 }
 
+fun iosBackgroundSync(completion: () -> Unit)
+{
+    backgroundSync(completion)
+}
+
+fun iosCancelBackgroundSync()
+{
+    cancelBackgroundSync()
+}

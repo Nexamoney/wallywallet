@@ -71,7 +71,8 @@ struct iOSApp: App {
 
 	var body: some Scene {
 		WindowGroup {
-			ComposeContentView()
+			let tmp = ComposeContentView()
+            tmp.ignoresSafeArea(.keyboard, edges: .all)
 		}
         .onChange(of: scenePhase, perform: { newValue in
             switch newValue {
@@ -137,7 +138,7 @@ struct iOSApp: App {
             }
 
             _isExecuting = true
-            MainViewControllerKt.backgroundSync(completion: {
+            MainViewControllerKt.iosBackgroundSync(completion: {
                 // Call this in your completion handler when the background work is done
                 self.finish()
             })
@@ -145,7 +146,7 @@ struct iOSApp: App {
 
         override func cancel() {
             super.cancel()
-            MainViewControllerKt.cancelBackgroundSync()
+            MainViewControllerKt.iosCancelBackgroundSync()
             // Directly marking as finished in case cancel is called before the operation starts executing or finishes
             if _isExecuting {
                 finish()
