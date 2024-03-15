@@ -32,15 +32,6 @@ object AndroidAssetManagerStorage:AssetManagerStorage
         val dir = context!!.getDir("asset", Context.MODE_PRIVATE)
         val file = File(dir, filename)
         val name = file.absolutePath
-        //val strm = FileSystem.SYSTEM.openReadOnly(name.toPath())
-        /*
-        FileInputStream(file).use {
-            val ef = EfficientFile(it.source().buffer())
-            return Pair(name, ef)
-        }
-
-         */
-        //return Pair(name, EfficientFile(strm.source().buffer()))
         val ef = EfficientFile(name.toPath(), FileSystem.SYSTEM)
         return Pair(name, ef)
     }
@@ -48,16 +39,7 @@ object AndroidAssetManagerStorage:AssetManagerStorage
     {
         val context = wallyAndroidApp
 
-        /*
-    val dir = context.getDir("card", Context.MODE_PRIVATE)
-    val file = File(dir, filename)
-    FileOutputStream(file).use {
-        it.write(data)
-    }
-     */
-
-        val file = context!!.openFileOutput(filename, Context.MODE_PRIVATE)
-        file.use {
+        context!!.openFileOutput(filename, Context.MODE_PRIVATE).use {
             it.write(data)
         }
         return context.getFileStreamPath(filename).path  //.absolutePath

@@ -11,11 +11,10 @@ import okio.Buffer
 import okio.BufferedSource
 import okio.FileNotFoundException
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.InternalResourceApi
-import org.jetbrains.compose.resources.readResourceBytes
 import org.nexa.libnexakotlin.GetLog
 import platform.Foundation.*
 import platform.UIKit.*
+import wpw.src.generated.resources.Res
 
 private val LogIt = GetLog("BU.wally.utils_ios")
 
@@ -145,7 +144,7 @@ actual fun platformNotification(message:String, title: String?, onclickUrl:Strin
     // TODO issue an ios notification
 }
 
-@OptIn(ExperimentalForeignApi::class, ExperimentalResourceApi::class, InternalResourceApi::class)
+@OptIn(ExperimentalForeignApi::class, ExperimentalResourceApi::class)
 actual fun getResourceFile(name: String): BufferedSource
 {
     /* uses the old URLForResource APIs
@@ -178,7 +177,7 @@ actual fun getResourceFile(name: String): BufferedSource
 
     val ba = try
         {
-            runBlocking { readResourceBytes(name) }
+            runBlocking { Res.readBytes(name) }
         }
         catch(e: Exception)
         {
@@ -187,7 +186,7 @@ actual fun getResourceFile(name: String): BufferedSource
             val subdir = if (dirSpot == -1) null else name.take(dirSpot)
             try
             {
-                runBlocking { readResourceBytes(fname) }
+                runBlocking { Res.readBytes(fname) }
             }
             catch (e: Exception)
             {

@@ -299,26 +299,38 @@ class AssetInfo(val groupInfo: GroupInfo)
                 val nftZipData = am.getNftFile(null, groupInfo.groupId)
                 if (nftZipData != null)
                 {
-                    tokenInfo = td
-                    if (td.marketUri == null)
-                    {
-                        val u: Url = Url(nftZipData.first)
-                        if (u.isAbsolutePath)  // This is a real URI, not a local path
-                        {
-                            td.marketUri = u.resolve("/token/" + groupInfo.groupId.toHex()).toString()
-                            am.storeTokenDesc(groupInfo.groupId, td)
-                        }
-                    }
                     try
                     {
-                        extractNftData(am, groupInfo.groupId, nftZipData.second)
+
+                        tokenInfo = td
+                        if (td.marketUri == null)
+                        {
+                            val u: Url = Url(nftZipData.first)
+                            if (u.isAbsolutePath)  // This is a real URI, not a local path
+                            {
+                                td.marketUri = u.resolve("/token/" + groupInfo.groupId.toHex()).toString()
+                                am.storeTokenDesc(groupInfo.groupId, td)
+                            }
+                        }
+
+
+                        try
+                        {
+                            extractNftData(am, groupInfo.groupId, nftZipData.second)
+                        }
+                        catch (e: Exception)
+                        {
+                            // Something went wrong (probably out of memory).
+                            logThreadException(e, "Exception opening NFT")
+                        }
+                        dataChanged = true
+
+
                     }
-                    catch(e: Exception)
+                    finally
                     {
-                        // Something went wrong (probably out of memory).
-                        logThreadException(e, "Exception opening NFT")
+                        nftZipData.second.close()
                     }
-                    dataChanged = true
                 }
             }
 
@@ -417,7 +429,8 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
             if (DBG_NO_ASSET_CACHE) throw Exception()
             if (forceReload) throw Exception()
             val ef = assetManagerStorage().loadAssetFile(groupId.toHex() + ".td").second
-            val data = ef.openAt(0).readByteArray()
+            val data = ef.openAt(0).readAndClose()
+            ef.close()
             val s = data.decodeUtf8()
             val ret = kotlinx.serialization.json.Json.decodeFromString(TokenDesc.serializer(), s)
             if (ret.genesisInfo?.height ?: 0 >= 0)  // If the data is valid in the asset file
