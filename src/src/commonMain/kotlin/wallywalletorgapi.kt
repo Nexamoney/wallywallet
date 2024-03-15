@@ -113,13 +113,13 @@ fun NexInFiat(fiat: String, setter: (BigDecimal) -> Unit)
     later {
         val data = try
         {
-                val client = HttpClient()
-                client.get("http://$WALLY_WALLET_ORG_HOST/_api/v0/now/nex/usdt").bodyAsText()
+            val client = HttpClient()
+            client.get("http://$WALLY_WALLET_ORG_HOST/_api/v0/now/nex/usdt").bodyAsText()
         }
         catch (e: Exception)
         {
-                LogIt.info("Error retrieving price: " + e.message)
-                return@later
+            LogIt.info("Error retrieving price: " + e.message)
+            return@later
         }
 
         if (data.startsWith("<!DOCTYPE HTML"))

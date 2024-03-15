@@ -21,9 +21,22 @@ object Drain:Sink
     override fun write(source: Buffer, byteCount: Long) {}
 }
 
+fun BufferedSource.readAndClose():ByteArray
+{
+    val ret = readByteArray()
+    close()
+    return ret
+}
+
+fun BufferedSource.readAndClose(len: Long):ByteArray
+{
+    val ret = readByteArray(len)
+    close()
+    return ret
+}
+
 /** This class wraps a file object that attempts to save memory by reducing the number of copies of the data needed in order to
  * run multiple random-access file operations.  Since okio is incapable of "rewinding", this can be hard to do */
-
 class EfficientFile(var openAt: ((Long) -> BufferedSource))
 {
     var handle: FileHandle? = null
@@ -38,8 +51,10 @@ class EfficientFile(var openAt: ((Long) -> BufferedSource))
         tmp
     })
     {
+        // just find the file size
         val bs = openAt(0)
         sz = bs.readAll(Drain)
+        bs.close()
     }
 
     // If the entire file has been put into a buffer
@@ -57,10 +72,17 @@ class EfficientFile(var openAt: ((Long) -> BufferedSource))
 
     constructor(filePath: Path, fileSystem: FileSystem): this({ Buffer() })
     {
-        val tmp =  fileSystem.openReadOnly(filePath)
+        val tmp = fileSystem.openReadOnly(filePath)
         handle = tmp
         sz = tmp.size()
-        openAt = { handle!!.source(it).buffer() }
+        openAt = { tmp.source(it).buffer() }
+    }
+
+    fun close() { handle?.close(); handle = null }
+
+    protected fun finalize()
+    {
+        close()
     }
 }
 
@@ -147,7 +169,7 @@ data class ZipDataDescriptor(
     {
         fun from(ds: BufferedSource): ZipDataDescriptor
         {
-            val structId: ByteArray = ds.peek().readByteArray(4)
+            val structId: ByteArray = ds.peek().readAndClose(4)
             if (!(structId contentEquals ZipDataDescriptorId))
             {
                 // may be benign so not log: LogIt.info("ZipDataDescriptor: Incorrect zip record: ${structId.toHex()}")
@@ -189,7 +211,7 @@ data class ZipDirRecord(
     {
         fun from(ds: BufferedSource): ZipDirRecord
         {
-            val structId: ByteArray = ds.peek().readByteArray(4)
+            val structId: ByteArray = ds.peek().readAndClose(4)
             if (!(structId contentEquals ZipDirRecordId))
             {
                 // may be benign so not log:  LogIt.info("ZipDirRecord: Incorrect zip record: ${structId.toHex()}")
@@ -248,7 +270,7 @@ data class ZipFileHeader(
     {
         fun from(ds: BufferedSource): ZipFileHeader
         {
-            val structId: ByteArray = ds.peek().readByteArray(4)
+            val structId: ByteArray = ds.peek().readAndClose(4)
             if (!(structId contentEquals ZipFileHeaderId))
             {
                 // may be benign so not log: LogIt.info("ZipFileHeader: Incorrect zip record: ${structId.toHex()}")
@@ -291,7 +313,7 @@ data class ZipDirEndRecord(
         val SIZE = (4 + 2 + 2 + 2 + 2 + 4 + 4 + 2).toLong()
         fun from(ds: BufferedSource): ZipDirEndRecord
         {
-            val structId: ByteArray = ds.peek().readByteArray(4)
+            val structId: ByteArray = ds.peek().readAndClose(4)
             if (!(structId contentEquals ZipDirEndId))
             {
                 // may be benign so not log: LogIt.info("ZipDirEndRecord: Incorrect zip record: ${structId.toHex()}")
@@ -376,15 +398,15 @@ fun zipFindDirEnd(ef: EfficientFile): ZipDirEndRecord?
     var srchidx = max(0, ef.size-CHUNK_SIZE)
     while(true)
     {
-        val ba = ef.openAt(srchidx).readByteArray(min(ef.size,CHUNK_SIZE))
+        val ba = ef.openAt(srchidx).readAndClose(min(ef.size,CHUNK_SIZE))
         val idx = ba.findLastOf(ZipDirEndId)
         if (idx != -1)
         {
             // Now reposition to the beginning of the discovered ZipDirEndRecord.
             // We have to do this because the record is variable sized, so might exceed the chunk we grabbed when searching
-            val b = ef.openAt(srchidx + idx)
-            //b.write(ba.takeLast(ba.size - idx).toByteArray())
-            val dirEnd = ZipDirEndRecord.from(b)
+            val dirEnd = ef.openAt(srchidx + idx).use {
+                ZipDirEndRecord.from(it)
+            }
             // Sanity check a bunch of fields to ignore spurious bytes that happen to be equal to ZipDirEndId
             if ((dirEnd.dirSize < ef.size) &&
               (dirEnd.dirOffset < ef.size - ZipDirRecordId.size) &&
@@ -450,137 +472,150 @@ fun zipForeach(zip: EfficientFile, handler: (ZipDirRecord, BufferedSource?) -> B
 
     // use the EfficientFile to just grab it where we need it
     val fragment = zip.openAt(dirend.dirOffset)
-
-    var recordCount = 0
-
-    val dirRecords = mutableMapOf<String, ZipDirRecord>()
-
-    while(!fragment.exhausted() && (recordCount < dirend.numRecords))
+    try
     {
-        try
+        var recordCount = 0
+
+        val dirRecords = mutableMapOf<String, ZipDirRecord>()
+
+        while (!fragment.exhausted() && (recordCount < dirend.numRecords))
         {
-            val hdr = ZipDirRecord.from(fragment)
-            dirRecords[hdr.fileName] = hdr
-            recordCount++
-        }
-        catch(e: ZipRecordException)
-        {
-            if (e.id contentEquals ZipDirEndId)
+            try
             {
-                ZipDirEndRecord.from(fragment)
+                val hdr = ZipDirRecord.from(fragment)
+                dirRecords[hdr.fileName] = hdr
+                recordCount++
             }
-            else
+            catch (e: ZipRecordException)
             {
-                logThreadException(e)
-                throw e
+                if (e.id contentEquals ZipDirEndId)
+                {
+                    ZipDirEndRecord.from(fragment)
+                }
+                else
+                {
+                    logThreadException(e)
+                    throw e
+                }
+            }
+            catch (e: EOFException)
+            {
+                break
             }
         }
-        catch(e:EOFException)
+
+        // Sometimes the central directory records don't actually point to the correct local dir record offset.
+        // They might just point to 0 (experienced, not specced), which is a correct local offset
+
+        // Go through every central dir record, loading all files available from every specified offset.
+
+        val alreadyDid = mutableSetOf<Long>()
+        val alreadyDidFile = mutableSetOf<String>()
+
+        for (crec in dirRecords.values)
         {
-            break
+            // If we already searched local records starting at this offset, then skip doing it again
+            if (alreadyDid.contains(crec.localHeaderOffset)) continue
+            alreadyDid.add(crec.localHeaderOffset)
+
+            // Grab the data we need to search
+            try
+            {
+                //val fileEntryFrag = Buffer()
+                //fileEntryFrag.write(zbytes.takeLast((zbytes.size - crec.localHeaderOffset).toInt()).toByteArray())
+                val fileEntryFrag = zip.openAt(crec.localHeaderOffset)
+                try
+                {
+
+                    while (!fileEntryFrag.exhausted())
+                    {
+                        val hdr = try
+                        {
+                            ZipFileHeader.from(fileEntryFrag)  // Get the first local record
+                        }
+                        catch (e: ZipRecordException)
+                        {
+                            if (e.id contentEquals ZipDataDescriptorId)  // this is info pertaining to the prior record, so not useful unless we read backwards
+                            {
+                                ZipDataDescriptor.from(fileEntryFrag)
+                                continue
+                            }
+                            else if (e.id contentEquals ZipDirRecordId)
+                            {
+                                // We are done iteration through records, because all the central dir records must be at the end.  so just fall thru.
+                                break
+                            }
+                            else
+                            {
+                                logThreadException(e)
+                                throw e
+                            }
+                        }
+
+
+                        val crecHdr = dirRecords[hdr.fileName]  // find the corresponding central record (if it exists)
+
+                        // I'm not sure which to prefer for common fields in the central dir and the local.  However, in cases I've seen the one to not use
+                        // has always been zero, unless they are both zero, and then that's where it really starts.  So this will work.
+
+                        // prefer the central record data if it exists and is non-zero
+                        var compressedSize = hdr.compressedSize
+                        if ((crecHdr != null) && (crecHdr.compressedSize != 0L)) compressedSize = crecHdr.compressedSize
+
+                        // prefer the central record data if it exists and is non-zero
+                        var uncompressedSize = hdr.uncompressedSize
+                        if ((crecHdr != null) && (crecHdr.uncompressedSize != 0L)) uncompressedSize = crecHdr.uncompressedSize
+
+                        if (!alreadyDidFile.contains(hdr.fileName))  // advance, calling the file handler for this new file
+                        {
+                            val bs: BufferedSource? = if (hdr.compression == ZipCompressionMethods.NoCompression.ordinal)
+                            {
+                                // I have to do it with a copy, because I can't create a BufferedSource that only peeks N bytes.
+                                val b = Buffer()
+                                b.write(fileEntryFrag.readByteArray(compressedSize))
+                                // not available on macos/ios: b.readFrom(fileEntryFrag.inputStream(), compressedSize)
+                            }
+                            else if (hdr.compression == ZipCompressionMethods.Deflated.ordinal)
+                            {
+                                val tmp = fileEntryFrag.readByteArray(compressedSize)
+                                val uncompressed: ByteArray = inflateRfc1951(tmp, uncompressedSize)
+                                val b = Buffer()
+                                b.write(uncompressed)
+                            }
+                            else null
+
+                            alreadyDidFile.add(hdr.fileName)
+
+                            if (crecHdr != null) // If there is not central record, this is an old, deleted file.  Skip (for now)
+                            {
+                                crecHdr.patch(hdr)
+                                if (handler(crecHdr, bs) == true) return
+                            }
+                        }
+                        else  // just advance
+                        {
+                            fileEntryFrag.skip(compressedSize)
+                        }
+
+                    }
+                }
+                finally
+                {
+                    fileEntryFrag.close()
+                }
+            }
+            // Its easy to get memory errors because the entire file is being put into memory and then large chunks copied from it
+            // In this case, skip the file
+            catch (e: Throwable)  // java.lang.OutOfMemoryError does not appear to have a kotlin equivalent
+            {
+
+            }
+
         }
     }
-
-    // Sometimes the central directory records don't actually point to the correct local dir record offset.
-    // They might just point to 0 (experienced, not specced), which is a correct local offset
-
-    // Go through every central dir record, loading all files available from every specified offset.
-
-    val alreadyDid = mutableSetOf<Long>()
-    val alreadyDidFile = mutableSetOf<String>()
-
-    for (crec in dirRecords.values)
+    finally
     {
-        // If we already searched local records starting at this offset, then skip doing it again
-        if (alreadyDid.contains(crec.localHeaderOffset)) continue
-        alreadyDid.add(crec.localHeaderOffset)
-
-        // Grab the data we need to search
-        try
-        {
-            //val fileEntryFrag = Buffer()
-            //fileEntryFrag.write(zbytes.takeLast((zbytes.size - crec.localHeaderOffset).toInt()).toByteArray())
-            val fileEntryFrag = zip.openAt(crec.localHeaderOffset)
-            while (!fileEntryFrag.exhausted())
-            {
-                val hdr = try
-                {
-                    ZipFileHeader.from(fileEntryFrag)  // Get the first local record
-                }
-                catch(e: ZipRecordException)
-                {
-                    if (e.id contentEquals ZipDataDescriptorId)  // this is info pertaining to the prior record, so not useful unless we read backwards
-                    {
-                        ZipDataDescriptor.from(fileEntryFrag)
-                        continue
-                    }
-                    else if (e.id contentEquals ZipDirRecordId)
-                    {
-                        // We are done iteration through records, because all the central dir records must be at the end.  so just fall thru.
-                        break
-                    }
-                    else
-                    {
-                        logThreadException(e)
-                        throw e
-                    }
-                }
-
-
-                val crecHdr = dirRecords[hdr.fileName]  // find the corresponding central record (if it exists)
-
-                // I'm not sure which to prefer for common fields in the central dir and the local.  However, in cases I've seen the one to not use
-                // has always been zero, unless they are both zero, and then that's where it really starts.  So this will work.
-
-                // prefer the central record data if it exists and is non-zero
-                var compressedSize = hdr.compressedSize
-                if ((crecHdr != null) && (crecHdr.compressedSize != 0L)) compressedSize = crecHdr.compressedSize
-
-                // prefer the central record data if it exists and is non-zero
-                var uncompressedSize = hdr.uncompressedSize
-                if ((crecHdr != null) && (crecHdr.uncompressedSize != 0L)) uncompressedSize = crecHdr.uncompressedSize
-
-                if (!alreadyDidFile.contains(hdr.fileName))  // advance, calling the file handler for this new file
-                {
-                    val bs: BufferedSource? = if (hdr.compression == ZipCompressionMethods.NoCompression.ordinal)
-                    {
-                        // I have to do it with a copy, because I can't create a BufferedSource that only peeks N bytes.
-                        val b = Buffer()
-                        b.write(fileEntryFrag.readByteArray(compressedSize))
-                        // not available on macos/ios: b.readFrom(fileEntryFrag.inputStream(), compressedSize)
-                    }
-                    else if (hdr.compression == ZipCompressionMethods.Deflated.ordinal)
-                    {
-                        val tmp = fileEntryFrag.readByteArray(compressedSize)
-                        val uncompressed: ByteArray = inflateRfc1951(tmp, uncompressedSize)
-                        val b = Buffer()
-                        b.write(uncompressed)
-                    }
-                    else null
-
-                    alreadyDidFile.add(hdr.fileName)
-
-                    if (crecHdr != null) // If there is not central record, this is an old, deleted file.  Skip (for now)
-                    {
-                        crecHdr.patch(hdr)
-                        if (handler(crecHdr, bs) == true) return
-                    }
-                }
-                else  // just advance
-                {
-                    fileEntryFrag.skip(compressedSize)
-                }
-
-            }
-            fileEntryFrag.close() // try to clean up memory sooner
-        }
-        // Its easy to get memory errors because the entire file is being put into memory and then large chunks copied from it
-        // In this case, skip the file
-        catch(e: Throwable)  // java.lang.OutOfMemoryError does not appear to have a kotlin equivalent
-        {
-
-        }
-
+        fragment.close()
     }
 
     /*

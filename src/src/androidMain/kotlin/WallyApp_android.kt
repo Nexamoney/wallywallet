@@ -8,10 +8,7 @@ import android.app.PendingIntent.CanceledException
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.*
 import android.service.notification.StatusBarNotification
 import android.view.View
 import android.widget.Toast
@@ -32,6 +29,8 @@ import org.nexa.threads.Mutex
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
+
+const val DEBUG_VM = false
 
 const val NORMAL_NOTIFICATION_CHANNEL_ID = "n"
 const val PRIORITY_NOTIFICATION_CHANNEL_ID = "p"
@@ -351,6 +350,13 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     override fun onCreate()
     {
         LogIt.info("------------  WALLY APP CREATED  ---------------")
+        if (DEBUG_VM)
+        {
+            StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder().detectLeakedClosableObjects().detectLeakedClosableObjects().detectActivityLeaks()
+              .penaltyLog().penaltyDeath().build()
+            )
+        }
+
         super.onCreate()
         appResources = getResources()
         displayMetrics = getResources().getDisplayMetrics()
