@@ -33,6 +33,14 @@ Tutorial: https://docs.fastlane.tools/app-store-connect-api/
 
 ## iOS
 
+### ios emulator UI integration test
+
+```sh
+[bundle exec] fastlane ios test
+```
+
+Run all the tests on emulator
+
 ### ios beta
 
 ```sh
@@ -40,6 +48,14 @@ Tutorial: https://docs.fastlane.tools/app-store-connect-api/
 ```
 
 Push a new beta build to TestFlight
+
+### ios beta_public
+
+```sh
+[bundle exec] fastlane ios beta_public
+```
+
+Push a new beta build to public TestFlight
 
 ----
 

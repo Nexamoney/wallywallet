@@ -19,6 +19,15 @@ default_platform(:ios)
 
 # bundle exec fastlane ios beta
 platform :ios do
+  desc "Run all the tests on emulator"
+  lane :test_emulator do
+    scan(
+      scheme: "iosApp",
+      devices: ["iPhone 15"],
+      clean: true # Cleans the project before building it
+    )
+  end
+
   desc "Push a new beta build to TestFlight"
   lane :beta do
     app_store_connect_api_key_path = ENV['APP_STORE_CONNECT_API_KEY_PATH']
