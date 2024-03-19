@@ -16,7 +16,7 @@ dependencyResolutionManagement {
         maven { url = uri("https://gitlab.com/api/v4/projects/48545045/packages/maven") }  // Libnexakotlin
         maven { url = uri("https://jitpack.io") }
         google()
-        mavenCentral()
+        gradlePluginPortal()
     }
 }
 

@@ -4,6 +4,7 @@ stages:
   - lint
   - assemble
   - test
+  - coverage
   - deploy_internally
   - deploy_beta
 
@@ -153,25 +154,15 @@ iosEmulatorUiIntegrationTest:
       - iosApp/fastlane/test_output/report.html
       - iosApp/fastlane/test_output/report.junit
 
-pages:
-  stage: test
-  needs:
-    - iosEmulatorUiIntegrationTest
-  script:
-    - mkdir public || true
-    - cp iosApp/fastlane/test_output/report.html public/index.html
-    - cp iosApp/fastlane/test_output/report.junit public/index.junit
-    - cp iosApp/fastlane/report.xml public/report.xml
-  artifacts:
-    paths:
-      - public
-
 jvmTest: #
   stage: test
   tags:
     - m1-baremetal
   script:
     - ./gradlew :src:cleanJvmTest :src:jvmTest
+  artifacts:
+    reports:
+      junit: src/build/test-results/jvmTest/TEST-*.xml
 
 macArm64Test:
   stage: test
@@ -196,6 +187,33 @@ androidTest:
     - export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
   script:
     - ./gradlew src:test
+  artifacts:
+    reports:
+      junit: src/build/test-results/testDebugUnitTest/TEST-*.xml
+
+testCoverageReport:
+  image: inovex/gitlab-ci-android
+  stage: coverage
+  script:
+    - ./gradlew koverXmlReport koverHtmlReport
+  artifacts:
+    expire_in: 4 week
+    paths:
+      - src/build/reports/kover/report.xml
+      - src/build/reports/kover/html
+
+pages:
+  stage: coverage
+  needs:
+    - testCoverageReport
+  script:
+    - mkdir public
+    - cp -r src/build/reports/kover/html/* public/
+  artifacts:
+    expire_in: 4 week
+    paths:
+      - public
+
 
 testflight:
   rules:

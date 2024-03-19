@@ -32,7 +32,21 @@ plugins {
     id("org.jetbrains.dokka").version("1.9.20").apply(false)
     id("org.openjfx.javafxplugin") version "0.1.0"
     idea
+    id("org.jetbrains.kotlinx.kover").version("0.8.0-Beta")
     // application  // for JVM executables, but not compatible with android, have to do it by hand
+}
+
+kover {
+    reports {
+        // filters for all report types of all build variants
+        filters {
+            excludes {
+                androidGeneratedClasses()
+                packages("info.bitcoinunlimited.www.wally.databinding")
+                packages("wpw.src.generated.resources")
+            }
+        }
+    }
 }
 
 // Host determination
