@@ -4,6 +4,7 @@ stages:
   - lint
   - assemble
   - test
+  - coverage
   - deploy_internally
   - deploy_beta
 
@@ -196,6 +197,14 @@ androidTest:
     - export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
   script:
     - ./gradlew src:test
+
+# Code coverage reporter for common, JVM and android
+codeCoveragePercent:
+  image: inovex/gitlab-ci-android
+  stage: coverage
+  script:
+    - ./gradlew koverLog
+  coverage: '/application line coverage: ([0-9]+(?:\.[0-9]+)?)%/' # Reports coverage to GitLab
 
 testflight:
   rules:
