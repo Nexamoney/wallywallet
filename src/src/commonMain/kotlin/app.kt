@@ -797,11 +797,20 @@ open class CommonApp
         // I only want to write the PIN once when the account is first created
         val epin = if (pin.length > 0) EncodePIN(name, pin) else null
 
+        // When creating a new account, I want to make sure that the blockchain is opened so that I can use data from it
+        // to fast forward the account to the current time
+        val bc = connectBlockchain(chainSelector)
+        val tip = bc.nearTip
+        // If the blockchain appears to be behind the current time, give the system a short period to catch up.
+        // Worst case if this does nothing, it will cause a longer wallet sync as the wallet's start point will be set to
+        // whatever the stored blockchain height is rather than the real height.
+        if (tip == null || tip.time < (epochMilliSeconds() / 1000L) - PREHISTORY_SAFEFTY_FACTOR) millisleep(250U)
+
         return accountLock.lock {
             val ac = try
             {
                 val prehistoryDate = (epochMilliSeconds() / 1000L) - PREHISTORY_SAFEFTY_FACTOR // Set prehistory to 2 hours ago to account for block timestamp variations
-                Account(name, flags, chainSelector, startPlace = prehistoryDate)
+                Account(name, flags, chainSelector, startDate = prehistoryDate, startHeight = bc?.curHeight)
             } catch (e: IllegalStateException)
             {
                 LogIt.warning("Error creating account: ${e.message}")
@@ -860,10 +869,65 @@ open class CommonApp
       pin: String,
       secretWords: String,
       chainSelector: ChainSelector,
+      txhist: List<TransactionHistory>,
+      histEnd: iBlockHeader,
+      histAddressCount: Int
+    ): Account?
+    {
+        // If the account is being restored from a recovery key, then the user must have it saved somewhere already
+        val flags = flags_p or ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY
+        dbgAssertNotGuiThread()
+
+        // I only want to write the PIN once when the account is first created
+        val epin = try
+        {
+            EncodePIN(name, pin.trim())
+        }
+        // catch (e: InvalidKeySpecException)
+        catch (e: Exception)  // If the pin is bad (generally whitespace or null) ignore it
+        {
+            byteArrayOf()
+        }
+
+        var earliestDate: Long = Long.MAX_VALUE
+        var earliestHeight: Long = Long.MAX_VALUE
+        for (txh in txhist)
+        {
+            if (txh.confirmedHeight < earliestHeight) earliestHeight = txh.confirmedHeight
+            if (txh.date < earliestDate) earliestDate = txh.date
+        }
+
+        return accountLock.lock {
+            val ac = Account(name, flags, chainSelector, secretWords, earliestDate, earliestHeight, null)
+            ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
+
+            // We need to pregenerate all the destinations used in the provided transactions, or we won't recognise these transactions
+            // as our own
+            ac.wallet.prepareDestinations(histAddressCount, histAddressCount)
+            ac.wallet.fastforward(histEnd.height, histEnd.time, histEnd.hash, txhist)
+            ac.start()
+            ac.onChange()
+            ac.saveAccountPin(name, epin)
+
+            accounts[name] = ac
+            // Write the list of existing accounts, so we know what to load
+            saveActiveAccountList()
+            ac.wallet.saveBip44Wallet() // because we jammed in a bunch of tx
+            ac
+        }
+    }
+
+    /** Create an account given a recovery key and the account's earliest activity */
+    fun recoverAccount(
+      name: String,
+      flags_p: ULong,
+      pin: String,
+      secretWords: String,
+      chainSelector: ChainSelector,
       earliestActivity: Long?,
       earliestHeight: Long?,
       nonstandardActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, HDActivityBracket>>?
-    )
+    ): Account?
     {
         // If the account is being restored from a recovery key, then the user must have it saved somewhere already
         val flags = flags_p or ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY
@@ -890,7 +954,7 @@ open class CommonApp
         }
         if (veryEarly != null) veryEarly = veryEarly - 1  // Must be earlier than the first activity
 
-        accountLock.lock {
+        return accountLock.lock {
             val ac = Account(name, flags, chainSelector, secretWords, veryEarly, earliestHeight, nonstandardActivity)
             ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
             ac.start()
@@ -901,6 +965,7 @@ open class CommonApp
             // Write the list of existing accounts, so we know what to load
             saveActiveAccountList()
             // wallet is saved in wallet constructor so no need to: ac.wallet.SaveBip44Wallet()
+            ac
         }
     }
 

@@ -357,7 +357,7 @@ Good luck!
 <string name="AccountRecoveryPhrase">वसूली वाक्य</string>
 <string name="LeaveEmptyNewWallet">नया खाता बनाने के लिए खाली छोड़ दें</string>
 <string name="PinSuggestions">कोई नहीं<font size="15">This secret number is needed to access the account</font></string>
-<string name="createAccount">खाता बनाएँ</string>
+<string name="createNewAccount">खाता बनाएँ</string>
 <string name="invalidRecoveryPhrase">बुरा रिकवरी फ्रेज़</string>
 <string name="invalidAccountName">अमान्य नाम</string>
 <string name="PassPhrase">पासवर्ड (वैकल्पिक)</string>

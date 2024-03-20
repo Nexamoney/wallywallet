@@ -1,16 +1,14 @@
 package info.bitcoinunlimited.www.wally.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
-//import androidx.compose.ui.platform.ClipboardManager
-//import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.ui.views.*
 import kotlinx.coroutines.delay
@@ -22,7 +20,6 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
-import kotlinx.coroutines.flow.collect
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.HomeScreen")
@@ -41,14 +38,13 @@ private val _sendFromAccount = MutableStateFlow<String>("")
 @OptIn(ExperimentalResourceApi::class)
 @Composable fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState<GuiDriver?>, nav: ScreenNav)
 {
-    val ags = accountGuiSlots.collectAsState()
+    var sendNote = remember { mutableStateOf("") }
+    val sendCurrencyChoices: MutableState<List<String>> = remember { mutableStateOf(listOf()) }
+
     var isSending by remember { mutableStateOf(false) }
     var isScanningQr by remember { mutableStateOf(false) }
 
-    val synced = remember { mutableStateOf(wallyApp!!.isSynced()) }
-    var currentReceive = currentReceiveShared.collectAsState()
     var sendQuantity = remember { mutableStateOf<String>("") }
-    val sendFromAccount = _sendFromAccount.collectAsState()
 
     var warnBackupRecoveryKey = remember { mutableStateOf(false) }
 
@@ -60,15 +56,20 @@ private val _sendFromAccount = MutableStateFlow<String>("")
     val paymentInProgress: MutableState<ProspectivePayment?> = remember { mutableStateOf(null) }
     var currencyCode by remember { mutableStateOf(i18n(S.choose)) } // TODO: get from local db
 
-    val _sendToAddress:String = sendToAddress.collectAsState().value
-    var sendNote = remember { mutableStateOf("") }
-    val sendCurrencyChoices: MutableState<List<String>> = remember { mutableStateOf(listOf()) }
-
     /** If we've already put up an error for this address, don't do it again */
     var alreadyErroredAddress: MutableState<PayAddress?> = remember { mutableStateOf(null) }
 
     /** remember last send coin selected */
     var lastSendFromAccountName by remember { mutableStateOf("") }
+
+    // Put all the fast-inited vars above so they are available during the blocking initializations below
+    // or you may get java.lang.IllegalStateException: Reading a state that was created after the snapshot...
+
+    val ags = accountGuiSlots.collectAsState()
+    val synced = remember { mutableStateOf(wallyApp!!.isSynced()) }
+    var currentReceive = currentReceiveShared.collectAsState()
+    val sendFromAccount = _sendFromAccount.collectAsState()
+    val _sendToAddress:String = sendToAddress.collectAsState().value
 
     val clipmgr: ClipboardManager = LocalClipboardManager.current
 
@@ -504,9 +505,6 @@ private val _sendFromAccount = MutableStateFlow<String>("")
             }
             tmp.amount?.let { sendQuantity.value = NexaFormat.format(it) }
             tmp.note?.let { sendNote.value = it }
-
-
-
             tmp.account?.let { updateSendAccount(it) }
 
             if (tmp?.show?.contains(ShowIt.WARN_BACKUP_RECOVERY_KEY) == true) warnBackupRecoveryKey.value = true
@@ -530,7 +528,7 @@ private val _sendFromAccount = MutableStateFlow<String>("")
 
     // During startup, there is a race condition between loading the accounts and the display of this screen.
     // So if the selectedAccount is null, wait for some accounts to appear
-    wallyApp?.later {
+    LaunchedEffect(Unit) {
         while(selectedAccount.value == null)
         {
             delay(100)
@@ -546,7 +544,7 @@ private val _sendFromAccount = MutableStateFlow<String>("")
     }
 
     // Update the syncronization icon based on the underlying synced status
-    wallyApp?.later {
+    LaunchedEffect(Unit) {
         try
         {
             while (true)
@@ -710,7 +708,10 @@ private val _sendFromAccount = MutableStateFlow<String>("")
                     {
                         Box(Modifier.size(45.dp)) { LoadingAnimationContent() }
                     }
-                    SectionText(S.AccountListHeader, Modifier.weight(1f))
+                    Column(modifier = Modifier.weight(0.75f).height(IntrinsicSize.Min), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                        SectionText(S.AccountListHeader, Modifier.weight(1f))
+                        HorizontalDivider(modifier = Modifier.width(100.dp), color = listDividerFg, thickness = 2.dp)
+                    }
                     ResImageView("icons/plus.xml", modifier = Modifier.size(45.dp).clickable {
                         clearAlerts()
                         nav.go(ScreenId.NewAccount)

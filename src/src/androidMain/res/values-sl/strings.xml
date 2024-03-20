@@ -287,7 +287,7 @@
 <string name="PinSuggestions">
 <font size="15">Ta skrivna številka je potrebna za dostop do računa</font>
 </string>
-<string name="createAccount">Ustvari račun</string>
+<string name="createNewAccount">Ustvari račun</string>
 <string name="invalidRecoveryPhrase">Nepravilen izraz za obnovitev</string>
 <string name="invalidAccountName">neveljavno ime</string>
 <string name="PassPhrase">Geslo (neobvezno)</string>

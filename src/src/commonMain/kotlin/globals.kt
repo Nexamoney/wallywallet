@@ -28,3 +28,5 @@ class Objectify<T>(var obj: T)
 // is because maybe some addresses were given out but payments weren't made.
 val WALLET_RECOVERY_DERIVATION_PATH_SEARCH_DEPTH = 15
 val WALLET_RECOVERY_IDENTITY_DERIVATION_PATH_SEARCH_DEPTH = 5
+
+val WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP = 50

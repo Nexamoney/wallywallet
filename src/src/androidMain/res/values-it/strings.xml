@@ -387,7 +387,7 @@ Good luck!
     <string name="AccountRecoveryPhrase">Frase di Recupero</string>
     <string name="LeaveEmptyNewWallet">Lascia vuoto per creare un nuovo account</string>
     <string name="PinSuggestions"><font size="15">Questo numero segreto è necessario per accedere all\'account</font></string>
-    <string name="createAccount">Crea Account</string>
+    <string name="createNewAccount">Crea Account</string>
     <string name="invalidRecoveryPhrase">frase di recupero errata</string>
     <string name="invalidAccountName">nome non valido</string>
     <string name="PassPhrase">Passphrase (opzionale)</string>

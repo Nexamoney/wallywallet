@@ -390,7 +390,7 @@ Good luck!
     <string name="AccountRecoveryPhrase">Taastamisfraas</string>
     <string name="LeaveEmptyNewWallet">Jätke tühjaks et luua uus konto</string>
     <string name="PinSuggestions"><font size="15">Seda salanumbrit on vaja, et pääseda ligi kontole</font></string>
-    <string name="createAccount">Loo konto</string>
+    <string name="createNewAccount">Loo konto</string>
     <string name="invalidRecoveryPhrase">Vale salafraas</string>
     <string name="invalidAccountName">Vigane nimi</string>
     <string name="PassPhrase">Pääsufraas (valikuline)</string>

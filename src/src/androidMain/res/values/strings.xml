@@ -265,7 +265,8 @@ Good luck!
     <string name="ScanQRCodeButton">Scan a QR code</string>
     <string name="PasteDestinationAddressButton">Paste</string>
     <string name="NewAccountButton">New Account Setup</string>
-    <string name="NewAccountSearchingForTransactions">...searching for transactions...</string>
+    <string name="NewAccountSearchingForTransactions">...searching for first transaction...</string>
+    <string name="NewAccountSearchingForAllTransactions">...searching for all transactions...</string>
     <string name="NewAccountSearchFailure">transaction search failed</string>
     <string name="receiveAddressQRCode">receive QR code</string>
     <string name="paymentProposal">as per received payment proposal</string>
@@ -411,12 +412,14 @@ Good luck!
     <string name="AccountRecoveryPhrase">Recovery Phrase</string>
     <string name="LeaveEmptyNewWallet">Leave empty to create a new account</string>
     <string name="PinSuggestions"><font size="15">This secret number is needed to access the account</font></string>
-    <string name="createAccount">Create Account</string>
+    <string name="createNewAccount">Create new account</string>
+    <string name="createSyncAccount">Recover account with careful (and lengthy) sync</string>
+    <string name="createDiscoveredAccount">Recover account immediately</string>
     <string name="invalidRecoveryPhrase">bad recovery phrase</string>
     <string name="invalidAccountName">invalid name</string>
     <string name="PassPhrase">Passphrase (optional)</string>
     <string name="Bip44ActivityNotice">Found account activity</string>
-    <string name="NoBip44ActivityNotice">Warning, No transactions found!</string>
+    <string name="NoBip44ActivityNotice">Warning, no transactions found!</string>
     <string name="Bip44BtcActivityNotice">Found nonstandard or pre-fork wallet activity</string>
     <string name="NoBip44BtcActivityNotice">No pre-fork transactions found</string>
     <string name="FirstUseDateHeightInfo" formatted="false">starting at %date (block %height)</string>
@@ -664,6 +667,9 @@ Thank you and enjoy your new wallet!</string>
     <string name="attachment_summary_off">Only download attachments upon request</string>
     <string name="signature_title">Your signature</string>
     <string name="reply_title">Default action when replying</string>
-    <string name="Kirim">Send</string>
+
+    <string name="discoveredAccountDetails">Discovered a balance of %bal %units\nin %addr addresses and %tx transactions</string>
+    <string name="discoveredWarning">If this looks correct, you may create this account immediately</string>
+
 
 </resources>
