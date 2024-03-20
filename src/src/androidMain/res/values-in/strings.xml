@@ -223,7 +223,6 @@ Good luck!
     <!-- as in unlock an account -->
     <string name="unlock">buka kunci</string>
     <string name="share">bagikan</string>
-    <string name="Kirim">Kirim</string>
     <string name="OpenSend">Kirim</string>
     <string name="SendCancel">Batalkan</string>
     <string name="ignoredInsecureRequest">Permintaan Tidak Aman yang Diabaikan</string>
@@ -388,7 +387,7 @@ Good luck!
     <string name="AccountRecoveryPhrase">Frasa Pemulihan</string>
     <string name="LeaveEmptyNewWallet">Biarkan kosong untuk membuat akun baru</string>
     <string name="PinSuggestions"><font size="15">Nomor rahasia ini diperlukan untuk mengakses akun</font></string>
-    <string name="createAccount">Buat Akun</string>
+    <string name="createNewAccount">Buat Akun</string>
     <string name="invalidRecoveryPhrase">frase pemulihan yang buruk</string>
     <string name="invalidAccountName">nama tidak valid</string>
     <string name="PassPhrase">Frasa sandi (opsional)</string>

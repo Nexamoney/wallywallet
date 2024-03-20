@@ -1,4 +1,5 @@
 import info.bitcoinunlimited.www.wally.*
+import io.ktor.client.network.sockets.*
 import okio.*
 import okio.Path.Companion.toPath
 import org.junit.Assert
@@ -30,9 +31,18 @@ class NonGuiTests
         val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
         var rpc = NexaRpcFactory.create(rpcConnection)
-        var peerInfo = rpc.getpeerinfo()
-        check(peerInfo.size > 0)
         return rpc
+    }
+
+    fun openEc(): ElectrumClient
+    {
+        val ec = ElectrumClient(ChainSelector.NEXAREGTEST, FULL_NODE_IP, DEFAULT_NEXAREG_TCP_ELECTRUM_PORT, useSSL=false)
+        ec.start()
+        val ver = ec.version()
+        LogIt.info("Electrum server Version: ${ver.first} Protocol version: ${ver.second}")
+        check(ver.first.startsWith("Rostrum"))
+        check(ver.second == "1.4")  // Protocol version, will change
+        return ec
     }
 
     fun waitFor(maxTime: Int, predicate:()->Boolean, doFailed:()->String)
@@ -225,6 +235,119 @@ class NonGuiTests
         LogIt.info("tx: " + ser2.toHex())
         assert(ser.toHex() == ser2.toHex())
     }
+
+
+    /** This test creates a wallet and fills it with some transactions.
+     * It then recovers this wallet using both blockchain sync and electrum fast forwarding,
+     * and verifies that all techniques result in the same wallet.
+     *
+     * It then spends all UTXOs back to the full node, from the fast forwarded wallet, showing that all are spendable,
+     * and verifies that all the wallet copies also see this spend
+     */
+    @Test
+    fun testWalletRecovery()
+    {
+        val TIMEOUT = 12000000
+        val cs = ChainSelector.NEXAREGTEST
+
+        val rpc = try
+        {
+            openRpc()
+        }
+        catch(e: ConnectTimeoutException)
+        {
+            println("**TEST MALFUNCTION**  Test cannot connect to a full node (probably you did not start one)")
+            return
+        }
+        val blkStart = try
+        {
+            rpc.getblockcount()
+        }
+        catch(e: Exception)
+        {
+            println("**TEST MALFUNCTION**  Test cannot connect to a full node (probably you did not start one)")
+            return
+        }
+
+        LogIt.info("Test starting block is: ${blkStart}")
+
+        // clean up old runs
+        deleteWallet("testwalletrecovery", cs)
+        deleteWallet("a1", cs)
+        deleteWallet("a2", cs)
+
+
+        REG_TEST_ONLY = true
+        wallyApp = CommonApp()
+        wallyApp!!.onCreate()
+        wallyApp!!.openAllAccounts()
+        val account = wallyApp!!.newAccount("testwalletrecovery", 0U, "", cs)!!
+        account.start()
+        rpc.generate(1)
+        waitFor(TIMEOUT, {  account!!.wallet.synced() }, {
+            LogIt.info("sync bad")
+            "sync unsuccessful, at: ${account!!.wallet.chainstate!!.syncedHeight}"
+        } )
+
+        val NUM_REPEATS = 5
+        repeat(NUM_REPEATS) {
+            val addr = account.wallet.getnewaddress()
+            rpc.sendtoaddress(addr.toString(), CurrencyDecimal(10000))
+            rpc.sendtoaddress(addr.toString(), CurrencyDecimal(10000))
+            rpc.generate(1)
+            account.wallet.send(800000, account.wallet.getnewaddress())  // add a few send-to-self in there because they are different
+            millisleep(200U)
+        }
+        // Add a little more because since I've been sending to myself, the balance won't be accurate
+        rpc.sendtoaddress(account.wallet.getnewaddress().toString(), CurrencyDecimal(1000))
+        rpc.generate(1)
+
+        waitFor(TIMEOUT, { account!!.wallet.synced() }, { "sync unsuccessful" })
+
+        waitFor(TIMEOUT, { account.wallet.balance > 5*2000000L}, { "wallet load failed"})
+        var balance = account.wallet.balance
+
+        // Ok, now let's recover this account into new accounts and compare
+
+        val a1 = wallyApp!!.recoverAccount("a1", 0U, "", account.wallet.secretWords, cs, null, blkStart, null)
+        waitFor(TIMEOUT, { a1!!.wallet.synced() }, { "a1 sync unsuccessful" })
+        LogIt.info("a1 balance: ${a1!!.wallet.balance}  orig bal: $balance")
+        check(a1!!.wallet.balance == balance)
+
+        val filledHeight = rpc.getblockcount()
+        val ec = openEc()
+        waitFor(TIMEOUT, {
+            val tmp = ec.getTip()
+            tmp.second == filledHeight}, { "electrum server never synced"})
+        val (ectip, ectipHeight) = ec.getTip()
+        val addressDerivationCoin = Bip44AddressDerivationByChain(cs)
+        val srchResults = searchDerivationPathActivity(ec, cs, 20) {
+            libnexa.deriveHd44ChildKey(account.wallet.secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
+        }
+
+        LogIt.info("EC bal: ${srchResults.balance}")
+        check(srchResults.balance == balance)
+        check(srchResults.txh.size == NUM_REPEATS*3 + 1)
+        check(srchResults.addrCount > NUM_REPEATS*2 + 1)
+
+        val a2 = wallyApp!!.recoverAccount("a2", 0U, "", account.wallet.secretWords, cs, srchResults.txh, ectip, srchResults.addrCount.toInt())
+        waitFor(TIMEOUT, { a2!!.wallet.synced() }, { "a2 sync unsuccessful" })
+        LogIt.info("a2 balance: ${a2!!.wallet.balance}  orig bal: $balance")
+        check(a2!!.wallet.balance == balance)
+
+        // Now spend ALL the utxos using the electrum client recovery mechanism
+        val returnAddr = rpc.getnewaddress()
+        val tx = a2.wallet.send(a2!!.wallet.balance,returnAddr, true)
+        waitFor(TIMEOUT, { rpc.gettxpoolinfo().size > 0 }, { "send all did not work: $tx"})
+        check(a2!!.wallet.balance == 0L)
+        rpc.generate(1)
+
+        waitFor(TIMEOUT, { account!!.wallet.balance == 0L}, { "send all did not work: $tx"})
+        check(a1!!.wallet.balance == 0L)
+
+        LogIt.info("recovery test completed")
+    }
+
 
 
     /**

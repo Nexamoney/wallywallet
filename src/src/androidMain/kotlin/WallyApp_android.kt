@@ -358,6 +358,13 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         }
 
         super.onCreate()
+
+        // Add the Wally Wallet server to our list of Electrum/Rostrum connection points
+        nexaElectrum.add(0, IpPort("rostrum.wallywallet.org", DEFAULT_NEXA_TCP_ELECTRUM_PORT))
+
+        registerActivityLifecycleCallbacks(ActivityLifecycleHandler(this))  // track the current activity
+        createNotificationChannel()
+
         appResources = getResources()
         displayMetrics = getResources().getDisplayMetrics()
         val locales = resources.configuration.locales
@@ -367,68 +374,9 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
             LogIt.info("Locale: ${loc.language} ${loc.country}")
             if (setLocale(loc.language, loc.country)) break
         }
-        initializeGraphicsResources()
         wallyAndroidApp = this
         wallyApp = commonApp
         commonApp.onCreate()
-
-        // This starts up every 15 min
-        val bkgSync = PeriodicWorkRequestBuilder<BackgroundSync>(BACKGROUND_PERIOD_MSEC.milliseconds.toJavaDuration()).build()
-        bkgSync?.let { WorkManager.getInstance(this).enqueueUniquePeriodicWork("WallySync",ExistingPeriodicWorkPolicy.UPDATE, it) }
-        // This will start up a few seconds after the app is closed, but only once (once it reports its finished)
-        val bkgSyncOnce = OneTimeWorkRequestBuilder<BackgroundSync>().build()
-        WorkManager.getInstance(this).enqueueUniqueWork("WallySyncOnce",ExistingWorkPolicy.REPLACE, bkgSyncOnce)
-
-        // Add the Wally Wallet server to our list of Electrum/Rostrum connection points
-        nexaElectrum.add(0, IpPort("rostrum.wallywallet.org", DEFAULT_NEXA_TCP_ELECTRUM_PORT))
-
-        registerActivityLifecycleCallbacks(ActivityLifecycleHandler(this))  // track the current activity
-        createNotificationChannel()
-
-        /*
-        var myClipboard = getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager
-        myClipboard.addPrimaryClipChangedListener(object:  ClipboardManager.OnPrimaryClipChangedListener {
-            override fun onPrimaryClipChanged()
-            {
-                // This is not essential, so don't crash if something is wrong
-                // In particular, some users get android.os.DeadSystemRuntimeException on android 13, implying an Android bug
-                try
-                {
-                    val tmp = myClipboard.getPrimaryClip()
-                    if (tmp != null) currentClip = tmp
-                }
-                catch (e: Exception)
-                {
-                    logThreadException(e, "primary clipboard object changed")
-                }
-            }
-
-        })
-        */
-        updateClipboardCache()
-    }
-
-    fun updateClipboardCache()  // modern android doesn't let you track the clipboard like this for security reasons
-    {
-        /*
-        var myClipboard = getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager
-        val tmp = myClipboard.getPrimaryClip()
-        if (tmp != null) currentClip = tmp
-
-        //  Because background apps monitor the clipboard and steal data, you can no longer access the clipboard unless you are foreground.
-        //  However, (and this is probably a bug) if you are becoming foreground, like an activity just completed and returned to you
-        //  in onActivityResult, then your activity hasn't been foregrounded yet :-(.  So I need to delay
-        //  Wait for this app to regain the input focus
-        //  https://developer.android.com/reference/android/content/ClipboardManager#hasPrimaryClip()
-        //  If the application is not the default IME or the does not have input focus getPrimaryClip() will return false.
-        laterUI {
-            delay(250)
-            var myClipboard = getSystemService(AppCompatActivity.CLIPBOARD_SERVICE) as ClipboardManager
-            val tmp = myClipboard.getPrimaryClip()
-            if (tmp != null) currentClip = tmp
-        }
-
-         */
     }
 
     // Called by the system when the device configuration changes while your component is running.
@@ -610,7 +558,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     }
     override fun onActivityPostResumed(activity: Activity)
     {
-        updateClipboardCache()
     }
 
     override fun onActivityPaused(activity: Activity)

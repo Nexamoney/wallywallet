@@ -399,7 +399,7 @@ Good luck!
     <string name="AccountRecoveryPhrase">복구 문구</string>
     <string name="LeaveEmptyNewWallet">새 계정을 만드려면 빈 칸으로 두세요</string>
     <string name="PinSuggestions"><font size="15">계정에 접근하기 위해선 이 비밀번호가 필요합니다</font></string>
-    <string name="createAccount">새 계정 만들기</string>
+    <string name="createNewAccount">새 계정 만들기</string>
     <string name="invalidRecoveryPhrase">잘못된 복구 문구</string>
     <string name="invalidAccountName">유효하지 않은 이름</string>
     <string name="PassPhrase">암호 (선택 가능)</string>

@@ -117,7 +117,7 @@ class NewAccount : CommonNavActivity()
                 // If the recovery phrase is good, let's peek at the blockchain to see if there's activity
                 val p = ui.GuiAccountRecoveryPhraseEntry.text.toString()
                 val words = processSecretWords(p)
-                launchPeekActivity(words, SupportedBlockchains[ui.GuiBlockchainSelector.selectedItem]!!)
+                launchPeekFirstActivity(words, SupportedBlockchains[ui.GuiBlockchainSelector.selectedItem]!!)
                 if (!nameChangedByUser)  // If the user has already put something in, then don't touch it
                 {
                     val a = wallyApp
@@ -269,7 +269,7 @@ class NewAccount : CommonNavActivity()
                 }
                 ui.GuiRecoveryPhraseOk.setImageResource(R.drawable.ic_check)
 
-                launchPeekActivity(words, SupportedBlockchains[ui.GuiBlockchainSelector.selectedItem]!!)
+                launchPeekFirstActivity(words, SupportedBlockchains[ui.GuiBlockchainSelector.selectedItem]!!)
             }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
@@ -283,7 +283,7 @@ class NewAccount : CommonNavActivity()
 
     }
 
-    fun launchPeekActivity(words: List<String>, cs: ChainSelector)
+    fun launchPeekFirstActivity(words: List<String>, cs: ChainSelector)
     {
         if (words.size != 12) return
         curPeek?.let { it.obj = true }
@@ -301,7 +301,7 @@ class NewAccount : CommonNavActivity()
             }
             try
             {
-                peekActivity(words.joinToString(" "), cs, p)
+                peekFirstActivity(words.joinToString(" "), cs, p)
             }
             catch (e: Exception)
             {
@@ -311,10 +311,82 @@ class NewAccount : CommonNavActivity()
             }
         }, "peekThread", 4*1024*1024)
         th.start()
-
     }
 
-    fun searchActivity(ec: ElectrumClient, chainSelector: ChainSelector, count: Int, secretDerivation: (Int) -> ByteArray, activityFound: ((Long, Int) -> Boolean)? = null): Pair<Long, Int>?
+    fun launchPeekAllActivity(words: List<String>, cs: ChainSelector)
+    {
+        if (words.size != 12) return
+        curPeek?.let { it.obj = true }
+        val p = Objectify<Boolean>(false)
+        curPeek = p
+        // If the recovery phrase is good, let's peek at the blockchain to see if there's activity
+        // thread(true, true, null, "peekWallet") // kotlin api does not offer stack size setting
+        val th = Thread(peekThreads,
+          {
+              laterUI {
+                  ui.GuiNewAccountStatus.text = i18n(R.string.NewAccountSearchingForTransactions)
+                  val d: AnimatedVectorDrawable = getDrawable(R.drawable.ani_syncing) as AnimatedVectorDrawable // Insert your AnimatedVectorDrawable resource identifier
+                  ui.GuiStatusOk.setImageDrawable(d)
+                  d.start()
+              }
+              try
+              {
+                  peekFirstActivity(words.joinToString(" "), cs, p)
+              }
+              catch (e: Exception)
+              {
+                  laterUI { ui.GuiNewAccountStatus.text = i18n(R.string.NewAccountSearchFailure) }
+                  LogIt.severe("wallet peek error: " + e.toString())
+                  handleThreadException(e, "wallet peek error", sourceLoc())
+              }
+          }, "peekThread", 4*1024*1024)
+        th.start()
+    }
+
+
+    fun searchAllActivity(ec: ElectrumClient, chainSelector: ChainSelector, count: Int, secretDerivation: (Int) -> ByteArray, activityFound: ((Long, Int) -> Boolean)? = null): List<TransactionHistory>
+    {
+        var index = 0
+        var ret = mutableListOf<TransactionHistory>()
+        while (index < count)
+        {
+            val newSecret = secretDerivation(index)
+            val us = UnsecuredSecret(newSecret)
+
+            val dests = mutableListOf<SatoshiScript>(Pay2PubKeyHashDestination(chainSelector, us, index.toLong()).outputScript())  // Note, if multiple destination types are allowed, the wallet load/save routines must be updated
+            if (chainSelector.hasTemplates)
+                dests.add(Pay2PubKeyTemplateDestination(chainSelector, us, index.toLong()).ungroupedOutputScript())
+
+            for (dest in dests)
+            {
+                try
+                {
+                    val history = ec.getHistory(dest, 10000)
+                    for (h in history)
+                    {
+                        val tx = ec.getTx(h.second)
+                        val txh:TransactionHistory = TransactionHistory(chainSelector, tx)
+                        val headerBytes = ec.getHeader(h.first)
+                        val header = blockHeaderFor(chainSelector, BCHserialized(SerializationType.NETWORK, headerBytes))
+                        if (header.validate(chainSelector))
+                        {
+                            txh.confirmedHeight = h.first.toLong()
+                            txh.confirmedHash = header.hash
+                            ret.add(txh)
+                        }
+                    }
+                }
+                catch (e: ElectrumNotFound)
+                {
+                }
+            }
+            index++
+        }
+        return ret
+    }
+
+
+    fun searchFirstActivity(ec: ElectrumClient, chainSelector: ChainSelector, count: Int, secretDerivation: (Int) -> ByteArray, activityFound: ((Long, Int) -> Boolean)? = null): Pair<Long, Int>?
     {
         var index = 0
         var ret: Pair<Long, Int>? = null
@@ -362,6 +434,7 @@ class NewAccount : CommonNavActivity()
         }
         return ret
     }
+
 
     fun bracketActivity(ec: ElectrumClient, chainSelector: ChainSelector, giveUpGap: Int, secretDerivation: (Int) -> ByteArray): HDActivityBracket?
     {
@@ -420,7 +493,7 @@ class NewAccount : CommonNavActivity()
     }
 
 
-    fun peekActivity(secretWords: String, chainSelector: ChainSelector, aborter: Objectify<Boolean>)
+    fun peekFirstActivity(secretWords: String, chainSelector: ChainSelector, aborter: Objectify<Boolean>)
     {
         val (svr, port) = try
         {
@@ -469,7 +542,7 @@ class NewAccount : CommonNavActivity()
 
         LogIt.info("Searching in ${addressDerivationCoin}")
         var earliestActivityP =
-          searchActivity(ec, chainSelector, WALLET_RECOVERY_DERIVATION_PATH_SEARCH_DEPTH, {
+          searchFirstActivity(ec, chainSelector, WALLET_RECOVERY_DERIVATION_PATH_SEARCH_DEPTH, {
               libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first }, { time, height -> laterUI {
               ui.GuiNewAccountStatus.text = i18n(R.string.Bip44ActivityNotice) + " " + (i18n(R.string.FirstUseDateHeightInfo) % mapOf(
               "date" to epochToDate(time),
@@ -487,7 +560,7 @@ class NewAccount : CommonNavActivity()
         LogIt.info("Searching in ${AddressDerivationKey.ANY}")
         // Look for activity in the identity and common location
         var earliestActivityId =
-          searchActivity(ec, chainSelector, WALLET_RECOVERY_IDENTITY_DERIVATION_PATH_SEARCH_DEPTH, {
+          searchFirstActivity(ec, chainSelector, WALLET_RECOVERY_IDENTITY_DERIVATION_PATH_SEARCH_DEPTH, {
               libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, false, it).first })
         if (aborter.obj) return
 

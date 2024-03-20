@@ -390,7 +390,7 @@ Good luck!
     <string name="AccountRecoveryPhrase">Frase de recuperació</string>
     <string name="LeaveEmptyNewWallet">Deixa buit per crear un compte nou</string>
     <string name="PinSuggestions"><font size="15">Aquest número secret és necessari per accedir al compte</font></string>
-    <string name="createAccount">Crear compte</string>
+    <string name="createNewAccount">Crear compte</string>
     <string name="invalidRecoveryPhrase">frase de mala recuperació</string>
     <string name="invalidAccountName">nom no vàlid</string>
     <string name="PassPhrase">Frase de contrasenya (opcional)</string>

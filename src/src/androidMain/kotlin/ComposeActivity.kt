@@ -16,11 +16,14 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.work.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.zxing.integration.android.IntentResult
 import info.bitcoinunlimited.www.wally.ui.*
 import org.nexa.libnexakotlin.logThreadException
 import org.nexa.libnexakotlin.rem
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.toJavaDuration
 
 fun SetTitle(title: String)
 {
@@ -282,6 +285,7 @@ class ComposeActivity: CommonActivity()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
+        initializeGraphicsResources()
         backgroundOnly = false
 
         onBackPressedDispatcher.addCallback(object: OnBackPressedCallback(true) {
@@ -293,6 +297,16 @@ class ComposeActivity: CommonActivity()
         })
 
         initializeGraphicsResources()
+
+        // If the UI is opened, register background sync work.  But we don't want to reregister the background work whenever the background work
+        // itself is launched, so this code can't be in the app class.
+        // This starts up every 15 min
+        val bkgSync = PeriodicWorkRequestBuilder<BackgroundSync>(BACKGROUND_PERIOD_MSEC.milliseconds.toJavaDuration()).build()
+        bkgSync?.let { WorkManager.getInstance(this).enqueueUniquePeriodicWork("WallySync", ExistingPeriodicWorkPolicy.UPDATE, it) }
+        // This will start up a few seconds after the app is closed, but only once (once it reports its finished)
+        val bkgSyncOnce = OneTimeWorkRequestBuilder<BackgroundSync>().build()
+        WorkManager.getInstance(this).enqueueUniqueWork("WallySyncOnce", ExistingWorkPolicy.REPLACE, bkgSyncOnce)
+
 
         // Wait for accounts to be loaded before we show the screen
         laterUI {

@@ -7,7 +7,7 @@ import java.net.URL
 // Dependency versions
 val mpThreadsVersion = "0.2.4"
 val nexaRpcVersion = "1.1.5"
-val libNexaKotlinVersion = "0.1.39"
+val libNexaKotlinVersion = "0.1.41"
 
 val serializationVersion = "1.6.3"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.8.0"     // https://github.com/Kotlin/kotlinx.coroutines
@@ -241,7 +241,7 @@ kotlin {
                 implementation("org.jetbrains.compose.runtime:runtime:$composeVersion")
                 implementation("org.jetbrains.compose.foundation:foundation:$composeVersion")
                 implementation("org.jetbrains.compose.material3:material3:$composeVersion")
-                implementation(compose.materialIconsExtended)
+                // implementation(compose.materialIconsExtended)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
 
@@ -268,7 +268,7 @@ kotlin {
 
                 // IO
                 implementation("com.squareup.okio:okio:3.7.0")
-                implementation("org.jetbrains.kotlinx:atomicfu:0.23.1")
+                implementation("org.jetbrains.kotlinx:atomicfu:0.23.2")
 
                 // nexa
                 implementation("org.nexa:mpthreads:$mpThreadsVersion")
@@ -279,7 +279,7 @@ kotlin {
                 implementation("io.github.alexzhirkevich:qrose:1.0.0-beta02")  // https://github.com/alexzhirkevich/qrose/releases
 
                 // Animation library binding
-                implementation("org.jetbrains.skiko:skiko:0.7.90")
+                implementation("org.jetbrains.skiko:skiko:0.7.93")
             }
         }
         val commonTest by getting {
@@ -320,7 +320,7 @@ kotlin {
                 implementation(compose.desktop.windows_x64)
                 implementation(compose.desktop.macos_x64)
                 implementation(compose.desktop.macos_arm64)
-                implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.21")
+                implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.23")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$coroutinesVersion")
                 // Required for Dispatchers.Main
                 // https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-dispatchers/-main.html
@@ -374,26 +374,26 @@ kotlin {
                     //implementation(project(":shared"))
 
                     // CameraX core library using the camera2 implementation
-                    val camerax_version = "1.4.0-alpha02"
+                    val camerax_version = "1.4.0-alpha04"
                     val lottieVersion = "6.3.0"
 
                     implementation(kotlin("stdlib-jdk8"))
                     implementation("androidx.activity:activity-compose:$androidxActivityComposeVersion")
 
-                    implementation("androidx.compose.ui:ui:1.5.4")
-                    implementation("androidx.compose.ui:ui-tooling:1.5.4")
-                    implementation("androidx.compose.ui:ui-tooling-preview:1.5.4")
-                    implementation("androidx.compose.foundation:foundation:1.5.4")
-                    implementation("androidx.compose.material:material:1.5.4")
+                    implementation("androidx.compose.ui:ui:1.6.3")
+                    implementation("androidx.compose.ui:ui-tooling:1.6.3")
+                    implementation("androidx.compose.ui:ui-tooling-preview:1.6.3")
+                    implementation("androidx.compose.foundation:foundation:1.6.3")
+                    implementation("androidx.compose.material:material:1.6.3")
                     implementation("androidx.activity:activity-compose:1.8.2")
-                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.6.2")
-                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.2")
+                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.6.3")
+                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.3")
 
                     // android layout dependencies
                     implementation("com.google.android.flexbox:flexbox:3.0.0")  // https://github.com/google/flexbox-layout/tags
                     implementation("androidx.activity:activity:1.8.2")
-                    implementation("androidx.navigation:navigation-fragment-ktx:2.7.6")  // https://developer.android.com/jetpack/androidx/releases/navigation
-                    implementation("androidx.navigation:navigation-ui-ktx:2.7.6")
+                    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")  // https://developer.android.com/jetpack/androidx/releases/navigation
+                    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
                     implementation("androidx.wear:wear:1.3.0")
                     implementation("com.android.support.constraint:constraint-layout:2.1.4") // https://developer.android.com/jetpack/androidx/releases/constraintlayout
                     implementation("com.google.android.material:material:1.11.0")
@@ -412,8 +412,8 @@ kotlin {
                     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
 
                     // for bigintegers
-                    implementation("com.ionspin.kotlin:bignum:0.3.8")
-                    implementation("com.ionspin.kotlin:bignum-serialization-kotlinx:0.3.8")
+                    implementation("com.ionspin.kotlin:bignum:0.3.9")
+                    implementation("com.ionspin.kotlin:bignum-serialization-kotlinx:0.3.9")
 
                     // Background syncing
                     // java: implementation("androidx.work:work-runtime:$workVersion")
@@ -435,9 +435,9 @@ kotlin {
                     implementation("androidx.camera:camera-view:${camerax_version}")
                     implementation("com.google.mlkit:barcode-scanning:17.2.0")
 
-                    implementation("androidx.media3:media3-exoplayer:1.2.1")
+                    implementation("androidx.media3:media3-exoplayer:1.3.0")
                     // Dynamic Adaptive Streaming over HTTP: implementation("androidx.media3:media3-exoplayer-dash:1.X.X")
-                    implementation("androidx.media3:media3-ui:1.2.1")
+                    implementation("androidx.media3:media3-ui:1.3.0")
 
                     // Animation
                     implementation("com.airbnb.android:lottie-compose:$lottieVersion")

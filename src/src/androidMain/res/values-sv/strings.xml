@@ -363,7 +363,7 @@ Ta bort kontot "%accountName" (på %blockchain)?</string>
   <string name="Pinförslag">
     <font size="15">Detta hemliga nummer behövs för att komma åt kontot</font>
   </string>
-  <string name="createAccount">Skapa konto</string>
+  <string name="createNewAccount">Skapa konto</string>
   <string name="invalidRecoveryPhrase">dålig återhämtningsfras</string>
   <string name="invalidAccountName">ogiltigt namn</string>
   <string name="PassPhrase">Lösenfras (valfritt)</string>

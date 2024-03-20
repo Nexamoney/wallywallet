@@ -267,7 +267,7 @@
 	<string name="PinSuggestions">
 		<font size="15">Diese geheime Nummer ist benötigt, um auf den Account zuzugreifen</font>
 	</string>
-	<string name="createAccount">Account anlegen</string>
+	<string name="createNewAccount">Account anlegen</string>
 	<string name="invalidRecoveryPhrase">Ungültige Wiederherstellungsphrase</string>
 	<string name="invalidAccountName">ungültiger Name</string>
 	<string name="PassPhrase">Passphrase (optional)</string>

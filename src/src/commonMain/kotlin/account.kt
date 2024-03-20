@@ -10,7 +10,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.nexa.libnexakotlin.*
-import org.nexa.threads.millisleep
 
 /** Account flags: No flag */
 const val ACCOUNT_FLAG_NONE = 0UL
@@ -58,7 +57,7 @@ class Account(
   var flags: ULong = ACCOUNT_FLAG_NONE,
   chainSelector: ChainSelector? = null,
   secretWords: String? = null,
-  startPlace: Long? = null, //* Where to start looking for transactions
+  startDate: Long? = null, //* Where to start looking for transactions
   startHeight: Long? = null, //* block height of first activity
   retrieveOnlyActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, HDActivityBracket>>? = null,  //* jam in other derivation paths to grab coins from (but use addresses of) (if new account)
   val prefDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
@@ -164,7 +163,7 @@ class Account(
         wallet.usesChain(chain)
         later {
             LogIt.info(sourceLoc() + name + ": wallet connect blockchain ${chain.name}")
-            wallet.startChain(startHeight, startPlace)
+            wallet.startChain(startHeight, startDate)
             LogIt.info(sourceLoc() + name + ": wallet blockchain ${chain.name} connection completed")
             wallet.fillReceivingWithRetrieveOnly()
             wallet.prepareDestinations(2, 2)  // Make sure that there is at least a few addresses before we hook into the network

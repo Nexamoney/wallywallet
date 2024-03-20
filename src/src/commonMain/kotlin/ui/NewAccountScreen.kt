@@ -17,11 +17,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.LoadingAnimationContent
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Thread
 
@@ -34,6 +36,17 @@ private val supportedBlockchains =
     // "TBCH (Bitcoin Cash)" to ChainSelector.BCHTESTNET,
     // "RBCH (Bitcoin Cash)" to ChainSelector.BCHREGTEST
   )
+
+fun fromFinestUnit(amount: Long, chainSelector:ChainSelector): BigDecimal
+{
+    val factor = when (chainSelector)
+    {
+            ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> SATperNEX
+            ChainSelector.BCH, ChainSelector.BCHREGTEST, ChainSelector.BCHTESTNET -> SATperUBCH
+    }
+    val f :BigDecimal= BigDecimal.fromInt(factor.toInt())
+    return CurrencyDecimal(amount) / f
+}
 
 const val MAX_NAME_LEN = 8
 const val MIN_PIN_LEN = 4
@@ -51,7 +64,12 @@ data class NewAccountState(
   val validOrNoPin: Boolean = true,
   val isSuccessDialogOpen: Boolean = false,
   val earliestActivity: Long? = null,
-  val earliestActivityHeight: Int = 0
+  val earliestActivityHeight: Int = -1,  // -1 means not even looking (either done and found nothing, or not applicable due to bad phrase or similar)
+  val discoveredAccountHistory: List<TransactionHistory> = listOf(),
+  val discoveredAddressCount: Long = 0,
+  val discoveredAccountBalance: Long = 0,
+  val discoveredAddressIndex: Int = 0,
+  val discoveredTip: iBlockHeader? = null
 )
 
 val chainToName: Map<ChainSelector, String> = mapOf(
@@ -88,17 +106,175 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
     later { newAccountDriver.send(NewAccountDriver(s, earliestActivity=earliestActivity, earliestActivityHeight=earliestActivityHeight)) }
 }
 
+var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAccountState())
+
+
 @Composable fun NewAccountScreen(accounts: State<ListifyMap<String, Account>>, devMode: Boolean, nav: ScreenNav)
 {
     val blockchains = supportedBlockchains.filter { devMode || it.value.isMainNet }
     var selectedBlockChain by remember { mutableStateOf(blockchains.entries.first().toPair()) }
-    var newAcState by remember { mutableStateOf( NewAccountState(accountName = ProposeAccountName(selectedBlockChain.second) ?: "") ) }
+
+    var newAcState = newAccountState.collectAsState()
+
+    // Typically this code is just run the first time thru, to propose an account name based on the default blockchain
+    if (newAcState.value.accountName == "")
+    {
+        val name = ProposeAccountName(selectedBlockChain.second)
+        if (name != null) newAccountState.value = newAccountState.value.copy(accountName = name, validAccountName = (name != null))
+        newAcState = newAccountState.collectAsState()
+    }
 
     var recoverySearchText by remember { mutableStateOf("") }
     var creatingAccountLoading by remember { mutableStateOf(false) }
 
     var aborter = remember { mutableStateOf(Objectify<Boolean>(false)) }
     var createClicks by remember {mutableStateOf(0) }  // Some operations require you click create twice
+
+    fun FinalDataCheck(): Boolean
+    {
+        var inputValid = false
+        val words = processSecretWords(newAcState.value.recoveryPhrase)
+        val incorrectWords = Bip39InvalidWords(words)
+
+        // Clear any old error
+        newAccountState.value = newAccountState.value.copy(
+          errorMessage = ""
+        )
+
+        if (newAcState.value.accountName.isEmpty() || newAcState.value.accountName.length > 8)
+        {
+            newAccountState.value = newAccountState.value.copy(errorMessage = (newAcState.value.errorMessage + i18n(S.invalidAccountName)))
+        }
+        else if (containsAccountWithName(accounts.value, newAcState.value.accountName)) {
+            newAccountState.value = newAccountState.value.copy(errorMessage = (newAcState.value.errorMessage + i18n(S.invalidAccountName)))
+        }
+        else if (words.size > 12)
+        {
+            newAccountState.value = newAccountState.value.copy(errorMessage = i18n(S.TooManyRecoveryWords), earliestActivityHeight = -1)
+        }
+        else if (words.size in 1..11)
+        {
+            newAccountState.value = newAccountState.value.copy(errorMessage = i18n(S.NotEnoughRecoveryWords), earliestActivityHeight = -1)
+        }
+        else if (incorrectWords.isNotEmpty())
+        {
+            newAccountState.value = newAccountState.value.copy(errorMessage = i18n(S.invalidRecoveryPhrase), earliestActivityHeight = -1)
+        }
+        else if (newAcState.value.pin.isNotEmpty() && newAcState.value.pin.length < MIN_PIN_LEN)
+        {
+            newAccountState.value = newAccountState.value .copy(errorMessage = i18n(S.InvalidPIN))
+        }
+        else inputValid = true
+
+        return inputValid
+    }
+
+    fun CleanState()
+    {
+        newAccountState.value = NewAccountState()
+    }
+
+    fun CreateDiscoveredAccount()
+    {
+        var inputValid = FinalDataCheck()
+
+        // data checks specific to discovered accounts
+        if (newAcState.value.discoveredTip == null || newAcState.value.discoveredAccountHistory == null)
+        {
+            newAccountState.value = newAccountState.value.copy(errorMessage = i18n(S.NewAccountSearchFailure), earliestActivityHeight = -1)
+            inputValid = false
+        }
+
+        if (inputValid)
+        {
+            later {  // get account creation out of the UI thread
+                val flags: ULong = if (newAcState.value.hideUntilPinEnter) ACCOUNT_FLAG_HIDE_UNTIL_PIN else ACCOUNT_FLAG_NONE
+                val words = processSecretWords(newAcState.value.recoveryPhrase)
+                newAccountState.value = try
+                {
+                    wallyApp!!.recoverAccount(newAcState.value.accountName, flags, newAcState.value.pin, words.joinToString(" "), selectedBlockChain.second, newAcState.value.discoveredAccountHistory, newAcState.value.discoveredTip!!, newAcState.value.discoveredAddressIndex)
+                    triggerAssignAccountsGuiSlots()
+                    nav.back()
+                    newAcState.value.copy(isSuccessDialogOpen = false)
+                }
+                catch (e: Error)
+                {
+                    displayUnexpectedError(e)
+                    newAcState.value.copy(errorMessage = i18n(S.unknownError))
+                }
+                catch (e: Exception)
+                {
+                    displayUnexpectedException(e)
+                    newAcState.value.copy(errorMessage = i18n(S.unknownError))
+                }
+            }
+        }
+
+    }
+
+    fun CreateSyncAccount()
+    {
+        var inputValid = FinalDataCheck()
+
+        val flags: ULong = if (newAcState.value.hideUntilPinEnter) ACCOUNT_FLAG_HIDE_UNTIL_PIN else ACCOUNT_FLAG_NONE
+
+        if (inputValid)
+        {
+
+            val words = processSecretWords(newAcState.value.recoveryPhrase)
+            if (words.size == 12) // account recovery
+            {
+                if ((createClicks == 0) && (newAcState.value.earliestActivity == null))
+                {
+                    createClicks += 1
+                    recoverySearchText = i18n(S.creatingNoHistoryAccountWarning)
+                }
+                else
+                {
+                    creatingAccountLoading = true
+                    Thread("recoverAccount")
+                    {
+                        newAccountState.value = try
+                        {
+                            wallyApp!!.recoverAccount(newAcState.value.accountName, flags, newAcState.value.pin, words.joinToString(" "), selectedBlockChain.second, newAcState.value.earliestActivity, newAcState.value.earliestActivityHeight.toLong(), null)
+                            triggerAssignAccountsGuiSlots()
+                            nav.back()
+                            newAcState.value.copy(isSuccessDialogOpen = false)
+                        }
+                        catch (e: Error)
+                        {
+                            displayUnexpectedError(e)
+                            newAcState.value.copy(errorMessage = i18n(S.unknownError))
+                        }
+                        catch (e: Exception)
+                        {
+                            displayUnexpectedException(e)
+                            newAcState.value.copy(errorMessage = i18n(S.unknownError))
+                        }
+
+                    }
+                }
+            }
+            else if (words.isEmpty())
+            {
+                later {
+                    val account = wallyApp!!.newAccount(newAcState.value.accountName, flags, newAcState.value.pin, selectedBlockChain.second)
+                    newAccountState.value = if (account == null)
+                    {
+                        displayError(i18n(S.unknownError))
+                        newAcState.value.copy(errorMessage = i18n(S.unknownError))
+                    }
+                    else
+                    {
+                        triggerAssignAccountsGuiSlots()
+                        nav.back()
+                        newAcState.value.copy(isSuccessDialogOpen = false)
+                    }
+                } // Can't happen in GUI thread
+            }
+        }
+    }
+
 
     LaunchedEffect(true)
     {
@@ -109,10 +285,11 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
                 recoverySearchText = it
             }
             c.earliestActivity?.let {
-                newAcState = newAcState.copy(earliestActivity = it)
+                newAccountState.value = newAccountState.value.copy(earliestActivity = it)
             }
             c.earliestActivityHeight?.let {
-                newAcState = newAcState.copy(earliestActivityHeight = it)
+                // newAcState = newAcState.copy(earliestActivityHeight = it)
+                newAccountState.value = newAccountState.value.copy(earliestActivityHeight = it)
             }
         }
     }
@@ -126,159 +303,99 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
         }
     }
 
+    fun HandleRecoveryPhrase(userInput: String, force: Boolean = false)
+    {
+        val words = processSecretWords(userInput)
+        val valid = isValidOrEmptyRecoveryPhrase(words)
+        val priorPhrase = newAcState.value.recoveryPhrase
+        newAccountState.value = newAccountState.value.copy(recoveryPhrase = userInput, validOrNoRecoveryPhrase = valid)
+        if (force || words != processSecretWords(priorPhrase))  // If the recovery phrase is equivalent nothing to do, otherwise set the new one
+        {
+            recoverySearchText = ""  // phrase changed so need to search again
+            // If the recovery phrase changes materially, we need to rediscover the wallet
+            newAccountState.value = newAccountState.value.copy(earliestActivity = null, earliestActivityHeight = if (valid && words.isNotEmpty()) 0 else -1, discoveredAccountBalance = 0L, discoveredTip = null, discoveredAccountHistory = listOf(), discoveredAddressIndex = 0, discoveredAddressCount = 0)
+            if (valid && words.size == 12) // Launch the wallet discoverer if the recovery phrase is ok
+            {
+                // If the recovery phrase is good, let's peek at the blockchain to see if there's activity
+                // thread(true, true, null, "peekWallet") // kotlin api does not offer stack size setting
+                aborter.value.obj = true  // Abort the current peek
+                aborter.value = Objectify<Boolean>(false)  // and create a new object for the next one
+                recoverySearchText = i18n(S.NewAccountSearchingForTransactions)
+
+                LogIt.info("launching wallet peek")
+                val th = Thread {
+                    try
+                    {
+                        peekFirstActivity(words.joinToString(" "), selectedBlockChain.second, aborter.value)
+                    }
+                    catch (e: Exception)
+                    {
+                        recoverySearchText = i18n(S.NewAccountSearchFailure)
+                        LogIt.severe("wallet peek error: " + e.toString())
+                    }
+                }
+                val th2 = Thread {
+                    try
+                    {
+                        searchAllActivity(words.joinToString(" "), selectedBlockChain.second, aborter.value)
+                    }
+                    catch (e: Exception)
+                    {
+                        LogIt.severe("wallet search error: " + e.toString())
+                    }
+                }
+            }
+            else
+                recoverySearchText == ""
+        }
+    }
+
     NewAccountScreenContent(
-      newAcState,
+      newAcState.value,
       recoverySearchText,
       selectedBlockChain,
       blockchains,
       onChainSelected = {
-          val oldname = ProposeAccountName(selectedBlockChain.second)
-          selectedBlockChain = it
-          if (oldname == newAcState.accountName)  // name remains the proposed default, so propose a different one
+          if (it != selectedBlockChain)  // Don't do anything if we selected the same as we already were
           {
+              selectedBlockChain = it
               val name = ProposeAccountName(selectedBlockChain.second)
-              if (name != null) newAcState = newAcState.copy(accountName = name)
+              if (name != null) newAccountState.value = newAccountState.value.copy(accountName = name, validAccountName = (name != null))
+              // We've changed the blockchain, so we need to rediscover any activity on the new one.
+              HandleRecoveryPhrase(newAccountState.value.recoveryPhrase, force = true)
           }
                         },
       onNewAccountName = {
           val actNameValid = (it.length > 0 && it.length <= MAX_NAME_LEN) && (!containsAccountWithName(accounts.value, it))
-          newAcState = newAcState.copy(
+          newAccountState.value = newAccountState.value.copy(
             accountName = it,
             validAccountName = actNameValid,
           )
       },
       onNewRecoveryPhrase = {
-          val words = processSecretWords(it)
-          val valid = isValidOrEmptyRecoveryPhrase(words)
-          val priorPhrase = newAcState.recoveryPhrase
-          newAcState = newAcState.copy(recoveryPhrase = it, validOrNoRecoveryPhrase = valid)
-          if (words != processSecretWords(priorPhrase))  // If the recovery phrase is equivalent nothing to do, otherwise set the new one
-          {
-              recoverySearchText = ""  // phrase changed so need to search again
-              // If the recovery phrase changes materially, we need to rediscover the wallet
-              newAcState = newAcState.copy(earliestActivity = null, earliestActivityHeight = 0)
-              if (valid && words.size == 12) // Launch the wallet discoverer if the recovery phrase is ok
-              {
-                  // If the recovery phrase is good, let's peek at the blockchain to see if there's activity
-                  // thread(true, true, null, "peekWallet") // kotlin api does not offer stack size setting
-                  aborter.value.obj = true  // Abort the current peek
-                  aborter.value = Objectify<Boolean>(false)  // and create a new object for the next one
-                  recoverySearchText = i18n(S.NewAccountSearchingForTransactions)
-                  LogIt.info("launching wallet peek")
-                  val th = Thread {
-                      try
-                      {
-                          peekActivity(words.joinToString(" "), selectedBlockChain.second, aborter.value)
-                      }
-                      catch (e: Exception)
-                      {
-                          recoverySearchText = i18n(S.NewAccountSearchFailure)
-                          LogIt.severe("wallet peek error: " + e.toString())
-                      }
-                  }
-              }
-              else
-                  recoverySearchText == ""
-          }
+          HandleRecoveryPhrase(it)
       },
       onPinChange = {
           val validOrNoPin = (it.isEmpty() || ((it.length >= MIN_PIN_LEN) && it.onlyDigits()) )
           if (it.onlyDigits())
           {
-              newAcState = newAcState.copy(pin = it, validOrNoPin = validOrNoPin)
+              newAccountState.value = newAccountState.value.copy(pin = it, validOrNoPin = validOrNoPin)
               it
           }
-          else newAcState.pin  // refuse to change if nondigits are in the field
+          else newAcState.value.pin  // refuse to change if nondigits are in the field
       },
       onHideUntilPinEnterChanged = {
-          newAcState =  newAcState.copy(hideUntilPinEnter = it)
+          newAccountState.value = newAccountState.value.copy(hideUntilPinEnter = it)
       },
       onClickCreateAccount =  {
-          var inputValid = false
-          val words = processSecretWords(newAcState.recoveryPhrase)
-          val incorrectWords = Bip39InvalidWords(words)
-          newAcState = newAcState.copy(
-            errorMessage = ""
-          )
+          CreateSyncAccount()
+          CleanState()
+                              },
+      onClickCreateDiscoveredAccount =  {
+          CreateDiscoveredAccount()
+          CleanState()
+                                        },
 
-          if (newAcState.accountName.isEmpty() || newAcState.accountName.length > 8)
-          {
-              newAcState = newAcState.copy(errorMessage = (newAcState.errorMessage + i18n(S.invalidAccountName)))
-
-          }
-          else if (containsAccountWithName(accounts.value, newAcState.accountName)) {
-              newAcState = newAcState.copy(errorMessage = (newAcState.errorMessage + i18n(S.invalidAccountName)))
-          }
-          else if (words.size > 12)
-          {
-              newAcState = newAcState.copy(errorMessage = i18n(S.TooManyRecoveryWords))
-          }
-          else if (words.size in 1..11)
-          {
-              newAcState = newAcState.copy(errorMessage = i18n(S.NotEnoughRecoveryWords))
-          }
-          else if (incorrectWords.isNotEmpty())
-          {
-              newAcState = newAcState.copy(errorMessage = i18n(S.invalidRecoveryPhrase))
-          }
-          else if (newAcState.pin.isNotEmpty() && newAcState.pin.length < MIN_PIN_LEN) {
-              newAcState = newAcState.copy(errorMessage = i18n(S.InvalidPIN))
-          }
-          else inputValid = true
-
-          val flags: ULong = if (newAcState.hideUntilPinEnter) ACCOUNT_FLAG_HIDE_UNTIL_PIN else ACCOUNT_FLAG_NONE
-
-          if (inputValid && words.size == 12) // account recovery
-          {
-              if ((createClicks == 0) && (newAcState.earliestActivity == null))
-              {
-                  createClicks += 1
-                  recoverySearchText = i18n(S.creatingNoHistoryAccountWarning)
-              }
-              else
-              {
-                  creatingAccountLoading = true
-                  Thread("recoverAccount")
-                  {
-                      newAcState = try
-                      {
-                          wallyApp!!.recoverAccount(newAcState.accountName, flags, newAcState.pin, words.joinToString(" "), selectedBlockChain.second, newAcState.earliestActivity, newAcState.earliestActivityHeight.toLong(), null)
-                          triggerAssignAccountsGuiSlots()
-                          nav.back()
-                          newAcState.copy(isSuccessDialogOpen = false)
-                      }
-                      catch (e: Error)
-                      {
-                          displayUnexpectedError(e)
-                          newAcState.copy(errorMessage = i18n(S.unknownError))
-                      }
-                      catch (e: Exception)
-                      {
-                          displayUnexpectedException(e)
-                          newAcState.copy(errorMessage = i18n(S.unknownError))
-                      }
-
-                  }
-              }
-          }
-         if (inputValid && words.isEmpty())
-          {
-              later {
-                  val account = wallyApp!!.newAccount(newAcState.accountName, flags, newAcState.pin, selectedBlockChain.second)
-                  newAcState = if (account == null)
-                  {
-                      displayError(i18n(S.unknownError))
-                      newAcState.copy(errorMessage = i18n(S.unknownError))
-                  }
-                  else
-                  {
-                      triggerAssignAccountsGuiSlots()
-                      nav.back()
-                      newAcState.copy(isSuccessDialogOpen = false)
-                  }
-              } // Can't happen in GUI thread
-          }
-      },
       creatingAccountLoading
     )
 }
@@ -309,6 +426,7 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
   onPinChange: (String) -> String,
   onHideUntilPinEnterChanged: (Boolean) -> Unit,
   onClickCreateAccount: () -> Unit,
+  onClickCreateDiscoveredAccount: () -> Unit,
   creatingAccountLoading: Boolean
 )
 {
@@ -348,8 +466,44 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
 
                 CenteredText(recoverySearchText)
             }
-            Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth())
-                { WallyRoundedTextButton(i18n(S.createAccount), onClick = onClickCreateAccount) }
+            if (newAcState.earliestActivity != null) Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth())
+            {
+                WallyRoundedTextButton(i18n(S.createSyncAccount), onClick = onClickCreateAccount)
+            }
+            else Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth())
+            {
+                 WallyRoundedTextButton(i18n(S.createNewAccount), onClick = onClickCreateAccount)
+            }
+
+            val discoveredSomething = newAcState.discoveredAccountHistory.size > 0
+            if (discoveredSomething)
+            {
+                Spacer(Modifier.height(20.dp))
+                Row(Modifier.fillMaxWidth()) {
+                    ResImageView("icons/check.xml", modifier = Modifier.size(50.dp))
+                    CenteredText(i18n(S.discoveredAccountDetails) % mapOf("tx" to newAcState.discoveredAccountHistory.size.toString(), "addr" to newAcState.discoveredAddressCount.toString(),
+                      "bal" to NexaFormat.format(fromFinestUnit(newAcState.discoveredAccountBalance, chainSelector = selectedChain.second)), "units" to (chainToDisplayCurrencyCode[selectedChain.second] ?:"")))
+                }
+                Row(Modifier.fillMaxWidth()) { CenteredText(i18n(S.discoveredWarning)) }
+                Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth())
+                {
+                    WallyRoundedTextButton(i18n(S.createDiscoveredAccount), onClick = onClickCreateDiscoveredAccount)
+                }
+            }
+            else
+            {
+                if (newAcState.earliestActivityHeight >= 0)
+                {
+                    Spacer(Modifier.height(20.dp))
+                    Row(Modifier.fillMaxWidth()) {
+                        Box(Modifier.size(50.dp)) {
+                            LoadingAnimationContent()
+                        }
+                        CenteredText(i18n(S.NewAccountSearchingForAllTransactions))
+                    }
+                }
+            }
+
         }
         else CenteredSectionText(i18n(S.Processing))
     }
@@ -504,7 +658,7 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
 }
 
 
-fun searchActivity(ec: ElectrumClient, chainSelector: ChainSelector, count: Int, secretDerivation: (Int) -> ByteArray, activityFound: ((Long, Int) -> Boolean)? = null): Pair<Long, Int>?
+fun searchFirstActivity(ec: ElectrumClient, chainSelector: ChainSelector, count: Int, secretDerivation: (Int) -> ByteArray, activityFound: ((Long, Int) -> Boolean)? = null): Pair<Long, Int>?
 {
     var index = 0
     var ret: Pair<Long, Int>? = null
@@ -610,7 +764,7 @@ fun bracketActivity(ec: ElectrumClient, chainSelector: ChainSelector, giveUpGap:
 }
 
 
-fun peekActivity(secretWords: String, chainSelector: ChainSelector, aborter: Objectify<Boolean>)
+fun peekFirstActivity(secretWords: String, chainSelector: ChainSelector, aborter: Objectify<Boolean>)
 {
     val (svr, port) = try
     {
@@ -657,7 +811,7 @@ fun peekActivity(secretWords: String, chainSelector: ChainSelector, aborter: Obj
 
     LogIt.info("Searching in ${addressDerivationCoin}")
     var earliestActivityP =
-      searchActivity(ec, chainSelector, WALLET_RECOVERY_DERIVATION_PATH_SEARCH_DEPTH, {
+      searchFirstActivity(ec, chainSelector, WALLET_RECOVERY_DERIVATION_PATH_SEARCH_DEPTH, {
           libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first }, { time, height ->
               displayRecoveryInfo(i18n(S.Bip44ActivityNotice) + " " + (i18n(S.FirstUseDateHeightInfo) % mapOf(
             "date" to epochToDate(time),
@@ -671,7 +825,7 @@ fun peekActivity(secretWords: String, chainSelector: ChainSelector, aborter: Obj
     LogIt.info("Searching in ${AddressDerivationKey.ANY}")
     // Look for activity in the identity and common location
     var earliestActivityId =
-      searchActivity(ec, chainSelector, WALLET_RECOVERY_IDENTITY_DERIVATION_PATH_SEARCH_DEPTH, {
+      searchFirstActivity(ec, chainSelector, WALLET_RECOVERY_IDENTITY_DERIVATION_PATH_SEARCH_DEPTH, {
           libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, false, it).first })
     if (aborter.obj) return
 
@@ -693,7 +847,7 @@ fun peekActivity(secretWords: String, chainSelector: ChainSelector, aborter: Obj
     }
     else
     {
-        updateRecoveryInfo(null,0, i18n(S.NoBip44ActivityNotice))
+        updateRecoveryInfo(null,-1, i18n(S.NoBip44ActivityNotice))
     }
 
     /*
@@ -735,5 +889,91 @@ fun peekActivity(secretWords: String, chainSelector: ChainSelector, aborter: Obj
     }
     else i18n(R.string.NoBip44BtcActivityNotice)
      */
+}
 
+class EarlyExitException:Exception()
+
+fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter: Objectify<Boolean>, ecCnxn: ElectrumClient? = null)
+{
+    val (svr, port) = try
+    {
+        getElectrumServerOn(chainSelector)
+    }
+    catch (e: BadCryptoException)
+    {
+        LogIt.info("wallet search not supported for this blockchain")
+        return
+    }
+
+    if (aborter.obj) return
+    val ec = ecCnxn ?: try
+    {
+        ElectrumClient(chainSelector, svr, port, useSSL=true)
+    }
+    catch (e: ElectrumConnectError) // covers java.net.ConnectException, UnknownHostException and a few others that could trigger
+    {
+        try
+        {
+            ElectrumClient(chainSelector, svr, port, useSSL = false, accessTimeoutMs = 60000, connectTimeoutMs = 10000)
+        }
+        catch(e: ElectrumConnectError)
+        {
+            if (chainSelector == ChainSelector.BCH)
+                ElectrumClient(chainSelector, LAST_RESORT_BCH_ELECTRS)
+            else if (chainSelector == ChainSelector.NEXA)
+                ElectrumClient(chainSelector, LAST_RESORT_NEXA_ELECTRS, DEFAULT_NEXA_TCP_ELECTRUM_PORT, useSSL = false)
+            else throw e
+        }
+        catch (e: ElectrumConnectError)
+        {
+            displayRecoveryInfo(i18n(S.ElectrumNetworkUnavailable))
+            // TODO status checkmark    ui.GuiStatusOk.setImageResource(android.R.drawable.ic_delete)
+            return
+        }
+    }
+    ec.start()
+    if (aborter.obj) return
+
+    val (tip, tipHeight) = ec.getTip()
+
+    val passphrase = "" // TODO: support a passphrase
+    val secret = generateBip39Seed(secretWords, passphrase)
+
+    val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
+
+    LogIt.info("Searching in ${addressDerivationCoin}")
+    var activity = try
+    {
+        searchDerivationPathActivity(ec, chainSelector, WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP) {
+            if (aborter.obj) throw EarlyExitException()
+            libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
+        }
+    }
+    catch( e: EarlyExitException)
+    {
+        return
+    }
+    if (aborter.obj) return
+
+    // TODO need to explicitly push nonstandard addresses into the wallet, by explicitly returning them.
+    // otherwise the transactions won't be noticed by the wallet when we jam them in.
+    LogIt.info("Searching in ${AddressDerivationKey.ANY}")
+    // Look for activity in the identity and common location
+    var activity2 = try
+    {
+        searchDerivationPathActivity(ec, chainSelector, WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP) {
+            if (aborter.obj) throw EarlyExitException()
+            libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, false, it).first
+        }
+    }
+    catch( e: EarlyExitException)
+    {
+        return
+    }
+    if (aborter.obj) return
+
+    val act = activity.txh + activity2.txh
+    val addrCount = activity.addrCount + activity2.addrCount
+    val bal = activity.balance + activity2.balance
+    newAccountState.value = newAccountState.value.copy(discoveredAccountHistory = act, discoveredAddressCount = addrCount, discoveredAccountBalance = bal, discoveredAddressIndex = activity.lastAddressIndex, discoveredTip = tip)
 }

@@ -383,7 +383,7 @@ Good luck!
     <string name="AccountRecoveryPhrase">Kurtarma Cümlesi</string>
     <string name="LeaveEmptyNewWallet">Yeni bir hesap oluşturmak için boş bırakın</string>
     <string name="PinSuggestions"><font size="15">Hesaba erişmek için bu gizli numara gereklidir</font></string>
-    <string name="createAccount">Hesap Oluştur</string>
+    <string name="createNewAccount">Hesap Oluştur</string>
     <string name="invalidRecoveryPhrase">geçersiz kurtarma cümlesi</string>
     <string name="invalidAccountName">geçersiz hesap adı</string>
     <string name="PassPhrase">Parola Cümlesi (isteğe bağlı)</string>
