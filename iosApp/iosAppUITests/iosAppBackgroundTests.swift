@@ -33,10 +33,10 @@ final class iosAppBackgroundTests: XCTestCase {
         // Simulate pressing the Home button to send the app to background
         XCUIDevice.shared.press(.home)
         
-        // Wait for a short period (e.g., 5 seconds)
+        // Wait for a short period (e.g., 60 seconds)
         // Note: XCTest does not support waiting for 24 hours.
         // You should consider what you're trying to achieve with such a wait and if it can be tested in a more practical manner.
-        sleep(5)
+        sleep(60)
         
         // Ideally, here you would mock the passage of time or check for the app's ability to resume correctly.
         
