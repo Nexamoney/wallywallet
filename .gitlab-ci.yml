@@ -133,7 +133,7 @@ iosX64Test:
   script:
     - ./gradlew :src:iosX64Test
 
-iosEmulatorUiIntegrationTest:
+iosEmulatorUiTest:
   stage: test
   resource_group: iphone_mac_emulator
   tags:
@@ -153,6 +153,20 @@ iosEmulatorUiIntegrationTest:
       - iosApp/fastlane/report.xml
       - iosApp/fastlane/test_output/report.html
       - iosApp/fastlane/test_output/report.junit
+
+iosDeviceUiTest:
+  stage: test
+  resource_group: iphone_mac_emulator
+  tags:
+    - m1-baremetal
+  script:
+    - cd iosApp
+    - gem install xcpretty
+    - ./rundevicetests.sh $DEVICE_UDID
+  artifacts:
+    reports:
+      junit: iosApp/iphone-ui-test-report.xml
+    expire_in: 4 week
 
 jvmTest: #
   stage: test

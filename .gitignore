@@ -16,3 +16,4 @@ src/release/
 /iosApp/iosApp.ipa
 /iosApp/.env
 /iosApp/iosApp.xcodeproj/project.xcworkspace/xcuserdata/
+/iosApp/iphone-ui-test-report.xml
