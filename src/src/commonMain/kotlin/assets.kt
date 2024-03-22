@@ -441,82 +441,91 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
 
         LogIt.info("Genesis Info for ${groupId.toHex()} not in cache")
         // first load the token description doc (TDD)
-        val ec = openElectrum(chain.chainSelector)
-        val tg = try
+        val net = chain.req.net
+        val ec = net.getElectrum()
+        try
         {
-            ec.getTokenGenesisInfo(groupId, 30 * 1000)
-        } catch (e: ElectrumRequestTimeout)
-        {
-            displayError(S.ElectrumNetworkUnavailable, e.message)
-            LogIt.info(sourceLoc() + ": Rostrum is inaccessible loading token info for ${groupId.toHex()}")
-            TokenGenesisInfo(null, null, -1, null, null, "", "", "")
-        }
-
-        val docUrl = tg.document_url
-        if (docUrl != null)
-        {
-            var doc: String? = null
-            try
+            val tg = try
             {
-                LogIt.info(sourceLoc() + ": Accessing TDD from " + docUrl)
-                doc = Url(docUrl).readText(ASSET_ACCESS_TIMEOUT_MS)
+                ec.getTokenGenesisInfo(groupId, 30 * 1000)
             }
-            catch (e: CannotLoadException)
+            catch (e: ElectrumRequestTimeout)
             {
-            }
-            catch (e: Exception)
-            {
-                LogIt.info(sourceLoc() + ": Error retrieving token description document: " + e.message)
+                displayError(S.ElectrumNetworkUnavailable, e.message)
+                LogIt.info(sourceLoc() + ": Rostrum is inaccessible loading token info for ${groupId.toHex()}")
+                TokenGenesisInfo(null, null, -1, null, null, "", "", "")
             }
 
-            if (doc != null)  // got the TDD
+            val docUrl = tg.document_url
+            if (docUrl != null)
             {
-                val tx = ec.getTx(tg.txid)
-                var addr: PayAddress? = null
-                for (out in tx.outputs)
+                var doc: String? = null
+                try
                 {
-                    val gi = out.script.groupInfo(out.amount)
-                    if (gi != null)
+                    LogIt.info(sourceLoc() + ": Accessing TDD from " + docUrl)
+                    doc = Url(docUrl).readText(ASSET_ACCESS_TIMEOUT_MS)
+                }
+                catch (e: CannotLoadException)
+                {
+                }
+                catch (e: Exception)
+                {
+                    LogIt.info(sourceLoc() + ": Error retrieving token description document: " + e.message)
+                }
+
+                if (doc != null)  // got the TDD
+                {
+                    val tx = ec.getTx(tg.txid)
+                    var addr: PayAddress? = null
+                    for (out in tx.outputs)
                     {
-                        if (gi.groupId == groupId)  // genesis of group must only produce 1 authority output so just match the groupid
+                        val gi = out.script.groupInfo(out.amount)
+                        if (gi != null)
                         {
-                            //assert(gi.isAuthority()) // possibly but double check subgroup creation
-                            addr = out.script.address
-                            break
+                            if (gi.groupId == groupId)  // genesis of group must only produce 1 authority output so just match the groupid
+                            {
+                                //assert(gi.isAuthority()) // possibly but double check subgroup creation
+                                addr = out.script.address
+                                break
+                            }
                         }
                     }
-                }
 
-                val td: TokenDesc = decodeTokenDescDoc(doc, addr)
-                val tddHash = td.tddHash
-                if ((tddHash != null) && (tg.document_hash == Hash256(tddHash).toHex()))
+                    val td: TokenDesc = decodeTokenDescDoc(doc, addr)
+                    val tddHash = td.tddHash
+                    if ((tddHash != null) && (tg.document_hash == Hash256(tddHash).toHex()))
+                    {
+                        td.genesisInfo = tg
+                        storeTokenDesc(groupId, td)  // We got good data, so cache it
+                        return td
+                    }
+                    else
+                    {
+                        LogIt.info("Incorrect token desc document")
+                        val tderr = TokenDesc(tg.ticker ?: "", tg.name, "token description document is invalid")
+                        tderr.genesisInfo = tg
+                        return tderr
+                    }
+                }
+                else  // Could not access the doc for some reason, don't cache it so we retry next time we load the token
                 {
+                    val td = TokenDesc(tg.ticker ?: "", tg.name)
+                    LogIt.info("Cannot access token desc document")
                     td.genesisInfo = tg
-                    storeTokenDesc(groupId, td)  // We got good data, so cache it
                     return td
                 }
-                else
-                {
-                    LogIt.info("Incorrect token desc document")
-                    val tderr = TokenDesc(tg.ticker ?: "", tg.name, "token description document is invalid")
-                    tderr.genesisInfo = tg
-                    return tderr
-                }
             }
-            else  // Could not access the doc for some reason, don't cache it so we retry next time we load the token
+            else // There is no token doc, cache what we have since its everything known about this token
             {
                 val td = TokenDesc(tg.ticker ?: "", tg.name)
-                LogIt.info("Cannot access token desc document")
                 td.genesisInfo = tg
+                storeTokenDesc(groupId, td)
                 return td
             }
         }
-        else // There is no token doc, cache what we have since its everything known about this token
+        finally
         {
-            val td = TokenDesc(tg.ticker ?: "", tg.name)
-            td.genesisInfo = tg
-            storeTokenDesc(groupId, td)
-            return td
+            chain.req.net.returnElectrum(ec)
         }
     }
 
@@ -604,57 +613,4 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
 
     override fun cacheNftMedia(groupId: GroupId, media: Pair<String?, ByteArray?>): Pair<String?, ByteArray?>
         = assetManagerStorage().cacheNftMedia(groupId, media)
-
 }
-
-
-// TODO this should be down in the net layer
-fun getElectrumServerOn(cs: ChainSelector):IpPort
-{
-    val prefDB = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
-
-    // Return our configured node if we have one
-    var name = chainToURI[cs]
-    val node = prefDB.getString(name + "." + CONFIGURED_NODE, null)
-    if (node != null) return splitIpPort(node, DefaultElectrumTCP[cs] ?: -1)
-    return ElectrumServerOn(cs)
-}
-
-// TODO this should be down in the net layer
-fun openElectrum(chainSelector: ChainSelector): ElectrumClient
-{
-    // TODO we need to wrap all electrum access into a retrier
-    // val ec = chain.net.getElectrum()
-
-    val (svr, port) = getElectrumServerOn(chainSelector)
-
-    val ec = try
-    {
-        ElectrumClient(chainSelector, svr, port, useSSL=true)
-    }
-    catch (e: ElectrumException) // covers java.net.ConnectException, UnknownHostException and a few others that could trigger
-    {
-        try  // If the port is given, it might be a p2p port so try the default electrum port
-        {
-            ElectrumClient(chainSelector, svr, DefaultElectrumTCP[chainSelector] ?: -1, useSSL=false)
-        }
-        catch (e: ElectrumException) // covers java.net.ConnectException, UnknownHostException and a few others that could trigger
-        {
-            try
-            {
-                ElectrumClient(chainSelector, svr, port, useSSL = false)
-            }
-            catch (e: ElectrumException)
-            {
-                if (chainSelector == ChainSelector.BCH)
-                    ElectrumClient(chainSelector, LAST_RESORT_BCH_ELECTRS)
-                else if (chainSelector == ChainSelector.NEXA)
-                    ElectrumClient(chainSelector, LAST_RESORT_NEXA_ELECTRS, DEFAULT_NEXA_TCP_ELECTRUM_PORT, useSSL = false)
-                else throw e
-            }
-        }
-    }
-    ec.start()
-    return ec
-}
-

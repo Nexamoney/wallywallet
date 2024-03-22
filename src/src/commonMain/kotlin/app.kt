@@ -52,7 +52,7 @@ fun backgroundSync(completion: () -> Unit)
     // Perform your background synchronization work here
     // ...
     backgroundStop = false
-    LogIt.info("backgroundSync()")
+    LogIt.info(sourceLoc() + ": backgroundSync()")
     wallyApp!!.openAllAccounts()  // Creating an account will automatically launch blockchain and wallet sync threads
     millisleep(10000U)     // Give those threads time to connect to another node and get block headers.
                                   // Otherwise the system may think accounts are synced simply because it doesn't have any up to date info.
@@ -73,7 +73,7 @@ fun backgroundSync(completion: () -> Unit)
                     unsynced++
                 }
             }
-            LogIt.info("Background work: Still syncing $unsynced accounts")
+            LogIt.info(sourceLoc() + " Background work: Still syncing $unsynced accounts")
             if (backgroundStop) break
             millisleep(5000U)
         } while(unsynced != 0 && !backgroundStop)

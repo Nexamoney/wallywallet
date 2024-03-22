@@ -495,105 +495,84 @@ class NewAccount : CommonNavActivity()
 
     fun peekFirstActivity(secretWords: String, chainSelector: ChainSelector, aborter: Objectify<Boolean>)
     {
-        val (svr, port) = try
+        val net = blockchains[chainSelector]?.net
+        val ec = net?.getElectrum()
+        if (ec == null)
         {
-            getElectrumServerOn(chainSelector)
-        } catch (e: BadCryptoException)
-        {
-            LogIt.info("peek not supported for this blockchain")
-            return
-        }
-
-        if (aborter.obj) return
-        val ec = try
-        {
-            ElectrumClient(chainSelector, svr, port, useSSL=true)
-        }
-        catch (e: ElectrumConnectError) // covers java.net.ConnectException, UnknownHostException and a few others that could trigger
-        {
-            try
-            {
-                ElectrumClient(chainSelector, svr, port, useSSL = false, accessTimeoutMs = 60000, connectTimeoutMs = 10000)
-            }
-            catch(e: ElectrumConnectError)
-            {
-                if (chainSelector == ChainSelector.BCH)
-                    ElectrumClient(chainSelector, LAST_RESORT_BCH_ELECTRS)
-                else if (chainSelector == ChainSelector.NEXA)
-                    ElectrumClient(chainSelector, LAST_RESORT_NEXA_ELECTRS, DEFAULT_NEXA_TCP_ELECTRUM_PORT, useSSL = false)
-                else throw e
-            }
-            catch (e: ElectrumConnectError)
-            {
-                laterUI {
+            laterUI {
                     ui.GuiNewAccountStatus.text = i18n(R.string.ElectrumNetworkUnavailable)
                     ui.GuiStatusOk.setImageResource(android.R.drawable.ic_delete)
+            }
+            return
+        }
+        try
+        {
+
+            if (aborter.obj) return
+
+            val passphrase = "" // TODO: support a passphrase
+            val secret = generateBip39Seed(secretWords, passphrase)
+
+            val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
+
+            LogIt.info("Searching in ${addressDerivationCoin}")
+            var earliestActivityP =
+              searchFirstActivity(ec, chainSelector, WALLET_RECOVERY_DERIVATION_PATH_SEARCH_DEPTH, {
+                  libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
+              }, { time, height ->
+                  laterUI {
+                      ui.GuiNewAccountStatus.text = i18n(R.string.Bip44ActivityNotice) + " " + (i18n(R.string.FirstUseDateHeightInfo) % mapOf(
+                        "date" to epochToDate(time),
+                        "height" to height.toString())
+                        )
+                      synchronized(earliestActivityHeight) {
+                          earliestActivity = time
+                          earliestActivityHeight = height
+                      }
+                  }
+                  true
+              })
+
+            if (aborter.obj) return
+
+            LogIt.info("Searching in ${AddressDerivationKey.ANY}")
+            // Look for activity in the identity and common location
+            var earliestActivityId =
+              searchFirstActivity(ec, chainSelector, WALLET_RECOVERY_IDENTITY_DERIVATION_PATH_SEARCH_DEPTH, {
+                  libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, false, it).first
+              })
+            if (aborter.obj) return
+
+            // Set earliestActivityP to the lesser of the two
+            if (earliestActivityP == null) earliestActivityP = earliestActivityId
+            else
+            {
+                if ((earliestActivityId != null) && (earliestActivityId.first < earliestActivityP.first)) earliestActivityP = earliestActivityId
+            }
+            if (aborter.obj) return
+            val Bip44Msg = if (earliestActivityP != null)
+            {
+                synchronized(earliestActivityHeight) {
+                    earliestActivity = earliestActivityP.first - 1 // -1 so earliest activity is just before the activity
+                    earliestActivityHeight = earliestActivityP.second
                 }
-                return
+                i18n(R.string.Bip44ActivityNotice) + " " + i18n(R.string.FirstUseDateHeightInfo) % mapOf(
+                  "date" to epochToDate(earliestActivityP.first),
+                  "height" to earliestActivityP.second.toString()
+                )
             }
-        }
-        ec.start()
-        if (aborter.obj) return
-
-        val passphrase = "" // TODO: support a passphrase
-        val secret = generateBip39Seed(secretWords, passphrase)
-
-        val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
-
-        LogIt.info("Searching in ${addressDerivationCoin}")
-        var earliestActivityP =
-          searchFirstActivity(ec, chainSelector, WALLET_RECOVERY_DERIVATION_PATH_SEARCH_DEPTH, {
-              libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first }, { time, height -> laterUI {
-              ui.GuiNewAccountStatus.text = i18n(R.string.Bip44ActivityNotice) + " " + (i18n(R.string.FirstUseDateHeightInfo) % mapOf(
-              "date" to epochToDate(time),
-              "height" to height.toString())
-            )
-              synchronized(earliestActivityHeight) {
-                  earliestActivity = time
-                  earliestActivityHeight = height
-              }
-        }
-              true })
-
-        if (aborter.obj) return
-
-        LogIt.info("Searching in ${AddressDerivationKey.ANY}")
-        // Look for activity in the identity and common location
-        var earliestActivityId =
-          searchFirstActivity(ec, chainSelector, WALLET_RECOVERY_IDENTITY_DERIVATION_PATH_SEARCH_DEPTH, {
-              libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, false, it).first })
-        if (aborter.obj) return
-
-        // Set earliestActivityP to the lesser of the two
-        if (earliestActivityP == null) earliestActivityP = earliestActivityId
-        else
-        {
-            if ((earliestActivityId != null) && (earliestActivityId.first < earliestActivityP.first)) earliestActivityP = earliestActivityId
-        }
-        if (aborter.obj) return
-        val Bip44Msg = if (earliestActivityP != null)
-        {
-            synchronized(earliestActivityHeight) {
-                earliestActivity = earliestActivityP.first - 1 // -1 so earliest activity is just before the activity
-                earliestActivityHeight = earliestActivityP.second
+            else
+            {
+                synchronized(earliestActivityHeight) {
+                    earliestActivity = null
+                    earliestActivityHeight = 0
+                }
+                i18n(R.string.NoBip44ActivityNotice)
             }
-            i18n(R.string.Bip44ActivityNotice) + " " + i18n(R.string.FirstUseDateHeightInfo) % mapOf(
-              "date" to epochToDate(earliestActivityP.first),
-              "height" to earliestActivityP.second.toString()
-            )
-        }
-        else
-        {
-            synchronized(earliestActivityHeight) {
-                earliestActivity = null
-                earliestActivityHeight = 0
-            }
-            i18n(R.string.NoBip44ActivityNotice)
-        }
 
-        val Bip44BTCMsg = ""
+            val Bip44BTCMsg = ""
 
-        /*
+            /*
         // Look in non-standard places for activity
         val BTCactivity =
           bracketActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.BTC, 0, 0, it) })
@@ -621,7 +600,7 @@ class NewAccount : CommonNavActivity()
         else i18n(R.string.NoBip44BtcActivityNotice)
         */
 
-        /*
+            /*
         earliestActivityP = searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, AddressDerivationKey.BTC, 0, 0, it) })
         var Bip44BTCMsg = if (earliestActivityP != null)
         {
@@ -633,10 +612,15 @@ class NewAccount : CommonNavActivity()
         else i18n(R.string.NoBip44BtcActivityNotice)
          */
 
-        laterUI {
-            ui.GuiNewAccountStatus.text = Bip44Msg + "\n" + Bip44BTCMsg
-            if (earliestActivity != null) ui.GuiStatusOk.setImageResource(R.drawable.ic_check)
-            else ui.GuiStatusOk.setImageResource(android.R.drawable.ic_delete)
+            laterUI {
+                ui.GuiNewAccountStatus.text = Bip44Msg + "\n" + Bip44BTCMsg
+                if (earliestActivity != null) ui.GuiStatusOk.setImageResource(R.drawable.ic_check)
+                else ui.GuiStatusOk.setImageResource(android.R.drawable.ic_delete)
+            }
+        }
+        finally
+        {
+            net?.returnElectrum(ec)
         }
     }
 
