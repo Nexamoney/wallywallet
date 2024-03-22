@@ -322,7 +322,7 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
                 aborter.value = Objectify<Boolean>(false)  // and create a new object for the next one
                 recoverySearchText = i18n(S.NewAccountSearchingForTransactions)
 
-                LogIt.info("launching wallet peek")
+                LogIt.info(sourceLoc() + ": launching wallet peek")
                 val th = Thread {
                     try
                     {
@@ -331,7 +331,7 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
                     catch (e: Exception)
                     {
                         recoverySearchText = i18n(S.NewAccountSearchFailure)
-                        LogIt.severe("wallet peek error: " + e.toString())
+                        LogIt.severe(sourceLoc() + "wallet peek error: " + e.toString())
                     }
                 }
                 val th2 = Thread {
@@ -341,7 +341,7 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
                     }
                     catch (e: Exception)
                     {
-                        LogIt.severe("wallet search error: " + e.toString())
+                        LogIt.severe(sourceLoc() + "wallet search error: " + e.toString())
                     }
                 }
             }
@@ -766,91 +766,68 @@ fun bracketActivity(ec: ElectrumClient, chainSelector: ChainSelector, giveUpGap:
 
 fun peekFirstActivity(secretWords: String, chainSelector: ChainSelector, aborter: Objectify<Boolean>)
 {
-    val (svr, port) = try
+    val net = blockchains[chainSelector]?.net
+    val ec = net?.getElectrum()
+    if (ec == null)
     {
-        getElectrumServerOn(chainSelector)
-    } catch (e: BadCryptoException)
-    {
-        LogIt.info("peek not supported for this blockchain")
+        displayRecoveryInfo(i18n(S.ElectrumNetworkUnavailable))
         return
     }
-
-    if (aborter.obj) return
-    val ec = try
+    try
     {
-        ElectrumClient(chainSelector, svr, port, useSSL=true)
-    }
-    catch (e: ElectrumConnectError) // covers java.net.ConnectException, UnknownHostException and a few others that could trigger
-    {
-        try
-        {
-            ElectrumClient(chainSelector, svr, port, useSSL = false, accessTimeoutMs = 60000, connectTimeoutMs = 10000)
-        }
-        catch(e: ElectrumConnectError)
-        {
-            if (chainSelector == ChainSelector.BCH)
-                ElectrumClient(chainSelector, LAST_RESORT_BCH_ELECTRS)
-            else if (chainSelector == ChainSelector.NEXA)
-                ElectrumClient(chainSelector, LAST_RESORT_NEXA_ELECTRS, DEFAULT_NEXA_TCP_ELECTRUM_PORT, useSSL = false)
-            else throw e
-        }
-        catch (e: ElectrumConnectError)
-        {
-            displayRecoveryInfo(i18n(S.ElectrumNetworkUnavailable))
-            // TODO status checkmark    ui.GuiStatusOk.setImageResource(android.R.drawable.ic_delete)
-            return
-        }
-    }
-    ec.start()
-    if (aborter.obj) return
 
-    val passphrase = "" // TODO: support a passphrase
-    val secret = generateBip39Seed(secretWords, passphrase)
+        if (aborter.obj) return
 
-    val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
+        val passphrase = "" // TODO: support a passphrase
+        val secret = generateBip39Seed(secretWords, passphrase)
 
-    LogIt.info("Searching in ${addressDerivationCoin}")
-    var earliestActivityP =
-      searchFirstActivity(ec, chainSelector, WALLET_RECOVERY_DERIVATION_PATH_SEARCH_DEPTH, {
-          libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first }, { time, height ->
+        val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
+
+        LogIt.info("Searching in ${addressDerivationCoin}")
+        var earliestActivityP =
+          searchFirstActivity(ec, chainSelector, WALLET_RECOVERY_DERIVATION_PATH_SEARCH_DEPTH, {
+              libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
+          }, { time, height ->
               displayRecoveryInfo(i18n(S.Bip44ActivityNotice) + " " + (i18n(S.FirstUseDateHeightInfo) % mapOf(
-            "date" to epochToDate(time),
-            "height" to height.toString())
-            ))
-          updateRecoveryInfo(time, height, null)
-          true })
+                "date" to epochToDate(time),
+                "height" to height.toString())
+                ))
+              updateRecoveryInfo(time, height, null)
+              true
+          })
 
-    if (aborter.obj) return
+        if (aborter.obj) return
 
-    LogIt.info("Searching in ${AddressDerivationKey.ANY}")
-    // Look for activity in the identity and common location
-    var earliestActivityId =
-      searchFirstActivity(ec, chainSelector, WALLET_RECOVERY_IDENTITY_DERIVATION_PATH_SEARCH_DEPTH, {
-          libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, false, it).first })
-    if (aborter.obj) return
+        LogIt.info("Searching in ${AddressDerivationKey.ANY}")
+        // Look for activity in the identity and common location
+        var earliestActivityId =
+          searchFirstActivity(ec, chainSelector, WALLET_RECOVERY_IDENTITY_DERIVATION_PATH_SEARCH_DEPTH, {
+              libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, false, it).first
+          })
+        if (aborter.obj) return
 
-    // Set earliestActivityP to the lesser of the two
-    if (earliestActivityP == null) earliestActivityP = earliestActivityId
-    else
-    {
-        if ((earliestActivityId != null) && (earliestActivityId.first < earliestActivityP.first)) earliestActivityP = earliestActivityId
-    }
-    if (aborter.obj) return
+        // Set earliestActivityP to the lesser of the two
+        if (earliestActivityP == null) earliestActivityP = earliestActivityId
+        else
+        {
+            if ((earliestActivityId != null) && (earliestActivityId.first < earliestActivityP.first)) earliestActivityP = earliestActivityId
+        }
+        if (aborter.obj) return
 
-    if (earliestActivityP != null)
-    {
-        updateRecoveryInfo(earliestActivityP.first - 1, earliestActivityP.second, // -1 so earliest activity is just before the activity
-        i18n(S.Bip44ActivityNotice) + " " + i18n(S.FirstUseDateHeightInfo) % mapOf(
-          "date" to epochToDate(earliestActivityP.first),
-          "height" to earliestActivityP.second.toString()
-        ))
-    }
-    else
-    {
-        updateRecoveryInfo(null,-1, i18n(S.NoBip44ActivityNotice))
-    }
+        if (earliestActivityP != null)
+        {
+            updateRecoveryInfo(earliestActivityP.first - 1, earliestActivityP.second, // -1 so earliest activity is just before the activity
+              i18n(S.Bip44ActivityNotice) + " " + i18n(S.FirstUseDateHeightInfo) % mapOf(
+                "date" to epochToDate(earliestActivityP.first),
+                "height" to earliestActivityP.second.toString()
+              ))
+        }
+        else
+        {
+            updateRecoveryInfo(null, -1, i18n(S.NoBip44ActivityNotice))
+        }
 
-    /*
+        /*
     // Look in non-standard places for activity
     val BTCactivity =
       bracketActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.BTC, 0, 0, it) })
@@ -878,7 +855,7 @@ fun peekFirstActivity(secretWords: String, chainSelector: ChainSelector, aborter
     else i18n(R.string.NoBip44BtcActivityNotice)
     */
 
-    /*
+        /*
     earliestActivityP = searchActivity(ec, chainSelector, DERIVATION_PATH_SEARCH_DEPTH, { AddressDerivationKey.Hd44DeriveChildKey(secret, AddressDerivationKey.BIP43, AddressDerivationKey.BTC, 0, 0, it) })
     var Bip44BTCMsg = if (earliestActivityP != null)
     {
@@ -889,91 +866,74 @@ fun peekFirstActivity(secretWords: String, chainSelector: ChainSelector, aborter
     }
     else i18n(R.string.NoBip44BtcActivityNotice)
      */
+    }
+    finally
+    {
+        net?.returnElectrum(ec)
+    }
 }
 
 class EarlyExitException:Exception()
 
 fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter: Objectify<Boolean>, ecCnxn: ElectrumClient? = null)
 {
-    val (svr, port) = try
+    val net = blockchains[chainSelector]?.net
+    val ec = net?.getElectrum()
+    if (ec == null)
     {
-        getElectrumServerOn(chainSelector)
-    }
-    catch (e: BadCryptoException)
-    {
-        LogIt.info("wallet search not supported for this blockchain")
+        displayRecoveryInfo(i18n(S.ElectrumNetworkUnavailable))
         return
     }
+    try
+    {
 
-    if (aborter.obj) return
-    val ec = ecCnxn ?: try
-    {
-        ElectrumClient(chainSelector, svr, port, useSSL=true)
-    }
-    catch (e: ElectrumConnectError) // covers java.net.ConnectException, UnknownHostException and a few others that could trigger
-    {
-        try
+        if (aborter.obj) return
+
+        val (tip, tipHeight) = ec.getTip()
+
+        val passphrase = "" // TODO: support a passphrase
+        val secret = generateBip39Seed(secretWords, passphrase)
+
+        val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
+
+        LogIt.info("Searching in ${addressDerivationCoin}")
+        var activity = try
         {
-            ElectrumClient(chainSelector, svr, port, useSSL = false, accessTimeoutMs = 60000, connectTimeoutMs = 10000)
+            searchDerivationPathActivity(ec, chainSelector, WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP) {
+                if (aborter.obj) throw EarlyExitException()
+                libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
+            }
         }
-        catch(e: ElectrumConnectError)
+        catch (e: EarlyExitException)
         {
-            if (chainSelector == ChainSelector.BCH)
-                ElectrumClient(chainSelector, LAST_RESORT_BCH_ELECTRS)
-            else if (chainSelector == ChainSelector.NEXA)
-                ElectrumClient(chainSelector, LAST_RESORT_NEXA_ELECTRS, DEFAULT_NEXA_TCP_ELECTRUM_PORT, useSSL = false)
-            else throw e
-        }
-        catch (e: ElectrumConnectError)
-        {
-            displayRecoveryInfo(i18n(S.ElectrumNetworkUnavailable))
-            // TODO status checkmark    ui.GuiStatusOk.setImageResource(android.R.drawable.ic_delete)
             return
         }
-    }
-    ec.start()
-    if (aborter.obj) return
+        if (aborter.obj) return
 
-    val (tip, tipHeight) = ec.getTip()
-
-    val passphrase = "" // TODO: support a passphrase
-    val secret = generateBip39Seed(secretWords, passphrase)
-
-    val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
-
-    LogIt.info("Searching in ${addressDerivationCoin}")
-    var activity = try
-    {
-        searchDerivationPathActivity(ec, chainSelector, WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP) {
-            if (aborter.obj) throw EarlyExitException()
-            libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
+        // TODO need to explicitly push nonstandard addresses into the wallet, by explicitly returning them.
+        // otherwise the transactions won't be noticed by the wallet when we jam them in.
+        LogIt.info("Searching in ${AddressDerivationKey.ANY}")
+        // Look for activity in the identity and common location
+        var activity2 = try
+        {
+            searchDerivationPathActivity(ec, chainSelector, WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP) {
+                if (aborter.obj) throw EarlyExitException()
+                libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, false, it).first
+            }
         }
-    }
-    catch( e: EarlyExitException)
-    {
-        return
-    }
-    if (aborter.obj) return
-
-    // TODO need to explicitly push nonstandard addresses into the wallet, by explicitly returning them.
-    // otherwise the transactions won't be noticed by the wallet when we jam them in.
-    LogIt.info("Searching in ${AddressDerivationKey.ANY}")
-    // Look for activity in the identity and common location
-    var activity2 = try
-    {
-        searchDerivationPathActivity(ec, chainSelector, WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP) {
-            if (aborter.obj) throw EarlyExitException()
-            libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, false, it).first
+        catch (e: EarlyExitException)
+        {
+            return
         }
-    }
-    catch( e: EarlyExitException)
-    {
-        return
-    }
-    if (aborter.obj) return
+        if (aborter.obj) return
 
-    val act = activity.txh + activity2.txh
-    val addrCount = activity.addrCount + activity2.addrCount
-    val bal = activity.balance + activity2.balance
-    newAccountState.value = newAccountState.value.copy(discoveredAccountHistory = act, discoveredAddressCount = addrCount, discoveredAccountBalance = bal, discoveredAddressIndex = activity.lastAddressIndex, discoveredTip = tip)
+        val act = activity.txh + activity2.txh
+        val addrCount = activity.addrCount + activity2.addrCount
+        val bal = activity.balance + activity2.balance
+        newAccountState.value = newAccountState.value.copy(discoveredAccountHistory = act, discoveredAddressCount = addrCount, discoveredAccountBalance = bal, discoveredAddressIndex = activity.lastAddressIndex, discoveredTip = tip)
+    }
+    finally
+    {
+        net.returnElectrum(ec)
+    }
 }
