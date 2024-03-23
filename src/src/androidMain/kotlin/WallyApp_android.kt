@@ -26,11 +26,10 @@ import kotlin.coroutines.CoroutineContext
 import com.eygraber.uri.*
 import info.bitcoinunlimited.www.wally.ui.views.loadingAnimation
 import org.nexa.threads.Mutex
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
-import kotlin.time.toJavaDuration
+
 
 const val DEBUG_VM = false
+var brokenMode: Boolean = false
 
 const val NORMAL_NOTIFICATION_CHANNEL_ID = "n"
 const val PRIORITY_NOTIFICATION_CHANNEL_ID = "p"
@@ -54,8 +53,6 @@ val ChainSelectorToSupportedBlockchains = SupportedBlockchains.entries.associate
 val PRIMARY_CRYPTO = if (REG_TEST_ONLY) ChainSelector.NEXAREGTEST else ChainSelector.NEXA
 
 var wallyAndroidApp: WallyApp? = null
-
-var brokenMode: Boolean = false
 
 // in app init, we change the lbbc integers to our own resource ids.  So this translation is likely unnecessary
 val i18nLbc = mapOf(

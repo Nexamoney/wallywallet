@@ -3,6 +3,7 @@ import info.bitcoinunlimited.www.wally.*
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
@@ -11,8 +12,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.HorizontalAlignmentLine
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -351,11 +354,14 @@ fun BlockchainSource(chain: ChainSelector, preferenceDB: SharedPreferences, swit
     var textState by remember { mutableStateOf(preferenceDB.getString(configuredNodeKey, "") ?: "") }
 
     val dispName = chainToName[chain]?.replaceFirstChar { it.uppercase() } ?: ""
+    val focusManager = LocalFocusManager.current
     Row(
         horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(5.dp, 0.dp),
     ) {
-        Text(dispName)
+        Text(dispName, modifier= Modifier.clickable {
+            focusManager.clearFocus()
+        })
         Spacer(modifier = Modifier.width(4.dp))
         WallyTextEntry(
           value = textState,
@@ -368,10 +374,8 @@ fun BlockchainSource(chain: ChainSelector, preferenceDB: SharedPreferences, swit
                 commit()
             }
           },
-          //label = { Text(name) },
-          //singleLine = true,
+          keyboardOptions = KeyboardOptions(autoCorrect = false, imeAction = ImeAction.Done),
           modifier = Modifier.weight(1f),
-          //colors = textFieldColors(containerColor = Color.Transparent),
           textStyle = TextStyle(fontSize = 14.sp)
         )
         Spacer(modifier = Modifier.weight(0.01f).alignBy(switchAlignment))

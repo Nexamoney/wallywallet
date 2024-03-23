@@ -543,6 +543,10 @@ expect fun isUiThread(): Boolean
 
 @Composable expect fun isImeVisible(): Boolean
 
+/** Split into set splits a list of items, separate by comma or space, into a set of individual items
+ * This defines the standard way in the UX to specify a list of items, so must be used for EVERY field that
+ * asks for an item list.
+ */
 fun String.splitIntoSet():Set<String>
 {
     return split(","," ").map({it.trim()}).filter({it.length > 0}).toSet()

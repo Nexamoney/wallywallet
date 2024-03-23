@@ -1,5 +1,6 @@
 package info.bitcoinunlimited.www.wally.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -26,6 +27,7 @@ import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import kotlinx.coroutines.*
 import org.nexa.libnexakotlin.*
+import wpw.src.generated.resources.Res
 
 enum class AccountAction
 {
@@ -479,12 +481,32 @@ fun RecoveryPhraseView(account: Account, done: () -> Unit)
       modifier = Modifier.fillMaxWidth(),
       horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(i18n(S.recoveryPhrase))
+        Text(i18n(S.recoveryPhrase), modifier = Modifier.padding(8.dp))
         val tmp = account.wallet.secretWords.split(" ")
         val halfWords:Int = tmp.size/2
-        val mnemonic = tmp.subList(0,halfWords).joinToString(" ") + "\n" + tmp.subList(halfWords, tmp.size).joinToString(" ")
+        var copied by remember { mutableStateOf(false) }
+
+        val mnemonic0 = tmp.subList(0,halfWords).joinToString(" ")
+        val mnemonic1 = tmp.subList(halfWords, tmp.size).joinToString(" ")
         SelectionContainer {
-            Text(mnemonic, color = Color.Red, fontWeight = FontWeight.Bold)
+            // This ensures that they fit on the line
+            Column(
+              modifier = Modifier.fillMaxWidth(),
+              horizontalAlignment = Alignment.CenterHorizontally
+            )
+            {
+                CenteredFittedText(mnemonic0, fontWeight = FontWeight.Bold, color = Color.Blue, modifier =
+                Modifier.clickable {
+                    setTextClipboard(account.wallet.secretWords)
+                    copied = true
+                })
+                CenteredFittedText(mnemonic1, fontWeight = FontWeight.Bold, color = Color.Blue, modifier =
+                Modifier.clickable {
+                    setTextClipboard(account.wallet.secretWords)
+                    copied = true
+                })
+            }
+            //Text(mnemonic, color = Color.Red, fontWeight = FontWeight.Bold)
         }
         WallyButtonRow {
             WallyBoringTextButton(S.WroteRecoveryPhraseDown) {
@@ -498,6 +520,10 @@ fun RecoveryPhraseView(account: Account, done: () -> Unit)
                 later { account.saveAccountFlags() }
                 done()
             }
+        }
+        if (copied)
+        {
+            Text(i18n(S.PastingRecoveryPhraseIsBadIdea), color = Color.Red, modifier = Modifier.padding(8.dp))
         }
     }
 }
