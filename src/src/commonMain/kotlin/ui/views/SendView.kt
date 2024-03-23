@@ -452,7 +452,7 @@ fun SendView(
 
 
             // Input address to send to
-            StringInputField(S.toColon, S.sendToAddressHint, toAddress, WallySectionTextStyle(), Modifier) {
+            AddressInputField(S.toColon, S.sendToAddressHint, toAddress, WallySectionTextStyle(), Modifier) {
                 setToAddress(it)
             }
 

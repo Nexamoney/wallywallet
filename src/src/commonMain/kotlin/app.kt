@@ -33,9 +33,6 @@ var wallyApp: CommonApp? = null
 var forTestingDoNotAutoCreateWallets = false
 var kvpDb: KvpDatabase? = null
 
-//@Volatile
-//var coinsCreated = false
-
 data class LongPollInfo(val proto: String, val hostPort: String, val cookie: String?, var active: Boolean = true)
 
 /** incompatible changes, extra fields added, fields and field sizes are the same, but content may be extended (that is, addtl bits in enums) */

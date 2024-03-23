@@ -26,6 +26,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Thread
+import org.nexa.threads.iThread
 
 private val supportedBlockchains =
   mapOf(
@@ -129,6 +130,9 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
 
     var aborter = remember { mutableStateOf(Objectify<Boolean>(false)) }
     var createClicks by remember {mutableStateOf(0) }  // Some operations require you click create twice
+
+    var firstActThread:iThread? = null
+    var allActThread:iThread? = null
 
     fun FinalDataCheck(): Boolean
     {
@@ -319,11 +323,13 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
                 // If the recovery phrase is good, let's peek at the blockchain to see if there's activity
                 // thread(true, true, null, "peekWallet") // kotlin api does not offer stack size setting
                 aborter.value.obj = true  // Abort the current peek
+                firstActThread?.join()
+                allActThread?.join()
                 aborter.value = Objectify<Boolean>(false)  // and create a new object for the next one
                 recoverySearchText = i18n(S.NewAccountSearchingForTransactions)
 
                 LogIt.info(sourceLoc() + ": launching wallet peek")
-                val th = Thread {
+                firstActThread = Thread {
                     try
                     {
                         peekFirstActivity(words.joinToString(" "), selectedBlockChain.second, aborter.value)
@@ -334,7 +340,8 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
                         LogIt.severe(sourceLoc() + "wallet peek error: " + e.toString())
                     }
                 }
-                val th2 = Thread {
+
+                allActThread = Thread {
                     try
                     {
                         searchAllActivity(words.joinToString(" "), selectedBlockChain.second, aborter.value)
@@ -775,7 +782,6 @@ fun peekFirstActivity(secretWords: String, chainSelector: ChainSelector, aborter
     }
     try
     {
-
         if (aborter.obj) return
 
         val passphrase = "" // TODO: support a passphrase
@@ -869,7 +875,7 @@ fun peekFirstActivity(secretWords: String, chainSelector: ChainSelector, aborter
     }
     finally
     {
-        net?.returnElectrum(ec)
+        net.returnElectrum(ec)
     }
 }
 

@@ -234,12 +234,44 @@ class Account(
         }
     }
 
+    var genericElectrumNodeReqCount = 0 // So when we increment first thing, we end up at 0
     private fun getElectrumServerOn(cs: ChainSelector):IpPort
     {
-        // Return our configured node if we have one
-        val name = chainToURI[cs]
-        val node = prefDB.getString(name + "." + CONFIGURED_NODE, null)
-        if (node != null) return splitIpPort(node, DefaultElectrumTCP[cs] ?: -1)
+        val excl = prefDB.getBoolean(name + "." + EXCLUSIVE_NODE_SWITCH, false)
+        val pref = prefDB.getBoolean(name + "." + PREFER_NODE_SWITCH, false)
+
+        // If we are in exclusive mode, or in preferred mode, once every 4 attempts, try our configured nodes
+        if (excl || pref)
+        {
+            // Return our configured node if we have one
+            val name = chainToURI[cs]
+            val nodeStr = prefDB.getString(name + "." + CONFIGURED_NODE, null)
+            if (nodeStr != null && nodeStr.isNotBlank() && nodeStr.isNotEmpty())
+            {
+                val nodes = nodeStr.splitIntoSet().toTypedArray()
+                if (nodes.size > 0)
+                {
+                    // In the preference case, after going thru all preferred choices,
+                    // drop through to a standard choice, setting the count back to 0
+                    if (pref && genericElectrumNodeReqCount>=nodes.size)
+                    {
+                        genericElectrumNodeReqCount = 0
+                    }
+                    else  // otherwise grab a node from the preference list
+                    {
+                        val node = nodes[genericElectrumNodeReqCount % nodes.size]
+                        val ipport = splitIpPort(node, DefaultElectrumTCP[cs] ?: -1)
+                        if (ipport.ip.isNotEmpty() && ipport.ip.isNotBlank())
+                        {
+                            genericElectrumNodeReqCount++
+                            return ipport
+                        }
+                    }
+                }
+            }
+            if (excl) throw ElectrumNoNodesException()
+        }
+        genericElectrumNodeReqCount++
         return ElectrumServerOn(cs)
     }
 

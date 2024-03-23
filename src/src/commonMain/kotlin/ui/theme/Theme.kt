@@ -50,6 +50,9 @@ import info.bitcoinunlimited.www.wally.ui.softKeyboardBar
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import org.nexa.libnexakotlin.CURRENCY_1
 import org.nexa.libnexakotlin.CurrencyDecimal
+import org.nexa.libnexakotlin.GetLog
+
+private val LogIt = GetLog("wally.theme")
 
 // https://stackoverflow.com/questions/65893939/how-to-convert-textunit-to-dp-in-jetpack-compose
 val Int.dpTextUnit: TextUnit
@@ -490,15 +493,19 @@ fun WallySectionTextStyle(): TextStyle = LocalTextStyle.current.copy(
 
 /* Styling for the text of titles that appear within a page */
 @Composable
-fun SectionText(textRes: Int, modifier: Modifier = Modifier) = SectionText(i18n(textRes), modifier)
+fun SectionText(textRes: Int, modifier: Modifier? = null) = SectionText(i18n(textRes), modifier)
 
 /* Styling for the text of titles that appear within a page */
 @Composable
-fun SectionText(text: String, modifier: Modifier = Modifier)
+fun SectionText(text: String, modifier: Modifier? = null)
 {
+    val focusManager = LocalFocusManager.current
+    val mod = modifier ?: Modifier.padding(0.dp).clickable {
+        focusManager.clearFocus()
+    }
     Text(
       text = text,
-      modifier = modifier.padding(0.dp),
+      modifier = mod,
       //.background(Color.Red),  // for layout debugging
       style = WallySectionTextStyle()
     )
@@ -513,12 +520,15 @@ fun CenteredSectionText(text: Int, modifier: Modifier = Modifier) =
 @Composable
 fun CenteredSectionText(text: String, modifier: Modifier = Modifier)
 {
+    val focusManager = LocalFocusManager.current
     Box(Modifier.fillMaxWidth())
     {
-        Text(text = text, modifier = Modifier.padding(0.dp).fillMaxWidth().align(Alignment.Center).then(modifier),
+        Text(text = text, modifier = Modifier.padding(0.dp).fillMaxWidth().align(Alignment.Center).clickable {
+            focusManager.clearFocus()
+        }.then(modifier),
           //.background(Color.Red),  // for layout debugging
           style = WallySectionTextStyle(),
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
         )
     }
 }
@@ -530,16 +540,16 @@ fun CenteredText(text: String, modifier: Modifier = Modifier)
     Text(text = text, modifier = Modifier.padding(0.dp).fillMaxWidth().then(modifier), textAlign = TextAlign.Center)
 }
 
-@Composable fun CenteredFittedText(text: Int, startingFontScale: Double=1.0, fontWeight: FontWeight = FontWeight.Normal, modifier: Modifier = Modifier) =
-  CenteredFittedText(i18n(text), startingFontScale, fontWeight, modifier)
+@Composable fun CenteredFittedText(text: Int, startingFontScale: Double=1.0, fontWeight: FontWeight = FontWeight.Normal, color: Color? = null, modifier: Modifier = Modifier) =
+  CenteredFittedText(i18n(text), startingFontScale, fontWeight, color, modifier)
 
-@Composable fun CenteredFittedText(text: String, startingFontScale: Double=1.0, fontWeight: FontWeight = FontWeight.Normal, modifier: Modifier = Modifier)
+@Composable fun CenteredFittedText(text: String, startingFontScale: Double=1.0, fontWeight: FontWeight = FontWeight.Normal, color: Color? = null, modifier: Modifier = Modifier)
 {
     // see https://stackoverflow.com/questions/63971569/androidautosizetexttype-in-jetpack-compose
     val tmp = WallyTextStyle(startingFontScale, fontWeight)
     var textStyle by remember { mutableStateOf(tmp) }
     var drawIt by remember { mutableStateOf(false) }
-    Text(text = text, style = textStyle, modifier = Modifier.padding(0.dp).fillMaxWidth().drawWithContent { if (drawIt) drawContent() }. then(modifier), textAlign = TextAlign.Center, maxLines = 1, softWrap = false,
+    Text(text = text, style = textStyle, color = color ?: Color.Unspecified, modifier = Modifier.padding(0.dp).fillMaxWidth().drawWithContent { if (drawIt) drawContent() }. then(modifier), textAlign = TextAlign.Center, maxLines = 1, softWrap = false,
       onTextLayout = {
           textLayoutResult ->
         if (textLayoutResult.didOverflowWidth)
@@ -573,7 +583,7 @@ fun CenteredText(text: String, modifier: Modifier = Modifier)
 
 /** Standard Wally text entry field.*/
 @Composable
-fun WallyTextEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, bkgCol: Color? = null, onValueChange: ((String) -> Unit)? = null) = WallyDataEntry(value, modifier, textStyle, null, bkgCol, onValueChange)
+fun WallyTextEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, bkgCol: Color? = null, keyboardOptions: KeyboardOptions? = null, onValueChange: ((String) -> Unit)? = null) = WallyDataEntry(value, modifier, textStyle, keyboardOptions, bkgCol, onValueChange)
 
 /** Standard Wally text entry field.*/
 @Composable
@@ -693,25 +703,41 @@ fun WallyDataEntry(value: String, modifier: Modifier = Modifier, textStyle: Text
     val scope = rememberCoroutineScope()
     val bkgColor = remember { Animatable(BaseBkg) }
     val ia = remember { MutableInteractionSource() }
-
+    // Track whenever we are inside a data entry field, because the soft keyboard will appear & we want to modify the screen based on soft
+    // keyboard state
     LaunchedEffect(ia) {
-        ia.interactions.collect {
-            when(it) {
-                // Hover for mouse platforms, Focus for touch platforms
-                is HoverInteraction.Enter, is FocusInteraction.Focus -> {
-                    scope.launch {
-                        bkgColor.animateTo(bkgCol ?: SelectedBkg, animationSpec = tween(500))
+        var entries=0
+        try
+        {
+            ia.interactions.collect {
+                //LogIt.info("WallyDataEntry interaction: $it")
+                when (it)
+                {
+                    // Hover for mouse platforms, Focus for touch platforms
+                    is HoverInteraction.Enter, is FocusInteraction.Focus ->
+                    {
+                        scope.launch {
+                            bkgColor.animateTo(bkgCol ?: SelectedBkg, animationSpec = tween(500))
                         }
-                    UxInTextEntry(true)
-                }
-                is HoverInteraction.Exit, is FocusInteraction.Unfocus -> {
-                    scope.launch {
-                        bkgColor.animateTo(bkgCol ?: BaseBkg, animationSpec = tween(500))
+                        if (entries==0) UxInTextEntry(true)
+                        entries++
                     }
-                    UxInTextEntry(false)
-                }
 
+                    is HoverInteraction.Exit, is FocusInteraction.Unfocus ->
+                    {
+                        scope.launch {
+                            bkgColor.animateTo(bkgCol ?: BaseBkg, animationSpec = tween(500))
+                        }
+                        entries--
+                        if (entries==0) UxInTextEntry(false)
+                    }
+                }
             }
+        }
+        catch(e: CancellationException)
+        {
+            // LogIt.info("WallyDataEntry cancelled $entries")
+            if (entries>0) UxInTextEntry(false)
         }
     }
 
@@ -721,7 +747,7 @@ fun WallyDataEntry(value: String, modifier: Modifier = Modifier, textStyle: Text
         textStyle = ts,
         interactionSource = ia,
         modifier = modifier,
-        keyboardOptions = keyboardOptions ?: KeyboardOptions.Default,
+        keyboardOptions = keyboardOptions ?: KeyboardOptions(imeAction = ImeAction.Done),
         decorationBox = { tf ->
           Box(Modifier.hoverable(ia, true)
           .background(bkgCol ?: bkgColor.value)
@@ -753,24 +779,40 @@ fun WallyDataEntry(value: MutableState<TextFieldValue>, modifier: Modifier = Mod
     val bkgColor = remember { Animatable(BaseBkg) }
     val ia = remember { MutableInteractionSource() }
 
-    LaunchedEffect(ia) {
-        ia.interactions.collect {
-            when(it) {
-                // Hover for mouse platforms, Focus for touch platforms
-                is HoverInteraction.Enter, is FocusInteraction.Focus -> {
-                    scope.launch {
-                        bkgColor.animateTo(bkgCol ?: SelectedBkg, animationSpec = tween(500))
+    LaunchedEffect(ia)
+    {
+        var entries=0
+        try
+        {
+            ia.interactions.collect {
+                when (it)
+                {
+                    // Hover for mouse platforms, Focus for touch platforms
+                    is HoverInteraction.Enter, is FocusInteraction.Focus ->
+                    {
+                        scope.launch {
+                            bkgColor.animateTo(bkgCol ?: SelectedBkg, animationSpec = tween(500))
+                        }
+                        if (entries==0) UxInTextEntry(true)
+                        entries++
                     }
-                    UxInTextEntry(true)
-                }
-                is HoverInteraction.Exit, is FocusInteraction.Unfocus -> {
-                    scope.launch {
-                        bkgColor.animateTo(bkgCol ?: BaseBkg, animationSpec = tween(500))
-                    }
-                    UxInTextEntry(false)
-                }
 
+                    is HoverInteraction.Exit, is FocusInteraction.Unfocus ->
+                    {
+                        scope.launch {
+                            bkgColor.animateTo(bkgCol ?: BaseBkg, animationSpec = tween(500))
+                        }
+                        entries--
+                        if(entries==0) UxInTextEntry(false)
+                    }
+
+                }
             }
+        }
+        catch(e: CancellationException)
+        {
+            // LogIt.info("WallyDataEntry cancelled $entries")
+            if (entries>0) UxInTextEntry(false)
         }
     }
 
@@ -808,10 +850,44 @@ fun WallyDataEntry(value: MutableState<TextFieldValue>, modifier: Modifier = Mod
 @Composable
 fun WallyIncognitoTextEntry(value: String, modifier: Modifier, onValueChange: (String) -> Unit)
 {
+    val ia = remember { MutableInteractionSource() }
+    // Track whenever we are inside a data entry field, because the soft keyboard will appear & we want to modify the screen based on soft
+    // keyboard state
+    LaunchedEffect(ia) {
+        var entries=0
+        try
+        {
+            ia.interactions.collect {
+                //LogIt.info("WallyDataEntry interaction: $it")
+                when (it)
+                {
+                    // Hover for mouse platforms, Focus for touch platforms
+                    is HoverInteraction.Enter, is FocusInteraction.Focus ->
+                    {
+                        if (entries==0) UxInTextEntry(true)
+                        entries++
+                    }
+
+                    is HoverInteraction.Exit, is FocusInteraction.Unfocus ->
+                    {
+                        entries--
+                        if (entries==0) UxInTextEntry(false)
+                    }
+                }
+            }
+        }
+        catch(e: CancellationException)
+        {
+            // LogIt.info("WallyDataEntry cancelled $entries")
+            if (entries>0) UxInTextEntry(false)
+        }
+    }
+
     BasicTextField(
       value,
       onValueChange,
-      modifier = modifier
+      modifier = modifier,
+      interactionSource = ia
     )
 }
 
@@ -926,13 +1002,35 @@ fun SelectStringDropdownRes(
 @Composable
 fun StringInputField(descriptionRes: Int, labelRes: Int, text: String, style: TextStyle = TextStyle(), modifier: Modifier = Modifier, onChange: (String) -> Unit)
 {
+    val focusManager = LocalFocusManager.current
     Row(
       modifier = Modifier.fillMaxWidth().then(modifier),
       verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(i18n(descriptionRes), style = style)
+        Text(i18n(descriptionRes), style = style, modifier = Modifier.clickable {
+            focusManager.clearFocus()
+        })
         Spacer(modifier = Modifier.width(8.dp))
         StringInputTextField(labelRes, text, onChange)
+    }
+}
+
+/**
+ *  Input field that returns a string and is described and labelled by a res Int for internationalization
+ */
+@Composable
+fun AddressInputField(descriptionRes: Int, labelRes: Int, text: String, style: TextStyle = TextStyle(), modifier: Modifier = Modifier, onChange: (String) -> Unit)
+{
+    val focusManager = LocalFocusManager.current
+    Row(
+      modifier = Modifier.fillMaxWidth().then(modifier),
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(i18n(descriptionRes), style = style, modifier = Modifier.clickable {
+            focusManager.clearFocus()
+        })
+        Spacer(modifier = Modifier.width(8.dp))
+        AddressInputTextField(labelRes, text, onChange)
     }
 }
 
@@ -942,6 +1040,39 @@ fun StringInputField(descriptionRes: Int, labelRes: Int, text: String, style: Te
 @Composable
 fun DecimalInputField(descriptionRes: Int, labelRes: Int, text: String, style: TextStyle = TextStyle(), modifier: Modifier = Modifier, onChange: (String) -> Unit)
 {
+    val ia = remember { MutableInteractionSource() }
+    // Track whenever we are inside a data entry field, because the soft keyboard will appear & we want to modify the screen based on soft
+    // keyboard state
+    LaunchedEffect(ia) {
+        var entries=0
+        try
+        {
+            ia.interactions.collect {
+                //LogIt.info("WallyDataEntry interaction: $it")
+                when (it)
+                {
+                    // Hover for mouse platforms, Focus for touch platforms
+                    is HoverInteraction.Enter, is FocusInteraction.Focus ->
+                    {
+                        if (entries==0) UxInTextEntry(true)
+                        entries++
+                    }
+
+                    is HoverInteraction.Exit, is FocusInteraction.Unfocus ->
+                    {
+                        entries--
+                        if (entries==0) UxInTextEntry(false)
+                    }
+                }
+            }
+        }
+        catch(e: CancellationException)
+        {
+            // LogIt.info("WallyDataEntry cancelled $entries")
+            if (entries>0) UxInTextEntry(false)
+        }
+    }
+
     Row(
       modifier = Modifier.fillMaxWidth().then(modifier),
       verticalAlignment = Alignment.CenterVertically
@@ -951,6 +1082,7 @@ fun DecimalInputField(descriptionRes: Int, labelRes: Int, text: String, style: T
         TextField(
             value = text,
             onValueChange = onChange,
+            interactionSource = ia,
             label = { Text(i18n(labelRes)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth().wrapContentWidth(),
@@ -975,13 +1107,102 @@ fun DecimalInputField(descriptionRes: Int, labelRes: Int, text: String, style: T
 @Composable
 fun StringInputTextField(labelRes: Int, text: String, onChange: (String) -> Unit)
 {
+    val ia = remember { MutableInteractionSource() }
+    // Track whenever we are inside a data entry field, because the soft keyboard will appear & we want to modify the screen based on soft
+    // keyboard state
+    LaunchedEffect(ia) {
+        var entries=0
+        try
+        {
+            ia.interactions.collect {
+                //LogIt.info("WallyDataEntry interaction: $it")
+                when (it)
+                {
+                    // Hover for mouse platforms, Focus for touch platforms
+                    is HoverInteraction.Enter, is FocusInteraction.Focus ->
+                    {
+                        if (entries==0) UxInTextEntry(true)
+                        entries++
+                    }
+
+                    is HoverInteraction.Exit, is FocusInteraction.Unfocus ->
+                    {
+                        entries--
+                        if (entries==0) UxInTextEntry(false)
+                    }
+                }
+            }
+        }
+        catch(e: CancellationException)
+        {
+            // LogIt.info("WallyDataEntry cancelled $entries")
+            if (entries>0) UxInTextEntry(false)
+        }
+    }
     TextField(
       value = text,
       onValueChange = onChange,
       label = { Text(i18n(labelRes)) },
       singleLine = true,
+      interactionSource = ia,
       modifier = Modifier.fillMaxWidth(),
+      keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
 
+      colors = TextFieldDefaults.colors(
+        focusedContainerColor = Color.Transparent,
+        unfocusedContainerColor = Color.Transparent,
+        disabledContainerColor = Color.Transparent,
+      ),
+      textStyle = TextStyle(fontSize = 12.sp),
+    )
+}
+
+/**
+ * Input field that returns a String
+ */
+@Composable
+fun AddressInputTextField(labelRes: Int, text: String, onChange: (String) -> Unit)
+{
+    val ia = remember { MutableInteractionSource() }
+    // Track whenever we are inside a data entry field, because the soft keyboard will appear & we want to modify the screen based on soft
+    // keyboard state
+    LaunchedEffect(ia) {
+        var entries=0
+        try
+        {
+            ia.interactions.collect {
+                //LogIt.info("WallyDataEntry interaction: $it")
+                when (it)
+                {
+                    // Hover for mouse platforms, Focus for touch platforms
+                    is HoverInteraction.Enter, is FocusInteraction.Focus ->
+                    {
+                        if (entries==0) UxInTextEntry(true)
+                        entries++
+                    }
+
+                    is HoverInteraction.Exit, is FocusInteraction.Unfocus ->
+                    {
+                        entries--
+                        if (entries==0) UxInTextEntry(false)
+                    }
+                }
+            }
+        }
+        catch(e: CancellationException)
+        {
+            // LogIt.info("WallyDataEntry cancelled $entries")
+            if (entries>0) UxInTextEntry(false)
+        }
+    }
+    TextField(
+      value = text,
+      onValueChange = onChange,
+      label = { Text(i18n(labelRes)) },
+      singleLine = true,
+      interactionSource = ia,
+      modifier = Modifier.fillMaxWidth(),
+      keyboardOptions = KeyboardOptions(autoCorrect = false, imeAction = ImeAction.Done),
       colors = TextFieldDefaults.colors(
         focusedContainerColor = Color.Transparent,
         unfocusedContainerColor = Color.Transparent,
@@ -997,6 +1218,38 @@ fun StringInputTextField(labelRes: Int, text: String, onChange: (String) -> Unit
 @Composable
 fun LongInputField(descriptionRes: Int, labelRes: Int, amount: Long, onChange: (Long) -> Unit)
 {
+    val ia = remember { MutableInteractionSource() }
+    // Track whenever we are inside a data entry field, because the soft keyboard will appear & we want to modify the screen based on soft
+    // keyboard state
+    LaunchedEffect(ia) {
+        var entries=0
+        try
+        {
+            ia.interactions.collect {
+                //LogIt.info("WallyDataEntry interaction: $it")
+                when (it)
+                {
+                    // Hover for mouse platforms, Focus for touch platforms
+                    is HoverInteraction.Enter, is FocusInteraction.Focus ->
+                    {
+                        if (entries==0) UxInTextEntry(true)
+                        entries++
+                    }
+
+                    is HoverInteraction.Exit, is FocusInteraction.Unfocus ->
+                    {
+                        entries--
+                        if (entries==0) UxInTextEntry(false)
+                    }
+                }
+            }
+        }
+        catch(e: CancellationException)
+        {
+            // LogIt.info("WallyDataEntry cancelled $entries")
+            if (entries>0) UxInTextEntry(false)
+        }
+    }
     Row(
       verticalAlignment = Alignment.CenterVertically
     ) {
@@ -1015,6 +1268,7 @@ fun LongInputField(descriptionRes: Int, labelRes: Int, amount: Long, onChange: (
           },
           label = { Text(i18n(labelRes)) },
           singleLine = true,
+          interactionSource = ia,
           modifier = Modifier.width(180.dp),
           colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.Transparent,
