@@ -216,6 +216,8 @@ struct iOSApp: App {
         // Schedule a new app refresh task.
         scheduleAppRefreshTask()
 
+        MainViewControllerKt.OnAppStartup()
+
         let operation = BackgroundOperation()
         let queue = OperationQueue()
 
@@ -243,6 +245,8 @@ struct iOSApp: App {
         print("[backgroundTask] handleBackgroundProcessing Task fired")
         // Schedule a new background processing task.
         scheduleBGProcessingTask()
+
+        MainViewControllerKt.OnAppStartup()
 
         let operation = BackgroundOperation()
         let queue = OperationQueue()
