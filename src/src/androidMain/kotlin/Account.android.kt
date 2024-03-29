@@ -205,9 +205,9 @@ fun Account.updateUI(force: Boolean)
 
     if (chainstate != null)
     {
-        val cnxnLst = wallet.chainstate?.chain?.net?.mapConnections() { it.name }
+        val cnxnLst = wallet.chainstate?.chain?.net?.mapConnections { it?.name }
 
-        val trying: List<String> = if (chainstate.chain.net is MultiNodeCnxnMgr) (chainstate.chain.net as MultiNodeCnxnMgr).initializingCnxns.map { it.name } else listOf()
+        val trying: List<String> = if (chainstate.chain.net is MultiNodeCnxnMgr) (chainstate.chain.net as MultiNodeCnxnMgr).initializingCnxns.map { it?.name ?: "" } else listOf()
         val peers = cnxnLst?.joinToString(", ") + (if (trying.isNotEmpty()) (" " + i18n(R.string.trying) + " " + trying.joinToString(", ")) else "")
 
         val infoStr = i18n(R.string.at) + " " + (wallet.chainstate?.syncedHash?.toHex()?.take(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight

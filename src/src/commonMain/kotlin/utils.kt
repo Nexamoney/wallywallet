@@ -303,109 +303,14 @@ fun com.eygraber.uri.Uri.loadTextAndStatus(timeoutInMs: Number): Pair<String,Int
             {
                 val newLoc = resp.request.headers.get("Location")
                 if (newLoc != null) access = newLoc
-                else throw CannotLoadException()
+                else throw CannotLoadException(access)
             }
             else return@runBlocking Pair(resp.bodyAsText(), status)
         }
-        throw CannotLoadException()
+        throw CannotLoadException(access)
     }
 }
 
-/** load this Uri (blocking).
- * @return The Uri body contents as a string, and the status code.  If status code 301 or 302 is returned (forwarding) then return the forwarding Uri in the first parameter.
- */
-fun io.ktor.http.Url.readText(timeoutInMs: Number, maxReadSize: Number = 250000000): String
-{
-    val client = HttpClient() {
-        install(HttpTimeout) {
-            requestTimeoutMillis = timeoutInMs.toLong()
-            // connectTimeoutMillis  // time to connect
-            // socketTimeoutMillis   // time between 2 data packets
-        }
-    }
-
-    var url:io.ktor.http.Url = this
-    return runBlocking(wallyApp!!.coMiscCtxt) {
-        var tries = 0
-        while (tries < 10)
-        {
-            tries = tries + 1
-            val resp: HttpResponse = client.get(url) {
-                // Configure request parameters exposed by HttpRequestBuilder
-            }
-            val status = resp.status.value
-            if ((status == 301) or (status == 302))  // Handle URL forwarding (often switching from http to https)
-            {
-                val newLoc = resp.request.headers.get("Location")
-                if (newLoc != null) url = io.ktor.http.Url(newLoc)
-                else throw CannotLoadException()
-            }
-            else return@runBlocking resp.bodyAsText()
-        }
-        throw CannotLoadException()
-    }
-}
-
-/** This helper function reads the contents of the URL.  This duplicates the API of other URL classes */
-fun io.ktor.http.Url.readBytes(timeoutInMs: Number = 30000, maxReadSize: Number = 250000000): ByteArray
-{
-    val client = HttpClient() {
-        install(HttpTimeout) {
-            requestTimeoutMillis = timeoutInMs.toLong()
-            connectTimeoutMillis = timeoutInMs.toLong() // time to connect
-            // socketTimeoutMillis   // time between 2 data packets
-        }
-    }
-
-    var url:Url = this
-    return runBlocking(wallyApp!!.coMiscCtxt) {
-        var tries = 0
-        while (tries < 10)
-        {
-            tries = tries + 1
-            try
-            {
-                val resp: HttpResponse = client.get(url) {
-                    // Configure request parameters exposed by HttpRequestBuilder
-                }
-                val status = resp.status.value
-                if ((status == 301) or (status == 302))  // Handle URL forwarding (often switching from http to https)
-                {
-                    val newLoc = resp.request.headers.get("Location")
-                    if (newLoc != null) url = io.ktor.http.Url(newLoc)
-                    else throw CannotLoadException()
-                    LogIt.info("forwarded to $url")
-                }
-                else
-                {
-                    val chan = resp.bodyAsChannel()
-                    val actualBytes = chan.toByteArray(maxReadSize.toInt())
-                    if (chan.isClosedForRead) return@runBlocking actualBytes
-                    else throw CannotLoadException("Resource is too large at $maxReadSize bytes")
-                }
-            }
-            catch(e: IllegalStateException)
-            {
-                // IOS limitation: kotlin.IllegalStateException: TLS sessions are not supported on Native platform.
-                if (e.message?.contains("TLS sessions") == true)
-                {
-                    // Note this won't work if your web site just responds with every HTTP request with a forward to HTTPS.  In this case, the code will eventually throw a CannotLoadException
-                    val ub = URLBuilder(url)
-                    ub.protocol = URLProtocol.HTTP
-                    url = ub.build()
-                    LogIt.info("trying $url")
-                }
-                else LogIt.error("Cannot access $url, error $e")
-            }
-            catch(e:Exception)
-            {
-                LogIt.error("Cannot access $url, error $e")
-                throw e
-            }
-        }
-        throw CannotLoadException()
-    }
-}
 
 /** This helper function reads the contents of the URL.  This duplicates the API of other URL classes */
 fun io.ktor.http.Url.readPostBytes(jsonBody: String, timeoutInMs: Number = 10000, maxReadSize: Number = 250000000): ByteArray
@@ -433,11 +338,11 @@ fun io.ktor.http.Url.readPostBytes(jsonBody: String, timeoutInMs: Number = 10000
             {
                 val newLoc = resp.request.headers.get("Location")
                 if (newLoc != null) url = io.ktor.http.Url(newLoc)
-                else throw CannotLoadException()
+                else throw CannotLoadException(url.toString())
             }
             else return@runBlocking resp.bodyAsChannel().toByteArray(maxReadSize.toInt())
         }
-        throw CannotLoadException()
+        throw CannotLoadException(url.toString())
     }
 }
 
@@ -549,7 +454,7 @@ expect fun isUiThread(): Boolean
  */
 fun String.splitIntoSet():Set<String>
 {
-    return split(","," ").map({it.trim()}).filter({it.length > 0}).toSet()
+    return split(","," ").map({it.trim()}).filter({(it.isNotEmpty())&&(it.isNotBlank())}).toSet()
 }
 
 fun formatLocalDateTime(ldt: LocalDateTime): String {

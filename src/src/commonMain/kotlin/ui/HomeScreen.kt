@@ -630,7 +630,7 @@ private val _sendFromAccount = MutableStateFlow<String>("")
                           isSending = false
                           driver.value = null // hack to fix send section reappearing on nav after an address is provided
                           clearAlerts()  // If user manually cancelled, they understood the problem
-                          wallyApp!!.assetManager.clearTransferListOfAssetsHeldBy(sendFromAccount.value)
+                          wallyApp!!.accounts[sendFromAccount.value]?.clearAssetTransferList()
                                  },
                       approximatelyText = approximatelyText,
                       currencies = sendCurrencyChoices,
@@ -648,7 +648,7 @@ private val _sendFromAccount = MutableStateFlow<String>("")
                           checkSendQuantity(s, account)
                       },
                       onSendSuccess = {
-                          wallyApp!!.assetManager.clearTransferListOfAssetsHeldBy(sendFromAccount.value)
+                          wallyApp!!.accounts[sendFromAccount.value]?.clearAssetTransferList()
                           sendToAddress.value = ""
                           sendQuantity.value = ""
                           isSending = false

@@ -131,17 +131,16 @@ fun TransactionHistoryHeaderCSV(): String
 }
 
 
-fun iTransaction.gatherAssets(b:Blockchain):List<AssetInfo>
+fun iTransaction.gatherAssets(b:Blockchain):List<AssetPerAccount>
 {
-    val ret = mutableListOf<AssetInfo>()
+    val ret = mutableListOf<AssetPerAccount>()
     for (i in outputs)
     {
         val gi = i.script.groupInfo(i.amount)
         if ((gi != null)&&(!gi.isAuthority()))  // TODO not dealing with authority txos in Wally mobile
         {
-            val ai = AssetInfo(gi)
-            wallyApp?.let { ai.load(b, it.assetManager) }
-            ret.add(ai)
+            val ai = wallyApp?.assetManager?.track(gi.groupId, null)
+            ai?.let { ret.add(AssetPerAccount(gi, ai)) }
         }
     }
     return ret

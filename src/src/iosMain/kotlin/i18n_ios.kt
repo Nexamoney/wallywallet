@@ -5,15 +5,14 @@ import kotlinx.cinterop.readBytes
 import org.nexa.libnexakotlin.decodeUtf8
 import platform.Foundation.*
 
-var LocaleStrings = listOf<String>()
+var LocaleStrings = arrayOf<String>()
 
 /** Convert this number to a locale-based string */
 actual fun i18n(id: Int): String
 {
     if (id > LocaleStrings.size) return("STR$id")
-    else return LocaleStrings[id].replace("\\n","\n")
+    else return LocaleStrings[id]
 }
-
 
 actual fun setLocale():Boolean
 {
@@ -35,40 +34,34 @@ fun provideLocaleFilesData(data:ByteArray)
 @OptIn(ExperimentalForeignApi::class)
 actual fun setLocale(language: String, country: String):Boolean
 {
-    //val nothing = Objectify<Int>(0)
-    val loadTries = listOf<() -> ByteArray>(
+    val data = try
       {
-          //NSBundle.GetPathsForResources()
           val url = NSBundle.mainBundle.URLForResource("strings_${language}_$country", "bin")
           if (url == null) throw NotUriException()
           val data = NSData.create(url!!)
           if (data == null) throw NotUriException()
           data.bytes?.readBytes(data.length.toInt()) ?: throw NotUriException()
-      },
-
-      {
-          val url = NSBundle.mainBundle.URLForResource("strings_$language", "bin")
-          if (url == null) throw NotUriException()
-          val data = NSData.create(url!!)
-          if (data == null) throw NotUriException()
-          data.bytes?.readBytes(data.length.toInt()) ?: throw NotUriException()
       }
-    )
-
-    var strs = byteArrayOf()
-    for (i in loadTries)
+    catch(e: Exception)
     {
         try
         {
-            strs = i()
-            break
+            val url = NSBundle.mainBundle.URLForResource("strings_$language", "bin")
+            if (url == null) throw NotUriException()
+            val data = NSData.create(url!!)
+            if (data == null) throw NotUriException()
+            data.bytes?.readBytes(data.length.toInt()) ?: throw NotUriException()
         }
         catch (e: Exception)
         {
+            null
         }
     }
-    if (strs.size == 0) return false
-    return setLocaleStringsFrom(strs)
+
+    if (data == null || data.size == 0) return false
+    val ret = setLocaleStringsFrom(data)
+    data.drop(data.size) // Try to clean up most of the memory even if the mem allocator does not
+    return ret
 }
 
 fun setLocaleStringsFrom(strs: ByteArray): Boolean
@@ -76,12 +69,12 @@ fun setLocaleStringsFrom(strs: ByteArray): Boolean
     val chopSpots = mutableListOf<Int>(0)
     strs.forEachIndexed { index, byte -> if (byte==0.toByte()) chopSpots.add(index+1)  }
 
-    val strings = mutableListOf<String>()
-    for (i in 0 until chopSpots.size-1)
-    {
-        val ba = strs.sliceArray(chopSpots[i] until chopSpots[i+1]-1)
-        strings.add(ba.decodeUtf8())
-    }
+    val strings = Array<String>(chopSpots.size-1, { i: Int ->
+        val ba = strs.sliceArray(chopSpots[i] until chopSpots[i + 1] - 1)
+        ba.decodeUtf8().replace("\\n","\n").replace("\\'","\'").replace("\\\"","\"")
+
+    })
+    chopSpots.clear()
     LocaleStrings = strings
     return true
 }

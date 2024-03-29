@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.eygraber.uri.Uri
 
@@ -27,35 +28,36 @@ import org.nexa.libnexakotlin.*
 private val LogIt = GetLog("wally.assets")
 
 @Composable
-fun AssetListItemView(assetInfo: AssetInfo, verbosity: Int = 1, modifier: Modifier = Modifier)
+fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, modifier: Modifier = Modifier)
 {
-    var asset by remember { mutableStateOf(assetInfo) }
+    var apc by remember { mutableStateOf(assetPerAccount) }
+    val asset = apc.assetInfo
     val nft = asset.nft
 
+
     Column(modifier = modifier) {
-        if ((devMode)&&(verbosity>0)) CenteredFittedText(asset.groupInfo.groupId.toStringNoPrefix())
+        if ((devMode)&&(verbosity>0)) CenteredFittedText(asset.groupId.toStringNoPrefix())
         Row {
-
-            // If its an NFT, don't show the quantity if they have just 1
-            if ((nft == null)||(asset.groupInfo.tokenAmt != 1L))
-            {
-                val amt = tokenAmountString(asset.groupInfo.tokenAmt, asset.tokenInfo?.genesisInfo?.decimal_places)
-                if (verbosity > 0) FontScale(2.0)
-                Text(amt, fontSize = if (verbosity > 0) FontScale(2.0) else FontScale(1.0))
-                Spacer(modifier.width(4.dp))
-            }
-
             MpMediaView(asset.iconBytes, asset.iconUri.toString()) { mi, draw ->
                 val m = (if (verbosity > 0) Modifier.background(Color.Transparent).size(64.dp, 64.dp)
                 else  Modifier.background(Color.Transparent).size(26.dp, 26.dp)).align(Alignment.CenterVertically)
                 draw(m)
             }
 
-            Column(Modifier.weight(1f)) {
+            // If its an NFT, don't show the quantity if they have just 1
+            if ((nft == null)||(apc.groupInfo.tokenAmt != 1L))
+            {
+                val amt = tokenAmountString(apc.groupInfo.tokenAmt, asset.tokenInfo?.genesisInfo?.decimal_places)
+                if (verbosity > 0) FontScale(2.0)
+                Text(amt, fontSize = if (verbosity > 0) FontScale(2.0) else FontScale(1.0), modifier = modifier.align(Alignment.CenterVertically))
+                Spacer(modifier.width(4.dp))
+            }
+
+            Column(Modifier.weight(1f).align(Alignment.CenterVertically)) {
                 var name = (if ((nft != null) && (nft.title.length > 0)) nft.title else asset.name) ?: ""
                 if (verbosity > 0)
                 {
-                    CenteredSectionText(name)
+                    Text(text = name, modifier = Modifier.padding(0.dp).fillMaxWidth(), style = WallySectionTextStyle(), textAlign = TextAlign.Center)
                     if ((nft?.author != null) && (nft.author.length > 0))
                     {
                         CenteredText(i18n(S.NftAuthor) % mapOf("author" to nft.author))
@@ -257,7 +259,7 @@ fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
 @Composable
 fun AssetScreen(account: Account, nav: ScreenNav)
 {
-    var assetFocus by remember { mutableStateOf<AssetInfo?>(null) }
+    var assetFocus by remember { mutableStateOf<AssetPerAccount?>(null) }
     var assetFocusIndex by remember { mutableStateOf<Int>(0) }
     // TODO remember account.assets so redraw happens if assets change
 
@@ -311,14 +313,14 @@ fun AssetScreen(account: Account, nav: ScreenNav)
             WallyDivider()
             val uriHandler = LocalUriHandler.current
 
-            AssetView(a, modifier = Modifier.weight(1f).padding(8.dp, 0.dp))
+            AssetView(a.assetInfo, modifier = Modifier.weight(1f).padding(8.dp, 0.dp))
             WallyButtonRow {
                 WallyBoringIconButton("icons/clipboard.xml", Modifier.width(26.dp).height(26.dp)) {
-                    onCopyToClipboardButton(a)
+                    onCopyToClipboardButton(a.assetInfo)
                 }
                 WallyRoundedTextButton(S.Send, onClick = {
                     a.displayAmount = 1  // The default send is to transfer a single one (you can change in the send screen)
-                    if (wallyApp?.assetManager?.addAssetToTransferList(a) == true)
+                    if (account.addAssetToTransferList(a.groupInfo.groupId) == true)
                     {
                         displaySuccess(S.AssetAddedToTransferList)
                     }
@@ -328,11 +330,11 @@ fun AssetScreen(account: Account, nav: ScreenNav)
                     }
 
                 })
-                if ((a.nft?.appuri ?: "") != "") WallyRoundedTextButton(S.AssetApplication, onClick = {
-                    onInvokeButton(a, uriHandler)
+                if ((a.assetInfo.nft?.appuri ?: "") != "") WallyRoundedTextButton(S.AssetApplication, onClick = {
+                    onInvokeButton(a.assetInfo, uriHandler)
                 })
-                if ((a.tokenInfo?.marketUri ?: "") != "") WallyRoundedTextButton(S.AssetMarketplace, onClick = {
-                    onTradeButton(a, uriHandler)
+                if ((a.assetInfo.tokenInfo?.marketUri ?: "") != "") WallyRoundedTextButton(S.AssetMarketplace, onClick = {
+                    onTradeButton(a.assetInfo, uriHandler)
                 })
             }
         }
@@ -344,7 +346,7 @@ fun onCopyToClipboardButton(a: AssetInfo?)
 {
     if (a!=null)
     {
-        setTextClipboard(a.groupInfo.groupId.toString())
+        setTextClipboard(a.groupId.toString())
         // TODO: if (android.os.Build.VERSION.SDK_INT <= 32)  // system toasts above this version
         displayNotice(S.copiedToClipboard)
     }
@@ -391,7 +393,7 @@ fun onTradeButton(a: AssetInfo?, uriHandler: UriHandler)
                             {
                                 // If there are already params, add another with an &.  Otherwise add the first param with a ?
                                 val mkt = (if (market.contains("?")) market + "&"
-                                else market + "?" + "tokenid=") + a.groupInfo.groupId.toStringNoPrefix()
+                                else market + "?" + "tokenid=") + a.groupId.toStringNoPrefix()
                                 uriHandler.openUri(mkt)
                             }
                         }
@@ -401,7 +403,7 @@ fun onTradeButton(a: AssetInfo?, uriHandler: UriHandler)
                 {
                     // If there are already params, add another with an &.  Otherwise add the first param with a ?
                     val mkt = (if (market.contains("?")) market + "&"
-                    else market + "?" + "tokenid=") + a.groupInfo.groupId.toStringNoPrefix()
+                    else market + "?" + "tokenid=") + a.groupId.toStringNoPrefix()
                     uriHandler.openUri(mkt)
                 }
             }
@@ -429,8 +431,8 @@ fun onInvokeButton(a: AssetInfo?, uriHandler: UriHandler )
 
             if (appuri.lowercase().startsWith("http"))
             {
-                if (appuri.contains("?")) appuri = appuri + "&" + "tokenid=" + a.groupInfo.groupId.toStringNoPrefix()
-                else appuri = appuri + "?" + "tokenid=" + a.groupInfo.groupId.toStringNoPrefix()
+                if (appuri.contains("?")) appuri = appuri + "&" + "tokenid=" + a.groupId.toStringNoPrefix()
+                else appuri = appuri + "?" + "tokenid=" + a.groupId.toStringNoPrefix()
             }
 
             uriHandler.openUri(appuri)

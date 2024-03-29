@@ -213,9 +213,9 @@ open class CommonNavActivity : CommonActivity()
             R.id.navigation_assets ->
             {
                 val message = "" // anything extra we want to send
-                val intent = Intent(this, AssetsActivity::class.java).apply {  // TODO create Assets Activity
-                    putExtra(ASSETS_MESSAGE, message)
-                }
+                //val intent = Intent(this, AssetsActivity::class.java).apply {  // TODO create Assets Activity
+                //    putExtra(ASSETS_MESSAGE, message)
+                //}
                 this.startActivity(intent)
                 return true
             }

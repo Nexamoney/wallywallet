@@ -2,6 +2,7 @@ local.properties
 .idea
 .gradle
 **build
+**.DS_Store
 i18n/*.bin
 i18n/*.jar
 dwally.log*

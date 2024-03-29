@@ -30,9 +30,7 @@ const val ACCESS_PRICE_DATA_PREF = "accessPriceData"
 const val DARK_MODE_PREF = "darkModeMenu"
 const val DEV_MODE_PREF = "devinfo"
 const val CONFIRM_ABOVE_PREF = "confirmAbove"
-const val EXCLUSIVE_NODE_SWITCH = "exclusiveNodeSwitch"
 const val CONFIGURED_NODE = "NodeAddress"
-const val PREFER_NODE_SWITCH = "preferNodeSwitch"
 
 data class GeneralSettingsSwitch(
   val prefKey: String,

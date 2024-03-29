@@ -10,13 +10,13 @@ import java.io.File
 import java.io.InputStream
 import java.util.*
 
-var LocaleStrings = listOf<String>()
+var LocaleStrings = arrayOf<String>()
 
 /** Convert this number to a locale-based string */
 actual fun i18n(id: Int): String
 {
     if (id > LocaleStrings.size) return("STR$id")
-    val s = LocaleStrings[id].replace("\\n","\n").replace("\\'","\'").replace("\\\"","\"")
+    val s = LocaleStrings[id]
     return s
 }
 
@@ -69,12 +69,11 @@ actual fun setLocale(language: String, country: String):Boolean
     val chopSpots = mutableListOf<Int>(0)
     strs.forEachIndexed { index, byte -> if (byte==0.toByte()) chopSpots.add(index+1)  }
 
-    val strings = mutableListOf<String>()
-    for (i in 0 until chopSpots.size-1)
-    {
+    val strings = Array<String>(chopSpots.size-1, { i:Int->
         val ba = strs.sliceArray(chopSpots[i] until chopSpots[i+1]-1)
-        strings.add(ba.decodeUtf8())
-    }
+        val s = ba.decodeUtf8().replace("\\n","\n").replace("\\'","\'").replace("\\\"","\"")
+        s
+    })
     LocaleStrings = strings
     return true
 }

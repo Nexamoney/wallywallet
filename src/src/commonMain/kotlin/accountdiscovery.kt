@@ -31,7 +31,7 @@ data class AccountSearchResults(
   val balance: Long
 )
 
-fun searchDerivationPathActivity(ec: ElectrumClient, chainSelector: ChainSelector, maxGap:Int, secretDerivation: (Int) -> ByteArray?): AccountSearchResults
+fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: ChainSelector, maxGap:Int, secretDerivation: (Int) -> ByteArray?): AccountSearchResults
     {
         var addrsFound = 0L
         var index = 0
@@ -40,7 +40,8 @@ fun searchDerivationPathActivity(ec: ElectrumClient, chainSelector: ChainSelecto
         var hdrs = mutableMapOf<Int, iBlockHeader>()
         var bal = 0L
         var lastAddressIndex = index
-        while (gap < maxGap)
+        var gapMultiplier = 1  // Works around an error in early wallets where they did not use addresses in order
+        while (gap < maxGap * gapMultiplier)
         {
             val newSecret = secretDerivation(index)
             if (newSecret == null) break
@@ -56,9 +57,10 @@ fun searchDerivationPathActivity(ec: ElectrumClient, chainSelector: ChainSelecto
                 try
                 {
                     val script = dest.outputScript()
-                    val history = ec.getHistory(script, 10000)
+                    val history = getEc().getHistory(script, 10000)
                     if (history.size > 0)
                     {
+                        LogIt.info("Found activity at address $index")
                         found = true
                         lastAddressIndex = index
                         addrsFound++
@@ -68,15 +70,16 @@ fun searchDerivationPathActivity(ec: ElectrumClient, chainSelector: ChainSelecto
                             // But I don't need to investigate any repeats
                             if (!ret.containsKey(h.second))
                             {
-                                val tx = ec.getTx(h.second)
+                                val tx = getEc().getTx(h.second)
                                 val txh: TransactionHistory = TransactionHistory(chainSelector, tx)
                                 //  Load the header at this height from a little cache we keep, or from the server
                                 val header = hdrs[h.first] ?: run {
-                                    val headerBytes = ec.getHeader(h.first)
+                                    val headerBytes = getEc().getHeader(h.first)
                                     blockHeaderFor(chainSelector, BCHserialized(SerializationType.NETWORK, headerBytes))
                                 }
                                 if (header.validate(chainSelector))
                                 {
+                                    if (txh.confirmedHeight < WALLET_RECOVERY_NON_INCREMENTAL_ADDRESS_HEIGHT) gapMultiplier=3
                                     txh.confirmedHeight = h.first.toLong()
                                     txh.confirmedHash = header.hash
                                     txh.date = header.time
@@ -84,12 +87,16 @@ fun searchDerivationPathActivity(ec: ElectrumClient, chainSelector: ChainSelecto
                                 }
                             }
                         }
-                        val unspent = ec.listUnspent(dest, 10000)
+                        val unspent = getEc().listUnspent(dest, 10000)
                         for (u in unspent)
                         {
                             found = true
                             bal += u.amount
                         }
+                    }
+                    else
+                    {
+                        LogIt.info("No activity at address $index")
                     }
                 }
                 catch (e: ElectrumNotFound)

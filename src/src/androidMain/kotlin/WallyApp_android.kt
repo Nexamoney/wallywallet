@@ -28,7 +28,7 @@ import info.bitcoinunlimited.www.wally.ui.views.loadingAnimation
 import org.nexa.threads.Mutex
 
 
-const val DEBUG_VM = false
+const val DEBUG_VM = true
 var brokenMode: Boolean = false
 
 const val NORMAL_NOTIFICATION_CHANNEL_ID = "n"
@@ -349,8 +349,8 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         LogIt.info("------------  WALLY APP CREATED  ---------------")
         if (DEBUG_VM)
         {
-            StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder().detectLeakedClosableObjects().detectLeakedClosableObjects().detectActivityLeaks()
-              .penaltyLog().penaltyDeath().build()
+            StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder().detectLeakedClosableObjects().detectActivityLeaks()
+              .penaltyLog().build()  // .penaltyDeath()
             )
         }
 

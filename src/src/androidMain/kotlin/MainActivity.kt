@@ -110,8 +110,8 @@ class SleepMonitor(val activity: MainActivity) : BroadcastReceiver()
 class MainActivity : CommonNavActivity()
 {
     public lateinit var ui: ActivityMainBinding
-    lateinit var sendAssetsLayoutManager: LinearLayoutManager
-    lateinit var sendAssetsAdapter: GuiList<AssetInfo, AssetSuccinctBinder>
+    //lateinit var sendAssetsLayoutManager: LinearLayoutManager
+    //lateinit var sendAssetsAdapter: GuiList<AssetInfo, AssetSuccinctBinder>
     override var navActivityId:Int = R.id.navigation_home
 
     var app: WallyApp? = null
@@ -198,9 +198,9 @@ class MainActivity : CommonNavActivity()
         ui.sendQuantity.text.clear()
 
         ui.GuiSendAssetList.visibility = View.GONE
-        sendAssetsLayoutManager = LinearLayoutManager(this)
-        ui.GuiSendAssetList.layoutManager = sendAssetsLayoutManager
-        setAssetsToTransfer(null)  // Not transferring any assets
+       // sendAssetsLayoutManager = LinearLayoutManager(this)
+        //ui.GuiSendAssetList.layoutManager = sendAssetsLayoutManager
+       // setAssetsToTransfer(null)  // Not transferring any assets
 
         // Load the model with persistently saves stuff when this activity is created
         if (savedInstanceState != null)
@@ -313,7 +313,7 @@ class MainActivity : CommonNavActivity()
                 val c = accounts[sct]
                 if (c != null) try
                 {
-                    setAssetsToTransfer(assetManager.transferList, c)
+                    setAssetsToTransfer(c.assetTransferList, c)
                     mainActivityModel.lastSendFromAccount = sct
                     val sendAddr = PayAddress(ui.sendToAddress.text.toString().trim())
                     if (c.wallet.chainSelector != sendAddr.blockchain)
@@ -527,7 +527,7 @@ class MainActivity : CommonNavActivity()
         {
             ui.recvIntoAccount.setSelection(account.name)
             ui.sendAccount.setSelection(account.name)
-            setAssetsToTransfer(assetManager.transferList, account)
+            //setAssetsToTransfer(assetManager.transferList, account)
             updateReceiveAddressUI(account)
         }
     }
@@ -770,13 +770,6 @@ class MainActivity : CommonNavActivity()
                     c.onResumeAndroid()
                 }
 
-                val tl = assetManager?.transferList
-                if (tl != null && tl.size > 0)
-                {
-                    setAssetsToTransfer(tl)
-                    sendVisibility(true)
-                    receiveVisibility(false)
-                }
 
             }
         }
@@ -1050,12 +1043,10 @@ class MainActivity : CommonNavActivity()
             if (matches.size > 1)
             {
                 ui.sendAccount.setSelection(i18n(R.string.choose))
-                setAssetsToTransfer(null)
             }
             else if (matches.size == 1)
             {
                 ui.sendAccount.setSelection(matches[0].name)
-                setAssetsToTransfer(assetManager.transferList, matches[0])
             }
         }
     }
@@ -1206,7 +1197,6 @@ class MainActivity : CommonNavActivity()
                 // This payment in progress looks ok, set up the UX to show it
                 if (true)
                 {
-                    setAssetsToTransfer(null)  // PIP spec does not cover any assets so make sure none are selected
                     updateSendAccount(chainSelector)
                     // Update the sendCurrencyType field to contain our coin selection
                     updateSendCurrencyType()
@@ -1917,7 +1907,7 @@ class MainActivity : CommonNavActivity()
         }
     }
 
-    public fun setAssetsToTransfer(assets: List<AssetInfo>?=null, account: Account? = null)
+    public fun setAssetsToTransfer(assets: List<GroupId>?=null, account: Account)
     {
         if ((assets == null)||(assets.size == 0))
         {
@@ -1927,16 +1917,9 @@ class MainActivity : CommonNavActivity()
         }
         else
         {
-            // if no account is chosen, pick the account of the first asset
-            var act = account
-            if (act == null) act = assets[0].account  // actually no asset should be in this list that has no account (because how did user select it?)
-            if (act == null) return  // we don't know what account to use
             // make sure the send from account combo box is correct.
-            ui.sendAccount.setSelection(act.name)
-            // filter the assets by the chosen account
-            sendAssetList = assets.filter { it.account == act }
-
-            if (sendAssetList.size == 0)
+            ui.sendAccount.setSelection(account.name)
+            if (assets.size == 0)
             {
                 sendAssetList = listOf()
                 ui.GuiSendAssetList.visibility = View.GONE
@@ -1947,6 +1930,7 @@ class MainActivity : CommonNavActivity()
                 ui.GuiSendAssetList.visibility = View.VISIBLE
                 ui.AssetsHeader.visibility = View.VISIBLE
 
+                /*
                 sendAssetsAdapter = GuiList(ui.GuiSendAssetList, sendAssetList, this, {
                     val ui = AssetSuccinctListItemBinding.inflate(LayoutInflater.from(it.context), it, false)
                     AssetSuccinctBinder(ui, this)
@@ -1954,6 +1938,8 @@ class MainActivity : CommonNavActivity()
                 sendAssetsAdapter.rowBackgroundColors = AndroidWallyAssetRowColors
                 sendAssetsAdapter.layout()
                 sendAssetsLayoutManager.requestLayout()
+
+                 */
             }
         }
     }
@@ -2062,10 +2048,6 @@ class MainActivity : CommonNavActivity()
         sendVisibility(false)
         receiveVisibility(true)
         askedForConfirmation = false
-
-        // Clear out any assets lined up to be transferred if the send is cancelled
-        assetManager?.transferList?.clear()
-        setAssetsToTransfer(null)
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -2293,30 +2275,12 @@ class MainActivity : CommonNavActivity()
                             cflags = cflags or TxCompletionFlags.SPEND_ALL_NATIVE or TxCompletionFlags.DEDUCT_FEE_FROM_OUTPUT
                         }
 
-                        // Construct outputs that send all selected assets
-                        var assetDustOut = 0L
-                        for (asset in sendAssetList)
-                        {
-                            if (asset.account == account)
-                            {
-                                val aout = txOutputFor(cs)
-                                aout.amount = dust(cs)
-                                assetDustOut += aout.amount
-                                aout.script = sendAddr.groupedConstraintScript(asset.groupInfo.groupId, asset.displayAmount ?: 1)
-                                tx.add(aout)
-                            }
-                            else
-                            {
-                                LogIt.info("asset from the wrong account in sendAssetList!  (Should never happen)")
-                            }
-                        }
                         //
                         // Construct an output that sends the right amount of native coin
                         if (atomAmt > 0)
                         {
                             val coinOut = txOutputFor(cs)
                             coinOut.amount = atomAmt
-                            if (spendAll) coinOut.amount -= assetDustOut  // it doesn't matter because txCompleter will solve but needs to not be too much
                             coinOut.script = sendAddr.outputScript()
                             tx.add(coinOut)
                         }
@@ -2327,13 +2291,6 @@ class MainActivity : CommonNavActivity()
                     }
                     LogIt.info("Sending TX: ${tx.toHex()}")
                     onSendSuccess(atomAmt, sendAddr, tx)
-                    assetManager?.transferList?.removeAll(sendAssetList)
-                    laterUI {
-                        setAssetsToTransfer(null)
-                        sendVisibility(false)
-                        confirmVisibility(false)
-                        receiveVisibility(true)
-                    }
                 }
                 catch (e: Exception)  // We don't want to crash, we want to tell the user what went wrong
                 {

@@ -3,8 +3,6 @@ package info.bitcoinunlimited.www.wally
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import info.bitcoinunlimited.www.wally.ui.CONFIGURED_NODE
-import info.bitcoinunlimited.www.wally.ui.EXCLUSIVE_NODE_SWITCH
-import info.bitcoinunlimited.www.wally.ui.PREFER_NODE_SWITCH
 import kotlin.concurrent.Volatile
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,10 +53,11 @@ fun WallyGetCnxnMgr(chain: ChainSelector, name: String? = null, start:Boolean = 
 class Account(
   val name: String, //* The name of this account
   var flags: ULong = ACCOUNT_FLAG_NONE,
-  chainSelector: ChainSelector? = null,
+  val chainSelector: ChainSelector? = null,
   secretWords: String? = null,
   startDate: Long? = null, //* Where to start looking for transactions
   startHeight: Long? = null, //* block height of first activity
+  autoInit: Boolean = true, /** Automatically begin the asynchronous initialization phase */
   retrieveOnlyActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, HDActivityBracket>>? = null,  //* jam in other derivation paths to grab coins from (but use addresses of) (if new account)
   val prefDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
 )
@@ -145,7 +144,8 @@ class Account(
     /** A string denoting this wallet's currency units.  That is, the units that this wallet should use in display, in its BigDecimal amount representations, and is converted to and from in fromFinestUnit() and toFinestUnit() respectively */
     val currencyCode: String = chainToDisplayCurrencyCode[wallet.chainSelector]!!
 
-    var assets = mutableMapOf<GroupId, AssetInfo>()
+    var assets = mutableMapOf<GroupId, AssetPerAccount>()
+    val assetTransferList = mutableListOf<GroupId>()
 
     init
     {
@@ -161,34 +161,39 @@ class Account(
         }
 
         wallet.usesChain(chain)
-        later {
-            LogIt.info(sourceLoc() + name + ": wallet connect blockchain ${chain.name}")
-            wallet.startChain(startHeight, startDate)
-            LogIt.info(sourceLoc() + name + ": wallet blockchain ${chain.name} connection completed")
-            wallet.fillReceivingWithRetrieveOnly()
-            wallet.prepareDestinations(2, 2)  // Make sure that there is at least a few addresses before we hook into the network
-            if (chainSelector != ChainSelector.NEXA)  // no fiat price for nextchain
-            {
-                val SatPerDisplayUnit = CurrencyDecimal(SATperUBCH)
-                wallet.spotPrice = { currencyCode ->
-                    try
-                    {
-                        assert(currencyCode == fiatCurrencyCode)
-                        fiatPerCoin * CurrencyDecimal(SATperBCH) / SatPerDisplayUnit
-                    }
-                    catch (e: ArithmeticException)
-                    {
-                        BigDecimal.ZERO
-                    }
+        if (autoInit) later { asyncInit(startHeight, startDate) }
+    }
+
+    fun asyncInit(startHeight: Long?, startDate: Long?)
+    {
+        LogIt.info(sourceLoc() + name + ": wallet connect blockchain ${chain.name}")
+        wallet.startChain(startHeight, startDate)
+        LogIt.info(sourceLoc() + name + ": wallet blockchain ${chain.name} connection completed")
+        wallet.fillReceivingWithRetrieveOnly()
+        wallet.prepareDestinations(2, 2)  // Make sure that there is at least a few addresses before we hook into the network
+        if (chainSelector != ChainSelector.NEXA)  // no fiat price for nextchain
+        {
+            val SatPerDisplayUnit = CurrencyDecimal(SATperUBCH)
+            wallet.spotPrice = { currencyCode ->
+                try
+                {
+                    assert(currencyCode == fiatCurrencyCode)
+                    fiatPerCoin * CurrencyDecimal(SATperBCH) / SatPerDisplayUnit
                 }
-                wallet.historicalPrice = { currencyCode: String, epochSec: Long -> historicalUbchInFiat(currencyCode, epochSec) }
+                catch (e: ArithmeticException)
+                {
+                    BigDecimal.ZERO
+                }
             }
-
-            (cnxnMgr as MultiNodeCnxnMgr).getElectrumServerCandidate = { this.getElectrumServerOn(it) }
-
-            setBlockchainAccessModeFromPrefs()
-            loadAccountAddress()
+            // Tell the wallet layer how to get pricing info
+            wallet.historicalPrice = { currencyCode: String, epochSec: Long -> historicalUbchInFiat(currencyCode, epochSec) }
         }
+
+        // Tell the net layer how to get potential electrum nodes
+        (cnxnMgr as MultiNodeCnxnMgr).getElectrumServerCandidate = { this.getElectrumServerOn(it) }
+
+        setBlockchainAccessModeFromPrefs()
+        loadAccountAddress()
     }
 
     /** Save the PIN of an account to the database */
@@ -237,6 +242,7 @@ class Account(
     var genericElectrumNodeReqCount = 0 // So when we increment first thing, we end up at 0
     private fun getElectrumServerOn(cs: ChainSelector):IpPort
     {
+        val name = chainToURI[cs]
         val excl = prefDB.getBoolean(name + "." + EXCLUSIVE_NODE_SWITCH, false)
         val pref = prefDB.getBoolean(name + "." + PREFER_NODE_SWITCH, false)
 
@@ -244,7 +250,6 @@ class Account(
         if (excl || pref)
         {
             // Return our configured node if we have one
-            val name = chainToURI[cs]
             val nodeStr = prefDB.getString(name + "." + CONFIGURED_NODE, null)
             if (nodeStr != null && nodeStr.isNotBlank() && nodeStr.isNotEmpty())
             {
@@ -407,10 +412,29 @@ class Account(
         return ret
     }
 
-    fun constructAssetMap()
+        /** Adds this asset to the list of assets to be transferred in the next send */
+    fun addAssetToTransferList(a: GroupId): Boolean
     {
+        if (assetTransferList.contains(a)) return false
+        assetTransferList.add(a)
+        return true
+    }
+
+    /** Clear all assets held by this account from the transfer list */
+    fun clearAssetTransferList():Int
+    {
+        val ret = assetTransferList.size
+        assetTransferList.clear()
+        return ret
+    }
+
+    fun constructAssetMap(getEc: () -> ElectrumClient)
+    {
+        val am = wallyApp?.assetManager
+        if (am == null) return
+
         // LogIt.info(sourceLoc() + name + ": Construct assets")
-        val ast = mutableMapOf<GroupId, AssetInfo>()
+        val ast = mutableMapOf<GroupId, GroupInfo>()
         wallet.forEachTxo { sp ->
             if (sp.isUnspent)
             {
@@ -425,15 +449,11 @@ class Account(
                 if (grp != null)
                 {
                     // LogIt.info(sourceLoc() + name + ": unspent asset ${grp.groupId.toHex()}")
-
                     if (!grp.isAuthority())  // TODO not dealing with authority txos in Wally mobile
                     {
-                        val tmp = grp.tokenAmt  // Set the tokenAmt to 0 and than add it back in once we grab or create the AssetInfo
-                        grp.tokenAmt = 0
-                        val ai: AssetInfo = ast[grp.groupId] ?: AssetInfo(grp)
-                        ai.groupInfo.tokenAmt += tmp
-                        ai.account = this
-                        ast[grp.groupId] = ai
+                        val gi: GroupInfo? = ast[grp.groupId]
+                        if (gi != null) gi.tokenAmt += grp.tokenAmt
+                        else ast[grp.groupId] = grp
                     }
                 }
             }
@@ -445,21 +465,8 @@ class Account(
         for (asset in ast.values)
         {
             // If we don't have it at all, add it to our dictionary
-            val assetSaved = assets[asset.groupInfo.groupId]
-            if (assetSaved == null)
-            {
-                assets[asset.groupInfo.groupId] = asset
-                wallyApp?.let { asset.load(wallet.blockchain, it.assetManager) }
-            }
-            else
-            {
-                // otherwise update the existing entry for amount changes
-                assetSaved.groupInfo.tokenAmt = asset.groupInfo.tokenAmt
-                if (assetSaved.iconUri == null)  // We failed to load this asset up, so try again
-                {
-                    wallyApp?.let { asset.load(wallet.blockchain, it.assetManager) }
-                }
-            }
+            val assetInfo = am.track(asset.groupId, getEc)
+            assets[asset.groupId] = AssetPerAccount(asset, assetInfo)
         }
     }
 
@@ -635,14 +642,16 @@ class Account(
         }
     }
 
+    /** This is called by the underlying layers whenever something in the wallet has changed */
     fun onChange(force: Boolean = false)
     {
         changeAsyncProcessing()
         onChanged(this, force)
+        triggerAssetCheck()  // In case the wallet change had something to do with assets
     }
 
     /**
-     * Common implementatin of onUpdateReceiveInfo from androidMain
+     * Common implementation of onUpdateReceiveInfo from androidMain
      */
     fun onUpdatedReceiveInfoCommon(refresh: ((String) -> Unit)): Unit
     {
