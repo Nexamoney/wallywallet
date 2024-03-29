@@ -16,6 +16,7 @@ import info.bitcoinunlimited.www.wally.ui.theme.*
 import io.ktor.http.*
 import io.ktor.utils.io.errors.*
 import okio.FileNotFoundException
+import org.nexa.libnexakotlin.CannotLoadException
 
 private val LogIt = GetLog("wally.actperm")
 

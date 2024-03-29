@@ -71,7 +71,7 @@ fun SendView(
     val sendToAddress: MutableState<PayAddress?> = remember { mutableStateOf(null) }
     val fpcState = account.fiatPerCoinObservable.collectAsState()
     val amountState: MutableState<BigDecimal?> = remember { mutableStateOf(null) }
-    val sendingTheseAssets = wallyApp!!.assetManager.transferList.filter { it.account == account }
+    val sendingTheseAssets = account.assetTransferList
 
     val coroutineExceptionHandler = CoroutineExceptionHandler { context, throwable ->
         LogIt.error(context.toString())
@@ -171,19 +171,21 @@ fun SendView(
                             }
                             // Construct outputs that send all selected assets
                             var assetDustOut = 0L
-                            for (asset in sendingTheseAssets)
+                            for (groupId in sendingTheseAssets)
                             {
-                                if (asset.account == account)
+                                val assetPerAccount = account.assets[groupId]
+                                if (assetPerAccount != null)
                                 {
-                                    val aout = txOutputFor(cs)
-                                    aout.amount = dust(cs)
-                                    assetDustOut += aout.amount
-                                    aout.script = sendAddress.groupedConstraintScript(asset.groupInfo.groupId, asset.displayAmount ?: 1)
-                                    tx.add(aout)
-                                }
-                                else
-                                {
-                                    LogIt.info("asset from the wrong account in sendAssetList!  (Should never happen)")
+                                    val qty = assetPerAccount.displayAmount
+
+                                    if (qty != null && qty > 0)
+                                    {
+                                        val aout = txOutputFor(cs)
+                                        aout.amount = dust(cs)
+                                        assetDustOut += aout.amount
+                                        aout.script = sendAddress.groupedConstraintScript(groupId, qty)
+                                        tx.add(aout)
+                                    }
                                 }
                             }
                             //
@@ -495,15 +497,18 @@ fun SendView(
                 LazyColumn(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                     var index = 0
                     sendingTheseAssets.forEach {
-                        val entry = it
-                        val indexFreezer = index  // To use this in the item composable, we need to freeze it to a val, because the composable is called out-of-scope
-                        item(key = indexFreezer) {
-                            Box(Modifier.padding(4.dp, 1.dp).fillMaxWidth().background(WallyAssetRowColors[indexFreezer % WallyAssetRowColors.size]).clickable {
-                            }) {
-                                AssetListItemView(entry, 0, Modifier.padding(0.dp, 2.dp))
+                        val entry = account.assets[it]
+                        if (entry != null)
+                        {
+                            val indexFreezer = index  // To use this in the item composable, we need to freeze it to a val, because the composable is called out-of-scope
+                            item(key = indexFreezer) {
+                                Box(Modifier.padding(4.dp, 1.dp).fillMaxWidth().background(WallyAssetRowColors[indexFreezer % WallyAssetRowColors.size]).clickable {
+                                }) {
+                                    AssetListItemView(entry, 0, Modifier.padding(0.dp, 2.dp))
+                                }
                             }
+                            index++
                         }
-                        index++
                     }
                 }
             }

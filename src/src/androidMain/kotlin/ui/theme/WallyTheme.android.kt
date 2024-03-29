@@ -36,10 +36,10 @@ import androidx.media3.datasource.TransferListener
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import com.caverock.androidsvg.SVG
-import info.bitcoinunlimited.www.wally.CannotLoadException
 import info.bitcoinunlimited.www.wally.getResourceFile
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import io.ktor.http.*
+import org.nexa.libnexakotlin.CannotLoadException
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.UnimplementedException
 import java.io.ByteArrayInputStream
@@ -213,9 +213,12 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
 
         // This doesn't make sense because SVG is generally scalable and might be given to us with crazy dimensions
         // val bitmap = Bitmap.createBitmap(svg.documentWidth.toInt(), svg.documentHeight.toInt(), Bitmap.Config.ARGB_8888)
-
-        val bitmap = Bitmap.createBitmap((1000 * svg.documentAspectRatio).toInt(), 1000, Bitmap.Config.ARGB_8888)
+        val width = (512 * svg.documentAspectRatio).toInt()
+        val height = 512
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = android.graphics.Canvas(bitmap)
+        svg.setDocumentHeight(height.toFloat())  // This tells the renderer to scale the SVG to fit the whole canvas
+        svg.setDocumentWidth(width.toFloat())
         svg.renderToCanvas(canvas)
         val im: ImageBitmap = bitmap.asImageBitmap()
         wrapper(MediaInfo(im.width, im.height, false)) { mod ->

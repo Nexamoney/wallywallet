@@ -15,8 +15,8 @@ val CONFIRM_ABOVE_PREF = "confirmAbove"
 
 val ACCESS_PRICE_DATA_PREF = "accessPriceData"
 
-val EXCLUSIVE_NODE_SWITCH = "exclusiveNodeSwitch"
+const val EXCLUSIVE_NODE_SWITCH = "exclusiveNodeSwitch"
 val CONFIGURED_NODE = "NodeAddress"
-val PREFER_NODE_SWITCH = "preferNodeSwitch"
+const val PREFER_NODE_SWITCH = "preferNodeSwitch"
 
 var currentlySelectedAccount = chainToURI[ChainSelector.NEXA]  // The default crypto I'm using

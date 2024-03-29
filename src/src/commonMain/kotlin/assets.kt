@@ -1,17 +1,21 @@
 package info.bitcoinunlimited.www.wally
 
+import info.bitcoinunlimited.www.wally.ui.displayFastForwardInfo
 import io.ktor.http.*
 import okio.Buffer
 import okio.BufferedSource
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Gate
+import org.nexa.threads.LeakyBucket
+import org.nexa.threads.iThread
+import org.nexa.threads.millisleep
 
 private val LogIt = GetLog("BU.wally.assets")
 
 // If true, do not cache asset info locally -- load it every time
 var DBG_NO_ASSET_CACHE = false
 
-val ASSET_ACCESS_TIMEOUT_MS = 10000
+val ASSET_ACCESS_TIMEOUT_MS = 30*60*1000L  // Check assets every half hour even if nothing happened
 
 open class IncorrectTokenDescriptionDoc(details: String) : LibNexaException(details, "Incorrect token description document", ErrorSeverity.Expected)
 
@@ -25,7 +29,93 @@ fun String.runCommand(): String?
     throw UnimplementedException("cannot run executables on Android")
 }
 
-class AssetInfo(val groupInfo: GroupInfo)
+enum class AssetLoadState
+{
+    UNLOADED,
+    LOADED_GENESIS_INFO,
+    LOADED_TOKEN_DESC,
+    // LOADED_NFT,  same as completed at this point
+    COMPLETED
+}
+
+class AssetPerAccount(
+  val groupInfo: GroupInfo,
+  val assetInfo:AssetInfo,
+  // display this amount if set (for quantity selection during send)
+  var displayAmount: Long? = null
+)
+
+val assetCheckTrigger = Gate("assetCheckTrigger")
+// will take 30 (trigger every 30 seconds on average, max 3 times in a row)
+var assetCheckPacer = LeakyBucket(90*1000, 1000, 25*1000)
+fun triggerAssetCheck()
+{
+    assetCheckTrigger.wake()
+}
+
+fun AssetLoaderThread(): iThread
+{
+    return org.nexa.threads.Thread("assetLoader") {
+        // Constructing the asset list can use a lot of disk which interferes with startup
+        // This will wait until all the accounts are loaded
+        while (wallyApp!!.nullablePrimaryAccount == null) millisleep(2000UL)
+        val ecCnxns = mutableMapOf<ChainSelector, ElectrumClient?>()
+
+        fun getEc(chain:Blockchain): ElectrumClient
+        {
+            val cs: ChainSelector = chain.chainSelector
+            var e = ecCnxns[cs]
+            if ((e == null) || (e.open == false))
+            {
+                e = chain.net.getElectrum()
+                LogIt.info("Got electrum for ${cs}: ${e}")
+                ecCnxns[cs] = e
+            }
+            return e
+        }
+
+        while (true)
+        {
+            LogIt.info("asset check")
+            try
+            {
+                val accounts = wallyApp!!.accountLock.lock {
+                    wallyApp!!.accounts.values
+                }
+                for (a in accounts)
+                    a.getXchgRates("USD")
+
+                for (a in accounts)
+                {
+                    try
+                    {
+                        a.constructAssetMap({ getEc(a.chain) })
+                    }
+                    catch(e: ElectrumRequestTimeout)
+                    {
+                        // ec.close()
+                    }
+                }
+                // let all the electrum cnxns go
+                //for (ec in ecCnxns)
+                //{
+                //    ec.value?.close()
+                //}
+                //ecCnxns.clear()
+            }
+            catch(e: Exception)
+            {
+                handleThreadException(e)
+            }
+            LogIt.info("asset delay")
+            // We don't want to recheck assets more often than every 30 sec, regardless of blockchain activity
+            assetCheckTrigger.delayuntil(ASSET_ACCESS_TIMEOUT_MS, { assetCheckPacer.trytake(30*1000, { true}) == true })
+        }
+    }
+}
+
+
+class AssetInfo(val groupId: GroupId)
 {
     var dataLock = Gate()
     var name:String? = null
@@ -54,10 +144,15 @@ class AssetInfo(val groupInfo: GroupInfo)
     //var ui:AssetBinder? = null
     //var sui:AssetSuccinctBinder? = null
 
-    // display this amount if set (for quantity selection during send)
-    var displayAmount: Long? = null
+    var loadState: AssetLoadState = AssetLoadState.UNLOADED
 
+    // TODO remove
     var account: Account? = null
+
+    fun finalize()
+    {
+        dataLock.finalize()
+    }
 
     /** Get the file associated with this NFT (if this is an NFT), or null
      * This function may retrieve this data from a local cache or remotely.
@@ -66,7 +161,7 @@ class AssetInfo(val groupInfo: GroupInfo)
     fun nftFile(am: AssetManager):Pair<String,EfficientFile>?
     {
         // TODO: cache both in RAM and on disk
-        return am.getNftFile(tokenInfo, groupInfo.groupId)
+        return am.getNftFile(tokenInfo, groupId)
     }
 
     fun extractNftData(am: AssetManager, grpId: GroupId, nftZip:EfficientFile)
@@ -192,52 +287,41 @@ class AssetInfo(val groupInfo: GroupInfo)
         val iconUrl = tokenInfo?.icon
         if (iconUrl != null)
         {
+            var url = Url(iconUrl)
+            // isRelativePath appears to be broken on android
+            if ((url.isRelativePath) || (url.host == "localhost") || (iconUrl.startsWith("/")))
+            {
+                val du = docUrl ?: return Pair(null, null)
+                url = Url(du).resolve(iconUrl)
+            }
             try
             {
-                val url = Url(iconUrl)
                 val data = url.readBytes()
                 return Pair(url, data)
             }
-            catch (e: CannotLoadException)
+            catch (e: Exception)
             {
-                val du = docUrl ?: return Pair(null, null)
-                try
-                {
-                    val url = Url(du).resolve(iconUrl)
-                    val data = url.readBytes()
-                    return Pair(url, data)
-                }
-                catch(e: Exception)
-                {
-                    // link is dead
-                    return Pair(null, null)
-                }
+                return Pair(null, null)
             }
         }
         return Pair(null,null)
     }
 
-    fun load(chain: Blockchain, am: AssetManager)  // Attempt to find all asset info from a variety of data sources
+    fun load(chain: Blockchain, am: AssetManager, getEc: () -> ElectrumClient)  // Attempt to find all asset info from a variety of data sources
     {
-        var td = am.getTokenDesc(chain, groupInfo.groupId)
+        var td:TokenDesc = am.getTokenDesc(chain, groupId, getEc)
         synchronized(dataLock)
         {
-            LogIt.info("Loading Asset ${groupInfo.groupId.toStringNoPrefix()}")
+            LogIt.info("Loading Asset ${groupId.toStringNoPrefix()}")
             var tg = td.genesisInfo
+            if (tg == null) return@synchronized
             var dataChanged = false
 
-            if (tg == null)
-            {
-                td = am.getTokenDesc(chain, groupInfo.groupId, true)
-                tg = td.genesisInfo
-                if (tg == null) return@synchronized // can't load
-            }
+            LogIt.info(sourceLoc() + chain.name + ": loaded: " + td.name)
 
-            LogIt.info(sourceLoc() + chain.name + ": loaded: " + tg.name)
-
-            name = tg.name
-            ticker = tg.ticker
-            genesisHeight = tg.height
+            name = td.name
+            ticker = td.ticker
+            genesisHeight = tg?.height ?: -1
             genesisTxidem = if (tg.txidem.length > 0) Hash256(tg.txidem) else null
 
             val du = tg.document_url
@@ -246,28 +330,37 @@ class AssetInfo(val groupInfo: GroupInfo)
             if (du != null)
             {
                 // Ok find the NFT description
-                val nftZipData = am.getNftFile(td, groupInfo.groupId)
+                val nftZipData = am.getNftFile(td, groupId)
                 if (nftZipData != null)
                 {
-                    tokenInfo = td
-                    if (td.marketUri == null)
+                    try
                     {
-                        val u: Url = Url(nftZipData.first)
-                        if (u.isAbsolutePath)  // This is a real URI, not a local path
-                        {
-                            td.marketUri = u.resolve("/token/" + groupInfo.groupId.toHex()).toString()
-                            am.storeTokenDesc(groupInfo.groupId, td)
-                        }
-                        else
-                        {
-                            td.marketUri = Url(du).resolve("/token/" + groupInfo.groupId.toHex()).toString()
-                        }
+
                         tokenInfo = td
-                        am.storeTokenDesc(groupInfo.groupId, td)
+                        if (td.marketUri == null)
+                        {
+                            val u: Url = Url(nftZipData.first)
+                            if (u.isAbsolutePath)  // This is a real URI, not a local path
+                            {
+                                td.marketUri = u.resolve("/token/" + groupId.toHex()).toString()
+                                am.storeTokenDesc(groupId, td)
+                            }
+                            else
+                            {
+                                td.marketUri = Url(du).resolve("/token/" + groupId.toHex()).toString()
+                            }
+                            tokenInfo = td
+                            am.storeTokenDesc(groupId, td)
+                        }
+                        extractNftData(am, groupId, nftZipData.second)
+                        if (iconBackUri == null) getTddIcon().let { iconBackUri = it.first; iconBackBytes = it.second }
+                        loadState == AssetLoadState.COMPLETED
+                        dataChanged = true
                     }
-                    extractNftData(am, groupInfo.groupId, nftZipData.second)
-                    if (iconBackUri == null) getTddIcon().let { iconBackUri = it.first; iconBackBytes = it.second }
-                    dataChanged = true
+                    finally
+                    {
+                         nftZipData.second.close()
+                    }
                 }
                 else  // Not an NFT, so fill in the data from the TDD
                 {
@@ -283,21 +376,22 @@ class AssetInfo(val groupInfo: GroupInfo)
                         ticker = td.ticker
                     }
                     // Guess one location for the market
-                    td.marketUri = Url(du).resolve("/token/" + groupInfo.groupId.toHex()).toString()
+                    td.marketUri = Url(du).resolve("/token/" + groupId.toHex()).toString()
                     tokenInfo = td  // ok save all the info
-                    am.storeTokenDesc(groupInfo.groupId, td)
-                    val iconUrl = tokenInfo?.icon
+                    val iconUrl = td?.icon
                     if (iconUrl != null)
                     {
                         getTddIcon().let { iconUri = it.first; iconBytes = it.second }
                         dataChanged = true
                     }
+                    am.storeTokenDesc(groupId, td)
+                    loadState == AssetLoadState.COMPLETED
                 }
             }
             else // Missing some standard token info, look around for an NFT file
             {
-                val nftZipData = am.getNftFile(null, groupInfo.groupId)
-                if (nftZipData != null)
+                val nftZipData = am.getNftFile(null, groupId)
+                if (nftZipData != null)  // This is a verified NFT file
                 {
                     try
                     {
@@ -308,15 +402,15 @@ class AssetInfo(val groupInfo: GroupInfo)
                             val u: Url = Url(nftZipData.first)
                             if (u.isAbsolutePath)  // This is a real URI, not a local path
                             {
-                                td.marketUri = u.resolve("/token/" + groupInfo.groupId.toHex()).toString()
-                                am.storeTokenDesc(groupInfo.groupId, td)
+                                td.marketUri = u.resolve("/token/" + groupId.toHex()).toString()
+                                am.storeTokenDesc(groupId, td)
                             }
                         }
 
-
                         try
                         {
-                            extractNftData(am, groupInfo.groupId, nftZipData.second)
+                            extractNftData(am, groupId, nftZipData.second)
+                            loadState == AssetLoadState.COMPLETED
                         }
                         catch (e: Exception)
                         {
@@ -380,9 +474,29 @@ interface AssetManagerStorage
     fun cacheNftMedia(groupId: GroupId, media: Pair<String?, ByteArray?>): Pair<String?, ByteArray?>
 }
 
+
+// Returns a function that returns the same electrum client until that client fails, and then creates a new one.
+// TODO clean up the client when the factory is done.
+fun ElectrumClientFactory(blockchain: Blockchain): ()->ElectrumClient
+{
+    var ec:ElectrumClient? = null
+    return {
+        retry(10) {
+            val tmp = ec
+            if (tmp != null && tmp.open) ec
+            else
+            {
+                ec = blockchain.net.getElectrum()
+                if (ec == null) millisleep(1000U)
+                ec
+            }
+        }
+    }
+}
+
 class AssetManager(val app: CommonApp): AssetManagerStorage
 {
-    val transferList = mutableListOf<AssetInfo>()
+    var assets = mutableMapOf<GroupId, AssetInfo>()
 
     fun nftUrl(s: String?, groupId: GroupId):String?
     {
@@ -394,27 +508,20 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
         return null
     }
 
-    /** Adds this asset to the list of assets to be transferred in the next send */
-    fun addAssetToTransferList(a: AssetInfo): Boolean
-    {
-        if (transferList.contains(a)) return false
-        transferList.add(a)
-        return true
-    }
 
-    /** Clear all assets held by this account from the transfer list */
-    fun clearTransferListOfAssetsHeldBy(account: Account) = clearTransferListOfAssetsHeldBy(account.name)
-    /** Clear all assets held by this account from the transfer list */
-    fun clearTransferListOfAssetsHeldBy(accountName: String):Int
+    fun track(groupId: GroupId, getEc: (() -> ElectrumClient)? = null): AssetInfo
     {
-        val forXferAssets = wallyApp!!.assetManager.transferList.filter { it.account?.name == accountName }
-        if (forXferAssets.isNotEmpty())
-        {
-            wallyApp!!.assetManager.transferList.removeAll(forXferAssets)
-        }
-        return forXferAssets.size
-    }
+        var ret = assets[groupId]
+        if (ret != null) return ret
 
+        val blockchain = connectBlockchain(groupId.blockchain)
+        val gec = getEc ?: ElectrumClientFactory(blockchain)
+
+        ret = AssetInfo(groupId)
+        assets[groupId] = ret
+        wallyApp?.let { app -> ret.load(blockchain, this, gec) }
+        return ret
+    }
 
     fun storeTokenDesc(groupId: GroupId, td: TokenDesc)
     {
@@ -422,7 +529,7 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
         assetManagerStorage().storeAssetFile(groupId.toHex() + ".td", ser.toByteArray())
     }
 
-    fun getTokenDesc(chain: Blockchain, groupId: GroupId, forceReload:Boolean = false): TokenDesc
+    fun getTokenDesc(chain: Blockchain, groupId: GroupId, getEc: () -> ElectrumClient, forceReload:Boolean = false): TokenDesc
     {
         try
         {
@@ -435,101 +542,46 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
             val ret = kotlinx.serialization.json.Json.decodeFromString(TokenDesc.serializer(), s)
             if (ret.genesisInfo?.height ?: 0 >= 0)  // If the data is valid in the asset file
                 return ret
-        } catch (e: Exception) // file not found, so grab it
+        }
+        catch (e: Exception) // file not found, so grab it from the network
         {
         }
 
-        LogIt.info("Genesis Info for ${groupId.toHex()} not in cache")
+        LogIt.info(sourceLoc() + ": Genesis Info for ${groupId.toString()} (${groupId.toHex()}) not in cache")
         // first load the token description doc (TDD)
         val net = chain.req.net
-        val ec = net.getElectrum()
+
         try
         {
-            val tg = try
-            {
-                ec.getTokenGenesisInfo(groupId, 30 * 1000)
-            }
-            catch (e: ElectrumRequestTimeout)
-            {
-                displayError(S.ElectrumNetworkUnavailable, e.message)
-                LogIt.info(sourceLoc() + ": Rostrum is inaccessible loading token info for ${groupId.toHex()}")
-                TokenGenesisInfo(null, null, -1, null, null, "", "", "")
-            }
-
-            val docUrl = tg.document_url
-            if (docUrl != null)
-            {
-                var doc: String? = null
-                try
+                val td = getTokenInfo(groupId.parentGroup(), getEc)
+                val tg = td.genesisInfo
+                if (tg == null)  // Should not happen except network
                 {
-                    LogIt.info(sourceLoc() + ": Accessing TDD from " + docUrl)
-                    doc = Url(docUrl).readText(ASSET_ACCESS_TIMEOUT_MS)
-                }
-                catch (e: CannotLoadException)
-                {
-                }
-                catch (e: Exception)
-                {
-                    LogIt.info(sourceLoc() + ": Error retrieving token description document: " + e.message)
+                    throw ElectrumRequestTimeout()
                 }
 
-                if (doc != null)  // got the TDD
+                // If the genesis commitment to the doc matches the actual document, then we can use it
+                val tddHash = td.tddHash
+                if ((tddHash != null) && (tg.document_hash == tddHash.toHex()))
                 {
-                    val tx = ec.getTx(tg.txid)
-                    var addr: PayAddress? = null
-                    for (out in tx.outputs)
-                    {
-                        val gi = out.script.groupInfo(out.amount)
-                        if (gi != null)
-                        {
-                            if (gi.groupId == groupId)  // genesis of group must only produce 1 authority output so just match the groupid
-                            {
-                                //assert(gi.isAuthority()) // possibly but double check subgroup creation
-                                addr = out.script.address
-                                break
-                            }
-                        }
-                    }
-
-                    val td: TokenDesc = decodeTokenDescDoc(doc, addr)
-                    val tddHash = td.tddHash
-                    if ((tddHash != null) && (tg.document_hash == Hash256(tddHash).toHex()))
-                    {
-                        td.genesisInfo = tg
-                        storeTokenDesc(groupId, td)  // We got good data, so cache it
-                        return td
-                    }
-                    else
-                    {
-                        LogIt.info("Incorrect token desc document")
-                        val tderr = TokenDesc(tg.ticker ?: "", tg.name, "token description document is invalid")
-                        tderr.genesisInfo = tg
-                        return tderr
-                    }
-                }
-                else  // Could not access the doc for some reason, don't cache it so we retry next time we load the token
-                {
-                    val td = TokenDesc(tg.ticker ?: "", tg.name)
-                    LogIt.info("Cannot access token desc document")
-                    td.genesisInfo = tg
+                    storeTokenDesc(groupId, td)  // We got good data, so cache it
                     return td
                 }
-            }
-            else // There is no token doc, cache what we have since its everything known about this token
-            {
-                val td = TokenDesc(tg.ticker ?: "", tg.name)
-                td.genesisInfo = tg
-                storeTokenDesc(groupId, td)
-                return td
-            }
+                else
+                {
+                    LogIt.info("Incorrect or non-existent token desc document")
+                    return td
+                }
         }
-        finally
+        catch(e: Exception)  // Normalize exceptions
         {
-            chain.req.net.returnElectrum(ec)
+            throw ElectrumRequestTimeout()
         }
     }
 
 
+    /** Checks various sources for the NFT file, and returns it, only if it's hash properly matches the subgroup.
+     * This means that a source cannot lie about what the NFT file is, so we can check untrusted sources. */
     fun getNftFile(td: TokenDesc?, groupId: GroupId):Pair<String, EfficientFile>?
     {
         try
@@ -558,7 +610,7 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
         }
 
         // Try well known locations
-        if (zipBytes == null)
+        if (zipBytes == null || zipBytes.size == 0)
         {
             try
             {
@@ -571,7 +623,7 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
             }
         }
 
-        if (zipBytes != null)
+        if (zipBytes != null && zipBytes.size > 0)
         {
             LogIt.info("NFT file loaded for ${groupId.toStringNoPrefix()}")
 
@@ -582,14 +634,19 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
             }
             else
             {
-                LogIt.info(sourceLoc() + "nft zip file does not match hash for ${groupId.toStringNoPrefix()}")
-                return null
+                // check another typical but nonstandard hash
+                val hash = libnexa.sha256(zipBytes)
+                if (groupId.subgroupData() contentEquals hash)
+                {
+                    LogIt.info(sourceLoc() + "nft zip file matches sha256 hash for ${groupId.toStringNoPrefix()}")
+                }
+                else return null
             }
             val ef = EfficientFile(zipBytes)
             val nftData = nftData(ef)  // Sanity check the file
             if (nftData == null)
             {
-                LogIt.info("But NOT an NFT file")
+                LogIt.info("but is NOT an NFT file")
                 return null
             }
             storeAssetFile(groupId.toHex() + ".zip", zipBytes)

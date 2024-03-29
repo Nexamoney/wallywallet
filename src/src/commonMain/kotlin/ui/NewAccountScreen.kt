@@ -5,6 +5,7 @@ import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.HoverInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
@@ -14,7 +15,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
@@ -23,10 +26,12 @@ import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.LoadingAnimationContent
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Thread
 import org.nexa.threads.iThread
+import org.nexa.threads.millisleep
 
 private val supportedBlockchains =
   mapOf(
@@ -98,17 +103,64 @@ fun ProposeAccountName(cs: ChainSelector):String?
     return null
 }
 
-data class NewAccountDriver(val peekText: String?= null, val earliestActivity:Long? = null, val earliestActivityHeight:Int? = null)
+data class NewAccountDriver(val peekText: String?= null, val fastForwardText: String?= null, val earliestActivity:Long? = null, val earliestActivityHeight:Int? = null)
 val newAccountDriver = Channel<NewAccountDriver>()
 fun displayRecoveryInfo(s:String) = later { newAccountDriver.send(NewAccountDriver(s)) }
+fun displayFastForwardInfo(s:String) = later { newAccountDriver.send(NewAccountDriver(fastForwardText=s)) }
 
 fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:String? )
 {
     later { newAccountDriver.send(NewAccountDriver(s, earliestActivity=earliestActivity, earliestActivityHeight=earliestActivityHeight)) }
 }
 
+fun launchRecoverAccountThread(acState: NewAccountState, flags: ULong, secret: String, chainSelector: ChainSelector)
+{
+    Thread("recoverAccount")
+    {
+        try
+        {
+            wallyApp!!.recoverAccount(acState.accountName, flags, acState.pin, secret, chainSelector, acState.earliestActivity, acState.earliestActivityHeight.toLong(), null)
+            triggerAssignAccountsGuiSlots()
+            // acState.copy(isSuccessDialogOpen = false)
+        }
+        catch (e: Error)
+        {
+            displayUnexpectedError(e)
+            // acState.copy(errorMessage = i18n(S.unknownError))
+        }
+        catch (e: Exception)
+        {
+            displayUnexpectedException(e)
+            // acState.copy(errorMessage = i18n(S.unknownError))
+        }
+    }
+}
+
 var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAccountState())
 
+
+fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSelector)
+{
+    Thread("actRecovery")
+    {
+        millisleep(200U)
+        val flags: ULong = if (acState.hideUntilPinEnter) ACCOUNT_FLAG_HIDE_UNTIL_PIN else ACCOUNT_FLAG_NONE
+        val words = processSecretWords(acState.recoveryPhrase)
+        try
+        {
+            wallyApp!!.recoverAccount(acState.accountName, flags, acState.pin, words.joinToString(" "), chainSelector, acState.discoveredAccountHistory, acState.discoveredTip!!, acState.discoveredAddressIndex)
+            triggerAssignAccountsGuiSlots()
+        }
+        catch (e: Error)
+        {
+            displayUnexpectedError(e)
+        }
+        catch (e: Exception)
+        {
+            displayUnexpectedException(e)
+        }
+    }
+}
 
 @Composable fun NewAccountScreen(accounts: State<ListifyMap<String, Account>>, devMode: Boolean, nav: ScreenNav)
 {
@@ -126,6 +178,7 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
     }
 
     var recoverySearchText by remember { mutableStateOf("") }
+    var fastForwardText by remember { mutableStateOf<String?>(null) }
     var creatingAccountLoading by remember { mutableStateOf(false) }
 
     var aborter = remember { mutableStateOf(Objectify<Boolean>(false)) }
@@ -183,7 +236,7 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
         var inputValid = FinalDataCheck()
 
         // data checks specific to discovered accounts
-        if (newAcState.value.discoveredTip == null || newAcState.value.discoveredAccountHistory == null)
+        if (newAccountState.value.discoveredTip == null || newAccountState.value.discoveredAccountHistory == null)
         {
             newAccountState.value = newAccountState.value.copy(errorMessage = i18n(S.NewAccountSearchFailure), earliestActivityHeight = -1)
             inputValid = false
@@ -191,27 +244,16 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
 
         if (inputValid)
         {
-            later {  // get account creation out of the UI thread
-                val flags: ULong = if (newAcState.value.hideUntilPinEnter) ACCOUNT_FLAG_HIDE_UNTIL_PIN else ACCOUNT_FLAG_NONE
-                val words = processSecretWords(newAcState.value.recoveryPhrase)
-                newAccountState.value = try
-                {
-                    wallyApp!!.recoverAccount(newAcState.value.accountName, flags, newAcState.value.pin, words.joinToString(" "), selectedBlockChain.second, newAcState.value.discoveredAccountHistory, newAcState.value.discoveredTip!!, newAcState.value.discoveredAddressIndex)
-                    triggerAssignAccountsGuiSlots()
-                    nav.back()
-                    newAcState.value.copy(isSuccessDialogOpen = false)
-                }
-                catch (e: Error)
-                {
-                    displayUnexpectedError(e)
-                    newAcState.value.copy(errorMessage = i18n(S.unknownError))
-                }
-                catch (e: Exception)
-                {
-                    displayUnexpectedException(e)
-                    newAcState.value.copy(errorMessage = i18n(S.unknownError))
-                }
-            }
+            nav.back()
+            // Freeze a copy of the data, for use in the deferred account creation
+            val acState = newAccountState.value.copy()
+            val chainSelector = selectedBlockChain.second
+
+            // get account creation out of the UI thread
+            // launching a co-routine somehow delays the UI update by seconds
+            // Also, by wrapping the thread launch in a non-compose function,
+            // we ensure that the compose context is not imported into the thread
+            CreateAccountRecoveryThread(acState, chainSelector)
         }
 
     }
@@ -219,16 +261,17 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
     fun CreateSyncAccount()
     {
         var inputValid = FinalDataCheck()
+        val acState = newAccountState.value.copy()
 
-        val flags: ULong = if (newAcState.value.hideUntilPinEnter) ACCOUNT_FLAG_HIDE_UNTIL_PIN else ACCOUNT_FLAG_NONE
+        val flags: ULong = if (acState.hideUntilPinEnter) ACCOUNT_FLAG_HIDE_UNTIL_PIN else ACCOUNT_FLAG_NONE
 
         if (inputValid)
         {
 
-            val words = processSecretWords(newAcState.value.recoveryPhrase)
+            val words = processSecretWords(acState.recoveryPhrase)
             if (words.size == 12) // account recovery
             {
-                if ((createClicks == 0) && (newAcState.value.earliestActivity == null))
+                if ((createClicks == 0) && (acState.earliestActivity == null))
                 {
                     createClicks += 1
                     recoverySearchText = i18n(S.creatingNoHistoryAccountWarning)
@@ -236,43 +279,24 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
                 else
                 {
                     creatingAccountLoading = true
-                    Thread("recoverAccount")
-                    {
-                        newAccountState.value = try
-                        {
-                            wallyApp!!.recoverAccount(newAcState.value.accountName, flags, newAcState.value.pin, words.joinToString(" "), selectedBlockChain.second, newAcState.value.earliestActivity, newAcState.value.earliestActivityHeight.toLong(), null)
-                            triggerAssignAccountsGuiSlots()
-                            nav.back()
-                            newAcState.value.copy(isSuccessDialogOpen = false)
-                        }
-                        catch (e: Error)
-                        {
-                            displayUnexpectedError(e)
-                            newAcState.value.copy(errorMessage = i18n(S.unknownError))
-                        }
-                        catch (e: Exception)
-                        {
-                            displayUnexpectedException(e)
-                            newAcState.value.copy(errorMessage = i18n(S.unknownError))
-                        }
-
-                    }
+                    nav.back()
+                    launchRecoverAccountThread(acState, flags, words.joinToString(" "), selectedBlockChain.second)
                 }
             }
             else if (words.isEmpty())
             {
+                nav.back()
                 later {
-                    val account = wallyApp!!.newAccount(newAcState.value.accountName, flags, newAcState.value.pin, selectedBlockChain.second)
-                    newAccountState.value = if (account == null)
+                    val account = wallyApp!!.newAccount(acState.accountName, flags, acState.pin, selectedBlockChain.second)
+                    if (account == null)
                     {
                         displayError(i18n(S.unknownError))
-                        newAcState.value.copy(errorMessage = i18n(S.unknownError))
+                        // acState.copy(errorMessage = i18n(S.unknownError))
                     }
                     else
                     {
                         triggerAssignAccountsGuiSlots()
-                        nav.back()
-                        newAcState.value.copy(isSuccessDialogOpen = false)
+                        // acState.copy(isSuccessDialogOpen = false)
                     }
                 } // Can't happen in GUI thread
             }
@@ -284,9 +308,12 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
     {
         for (c in newAccountDriver)
         {
-            LogIt.info(sourceLoc() + ": external screen driver received")
+            // LogIt.info(sourceLoc() + ": external screen driver received")
             c.peekText?.let {
                 recoverySearchText = it
+            }
+            c.fastForwardText?.let {
+                fastForwardText = it
             }
             c.earliestActivity?.let {
                 newAccountState.value = newAccountState.value.copy(earliestActivity = it)
@@ -329,7 +356,7 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
                 recoverySearchText = i18n(S.NewAccountSearchingForTransactions)
 
                 LogIt.info(sourceLoc() + ": launching wallet peek")
-                firstActThread = Thread {
+                firstActThread = Thread("actPeek") {
                     try
                     {
                         peekFirstActivity(words.joinToString(" "), selectedBlockChain.second, aborter.value)
@@ -341,13 +368,14 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
                     }
                 }
 
-                allActThread = Thread {
+                allActThread = Thread("actSearch") {
                     try
                     {
                         searchAllActivity(words.joinToString(" "), selectedBlockChain.second, aborter.value)
                     }
                     catch (e: Exception)
                     {
+                        displayFastForwardInfo(i18n(S.NoNodes))
                         LogIt.severe(sourceLoc() + "wallet search error: " + e.toString())
                     }
                 }
@@ -358,8 +386,8 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
     }
 
     NewAccountScreenContent(
-      newAcState.value,
       recoverySearchText,
+      fastForwardText,
       selectedBlockChain,
       blockchains,
       onChainSelected = {
@@ -423,8 +451,8 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
 }
 
 @Composable fun NewAccountScreenContent(
-  newAcState: NewAccountState,
   recoverySearchText: String,
+  fastForwardText: String?,
   selectedChain: Pair<String, ChainSelector>,
   blockchains: Map<String, ChainSelector>,
   onChainSelected: (Pair<String, ChainSelector>) -> Unit,
@@ -437,6 +465,7 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
   creatingAccountLoading: Boolean
 )
 {
+    val newAcState by newAccountState.collectAsState()
     Column(
       modifier = Modifier.padding(4.dp).fillMaxSize()
     ) {
@@ -499,7 +528,8 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
             }
             else
             {
-                if (newAcState.earliestActivityHeight >= 0)
+                if (fastForwardText != null) CenteredText(fastForwardText)
+                else if (newAcState.earliestActivityHeight >= 0)
                 {
                     Spacer(Modifier.height(20.dp))
                     Row(Modifier.fillMaxWidth()) {
@@ -564,22 +594,26 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
 
 @Composable fun CheckOrX(valid: Boolean)
 {
+    val focusManager = LocalFocusManager.current
     if (valid)
-        Icon(imageVector = Icons.Default.Check, tint = colorValid, contentDescription = null)
+        Icon(imageVector = Icons.Default.Check, tint = colorValid, contentDescription = null,
+          modifier = Modifier.clickable { focusManager.clearFocus() })
     else  // For some reason Clear is a red X
-        Icon(Icons.Default.Clear, tint = colorError, contentDescription = null)
+        Icon(Icons.Default.Clear, tint = colorError, contentDescription = null,
+          modifier = Modifier.clickable { focusManager.clearFocus() })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun AccountNameInput(accountName: String, validAccountName: Boolean, onNewAccountName: (String) -> Unit)
 {
+    val focusManager = LocalFocusManager.current
     Row(
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically
     ) {
         CheckOrX(validAccountName)
         Spacer(Modifier.width(8.dp))
-        Text(i18n(S.AccountName))
+        Text(i18n(S.AccountName), modifier = Modifier.clickable { focusManager.clearFocus() })
         Spacer(Modifier.width(8.dp))
         WallyTextEntry(
           value = accountName,
@@ -592,6 +626,7 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun RecoveryPhraseInput(recoveryPhrase: String, validOrNoRecoveryPhrase: Boolean, onValueChange: (String) -> Unit)
 {
+    val focusManager = LocalFocusManager.current
     val ia = remember { MutableInteractionSource() }
 
     LaunchedEffect(ia) {
@@ -610,7 +645,7 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
 
     val scale = if (platform().spaceConstrained) FontScale(0.75) else FontScale(1.0)
     Column {
-        Text(i18n(S.AccountRecoveryPhrase))
+        Text(i18n(S.AccountRecoveryPhrase), modifier = Modifier.clickable { focusManager.clearFocus() })
         Spacer(Modifier.width(8.dp))
         Row(
           horizontalArrangement = Arrangement.SpaceBetween,
@@ -626,7 +661,8 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
               minLines = 1,
               maxLines = 4,
               modifier = Modifier.fillMaxWidth(),
-              textStyle = TextStyle(fontSize = scale)
+              textStyle = TextStyle(fontSize = scale),
+              keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
             )
         }
     }
@@ -635,8 +671,9 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun pinInput(pin: String, validOrNoPin: Boolean, onPinChange : (String) -> String)
 {
+    val focusManager = LocalFocusManager.current
     Column {
-        Text(i18n(S.CreatePIN))
+        Text(i18n(S.CreatePIN), modifier = Modifier.clickable { focusManager.clearFocus() })
         Spacer(Modifier.width(8.dp))
         Row(
           horizontalArrangement = Arrangement.SpaceBetween,
@@ -665,7 +702,7 @@ var newAccountState: MutableStateFlow<NewAccountState> = MutableStateFlow(NewAcc
 }
 
 
-fun searchFirstActivity(ec: ElectrumClient, chainSelector: ChainSelector, count: Int, secretDerivation: (Int) -> ByteArray, activityFound: ((Long, Int) -> Boolean)? = null): Pair<Long, Int>?
+fun searchFirstActivity(getEc: () -> ElectrumClient, chainSelector: ChainSelector, count: Int, secretDerivation: (Int) -> ByteArray, activityFound: ((Long, Int) -> Boolean)? = null): Pair<Long, Int>?
 {
     var index = 0
     var ret: Pair<Long, Int>? = null
@@ -683,14 +720,14 @@ fun searchFirstActivity(ec: ElectrumClient, chainSelector: ChainSelector, count:
         {
             try
             {
-                val use = ec.getFirstUse(dest, 10000)
+                val use = getEc().getFirstUse(dest, 10000)
                 if (use.block_hash != null)
                 {
                     val bh = use.block_height
                     if (bh != null)
                     {
-                        LogIt.info("Found activity at index $index in ${dest.address.toString()}")
-                        val headerBin = ec.getHeader(bh)
+                        LogIt.info(sourceLoc() +": Found activity at index $index in ${dest.address.toString()}")
+                        val headerBin = getEc().getHeader(bh)
                         val blkHeader = blockHeaderFor(chainSelector, BCHserialized(headerBin, SerializationType.HASH))
                         if (ret == null || blkHeader.time < ret.first)
                         {
@@ -701,12 +738,12 @@ fun searchFirstActivity(ec: ElectrumClient, chainSelector: ChainSelector, count:
                 }
                 else
                 {
-                    LogIt.info("didn't find activity at index $index in ${dest.address.toString()}")
+                    LogIt.info(sourceLoc() +": didn't find activity at index $index in ${dest.address.toString()}")
                 }
             }
             catch (e: ElectrumNotFound)
             {
-                LogIt.info("didn't find activity at index $index in ${dest.address.toString()}")
+                LogIt.info(sourceLoc() + ": didn't find activity at index $index in ${dest.address.toString()}")
             }
         }
         index++
@@ -773,13 +810,18 @@ fun bracketActivity(ec: ElectrumClient, chainSelector: ChainSelector, giveUpGap:
 
 fun peekFirstActivity(secretWords: String, chainSelector: ChainSelector, aborter: Objectify<Boolean>)
 {
-    val net = blockchains[chainSelector]?.net
-    val ec = net?.getElectrum()
-    if (ec == null)
-    {
-        displayRecoveryInfo(i18n(S.ElectrumNetworkUnavailable))
-        return
+    val net = connectBlockchain(chainSelector).net
+
+    var ec = retry(10) {
+        val ec = net?.getElectrum()
+        if (ec == null)
+        {
+            displayRecoveryInfo(i18n(S.ElectrumNetworkUnavailable))
+            millisleep(1000U)
+        }
+        ec
     }
+
     try
     {
         if (aborter.obj) return
@@ -791,7 +833,11 @@ fun peekFirstActivity(secretWords: String, chainSelector: ChainSelector, aborter
 
         LogIt.info("Searching in ${addressDerivationCoin}")
         var earliestActivityP =
-          searchFirstActivity(ec, chainSelector, WALLET_RECOVERY_DERIVATION_PATH_SEARCH_DEPTH, {
+          searchFirstActivity( {
+              if (ec.open) return@searchFirstActivity ec
+              ec = net.getElectrum()
+              return@searchFirstActivity(ec)
+          }, chainSelector, WALLET_RECOVERY_DERIVATION_PATH_SEARCH_DEPTH, {
               libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
           }, { time, height ->
               displayRecoveryInfo(i18n(S.Bip44ActivityNotice) + " " + (i18n(S.FirstUseDateHeightInfo) % mapOf(
@@ -807,7 +853,11 @@ fun peekFirstActivity(secretWords: String, chainSelector: ChainSelector, aborter
         LogIt.info("Searching in ${AddressDerivationKey.ANY}")
         // Look for activity in the identity and common location
         var earliestActivityId =
-          searchFirstActivity(ec, chainSelector, WALLET_RECOVERY_IDENTITY_DERIVATION_PATH_SEARCH_DEPTH, {
+          searchFirstActivity({
+              if (ec.open) return@searchFirstActivity ec
+              ec = net.getElectrum()
+              return@searchFirstActivity(ec)
+          }, chainSelector, WALLET_RECOVERY_IDENTITY_DERIVATION_PATH_SEARCH_DEPTH, {
               libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, false, it).first
           })
         if (aborter.obj) return
@@ -875,27 +925,41 @@ fun peekFirstActivity(secretWords: String, chainSelector: ChainSelector, aborter
     }
     finally
     {
-        net.returnElectrum(ec)
+        net?.returnElectrum(ec)
     }
+    LogIt.info(sourceLoc() +": Activity peek is complete")
 }
 
 class EarlyExitException:Exception()
 
 fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter: Objectify<Boolean>, ecCnxn: ElectrumClient? = null)
 {
-    val net = blockchains[chainSelector]?.net
-    val ec = net?.getElectrum()
-    if (ec == null)
-    {
-        displayRecoveryInfo(i18n(S.ElectrumNetworkUnavailable))
-        return
+    val net = connectBlockchain(chainSelector).net
+    var ec: ElectrumClient? = null
+
+    fun getEc():ElectrumClient {
+        return retry(10) {
+            val tmp = ec
+            if (tmp != null && tmp.open) ec
+            else
+            {
+                ec = net.getElectrum()
+                if (ec == null)
+                {
+                    displayFastForwardInfo(i18n(S.ElectrumNetworkUnavailable))
+                    millisleep(2000U)
+                }
+                ec
+            }
+        }
     }
+
+
     try
     {
-
         if (aborter.obj) return
 
-        val (tip, tipHeight) = ec.getTip()
+        val (tip, tipHeight) = getEc().getTip()
 
         val passphrase = "" // TODO: support a passphrase
         val secret = generateBip39Seed(secretWords, passphrase)
@@ -905,7 +969,7 @@ fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter
         LogIt.info("Searching in ${addressDerivationCoin}")
         var activity = try
         {
-            searchDerivationPathActivity(ec, chainSelector, WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP) {
+            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP) {
                 if (aborter.obj) throw EarlyExitException()
                 libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
             }
@@ -922,7 +986,7 @@ fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter
         // Look for activity in the identity and common location
         var activity2 = try
         {
-            searchDerivationPathActivity(ec, chainSelector, WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP) {
+            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_NONSTD_DERIVATION_PATH_MAX_GAP) {
                 if (aborter.obj) throw EarlyExitException()
                 libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, false, it).first
             }
@@ -940,6 +1004,7 @@ fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter
     }
     finally
     {
-        net.returnElectrum(ec)
+        ec?.let { net.returnElectrum(it) }
     }
+    LogIt.info("Account search is complete")
 }

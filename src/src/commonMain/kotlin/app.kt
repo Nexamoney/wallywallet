@@ -20,10 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.newFixedThreadPoolContext
 import org.nexa.libnexakotlin.*
-import org.nexa.threads.Mutex
-import org.nexa.threads.iMutex
-import org.nexa.threads.iThread
-import org.nexa.threads.millisleep
+import org.nexa.threads.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.concurrent.Volatile
 
@@ -220,7 +217,6 @@ class AccessHandler(val app: CommonApp)
     }
 }
 
-
 open class CommonApp
 {
     // Set to true if this is the first time this app has ever been run
@@ -228,7 +224,7 @@ open class CommonApp
 
     val accessHandler = AccessHandler(this)
 
-    val coMiscCtxt: CoroutineContext = newFixedThreadPoolContext(6, "app")
+    val coMiscCtxt: CoroutineContext = newFixedThreadPoolContext(8, "app")
     val coMiscScope: CoroutineScope = kotlinx.coroutines.CoroutineScope(coMiscCtxt)
 
     val accountLock = org.nexa.threads.Mutex()
@@ -671,20 +667,7 @@ open class CommonApp
             tpDomains.load()
         }
 
-        assetLoaderThread = org.nexa.threads.Thread("assetLoader") {
-            // Constructing the asset list can use a lot of disk which interferes with startup
-            // This will wait until all the accounts are loaded
-            while(wallyApp!!.nullablePrimaryAccount == null) millisleep(500UL)
-            while(true)
-            {
-                for (a in accounts)
-                    a.value.getXchgRates("USD")
-
-                for (a in accounts)
-                    a.value.constructAssetMap()
-                millisleep(10000UL)
-            }
-        }
+        assetLoaderThread = AssetLoaderThread()
     }
 
     /** Iterate through all the accounts, looping */
@@ -859,7 +842,8 @@ open class CommonApp
         }
     }
 
-    /** Create an account given a recovery key and the account's earliest activity */
+    /** Create an account given a recovery key and the account's earliest activity.
+     * This call is time consuming and must be run async from the main or UI thread */
     fun recoverAccount(
       name: String,
       flags_p: ULong,
@@ -894,24 +878,34 @@ open class CommonApp
             if (txh.date < earliestDate) earliestDate = txh.date
         }
 
-        return accountLock.lock {
-            val ac = Account(name, flags, chainSelector, secretWords, earliestDate, earliestHeight, null)
-            ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
+        LogIt.info("create account")
+        val ac = Account(name, flags, chainSelector, secretWords, earliestDate, earliestHeight, autoInit = false)
+        accountLock.lock {  // We can show it early, although it might have the wrong data momentarily
+                accounts[name] = ac
+                // Write the list of existing accounts, so we know what to load
+                saveActiveAccountList()
+            }
+        ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
 
-            // We need to pregenerate all the destinations used in the provided transactions, or we won't recognise these transactions
-            // as our own
-            ac.wallet.prepareDestinations(histAddressCount, histAddressCount)
-            ac.wallet.fastforward(histEnd.height, histEnd.time, histEnd.hash, txhist)
-            ac.start()
-            ac.onChange()
-            ac.saveAccountPin(name, epin)
+        // normally this can be done asynchronously to account creation, but we need to do it before fastforwarding
+        // because if it accidentally runs after the fast forward, it will set the sync point back to these start points
+        ac.asyncInit(earliestDate, earliestHeight)
+        LogIt.info("prepare destinations")
+        // We need to pregenerate all the destinations used in the provided transactions, or we won't recognise these transactions as our own
+        ac.wallet.prepareDestinations(histAddressCount, histAddressCount)
+        LogIt.info("fastforward")
+        ac.wallet.fastforward(histEnd.height, histEnd.time, histEnd.hash, txhist)
+        LogIt.info("start")
+        ac.start()
+        ac.onChange()
+        LogIt.info("save")
+        ac.saveAccountPin(name, epin)
+        ac.wallet.saveBip44Wallet() // because we jammed in a bunch of tx
+        LogIt.info("insert")
 
-            accounts[name] = ac
-            // Write the list of existing accounts, so we know what to load
-            saveActiveAccountList()
-            ac.wallet.saveBip44Wallet() // because we jammed in a bunch of tx
-            ac
-        }
+        LogIt.info("done")
+        return ac
+
     }
 
     /** Create an account given a recovery key and the account's earliest activity */
@@ -952,7 +946,7 @@ open class CommonApp
         if (veryEarly != null) veryEarly = veryEarly - 1  // Must be earlier than the first activity
 
         return accountLock.lock {
-            val ac = Account(name, flags, chainSelector, secretWords, veryEarly, earliestHeight, nonstandardActivity)
+            val ac = Account(name, flags, chainSelector, secretWords, veryEarly, earliestHeight, retrieveOnlyActivity = nonstandardActivity)
             ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
             ac.start()
             ac.onChange()

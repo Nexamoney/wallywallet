@@ -8,6 +8,8 @@ open class WalletInvalidException() : LibNexaExceptionI(S.accountUnavailableDeta
 open class PasteEmptyException() : LibNexaExceptionI(S.pasteIsEmpty, null, ErrorSeverity.Expected)
 open class BadAmountException(msg: Int) : LibNexaExceptionI(S.badAmount, i18n(msg))
 
+open class RetryExceeded(): LibNexaException("Retry Exceeded")
+
 // Defined in libnexakotlin
 //open class BadCryptoException(msg: Int = -1) : LibNexaExceptionI(S.badCryptoCode, i18n(msg))
 open class BadUnitException(msg: Int = -1) : LibNexaExceptionI(S.badCurrencyUnit, i18n(msg))
@@ -16,8 +18,6 @@ open class UnavailableException(msg: String? = null) : LibNexaExceptionI(S.unava
     constructor(msg: Int):this(i18n(msg)) {}
 }
 open class UiUnavailableException(msg: Int = -1) : LibNexaExceptionI(S.unavailable, i18n(msg))
-
-open class CannotLoadException(details: String?=null):UnavailableException(details)
 
 open class TdppException(err: Int? = null, details: String?) : LibNexaExceptionI(if (err != null) err else S.unknownError, details, ErrorSeverity.Abnormal)
 

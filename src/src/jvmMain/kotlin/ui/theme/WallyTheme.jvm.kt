@@ -13,10 +13,10 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import com.github.weisj.jsvg.parser.SVGLoader
-import info.bitcoinunlimited.www.wally.CannotLoadException
 import info.bitcoinunlimited.www.wally.getResourceFile
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import io.ktor.http.*
+import org.nexa.libnexakotlin.CannotLoadException
 import org.nexa.libnexakotlin.UnimplementedException
 import org.nexa.libnexakotlin.logThreadException
 import java.awt.Graphics2D

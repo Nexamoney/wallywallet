@@ -486,7 +486,7 @@ fun RecoveryPhraseView(account: Account, done: () -> Unit)
         val halfWords:Int = tmp.size/2
         var copied by remember { mutableStateOf(false) }
 
-        val mnemonic0 = tmp.subList(0,halfWords).joinToString(" ")
+        val mnemonic0 = tmp.subList(0,halfWords).joinToString(" ") + " "  // Need trailing space so there is whitespace between this line and then next
         val mnemonic1 = tmp.subList(halfWords, tmp.size).joinToString(" ")
         SelectionContainer {
             // This ensures that they fit on the line

@@ -5,17 +5,17 @@ import java.time.Instant
 import java.net.URL
 
 // Dependency versions
-val mpThreadsVersion = "0.2.4"
+val mpThreadsVersion = "0.2.6"
 val nexaRpcVersion = "1.1.5"
-val libNexaKotlinVersion = "0.1.45"
+val libNexaKotlinVersion = "0.1.51"
 
 val serializationVersion = "1.6.3"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.8.0"     // https://github.com/Kotlin/kotlinx.coroutines
 val ktorVersion = "2.3.9"           // https://github.com/ktorio/ktor
 val bigNumVersion = "0.3.9"         // https://github.com/ionspin/kotlin-multiplatform-bignum
-val composeVersion = "1.6.0"        // https://github.com/JetBrains/compose-multiplatform/releases
-val androidTestCoreVersion = "1.6.10-dev1520"
-val androidxActivityComposeVersion = "1.7.2"
+val composeVersion = "1.6.10-dev1551"        // https://github.com/JetBrains/compose-multiplatform/releases
+val androidTestCoreVersion = "1.6.10-dev1551"
+val androidxActivityComposeVersion = "1.8.2"
 val uriKmpVersion = "0.0.16"  // https://github.com/eygraber/uri-kmp
 val skikoVersion = "0.7.93" // https://github.com/JetBrains/skiko/releases
 val workVersion = "2.9.0"
@@ -28,9 +28,9 @@ plugins {
     kotlin("multiplatform")
     id("com.android.application")
     kotlin("plugin.serialization").version("1.9.22")
-    id("org.jetbrains.compose").version("1.6.10-dev1520")   // https://github.com/JetBrains/compose-multiplatform/releases
+    id("org.jetbrains.compose").version("1.6.10-dev1551")   // https://github.com/JetBrains/compose-multiplatform/releases
     id("org.jetbrains.dokka").version("1.9.20").apply(false)
-    id("org.openjfx.javafxplugin") version "0.1.0"
+    // id("org.openjfx.javafxplugin") version "0.1.0"
     idea
     id("org.jetbrains.kotlinx.kover").version("0.8.0-Beta")
     // application  // for JVM executables, but not compatible with android, have to do it by hand
