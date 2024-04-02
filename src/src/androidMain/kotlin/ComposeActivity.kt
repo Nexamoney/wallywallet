@@ -320,6 +320,23 @@ class ComposeActivity: CommonActivity()
         }
     }
 
+    // If the title bar is touched, show all the errors and warnings the app has generated
+    // unless we are already in that screen.
+    override fun onTitleBarTouched()
+    {
+        /*
+        if (nav.currentScreen.value == ScreenId.Logs)
+        {
+            nav.back()
+        }
+        else
+        {
+            nav.go(ScreenId.Logs)
+        }
+         */
+    }
+
+
     override fun onDestroy()
     {
         backgroundOnly = true

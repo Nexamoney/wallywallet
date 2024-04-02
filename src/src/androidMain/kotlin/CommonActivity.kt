@@ -118,135 +118,13 @@ open class CommonNavActivity : CommonActivity()
     override fun onStart()
     {
         super.onStart()
-
-        // Finding a UI element has to happen after the derived class has inflated the view, so it cannot be in onCreate.
-        val navView: BottomNavigationView = findViewById(R.id.nav_view)
-        navView.setOnItemSelectedListener(null)
-        if (navActivityId >= 0)  // This will both change the selection AND switch to that activity if it is different than the current one!
-            navView.selectedItemId = navActivityId
-        navView.setOnItemSelectedListener { item -> bottomNavSelectHandler(item) }
-
-        navViewMenuId?.let {
-            navView.menu.clear()
-            navView.inflateMenu(it)
-        }
     }
 
     override fun onResume()
     {
         super.onResume()
-
-        val navView: BottomNavigationView = findViewById(R.id.nav_view)
-        val prefDB = getSharedPreferences(i18n(R.string.preferenceFileName), PREF_MODE_PRIVATE)
-        val showIdentity = if (devMode) devMode else prefDB.getBoolean(SHOW_IDENTITY_PREF, false)
-        val showTrickePay = if (devMode) devMode else prefDB.getBoolean(SHOW_TRICKLEPAY_PREF, false)
-        val showAssets = if (devMode) devMode else prefDB.getBoolean(SHOW_ASSETS_PREF, false)
-        val menu = navView.getMenu()
-        menu.findItem(R.id.navigation_identity)?.setVisible(showIdentity)
-        menu.findItem(R.id.navigation_trickle_pay)?.setVisible(showTrickePay)
-        menu.findItem(R.id.navigation_assets)?.setVisible(showAssets)
     }
 
-    /** return true if the asset nav item is shown */
-    fun isShowingAssetsNavButton(): Boolean
-    {
-        val navView: BottomNavigationView = findViewById(R.id.nav_view)
-        val menu = navView.getMenu()
-        return menu.findItem(R.id.navigation_assets)?.isVisible ?: false
-    }
-
-    /** show or hide the assets nav button */
-    fun setAssetsNavVisible(vis: Boolean)
-    {
-        val navView: BottomNavigationView = findViewById(R.id.nav_view)
-        val menu = navView.getMenu()
-        menu.findItem(R.id.navigation_assets)?.setVisible(vis)
-        navView.requestLayout()
-    }
-
-    // note to stop multiple copies of activities from being launched, use android:launchMode="singleTask" in the activity definition in AndroidManifest.xml
-
-    open fun bottomNavSelectHandler(item: MenuItem): Boolean
-    {
-        when (item.itemId)
-        {
-            R.id.navigation_identity ->
-            {
-                val message = "" // anything extra we want to send
-                val intent = Intent(this, IdentityActivity::class.java).apply {
-                    putExtra(IDENTITY_MESSAGE, message)
-                }
-                startActivity(intent)
-                return true
-            }
-
-            R.id.navigation_trickle_pay ->
-            {
-                val message = "" // anything extra we want to send
-                val intent = Intent(this, TricklePayActivity::class.java).apply {
-                    putExtra(TRICKLEPAY_MESSAGE, message)
-                }
-                startActivity(intent)
-                return true
-            }
-            /*
-                    R.id.navigation_exchange ->
-                    {
-                        val message = "" // anything extra we want to send
-                        val intent = Intent(ths, ExchangeActivity::class.java).apply {
-                            putExtra(EXCHANGE_MESSAGE, message)
-                        }
-                        ths.startActivity(intent)
-                        return true
-                    }
-
-                    R.id.navigation_invoices ->
-                    {
-                        val message = "" // anything extra we want to send
-                        val intent = Intent(ths, InvoicesActivity::class.java).apply {
-                            putExtra(INVOICES_MESSAGE, message)
-                        }
-                        ths.startActivity(intent)
-                        return true
-                    }
-            */
-            R.id.navigation_assets ->
-            {
-                val message = "" // anything extra we want to send
-                //val intent = Intent(this, AssetsActivity::class.java).apply {  // TODO create Assets Activity
-                //    putExtra(ASSETS_MESSAGE, message)
-                //}
-                this.startActivity(intent)
-                return true
-            }
-
-            R.id.navigation_home ->
-            {
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-                return true
-
-                /* This goes back */
-                /*
-                if (!(ths is MainActivity))
-                {
-                    ths.finish()
-                    return@bottomNavSelectHandler true
-                }
-                return false
-                */
-            }
-
-            R.id.navigation_shopping ->
-            {
-                val intent = Intent(this, ShoppingActivity::class.java)
-                startActivity(intent)
-                return true
-            }
-        }
-
-        return false
-    }
 }
 
 @SuppressLint("Registered")
@@ -300,16 +178,6 @@ open class CommonActivity : AppCompatActivity()
     }
     open fun onTitleBarTouched()
     {
-        LogIt.info("title button pressed")
-        if (this is AlertActivity)
-        {
-            finish()  // If you click the header bar when looking at the error messages, then go back
-        }
-        else
-        {
-            var intent = Intent(this, AlertActivity::class.java)  // Otherwise start up the alert activity
-            startActivity(intent)
-        }
     }
 
     override fun onStart()
@@ -647,70 +515,6 @@ open class CommonActivity : AppCompatActivity()
     fun amIbackground(): Boolean
     {
         return isRunning==false
-    }
-
-
-    // We wouldn't notify if this app produced the Intent from active user input (like QR scan)
-    // but if it came from a long poll, then notify.
-    // Notifying and startActivityForResult produces a double call to that intent
-    fun handleAnyIntent(intentUri: String): Boolean
-    {
-        //val scheme = intentUri.split(":")[0]
-        val uri = intentUri.toUri()
-        val scheme = uri.scheme
-        val notify = amIbackground()
-        val app = wallyApp
-        if (app == null) return false // should never occur
-
-        val isChain = uriToChain[scheme]
-        if (isChain != null)  // handle a blockchain address (by preparing the send to)
-        {
-            LogIt.info("handle address")
-            if (currentActivity is MainActivity)
-            {
-                LogIt.info("main activity is open")
-                (currentActivity as MainActivity).handleNonIntentText(intentUri)  // Don't try as an intent, or recursive loop
-            }
-            else
-            {
-                LogIt.info("launch main activity")
-                var intent = Intent(this, MainActivity::class.java)
-                intent.data = Uri.parse(intentUri)
-                if (notify)
-                {
-                    val nid = wallyAndroidApp!!.notifyPopup(intent, i18n(R.string.sendRequestNotification), i18n(R.string.toColon) + intentUri, this, false)
-                    intent.extras?.putIntegerArrayList("notificationId", arrayListOf(nid))
-                }
-                else startActivityForResult(intent, IDENTITY_OP_RESULT)
-            }
-        }
-        else if (scheme == IDENTITY_URI_SCHEME)
-        {
-            LogIt.info("starting identity operation activity")
-            var intent = Intent(this, IdentityOpActivity::class.java)
-            intent.data = Uri.parse(intentUri)
-            if (notify)
-            {
-                val nid = wallyAndroidApp!!.notifyPopup(intent, i18n(R.string.identityRequestNotification), i18n(R.string.fromColon) + uri.host, this)
-                intent.extras?.putIntegerArrayList("notificationId", arrayListOf(nid))
-            }
-            else startActivityForResult(intent, IDENTITY_OP_RESULT)
-        }
-        else if (scheme == TDPP_URI_SCHEME)
-        {
-            var intent = Intent(this, TricklePayActivity::class.java)
-            intent.data = Uri.parse(intentUri)
-            if (notify)
-            {
-                wallyAndroidApp!!.autoHandle(intentUri)
-            }
-            else startActivityForResult(intent, TRICKLEPAY_RESULT)
-        }
-        else
-        {
-            return false
-        }
-        return true
     }
 
     /** Do whatever you pass but not within the user interface context, asynchronously */
