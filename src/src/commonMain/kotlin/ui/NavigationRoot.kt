@@ -61,8 +61,7 @@ enum class ScreenId
     SpecialTxPerm,
     AssetInfoPerm,
     SendToPerm,
-
-    Test;
+    Alerts;
 
     val isEntirelyScrollable:Boolean
         get()
@@ -115,13 +114,12 @@ enum class ScreenId
             TxHistory -> i18n(S.title_activity_tx_history) % mapOf("account" to (wallyApp?.focusedAccount?.name ?: ""))
 
             TpSettings -> i18n(S.title_activity_trickle_pay)
+            Alerts -> i18n(S.title_activity_alert_history)
 
             // TODO make a better title for these permissions screens
             SpecialTxPerm -> i18n(S.title_activity_trickle_pay)
             AssetInfoPerm -> i18n(S.title_activity_trickle_pay)
             SendToPerm -> i18n(S.title_activity_trickle_pay)
-
-            Test -> "Test"
         }
     }
 
@@ -660,7 +658,6 @@ fun NavigationRoot(nav: ScreenNav)
                         ScreenId.Home -> HomeScreen(selectedAccount, driver, nav)
                         ScreenId.SplitBill -> SplitBillScreen(nav)
                         ScreenId.NewAccount -> NewAccountScreen(accountGuiSlots.collectAsState(), devMode, nav)
-                        ScreenId.Test -> TestScreen(400.dp)
                         ScreenId.Settings -> SettingsScreen(nav)
                         ScreenId.AccountDetails -> withUnlockedAccount { AccountDetailScreen(it, nav) }
                         ScreenId.Assets -> withAccount { AssetScreen(it, nav) }
@@ -680,6 +677,7 @@ fun NavigationRoot(nav: ScreenNav)
                         ScreenId.AssetInfoPerm -> withTp { act, ctp -> AssetInfoPermScreen(act, ctp, nav) }
                         ScreenId.SendToPerm -> withTp { act, ctp -> SendToPermScreen(act, ctp, nav) }
                         ScreenId.IdentityOp -> withAccount { act -> IdentityPermScreen(act, currentUri, nav); }
+                        ScreenId.Alerts -> HomeScreen(selectedAccount, driver, nav)  // not currently implemented
                     }
                 }
                 if (!isSoftKeyboardShowing.collectAsState().value)
