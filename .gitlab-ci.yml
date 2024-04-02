@@ -1,3 +1,5 @@
+image: andrewstone/nexaadk:latest
+
 # These "stages" are actually separately initiated VMs, so better used for different configurations, etc
 stages:
   - docs
