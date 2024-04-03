@@ -69,7 +69,7 @@ fun backgroundSync(completion: () -> Unit)
             }
             LogIt.info(sourceLoc() + " Background work: Still syncing $unsynced accounts")
             if (backgroundStop) break
-            millisleep(5000U)
+            millisleep(30000U)
         } while(unsynced != 0 && !backgroundStop)
     }
     for (a in wallyApp!!.accounts)

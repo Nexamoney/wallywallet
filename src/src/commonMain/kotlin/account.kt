@@ -360,7 +360,7 @@ class Account(
             LogIt.info(sourceLoc() + chain.name + ": Preferred node mode")
             try
             {
-                val nodeSet:Set<String> = preferredNode.toSet().map { it.toString() }.toSet()
+                val nodeSet:Set<String> = preferredNode.splitIntoSet()
                 cnxnMgr.preferNodes(nodeSet)
             }
             catch (e: Exception)
