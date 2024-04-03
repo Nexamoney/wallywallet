@@ -20,8 +20,10 @@ import com.ionspin.kotlin.bignum.decimal.DecimalMode
 import com.ionspin.kotlin.bignum.decimal.RoundingMode
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.AssetListItemView
+import info.bitcoinunlimited.www.wally.ui.currencyCodeShared
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.asStateFlow
 import okio.utf8Size
 import org.nexa.libnexakotlin.*
 
@@ -40,7 +42,6 @@ val SEND_ALL_TEXT: String = i18n(S.sendAll)
 fun SendView(
   selectedAccountName: String,
   accountNames: List<String>,
-  currencyCode: String,
   toAddress: String,
   note: MutableState<String>,
   sendQuantity: MutableState<String>,
@@ -49,7 +50,6 @@ fun SendView(
   xchgRateText: String,
   currencies: MutableState<List<String>>,
   setSendQuantity: (String) -> Unit,
-  onCurrencySelectedCode: (String) -> Unit,
   setToAddress: (String) -> Unit,
   onCancel: () -> Unit,
   onPaymentInProgress: (ProspectivePayment?) -> Unit,
@@ -64,6 +64,7 @@ fun SendView(
         displayNotice(S.NoAccounts, null)
         return
     }
+    val currencyCode = currencyCodeShared.asStateFlow()
     var accountExpanded by remember { mutableStateOf(false) }
     var displayNoteInput by remember { mutableStateOf(false) }
     var sendConfirm by remember { mutableStateOf("") }
@@ -72,6 +73,9 @@ fun SendView(
     val fpcState = account.fiatPerCoinObservable.collectAsState()
     val amountState: MutableState<BigDecimal?> = remember { mutableStateOf(null) }
     val sendingTheseAssets = account.assetTransferList
+    var ccIndex by remember { mutableStateOf(0) }
+    ccIndex = currencies.value.indexOf(currencyCode.value)
+    val focusManager = LocalFocusManager.current
 
     val coroutineExceptionHandler = CoroutineExceptionHandler { context, throwable ->
         LogIt.error(context.toString())
@@ -85,6 +89,13 @@ fun SendView(
     {
         val sendQty = sendQuantity.value
         checkSendQuantity(sendQty, account)
+    }
+
+    fun afterTextChanged()
+    {
+        onPaymentInProgress(null)
+        updateSendBasedOnPaymentInProgress()
+        checkSendQuantity(sendQuantity.value, account)
     }
 
     fun paymentInProgressSend()
@@ -340,7 +351,7 @@ fun SendView(
             return
         }
 
-        when (currencyCode)
+        when (currencyCode.value)
         {
             account.currencyCode ->
             {
@@ -421,18 +432,6 @@ fun SendView(
         amountState.value = amount
     }
 
-    fun afterTextChanged()
-    {
-        onPaymentInProgress(null)
-        updateSendBasedOnPaymentInProgress()
-        checkSendQuantity(sendQuantity.value, account)
-    }
-
-
-    var ccIndex by remember { mutableStateOf(0) }
-    ccIndex = currencies.value.indexOf(currencyCode)
-    val focusManager = LocalFocusManager.current
-
     // give some side margins if the platform supports it
     val sendPadding = if (platform().spaceConstrained) 0.dp else 8.dp
     Column(modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(sendPadding, 0.dp, sendPadding, 0.dp)) {
@@ -479,7 +478,7 @@ fun SendView(
                     if (index < currencies.value.size)
                     {
                         ccIndex = index
-                        onCurrencySelectedCode(currencies.value[index])
+                        currencyCodeShared.value = currencies.value[index]
                         onCurrencySelected()
                         afterTextChanged()
                     }
