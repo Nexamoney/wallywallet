@@ -20,13 +20,14 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
+import kotlinx.coroutines.flow.asStateFlow
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.HomeScreen")
 // stores the account name we are receiving into and the receive address as a pair
 val currentReceiveShared: MutableStateFlow<Pair<String,String>> = MutableStateFlow(Pair("",""))
 var sendToAddress: MutableStateFlow<String> = MutableStateFlow("")
-
+val currencyCodeShared: MutableStateFlow<String> = MutableStateFlow("NEX")
 
 /* Since composable state needs to be defined within a composable, imagine this composable is actually a singleton class,
 with member variables and member functions defined in it.
@@ -39,7 +40,7 @@ private val _sendFromAccount = MutableStateFlow<String>("")
 @Composable fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState<GuiDriver?>, nav: ScreenNav)
 {
     var sendNote = remember { mutableStateOf("") }
-    val sendCurrencyChoices: MutableState<List<String>> = remember { mutableStateOf(listOf()) }
+    val sendCurrencyChoices: MutableState<List<String>> = remember { mutableStateOf(listOf("NEX", "tNEX", "rNEX")) }
 
     var isSending by remember { mutableStateOf(false) }
     var isScanningQr by remember { mutableStateOf(false) }
@@ -54,7 +55,7 @@ private val _sendFromAccount = MutableStateFlow<String>("")
 
     /** If there's a payment proposal that this app has seen, information about it is located here */
     val paymentInProgress: MutableState<ProspectivePayment?> = remember { mutableStateOf(null) }
-    var currencyCode by remember { mutableStateOf(i18n(S.choose)) } // TODO: get from local db
+    var currencyCode = currencyCodeShared.asStateFlow()
 
     /** If we've already put up an error for this address, don't do it again */
     var alreadyErroredAddress: MutableState<PayAddress?> = remember { mutableStateOf(null) }
@@ -158,7 +159,7 @@ private val _sendFromAccount = MutableStateFlow<String>("")
             return false
         }
 
-        if (currencyCode == fiatCurrencyCode)
+        if (currencyCode.value == fiatCurrencyCode)
         {
             val fiatPerCoin = account.fiatPerCoin
             if (account.fiatPerCoin == -1.toBigDecimal())
@@ -247,7 +248,7 @@ private val _sendFromAccount = MutableStateFlow<String>("")
             sendCurrencyChoices.value = if (acc.fiatPerCoin != -1.toBigDecimal()) listOf(acc.currencyCode, fiatCurrencyCode) else listOf(acc.currencyCode)
 
             // If we switched to a currency code we don't have, set it to the first one we support
-            if (!sendCurrencyChoices.value.contains(currencyCode)) currencyCode = sendCurrencyChoices.value.first()
+            if (!sendCurrencyChoices.value.contains(currencyCode.value)) currencyCodeShared.value = sendCurrencyChoices.value.first()
         }
     }
 
@@ -537,7 +538,7 @@ private val _sendFromAccount = MutableStateFlow<String>("")
             {
                 selectedAccount.value = tmp
                 updateSendAccount(tmp)
-                currencyCode = tmp.currencyCode
+                currencyCodeShared.value = tmp.currencyCode
                 break
             }
         }
@@ -614,16 +615,12 @@ private val _sendFromAccount = MutableStateFlow<String>("")
                 SendView(
                       selectedAccountName = sendFromAccount.value,
                       accountNames = accountGuiSlots.value.map { it.name },
-                      currencyCode = currencyCode,
                       toAddress = _sendToAddress,
                       note = sendNote,
                       sendQuantity = sendQuantity,
                       paymentInProgress = paymentInProgress.value,
                       setSendQuantity = {
                           sendQuantity.value = it
-                      },
-                      onCurrencySelectedCode = {
-                          currencyCode = it
                       },
                       setToAddress = { sendToAddress.value = it },
                       onCancel = {
