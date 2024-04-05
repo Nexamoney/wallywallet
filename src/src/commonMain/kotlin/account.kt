@@ -412,9 +412,16 @@ class Account(
         return ret
     }
 
-        /** Adds this asset to the list of assets to be transferred in the next send */
-    fun addAssetToTransferList(a: GroupId): Boolean
+        /** Adds this asset to the list of assets to be transferred in the next send
+         * Send the quantity *in finest units* */
+    fun addAssetToTransferList(a: GroupId, amt: BigDecimal): Boolean
     {
+        val asset = assets.get(a)
+        if (asset == null) // you can't add an asset to the xfer list that you don't even have
+        {
+            return false
+        }
+        asset.editableAmount = amt
         if (assetTransferList.contains(a)) return false
         assetTransferList.add(a)
         return true
@@ -424,6 +431,10 @@ class Account(
     fun clearAssetTransferList():Int
     {
         val ret = assetTransferList.size
+        for (i in assets)
+        {
+            i.value.editableAmount = null
+        }
         assetTransferList.clear()
         return ret
     }

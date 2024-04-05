@@ -1,9 +1,7 @@
 package info.bitcoinunlimited.www.wally
 
-import info.bitcoinunlimited.www.wally.ui.displayFastForwardInfo
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import io.ktor.http.*
-import okio.Buffer
-import okio.BufferedSource
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Gate
 import org.nexa.threads.LeakyBucket
@@ -42,8 +40,31 @@ class AssetPerAccount(
   val groupInfo: GroupInfo,
   val assetInfo:AssetInfo,
   // display this amount if set (for quantity selection during send)
-  var displayAmount: Long? = null
+  var editableAmount: BigDecimal? = null
 )
+{
+    fun tokenDecimalToFinestUnit(amt: BigDecimal): Long
+    {
+        val decimalPlaces = assetInfo.tokenInfo?.genesisInfo?.decimal_places ?: 0
+        return (amt * BigDecimal.fromInt(10, ).pow(decimalPlaces)).toLong()
+    }
+
+    fun tokenDecimalFromString(s: String): BigDecimal
+    {
+        val dp = assetInfo.tokenInfo?.genesisInfo?.decimal_places ?: 0
+        val dm = tokenDecimalMode(dp)
+        val bd = BigDecimal.fromString(s, dm)
+        return bd
+    }
+
+    fun tokenDecimalFromFinestUnit(finestAmount: Long): BigDecimal
+    {
+        val decimalPlaces = assetInfo.tokenInfo?.genesisInfo?.decimal_places ?: 0
+        var tmp = BigDecimal.fromLong(finestAmount,tokenDecimalMode(decimalPlaces))
+        tmp = tmp/(BigDecimal.fromInt(10).pow(decimalPlaces ?: 0))
+        return tmp
+    }
+}
 
 val assetCheckTrigger = Gate("assetCheckTrigger")
 // will take 30 (trigger every 30 seconds on average, max 3 times in a row)

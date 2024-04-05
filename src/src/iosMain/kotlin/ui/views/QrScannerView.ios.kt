@@ -29,6 +29,8 @@ import platform.UIKit.UIDeviceOrientation
 import platform.UIKit.UIView
 import platform.darwin.NSObject
 import platform.darwin.dispatch_get_main_queue
+import org.nexa.threads.millisleep
+import info.bitcoinunlimited.www.wally.*
 
 private sealed interface CameraAccess {
     object Undefined : CameraAccess
@@ -79,17 +81,15 @@ actual fun QrScannerView(
             CameraAccess.Undefined -> {
                 // Waiting for the user to accept permission
             }
-
             CameraAccess.Denied -> {
                 Text("Camera access denied", color = Color.White)
             }
-
             CameraAccess.Authorized -> {
                 AuthorizedCamera(onQrCodeScanned)
             }
-
             else ->
             {
+                LogIt.info("Unexpected camera access issue $cameraAccess")
             }
         }
     }
@@ -104,10 +104,12 @@ private fun BoxScope.AuthorizedCamera(onQrCodeScanned: (String) -> Unit) {
           position = AVCaptureDevicePositionBack,
         ).devices.firstOrNull() as? AVCaptureDevice
     }
-    if (camera != null) {
-        LogIt.info("camera != null")
+    if (camera != null)
+    {
         RealDeviceCamera(camera, onQrCodeScanned)
-    } else {
+    }
+    else
+    {
         Text(
           """
             Camera is not available on simulator.
@@ -123,10 +125,8 @@ private val coExceptionHandler = CoroutineExceptionHandler() { ctx, err ->
 }
 @OptIn(ExperimentalForeignApi::class)
 @Composable
-private fun RealDeviceCamera(
-  camera: AVCaptureDevice,
-  onQrCodeScanned: (String) -> Unit,
-) {
+private fun RealDeviceCamera(camera: AVCaptureDevice, onQrCodeScanned: (String) -> Unit)
+{
     val capturePhotoOutput = remember { AVCapturePhotoOutput() }
     var actualOrientation by remember {
         mutableStateOf(
@@ -138,43 +138,65 @@ private fun RealDeviceCamera(
 
     val captureSession: AVCaptureSession = remember {
         AVCaptureSession().also { captureSession ->
-            captureSession.sessionPreset = AVCaptureSessionPresetPhoto
-            val captureDeviceInput: AVCaptureDeviceInput =
-              deviceInputWithDevice(device = camera, error = null)!!
-            captureSession.addInput(captureDeviceInput)
-            captureSession.addOutput(capturePhotoOutput)
+            if (true)
+            {
+                //LogIt.info("AvCapture also")
+                captureSession.sessionPreset = AVCaptureSessionPresetPhoto
+                val captureDeviceInput: AVCaptureDeviceInput = deviceInputWithDevice(device = camera, error = null)!!
+                captureSession.addInput(captureDeviceInput)
+                captureSession.addOutput(capturePhotoOutput)
 
-            // Initialize an AVCaptureMetadataOutput object and set it as the output device to the capture session.
-            val metadataOutput = AVCaptureMetadataOutput()
-            if (captureSession.canAddOutput(metadataOutput)) {
-                // Set delegate and use default dispatch queue to execute the call back
-                // fixed with https://youtrack.jetbrains.com/issue/KT-45755/iOS-delegate-protocol-is-empty
-                captureSession.addOutput(metadataOutput)
-                metadataOutput.metadataObjectTypes = listOf(AVMetadataObjectTypeQRCode)
-                metadataOutput.setMetadataObjectsDelegate(objectsDelegate = object : NSObject(),
-                                                                                     AVCaptureMetadataOutputObjectsDelegateProtocol {
-                    override fun captureOutput(
-                      output: AVCaptureOutput,
-                      didOutputMetadataObjects: List<*>,
-                      fromConnection: AVCaptureConnection
-                    )
+                // Initialize an AVCaptureMetadataOutput object and set it as the output device to the capture session.
+                val metadataOutput = AVCaptureMetadataOutput()
+                if (captureSession.canAddOutput(metadataOutput))
+                {
+                    //LogIt.info("adding output")
+                    // Set delegate and use default dispatch queue to execute the call back
+                    // fixed with https://youtrack.jetbrains.com/issue/KT-45755/iOS-delegate-protocol-is-empty
+                    //metadataOutput.metadataObjectTypes = metadataOutput.availableMetadataObjectTypes()
+                    captureSession.addOutput(metadataOutput)
+                    metadataOutput.metadataObjectTypes = listOf(AVMetadataObjectTypeQRCode)
+                    metadataOutput.setMetadataObjectsDelegate(objectsDelegate = object : NSObject(),
+                                                                                         AVCaptureMetadataOutputObjectsDelegateProtocol
                     {
-                        didOutputMetadataObjects.firstOrNull()?.let { metadataObject ->
-                            val readableObject =
-                              metadataObject as? AVMetadataMachineReadableCodeObject
-                            LogIt.info("readableObject")
-                            val code = readableObject?.stringValue ?: return@let
-                            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
-                            LogIt.info("code: $code")
-                            onQrCodeScanned(code)
-                            captureSession.stopRunning()
+                        override fun captureOutput(output: AVCaptureOutput, didOutputMetadataObjects: List<*>, fromConnection: AVCaptureConnection)
+                        {
+                            for (mo in didOutputMetadataObjects)
+                            {
+                                if (mo != null)
+                                {
+                                    val readableObject = mo as? AVMetadataMachineReadableCodeObject
+                                    if (readableObject != null)
+                                    {
+                                        val code = readableObject.stringValue
+                                        if (code != null)
+                                        {
+                                            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+                                            LogIt.info("QR code scanned: $code")
+                                            onQrCodeScanned(code)
+                                            captureSession.stopRunning()
+                                        }
+                                        else
+                                        {
+                                            LogIt.info("scanned $readableObject is not a string")
+                                        }
+                                    }
+                                    else
+                                    {
+                                        LogIt.info("scanned $readableObject")
+                                    }
+                                }
+                            }
                         }
-                    }
-                }, queue = dispatch_get_main_queue())
-
-                metadataOutput.metadataObjectTypes = metadataOutput.availableMetadataObjectTypes()
+                    }, queue = dispatch_get_main_queue())
+                
+                }
+                else
+                {
+                    LogIt.info("QR cap unavailable")
+                    throw UiUnavailableException()
+                }
             }
-
         }
     }
     val cameraPreviewLayer = remember {
@@ -182,13 +204,18 @@ private fun RealDeviceCamera(
     }
 
     DisposableEffect(Unit) {
-        class OrientationListener : NSObject() {
+        class OrientationListener : NSObject()
+        {
             @Suppress("UNUSED_PARAMETER")
             @ObjCAction
-            fun orientationDidChange(arg: NSNotification) {
+            fun orientationDidChange(arg: NSNotification)
+            {
                 val cameraConnection = cameraPreviewLayer.connection
-                if (cameraConnection != null) {
-                    actualOrientation = when (UIDevice.currentDevice.orientation) {
+                if (cameraConnection != null)
+                {
+                    LogIt.info("QR scan orientation change")
+                    actualOrientation = when (UIDevice.currentDevice.orientation)
+                    {
                         UIDeviceOrientation.UIDeviceOrientationPortrait ->
                             AVCaptureVideoOrientationPortrait
 
@@ -221,6 +248,7 @@ private fun RealDeviceCamera(
           `object` = null
         )
         onDispose {
+            LogIt.info("dispose")
             NSNotificationCenter.defaultCenter.removeObserver(
               observer = listener,
               name = notificationName,
@@ -235,10 +263,15 @@ private fun RealDeviceCamera(
           val cameraContainer = UIView()
           cameraContainer.layer.addSublayer(cameraPreviewLayer)
           cameraPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
-          captureSession.startRunning()
+          wallyApp!!.later {
+              //LogIt.info("cap session started")
+              //millisleep(250U)
+              captureSession.startRunning()
+          }
           cameraContainer
       },
       onResize = { view: UIView, rect: CValue<CGRect> ->
+          //LogIt.info("QR scan resize")
           CATransaction.begin()
           CATransaction.setValue(true, kCATransactionDisableActions)
           view.layer.setFrame(rect)

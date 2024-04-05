@@ -7,7 +7,7 @@ import java.net.URL
 // Dependency versions
 val mpThreadsVersion = "0.2.6"
 val nexaRpcVersion = "1.1.5"
-val libNexaKotlinVersion = "0.1.53"
+val libNexaKotlinVersion = "0.1.54"
 
 val serializationVersion = "1.6.3"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.8.0"     // https://github.com/Kotlin/kotlinx.coroutines
@@ -276,7 +276,7 @@ kotlin {
                 //implementation("org.nexa:walletoperations:0.0.1")
 
                 // Generate and display Compose Multiplaform QR code
-                implementation("io.github.alexzhirkevich:qrose:1.0.0-beta02")  // https://github.com/alexzhirkevich/qrose/releases
+                implementation("io.github.alexzhirkevich:qrose:1.0.1")  // https://github.com/alexzhirkevich/qrose/releases
 
                 // Animation library binding
                 implementation("org.jetbrains.skiko:skiko:0.7.93")

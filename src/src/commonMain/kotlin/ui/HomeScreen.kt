@@ -740,12 +740,15 @@ private val _sendFromAccount = MutableStateFlow<String>("")
                 {
                     QrScannerDialog(
                       onDismiss = {
+                          LogIt.info("dismissed QR scan")
                           clearAlerts()
                           isScanningQr = false
                       },
                       onScan = {
+                          LogIt.info("handling QR scan $isScanningQr")
                           if (it.isNotEmpty() && isScanningQr)
                           {
+                              LogIt.info("actually handling QR scan")
                               // Clean out an old payment protocol if you are pasting a new send in
                               // paymentInProgress.value = null
                               isScanningQr = false

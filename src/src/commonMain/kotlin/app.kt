@@ -374,6 +374,7 @@ open class CommonApp
                 }
             }
             else uriToChain[scheme]
+            LogIt.info("QR code refers to $whichChain ${chainToName[whichChain]}")
 
             if (whichChain != null)  // handle a blockchain address (by preparing the send to)
             {
@@ -399,9 +400,13 @@ open class CommonApp
                         BigDecimal.fromString(stramt, NexaMathMode)
                     }
                 }
+                else
+                {
+                    // providing no amount is fine
+                }
 
                 // Inject a change into the GUI
-                launch {
+                wallyApp!!.later {
                     externalDriver.send(GuiDriver(ScreenId.Home, sendAddress = chainToURI[whichChain] + ":" + uri.body(), amount = amt, note = attribs["label"], chainSelector = whichChain))
                 }
             }
@@ -425,6 +430,7 @@ open class CommonApp
         }
         catch(e: Exception)
         {
+            LogIt.info("unexpected exception handling QR code $urlStr")
             displayUnexpectedException(e)
         }
         return false
