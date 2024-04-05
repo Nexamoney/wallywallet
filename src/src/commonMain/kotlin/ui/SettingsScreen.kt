@@ -85,6 +85,7 @@ fun SettingsScreen(nav: ScreenNav)
       GeneralSettingsSwitch(ACCESS_PRICE_DATA_PREF, S.AccessPriceData)
     )
 
+    // When we leave the settings screen, set global variables based on settings changes
     nav.onDepart {
         var nodeAddr: String? = null
 

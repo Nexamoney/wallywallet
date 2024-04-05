@@ -527,6 +527,25 @@ private val _sendFromAccount = MutableStateFlow<String>("")
         }
     }
 
+    // Redisplay the accounts 4x a second in dev mode where data is being shown that does not normally
+    // trigger an account update (like connection state changes)
+    LaunchedEffect(Unit) {
+        while(true)
+        {
+            if (devMode)
+            {
+                val acts = wallyApp?.accounts?.values
+                if (acts != null) for (a in acts)
+                {
+                    a.uiData()
+                }
+                accountChangedNotification.send("*all changed*")
+                delay(250)
+            }
+            else delay(2000)
+        }
+    }
+
     // During startup, there is a race condition between loading the accounts and the display of this screen.
     // So if the selectedAccount is null, wait for some accounts to appear
     LaunchedEffect(Unit) {
