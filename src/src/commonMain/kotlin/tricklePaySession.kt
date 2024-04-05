@@ -1184,7 +1184,6 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
 
         return TxAnalysisResults(act, receivingSats, sendingSats, receivingTokenTypes, sendingTokenTypes, imSpendingTokenTypes, inputSatoshis, iFunded, myInputTokenInfo, sendingTokenInfo, receivingTokenInfo, myNetTokenInfo, completionException)
     }
-
 }
 
 
@@ -1303,7 +1302,7 @@ fun HandleTdpp(iuri: Uri): Boolean
                 }
                 TdppAction.ACCEPT -> // ADDRESS
                 {
-                    tp.acceptAssetRequest()
+                    tp.acceptAddressRequest()
                     return true
                 }
 

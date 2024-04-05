@@ -73,6 +73,11 @@ fun tokenDecimalMode(decimalPlaces: Int?): DecimalMode
     return DecimalMode(TOKEN_PRECISION, roundingMode = RoundingMode.TOWARDS_ZERO, scale = (decimalPlaces ?: 0).toLong())
 }
 
+fun tokenDecimalToFinestUnit(amt: BigDecimal, decimalPlaces: Int?): Long
+{
+    return (amt * BigDecimal.fromInt(10, ).pow(decimalPlaces ?: 0)).toLong()
+}
+
 fun tokenDecimalFromFinestUnit(finestAmount: Long, decimalPlaces: Int?): BigDecimal
 {
     var tmp = BigDecimal.fromLong(finestAmount,tokenDecimalMode(decimalPlaces))

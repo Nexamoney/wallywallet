@@ -1,7 +1,6 @@
 package info.bitcoinunlimited.www.wally.ui.views
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -187,7 +186,11 @@ fun SendView(
                                 val assetPerAccount = account.assets[groupId]
                                 if (assetPerAccount != null)
                                 {
-                                    val qty = assetPerAccount.displayAmount
+                                    val qty = if ((assetPerAccount.editableAmount == null)&&(assetPerAccount.groupInfo.tokenAmt == 1L)) 1L  // its an NFT
+                                    else
+                                    {
+                                        assetPerAccount.tokenDecimalToFinestUnit(assetPerAccount.editableAmount ?: BigDecimal.ZERO)
+                                    }
 
                                     if (qty != null && qty > 0)
                                     {
@@ -503,7 +506,7 @@ fun SendView(
                             item(key = indexFreezer) {
                                 Box(Modifier.padding(4.dp, 1.dp).fillMaxWidth().background(WallyAssetRowColors[indexFreezer % WallyAssetRowColors.size]).clickable {
                                 }) {
-                                    AssetListItemView(entry, 0, Modifier.padding(0.dp, 2.dp))
+                                    AssetListItemView(entry, 0, true, Modifier.padding(0.dp, 2.dp))
                                 }
                             }
                             index++

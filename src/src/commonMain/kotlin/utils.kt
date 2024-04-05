@@ -226,6 +226,21 @@ val ChainSelector.currencyDecimals: Int
     }
 }
 
+
+/**
+ * compute this^e.  This is not currently a high performing implementation
+ */
+fun Long.exp(e: Long): Long
+{
+    val mul = this
+    var ret = 1L
+    for (i in rangeTo(e))
+    {
+        ret = ret*mul
+    }
+    return ret
+}
+
 fun isCashAddrScheme(s: String): Boolean
 {
     val chain = uriToChain[s.lowercase()]

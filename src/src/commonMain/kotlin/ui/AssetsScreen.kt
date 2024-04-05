@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.eygraber.uri.Uri
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
 
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
@@ -28,12 +29,11 @@ import org.nexa.libnexakotlin.*
 private val LogIt = GetLog("wally.assets")
 
 @Composable
-fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, modifier: Modifier = Modifier)
+fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, allowAmountEdit: Boolean = false, modifier: Modifier = Modifier)
 {
     var apc by remember { mutableStateOf(assetPerAccount) }
     val asset = apc.assetInfo
     val nft = asset.nft
-
 
     Column(modifier = modifier) {
         if ((devMode)&&(verbosity>0)) CenteredFittedText(asset.groupId.toStringNoPrefix())
@@ -47,9 +47,26 @@ fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, modi
             // If its an NFT, don't show the quantity if they have just 1
             if ((nft == null)||(apc.groupInfo.tokenAmt != 1L))
             {
-                val amt = tokenAmountString(apc.groupInfo.tokenAmt, asset.tokenInfo?.genesisInfo?.decimal_places)
-                if (verbosity > 0) FontScale(2.0)
-                Text(amt, fontSize = if (verbosity > 0) FontScale(2.0) else FontScale(1.0), modifier = modifier.align(Alignment.CenterVertically))
+                if (allowAmountEdit)
+                {
+                    val amt = assetPerAccount.editableAmount?.toPlainString() ?: tokenAmountString(apc.groupInfo.tokenAmt, asset.tokenInfo?.genesisInfo?.decimal_places)
+                    WallyDecimalEntry(mutableStateOf(amt))
+                    {
+                        try
+                        {
+                            assetPerAccount.editableAmount = assetPerAccount.tokenDecimalFromString(it)
+                        }
+                        catch (e: Exception) // If we can't parse it for any reason, ignore
+                        {
+                        }
+                        it
+                    }
+                }
+                else
+                {
+                    val amt = tokenAmountString(apc.groupInfo.tokenAmt, asset.tokenInfo?.genesisInfo?.decimal_places)
+                    Text(amt, fontSize = if (verbosity > 0) FontScale(2.0) else FontScale(1.0), modifier = modifier.align(Alignment.CenterVertically))
+                }
                 Spacer(modifier.width(4.dp))
             }
 
@@ -291,7 +308,7 @@ fun AssetScreen(account: Account, nav: ScreenNav)
                                 assetFocusIndex = indexFreezer
                                 nav.go(ScreenId.Assets, byteArrayOf(indexFreezer.toByte()))
                             }) {
-                                AssetListItemView(entry, 1, Modifier.padding(0.dp, 2.dp))
+                                AssetListItemView(entry, 1, false, Modifier.padding(0.dp, 2.dp))
                             }
                         }
                         index++
@@ -319,8 +336,8 @@ fun AssetScreen(account: Account, nav: ScreenNav)
                     onCopyToClipboardButton(a.assetInfo)
                 }
                 WallyRoundedTextButton(S.Send, onClick = {
-                    a.displayAmount = 1  // The default send is to transfer a single one (you can change in the send screen)
-                    if (account.addAssetToTransferList(a.groupInfo.groupId) == true)
+                    val defaultAmt = BigDecimal.fromInt(1, tokenDecimalMode(a.assetInfo?.tokenInfo?.genesisInfo?.decimal_places ?: 0)) // The default send is to transfer a single "one" (you can change in the send screen) -- whatever that means WRT the # of decimal places
+                    if (account.addAssetToTransferList(a.groupInfo.groupId, defaultAmt) == true)
                     {
                         displaySuccess(S.AssetAddedToTransferList)
                     }

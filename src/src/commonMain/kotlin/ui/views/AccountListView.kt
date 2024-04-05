@@ -80,7 +80,7 @@ private val accountListState:MutableStateFlow<LazyListState?> = MutableStateFlow
         }
         // Since the thumb buttons cover the bottom most row, this blank bottom row allows the user to scroll the account list upwards enough to
         // uncover the last account.  Its not necessary if there are just a few accounts though.
-        if (accounts.size > 3)
+        if (accounts.size > 2)
         {
             item(key = "") {
                 Spacer(Modifier.height(150.dp))

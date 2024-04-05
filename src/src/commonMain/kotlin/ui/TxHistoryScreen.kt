@@ -288,7 +288,7 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
                                 val entry = it
                                 val indexFreezer = index  // To use this in the item composable, we need to freeze it to a val, because the composable is called out-of-scope
                                 Box(Modifier.padding(4.dp, 1.dp).fillMaxWidth().background(WallyAssetRowColors[indexFreezer % WallyAssetRowColors.size])) {
-                                        AssetListItemView(entry, 0, Modifier.padding(0.dp, 2.dp))
+                                        AssetListItemView(entry, 0, false, Modifier.padding(0.dp, 2.dp))
                                     }
                                 index++
                             }
