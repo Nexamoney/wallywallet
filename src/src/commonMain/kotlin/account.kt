@@ -471,6 +471,11 @@ class Account(
             false
         }
 
+        // Rather than clearing the entire asset dictionary and adding the existing ones,
+        // we'll add the existing ones and then remove any that no longer exist.
+        // This will ensure that the asset page doesn't suddenly go blank if this process happens right when
+        // the user is looking at it.
+
         // Check if this asset is new, and if so start grabbing the data for all assets (asynchronously)
         // otherwise update the existing entry for amount changes
         for (asset in ast.values)
@@ -478,6 +483,11 @@ class Account(
             // If we don't have it at all, add it to our dictionary
             val assetInfo = am.track(asset.groupId, getEc)
             assets[asset.groupId] = AssetPerAccount(asset, assetInfo)
+        }
+        // Now remove any assets that are no longer in the wallet
+        for (assetKey in assets.keys)
+        {
+            if (!(assetKey in ast)) assets.remove(assetKey)
         }
     }
 
