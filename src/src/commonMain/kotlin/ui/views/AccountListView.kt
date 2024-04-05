@@ -25,6 +25,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.nexa.libnexakotlin.*
+import kotlin.math.roundToLong
 
 private val LogIt = GetLog("BU.wally.accountlistview")
 
@@ -159,8 +160,14 @@ fun Account.uiData():AccountUIData
 
     if (chainstate != null)
     {
-        val cnxnLst = wallet.chainstate?.chain?.net?.mapConnections() { it.name }
-
+        val now = millinow()
+        val cnxnLst = wallet.chainstate?.chain?.net?.mapConnections()
+        {
+            val recentRecv = (now - it.lastReceiveTime) < 50L
+            val recentSend = (now - it.lastSendTime) < 50L
+            val sr = (if (recentSend) "↑" else " ") + (if (recentRecv) "↓" else " ")
+            it.name + " (" + it.aveLatency.roundToLong() + "ms" + sr + ")"
+        }
         val trying: List<String> = if (chainstate.chain.net is MultiNodeCnxnMgr) (chainstate.chain.net as MultiNodeCnxnMgr).initializingCnxns.map { it.name } else listOf()
         val peers = cnxnLst?.joinToString(", ") + (if (trying.isNotEmpty()) (" " + i18n(S.trying) + " " + trying.joinToString(", ")) else "")
 

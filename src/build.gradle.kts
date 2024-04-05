@@ -7,14 +7,14 @@ import java.net.URL
 // Dependency versions
 val mpThreadsVersion = "0.2.6"
 val nexaRpcVersion = "1.1.5"
-val libNexaKotlinVersion = "0.1.54"
+val libNexaKotlinVersion = "0.1.55"
 
 val serializationVersion = "1.6.3"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.8.0"     // https://github.com/Kotlin/kotlinx.coroutines
 val ktorVersion = "2.3.9"           // https://github.com/ktorio/ktor
 val bigNumVersion = "0.3.9"         // https://github.com/ionspin/kotlin-multiplatform-bignum
-val composeVersion = "1.6.10-dev1557"        // https://github.com/JetBrains/compose-multiplatform/releases
-val androidTestCoreVersion = "1.6.10-dev1557"
+val composeVersion = "1.6.10-dev1561"        // https://github.com/JetBrains/compose-multiplatform/releases
+val androidTestCoreVersion = "1.6.0-alpha05" // https://mvnrepository.com/artifact/androidx.test/core
 val androidxActivityComposeVersion = "1.8.2"
 val uriKmpVersion = "0.0.16"  // https://github.com/eygraber/uri-kmp
 val skikoVersion = "0.7.93" // https://github.com/JetBrains/skiko/releases
