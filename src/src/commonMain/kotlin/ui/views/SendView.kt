@@ -146,11 +146,15 @@ fun SendView(
     {
         displayNotice(S.Processing, null)
 
-        // avoid network on main thread exception
+        // Launch to avoid network on main thread exception
+        // Grab copies of all the data we need
+        val sendList = sendingTheseAssets.toList()
+        val act = account
+        val assets = act.assets.toMap()
         later {
-            val cs = account.wallet.chainSelector
+            val cs = act.wallet.chainSelector
             var tx: iTransaction = txFor(cs)
-            if ((qty == BigDecimal.ZERO)&&sendingTheseAssets.isEmpty())  // Sending nothing
+            if ((qty == BigDecimal.ZERO)&&sendList.isEmpty())  // Sending nothing
             {
                 displayError(i18n(S.badAmount))
             }
@@ -165,11 +169,11 @@ fun SendView(
                     tx = txFor(cs)
                     try
                     {
-                        val atomAmt = account.toFinestUnit(qty)
-                        if (sendingTheseAssets.size == 0)
+                        val atomAmt = act.toFinestUnit(qty)
+                        if (sendList.size == 0)
                         {
                             // If we are spending all, then deduct the fee from the amount (which was set above to the full ungrouped balance)
-                            tx = account.wallet.send(atomAmt, sendAddress, spendAll, false, note = note.value)
+                            tx = act.wallet.send(atomAmt, sendAddress, spendAll, false, note = note.value)
                         }
                         else
                         {
@@ -181,9 +185,9 @@ fun SendView(
                             }
                             // Construct outputs that send all selected assets
                             var assetDustOut = 0L
-                            for (groupId in sendingTheseAssets)
+                            for (groupId in sendList)
                             {
-                                val assetPerAccount = account.assets[groupId]
+                                val assetPerAccount = assets[groupId]
                                 if (assetPerAccount != null)
                                 {
                                     val qty = if ((assetPerAccount.editableAmount == null)&&(assetPerAccount.groupInfo.tokenAmt == 1L)) 1L  // its an NFT
@@ -214,8 +218,8 @@ fun SendView(
                             }
 
                             // Attempt to pay for the constructed transaction
-                            account.wallet.txCompleter(tx, 0, cflags, null, if (spendAll) (tx.outputs.size-1) else null)
-                            account.wallet.send(tx,false, note = note.value)
+                            act.wallet.txCompleter(tx, 0, cflags, null, if (spendAll) (tx.outputs.size-1) else null)
+                            act.wallet.send(tx,false, note = note.value)
                         }
                         note.value = ""
                         LogIt.info("Sending TX: ${tx.toHex()}")

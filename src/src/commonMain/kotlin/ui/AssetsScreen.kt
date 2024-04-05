@@ -50,14 +50,14 @@ fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, allo
                 if (allowAmountEdit)
                 {
                     val amt = assetPerAccount.editableAmount?.toPlainString() ?: tokenAmountString(apc.groupInfo.tokenAmt, asset.tokenInfo?.genesisInfo?.decimal_places)
-                    WallyDecimalEntry(mutableStateOf(amt))
-                    {
+                    WallyDecimalEntry(mutableStateOf(amt)) {
                         try
                         {
                             assetPerAccount.editableAmount = assetPerAccount.tokenDecimalFromString(it)
                         }
                         catch (e: Exception) // If we can't parse it for any reason, ignore
                         {
+                            LogIt.info("Can't parse editable amount ${it}")
                         }
                         it
                     }

@@ -443,6 +443,7 @@ private val _sendFromAccount = MutableStateFlow<String>("")
     fun onAccountSelected(c: Account?)
     {
         wallyApp!!.focusedAccount = c
+        var errorShown = false
         try
         {
             if (c != null)
@@ -452,12 +453,15 @@ private val _sendFromAccount = MutableStateFlow<String>("")
                 val sendAddr = PayAddress(_sendToAddress.trim())
                 if (c.wallet.chainSelector != sendAddr.blockchain)
                 {
-                    if (sendAddr != alreadyErroredAddress.value)
+                    // If the send view is visible, then show an error indicating that the account you've just selected
+                    // isn't compatible with the pasted address.  But if the send view is not visible, then don't show;
+                    // the user is probably doing something else right now.
+                    if (isSending && sendAddr != alreadyErroredAddress.value)
                     {
                         displayError(S.chainIncompatibleWithAddress,
                           i18n(S.chainIncompatibleWithAddressDetails) % mapOf("walletCrypto" to (chainToCurrencyCode[c.wallet.chainSelector]
                             ?: i18n(S.unknownCurrency)), "addressCrypto" to (chainToCurrencyCode[sendAddr.blockchain] ?: i18n(S.unknownCurrency))))
-
+                        errorShown = true
                         alreadyErroredAddress.value = sendAddr
                     }
                     updateSendAccount(sendAddr)
@@ -474,7 +478,7 @@ private val _sendFromAccount = MutableStateFlow<String>("")
         {
             if (DEBUG) throw e
         } // ignore all problems from user input, unless in debug mode when we should analyze them
-
+        if (!errorShown) clearAlerts()  // because user did something
     }
 
     // Handle incoming GUI changes
