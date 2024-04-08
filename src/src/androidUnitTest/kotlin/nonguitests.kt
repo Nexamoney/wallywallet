@@ -10,7 +10,7 @@ import org.nexa.threads.millisleep
 import java.util.concurrent.TimeoutException
 import kotlin.test.*
 
-val FULL_NODE_IP = "192.168.1.5"
+val FULL_NODE_IP = "127.0.0.1"
 val REGTEST_RPC_PORT=18332
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -321,9 +321,9 @@ class NonGuiTests
             tmp.second == filledHeight}, { "electrum server never synced"})
         val (ectip, ectipHeight) = ec.getTip()
         val addressDerivationCoin = Bip44AddressDerivationByChain(cs)
-        val srchResults = searchDerivationPathActivity({ec }, cs, 20) {
+        val srchResults = searchDerivationPathActivity({ec }, cs, 20, {
             libnexa.deriveHd44ChildKey(account.wallet.secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
-        }
+        }, {})
 
         LogIt.info("EC bal: ${srchResults.balance}")
         check(srchResults.balance == balance)

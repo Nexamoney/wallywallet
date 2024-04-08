@@ -7,7 +7,7 @@ private val LogIt = GetLog("BU.wally.accountdiscovery")
 /** Given a string, this cleans up extra spaces and returns a list of the actual words */
 fun processSecretWords(secretWords: String): List<String>
 {
-    val txt: String = secretWords.trim()
+    val txt: String = secretWords.trim().lowercase()
     val wordSplit = txt.split(' ','\n','\t')
     val junkDropped = wordSplit.filter { it.length > 0 }
     return junkDropped
@@ -31,7 +31,7 @@ data class AccountSearchResults(
   val balance: Long
 )
 
-fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: ChainSelector, maxGap:Int, secretDerivation: (Int) -> ByteArray?): AccountSearchResults
+fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: ChainSelector, maxGap:Int, secretDerivation: (Int) -> ByteArray?, ongoingResults: ((AccountSearchResults)->Unit)?=null): AccountSearchResults
     {
         var addrsFound = 0L
         var index = 0
@@ -93,6 +93,7 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
                             found = true
                             bal += u.amount
                         }
+                        ongoingResults?.invoke(AccountSearchResults(ret.values.toList(), addrsFound, lastAddressIndex, bal))
                     }
                     else
                     {
