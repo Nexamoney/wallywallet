@@ -475,16 +475,47 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
         }
         WallyDropDownMenuUnidirectional<ChainSelector>(selectedChain, blockchains, onChainSelected)
         AccountNameInput(newAcState.accountName, newAcState.validAccountName, onNewAccountName)
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(5.dp))
         RecoveryPhraseInput(newAcState.recoveryPhrase, newAcState.validOrNoRecoveryPhrase, onNewRecoveryPhrase)
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(5.dp))
         pinInput(newAcState.pin, newAcState.validOrNoPin, onPinChange)
         Text(i18n(S.PinSpendingUnprotected), fontSize = 14.sp)
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(5.dp))
         WallySwitch(newAcState.hideUntilPinEnter, S.PinHidesAccount, true, onHideUntilPinEnterChanged)
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(5.dp))
         if (!creatingAccountLoading)
         {
+            // fast forward search
+            val discoveredSomething = newAcState.discoveredAccountHistory.size > 0
+            if (discoveredSomething)
+            {
+                Row(Modifier.fillMaxWidth()) {
+                    ResImageView("icons/check.xml", modifier = Modifier.size(50.dp))
+                    CenteredText(i18n(S.discoveredAccountDetails) % mapOf("tx" to newAcState.discoveredAccountHistory.size.toString(), "addr" to newAcState.discoveredAddressCount.toString(),
+                      "bal" to NexaFormat.format(fromFinestUnit(newAcState.discoveredAccountBalance, chainSelector = selectedChain.second)), "units" to (chainToDisplayCurrencyCode[selectedChain.second] ?:"")))
+                }
+                Row(Modifier.fillMaxWidth()) { CenteredText(i18n(S.discoveredWarning)) }
+                Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth())
+                {
+                    WallyRoundedTextButton(i18n(S.createDiscoveredAccount), onClick = onClickCreateDiscoveredAccount)
+                }
+            }
+            else
+            {
+                if (fastForwardText != null) CenteredText(fastForwardText)
+                else if (newAcState.earliestActivityHeight >= 0)
+                {
+                    Row(Modifier.fillMaxWidth()) {
+                        Box(Modifier.size(50.dp)) {
+                            LoadingAnimationContent()
+                        }
+                        CenteredText(i18n(S.NewAccountSearchingForAllTransactions))
+                    }
+                }
+            }
+
+            // Full sync
+            Spacer(Modifier.height(10.dp))
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 // I'm cheating a bit here and using the contents of the recoverySearchText to pick what icon to show
                 if (recoverySearchText == i18n(S.NewAccountSearchingForTransactions))
@@ -509,36 +540,6 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
             else Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth())
             {
                  WallyRoundedTextButton(i18n(S.createNewAccount), onClick = onClickCreateAccount)
-            }
-
-            val discoveredSomething = newAcState.discoveredAccountHistory.size > 0
-            if (discoveredSomething)
-            {
-                Spacer(Modifier.height(20.dp))
-                Row(Modifier.fillMaxWidth()) {
-                    ResImageView("icons/check.xml", modifier = Modifier.size(50.dp))
-                    CenteredText(i18n(S.discoveredAccountDetails) % mapOf("tx" to newAcState.discoveredAccountHistory.size.toString(), "addr" to newAcState.discoveredAddressCount.toString(),
-                      "bal" to NexaFormat.format(fromFinestUnit(newAcState.discoveredAccountBalance, chainSelector = selectedChain.second)), "units" to (chainToDisplayCurrencyCode[selectedChain.second] ?:"")))
-                }
-                Row(Modifier.fillMaxWidth()) { CenteredText(i18n(S.discoveredWarning)) }
-                Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth())
-                {
-                    WallyRoundedTextButton(i18n(S.createDiscoveredAccount), onClick = onClickCreateDiscoveredAccount)
-                }
-            }
-            else
-            {
-                if (fastForwardText != null) CenteredText(fastForwardText)
-                else if (newAcState.earliestActivityHeight >= 0)
-                {
-                    Spacer(Modifier.height(20.dp))
-                    Row(Modifier.fillMaxWidth()) {
-                        Box(Modifier.size(50.dp)) {
-                            LoadingAnimationContent()
-                        }
-                        CenteredText(i18n(S.NewAccountSearchingForAllTransactions))
-                    }
-                }
             }
 
         }
@@ -947,7 +948,7 @@ fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter
                 if (ec == null)
                 {
                     displayFastForwardInfo(i18n(S.ElectrumNetworkUnavailable))
-                    millisleep(2000U)
+                    millisleep(200U)
                 }
                 ec
             }
@@ -967,12 +968,26 @@ fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter
         val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
 
         LogIt.info("Searching in ${addressDerivationCoin}")
+        var addrText = ""
+        var summaryText = ""
         var activity = try
         {
-            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP) {
+            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP, {
                 if (aborter.obj) throw EarlyExitException()
-                libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
-            }
+                val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
+                val us = UnsecuredSecret(key)
+                val dest = Pay2PubKeyTemplateDestination(chainSelector, us, it.toLong())
+                addrText = "\n ${it} at ${dest.address.toString()}"
+                displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + addrText + summaryText)
+                key
+            },
+              {
+                  summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
+                    "bal" to NexaFormat.format(fromFinestUnit(it.balance, chainSelector = chainSelector)), "units" to (chainToDisplayCurrencyCode[chainSelector] ?:""))
+
+                  displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + addrText + summaryText)
+              }
+            )
         }
         catch (e: EarlyExitException)
         {
@@ -986,10 +1001,21 @@ fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter
         // Look for activity in the identity and common location
         var activity2 = try
         {
-            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_NONSTD_DERIVATION_PATH_MAX_GAP) {
+            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_NONSTD_DERIVATION_PATH_MAX_GAP, {
                 if (aborter.obj) throw EarlyExitException()
-                libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, false, it).first
-            }
+                val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, false, it).first
+                val us = UnsecuredSecret(key)
+                val dest = Pay2PubKeyTemplateDestination(chainSelector, us, it.toLong())
+                displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + "\n ${it} at ${dest.address.toString()}")
+                key
+            },
+              {
+                  summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
+                    "bal" to NexaFormat.format(fromFinestUnit(it.balance, chainSelector = chainSelector)), "units" to (chainToDisplayCurrencyCode[chainSelector] ?:""))
+
+                  displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + addrText + summaryText)
+              }
+            )
         }
         catch (e: EarlyExitException)
         {

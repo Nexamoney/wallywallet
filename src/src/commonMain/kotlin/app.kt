@@ -827,7 +827,7 @@ open class CommonApp
             accounts.remove(act.name)  // remove this coin from any global access before we delete it
             // clean up the a reference to this account, if its the primary
             if (nullablePrimaryAccount == act) nullablePrimaryAccount = null
-            launch { // cannot access db in UI thread
+            later { // cannot access db in UI thread
                 saveActiveAccountList()
                 act.delete()
             }
@@ -884,34 +884,28 @@ open class CommonApp
             if (txh.date < earliestDate) earliestDate = txh.date
         }
 
-        LogIt.info("create account")
         val ac = Account(name, flags, chainSelector, secretWords, earliestDate, earliestHeight, autoInit = false)
         accountLock.lock {  // We can show it early, although it might have the wrong data momentarily
                 accounts[name] = ac
-                // Write the list of existing accounts, so we know what to load
-                saveActiveAccountList()
             }
         ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
 
         // normally this can be done asynchronously to account creation, but we need to do it before fastforwarding
         // because if it accidentally runs after the fast forward, it will set the sync point back to these start points
         ac.asyncInit(earliestDate, earliestHeight)
-        LogIt.info("prepare destinations")
         // We need to pregenerate all the destinations used in the provided transactions, or we won't recognise these transactions as our own
         ac.wallet.prepareDestinations(histAddressCount, histAddressCount)
-        LogIt.info("fastforward")
         ac.wallet.fastforward(histEnd.height, histEnd.time, histEnd.hash, txhist)
-        LogIt.info("start")
         ac.start()
         ac.onChange()
-        LogIt.info("save")
         ac.saveAccountPin(name, epin)
+        ac.wallet.save(force=true)  // force the save
         ac.wallet.saveBip44Wallet() // because we jammed in a bunch of tx
-        LogIt.info("insert")
-
-        LogIt.info("done")
+        accountLock.lock {
+            // Write the list of existing accounts, so we know what to load
+            saveActiveAccountList()
+        }
         return ac
-
     }
 
     /** Create an account given a recovery key and the account's earliest activity */

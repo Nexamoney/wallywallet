@@ -717,10 +717,7 @@ class Account(
         val wdb = walletDb
         if (wdb != null)
         {
-            GlobalScope.launch(Dispatchers.IO + CoroutineExceptionHandler { context, throwable ->
-                LogIt.error(throwable.message + " Something went wrong in saveAccountAddress()")
-                LogIt.error(context.toString())
-            }) { wdb.set("accountAddress_" + name, (currentReceive?.address?.toString() ?: "").toByteArray()) }
+            later { wdb.set("accountAddress_" + name, (currentReceive?.address?.toString() ?: "").toByteArray()) }
         }
     }
 }
