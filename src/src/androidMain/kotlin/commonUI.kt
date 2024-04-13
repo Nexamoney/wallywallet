@@ -38,59 +38,15 @@ import java.net.URLDecoder
 
 const val SUP = "UNUSED_PARAMETER"
 
-const val SPLITBILL_MESSAGE = "info.bitcoinunlimited.www.wally.splitbill"
-const val TRICKLEPAY_MESSAGE = "info.bitcoinunlimited.www.wally.tricklepay"
-const val EXCHANGE_MESSAGE = "info.bitcoinunlimited.www.wally.exchange"
-const val SETTINGS_MESSAGE = "info.bitcoinunlimited.www.wally.settings"
-const val ASSETS_MESSAGE = "info.bitcoinunlimited.www.wally.invoices"
-const val IDENTITY_MESSAGE = "info.bitcoinunlimited.www.wally.identity"
-
-val IDENTITY_OP_RESULT = 27720
-val IDENTITY_SETTINGS_RESULT = 27721
-val TRICKLEPAY_RESULT = 27722
 val IMAGE_RESULT = 27723
 val READ_FILES_PERMISSION_RESULT = 27724
 val READ_MEDIA_IMAGES_RESULT = 27725
-private val PICK_IMAGE = 1
-private val PICK_VIDEO = 2
-
-var WallyRowColors = arrayOf(0x4Ff5f8ff.toInt(), 0x4Fd0d0ef.toInt())
 
 // Assign this in your App.onCreate
 var displayMetrics = DisplayMetrics()
 
 
 private val LogIt = GetLog("BU.wally.commonUI")
-fun RunningTheUnitTests(): Boolean
-{
-    return runningTheTests
-    /*
-    try
-    {
-        // I can search for either UnitTest or GuiTest here because both are included in the test image.
-        Class.forName("org.wallywallet.androidTestImplementation.UnitTest")
-        return true
-    }
-    catch (e: ClassNotFoundException)
-    {
-        return false
-    }
-
-     */
-}
-
-/** */
-fun View.visOrGone(vis: Boolean)
-{
-    if (vis) visibility = View.VISIBLE
-    else visibility = View.GONE
-}
-
-fun View.visOrInvis(vis: Boolean)
-{
-    if (vis) visibility = View.VISIBLE
-    else visibility = View.INVISIBLE
-}
 
 fun PayAddress.urlEncode():String
 {
@@ -115,36 +71,6 @@ fun Spinner.setSelection(v: String): Boolean
     }
     return false
 }
-
-/** Do whatever you pass within the user interface context, asynchronously */
-fun laterUI(fn: suspend () -> Unit): Unit
-{
-    GlobalScope.launch(Dispatchers.Main) {
-        try
-        {
-            fn()
-        }
-        catch (e: Exception)
-        {
-            handleThreadException(e,"Exception in laterUI", sourceLoc())
-        }
-
-    }
-}
-
-// see https://stackoverflow.com/questions/8276634/how-to-get-hosting-activity-from-a-view
-fun getActivity(view: View): Activity?
-{
-    var context: Context = view.getContext();
-    while (context is ContextWrapper)
-    {
-        if (context is Activity) return context
-        context = context.getBaseContext()
-    }
-    return null
-}
-
-
 
 // https://stackoverflow.com/questions/29664993/how-to-convert-dp-px-sp-among-each-other-especially-dp-and-sp
 public fun dpToPx(dp: Float): Int

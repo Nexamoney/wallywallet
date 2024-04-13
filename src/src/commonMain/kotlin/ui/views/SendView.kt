@@ -75,13 +75,12 @@ fun SendView(
     var ccIndex by remember { mutableStateOf(0) }
     ccIndex = currencies.value.indexOf(currencyCode.value)
     val focusManager = LocalFocusManager.current
+    val coroutineScope = rememberCoroutineScope()
 
     val coroutineExceptionHandler = CoroutineExceptionHandler { context, throwable ->
         LogIt.error(context.toString())
         LogIt.error(throwable.message ?: throwable.toString())
-        GlobalScope.launch(Dispatchers.Main) {
-            displayError(S.unknownError, throwable.message ?: throwable.toString())
-        }
+        displayError(S.unknownError, throwable.message ?: throwable.toString())
     }
 
     fun onCurrencySelected()
@@ -124,7 +123,7 @@ fun SendView(
             }
             displayNotice(S.sendSuccess, null)
             onPaymentInProgress(null)
-            GlobalScope.launch(Dispatchers.Main + coroutineExceptionHandler) {
+            coroutineScope.launch(coroutineExceptionHandler) {
                 setToAddress("")
                 updateSendBasedOnPaymentInProgress()
             }

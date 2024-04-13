@@ -280,7 +280,7 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
             AccountAction.Delete -> AccountDetailAcceptDeclineTextView(i18n(S.deleteConfirmation) % mapOf("accountName" to acc.name, "blockchain" to acc.currencyCode)) {
                 if (it)
                 {
-                    wallyApp?.deleteAccount(acc)
+                    wallyApp!!.deleteAccount(acc)
                     displayNotice(S.accountDeleteNotice)
                     accountDeleted()
                 }

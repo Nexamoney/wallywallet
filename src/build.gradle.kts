@@ -7,13 +7,12 @@ import java.net.URL
 // Dependency versions
 val mpThreadsVersion = "0.2.6"
 val nexaRpcVersion = "1.1.5"
-val libNexaKotlinVersion = "0.1.58"
-
+val libNexaKotlinVersion = "0.1.63"
 val serializationVersion = "1.6.3"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.8.0"     // https://github.com/Kotlin/kotlinx.coroutines
-val ktorVersion = "2.3.9"           // https://github.com/ktorio/ktor
+val ktorVersion = "2.3.10"           // https://github.com/ktorio/ktor
 val bigNumVersion = "0.3.9"         // https://github.com/ionspin/kotlin-multiplatform-bignum
-val composeVersion = "1.6.10-dev1561"        // https://github.com/JetBrains/compose-multiplatform/releases
+val composeVersion = "1.6.10-dev1575"        // https://github.com/JetBrains/compose-multiplatform/releases
 val androidTestCoreVersion = "1.6.0-alpha05" // https://mvnrepository.com/artifact/androidx.test/core
 val androidxActivityComposeVersion = "1.8.2"
 val uriKmpVersion = "0.0.16"  // https://github.com/eygraber/uri-kmp
@@ -279,7 +278,7 @@ kotlin {
                 implementation("io.github.alexzhirkevich:qrose:1.0.1")  // https://github.com/alexzhirkevich/qrose/releases
 
                 // Animation library binding
-                implementation("org.jetbrains.skiko:skiko:0.7.93")
+                implementation("org.jetbrains.skiko:skiko:0.8.0")
             }
         }
         val commonTest by getting {
@@ -380,11 +379,11 @@ kotlin {
                     implementation(kotlin("stdlib-jdk8"))
                     implementation("androidx.activity:activity-compose:$androidxActivityComposeVersion")
 
-                    implementation("androidx.compose.ui:ui:1.6.3")
-                    implementation("androidx.compose.ui:ui-tooling:1.6.3")
-                    implementation("androidx.compose.ui:ui-tooling-preview:1.6.3")
-                    implementation("androidx.compose.foundation:foundation:1.6.3")
-                    implementation("androidx.compose.material:material:1.6.3")
+                    implementation("androidx.compose.ui:ui:1.6.5")
+                    implementation("androidx.compose.ui:ui-tooling:1.6.5")
+                    implementation("androidx.compose.ui:ui-tooling-preview:1.6.5")
+                    implementation("androidx.compose.foundation:foundation:1.6.5")
+                    implementation("androidx.compose.material:material:1.6.5")
                     implementation("androidx.activity:activity-compose:1.8.2")
                     implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.6.3")
                     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.3")
@@ -435,9 +434,9 @@ kotlin {
                     implementation("androidx.camera:camera-view:${camerax_version}")
                     implementation("com.google.mlkit:barcode-scanning:17.2.0")
 
-                    implementation("androidx.media3:media3-exoplayer:1.3.0")
+                    implementation("androidx.media3:media3-exoplayer:1.3.1")
                     // Dynamic Adaptive Streaming over HTTP: implementation("androidx.media3:media3-exoplayer-dash:1.X.X")
-                    implementation("androidx.media3:media3-ui:1.3.0")
+                    implementation("androidx.media3:media3-ui:1.3.1")
 
                     // Animation
                     implementation("com.airbnb.android:lottie-compose:$lottieVersion")

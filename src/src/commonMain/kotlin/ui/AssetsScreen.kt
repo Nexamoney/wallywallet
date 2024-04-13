@@ -38,7 +38,8 @@ fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, allo
     Column(modifier = modifier) {
         if ((devMode)&&(verbosity>0)) CenteredFittedText(asset.groupId.toStringNoPrefix())
         Row {
-            MpMediaView(asset.iconBytes, asset.iconUri.toString()) { mi, draw ->
+            LogIt.info("Asset ${asset.name} icon bytes: ${asset.iconBytes?.size ?: -1} icon url: ${asset.iconUri}")
+            MpMediaView(asset.iconBytes, asset.iconUri?.toString()) { mi, draw ->
                 val m = (if (verbosity > 0) Modifier.background(Color.Transparent).size(64.dp, 64.dp)
                 else  Modifier.background(Color.Transparent).size(26.dp, 26.dp)).align(Alignment.CenterVertically)
                 draw(m)
@@ -297,7 +298,6 @@ fun AssetScreen(account: Account, nav: ScreenNav)
                 LazyColumn(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(0.2f)) {
                     var index = 0
                     account.assets.forEach {
-                        //LogIt.info("asset for each")
                         val key = it.key
                         val entry = it.value
                         val indexFreezer = index  // To use this in the item composable, we need to freeze it to a val, because the composable is called out-of-scope

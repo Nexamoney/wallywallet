@@ -21,10 +21,6 @@ import okio.FileSystem
 import platform.AVKit.AVPlayerViewController
 import platform.CoreGraphics.CGRect
 import platform.CoreGraphics.CGRectMake
-import platform.Foundation.NSData
-import platform.Foundation.NSSelectorFromString
-import platform.Foundation.NSURL
-import platform.Foundation.create
 import platform.QuartzCore.CATransaction
 import platform.QuartzCore.kCATransactionDisableActions
 import okio.Path.Companion.toPath
@@ -59,6 +55,7 @@ import platform.CoreGraphics.CGImageGetBytesPerRow
 import platform.CoreGraphics.CGImageGetDataProvider
 import platform.CoreGraphics.CGImageGetHeight
 import platform.CoreGraphics.CGImageGetWidth
+import platform.Foundation.*
 import platform.UIKit.UIImage
 import platform.UIKit.UIImagePNGRepresentation
 import platform.posix.memcpy
@@ -187,12 +184,13 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
 
     val mu = mediaUri
     if (mu == null) return false
-
-    //val url = Url(mu)
     val name = mu.lowercase()
 
-    if (name.endsWith(".svg", true) ||
-      name.endsWith(".jpg", true) ||
+    if (name.endsWith(".svg", true))
+    {
+        // TODO iOS SVG rendering
+    }
+    else if (name.endsWith(".jpg", true) ||
       name.endsWith(".jpeg", true) ||
       name.endsWith(".png", true) ||
       name.endsWith(".webp", true) ||
@@ -201,18 +199,22 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
       name.endsWith(".heif", true)
     )
     {
-        // var mediaBytes by remember { mutableStateOf(mediaData) }
         var im by remember { mutableStateOf<UIImage?>(null) }
-        // val tmpname = name?.takeLast(20) ?: ""
-        // var message by remember { mutableStateOf(tmpname) }
-
         im = mediaData?.usePinned { pinned ->
-                    val b = NSData.create(bytes = pinned.addressOf(0), length = pinned.get().size.toULong())
-                    UIImage(b)
-                }
-          ?: run {
+            val b = NSData.create(bytes = pinned.addressOf(0), length = pinned.get().size.toULong())
+            try
+            {
+                UIImage(b)
+            }
+            catch (e: NullPointerException)
+            {
+                // Happens if the data cannot be parsed into an image
+                UIImage()
+            }
+        } ?: run {
               val path = mediaUri.toPath()
               // If mediaUri doesn't exist, program will crash
+              LogIt.info("mpmediaview UIImage load from uri")
               if (!FileSystem.SYSTEM.exists(path)) UIImage()
               else UIImage(mediaUri)
           }
@@ -230,27 +232,14 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
             wrapper(MediaInfo(width, height, false, true))
             {
                 val m = it ?: Modifier.fillMaxSize().background(Color.Transparent)
-                UIKitView(
-                      modifier = m,
+                LogIt.info("MpMediaView wrapper render")
+                UIKitView(modifier = m,
                       factory = {
-                          /*
-                          val textField = object : UITextField(CGRectMake(0.0, 0.0, 0.0, 0.0)) {
-                              @ObjCAction
-                              fun editingChanged() {
-                                  message = text ?: ""
-                              }
-                          }
-                          textField.font = UIFont.systemFontOfSize(6.0)
-                          if (tim != null) textField.background = tim
-                          textField
-                          */
-
                           val imField = UIImageView(CGRectMake(0.0, 0.0, 0.0, 0.0))
                           imField.image = tim
                           imField.contentMode = UIViewContentMode.UIViewContentModeScaleAspectFit
                           imField
                       },
-
                   update = {
                       it.contentMode = UIViewContentMode.UIViewContentModeScaleAspectFit
                       it.image = tim
@@ -269,7 +258,6 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
     {
         VideoView(mediaUri, wrapper)
     }
-
     return false
 }
 
