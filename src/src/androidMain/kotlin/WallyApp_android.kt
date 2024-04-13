@@ -26,6 +26,7 @@ import kotlin.coroutines.CoroutineContext
 import com.eygraber.uri.*
 import info.bitcoinunlimited.www.wally.ui.views.loadingAnimation
 import org.nexa.threads.Mutex
+import org.nexa.threads.setThreadName
 
 
 const val DEBUG_VM = true
@@ -293,30 +294,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     var finishParent = 0
 
 
-    /** Return what account a particular GUI element is bound to or null if its not bound */
-    fun accountFromGui(view: View): Account?
-    {
-        var act:Account? = null
-        try
-        {
-            act = commonApp.accountLock.lock {
-                for (a in commonApp.accounts.values)
-                {
-                    if ((a.tickerGUI.reactor is TextViewReactor<String>) && (a.tickerGUI.reactor as TextViewReactor<String>).gui == view) return@lock a
-                    if ((a.balanceGUI.reactor is TextViewReactor<String>) && (a.balanceGUI.reactor as TextViewReactor<String>).gui == view) return@lock a
-                    if ((a.unconfirmedBalanceGUI.reactor is TextViewReactor<String>) && (a.unconfirmedBalanceGUI.reactor as TextViewReactor<String>).gui == view) return@lock a
-                    if ((a.infoGUI.reactor is TextViewReactor<String>) && (a.infoGUI.reactor as TextViewReactor<String>).gui == view) return@lock a
-                }
-                null
-            }
-        } catch (e: Exception)
-        {
-            LogIt.warning("Exception in accountFromGui: " + e.toString())
-            handleThreadException(e)
-        }
-        return act
-    }
-
 
     private fun createNotificationChannel()
     {
@@ -420,6 +397,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         lateinit var handler: Handler
         override fun run()
         {
+            setThreadName("WallyAppEventLoop")
             Looper.prepare()
             handler = object : Handler(Looper.myLooper()!!)
             {

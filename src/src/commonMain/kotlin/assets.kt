@@ -2,6 +2,14 @@ package info.bitcoinunlimited.www.wally
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import io.ktor.http.*
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Gate
 import org.nexa.threads.LeakyBucket
@@ -76,10 +84,11 @@ fun triggerAssetCheck()
 
 fun AssetLoaderThread(): iThread
 {
-    return org.nexa.threads.Thread("assetLoader") {
+    return org.nexa.threads.Thread("assetLoader")
+    {
         // Constructing the asset list can use a lot of disk which interferes with startup
         // This will wait until all the accounts are loaded
-        while (wallyApp!!.nullablePrimaryAccount == null) millisleep(2000UL)
+        while (wallyApp!!.nullablePrimaryAccount == null) millisleep(5000UL)
         val ecCnxns = mutableMapOf<ChainSelector, ElectrumClient?>()
 
         fun getEc(chain:Blockchain): ElectrumClient
@@ -97,17 +106,20 @@ fun AssetLoaderThread(): iThread
 
         while (true)
         {
-            LogIt.info("asset check")
+            LogIt.info(sourceLoc() + ": asset check")
             try
             {
+                // Take a copy
                 val accounts = wallyApp!!.accountLock.lock {
-                    wallyApp!!.accounts.values
+                    wallyApp!!.accounts.values.toList()
                 }
                 for (a in accounts)
                     a.getXchgRates("USD")
 
+                // Refresh all assets
                 for (a in accounts)
                 {
+                    LogIt.info(sourceLoc() + ":   asset check for ${a.name}")
                     try
                     {
                         a.constructAssetMap({ getEc(a.chain) })
@@ -117,58 +129,97 @@ fun AssetLoaderThread(): iThread
                         // ec.close()
                     }
                 }
-                // let all the electrum cnxns go
-                //for (ec in ecCnxns)
-                //{
-                //    ec.value?.close()
-                //}
-                //ecCnxns.clear()
             }
             catch(e: Exception)
             {
                 handleThreadException(e)
             }
-            LogIt.info("asset delay")
+            LogIt.info(sourceLoc() + ": asset check complete")
             // We don't want to recheck assets more often than every 30 sec, regardless of blockchain activity
             assetCheckTrigger.delayuntil(ASSET_ACCESS_TIMEOUT_MS, { assetCheckPacer.trytake(30*1000, { true}) == true })
         }
     }
 }
 
+/*
+object BigDecimalSerializer: JsonTransformingSerializer<BigDecimal>(tSerializer = object: KSerializer<BigDecimal>
+{
+    // java override fun deserialize(decoder: Decoder): BigDecimal = decoder.decodeString().toBigDecimal()
+    override fun deserialize(decoder: Decoder): BigDecimal = BigDecimal.fromString(decoder.decodeString(), SerializationMode)
+    override fun serialize(encoder: Encoder, value: BigDecimal) = encoder.encodeString(value.toPlainString())
+    override val descriptor: SerialDescriptor
+        get() = PrimitiveSerialDescriptor("BigDecimal", PrimitiveKind.STRING)
+})
+{
+    override fun transformDeserialize(element: JsonElement): JsonElement
+    {
+        var s = element.toString()
+        if (s[0] == '"') s = s.drop(1).dropLast(1)
+        return JsonPrimitive(value = s)
+    }
+}
+ */
 
+object Hash256Serializer: KSerializer<Hash256>
+{
+    override val descriptor: SerialDescriptor
+        get() = PrimitiveSerialDescriptor("Hash256", PrimitiveKind.STRING)
+
+    override fun deserialize(decoder: Decoder): Hash256
+    {
+        return Hash256(decoder.decodeString())
+    }
+    override fun serialize(encoder: Encoder, value: Hash256)
+    {
+        encoder.encodeString(value.toHex())
+    }
+}
+
+object UrlSerializer: KSerializer<Url>
+{
+    override val descriptor: SerialDescriptor
+        get() = PrimitiveSerialDescriptor("Url", PrimitiveKind.STRING)
+
+    override fun deserialize(decoder: Decoder): Url
+    {
+        return Url(decoder.decodeString())
+    }
+    override fun serialize(encoder: Encoder, value: Url)
+    {
+        encoder.encodeString(value.toString())
+    }
+}
+
+
+@Serializable
 class AssetInfo(val groupId: GroupId)
 {
-    var dataLock = Gate()
+    @kotlinx.serialization.Transient var dataLock = Gate()
     var name:String? = null
     var ticker:String? = null
-    var genesisHeight:Long = 0
-    var genesisTxidem: Hash256? = null
-    var docHash: Hash256? = null
+    var genesisHeight:Long = -1
+    @Serializable(with = Hash256Serializer::class) var genesisTxidem: Hash256? = null
+    @Serializable(with = Hash256Serializer::class) var docHash: Hash256? = null
     var docUrl: String? = null
     var tokenInfo: TokenDesc? = null
     var iconBytes: ByteArray? = null
-    var iconUri: Url? = null
+    @Serializable(with = UrlSerializer::class)var iconUri: Url? = null
     var iconBackBytes: ByteArray? = null
-    var iconBackUri: Url? = null
+    @Serializable(with = UrlSerializer::class) var iconBackUri: Url? = null
 
     var nft: NexaNFTv2? = null
 
     var publicMediaCache: String? = null   // local storage location (if it exists)
+    @Serializable(with = UrlSerializer::class)
     var publicMediaUri: Url? = null        // canonical location (needed to find the file extension to get its type  at a minimum)
     var publicMediaBytes: ByteArray? = null
 
     var ownerMediaCache: String? = null
+    @Serializable(with = UrlSerializer::class)
     var ownerMediaUri: Url? = null        // canonical location (needed to find the file extension to get its type at a minimum)
     var ownerMediaBytes: ByteArray? = null
 
-    // Connection to the UI if shown on screen
-    //var ui:AssetBinder? = null
-    //var sui:AssetSuccinctBinder? = null
-
     var loadState: AssetLoadState = AssetLoadState.UNLOADED
-
-    // TODO remove
-    var account: Account? = null
 
     fun finalize()
     {
@@ -330,10 +381,12 @@ class AssetInfo(val groupId: GroupId)
 
     fun load(chain: Blockchain, am: AssetManager, getEc: () -> ElectrumClient)  // Attempt to find all asset info from a variety of data sources
     {
+        if (loadState == AssetLoadState.COMPLETED) return
+        LogIt.info(sourceLoc() + chain.name + ": Loading Asset: Get Token Desc ${groupId.toStringNoPrefix()}")
         var td:TokenDesc = am.getTokenDesc(chain, groupId, getEc)
         synchronized(dataLock)
         {
-            LogIt.info("Loading Asset ${groupId.toStringNoPrefix()}")
+            LogIt.info(sourceLoc() + chain.name + ": Loading Asset: Process genesis info ${groupId.toStringNoPrefix()}")
             var tg = td.genesisInfo
             if (tg == null) return@synchronized
             var dataChanged = false
@@ -356,7 +409,6 @@ class AssetInfo(val groupId: GroupId)
                 {
                     try
                     {
-
                         tokenInfo = td
                         if (td.marketUri == null)
                         {
@@ -364,7 +416,6 @@ class AssetInfo(val groupId: GroupId)
                             if (u.isAbsolutePath)  // This is a real URI, not a local path
                             {
                                 td.marketUri = u.resolve("/token/" + groupId.toHex()).toString()
-                                am.storeTokenDesc(groupId, td)
                             }
                             else
                             {
@@ -375,12 +426,12 @@ class AssetInfo(val groupId: GroupId)
                         }
                         extractNftData(am, groupId, nftZipData.second)
                         if (iconBackUri == null) getTddIcon().let { iconBackUri = it.first; iconBackBytes = it.second }
-                        loadState == AssetLoadState.COMPLETED
+                        loadState = AssetLoadState.COMPLETED
                         dataChanged = true
                     }
                     finally
                     {
-                         nftZipData.second.close()
+                        nftZipData.second.close()
                     }
                 }
                 else  // Not an NFT, so fill in the data from the TDD
@@ -404,9 +455,9 @@ class AssetInfo(val groupId: GroupId)
                     {
                         getTddIcon().let { iconUri = it.first; iconBytes = it.second }
                         dataChanged = true
+                        loadState = AssetLoadState.COMPLETED
                     }
                     am.storeTokenDesc(groupId, td)
-                    loadState == AssetLoadState.COMPLETED
                 }
             }
             else // Missing some standard token info, look around for an NFT file
@@ -431,7 +482,7 @@ class AssetInfo(val groupId: GroupId)
                         try
                         {
                             extractNftData(am, groupId, nftZipData.second)
-                            loadState == AssetLoadState.COMPLETED
+                            loadState = AssetLoadState.COMPLETED
                         }
                         catch (e: Exception)
                         {
@@ -448,17 +499,6 @@ class AssetInfo(val groupId: GroupId)
                     }
                 }
             }
-
-            /*  TODO ui changes
-            laterUI {
-                if (dataChanged)
-                {
-                    ui?.repopulate()
-                    sui?.repopulate()
-                }
-            }
-
-             */
         }
     }
 
@@ -530,17 +570,45 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
     }
 
 
+    /** Start tracking this asset & return the current info if already tracking.
+     * If not tracking and the passed electrum client is null, this asset's info will be loaded asynchronously.
+     * Otherwise the passed electrum client will be used to load the asset synchronously
+     */
     fun track(groupId: GroupId, getEc: (() -> ElectrumClient)? = null): AssetInfo
     {
         var ret = assets[groupId]
-        if (ret != null) return ret
+        if (ret != null)
+        {
+            // LogIt.info(sourceLoc() + ": Asset manager: already tracking ${groupId.toString()}")
+            return ret
+        }
+        LogIt.info(sourceLoc() + ": Asset manager: track ${groupId.toString()}")
+        try
+        {
+            val ai = loadAssetInfo(groupId)
+            LogIt.info(sourceLoc() + ":   Asset manager: loaded ${ai.name} icon(${ai.iconBytes?.size ?: -1} bytes): ${ai.iconUri.toString()} group: ${groupId}")
+            assets[groupId] = ai
+            return ai
+        }
+        catch (e: Exception)
+        {}
 
         val blockchain = connectBlockchain(groupId.blockchain)
         val gec = getEc ?: ElectrumClientFactory(blockchain)
 
         ret = AssetInfo(groupId)
         assets[groupId] = ret
-        wallyApp?.let { app -> ret.load(blockchain, this, gec) }
+        if (getEc != null)
+        {
+            ret.load(blockchain, this, gec)
+            if (ret.loadState == AssetLoadState.COMPLETED)
+                storeAssetInfo(ret)
+        }
+        else wallyApp?.later {
+            ret.load(blockchain, this, gec)
+            if (ret.loadState == AssetLoadState.COMPLETED)
+                storeAssetInfo(ret)
+        }
         return ret
     }
 
@@ -561,23 +629,23 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
             ef.close()
             val s = data.decodeUtf8()
             val ret = kotlinx.serialization.json.Json.decodeFromString(TokenDesc.serializer(), s)
-            if (ret.genesisInfo?.height ?: 0 >= 0)  // If the data is valid in the asset file
+            if (((ret.genesisInfo?.height ?: 0) >= 0) && (ret.pubkey != null))  // If the data is valid in the asset file
                 return ret
         }
         catch (e: Exception) // file not found, so grab it from the network
         {
         }
 
-        LogIt.info(sourceLoc() + ": Genesis Info for ${groupId.toString()} (${groupId.toHex()}) not in cache")
+        LogIt.info(sourceLoc() + ": Token Info for ${groupId.toString()} (${groupId.toHex()}) not in cache or incomplete")
         // first load the token description doc (TDD)
         val net = chain.req.net
-
         try
         {
                 val td = getTokenInfo(groupId.parentGroup(), getEc)
                 val tg = td.genesisInfo
                 if (tg == null)  // Should not happen except network
                 {
+                    LogIt.info(sourceLoc() + ": No token info available")
                     throw ElectrumRequestTimeout()
                 }
 
@@ -596,6 +664,7 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
         }
         catch(e: Exception)  // Normalize exceptions
         {
+            handleThreadException(e, "getting asset description (assetmanager.getTokenDesc)")
             throw ElectrumRequestTimeout()
         }
     }
@@ -675,6 +744,22 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
         }
 
         return null
+    }
+
+    fun storeAssetInfo(assetInfo: AssetInfo)
+    {
+        val db = kvpDb!!
+        val json = kotlinx.serialization.json.Json { encodeDefaults = true; ignoreUnknownKeys = true }
+        db.set(assetInfo.groupId.data, json.encodeToString(AssetInfo.serializer(), assetInfo).toByteArray())
+    }
+
+    fun loadAssetInfo(groupId: GroupId): AssetInfo
+    {
+        val db = kvpDb!!
+        val json = kotlinx.serialization.json.Json { encodeDefaults = true; ignoreUnknownKeys = true }
+        val data = db.get(groupId.data)
+        val ret = json.decodeFromString<AssetInfo>(AssetInfo.serializer(), data.decodeToString())
+        return ret
     }
 
     override fun storeAssetFile(filename: String, data: ByteArray): String

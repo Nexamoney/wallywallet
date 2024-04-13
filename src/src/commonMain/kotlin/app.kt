@@ -43,6 +43,7 @@ val WALLY_DATA_VERSION = byteArrayOf(1, 0, 0)
  */
 fun backgroundSync(completion: () -> Unit)
 {
+    org.nexa.threads.setThreadName("background_sync")
     // Perform your background synchronization work here
     // ...
     backgroundStop = false
@@ -827,24 +828,13 @@ open class CommonApp
             accounts.remove(act.name)  // remove this coin from any global access before we delete it
             // clean up the a reference to this account, if its the primary
             if (nullablePrimaryAccount == act) nullablePrimaryAccount = null
-            later { // cannot access db in UI thread
-                saveActiveAccountList()
-                act.delete()
-            }
+        }
 
-            /* stopping the blockchain is handled by the wallet/ blockchain
-            val bc = act.chain.chainSelector
-            var anythingUsingThisBlockchain = false
-            for (a in accounts.values)
-            {
-                if (a.chain.chainSelector == bc)
-                {
-                    anythingUsingThisBlockchain = true
-                    break
-                }
-            }
-            if (!anythingUsingThisBlockchain) blockchains[bc]?.stop()
-             */
+        later { // cannot access db in UI thread
+            saveActiveAccountList()
+        }
+        later {
+            act.delete()
         }
     }
 
@@ -897,6 +887,7 @@ open class CommonApp
         ac.wallet.prepareDestinations(histAddressCount, histAddressCount)
         ac.wallet.fastforward(histEnd.height, histEnd.time, histEnd.hash, txhist)
         ac.start()
+        ac.constructAssetMap()
         ac.onChange()
         ac.saveAccountPin(name, epin)
         ac.wallet.save(force=true)  // force the save

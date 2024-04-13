@@ -194,6 +194,7 @@ class Account(
 
         setBlockchainAccessModeFromPrefs()
         loadAccountAddress()
+        constructAssetMap()
     }
 
     /** Save the PIN of an account to the database */
@@ -439,7 +440,11 @@ class Account(
         return ret
     }
 
-    fun constructAssetMap(getEc: () -> ElectrumClient)
+
+    /** Constructs a map of assets held by this account.
+     * @param getEc if null, the asset map will be constructed rapidly without gathering asset information from the internet, otherwise the returned electrumClient will be used to gather asset info
+     */
+    fun constructAssetMap(getEc: (() -> ElectrumClient)? = null)
     {
         val am = wallyApp?.assetManager
         if (am == null) return
@@ -485,7 +490,8 @@ class Account(
             assets[asset.groupId] = AssetPerAccount(asset, assetInfo)
         }
         // Now remove any assets that are no longer in the wallet
-        for (assetKey in assets.keys)
+        val curKeys = assets.keys.toList()
+        for (assetKey in curKeys)
         {
             if (!(assetKey in ast)) assets.remove(assetKey)
         }
@@ -668,7 +674,7 @@ class Account(
     {
         changeAsyncProcessing()
         onChanged(this, force)
-        triggerAssetCheck()  // In case the wallet change had something to do with assets
+        constructAssetMap()
     }
 
     /**

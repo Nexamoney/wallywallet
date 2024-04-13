@@ -15,11 +15,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.*
 import kotlinx.coroutines.*
-import org.nexa.libnexakotlin.exceptionHandler
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
+import org.nexa.libnexakotlin.exceptionHandler
 
 /**
  * Select which account you want to receive into
@@ -59,16 +59,16 @@ fun AddressQrCode(address: String)
 {
     var displayCopiedNotice by remember { mutableStateOf(false) }
     val qrcodePainter = rememberQrCodePainter(address)
+    val coroutineScope = rememberCoroutineScope()
+
 
     fun onAddressCopied()
     {
         setTextClipboard(address)
         displayCopiedNotice = true
-        GlobalScope.launch(Dispatchers.IO + exceptionHandler) {
+        coroutineScope.launch {
             delay(NORMAL_NOTICE_DISPLAY_TIME)  // Delay of 5 seconds
-            withContext(Dispatchers.Default + exceptionHandler) {
-                displayCopiedNotice = false
-            }
+            displayCopiedNotice = false
         }
     }
 

@@ -136,42 +136,9 @@ fun Account.onResumeAndroid()
 var accountOnChangedLater = false
 actual fun onChanged(account: Account, force: Boolean)
 {
-    /*
-    // While I'm updating the screen is not responsive (e.g. onclick does not work).  This is probably a compose bug.  But regardless
-    // updating only 3 times a second is fast enough and consumes a lot less CPU which results in lower battery drain.
-    triggerRecompose.value = (millinow()/333).toInt()
-    // I need to make sure that the last change gets updated.  so if this change didn't cause an update
-    // I need to schedule an update to trigger later in case this is the last update for awhile.
-    // But I don't want to launch 100s of coroutines to do this...
-    if (!accountOnChangedLater)
-    {
-        accountOnChangedLater = true
-        later {
-            delay(500L)
-            accountOnChangedLater = false
-            triggerRecompose.value = (millinow()/333).toInt()
-        }
-    }
-     */
-
-    laterUI {
-        account.uiBinding?.let {
-            if (account.lockable)
-            {
-                it.lockIcon.visibility = View.VISIBLE
-                if (account.locked)
-                    it.lockIcon.setImageResource(R.drawable.ic_lock)
-                else
-                    it.lockIcon.setImageResource(R.drawable.ic_unlock)
-            }
-            else
-                it.lockIcon.visibility = View.GONE
-        }
-    }
     later {
         account.changeAsyncProcessing()
         triggerAccountsChanged(account)
     }
-
 }
 

@@ -104,14 +104,14 @@ enum class ScreenId
             Identity -> i18n(S.title_activity_identity)
             IdentityOp -> i18n(S.title_activity_identity_op)
             TricklePay -> i18n(S.title_activity_trickle_pay)
-            Assets -> i18n(S.assetsColon) + wallyApp?.focusedAccount?.name ?: ""
+            Assets -> i18n(S.assetsColon) + (wallyApp?.preferredVisibleAccount()?.name ?: "")
             Shopping -> i18n(S.title_activity_shopping)
             Settings -> i18n(S.title_activity_settings)
             SplitBill -> i18n(S.title_split_bill)
             NewAccount -> i18n(S.title_activity_new_account)
-            AccountDetails -> i18n(S.title_activity_account_details) % mapOf("account" to (wallyApp?.focusedAccount?.name ?: ""))
-            AddressHistory -> i18n(S.title_activity_address_history) % mapOf("account" to (wallyApp?.focusedAccount?.name ?: ""))
-            TxHistory -> i18n(S.title_activity_tx_history) % mapOf("account" to (wallyApp?.focusedAccount?.name ?: ""))
+            AccountDetails -> i18n(S.title_activity_account_details) % mapOf("account" to (wallyApp?.preferredVisibleAccount()?.name ?: ""))
+            AddressHistory -> i18n(S.title_activity_address_history) % mapOf("account" to (wallyApp?.preferredVisibleAccount()?.name ?: ""))
+            TxHistory -> i18n(S.title_activity_tx_history) % mapOf("account" to (wallyApp?.preferredVisibleAccount()?.name ?: ""))
 
             TpSettings -> i18n(S.title_activity_trickle_pay)
             Alerts -> i18n(S.title_activity_alert_history)
