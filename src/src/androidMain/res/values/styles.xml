@@ -14,19 +14,22 @@
         <item name="actionBarStyle">@style/WallyActionBarStyle</item>
     </style>
 
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
     <style name="WallyActionBarStyle" parent="Widget.AppCompat.Light.ActionBar.Solid">
-    <item name="actionButtonStyle">@style/WallyActionButtonStyle</item>
-</style>
+        <item name="actionButtonStyle">@style/WallyActionButtonStyle</item>
+        <item name="android:background">@color/transparent</item>
+    </style>
 
     <style name="WallyActionButtonStyle" parent="Widget.AppCompat.Light.ActionButton">
-        <item name="android:minWidth">12dp</item>
-        <item name="android:maxWidth">14dp</item>
+        <item name="android:minWidth">24dp</item>
+        <item name="android:maxWidth">32dp</item>
         <item name="android:minHeight">10dp</item>
+        <item name="android:background">@color/transparent</item>
     </style>
 
     <!-- style the overflow menu -->

@@ -360,7 +360,19 @@ fun SpecialTxPermScreen(acc: Account, sess: TricklePaySession, nav: ScreenNav)
         }
         else
         {
-            sess.acceptSpecialTx(breakIt)
+            try
+            {
+                sess.acceptSpecialTx(breakIt)
+            }
+            catch (e: LibNexaExceptionI)
+            {
+                displayUnexpectedException(e)
+            }
+            catch(e: Exception)
+            {
+                handleThreadException(e)
+                displayError(S.unknownError, e.toString())
+            }
             nav.back()
         }
     }
@@ -552,6 +564,12 @@ fun SpecialTxPermScreen(acc: Account, sess: TricklePaySession, nav: ScreenNav)
                     displayError(S.unknownError, e.toString())
                     nav.back()
                 }
+                catch(e: Exception)
+                {
+                    handleThreadException(e)
+                    displayError(S.unknownError, e.toString())
+                    nav.back()
+                }
             }
 
             WallyBoringLargeTextButton(DeleteButtonText)
@@ -604,8 +622,20 @@ fun AssetInfoPermScreen(acc: Account, sess: TricklePaySession , nav: ScreenNav)
                 // Turn the menu on since user has accepted an operation of this type
                 enableNavMenuItem(ScreenId.TricklePay)
 
-                val details = sess.acceptAssetRequest()
-                displaySuccess(S.TpAssetRequestAccepted, details)
+                try
+                {
+                    val details = sess.acceptAssetRequest()
+                    displaySuccess(S.TpAssetRequestAccepted, details)
+                }
+                catch (e: LibNexaExceptionI)
+                {
+                    displayUnexpectedException(e)
+                }
+                catch(e: Exception)
+                {
+                    handleThreadException(e)
+                    displayError(S.unknownError, e.toString())
+                }
                 nav.back()
             }
             WallyBoringLargeTextButton(S.deny)
