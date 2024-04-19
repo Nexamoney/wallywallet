@@ -150,6 +150,7 @@ open class CommonActivity : AppCompatActivity()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
+        setTheme(R.style.WallyActionBarStyle)
         super.onCreate(savedInstanceState)
 
         origTitle = title.toString()

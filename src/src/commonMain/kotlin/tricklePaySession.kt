@@ -743,7 +743,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
                 // (And I'm not deliberately creating a bad transaction)
                 if (((tflags and TDPP_FLAG_NOPOST) == 0)&&(!breakIt)) try
                     {
-                        var completed = true
+                        var completed = pTx.inputs.isNotEmpty()  // It can't be completed if there are no inputs at all
                         for (inp in pTx.inputs)
                         {
                             if (inp.script == null || inp.script.size == 0)
