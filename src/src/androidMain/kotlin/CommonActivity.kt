@@ -164,6 +164,11 @@ open class CommonActivity : AppCompatActivity()
         }
     }
 
+    open fun splash(shown: Boolean)
+    {
+
+    }
+
     open fun onSoftKeyboard(shown: Boolean)
     {
     }

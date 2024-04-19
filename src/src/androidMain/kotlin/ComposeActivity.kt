@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import com.google.zxing.integration.android.IntentIntegrator
 import kotlinx.coroutines.delay
 import android.content.pm.PackageManager
+import android.graphics.drawable.ColorDrawable
 import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuInflater
@@ -73,6 +74,20 @@ class ComposeActivity: CommonActivity()
 
     }
      */
+
+    override fun splash(shown: Boolean)
+    {
+        if (shown)
+        {
+
+        }
+        else
+        {
+            val v = findViewById<View>(android.R.id.content).getRootView()
+            v.setBackgroundResource(0)
+            v.background = ColorDrawable(ContextCompat.getColor(applicationContext, R.color.titleBackground))
+        }
+    }
 
     // call this with a function to execute whenever that function needs file read permissions
     fun onReadMediaPermissionGranted(doit: () -> Unit): Boolean
@@ -285,6 +300,14 @@ class ComposeActivity: CommonActivity()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
+
+        setContent {
+            val currentRootScreen = remember { mutableStateOf(ScreenId.Splash) }
+            nav.reset(currentRootScreen)
+            SetTitle(nav.title())
+            NavigationRoot(nav)
+        }
+
         initializeGraphicsResources()
         backgroundOnly = false
 
@@ -296,7 +319,6 @@ class ComposeActivity: CommonActivity()
 
         })
 
-        initializeGraphicsResources()
 
         // If the UI is opened, register background sync work.  But we don't want to reregister the background work whenever the background work
         // itself is launched, so this code can't be in the app class.
@@ -307,17 +329,6 @@ class ComposeActivity: CommonActivity()
         val bkgSyncOnce = OneTimeWorkRequestBuilder<BackgroundSync>().build()
         WorkManager.getInstance(this).enqueueUniqueWork("WallySyncOnce", ExistingWorkPolicy.REPLACE, bkgSyncOnce)
 
-
-        // Wait for accounts to be loaded before we show the screen
-        laterUI {
-            //while(!coinsCreated) delay(250)
-            setContent {
-                val currentRootScreen = remember { mutableStateOf(ScreenId.Home) }
-                nav.reset(currentRootScreen)
-                SetTitle(nav.title())
-                NavigationRoot(nav)
-            }
-        }
     }
 
     // If the title bar is touched, show all the errors and warnings the app has generated

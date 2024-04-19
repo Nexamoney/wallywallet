@@ -30,6 +30,12 @@ import kotlin.math.min
 //import javafx.scene.media.MediaPlayer
 //import javafx.scene.media.MediaView
 
+/** Sets/removes the native splashscreen, returning True if the platform HAS a native splashscreen */
+actual fun NativeSplash(start: Boolean): Boolean
+{
+    return false
+}
+
 actual fun UxInTextEntry(boolean: Boolean)
 {
     // no soft keyboard

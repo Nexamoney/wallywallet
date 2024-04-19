@@ -18,6 +18,7 @@ import kotlin.time.TimeSource.Monotonic
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
 import org.nexa.threads.Gate
 
 private val LogIt = GetLog("BU.wally.orgapi")
@@ -97,9 +98,7 @@ fun NexInFiat(fiat: String, setter: (BigDecimal) -> Unit)
     if ((!allowAccessPriceData)||(backgroundOnly)) return
     // only usdt pair supported right now
     if (fiat != "USD") return
-
     val prior = nexaPricePollSync.lock { lastNexaPricePoll[fiat] }
-
     if (prior != null)
     {
         if (prior.first.elapsedNow().inWholeMilliseconds < POLL_INTERVAL)
@@ -109,12 +108,10 @@ fun NexInFiat(fiat: String, setter: (BigDecimal) -> Unit)
         }
     }
 
-
     later {
         val data = try
         {
-            val client = HttpClient()
-            client.get("http://$WALLY_WALLET_ORG_HOST/_api/v0/now/nex/usdt").bodyAsText()
+            Url("http://$WALLY_WALLET_ORG_HOST/_api/v0/now/nex/usdt").readText(20000, 10000)
         }
         catch (e: Exception)
         {

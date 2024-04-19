@@ -11,6 +11,9 @@ expect fun WallyTheme(
   content: @Composable () -> Unit
 )
 
+/** Sets/removes the native splashscreen, returning True if the platform HAS a native splashscreen */
+expect fun NativeSplash(start: Boolean): Boolean
+
 /** Call this when text entry has the focus -- this works around issues on some platforms in gaining knowledge of what the
  * system UX is doing.
  */

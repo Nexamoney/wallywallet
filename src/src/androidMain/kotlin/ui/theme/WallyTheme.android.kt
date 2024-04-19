@@ -36,6 +36,7 @@ import androidx.media3.datasource.TransferListener
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import com.caverock.androidsvg.SVG
+import info.bitcoinunlimited.www.wally.currentActivity
 import info.bitcoinunlimited.www.wally.getResourceFile
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import io.ktor.http.*
@@ -51,6 +52,13 @@ private val LogIt = GetLog("wally.theme.android")
 actual fun UxInTextEntry(boolean: Boolean)
 {
     // nothing to do; we can learn about the soft keyboard from the os
+}
+
+actual fun NativeSplash(start: Boolean): Boolean
+{
+    return false
+    //currentActivity!!.splash(start)
+    //return true
 }
 
 @OptIn(UnstableApi::class)
