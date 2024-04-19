@@ -9,11 +9,15 @@ import androidx.compose.ui.graphics.ImageBitmap
 import info.bitcoinunlimited.www.wally.ui.isSoftKeyboardShowing
 import org.nexa.libnexakotlin.UnimplementedException
 
+actual fun NativeSplash(start: Boolean): Boolean
+{
+    return false
+}
+
 actual fun UxInTextEntry(boolean: Boolean)
 {
     // macos has no soft keyboard
 }
-
 
 @Composable
 actual fun WallyTheme(

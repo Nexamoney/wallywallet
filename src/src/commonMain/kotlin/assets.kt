@@ -114,7 +114,7 @@ fun AssetLoaderThread(): iThread
                     wallyApp!!.accounts.values.toList()
                 }
                 for (a in accounts)
-                    a.getXchgRates("USD")
+                    a.getXchgRates(localCurrency)
 
                 // Refresh all assets
                 for (a in accounts)

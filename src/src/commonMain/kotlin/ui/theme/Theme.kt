@@ -64,14 +64,15 @@ val Int.dpTextUnit: TextUnit
 val DarkColorPalette = darkColorScheme(
   primary = colorPrimary,
   inversePrimary = colorPrimaryDark,
-  secondary = colorAccent
+  secondary = colorAccent,
+  background = colorTitleBackground
 )
 
 val LightColorPalette = lightColorScheme(
   primary = colorPrimary,
   inversePrimary = colorPrimaryDark,
-  secondary = colorAccent
-  // background = defaultListHighlight
+  secondary = colorAccent,
+  background = colorTitleBackground
 
   // Other default colors to override
   //

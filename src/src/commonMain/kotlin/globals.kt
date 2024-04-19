@@ -17,6 +17,7 @@ const val NEXA_TESTNET_EXPLORER_URL = "https://testnet-explorer.nexa.org"
 
 var allowAccessPriceData: Boolean = true
 var devMode = false
+var localCurrency = "USD"
 
 /** Make some type (probably a primitive type) into an object that holds one of them */
 class Objectify<T>(var obj: T)

@@ -23,14 +23,12 @@
         android:name=".WallyApp"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
-        android:icon="@mipmap/ic_wally"
+        android:icon="@mipmap/icon2024"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_wally_round"
+        android:roundIcon="@mipmap/icon2024_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-
-        <activity android:name=".UnlockActivity" />
 
         <activity
             android:name=".ComposeActivity"

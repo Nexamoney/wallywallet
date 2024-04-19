@@ -43,6 +43,7 @@ val isSoftKeyboardShowing = MutableStateFlow(false)
 enum class ScreenId
 {
     None,
+    Splash,
     Home,
     Identity,
     IdentityOp,
@@ -90,6 +91,7 @@ enum class ScreenId
             SendToPerm -> Home
             TpSettings -> TricklePay
             IdentityEdit -> Identity
+            Splash -> Home
             else -> None
         }
     }
@@ -98,7 +100,8 @@ enum class ScreenId
     {
         return when (this)
         {
-            None -> ""
+            None -> i18n(S.app_name)
+            Splash -> ""
             Home -> i18n(S.app_name)
             IdentityEdit -> i18n(S.title_activity_identity)
             Identity -> i18n(S.title_activity_identity)
@@ -418,6 +421,26 @@ fun buildMenuItems()
 @Composable
 fun NavigationRoot(nav: ScreenNav)
 {
+    if (nav.currentScreen.value == ScreenId.Splash)
+    {
+        val nativeSplash = NativeSplash(true)
+        if (!nativeSplash)
+        {
+            Box(Modifier.fillMaxSize().background(Color(0xFF725092))) {
+                ResImageView("icons/wallyicon2024_800x800.png", modifier = Modifier.background(Color(0xFF725092)).align(Alignment.Center).fillMaxSize(0.5f), "")
+            }
+        }
+
+        LaunchedEffect(true) {
+            delay(2000)
+            if (nativeSplash) NativeSplash(false)
+            nav.back()
+        }
+
+
+        return
+    }
+
     val scrollState = rememberScrollState()
     var driver = remember { mutableStateOf<GuiDriver?>(null) }
     var errorText by remember { mutableStateOf("") }
@@ -655,6 +678,7 @@ fun NavigationRoot(nav: ScreenNav)
                     when (nav.currentScreen.value)
                     {
                         ScreenId.None -> HomeScreen(selectedAccount, driver, nav)
+                        ScreenId.Splash -> run {} // splash screen is done at the top for max speed and to be outside of the theme
                         ScreenId.Home -> HomeScreen(selectedAccount, driver, nav)
                         ScreenId.SplitBill -> SplitBillScreen(nav)
                         ScreenId.NewAccount -> NewAccountScreen(accountGuiSlots.collectAsState(), devMode, nav)

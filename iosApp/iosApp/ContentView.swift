@@ -6,8 +6,9 @@ struct ComposeContentView: UIViewControllerRepresentable
 {
     func updateUIViewController(_ updateUIViewController: UIViewControllerType, context: Context)
     {}
-    func makeUIViewController(context: Context) -> some UIViewController {
-        MainViewControllerKt.MainViewController()
+    func makeUIViewController(context: Context) -> some UIViewController 
+    {
+       MainViewControllerKt.MainViewController()
     }
 }
 

@@ -62,6 +62,11 @@ import platform.posix.memcpy
 
 private val LogIt = GetLog("wally.theme.ios")
 
+actual fun NativeSplash(start: Boolean): Boolean
+{
+    return false
+}
+
 actual fun UxInTextEntry(boolean: Boolean)
 {
     isSoftKeyboardShowing.value = boolean

@@ -69,8 +69,8 @@ object WallyJvmApp
 fun guiNewPanel()
 {
     val nav = ScreenNav()
-    val currentRootScreen = mutableStateOf(ScreenId.Home)
-
+    val currentRootScreen = mutableStateOf(ScreenId.Splash)
+    backgroundOnly = false
     application(true)
     {
         var isOpen by remember { mutableStateOf(true) }

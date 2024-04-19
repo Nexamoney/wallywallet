@@ -666,10 +666,12 @@ open class CommonApp
             DEFAULT_MAX_RECENT_HEADER_CACHE = 25
         }
 
-        val prefs = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
-        devMode = prefs.getBoolean(DEV_MODE_PREF, false)
-        allowAccessPriceData = prefs.getBoolean(ACCESS_PRICE_DATA_PREF, true)
         later {
+            val prefs = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
+            devMode = prefs.getBoolean(DEV_MODE_PREF, false)
+            allowAccessPriceData = prefs.getBoolean(ACCESS_PRICE_DATA_PREF, true)
+            localCurrency = prefs.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"
+
             openAccountsTriggerGui()
             tpDomains.load()
         }
@@ -1026,7 +1028,6 @@ open class CommonApp
         {
             // Initialize the currencies supported by this wallet
             later {
-
                 openAllAccounts()
                 assignAccountsGuiSlots()
 
@@ -1071,9 +1072,9 @@ open class CommonApp
                     c.start()
                     c.onChange()  // update all wallet UI fields since just starting up
                 }
-
                 // Going to block here until the GUI asks for this field
                 if (recoveryWarning != null) externalDriver.send(GuiDriver(show = setOf(ShowIt.WARN_BACKUP_RECOVERY_KEY), account = recoveryWarning))
+                for (a in alist) a.getXchgRates("USD")
             }
         }
     }
