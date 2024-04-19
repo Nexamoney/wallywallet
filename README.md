@@ -2,6 +2,8 @@
 
 This is a non-custodial SPV & Electrum protocol wallet for Nexa and Bitcoin Cash.
 
+<a href='https://play.google.com/store/apps/details?id=info.bitcoinunlimited.www.wally&hl=en&gl=US&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' style="width: 250px;" width="250" /></a>
+
 <a href="https://www.producthunt.com/posts/wally-nexa-wallet?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-wally&#0045;nexa&#0045;wallet" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=452242&theme=light" alt="Wally&#0032;Nexa&#0032;Wallet - Open&#0032;source&#0032;light&#0032;Wallet&#0032;for&#0032;Nexa&#0046;&#0032;Support&#0032;coins&#0032;and&#0032;NFTs | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 
 ## Cloning
