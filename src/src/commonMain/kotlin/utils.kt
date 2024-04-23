@@ -95,7 +95,9 @@ data class PlatformCharacteristics(
    * (and as part of your native set-up, turn off rotating) */
   val landscape: Boolean,
   /** Return true if the platform supports the concept of "sharing" (setting to true adds a share button in various places in the UX) */
-  val hasShare: Boolean
+  val hasShare: Boolean,
+  /** Return true if the platform supports the concept of background syncronization **/
+  val supportsBackgroundSync: Boolean
 )
 
 /** Return details about this platform */

@@ -161,4 +161,6 @@
     <!-- Primary Account -->
     <string name="primaryAccountSuccess">Primærkonto: %name</string>
 
+    <string name="backgroundSync">Bakgrunnssynkronisering</string>
+
 </resources>

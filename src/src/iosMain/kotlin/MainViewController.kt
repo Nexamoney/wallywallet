@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.uikit.ComposeUIViewControllerDelegate
 import androidx.compose.ui.window.ComposeUIViewController
+import info.bitcoinunlimited.www.wally.ui.BACKGROUND_SYNC_PREF
 import info.bitcoinunlimited.www.wally.ui.NavigationRoot
 import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.ScreenNav
@@ -59,7 +60,12 @@ fun MainViewController(): UIViewController
 
 fun iosBackgroundSync(completion: () -> Unit)
 {
-    backgroundSync(completion)
+    val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
+    val allowBackgroundSync = preferenceDB.getBoolean(BACKGROUND_SYNC_PREF, true)
+    if (allowBackgroundSync)
+        backgroundSync(completion)
+    else
+        completion()
 }
 
 fun iosCancelBackgroundSync()

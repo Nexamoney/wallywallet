@@ -123,7 +123,8 @@ val macosPlatformCharacteristics = PlatformCharacteristics(
   hasNativeTitleBar = false,
   spaceConstrained = false,
   landscape = true,
-  hasShare = false)
+  hasShare = false,
+  supportsBackgroundSync = false)
 
 actual fun platform(): PlatformCharacteristics = macosPlatformCharacteristics
 

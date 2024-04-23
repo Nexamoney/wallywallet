@@ -672,5 +672,6 @@ Thank you and enjoy your new wallet!</string>
     <string name="discoveredAccountDetails">Discovered a balance of %bal %units\nin %addr addresses and %tx transactions</string>
     <string name="discoveredWarning">If this looks correct, you may create this account immediately</string>
 
+    <string name="backgroundSync">Background sync</string>
 
 </resources>
