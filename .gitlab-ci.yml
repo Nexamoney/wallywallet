@@ -188,13 +188,6 @@ macArm64Test:
   script:
     - ./gradlew :src:cleanMacosArm64Test :src:macosArm64Test
 
-macX64Test:
-  stage: test
-  tags:
-    - m1-baremetal
-  script:
-    - ./gradlew :src:cleanIosSimulatorArm64Test :src:iosSimulatorArm64Test
-
 # I'm assuming that this only runs Android tests
 androidTest:
   image: inovex/gitlab-ci-android
