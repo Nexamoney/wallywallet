@@ -27,6 +27,7 @@ import org.nexa.libnexakotlin.*
 private val LogIt = GetLog("BU.wally.SettingsScreen")
 const val LOCAL_CURRENCY_PREF = "localCurrency"
 const val ACCESS_PRICE_DATA_PREF = "accessPriceData"
+const val BACKGROUND_SYNC_PREF = "backgroundSync"
 const val DARK_MODE_PREF = "darkModeMenu"
 const val DEV_MODE_PREF = "devinfo"
 const val CONFIRM_ABOVE_PREF = "confirmAbove"
@@ -81,9 +82,15 @@ fun SettingsScreen(nav: ScreenNav)
     val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
     // TODO val darkMode = remember { mutableStateOf( preferenceDB.getBoolean(DARK_MODE_PREF, false)) }
     var devModeView by mutableStateOf(devMode)
-    val generalSettingsSwitches = listOf(
-      GeneralSettingsSwitch(ACCESS_PRICE_DATA_PREF, S.AccessPriceData)
+    val generalSettingsSwitches = mutableListOf(
+      GeneralSettingsSwitch(ACCESS_PRICE_DATA_PREF, S.AccessPriceData),
     )
+
+    if (platform().supportsBackgroundSync)
+    {
+        generalSettingsSwitches.add(GeneralSettingsSwitch(BACKGROUND_SYNC_PREF, S.backgroundSync))
+    }
+
 
     // When we leave the settings screen, set global variables based on settings changes
     nav.onDepart {

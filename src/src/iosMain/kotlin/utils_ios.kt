@@ -135,7 +135,8 @@ val iosPlatformCharacteristics = PlatformCharacteristics(
   hasNativeTitleBar = false,
   spaceConstrained = true,
   landscape = false,
-  hasShare = true
+  hasShare = true,
+  supportsBackgroundSync = true
   )
 actual fun platform(): PlatformCharacteristics = iosPlatformCharacteristics
 

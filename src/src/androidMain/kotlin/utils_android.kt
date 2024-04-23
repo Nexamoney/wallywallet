@@ -140,7 +140,8 @@ val androidPlatformCharacteristics = PlatformCharacteristics(
   hasNativeTitleBar = true,
   spaceConstrained = true,
   landscape = false,
-  hasShare = true)
+  hasShare = true,
+  supportsBackgroundSync = true)
 
 actual fun platform(): PlatformCharacteristics = androidPlatformCharacteristics
 
