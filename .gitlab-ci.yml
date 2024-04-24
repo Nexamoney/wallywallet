@@ -98,20 +98,6 @@ jvmJar:
   script:
     - ./gradlew :src:jvmJar
 
-linkFrameworkIos:
-  stage: assemble
-  tags:
-    - m1-baremetal
-  script:
-    - ./gradlew :src:linkDebugFrameworkIosArm64
-    - ./gradlew :src:linkDebugFrameworkIosFat
-    - ./gradlew :src:linkDebugFrameworkIosSimulatorArm64
-    - ./gradlew :src:linkDebugFrameworkIosX64
-    - ./gradlew :src:linkReleaseFrameworkIosArm64
-    - ./gradlew :src:linkReleaseFrameworkIosFat
-    - ./gradlew :src:linkReleaseFrameworkIosSimulatorArm64
-    - ./gradlew :src:linkReleaseFrameworkIosX64
-
 macMetadataJar:
   stage: assemble
   tags:
