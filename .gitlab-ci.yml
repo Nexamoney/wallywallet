@@ -98,6 +98,13 @@ jvmJar:
   script:
     - ./gradlew :src:jvmJar
 
+jvmJar-intelmac:
+  stage: assemble
+  tags:
+    - intelmac-baremetal
+  script:
+    - ./gradlew :src:jvmJar
+
 macMetadataJar:
   stage: assemble
   tags:
@@ -160,6 +167,16 @@ jvmTest: #
   stage: test
   tags:
     - m1-baremetal
+  script:
+    - ./gradlew :src:cleanJvmTest :src:jvmTest
+  artifacts:
+    reports:
+      junit: src/build/test-results/jvmTest/TEST-*.xml
+
+jvmTest-intelmac: #
+  stage: test
+  tags:
+    - intelmac-baremetal
   script:
     - ./gradlew :src:cleanJvmTest :src:jvmTest
   artifacts:
