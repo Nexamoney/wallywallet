@@ -10,14 +10,14 @@ import java.net.URL
 // Dependency versions
 val mpThreadsVersion = "0.2.6"
 val nexaRpcVersion = "1.1.5"
-val libNexaKotlinVersion = "0.1.64"
+val libNexaKotlinVersion = "0.1.65"
 val serializationVersion = "1.6.3"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.8.0"     // https://github.com/Kotlin/kotlinx.coroutines
 val ktorVersion = "2.3.10"           // https://github.com/ktorio/ktor
 val bigNumVersion = "0.3.9"         // https://github.com/ionspin/kotlin-multiplatform-bignum
 val composeVersion = "1.6.10-dev1575"        // https://github.com/JetBrains/compose-multiplatform/releases
 val androidTestCoreVersion = "1.6.10-beta01" // https://mvnrepository.com/artifact/androidx.test/core
-val androidxActivityComposeVersion = "1.8.2"
+val androidxActivityComposeVersion = "1.9.0"
 val uriKmpVersion = "0.0.16"  // https://github.com/eygraber/uri-kmp
 val skikoVersion = "0.7.93" // https://github.com/JetBrains/skiko/releases
 val workVersion = "2.9.0"
@@ -64,14 +64,14 @@ val LINUX_TARGETS = LINUX
 val LINUX_NATIVE_TARGETS = false // not supported in compose
 val MAC_TARGETS = MAC // || LINUX
 // ktor network does not support ms windows so we cannot produce MSWIN right now
-var MSWIN_TARGETS = false
-var ANDROID_TARGETS = LINUX || MAC
+val MSWIN_TARGETS = MSWIN
+val ANDROID_TARGETS = LINUX || MAC
 
 if (MAC) println("Host is a MAC, MacOS and iOS targets are enabled")
 if (LINUX) println("Host is LINUX, Android, JVM, and LinuxNative targets are enabled")
 else println("Linux target is disabled")
 
-if (MSWIN) { println("Host is MS-WINDOWS"); MSWIN_TARGETS = true }
+if (MSWIN) println("Host is MS-WINDOWS")
 
 if (!LINUX_TARGETS) println("Linux targets are disabled")
 if (!MAC_TARGETS) println("MacOS and iOS targets are disabled")
@@ -100,12 +100,6 @@ val prop = Properties().apply {
         File(rootProject.rootDir, "local.properties").writeText("### This file must NOT be checked into version control, since it contains local configuration.")
         load(FileInputStream(File(rootProject.rootDir, "local.properties")))
     }
-}
-
-// Define a few local variables
-ext {
-    var linuxToolchain = prop["linux.toolchain"]
-    var linuxTarget = prop["linux.target"]
 }
 
 @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
@@ -388,24 +382,24 @@ kotlin {
                     //implementation(project(":shared"))
 
                     // CameraX core library using the camera2 implementation
-                    val camerax_version = "1.4.0-alpha04"
+                    val camerax_version = "1.4.0-alpha05"
                     val lottieVersion = "6.3.0"
 
                     implementation(kotlin("stdlib-jdk8"))
                     implementation("androidx.activity:activity-compose:$androidxActivityComposeVersion")
-
-                    implementation("androidx.compose.ui:ui:1.6.5")
-                    implementation("androidx.compose.ui:ui-tooling:1.6.5")
-                    implementation("androidx.compose.ui:ui-tooling-preview:1.6.5")
-                    implementation("androidx.compose.foundation:foundation:1.6.5")
-                    implementation("androidx.compose.material:material:1.6.5")
-                    implementation("androidx.activity:activity-compose:1.8.2")
+                    implementation("androidx.tracing:tracing:1.2.0")
+                    implementation("androidx.compose.ui:ui:1.6.6")
+                    implementation("androidx.compose.ui:ui-tooling:1.6.6")
+                    implementation("androidx.compose.ui:ui-tooling-preview:1.6.6")
+                    implementation("androidx.compose.foundation:foundation:1.6.6")
+                    implementation("androidx.compose.material:material:1.6.6")
+                    implementation("androidx.activity:activity-compose:1.9.0")
                     implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.6.3")
                     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.3")
 
                     // android layout dependencies
                     implementation("com.google.android.flexbox:flexbox:3.0.0")  // https://github.com/google/flexbox-layout/tags
-                    implementation("androidx.activity:activity:1.8.2")
+                    implementation("androidx.activity:activity:1.9.0")
                     implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")  // https://developer.android.com/jetpack/androidx/releases/navigation
                     implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
                     implementation("androidx.wear:wear:1.3.0")
@@ -459,13 +453,6 @@ kotlin {
             }
         }
 
-        /*
-        val jvmMain by getting {
-            //dependsOn(sourceSets.named("commonJvm").get())
-            dependencies {
-            }
-        }
-         */
 
         if (MAC_TARGETS)
         {

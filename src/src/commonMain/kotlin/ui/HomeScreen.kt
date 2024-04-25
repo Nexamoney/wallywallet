@@ -77,7 +77,6 @@ private val _sendFromAccount = MutableStateFlow<String>("")
     var oldDriver = remember { mutableStateOf<GuiDriver?>(null) }
 
 
-
     /**
      * View for receiving funds
      */
@@ -99,7 +98,6 @@ private val _sendFromAccount = MutableStateFlow<String>("")
             ToBeShared = { currentReceive.value.second }
         }
     }
-
 
 
     /** Calculate whether there is enough money available to make a payment and return an appropriate info string for the GUI. Does not need to be called within GUI context */
@@ -538,11 +536,6 @@ private val _sendFromAccount = MutableStateFlow<String>("")
         {
             if (devMode)
             {
-                val acts = wallyApp?.accounts?.values
-                if (acts != null) for (a in acts)
-                {
-                    a.uiData()
-                }
                 accountChangedNotification.send("*all changed*")
                 delay(250)
             }
@@ -741,7 +734,6 @@ private val _sendFromAccount = MutableStateFlow<String>("")
                 AccountListView(
                   nav,
                   selectedAccount,
-                  ags.value,
                   modifier = Modifier.weight(1f),
                   onAccountSelected = {
                       if (selectedAccount.value == it)

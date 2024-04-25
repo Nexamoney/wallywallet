@@ -102,7 +102,7 @@ fun AccountBlockchainBlockDetails(chainState: GlueWalletBlockchain)
 fun AccountBlockchainConnectionDetails(chainState: GlueWalletBlockchain)
 {
     val cnxnLst = chainState.chain.net.mapConnections { it.name }
-    val trying:List<String> = if (chainState.chain.net is MultiNodeCnxnMgr) (chainState.chain.net as MultiNodeCnxnMgr).initializingCnxns.map { it.name } else listOf()
+    val trying:List<String> = if (chainState.chain.net is MultiNodeCnxnMgr) (chainState.chain.net as MultiNodeCnxnMgr).initializingCnxns().map { it.name } else listOf()
     val peers = cnxnLst.joinToString(", ") + if (trying.isNotEmpty()) (" " + i18n(S.trying) + " " + trying.joinToString(", ")) else ""
     val text =  i18n(S.AccountBlockchainConnectionDetails) % mapOf(
       "num" to cnxnLst.size.toString(),
