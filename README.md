@@ -98,6 +98,19 @@ Don't worry about it.  We only use boost headers right now.
 You are including the host's version of libsecp256k1-config.h.
 Search the Bitcoin Unlimited source tree for this file and remove any copies except for the one located in src/cashlib.
 
+## Running Compose UI tests (Experimental)
+Compose UI test commands:
+```
+./gradlew pixel5DebugAndroidTest
+./gradlew :src:connectedAndroidTest
+./gradlew :src:jvmTest
+./gradlew :src:iosSimulatorArm64Test
+```
+
+Read more at the Kotlin Compose Multiplatform UI docs.
+
+https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html
+
 ## Localization
 
 WallyWallet text is internationalized in the Android standard manner, via specialization of app/src/main/res/values/strings.xml.  See https://developer.android.com/guide/topics/resources/localization.
