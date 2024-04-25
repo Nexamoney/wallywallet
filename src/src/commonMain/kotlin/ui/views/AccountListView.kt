@@ -32,11 +32,13 @@ private val LogIt = GetLog("BU.wally.accountlistview")
 
 private val accountListState:MutableStateFlow<LazyListState?> = MutableStateFlow(null)
 
-@Composable fun AccountListView(nav: ScreenNav, selectedAccount: MutableStateFlow<Account?>, accounts: ListifyMap<String,Account>,
+@Composable fun AccountListView(nav: ScreenNav, selectedAccount: MutableStateFlow<Account?>,
   modifier: Modifier = Modifier, onAccountSelected: (Account) -> Unit)
 {
     val accountUIData = remember { mutableStateMapOf<String,AccountUIData>() }
+    val accounts = accountGuiSlots.collectAsState()
     if (accountListState.value == null) accountListState.value = rememberLazyListState()
+
 
     LaunchedEffect(true)
         {
@@ -44,9 +46,9 @@ private val accountListState:MutableStateFlow<LazyListState?> = MutableStateFlow
             {
                 if (c == "*all changed*")  // this is too long to be a valid account name
                 {
-                    wallyApp?.accounts?.forEach {
-                        val uid = it.value.uiData()
-                        accountUIData[it.value.name] = uid
+                    wallyApp?.orderedAccounts(true)?.forEach {
+                        val uid = it.uiData()
+                        accountUIData[it.name] = uid
                     }
                 }
                 else
@@ -65,7 +67,7 @@ private val accountListState:MutableStateFlow<LazyListState?> = MutableStateFlow
 
     val selAct = selectedAccount.collectAsState().value
     LazyColumn(state=tmp, horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
-        accounts.forEachIndexed { idx, it ->
+        accounts.value.forEachIndexed { idx, it ->
             item(key=it.name) {
                         // I would think that capturing this data would control redraw of each item, but it appears to not do so.
                         // Redraw is controlled of the entire AccountListView, or not at all.
@@ -81,7 +83,7 @@ private val accountListState:MutableStateFlow<LazyListState?> = MutableStateFlow
         }
         // Since the thumb buttons cover the bottom most row, this blank bottom row allows the user to scroll the account list upwards enough to
         // uncover the last account.  Its not necessary if there are just a few accounts though.
-        if (accounts.size > 2)
+        if (accounts.value.size >= 2)
         {
             item(key = "") {
                 Spacer(Modifier.height(150.dp))
@@ -158,26 +160,30 @@ fun Account.uiData():AccountUIData
 
     ret.balance = format(balance)
 
-    if (chainstate != null)
-    {
-        val now = millinow()
-        val cnxnLst = wallet.chainstate?.chain?.net?.mapConnections()
-        {
-            val recentRecv = (now - it.lastReceiveTime) < 50L
-            val recentSend = (now - it.lastSendTime) < 50L
-            val sr = (if (recentSend) "↑" else " ") + (if (recentRecv) "↓" else " ")
-            it.name + " (" + it.aveLatency.roundToLong() + "ms" + sr + ")"
-        }
-        val trying: List<String> = if (chainstate.chain.net is MultiNodeCnxnMgr) (chainstate.chain.net as MultiNodeCnxnMgr).initializingCnxns.map { it.name } else listOf()
-        val peers = cnxnLst?.joinToString(", ") + (if (trying.isNotEmpty()) (" " + i18n(S.trying) + " " + trying.joinToString(", ")) else "")
-
-        ret.devinfo = i18n(S.at) + " " + (wallet.chainstate?.syncedHash?.toHex()?.take(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight
-          ?: "") + " " + i18n(S.of) + " " + (wallet.chainstate?.chain?.curHeight
-          ?: "") + " blocks, " + (wallet.chainstate?.chain?.net?.size ?: "") + " peers\n" + peers
-    }
+    if (!devMode) ret.devinfo = ""
     else
     {
-        ret.devinfo = i18n(S.walletDisconnectedFromBlockchain)
+        if (chainstate != null)
+        {
+            val now = millinow()
+            val cnxnLst = wallet.chainstate?.chain?.net?.mapConnections()
+            {
+                val recentRecv = (now - it.lastReceiveTime) < 50L
+                val recentSend = (now - it.lastSendTime) < 50L
+                val sr = (if (recentSend) "↑" else " ") + (if (recentRecv) "↓" else " ")
+                it.name + " (" + it.aveLatency.roundToLong() + "ms" + sr + ")"
+            }
+            val trying:List<String> = if (chainstate.chain.net is MultiNodeCnxnMgr) (chainstate.chain.net as MultiNodeCnxnMgr).initializingCnxns().map { it.name } else listOf()
+            val peers = cnxnLst?.joinToString(", ") + (if (trying.isNotEmpty()) (" " + i18n(S.trying) + " " + trying.joinToString(", ")) else "")
+
+            ret.devinfo = i18n(S.at) + " " + (wallet.chainstate?.syncedHash?.toHex()?.take(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight
+              ?: "") + " " + i18n(S.of) + " " + (wallet.chainstate?.chain?.curHeight
+              ?: "") + " blocks, " + (wallet.chainstate?.chain?.net?.size ?: "") + " peers\n" + peers
+        }
+        else
+        {
+            ret.devinfo = i18n(S.walletDisconnectedFromBlockchain)
+        }
     }
 
     if (fiatPerCoin > BigDecimal.ZERO)

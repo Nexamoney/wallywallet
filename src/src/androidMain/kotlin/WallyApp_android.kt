@@ -153,6 +153,7 @@ class BackgroundSync(appContext: Context, workerParams: WorkerParameters): Worke
             if (backgroundCount > 0) true
             else
             {
+                initializeLibNexa()
                 backgroundCount++
                 false
             }

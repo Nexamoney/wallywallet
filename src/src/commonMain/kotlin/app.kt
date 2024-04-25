@@ -245,16 +245,17 @@ open class CommonApp
     /** Return an ordered map of the visible accounts (in display order) */
     fun orderedAccounts(visibleOnly: Boolean = true):ListifyMap<String, Account>
     {
-        val ret = ListifyMap(accounts, { if (visibleOnly) it.value.visible else true }, object : Comparator<String>
-        {
-            override fun compare(p0: String, p1: String): Int
+        return accountLock.synchronized {
+            ListifyMap(accounts, { if (visibleOnly) it.value.visible else true }, object : Comparator<String>
             {
-                if (wallyApp?.nullablePrimaryAccount?.name == p0) return Int.MIN_VALUE
-                if (wallyApp?.nullablePrimaryAccount?.name == p1) return Int.MAX_VALUE
-                return p0.compareTo(p1)
-            }
-        })
-        return ret
+                override fun compare(p0: String, p1: String): Int
+                {
+                    if (wallyApp?.nullablePrimaryAccount?.name == p0) return Int.MIN_VALUE
+                    if (wallyApp?.nullablePrimaryAccount?.name == p1) return Int.MAX_VALUE
+                    return p0.compareTo(p1)
+                }
+            })
+        }
     }
 
     var primaryAccount: Account
