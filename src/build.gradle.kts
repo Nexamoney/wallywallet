@@ -1,3 +1,6 @@
+import com.android.build.api.dsl.ManagedVirtualDevice
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import java.util.Properties
 import java.io.FileInputStream
@@ -13,7 +16,7 @@ val coroutinesVersion = "1.8.0"     // https://github.com/Kotlin/kotlinx.corouti
 val ktorVersion = "2.3.10"           // https://github.com/ktorio/ktor
 val bigNumVersion = "0.3.9"         // https://github.com/ionspin/kotlin-multiplatform-bignum
 val composeVersion = "1.6.10-dev1575"        // https://github.com/JetBrains/compose-multiplatform/releases
-val androidTestCoreVersion = "1.6.0-alpha05" // https://mvnrepository.com/artifact/androidx.test/core
+val androidTestCoreVersion = "1.6.10-beta01" // https://mvnrepository.com/artifact/androidx.test/core
 val androidxActivityComposeVersion = "1.8.2"
 val uriKmpVersion = "0.0.16"  // https://github.com/eygraber/uri-kmp
 val skikoVersion = "0.7.93" // https://github.com/JetBrains/skiko/releases
@@ -137,6 +140,16 @@ kotlin {
                 }
             }
             // publishLibraryVariants("release", "debug")
+
+            @OptIn(ExperimentalKotlinGradlePluginApi::class)
+            instrumentedTestVariant {
+                sourceSetTree.set(KotlinSourceSetTree.test)
+
+                dependencies {
+                    implementation("androidx.compose.ui:ui-test-junit4-android:1.5.4")
+                    debugImplementation("androidx.compose.ui:ui-test-manifest:1.5.4")
+                }
+            }
         }
     }
 
@@ -289,6 +302,8 @@ kotlin {
                 //implementation(kotlin("LibNexaTests"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
                 implementation("org.nexa:nexarpc:$nexaRpcVersion")
+                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+                implementation(compose.uiTest)
             }
         }
 
@@ -499,19 +514,20 @@ kotlin {
                 dependencies {
                     implementation(kotlin("test-junit"))
                     implementation("org.nexa:nexarpc:$nexaRpcVersion")
-                    implementation("androidx.test:core:$androidTestCoreVersion")
-                    implementation("androidx.test:core-ktx:$androidTestCoreVersion")
-                    implementation("androidx.test.ext:junit:1.1.5")
-                    implementation("androidx.test.ext:junit-ktx:1.1.5")
+                    implementation("org.nexa:nexarpc:$nexaRpcVersion")
+                    // implementation("androidx.test:core:$androidTestCoreVersion")
+                    // implementation("androidx.test:core-ktx:$androidTestCoreVersion")
+                    // implementation("androidx.test.ext:junit:1.1.5")
+                    // implementation("androidx.test.ext:junit-ktx:1.1.5")
 
                     // androidTestImplementation 'androidx.test:support-annotations:24.0.0'
-                    implementation("androidx.test.espresso:espresso-contrib:3.5.1")
+                    // implementation("androidx.test.espresso:espresso-contrib:3.5.1")
                     // for intent mocking
-                    implementation("androidx.test.espresso:espresso-intents:3.5.1")
+                    // implementation("androidx.test.espresso:espresso-intents:3.5.1")
                     // for network testing to track idle state
-                    implementation("androidx.test.espresso.idling:idling-concurrent:3.5.1")
-                    implementation("androidx.test.espresso:espresso-idling-resource:3.5.1")
-                    implementation("androidx.test.espresso:espresso-core:3.5.1")
+                    // implementation("androidx.test.espresso.idling:idling-concurrent:3.5.1")
+                    // implementation("androidx.test.espresso:espresso-idling-resource:3.5.1")
+                    // implementation("androidx.test.espresso:espresso-core:3.5.1")
                     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
                     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
                 }
@@ -580,6 +596,17 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+
+    @Suppress("UnstableApiUsage")
+    testOptions {
+        managedDevices.devices {
+            maybeCreate<ManagedVirtualDevice>("pixel5").apply {
+                device = "Pixel 5"
+                apiLevel = 34
+                systemImageSource = "aosp"
+            }
         }
     }
 

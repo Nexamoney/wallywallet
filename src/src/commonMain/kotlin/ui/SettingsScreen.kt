@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.HorizontalAlignmentLine
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -235,7 +236,7 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
       horizontalArrangement = Arrangement.SpaceEvenly,
       verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = i18n(S.localCurrency))
+        Text(text = i18n(S.localCurrency), Modifier.testTag(i18n(S.localCurrency)))
         Spacer(modifier = Modifier.width(8.dp))
         Box {
             Row(
