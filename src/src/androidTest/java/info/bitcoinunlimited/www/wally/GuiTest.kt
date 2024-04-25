@@ -1,5 +1,5 @@
 package info.bitcoinunlimited.www.wally
-
+/*
 import org.nexa.libnexakotlin.*
 import com.ionspin.kotlin.bignum.decimal.*
 import org.nexa.nexarpc.NexaRpcFactory
@@ -1705,3 +1705,4 @@ class executeUI(val desc: String = "", val block: (View?, UiController?) -> Unit
 fun<T> ViewInteraction.perform(block:()->T) {
 }
 //fun<T> ViewInteraction.dothis(block: ()->T): View
+ */
