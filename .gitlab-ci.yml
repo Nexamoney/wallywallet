@@ -83,14 +83,6 @@ compileIos:
     - ./gradlew :src:iosSimulatorArm64MetadataJar
     - ./gradlew :src:iosX64MetadataJar
 
-compileMac:
-  stage: assemble
-  tags:
-    - m1-baremetal
-  script:
-    - ./gradlew :src:compileKotlinMacosArm64
-    - ./gradlew :src:compileKotlinMacosX64
-
 jvmJar:
   stage: assemble
   tags:
@@ -111,7 +103,6 @@ macMetadataJar:
     - m1-baremetal
   script:
     - ./gradlew :src:macosArm64MetadataJar
-    - ./gradlew :src:macosX64MetadataJar
 
 iosArm64Test:
   stage: test

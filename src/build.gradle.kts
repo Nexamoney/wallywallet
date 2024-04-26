@@ -15,7 +15,7 @@ val serializationVersion = "1.6.3"  // https://github.com/Kotlin/kotlinx.seriali
 val coroutinesVersion = "1.8.0"     // https://github.com/Kotlin/kotlinx.coroutines
 val ktorVersion = "2.3.10"           // https://github.com/ktorio/ktor
 val bigNumVersion = "0.3.9"         // https://github.com/ionspin/kotlin-multiplatform-bignum
-val composeVersion = "1.6.10-dev1575"        // https://github.com/JetBrains/compose-multiplatform/releases
+val composeVersion = "1.6.10-dev1599"        // https://github.com/JetBrains/compose-multiplatform/releases
 val androidTestCoreVersion = "1.6.10-beta01" // https://mvnrepository.com/artifact/androidx.test/core
 val androidxActivityComposeVersion = "1.9.0"
 val uriKmpVersion = "0.0.16"  // https://github.com/eygraber/uri-kmp
@@ -30,7 +30,7 @@ plugins {
     kotlin("multiplatform")
     id("com.android.application")
     kotlin("plugin.serialization").version("1.9.22")
-    id("org.jetbrains.compose").version("1.6.10-dev1551")   // https://github.com/JetBrains/compose-multiplatform/releases
+    id("org.jetbrains.compose").version("1.6.10-dev1599")   // https://github.com/JetBrains/compose-multiplatform/releases
     id("org.jetbrains.dokka").version("1.9.20").apply(false)
     // id("org.openjfx.javafxplugin") version "0.1.0"
     idea
@@ -193,12 +193,6 @@ kotlin {
             }
         }
 
-        macosX64 {
-            compilations.getByName("main") {
-                compilerOptions.options.freeCompilerArgs.add("-verbose")
-                //binaries.libnexaBinCfg()
-            }
-        }
         macosArm64 {
             compilations.getByName("main") {
                 compilerOptions.options.freeCompilerArgs.add("-verbose")
