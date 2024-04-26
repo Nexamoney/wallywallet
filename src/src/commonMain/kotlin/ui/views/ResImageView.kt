@@ -8,19 +8,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.ui.theme.MpIcon
-import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.*
 
 
-@OptIn(ExperimentalResourceApi::class)
+@OptIn(ExperimentalResourceApi::class, InternalResourceApi::class)
 @Composable
 fun ResImageView(resPath: String, modifier: Modifier, description: String? = null)
 {
     if (resPath.endsWith(".xml", true) || resPath.endsWith(".png", true) )
     {
-        val dr = DrawableResource(resPath)
+        val dr = DrawableResource(id = resPath, items = setOf(ResourceItem(offset = 0L, qualifiers = setOf(), path = resPath, size = 45L )))
         val tmp = painterResource(dr)
         Image(painter = tmp, contentDescription = description, modifier = modifier)
     }
