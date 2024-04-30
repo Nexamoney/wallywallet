@@ -176,59 +176,6 @@ class BackgroundSync(appContext: Context, workerParams: WorkerParameters): Worke
     }
 }
 
-
-class ActivityLifecycleHandler(private val app: WallyApp) : Application.ActivityLifecycleCallbacks
-{
-    override fun onActivityPaused(act: Activity)
-    {
-    }
-
-    override fun onActivityStarted(act: Activity)
-    {
-        /*
-        //if (app.currentActivity is CommonActivity)
-        try
-        {
-            app.currentActivity = act as CommonNavActivity
-        } catch (e: Throwable)  // Some other activity (QR scanner)
-        {
-        }
-
-         */
-    }
-
-    override fun onActivityDestroyed(act: Activity)
-    {
-    }
-
-    override fun onActivitySaveInstanceState(act: Activity, b: Bundle)
-    {
-
-    }
-
-    override fun onActivityStopped(act: Activity)
-    {
-    }
-
-    override fun onActivityCreated(act: Activity, b: Bundle?)
-    {
-    }
-
-    override fun onActivityResumed(act: Activity)
-    {
-        /*
-        //if (app.currentActivity is CommonActivity)
-        try
-        {
-            app.currentActivity = act as CommonNavActivity
-        } catch (e: Throwable)  // Some other activity (QR scanner)
-        {
-        }
-
-         */
-    }
-}
-
 class WallyApp : Application.ActivityLifecycleCallbacks, Application()
 {
     init
@@ -337,7 +284,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         // Add the Wally Wallet server to our list of Electrum/Rostrum connection points
         nexaElectrum.add(0, IpPort("rostrum.wallywallet.org", DEFAULT_NEXA_TCP_ELECTRUM_PORT))
 
-        registerActivityLifecycleCallbacks(ActivityLifecycleHandler(this))  // track the current activity
         createNotificationChannel()
 
         appResources = getResources()
