@@ -33,6 +33,27 @@ object JvmAssetManagerStorage:AssetManagerStorage
         val ef = EfficientFile(name.toPath(), FileSystem.SYSTEM)
         return Pair(name, ef)
     }
+
+    /** delete a particular asset file */
+    override fun deleteAssetFile(filename: String)
+    {
+        val dir = File("assets")
+        if (!dir.exists()) return
+        val file = File(dir, filename)
+        file.delete()
+    }
+
+    /** delete all asset files */
+    override fun deleteAssetFiles()
+    {
+        val dir = File("assets")
+        if (!dir.exists()) return
+        val files = dir.listFiles()
+        for (f in files)
+            f.delete()
+    }
+
+
     override fun storeCardFile(filename: String, data: ByteArray): String
     {
         val dir = File("wallyCache")

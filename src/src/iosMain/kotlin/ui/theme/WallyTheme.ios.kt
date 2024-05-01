@@ -164,7 +164,7 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
       name.endsWith(".heif", true)
     )
     {
-        LogIt.info("Media icon $name")
+        // LogIt.info("Media icon $name")
 
         val im = bytes?.usePinned { pinned ->
             val b = NSData.create(bytes = pinned.addressOf(0), length = pinned.get().size.toULong())
@@ -185,7 +185,7 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
 @OptIn(ExperimentalForeignApi::class)
 @Composable actual fun MpMediaView(mediaData: ByteArray?, mediaUri: String?, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit):Boolean
 {
-    LogIt.info( "MpMediaView($mediaData, $mediaUri, $wrapper)")
+    LogIt.info( "MpMediaView(${mediaData?.size} bytes, $mediaUri)")
 
     val mu = mediaUri
     if (mu == null) return false
@@ -219,7 +219,7 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
         } ?: run {
               val path = mediaUri.toPath()
               // If mediaUri doesn't exist, program will crash
-              LogIt.info("mpmediaview UIImage load from uri")
+              // LogIt.info("mpmediaview UIImage load from uri")
               if (!FileSystem.SYSTEM.exists(path)) UIImage()
               else UIImage(mediaUri)
           }
@@ -237,7 +237,7 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
             wrapper(MediaInfo(width, height, false, true))
             {
                 val m = it ?: Modifier.fillMaxSize().background(Color.Transparent)
-                LogIt.info("MpMediaView wrapper render")
+                // LogIt.info("MpMediaView wrapper render")
                 UIKitView(modifier = m,
                       factory = {
                           val imField = UIImageView(CGRectMake(0.0, 0.0, 0.0, 0.0))

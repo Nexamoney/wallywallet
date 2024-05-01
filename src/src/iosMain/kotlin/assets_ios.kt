@@ -62,6 +62,24 @@ object IosAssetManagerStorage:AssetManagerStorage
          */
         return Pair(path.toString(), EfficientFile(path, FileSystem.SYSTEM))
     }
+
+    override fun deleteAssetFile(filename: String)
+    {
+        val dirs = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true)
+        var path = if (dirs.size > 0) dirs[0].toString().toPath() / "assets" else "assets".toPath()
+        if (!FileSystem.SYSTEM.exists(path)) return
+        path = path / filename
+        FileSystem.SYSTEM.delete(path)
+    }
+
+    override fun deleteAssetFiles()
+    {
+        val dirs = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true)
+        var path = if (dirs.size > 0) dirs[0].toString().toPath() / "assets" else "assets".toPath()
+        if (!FileSystem.SYSTEM.exists(path)) return
+        FileSystem.SYSTEM.deleteRecursively(path)
+    }
+
     override fun storeCardFile(filename: String, data: ByteArray): String
     {
         val dirs = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true)

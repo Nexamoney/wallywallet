@@ -12,6 +12,17 @@ object MacosAssetManagerStorage:AssetManagerStorage
     {
         TODO()
     }
+
+    override fun deleteAssetFile(filename: String)
+    {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteAssetFiles()
+    {
+        TODO("Not yet implemented")
+    }
+
     override fun storeCardFile(filename: String, data: ByteArray): String
     {
         TODO()

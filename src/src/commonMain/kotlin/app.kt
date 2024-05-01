@@ -885,7 +885,7 @@ open class CommonApp
 
         // normally this can be done asynchronously to account creation, but we need to do it before fastforwarding
         // because if it accidentally runs after the fast forward, it will set the sync point back to these start points
-        ac.asyncInit(earliestDate, earliestHeight)
+        ac.asyncInit(earliestHeight, earliestDate)
         // We need to pregenerate all the destinations used in the provided transactions, or we won't recognise these transactions as our own
         ac.wallet.prepareDestinations(histAddressCount, histAddressCount)
         ac.wallet.fastforward(histEnd.height, histEnd.time, histEnd.hash, txhist)

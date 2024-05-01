@@ -191,8 +191,12 @@ fun SettingsScreen(nav: ScreenNav)
                 Box(modifier = Modifier.fillMaxWidth()) {
                     Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
                         Button(onClick = { onLogDebugData() }) {
-                            Text("LOG DEBUG DATA")
+                            Text("Log debug info")
                         }
+                        Button(onClick = { onReloadAssets() }) {
+                            Text("Reload Assets")
+                        }
+
                         /*  uncomment if you need this for dev
                         Button(onClick = { onWipeDatabase() }) {
                             Text("WIPE DATABASE")
@@ -222,8 +226,22 @@ fun onLogDebugData()
         LogIt.info("LOG DEBUG BUTTON")
         for (c in coins)
             c.value.wallet.debugDump()
+        displayNotice("Log written")
     }
 }
+
+fun onReloadAssets()
+{
+    later {
+        val app = wallyApp!!
+        app.assetManager.clear()
+
+        LogIt.info("Reload Assets Button")
+        displayNotice("Reloading assets")
+        triggerAssetCheck()
+    }
+}
+
 
 @Composable
 fun LocalCurrency(preferenceDB: SharedPreferences)

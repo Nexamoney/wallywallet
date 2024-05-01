@@ -68,7 +68,6 @@ data class NewAccountState(
   val validOrNoRecoveryPhrase: Boolean = true,
   val pin: String = "",
   val validOrNoPin: Boolean = true,
-  val isSuccessDialogOpen: Boolean = false,
   val earliestActivity: Long? = null,
   val earliestActivityHeight: Int = -1,  // -1 means not even looking (either done and found nothing, or not applicable due to bad phrase or similar)
   val discoveredAccountHistory: List<TransactionHistory> = listOf(),
@@ -121,7 +120,6 @@ fun launchRecoverAccountThread(acState: NewAccountState, flags: ULong, secret: S
         {
             wallyApp!!.recoverAccount(acState.accountName, flags, acState.pin, secret, chainSelector, acState.earliestActivity, acState.earliestActivityHeight.toLong(), null)
             triggerAssignAccountsGuiSlots()
-            // acState.copy(isSuccessDialogOpen = false)
         }
         catch (e: Error)
         {
@@ -167,15 +165,17 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
     val blockchains = supportedBlockchains.filter { devMode || it.value.isMainNet }
     var selectedBlockChain by remember { mutableStateOf(blockchains.entries.first().toPair()) }
 
-    var newAcState = newAccountState.collectAsState()
-
     // Typically this code is just run the first time thru, to propose an account name based on the default blockchain
-    if (newAcState.value.accountName == "")
+    LaunchedEffect(Unit)
     {
-        val name = ProposeAccountName(selectedBlockChain.second)
-        if (name != null) newAccountState.value = newAccountState.value.copy(accountName = name, validAccountName = (name != null))
-        newAcState = newAccountState.collectAsState()
+        if (newAccountState.value.accountName == "")
+        {
+            val name = ProposeAccountName(selectedBlockChain.second)
+            if (name != null) newAccountState.value = newAccountState.value.copy(accountName = name, validAccountName = (name != null))
+        }
     }
+
+    var newAcState = newAccountState.collectAsState()
 
     var recoverySearchText by remember { mutableStateOf("") }
     var fastForwardText by remember { mutableStateOf<String?>(null) }
@@ -186,6 +186,24 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
 
     var firstActThread:iThread? = null
     var allActThread:iThread? = null
+
+    // When we leave this screen, we want to wipe most of the data and and info.  The user should not nav away from this page
+    // and expect to come back to finish account set up.
+    nav.onDepart {
+        // close out any search thread that are running
+        aborter.value.obj = true
+        // forget the secret for security reasons & almost everything else for consistency
+        newAccountState.value = newAccountState.value.copy(errorMessage = "", recoveryPhrase = "", validOrNoRecoveryPhrase = true, pin = "", validOrNoPin = true, earliestActivityHeight = -1, earliestActivity = null,
+          discoveredAccountHistory = listOf(), discoveredAccountBalance = 0, discoveredAddressCount = -1, discoveredAddressIndex = 0, discoveredTip = null)
+        // forget any info text
+        recoverySearchText = ""
+        fastForwardText = ""
+        creatingAccountLoading = false
+        createClicks = 0
+        // make a new thread aborter for next time
+        aborter.value = Objectify(false)
+    }
+
 
     fun FinalDataCheck(): Boolean
     {
@@ -244,11 +262,10 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
 
         if (inputValid)
         {
-            nav.back()
             // Freeze a copy of the data, for use in the deferred account creation
             val acState = newAccountState.value.copy()
             val chainSelector = selectedBlockChain.second
-
+            nav.back()  // since the data is wiped when we go back
             // get account creation out of the UI thread
             // launching a co-routine somehow delays the UI update by seconds
             // Also, by wrapping the thread launch in a non-compose function,
@@ -261,8 +278,9 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
     fun CreateSyncAccount()
     {
         var inputValid = FinalDataCheck()
+        // Grab all the data because when I go back it will be wiped from the UX
         val acState = newAccountState.value.copy()
-
+        val chainSelector = selectedBlockChain.second
         val flags: ULong = if (acState.hideUntilPinEnter) ACCOUNT_FLAG_HIDE_UNTIL_PIN else ACCOUNT_FLAG_NONE
 
         if (inputValid)
@@ -279,15 +297,15 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
                 else
                 {
                     creatingAccountLoading = true
+                    launchRecoverAccountThread(acState, flags, words.joinToString(" "), chainSelector)
                     nav.back()
-                    launchRecoverAccountThread(acState, flags, words.joinToString(" "), selectedBlockChain.second)
                 }
             }
             else if (words.isEmpty())
             {
                 nav.back()
                 later {
-                    val account = wallyApp!!.newAccount(acState.accountName, flags, acState.pin, selectedBlockChain.second)
+                    val account = wallyApp!!.newAccount(acState.accountName, flags, acState.pin, chainSelector)
                     if (account == null)
                     {
                         displayError(i18n(S.unknownError))
@@ -296,7 +314,6 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
                     else
                     {
                         triggerAssignAccountsGuiSlots()
-                        // acState.copy(isSuccessDialogOpen = false)
                     }
                 } // Can't happen in GUI thread
             }
@@ -513,7 +530,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
                     }
                 }
             }
-
+            WallyHalfDivider()
             // Full sync
             Spacer(Modifier.height(10.dp))
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -841,6 +858,7 @@ fun peekFirstActivity(secretWords: String, chainSelector: ChainSelector, aborter
           }, chainSelector, WALLET_RECOVERY_DERIVATION_PATH_SEARCH_DEPTH, {
               libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
           }, { time, height ->
+
               displayRecoveryInfo(i18n(S.Bip44ActivityNotice) + " " + (i18n(S.FirstUseDateHeightInfo) % mapOf(
                 "date" to epochToDate(time),
                 "height" to height.toString())
@@ -849,7 +867,11 @@ fun peekFirstActivity(secretWords: String, chainSelector: ChainSelector, aborter
               true
           })
 
-        if (aborter.obj) return
+        if (aborter.obj)
+        {
+            displayRecoveryInfo("")
+            return
+        }
 
         LogIt.info("Searching in ${AddressDerivationKey.ANY}")
         // Look for activity in the identity and common location
@@ -861,7 +883,11 @@ fun peekFirstActivity(secretWords: String, chainSelector: ChainSelector, aborter
           }, chainSelector, WALLET_RECOVERY_IDENTITY_DERIVATION_PATH_SEARCH_DEPTH, {
               libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, false, it).first
           })
-        if (aborter.obj) return
+        if (aborter.obj)
+        {
+            displayRecoveryInfo("")
+            return
+        }
 
         // Set earliestActivityP to the lesser of the two
         if (earliestActivityP == null) earliestActivityP = earliestActivityId
@@ -869,7 +895,11 @@ fun peekFirstActivity(secretWords: String, chainSelector: ChainSelector, aborter
         {
             if ((earliestActivityId != null) && (earliestActivityId.first < earliestActivityP.first)) earliestActivityP = earliestActivityId
         }
-        if (aborter.obj) return
+        if (aborter.obj)
+        {
+            displayRecoveryInfo("")
+            return
+        }
 
         if (earliestActivityP != null)
         {
@@ -970,6 +1000,7 @@ fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter
         LogIt.info("Searching in ${addressDerivationCoin}")
         var addrText = ""
         var summaryText = ""
+        var fromText = ""
         var activity = try
         {
             searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP, {
@@ -978,7 +1009,8 @@ fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter
                 val us = UnsecuredSecret(key)
                 val dest = Pay2PubKeyTemplateDestination(chainSelector, us, it.toLong())
                 addrText = "\n ${it} at ${dest.address.toString()}"
-                displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + addrText + summaryText)
+                fromText = if (ec != null) "\n from ${ec?.logName}" else ""
+                displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + fromText + addrText + summaryText)
                 key
             },
               {
@@ -993,7 +1025,11 @@ fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter
         {
             return
         }
-        if (aborter.obj) return
+        if (aborter.obj)
+        {
+            displayFastForwardInfo("")
+            return
+        }
 
         // TODO need to explicitly push nonstandard addresses into the wallet, by explicitly returning them.
         // otherwise the transactions won't be noticed by the wallet when we jam them in.
@@ -1021,7 +1057,11 @@ fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter
         {
             return
         }
-        if (aborter.obj) return
+        if (aborter.obj)
+        {
+            displayFastForwardInfo("")
+            return
+        }
 
         val act = activity.txh + activity2.txh
         val addrCount = activity.addrCount + activity2.addrCount
