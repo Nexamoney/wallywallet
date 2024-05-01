@@ -35,6 +35,26 @@ object AndroidAssetManagerStorage:AssetManagerStorage
         val ef = EfficientFile(name.toPath(), FileSystem.SYSTEM)
         return Pair(name, ef)
     }
+
+    /** delete a particular asset file */
+    override fun deleteAssetFile(filename: String)
+    {
+        val context = wallyAndroidApp
+        val dir = context!!.getDir("asset", Context.MODE_PRIVATE)
+        val file = File(dir, filename)
+        file.delete()
+    }
+
+    /** delete all asset files */
+    override fun deleteAssetFiles()
+    {
+        val context = wallyAndroidApp
+        val dir = context!!.getDir("asset", Context.MODE_PRIVATE)
+        val files = dir.listFiles()
+        for (f in files)
+            f.delete()
+    }
+
     override fun storeCardFile(filename: String, data: ByteArray): String
     {
         val context = wallyAndroidApp

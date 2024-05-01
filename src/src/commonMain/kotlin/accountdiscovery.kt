@@ -60,7 +60,7 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
                     val history = getEc().getHistory(script, 10000)
                     if (history.size > 0)
                     {
-                        LogIt.info("Found activity at address $index")
+                        LogIt.info("Found activity at address $index script ${script.toHex()} address ${script.address} (${history.size} events)")
                         found = true
                         lastAddressIndex = index
                         addrsFound++
@@ -70,12 +70,30 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
                             // But I don't need to investigate any repeats
                             if (!ret.containsKey(h.second))
                             {
+                                LogIt.info("  Searching ${h.first} tx: ${h.second}")
                                 val tx = getEc().getTx(h.second)
                                 val txh: TransactionHistory = TransactionHistory(chainSelector, tx)
                                 //  Load the header at this height from a little cache we keep, or from the server
                                 val header = hdrs[h.first] ?: run {
-                                    val headerBytes = getEc().getHeader(h.first)
-                                    blockHeaderFor(chainSelector, BCHserialized(SerializationType.NETWORK, headerBytes))
+                                    var hdr:iBlockHeader? = null
+                                    val bc = blockchains[chainSelector]
+                                    if (bc != null)
+                                    {
+                                        try
+                                        {
+                                            hdr = bc.getBlockHeader(h.first.toLong())
+                                        }
+                                        catch(e: HeadersNotForthcoming)
+                                        {
+                                            // I dont have it saved, will load it via electrum
+                                        }
+                                    }
+                                    if (hdr == null)
+                                    {
+                                        val headerBytes = getEc().getHeader(h.first)
+                                        blockHeaderFor(chainSelector, BCHserialized(SerializationType.NETWORK, headerBytes))
+                                    }
+                                    hdr!!
                                 }
                                 if (header.validate(chainSelector))
                                 {
@@ -84,7 +102,16 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
                                     txh.confirmedHash = header.hash
                                     txh.date = header.time
                                     ret[h.second] = txh
+                                    hdrs[h.first] = header
                                 }
+                                else
+                                {
+                                    LogIt.error("Illegal header when loading asset")
+                                }
+                            }
+                            else
+                            {
+                                LogIt.info("  Already have tx ${h.second}")
                             }
                         }
                         val unspent = getEc().listUnspent(dest, 10000)
@@ -97,7 +124,7 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
                     }
                     else
                     {
-                        LogIt.info("No activity at address $index")
+                        LogIt.info("No activity at address $index ${dest.address.toString()}")
                     }
                 }
                 catch (e: ElectrumNotFound)
@@ -108,5 +135,6 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
             else gap++
             index++
         }
+        hdrs.clear()
         return AccountSearchResults(ret.values.toList(), addrsFound, lastAddressIndex, bal)
     }

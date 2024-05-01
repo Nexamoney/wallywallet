@@ -23,6 +23,7 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import io.ktor.http.*
+import kotlinx.coroutines.delay
 import org.nexa.libnexakotlin.*
 
 
@@ -279,7 +280,52 @@ fun AssetScreen(account: Account, nav: ScreenNav)
 {
     var assetFocus by remember { mutableStateOf<AssetPerAccount?>(null) }
     var assetFocusIndex by remember { mutableStateOf<Int>(0) }
-    // TODO remember account.assets so redraw happens if assets change
+    var assetList = remember { mutableStateListOf<Pair<AssetLoadState,AssetPerAccount>>() }
+
+    // Every half second check whether assetList needs to be regenerated
+    LaunchedEffect(Unit) {
+        while(true)
+        {
+            val lst = account.assets.values.toMutableList()
+            lst.sortBy { it.assetInfo.nft?.title ?: it.assetInfo.name ?: it.assetInfo.ticker ?: it.groupInfo.groupId.toString() }
+
+            var redo=false
+            if (lst.size != assetList.size)
+            {
+                LogIt.info("Asset list redraw: Size changed")
+                redo=true
+            }
+            else
+            {
+                // Check if either the token changed or its loadstate changed
+                for (item in lst.zip(assetList))
+                {
+                    if (item.first.assetInfo.loadState != item.second.first)
+                    {
+                        LogIt.info("Asset list redraw: loadstate changed for ${item.first.groupInfo.groupId}")
+                        redo = true
+                        break
+                    }
+                    if (item.first.groupInfo.groupId != item.second.second.groupInfo.groupId)
+                    {
+                        LogIt.info("Asset list redraw: order changed for ${item.first.groupInfo.groupId} was ${item.second.second.groupInfo.groupId}")
+                        redo = true
+                        break
+                    }
+                }
+            }
+
+            if (redo)
+            {
+                assetList.clear()
+                for (item in lst)
+                {
+                    assetList.add(Pair(item.assetInfo.loadState, item))
+                }
+            }
+            delay(500)
+        }
+    }
 
     if (nav.currentSubState.value == null) assetFocus = null  // If I go back from a focused asset, the nav subscreenstate will be null
 
@@ -297,11 +343,11 @@ fun AssetScreen(account: Account, nav: ScreenNav)
                 //LogIt.info("recomposing asset column")
                 LazyColumn(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(0.2f)) {
                     var index = 0
-                    account.assets.forEach {
-                        val key = it.key
-                        val entry = it.value
+                    assetList.forEach {
+                        val key = it.second.groupInfo.groupId
+                        val entry = it.second
                         val indexFreezer = index  // To use this in the item composable, we need to freeze it to a val, because the composable is called out-of-scope
-                        item(key = it.key.toByteArray()) {
+                        item(key = key.toByteArray()) {
                             //LogIt.info("asset item")
                             Box(Modifier.padding(4.dp, 2.dp).fillMaxWidth().background(WallyAssetRowColors[indexFreezer % WallyAssetRowColors.size]).clickable {
                                 assetFocus = account.assets[key]

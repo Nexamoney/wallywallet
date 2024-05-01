@@ -79,6 +79,7 @@ val assetCheckTrigger = Gate("assetCheckTrigger")
 var assetCheckPacer = LeakyBucket(90*1000, 1000, 25*1000)
 fun triggerAssetCheck()
 {
+    assetCheckPacer.level = 90*1000  // force recheck regardless of leaky bucket
     assetCheckTrigger.wake()
 }
 
@@ -518,6 +519,12 @@ interface AssetManagerStorage
     /** Load a file from the @storeAssetFile location */
     fun loadAssetFile(filename: String): Pair<String, EfficientFile>
 
+    /** delete a particular asset file */
+    fun deleteAssetFile(filename: String)
+
+    /** delete all asset files */
+    fun deleteAssetFiles()
+
     /** Save data in a temporary/cache location; it is only expected that this data continue to exist while the program
      * is running.  Recommend "wallyCache" directory.
      */
@@ -762,11 +769,37 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
         return ret
     }
 
+    fun clear()
+    {
+        val assetKeys = assets.keys.toList()
+        for (k in assetKeys)
+           kvpDb?.delete(k.data)
+        for (v in assets.values)  // clean this data structure in case someone is holding a copy of it
+        {
+            v.iconUri = null
+            v.iconBytes = null
+            v.tokenInfo = null
+            v.publicMediaUri = null
+            v.publicMediaBytes = null
+            v.ownerMediaUri = null
+            v.ownerMediaCache = null
+            v.nft = null
+            v.loadState = AssetLoadState.UNLOADED
+        }
+        assets.clear()
+        assetManagerStorage().deleteAssetFiles()
+    }
+
     override fun storeAssetFile(filename: String, data: ByteArray): String
         = assetManagerStorage().storeAssetFile(filename, data)
 
     override fun loadAssetFile(filename: String): Pair<String, EfficientFile>
         = assetManagerStorage().loadAssetFile(filename)
+
+    override fun deleteAssetFile(filename: String) =
+        assetManagerStorage().deleteAssetFile(filename)
+
+    override fun deleteAssetFiles() = assetManagerStorage().deleteAssetFiles()
 
     override fun storeCardFile(filename: String, data: ByteArray): String
         = assetManagerStorage().storeCardFile(filename, data)
