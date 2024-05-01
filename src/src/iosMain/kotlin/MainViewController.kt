@@ -72,3 +72,9 @@ fun iosCancelBackgroundSync()
 {
     cancelBackgroundSync()
 }
+
+fun onQrCodeScannedWithDefaultCameraApp(qr: String)
+{
+    LogIt.info("onQrCodeScannedWithDefaultCameraApp: $qr")
+    wallyApp!!.handlePaste(qr)
+}

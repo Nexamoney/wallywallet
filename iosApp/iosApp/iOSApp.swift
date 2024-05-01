@@ -71,8 +71,12 @@ struct iOSApp: App {
 
 	var body: some Scene {
 		WindowGroup {
-			let tmp = ComposeContentView()
-            tmp.ignoresSafeArea(.keyboard, edges: .all)
+			let composeView = ComposeContentView()
+                .onOpenURL(perform: { url in
+                    print("App was opened via URL: \(url)")
+                    MainViewControllerKt.onQrCodeScannedWithDefaultCameraApp(qr: url.absoluteString)
+                })
+            composeView.ignoresSafeArea(.keyboard, edges: .all)
 		}
         .onChange(of: scenePhase, perform: { newValue in
             switch newValue {
