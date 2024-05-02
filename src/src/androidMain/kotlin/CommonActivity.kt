@@ -234,6 +234,14 @@ open class CommonActivity : AppCompatActivity()
     {
     }
 
+    override fun onNewIntent(intent: Intent)
+    {
+        super.onNewIntent(intent)
+        val s = intent.dataString ?: intent.toUri(0)
+        LogIt.info("Handling intent $s")
+        wallyApp?.handlePaste(s)
+    }
+
     override fun onResume()
     {
         super.onResume()

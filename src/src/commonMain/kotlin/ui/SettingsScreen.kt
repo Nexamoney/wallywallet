@@ -206,12 +206,14 @@ fun SettingsScreen(nav: ScreenNav)
                     Column {
                         Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
                             Button(onClick = { onLogDebugData() }) {
-                                Text("Log debug info")
+                                Text("Log Info")
                             }
                             Button(onClick = { onReloadAssets() }) {
                                 Text("Reload Assets")
                             }
-
+                            Button(onClick = { onCloseP2pConnections() }) {
+                                Text("Close P2P")
+                            }
                             /*  uncomment if you need this for dev
                             Button(onClick = { onWipeDatabase() }) {
                                 Text("WIPE DATABASE")
@@ -261,6 +263,21 @@ fun onReloadAssets()
         LogIt.info("Reload Assets Button")
         displayNotice("Reloading assets")
         triggerAssetCheck()
+    }
+}
+
+fun onCloseP2pConnections()
+{
+    later {
+        for (bc in blockchains)
+        {
+            for (cxn in bc.value.net.p2pCnxns)
+            {
+                cxn.close()
+            }
+        }
+        LogIt.info("All P2P connections closed")
+        displayNotice("Connections closed")
     }
 }
 

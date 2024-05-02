@@ -30,6 +30,7 @@ import androidx.core.content.ContextCompat
 import com.google.common.util.concurrent.ListenableFuture
 import android.annotation.SuppressLint
 import android.content.Context
+import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.os.Build
@@ -72,17 +73,22 @@ actual fun QrScannerView(modifier: Modifier, onQrCodeScanned: (String) -> Unit)
 @SuppressLint("ObsoleteSdkInt")
 fun vibratePhone(context: Context)
 {
-    val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    // Only vibrate if not silent
+    val am:AudioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    if (am.ringerMode != AudioManager.RINGER_MODE_SILENT)
+    {
+        val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-    {
-        vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE))
-    }
-    else
-    {
-        // Deprecated in API 26
-        @Suppress("DEPRECATION")
-        vibrator.vibrate(1000)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE))
+        }
+        else
+        {
+            // Deprecated in API 26
+            @Suppress("DEPRECATION")
+            vibrator.vibrate(1000)
+        }
     }
 }
 

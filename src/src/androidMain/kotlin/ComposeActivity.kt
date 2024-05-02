@@ -55,8 +55,8 @@ class ComposeActivity: CommonActivity()
 {
     var nav = ScreenNav()
 
-    var dynOrStaticOrientation: Int = -1  // Used to remember the screen orientation when temporarily disabling int
-    var scanDoneFn: ((String)->Unit)? = null
+    // var dynOrStaticOrientation: Int = -1  // Used to remember the screen orientation when temporarily disabling int
+    // var scanDoneFn: ((String)->Unit)? = null
     var imageParsedFn: ((String?)->Unit)? = null
     /** Do this once we get file read permissions */
     var doOnMediaReadPerms: (() -> Unit)? = null
@@ -182,9 +182,9 @@ class ComposeActivity: CommonActivity()
         }
 
 
-        // QR code scanning
+        // Android-specific QR code scanning
+        /*
         val result: IntentResult? = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
-
         if (result != null)
         {
             if (result.contents != null)
@@ -215,6 +215,7 @@ class ComposeActivity: CommonActivity()
         {
             super.onActivityResult(requestCode, resultCode, data)
         }
+         */
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray)
