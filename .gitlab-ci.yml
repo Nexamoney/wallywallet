@@ -17,6 +17,16 @@ workflow:
     - if: $CI_COMMIT_REF_PROTECTED == "true"
       when: always
 
+before_script:
+  - GIT_COMMIT_HASH=$(git rev-parse --short HEAD)
+  - export GIT_COMMIT_HASH
+  - 'echo "Current Git commit hash: $GIT_COMMIT_HASH"'
+  - ./gradlew generateVersionFile
+
+variables:
+  VERSION_CODE_RAW: ${CI_PIPELINE_IID}+${VERSION_BUMPER}
+  VERSION_CODE_RENDER: $(($VERSION_CODE_RAW))
+
 tasks:
   stage: docs
   tags:

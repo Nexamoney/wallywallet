@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.HorizontalAlignmentLine
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.ui.theme.*
+import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
 
@@ -77,6 +79,14 @@ data class GeneralSettingsSwitch(
     }
 }
 
+interface VersionI
+{
+    open val VERSION: String
+    open val VERSION_NUMBER: String
+    open val GIT_COMMIT_HASH: String
+    open val GITLAB_URL: String
+}
+
 @Composable
 fun SettingsScreen(nav: ScreenNav)
 {
@@ -126,13 +136,17 @@ fun SettingsScreen(nav: ScreenNav)
       horizontalAlignment = Alignment.Start,
       verticalArrangement = Arrangement.SpaceEvenly
     ) {
+        val uriHandler = LocalUriHandler.current
         Column(
           modifier = Modifier.fillMaxWidth(),
           horizontalAlignment = Alignment.Start
         ) {
+
             CenteredSectionText(i18n(S.GeneralSettings))
-            Text(i18n(S.version) % mapOf("ver" to BuildInfo.VERSION_NAME), modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally), textAlign = TextAlign.Center)
+
+            Text(i18n(S.version) % mapOf("ver" to Version.VERSION_NUMBER + "-" + Version.GIT_COMMIT_HASH), modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally), textAlign = TextAlign.Center)
         }
+
         Column(
           modifier = Modifier.padding(start = 32.dp)
         ) {
@@ -189,19 +203,27 @@ fun SettingsScreen(nav: ScreenNav)
             {
                 Spacer(Modifier.height(32.dp))
                 Box(modifier = Modifier.fillMaxWidth()) {
-                    Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
-                        Button(onClick = { onLogDebugData() }) {
-                            Text("Log debug info")
-                        }
-                        Button(onClick = { onReloadAssets() }) {
-                            Text("Reload Assets")
-                        }
+                    Column {
+                        Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
+                            Button(onClick = { onLogDebugData() }) {
+                                Text("Log debug info")
+                            }
+                            Button(onClick = { onReloadAssets() }) {
+                                Text("Reload Assets")
+                            }
 
-                        /*  uncomment if you need this for dev
-                        Button(onClick = { onWipeDatabase() }) {
-                            Text("WIPE DATABASE")
+                            /*  uncomment if you need this for dev
+                            Button(onClick = { onWipeDatabase() }) {
+                                Text("WIPE DATABASE")
+                            }
+                             */
                         }
-                         */
+                        Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
+                            WallyBoringButton({ uriHandler.openUri(Version.GITLAB_URL) }, modifier = Modifier
+                            ) {
+                                ResImageView("icons/gitlab-logo-300.png", modifier = Modifier.width(100.dp))
+                            }
+                        }
                     }
                 }
             }

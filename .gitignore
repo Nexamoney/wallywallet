@@ -24,3 +24,4 @@ src/release/
 /iosApp/iosApp.xcodeproj/project.xcworkspace/contents.xcworkspacedata
 /wallyCache
 .gitlab-ci.yml.swp
+/src/src/commonMain/kotlin/Version.kt
