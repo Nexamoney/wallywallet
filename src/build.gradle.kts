@@ -1,3 +1,4 @@
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.android.build.api.dsl.ManagedVirtualDevice
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
@@ -552,6 +553,19 @@ kotlin {
 */
 }
 
+val gitCommitHash: String by lazy {
+    ProcessBuilder("git", "rev-parse", "--short", "HEAD")
+      .redirectOutput(ProcessBuilder.Redirect.PIPE)
+      .start()
+      .inputStream
+      .bufferedReader()
+      .readText()
+      .trim()
+}
+val versionNumber = "3.0.0"
+val versionCode = versionNumber.replace(".", "").toInt()
+version = "$versionNumber-$gitCommitHash"
+
 
 android {
     namespace = "info.bitcoinunlimited.www.wally"
@@ -562,8 +576,8 @@ android {
         applicationId = "info.bitcoinunlimited.www.wally"
         minSdk = 29
         targetSdk = 34
-        versionCode = 300
-        versionName = "3.00"
+        versionCode = versionCode
+        versionName = versionNumber
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildFeatures {
@@ -643,12 +657,34 @@ fun org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet.nexaLangSettings()
     }
 }
 
+tasks.register("generateVersionFile") {
+    doLast {
+        println("Generating... src/commonMain/kotlin/Version.kt")
+        val file = file("src/commonMain/kotlin/Version.kt")
+        file.writeText("""
+            package info.bitcoinunlimited.www.wally
+            
+            import info.bitcoinunlimited.www.wally.ui.VersionI
+            
+            object Version: VersionI
+            {
+                override val VERSION = "${project.version}"
+                override val VERSION_NUMBER = "$versionNumber"
+                override val GIT_COMMIT_HASH = "$gitCommitHash"
+                override val GITLAB_URL = "https://gitlab.com/wallywallet/wallet/-/commit/$gitCommitHash"
+            }
+        """.trimIndent())
+    }
+}
+
+tasks.named("compileKotlinMetadata").configure {
+    dependsOn("generateVersionFile")
+}
 
 /*
 // PUBLISHING
 // Deployment constants
 group = "org.nexa"
-version = "3.0.0"
 
 publishing {
     repositories {

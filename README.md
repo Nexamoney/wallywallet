@@ -20,6 +20,11 @@ Use `git clone https://gitlab.com/wallywallet/android.git` or `git clone git@git
 ./gradlew appJar
 ```
 
+##### Generate version file
+```
+./gradlew generateVersionFile
+```
+
 #### Execution
 
 In Android Studio, create a "JAR Application" in edit run configurations.  Just put the application (fat) jar file into the "Path To Jar" field.
