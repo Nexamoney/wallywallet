@@ -6,6 +6,9 @@ This is a non-custodial SPV & Electrum protocol wallet for Nexa and Bitcoin Cash
 
 <a href="https://www.producthunt.com/posts/wally-nexa-wallet?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-wally&#0045;nexa&#0045;wallet" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=452242&theme=light" alt="Wally&#0032;Nexa&#0032;Wallet - Open&#0032;source&#0032;light&#0032;Wallet&#0032;for&#0032;Nexa&#0046;&#0032;Support&#0032;coins&#0032;and&#0032;NFTs | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 
+[TestFlight BETA for iPhone](https://testflight.apple.com/join/AznUHg38)
+
+
 ## Cloning
 
 Use `git clone https://gitlab.com/wallywallet/android.git` or `git clone git@gitlab.com:wallywallet/android.git` to clone this repository.
