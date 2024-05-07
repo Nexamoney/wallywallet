@@ -1,13 +1,11 @@
 package info.bitcoinunlimited.www.wally.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -17,10 +15,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.BrightBkg
-import kotlinx.coroutines.delay
 import org.nexa.libnexakotlin.GetLog
 
 private val LogIt = GetLog("BU.wally.unlockview")
@@ -30,14 +29,11 @@ private val LogIt = GetLog("BU.wally.unlockview")
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UnlockDialog(onPinEntered: (String) -> Unit)
+fun UnlockView(onPinEntered: (String) -> Unit)
 {
     val pin = remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-    }
     clearAlerts()
 
     fun attemptUnlock()
@@ -68,14 +64,17 @@ fun UnlockDialog(onPinEntered: (String) -> Unit)
                       unfocusedIndicatorColor = Color.Black
                     ),
                     onValueChange = { pin.value = it },
-                    //label = { Text("Enter PIN") },
-                    modifier = Modifier.focusRequester(focusRequester).onKeyEvent {
+                    modifier = Modifier.testTag(i18n(S.EnterPIN))
+                      .focusRequester(focusRequester)
+                      .onKeyEvent {
                         if ((it.key == Key.Enter)||(it.key == Key.NumPadEnter))
                         {
                             attemptUnlock()
                             false
                         }
                         else false// Do not accept this key
+                    }.onGloballyPositioned {
+                        focusRequester.requestFocus()
                     },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
