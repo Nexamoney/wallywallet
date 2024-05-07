@@ -142,10 +142,16 @@ struct iOSApp: App {
             }
 
             _isExecuting = true
-            MainViewControllerKt.iosBackgroundSync(completion: {
-                // Call this in your completion handler when the background work is done
+            do {
+                try MainViewControllerKt.iosBackgroundSync(completion: {
+                    // Call this in your completion handler when the background work is done
+                    self.finish()
+                })
+            } catch {
+                print("iosBackgroundSync error occurred: \(error)")
+                // Handle the error, perhaps by finishing with an error state
                 self.finish()
-            })
+            }
         }
 
         override func cancel() {
