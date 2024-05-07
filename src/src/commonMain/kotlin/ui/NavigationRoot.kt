@@ -655,7 +655,7 @@ fun NavigationRoot(nav: ScreenNav)
     // The main screen
     WallyTheme(darkTheme = false, dynamicColor = false) {
         Box(modifier = WallyPageBase) {
-            if (unlockDialog != null) UnlockDialog {  }
+            if (unlockDialog != null) UnlockView {  }
             Column(modifier = Modifier.fillMaxSize()) {
                 ConstructTitleBar(nav, errorText, warningText, noticeText)
 
