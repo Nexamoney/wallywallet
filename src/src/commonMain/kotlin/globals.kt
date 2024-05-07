@@ -19,11 +19,6 @@ var allowAccessPriceData: Boolean = true
 var devMode = false
 var localCurrency = "USD"
 
-/** Make some type (probably a primitive type) into an object that holds one of them */
-class Objectify<T>(var obj: T)
-{
-}
-
 // Search the first N addresses in a particular derivation path during wallet recovery.
 // Since wallets give out addresses in order, this will tend to find the activity.  The only reason we search a bunch of addresses
 // is because maybe some addresses were given out but payments weren't made.

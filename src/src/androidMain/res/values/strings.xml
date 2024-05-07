@@ -98,6 +98,8 @@ Good luck!
          Its modern UX philosophy of "why do we have to explicitly "save" everything on settings screens?  If you make a change, that change ought to be made, no additional button clicks needed."
     -->
     <string name="done">done</string>
+    <!-- close out an informational dialog or view -->
+    <string name="dismiss">Dismiss</string>
     <!-- an external service is making a request (to see the assets you own, to get you to sign a transaction, or to prove your identity).  You refuse -->
     <string name="deny">deny</string>
     <!-- Should the program ask the user before authorizing this, verses automatically accepting or automatically denying -->
@@ -123,12 +125,15 @@ Good luck!
     <string name="connected">connected</string>
     <string name="balance">current balance</string>
     <string name="totalReceived">total received</string>
+    <string name="inProgress">in progress</string>
 
     <string name="NoPermission">No Permission</string>
     <string name="NoPermissionDetails" formatted="false">You must enable the %perm permission to use this feature.  You may do so in Android Settings -> Apps -> Wally -> Permissions</string>
 
     <!-- this is an indication that we are still waiting for some web page to load. please leave the HTML and just translate ...loading... -->
     <string name="WebLoadingPage"><![CDATA[<body><h1><center>...loading...</h1></center></body>]]></string>
+    <!-- this is an indication that we are still waiting for something to load (currently used for assets) -->
+    <string name="loading">loading</string>
 
     <!-- Implication is "no charge" or "no cost" for a transaction -->
     <string name="nothing">nothing</string>
@@ -285,6 +290,7 @@ Good luck!
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Account currency is %walletCrypto, address is %addressCrypto.  Use the combo box to change the send from account to one that matches the address\'s blockchain.</string>
     <string name="incoming" formatted="false">includes %delta %unit pending</string>
     <string name="approximatelyT" formatted="false">approximately %qty %fiat</string>
+    <string name="fastforwardStatus" formatted="false">fast forward analysis: %info</string>
     <string name="exchangeRate" formatted="false">(exchange rate: 1 %fiat is worth %amt %crypto)</string>
     <!-- user is attempting to send more cryptocurrency than the wallet contains.  The payment cannot happen -->
     <string name="moreThanAvailable">(more than available)</string>

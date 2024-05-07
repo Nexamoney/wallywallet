@@ -8,6 +8,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.nexa.libnexakotlin.*
+import org.nexa.threads.iThread
 
 /** Account flags: No flag */
 const val ACCOUNT_FLAG_NONE = 0UL
@@ -147,6 +148,10 @@ class Account(
     var assets = mutableMapOf<GroupId, AssetPerAccount>()
     val assetTransferList = mutableListOf<GroupId>()
 
+    // How to abort a fastforward (and its happening if non-null)
+    var fastforward:Objectify<Boolean>? = null
+    var fastforwardStatus:String? = null
+
     init
     {
         if (retrieveOnlyActivity != null)  // push in nonstandard addresses before we connect to the blockchain.
@@ -197,10 +202,11 @@ class Account(
         constructAssetMap()
     }
 
-    /** Save the PIN of an account to the database */
-    fun saveAccountPin(actName: String, epin: ByteArray)
+    /** Save the PIN of an account to the database
+     * @param epin must be the ENCODED (not plaintext) pin */
+    fun saveAccountPin(epin: ByteArray)
     {
-        walletDb?.set("accountPin_" + actName, epin)
+        walletDb?.set("accountPin_" + name, epin)
     }
 
     @Suppress("UNUSED_PARAMETER")

@@ -2,9 +2,10 @@ package info.bitcoinunlimited.www.wally
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import io.ktor.http.*
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.newFixedThreadPoolContext
+import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -15,6 +16,47 @@ import org.nexa.threads.Gate
 import org.nexa.threads.LeakyBucket
 import org.nexa.threads.iThread
 import org.nexa.threads.millisleep
+
+import org.jetbrains.skia.*
+import kotlin.coroutines.CoroutineContext
+
+const val ASSET_ICON_SIZE = 100
+
+val assetCoCtxt: CoroutineContext = newFixedThreadPoolContext(4, "asset")
+
+// TODO get skiko internal error
+/*
+fun scaleUsingSurface(image: Image, width: Int, height: Int): Image {
+    val surface = Surface.makeRasterN32Premul(width, height)
+    val canvas = surface.canvas
+    val paint = Paint().apply {
+        //filterQuality = FilterQuality.HIGH
+    }
+    canvas.drawImageRect(image, Rect(0f, 0f, width.toFloat(), height.toFloat()), paint)
+    val im = surface.makeImageSnapshot()
+    return im
+}
+
+fun scaleTo(image: Image, width: Int, height: Int, outFormat: EncodedImageFormat): ByteArray?
+{
+    val im = scaleUsingSurface(image, width, height)
+    val d = im.encodeToData(outFormat)
+    return d?.bytes
+}
+
+fun scaleTo(imageBytes: ByteArray, width: Int, height: Int, outFormat: EncodedImageFormat): ByteArray?
+{
+    val imIn = Image.makeFromEncoded(imageBytes)
+    val im = scaleUsingSurface(imIn, width, height)
+    val d = im.encodeToData(outFormat)
+    return d?.bytes
+}
+ */
+
+fun scaleTo(imageBytes: ByteArray, width: Int, height: Int, outFormat: EncodedImageFormat): ByteArray?
+{
+    return imageBytes
+}
 
 private val LogIt = GetLog("BU.wally.assets")
 
@@ -193,8 +235,12 @@ object UrlSerializer: KSerializer<Url>
 
 
 @Serializable
-class AssetInfo(val groupId: GroupId)
+class AssetInfo(val groupId: GroupId) // :BCHserializable
 {
+    companion object
+    {
+        const val SERIALIZE_VERSION = 1.toByte()
+    }
     @kotlinx.serialization.Transient var dataLock = Gate()
     var name:String? = null
     var ticker:String? = null
@@ -204,7 +250,7 @@ class AssetInfo(val groupId: GroupId)
     var docUrl: String? = null
     var tokenInfo: TokenDesc? = null
     var iconBytes: ByteArray? = null
-    @Serializable(with = UrlSerializer::class)var iconUri: Url? = null
+    @Serializable(with = UrlSerializer::class) var iconUri: Url? = null
     var iconBackBytes: ByteArray? = null
     @Serializable(with = UrlSerializer::class) var iconBackUri: Url? = null
 
@@ -213,14 +259,60 @@ class AssetInfo(val groupId: GroupId)
     var publicMediaCache: String? = null   // local storage location (if it exists)
     @Serializable(with = UrlSerializer::class)
     var publicMediaUri: Url? = null        // canonical location (needed to find the file extension to get its type  at a minimum)
+    @Transient
     var publicMediaBytes: ByteArray? = null
 
     var ownerMediaCache: String? = null
     @Serializable(with = UrlSerializer::class)
     var ownerMediaUri: Url? = null        // canonical location (needed to find the file extension to get its type at a minimum)
+    @Transient
     var ownerMediaBytes: ByteArray? = null
 
     var loadState: AssetLoadState = AssetLoadState.UNLOADED
+
+    /*
+    // We know our serialization format is stable so its the safest choice to use
+    override fun BCHdeserialize(stream: BCHserialized): BCHserialized
+    {
+        val ver = stream.debyte()
+        if (ver != SERIALIZE_VERSION) throw SerializationException("Invalid version deserializing AssetInfo: $ver")
+        name = stream.denullString()
+        ticker = stream.denullString()
+        genesisHeight = stream.deint64()
+        genesisTxidem = stream.denullHash()
+        docHash = stream.denullHash()
+        tokenInfo = stream.deNullable { TokenDesc.BCHdeserialize(it) }
+        iconBytes = stream.denullByteArray()
+        iconBackBytes = stream.denullByteArray()
+        nft = NexaNFTv2.deserialize(stream)
+
+        publicMediaCache = stream.denullString()
+        publicMediaUri = stream.denullString()
+    }
+
+    override fun BCHserialize(format: SerializationType): BCHserialized
+    {
+        var ret = BCHserialized(format).add(SERIALIZE_VERSION).add(name).add(ticker).addInt64(genesisHeight).add(genesisTxidem ?: Hash256())
+          .add(docHash ?: Hash256()).add(docUrl)
+          .addNullable(tokenInfo)
+          .addNullableVariableSized(iconBytes)
+          .addNullableVariableSized(iconBackBytes)
+          .addNullable(nft)
+
+        ret.add(publicMediaCache)  // TODO do not want to serialize "null" .add(publicMediaUri.toString())
+        // If we've stored the image locally, do not save its bytes
+        if (publicMediaCache == null) ret.addNullableVariableSized(publicMediaBytes)
+        else ret.addNullableVariableSized(null)
+
+        ret.add(ownerMediaCache) // TODO do not want to serialize "null" .add(ownerMediaUri.toString())
+        if (ownerMediaCache == null) ret.addNullableVariableSized(ownerMediaBytes)
+        else ret.addNullableVariableSized(null)
+
+        ret.addUint8(loadState.ordinal)
+        return ret
+    }
+
+     */
 
     fun finalize()
     {
@@ -247,7 +339,7 @@ class AssetInfo(val groupId: GroupId)
                 if (data != null)
                 {
                     val bytes = data.readByteArray()
-                    iconBytes = bytes
+                    iconBytes = scaleTo(bytes, ASSET_ICON_SIZE,ASSET_ICON_SIZE, EncodedImageFormat.PNG)
                     val tmp = am.storeCardFile(grpId.toStringNoPrefix() + "_" + fname, bytes)
                     iconUri = Url("file://" + tmp)
                 }
@@ -262,7 +354,7 @@ class AssetInfo(val groupId: GroupId)
                 if (data != null)
                 {
                     val bytes = data.readByteArray()
-                    iconBackBytes = bytes
+                    iconBackBytes = scaleTo(bytes, ASSET_ICON_SIZE,ASSET_ICON_SIZE, EncodedImageFormat.PNG)
                     // Note caching is NEEDED to show video (because videoview can only take a file)
                     if (iconBackBytes != null) iconBackUri = Url("file://" + am.storeCardFile(grpId.toStringNoPrefix() + "_" + fname, bytes))
                     else iconBackUri = Url("file://" + fname)
@@ -383,8 +475,9 @@ class AssetInfo(val groupId: GroupId)
     fun load(chain: Blockchain, am: AssetManager, getEc: () -> ElectrumClient)  // Attempt to find all asset info from a variety of data sources
     {
         if (loadState == AssetLoadState.COMPLETED) return
-        LogIt.info(sourceLoc() + chain.name + ": Loading Asset: Get Token Desc ${groupId.toStringNoPrefix()}")
+        LogIt.info(sourceLoc() + chain.name + ": Loading Asset: Get Token Desc ${groupId}")
         var td:TokenDesc = am.getTokenDesc(chain, groupId, getEc)
+        LogIt.info(sourceLoc() + chain.name + ": Get Token Desc complete: ${groupId} td: ${td}")
         synchronized(dataLock)
         {
             LogIt.info(sourceLoc() + chain.name + ": Loading Asset: Process genesis info ${groupId.toStringNoPrefix()}")
@@ -404,10 +497,12 @@ class AssetInfo(val groupId: GroupId)
 
             if (du != null)
             {
+                LogIt.info(sourceLoc() +": Getting NFT file for ${groupId}")
                 // Ok find the NFT description
                 val nftZipData = am.getNftFile(td, groupId)
                 if (nftZipData != null)
                 {
+                    LogIt.info(sourceLoc() +": Got NFT file for ${groupId}")
                     try
                     {
                         tokenInfo = td
@@ -427,6 +522,7 @@ class AssetInfo(val groupId: GroupId)
                         }
                         extractNftData(am, groupId, nftZipData.second)
                         if (iconBackUri == null) getTddIcon().let { iconBackUri = it.first; iconBackBytes = it.second }
+                        LogIt.info("NFT download complete for ${groupId}")
                         loadState = AssetLoadState.COMPLETED
                         dataChanged = true
                     }
@@ -597,8 +693,10 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
             assets[groupId] = ai
             return ai
         }
-        catch (e: Exception)
-        {}
+        catch (e: Throwable)  // probably file not found which is fine
+        {
+            logThreadException(e, "Exception loading asset info for ${groupId}")
+        }
 
         val blockchain = connectBlockchain(groupId.blockchain)
         val gec = getEc ?: ElectrumClientFactory(blockchain)
@@ -607,11 +705,15 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
         assets[groupId] = ret
         if (getEc != null)
         {
+            LogIt.info("Immediate asset load for ${groupId}")
             ret.load(blockchain, this, gec)
             if (ret.loadState == AssetLoadState.COMPLETED)
                 storeAssetInfo(ret)
         }
-        else wallyApp?.later {
+        else later(CoroutineScope(assetCoCtxt))
+        {
+            delay(1000)
+            LogIt.info("Deferred asset load for ${groupId} happening now")
             ret.load(blockchain, this, gec)
             if (ret.loadState == AssetLoadState.COMPLETED)
                 storeAssetInfo(ret)
@@ -643,12 +745,12 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
         {
         }
 
-        LogIt.info(sourceLoc() + ": Token Info for ${groupId.toString()} (${groupId.toHex()}) not in cache or incomplete")
+        LogIt.info(sourceLoc() + ": Token info not in cache or incomplete for ${groupId} (${groupId.toHex()})")
         // first load the token description doc (TDD)
-        val net = chain.req.net
         try
         {
                 val td = getTokenInfo(groupId.parentGroup(), getEc)
+                LogIt.info(sourceLoc() + ": Got token info for ${groupId} (${groupId.toHex()})")
                 val tg = td.genesisInfo
                 if (tg == null)  // Should not happen except network
                 {
@@ -660,18 +762,19 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
                 val tddHash = td.tddHash
                 if ((tddHash != null) && (tg.document_hash == tddHash.toHex()))
                 {
+                    LogIt.info(sourceLoc() + ": Saving token info for ${groupId}")
                     storeTokenDesc(groupId, td)  // We got good data, so cache it
                     return td
                 }
                 else
                 {
-                    LogIt.info("Incorrect or non-existent token desc document")
+                    LogIt.info(sourceLoc() + ": Incorrect or non-existent token desc document for ${groupId}")
                     return td
                 }
         }
         catch(e: Exception)  // Normalize exceptions
         {
-            handleThreadException(e, "getting asset description (assetmanager.getTokenDesc)")
+            handleThreadException(e, "getting token info (assetmanager.getTokenDesc) for ${groupId}")
             throw ElectrumRequestTimeout()
         }
     }
@@ -691,14 +794,15 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
         }
 
         var url = td?.nftUrl ?: nftUrl(td?.genesisInfo?.document_url, groupId)
-        LogIt.info(sourceLoc() + "nft URL: " + url)
+        LogIt.info(sourceLoc() + "${groupId} NFT URL: " + url)
 
         var zipBytes:ByteArray? = null
         if (url != null)
         {
             try
             {
-                zipBytes = Url(url).readBytes()
+                LogIt.info(sourceLoc() + "${groupId} trying NFT URL: " + url)
+                zipBytes = Url(url).readBytes(context = tokenCoCtxt)
             }
             catch(e:Exception)
             {
@@ -712,7 +816,9 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
             try
             {
                 url = "https://niftyart.cash/_public/${groupId.toStringNoPrefix()}"
-                zipBytes = Url(url).readBytes()
+                LogIt.info(sourceLoc() + "${groupId} trying NFT URL: " + url)
+                zipBytes = Url(url).readBytes(context = tokenCoCtxt)
+                LogIt.info(sourceLoc() + "${groupId} received NFT URL: " + url)
             }
             catch(e: Exception)
             {
@@ -755,17 +861,27 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
 
     fun storeAssetInfo(assetInfo: AssetInfo)
     {
+        /* Asset info is too big for sqlite database
         val db = kvpDb!!
         val json = kotlinx.serialization.json.Json { encodeDefaults = true; ignoreUnknownKeys = true }
         db.set(assetInfo.groupId.data, json.encodeToString(AssetInfo.serializer(), assetInfo).toByteArray())
+         */
+        val json = kotlinx.serialization.json.Json { encodeDefaults = true; ignoreUnknownKeys = true }
+        val ais = json.encodeToString(AssetInfo.serializer(), assetInfo).toByteArray()
+        assetManagerStorage().storeAssetFile(assetInfo.groupId.toStringNoPrefix() + ".ai", ais)
     }
 
     fun loadAssetInfo(groupId: GroupId): AssetInfo
     {
+        /* Asset info is too big for sqlite database
         val db = kvpDb!!
-        val json = kotlinx.serialization.json.Json { encodeDefaults = true; ignoreUnknownKeys = true }
         val data = db.get(groupId.data)
+        */
+        val ef = assetManagerStorage().loadAssetFile(groupId.toStringNoPrefix() + ".ai")
+        val json = kotlinx.serialization.json.Json { encodeDefaults = true; ignoreUnknownKeys = true }
+        val data = ef.second.openAt(0).readAndClose()
         val ret = json.decodeFromString<AssetInfo>(AssetInfo.serializer(), data.decodeToString())
+        ef.second.close()
         return ret
     }
 

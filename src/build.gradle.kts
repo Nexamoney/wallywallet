@@ -11,12 +11,12 @@ import java.net.URL
 // Dependency versions
 val mpThreadsVersion = "0.2.6"
 val nexaRpcVersion = "1.1.5"
-val libNexaKotlinVersion = "0.1.69"
+val libNexaKotlinVersion = "0.1.73"
 val serializationVersion = "1.6.3"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.8.0"     // https://github.com/Kotlin/kotlinx.coroutines
 val ktorVersion = "2.3.10"           // https://github.com/ktorio/ktor
 val bigNumVersion = "0.3.9"         // https://github.com/ionspin/kotlin-multiplatform-bignum
-val composeVersion = "1.6.10-dev1599"        // https://github.com/JetBrains/compose-multiplatform/releases
+val composeVersion = "1.6.10-beta01"        // https://github.com/JetBrains/compose-multiplatform/releases
 val androidTestCoreVersion = "1.6.10-beta01" // https://mvnrepository.com/artifact/androidx.test/core
 val androidxActivityComposeVersion = "1.9.0"
 val uriKmpVersion = "0.0.16"  // https://github.com/eygraber/uri-kmp
@@ -31,7 +31,7 @@ plugins {
     kotlin("multiplatform")
     id("com.android.application")
     kotlin("plugin.serialization").version("1.9.22")
-    id("org.jetbrains.compose").version("1.6.10-dev1599")   // https://github.com/JetBrains/compose-multiplatform/releases
+    id("org.jetbrains.compose").version("1.6.10-rc01")   // https://github.com/JetBrains/compose-multiplatform/releases
     id("org.jetbrains.dokka").version("1.9.20").apply(false)
     // id("org.openjfx.javafxplugin") version "0.1.0"
     idea
@@ -103,6 +103,7 @@ val prop = Properties().apply {
     }
 }
 
+
 @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
 kotlin {
     targetHierarchy.default()
@@ -141,8 +142,8 @@ kotlin {
                 sourceSetTree.set(KotlinSourceSetTree.test)
 
                 dependencies {
-                    implementation("androidx.compose.ui:ui-test-junit4-android:1.5.4")
-                    debugImplementation("androidx.compose.ui:ui-test-manifest:1.5.4")
+                    implementation("androidx.compose.ui:ui-test-junit4-android:1.6.7")
+                    debugImplementation("androidx.compose.ui:ui-test-manifest:1.6.7")
                 }
             }
         }
@@ -268,7 +269,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-cio:$ktorVersion")
 
                 // IO
-                implementation("com.squareup.okio:okio:3.7.0")
+                implementation("com.squareup.okio:okio:3.9.0")
                 implementation("org.jetbrains.kotlinx:atomicfu:0.23.2")
 
                 // nexa
@@ -280,7 +281,7 @@ kotlin {
                 implementation("io.github.alexzhirkevich:qrose:1.0.1")  // https://github.com/alexzhirkevich/qrose/releases
 
                 // Animation library binding
-                implementation("org.jetbrains.skiko:skiko:0.8.0")
+                implementation("org.jetbrains.skiko:skiko:0.8.4")
             }
         }
         val commonTest by getting {
@@ -383,24 +384,24 @@ kotlin {
                     implementation(kotlin("stdlib-jdk8"))
                     implementation("androidx.activity:activity-compose:$androidxActivityComposeVersion")
                     implementation("androidx.tracing:tracing:1.2.0")
-                    implementation("androidx.compose.ui:ui:1.6.6")
-                    implementation("androidx.compose.ui:ui-tooling:1.6.6")
-                    implementation("androidx.compose.ui:ui-tooling-preview:1.6.6")
-                    implementation("androidx.compose.foundation:foundation:1.6.6")
-                    implementation("androidx.compose.material:material:1.6.6")
+                    implementation("androidx.compose.ui:ui:1.6.7")
+                    implementation("androidx.compose.ui:ui-tooling:1.6.7")
+                    implementation("androidx.compose.ui:ui-tooling-preview:1.6.7")
+                    implementation("androidx.compose.foundation:foundation:1.6.7")
+                    implementation("androidx.compose.material:material:1.6.7")
                     implementation("androidx.activity:activity-compose:1.9.0")
                     implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.6.3")
                     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.3")
 
                     // android layout dependencies
-                    implementation("com.google.android.flexbox:flexbox:3.0.0")  // https://github.com/google/flexbox-layout/tags
+                    //implementation("com.google.android.flexbox:flexbox:3.0.0")  // https://github.com/google/flexbox-layout/tags
                     implementation("androidx.activity:activity:1.9.0")
-                    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")  // https://developer.android.com/jetpack/androidx/releases/navigation
-                    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
+                    //implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")  // https://developer.android.com/jetpack/androidx/releases/navigation
+                    //implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
                     implementation("androidx.wear:wear:1.3.0")
-                    implementation("com.android.support.constraint:constraint-layout:2.1.4") // https://developer.android.com/jetpack/androidx/releases/constraintlayout
-                    implementation("com.google.android.material:material:1.11.0")
-                    implementation("androidx.preference:preference:1.2.1")  // https://developer.android.com/jetpack/androidx/releases/preference
+                    //implementation("com.android.support.constraint:constraint-layout:2.1.4") // https://developer.android.com/jetpack/androidx/releases/constraintlayout
+                    implementation("com.google.android.material:material:1.12.0")
+                    //implementation("androidx.preference:preference:1.2.1")  // https://developer.android.com/jetpack/androidx/releases/preference
 
                     //implementation("org.jetbrains.skiko:skiko-android:$skikoVersion")
                     //implementation("org.jetbrains.skiko:skiko-android-runtime-x64:$skikoVersion")
@@ -422,9 +423,7 @@ kotlin {
                     // java: implementation("androidx.work:work-runtime:$workVersion")
                     implementation("androidx.work:work-runtime-ktx:$workVersion")
 
-
-
-                    // QR scanning
+                    // QR scanning (and read from gallery)
                     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
                     // Image file conversion
                     implementation("com.caverock:androidsvg-aar:1.4")
@@ -484,7 +483,7 @@ kotlin {
         {
             val mingwMain by getting {
                 dependencies {
-                    implementation("app.cash.sqldelight:native-driver:2.0.1")
+                    implementation("app.cash.sqldelight:native-driver:2.0.2")
                 }
             }
         }
@@ -628,7 +627,6 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.majorVersion
     }
-
      */
 }
 
@@ -738,7 +736,8 @@ for (s in kotlin.targets)
 /* Put all the dependent files into a single big jar */
 tasks.register<Jar>("appJar") {
     //archiveClassifier.set("app")
-    archiveBaseName.set("wpw")
+    //archiveBaseName.set("wpw")
+    archiveFileName.set("wpw.jar")
     manifest {
         attributes["Main-Class"] = "info.bitcoinunlimited.www.wally.WallyJvmApp"
     }

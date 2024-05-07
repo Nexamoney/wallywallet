@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat.getSystemService
+import info.bitcoinunlimited.www.wally.old.convertOldAccounts
 import info.bitcoinunlimited.www.wally.ui.theme.colorError
 import info.bitcoinunlimited.www.wally.ui.theme.colorNotice
 import info.bitcoinunlimited.www.wally.ui.theme.colorWarning
@@ -24,6 +25,11 @@ import java.io.File
 import java.io.InputStream
 import java.util.zip.Inflater
 
+actual fun convertOldAccounts(): Boolean
+{
+    convertOldAccounts(wallyAndroidApp!!)
+    return true
+}
 
 actual fun platformRam():Long?
 {

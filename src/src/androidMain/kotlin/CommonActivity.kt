@@ -105,8 +105,8 @@ open class CommonNavActivity : CommonActivity()
 
     override fun onSoftKeyboard(shown: Boolean)
     {
-        val navView: BottomNavigationView = findViewById(R.id.nav_view)
-        navView.visibility = if (shown) View.GONE else View.VISIBLE
+        //val navView: BottomNavigationView = findViewById(R.id.nav_view)
+        //navView.visibility = if (shown) View.GONE else View.VISIBLE
     }
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -237,9 +237,12 @@ open class CommonActivity : AppCompatActivity()
     override fun onNewIntent(intent: Intent)
     {
         super.onNewIntent(intent)
-        val s = intent.dataString ?: intent.toUri(0)
-        LogIt.info("Handling intent $s")
-        wallyApp?.handlePaste(s)
+        // An intent with no dataString just launches the program; it does not provide any paste info
+        // To handle QR scanning and other input methods, we ALWAYS use data to navigate never the intent itself.
+        // so nothing to do if there is no dataString
+        val s = intent.dataString
+        LogIt.info("Handling intent data: $s  Intent ${intent.toUri(0)}")
+        s?.let { wallyApp?.handlePaste(it) }
     }
 
     override fun onResume()

@@ -18,6 +18,11 @@ import wpw.src.generated.resources.Res
 
 private val LogIt = GetLog("BU.wally.utils_ios")
 
+// the platform release did not exist so no possibility of old accounts
+actual fun convertOldAccounts(): Boolean
+{
+    return false
+}
 actual fun applicationState(): ApplicationState
 {
     val state = UIApplication.sharedApplication.applicationState

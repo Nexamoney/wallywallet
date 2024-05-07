@@ -13,6 +13,7 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.Bip44Wallet
 import org.nexa.libnexakotlin.initializeLibNexa
+import org.nexa.libnexakotlin.handleThreadException
 import platform.CoreGraphics.CGColorRef
 import platform.UIKit.UIColor
 import platform.UIKit.UIViewController
@@ -75,7 +76,15 @@ fun iosBackgroundSync(completion: () -> Unit)
 
 fun iosCancelBackgroundSync()
 {
-    cancelBackgroundSync()
+    try
+    {
+        cancelBackgroundSync()
+    }
+    catch(e: Exception)
+    {
+        println(e.stackTraceToString())
+        handleThreadException(e, "Unexpected exception cancelling background sync")
+    }
 }
 
 fun onQrCodeScannedWithDefaultCameraApp(qr: String)

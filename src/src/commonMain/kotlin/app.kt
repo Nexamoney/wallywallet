@@ -35,6 +35,8 @@ data class LongPollInfo(val proto: String, val hostPort: String, val cookie: Str
 /** incompatible changes, extra fields added, fields and field sizes are the same, but content may be extended (that is, addtl bits in enums) */
 val WALLY_DATA_VERSION = byteArrayOf(1, 0, 0)
 
+/** returns true if some old accounts existed */
+expect fun convertOldAccounts(): Boolean
 
 @Volatile var backgroundStop = false   // If true, tell the background loop to stop processing -- reset to false whenever we enter backgroundSync
 @Volatile var backgroundOnly = true    // Set to false when the GUI is launched so we know that the app is also in the foreground
@@ -361,6 +363,7 @@ open class CommonApp
             // TODO val notify = amIbackground()
             val app = wallyApp
             if (app == null) return false // should never occur
+            // LogIt.info("Handle Paste: $urlStr")
 
             // see if this is an address without the prefix
             val whichChain = if (scheme == null)
@@ -371,7 +374,7 @@ open class CommonApp
                 }
                 catch (e: UnknownBlockchainException)
                 {
-                    displayError(S.unknownCryptoCurrency)
+                    displayError(S.unknownCryptoCurrency, urlStr)
                     return false
                 }
             }
@@ -812,7 +815,7 @@ open class CommonApp
             ac.start()
             ac.onChange()
             // I save a blank if no pin just in case there's old data in the database
-            if (epin != null) ac.saveAccountPin(name, epin) else ac.saveAccountPin(name, byteArrayOf())
+            if (epin != null) ac.saveAccountPin(epin) else ac.saveAccountPin(byteArrayOf())
             ac.wallet.save(true)
 
             accounts[name] = ac
@@ -892,7 +895,7 @@ open class CommonApp
         ac.start()
         ac.constructAssetMap()
         ac.onChange()
-        ac.saveAccountPin(name, epin)
+        ac.saveAccountPin(epin)
         ac.wallet.save(force=true)  // force the save
         ac.wallet.saveBip44Wallet() // because we jammed in a bunch of tx
         accountLock.lock {
@@ -944,7 +947,7 @@ open class CommonApp
             ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
             ac.start()
             ac.onChange()
-            ac.saveAccountPin(name, epin)
+            ac.saveAccountPin(epin)
 
             accounts[name] = ac
             // Write the list of existing accounts, so we know what to load
@@ -957,9 +960,12 @@ open class CommonApp
     fun openAllAccounts()
     {
         val prefs = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
+        var alreadyDone = false
         accountLock.lock {
             if (kvpDb == null) kvpDb = openKvpDB(dbPrefix + "wpw")
+            else alreadyDone = true // do not open multiple times
         }
+        if (alreadyDone) return
 
         if (REG_TEST_ONLY)  // If I want a regtest only wallet for manual debugging, just create it directly
         {
@@ -985,12 +991,15 @@ open class CommonApp
             LogIt.info(sourceLoc() + " Loading account names")
             val accountNames = try
             {
+                // throw Exception("TESTING")  // TODO DBG force old account conversion for testing
                 db.get("activeAccountNames")
-            } catch (e: DataMissingException)
+            }
+            catch (e: Exception)
             {
-                firstRun = true
+                if (!convertOldAccounts()) firstRun = true
                 byteArrayOf()
             }
+
             if (accountNames.size == 0) firstRun = true // Ok maybe not first run but no wallets
 
             val accountNameStr = accountNames.decodeUtf8()

@@ -29,6 +29,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
+import org.nexa.libnexakotlin.Objectify
 import org.nexa.threads.Thread
 import org.nexa.threads.iThread
 import org.nexa.threads.millisleep
@@ -394,6 +395,8 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
                     {
                         displayFastForwardInfo(i18n(S.NoNodes))
                         LogIt.severe(sourceLoc() + "wallet search error: " + e.toString())
+                        LogIt.severe(e.stackTraceToString())
+                        displayUnexpectedException(e)
                     }
                 }
             }
@@ -440,10 +443,12 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
           newAccountState.value = newAccountState.value.copy(hideUntilPinEnter = it)
       },
       onClickCreateAccount =  {
+          aborter.value.obj = true
           CreateSyncAccount()
           CleanState()
                               },
       onClickCreateDiscoveredAccount =  {
+          aborter.value.obj = true
           CreateDiscoveredAccount()
           CleanState()
                                         },
@@ -968,7 +973,8 @@ fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter
     val net = connectBlockchain(chainSelector).net
     var ec: ElectrumClient? = null
 
-    fun getEc():ElectrumClient {
+    fun getEc():ElectrumClient
+    {
         return retry(10) {
             val tmp = ec
             if (tmp != null && tmp.open) ec

@@ -9,14 +9,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
-import info.bitcoinunlimited.www.wally.Objectify
-import info.bitcoinunlimited.www.wally.S.nothing
-import org.jetbrains.skia.Data
 import org.jetbrains.skia.Rect
 import org.jetbrains.skia.skottie.Animation
 import org.jetbrains.skia.sksg.InvalidationController
-import org.nexa.libnexakotlin.decodeUtf8
-import java.io.File
 import kotlin.math.roundToInt
 
 

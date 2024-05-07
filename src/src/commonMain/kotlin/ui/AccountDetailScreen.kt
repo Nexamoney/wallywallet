@@ -211,7 +211,7 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
         WallyBoringMediumTextButton(S.rediscoverWalletTx) {
             accountAction.value = AccountAction.Rediscover
         }
-        WallyBoringMediumTextButton(S.rediscoverBlockchain) {
+        if (devMode) WallyBoringMediumTextButton(S.rediscoverBlockchain) {
             accountAction.value = AccountAction.RediscoverBlockchain
         }
         WallyBoringMediumTextButton(S.deleteWalletAccount) {
@@ -377,13 +377,13 @@ fun AccountDetailChangePinView(acc: Account, displayError: (String) -> Unit, dis
             val epin = EncodePIN(name, newPin)
             acc.encodedPin = epin
             displayNotice(S.PinChanged)
-            later { acc.saveAccountPin(name, epin) }
+            later { acc.saveAccountPin(epin) }
             pinChangedOrCancelled()
         }
         else
         {
             acc.encodedPin = null
-            later { acc.saveAccountPin(name, byteArrayOf()) }
+            later { acc.saveAccountPin(byteArrayOf()) }
             displayNotice(S.PinRemoved)
             pinChangedOrCancelled()
         }

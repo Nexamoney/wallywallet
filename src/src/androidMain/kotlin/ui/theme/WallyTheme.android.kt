@@ -61,6 +61,15 @@ actual fun NativeSplash(start: Boolean): Boolean
     //return true
 }
 
+actual fun NativeTitle(title: String)
+{
+    val ca = currentActivity
+    if (ca != null)
+    {
+        ca.setTitle(title)
+    }
+}
+
 @OptIn(UnstableApi::class)
 class ByteArrayDataSourceFactory(val bads: ByteArrayDataSource):DataSource.Factory
 {
