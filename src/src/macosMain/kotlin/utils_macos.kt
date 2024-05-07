@@ -23,6 +23,11 @@ actual fun applicationState(): ApplicationState
     return ApplicationState(ApplicationState.RunState.ACTIVE)
 }
 
+// the platform release did not exist so no possibility of old accounts
+actual fun convertOldAccounts(): Boolean
+{
+    return false
+}
 actual fun platformRam():Long?
 {
     return null

@@ -26,11 +26,14 @@ import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.nexa.libnexakotlin.*
 import kotlin.math.roundToLong
+import org.nexa.threads.Thread
+import org.nexa.threads.iThread
+import org.nexa.threads.millisleep
 
+const val OFFER_FAST_FORWARD_GAP = 86400*7  // 1 week in seconds
 private val LogIt = GetLog("BU.wally.accountlistview")
-
-
 private val accountListState:MutableStateFlow<LazyListState?> = MutableStateFlow(null)
+
 
 @Composable fun AccountListView(nav: ScreenNav, selectedAccount: MutableStateFlow<Account?>,
   modifier: Modifier = Modifier, onAccountSelected: (Account) -> Unit)
@@ -108,7 +111,9 @@ data class AccountUIData(
   var approximately: String? = null,
   var devinfo: String="",
   var locked: Boolean = false,
-  var lockable: Boolean = false)
+  var lockable: Boolean = false,
+  var fastForwarding: Boolean = false,
+  var ffStatus: String? = null)
 
 /** Look into this account and produce the strings and modifications needed to display it */
 fun Account.uiData():AccountUIData
@@ -121,6 +126,9 @@ fun Account.uiData():AccountUIData
     ret.lockable = lockable
     ret.locked = locked
     ret.chainSelector = wallet.chainSelector
+    ret.currencyCode = currencyCode
+    ret.fastForwarding = (fastforward != null)
+    ret.ffStatus = fastforwardStatus
     val chainstate = wallet.chainstate
     if (chainstate != null)
     {
@@ -166,7 +174,7 @@ fun Account.uiData():AccountUIData
         if (chainstate != null)
         {
             val now = millinow()
-            val cnxnLst = wallet.chainstate?.chain?.net?.mapConnections()
+            val cnxnLst = chainstate.chain?.net?.mapConnections()
             {
                 val recentRecv = (now - it.lastReceiveTime) < 50L
                 val recentSend = (now - it.lastSendTime) < 50L
@@ -176,9 +184,9 @@ fun Account.uiData():AccountUIData
             val trying:List<String> = if (chainstate.chain.net is MultiNodeCnxnMgr) (chainstate.chain.net as MultiNodeCnxnMgr).initializingCnxns().map { it.name } else listOf()
             val peers = cnxnLst?.joinToString(", ") + (if (trying.isNotEmpty()) (" " + i18n(S.trying) + " " + trying.joinToString(", ")) else "")
 
-            ret.devinfo = i18n(S.at) + " " + (wallet.chainstate?.syncedHash?.toHex()?.take(8) ?: "") + ", " + (wallet.chainstate?.syncedHeight
-              ?: "") + " " + i18n(S.of) + " " + (wallet.chainstate?.chain?.curHeight
-              ?: "") + " blocks, " + (wallet.chainstate?.chain?.net?.size ?: "") + " peers\n" + peers
+            ret.devinfo = i18n(S.at) + " " + (chainstate.syncedHash?.toHex()?.take(8) ?: "") + ", " + (chainstate.syncedHeight
+              ?: "") + " " + i18n(S.of) + " " + (chainstate.chain?.curHeight
+              ?: "") + " blocks, " + (chainstate.chain?.net?.size ?: "") + " peers\n" + peers
         }
         else
         {
@@ -205,7 +213,8 @@ fun AccountItemView(
   onClickAccount: () -> Unit,
   onClickGearIcon: () -> Unit
 ) {
-
+    val curSync = uidata.account.wallet.chainstate?.syncedDate ?: 0
+    val offerFastForward = (millinow()/1000 - curSync) > OFFER_FAST_FORWARD_GAP
     val backgroundColor = if (isSelected) defaultListHighlight else if (index and 1 == 0) WallyRowAbkg1 else WallyRowAbkg2
     Box(
       modifier = Modifier
@@ -224,6 +233,7 @@ fun AccountItemView(
               modifier = Modifier.weight(1f).padding(2.dp),
               verticalArrangement = Arrangement.Top,
             ) {
+                // Top row of info
                 Row(
                   verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -248,11 +258,25 @@ fun AccountItemView(
                           })
                     }
                     Spacer(Modifier.width(16.dp))
+                    // Balance and currency code row to align bottoms of fonts of different size
                     Row(
                       verticalAlignment = Alignment.Bottom
                     ) {
                         Text(text = uidata.balance, fontSize = 28.sp, color = colorDebit)
                         Text(text = uidata.currencyCode, fontSize = 14.sp)
+                    }
+                    if (offerFastForward && (uidata.fastForwarding == false))
+                    {
+                        Spacer(Modifier.width(8.dp))
+                        WallyBoringButton({
+                            uidata.fastForwarding = true
+                            startAccountFastForward(uidata.account) {
+                                uidata.account.fastforwardStatus = it
+                                triggerAccountsChanged(uidata.account)
+                            }
+                        }) {
+                            ResImageView("icons/fastforward.png", modifier = Modifier.size(26.dp))
+                        }
                     }
                 }
 
@@ -260,8 +284,16 @@ fun AccountItemView(
                   modifier = Modifier.fillMaxWidth(),
                   horizontalArrangement = Arrangement.Center
                 ) {
-                    uidata.approximately?.let {
-                        Text(text = it, fontSize = 16.sp)
+                    val ffs = uidata.ffStatus
+                    if (uidata.fastForwarding && (ffs != null))
+                    {
+                        Text(text = i18n(S.fastforwardStatus) % mapOf("info" to ffs), fontSize = 16.sp)
+                    }
+                    else
+                    {
+                        uidata.approximately?.let {
+                            Text(text = it, fontSize = 16.sp)
+                        }
                     }
                 }
                 if (uidata.unconfBal.isNotEmpty())
@@ -298,5 +330,126 @@ private fun getAccountIconResPath(chainSelector: ChainSelector): String
         ChainSelector.BCH -> "icons/bitcoin_cash_token.xml"
         ChainSelector.BCHTESTNET -> "icons/bitcoin_cash_token.xml"
         ChainSelector.BCHREGTEST -> "icons/bitcoin_cash_token.xml"
+    }
+}
+
+
+data class DerivationPathSearchProgress(var aborter: Objectify<Boolean>,var progress: String?, var progressInt: Int, var results:AccountSearchResults? = null)
+
+
+fun derivationPathSearch(progress: DerivationPathSearchProgress, wallet: Bip44Wallet, coin: Long, account: Long, change: Boolean, idxMaxGap: Int, start: Long = 0, event: (()->Unit)? = null): iThread
+{
+    val cnxn = wallet.blockchain.net
+    val secret = wallet.secret
+
+    return Thread("ff_${wallet.name}")
+    {
+        var ec: ElectrumClient? = null
+        fun getEc():ElectrumClient {
+            return retry(10) {
+                val tmp = ec
+                if (tmp != null && tmp.open) ec
+                else
+                {
+                    progress.progress = i18n(S.trying)
+                    ec = cnxn.getElectrum()
+                    if (ec == null)
+                    {
+                        progress.progress = i18n(S.NoNodes)
+                        event?.invoke()
+                        millisleep(200U)
+                    }
+                    ec
+                }
+            }
+        }
+        progress.results = try
+        {
+            searchDerivationPathActivity(::getEc, wallet.chainSelector, idxMaxGap, {
+                if (progress.aborter.obj) throw EarlyExitException()
+                val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, coin, account, change, it).first
+                val us = UnsecuredSecret(key)
+                val dest = Pay2PubKeyTemplateDestination(wallet.chainSelector, us, it.toLong())
+                progress.progress = ""
+                progress.progressInt = it
+                event?.invoke()
+                key
+            },
+              {
+                  //summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
+                  //  "bal" to NexaFormat.format(fromFinestUnit(it.balance, chainSelector = chainSelector)), "units" to (chainToDisplayCurrencyCode[chainSelector] ?:""))
+                  // displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + addrText + summaryText)
+                  event?.invoke()
+              }
+            )
+        }
+        catch (e: EarlyExitException)
+        {
+            null
+        }
+        catch (e: Exception)
+        {
+            displayUnexpectedException(e)
+            null
+        }
+    }
+}
+
+fun startAccountFastForward(account: Account, displayFastForwardInfo: (String?) -> Unit)
+{
+    if (account.fastforward != null)
+    {
+        displayNotice(i18n(S.inProgress))
+        return
+    }
+    val wallet = account.wallet
+    // val passphrase = "" // TODO: support a passphrase
+    val addressDerivationCoin = Bip44AddressDerivationByChain(wallet.chainSelector)
+
+    var aborter = Objectify<Boolean>(false)
+    account.fastforward = aborter
+
+    Thread("fastforward_${wallet.name}")
+    {
+        var normal: DerivationPathSearchProgress = DerivationPathSearchProgress(aborter, null, 0, null)
+        // var change: DerivationPathSearchProgress = DerivationPathSearchProgress(aborter, null, 0, null)
+
+        // This code basically assumes that the contacted Rostrum nodes are synced with each other (which basically means on the tip)
+        // otherwise you could get into a situation where some Rostrum connection says no activity on address X, but its really
+        // reporting that for blocks 0-N whereas another request reports for blocks 0-N+10.  And so N+10 is used as the synced height.
+        val t1 = derivationPathSearch(normal, wallet, addressDerivationCoin, 0, false, WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP) {
+            // displayFastForwardInfo((normal.progressInt + change.progressInt).toString() + " " + (normal.progress ?: "") + " " + (change.progress ?: ""))
+            displayFastForwardInfo(normal.progressInt.toString() + " " + (normal.progress ?: ""))
+        }
+        /* skip searching the change for speed
+        val t2 = derivationPathSearch(change, wallet, addressDerivationCoin, 0, true, WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP) {
+            displayFastForwardInfo((normal.progressInt + change.progressInt).toString() + " " + (normal.progress ?: "") + " " + (change.progress ?: ""))
+        }
+         */
+        t1.join()
+        // t2.join()
+
+        normal.results?.let {
+            var lastHeight = it.lastHeight
+            var lastDate = it.lastDate
+            var lastHash = it.lastHash
+            val ch: AccountSearchResults? = null // change.results
+            var txh = it.txh
+            if (ch!=null)
+            {
+                if (ch.lastHeight > it.lastHeight)
+                {
+                    lastHeight = ch.lastHeight
+                    lastDate = ch.lastDate
+                    lastHash = ch.lastHash
+                }
+                txh = it.txh + ch.txh
+            }
+            wallet.fastforward(lastHeight, lastDate, lastHash, txh)
+        }
+
+        displayFastForwardInfo(null)
+        account.fastforward = null
+        triggerAccountsChanged(account)
     }
 }

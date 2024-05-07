@@ -8,7 +8,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import com.google.zxing.integration.android.IntentIntegrator
 import kotlinx.coroutines.delay
 import android.content.pm.PackageManager
 import android.graphics.drawable.ColorDrawable
@@ -18,22 +17,11 @@ import android.view.MenuInflater
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.work.*
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.zxing.integration.android.IntentResult
 import info.bitcoinunlimited.www.wally.ui.*
-import org.nexa.libnexakotlin.logThreadException
+import info.bitcoinunlimited.www.wally.ui.theme.NativeTitle
 import org.nexa.libnexakotlin.rem
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.toJavaDuration
-
-fun SetTitle(title: String)
-{
-    val ca = currentActivity
-    if (ca != null)
-    {
-        ca.setTitle(title)
-    }
-}
 
 actual fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
 {
@@ -305,7 +293,7 @@ class ComposeActivity: CommonActivity()
         setContent {
             val currentRootScreen = remember { mutableStateOf(ScreenId.Splash) }
             nav.reset(currentRootScreen)
-            SetTitle(nav.title())
+            NativeTitle(nav.title())
             NavigationRoot(nav)
         }
 

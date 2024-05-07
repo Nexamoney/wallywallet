@@ -11,6 +11,9 @@ expect fun WallyTheme(
   content: @Composable () -> Unit
 )
 
+/** Sets the title (at the native/platform level) if needed */
+expect fun NativeTitle(title: String)
+
 /** Sets/removes the native splashscreen, returning True if the platform HAS a native splashscreen */
 expect fun NativeSplash(start: Boolean): Boolean
 

@@ -256,7 +256,7 @@ fun List<String>.first(): String = this[0]
 var notInUIscope: CoroutineScope? = null
 
 /** Do whatever you pass but not within the user interface context, asynchronously */
-fun later(fn: suspend () -> Unit): Unit
+fun later(scope: CoroutineScope? = null, fn: suspend () -> Unit): Unit
 {
     (notInUIscope ?: GlobalScope).launch {
         try

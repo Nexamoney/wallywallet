@@ -73,7 +73,7 @@ fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, allo
             }
 
             Column(Modifier.weight(1f).align(Alignment.CenterVertically)) {
-                var name = (if ((nft != null) && (nft.title.length > 0)) nft.title else asset.name) ?: ""
+                var name = (if ((nft != null) && (nft.title.length > 0)) nft.title else asset.name) ?: i18n(S.loading)
                 if (verbosity > 0)
                 {
                     Text(text = name, modifier = Modifier.padding(0.dp).fillMaxWidth(), style = WallySectionTextStyle(), textAlign = TextAlign.Center)

@@ -19,12 +19,15 @@ import java.awt.Toolkit
 import java.awt.datatransfer.*
 import java.io.File
 import java.io.InputStream
-import java.net.URLDecoder
-import java.net.URLEncoder
 import java.util.zip.Inflater
+import org.nexa.libnexakotlin.Objectify
 
 
-
+// the platform release did not exist so no possibility of old accounts
+actual fun convertOldAccounts(): Boolean
+{
+    return false
+}
 actual fun applicationState(): ApplicationState
 {
     return ApplicationState(ApplicationState.RunState.ACTIVE)

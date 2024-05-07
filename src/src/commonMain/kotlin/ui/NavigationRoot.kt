@@ -163,6 +163,7 @@ class ScreenNav()
         currentScreen.value = screen
         currentSubState.value = screenSubState
         currentScreenDepart = null
+        NativeTitle(title())
     }
 
     fun title() = currentScreen.value.title()
@@ -199,6 +200,7 @@ class ScreenNav()
         {
             currentScreen.value = priorId
         }  // actually trigger going back
+        NativeTitle(title())
         return priorId
     }
 }
@@ -354,11 +356,19 @@ val externalDriver = Channel<GuiDriver>()
         Text(i18n(S.WriteDownRecoveryPhraseWarning), Modifier.fillMaxWidth().wrapContentHeight(), colorPrimaryDark, maxLines = 10, textAlign = TextAlign.Center,
           fontSize = FontScale(1.25))
 
-        WallyRoundedButton({
-            externalDriver.trySend(GuiDriver(ScreenId.AccountDetails, noshow = setOf(ShowIt.WARN_BACKUP_RECOVERY_KEY), account = account))
-        }) {
-            Text(i18n(S.GoThere))
+        WallyButtonRow {
+            WallyRoundedButton({
+                externalDriver.trySend(GuiDriver(ScreenId.AccountDetails, noshow = setOf(ShowIt.WARN_BACKUP_RECOVERY_KEY), account = account))
+            }) {
+                Text(i18n(S.GoThere))
+            }
+            WallyRoundedButton({
+                externalDriver.trySend(GuiDriver(noshow = setOf(ShowIt.WARN_BACKUP_RECOVERY_KEY)))
+            }) {
+                Text(i18n(S.dismiss))
+            }
         }
+
     }
 }
 

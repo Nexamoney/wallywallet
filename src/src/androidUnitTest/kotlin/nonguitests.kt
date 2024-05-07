@@ -284,9 +284,9 @@ class NonGuiTests
         val account = wallyApp!!.newAccount("testwalletrecovery", 0U, "", cs)!!
         account.start()
         rpc.generate(1)
-        waitFor(TIMEOUT, {  account!!.wallet.synced() }, {
+        waitFor(TIMEOUT, {  account.wallet.synced() }, {
             LogIt.info("sync bad")
-            "sync unsuccessful, at: ${account!!.wallet.chainstate!!.syncedHeight}"
+            "sync unsuccessful, at: ${account.wallet.chainstate!!.syncedHeight}"
         } )
 
         val NUM_REPEATS = 5
@@ -302,7 +302,7 @@ class NonGuiTests
         rpc.sendtoaddress(account.wallet.getnewaddress().toString(), CurrencyDecimal(1000))
         rpc.generate(1)
 
-        waitFor(TIMEOUT, { account!!.wallet.synced() }, { "sync unsuccessful" })
+        waitFor(TIMEOUT, { account.wallet.synced() }, { "sync unsuccessful" })
 
         waitFor(TIMEOUT, { account.wallet.balance > 5*2000000L}, { "wallet load failed"})
         var balance = account.wallet.balance
@@ -312,7 +312,7 @@ class NonGuiTests
         val a1 = wallyApp!!.recoverAccount("a1", 0U, "", account.wallet.secretWords, cs, null, blkStart, null)
         waitFor(TIMEOUT, { a1!!.wallet.synced() }, { "a1 sync unsuccessful" })
         LogIt.info("a1 balance: ${a1!!.wallet.balance}  orig bal: $balance")
-        check(a1!!.wallet.balance == balance)
+        check(a1.wallet.balance == balance)
 
         val filledHeight = rpc.getblockcount()
         val ec = openEc()
@@ -333,17 +333,17 @@ class NonGuiTests
         val a2 = wallyApp!!.recoverAccount("a2", 0U, "", account.wallet.secretWords, cs, srchResults.txh, ectip, srchResults.addrCount.toInt())
         waitFor(TIMEOUT, { a2!!.wallet.synced() }, { "a2 sync unsuccessful" })
         LogIt.info("a2 balance: ${a2!!.wallet.balance}  orig bal: $balance")
-        check(a2!!.wallet.balance == balance)
+        check(a2.wallet.balance == balance)
 
         // Now spend ALL the utxos using the electrum client recovery mechanism
         val returnAddr = rpc.getnewaddress()
-        val tx = a2.wallet.send(a2!!.wallet.balance,returnAddr, true)
+        val tx = a2.wallet.send(a2.wallet.balance,returnAddr, true)
         waitFor(TIMEOUT, { rpc.gettxpoolinfo().size > 0 }, { "send all did not work: $tx"})
-        check(a2!!.wallet.balance == 0L)
+        check(a2.wallet.balance == 0L)
         rpc.generate(1)
 
-        waitFor(TIMEOUT, { account!!.wallet.balance == 0L}, { "send all did not work: $tx"})
-        check(a1!!.wallet.balance == 0L)
+        waitFor(TIMEOUT, { account.wallet.balance == 0L}, { "send all did not work: $tx"})
+        check(a1.wallet.balance == 0L)
 
         LogIt.info("recovery test completed")
     }

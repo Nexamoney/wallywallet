@@ -28,11 +28,14 @@ data class AccountSearchResults(
   val txh: List<TransactionHistory>,
   val addrCount: Long,
   val lastAddressIndex: Int,
-  val balance: Long
+  val balance: Long,
+  val lastHeight: Long,
+  val lastDate: Long,
+  val lastHash: Hash256
 )
 
 fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: ChainSelector, maxGap:Int, secretDerivation: (Int) -> ByteArray?, ongoingResults: ((AccountSearchResults)->Unit)?=null): AccountSearchResults
-    {
+{
         var addrsFound = 0L
         var index = 0
         var gap = 0
@@ -41,6 +44,15 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
         var bal = 0L
         var lastAddressIndex = index
         var gapMultiplier = 1  // Works around an error in early wallets where they did not use addresses in order
+        var lastHeight = 0L
+        var lastDate = 0L
+        var lastHash = Hash256()
+
+        val tip = getEc().getTip()
+        lastHeight = tip.first.height
+        lastDate = tip.first.time
+        lastHash = tip.first.hash
+
         while (gap < maxGap * gapMultiplier)
         {
             val newSecret = secretDerivation(index)
@@ -91,9 +103,9 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
                                     if (hdr == null)
                                     {
                                         val headerBytes = getEc().getHeader(h.first)
-                                        blockHeaderFor(chainSelector, BCHserialized(SerializationType.NETWORK, headerBytes))
+                                        hdr = blockHeaderFor(chainSelector, BCHserialized(SerializationType.NETWORK, headerBytes))
                                     }
-                                    hdr!!
+                                    hdr
                                 }
                                 if (header.validate(chainSelector))
                                 {
@@ -120,7 +132,7 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
                             found = true
                             bal += u.amount
                         }
-                        ongoingResults?.invoke(AccountSearchResults(ret.values.toList(), addrsFound, lastAddressIndex, bal))
+                        ongoingResults?.invoke(AccountSearchResults(ret.values.toList(), addrsFound, lastAddressIndex, bal, lastHeight, lastDate, lastHash))
                     }
                     else
                     {
@@ -130,11 +142,15 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
                 catch (e: ElectrumNotFound)
                 {
                 }
+                catch (e: ElectrumRequestTimeout)
+                {
+
+                }
             }
             if (found) gap = 0
             else gap++
             index++
         }
         hdrs.clear()
-        return AccountSearchResults(ret.values.toList(), addrsFound, lastAddressIndex, bal)
+        return AccountSearchResults(ret.values.toList(), addrsFound, lastAddressIndex, bal, lastHeight, lastDate, lastHash)
     }

@@ -1,12 +1,6 @@
 package info.bitcoinunlimited.www.wally
 
 import android.graphics.Bitmap
-import android.graphics.Paint
-import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
-import info.bitcoinunlimited.www.wally.databinding.AccountListItemBinding
-import java.time.Instant
 
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
@@ -19,7 +13,6 @@ import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.AccountAndroid")
 
-private val uiBindingMap = mutableMapOf<Account, AccountListItemBinding?>()
 private val currentReceiveQRMap = mutableMapOf<Account, Bitmap?>()
 private val updateReceiveAddressUIMap = mutableMapOf<Account, ((Account) -> Unit)?>()
 
@@ -32,13 +25,6 @@ actual fun EncodePIN(actName: String, pin: String, size: Int): ByteArray
     val seed = skf.generateSecret(secretkey)
     return seed.encoded.slice(IntRange(0, size - 1)).toByteArray()
 }
-
-
-var Account.uiBinding: AccountListItemBinding?
-    get() = uiBindingMap[this]
-    set(value) {
-        uiBindingMap[this] = value
-    }
 
 var Account.currentReceiveQR: Bitmap?
     get() = currentReceiveQRMap[this]
