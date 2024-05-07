@@ -66,7 +66,11 @@ struct iOSApp: App {
         */
         registerBackgroundTask()
         scheduleBGProcessingTask()
-        MainViewControllerKt.OnAppStartup()
+        do {
+            try MainViewControllerKt.OnAppStartup()
+        } catch {
+            print("iosBackgroundSync error occurred in iOSApp.init(): \(error)")
+        }
     }
 
 	var body: some Scene {
@@ -74,7 +78,11 @@ struct iOSApp: App {
 			let composeView = ComposeContentView()
                 .onOpenURL(perform: { url in
                     print("App was opened via URL: \(url)")
-                    MainViewControllerKt.onQrCodeScannedWithDefaultCameraApp(qr: url.absoluteString)
+                    do {
+                        try MainViewControllerKt.onQrCodeScannedWithDefaultCameraApp(qr: url.absoluteString)
+                    } catch {
+                        print("iosBackgroundSync error occurred in onOpenURL(): \(error)")
+                    }
                 })
             composeView.ignoresSafeArea(.keyboard, edges: .all)
 		}
@@ -148,15 +156,19 @@ struct iOSApp: App {
                     self.finish()
                 })
             } catch {
-                print("iosBackgroundSync error occurred: \(error)")
-                // Handle the error, perhaps by finishing with an error state
+                print("iosBackgroundSync error occurred in start(): \(error)")
                 self.finish()
             }
         }
 
         override func cancel() {
             super.cancel()
-            MainViewControllerKt.iosCancelBackgroundSync()
+            do {
+                try MainViewControllerKt.iosCancelBackgroundSync()
+            } catch {
+                print("iosBackgroundSync error occurred in cancel(): \(error)")
+            }
+            
             // Directly marking as finished in case cancel is called before the operation starts executing or finishes
             if _isExecuting {
                 finish()

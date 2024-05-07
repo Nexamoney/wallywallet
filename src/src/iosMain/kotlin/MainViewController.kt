@@ -21,6 +21,7 @@ import platform.UIKit.UIViewController
 private val LogIt = GetLog("BU.wally.iosMain.MainViewController")
 val accounts = mutableMapOf<String, Bip44Wallet>()
 
+@Throws(Throwable::class, Exception::class, NullPointerException::class, RuntimeException::class)
 fun OnAppStartup()
 {
     initializeLibNexa()
@@ -59,10 +60,6 @@ fun MainViewController(): UIViewController
     return view
 }
 
-/**
-    All Kotlin exceptions are unchecked, meaning that errors are caught at runtime. However, Swift has only checked errors that are handled at compile time. So, if Swift or Objective-C code calls a Kotlin method that throws an exception, the Kotlin method should be marked with the @Throws annotation, specifying a list of "expected" exception classes.
-    Read more at: https://kotlinlang.org/docs/native-objc-interop.html#errors-and-exceptions
-*/
 @Throws(Throwable::class, Exception::class, NullPointerException::class, RuntimeException::class)
 fun iosBackgroundSync(completion: () -> Unit)
 {
@@ -74,6 +71,7 @@ fun iosBackgroundSync(completion: () -> Unit)
         completion()
 }
 
+@Throws(Throwable::class, Exception::class, NullPointerException::class, RuntimeException::class)
 fun iosCancelBackgroundSync()
 {
     try
@@ -87,6 +85,7 @@ fun iosCancelBackgroundSync()
     }
 }
 
+@Throws(Throwable::class, Exception::class, NullPointerException::class, RuntimeException::class)
 fun onQrCodeScannedWithDefaultCameraApp(qr: String)
 {
     LogIt.info("onQrCodeScannedWithDefaultCameraApp: $qr")
