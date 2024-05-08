@@ -3,6 +3,7 @@ package info.bitcoinunlimited.www.wally.ui.views
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 
@@ -17,7 +18,7 @@ import androidx.compose.ui.window.Dialog
     Dialog(
       onDismissRequest = onDismiss,
       content = {
-          QrScannerView(Modifier.height(300.dp), onScan)
+          QrScannerView(Modifier.height(300.dp).testTag("QrScannerView"), onScan)
       },
     )
 }

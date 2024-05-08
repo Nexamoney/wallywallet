@@ -460,6 +460,12 @@ kotlin {
                 dependencies {
                 }
             }
+
+            val iosTest by getting {
+                dependencies {
+
+                }
+            }
         }
 
 
