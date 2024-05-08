@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.ui.views.*
 import kotlinx.coroutines.delay
@@ -734,7 +735,7 @@ private val _sendFromAccount = MutableStateFlow<String>("")
                 AccountListView(
                   nav,
                   selectedAccount,
-                  modifier = Modifier.weight(1f),
+                  modifier = Modifier.weight(1f).testTag("AccountListView"),
                   onAccountSelected = {
                       if (selectedAccount.value == it)
                       {
