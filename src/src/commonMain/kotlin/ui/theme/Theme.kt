@@ -38,10 +38,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.*
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.*
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
@@ -53,6 +50,8 @@ import org.nexa.libnexakotlin.CurrencyDecimal
 import org.nexa.libnexakotlin.GetLog
 
 private val LogIt = GetLog("wally.theme")
+
+val defaultFontSize = 16.sp // Fallback size
 
 // https://stackoverflow.com/questions/65893939/how-to-convert-textunit-to-dp-in-jetpack-compose
 val Int.dpTextUnit: TextUnit
@@ -447,13 +446,27 @@ fun WarningText(errorText: String, modifier: Modifier)
 
 @Composable fun FontScale(amt: Double): TextUnit
 {
-    return LocalTextStyle.current.fontSize.times(amt)
+    val currentStyle = LocalTextStyle.current
+    val fontSize = if (currentStyle.fontSize.isUnspecified) {
+        defaultFontSize
+    } else {
+        currentStyle.fontSize
+    }
+
+    return fontSize.times(amt)
 }
 
 @Composable fun FontScaleStyle(amt: Double): TextStyle
 {
+    val currentStyle = LocalTextStyle.current
+    val fontSize = if (currentStyle.fontSize.isUnspecified) {
+        defaultFontSize
+    } else {
+        currentStyle.fontSize
+    }
+
     return LocalTextStyle.current.copy(
-      fontSize = LocalTextStyle.current.fontSize.times(amt)
+      fontSize = fontSize.times(amt)
     )
 }
 
@@ -485,12 +498,23 @@ fun TitleText(text: String, modifier: Modifier = Modifier)
 }
 
 @Composable
-fun WallySectionTextStyle(): TextStyle = LocalTextStyle.current.copy(
-        color = Color.Black,
-        textAlign = TextAlign.Center,
-        fontWeight = FontWeight.Bold,
-        fontSize = LocalTextStyle.current.fontSize.times(1.25)
-      )
+fun WallySectionTextStyle(): TextStyle {
+    val currentStyle = LocalTextStyle.current
+    val defaultFontSize = 16.sp // Fallback size
+
+    val fontSize = if (currentStyle.fontSize.isUnspecified) {
+        defaultFontSize * 1.25
+    } else {
+        currentStyle.fontSize
+    }
+
+    return currentStyle.copy(
+      color = Color.Black,
+      textAlign = TextAlign.Center,
+      fontWeight = FontWeight.Bold,
+      fontSize = fontSize
+    )
+}
 
 /* Styling for the text of titles that appear within a page */
 @Composable
