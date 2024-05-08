@@ -30,6 +30,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -472,8 +473,15 @@ fun WarningText(errorText: String, modifier: Modifier)
 
 @Composable fun WallyDropdownItemFontStyle(): TextStyle
 {
+    val currentStyle = LocalTextStyle.current
+    val fontSize = if (currentStyle.fontSize.isUnspecified) {
+        defaultFontSize
+    } else {
+        currentStyle.fontSize
+    }
+
     return LocalTextStyle.current.copy(
-      fontSize = LocalTextStyle.current.fontSize.times(1.5)
+      fontSize = fontSize.times(1.5)
     )
 }
 
@@ -484,6 +492,13 @@ fun TitleText(textRes: Int, modifier: Modifier = Modifier) = TitleText(i18n(text
 @Composable
 fun TitleText(text: String, modifier: Modifier = Modifier)
 {
+    val currentStyle = LocalTextStyle.current
+    val fontSize = if (currentStyle.fontSize.isUnspecified) {
+        defaultFontSize
+    } else {
+        currentStyle.fontSize
+    }
+
     Text(
       text = text,
       modifier = modifier,
@@ -492,7 +507,7 @@ fun TitleText(text: String, modifier: Modifier = Modifier)
         color = colorTitleForeground,
         textAlign = TextAlign.Center,  // To make this actually work, you need to pass a modifier where the space given to the title is greedy using .weight()
         fontWeight = FontWeight.Bold,
-        fontSize = LocalTextStyle.current.fontSize.times(1.5)
+        fontSize = fontSize.times(1.5)
       )
     )
 }
@@ -500,7 +515,6 @@ fun TitleText(text: String, modifier: Modifier = Modifier)
 @Composable
 fun WallySectionTextStyle(): TextStyle {
     val currentStyle = LocalTextStyle.current
-    val defaultFontSize = 16.sp // Fallback size
 
     val fontSize = if (currentStyle.fontSize.isUnspecified) {
         defaultFontSize * 1.25
@@ -798,7 +812,15 @@ fun WallyDataEntry(value: String, modifier: Modifier = Modifier, textStyle: Text
 @Composable
 fun WallyDataEntry(value: MutableState<TextFieldValue>, modifier: Modifier = Modifier, textStyle: TextStyle? = null, keyboardOptions: KeyboardOptions?=null, bkgCol: Color? = null, onValueChange: ((TextFieldValue) -> Unit)? = null)
 {
-    val ts2 = LocalTextStyle.current.copy(fontSize = LocalTextStyle.current.fontSize.times(1.25))
+    val currentStyle = LocalTextStyle.current
+
+    val fontSize = if (currentStyle.fontSize.isUnspecified) {
+        defaultFontSize * 1.25
+    } else {
+        currentStyle.fontSize
+    }
+
+    val ts2 = LocalTextStyle.current.copy(fontSize = fontSize.times(1.25))
     val ts = ts2.merge(textStyle)
     val scope = rememberCoroutineScope()
     val bkgColor = remember { Animatable(BaseBkg) }
@@ -846,7 +868,7 @@ fun WallyDataEntry(value: MutableState<TextFieldValue>, modifier: Modifier = Mod
       onValueChange ?: { },
       textStyle = ts,
       interactionSource = ia,
-      modifier = modifier,
+      modifier = modifier.testTag("WallyDataEntryTextField"),
       keyboardOptions = keyboardOptions ?: KeyboardOptions.Default,
       decorationBox = { tf ->
           Box(Modifier.hoverable(ia, true)
