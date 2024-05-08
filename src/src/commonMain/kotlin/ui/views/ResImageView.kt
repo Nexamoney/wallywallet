@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.ui.theme.MpIcon
@@ -21,7 +22,7 @@ fun ResImageView(resPath: String, modifier: Modifier, description: String? = nul
     {
         val dr = DrawableResource(id = resPath, items = setOf(ResourceItem(offset = 0L, qualifiers = setOf(), path = resPath, size = 45L )))
         val tmp = painterResource(dr)
-        Image(painter = tmp, contentDescription = description, modifier = modifier)
+        Image(painter = tmp, contentDescription = description, modifier = modifier.testTag("res_image"))
     }
     else
     {
