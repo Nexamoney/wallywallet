@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -107,7 +108,7 @@ fun <T> WallyDropdownMenu(
         else // succinct
         {
             Row {
-                Text(items.getOrNull(selectedIndex)?.toString() ?: label)
+                Text(items.getOrNull(selectedIndex)?.toString() ?: label, modifier = Modifier.testTag("WallyDropdownMenuItemSelected"))
                 val icon = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Filled.ArrowDropDown
                 Icon(icon, "")
             }
