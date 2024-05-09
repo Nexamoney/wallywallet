@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
@@ -217,7 +218,7 @@ fun AccountItemView(
     val offerFastForward = (millinow()/1000 - curSync) > OFFER_FAST_FORWARD_GAP
     val backgroundColor = if (isSelected) defaultListHighlight else if (index and 1 == 0) WallyRowAbkg1 else WallyRowAbkg2
     Box(
-      modifier = Modifier
+      modifier = Modifier.testTag("AccountItemView")
         .fillMaxWidth()
         .padding(2.dp)
         .background(backgroundColor)
@@ -313,7 +314,7 @@ fun AccountItemView(
             // Show the account settings gear at the end
             if (isSelected)
             {
-                ResImageView("icons/gear.xml", Modifier.align(Alignment.CenterVertically).padding(0.dp, 0.dp).size(32.dp).clickable(onClick = onClickGearIcon))
+                ResImageView("icons/gear.xml", Modifier.align(Alignment.CenterVertically).padding(0.dp, 0.dp).size(32.dp).clickable(onClick = onClickGearIcon).testTag("accountSettingsGearIcon"))
             }
             else Spacer(Modifier.align(Alignment.CenterVertically).padding(0.dp, 0.dp).size(32.dp))  // by putting a blank here, the other columns don't change
         }
