@@ -40,7 +40,7 @@ fun ShoppingDestination.compose()
                 null
             }
             imageBytes?.let {
-                MpMediaView(it.readByteArray(), name) { mi, draw ->
+                MpMediaView(null, it.readByteArray(), name) { mi, draw ->
                     draw(Modifier.size(64.dp).background(Color.Transparent))
                 }
             }

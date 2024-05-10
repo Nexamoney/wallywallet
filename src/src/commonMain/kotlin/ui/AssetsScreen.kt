@@ -5,6 +5,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 
@@ -24,6 +26,7 @@ import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import io.ktor.http.*
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
 
 
@@ -39,8 +42,9 @@ fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, allo
     Column(modifier = modifier) {
         if ((devMode)&&(verbosity>0)) CenteredFittedText(asset.groupId.toStringNoPrefix())
         Row {
-            LogIt.info("Asset ${asset.name} icon bytes: ${asset.iconBytes?.size ?: -1} icon url: ${asset.iconUri}")
-            MpMediaView(asset.iconBytes, asset.iconUri?.toString()) { mi, draw ->
+            val hasImage = if (asset.iconImage != null) "yes" else "null"
+            LogIt.info("Asset ${asset.name} icon Image ${hasImage} icon bytes: ${asset.iconBytes?.size} icon url: ${asset.iconUri}")
+            MpMediaView(asset.iconImage, asset.iconBytes, asset.iconUri?.toString()) { mi, draw ->
                 val m = (if (verbosity > 0) Modifier.background(Color.Transparent).size(64.dp, 64.dp)
                 else  Modifier.background(Color.Transparent).size(26.dp, 26.dp)).align(Alignment.CenterVertically)
                 draw(m)
@@ -139,7 +143,8 @@ fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
 
                 val surfShape = RoundedCornerShape(20.dp)
 
-                MpMediaView(mediaBytes, url.toString()) { mi, draw ->
+                // Do not show the cached icon since its small
+                MpMediaView(null, mediaBytes, url.toString()) { mi, draw ->
 
                     // Fill the media available space's x or y with the media, but draw a nice box around that space.
                     // Its is amazing that this is so hard.
@@ -170,13 +175,14 @@ fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
             S.NftPublicMedia ->
             {
                 val mediaBytes = a.publicMediaBytes
+                LogIt.info("public media bytes: ${a.publicMediaBytes?.size} cache: ${a.publicMediaCache} uri: ${a.publicMediaUri} ")
                 val url = a.publicMediaCache ?: a.publicMediaUri?.toString()
 
                 //if (mediaBytes == null && (url?.protocol == URLProtocol.HTTP || url?.protocol == URLProtocol.HTTPS)) throw UnimplementedException("load from URL")
 
                 val surfShape = RoundedCornerShape(20.dp)
 
-                MpMediaView(mediaBytes, url.toString()) { mi, draw ->
+                MpMediaView(null, mediaBytes, url.toString()) { mi, draw ->
 
                     // Fill the media available space's x or y with the media, but draw a nice box around that space.
                     // Its is amazing that this is so hard.
@@ -214,7 +220,7 @@ fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
 
                 val surfShape = RoundedCornerShape(20.dp)
 
-                MpMediaView(mediaBytes, url.toString()) { mi, draw ->
+                MpMediaView(null, mediaBytes, url.toString()) { mi, draw ->
                     val ar = mi.width.toFloat()/mi.height.toFloat()
                     BoxWithConstraints(Modifier.fillMaxSize()) {
                         val spaceAr = minWidth/minHeight
@@ -240,7 +246,7 @@ fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
 
                 val surfShape = RoundedCornerShape(20.dp)
 
-                MpMediaView(mediaBytes, url.toString()) { mi, draw ->
+                MpMediaView(null, mediaBytes, url.toString()) { mi, draw ->
                     val ar = mi.width.toFloat()/mi.height.toFloat()
                     BoxWithConstraints(Modifier.fillMaxSize()) {
                         val spaceAr = minWidth/minHeight
@@ -274,6 +280,7 @@ fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
     }
 }
 
+private val assetListState: MutableMap<String, MutableStateFlow<LazyListState?> > = mutableMapOf() //MutableStateFlow(null)
 
 @Composable
 fun AssetScreen(account: Account, nav: ScreenNav)
@@ -282,11 +289,18 @@ fun AssetScreen(account: Account, nav: ScreenNav)
     var assetFocusIndex by remember { mutableStateOf<Int>(0) }
     var assetList = remember { mutableStateListOf<Pair<AssetLoadState,AssetPerAccount>>() }
 
+    var asl = assetListState.get(account.name)
+    if (asl == null)
+    {
+            assetListState[account.name] = MutableStateFlow(rememberLazyListState())
+    }
+
+
     // Every half second check whether assetList needs to be regenerated
     LaunchedEffect(Unit) {
         while(true)
         {
-            val lst = account.assets.values.toMutableList()
+            val lst = account.assetList()
             lst.sortBy { it.assetInfo.nft?.title ?: it.assetInfo.name ?: it.assetInfo.ticker ?: it.groupInfo.groupId.toString() }
 
             var redo=false
@@ -340,8 +354,10 @@ fun AssetScreen(account: Account, nav: ScreenNav)
             }
             else
             {
+                val scope = rememberCoroutineScope()
+                val tmp = assetListState[account.name]?.collectAsState(scope.coroutineContext)?.value ?: rememberLazyListState()
                 //LogIt.info("recomposing asset column")
-                LazyColumn(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(0.2f)) {
+                LazyColumn(state=tmp, horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(0.2f)) {
                     var index = 0
                     assetList.forEach {
                         val key = it.second.groupInfo.groupId
@@ -349,12 +365,13 @@ fun AssetScreen(account: Account, nav: ScreenNav)
                         val indexFreezer = index  // To use this in the item composable, we need to freeze it to a val, because the composable is called out-of-scope
                         item(key = key.toByteArray()) {
                             //LogIt.info("asset item")
-                            Box(Modifier.padding(4.dp, 2.dp).fillMaxWidth().background(WallyAssetRowColors[indexFreezer % WallyAssetRowColors.size]).clickable {
+                            val bkg = WallyAssetRowColors[indexFreezer % WallyAssetRowColors.size]
+                            Box(Modifier.padding(4.dp, 2.dp).fillMaxWidth().background(bkg).clickable {
                                 assetFocus = account.assets[key]
                                 assetFocusIndex = indexFreezer
                                 nav.go(ScreenId.Assets, byteArrayOf(indexFreezer.toByte()))
                             }) {
-                                AssetListItemView(entry, 1, false, Modifier.padding(0.dp, 2.dp))
+                                AssetListItemView(entry, 1, false, Modifier.padding(0.dp, 2.dp).background(bkg))
                             }
                         }
                         index++
@@ -362,11 +379,12 @@ fun AssetScreen(account: Account, nav: ScreenNav)
                 }
             }
         }
-        else
+        else  // Show a specific asset
         {
             Box(Modifier.padding(4.dp, 2.dp).fillMaxWidth().background(WallyAssetRowColors[assetFocusIndex % WallyAssetRowColors.size]).clickable {
                 assetFocus = null  // If you touch the asset list when focused on an asset, then pop back out to the list
                 assetFocusIndex = 0
+                clearAlerts()
                 nav.back()
 
             }) {
@@ -383,15 +401,8 @@ fun AssetScreen(account: Account, nav: ScreenNav)
                 }
                 WallyRoundedTextButton(S.Send, onClick = {
                     val defaultAmt = BigDecimal.fromInt(1, tokenDecimalMode(a.assetInfo?.tokenInfo?.genesisInfo?.decimal_places ?: 0)) // The default send is to transfer a single "one" (you can change in the send screen) -- whatever that means WRT the # of decimal places
-                    if (account.addAssetToTransferList(a.groupInfo.groupId, defaultAmt) == true)
-                    {
-                        displaySuccess(S.AssetAddedToTransferList)
-                    }
-                    else  // double click goes there
-                    {
-                        nav.go(ScreenId.Home)  // TODO open send dialog
-                    }
-
+                    account.addAssetToTransferList(a.groupInfo.groupId, defaultAmt)
+                    displaySuccess(S.AssetAddedToTransferList)
                 })
                 if ((a.assetInfo.nft?.appuri ?: "") != "") WallyRoundedTextButton(S.AssetApplication, onClick = {
                     onInvokeButton(a.assetInfo, uriHandler)

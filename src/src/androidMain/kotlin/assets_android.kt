@@ -10,8 +10,6 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
-const val MAX_UNCACHED_FILE_SIZE = 5000000
-
 object AndroidAssetManagerStorage:AssetManagerStorage
 {
     override fun storeAssetFile(filename: String, data: ByteArray): String
@@ -62,16 +60,15 @@ object AndroidAssetManagerStorage:AssetManagerStorage
         context!!.openFileOutput(filename, Context.MODE_PRIVATE).use {
             it.write(data)
         }
-        return context.getFileStreamPath(filename).path  //.absolutePath
+        val path =  context.filesDir.toString() + File.separator + filename
+        return path
     }
 
     override fun loadCardFile(filename: String): Pair<String, ByteArray>
     {
         if (DBG_NO_ASSET_CACHE) throw Exception()
-        val context = wallyAndroidApp
-        //val dir = context!!.getDir("card", Context.MODE_PRIVATE)
-        //val file = File(dir, filename)
-        val file = File(filename)
+        val localname = if (filename.startsWith("file://")) filename.drop(7) else filename
+        val file = File(localname)
         val name = file.absolutePath
         FileInputStream(file).use {
             return Pair(name, it.readBytes())
@@ -85,7 +82,8 @@ object AndroidAssetManagerStorage:AssetManagerStorage
         var b = media.second
         if (b != null)
         {
-            if ((b.size > MAX_UNCACHED_FILE_SIZE) || (uriStr!=null && isVideo(uriStr)))
+            // Choose to always cache the file regardless of whether we also hold onto its bytes
+            if (true) // if ((b.size > MAX_UNCACHED_FILE_SIZE) || (uriStr!=null && isVideo(uriStr)))
             {
                 val result = canonicalSplitExtension(uriStr)
                 if (result == null) return Pair(uriStr, b)  // never going to happen because uriStr != null
@@ -94,7 +92,7 @@ object AndroidAssetManagerStorage:AssetManagerStorage
                 val f = File(cacheDir, groupId.toStringNoPrefix() + "_" + fnoext + "." + ext)
                 uriStr = f.absolutePath
                 f.writeBytes(b)
-                b = null  // We want to load this from cache file so don't save the bytes
+                if (b.size > MAX_UNCACHED_FILE_SIZE) b = null  // We want to load this from cache file so don't save the bytes
             }
         }
         return Pair(uriStr, b)

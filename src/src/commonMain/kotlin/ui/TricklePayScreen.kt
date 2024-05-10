@@ -212,7 +212,7 @@ fun TricklePayScreen(act: Account, startSess: TricklePaySession?, nav: ScreenNav
                         editDomain.editDomain = true
                         sess = editDomain
                     }) {
-                        SectionText(entry.key)
+                        Text(entry.key)
                     }
                 }
             }

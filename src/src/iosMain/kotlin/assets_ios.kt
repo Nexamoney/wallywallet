@@ -12,8 +12,6 @@ import platform.Foundation.NSURL.Companion.URLWithString
 import platform.Foundation.NSUserDomainMask
 import platform.darwin.YESEXPR
 private val LogIt = GetLog("wally.assets_ios")
-const val MAX_UNCACHED_FILE_SIZE = 2000000
-
 
 // Does not work
 /*
@@ -44,6 +42,7 @@ object IosAssetManagerStorage:AssetManagerStorage
         FileSystem.SYSTEM.write(path) {
             this.write(data)
         }
+        LogIt.info("Wrote ai file $path")
         return path.toString()
     }
     override fun loadAssetFile(filename: String): Pair<String, EfficientFile>
@@ -52,8 +51,12 @@ object IosAssetManagerStorage:AssetManagerStorage
 
         val dirs = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true)
         var path = if (dirs.size > 0) dirs[0].toString().toPath() / "assets" else "assets".toPath()
-        if (!FileSystem.SYSTEM.exists(path)) FileSystem.SYSTEM.createDirectories(path)
+        //if (!FileSystem.SYSTEM.exists(path)) FileSystem.SYSTEM.createDirectories(path)
         path = path / filename
+        if (!FileSystem.SYSTEM.exists(path))
+        {
+            LogIt.info("ai file does not exist at ${path}")
+        }
         /*
         FileSystem.SYSTEM.read(path) {
             val data = this.readByteArray()
@@ -90,15 +93,21 @@ object IosAssetManagerStorage:AssetManagerStorage
         FileSystem.SYSTEM.write(path) {
             this.write(data)
         }
-        return path.toString()
+        val ret = "cache/" + filename
+        LogIt.info("Wrote card file $ret (actually $path)")
+        return ret
     }
     override fun loadCardFile(filename: String): Pair<String, ByteArray>
     {
+        var localname = if (filename.startsWith("file://")) filename.drop(7) else filename
         if (DBG_NO_ASSET_CACHE) throw Exception()
         val dirs = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true)
-        var path = if (dirs.size > 0) dirs[0].toString().toPath() / "cache" else "cache".toPath()
-        if (!FileSystem.SYSTEM.exists(path)) FileSystem.SYSTEM.createDirectories(path)
-        path = path / filename
+        var path = if (dirs.size > 0) dirs[0].toString().toPath() else "".toPath(true)
+        path = path / localname
+        if (!FileSystem.SYSTEM.exists(path))
+        {
+            LogIt.error("loadCardfile $path does not exist")
+        }
         FileSystem.SYSTEM.read(path) {
             val data = this.readByteArray()
             return Pair(path.toString(), data)
@@ -108,10 +117,11 @@ object IosAssetManagerStorage:AssetManagerStorage
     override fun cacheNftMedia(groupId: GroupId, media: Pair<String?, ByteArray?>): Pair<String?, ByteArray?>
     {
         val uriStr = media.first
-        val b = media.second
+        var b = media.second
         if (b != null)
         {
-            if ((b.size > MAX_UNCACHED_FILE_SIZE) || (uriStr != null && isVideo(uriStr)))
+            // Choose to always cache the file regardless of whether we also hold onto its bytes
+            if (true) //if ((b.size > MAX_UNCACHED_FILE_SIZE) || (uriStr != null && isVideo(uriStr)))
             {
                 val result = canonicalSplitExtension(uriStr)
                 if (result == null) return Pair(uriStr, b)  // never going to happen because uriStr != null
@@ -121,11 +131,15 @@ object IosAssetManagerStorage:AssetManagerStorage
                 var path = if (dirs.size > 0) dirs[0].toString().toPath() / "cache" else "cache".toPath()
                 if (!FileSystem.SYSTEM.exists(path)) FileSystem.SYSTEM.createDirectories(path)
 
-                path = path / (groupId.toStringNoPrefix() + "_" + fnoext + "." + ext)
+                val fname = groupId.toStringNoPrefix() + "_" + fnoext + "." + ext
+                path = path / fname
                 FileSystem.SYSTEM.write(path) {  // ASYNC
-                    this.write(b)
+                    this.write(b!!)
                 }
-                return Pair(path.toString(), null)
+                if (b.size > MAX_UNCACHED_FILE_SIZE) b = null
+                // The base directory path changes every run so can't be part of the returned path
+                // anyone using this filename will need to search for it off of NSSearchPathForDirectoriesInDomains(...)
+                return Pair("cache/" + fname, b)
             }
         }
         return Pair(uriStr, b)

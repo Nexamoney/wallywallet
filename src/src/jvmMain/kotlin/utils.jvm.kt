@@ -2,7 +2,9 @@ package info.bitcoinunlimited.www.wally
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.loadImageBitmap
@@ -14,6 +16,7 @@ import okio.BufferedSource
 import okio.FileNotFoundException
 import okio.buffer
 import okio.source
+import org.jetbrains.skia.*
 import org.xml.sax.InputSource
 import java.awt.Toolkit
 import java.awt.datatransfer.*
@@ -21,7 +24,55 @@ import java.io.File
 import java.io.InputStream
 import java.util.zip.Inflater
 import org.nexa.libnexakotlin.Objectify
+import kotlin.math.abs
 
+
+// on android this fails with couldn't find "libskiko-android-arm64.so", see https://github.com/JetBrains/skiko/issues/531
+fun scaleUsingSurface(image: Image, width: Int, height: Int): Image
+{
+    val surface = Surface.makeRasterN32Premul(width, height)
+    val canvas = surface.canvas
+    val paint = Paint().apply {
+        this.isAntiAlias = true
+        this.isDither = true
+        // this.filterQuality = FilterQuality.HIGH
+    }
+
+    canvas.drawImageRect(image, Rect(0f, 0f, width.toFloat(), height.toFloat()), paint)
+    val im = surface.makeImageSnapshot()
+    return im
+}
+
+actual fun makeImageBitmap(imageBytes: ByteArray, width: Int, height: Int,scaleMode: ScaleMode): ImageBitmap?
+{
+    try
+    {
+        val imIn = Image.makeFromEncoded(imageBytes)
+        var newWidth = width
+        var newHeight = height
+        if ((scaleMode != ScaleMode.DISTORT) && (imIn.height != 0))
+        {
+            var ratio = imIn.width.toFloat() / imIn.height.toFloat()
+
+            if (scaleMode == ScaleMode.INSIDE)
+            {
+                if (ratio < 1.0) newWidth = (height * ratio).toInt()
+                else newHeight = (width / ratio).toInt()
+            }
+            if (scaleMode == ScaleMode.COVER)
+            {
+                if (ratio < 1.0) newHeight = (width / ratio).toInt()
+                else newWidth = (width * ratio).toInt()
+            }
+        }
+        val im = scaleUsingSurface(imIn, newWidth, newHeight)
+        return im.toComposeImageBitmap()
+    }
+    catch (e: IllegalArgumentException)  // imageBytes can't be decoded
+    {
+        return null
+    }
+}
 
 // the platform release did not exist so no possibility of old accounts
 actual fun convertOldAccounts(): Boolean

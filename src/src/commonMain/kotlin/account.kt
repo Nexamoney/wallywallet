@@ -8,6 +8,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.nexa.libnexakotlin.*
+import org.nexa.threads.Mutex
 import org.nexa.threads.iThread
 
 /** Account flags: No flag */
@@ -63,22 +64,16 @@ class Account(
   val prefDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
 )
 {
+    val access = Mutex("actMut")
     val handler = CoroutineExceptionHandler {
         _, exception -> LogIt.error("Caught in Account CoroutineExceptionHandler: $exception")
     }
     var walletDb: WalletDatabase? = openWalletDB(dbPrefix + name + "_wallet", chainSelector)
-    val tickerGUI = Reactive<String>("") // Where to show the crypto's ticker
-    val balanceGUI = Reactive<String>("")
-    val unconfirmedBalanceGUI = Reactive<String>("")
-    val infoGUI = Reactive<String>("")
-
-    var encodedPin: ByteArray? = loadEncodedPin()
-
     @Volatile
     var started = false  // Have the cnxnmgr and blockchain services been started or are we in initialization?
-
     //? Was the PIN entered properly since the last 15 second sleep?
     var pinEntered = false
+    var encodedPin: ByteArray? = loadEncodedPin()
 
     var currentReceive: PayDestination? = null //? This receive address appears on the main screen for quickly receiving coins
 
@@ -140,7 +135,6 @@ class Account(
 
     var cnxnMgr: CnxnMgr = WallyGetCnxnMgr(wallet.chainSelector, name, false)
     var chain: Blockchain = GetBlockchain(wallet.chainSelector, cnxnMgr, chainToURI[wallet.chainSelector], false) // do not start right away so we can configure exclusive/preferred no
-
 
     /** A string denoting this wallet's currency units.  That is, the units that this wallet should use in display, in its BigDecimal amount representations, and is converted to and from in fromFinestUnit() and toFinestUnit() respectively */
     val currencyCode: String = chainToDisplayCurrencyCode[wallet.chainSelector]!!
@@ -423,27 +417,37 @@ class Account(
          * Send the quantity *in finest units* */
     fun addAssetToTransferList(a: GroupId, amt: BigDecimal): Boolean
     {
-        val asset = assets.get(a)
-        if (asset == null) // you can't add an asset to the xfer list that you don't even have
-        {
-            return false
+        return access.lock {
+            val asset = assets.get(a)
+            if (asset == null) // you can't add an asset to the xfer list that you don't even have
+            {
+                false
+            }
+            else
+            {
+                asset.editableAmount = amt
+                if (assetTransferList.contains(a)) false
+                else
+                {
+                    assetTransferList.add(a)
+                    true
+                }
+            }
         }
-        asset.editableAmount = amt
-        if (assetTransferList.contains(a)) return false
-        assetTransferList.add(a)
-        return true
     }
 
     /** Clear all assets held by this account from the transfer list */
     fun clearAssetTransferList():Int
     {
-        val ret = assetTransferList.size
-        for (i in assets)
-        {
-            i.value.editableAmount = null
+        return access.lock {
+            val ret = assetTransferList.size
+            for (i in assets)
+            {
+                i.value.editableAmount = null
+            }
+            assetTransferList.clear()
+            ret
         }
-        assetTransferList.clear()
-        return ret
     }
 
 
@@ -489,17 +493,28 @@ class Account(
 
         // Check if this asset is new, and if so start grabbing the data for all assets (asynchronously)
         // otherwise update the existing entry for amount changes
+
         for (asset in ast.values)
         {
             // If we don't have it at all, add it to our dictionary
             val assetInfo = am.track(asset.groupId, getEc)
-            assets[asset.groupId] = AssetPerAccount(asset, assetInfo)
+            access.lock { assets[asset.groupId] = AssetPerAccount(asset, assetInfo) }
         }
-        // Now remove any assets that are no longer in the wallet
-        val curKeys = assets.keys.toList()
-        for (assetKey in curKeys)
-        {
-            if (!(assetKey in ast)) assets.remove(assetKey)
+        access.lock {
+            // Now remove any assets that are no longer in the wallet
+            val curKeys = assets.keys.toList()
+            for (assetKey in curKeys)
+            {
+                if (!(assetKey in ast)) assets.remove(assetKey)
+            }
+        }
+    }
+
+    /** Return a list of assets held by this account */
+    fun assetList():MutableList<AssetPerAccount>
+    {
+        return access.lock {
+            assets.values.toMutableList()
         }
     }
 

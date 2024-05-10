@@ -293,7 +293,7 @@ class ComposeActivity: CommonActivity()
         setContent {
             val currentRootScreen = remember { mutableStateOf(ScreenId.Splash) }
             nav.reset(currentRootScreen)
-            NativeTitle(nav.title())
+            setTitle(nav.title())
             NavigationRoot(nav)
         }
 
@@ -304,6 +304,7 @@ class ComposeActivity: CommonActivity()
             override fun handleOnBackPressed()
             {
                 if (nav.back() == null) finish()
+                else setTitle(nav.title())
             }
 
         })

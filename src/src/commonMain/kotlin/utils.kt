@@ -30,6 +30,14 @@ import okio.utf8Size
 
 private val LogIt = GetLog("BU.wally.utils")
 
+enum class ScaleMode
+{
+    DISTORT,
+    INSIDE,
+    COVER
+}
+expect fun makeImageBitmap(imageBytes: ByteArray, width: Int, height: Int, scaleMode: ScaleMode): ImageBitmap?
+
 /** Gets the ktor http client for this platform */
 expect fun GetHttpClient(timeoutInMs: Number):HttpClient
 
