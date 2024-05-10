@@ -1,5 +1,6 @@
 package info.bitcoinunlimited.www.wally
 
+import androidx.compose.ui.graphics.ImageBitmap
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import io.ktor.http.*
 import kotlinx.coroutines.CoroutineScope
@@ -11,30 +12,40 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import okio.FileNotFoundException
 import org.nexa.libnexakotlin.*
-import org.nexa.threads.Gate
-import org.nexa.threads.LeakyBucket
-import org.nexa.threads.iThread
-import org.nexa.threads.millisleep
-
-import org.jetbrains.skia.*
+import org.nexa.threads.*
 import kotlin.coroutines.CoroutineContext
 
+
 const val ASSET_ICON_SIZE = 100
+const val MAX_UNCACHED_FILE_SIZE = 20000
 
 val assetCoCtxt: CoroutineContext = newFixedThreadPoolContext(4, "asset")
 
-// TODO get skiko internal error
 /*
-fun scaleUsingSurface(image: Image, width: Int, height: Int): Image {
-    val surface = Surface.makeRasterN32Premul(width, height)
-    val canvas = surface.canvas
-    val paint = Paint().apply {
-        //filterQuality = FilterQuality.HIGH
-    }
-    canvas.drawImageRect(image, Rect(0f, 0f, width.toFloat(), height.toFloat()), paint)
-    val im = surface.makeImageSnapshot()
+// on android this fails with couldn't find "libskiko-android-arm64.so", see https://github.com/JetBrains/skiko/issues/531
+fun scaleUsingSurface(image: Image, width: Int, height: Int): Image
+{
+    //val bmp = Bitmap.makeFromImage(image)
+    val bmp = Bitmap(width, height)
+    val cvs = Canvas(bmp)
+    val sfx = width.toFloat() / image.width.toFloat()
+    val sfy = height.toFloat() / image.height.toFloat()
+    // Pick the scale factor that's closest to no change (1)
+    val sf = if (abs(1.0-sfx) > abs(1.0-sfy)) sfy else sfx
+    cvs.scale(sf, sf)
+    val ret = Image.
     return im
+}
+
+fun scaleTo(imageBytes: ByteArray, width: Int, height: Int): Image
+{
+    val imIn = Image.makeFromEncoded(imageBytes)
+    imIn.
+    val im = scaleUsingSurface(imIn, width, height)
+    val d = im.encodeToData(outFormat)
+    return d?.bytes
 }
 
 fun scaleTo(image: Image, width: Int, height: Int, outFormat: EncodedImageFormat): ByteArray?
@@ -44,19 +55,14 @@ fun scaleTo(image: Image, width: Int, height: Int, outFormat: EncodedImageFormat
     return d?.bytes
 }
 
-fun scaleTo(imageBytes: ByteArray, width: Int, height: Int, outFormat: EncodedImageFormat): ByteArray?
+actual fun scaleTo(imageBytes: ByteArray, width: Int, height: Int, outFormat: EncodedImageFormat): ByteArray?
 {
     val imIn = Image.makeFromEncoded(imageBytes)
     val im = scaleUsingSurface(imIn, width, height)
     val d = im.encodeToData(outFormat)
     return d?.bytes
 }
- */
-
-fun scaleTo(imageBytes: ByteArray, width: Int, height: Int, outFormat: EncodedImageFormat): ByteArray?
-{
-    return imageBytes
-}
+*/
 
 private val LogIt = GetLog("BU.wally.assets")
 
@@ -250,6 +256,7 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
     var docUrl: String? = null
     var tokenInfo: TokenDesc? = null
     var iconBytes: ByteArray? = null
+    @Transient var iconImage: ImageBitmap? = null
     @Serializable(with = UrlSerializer::class) var iconUri: Url? = null
     var iconBackBytes: ByteArray? = null
     @Serializable(with = UrlSerializer::class) var iconBackUri: Url? = null
@@ -339,7 +346,8 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
                 if (data != null)
                 {
                     val bytes = data.readByteArray()
-                    iconBytes = scaleTo(bytes, ASSET_ICON_SIZE,ASSET_ICON_SIZE, EncodedImageFormat.PNG)
+                    iconBytes = if (bytes.size < MAX_UNCACHED_FILE_SIZE) bytes else null
+                    iconImage = makeImageBitmap(bytes, ASSET_ICON_SIZE,ASSET_ICON_SIZE, ScaleMode.INSIDE)
                     val tmp = am.storeCardFile(grpId.toStringNoPrefix() + "_" + fname, bytes)
                     iconUri = Url("file://" + tmp)
                 }
@@ -354,9 +362,9 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
                 if (data != null)
                 {
                     val bytes = data.readByteArray()
-                    iconBackBytes = scaleTo(bytes, ASSET_ICON_SIZE,ASSET_ICON_SIZE, EncodedImageFormat.PNG)
+                    iconBackBytes = if (bytes.size < MAX_UNCACHED_FILE_SIZE) bytes else null
                     // Note caching is NEEDED to show video (because videoview can only take a file)
-                    if (iconBackBytes != null) iconBackUri = Url("file://" + am.storeCardFile(grpId.toStringNoPrefix() + "_" + fname, bytes))
+                    if (iconBackBytes == null) iconBackUri = Url("file://" + am.storeCardFile(grpId.toStringNoPrefix() + "_" + fname, bytes))
                     else iconBackUri = Url("file://" + fname)
                 }
             }
@@ -550,7 +558,11 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
                     val iconUrl = td?.icon
                     if (iconUrl != null)
                     {
-                        getTddIcon().let { iconUri = it.first; iconBytes = it.second }
+                        getTddIcon().let {
+                            iconUri = it.first
+                            iconBytes = it.second
+                            iconBytes?.let { b -> iconImage = makeImageBitmap(b, ASSET_ICON_SIZE,ASSET_ICON_SIZE, ScaleMode.INSIDE) }
+                        }
                         dataChanged = true
                         loadState = AssetLoadState.COMPLETED
                     }
@@ -660,6 +672,7 @@ fun ElectrumClientFactory(blockchain: Blockchain): ()->ElectrumClient
 
 class AssetManager(val app: CommonApp): AssetManagerStorage
 {
+    protected var access = Mutex("assetLock")
     var assets = mutableMapOf<GroupId, AssetInfo>()
 
     fun nftUrl(s: String?, groupId: GroupId):String?
@@ -679,7 +692,8 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
      */
     fun track(groupId: GroupId, getEc: (() -> ElectrumClient)? = null): AssetInfo
     {
-        var ret = assets[groupId]
+
+        var ret = access.lock { assets[groupId] }
         if (ret != null)
         {
             // LogIt.info(sourceLoc() + ": Asset manager: already tracking ${groupId.toString()}")
@@ -690,19 +704,23 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
         {
             val ai = loadAssetInfo(groupId)
             LogIt.info(sourceLoc() + ":   Asset manager: loaded ${ai.name} icon(${ai.iconBytes?.size ?: -1} bytes): ${ai.iconUri.toString()} group: ${groupId}")
-            assets[groupId] = ai
+            access.lock { assets[groupId] = ai }
             return ai
         }
-        catch (e: Throwable)  // probably file not found which is fine
+        catch (e: Throwable)  // out of memory?
         {
-            logThreadException(e, "Exception loading asset info for ${groupId}")
+            // logThreadException(e, "Ignored exception loading asset info for ${groupId}")
+        }
+        catch (e: Exception)  // probably file not found which is expected
+        {
+            // logThreadException(e, "Ignored exception loading asset info for ${groupId}")
         }
 
         val blockchain = connectBlockchain(groupId.blockchain)
         val gec = getEc ?: ElectrumClientFactory(blockchain)
 
         ret = AssetInfo(groupId)
-        assets[groupId] = ret
+        access.lock { assets[groupId] = ret }
         if (getEc != null)
         {
             LogIt.info("Immediate asset load for ${groupId}")
@@ -882,27 +900,48 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
         val data = ef.second.openAt(0).readAndClose()
         val ret = json.decodeFromString<AssetInfo>(AssetInfo.serializer(), data.decodeToString())
         ef.second.close()
+        if (ret.iconUri != null)
+        {
+            val bytes = if (ret.iconBytes != null) ret.iconBytes else
+            {
+                ret.iconUri?.toString()?.let {
+                    try
+                    {
+                        val cf = loadCardFile(it)
+                        cf.second
+                    }
+                    catch(e:FileNotFoundException)  // its benign if we load the asset info but not the icon
+                    {
+                        LogIt.info("Note asset info for ${ret.name} loaded, but no card file ${it}")
+                        null
+                    }
+                }
+            }
+            bytes?.let { ret.iconImage = makeImageBitmap(it, ASSET_ICON_SIZE, ASSET_ICON_SIZE, ScaleMode.INSIDE) }
+        }
         return ret
     }
 
     fun clear()
     {
-        val assetKeys = assets.keys.toList()
+        val assetKeys = access.lock { assets.keys.toList() }
         for (k in assetKeys)
-           kvpDb?.delete(k.data)
-        for (v in assets.values)  // clean this data structure in case someone is holding a copy of it
-        {
-            v.iconUri = null
-            v.iconBytes = null
-            v.tokenInfo = null
-            v.publicMediaUri = null
-            v.publicMediaBytes = null
-            v.ownerMediaUri = null
-            v.ownerMediaCache = null
-            v.nft = null
-            v.loadState = AssetLoadState.UNLOADED
+           if (k!=null) kvpDb?.delete(k.data)
+        access.lock {
+            for (v in assets.values)  // clean this data structure in case someone is holding a copy of it
+            {
+                v.iconUri = null
+                v.iconBytes = null
+                v.tokenInfo = null
+                v.publicMediaUri = null
+                v.publicMediaBytes = null
+                v.ownerMediaUri = null
+                v.ownerMediaCache = null
+                v.nft = null
+                v.loadState = AssetLoadState.UNLOADED
+            }
         }
-        assets.clear()
+        access.lock { assets.clear() }
         assetManagerStorage().deleteAssetFiles()
     }
 

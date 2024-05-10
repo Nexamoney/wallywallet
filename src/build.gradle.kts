@@ -11,16 +11,16 @@ import java.net.URL
 // Dependency versions
 val mpThreadsVersion = "0.2.6"
 val nexaRpcVersion = "1.1.5"
-val libNexaKotlinVersion = "0.1.73"
+val libNexaKotlinVersion = "0.1.75"
 val serializationVersion = "1.6.3"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.8.0"     // https://github.com/Kotlin/kotlinx.coroutines
 val ktorVersion = "2.3.10"           // https://github.com/ktorio/ktor
 val bigNumVersion = "0.3.9"         // https://github.com/ionspin/kotlin-multiplatform-bignum
-val composeVersion = "1.6.10-beta01"        // https://github.com/JetBrains/compose-multiplatform/releases
-val androidTestCoreVersion = "1.6.10-beta01" // https://mvnrepository.com/artifact/androidx.test/core
+val composeVersion = "1.6.10-rc01"        // https://github.com/JetBrains/compose-multiplatform/releases
+val androidTestCoreVersion = "1.6.10-rc01" // https://mvnrepository.com/artifact/androidx.test/core
 val androidxActivityComposeVersion = "1.9.0"
 val uriKmpVersion = "0.0.16"  // https://github.com/eygraber/uri-kmp
-val skikoVersion = "0.7.93" // https://github.com/JetBrains/skiko/releases
+val skikoVersion = "0.8.4" // https://github.com/JetBrains/skiko/releases
 val workVersion = "2.9.0"
 
 
@@ -281,7 +281,7 @@ kotlin {
                 implementation("io.github.alexzhirkevich:qrose:1.0.1")  // https://github.com/alexzhirkevich/qrose/releases
 
                 // Animation library binding
-                implementation("org.jetbrains.skiko:skiko:0.8.4")
+                implementation("org.jetbrains.skiko:skiko:$skikoVersion")
             }
         }
         val commonTest by getting {

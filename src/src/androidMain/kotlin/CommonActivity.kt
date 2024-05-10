@@ -20,6 +20,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -159,7 +160,6 @@ open class CommonActivity : AppCompatActivity()
         origTitleBackground = ColorDrawable(ContextCompat.getColor(applicationContext, R.color.titleBackground))
 
         origTitleBackground?.let { titlebar.background = it }  // Set the title background color here, so we don't need to match the background defined in some resource file
-
         titlebar.setOnClickListener {
             onTitleBarTouched()
         }
@@ -218,6 +218,9 @@ open class CommonActivity : AppCompatActivity()
             }
 
         })
+
+        getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
+        getSupportActionBar()?.setDisplayShowHomeEnabled(true)
 
         super.onStart()
     }
@@ -405,18 +408,21 @@ open class CommonActivity : AppCompatActivity()
         laterUI {
             synchronized(errorSync)
             {
-                currentNumShowing -= 1
-                val titlebar: View = findViewById(actionBarId)
-                if (menuHidden > 0) menuHidden -= 1
-                if (errNo == 0)
+                if (currentNumShowing > 0)
                 {
-                    menuHidden = 0
-                } // Abort all errors shown (returned from other activity)
-                if (errorCount == errNo || errNo == null)
-                {
-                    invalidateOptionsMenu()
-                    super.setTitle(origTitle)
-                    origTitleBackground?.let { titlebar.background = it }
+                    currentNumShowing -= 1
+                    val titlebar: View = findViewById(actionBarId)
+                    if (menuHidden > 0) menuHidden -= 1
+                    if (errNo == 0)
+                    {
+                        menuHidden = 0
+                    } // Abort all errors shown (returned from other activity)
+                    if (errorCount == errNo || errNo == null)
+                    {
+                        invalidateOptionsMenu()
+                        super.setTitle(origTitle)
+                        origTitleBackground?.let { titlebar.background = it }
+                    }
                 }
             }
         }
@@ -509,6 +515,7 @@ open class CommonActivity : AppCompatActivity()
                 alerts.add(Alert(msg, details, AlertLevel.NOTICE, trace))
                 menuHidden += 1
                 invalidateOptionsMenu()
+                actionBar?.setDisplayHomeAsUpEnabled(false)
                 titlebar.background = ColorDrawable(errorColor)
                 errorCount += 1
                 currentNumShowing += 1

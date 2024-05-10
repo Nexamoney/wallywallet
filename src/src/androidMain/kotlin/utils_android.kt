@@ -5,12 +5,16 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.content.ContextCompat.getSystemService
 import info.bitcoinunlimited.www.wally.old.convertOldAccounts
 import info.bitcoinunlimited.www.wally.ui.theme.colorError
@@ -20,10 +24,67 @@ import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.*
 import okio.*
+import org.jetbrains.skia.EncodedImageFormat
+import org.jetbrains.skia.Image
 import org.nexa.libnexakotlin.*
 import java.io.File
 import java.io.InputStream
 import java.util.zip.Inflater
+import kotlin.math.abs
+
+/*
+actual fun scaleTo(imageBytes: ByteArray, width: Int, height: Int, outFormat: EncodedImageFormat): ByteArray?
+{
+    val bmp = BitmapFactory.decodeByteArray(imageBytes,0, imageBytes.size)
+    val bitmap = Bitmap.createScaledBitmap(bmp, width, height, true)
+    val canvas = android.graphics.Canvas(bitmap)
+    canvas.
+
+}
+ */
+
+actual fun makeImageBitmap(imageBytes: ByteArray, width: Int, height: Int, scaleMode: ScaleMode): ImageBitmap?
+{
+    val imIn = BitmapFactory.decodeByteArray(imageBytes,0, imageBytes.size)
+    if (imIn == null) return null
+    var newWidth = width
+    var newHeight = height
+    if ((scaleMode != ScaleMode.DISTORT)&&(imIn.height != 0))
+    {
+        var ratio = imIn.width.toFloat()/imIn.height.toFloat()
+
+        if (scaleMode == ScaleMode.INSIDE)
+        {
+            if (ratio < 1.0) newWidth = (height*ratio).toInt()
+            else newHeight = (width/ratio).toInt()
+        }
+        if (scaleMode == ScaleMode.COVER)
+        {
+            if (ratio < 1.0) newHeight = (width/ratio).toInt()
+            else newWidth = (width*ratio).toInt()
+        }
+    }
+    val sbmp = Bitmap.createScaledBitmap(imIn, newWidth, newHeight, true)
+    return sbmp.asImageBitmap()
+}
+/* logic to handle scaling if we have to provide the scale factor
+    var scale:Float = 1.0
+    if (scaleMode != ScaleMode.DISTORT)
+    {
+        var sx = width.toFloat()/imIn.width.toFloat()
+        var sy = height.toFloat()/imIn.height.toFloat()
+        var minIsX = (abs(1.0-sx) < abs(1.0-sy))
+        scale = if (scaleMode == ScaleMode.INSIDE)
+        {
+            // choose the minimum scale of the 2
+            if (minIsX) sx else sy
+        }
+        else
+        {
+            if (minIsX) sy else sx
+        }
+    }
+ */
 
 actual fun convertOldAccounts(): Boolean
 {

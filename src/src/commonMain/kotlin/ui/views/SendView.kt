@@ -499,7 +499,7 @@ fun SendView(
             if (sendingTheseAssets.size > 0)
             {
                 CenteredSectionText(S.assetsColon)
-                LazyColumn(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                LazyColumn(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth().heightIn(0.dp, 200.dp), userScrollEnabled = true) {
                     var index = 0
                     sendingTheseAssets.forEach {
                         val entry = account.assets[it]

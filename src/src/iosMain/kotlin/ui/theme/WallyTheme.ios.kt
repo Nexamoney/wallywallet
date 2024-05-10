@@ -1,5 +1,6 @@
 package info.bitcoinunlimited.www.wally.ui.theme
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,11 +34,13 @@ import platform.CoreMedia.CMTimeRangeMake
 import platform.UIKit.*
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import info.bitcoinunlimited.www.wally.getResourceFile
 import info.bitcoinunlimited.www.wally.ui.isSoftKeyboardShowing
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.get
 import kotlinx.cinterop.usePinned
+import okio.Path
 import org.jetbrains.skia.ColorAlphaType
 import org.jetbrains.skia.ColorType
 import org.jetbrains.skia.Image
@@ -185,18 +188,55 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
     throw UnimplementedException("other icon formats")
 }
 
-@OptIn(ExperimentalForeignApi::class)
-@Composable actual fun MpMediaView(mediaData: ByteArray?, mediaUri: String?, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit):Boolean
+fun resolveLocalFilename(filename: String): Path?
 {
-    LogIt.info( "MpMediaView(${mediaData?.size} bytes, $mediaUri)")
+    var path = filename.toPath()
+    if (!FileSystem.SYSTEM.exists(path))
+    {
+        // LogIt.info("MpMediaView File does not exist $path ($mu)")
+        val cutname = if (filename.startsWith("file://")) filename.drop(7) else filename
+        val dirs = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, true)
+        for (d in dirs)
+        {
+            val dsa = d.toString().toPath() / cutname
+            // LogIt.info("MpMediaView trying $ds $dsa")
+            if (FileSystem.SYSTEM.exists(dsa))
+            {
+                // LogIt.info("MpMediaView Found at $dsa")
+                return dsa
+            }
+            else
+            {
+                // LogIt.info("MpMediaView File does not exist $path ($mu)")
+            }
+        }
+        return null
+    }
+    else return path
+}
 
+@OptIn(ExperimentalForeignApi::class)
+@Composable actual fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri: String?, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit):Boolean
+{
+    // LogIt.info( "MpMediaView(${mediaData?.size} bytes, $mediaUri)")
     val mu = mediaUri
     if (mu == null) return false
     val name = mu.lowercase()
 
-    if (name.endsWith(".svg", true))
+    if (mediaImage != null)
+    {
+        wrapper(MediaInfo(mediaImage.width, mediaImage.height, false)) { mod ->
+            val m = mod ?: Modifier
+              .fillMaxSize()
+              .background(Color.Transparent)
+            Image(mediaImage, null, m, contentScale = ContentScale.Fit)
+        }
+        return true
+    }
+    else if (name.endsWith(".svg", true))
     {
         // TODO iOS SVG rendering
+        return false
     }
     else if (name.endsWith(".jpg", true) ||
       name.endsWith(".jpeg", true) ||
@@ -217,14 +257,11 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
             catch (e: NullPointerException)
             {
                 // Happens if the data cannot be parsed into an image
-                UIImage()
+                return false
             }
         } ?: run {
-              val path = mediaUri.toPath()
-              // If mediaUri doesn't exist, program will crash
-              // LogIt.info("mpmediaview UIImage load from uri")
-              if (!FileSystem.SYSTEM.exists(path)) UIImage()
-              else UIImage(mediaUri)
+            val tmp = resolveLocalFilename(mu)
+            if (tmp!=null) UIImage(tmp.toString()) else UIImage()
           }
 
         val tim = im
@@ -258,13 +295,23 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
                     )
             }
         }
+        return true
     }
     else if (name.endsWith(".mp4", true) ||
       name.endsWith(".webm", true) ||
       name.endsWith(".3gp", true) ||
       name.endsWith(".mkv", true))
     {
-        VideoView(mediaUri, wrapper)
+        val tmp = resolveLocalFilename(mu)
+        if (tmp!=null)
+        {
+            val furl = "file://" + tmp.toString()
+            //val cutname = "file:" + if (mu.startsWith("file://")) mu.drop(7) else mu
+            LogIt.info("VideoView $furl")
+            VideoView(furl, wrapper)
+            return true
+        }
+        else return false
     }
     return false
 }

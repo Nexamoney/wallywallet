@@ -22,6 +22,7 @@ import org.nexa.libnexakotlin.logThreadException
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
+import java.io.File
 import javax.imageio.ImageIO
 import kotlin.math.min
 
@@ -125,7 +126,7 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
     throw UnimplementedException("video icons")
 }
 
-@Composable actual fun MpMediaView(mediaData: ByteArray?, mediaUri: String?, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit): Boolean
+@Composable actual fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri: String?, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit): Boolean
 {
     val bytes = mediaData
 
@@ -133,9 +134,18 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
     if (mu == null) return false
 
     val url = Url(mu)
-    val name = mu.lowercase()
+    val lcasename = mu.lowercase()
 
-    if (name.endsWith(".svg", true))
+    if (mediaImage != null)
+    {
+        wrapper(MediaInfo(mediaImage.width, mediaImage.height, false)) { mod ->
+            val m = mod ?: Modifier
+              .fillMaxSize()
+              .background(Color.Transparent)
+            Image(mediaImage, null, m, contentScale = ContentScale.Fit)
+        }
+    }
+    else if (lcasename.endsWith(".svg", true))
     {
         val loader = SVGLoader()
         val svgdoc = if (mediaData != null) loader.load(ByteArrayInputStream(mediaData))
@@ -162,28 +172,34 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
             }
         }
     }
-    else if (name.endsWith(".jpg", true) ||
-      name.endsWith(".jpeg", true) ||
-      name.endsWith(".png", true) ||
-      name.endsWith(".webp", true) ||
-      name.endsWith(".gif", true) ||
-      name.endsWith(".heic", true) ||
-      name.endsWith(".heif", true)
+    else if (lcasename.endsWith(".jpg", true) ||
+      lcasename.endsWith(".jpeg", true) ||
+      lcasename.endsWith(".png", true) ||
+      lcasename.endsWith(".webp", true) ||
+      lcasename.endsWith(".gif", true) ||
+      lcasename.endsWith(".heic", true) ||
+      lcasename.endsWith(".heif", true)
     )
     {
-        val bitmap = if (bytes == null)
-        {
-            val URL = url.toURI().toURL()
-            if ((URL.protocol == null)||(URL.protocol == "file"))
-            {
-                ImageIO.read(url.toURI().toURL())
-            }
-            else throw UnimplementedException("non-local data in NFT")
-        }
+        var bitmap:BufferedImage? = null
+
+        if (bytes != null) bitmap = ImageIO.read(ByteArrayInputStream(bytes))
         else
         {
-            ImageIO.read(ByteArrayInputStream(bytes))
+            // Try to grab it locally if its cached here
+            // ImageIO.read(URL) puts up an ugly dialog and aborts if URL does not exist
+            var tryname:String? = null
+            if (mu.startsWith("http://localhost")) tryname = mu.drop("http://localhost".length)
+            else if (mu.startsWith("file://")) tryname = mu.drop(7)
+            else if (mu.startsWith("file:")) tryname = mu.drop(5)
+            else if (mu.startsWith("/")) tryname = mu
+            if ((tryname != null)&& File(tryname).exists())
+            {
+                bitmap = ImageIO.read(File(tryname))
+            }
         }
+        if (bitmap == null) return false
+
 
         val im: ImageBitmap = bitmap.toComposeImageBitmap()
         wrapper(MediaInfo(im.width,im.height,false)) { mod ->
@@ -258,7 +274,6 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
         {
             throw UnimplementedException("unsupported video format $name")
         }
-
          */
     return true
 }

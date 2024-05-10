@@ -210,7 +210,7 @@ fun WallyBoringLargeIconButton(iconRes: String, enabled: Boolean=true, modifier:
         else
         {
             val imbytes = getResourceFile(iconRes).readByteArray()
-            MpMediaView(imbytes, iconRes) { mediaInfo, drawer ->
+            MpMediaView(null, imbytes, iconRes) { mediaInfo, drawer ->
                 drawer(Modifier.wrapContentWidth().height(32.dp).defaultMinSize(32.dp, 32.dp).clickable { onClick() }.then(modifier))
             }
         }

@@ -40,10 +40,9 @@ import info.bitcoinunlimited.www.wally.currentActivity
 import info.bitcoinunlimited.www.wally.getResourceFile
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import io.ktor.http.*
-import org.nexa.libnexakotlin.CannotLoadException
-import org.nexa.libnexakotlin.GetLog
-import org.nexa.libnexakotlin.UnimplementedException
+import org.nexa.libnexakotlin.*
 import java.io.ByteArrayInputStream
+import java.io.File
 import java.io.FileInputStream
 import kotlin.math.min
 
@@ -201,22 +200,28 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
     throw UnimplementedException("video icons")
 }
 
-
-@OptIn(UnstableApi::class) @Composable actual fun MpMediaView(mediaData: ByteArray?, mediaUri: String?, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit): Boolean
+@OptIn(UnstableApi::class) @Composable actual fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri: String?, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit): Boolean
 {
-    val bytes = mediaData
+    val name = mediaUri
+    if (name == null) return false
 
-    val mu = mediaUri
-    if (mu == null) return false
+    val url = Url(name)
+    val lcasename = name.lowercase()
 
-    val url = Url(mu)
-    val name = mu.lowercase()
-
-    if (name.endsWith(".svg", true))
+    if (mediaImage != null)
     {
-        val svg = if (bytes == null)
+        wrapper(MediaInfo(mediaImage.width, mediaImage.height, false)) { mod ->
+            val m = mod ?: Modifier
+              .fillMaxSize()
+              .background(Color.Transparent)
+            Image(mediaImage, null, m, contentScale = ContentScale.Fit)
+        }
+    }
+    else if (lcasename.endsWith(".svg", true))
+    {
+        val svg = if (mediaData == null)
         {
-            if (url.protocol == null)
+            if (url.protocol == null || url.protocol.name == "file" || url.toString().contains("://localhost"))
             {
                 SVG.getFromInputStream(FileInputStream(name))
             }
@@ -224,7 +229,7 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
         }
         else
         {
-            SVG.getFromInputStream(ByteArrayInputStream(bytes))
+            SVG.getFromInputStream(ByteArrayInputStream(mediaData))
         }
 
 
@@ -245,27 +250,39 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
             Image(im, null, m, contentScale = ContentScale.Fit)
         }
     }
-    else if (name.endsWith(".jpg", true) ||
-      name.endsWith(".jpeg", true) ||
-      name.endsWith(".png", true) ||
-      name.endsWith(".webp", true) ||
-      name.endsWith(".gif", true) ||
-      name.endsWith(".heic", true) ||
-      name.endsWith(".heif", true)
+    else if (lcasename.endsWith(".jpg", true) ||
+      lcasename.endsWith(".jpeg", true) ||
+      lcasename.endsWith(".png", true) ||
+      lcasename.endsWith(".webp", true) ||
+      lcasename.endsWith(".gif", true) ||
+      lcasename.endsWith(".heic", true) ||
+      lcasename.endsWith(".heif", true)
     )
     {
-        val bitmap = if (bytes == null)
+        val bitmap = if (mediaData == null)
         {
-            if (url.protocol == null)
+            if (url.protocol == null || url.protocol.name == "file" || url.toString().contains("://localhost"))
             {
-                BitmapFactory.decodeFile(name)
+                var localname = if (name.startsWith("file:///")) name.drop(7) else name
+                var tmp = BitmapFactory.decodeFile(localname)
+                if (tmp == null)  // given the troubles with android directory prefixes, leave this code in until we see stability
+                {
+                    val justname = name.replaceBeforeLast(File.separator, "").drop(1)
+                    val dir = androidContext!!.filesDir
+                    if (tmp == null) tmp = BitmapFactory.decodeFile(justname)
+                    if (tmp == null) tmp = BitmapFactory.decodeFile(dir.absolutePath + File.separator + justname)
+                    if (tmp == null) tmp = BitmapFactory.decodeFile("/data/data/info.bitcoinunlimited.www.wally/files" + File.separator + justname)
+                }
+                tmp
             }
-            else throw UnimplementedException("non-local data in NFT")
+            else return false //throw UnimplementedException("non-local data in NFT: protocol: ${url.protocol} url is $url, name is $name")
         }
         else
         {
-            BitmapFactory.decodeStream(ByteArrayInputStream(bytes))
+            // BitmapFactory.decodeStream(ByteArrayInputStream(bytes))
+            BitmapFactory.decodeByteArray(mediaData,0,mediaData.size)
         }
+        if (bitmap == null) return false
 
         val im: ImageBitmap = bitmap.asImageBitmap()
         wrapper(MediaInfo(im.width, im.height, false)) { mod ->
@@ -275,16 +292,15 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
             Image(im, null, m, contentScale = ContentScale.Fit)
         }
     }
-    else if (name.endsWith(".mp4", true) ||
-      name.endsWith(".webm", true) ||
-      name.endsWith(".3gp", true) ||
-      name.endsWith(".mkv", true))
+    else if (lcasename.endsWith(".mp4", true) ||
+      lcasename.endsWith(".webm", true) ||
+      lcasename.endsWith(".3gp", true) ||
+      lcasename.endsWith(".mkv", true))
     {
 
-        LogIt.info("Video URI: ${url}")
+        LogIt.info(sourceLoc()+": Video URI: $name (url: ${url})")
         val context = LocalContext.current
-        // val tmp = ProgressiveMediaSource.Factory(ByteArrayDataSourceFactory(ByteArrayDataSource(mediaData!!, Url(mediaUri))))
-        val mediaItem = MediaItem.Builder().setUri(url.toString()).build()
+        val mediaItem = MediaItem.Builder().setUri(name).build()
 
         val exoPlayer = remember(context, mediaItem) {
             ExoPlayer.Builder(context)
@@ -341,6 +357,7 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
     }
     return true
 }
+
 
 
 @Composable

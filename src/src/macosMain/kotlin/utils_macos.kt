@@ -1,6 +1,7 @@
 package info.bitcoinunlimited.www.wally
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.ImageBitmap
 import kotlinx.cinterop.*
 import io.ktor.client.*
 import io.ktor.client.plugins.*
@@ -21,6 +22,11 @@ import platform.Foundation.*
 actual fun applicationState(): ApplicationState
 {
     return ApplicationState(ApplicationState.RunState.ACTIVE)
+}
+
+actual fun makeImageBitmap(imageBytes: ByteArray, width: Int, height: Int,scaleMode: ScaleMode): ImageBitmap?
+{
+    return null
 }
 
 // the platform release did not exist so no possibility of old accounts
