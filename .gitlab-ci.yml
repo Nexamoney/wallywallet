@@ -276,8 +276,7 @@ testflight_public:
     name: "beta deploy"
   allow_failure: false
   only:
-    - master
-    - mp
+    - main
   when: manual
   stage: deploy_beta
   tags:
