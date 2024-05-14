@@ -5,6 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -673,7 +674,7 @@ fun SendToPermScreen(acc: Account, sess: TricklePaySession , nav: ScreenNav)
 
     val domainAndTopic = u.authority + tpc
 
-    Column(Modifier.padding(8.dp, 2.dp)) {
+    Column(Modifier.padding(8.dp, 2.dp).testTag("ActionPermissionScreensColumn")) {
         CenteredSectionText(S.TpSendToTitle)
         Text(domainAndTopic)
         CenteredSectionText(S.TpInAccount)
