@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -35,22 +36,9 @@ fun groupedCurrencyDecimal(a: String): BigDecimal
 }
 
 @Composable
-fun TricklePayDomainView(from: TdppDomain?, to: TdppDomain, modifier: Modifier = Modifier)
+fun TricklePayDomainView(from: TdppDomain?, to: TdppDomain, modifier: Modifier = Modifier, act: Account)
 {
     val badFieldBkg = colorWarning
-
-    val act = wallyApp!!.accounts[to.accountName] ?: wallyApp!!.accounts[from?.accountName] ?: run {
-        if (to.uoa == "") wallyApp!!.primaryAccount
-        else
-        {
-            val acts = wallyApp!!.accountsFor(to.uoa)
-            if (acts.size > 0) acts[0]
-            else
-            {
-                displayError(S.NoAccounts); return@TricklePayDomainView
-            }
-        }
-    }
 
     fun fmtMax(i:Long): String
     {
@@ -102,7 +90,7 @@ fun TricklePayDomainView(from: TdppDomain?, to: TdppDomain, modifier: Modifier =
 
     var automaticEnabled by remember { mutableStateOf(to.automaticEnabled) }
 
-    Column(modifier = modifier) {
+    Column(modifier = modifier.testTag("TricklePayDomainViewTag")) {
         if (from == to) CenteredSectionText(S.EditTpRegistration)
         else CenteredSectionText(S.AcceptTpRegistration)
         Text(to.domain)
@@ -226,7 +214,20 @@ fun TricklePayScreen(act: Account, startSess: TricklePaySession?, nav: ScreenNav
             // Show proposed registration changes to this TDPP domain
             if (pdc != null)
             {
-                TricklePayDomainView(s.domain, pdc, modifier = Modifier.weight(1f).padding(8.dp, 0.dp))
+                val account = wallyApp!!.accounts[pdc.accountName] ?: wallyApp!!.accounts[s.domain?.accountName] ?: run {
+                    if (pdc.uoa == "") wallyApp!!.primaryAccount
+                    else
+                    {
+                        val acts = wallyApp!!.accountsFor(pdc.uoa)
+                        if (acts.size > 0) acts[0]
+                        else
+                        {
+                            displayError(S.NoAccounts); return
+                        }
+                    }
+                }
+
+                TricklePayDomainView(s.domain, pdc, modifier = Modifier.weight(1f).padding(8.dp, 0.dp), account)
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
                     if (!s.newDomain)
                     {
