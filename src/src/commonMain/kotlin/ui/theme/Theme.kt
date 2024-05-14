@@ -812,15 +812,8 @@ fun WallyDataEntry(value: String, modifier: Modifier = Modifier, textStyle: Text
 @Composable
 fun WallyDataEntry(value: MutableState<TextFieldValue>, modifier: Modifier = Modifier, textStyle: TextStyle? = null, keyboardOptions: KeyboardOptions?=null, bkgCol: Color? = null, onValueChange: ((TextFieldValue) -> Unit)? = null)
 {
-    val currentStyle = LocalTextStyle.current
-
-    val fontSize = if (currentStyle.fontSize.isUnspecified) {
-        defaultFontSize * 1.25
-    } else {
-        currentStyle.fontSize
-    }
-
-    val ts2 = LocalTextStyle.current.copy(fontSize = fontSize.times(1.25))
+    val adjustedFontSize = FontScale(1.25)
+    val ts2 = LocalTextStyle.current.copy(fontSize = adjustedFontSize)
     val ts = ts2.merge(textStyle)
     val scope = rememberCoroutineScope()
     val bkgColor = remember { Animatable(BaseBkg) }

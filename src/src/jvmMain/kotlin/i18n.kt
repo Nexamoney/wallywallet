@@ -17,7 +17,7 @@ var LocaleStrings = arrayOf<String>()
 /** Convert this number to a locale-based string */
 actual fun i18n(id: Int): String
 {
-    if (id > LocaleStrings.size) return("STR$id")
+    if (id > LocaleStrings.size - 1) return("STR$id")
     val s = LocaleStrings[id]
     return s
 }
