@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.eygraber.uri.Uri
@@ -224,7 +225,7 @@ fun IdentityScreen(account: Account, urip: Uri?, nav: ScreenNav)
                         uri = null
                         domain = null
                     })
-                    WallyBoringLargeTextButton(S.remove, onClick = {
+                    WallyBoringLargeTextButton(S.remove, modifier = Modifier.testTag("EditIdentityButton"), onClick = {
                         wallet.removeIdentityDomain(d.domain)
                         displayNotice(S.removed)
                         uri = null
