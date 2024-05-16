@@ -378,7 +378,7 @@ kotlin {
                     //implementation(project(":shared"))
 
                     // CameraX core library using the camera2 implementation
-                    val camerax_version = "1.4.0-alpha05"
+                    val camerax_version = "1.4.0-beta01"
                     val lottieVersion = "6.3.0"
 
                     implementation(kotlin("stdlib-jdk8"))
