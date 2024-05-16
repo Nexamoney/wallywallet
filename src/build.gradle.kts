@@ -502,19 +502,6 @@ kotlin {
                     implementation(kotlin("test-junit"))
                     implementation("org.nexa:nexarpc:$nexaRpcVersion")
                     implementation("org.nexa:nexarpc:$nexaRpcVersion")
-                    // implementation("androidx.test:core:$androidTestCoreVersion")
-                    // implementation("androidx.test:core-ktx:$androidTestCoreVersion")
-                    // implementation("androidx.test.ext:junit:1.1.5")
-                    // implementation("androidx.test.ext:junit-ktx:1.1.5")
-
-                    // androidTestImplementation 'androidx.test:support-annotations:24.0.0'
-                    // implementation("androidx.test.espresso:espresso-contrib:3.5.1")
-                    // for intent mocking
-                    // implementation("androidx.test.espresso:espresso-intents:3.5.1")
-                    // for network testing to track idle state
-                    // implementation("androidx.test.espresso.idling:idling-concurrent:3.5.1")
-                    // implementation("androidx.test.espresso:espresso-idling-resource:3.5.1")
-                    // implementation("androidx.test.espresso:espresso-core:3.5.1")
                     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
                     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
                 }
