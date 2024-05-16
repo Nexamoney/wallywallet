@@ -16,22 +16,71 @@ The TestFlight BETA is used for testing new features and bugfixes and usually ha
 
 Use `git clone https://gitlab.com/wallywallet/android.git` or `git clone git@gitlab.com:wallywallet/android.git` to clone this repository.
 
-## Platforms
 
-### JVM
+## Setup development environment
 
-#### Building
+### Kotlin/Native compiler
 
-```bash
-./gradlew appJar
+> The Kotlin/Native compiler is available for macOS, Linux, and Windows. It is available as a command line tool
+
+https://kotlinlang.org/docs/native-command-line-compiler.html
+
+### Android Studio
+
+* Download and install Android Studio
+
+https://developer.android.com/studio
+
+* Install the Android NDK and CMake
+
+At the welcome screen, click "Configure" (bottom right) and choose "SDK Manager".  Next, Select "Android SDK" on the left and the "SDK Tools" tab.  Change your SDK location (if desired), check "NDK" and "CMake" and then click "Apply" or "OK" to make it happen.
+
+* Enable phone emulation on your desktop
+
+Make sure that CPU virtualization is enabled in your BIOS (you'll get an error when you try to start a phone if it is not).
+
+* If using Ubuntu Linux (or other Debian distribution): Add yourself to the /dev/kvm group, and logout or restart.
+
+```
+sudo adduser $USER kvm
+```
+Note the above **should** work but did not.  Another option on a single-user machine is to have your user own /dev/kvm:
+```
+sudo chown $USER /dev/kvm
 ```
 
-##### Generate version file
+#### Kotlin Multiplatform Android Studio plugin
+
+Install the kotlin multiplatform mobile android studio plugin
+
+https://plugins.jetbrains.com/plugin/14936-kotlin-multiplatform-mobile
+
+### Kdoctor: MacOs Environment analysis tool
+
+```bash
+brew install kdoctor
+kdoctor
+```
+
+> KDoctor ensures that all required components are properly installed and ready for use. If something is missed or not configured, KDoctor highlights the problem and suggests how to fix the problem.
+
+
+### Generate requires files
+**Generate version file**
 ```
 ./gradlew generateVersionFile
 ```
 
-#### Execution
+**Generate strings**
+
+Generating strings requires the [Kotlin Native compiler](https://kotlinlang.org/docs/native-command-line-compiler.html) to be installed
+
+```
+cd i18n
+./run.sh
+```
+
+### Execution
 
 In Android Studio, create a "JAR Application" in edit run configurations.  Just put the application (fat) jar file into the "Path To Jar" field.
 Then go down to "Before Launch" and add a gradle task with this project "wpw" and task name "appJar".  The Jar file is located at:
@@ -42,34 +91,17 @@ YOUR_PROJECT_PATH/build/libs/wpw-app.jar
 
 ## Building
 
-
-
-
-### Tools
-
-#### Android Studio
-
- * Download and install Android Studio
-
-https://developer.android.com/studio
-
- * Install the Android NDK and CMake
-
-At the welcome screen, click "Configure" (bottom right) and choose "SDK Manager".  Next, Select "Android SDK" on the left and the "SDK Tools" tab.  Change your SDK location (if desired), check "NDK" and "CMake" and then click "Apply" or "OK" to make it happen.
-
- * Enable phone emulation on your desktop
-
-Make sure that CPU virtualization is enabled in your BIOS (you'll get an error when you try to start a phone if it is not).
-
- * If using Ubuntu Linux (or other Debian distribution): Add yourself to the /dev/kvm group, and logout or restart.
-
+```bash
+./gradlew assemble
 ```
-sudo adduser $USER kvm
+### Building JVM
+
+```bash
+./gradlew appJar
 ```
-Note the above **should** work but did not.  Another option on a single-user machine is to have your user own /dev/kvm:
-```
-sudo chown $USER /dev/kvm
-```
+
+
+https://plugins.jetbrains.com/plugin/14936-kotlin-multiplatform-mobile
 
 ### Dependencies
 
