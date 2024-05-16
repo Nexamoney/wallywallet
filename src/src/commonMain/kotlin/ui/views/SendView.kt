@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,7 +27,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import okio.utf8Size
 import org.nexa.libnexakotlin.*
 
-private val LogIt = GetLog("BU.wally.SenView")
+private val LogIt = GetLog("BU.wally.SendView")
 
 /**
  * Send all text
@@ -36,7 +37,6 @@ val SEND_ALL_TEXT: String = i18n(S.sendAll)
 /**
  * View for sending coins
  */
-@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun SendView(
   selectedAccountName: String,
@@ -56,13 +56,10 @@ fun SendView(
   onApproximatelyText: (String) -> Unit,
   checkSendQuantity: (s: String, account: Account) -> Unit,
   onSendSuccess: () -> Unit,
-  onAccountNameSelected: (name: String) -> Unit
+  onAccountNameSelected: (name: String) -> Unit,
+  account: Account,
 )
 {
-    val account = wallyApp!!.accounts[selectedAccountName] ?: wallyApp!!.nullablePrimaryAccount ?: run {
-        displayNotice(S.NoAccounts, null)
-        return
-    }
     val currencyCode = currencyCodeShared.asStateFlow()
     var accountExpanded by remember { mutableStateOf(false) }
     var displayNoteInput by remember { mutableStateOf(false) }
@@ -465,7 +462,7 @@ fun SendView(
 
             // Display note input
             if (displayNoteInput || note.value.utf8Size() > 0)
-                StringInputTextField(S.editSendNoteHint, note.value, { note.value = it })
+                StringInputTextField(S.editSendNoteHint, note.value, Modifier.testTag("noteInputFieldSendView"), { note.value = it })
 
             Spacer(Modifier.height(4.dp))
             Row(
@@ -518,7 +515,7 @@ fun SendView(
                 }
             }
             WallyButtonRow {
-                WallyBoringLargeIconButton("icons/edit_pencil.png", interactionSource = MutableInteractionSource(),
+                WallyBoringLargeIconButton("icons/edit_pencil.png", interactionSource = MutableInteractionSource(), modifier = Modifier.testTag("noteButtonSendView"),
                   onClick = { displayNoteInput = !displayNoteInput }
                 )
                 WallyBoringLargeTextButton(S.Send, onClick = {
