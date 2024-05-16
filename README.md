@@ -65,7 +65,7 @@ kdoctor
 > KDoctor ensures that all required components are properly installed and ready for use. If something is missed or not configured, KDoctor highlights the problem and suggests how to fix the problem.
 
 
-### Generate requires files
+### Generate required files
 **Generate version file**
 ```
 ./gradlew generateVersionFile
@@ -100,10 +100,36 @@ YOUR_PROJECT_PATH/build/libs/wpw-app.jar
 ./gradlew appJar
 ```
 
+### Test
 
-https://plugins.jetbrains.com/plugin/14936-kotlin-multiplatform-mobile
+
+
+#### Trigger iOS background processing task from Xcode
+A physical device is required. Background processing is not supported in emulator.
+
+1. Start Xcode and have an iphone connected
+2. Add a breakpoint after the task is scheduled. In line one of `func scheduleBGProcessingTask` in swift
+3. Start the app using the play button in Xcode
+4. A text input field will appear at the bottom of Xcode
+5. Run one of the following command to trigger `func handleBackgroundProcessing()`:
+
+```
+e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"info.bitcoinunlimited.www.wally.backgroundProcessing"]
+```
+
+Alternatively, fire `func handleBackgroundAppRefresh`:
+
+```
+e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"info.bitcoinunlimited.www.wally.appRefresh"]
+```
+
+Read more in the [official Apple documentation](https://developer.apple.com/documentation/backgroundtasks/starting-and-terminating-tasks-during-development)
+
+
 
 ### Dependencies
+
+https://plugins.jetbrains.com/plugin/14936-kotlin-multiplatform-mobile
 
 #### Nexa and Bitcoin Cash Kotlin Library
 
@@ -115,24 +141,66 @@ https://gitlab.com/nexa/libnexakotlin
 
 Start Android Studio and use the _Build_ menu to start a build.
 
-### Troubleshooting
+### Test and Debug
 
-## Running Compose UI tests (Experimental)
-Compose UI test commands:
+#### Running Compose UI tests (Experimental)
+
+Read more at the Kotlin Compose Multiplatform UI docs.
+https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html
+
+##### iOS UI automated tests
+*  Note iOS Compose tests do not actually appear on the device.
+```bash
+./gradlew iosTest
 ```
-./gradlew pixel5DebugAndroidTest
-./gradlew :src:connectedAndroidTest
-./gradlew :src:jvmTest
+
+```bash
 ./gradlew :src:iosSimulatorArm64Test
 ```
 
-Read more at the Kotlin Compose Multiplatform UI docs.
+##### Android UI automated tests
+  On Android phones, you can watch the tests on-device.
 
-https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html
+```bash
+./gradlew :src:connectedAndroidTest
+```
+
+```bash
+./gradlew pixel5DebugAndroidTest
+```
+
+#### Running automated (unit) tests
+To successfully run the units tests, you must have a local "regtest" Nexa full node running.
+```
+./gradlew :src:jvmTest
+```
+
+#### Trigger iOS background processing task from Xcode
+Physical device is required. Background processing is not supported in emulator
+
+1. Start Xcode and have an iphone connected
+2. Add a breakpoint after the task is scheduled. In line one of `func scheduleBGProcessingTask` in swift
+3. Start the app using the play button in Xcode
+4. A text input field will appear at the bottom of Xcode
+5. Run one of the following command to trigger `func handleBackgroundProcessing()`:
+
+```
+e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"info.bitcoinunlimited.www.wally.backgroundProcessing"]
+```
+
+Alternatively, fire `func handleBackgroundAppRefresh`:
+
+```
+e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"info.bitcoinunlimited.www.wally.appRefresh"]
+```
+
+Read more in the [official Apple documentation](https://developer.apple.com/documentation/backgroundtasks/starting-and-terminating-tasks-during-development)
+
 
 ## Localization
 
 WallyWallet text is internationalized in the Android standard manner, via specialization of app/src/main/res/values/strings.xml.  See https://developer.android.com/guide/topics/resources/localization.
+However to apply this to a multiplatform project, some customization is needed.  To regenerate the internationalized text into multiplatform resource files, see "Generate required files" above.
 
 ## libnexa.dylib 
 
