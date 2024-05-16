@@ -69,6 +69,14 @@ lint:
   script:
     - ./gradlew lint -x :src:lintDebug # Skips android linter with 356 errors, 500 warnings.
 
+appJar:
+  stage: assemble
+  script:
+    - ./gradlew appJar
+  artifacts:
+    paths:
+      - src/build/libs/wpw.jar
+
 assemble:
   stage: assemble
   tags:
