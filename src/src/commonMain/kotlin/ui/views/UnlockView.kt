@@ -29,7 +29,7 @@ private val LogIt = GetLog("BU.wally.unlockview")
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UnlockView(onPinEntered: (String) -> Unit)
+fun UnlockView(enterPin: String = i18n(S.EnterPIN), onPinEntered: (String) -> Unit)
 {
     val pin = remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
@@ -52,7 +52,7 @@ fun UnlockView(onPinEntered: (String) -> Unit)
         onPinEntered(pin.value)
     }
 
-    AlertDialog(title = { Text(i18n(S.EnterPIN)) },
+    AlertDialog(title = { Text(enterPin) },
       containerColor = BrightBkg,
       text = {
               Column {
