@@ -200,18 +200,18 @@ fun WallyBoringLargeTextButton(textRes: Int, enabled: Boolean=true, modifier: Mo
 }
 
 @Composable
-fun WallyBoringLargeIconButton(iconRes: String, enabled: Boolean=true, modifier: Modifier = Modifier, interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
+fun WallyBoringLargeIconButton(iconRes: String, enabled: Boolean= true, modifier: Modifier = Modifier, interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
 {
     // chosen height is comparable to the large text button
     WallyBoringButton(onClick, enabled, modifier, interactionSource)
     {
         if (iconRes.endsWith(".xml") || iconRes.endsWith(".png"))
-            ResImageView(iconRes, Modifier.wrapContentWidth().height(32.dp).defaultMinSize(32.dp, 32.dp).clickable { onClick() }.then(modifier))
+            ResImageView(iconRes, Modifier.wrapContentWidth().height(32.dp).defaultMinSize(32.dp, 32.dp).clickable { onClick() })
         else
         {
             val imbytes = getResourceFile(iconRes).readByteArray()
             MpMediaView(null, imbytes, iconRes) { mediaInfo, drawer ->
-                drawer(Modifier.wrapContentWidth().height(32.dp).defaultMinSize(32.dp, 32.dp).clickable { onClick() }.then(modifier))
+                drawer(Modifier.wrapContentWidth().height(32.dp).defaultMinSize(32.dp, 32.dp).clickable { onClick() })
             }
         }
     }
@@ -1051,7 +1051,7 @@ fun StringInputField(descriptionRes: Int, labelRes: Int, text: String, style: Te
             focusManager.clearFocus()
         })
         Spacer(modifier = Modifier.width(8.dp))
-        StringInputTextField(labelRes, text, onChange)
+        StringInputTextField(labelRes, text, onChange = onChange)
     }
 }
 
@@ -1145,7 +1145,7 @@ fun DecimalInputField(descriptionRes: Int, labelRes: Int, text: String, style: T
  * Input field that returns a String
  */
 @Composable
-fun StringInputTextField(labelRes: Int, text: String, onChange: (String) -> Unit)
+fun StringInputTextField(labelRes: Int, text: String, modifier: Modifier = Modifier, onChange: (String) -> Unit)
 {
     val ia = remember { MutableInteractionSource() }
     // Track whenever we are inside a data entry field, because the soft keyboard will appear & we want to modify the screen based on soft
@@ -1185,7 +1185,7 @@ fun StringInputTextField(labelRes: Int, text: String, onChange: (String) -> Unit
       label = { Text(i18n(labelRes)) },
       singleLine = true,
       interactionSource = ia,
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth().then(modifier),
       keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
 
       colors = TextFieldDefaults.colors(

@@ -2,7 +2,6 @@ package info.bitcoinunlimited.www.wally.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.ui.views.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.nexa.libnexakotlin.NexaFormat
 import androidx.compose.ui.zIndex
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
@@ -36,8 +34,8 @@ We could use a composable "State Holder" (in theory) to capture all the state ne
 writing a vast amount of inscrutible garbage rather than actual useful code.
 * */
 
-private val _sendFromAccount = MutableStateFlow<String>("")
-@OptIn(ExperimentalResourceApi::class)
+private val sendFromAccountShared = MutableStateFlow<Account?>(null)
+
 @Composable fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState<GuiDriver?>, nav: ScreenNav)
 {
     var sendNote = remember { mutableStateOf("") }
@@ -70,7 +68,7 @@ private val _sendFromAccount = MutableStateFlow<String>("")
     val ags = accountGuiSlots.collectAsState()
     val synced = remember { mutableStateOf(wallyApp!!.isSynced()) }
     var currentReceive = currentReceiveShared.collectAsState()
-    val sendFromAccount = _sendFromAccount.collectAsState()
+    val sendFromAccount = sendFromAccountShared.collectAsState().value
     val _sendToAddress:String = sendToAddress.collectAsState().value
 
     val clipmgr: ClipboardManager = LocalClipboardManager.current
@@ -255,7 +253,7 @@ private val _sendFromAccount = MutableStateFlow<String>("")
     {
         if (account != null)
         {
-            _sendFromAccount.value = account.name
+            sendFromAccountShared.value = account
             updateSendCurrencyType(account)
             checkSendQuantity(sendQuantity.value, account)
         }
@@ -267,7 +265,7 @@ private val _sendFromAccount = MutableStateFlow<String>("")
     fun getSendFromAccount(): Account?
     {
         // Get an account from the sendFromAccount string
-        var account = wallyApp!!.accounts[sendFromAccount.value]
+        var account = sendFromAccount
         if (account == null)   // if no sendFromAccount, grab the selected account
         {
             account = selectedAccount.value
@@ -492,7 +490,7 @@ private val _sendFromAccount = MutableStateFlow<String>("")
                 try // If the address blockchain does not match, auto-pick one that does.  But if it does match, don't touch it.
                 {
                     val payAddress: PayAddress = PayAddress(tmp.sendAddress)
-                    val from = wallyApp!!.accounts[sendFromAccount.value]
+                    val from = sendFromAccount
                     if (from != null)
                     {
                         if (from.chain.chainSelector != payAddress.blockchain)
@@ -578,7 +576,7 @@ private val _sendFromAccount = MutableStateFlow<String>("")
         }
     }
 
-    if (sendFromAccount.value == "")
+    if (sendFromAccount == null)
     {
         try
         { val act = wallyApp!!.preferredVisibleAccount()
@@ -629,8 +627,12 @@ private val _sendFromAccount = MutableStateFlow<String>("")
         Column(modifier = Modifier.fillMaxSize()) {
             if (isSending)
             {
+                val fromAccount: Account = sendFromAccount ?: run {
+                    displayNotice(S.NoAccounts, null)
+                    return
+                }
                 SendView(
-                      selectedAccountName = sendFromAccount.value,
+                      selectedAccountName = fromAccount.name,
                       accountNames = accountGuiSlots.value.map { it.name },
                       toAddress = _sendToAddress,
                       note = sendNote,
@@ -644,7 +646,7 @@ private val _sendFromAccount = MutableStateFlow<String>("")
                           isSending = false
                           driver.value = null // hack to fix send section reappearing on nav after an address is provided
                           clearAlerts()  // If user manually cancelled, they understood the problem
-                          wallyApp!!.accounts[sendFromAccount.value]?.clearAssetTransferList()
+                          sendFromAccountShared.value?.clearAssetTransferList()
                                  },
                       approximatelyText = approximatelyText,
                       currencies = sendCurrencyChoices,
@@ -662,7 +664,7 @@ private val _sendFromAccount = MutableStateFlow<String>("")
                           checkSendQuantity(s, account)
                       },
                       onSendSuccess = {
-                          wallyApp!!.accounts[sendFromAccount.value]?.clearAssetTransferList()
+                          sendFromAccountShared.value?.clearAssetTransferList()
                           sendToAddress.value = ""
                           sendQuantity.value = ""
                           isSending = false
@@ -672,7 +674,8 @@ private val _sendFromAccount = MutableStateFlow<String>("")
                           act?.let {
                               updateSendAccount(it)
                           }
-                      }
+                      },
+                      account = fromAccount
                     )
                 }
                 if (!isSending)
