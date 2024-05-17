@@ -48,7 +48,10 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
         var lastDate = 0L
         var lastHash = Hash256()
 
+        LogIt.info("all activity: first getEc: getTip()")
         val tip = getEc().getTip()
+        LogIt.info("all activity: done")
+
         lastHeight = tip.first.height
         lastDate = tip.first.time
         lastHash = tip.first.hash
@@ -69,10 +72,13 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
                 try
                 {
                     val script = dest.outputScript()
-                    val history = getEc().getHistory(script, 10000)
+                    LogIt.info("all activity: getEc()")
+                    val ec = getEc()
+                    LogIt.info("all activity: getHistory()")
+                    val history = ec.getHistory(script, 10000)
                     if (history.size > 0)
                     {
-                        LogIt.info("Found activity at address $index script ${script.toHex()} address ${script.address} (${history.size} events)")
+                        LogIt.info("all activity: Found activity at address $index script ${script.toHex()} address ${script.address} (${history.size} events)")
                         found = true
                         lastAddressIndex = index
                         addrsFound++
@@ -82,7 +88,7 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
                             // But I don't need to investigate any repeats
                             if (!ret.containsKey(h.second))
                             {
-                                LogIt.info("  Searching ${h.first} tx: ${h.second}")
+                                LogIt.info("  all activity: Searching ${h.first} tx: ${h.second}")
                                 val tx = getEc().getTx(h.second)
                                 val txh: TransactionHistory = TransactionHistory(chainSelector, tx)
                                 //  Load the header at this height from a little cache we keep, or from the server
@@ -93,6 +99,7 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
                                     {
                                         try
                                         {
+                                            LogIt.info("all activity: get block header")
                                             hdr = bc.getBlockHeader(h.first.toLong())
                                         }
                                         catch(e: HeadersNotForthcoming)
@@ -102,9 +109,11 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
                                     }
                                     if (hdr == null)
                                     {
+                                        LogIt.info("all activity: get header")
                                         val headerBytes = getEc().getHeader(h.first)
                                         hdr = blockHeaderFor(chainSelector, BCHserialized(SerializationType.NETWORK, headerBytes))
                                     }
+                                    LogIt.info("all activity: get header completed")
                                     hdr
                                 }
                                 if (header.validate(chainSelector))
