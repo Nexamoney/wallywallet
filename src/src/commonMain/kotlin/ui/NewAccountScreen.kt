@@ -569,52 +569,6 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
     }
 }
 
-@Composable fun BlockchainDropDownMenu(
-  selectedChain: Map.Entry<String, ChainSelector>,
-  blockchains: Map<String, ChainSelector>,
-  onChainSelected: (Map.Entry<String, ChainSelector>) -> Unit
-)
-{
-    var expanded by remember { mutableStateOf(false) }
-
-    Row(
-      horizontalArrangement = Arrangement.SpaceEvenly,
-      verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(Icons.Default.Check, tint = colorDebit ,contentDescription = "Check or not check")
-        Spacer(Modifier.width(8.dp))
-        Text(i18n(S.Blockchain))
-        Spacer(Modifier.width(8.dp))
-        Box {
-            Row(
-              verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                  text = selectedChain.key,
-                  modifier = Modifier.clickable(onClick = { expanded = true })
-                )
-                IconButton(onClick = {expanded = true}) {
-                    Icon(Icons.Default.ArrowDropDown, null)
-                }
-            }
-            DropdownMenu(
-              expanded = expanded,
-              onDismissRequest = { expanded = false }
-            ) {
-                blockchains.forEach {
-                    DropdownMenuItem(
-                      onClick = {
-                          onChainSelected(it)
-                          expanded = false
-                      },
-                      text = { Text(it.key) }
-                    )
-                }
-            }
-        }
-    }
-}
-
 @Composable fun CheckOrX(valid: Boolean)
 {
     val focusManager = LocalFocusManager.current
