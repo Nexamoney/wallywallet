@@ -749,7 +749,7 @@ fun searchFirstActivity(getEc: () -> ElectrumClient, chainSelector: ChainSelecto
                     val bh = use.block_height
                     if (bh != null)
                     {
-                        LogIt.info(sourceLoc() +": Found activity at index $index in ${dest.address.toString()}")
+                        LogIt.info(sourceLoc() +": Found first use activity at index $index in ${dest.address.toString()}")
                         val headerBin = getEc().getHeader(bh)
                         val blkHeader = blockHeaderFor(chainSelector, BCHserialized(headerBin, SerializationType.HASH))
                         if (ret == null || blkHeader.time < ret.first)
@@ -761,12 +761,12 @@ fun searchFirstActivity(getEc: () -> ElectrumClient, chainSelector: ChainSelecto
                 }
                 else
                 {
-                    LogIt.info(sourceLoc() +": didn't find activity at index $index in ${dest.address.toString()}")
+                    LogIt.info(sourceLoc() +": didn't find first use activity at index $index in ${dest.address.toString()}")
                 }
             }
             catch (e: ElectrumNotFound)
             {
-                LogIt.info(sourceLoc() + ": didn't find activity at index $index in ${dest.address.toString()}")
+                LogIt.info(sourceLoc() + ": didn't find first use activity at index $index in ${dest.address.toString()}")
             }
         }
         index++
@@ -980,12 +980,14 @@ fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter
             if (tmp != null && tmp.open) ec
             else
             {
+                LogIt.info(sourceLoc() + ": search activity, getting Electrum connection")
                 ec = net.getElectrum()
                 if (ec == null)
                 {
                     displayFastForwardInfo(i18n(S.ElectrumNetworkUnavailable))
                     millisleep(200U)
                 }
+                LogIt.info(sourceLoc() + ": search activity, getting Electrum connection is $ec")
                 ec
             }
         }
@@ -1003,7 +1005,7 @@ fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter
 
         val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
 
-        LogIt.info("Searching in ${addressDerivationCoin}")
+        LogIt.info("Searching all activity in ${addressDerivationCoin}")
         var addrText = ""
         var summaryText = ""
         var fromText = ""

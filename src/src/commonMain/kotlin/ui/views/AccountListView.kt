@@ -436,6 +436,7 @@ fun startAccountFastForward(account: Account, displayFastForwardInfo: (String?) 
             var lastHash = it.lastHash
             val ch: AccountSearchResults? = null // change.results
             var txh = it.txh
+            /*
             if (ch!=null)
             {
                 if (ch.lastHeight > it.lastHeight)
@@ -446,9 +447,11 @@ fun startAccountFastForward(account: Account, displayFastForwardInfo: (String?) 
                 }
                 txh = it.txh + ch.txh
             }
+             */
+            wallet.generateAddressesUntil(it.lastAddressIndex)
             wallet.fastforward(lastHeight, lastDate, lastHash, txh)
         }
-
+        triggerAssetCheck()
         displayFastForwardInfo(null)
         account.fastforward = null
         triggerAccountsChanged(account)

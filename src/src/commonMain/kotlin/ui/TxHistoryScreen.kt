@@ -147,10 +147,10 @@ fun iTransaction.gatherAssets(b:Blockchain):List<AssetPerAccount>
 }
 
 /** returns the destination addresses if this tx is sending, or the receipt addresses if this tx is receiving */
-fun TransactionHistory.gatherRelevantAddresses():List<PayAddress>
+fun TransactionHistory.gatherRelevantAddresses():Set<PayAddress>
 {
     val data = this
-    val addrs = mutableListOf<PayAddress>()
+    val addrs = mutableSetOf<PayAddress>()
     if (data.incomingAmt > data.outgoingAmt)  // receive
     {
         for (i in data.incomingIdxes)
