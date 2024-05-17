@@ -18,6 +18,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.work.*
 import info.bitcoinunlimited.www.wally.ui.*
+import info.bitcoinunlimited.www.wally.ui.theme.BaseBkg
 import info.bitcoinunlimited.www.wally.ui.theme.NativeTitle
 import org.nexa.libnexakotlin.rem
 import kotlin.time.Duration.Companion.milliseconds
@@ -308,6 +309,8 @@ class ComposeActivity: CommonActivity()
             }
 
         })
+
+        getWindow().getDecorView().setBackgroundColor(BaseBkg.value.toInt())
 
 
         // If the UI is opened, register background sync work.  But we don't want to reregister the background work whenever the background work

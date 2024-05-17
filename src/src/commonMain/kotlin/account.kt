@@ -61,14 +61,15 @@ class Account(
   startHeight: Long? = null, //* block height of first activity
   autoInit: Boolean = true, /** Automatically begin the asynchronous initialization phase */
   retrieveOnlyActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, HDActivityBracket>>? = null,  //* jam in other derivation paths to grab coins from (but use addresses of) (if new account)
-  val prefDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
+  val prefDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE),
+  db: WalletDatabase? = null
 )
 {
     val access = Mutex("actMut")
     val handler = CoroutineExceptionHandler {
         _, exception -> LogIt.error("Caught in Account CoroutineExceptionHandler: $exception")
     }
-    var walletDb: WalletDatabase? = openWalletDB(dbPrefix + name + "_wallet", chainSelector)
+    var walletDb: WalletDatabase? = db ?: openWalletDB(dbPrefix + name + "_wallet", chainSelector)
     @Volatile
     var started = false  // Have the cnxnmgr and blockchain services been started or are we in initialization?
     //? Was the PIN entered properly since the last 15 second sleep?

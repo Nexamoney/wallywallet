@@ -32,7 +32,7 @@ fun provideLocaleFilesData(data:ByteArray)
     setLocaleStringsFrom(data)
 }
 @OptIn(ExperimentalForeignApi::class)
-actual fun setLocale(language: String, country: String):Boolean
+actual fun setLocale(language: String, country: String, context: Any?):Boolean
 {
     val data = try
       {

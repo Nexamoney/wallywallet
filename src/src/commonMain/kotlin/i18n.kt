@@ -8,4 +8,4 @@ expect fun i18n(id: Int): String
 expect fun setLocale():Boolean
 
 /** Set the current locale (pass the region code) */
-expect fun setLocale(language: String, country: String): Boolean
+expect fun setLocale(language: String, country: String, context: Any? = null): Boolean

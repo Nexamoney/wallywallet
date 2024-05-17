@@ -6,7 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowSplashScreenBackground">@color/splashBackground</item>
+        <item name="android:windowSplashScreenBackground">@color/titleBackground</item>
         <!-- TODO make the splash screen appear right away item name="android:background">@drawable/splash</item -->
         <item name="android:background">@color/titleBackground</item>
         <item name="actionBarPopupTheme">@style/ActionBarOverflowMenu</item>

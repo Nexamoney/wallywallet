@@ -28,7 +28,7 @@ actual fun setLocale():Boolean
     val locale = Locale.getDefault()
     return setLocale(locale.language, locale.country)
 }
-actual fun setLocale(language: String, country: String):Boolean
+actual fun setLocale(language: String, country: String, context: Any?):Boolean
 {
     val nothing = Objectify<Int>(0)
     //val ins: InputStream = nothing::class.java.getClassLoader().getResourceAsStream("file.txt")
