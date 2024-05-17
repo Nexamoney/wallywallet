@@ -278,7 +278,7 @@ fun SplitBillScreen(nav: ScreenNav)
             color = Color.Black,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
-            fontSize = LocalTextStyle.current.fontSize.times(1.25)
+            fontSize = FontScale(1.25)
           ))
 
         val s = qrString

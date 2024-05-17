@@ -47,22 +47,36 @@ actual fun setLocale():Boolean
     return false
 }
 
-actual fun setLocale(language: String, country: String):Boolean
+
+actual fun setLocale(language: String, country: String, context: Any?):Boolean
 {
-    val androidContext = (appContext() as android.content.Context)!!
-    var id = androidContext.resources.getIdentifier("strings_${language}", "raw", androidContext.packageName)
-    if (id == 0) id = androidContext.resources.getIdentifier("strings_${language}_${country}", "raw", androidContext.packageName)
-    val strs = androidContext.resources.openRawResource(id).readBytes()
-
-    val chopSpots = mutableListOf<Int>(0)
-    strs.forEachIndexed { index, byte -> if (byte==0.toByte()) chopSpots.add(index+1)  }
-
-    val strings = mutableListOf<String>()
-    for (i in 0 until chopSpots.size-1)
+    val androidContext = if (context != null)
     {
-        val ba = strs.sliceArray(chopSpots[i] until chopSpots[i+1]-1)
-        strings.add(ba.decodeUtf8())
+        context as android.content.Context
     }
-    LocaleStrings = strings
-    return true
+    else
+    {
+        appContext() as android.content.Context
+    }
+
+    if (androidContext != null)
+    {
+            var id = androidContext.resources.getIdentifier("strings_${language}", "raw", androidContext.packageName)
+            if (id == 0) id = androidContext.resources.getIdentifier("strings_${language}_${country}", "raw", androidContext.packageName)
+            val strs = androidContext.resources.openRawResource(id).readBytes()
+
+            val chopSpots = mutableListOf<Int>(0)
+            strs.forEachIndexed { index, byte -> if (byte == 0.toByte()) chopSpots.add(index + 1) }
+
+            val strings = mutableListOf<String>()
+            for (i in 0 until chopSpots.size - 1)
+            {
+                val ba = strs.sliceArray(chopSpots[i] until chopSpots[i + 1] - 1)
+                strings.add(ba.decodeUtf8())
+            }
+            LocaleStrings = strings
+        return true
+    }
+    return false
 }
+

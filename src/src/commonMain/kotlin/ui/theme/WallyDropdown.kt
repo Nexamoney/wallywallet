@@ -253,7 +253,7 @@ fun <T> WallyDropDownMenuUnidirectional(
                         Text(
                           fontWeight = fontWeight,
                           color = color,
-                          fontSize = LocalTextStyle.current.fontSize.times(1.3),
+                          fontSize = FontScale(1.3),
                           text = key
                         )
                     }

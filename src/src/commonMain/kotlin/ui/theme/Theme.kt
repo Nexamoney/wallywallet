@@ -473,16 +473,7 @@ fun WarningText(errorText: String, modifier: Modifier)
 
 @Composable fun WallyDropdownItemFontStyle(): TextStyle
 {
-    val currentStyle = LocalTextStyle.current
-    val fontSize = if (currentStyle.fontSize.isUnspecified) {
-        defaultFontSize
-    } else {
-        currentStyle.fontSize
-    }
-
-    return LocalTextStyle.current.copy(
-      fontSize = fontSize.times(1.5)
-    )
+    return FontScaleStyle(1.5)
 }
 
 /* Styling for the text of page titles */
@@ -492,13 +483,6 @@ fun TitleText(textRes: Int, modifier: Modifier = Modifier) = TitleText(i18n(text
 @Composable
 fun TitleText(text: String, modifier: Modifier = Modifier)
 {
-    val currentStyle = LocalTextStyle.current
-    val fontSize = if (currentStyle.fontSize.isUnspecified) {
-        defaultFontSize
-    } else {
-        currentStyle.fontSize
-    }
-
     Text(
       text = text,
       modifier = modifier,
@@ -507,7 +491,7 @@ fun TitleText(text: String, modifier: Modifier = Modifier)
         color = colorTitleForeground,
         textAlign = TextAlign.Center,  // To make this actually work, you need to pass a modifier where the space given to the title is greedy using .weight()
         fontWeight = FontWeight.Bold,
-        fontSize = fontSize.times(1.5)
+        fontSize = FontScale(1.5)
       )
     )
 }
@@ -516,11 +500,7 @@ fun TitleText(text: String, modifier: Modifier = Modifier)
 fun WallySectionTextStyle(): TextStyle {
     val currentStyle = LocalTextStyle.current
 
-    val fontSize = if (currentStyle.fontSize.isUnspecified) {
-        defaultFontSize * 1.25
-    } else {
-        currentStyle.fontSize
-    }
+    val fontSize = FontScale(1.25)
 
     return currentStyle.copy(
       color = Color.Black,
@@ -737,7 +717,7 @@ fun WallyDigitEntry(value: String, modifier: Modifier = Modifier, textStyle: Tex
 @Composable
 fun WallyDataEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, keyboardOptions: KeyboardOptions?=null, bkgCol: Color? = null, onValueChange: ((String) -> Unit)? = null)
 {
-    val ts2 = LocalTextStyle.current.copy(fontSize = LocalTextStyle.current.fontSize.times(1.25))
+    val ts2 = FontScaleStyle(1.25)
     val ts = ts2.merge(textStyle)
     val scope = rememberCoroutineScope()
     val bkgColor = remember { Animatable(BaseBkg) }
