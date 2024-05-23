@@ -10,10 +10,14 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.sp
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
@@ -175,7 +179,7 @@ fun Account.uiData():AccountUIData
         if (chainstate != null)
         {
             val now = millinow()
-            val cnxnLst = chainstate.chain?.net?.mapConnections()
+            val cnxnLst = chainstate.chain.net.mapConnections()
             {
                 val recentRecv = (now - it.lastReceiveTime) < 50L
                 val recentSend = (now - it.lastSendTime) < 50L
@@ -183,11 +187,11 @@ fun Account.uiData():AccountUIData
                 it.name + " (" + it.aveLatency.roundToLong() + "ms" + sr + ")"
             }
             val trying:List<String> = if (chainstate.chain.net is MultiNodeCnxnMgr) (chainstate.chain.net as MultiNodeCnxnMgr).initializingCnxns().map { it.name } else listOf()
-            val peers = cnxnLst?.joinToString(", ") + (if (trying.isNotEmpty()) (" " + i18n(S.trying) + " " + trying.joinToString(", ")) else "")
+            val peers = cnxnLst.joinToString(", ") + (if (trying.isNotEmpty()) (" " + i18n(S.trying) + " " + trying.joinToString(", ")) else "")
 
-            ret.devinfo = i18n(S.at) + " " + (chainstate.syncedHash?.toHex()?.take(8) ?: "") + ", " + (chainstate.syncedHeight
-              ?: "") + " " + i18n(S.of) + " " + (chainstate.chain?.curHeight
-              ?: "") + " blocks, " + (chainstate.chain?.net?.size ?: "") + " peers\n" + peers
+            ret.devinfo = i18n(S.at) + " " + (chainstate.syncedHash.toHex().take(8) ?: "") + ", " + (chainstate.syncedHeight
+              ?: "") + " " + i18n(S.of) + " " + (chainstate.chain.curHeight
+              ?: "") + " blocks, " + (chainstate.chain.net.size ?: "") + " peers\n" + peers
         }
         else
         {
@@ -261,10 +265,44 @@ fun AccountItemView(
                     Spacer(Modifier.width(16.dp))
                     // Balance and currency code row to align bottoms of fonts of different size
                     Row(
-                      verticalAlignment = Alignment.Bottom
+                      verticalAlignment = Alignment.Bottom,
+                      modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(text = uidata.balance, fontSize = 28.sp, color = colorDebit)
-                        Text(text = uidata.currencyCode, fontSize = 14.sp)
+                        val startingBalStyle = FontScaleStyle(1.75)
+                        val startingCcStyle = FontScaleStyle(0.6)
+                        var balTextStyle by remember { mutableStateOf(startingBalStyle) }
+                        var ccTextStyle by remember { mutableStateOf(startingCcStyle) }
+                        var drawBal by remember { mutableStateOf(false) }
+                        var drawCC by remember { mutableStateOf(false) }
+                        var scale by remember { mutableStateOf(1.0) }
+                        Text(text = uidata.balance, style = balTextStyle, color = colorDebit, modifier = Modifier.padding(0.dp).drawWithContent { if (drawBal) drawContent() }, textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
+                          onTextLayout = {
+                              textLayoutResult ->
+                              if (textLayoutResult.didOverflowWidth)
+                              {
+                                  scale = scale*0.90
+                                  balTextStyle = startingBalStyle.copy(fontSize = startingBalStyle.fontSize * scale)
+                              }
+                              else drawBal = true
+                          })
+                        Text(text = uidata.currencyCode, style = ccTextStyle, modifier = Modifier.padding(0.dp).fillMaxWidth().drawWithContent { if (drawCC) drawContent() }, textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
+                          onTextLayout = {
+                              textLayoutResult ->
+                              if (textLayoutResult.didOverflowWidth)
+                              {
+                                  scale = scale*0.90
+                                  if (scale > 0.20) // If this field gets too small, just drop it
+                                  {
+                                      ccTextStyle = ccTextStyle.copy(fontSize = startingCcStyle.fontSize * scale)
+                                  }
+                                  else
+                                  {
+                                      ccTextStyle = ccTextStyle.copy(fontSize = TextUnit(0.0f, TextUnitType.Em))
+                                      drawCC = true
+                                  }
+                              }
+                              else drawCC = true
+                          })
                     }
                     if (offerFastForward && (uidata.fastForwarding == false))
                     {
