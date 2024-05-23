@@ -592,6 +592,36 @@ fun CenteredText(text: String, modifier: Modifier = Modifier)
       })
 }
 
+@Composable fun FittedText(text: String, textStyle:TextStyle, color: Color? = null, modifier: Modifier = Modifier)
+{
+    // see https://stackoverflow.com/questions/63971569/androidautosizetexttype-in-jetpack-compose
+    var rtextStyle by remember { mutableStateOf(textStyle) }
+    var drawIt by remember { mutableStateOf(false) }
+    Text(text = text, style = textStyle, color = color ?: Color.Unspecified, modifier = Modifier.padding(0.dp).fillMaxWidth().drawWithContent { if (drawIt) drawContent() }. then(modifier), textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
+      onTextLayout = {
+          textLayoutResult ->
+          if (textLayoutResult.didOverflowWidth)
+              rtextStyle = rtextStyle.copy(fontSize = rtextStyle.fontSize * 0.9)
+          else drawIt = true
+      })
+}
+
+/*
+@Composable fun FittedTextIn()
+{
+    // see https://stackoverflow.com/questions/63971569/androidautosizetexttype-in-jetpack-compose
+    var rtextStyle by remember { mutableStateOf(textStyle) }
+    var drawIt by remember { mutableStateOf(false) }
+    Text(text = text, style = textStyle, color = color ?: Color.Unspecified, modifier = Modifier.padding(0.dp).fillMaxWidth().drawWithContent { if (drawIt) drawContent() }. then(modifier), textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
+      onTextLayout = {
+          textLayoutResult ->
+          if (textLayoutResult.didOverflowWidth)
+              rtextStyle = rtextStyle.copy(fontSize = rtextStyle.fontSize * 0.9)
+          else drawIt = true
+      })
+}
+ */
+
 /** Creates a horizontal row of evenly spaced objects that you add.  Meant to be used to provide a consistent look for
  * a row of buttons. */
 @Composable fun WallyButtonRow(modifier: Modifier = Modifier, content: @Composable() (RowScope.() -> Unit))
@@ -677,7 +707,7 @@ fun WallyDecimalEntry(value: MutableState<String>, modifier: Modifier = Modifier
             softKeyboardBar.value = null
         }
     },
-      textStyle, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done), bkgCol,
+      textStyle, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Done), bkgCol,
       {
           if (it.text.onlyDecimal())  // Only allow characters to be entered that are part of decimal numbers
           {
