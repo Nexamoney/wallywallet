@@ -97,9 +97,9 @@ compileIos:
     - ./gradlew :src:compileKotlinIosArm64
     - ./gradlew :src:compileKotlinIosSimulatorArm64
     - ./gradlew :src:compileKotlinIosX64
-    - ./gradlew :src:iosArm64MetadataJar
-    - ./gradlew :src:iosSimulatorArm64MetadataJar
-    - ./gradlew :src:iosX64MetadataJar
+    - ./gradlew :src:iosArm64MetadataElements
+    - ./gradlew :src:iosSimulatorArm64MetadataElements
+    - ./gradlew :src:iosX64MetadataElements
 
 jvmJar:
   stage: assemble
