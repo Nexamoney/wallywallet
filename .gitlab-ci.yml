@@ -115,13 +115,6 @@ jvmJar-intelmac:
   script:
     - ./gradlew :src:jvmJar
 
-macMetadataJar:
-  stage: assemble
-  tags:
-    - m1-baremetal
-  script:
-    - ./gradlew :src:macosArm64MetadataJar
-
 iosArm64Test:
   stage: test
   tags:
