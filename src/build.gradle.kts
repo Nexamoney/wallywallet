@@ -194,13 +194,6 @@ kotlin {
                 baseName = "src"
             }
         }
-
-        macosArm64 {
-            compilations.getByName("main") {
-                compilerOptions.options.freeCompilerArgs.add("-verbose")
-                //binaries.libnexaBinCfg()
-            }
-        }
     }
 
     /* Linux native targets are not supported in compose -- desktop is available via jvm
