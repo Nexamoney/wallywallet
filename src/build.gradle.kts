@@ -312,14 +312,16 @@ kotlin {
             dependencies {
                 // Strangely this appears to work on multiple platforms (win, macos) if the linux-built jar is copied to them
                 implementation("org.jetbrains.skiko:skiko-awt-runtime-$skikoTarget:$skikoVersion")
-                // custom compose libs appear unnecessary since kotlin 2.0 / compose 1.6.10
-                //implementation(compose.desktop.common)
-                //implementation(compose.desktop.currentOs)
-                //implementation(compose.desktop.linux_x64)
-                //implementation(compose.desktop.linux_arm64)
-                //implementation(compose.desktop.windows_x64)
-                //implementation(compose.desktop.macos_x64)
-                //implementation(compose.desktop.macos_arm64)
+                // These compose platform libs are necessary so that you can take the wpw.jar file and copy it to another
+                // platform and run it.  DO NOT remove without running this manual test!
+                // Note (when manually testing) that you also need the correct libnexa shared lib copied over.
+                implementation(compose.desktop.common)
+                implementation(compose.desktop.currentOs)
+                implementation(compose.desktop.linux_x64)
+                implementation(compose.desktop.linux_arm64)
+                implementation(compose.desktop.windows_x64)
+                implementation(compose.desktop.macos_x64)
+                implementation(compose.desktop.macos_arm64)
                 implementation("org.jetbrains.kotlin:kotlin-stdlib:2.0.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$coroutinesVersion")
                 // Required for Dispatchers.Main
