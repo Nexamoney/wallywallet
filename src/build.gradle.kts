@@ -9,15 +9,15 @@ import java.time.Instant
 import java.net.URL
 
 // Dependency versions
-val mpThreadsVersion = "0.2.6"
-val nexaRpcVersion = "1.1.5"
-val libNexaKotlinVersion = "0.1.78"
+val mpThreadsVersion = "0.2.7"
+val nexaRpcVersion = "1.1.8"
+val libNexaKotlinVersion = "0.1.80"
 val serializationVersion = "1.6.3"  // https://github.com/Kotlin/kotlinx.serialization
-val coroutinesVersion = "1.8.0"     // https://github.com/Kotlin/kotlinx.coroutines
-val ktorVersion = "2.3.10"           // https://github.com/ktorio/ktor
+val coroutinesVersion = "1.8.1"     // https://github.com/Kotlin/kotlinx.coroutines
+val ktorVersion = "2.3.11"           // https://github.com/ktorio/ktor
 val bigNumVersion = "0.3.9"         // https://github.com/ionspin/kotlin-multiplatform-bignum
-val composeVersion = "1.6.10-rc01"        // https://github.com/JetBrains/compose-multiplatform/releases
-val androidTestCoreVersion = "1.6.10-rc01" // https://mvnrepository.com/artifact/androidx.test/core
+val composeVersion = "1.6.10"        // https://github.com/JetBrains/compose-multiplatform/releases
+val androidTestCoreVersion = "1.6.0-beta01" // https://mvnrepository.com/artifact/androidx.test/core
 val androidxActivityComposeVersion = "1.9.0"
 val uriKmpVersion = "0.0.16"  // https://github.com/eygraber/uri-kmp
 val skikoVersion = "0.8.4" // https://github.com/JetBrains/skiko/releases
@@ -30,12 +30,14 @@ plugins {
     //trick: for the same plugin versions in all sub-modulesly
     kotlin("multiplatform")
     id("com.android.application")
-    kotlin("plugin.serialization").version("1.9.22")
-    id("org.jetbrains.compose").version("1.6.10-rc01")   // https://github.com/JetBrains/compose-multiplatform/releases
+    kotlin("plugin.serialization").version("2.0.0")
+    //id("org.jetbrains.kotlin.android").version("2.0.0")
+    id("org.jetbrains.kotlin.plugin.compose").version("2.0.0")
+    id("org.jetbrains.compose")   // https://github.com/JetBrains/compose-multiplatform/releases
     id("org.jetbrains.dokka").version("1.9.20").apply(false)
     // id("org.openjfx.javafxplugin") version "0.1.0"
     idea
-    id("org.jetbrains.kotlinx.kover").version("0.8.0-Beta")
+    id("org.jetbrains.kotlinx.kover").version("0.8.0")
     // application  // for JVM executables, but not compatible with android, have to do it by hand
 }
 
@@ -215,7 +217,7 @@ kotlin {
         mingwX64 {
             compilations.getByName("main") {
                 compilerOptions.options.freeCompilerArgs.add("-verbose")
-                binaries.libnexaBinCfg()
+                target.binaries.libnexaBinCfg()
             }
         }
     }
@@ -237,7 +239,7 @@ kotlin {
                 implementation("org.jetbrains.compose.foundation:foundation:$composeVersion")
                 implementation("org.jetbrains.compose.material3:material3:$composeVersion")
                 // implementation(compose.materialIconsExtended)
-                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+                //@OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
 
                 // multiplatform replacements
@@ -308,16 +310,17 @@ kotlin {
 
         val jvmMain by getting {
             dependencies {
-                implementation(compose.desktop.common)
                 // Strangely this appears to work on multiple platforms (win, macos) if the linux-built jar is copied to them
                 implementation("org.jetbrains.skiko:skiko-awt-runtime-$skikoTarget:$skikoVersion")
-                implementation(compose.desktop.currentOs)
-                implementation(compose.desktop.linux_x64)
-                implementation(compose.desktop.linux_arm64)
-                implementation(compose.desktop.windows_x64)
-                implementation(compose.desktop.macos_x64)
-                implementation(compose.desktop.macos_arm64)
-                implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.23")
+                // custom compose libs appear unnecessary since kotlin 2.0 / compose 1.6.10
+                //implementation(compose.desktop.common)
+                //implementation(compose.desktop.currentOs)
+                //implementation(compose.desktop.linux_x64)
+                //implementation(compose.desktop.linux_arm64)
+                //implementation(compose.desktop.windows_x64)
+                //implementation(compose.desktop.macos_x64)
+                //implementation(compose.desktop.macos_arm64)
+                implementation("org.jetbrains.kotlin:kotlin-stdlib:2.0.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$coroutinesVersion")
                 // Required for Dispatchers.Main
                 // https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-dispatchers/-main.html

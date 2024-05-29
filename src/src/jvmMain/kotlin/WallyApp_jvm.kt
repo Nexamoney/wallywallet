@@ -74,10 +74,6 @@ fun guiNewPanel()
     application(true)
     {
         var isOpen by remember { mutableStateOf(true) }
-        //var w = mutableStateOf(i18n(S.app_name))
-        //WallyJvmApp.topWindow = remember { w }
-        //var windowTitle by remember { w }
-        //val currentRootScreen = remember { mutableStateOf(ScreenId.Home) }
         nav.reset(currentRootScreen)
 
         if (isOpen)
@@ -88,12 +84,7 @@ fun guiNewPanel()
               state = rememberWindowState(width = (5 * 160).dp, height = (7 * 160).dp)
             )
             {
-                //WallyJvmApp.topWindow = w
-                MaterialTheme()
-                {
-                    NavigationRoot(nav)
-                }
-               // DashboardScreen((4 * 160).dp, WallyJvmApp.accounts)
+                NavigationRoot(nav)
             }
         }
     }

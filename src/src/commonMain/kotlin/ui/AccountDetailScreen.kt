@@ -27,7 +27,6 @@ import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import kotlinx.coroutines.*
 import org.nexa.libnexakotlin.*
-import wpw.src.generated.resources.Res
 
 enum class AccountAction
 {
