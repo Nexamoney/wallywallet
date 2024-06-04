@@ -77,7 +77,7 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
             val holding = acc.wallet.getBalanceIn(a)
             val totalReceived = acc.wallet.getBalanceIn(a, false)
 
-            val os = a.outputScript()
+            val os = a.lockingScript()
             var first = Long.MAX_VALUE
             var last = Long.MIN_VALUE
             acc.wallet.forEachTx {
