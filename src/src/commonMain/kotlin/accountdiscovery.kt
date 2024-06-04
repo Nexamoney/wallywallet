@@ -71,7 +71,7 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
             {
                 try
                 {
-                    val script = dest.outputScript()
+                    val script = dest.lockingScript()
                     LogIt.info("all activity: getEc()")
                     val ec = getEc()
                     LogIt.info("all activity: getHistory()")

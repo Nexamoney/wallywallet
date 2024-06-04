@@ -11,7 +11,7 @@ import java.net.URL
 // Dependency versions
 val mpThreadsVersion = "0.2.7"
 val nexaRpcVersion = "1.1.8"
-val libNexaKotlinVersion = "0.1.80"
+val libNexaKotlinVersion = "0.1.83"
 val serializationVersion = "1.6.3"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.8.1"     // https://github.com/Kotlin/kotlinx.coroutines
 val ktorVersion = "2.3.11"           // https://github.com/ktorio/ktor
@@ -816,4 +816,12 @@ fun prjFileMustExist(path:String):File
     val f = project.file(path)
     if (!f.exists()) throw Exception("missing $f")
     return f
+}
+
+// makes the standard streams (err and out) visible at console when running tests
+tasks.withType<Test> {
+    testLogging {
+        showStandardStreams = true
+    }
+    outputs.upToDateWhen { false }  // Always rerun test tasks
 }

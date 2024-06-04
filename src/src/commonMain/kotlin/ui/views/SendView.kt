@@ -197,7 +197,7 @@ fun SendView(
                                         val aout = txOutputFor(cs)
                                         aout.amount = dust(cs)
                                         assetDustOut += aout.amount
-                                        aout.script = sendAddress.groupedConstraintScript(groupId, qty)
+                                        aout.script = sendAddress.groupedLockingScript(groupId, qty)
                                         tx.add(aout)
                                     }
                                 }
@@ -209,7 +209,7 @@ fun SendView(
                                 val coinOut = txOutputFor(cs)
                                 coinOut.amount = atomAmt
                                 if (spendAll) coinOut.amount -= assetDustOut  // it doesn't matter because txCompleter will solve but needs to not be too much
-                                coinOut.script = sendAddress.outputScript()
+                                coinOut.script = sendAddress.lockingScript()
                                 tx.add(coinOut)
                             }
 

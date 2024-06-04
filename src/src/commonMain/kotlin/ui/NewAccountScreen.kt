@@ -688,10 +688,10 @@ fun searchFirstActivity(getEc: () -> ElectrumClient, chainSelector: ChainSelecto
         val newSecret = secretDerivation(index)
         val us = UnsecuredSecret(newSecret)
 
-        val dests = mutableListOf<SatoshiScript>(Pay2PubKeyHashDestination(chainSelector, us, index.toLong()).outputScript())  // Note, if multiple destination types are allowed, the wallet load/save routines must be updated
+        val dests = mutableListOf<SatoshiScript>(Pay2PubKeyHashDestination(chainSelector, us, index.toLong()).lockingScript())  // Note, if multiple destination types are allowed, the wallet load/save routines must be updated
         //LogIt.info(sourceLoc() + " " + name + ": New Destination " + tmp.toString() + ": " + dest.address.toString())
         if (chainSelector.hasTemplates)
-            dests.add(Pay2PubKeyTemplateDestination(chainSelector, us, index.toLong()).ungroupedOutputScript())
+            dests.add(Pay2PubKeyTemplateDestination(chainSelector, us, index.toLong()).lockingScript())
 
         for (dest in dests)
         {
@@ -745,7 +745,7 @@ fun bracketActivity(ec: ElectrumClient, chainSelector: ChainSelector, giveUpGap:
 
         try
         {
-            val use = ec.getFirstUse(dest.outputScript(), 10000)
+            val use = ec.getFirstUse(dest.lockingScript(), 10000)
             if (use.block_hash != null)
             {
                 if (use.block_height != null)

@@ -30,7 +30,16 @@ class NonGuiTests
     {
         val rpcConnection = "http://" + FULL_NODE_IP + ":" + REGTEST_RPC_PORT
         LogIt.info("Connecting to: " + rpcConnection)
-        var rpc = NexaRpcFactory.create(rpcConnection)
+        val rpc = NexaRpcFactory.create(rpcConnection)
+        val tipIdx = rpc.getblockcount()
+        if (tipIdx < 102)
+            rpc.generate((101 - tipIdx).toInt())
+        else
+        {
+            val tip = rpc.getblock(tipIdx)
+            // The tip is so old that this node won't think its synced so we need to produce a block
+            if (epochSeconds() - tip.time > 1000) rpc.generate(1)
+        }
         return rpc
     }
 
@@ -247,7 +256,7 @@ class NonGuiTests
     @Test
     fun testWalletRecovery()
     {
-        val TIMEOUT = 12000000
+        val TIMEOUT = 1200000
         val cs = ChainSelector.NEXAREGTEST
 
         val rpc = try
@@ -259,6 +268,12 @@ class NonGuiTests
             println("**TEST MALFUNCTION**  Test cannot connect to a full node (probably you did not start one)")
             return
         }
+        catch(e: Exception)
+        {
+            println("**TEST MALFUNCTION**  Test cannot connect to a full node (probably you did not start one)")
+            return
+        }
+
         val blkStart = try
         {
             rpc.getblockcount()

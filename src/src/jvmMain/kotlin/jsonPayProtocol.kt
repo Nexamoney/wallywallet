@@ -165,7 +165,7 @@ actual fun processJsonPay(bip72: String): ProspectivePayment
                         payAddrString = chainToURI[chainSelector] + ":" + payAddrString
                     }
                     val payAddr: PayAddress = PayAddress(payAddrString)
-                    ret.outputs.add(NexaTxOutput(chainSelector, amount, payAddr.outputScript()))
+                    ret.outputs.add(NexaTxOutput(chainSelector, amount, payAddr.lockingScript()))
                 }
             }
 
