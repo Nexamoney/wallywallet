@@ -552,7 +552,7 @@ val gitCommitHash: String by lazy {
       .readText()
       .trim()
 }
-val versionNumber = "3.0.0"
+val versionNumber = "3.0.4"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 
 version = "$versionNumber-$gitCommitHash"
@@ -665,6 +665,18 @@ tasks.register("generateVersionFile") {
             }
         """.trimIndent())
     }
+
+    if(MAC)
+        dependsOn("updateCFBundleShortVersionString")
+}
+
+
+// Task to update the iOS version based on versionNumber
+tasks.register<Exec>("updateCFBundleShortVersionString") {
+    val plistFile = file("../iosApp/iosApp/Info.plist")
+
+    // Use PlistBuddy to set the CFBundleShortVersionString
+    commandLine("/usr/libexec/PlistBuddy", plistFile.absolutePath, "-c", "Set :CFBundleShortVersionString $versionNumber")
 }
 
 tasks.named("compileKotlinMetadata").configure {
