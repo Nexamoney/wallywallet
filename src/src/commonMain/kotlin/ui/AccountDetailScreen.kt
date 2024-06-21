@@ -112,7 +112,7 @@ fun AccountBlockchainConnectionDetails(chainState: GlueWalletBlockchain)
 }
 
 @Composable
-fun AccountFirstLastSend(stat: CommonWallet.WalletStatistics,)
+fun AccountFirstLastSend(stat: Wallet.WalletStatistics)
 {
     val firstLastSend = i18n(S.FirstLastSend) % mapOf(
       "first" to (if (stat.firstSendHeight == Long.MAX_VALUE) "never" else stat.firstSendHeight.toString()),
@@ -127,7 +127,7 @@ fun AccountFirstLastSend(stat: CommonWallet.WalletStatistics,)
 
 
 @Composable
-fun GuiAccountTxStatisticsRow(stat: CommonWallet.WalletStatistics, onAddressesButtonClicked: () -> Unit, onTxHistoryButtonClicked: () -> Unit)
+fun GuiAccountTxStatisticsRow(stat: Wallet.WalletStatistics, onAddressesButtonClicked: () -> Unit, onTxHistoryButtonClicked: () -> Unit)
 {
     Row(
       modifier = Modifier.padding(0.dp).fillMaxWidth(),
