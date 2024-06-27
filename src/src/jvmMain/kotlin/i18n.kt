@@ -31,11 +31,10 @@ actual fun setLocale():Boolean
 actual fun setLocale(language: String, country: String, context: Any?):Boolean
 {
     val nothing = Objectify<Int>(0)
-    //val ins: InputStream = nothing::class.java.getClassLoader().getResourceAsStream("file.txt")
 
-    val loadTries = listOf<()->ByteArray> (
-      { nothing::class.java.getClassLoader().getResourceAsStream("strings_${language}_${country}.bin").readBytes() },
-      { nothing::class.java.getClassLoader().getResourceAsStream("strings_${language}.bin").readBytes() },
+    val loadTries = listOf<()->ByteArray?> (
+      { nothing::class.java.getClassLoader().getResourceAsStream("strings_${language}_${country}.bin")?.readBytes() },
+      { nothing::class.java.getClassLoader().getResourceAsStream("strings_${language}.bin")?.readBytes() },
       { File("strings_${language}_${country}.bin").readBytes() },
       { File("strings_${language}.bin").readBytes() }
       )
@@ -45,29 +44,13 @@ actual fun setLocale(language: String, country: String, context: Any?):Boolean
     {
         try
         {
-            strs = i()
+            strs = i() ?: continue
             break
         }
-        catch (e:Exception)
+        catch (_:Exception)
         {}
     }
     if (strs.size == 0) return false
-    /*
-    {
-        File("strings_${language}_${country}.bin").readBytes()
-    }
-    catch (e: Exception)
-    {
-        try
-        {
-            File("strings_${language}.bin").readBytes()
-        }
-        catch(e: Exception)
-        {
-            return false
-        }
-    }
-    */
     val chopSpots = mutableListOf<Int>(0)
     strs.forEachIndexed { index, byte -> if (byte==0.toByte()) chopSpots.add(index+1)  }
 

@@ -55,7 +55,7 @@ fun convertOldAccounts(app: WallyApp): Boolean
 {
     val db = oldRawOpenKvpDB(app, "bip44walletdb")
     if (db == null) return false
-
+    var numAccounts = 0
     if (true)
     {
         val cursor = db.query("KvpData", null, null, null, null, null, null)
@@ -122,10 +122,10 @@ fun convertOldAccounts(app: WallyApp): Boolean
                 val acc = wallyApp!!.recoverAccount(w, flags, "",  wd.secretWords, wd.chainSelector, earliestActivity, earliestHeight, null)
                 // Write the encoded pin directly because we do not know its unencoded value
                 epin?.let { acc?.saveAccountPin(it) }
+                numAccounts += 1
             }
         }
     }
-
     db.close()
-    return false
+    return numAccounts > 0
 }

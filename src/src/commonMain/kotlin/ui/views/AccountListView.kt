@@ -263,7 +263,7 @@ fun AccountItemView(
                     // Balance and currency code row to align bottoms of fonts of different size
                     Row(
                       verticalAlignment = Alignment.Bottom,
-                      modifier = Modifier.fillMaxWidth()
+                      modifier = Modifier.fillMaxWidth(0.80f)  // this is the fraction of what's left over
                     ) {
                         val startingBalStyle = FontScaleStyle(1.75)
                         val startingCcStyle = FontScaleStyle(0.6)
@@ -304,6 +304,7 @@ fun AccountItemView(
                     if (offerFastForward && (uidata.fastForwarding == false))
                     {
                         Spacer(Modifier.width(8.dp))
+                        LogIt.info("offer fast forward")
                         WallyBoringButton({
                             uidata.fastForwarding = true
                             startAccountFastForward(uidata.account) {
@@ -311,7 +312,7 @@ fun AccountItemView(
                                 triggerAccountsChanged(uidata.account)
                             }
                         }) {
-                            ResImageView("icons/fastforward.png", modifier = Modifier.size(26.dp))
+                                ResImageView("icons/fastforward.png", modifier = Modifier.size(26.dp))
                         }
                     }
                 }

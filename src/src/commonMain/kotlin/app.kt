@@ -996,11 +996,14 @@ open class CommonApp
             }
             catch (e: Exception)
             {
-                if (!convertOldAccounts()) firstRun = true
                 byteArrayOf()
             }
 
-            if (accountNames.size == 0) firstRun = true // Ok maybe not first run but no wallets
+            // Ok maybe not first run but no wallets
+            if (accountNames.size == 0)
+            {
+                if (!convertOldAccounts()) firstRun = true
+            }
 
             val accountNameStr = accountNames.decodeUtf8()
             LogIt.info("Loading active accounts: $accountNameStr")

@@ -10,17 +10,17 @@ import java.net.URL
 
 // Dependency versions
 val mpThreadsVersion = "0.2.7"
-val nexaRpcVersion = "1.1.8"
-val libNexaKotlinVersion = "0.1.87"
+val nexaRpcVersion = "1.1.9"
+val libNexaKotlinVersion = "0.1.88"
 val serializationVersion = "1.6.3"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.8.1"     // https://github.com/Kotlin/kotlinx.coroutines
 val ktorVersion = "2.3.11"           // https://github.com/ktorio/ktor
 val bigNumVersion = "0.3.9"         // https://github.com/ionspin/kotlin-multiplatform-bignum
-val composeVersion = "1.6.10"        // https://github.com/JetBrains/compose-multiplatform/releases
-val androidTestCoreVersion = "1.6.0-beta01" // https://mvnrepository.com/artifact/androidx.test/core
+val composeVersion = "1.6.11"        // https://github.com/JetBrains/compose-multiplatform/releases
+val androidTestCoreVersion = "1.6.0-rc01" // https://mvnrepository.com/artifact/androidx.test/core
 val androidxActivityComposeVersion = "1.9.0"
 val uriKmpVersion = "0.0.16"  // https://github.com/eygraber/uri-kmp
-val skikoVersion = "0.8.4" // https://github.com/JetBrains/skiko/releases
+val skikoVersion = "0.8.9" // https://github.com/JetBrains/skiko/releases
 val workVersion = "2.9.0"
 
 
@@ -144,8 +144,8 @@ kotlin {
                 sourceSetTree.set(KotlinSourceSetTree.test)
 
                 dependencies {
-                    implementation("androidx.compose.ui:ui-test-junit4-android:1.6.7")
-                    debugImplementation("androidx.compose.ui:ui-test-manifest:1.6.7")
+                    implementation("androidx.compose.ui:ui-test-junit4-android:1.6.8")
+                    debugImplementation("androidx.compose.ui:ui-test-manifest:1.6.8")
                 }
             }
         }
@@ -232,7 +232,7 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
                 implementation(kotlin("stdlib-common"))
-                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.5.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
 
                 // Compose
                 implementation("org.jetbrains.compose.runtime:runtime:$composeVersion")
@@ -376,17 +376,17 @@ kotlin {
                     //implementation(project(":shared"))
 
                     // CameraX core library using the camera2 implementation
-                    val camerax_version = "1.4.0-beta01"
-                    val lottieVersion = "6.3.0"
+                    val camerax_version = "1.4.0-beta02"  // https://developer.android.com/jetpack/androidx/releases/camera
+                    val lottieVersion = "6.4.1"
 
                     implementation(kotlin("stdlib-jdk8"))
                     implementation("androidx.activity:activity-compose:$androidxActivityComposeVersion")
                     implementation("androidx.tracing:tracing:1.2.0")
-                    implementation("androidx.compose.ui:ui:1.6.7")
-                    implementation("androidx.compose.ui:ui-tooling:1.6.7")
-                    implementation("androidx.compose.ui:ui-tooling-preview:1.6.7")
-                    implementation("androidx.compose.foundation:foundation:1.6.7")
-                    implementation("androidx.compose.material:material:1.6.7")
+                    implementation("androidx.compose.ui:ui:1.6.8")
+                    implementation("androidx.compose.ui:ui-tooling:1.6.8")
+                    implementation("androidx.compose.ui:ui-tooling-preview:1.6.8")
+                    implementation("androidx.compose.foundation:foundation:1.6.8")
+                    implementation("androidx.compose.material:material:1.6.8")
                     implementation("androidx.activity:activity-compose:1.9.0")
                     implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.6.3")
                     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.3")
@@ -552,7 +552,8 @@ val gitCommitHash: String by lazy {
       .readText()
       .trim()
 }
-val versionNumber = "3.0.4"
+
+val versionNumber = "3.0.8"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 
 version = "$versionNumber-$gitCommitHash"
@@ -562,7 +563,7 @@ android {
     namespace = "info.bitcoinunlimited.www.wally"
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
-    compileSdk = 34
+    compileSdk = 35
     defaultConfig {
         applicationId = "info.bitcoinunlimited.www.wally"
         minSdk = 29
@@ -602,12 +603,14 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("debug")
             buildConfigField("String", "BUILD_TIME", "\"${secSinceEpoch}\"")
+            ndk.debugSymbolLevel = "FULL"
         }
         release {
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("debug")
             buildConfigField("String", "BUILD_TIME", "\"${secSinceEpoch}\"")
+            ndk.debugSymbolLevel = "FULL"
         }
     }
     compileOptions {
