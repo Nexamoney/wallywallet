@@ -289,12 +289,19 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         appResources = getResources()
         displayMetrics = getResources().getDisplayMetrics()
         val locales = resources.configuration.locales
+        var localeSet = false
         for (idx in 0 until locales.size())
         {
             val loc = locales[idx]
             LogIt.info("Locale: ${loc.language} ${loc.country}")
-            if (setLocale(loc.language, loc.country)) break
+            if (setLocale(loc.language, loc.country))
+            {
+                localeSet = true
+                break
+            }
         }
+        // If I do not have any translations for their locales then default to english
+        if (!localeSet) setLocale("en","US")
         wallyAndroidApp = this
         wallyApp = commonApp
         commonApp.onCreate()

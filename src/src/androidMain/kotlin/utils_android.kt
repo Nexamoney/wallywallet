@@ -88,8 +88,7 @@ actual fun makeImageBitmap(imageBytes: ByteArray, width: Int, height: Int, scale
 
 actual fun convertOldAccounts(): Boolean
 {
-    convertOldAccounts(wallyAndroidApp!!)
-    return true
+    return convertOldAccounts(wallyAndroidApp!!)
 }
 
 actual fun platformRam():Long?

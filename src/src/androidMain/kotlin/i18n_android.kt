@@ -59,8 +59,10 @@ actual fun setLocale(language: String, country: String, context: Any?):Boolean
         appContext() as android.content.Context
     }
 
-    if (androidContext != null)
+    try
     {
+        if (androidContext != null)
+        {
             var id = androidContext.resources.getIdentifier("strings_${language}", "raw", androidContext.packageName)
             if (id == 0) id = androidContext.resources.getIdentifier("strings_${language}_${country}", "raw", androidContext.packageName)
             val strs = androidContext.resources.openRawResource(id).readBytes()
@@ -75,7 +77,13 @@ actual fun setLocale(language: String, country: String, context: Any?):Boolean
                 strings.add(ba.decodeUtf8())
             }
             LocaleStrings = strings
-        return true
+            return true
+        }
+    }
+    catch (e: Resources.NotFoundException)
+    {
+        LogIt.info("Locale $language $country is not found")
+        return false
     }
     return false
 }
