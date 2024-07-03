@@ -871,7 +871,7 @@ fun WallyDataEntry(value: MutableState<TextFieldValue>, modifier: Modifier = Mod
       onValueChange ?: { },
       textStyle = ts,
       interactionSource = ia,
-      modifier = modifier.testTag("WallyDataEntryTextField"),
+      modifier = modifier,
       keyboardOptions = keyboardOptions ?: KeyboardOptions.Default,
       decorationBox = { tf ->
           Box(Modifier.hoverable(ia, true)

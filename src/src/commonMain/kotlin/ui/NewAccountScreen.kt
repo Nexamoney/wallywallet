@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -580,7 +581,6 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
           modifier = Modifier.clickable { focusManager.clearFocus() })
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable fun AccountNameInput(accountName: String, validAccountName: Boolean, onNewAccountName: (String) -> Unit)
 {
     val focusManager = LocalFocusManager.current
@@ -595,7 +595,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
         WallyTextEntry(
           value = accountName,
           onValueChange = onNewAccountName,
-          modifier = Modifier.weight(1f)
+          modifier = Modifier.weight(1f).testTag("AccountNameInput")
         )
     }
 }
@@ -657,7 +657,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
           verticalAlignment = Alignment.CenterVertically
         ) {
             CheckOrX(validOrNoPin)
-            WallyDigitEntry(pin,modifier = Modifier.weight(1f), onValueChange = onPinChange)
+            WallyDigitEntry(pin,modifier = Modifier.weight(1f).testTag("NewAccountPinInput"), onValueChange = onPinChange)
             /*
             TextField(
               value = pin,
