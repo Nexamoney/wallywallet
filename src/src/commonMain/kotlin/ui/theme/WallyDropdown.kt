@@ -277,7 +277,8 @@ fun <T> WallyDropDownMenuUnidirectional(
                       onSelect(it.toPair())
                       expanded = false
                   },
-                  text = { Text(text = it.key) }
+                  text = { Text(text = it.key) },
+                  modifier = Modifier.testTag("DropdownMenuItem-${it.key}")
                 )
             }
         }
