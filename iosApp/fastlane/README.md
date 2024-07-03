@@ -11,32 +11,14 @@ xcode-select --install
 
 For _fastlane_ installation instructions, see [Installing _fastlane_](https://docs.fastlane.tools/#installing-fastlane)
 
-## env
-
-Add your environment variables to the iosApp/.env file in the format KEY=VALUE. For example:
-
-```.env
-APPLE_ID=myappleid@example.com
-ITC_TEAM_ID="1231231"
-TEAM_ID="123456789"
-APP_STORE_CONNECT_API_KEY_PATH=fastlane/keys/123456789.json
-```
-
-Add app store connect key to:
-- iosApp/fastlane/keys/<teamid>.json
-- iosApp/fastlane/keys/<teamid>.p8
-
-Tutorial: https://docs.fastlane.tools/app-store-connect-api/
-
-
 # Available Actions
 
 ## iOS
 
-### ios emulator UI integration test
+### ios test_emulator
 
 ```sh
-[bundle exec] fastlane ios test
+[bundle exec] fastlane ios test_emulator
 ```
 
 Run all the tests on emulator

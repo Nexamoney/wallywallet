@@ -122,6 +122,11 @@ iosArm64Test:
   resource_group: iphone_mac_emulators
   script:
     - ./gradlew :src:cleanIosSimulatorArm64Test :src:iosSimulatorArm64Test
+  artifacts:
+    when: always
+    paths:
+      - src/build/reports/tests/iosSimulatorArm64Test/index.html
+      - src/build/reports/tests/iosSimulatorArm64Test/**/**.html
 
 iosX64Test:
   stage: test
