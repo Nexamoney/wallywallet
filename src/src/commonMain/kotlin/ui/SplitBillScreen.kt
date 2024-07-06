@@ -49,11 +49,11 @@ fun SplitBillScreen(nav: ScreenNav)
     var total by remember { mutableStateOf(CurrencyDecimal(0)) }
 
     var amount by remember { mutableStateOf(CurrencyDecimal(0)) }
-    var amountString by remember { mutableStateOf(FiatFormat.format(amount)) }
+    var amountString = remember { mutableStateOf(FiatFormat.format(amount)) }
 
     var tipSelectedIndex by remember { mutableStateOf(0) }
     var tipAmount = CurrencyDecimal(0)
-    var tipAmountString by remember { mutableStateOf(FiatFormat.format(tipAmount)) }
+    val tipAmountString = remember { mutableStateOf(FiatFormat.format(tipAmount)) }
 
     var waysSelectedIndex by remember { mutableStateOf(0) }
 
@@ -123,7 +123,7 @@ fun SplitBillScreen(nav: ScreenNav)
         {
             val pct = tipAmounts[tipSelectedIndex]
             tipAmount = (amount*pct)/100
-            tipAmountString = FiatFormat.format(tipAmount)
+            tipAmountString.value = FiatFormat.format(tipAmount)
         }
         total = amount + tipAmount
 
@@ -166,21 +166,23 @@ fun SplitBillScreen(nav: ScreenNav)
         // Amount row:
         Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
             SectionText(S.Amount)
-            WallyTextEntry(
-              value = amountString,
-              onValueChange = {
-                  amountString = it
-                  try
-                  {
-                      amount = CurrencyDecimal(it)
-                      updateNumbers()
-                  }
-                  catch(e: Exception)
-                  {
-                      // X it
-                  }
-              },
-              modifier = Modifier.weight(1.0f, false))
+            WallyDecimalEntry(
+              amountString,
+              modifier = Modifier.weight(1.0f, false)
+            ) {
+                amountString.value = it
+                try
+                {
+                    amount = CurrencyDecimal(it)
+                    updateNumbers()
+                    amountString.value
+                }
+                catch(e: Exception)
+                {
+                    // X it
+                    ""
+                }
+            }
             Spacer(Modifier.width(rowSpacer/5))
             WallyDropdownMenu(
               modifier = Modifier.weight(0.75f, false),
@@ -224,19 +226,22 @@ fun SplitBillScreen(nav: ScreenNav)
             Spacer(Modifier.width(rowSpacer))
             Text(i18n(S.asciiArrow))
             Spacer(Modifier.width(rowSpacer))
-            WallyTextEntry(
-              value = tipAmountString,
+            WallyDecimalEntry(tipAmountString,
               onValueChange = {
-                  tipAmountString = it
                   try
                   {
                       tipAmount = CurrencyDecimal(it)
                       tipSelectedIndex = 0  // If the user manually enters a tip, pop the combo box to --
                       updateNumbers()
+                      tipAmountString.value = it
+                      it
                   }
                   catch(e: Exception)
                   {
+                      val zero = ""
                       tipAmount = CURRENCY_ZERO
+                      tipAmountString.value = zero
+                      zero
                   }
               },
               modifier = Modifier.width(IntrinsicSize.Min).weight(1f))
