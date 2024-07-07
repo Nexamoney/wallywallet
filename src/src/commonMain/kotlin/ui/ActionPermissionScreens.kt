@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUnsignedTypes::class)
+
 package info.bitcoinunlimited.www.wally.ui
 
 import androidx.compose.foundation.layout.*
@@ -18,6 +20,7 @@ import io.ktor.http.*
 import io.ktor.utils.io.errors.*
 import okio.FileNotFoundException
 import org.nexa.libnexakotlin.CannotLoadException
+import org.nexa.libnexakotlin.simpleapi.NexaScript
 
 private val LogIt = GetLog("wally.actperm")
 
@@ -527,8 +530,6 @@ fun SpecialTxPermScreen(acc: Account, sess: TricklePaySession, nav: ScreenNav)
                 {
                     LogIt.info("accept trickle pay special transaction")
 
-                    val pTx = sess.proposedTx
-                    val panalysis = sess.proposalAnalysis
                     // Step 1, unlock if needed, otherwise accept & done
                     if ((pTx != null) && (panalysis != null))
                     {
@@ -607,7 +608,22 @@ fun AssetInfoPermScreen(acc: Account, sess: TricklePaySession , nav: ScreenNav)
         Text(fromAccount, modifier = tm, style = ts, textAlign = TextAlign.Center)
 
         Spacer(Modifier.height(10.dp))
-        val numAssetsToShare = sess.assetInfoList?.assets?.size ?: 0
+        val alist = sess.assetInfoList?.assets
+        val aset = mutableSetOf<GroupId>()
+        if (alist != null) for (a in alist)
+        {
+            val prevout = txOutputFor(acc.wallet.chainSelector, BCHserialized(a.prevout.fromHex(), SerializationType.NETWORK))
+            val tmpl = prevout.script.parseTemplate(prevout.amount)
+            val gi = tmpl?.groupInfo
+            if (gi != null)
+            {
+                val ai = wallyApp!!.assetManager.assets[gi.groupId]
+                aset.add(gi.groupId)
+                LogIt.info("info: ${a.amt} ${a.prevout} ${gi.groupId.toString()} ${ai?.ticker}")
+            }
+        }
+
+        val numAssetsToShare = aset.size
         Text(i18n(S.TpAssetMatches) % mapOf("num" to numAssetsToShare.toString() ), modifier = tm, textAlign = TextAlign.Center)
 
         Spacer(Modifier.height(20.dp))
@@ -652,9 +668,6 @@ fun AssetInfoPermScreen(acc: Account, sess: TricklePaySession , nav: ScreenNav)
 fun SendToPermScreen(acc: Account, sess: TricklePaySession , nav: ScreenNav)
 {
     var breakIt = false // TODO allow a debug mode that produces bad tx
-
-    var accountUnlockTrigger = remember { mutableStateOf(0) }
-    var oldAccountUnlockTrigger = remember { mutableStateOf(0) }
 
     val u: Uri = sess.proposalUrl ?: return
 

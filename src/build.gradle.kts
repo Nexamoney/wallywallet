@@ -11,7 +11,7 @@ import java.net.URL
 // Dependency versions
 val mpThreadsVersion = "0.2.7"
 val nexaRpcVersion = "1.1.9"
-val libNexaKotlinVersion = "0.1.88"
+val libNexaKotlinVersion = "0.1.93"
 val serializationVersion = "1.6.3"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.8.1"     // https://github.com/Kotlin/kotlinx.coroutines
 val ktorVersion = "2.3.11"           // https://github.com/ktorio/ktor
@@ -553,7 +553,7 @@ val gitCommitHash: String by lazy {
       .trim()
 }
 
-val versionNumber = "3.0.8"
+val versionNumber = "3.1.2"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 
 version = "$versionNumber-$gitCommitHash"
@@ -567,7 +567,7 @@ android {
     defaultConfig {
         applicationId = "info.bitcoinunlimited.www.wally"
         minSdk = 29
-        targetSdk = 34
+        targetSdk = 35
         versionCode = androidVersionCode
         versionName = versionNumber
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

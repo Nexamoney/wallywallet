@@ -48,9 +48,9 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
         var lastDate = 0L
         var lastHash = Hash256()
 
-        LogIt.info("all activity: first getEc: getTip()")
+        //LogIt.info("all activity: first getEc: getTip()")
         val tip = getEc().getTip()
-        LogIt.info("all activity: done")
+        //LogIt.info("all activity: done")
 
         lastHeight = tip.first.height
         lastDate = tip.first.time
@@ -72,9 +72,9 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
                 try
                 {
                     val script = dest.lockingScript()
-                    LogIt.info("all activity: getEc()")
+                    //LogIt.info("all activity: getEc()")
                     val ec = getEc()
-                    LogIt.info("all activity: getHistory()")
+                    //LogIt.info("all activity: getHistory()")
                     val history = ec.getHistory(script, 10000)
                     if (history.size > 0)
                     {
@@ -99,8 +99,8 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
                                     {
                                         try
                                         {
-                                            LogIt.info("all activity: get block header")
-                                            hdr = bc.getBlockHeader(h.first.toLong())
+                                            //LogIt.info("all activity: get block header")
+                                            hdr = bc.blockHeader(h.first.toLong())
                                         }
                                         catch(e: HeadersNotForthcoming)
                                         {
@@ -109,11 +109,11 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
                                     }
                                     if (hdr == null)
                                     {
-                                        LogIt.info("all activity: get header")
+                                        //LogIt.info("all activity: get header")
                                         val headerBytes = getEc().getHeader(h.first)
                                         hdr = blockHeaderFor(chainSelector, BCHserialized(SerializationType.NETWORK, headerBytes))
                                     }
-                                    LogIt.info("all activity: get header completed")
+                                    //LogIt.info("all activity: get header completed")
                                     hdr
                                 }
                                 if (header.validate(chainSelector))

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUnsignedTypes::class)
+
 import info.bitcoinunlimited.www.wally.historicalUbchInFiat
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.*
@@ -25,7 +27,7 @@ class NonGuiTestsCommon
         var tx = NexaTransaction(cs)
         try
         {
-            var in1 = Spendable(cs, BchTxOutpoint("00112233445566778899aabbccddeeff000102030405060708090a0b0c0d0e0f", 0), 10001)
+            Spendable(cs, BchTxOutpoint("00112233445566778899aabbccddeeff000102030405060708090a0b0c0d0e0f", 0), 10001)
             assert(false)
         } catch (e: ClassCastException)
         {
@@ -64,8 +66,9 @@ class NonGuiTestsCommon
         val jsonArray: JsonArray = je.jsonArray
         val tdjo = jsonArray[0].jsonObject
         val td = Json.decodeFromJsonElement(TokenDesc.serializer(), tdjo)
+        check(td.ticker == "NIFTY")
         val sig: String = jsonArray[1].jsonPrimitive.content
-
+        check(sig == "IDeKqpAh/uVJMTX8rEr1kQ/ItKY4fPnvF/iUPuJOtV52MhNongMBNRVPYoYf++HWB+IPOvFZwX225j3tFyyUV10=")
         println(je)
     }
 

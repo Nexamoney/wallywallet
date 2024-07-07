@@ -946,10 +946,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         val challengerId = host?.toByteArray()
 
         var matches = mutableListOf<TricklePayAssetInfo>()
-        //for ((outpoint, spendable) in wal.txos)
-        wal.forEachTxo { spendable ->
-            if (spendable.spentHeight < 0)  // unspent
-            {
+        wal.forEachUtxo { spendable ->
                 val constraint = spendable.priorOutScript
                 if (constraint.matches(stemplate, true) != null)
                 {
@@ -968,7 +965,6 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
                     val tryAgain = constraint.matches(stemplate, true)
                     LogIt.info(tryAgain.toString())
                 }
-            }
             false
         }
         assetInfoList = TricklePayAssetList(matches)

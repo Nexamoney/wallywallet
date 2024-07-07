@@ -37,7 +37,7 @@ actual fun i18n(id: Int): String
 
 actual fun setLocale():Boolean
 {
-    val locales = (appContext() as android.content.Context)!!.resources.configuration.locales
+    val locales = (appContext() as android.content.Context).resources.configuration.locales
     for (idx in 0 until locales.size())
     {
         val loc = locales[idx]

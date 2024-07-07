@@ -54,7 +54,7 @@ open class OnSwipeTouchListener(val view: View, var claimIfUsed: Boolean=true) :
         fun viewSize():Pair<Int, Int>
         {
             val v = view
-            if (v == null) return Pair(1000,1000)  // TODO, but should never be the case...
+            // if (v == null) return Pair(1000,1000)  // TODO, but should never be the case...
             return(Pair(v.width, v.height))
         }
 
