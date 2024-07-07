@@ -81,10 +81,10 @@ data class GeneralSettingsSwitch(
 
 interface VersionI
 {
-    open val VERSION: String
-    open val VERSION_NUMBER: String
-    open val GIT_COMMIT_HASH: String
-    open val GITLAB_URL: String
+    val VERSION: String
+    val VERSION_NUMBER: String
+    val GIT_COMMIT_HASH: String
+    val GITLAB_URL: String
 }
 
 @Composable

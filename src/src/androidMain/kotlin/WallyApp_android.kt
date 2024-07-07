@@ -1,6 +1,8 @@
 // Copyright (c) 2019 Andrew Stone Consulting (qq9wwnuw4eukyh5g34ckg5vk4aaxnvr04vkspyv850)
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+@file:OptIn(ExperimentalUnsignedTypes::class)
+
 package info.bitcoinunlimited.www.wally
 
 import android.app.*
@@ -116,7 +118,7 @@ actual fun platformNotification(message:String, title: String?, onclickUrl:Strin
 
 fun loadTextResource(resFile: String):String?
 {
-    val androidContext = (appContext() as android.content.Context)!!
+    val androidContext = (appContext() as android.content.Context)
     var id = androidContext.resources.getIdentifier(resFile, "raw", androidContext.packageName)
     val strs = androidContext.resources.openRawResource(id).readBytes()
     if (strs.size == 0) return null
@@ -125,7 +127,7 @@ fun loadTextResource(resFile: String):String?
 
 fun loadTextResource(@RawRes resId: Int):String?
 {
-    val androidContext = (appContext() as android.content.Context)!!
+    val androidContext = (appContext() as android.content.Context)
     val strs = androidContext.resources.openRawResource(resId).readBytes()
     if (strs.size == 0) return null
     else return strs.decodeUtf8()

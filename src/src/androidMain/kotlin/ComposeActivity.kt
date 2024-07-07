@@ -317,7 +317,7 @@ class ComposeActivity: CommonActivity()
         // itself is launched, so this code can't be in the app class.
         // This starts up every 15 min
         val bkgSync = PeriodicWorkRequestBuilder<BackgroundSync>(BACKGROUND_PERIOD_MSEC.milliseconds.toJavaDuration()).build()
-        bkgSync?.let { WorkManager.getInstance(this).enqueueUniquePeriodicWork("WallySync", ExistingPeriodicWorkPolicy.UPDATE, it) }
+        bkgSync.let { WorkManager.getInstance(this).enqueueUniquePeriodicWork("WallySync", ExistingPeriodicWorkPolicy.UPDATE, it) }
         // This will start up a few seconds after the app is closed, but only once (once it reports its finished)
         val bkgSyncOnce = OneTimeWorkRequestBuilder<BackgroundSync>().build()
         WorkManager.getInstance(this).enqueueUniqueWork("WallySyncOnce", ExistingWorkPolicy.REPLACE, bkgSyncOnce)

@@ -1,3 +1,4 @@
+@file:OptIn(ExperimentalUnsignedTypes::class)
 import info.bitcoinunlimited.www.wally.*
 import io.ktor.client.network.sockets.*
 import okio.*
@@ -124,8 +125,8 @@ class NonGuiTests
                     false
                 }
                 println("  as buffer:")
-                val nftyZip = FileSystem.SYSTEM.source(file).buffer()
-                zipForeach(nftyZip) { info, data ->
+                val nftyZip2 = FileSystem.SYSTEM.source(file).buffer()
+                zipForeach(nftyZip2) { info, data ->
                     println("${info.fileName}: ${info.uncompressedSize}")
                     val tmp = libnexa.sha256(data!!.readByteArray())
                     check(results[info.fileName] contentEquals  tmp)
@@ -222,7 +223,7 @@ class NonGuiTests
         var tx = NexaTransaction(cs)
         try
         {
-            var in1 = Spendable(cs, BchTxOutpoint("00112233445566778899aabbccddeeff000102030405060708090a0b0c0d0e0f", 0), 10001)
+            Spendable(cs, BchTxOutpoint("00112233445566778899aabbccddeeff000102030405060708090a0b0c0d0e0f", 0), 10001)
             assert(false)
         } catch (e: java.lang.ClassCastException)
         {
@@ -334,7 +335,7 @@ class NonGuiTests
         waitFor(TIMEOUT, {
             val tmp = ec.getTip()
             tmp.second == filledHeight}, { "electrum server never synced"})
-        val (ectip, ectipHeight) = ec.getTip()
+        val (ectip, _) = ec.getTip()
         val addressDerivationCoin = Bip44AddressDerivationByChain(cs)
         val srchResults = searchDerivationPathActivity({ec }, cs, 20, {
             libnexa.deriveHd44ChildKey(account.wallet.secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first

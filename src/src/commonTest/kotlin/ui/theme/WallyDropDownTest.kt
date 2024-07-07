@@ -21,7 +21,7 @@ class WallyDropDownTest
               selectedIndex = selectedIndexMock,
               label = labelMock,
               items = itemsMock,
-              onItemSelected = { index, item ->
+              onItemSelected = { index, _ ->
                   selectedIndexMock = index
               }
             )

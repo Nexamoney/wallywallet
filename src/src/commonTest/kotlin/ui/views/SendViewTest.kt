@@ -59,7 +59,7 @@ class SendViewTest
               onPaymentInProgress = {},
               updateSendBasedOnPaymentInProgress = {},
               onApproximatelyText = {},
-              checkSendQuantity = {s, a -> },
+              checkSendQuantity = {_, _ -> },
               onSendSuccess = {},
               onAccountNameSelected = {},
               account = account

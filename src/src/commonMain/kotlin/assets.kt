@@ -732,9 +732,17 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
         {
             delay(1000)
             LogIt.info("Deferred asset load for ${groupId} happening now")
-            ret.load(blockchain, this, gec)
-            if (ret.loadState == AssetLoadState.COMPLETED)
-                storeAssetInfo(ret)
+            try
+            {
+                ret.load(blockchain, this, gec)
+                if (ret.loadState == AssetLoadState.COMPLETED)
+                    storeAssetInfo(ret)
+            }
+            catch(e:ElectrumRequestTimeout)
+            {
+                // nothing to do, electrum not available
+                LogIt.info("Cannot load ${groupId}, no electrum servers")
+            }
         }
         return ret
     }

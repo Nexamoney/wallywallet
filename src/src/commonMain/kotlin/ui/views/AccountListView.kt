@@ -186,9 +186,7 @@ fun Account.uiData():AccountUIData
             val trying:List<String> = if (chainstate.chain.net is MultiNodeCnxnMgr) (chainstate.chain.net as MultiNodeCnxnMgr).initializingCnxns().map { it.name } else listOf()
             val peers = cnxnLst.joinToString(", ") + (if (trying.isNotEmpty()) (" " + i18n(S.trying) + " " + trying.joinToString(", ")) else "")
 
-            ret.devinfo = i18n(S.at) + " " + (chainstate.syncedHash.toHex().take(8) ?: "") + ", " + (chainstate.syncedHeight
-              ?: "") + " " + i18n(S.of) + " " + (chainstate.chain.curHeight
-              ?: "") + " blocks, " + (chainstate.chain.net.size ?: "") + " peers\n" + peers
+            ret.devinfo = i18n(S.at) + " " + chainstate.syncedHash.toHex().take(8) + ", " + chainstate.syncedHeight + " " + i18n(S.of) + " " + chainstate.chain.curHeight + " blocks, " + (chainstate.chain.net.size ?: "") + " peers\n" + peers
         }
         else
         {
@@ -259,11 +257,11 @@ fun AccountItemView(
                               }
                           })
                     }
-                    Spacer(Modifier.width(16.dp))
+                    Spacer(Modifier.width(8.dp))
                     // Balance and currency code row to align bottoms of fonts of different size
                     Row(
                       verticalAlignment = Alignment.Bottom,
-                      modifier = Modifier.fillMaxWidth(0.80f)  // this is the fraction of what's left over
+                      modifier = Modifier.fillMaxWidth(0.85f)  // this is the fraction of what's left over
                     ) {
                         val startingBalStyle = FontScaleStyle(1.75)
                         val startingCcStyle = FontScaleStyle(0.6)
@@ -272,12 +270,16 @@ fun AccountItemView(
                         var drawBal by remember { mutableStateOf(false) }
                         var drawCC by remember { mutableStateOf(false) }
                         var scale by remember { mutableStateOf(1.0) }
+                        var priorBal by remember { mutableStateOf(uidata.balance) }
+                        // If our balance shrinks, we might be able to redraw it with a bigger font
+                        if (priorBal > uidata.balance) scale = 1.0
+                        priorBal = uidata.balance
                         Text(text = uidata.balance, style = balTextStyle, color = colorDebit, modifier = Modifier.padding(0.dp).drawWithContent { if (drawBal) drawContent() }, textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
                           onTextLayout = {
                               textLayoutResult ->
                               if (textLayoutResult.didOverflowWidth)
                               {
-                                  scale = scale*0.90
+                                  scale = scale*0.95
                                   balTextStyle = startingBalStyle.copy(fontSize = startingBalStyle.fontSize * scale)
                               }
                               else drawBal = true
@@ -287,7 +289,7 @@ fun AccountItemView(
                               textLayoutResult ->
                               if (textLayoutResult.didOverflowWidth)
                               {
-                                  scale = scale*0.90
+                                  scale = scale*0.95
                                   if (scale > 0.20) // If this field gets too small, just drop it
                                   {
                                       ccTextStyle = ccTextStyle.copy(fontSize = startingCcStyle.fontSize * scale)
@@ -303,8 +305,7 @@ fun AccountItemView(
                     }
                     if (offerFastForward && (uidata.fastForwarding == false))
                     {
-                        Spacer(Modifier.width(8.dp))
-                        LogIt.info("offer fast forward")
+                        Spacer(Modifier.width(4.dp))
                         WallyBoringButton({
                             uidata.fastForwarding = true
                             startAccountFastForward(uidata.account) {

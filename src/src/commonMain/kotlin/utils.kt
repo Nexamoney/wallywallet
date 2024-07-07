@@ -272,7 +272,7 @@ fun later(scope: CoroutineScope? = null, fn: suspend () -> Unit): Unit
             fn()
         } catch (e: Exception) // Uncaught exceptions will end the app
         {
-            LogIt.info(sourceLoc() + ": General exception handler (should be caught earlier!)")
+            LogIt.info(sourceLoc(2) + ": General exception handler (should be caught earlier!)")
             handleThreadException(e)
         }
     }
