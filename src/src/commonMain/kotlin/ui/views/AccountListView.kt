@@ -334,6 +334,7 @@ fun AccountItemView(
                         }
                     }
                 }
+                // includes (amount) NEX pending
                 if (uidata.unconfBal.isNotEmpty())
                     Row(
                       modifier = Modifier.fillMaxWidth(),

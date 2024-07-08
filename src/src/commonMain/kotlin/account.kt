@@ -199,9 +199,10 @@ class Account(
 
     /** Save the PIN of an account to the database
      * @param epin must be the ENCODED (not plaintext) pin */
-    fun saveAccountPin(epin: ByteArray)
+    fun saveAccountPin(epin: ByteArray?)
     {
-        walletDb?.set("accountPin_" + name, epin)
+        val ep = epin ?: byteArrayOf()
+        walletDb?.set("accountPin_" + name, ep)
     }
 
     @Suppress("UNUSED_PARAMETER")
