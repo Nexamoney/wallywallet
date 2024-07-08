@@ -815,7 +815,7 @@ open class CommonApp
             ac.start()
             ac.onChange()
             // I save a blank if no pin just in case there's old data in the database
-            if (epin != null) ac.saveAccountPin(epin) else ac.saveAccountPin(byteArrayOf())
+            ac.saveAccountPin(epin)
             ac.wallet.save(true)
 
             accounts[name] = ac
@@ -862,14 +862,16 @@ open class CommonApp
         dbgAssertNotGuiThread()
 
         // I only want to write the PIN once when the account is first created
+
+        val p = pin.trim()
         val epin = try
         {
-            EncodePIN(name, pin.trim())
+            if (p.length > 0) EncodePIN(name, p) else null
         }
         // catch (e: InvalidKeySpecException)
         catch (e: Exception)  // If the pin is bad (generally whitespace or null) ignore it
         {
-            byteArrayOf()
+            null
         }
 
         var earliestDate: Long = Long.MAX_VALUE
@@ -884,6 +886,7 @@ open class CommonApp
         accountLock.lock {  // We can show it early, although it might have the wrong data momentarily
                 accounts[name] = ac
             }
+        ac.encodedPin = epin
         ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
 
         // normally this can be done asynchronously to account creation, but we need to do it before fastforwarding
@@ -929,7 +932,7 @@ open class CommonApp
         // catch (e: InvalidKeySpecException)
         catch (e: Exception)  // If the pin is bad (generally whitespace or null) ignore it
         {
-            byteArrayOf()
+            null
         }
 
         var veryEarly = earliestActivity
@@ -944,6 +947,7 @@ open class CommonApp
 
         return accountLock.lock {
             val ac = Account(name, flags, chainSelector, secretWords, veryEarly, earliestHeight, retrieveOnlyActivity = nonstandardActivity)
+            ac.encodedPin = epin
             ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
             ac.start()
             ac.onChange()

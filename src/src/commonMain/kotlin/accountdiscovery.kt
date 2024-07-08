@@ -13,14 +13,16 @@ fun processSecretWords(secretWords: String): List<String>
     return junkDropped
 }
 
-fun isValidOrEmptyRecoveryPhrase(words: List<String>): Boolean {
+fun isValidOrEmptyRecoveryPhrase(words: List<String>): Boolean
+{
     if(words.isEmpty()) return true
     if (words.size != 12)
     {
         return false
     }
     val incorrectWords = Bip39InvalidWords(words)
-    return incorrectWords.isEmpty()
+    if (!incorrectWords.isEmpty()) return false
+    return ValidBip39Checksum(words.toTypedArray())
 }
 
 
@@ -39,8 +41,8 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
         var addrsFound = 0L
         var index = 0
         var gap = 0
-        var ret = mutableMapOf<Hash256, TransactionHistory>()
-        var hdrs = mutableMapOf<Int, iBlockHeader>()
+        val ret = mutableMapOf<Hash256, TransactionHistory>()
+        val hdrs = mutableMapOf<Int, iBlockHeader>()
         var bal = 0L
         var lastAddressIndex = index
         var gapMultiplier = 1  // Works around an error in early wallets where they did not use addresses in order

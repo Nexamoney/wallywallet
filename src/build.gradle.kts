@@ -11,7 +11,7 @@ import java.net.URL
 // Dependency versions
 val mpThreadsVersion = "0.2.7"
 val nexaRpcVersion = "1.1.9"
-val libNexaKotlinVersion = "0.1.93"
+val libNexaKotlinVersion = "0.1.96"
 val serializationVersion = "1.6.3"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.8.1"     // https://github.com/Kotlin/kotlinx.coroutines
 val ktorVersion = "2.3.11"           // https://github.com/ktorio/ktor
@@ -105,6 +105,10 @@ val prop = Properties().apply {
     }
 }
 
+configurations.all {
+    // Check for updates every build
+    resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.MILLISECONDS)
+}
 
 @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
 kotlin {
@@ -269,7 +273,7 @@ kotlin {
 
                 // nexa
                 implementation("org.nexa:mpthreads:$mpThreadsVersion")
-                implementation("org.nexa:libnexakotlin:$libNexaKotlinVersion")
+                implementation("org.nexa:libnexakotlin:$libNexaKotlinVersion") { setChanging(true) }
                 //implementation("org.nexa:walletoperations:0.0.1")
 
                 // Generate and display Compose Multiplaform QR code
@@ -553,7 +557,7 @@ val gitCommitHash: String by lazy {
       .trim()
 }
 
-val versionNumber = "3.1.2"
+val versionNumber = "3.1.3"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 
 version = "$versionNumber-$gitCommitHash"
