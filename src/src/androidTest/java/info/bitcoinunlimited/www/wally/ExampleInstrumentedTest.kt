@@ -66,6 +66,14 @@ class UnitTest
     }
 
     @Test
+    fun testSort()
+    {
+        val lst = listOf(3,10,1,2)
+        val sorted = lst.sortedBy { it }
+        assert(sorted[0] == 1)
+    }
+
+    @Test
     fun testelectrumclient()
     {
         /*
