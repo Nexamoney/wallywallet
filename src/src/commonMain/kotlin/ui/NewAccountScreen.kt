@@ -75,6 +75,7 @@ data class NewAccountState(
   val earliestActivity: Long? = null,
   val earliestActivityHeight: Int = -1,  // -1 means not even looking (either done and found nothing, or not applicable due to bad phrase or similar)
   val discoveredAccountHistory: List<TransactionHistory> = listOf(),
+  val discoveredAddresses: Set<PayDestination> = setOf(),
   val discoveredAddressCount: Long = 0,
   val discoveredAccountBalance: Long = 0,
   val discoveredAddressIndex: Int = 0,
@@ -150,7 +151,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
         val words = processSecretWords(acState.recoveryPhrase)
         try
         {
-            wallyApp!!.recoverAccount(acState.accountName, flags, acState.pin, words.joinToString(" "), chainSelector, acState.discoveredAccountHistory, acState.discoveredTip!!, acState.discoveredAddressIndex)
+            wallyApp!!.recoverAccount(acState.accountName, flags, acState.pin, words.joinToString(" "), chainSelector, acState.discoveredAccountHistory, acState.discoveredAddresses, acState.discoveredTip!!, acState.discoveredAddressIndex)
             triggerAssignAccountsGuiSlots()
         }
         catch (e: Error)
@@ -1026,11 +1027,46 @@ fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter
             displayFastForwardInfo("")
             return
         }
+        var activity3 = try
+        {
+            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_CHANGE_DERIVATION_PATH_MAX_GAP, {
+                if (aborter.obj) throw EarlyExitException()
+                val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, true, it).first
+                val us = UnsecuredSecret(key)
+                val dest = Pay2PubKeyTemplateDestination(chainSelector, us, it.toLong())
+                addrText = "\n ${it} at ${dest.address}"
+                fromText = if (ec != null) "\n from ${ec?.logName}" else ""
+                displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + fromText + addrText + summaryText)
+                key
+            },
+              {
+                  summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
+                    "bal" to NexaFormat.format(fromFinestUnit(it.balance, chainSelector = chainSelector)), "units" to (chainToDisplayCurrencyCode[chainSelector] ?:""))
 
-        val act = activity.txh + activity2.txh
-        val addrCount = activity.addrCount + activity2.addrCount
-        val bal = activity.balance + activity2.balance
-        newAccountState.value = newAccountState.value.copy(discoveredAccountHistory = act, discoveredAddressCount = addrCount, discoveredAccountBalance = bal, discoveredAddressIndex = activity.lastAddressIndex, discoveredTip = tip)
+                  displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + addrText + summaryText)
+              }
+            )
+        }
+        catch (e: EarlyExitException)
+        {
+            return
+        }
+        if (aborter.obj)
+        {
+            displayFastForwardInfo("")
+            return
+        }
+
+        //val act = activity.txh + activity2.txh + activity3.txh
+        val act = mutableMapOf<Hash256, TransactionHistory>()
+        activity.txh.forEach { act[it.tx.idem] = it }
+        activity2.txh.forEach { act[it.tx.idem] = it }
+        activity3.txh.forEach { act[it.tx.idem] = it }
+
+        val addrs = activity.addresses + activity2.addresses + activity3.addresses
+        val addrCount = activity.addrCount + activity2.addrCount + activity3.addrCount
+        val bal = activity.balance + activity2.balance + activity3.balance
+        newAccountState.value = newAccountState.value.copy(discoveredAccountHistory = act.values.toList(), discoveredAddresses = addrs, discoveredAddressCount = addrCount, discoveredAccountBalance = bal, discoveredAddressIndex = activity.lastAddressIndex, discoveredTip = tip)
     }
     finally
     {

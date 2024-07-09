@@ -205,6 +205,10 @@ class Account(
         walletDb?.set("accountPin_" + name, ep)
     }
 
+    val cb1: ((Wallet) -> Unit)? = { onChange() }
+    var blkCb: Int? = null
+    var netCb: Int? = null
+
     @Suppress("UNUSED_PARAMETER")
     fun start()
     {
@@ -216,9 +220,9 @@ class Account(
                 chain.start()
                 started = true
                 // Set all the underlying change callbacks to trigger the account update
-                wallet.setOnWalletChange { onChange() }
-                wallet.blockchain.onChange.add({ onChange() })
-                wallet.blockchain.net.changeCallback.add({ _, _ -> onChange() })
+                wallet.setOnWalletChange(cb1)
+                blkCb = wallet.blockchain.onChange.add({ onChange() })
+                netCb = wallet.blockchain.net.changeCallback.add({ _, _ -> onChange() })
             }
         }
     }
@@ -669,6 +673,9 @@ class Account(
      */
     fun delete()
     {
+        wallet.removeOnWalletChange(cb1)
+        blkCb?.let { wallet.blockchain.onChange.remove(it) }
+        netCb?.let { wallet.blockchain.net.changeCallback.remove(it) }
         currentReceive = null
         wallet.stop()
         walletDb = null

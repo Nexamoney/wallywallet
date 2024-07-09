@@ -137,7 +137,7 @@ fun Account.uiData():AccountUIData
         if (chainstate.isSynchronized(1, 60 * 60))  // ignore 1 block desync or this displays every time a new block is found
         {
             ret.unconfBal =
-              if (CURRENCY_ZERO == unconfirmedBalance)
+              if (CURRENCY_ZERO == delta)
                   ""
               else
                   i18n(S.incoming) % mapOf(
@@ -451,7 +451,7 @@ fun startAccountFastForward(account: Account, displayFastForwardInfo: (String?) 
     Thread("fastforward_${wallet.name}")
     {
         var normal: DerivationPathSearchProgress = DerivationPathSearchProgress(aborter, null, 0, null)
-        // var change: DerivationPathSearchProgress = DerivationPathSearchProgress(aborter, null, 0, null)
+        var change: DerivationPathSearchProgress = DerivationPathSearchProgress(aborter, null, 0, null)
 
         // This code basically assumes that the contacted Rostrum nodes are synced with each other (which basically means on the tip)
         // otherwise you could get into a situation where some Rostrum connection says no activity on address X, but its really
@@ -460,21 +460,20 @@ fun startAccountFastForward(account: Account, displayFastForwardInfo: (String?) 
             // displayFastForwardInfo((normal.progressInt + change.progressInt).toString() + " " + (normal.progress ?: "") + " " + (change.progress ?: ""))
             displayFastForwardInfo(normal.progressInt.toString() + " " + (normal.progress ?: ""))
         }
-        /* skip searching the change for speed
-        val t2 = derivationPathSearch(change, wallet, addressDerivationCoin, 0, true, WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP) {
+        t1.join()
+        /* skip searching the change for speed */
+        val t2 = derivationPathSearch(change, wallet, addressDerivationCoin, 0, true, WALLET_FULL_RECOVERY_CHANGE_DERIVATION_PATH_MAX_GAP) {
             displayFastForwardInfo((normal.progressInt + change.progressInt).toString() + " " + (normal.progress ?: "") + " " + (change.progress ?: ""))
         }
-         */
-        t1.join()
-        // t2.join()
+        t2.join()
 
         normal.results?.let {
             var lastHeight = it.lastHeight
             var lastDate = it.lastDate
             var lastHash = it.lastHash
-            val ch: AccountSearchResults? = null // change.results
+            val ch: AccountSearchResults? = change.results
             var txh = it.txh
-            /*
+
             if (ch!=null)
             {
                 if (ch.lastHeight > it.lastHeight)
@@ -485,7 +484,6 @@ fun startAccountFastForward(account: Account, displayFastForwardInfo: (String?) 
                 }
                 txh = it.txh + ch.txh
             }
-             */
             wallet.generateAddressesUntil(it.lastAddressIndex)
             wallet.fastforward(lastHeight, lastDate, lastHash, txh)
         }
