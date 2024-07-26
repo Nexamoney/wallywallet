@@ -31,15 +31,6 @@ actual fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
     return true
 }
 
-/*
-actual fun ScanQrCode(scanDone: (String)->Unit): Boolean
-{
-    val ca = currentActivity
-    (ca as ComposeActivity).scanQrCode(scanDone)
-    return true
-}
- */
-
 class ComposeActivity: CommonActivity()
 {
     var nav = ScreenNav()

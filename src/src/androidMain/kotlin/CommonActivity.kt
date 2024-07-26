@@ -99,36 +99,6 @@ open class KeyboardToggleListener(private val root: View, private val onKeyboard
 fun View.dpToPx(dp: Float): Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, resources.displayMetrics).roundToInt()
 
 @SuppressLint("Registered")
-open class CommonNavActivity : CommonActivity()
-{
-    open var navActivityId: Int = -1 //* Change this in derived classes to identify which navBar item this activity is
-    var navViewMenuId: Int? = null //* change this in derived classes to pick a different bottom nav menu
-
-    override fun onSoftKeyboard(shown: Boolean)
-    {
-        //val navView: BottomNavigationView = findViewById(R.id.nav_view)
-        //navView.visibility = if (shown) View.GONE else View.VISIBLE
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
-        super.onCreate(savedInstanceState)
-
-    }
-
-    override fun onStart()
-    {
-        super.onStart()
-    }
-
-    override fun onResume()
-    {
-        super.onResume()
-    }
-
-}
-
-@SuppressLint("Registered")
 open class CommonActivity : AppCompatActivity()
 {
     var errorSync = object {}

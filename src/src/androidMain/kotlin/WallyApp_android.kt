@@ -231,9 +231,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
 
     val init = org.nexa.libnexakotlin.initializeLibNexa()
 
-    // Use currentActivity global
-    //var currentActivity: CommonNavActivity? = null
-
     // Track notifications
     val notifs: MutableList<Triple<Int, PendingIntent, Intent>> = mutableListOf()
 
