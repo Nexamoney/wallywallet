@@ -127,6 +127,9 @@ Good luck!
     <string name="totalReceived">total received</string>
     <string name="inProgress">in progress</string>
 
+    <string name="staleTransaction">Stale Transaction</string>
+    <string name="staleTransactionDetails">This transaction was rejected by a full node.  It is probably stale (already used by someone else), however its also possible that the transaction was never valid, or that it is fine and the nodes we asked are dishonest. The wallet will ignore this transaction unless it gets confirmed.</string>
+
     <string name="NoPermission">No Permission</string>
     <string name="NoPermissionDetails" formatted="false">You must enable the %perm permission to use this feature.  You may do so in Android Settings -> Apps -> Wally -> Permissions</string>
 
@@ -545,6 +548,9 @@ Good luck!
     <string name="NFTs">Nonfungible Tokens (NFTs)</string>
     <string name="ExplainNFTs">NiftyArt.cash: Create and trade unique images and digital representations of unique items</string>
     <string name="NftUrl">http://niftyart.cash</string>
+    <string name="NftImproperConstruction">Warning: Fake or improperly constructed!</string>
+    <string name="TokenSourceWebsite">Token source:</string>
+    <string name="TokenUnsigned">This token\'s information was not properly signed.  This token may be a fake or a spoof.  It may also mean that the token creator simply has not properly signed the token.</string>
 
     <string name="OpenWebsite" formatted="false">Access %siteName</string>
     <string name="WebsiteUnavailable" formatted="false">Website unavailable</string>

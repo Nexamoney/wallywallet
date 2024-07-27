@@ -493,10 +493,10 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
             if (tg == null) return@synchronized
             var dataChanged = false
 
-            LogIt.info(sourceLoc() + chain.name + ": loaded: " + td.name)
+            LogIt.info(sourceLoc() + chain.name + ": loaded: " + tg.name)
 
-            name = td.name
-            ticker = td.ticker
+            name = tg.name ?: td.name
+            ticker = tg.ticker ?: td.ticker
             genesisHeight = tg?.height ?: -1
             genesisTxidem = if (tg.txidem.length > 0) Hash256(tg.txidem) else null
 

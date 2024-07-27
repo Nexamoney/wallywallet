@@ -78,6 +78,47 @@ class ByteArrayDataSourceFactory(val bads: ByteArrayDataSource):DataSource.Facto
     }
 }
 
+class FileIdentifier(protected val bytes: ByteArray, protected val offset: Int)
+{
+    override fun equals(other: Any?): Boolean
+    {
+        if (this === other) return true
+        if (other is FileIdentifier && this.bytes contentEquals other.bytes) return true
+        if (other is ByteArray && this.bytes contentEquals other.sliceArray(IntRange(offset, offset+bytes.size-1))) return true
+        return false
+    }
+    override fun hashCode(): Int = bytes.contentHashCode()
+    override fun toString(): String = bytes.contentToString()
+}
+private fun maj(offset:Int, vararg bytes: UByte) = FileIdentifier(bytes.asByteArray(), offset)
+
+val fileMagicNums:Map<FileIdentifier, String> = mapOf<FileIdentifier, String>(
+  maj(0,0x42U,0x4dU) to ".bmp",
+  maj(0, 0x47U,0x49U,0x46U,0x38U) to ".gif",
+  maj(0, 0xffU, 0xd8U, 0xffU, 0xe0U) to ".jpg",
+  maj(0, 0x89U, 0x50U, 0x4eU, 0x47U) to ".png",
+  maj(0, 0x52U, 0x49U, 0x46U, 0x46U) to ".webp",
+  maj(4, 0x66U, 0x74U, 0x79U, 0x70U, 0x68U, 0x65U) to ".heic",
+  maj(4,0x66U, 0x74U, 0x79U, 0x70U, 0x69U, 0x73U, 0x6FU, 0x6DU) to ".mp4",
+  maj(4,0x66U, 0x74U, 0x79U, 0x70U, 0x4DU, 0x53U, 0x4EU, 0x56U) to ".mp4",
+  maj(0,0x1AU, 0x45U, 0xDFU, 0xA3U) to ".webm",  // and .mkv
+
+  maj(0, 0xFFU, 0xFBU) to ".mp3",
+  maj(0, 0xFFU, 0xF3U) to ".mp3",
+  maj(0, 0xFFU, 0xF2U) to ".mp3",
+  maj(0, 0x49U, 0x44U, 0x33U) to ".mp3",
+  maj(0,0x4FU, 0x67U, 0x67U, 0x53U) to ".ogg"
+)
+
+fun mediaType(contents:ByteArray): String?
+{
+    for ((k,v) in fileMagicNums)
+    {
+        if (k.equals(contents)) return v
+    }
+    return null
+}
+
 // TODO this ByteArrayDataSource is broken somehow (media does not play)
 @OptIn(UnstableApi::class)
 class ByteArrayDataSource(val data:ByteArray, val url: Url): DataSource
@@ -156,8 +197,6 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
 
         val winAR:Float = widthPx.toFloat()/heightPx.toFloat()
 
-
-
         // window is wider than the doc
         val bitmap =  if (winAR > svg.documentAspectRatio)
             Bitmap.createBitmap((heightPx * svg.documentAspectRatio).toInt(), heightPx, Bitmap.Config.ARGB_8888)
@@ -202,12 +241,7 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
 
 @OptIn(UnstableApi::class) @Composable actual fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri: String?, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit): Boolean
 {
-    val name = mediaUri
-    if (name == null) return false
-
-    val url = Url(name)
-    val lcasename = name.lowercase()
-
+    // Its cached
     if (mediaImage != null)
     {
         wrapper(MediaInfo(mediaImage.width, mediaImage.height, false)) { mod ->
@@ -216,8 +250,18 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
               .background(Color.Transparent)
             Image(mediaImage, null, m, contentScale = ContentScale.Fit)
         }
+        return true
     }
-    else if (lcasename.endsWith(".svg", true))
+
+    val name = mediaUri ?: ""
+    val url = Url(name)
+    val lcasename = name.lowercase()
+    var fileExt: String? = if (lcasename.contains(".")) ("." + lcasename.split(".").last()) else null
+    var mediaExt: String? = if (mediaData != null) mediaType(mediaData) else null
+
+    val ext = mediaExt ?: fileExt ?: return false
+
+    if (ext.endsWith(".svg", true))
     {
         val svg = if (mediaData == null)
         {
@@ -250,13 +294,13 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
             Image(im, null, m, contentScale = ContentScale.Fit)
         }
     }
-    else if (lcasename.endsWith(".jpg", true) ||
-      lcasename.endsWith(".jpeg", true) ||
-      lcasename.endsWith(".png", true) ||
-      lcasename.endsWith(".webp", true) ||
-      lcasename.endsWith(".gif", true) ||
-      lcasename.endsWith(".heic", true) ||
-      lcasename.endsWith(".heif", true)
+    else if (ext.endsWith(".jpg", true) ||
+      ext.endsWith(".jpeg", true) ||
+      ext.endsWith(".png", true) ||
+      ext.endsWith(".webp", true) ||
+      ext.endsWith(".gif", true) ||
+      ext.endsWith(".heic", true) ||
+      ext.endsWith(".heif", true)
     )
     {
         val bitmap = if (mediaData == null)
@@ -292,10 +336,10 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
             Image(im, null, m, contentScale = ContentScale.Fit)
         }
     }
-    else if (lcasename.endsWith(".mp4", true) ||
-      lcasename.endsWith(".webm", true) ||
-      lcasename.endsWith(".3gp", true) ||
-      lcasename.endsWith(".mkv", true))
+    else if (ext.endsWith(".mp4", true) ||
+      ext.endsWith(".webm", true) ||
+      ext.endsWith(".3gp", true) ||
+      ext.endsWith(".mkv", true))
     {
 
         LogIt.info(sourceLoc()+": Video URI: $name (url: ${url})")
@@ -343,6 +387,24 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
                 onDispose { exoPlayer.release() }
             }
         }
+    }
+    else if (ext.endsWith(".mp3", true) ||
+      ext.endsWith(".ogg", true) ||
+      ext.endsWith(".aac", true) ||
+      ext.endsWith(".aiff", true) ||
+      ext.endsWith(".wma", true) ||
+      ext.endsWith(".flac", true) ||
+      ext.endsWith(".alac", true) ||
+      ext.endsWith(".wav", true))
+    {
+        val mi = MediaInfo(200, 200, false, false)
+        wrapper(mi) { mod ->
+            val m = mod ?: Modifier
+              .fillMaxSize()
+              .background(Color.Transparent)
+            ResImageView("icons/note.png", modifier = m)
+        }
+        return false
     }
     else  // Media is not displayable
     {

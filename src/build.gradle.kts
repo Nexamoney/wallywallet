@@ -11,7 +11,7 @@ import java.net.URL
 // Dependency versions
 val mpThreadsVersion = "0.2.7"
 val nexaRpcVersion = "1.1.9"
-val libNexaKotlinVersion = "0.1.101"
+val libNexaKotlinVersion = "0.1.103"
 val serializationVersion = "1.6.3"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.8.1"     // https://github.com/Kotlin/kotlinx.coroutines
 val ktorVersion = "2.3.11"           // https://github.com/ktorio/ktor
@@ -557,7 +557,7 @@ val gitCommitHash: String by lazy {
       .trim()
 }
 
-val versionNumber = "3.1.4"
+val versionNumber = "3.2.0"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 
 version = "$versionNumber-$gitCommitHash"

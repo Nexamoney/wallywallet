@@ -528,7 +528,7 @@ fun SpecialTxPermScreen(acc: Account, sess: TricklePaySession, nav: ScreenNav)
 
                 try
                 {
-                    LogIt.info("accept trickle pay special transaction")
+                    LogIt.info(sourceLoc() +": accept trickle pay special transaction")
 
                     // Step 1, unlock if needed, otherwise accept & done
                     if ((pTx != null) && (panalysis != null))

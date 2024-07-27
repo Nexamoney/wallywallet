@@ -552,12 +552,20 @@ fun CenteredSectionText(text: String, modifier: Modifier = Modifier)
     }
 }
 
-/* Styling for the text of titles that appear within a page */
+/* Shortcut to center text */
 @Composable
 fun CenteredText(text: String, modifier: Modifier = Modifier)
 {
     Text(text = text, modifier = Modifier.padding(0.dp).fillMaxWidth().then(modifier), textAlign = TextAlign.Center)
 }
+
+/* Shortcut to center text */
+@Composable
+fun CenteredText(text: String, textStyle: TextStyle, modifier: Modifier = Modifier)
+{
+    Text(text = text, modifier = Modifier.padding(0.dp).fillMaxWidth().then(modifier), textAlign = TextAlign.Center, style = textStyle)
+}
+
 
 @Composable fun CenteredFittedText(text: Int, startingFontScale: Double=1.0, fontWeight: FontWeight = FontWeight.Normal, color: Color? = null, modifier: Modifier = Modifier) =
   CenteredFittedText(i18n(text), startingFontScale, fontWeight, color, modifier)
@@ -1079,7 +1087,7 @@ fun AddressInputField(descriptionRes: Int, labelRes: Int, text: String, style: T
         Text(i18n(descriptionRes), style = style, modifier = Modifier.clickable {
             focusManager.clearFocus()
         })
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(4.dp))
         AddressInputTextField(labelRes, text, onChange)
     }
 }
@@ -1258,7 +1266,7 @@ fun AddressInputTextField(labelRes: Int, text: String, onChange: (String) -> Uni
         unfocusedContainerColor = Color.Transparent,
         disabledContainerColor = Color.Transparent,
       ),
-      textStyle = TextStyle(fontSize = 12.sp),
+      textStyle = TextStyle(fontSize = 11.sp),
     )
 }
 
