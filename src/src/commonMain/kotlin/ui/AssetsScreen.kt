@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Surface
 
 import androidx.compose.material3.Text
@@ -17,6 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.eygraber.uri.Uri
@@ -55,6 +59,7 @@ fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, allo
             {
                 if (allowAmountEdit)
                 {
+                    // Note the "default" (unedited) amount is ALL tokens.  If you change this default, you must also change it in the actuallySend() function.
                     val amt = assetPerAccount.editableAmount?.toPlainString() ?: tokenAmountString(apc.groupInfo.tokenAmt, asset.tokenInfo?.genesisInfo?.decimal_places)
                     WallyDecimalEntry(mutableStateOf(amt)) {
                         try
@@ -70,17 +75,23 @@ fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, allo
                 }
                 else
                 {
+                    Spacer(modifier.width(2.dp))
                     val amt = tokenAmountString(apc.groupInfo.tokenAmt, asset.tokenInfo?.genesisInfo?.decimal_places)
-                    Text(amt, fontSize = if (verbosity > 0) FontScale(2.0) else FontScale(1.0), modifier = modifier.align(Alignment.CenterVertically))
+                    val lenAdjust = 1.0 // 5.0/max(amt.length,5)
+                    val fontSize = if (verbosity > 0) 2.0*lenAdjust else 1.0*lenAdjust
+                    SelectionContainer(modifier = modifier.weight(0.75f).align(Alignment.CenterVertically)) {
+                        CenteredFittedText(amt, fontSize, modifier = modifier.align(Alignment.CenterVertically))
+                    }
                 }
                 Spacer(modifier.width(4.dp))
             }
 
             Column(Modifier.weight(1f).align(Alignment.CenterVertically)) {
-                var name = (if ((nft != null) && (nft.title.length > 0)) nft.title else asset.name) ?: i18n(S.loading)
+                var name = (if ((nft != null) && (nft.title.length > 0)) nft.title else asset.name)
                 if (verbosity > 0)
                 {
-                    Text(text = name, modifier = Modifier.padding(0.dp).fillMaxWidth(), style = WallySectionTextStyle(), textAlign = TextAlign.Center)
+                    if (name != null) Text(text = name, modifier = Modifier.padding(0.dp).fillMaxWidth(), style = WallySectionTextStyle(), textAlign = TextAlign.Center)
+                    else Text(text = i18n(S.loading), modifier = Modifier.padding(0.dp).fillMaxWidth(), textAlign = TextAlign.Center, style = TextStyle(fontWeight = FontWeight.Light,  fontStyle = FontStyle.Italic))
                     if ((nft?.author != null) && (nft.author.length > 0))
                     {
                         CenteredText(i18n(S.NftAuthor) % mapOf("author" to nft.author))
@@ -89,9 +100,27 @@ fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, allo
                     {
                         CenteredText(i18n(S.NftSeries) % mapOf("series" to nft.series))
                     }
+                    val ti = asset.tokenInfo
+                    if ((ti!=null) && (ti.tddSig == null))
+                    {
+                        CenteredText(i18n(S.NftImproperConstruction), modifier.background(colorWarning))
+                    }
+                    else
+                    {
+                        val urlS = asset.docUrl
+                        if (urlS != null)
+                        {
+                            val url = com.eygraber.uri.Url.parseOrNull(urlS)
+                            if (url != null)
+                            {
+                                CenteredText(url.host, TextStyle(fontSize = defaultFontSize * 0.75, fontWeight = FontWeight.Light,  fontStyle = FontStyle.Italic))
+                            }
+                        }
+                    }
                 }
                 else
                 {
+                    if (name == null) name = asset.ticker ?: asset.groupId.toString()
                     var author = if ((nft?.author != null) && (nft.author.length > 0)) ", " + nft.author else ""
                     CenteredFittedText(name + author)
                 }
@@ -110,7 +139,7 @@ fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
 
     Column(modifier = modifier) {
         val a = asset
-
+        // Token info buttons
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
             if (a.iconUri != null) WallySmallTextButton(S.NftCardFront, onClick = {
                 showing = S.NftCardFront
@@ -130,6 +159,11 @@ fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
             if (a.iconBackUri != null) WallySmallTextButton(S.NftCardBack, onClick = {
                 showing = S.NftCardBack
             })
+        }
+
+        if ((a.tokenInfo != null) && (a.tokenInfo?.tddSig == null))
+        {
+            CenteredText(i18n(S.TokenUnsigned))
         }
 
         CenteredSectionText(showing)
@@ -371,7 +405,7 @@ fun AssetScreen(account: Account, nav: ScreenNav)
                                 assetFocusIndex = indexFreezer
                                 nav.go(ScreenId.Assets, byteArrayOf(indexFreezer.toByte()))
                             }) {
-                                AssetListItemView(entry, 1, false, Modifier.padding(0.dp, 2.dp).background(bkg))
+                                AssetListItemView(entry, 1, false, Modifier.padding(0.dp, 2.dp))
                             }
                         }
                         index++

@@ -701,7 +701,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
     /** If breakIt is true, a bad transaction is generated (for testing) */
     fun acceptSpecialTx(breakIt:Boolean = false)
     {
-        LogIt.info("accept trickle pay special transaction")
+        LogIt.info(sourceLoc() + ": accept trickle pay special transaction")
         accepted = true
         val pTx = proposedTx
         val panalysis = proposalAnalysis
@@ -727,12 +727,12 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
                         pTx.outputs.removeAt((0 until pTx.outputs.size).random())
                     }
                 }
-                LogIt.info("Breaking this TDPP special transaction response: ${pTx.toHex()}")
+                LogIt.info(sourceLoc() + "Breaking this TDPP special transaction response: ${pTx.toHex()}")
             }
 
             proposedTx = null
             proposalUrl = null
-            LogIt.info("sign trickle pay special transaction")
+            LogIt.info(sourceLoc() + ": sign trickle pay special transaction")
 
             // TODO: put a record of this transaction somewhere so when it is completed by the server we can annotate the history with a reason.
             // This is tricky because it may not be fully formed so idem will change.  Maybe look up by signature
@@ -748,11 +748,30 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
                         {
                             if (inp.script == null || inp.script.size == 0)
                             {
-                                LogIt.warning("TDPP special transaction: Counterparty indicated that I could post the completed transaction, but they still need to sign")
+                                LogIt.warning(sourceLoc() +": TDPP special transaction: Counterparty indicated that I could post the completed transaction, but they still need to sign")
                                 completed = false
                             }
                         }
-                        if (completed) getRelevantAccount(domain?.accountName).wallet.send(pTx)
+                        if (completed)
+                        {
+                            val wallet = getRelevantAccount(domain?.accountName).wallet
+                            wallet.send(pTx)
+                            // Now asynchronously wait for the wallet to process the tx, and then annotate it
+                            launch {
+                                var retries = 0
+                                while(retries<10)
+                                {
+                                    val txRecord = wallet.getTx(pTx.idem)
+                                    if (txRecord != null)
+                                    {
+                                        // TODO I could put some interesting info here
+                                        txRecord.relatedTo["TDPP"] = byteArrayOf(1)
+                                        break
+                                    }
+                                    delay(100)
+                                }
+                            }
+                        }
                     }
                     catch(e:Exception)  // Its possible that the tx is partial but the caller didn't set the bit, so if the tx is rejected ignore
                     {

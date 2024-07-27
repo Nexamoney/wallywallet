@@ -186,11 +186,9 @@ fun SendView(
                                 val assetPerAccount = assets[groupId]
                                 if (assetPerAccount != null)
                                 {
-                                    val qty = if ((assetPerAccount.editableAmount == null)&&(assetPerAccount.groupInfo.tokenAmt == 1L)) 1L  // its an NFT
-                                    else
-                                    {
-                                        assetPerAccount.tokenDecimalToFinestUnit(assetPerAccount.editableAmount ?: BigDecimal.ZERO)
-                                    }
+                                    val eAmt = assetPerAccount.editableAmount
+                                    val qty = if (eAmt == null) assetPerAccount.groupInfo.tokenAmt  // If they don't change the amount, send all of them (see default in AssetScreen.kt)
+                                    else assetPerAccount.tokenDecimalToFinestUnit(eAmt)
 
                                     if (qty != null && qty > 0)
                                     {
@@ -404,10 +402,10 @@ fun SendView(
         // If sending a large amount, or any assets, ask to confirm
         if ((amount >= confirmAmt)|| sendingTheseAssets.isNotEmpty())
         {
-            val fiatAmt = if (account.fiatPerCoin > BigDecimal.ZERO)
+            val fiatAmt = if ((account.fiatPerCoin > BigDecimal.ZERO)&&(amount > BigDecimal.ZERO))
             {
                 val fiatDisplay = amount * account.fiatPerCoin
-                i18n(S.approximatelyT) % mapOf("qty" to FiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode)
+                "(" + i18n(S.approximatelyT) % mapOf("qty" to FiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode) + ")"
             }
             else
             {
@@ -504,8 +502,8 @@ fun SendView(
                         {
                             val indexFreezer = index  // To use this in the item composable, we need to freeze it to a val, because the composable is called out-of-scope
                             item(key = indexFreezer) {
-                                Box(Modifier.padding(4.dp, 1.dp).fillMaxWidth().background(WallyAssetRowColors[indexFreezer % WallyAssetRowColors.size]).clickable {
-                                }) {
+                                Box(Modifier.padding(4.dp, 1.dp).fillMaxWidth() // .clickable {}
+                                ) {
                                     AssetListItemView(entry, 0, true, Modifier.padding(0.dp, 2.dp))
                                 }
                             }

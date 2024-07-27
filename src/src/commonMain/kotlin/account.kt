@@ -205,7 +205,22 @@ class Account(
         walletDb?.set("accountPin_" + name, ep)
     }
 
-    val cb1: ((Wallet) -> Unit)? = { onChange() }
+    val cb1: ((Wallet,List<TransactionHistory>?) -> Unit) =
+      { w, txes ->
+          if (txes!=null) for (txh in txes)
+          {
+              if (txh.confirmedHeight == Long.MIN_VALUE)  // This TX is being rejected out of our wallet
+              {
+                  val isTdpp = txh.relatedTo["TDPP"]
+                  if (isTdpp != null)  // OK so I oked this, but its actually a bad tx in a way I couldn't verify so its going away
+                  {
+                      displayWarning(i18n(S.staleTransaction),i18n(S.staleTransactionDetails))
+                  }
+              }
+          }
+          onChange()
+      }
+    var wCb: Int? = null
     var blkCb: Int? = null
     var netCb: Int? = null
 
@@ -220,7 +235,7 @@ class Account(
                 chain.start()
                 started = true
                 // Set all the underlying change callbacks to trigger the account update
-                wallet.setOnWalletChange(cb1)
+                wCb = wallet.setOnWalletChange(cb1)
                 blkCb = wallet.blockchain.onChange.add({ onChange() })
                 netCb = wallet.blockchain.net.changeCallback.add({ _, _ -> onChange() })
             }
@@ -673,7 +688,7 @@ class Account(
      */
     fun delete()
     {
-        wallet.removeOnWalletChange(cb1)
+        wCb?.let { wallet.removeOnWalletChange(it) }
         blkCb?.let { wallet.blockchain.onChange.remove(it) }
         netCb?.let { wallet.blockchain.net.changeCallback.remove(it) }
         currentReceive = null

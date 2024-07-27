@@ -25,6 +25,7 @@ import com.ionspin.kotlin.bignum.decimal.*
 
 
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.JsonElement
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
@@ -134,7 +135,7 @@ data class NexaNFTv2(
   val appuri: String,
   val info: String,
   val bindata: String?=null,
-  val data: JsonObject?=null,
+  val data: JsonElement?=null,
   val license: String?=null,
 )
 
