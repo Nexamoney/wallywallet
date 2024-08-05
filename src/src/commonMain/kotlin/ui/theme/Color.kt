@@ -14,8 +14,8 @@ val softKeyboardTop = Color(0xFFFFF6F6F6)
 val defaultListHighlight = Color(0xFFECE1B6)
 val defaultListHighlight2 = Color(0xFFe3d395)
 
-val colorCredit = Color(0xFFB43200)
-val colorDebit = Color(0xFF70A01E)
+val colorDebit = Color(0xFFB43200)
+val colorCredit = Color(0xFF70A01E)
 val colorConfirm = Color(0xFFE48864)
 
 val colorValid = Color(0xFF70A01E)
@@ -54,8 +54,8 @@ val ModalItemBkg = BrightBkg
 val listDividerFg = Color(0xFFFF906EB0)
 val unconfirmedBalanceIncomingColor = Color(0xFFFFa19120)
 val unconfirmedBalanceOutgoingColor = Color(0xFFFFBD4311)
-val unsyncedBalanceColor = Color(0xFFFFDBBFB3)
-val unsyncedStatusColor = Color(0xFFFF685953)
+val unsyncedBalanceColor = Color(0xFFFF9ac3e9)
+val unsyncedStatusColor = Color(0xFFFF80a0FF)
 val accountSelectionBkg = white
 val accountSelectionBorder = WallyBorder
 

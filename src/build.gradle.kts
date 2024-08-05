@@ -9,16 +9,16 @@ import java.time.Instant
 import java.net.URL
 
 // Dependency versions
-val mpThreadsVersion = "0.2.7"
-val nexaRpcVersion = "1.1.9"
-val libNexaKotlinVersion = "0.1.103"
-val serializationVersion = "1.6.3"  // https://github.com/Kotlin/kotlinx.serialization
+val mpThreadsVersion = "0.2.9"
+val nexaRpcVersion = "1.2.2"
+val libNexaKotlinVersion = "0.2.0"
+val serializationVersion = "1.7.1"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.8.1"     // https://github.com/Kotlin/kotlinx.coroutines
 val ktorVersion = "2.3.11"           // https://github.com/ktorio/ktor
-val bigNumVersion = "0.3.9"         // https://github.com/ionspin/kotlin-multiplatform-bignum
+val bigNumVersion = "0.3.10"         // https://github.com/ionspin/kotlin-multiplatform-bignum
 val composeVersion = "1.6.11"        // https://github.com/JetBrains/compose-multiplatform/releases
 val androidTestCoreVersion = "1.6.0-rc01" // https://mvnrepository.com/artifact/androidx.test/core
-val androidxActivityComposeVersion = "1.9.0"
+val androidxActivityComposeVersion = "1.9.1"
 val uriKmpVersion = "0.0.16"  // https://github.com/eygraber/uri-kmp
 val skikoVersion = "0.8.9" // https://github.com/JetBrains/skiko/releases
 val workVersion = "2.9.0"
@@ -391,13 +391,13 @@ kotlin {
                     implementation("androidx.compose.ui:ui-tooling-preview:1.6.8")
                     implementation("androidx.compose.foundation:foundation:1.6.8")
                     implementation("androidx.compose.material:material:1.6.8")
-                    implementation("androidx.activity:activity-compose:1.9.0")
-                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.6.3")
-                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.3")
+                    implementation("androidx.activity:activity-compose:1.9.1")
+                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.7.1")
+                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.7.1")
 
                     // android layout dependencies
                     //implementation("com.google.android.flexbox:flexbox:3.0.0")  // https://github.com/google/flexbox-layout/tags
-                    implementation("androidx.activity:activity:1.9.0")
+                    implementation("androidx.activity:activity:1.9.1")
                     //implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")  // https://developer.android.com/jetpack/androidx/releases/navigation
                     //implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
                     implementation("androidx.wear:wear:1.3.0")
@@ -418,8 +418,8 @@ kotlin {
                     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
 
                     // for bigintegers
-                    implementation("com.ionspin.kotlin:bignum:0.3.9")
-                    implementation("com.ionspin.kotlin:bignum-serialization-kotlinx:0.3.9")
+                    implementation("com.ionspin.kotlin:bignum:0.3.10")
+                    implementation("com.ionspin.kotlin:bignum-serialization-kotlinx:0.3.10")
 
                     // Background syncing
                     // java: implementation("androidx.work:work-runtime:$workVersion")
@@ -439,9 +439,9 @@ kotlin {
                     implementation("androidx.camera:camera-view:${camerax_version}")
                     implementation("com.google.mlkit:barcode-scanning:17.2.0")
 
-                    implementation("androidx.media3:media3-exoplayer:1.3.1")
+                    implementation("androidx.media3:media3-exoplayer:1.4.0")
                     // Dynamic Adaptive Streaming over HTTP: implementation("androidx.media3:media3-exoplayer-dash:1.X.X")
-                    implementation("androidx.media3:media3-ui:1.3.1")
+                    implementation("androidx.media3:media3-ui:1.4.0")
 
                     // Animation
                     implementation("com.airbnb.android:lottie-compose:$lottieVersion")
@@ -557,7 +557,7 @@ val gitCommitHash: String by lazy {
       .trim()
 }
 
-val versionNumber = "3.2.0"
+val versionNumber = "3.2.1"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 
 version = "$versionNumber-$gitCommitHash"

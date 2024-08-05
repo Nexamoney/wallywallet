@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
-import org.nexa.threads.iThread
 
 /** Account flags: No flag */
 const val ACCOUNT_FLAG_NONE = 0UL
@@ -161,12 +160,13 @@ class Account(
         }
 
         wallet.usesChain(chain)
-        if (autoInit) later { asyncInit(startHeight, startDate) }
+        if (autoInit) tlater { asyncInit(startHeight, startDate) }
     }
 
     fun asyncInit(startHeight: Long?, startDate: Long?)
     {
         LogIt.info(sourceLoc() + name + ": wallet connect blockchain ${chain.name}")
+        loadAccountAddress()
         wallet.startChain(startHeight, startDate)
         LogIt.info(sourceLoc() + name + ": wallet blockchain ${chain.name} connection completed")
         wallet.fillReceivingWithRetrieveOnly()
@@ -193,7 +193,6 @@ class Account(
         (cnxnMgr as MultiNodeCnxnMgr).getElectrumServerCandidate = { this.getElectrumServerOn(it) }
 
         setBlockchainAccessModeFromPrefs()
-        loadAccountAddress()
         constructAssetMap()
     }
 
@@ -235,9 +234,9 @@ class Account(
                 chain.start()
                 started = true
                 // Set all the underlying change callbacks to trigger the account update
-                wCb = wallet.setOnWalletChange(cb1)
-                blkCb = wallet.blockchain.onChange.add({ onChange() })
-                netCb = wallet.blockchain.net.changeCallback.add({ _, _ -> onChange() })
+                if (wCb==null) wCb = wallet.setOnWalletChange(cb1)
+                if (blkCb == null) blkCb = wallet.blockchain.onChange.add({ onChange() })
+                if (netCb == null) netCb = wallet.blockchain.net.changeCallback.add({ _, _ -> onChange() })
             }
         }
     }
@@ -519,7 +518,13 @@ class Account(
         {
             // If we don't have it at all, add it to our dictionary
             val assetInfo = am.track(asset.groupId, getEc)
-            access.lock { assets[asset.groupId] = AssetPerAccount(asset, assetInfo) }
+            access.lock {
+                val cur = assets[asset.groupId]
+                // Insert it into our account if missing -- but do not reinsert if not missing so we don't accidentally remove other state (send quantity)
+                // just update the quantity
+                if (cur != null) cur.groupInfo.tokenAmt = asset.tokenAmt
+                else assets[asset.groupId] = AssetPerAccount(asset, assetInfo)
+            }
         }
         access.lock {
             // Now remove any assets that are no longer in the wallet
@@ -725,18 +730,18 @@ class Account(
     /**
      * Common implementation of onUpdateReceiveInfo from androidMain
      */
-    fun onUpdatedReceiveInfoCommon(refresh: ((String) -> Unit)): Unit
+    fun onUpdatedReceiveInfo(refresh: ((String) -> Unit)): Unit
     {
         fun genNewAddress()
         {
-            val ret = wallet.getNewDestination()
+            val ret = wallet.getCurrentDestination()  // Will pop forward but only if needed  //getNewDestination()
             currentReceive = ret
             saveAccountAddress()
             refresh.invoke(ret.address.toString())
         }
 
         val cr = currentReceive
-        if (cr == null)  later { genNewAddress() }
+        if (cr == null)  tlater { genNewAddress() }
         else
         {
             var addr: PayAddress? = cr.address
@@ -750,7 +755,7 @@ class Account(
                 else
                 {
                     addr.let {
-                        later {
+                        tlater {
                             if (wallet.getBalanceIn(it) > 0)
                                 genNewAddress()
                             else
@@ -759,7 +764,11 @@ class Account(
                     }
                 }
             }
-            else later { genNewAddress() }
+            else
+            {
+                LogIt.error(sourceLoc() +": Receiving Destination has no addres!!!")
+                tlater { genNewAddress() }
+            }
         }
     }
 
@@ -768,7 +777,11 @@ class Account(
         val wdb = walletDb
         if (wdb != null)
         {
-            later { wdb.set("accountAddress_" + name, (currentReceive?.address?.toString() ?: "").toByteArray()) }
+            tlater {
+                val tmp = currentReceive?.address?.toString()
+                if (tmp != null)
+                  wdb.set("accountAddress_" + name, tmp.toByteArray())
+            }
         }
     }
 }

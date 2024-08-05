@@ -57,31 +57,6 @@ val PRIMARY_CRYPTO = if (REG_TEST_ONLY) ChainSelector.NEXAREGTEST else ChainSele
 
 var wallyAndroidApp: WallyApp? = null
 
-// in app init, we change the lbbc integers to our own resource ids.  So this translation is likely unnecessary
-val i18nLbc = mapOf(
-  RinsufficentBalance to S.insufficentBalance,
-  RbadWalletImplementation to S.badWalletImplementation,
-  RdataMissing to S.PaymentDataMissing,
-  RwalletAndAddressIncompatible to S.chainIncompatibleWithAddress,
-  RnotSupported to S.notSupported,
-  Rexpired to S.expired,
-  RsendMoreThanBalance to S.sendMoreThanBalance,
-  RbadAddress to S.badAddress,
-  RblankAddress to S.blankAddress,
-  RblockNotForthcoming to S.blockNotForthcoming,
-  RheadersNotForthcoming to S.headersNotForthcoming,
-  RbadTransaction to S.badTransaction,
-  RfeeExceedsFlatMax to S.feeExceedsFlatMax,
-  RexcessiveFee to S.excessiveFee,
-  Rbip70NoAmount to S.badAmount,
-  RdeductedFeeLargerThanSendAmount to S.deductedFeeLargerThanSendAmount,
-  RwalletDisconnectedFromBlockchain to S.walletDisconnectedFromBlockchain,
-  RsendDust to S.sendDustError,
-  RnoNodes to S.NoNodes,
-  RwalletAddressMissing to S.badAddress,
-  RunknownCryptoCurrency to S.unknownCryptoCurrency,
-  RsendMoreTokensThanBalance to S.insufficentTokenBalance
-)
 
 actual fun platformNotification(message:String, title: String?, onclickUrl:String?, severity: AlertLevel)
 {
@@ -225,7 +200,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         {
             //System.loadLibrary("native-lib")
             System.loadLibrary("nexalight")
-            appI18n = { libErr: Int -> i18n(i18nLbc[libErr] ?: libErr) }
         }
     }
 

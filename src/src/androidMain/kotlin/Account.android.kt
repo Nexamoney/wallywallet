@@ -42,6 +42,7 @@ var Account.updateReceiveAddressUI: ((Account) -> Unit)?
 
 data class ReceiveInfoResult(val addrString: String?, val qr: Bitmap?)
 
+/*
 suspend fun Account.ifUpdatedReceiveInfo(sz: Int, refresh: (String, Bitmap) -> Unit) = onUpdatedReceiveInfo(sz, refresh)
 
 suspend fun Account.onUpdatedReceiveInfo(sz: Int, refresh: ((String, Bitmap) -> Unit)): Unit
@@ -81,6 +82,7 @@ suspend fun Account.onUpdatedReceiveInfo(sz: Int, refresh: ((String, Bitmap) -> 
 
     }
 }
+ */
 
 //? Return a string and bitmap that corresponds to the current receive address, with a suggested quantity specified in the URI's standard units, i.e BCH.
 //? Provide qty in this currency code's units (i.e. mBCH)
@@ -122,7 +124,7 @@ fun Account.onResumeAndroid()
 var accountOnChangedLater = false
 actual fun onChanged(account: Account, force: Boolean)
 {
-    later {
+    onetlater("accountChanged") {
         account.changeAsyncProcessing()
         triggerAccountsChanged(account)
     }

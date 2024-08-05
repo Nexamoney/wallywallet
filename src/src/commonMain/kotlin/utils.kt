@@ -25,8 +25,14 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.util.cio.*
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format.char
+import kotlinx.datetime.toLocalDateTime
 import okio.BufferedSource
 import okio.utf8Size
+import org.nexa.threads.Gate
+import org.nexa.threads.Thread
+import org.nexa.threads.iThread
 
 private val LogIt = GetLog("BU.wally.utils")
 
@@ -80,7 +86,21 @@ val NumberDecimalCharacter:String
         }
     }
 
+val DATE_TIME_FORMAT = kotlinx.datetime.LocalDateTime.Format {
+    year()
+    char('-')
+    monthNumber()
+    char('-')
+    dayOfMonth()
 
+    char(' ')
+
+    hour()
+    char(':')
+    minute()
+    char(':')
+    second()
+}
 
 data class PlatformCharacteristics(
   /** Does this platform support QR code scanning */
@@ -277,6 +297,7 @@ fun later(scope: CoroutineScope? = null, fn: suspend () -> Unit): Unit
         }
     }
 }
+
 
 fun dbgAssertGuiThread()
 {
@@ -482,7 +503,8 @@ fun String.splitIntoSet():Set<String>
     return split(","," ").map({it.trim()}).filter({(it.isNotEmpty())&&(it.isNotBlank())}).toSet()
 }
 
-fun formatLocalDateTime(ldt: LocalDateTime): String {
+fun formatLocalDateTime(ldt: LocalDateTime,splitter:String=" "): String
+{
     val year = ldt.year.toString()
     val month = ldt.monthNumber.toString().padStart(2, '0')
     val day = ldt.dayOfMonth.toString().padStart(2, '0')
@@ -491,7 +513,21 @@ fun formatLocalDateTime(ldt: LocalDateTime): String {
     val second = ldt.second.toString().padStart(2, '0')
 
     // Format: YYYY-MM-DD HH:MM:SS
-    return "$year-$month-$day $hour:$minute:$second"
+    return "$year-$month-$day$splitter$hour:$minute:$second"
+}
+
+fun formatLocalEpochMilliseconds(epochMs:Long, splitter:String=" "): String
+{
+    val instant = kotlinx.datetime.Instant.fromEpochMilliseconds(epochMs)
+    val ldt = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+    val year = ldt.year.toString()
+    val month = ldt.monthNumber.toString().padStart(2, '0')
+    val day = ldt.dayOfMonth.toString().padStart(2, '0')
+    val hour = ldt.hour.toString().padStart(2, '0')
+    val minute = ldt.minute.toString().padStart(2, '0')
+    val second = ldt.second.toString().padStart(2, '0')
+    // Format: YYYY-MM-DD HH:MM:SS
+    return "$year-$month-$day$splitter$hour:$minute:$second"
 }
 
 expect fun getResourceFile(name: String): BufferedSource

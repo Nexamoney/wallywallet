@@ -635,14 +635,14 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         // If requester wants a unique address just give one.  Otherwise give the main address (if we have one; if not, make one)
         val addr:String = if (uniqueAddress)
         {
-            wal.getNewAddress().toString()
+            wal.getCurrentDestination().address.toString()
         }
         else
         {
             if (d.mainPayAddress != "") d.mainPayAddress
             else
             {
-                val tmp = wal.getNewAddress()
+                val tmp = wal.getCurrentDestination().address
                 d.mainPayAddress = tmp.toString()
                 tmp.toString()
             }

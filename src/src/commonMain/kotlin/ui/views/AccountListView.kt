@@ -25,6 +25,7 @@ import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
 import kotlinx.datetime.toLocalDateTime
 import org.nexa.libnexakotlin.*
 import kotlin.math.roundToLong
@@ -111,6 +112,8 @@ data class AccountUIData(
   var unconfBal: String="",
   var unconfBalColor: Color = colorCredit,
   var approximately: String? = null,
+  var approximatelyColor: Color = colorPrimaryDark,
+  var approximatelyWeight: FontWeight = FontWeight.Normal,
   var devinfo: String="",
   var locked: Boolean = false,
   var lockable: Boolean = false,
@@ -132,9 +135,11 @@ fun Account.uiData():AccountUIData
     ret.fastForwarding = (fastforward != null)
     ret.ffStatus = fastforwardStatus
     val chainstate = wallet.chainstate
+    var synced = true
     if (chainstate != null)
     {
-        if (chainstate.isSynchronized(1, 60 * 60))  // ignore 1 block desync or this displays every time a new block is found
+        synced = chainstate.isSynchronized(1, 60 * 60)
+        if (synced)  // ignore 1 block desync or this displays every time a new block is found
         {
             ret.unconfBal =
               if (CURRENCY_ZERO == delta)
@@ -150,16 +155,6 @@ fun Account.uiData():AccountUIData
         }
         else
         {
-            ret.unconfBal = if (chainstate.syncedDate <= 1231416000) i18n(S.unsynced)  // for fun: bitcoin genesis block
-            else {
-                val instant = kotlinx.datetime.Instant.fromEpochSeconds(chainstate.syncedDate)
-                val localTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-                val td = localTime.date.toString() + " " + localTime.time.toString()
-                i18n(S.balanceOnTheDate) % mapOf("date" to td)  //epochToDate(chainstate.syncedDate))
-            }
-
-            ret.balFontWeight = FontWeight.Light
-            ret.unconfBalColor = unsyncedStatusColor
         }
     }
     else
@@ -194,12 +189,37 @@ fun Account.uiData():AccountUIData
         }
     }
 
-    if (fiatPerCoin > BigDecimal.ZERO)
+    // Only show the approx fiat amount if synced and we have the conversion data
+    if (synced)
     {
-        var fiatDisplay = balance * fiatPerCoin
-        ret.approximately = i18n(S.approximatelyT) % mapOf("qty" to FiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode)
+        if (fiatPerCoin > BigDecimal.ZERO)
+        {
+            var fiatDisplay = balance * fiatPerCoin
+            ret.approximately = i18n(S.approximatelyT) % mapOf("qty" to FiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode)
+            ret.approximatelyColor = colorPrimaryDark
+            ret.approximatelyWeight = FontWeight.Normal
+        }
+        else ret.approximately = null
     }
-    else ret.approximately = null
+    else
+    {
+
+        ret.approximately = if ((chainstate == null) || (chainstate.syncedDate <= 1231416000)) i18n(S.unsynced)  // for fun: bitcoin genesis block
+        else
+        {
+            val instant = kotlinx.datetime.Instant.fromEpochSeconds(chainstate.syncedDate)
+            val localTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+
+            val td = localTime.format(DATE_TIME_FORMAT)
+            i18n(S.balanceOnTheDate) % mapOf("date" to td)
+        }
+
+        ret.balFontWeight = FontWeight.Light
+        ret.approximatelyColor = unsyncedStatusColor
+        ret.approximatelyWeight = FontWeight.Bold
+        ret.balColor = unsyncedBalanceColor
+    }
+
     return ret
 }
 
@@ -250,9 +270,9 @@ fun AccountItemView(
                               else
                               {
                                   uidata.account.pinEntered = false
-                                  later {
+                                  tlater("assignGuiSlots") {
                                       triggerAssignAccountsGuiSlots()  // In case it should be hidden
-                                      accountChangedNotification.send(uidata.name)
+                                      later { accountChangedNotification.send(uidata.name) }
                                   }
                               }
                           })
@@ -274,7 +294,7 @@ fun AccountItemView(
                         // If our balance shrinks, we might be able to redraw it with a bigger font
                         if (priorBal > uidata.balance) scale = 1.0
                         priorBal = uidata.balance
-                        Text(text = uidata.balance, style = balTextStyle, color = colorDebit, modifier = Modifier.padding(0.dp).drawWithContent { if (drawBal) drawContent() }, textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
+                        Text(text = uidata.balance, style = balTextStyle, color = uidata.balColor, modifier = Modifier.padding(0.dp).drawWithContent { if (drawBal) drawContent() }, textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
                           onTextLayout = {
                               textLayoutResult ->
                               if (textLayoutResult.didOverflowWidth)
@@ -322,18 +342,18 @@ fun AccountItemView(
                   modifier = Modifier.fillMaxWidth(),
                   horizontalArrangement = Arrangement.Center
                 ) {
-                    val ffs = uidata.ffStatus
-                    if (uidata.fastForwarding && (ffs != null))
-                    {
-                        Text(text = i18n(S.fastforwardStatus) % mapOf("info" to ffs), fontSize = 16.sp)
-                    }
-                    else
-                    {
-                        uidata.approximately?.let {
-                            Text(text = it, fontSize = 16.sp)
-                        }
+                    uidata.approximately?.let {
+                        Text(text = it, fontSize = 16.sp, color = uidata.approximatelyColor, fontWeight = uidata.approximatelyWeight)
                     }
                 }
+
+                val ffs = uidata.ffStatus
+                if (uidata.fastForwarding && (ffs != null))
+                {
+                        Text(text = i18n(S.fastforwardStatus) % mapOf("info" to ffs), fontSize = 16.sp)
+                }
+                else
+                {
                 // includes (amount) NEX pending
                 if (uidata.unconfBal.isNotEmpty())
                     Row(
@@ -342,11 +362,13 @@ fun AccountItemView(
                     ) {
                         Text(text = uidata.unconfBal, color = uidata.unconfBalColor)
                     }
+                }
+
                 if (devMode) Row(
                   modifier = Modifier.fillMaxWidth(),
                   horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(text = uidata.devinfo, fontSize = 12.sp)
+                    Text(text = uidata.devinfo, fontSize = 12.sp, maxLines = 5, minLines = 5)
                 }
             }
             // Show the account settings gear at the end
@@ -412,7 +434,7 @@ fun derivationPathSearch(progress: DerivationPathSearchProgress, wallet: Bip44Wa
                 progress.progress = ""
                 progress.progressInt = it
                 event?.invoke()
-                key
+                dest
             },
               {
                   //summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
@@ -447,6 +469,7 @@ fun startAccountFastForward(account: Account, displayFastForwardInfo: (String?) 
 
     var aborter = Objectify<Boolean>(false)
     account.fastforward = aborter
+    displayFastForwardInfo(i18n(S.fastforwardStart))
 
     Thread("fastforward_${wallet.name}")
     {
