@@ -600,12 +600,13 @@ fun CenteredText(text: String, textStyle: TextStyle, modifier: Modifier = Modifi
       })
 }
 
-@Composable fun FittedText(text: String, textStyle:TextStyle, color: Color? = null, modifier: Modifier = Modifier)
+@Composable fun FittedText(text: String, textStyle:TextStyle?=null, color: Color? = null, modifier: Modifier = Modifier)
 {
     // see https://stackoverflow.com/questions/63971569/androidautosizetexttype-in-jetpack-compose
-    var rtextStyle by remember { mutableStateOf(textStyle) }
+    val tmp = textStyle ?: WallyTextStyle(1.0, FontWeight.Normal)
+    var rtextStyle by remember { mutableStateOf(tmp) }
     var drawIt by remember { mutableStateOf(false) }
-    Text(text = text, style = textStyle, color = color ?: Color.Unspecified, modifier = Modifier.padding(0.dp).fillMaxWidth().drawWithContent { if (drawIt) drawContent() }. then(modifier), textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
+    Text(text = text, style = rtextStyle, color = color ?: Color.Unspecified, modifier = Modifier.padding(0.dp).fillMaxWidth().drawWithContent { if (drawIt) drawContent() }. then(modifier), textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
       onTextLayout = {
           textLayoutResult ->
           if (textLayoutResult.didOverflowWidth)

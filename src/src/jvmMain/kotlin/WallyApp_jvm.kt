@@ -13,6 +13,7 @@ import info.bitcoinunlimited.www.wally.ui.NavigationRoot
 import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.ScreenNav
 import info.bitcoinunlimited.www.wally.ui.views.loadingAnimation
+import org.nexa.threads.millisleep
 import java.io.File
 
 private val LogIt = GetLog("BU.wally.IdentityActivity")

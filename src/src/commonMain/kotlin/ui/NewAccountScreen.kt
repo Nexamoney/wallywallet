@@ -976,7 +976,39 @@ fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter
                 addrText = "\n ${it} at ${dest.address.toString()}"
                 fromText = if (ec != null) "\n from ${ec?.logName}" else ""
                 displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + fromText + addrText + summaryText)
-                key
+                dest
+            },
+              {
+                  summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
+                    "bal" to NexaFormat.format(fromFinestUnit(it.balance, chainSelector = chainSelector)), "units" to (chainToDisplayCurrencyCode[chainSelector] ?:""))
+
+                  displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + addrText + summaryText)
+              }
+            )
+        }
+        catch (e: EarlyExitException)
+        {
+            return
+        }
+        if (aborter.obj)
+        {
+            displayFastForwardInfo("")
+            return
+        }
+
+        // TODO need to explicitly push nonstandard addresses into the wallet, by explicitly returning them.
+        // otherwise the transactions won't be noticed by the wallet when we jam them in.
+        LogIt.info("Searching in p2pkh ${addressDerivationCoin}")
+        // Look for activity in the identity and common location
+        var activity4 = try
+        {
+            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_NONSTD_DERIVATION_PATH_MAX_GAP, {
+                if (aborter.obj) throw EarlyExitException()
+                val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
+                val us = UnsecuredSecret(key)
+                val dest = Pay2PubKeyHashDestination(chainSelector, us, it.toLong())
+                displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + "\n ${it} at ${dest.address.toString()}")
+                dest
             },
               {
                   summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
@@ -1008,7 +1040,7 @@ fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter
                 val us = UnsecuredSecret(key)
                 val dest = Pay2PubKeyTemplateDestination(chainSelector, us, it.toLong())
                 displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + "\n ${it} at ${dest.address.toString()}")
-                key
+                dest
             },
               {
                   summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
@@ -1037,7 +1069,7 @@ fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter
                 addrText = "\n ${it} at ${dest.address}"
                 fromText = if (ec != null) "\n from ${ec?.logName}" else ""
                 displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + fromText + addrText + summaryText)
-                key
+                dest
             },
               {
                   summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
@@ -1062,10 +1094,11 @@ fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter
         activity.txh.forEach { act[it.tx.idem] = it }
         activity2.txh.forEach { act[it.tx.idem] = it }
         activity3.txh.forEach { act[it.tx.idem] = it }
+        activity4.txh.forEach { act[it.tx.idem] = it }
 
-        val addrs = activity.addresses + activity2.addresses + activity3.addresses
-        val addrCount = activity.addrCount + activity2.addrCount + activity3.addrCount
-        val bal = activity.balance + activity2.balance + activity3.balance
+        val addrs = activity.addresses + activity2.addresses + activity3.addresses + activity4.addresses
+        val addrCount = activity.addrCount + activity2.addrCount + activity3.addrCount + activity4.addrCount
+        val bal = activity.balance + activity2.balance + activity3.balance + activity4.balance
         newAccountState.value = newAccountState.value.copy(discoveredAccountHistory = act.values.toList(), discoveredAddresses = addrs, discoveredAddressCount = addrCount, discoveredAccountBalance = bal, discoveredAddressIndex = activity.lastAddressIndex, discoveredTip = tip)
     }
     finally

@@ -26,9 +26,44 @@ import kotlin.concurrent.Volatile
 
 private val LogIt = GetLog("BU.wally.app")
 
+val i18nLbc = mapOf(
+  RinsufficentBalance to S.insufficentBalance,
+  RbadWalletImplementation to S.badWalletImplementation,
+  RdataMissing to S.PaymentDataMissing,
+  RwalletAndAddressIncompatible to S.chainIncompatibleWithAddress,
+  RnotSupported to S.notSupported,
+  Rexpired to S.expired,
+  RsendMoreThanBalance to S.sendMoreThanBalance,
+  RbadAddress to S.badAddress,
+  RblankAddress to S.blankAddress,
+  RblockNotForthcoming to S.blockNotForthcoming,
+  RheadersNotForthcoming to S.headersNotForthcoming,
+  RbadTransaction to S.badTransaction,
+  RfeeExceedsFlatMax to S.feeExceedsFlatMax,
+  RexcessiveFee to S.excessiveFee,
+  Rbip70NoAmount to S.badAmount,
+  RdeductedFeeLargerThanSendAmount to S.deductedFeeLargerThanSendAmount,
+  RwalletDisconnectedFromBlockchain to S.walletDisconnectedFromBlockchain,
+  RsendDust to S.sendDustError,
+  RnoNodes to S.NoNodes,
+  RwalletAddressMissing to S.badAddress,
+  RunknownCryptoCurrency to S.unknownCryptoCurrency,
+  RsendMoreTokensThanBalance to S.insufficentTokenBalance
+)
+
 var wallyApp: CommonApp? = null
 var forTestingDoNotAutoCreateWallets = false
 var kvpDb: KvpDatabase? = null
+
+fun tlater(name: String?=null, job: ()->Unit)
+{
+    wallyApp!!.threadJobPool.later(name, job)
+}
+
+fun onetlater(name: String, job: ()->Unit)
+{
+    wallyApp!!.threadJobPool.oneLater(name, job)
+}
 
 data class LongPollInfo(val proto: String, val hostPort: String, val cookie: String?, var active: Boolean = true)
 
@@ -230,6 +265,8 @@ open class CommonApp
     val coMiscCtxt: CoroutineContext = newFixedThreadPoolContext(8, "app")
     val coMiscScope: CoroutineScope = kotlinx.coroutines.CoroutineScope(coMiscCtxt)
 
+    val threadJobPool = ThreadJobPool("tapp", 4)
+
     val accountLock = org.nexa.threads.Mutex()
     val accounts: MutableMap<String, Account> = mutableMapOf()
 
@@ -243,6 +280,11 @@ open class CommonApp
     val tpDomains: TricklePayDomains = TricklePayDomains(this)
 
     var assetLoaderThread: iThread? = null
+
+    init {
+        // Set up the libnexakotlin translations
+        appI18n = { libErr: Int -> i18n(i18nLbc[libErr] ?: libErr) }
+    }
 
     /** Return an ordered map of the visible accounts (in display order) */
     fun orderedAccounts(visibleOnly: Boolean = true):ListifyMap<String, Account>

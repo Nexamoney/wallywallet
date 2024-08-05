@@ -66,7 +66,7 @@ fun TransactionHistory.toCSV(): String
 
     val instant = kotlinx.datetime.Instant.fromEpochMilliseconds(date)
     val localTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-    val fdate = localTime.toString()
+    val fdate = localTime.format(DATE_TIME_FORMAT)
     val ret = StringBuilder()
     ret.append(fdate)
     ret.append(",")
@@ -131,20 +131,25 @@ fun TransactionHistoryHeaderCSV(): String
 }
 
 
-fun iTransaction.gatherAssets(b:Blockchain):List<AssetPerAccount>
+fun iTransaction.gatherAssets(addrFilter: (PayAddress?) -> Boolean = { true}):List<AssetPerAccount>
 {
     val ret = mutableListOf<AssetPerAccount>()
     for (i in outputs)
     {
-        val gi = i.script.groupInfo(i.amount)
-        if ((gi != null)&&(!gi.isAuthority()))  // TODO not dealing with authority txos in Wally mobile
+        val addr = i.script.address
+        if (addrFilter(addr))  // only gather assets relevant to this wallet
         {
-            val ai = wallyApp?.assetManager?.track(gi.groupId, null)
-            ai?.let { ret.add(AssetPerAccount(gi, ai)) }
+            val gi = i.script.groupInfo(i.amount)
+            if ((gi != null) && (!gi.isAuthority()))  // TODO not dealing with authority txos in Wally mobile
+            {
+                val ai = wallyApp?.assetManager?.track(gi.groupId, null)
+                ai?.let { ret.add(AssetPerAccount(gi, ai)) }
+            }
         }
     }
     return ret
 }
+
 
 /** returns the destination addresses if this tx is sending, or the receipt addresses if this tx is receiving */
 fun TransactionHistory.gatherRelevantAddresses():Set<PayAddress>
@@ -204,14 +209,11 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
      */
     fun fillTxList()
     {
-        //val txList = mutableListOf<TransactionHistory>()
         txes.clear()
         acc.wallet.forEachTxByDate {
-            //txList.add(it)
             txes.add(it)
             false
         }
-        //txList.sortBy { it.date }
     }
 
     fillTxList()
@@ -251,16 +253,14 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
                             ResImageView("icons/sendarrow.xml", modifier = Modifier.size(30.dp))
                         }
                         else Spacer(Modifier.size(30.dp))
-                        val instant = kotlinx.datetime.Instant.fromEpochMilliseconds(it.date)
-                        val localTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-                        Text(localTime.date.toString() + "\n" + localTime.time.toString())
+                        if (it.date > 1577836800000) Text(formatLocalEpochMilliseconds(it.date, "\n"))  // jan 1 2020, before the genesis block
+                        else
+                        {
+                            LogIt.info(sourceLoc() +": tx with date ${it.date}")
+                        }
                         CenteredFittedWithinSpaceText(text = acc.cryptoFormat.format(acc.fromFinestUnit(amt)), startingFontScale = 1.5, fontWeight = FontWeight.Bold,
                           modifier = Modifier.weight(1f))
-                        val uri = if (it.chainSelector == ChainSelector.NEXA)
-                            NEXA_EXPLORER_URL + "/tx/${it.tx.idem.toHex()}"
-                        else if (it.chainSelector == ChainSelector.NEXATESTNET)
-                            NEXA_TESTNET_EXPLORER_URL + "/tx/${it.tx.idem.toHex()}"
-                        else null
+                        val uri = it.chainSelector.explorer("/tx/${it.tx.idem.toHex()}")
                         if (uri != null)
                         {
                             WallyBoringButton({ uriHandler.openUri(uri) }, modifier = Modifier.padding(0.dp, 0.dp, 10.dp, 0.dp)
@@ -279,7 +279,19 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
                     }
 
                     if (it.note.isNotBlank()) CenteredText(text = it.note)
-                    val assets = it.tx.gatherAssets(acc.wallet.blockchain)
+                    val assets = it.tx.gatherAssets({
+                        // We are going to use the native coin as a hint as to whether this transaction is sending or receiving
+                        // If its sending, just look for assets that left this wallet
+                        // If its receiving, look for assets coming in.
+                        // TODO: look at inputs and accurately describing sending/receiving
+                        if (it == null) false
+                        else
+                        {
+                            val result:Boolean = if (amt > 0) acc.wallet.isWalletAddress(it)
+                            else !acc.wallet.isWalletAddress(it)
+                            result
+                        }
+                    })
                     if (assets.isNotEmpty())
                     {
                         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {

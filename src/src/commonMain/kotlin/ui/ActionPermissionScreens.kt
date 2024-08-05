@@ -124,15 +124,13 @@ fun IdentityPermScreen(account: Account, uri: Uri?, nav: ScreenNav)
     val op = queries["op"]?.lowercase() ?: ""
 
     var msgToSign by remember { mutableStateOf<ByteArray?>(null) }
+    var destToSignWith by remember { mutableStateOf<PayDestination?>(null) }
 
     var error = ""  // If there's some error but you want to insist on the user actively dismissing the screen, set this to the error to display
 
-
-    val act = try
+    var act = try
     {
-        val tmp = wallyApp!!.primaryAccount
-        if (tmp == null) throw PrimaryWalletInvalidException()
-        tmp
+        wallyApp!!.preferredVisibleAccount()
     }
     catch (e: PrimaryWalletInvalidException)
     {
@@ -140,8 +138,7 @@ fun IdentityPermScreen(account: Account, uri: Uri?, nav: ScreenNav)
         nav.back()
         return
     }
-
-    val w = act.wallet
+    var w = act.wallet
 
     // TODO If the primary account is locked
 
@@ -164,7 +161,6 @@ fun IdentityPermScreen(account: Account, uri: Uri?, nav: ScreenNav)
         }
     }
 
-
     val topText = when(op)
     {
         "info" -> S.provideInfoQuestion
@@ -179,9 +175,7 @@ fun IdentityPermScreen(account: Account, uri: Uri?, nav: ScreenNav)
     }
 
     Column(Modifier.fillMaxWidth()) {
-
         CenteredSectionText(topText)
-
         if (h != null)
         {
             val tm = Modifier.padding(0.dp).fillMaxWidth().align(Alignment.CenterHorizontally)
@@ -191,10 +185,41 @@ fun IdentityPermScreen(account: Account, uri: Uri?, nav: ScreenNav)
 
         if (op == "sign")
         {
+
+            var signAddr = queries["addr"]?.let { PayAddress(it) } ?: null
             var signText = queries["sign"]?.urlDecode()
             val signHex = queries["signhex"]
+            if (signAddr != null)
+            {
+                var dest = w.walletDestination(signAddr)
+                if (dest == null)
+                {
+                    for (aname in wallyApp!!.visibleAccountNames())
+                    {
+                        val a = wallyApp!!.accounts[aname] ?: continue
+                        dest = a.wallet.walletDestination(signAddr)
+                        if (dest != null)
+                        {
+                            act = a
+                            w = act.wallet
+                            break
+                        }
+                    }
+                    if (dest == null)
+                    {
+                        displayError(S.unknownAddress)
+                        return
+                    }
+                }
+                destToSignWith = dest
+            }
+            destToSignWith?.let {
+                CenteredSectionText(i18n(S.SigningWithAccount) % mapOf("act" to act.nameAndChain))
+                CenteredFittedText(it.address.toString())
+            }
             if (signText != null)
             {
+                Spacer(Modifier.height(10.dp))
                 CenteredSectionText(S.textToSign)
                 WallyBrightEmphasisBox(Modifier.weight(1f).fillMaxWidth()) {
                     Text(signText, modifier = Modifier.wrapContentHeight(align = Alignment.CenterVertically), colorPrimaryDark)
@@ -234,10 +259,16 @@ fun IdentityPermScreen(account: Account, uri: Uri?, nav: ScreenNav)
                 if (op == "sign")
                 {
                     val path = uri.encodedPath
-                    val (secret, address) = getSecretAndAddress(act.wallet, h ?: "", path)
+
+                    val (secret, address) = destToSignWith?.let { Pair(it.secret, it.address) } ?: getSecretAndAddress(act.wallet, h ?: "", path)
 
                     val msg = msgToSign
-                    if (msg == null)
+                    if (secret == null)
+                    {
+                        displayError(S.unknownAddress)
+                        nav.back()
+                    }
+                    else if (msg == null)
                     {
                         displayError(S.nothingToSign)
                         nav.back()
@@ -262,7 +293,7 @@ fun IdentityPermScreen(account: Account, uri: Uri?, nav: ScreenNav)
                             displayNotice(S.sigInClipboard)
 
                             val reply = queries["reply"]
-                            if (reply == null || reply == "true")
+                            if ((reply == null || reply == "true") && (h != "_"))
                             {
                                 val responseProtocol = queries["proto"]
                                 var protocol = responseProtocol ?: uri.scheme  // Prefer the protocol requested by the other side, otherwise use the same protocol we got the request from
@@ -310,6 +341,10 @@ fun IdentityPermScreen(account: Account, uri: Uri?, nav: ScreenNav)
                                     displayError(S.connectionException)
                                     nav.back()
                                 }
+                            }
+                            else
+                            {
+                                nav.back()
                             }
                         }
                     }

@@ -29,7 +29,7 @@ import org.nexa.libnexakotlin.*
 /**
  * Address information to display in view
  */
-data class AddressInfo(val address: PayAddress, val givenOut: Boolean, val amountHeld: Long, val totalReceived: Long, val firstRecv: Long, val lastRecv: Long)
+data class AddressInfo(val address: PayAddress, val givenOut: Boolean, val amountHeld: Long, val totalReceived: Long, val firstRecv: Long, val lastRecv: Long, val assetTypesHeld:Long)
 
 val addressInfoComparator = object:  Comparator<AddressInfo>
 {
@@ -71,26 +71,37 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
     fun fillAddressList()
     {
         addresses.value.clear()
+        //val addrInfo = mutableMapOf<SatoshiScript, AddressInfo>()
         for (a in acc.wallet.allAddresses)
         {
             val used = acc.wallet.isAddressGivenOut(a)
             val holding = acc.wallet.getBalanceIn(a)
             val totalReceived = acc.wallet.getBalanceIn(a, false)
-
             val os = a.lockingScript()
+
             var first = Long.MAX_VALUE
             var last = Long.MIN_VALUE
+            var assetTypes = 0L
             acc.wallet.forEachTx {
                 var amt = 0L
+                var asset = false
+
                 for (out in it.tx.outputs)
                 {
-                    if (os contentEquals out.script)
+                    val ungrouped = out.script.ungrouped()
+                    if (os contentEquals ungrouped)
                     {
                         amt += out.amount
+                        val gi = out.script.groupInfo(out.amount)
+                        if (gi != null)
+                        {
+                            assetTypes += 1
+                            asset = true
+                        }
                         break
                     }
                 }
-                if (amt > 0)
+                if ((amt > 0) || asset)
                 {
                     if (first > it.date) first = it.date
                     if (last < it.date) last = it.date
@@ -99,7 +110,7 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
             }
 
             if (used)
-                addresses.value.add(AddressInfo(a, used, holding, totalReceived, first, last))
+                addresses.value.add(AddressInfo(a, used, holding, totalReceived, first, last, assetTypes))
         }
 
         addresses.value.sortWith(addressInfoComparator)
@@ -158,87 +169,93 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
 
                         Column (modifier = Modifier.fillMaxWidth().background(color).padding(8.dp)) {
 
-                            if ((it.amountHeld > 0) || (it.totalReceived > 0))
+                            if ((it.amountHeld > 0) || (it.totalReceived > 0) || (it.assetTypesHeld > 0))
                             {
-                                val balance = i18n(S.balance) + " " + acc.cryptoFormat.format(acc.fromFinestUnit(it.amountHeld))
+                                val assetsHeld = if (it.assetTypesHeld > 0) (" (" + (i18n(S.AssetTypes) % mapOf("assetTypes" to it.assetTypesHeld.toString())) + ")") else ""
+                                val balance = i18n(S.balance) + " " + acc.cryptoFormat.format(acc.fromFinestUnit(it.amountHeld)) + assetsHeld
                                 val totalReceived = i18n(S.totalReceived) + " " + acc.cryptoFormat.format(acc.fromFinestUnit(it.totalReceived))
+
+                                if (devMode)
+                                {
+                                    val dest = acc.wallet.walletDestination(it.address)
+                                    if (dest != null)
+                                    {
+                                        // These are dev mode only, so english
+                                        CenteredFittedText("Pubkey:" + dest.pubkey?.toHex() ?: "")
+                                        Text("Index: " + dest.index )
+                                    }
+                                }
 
                                 if (it.firstRecv != Long.MIN_VALUE)
                                 {
-                                    if (it.firstRecv == it.lastRecv)  // only one receive
-                                    {
-                                        val guiTxDate = try
-                                        {
-                                            val firstRecv = Instant.fromEpochMilliseconds(it.firstRecv).toLocalDateTime(timeZone)
-                                            formatLocalDateTime(firstRecv)
-                                        }
-                                        catch (e: IllegalArgumentException)  // happens if date is invalid
-                                        {
-                                            i18n(S.unavailable)
-                                        }
-                                        catch (e: DateTimeArithmeticException)  // happens if date is invalid
-                                        {
-                                            i18n(S.unavailable)
-                                        }
-                                        Text(i18n(S.FirstUse) % mapOf("date" to guiTxDate))
-                                    }
-                                    else
-                                    {
-                                        val guiTxDate = try
-                                        {
-                                            val firstRecv = Instant.fromEpochMilliseconds(it.firstRecv).toLocalDateTime(timeZone)
-                                            formatLocalDateTime(firstRecv)
-                                        }
-                                        catch (e: IllegalArgumentException)  // happens if date is invalid
-                                        {
-                                            i18n(S.unavailable)
-                                        }
-                                        catch (e: DateTimeArithmeticException)  // happens if date is invalid
-                                        {
-                                            i18n(S.unavailable)
-                                        }
+                                    Row {
+                                        Column(Modifier.weight(1f)) {
+                                            if (it.firstRecv == it.lastRecv)  // only one receive
+                                            {
+                                                val guiTxDate = try
+                                                {
+                                                    formatLocalEpochMilliseconds(it.firstRecv)
+                                                }
+                                                catch (e: IllegalArgumentException)  // happens if date is invalid
+                                                {
+                                                    i18n(S.unavailable)
+                                                }
+                                                catch (e: DateTimeArithmeticException)  // happens if date is invalid
+                                                {
+                                                    i18n(S.unavailable)
+                                                }
+                                                Text(i18n(S.FirstUse) % mapOf("date" to guiTxDate))
+                                            }
+                                            else
+                                            {
+                                                val guiTxDate = try
+                                                {
+                                                    formatLocalEpochMilliseconds(it.firstRecv)
+                                                }
+                                                catch (e: IllegalArgumentException)  // happens if date is invalid
+                                                {
+                                                    i18n(S.unavailable)
+                                                }
+                                                catch (e: DateTimeArithmeticException)  // happens if date is invalid
+                                                {
+                                                    i18n(S.unavailable)
+                                                }
 
-                                        val guiTxDateLast = try
-                                        {
-                                            val lastRecv = Instant.fromEpochMilliseconds(it.lastRecv).toLocalDateTime(timeZone)
-                                            formatLocalDateTime(lastRecv)
+                                                val guiTxDateLast = try
+                                                {
+                                                    formatLocalEpochMilliseconds(it.lastRecv)
+                                                }
+                                                catch (e: IllegalArgumentException)  // happens if date is invalid
+                                                {
+                                                    i18n(S.unavailable)
+                                                }
+                                                catch (e: DateTimeArithmeticException)  // happens if date is invalid
+                                                {
+                                                    i18n(S.unavailable)
+                                                }
+
+                                                Text(i18n(S.FirstUse) % mapOf("date" to guiTxDate))
+                                                Text(i18n(S.LastUse) % mapOf("date" to guiTxDateLast))
+                                            }
+                                            Text(totalReceived)
                                         }
-                                        catch (e: IllegalArgumentException)  // happens if date is invalid
-                                        {
-                                            i18n(S.unavailable)
+                                        Column {
+                                            val uri = it.address.blockchain.explorer("/address/${it.address.toString()}")
+                                            if (uri != null)
+                                            {
+                                                //Spacer(Modifier.height(1.dp).weight(1f))
+                                                WallyBoringButton({ uriHandler.openUri(uri) }, modifier = Modifier.padding(0.dp, 0.dp, 10.dp, 0.dp)
+                                                ) {
+                                                    Icon(Icons.Default.ExitToApp, tint = colorConfirm, contentDescription = "view address activity")
+                                                }
+                                            }
                                         }
-                                        catch (e: DateTimeArithmeticException)  // happens if date is invalid
-                                        {
-                                            i18n(S.unavailable)
-                                        }
-                                        Text(i18n(S.FirstUse) % mapOf("date" to guiTxDate))
-                                        Text(i18n(S.LastUse) % mapOf("date" to guiTxDateLast))
                                     }
+                                    if (it.amountHeld > 0) Text(balance, fontWeight = FontWeight.Bold)
                                 }
                                 else
                                 {
                                     assert(false)  // should never happen if some amount is held
-                                }
-
-                                Row {
-                                    Column {
-                                        Text(totalReceived)
-                                        if (it.amountHeld > 0) Text(balance, fontWeight = FontWeight.Bold)
-                                    }
-                                    val uri = if (it.address.blockchain == ChainSelector.NEXA)
-                                            NEXA_EXPLORER_URL + "/address/${it.address.toString()}"
-                                        else if (it.address.blockchain == ChainSelector.NEXATESTNET)
-                                            NEXA_TESTNET_EXPLORER_URL + "/address/${it.address.toString()}"
-                                        else null
-
-                                    if (uri != null)
-                                    {
-                                        Spacer(Modifier.height(1.dp).weight(1f))
-                                        WallyBoringButton({ uriHandler.openUri(uri) }, modifier = Modifier.padding(0.dp, 0.dp, 10.dp, 0.dp)
-                                        ) {
-                                            Icon(Icons.Default.ExitToApp, tint = colorConfirm, contentDescription = "view address activity")
-                                        }
-                                    }
                                 }
                             }
                         }

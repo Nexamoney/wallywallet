@@ -27,12 +27,14 @@ import info.bitcoinunlimited.www.wally.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.rem
 import org.nexa.libnexakotlin.sourceLoc
+import org.nexa.threads.millisleep
 
 private val LogIt = GetLog("wally.NavRoot")
 
@@ -223,7 +225,7 @@ fun triggerAssignAccountsGuiSlots()
     if (act == null || act.visible == false) try
     {
         wallyApp?.preferredVisibleAccount()?.let {
-            it.onUpdatedReceiveInfoCommon { recvAddrStr ->
+            it.onUpdatedReceiveInfo { recvAddrStr ->
                     currentReceiveShared.value = Pair(it.name, recvAddrStr)
                 }
         }
@@ -301,16 +303,27 @@ fun onShareButton()
 }
 
 // Only needed if we need to reassign the account slots outside of the GUI's control
-val accountChangedNotification = Channel<String>()
+val accountChangedNotification = Channel<String>(100, BufferOverflow.DROP_OLDEST)
 
 /** Call this function to cause the GUI to update any view of any accounts.  Provide no arguments to update all of them */
 fun triggerAccountsChanged(vararg accounts: Account)
 {
+    millisleep(100U)
     if (accounts.size == 0)
-        later { delay(100); accountChangedNotification.send("*all changed*") }
+        accountChangedNotification.trySend("*all changed*")
+    for (account in accounts)
+        accountChangedNotification.trySend(account.name)
+}
+
+/** Call this function to cause the GUI to update any view of any accounts.  Provide no arguments to update all of them */
+suspend fun suspendTriggerAccountsChanged(vararg accounts: Account)
+{
+    delay(100)
+    if (accounts.size == 0)
+        accountChangedNotification.send("*all changed*")
     else for (account in accounts)
     {
-        later { delay(100); accountChangedNotification.send(account.name) }
+        accountChangedNotification.send(account.name)
     }
 }
 

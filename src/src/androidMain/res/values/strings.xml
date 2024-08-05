@@ -124,7 +124,7 @@ Good luck!
     <string name="unsynced">synchronizing</string>
     <string name="connected">connected</string>
     <string name="balance">current balance</string>
-    <string name="totalReceived">total received</string>
+    <string name="totalReceived">Total received</string>
     <string name="inProgress">in progress</string>
 
     <string name="staleTransaction">Stale Transaction</string>
@@ -294,6 +294,7 @@ Good luck!
     <string name="incoming" formatted="false">includes %delta %unit pending</string>
     <string name="approximatelyT" formatted="false">approximately %qty %fiat</string>
     <string name="fastforwardStatus" formatted="false">fast forward analysis: %info</string>
+    <string name="fastforwardStart" formatted="false">started</string>
     <string name="exchangeRate" formatted="false">(exchange rate: 1 %fiat is worth %amt %crypto)</string>
     <!-- user is attempting to send more cryptocurrency than the wallet contains.  The payment cannot happen -->
     <string name="moreThanAvailable">(more than available)</string>
@@ -317,6 +318,7 @@ Good luck!
     <string name="unavailableExchangeRate">exchange rate unavailable</string>
 
     <!-- Identity -->
+    <string name="SigningWithAccount" formatted="false">Signing With Account: %act</string>
     <string name="commonIdentityForAccount" formatted="false">Common ID for Account: %act</string>
     <string name="identityRequestNotification">identity requested</string>
     <string name="IdentityDataMissing">Missing Identity Info</string>
@@ -403,9 +405,10 @@ Good luck!
     <string name="AccountBlockchainSync">Currently %sync on blockchain %chain.</string>
     <string name="AccountBlockchainDetails">At %actBlockDate, block %actBlock of %chainBlockCount.</string>
     <string name="AccountBlockchainConnectionDetails">Connected to %num nodes: %names</string>
-    <string name="AccountNumAddresses">%num addresses</string>
-    <string name="FirstLastReceive">First deposit in block %first, most recent in block %last.</string>
-    <string name="FirstLastSend">First withdraw in block %first, most recent in block %last.</string>
+    <string name="AccountNumAddresses" formatted="false">%num addresses</string>
+    <string name="CurrentAddress" formatted="false">At address %num: %addr</string>
+    <string name="FirstLastReceive" formatted="false">First deposit in block %first, most recent in block %last.</string>
+    <string name="FirstLastSend" formatted="false">First withdraw in block %first, most recent in block %last.</string>
     <string name="FirstUse">First use: %date</string>
     <string name="LastUse">Last use: %date</string>
     <string name="AccountNumTx">%num transactions</string>
@@ -465,6 +468,7 @@ Good luck!
 
     <string name="badTransaction">bad transaction</string>
     <string name="badAddress">invalid address</string>
+    <string name="unknownAddress">unknown address</string>
     <string name="badAmount">invalid amount</string>
     <!-- No accounts have been created yet -->
     <string name="NoAccounts">No accessible accounts</string>
@@ -516,7 +520,7 @@ Good luck!
     <string name="title_activity_identity">Identity</string>
     <string name="title_activity_identity_op">Identity</string>
     <string name="title_activity_domain_identity_settings">Domain Identity Settings</string>
-    <string name="title_activity_tx_history" formatted="false">Transaction History: %account</string>
+    <string name="title_activity_tx_history" formatted="false">Tx History: %account</string>
     <string name="title_activity_address_history" formatted="false">Address History: %account</string>
     <string name="title_activity_account_details" formatted="false">Account: %account</string>
     <string name="title_test">Test</string>
@@ -644,6 +648,7 @@ Good luck!
     <string name="IssuedToConnection">Launched in connected site</string>
     <!-- this message tells users that some assets will be part of a proposed transaction -->
     <string name="AndSomeAssets"> and some assets</string>
+    <string name="AssetTypes" formatted="false">%assetTypes asset types</string>
 
     <!-- the following strings are often not used and need translation into English and other languages. This resolves lintVitalRelease -->
     <string name="ExplainRestaurant">Online restaurant ordering services (for delivery or pickup) may accept cryptocurrency even if the physical location does not.</string>

@@ -44,7 +44,7 @@ fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, allo
     val nft = asset.nft
 
     Column(modifier = modifier) {
-        if ((devMode)&&(verbosity>0)) CenteredFittedText(asset.groupId.toStringNoPrefix())
+        if ((devMode)&&(verbosity>0)) SelectionContainer(Modifier.fillMaxWidth()) { CenteredFittedText(asset.groupId.toStringNoPrefix()) }
         Row {
             val hasImage = if (asset.iconImage != null) "yes" else "null"
             LogIt.info("Asset ${asset.name} icon Image ${hasImage} icon bytes: ${asset.iconBytes?.size} icon url: ${asset.iconUri}")
@@ -375,7 +375,11 @@ fun AssetScreen(account: Account, nav: ScreenNav)
         }
     }
 
-    if (nav.currentSubState.value == null) assetFocus = null  // If I go back from a focused asset, the nav subscreenstate will be null
+    if (nav.currentSubState.value == null)
+    {
+        if (assetFocus!=null) clearAlerts()
+        assetFocus = null
+    }  // If I go back from a focused asset, the nav subscreenstate will be null
 
     Column(Modifier.fillMaxSize()) {
         val a = assetFocus

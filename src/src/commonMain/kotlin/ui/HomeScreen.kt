@@ -521,7 +521,7 @@ private val sendFromAccountShared = MutableStateFlow<Account?>(null)
     LaunchedEffect(selectedAccount) {
         selectedAccount.collect {
             selectedAccount.value?.let {
-                it.onUpdatedReceiveInfoCommon { recvAddrStr ->
+                it.onUpdatedReceiveInfo { recvAddrStr ->
                     currentReceiveShared.value = Pair(it.name, recvAddrStr)
                 }
             }

@@ -41,8 +41,11 @@ fun AccountDetailScreen(account: Account, nav: ScreenNav)
         if (!account.wallet.isDeleted)
         {
             AccountBlockchainDetail(account)
-            AccountFirstLastSend(account.wallet.statistics())
-            GuiAccountTxStatisticsRow(account.wallet.statistics(), { nav.go(ScreenId.AddressHistory) }, { nav.go(ScreenId.TxHistory) })
+            val stats = account.wallet.statistics()
+            val curDest = account.wallet.getCurrentDestination()
+            FittedText(i18n(S.CurrentAddress) % mapOf("num" to curDest.index.toString(), "addr" to curDest.address.toString()))
+            AccountFirstLastSend(stats)
+            GuiAccountTxStatisticsRow(stats, { nav.go(ScreenId.AddressHistory) }, { nav.go(ScreenId.TxHistory) })
         }
         Spacer(modifier = Modifier.padding(4.dp))
         WallyDivider()
@@ -192,13 +195,11 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
             }
         }
 
+        WallyBoringMediumTextButton(S.txHistoryButton, onClick = txHistoryButtonClicked)
+
         WallyBoringMediumTextButton(S.SetChangePin) {
             accountAction.value = AccountAction.PinChange
         }
-        WallyBoringMediumTextButton(S.ViewRecoveryPhrase) {
-            accountAction.value = AccountAction.RecoveryPhrase
-        }
-        WallyBoringMediumTextButton(S.txHistoryButton, onClick = txHistoryButtonClicked)
 
         if(wallyApp?.nullablePrimaryAccount != acc)    // it not primary
             WallyBoringMediumTextButton(S.setAsPrimaryAccountButton) {
@@ -212,6 +213,9 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
         }
         if (devMode) WallyBoringMediumTextButton(S.rediscoverBlockchain) {
             accountAction.value = AccountAction.RediscoverBlockchain
+        }
+        WallyBoringMediumTextButton(S.ViewRecoveryPhrase) {
+            accountAction.value = AccountAction.RecoveryPhrase
         }
         WallyBoringMediumTextButton(S.deleteWalletAccount) {
             accountAction.value = AccountAction.Delete
@@ -244,7 +248,7 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
             ) { accepted ->
                 accountAction.value = null
                 if(accepted)
-                    later {
+                    tlater("cleanUnconfirmed") {
                         try
                         {
                             // TODO while we don't have Rostrum (electrum) we can't reassess, so just forget them under the assumption that they will be confirmed and accounted for, or are bad.
@@ -261,7 +265,7 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
             AccountAction.RediscoverBlockchain -> AccountDetailAcceptDeclineTextView(S.rediscoverConfirmation) {
                 if (it)
                 {
-                    later {
+                    tlater("rediscoverBlockchain") {
                         val bc = acc.wallet.blockchain
                         // If you reset the wallet first, it'll start rediscovering the existing blockchain before it gets reset.
                         bc.rediscover()
@@ -288,7 +292,7 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
             AccountAction.Rediscover -> AccountDetailAcceptDeclineTextView(S.rediscoverConfirmation) {
                 if (it)
                 {
-                    later {
+                    tlater("rediscover") {
                         acc.wallet.rediscover(true, false)
                         displayNotice(S.rediscoverNotice)
                     }
@@ -376,13 +380,13 @@ fun AccountDetailChangePinView(acc: Account, displayError: (String) -> Unit, dis
             val epin = EncodePIN(name, newPin)
             acc.encodedPin = epin
             displayNotice(S.PinChanged)
-            later { acc.saveAccountPin(epin) }
+            tlater("savePin") { acc.saveAccountPin(epin) }
             pinChangedOrCancelled()
         }
         else
         {
             acc.encodedPin = null
-            later { acc.saveAccountPin(byteArrayOf()) }
+            tlater("savePin") { acc.saveAccountPin(byteArrayOf()) }
             displayNotice(S.PinRemoved)
             pinChangedOrCancelled()
         }
@@ -489,10 +493,7 @@ fun RecoveryPhraseView(account: Account, done: () -> Unit)
         val mnemonic1 = tmp.subList(halfWords, tmp.size).joinToString(" ")
         SelectionContainer {
             // This ensures that they fit on the line
-            Column(
-              modifier = Modifier.fillMaxWidth(),
-              horizontalAlignment = Alignment.CenterHorizontally
-            )
+            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally)
             {
                 CenteredFittedText(mnemonic0, fontWeight = FontWeight.Bold, color = Color.Blue, modifier =
                 Modifier.clickable {
@@ -510,13 +511,13 @@ fun RecoveryPhraseView(account: Account, done: () -> Unit)
         WallyButtonRow {
             WallyBoringTextButton(S.WroteRecoveryPhraseDown) {
                 account.flags = account.flags or ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY
-                later { account.saveAccountFlags() }
+                tlater("saveAccountFlags") { account.saveAccountFlags() }
                 done()
             }
             WallyBoringTextButton(S.RecoveryPhraseKeepRemindingMe) {
                 // User wants to be reminded to back up the key again
                 account.flags = account.flags and ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY.inv()
-                later { account.saveAccountFlags() }
+                tlater("saveAccountFlags") { account.saveAccountFlags() }
                 done()
             }
         }

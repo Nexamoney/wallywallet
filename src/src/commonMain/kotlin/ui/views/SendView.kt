@@ -147,7 +147,7 @@ fun SendView(
         val sendList = sendingTheseAssets.toList()
         val act = account
         val assets = act.assets.toMap()
-        later {
+        tlater("actuallySend") {
             val cs = act.wallet.chainSelector
             var tx: iTransaction = txFor(cs)
             if ((qty == BigDecimal.ZERO)&&sendList.isEmpty())  // Sending nothing
@@ -252,7 +252,7 @@ fun SendView(
         if (paymentInProgress != null)
         {
             displayNotice(S.Processing, null)
-            later {
+            tlater("pipSend") {
                 paymentInProgressSend()
             }
             return
@@ -560,12 +560,9 @@ fun SendView(
 @Composable
 fun OptionalInfoText(text: String)
 {
-    if (text.utf8Size() > 0)
-    Text(
+    if (text.utf8Size() > 0) Text(
       text = text,
-      modifier = Modifier
-        .fillMaxWidth()
-        .wrapContentHeight(),
+      modifier = Modifier.fillMaxWidth().wrapContentHeight(),
       textAlign = TextAlign.Center,
       fontSize = 14.sp,
       color = Color.Gray
