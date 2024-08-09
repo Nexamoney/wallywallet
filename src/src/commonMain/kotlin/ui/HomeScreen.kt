@@ -720,21 +720,22 @@ private val sendFromAccountShared = MutableStateFlow<Account?>(null)
                 Row(modifier = Modifier.fillMaxWidth().padding(0.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
                     Spacer(Modifier.width(8.dp))
                     if(synced.value)
-                        ResImageView("icons/check.xml", modifier = Modifier.size(45.dp))
+                        ResImageView("icons/check.xml", modifier = Modifier.size(24.dp))
                     else
                     {
-                        Box(Modifier.size(45.dp)) { LoadingAnimationContent() }
+                        Box(Modifier.size(24.dp)) { LoadingAnimationContent() }
                     }
                     Column(modifier = Modifier.weight(0.75f).height(IntrinsicSize.Min), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
                         SectionText(S.AccountListHeader, Modifier.weight(1f))
                         HorizontalDivider(modifier = Modifier.width(100.dp), color = listDividerFg, thickness = 2.dp)
                     }
-                    ResImageView("icons/plus.xml", modifier = Modifier.size(45.dp).clickable {
+                    ResImageView("icons/plus.xml", modifier = Modifier.size(24.dp).clickable {
                         clearAlerts()
                         nav.go(ScreenId.NewAccount)
                     })
                     Spacer(Modifier.width(8.dp))
                 }
+                Spacer(Modifier.height(8.dp))
                 AccountListView(
                   nav,
                   selectedAccount,
