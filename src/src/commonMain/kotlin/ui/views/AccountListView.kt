@@ -47,26 +47,26 @@ private val accountListState:MutableStateFlow<LazyListState?> = MutableStateFlow
 
 
     LaunchedEffect(true)
+    {
+        for(c in accountChangedNotification)
         {
-            for(c in accountChangedNotification)
+            if (c == "*all changed*")  // this is too long to be a valid account name
             {
-                if (c == "*all changed*")  // this is too long to be a valid account name
-                {
-                    wallyApp?.orderedAccounts(true)?.forEach {
-                        val uid = it.uiData()
-                        accountUIData[it.name] = uid
-                    }
+                wallyApp?.orderedAccounts(true)?.forEach {
+                    val uid = it.uiData()
+                    accountUIData[it.name] = uid
                 }
-                else
+            }
+            else
+            {
+                val act = wallyApp?.accounts?.get(c)
+                if (act != null)
                 {
-                    val act = wallyApp?.accounts?.get(c)
-                    if (act != null)
-                    {
-                        accountUIData[c] = act.uiData()
-                    }
+                    accountUIData[c] = act.uiData()
                 }
             }
         }
+    }
 
     val scope = rememberCoroutineScope()
     val tmp = accountListState.collectAsState(scope.coroutineContext).value ?: rememberLazyListState()
@@ -75,16 +75,16 @@ private val accountListState:MutableStateFlow<LazyListState?> = MutableStateFlow
     LazyColumn(state=tmp, horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
         accounts.value.forEachIndexed { idx, it ->
             item(key=it.name) {
-                        // I would think that capturing this data would control redraw of each item, but it appears to not do so.
-                        // Redraw is controlled of the entire AccountListView, or not at all.
-                        //val anyChanges: MutableState<AccountUIData> = remember { mutableStateOf(it.uiData()) }
+                // I would think that capturing this data would control redraw of each item, but it appears to not do so.
+                // Redraw is controlled of the entire AccountListView, or not at all.
+                //val anyChanges: MutableState<AccountUIData> = remember { mutableStateOf(it.uiData()) }
                 // scope.launch { listState.animateScrollToItem(idx, -1) }  // -1 puts our item more in the center
                 if (accountUIData[it.name] == null) accountUIData[it.name] = it.uiData()
                 AccountItemView(accountUIData[it.name]!!, idx, selAct == it, devMode,
-                          onClickAccount = { onAccountSelected(it) },
-                          onClickGearIcon = {
-                              nav.go(ScreenId.AccountDetails)
-                          })
+                  onClickAccount = { onAccountSelected(it) },
+                  onClickGearIcon = {
+                      nav.go(ScreenId.AccountDetails)
+                  })
             }
         }
         // Since the thumb buttons cover the bottom most row, this blank bottom row allows the user to scroll the account list upwards enough to
@@ -244,24 +244,127 @@ fun AccountItemView(
         .clickable(onClick = onClickAccount),
       contentAlignment = Alignment.Center
     ) {
-        Row(modifier = Modifier.fillMaxHeight()) {
-            Column(modifier = Modifier.fillMaxHeight())
+        Row(modifier = Modifier.fillMaxHeight().padding(5.dp, 2.dp),
+          horizontalArrangement = Arrangement.SpaceBetween,
+          verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.fillMaxHeight().weight(0.5f))
             {
-                ResImageView(getAccountIconResPath(uidata.chainSelector), Modifier.size(32.dp), "Blockchain icon")
+                ResImageView(getAccountIconResPath(uidata.chainSelector), Modifier.size(32.dp).align(Alignment.Start), "Blockchain icon")
             }
             Column(
-              modifier = Modifier.weight(1f).padding(2.dp),
+              modifier = Modifier.weight(2f),
               verticalArrangement = Arrangement.Top,
+              horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Top row of info
                 Row(
-                  verticalAlignment = Alignment.CenterVertically
+                  verticalAlignment = Alignment.CenterVertically,
+                  modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = uidata.name, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    Text(text = uidata.name, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                }
+                Row(
+                  horizontalArrangement = Arrangement.SpaceBetween,
+                  verticalAlignment = Alignment.CenterVertically,
+                  modifier = Modifier.fillMaxWidth()
+                ) {
+                    val startingBalStyle = FontScaleStyle(1.75)
+                    val startingCcStyle = FontScaleStyle(0.6)
+                    var balTextStyle by remember { mutableStateOf(startingBalStyle) }
+                    var ccTextStyle by remember { mutableStateOf(startingCcStyle) }
+                    var drawBal by remember { mutableStateOf(false) }
+                    var drawCC by remember { mutableStateOf(false) }
+                    var scale by remember { mutableStateOf(1.0) }
+                    Text(text = uidata.balance, style = balTextStyle, color = colorDebit, modifier = Modifier.padding(0.dp).drawWithContent { if (drawBal) drawContent() }, textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
+                      onTextLayout = {
+                          textLayoutResult ->
+                          if (textLayoutResult.didOverflowWidth)
+                          {
+                              scale = scale*0.90
+                              balTextStyle = startingBalStyle.copy(fontSize = startingBalStyle.fontSize * scale)
+                          }
+                          else drawBal = true
+                      })
+                    Text(text = uidata.currencyCode, style = ccTextStyle, modifier = Modifier.padding(5.dp, 0.dp).fillMaxWidth().drawWithContent { if (drawCC) drawContent() }, textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
+                      onTextLayout = {
+                          textLayoutResult ->
+                          if (textLayoutResult.didOverflowWidth)
+                          {
+                              scale = scale*0.90
+                              if (scale > 0.20) // If this field gets too small, just drop it
+                              {
+                                  ccTextStyle = ccTextStyle.copy(fontSize = startingCcStyle.fontSize * scale)
+                              }
+                              else
+                              {
+                                  ccTextStyle = ccTextStyle.copy(fontSize = TextUnit(0.0f, TextUnitType.Em))
+                                  drawCC = true
+                              }
+                          }
+                          else drawCC = true
+                      }
+                    )
+                }
+                Row(
+                  verticalAlignment = Alignment.Bottom,
+                ) {
+                    // Balance and currency code row to align bottoms of fonts of different size
+                    if (offerFastForward && !uidata.fastForwarding)
+                    {
+                        Spacer(Modifier.width(8.dp))
+                        WallyBoringButton({
+                            uidata.fastForwarding = true
+                            startAccountFastForward(uidata.account) {
+                                uidata.account.fastforwardStatus = it
+                                triggerAccountsChanged(uidata.account)
+                            }
+                        }) {
+                            ResImageView("icons/fastforward.png", modifier = Modifier.size(24.dp))
+                        }
+                    }
+                }
+
+                Row(
+                  modifier = Modifier.fillMaxWidth(),
+                  horizontalArrangement = Arrangement.Start
+                ) {
+                    val ffs = uidata.ffStatus
+                    if (uidata.fastForwarding && (ffs != null))
+                    {
+                        Text(text = i18n(S.fastforwardStatus) % mapOf("info" to ffs), fontSize = 16.sp)
+                    }
+                    else
+                    {
+                        uidata.approximately?.let {
+                            Text(text = it, fontSize = 16.sp, color = uidata.approximatelyColor, fontWeight = uidata.approximatelyWeight)
+                        }
+                    }
+                }
+                // includes (amount) NEX pending
+                if (uidata.unconfBal.isNotEmpty())
+                    Row(
+                      modifier = Modifier.fillMaxWidth(),
+                      horizontalArrangement = Arrangement.Start
+                    ) {
+                        Text(text = uidata.unconfBal, color = uidata.unconfBalColor)
+                    }
+                if (devMode) Row(
+                  modifier = Modifier.fillMaxWidth(),
+                  horizontalArrangement = Arrangement.Start
+                ) {
+                    Text(text = uidata.devinfo, fontSize = 12.sp, maxLines = 5, minLines = 5)
+                }
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Row(
+                  modifier = Modifier.fillMaxWidth(),
+                  horizontalArrangement = Arrangement.End
+                ) {
                     if (uidata.lockable)
                     {
                         ResImageView(if (uidata.locked) "icons/lock.xml" else "icons/unlock.xml",
-                          modifier = Modifier.size(26.dp).absoluteOffset(0.dp, -8.dp).clickable {
+                          modifier = Modifier.size(24.dp).clickable {
                               onClickAccount()  // I want to select the whole account & then try to unlock/lock
                               if (uidata.locked)
                               {
@@ -277,107 +380,15 @@ fun AccountItemView(
                               }
                           })
                     }
-                    Spacer(Modifier.width(8.dp))
-                    // Balance and currency code row to align bottoms of fonts of different size
-                    Row(
-                      verticalAlignment = Alignment.Bottom,
-                      modifier = Modifier.fillMaxWidth(0.85f)  // this is the fraction of what's left over
-                    ) {
-                        val startingBalStyle = FontScaleStyle(1.75)
-                        val startingCcStyle = FontScaleStyle(0.6)
-                        var balTextStyle by remember { mutableStateOf(startingBalStyle) }
-                        var ccTextStyle by remember { mutableStateOf(startingCcStyle) }
-                        var drawBal by remember { mutableStateOf(false) }
-                        var drawCC by remember { mutableStateOf(false) }
-                        var scale by remember { mutableStateOf(1.0) }
-                        var priorBal by remember { mutableStateOf(uidata.balance) }
-                        // If our balance shrinks, we might be able to redraw it with a bigger font
-                        if (priorBal > uidata.balance) scale = 1.0
-                        priorBal = uidata.balance
-                        Text(text = uidata.balance, style = balTextStyle, color = uidata.balColor, modifier = Modifier.padding(0.dp).drawWithContent { if (drawBal) drawContent() }, textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
-                          onTextLayout = {
-                              textLayoutResult ->
-                              if (textLayoutResult.didOverflowWidth)
-                              {
-                                  scale = scale*0.95
-                                  balTextStyle = startingBalStyle.copy(fontSize = startingBalStyle.fontSize * scale)
-                              }
-                              else drawBal = true
-                          })
-                        Text(text = uidata.currencyCode, style = ccTextStyle, modifier = Modifier.padding(0.dp).fillMaxWidth().drawWithContent { if (drawCC) drawContent() }, textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
-                          onTextLayout = {
-                              textLayoutResult ->
-                              if (textLayoutResult.didOverflowWidth)
-                              {
-                                  scale = scale*0.95
-                                  if (scale > 0.20) // If this field gets too small, just drop it
-                                  {
-                                      ccTextStyle = ccTextStyle.copy(fontSize = startingCcStyle.fontSize * scale)
-                                  }
-                                  else
-                                  {
-                                      ccTextStyle = ccTextStyle.copy(fontSize = TextUnit(0.0f, TextUnitType.Em))
-                                      drawCC = true
-                                  }
-                              }
-                              else drawCC = true
-                          })
-                    }
-                    if (offerFastForward && (uidata.fastForwarding == false))
+                    // Show the account settings gear at the end
+                    if (isSelected)
                     {
-                        Spacer(Modifier.width(4.dp))
-                        WallyBoringButton({
-                            uidata.fastForwarding = true
-                            startAccountFastForward(uidata.account) {
-                                uidata.account.fastforwardStatus = it
-                                triggerAccountsChanged(uidata.account)
-                            }
-                        }) {
-                                ResImageView("icons/fastforward.png", modifier = Modifier.size(26.dp))
-                        }
+                        ResImageView("icons/gear.xml", Modifier.padding(5.dp, 0.dp).size(24.dp).clickable(onClick = onClickGearIcon).testTag("accountSettingsGearIcon"))
                     }
-                }
-
-                Row(
-                  modifier = Modifier.fillMaxWidth(),
-                  horizontalArrangement = Arrangement.Center
-                ) {
-                    uidata.approximately?.let {
-                        Text(text = it, fontSize = 16.sp, color = uidata.approximatelyColor, fontWeight = uidata.approximatelyWeight)
-                    }
-                }
-
-                val ffs = uidata.ffStatus
-                if (uidata.fastForwarding && (ffs != null))
-                {
-                        Text(text = i18n(S.fastforwardStatus) % mapOf("info" to ffs), fontSize = 16.sp)
-                }
-                else
-                {
-                // includes (amount) NEX pending
-                if (uidata.unconfBal.isNotEmpty())
-                    Row(
-                      modifier = Modifier.fillMaxWidth(),
-                      horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(text = uidata.unconfBal, color = uidata.unconfBalColor)
-                    }
-                }
-
-                if (devMode) Row(
-                  modifier = Modifier.fillMaxWidth(),
-                  horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(text = uidata.devinfo, fontSize = 12.sp, maxLines = 5, minLines = 5)
                 }
             }
-            // Show the account settings gear at the end
-            if (isSelected)
-            {
-                ResImageView("icons/gear.xml", Modifier.align(Alignment.CenterVertically).padding(0.dp, 0.dp).size(32.dp).clickable(onClick = onClickGearIcon).testTag("accountSettingsGearIcon"))
-            }
-            else Spacer(Modifier.align(Alignment.CenterVertically).padding(0.dp, 0.dp).size(32.dp))  // by putting a blank here, the other columns don't change
         }
+
     }
 }
 
