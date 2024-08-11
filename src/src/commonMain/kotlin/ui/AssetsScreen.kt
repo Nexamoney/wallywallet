@@ -111,9 +111,17 @@ fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, allo
                         if (urlS != null)
                         {
                             val url = com.eygraber.uri.Url.parseOrNull(urlS)
-                            if (url != null)
+                            val host = try
                             {
-                                CenteredText(url.host, TextStyle(fontSize = defaultFontSize * 0.75, fontWeight = FontWeight.Light,  fontStyle = FontStyle.Italic))
+                                url?.host  // although host is supposedly not null, I can get "java.lang.IllegalArgumentException: Url requires a non-null host"
+                            }
+                            catch (e: IllegalArgumentException)
+                            {
+                                null
+                            }
+                            if (host != null)
+                            {
+                                CenteredText(host, TextStyle(fontSize = defaultFontSize * 0.75, fontWeight = FontWeight.Light,  fontStyle = FontStyle.Italic))
                             }
                         }
                     }

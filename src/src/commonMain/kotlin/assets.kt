@@ -775,7 +775,7 @@ class AssetManager(val app: CommonApp): AssetManagerStorage
         // first load the token description doc (TDD)
         try
         {
-                val td = getTokenInfo(groupId.parentGroup(), getEc)
+                val td = getTokenInfo(groupId.parentGroup(), getEc, chain.net)
                 LogIt.info(sourceLoc() + ": Got token info for ${groupId} (${groupId.toHex()})")
                 val tg = td.genesisInfo
                 if (tg == null)  // Should not happen except network
