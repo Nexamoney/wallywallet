@@ -8,13 +8,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
@@ -173,10 +176,11 @@ fun Account.uiData():AccountUIData
             val now = millinow()
             val cnxnLst = chainstate.chain.net.mapConnections()
             {
-                val recentRecv = (now - it.lastReceiveTime) < 50L
-                val recentSend = (now - it.lastSendTime) < 50L
-                val sr = (if (recentSend) "↑" else " ") + (if (recentRecv) "↓" else " ")
-                it.name + " (" + it.aveLatency.roundToLong() + "ms" + sr + ")"
+                val recentRecv = (now - it.lastReceiveTime) < 75L
+                val recentSend = (now - it.lastSendTime) < 75L
+                val sr = (if (recentSend&&recentRecv) "⇅" else if (recentSend) "↑" else if (recentRecv) "↓" else " ")
+                val latencyStr = if (it.bytesReceived + it.bytesSent > 2000) (it.aveLatency.roundToLong().toString() + "ms") else ""
+                it.name + " (" + sr + latencyStr + ")"
             }
             val trying:List<String> = if (chainstate.chain.net is MultiNodeCnxnMgr) (chainstate.chain.net as MultiNodeCnxnMgr).initializingCnxns().map { it.name } else listOf()
             val peers = cnxnLst.joinToString(", ") + (if (trying.isNotEmpty()) (" " + i18n(S.trying) + " " + trying.joinToString(", ")) else "")
@@ -223,6 +227,123 @@ fun Account.uiData():AccountUIData
     return ret
 }
 
+@Composable fun AccountItemLineTop(uidata: AccountUIData, isSelected: Boolean,onClickAccount: () -> Unit, onClickGearIcon: () -> Unit)
+{
+    val curSync = uidata.account.wallet.chainstate?.syncedDate ?: 0
+    val offerFastForward = (millinow()/1000 - curSync) > OFFER_FAST_FORWARD_GAP
+
+    Row(modifier = Modifier.fillMaxWidth())
+    {
+        // Show blockchain icon
+        Column(Modifier.align(Alignment.CenterVertically).padding(0.dp,0.dp,4.dp, 0.dp)) {
+            ResImageView(getAccountIconResPath(uidata.chainSelector), Modifier.size(32.dp).align(Alignment.Start), "Blockchain icon")
+        }
+        // Account name and Nexa amount
+        Column(modifier = Modifier.weight(1f)) {
+            // Account Name
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                Text(text = uidata.name, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            }
+            // Nexa Amount
+            Row(horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                val startingBalStyle = FontScaleStyle(1.75)
+                val startingCcStyle = FontScaleStyle(0.6)
+                var balTextStyle by remember { mutableStateOf(startingBalStyle) }
+                var ccTextStyle by remember { mutableStateOf(startingCcStyle) }
+                var showingCurrencyCode:String by remember { mutableStateOf(uidata.currencyCode) }
+                var drawBal by remember { mutableStateOf(false) }
+                var drawCC by remember { mutableStateOf(false) }
+                var scale by remember { mutableStateOf(1.0) }
+                Text(text = uidata.balance, style = balTextStyle, color = uidata.balColor, modifier = Modifier.padding(0.dp).drawWithContent { if (drawBal) drawContent() }, textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
+                  onTextLayout = { textLayoutResult ->
+                      if (textLayoutResult.didOverflowWidth)
+                      {
+                          scale = scale * 0.90
+                          balTextStyle = startingBalStyle.copy(fontSize = startingBalStyle.fontSize * scale)
+                      }
+                      else drawBal = true
+                  })
+
+                if (showingCurrencyCode.length > 0) Text(text = showingCurrencyCode ?: "", style = ccTextStyle, modifier = Modifier.padding(5.dp, 0.dp).fillMaxWidth().drawWithContent { if (drawCC) drawContent() }, textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
+                  onTextLayout = { textLayoutResult ->
+                      if (textLayoutResult.didOverflowWidth)
+                      {
+                          scale = scale * 0.90
+                          if (scale > 0.40) // If this field gets too small, just drop it
+                          {
+                              ccTextStyle = ccTextStyle.copy(fontSize = startingCcStyle.fontSize * scale)
+                          }
+                          else
+                          {
+                              showingCurrencyCode = ""
+                              drawCC = true
+                          }
+                      }
+                      else drawCC = true
+                  }
+                )
+            }
+            // Approximately amount or as of date (we don't want to show a fiat amount if we are syncing)
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+                uidata.approximately?.let {
+                    Text(modifier = Modifier.fillMaxWidth(), text = it, fontSize = 16.sp, color = uidata.approximatelyColor, fontWeight = uidata.approximatelyWeight, textAlign = TextAlign.Start)
+                }
+            }
+        }
+
+        // Account-specific buttons
+        Column(modifier = Modifier.align(Alignment.CenterVertically)) {
+            Row(
+              modifier = Modifier.wrapContentWidth(),
+              horizontalArrangement = Arrangement.End,
+              verticalAlignment = Alignment.CenterVertically
+            ) {
+                val actButtonSize = Modifier.padding(5.dp, 0.dp).size(28.dp)
+                // Fast forward button
+                if (offerFastForward && !uidata.fastForwarding)
+                {
+                    ResImageView("icons/fastforward.png", modifier = actButtonSize.clickable {
+                        uidata.fastForwarding = true
+                        startAccountFastForward(uidata.account) {
+                            uidata.account.fastforwardStatus = it
+                            triggerAccountsChanged(uidata.account)
+                        }
+                    })
+                }
+                // Lock
+                if (uidata.lockable)
+                {
+                    ResImageView(if (uidata.locked) "icons/lock.xml" else "icons/unlock.xml",
+                      modifier = actButtonSize.clickable {
+                          onClickAccount()  // I want to select the whole account & then try to unlock/lock
+                          if (uidata.locked)
+                          {
+                              triggerUnlockDialog()
+                          }
+                          else
+                          {
+                              uidata.account.pinEntered = false
+                              tlater("assignGuiSlots") {
+                                  triggerAssignAccountsGuiSlots()  // In case it should be hidden
+                                  later { accountChangedNotification.send(uidata.name) }
+                              }
+                          }
+                      })
+                }
+                // else Spacer(actButtonSize) // these would stop the buttons from moving when other buttons disappear
+
+                // Show the account settings gear at the end
+                if (isSelected)
+                {
+                    ResImageView("icons/gear.xml", actButtonSize.clickable(onClick = onClickGearIcon).testTag("accountSettingsGearIcon"))
+                }
+                // else Spacer(actButtonSize) // these would stop the buttons from moving when other buttons disappear
+            }
+        }
+
+    }
+
+}
 
 @Composable
 fun AccountItemView(
@@ -233,159 +354,46 @@ fun AccountItemView(
   onClickAccount: () -> Unit,
   onClickGearIcon: () -> Unit
 ) {
-    val curSync = uidata.account.wallet.chainstate?.syncedDate ?: 0
-    val offerFastForward = (millinow()/1000 - curSync) > OFFER_FAST_FORWARD_GAP
     val backgroundColor = if (isSelected) defaultListHighlight else if (index and 1 == 0) WallyRowAbkg1 else WallyRowAbkg2
-    Box(
-      modifier = Modifier.testTag("AccountItemView")
-        .fillMaxWidth()
-        .padding(2.dp)
-        .background(backgroundColor)
-        .clickable(onClick = onClickAccount),
-      contentAlignment = Alignment.Center
-    ) {
-        Row(modifier = Modifier.fillMaxHeight().padding(5.dp, 2.dp),
-          horizontalArrangement = Arrangement.SpaceBetween,
-          verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.fillMaxHeight().weight(0.5f))
-            {
-                ResImageView(getAccountIconResPath(uidata.chainSelector), Modifier.size(32.dp).align(Alignment.Start), "Blockchain icon")
-            }
-            Column(
-              modifier = Modifier.weight(2f),
-              verticalArrangement = Arrangement.Top,
-              horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // Top row of info
-                Row(
-                  verticalAlignment = Alignment.CenterVertically,
-                  modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(text = uidata.name, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                }
-                Row(
-                  horizontalArrangement = Arrangement.SpaceBetween,
-                  verticalAlignment = Alignment.CenterVertically,
-                  modifier = Modifier.fillMaxWidth()
-                ) {
-                    val startingBalStyle = FontScaleStyle(1.75)
-                    val startingCcStyle = FontScaleStyle(0.6)
-                    var balTextStyle by remember { mutableStateOf(startingBalStyle) }
-                    var ccTextStyle by remember { mutableStateOf(startingCcStyle) }
-                    var drawBal by remember { mutableStateOf(false) }
-                    var drawCC by remember { mutableStateOf(false) }
-                    var scale by remember { mutableStateOf(1.0) }
-                    Text(text = uidata.balance, style = balTextStyle, color = colorDebit, modifier = Modifier.padding(0.dp).drawWithContent { if (drawBal) drawContent() }, textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
-                      onTextLayout = {
-                          textLayoutResult ->
-                          if (textLayoutResult.didOverflowWidth)
-                          {
-                              scale = scale*0.90
-                              balTextStyle = startingBalStyle.copy(fontSize = startingBalStyle.fontSize * scale)
-                          }
-                          else drawBal = true
-                      })
-                    Text(text = uidata.currencyCode, style = ccTextStyle, modifier = Modifier.padding(5.dp, 0.dp).fillMaxWidth().drawWithContent { if (drawCC) drawContent() }, textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
-                      onTextLayout = {
-                          textLayoutResult ->
-                          if (textLayoutResult.didOverflowWidth)
-                          {
-                              scale = scale*0.90
-                              if (scale > 0.20) // If this field gets too small, just drop it
-                              {
-                                  ccTextStyle = ccTextStyle.copy(fontSize = startingCcStyle.fontSize * scale)
-                              }
-                              else
-                              {
-                                  ccTextStyle = ccTextStyle.copy(fontSize = TextUnit(0.0f, TextUnitType.Em))
-                                  drawCC = true
-                              }
-                          }
-                          else drawCC = true
-                      }
-                    )
-                }
-                Row(
-                  verticalAlignment = Alignment.Bottom,
-                ) {
-                    // Balance and currency code row to align bottoms of fonts of different size
-                    if (offerFastForward && !uidata.fastForwarding)
-                    {
-                        Spacer(Modifier.width(8.dp))
-                        WallyBoringButton({
-                            uidata.fastForwarding = true
-                            startAccountFastForward(uidata.account) {
-                                uidata.account.fastforwardStatus = it
-                                triggerAccountsChanged(uidata.account)
-                            }
-                        }) {
-                            ResImageView("icons/fastforward.png", modifier = Modifier.size(24.dp))
-                        }
-                    }
+    Box(modifier = Modifier.testTag("AccountItemView").fillMaxWidth().padding(2.dp).background(backgroundColor).clickable(onClick = onClickAccount), contentAlignment = Alignment.Center) {
+        // Each account
+        Row(modifier = Modifier.padding(5.dp, 2.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+
+            Column(modifier = Modifier.weight(2f), verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
+                // top line, icon, quantity, and fastforward
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    AccountItemLineTop(uidata, isSelected, onClickAccount, onClickGearIcon)
                 }
 
-                Row(
-                  modifier = Modifier.fillMaxWidth(),
-                  horizontalArrangement = Arrangement.Start
-                ) {
+                // Fast Forwarding status
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
                     val ffs = uidata.ffStatus
                     if (uidata.fastForwarding && (ffs != null))
                     {
-                        Text(text = i18n(S.fastforwardStatus) % mapOf("info" to ffs), fontSize = 16.sp)
-                    }
-                    else
-                    {
-                        uidata.approximately?.let {
-                            Text(text = it, fontSize = 16.sp, color = uidata.approximatelyColor, fontWeight = uidata.approximatelyWeight)
-                        }
+                        Text(modifier = Modifier.fillMaxWidth(), text = i18n(S.fastforwardStatus) % mapOf("info" to ffs), fontSize = 16.sp, textAlign = TextAlign.Center)
                     }
                 }
-                // includes (amount) NEX pending
-                if (uidata.unconfBal.isNotEmpty())
-                    Row(
-                      modifier = Modifier.fillMaxWidth(),
-                      horizontalArrangement = Arrangement.Start
-                    ) {
-                        Text(text = uidata.unconfBal, color = uidata.unconfBalColor)
-                    }
-                if (devMode) Row(
-                  modifier = Modifier.fillMaxWidth(),
-                  horizontalArrangement = Arrangement.Start
-                ) {
-                    Text(text = uidata.devinfo, fontSize = 12.sp, maxLines = 5, minLines = 5)
+
+                // includes (amount)   --- NEXA pending amount
+                if (uidata.unconfBal.isNotEmpty()) Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+                    Text(text = uidata.unconfBal, color = uidata.unconfBalColor)
                 }
-            }
-            Column(modifier = Modifier.weight(1f)) {
-                Row(
-                  modifier = Modifier.fillMaxWidth(),
-                  horizontalArrangement = Arrangement.End
-                ) {
-                    if (uidata.lockable)
-                    {
-                        ResImageView(if (uidata.locked) "icons/lock.xml" else "icons/unlock.xml",
-                          modifier = Modifier.size(24.dp).clickable {
-                              onClickAccount()  // I want to select the whole account & then try to unlock/lock
-                              if (uidata.locked)
-                              {
-                                  triggerUnlockDialog()
-                              }
-                              else
-                              {
-                                  uidata.account.pinEntered = false
-                                  tlater("assignGuiSlots") {
-                                      triggerAssignAccountsGuiSlots()  // In case it should be hidden
-                                      later { accountChangedNotification.send(uidata.name) }
-                                  }
-                              }
-                          })
-                    }
-                    // Show the account settings gear at the end
-                    if (isSelected)
-                    {
-                        ResImageView("icons/gear.xml", Modifier.padding(5.dp, 0.dp).size(24.dp).clickable(onClick = onClickGearIcon).testTag("accountSettingsGearIcon"))
+                // Devmode connectivity text
+                if (devMode)
+                {
+                    // Give a little extra height because the unicode up and down arrows don't fit causing the line to go bigger.
+                    var lh = LocalTextStyle.current.lineHeight
+                    if (lh == TextUnit.Unspecified) lh = defaultFontSize
+                    val devModeTextStyle = LocalTextStyle.current.copy(lineHeightStyle = LineHeightStyle(
+                      alignment = LineHeightStyle.Alignment.Proportional,
+                      trim = LineHeightStyle.Trim.None),
+                      lineHeight = lh.times(1.05)
+                      )
+                    Row(modifier = Modifier.fillMaxWidth().padding(4.dp,4.dp,4.dp, 4.dp), horizontalArrangement = Arrangement.Start) {
+                        Text(text = uidata.devinfo, fontSize = 12.sp, maxLines = 5, minLines = 3, style = devModeTextStyle, textAlign = TextAlign.Center)
                     }
                 }
+
             }
         }
 
