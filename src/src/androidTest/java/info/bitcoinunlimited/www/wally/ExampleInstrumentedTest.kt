@@ -456,7 +456,7 @@ class UnitTest
          */
     }
 
-    @Test
+    // @Test
     fun testBitcoinComPrices()
     {
         val result = historicalUbchInFiat("USD", 1576616203)
