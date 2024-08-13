@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -38,9 +39,8 @@ fun CurrencyDecimal(b: BigDecimal): BigDecimal
 }
 
 @Composable
-fun SplitBillScreen(nav: ScreenNav)
+fun SplitBillScreen(nav: ScreenNav, acct: Account? = wallyApp?.focusedAccount)
 {
-    val acct = wallyApp?.focusedAccount
     val cryptoCurrencyCode = acct?.currencyCode ?: chainToCurrencyCode[ChainSelector.NEXA] ?: "NEXA"
     var usingCurrency by remember { mutableStateOf(fiatCurrencyCode) }
     var usingFiatCurrency by remember { mutableStateOf(true) }
@@ -168,7 +168,7 @@ fun SplitBillScreen(nav: ScreenNav)
             SectionText(S.Amount)
             WallyDecimalEntry(
               amountString,
-              modifier = Modifier.weight(1.0f, false)
+              modifier = Modifier.weight(1.0f, false).testTag("SplitBillScreenAmountInput")
             ) {
                 amountString.value = it
                 try
@@ -244,7 +244,7 @@ fun SplitBillScreen(nav: ScreenNav)
                       zero
                   }
               },
-              modifier = Modifier.width(IntrinsicSize.Min).weight(1f))
+              modifier = Modifier.testTag("SplitBillScreenTipInput").width(IntrinsicSize.Min).weight(1f))
         }
         Spacer(Modifier.height(10.dp))
 
