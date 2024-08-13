@@ -216,7 +216,7 @@ fun resolveLocalFilename(filename: String): Path?
 }
 
 @OptIn(ExperimentalForeignApi::class)
-@Composable actual fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri: String?, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit):Boolean
+@Composable actual fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri: String?, autoplay: Boolean, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit):Boolean
 {
     // LogIt.info( "MpMediaView(${mediaData?.size} bytes, $mediaUri)")
     val mu = mediaUri
@@ -308,7 +308,7 @@ fun resolveLocalFilename(filename: String): Path?
             val furl = "file://" + tmp.toString()
             //val cutname = "file:" + if (mu.startsWith("file://")) mu.drop(7) else mu
             LogIt.info("VideoView $furl")
-            VideoView(furl, wrapper)
+            VideoView(furl, autoplay, wrapper)
             return true
         }
         else return false
@@ -317,7 +317,7 @@ fun resolveLocalFilename(filename: String): Path?
 }
 
 @OptIn(ExperimentalForeignApi::class)
-@Composable fun VideoView(url: String, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit)
+@Composable fun VideoView(url: String, autoplay: Boolean = false, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit)
 {
     var avPlayer by remember { mutableStateOf<AVPlayerItem?>(null) }
     var avPlayerViewController by remember { mutableStateOf<AVPlayerViewController?>(null) }
@@ -341,7 +341,8 @@ fun resolveLocalFilename(filename: String): Path?
                 exitsFullScreenWhenPlaybackEnds = false
                 videoGravity = AVLayerVideoGravityResize
                 contentOverlayView?.autoresizesSubviews = true
-                player?.play()  // get going
+                if(autoplay)
+                    player?.play()  // get going
             }
             tmp
         }
