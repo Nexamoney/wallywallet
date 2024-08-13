@@ -79,8 +79,10 @@ fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, allo
                     val amt = tokenAmountString(apc.groupInfo.tokenAmt, asset.tokenInfo?.genesisInfo?.decimal_places)
                     val lenAdjust = 1.0 // 5.0/max(amt.length,5)
                     val fontSize = if (verbosity > 0) 2.0*lenAdjust else 1.0*lenAdjust
-                    SelectionContainer(modifier = modifier.weight(0.75f).align(Alignment.CenterVertically)) {
-                        CenteredFittedText(amt, fontSize, modifier = modifier.align(Alignment.CenterVertically))
+                    Box(modifier = modifier.weight(0.50f).align(Alignment.CenterVertically)) {
+                        SelectionContainer {
+                            CenteredFittedText(amt, fontSize)
+                        }
                     }
                 }
                 Spacer(modifier.width(4.dp))

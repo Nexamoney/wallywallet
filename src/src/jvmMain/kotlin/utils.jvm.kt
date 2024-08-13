@@ -10,6 +10,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.res.loadSvgPainter
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import okio.BufferedSource
@@ -266,3 +268,5 @@ actual fun platformNotification(message:String, title: String?, onclickUrl:Strin
 
 // No IME (soft keyboard on desktop)
 @Composable actual fun isImeVisible(): Boolean = false
+
+@Composable actual fun getImeHeight(): Dp = 0.dp

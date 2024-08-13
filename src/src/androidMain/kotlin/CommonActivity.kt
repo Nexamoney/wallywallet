@@ -19,14 +19,17 @@ import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.core.view.ViewCompat
 import androidx.core.view.ViewCompat.setWindowInsetsAnimationCallback
 import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
 import kotlinx.coroutines.*
@@ -72,19 +75,30 @@ fun isKeyboardShown(root: View): Boolean
 
 open class KeyboardToggleListener(private val root: View, private val onKeyboardToggleAction: (shown: Boolean) -> Unit) : ViewTreeObserver.OnGlobalLayoutListener
 {
-    private var shown = isKeyboardShown(root)
+    var lastHeight = root.height
+    init {
+        root.viewTreeObserver.addOnGlobalLayoutListener(this)
+    }
+    //private var shown = isKeyboardShown(root)
+
     override fun onGlobalLayout()
     {
         var rect = Rect()
         root.getWindowVisibleDisplayFrame(rect)
+        val curHeight = (rect.bottom - rect.top)
+        val heightChange = curHeight - lastHeight
 
-        val heightDiff = root.height - rect.bottom
-        val keyboardShown = heightDiff > root.dpToPx(200f)
-        if (shown != keyboardShown)
+        //val heightDiff = root.height - rect.bottom
+        //val keyboardShown = heightDiff > root.dpToPx(150f)
+        if (heightChange >= 150)
         {
-            onKeyboardToggleAction.invoke(keyboardShown)
-            shown = keyboardShown
+            onKeyboardToggleAction.invoke(false)
         }
+        if (heightChange <= -150)
+        {
+            onKeyboardToggleAction.invoke(true)
+        }
+        lastHeight = curHeight
     }
 
     fun remove()
@@ -123,6 +137,8 @@ open class CommonActivity : AppCompatActivity()
     {
         setTheme(R.style.WallyActionBarStyle)
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        displayMetrics = resources.displayMetrics
 
         origTitle = title.toString()
         actionBarId = resources.getIdentifier("action_bar", "id", packageName)
@@ -156,12 +172,17 @@ open class CommonActivity : AppCompatActivity()
     {
     }
 
+    var softKeyboardShown = false  // assume that it starts not shown (see AndroidManifest.xml android:windowSoftInputMode)
+    var softkeyboardChangeHandler:KeyboardToggleListener? = null
+
     override fun onStart()
     {
         currentActivity = this
 
         val view: View = findViewById(android.R.id.content)
         val rootView = view.rootView
+
+        softkeyboardChangeHandler = KeyboardToggleListener(rootView) { onSoftKeyboard(it) }
 
         setWindowInsetsAnimationCallback(rootView, object : WindowInsetsAnimationCompat.Callback(DISPATCH_MODE_CONTINUE_ON_SUBTREE) {
             override fun onProgress(insets: WindowInsetsCompat, runningAnimations: MutableList<WindowInsetsAnimationCompat>): WindowInsetsCompat
@@ -171,27 +192,22 @@ open class CommonActivity : AppCompatActivity()
 
             override fun onStart(animation: WindowInsetsAnimationCompat, bounds: WindowInsetsAnimationCompat.BoundsCompat): WindowInsetsAnimationCompat.BoundsCompat
             {
-
                 if ((animation.typeMask and WindowInsetsCompat.Type.ime()) > 0)  // soft keyboard thing
                 {
-                    if (isKeyboardShown(rootView))
-                        onSoftKeyboard(true)
+                    softKeyboardShown = !softKeyboardShown
+                    onSoftKeyboard(softKeyboardShown)
                 }
                 return super.onStart(animation, bounds)
             }
             override fun onEnd(animation: WindowInsetsAnimationCompat)
             {
                 super.onEnd(animation)
-                //if (!isKeyboardShown(rootView))
-                onSoftKeyboard(isKeyboardShown(rootView))
-                // val showingKeyboard = rootView.rootWindowInsets.isVisible(WindowInsets.Type.ime())
             }
 
         })
 
         getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
         getSupportActionBar()?.setDisplayShowHomeEnabled(true)
-
         super.onStart()
     }
 
@@ -249,7 +265,6 @@ open class CommonActivity : AppCompatActivity()
         val flags: Int = intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY
         return flags == Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY
     }
-
      */
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean
@@ -504,11 +519,6 @@ open class CommonActivity : AppCompatActivity()
             fn()
         }
 
-    }
-
-    fun amIbackground(): Boolean
-    {
-        return isRunning==false
     }
 
     /** Do whatever you pass but not within the user interface context, asynchronously */

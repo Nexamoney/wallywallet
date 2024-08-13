@@ -3,6 +3,8 @@ package info.bitcoinunlimited.www.wally
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.ui.softKeyboardBar
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -259,4 +261,10 @@ actual fun isImeVisible(): Boolean
     // then the softkeyboard is up.
     if (softKeyboardBar != null) return true
     return false
+}
+
+@Composable actual fun getImeHeight(): Dp
+{
+    // This isn't needed right now because we don't put the number bar above the IME
+    return 0.dp
 }

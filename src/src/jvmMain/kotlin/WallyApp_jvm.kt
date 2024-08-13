@@ -7,6 +7,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.runtime.*
 import androidx.compose.ui.unit.*
 import androidx.compose.material.*
+import androidx.compose.ui.Modifier
 
 import androidx.compose.ui.window.rememberWindowState
 import info.bitcoinunlimited.www.wally.ui.NavigationRoot
@@ -85,7 +86,7 @@ fun guiNewPanel()
               state = rememberWindowState(width = (5 * 160).dp, height = (7 * 160).dp)
             )
             {
-                NavigationRoot(nav)
+                NavigationRoot(nav, Modifier)
             }
         }
     }
