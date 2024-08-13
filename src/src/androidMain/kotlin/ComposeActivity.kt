@@ -10,12 +10,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import kotlinx.coroutines.delay
 import android.content.pm.PackageManager
+import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.work.*
 import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.theme.BaseBkg
@@ -42,18 +53,6 @@ class ComposeActivity: CommonActivity()
     var doOnMediaReadPerms: (() -> Unit)? = null
     /** Do this once we get file read permissions */
     var doOnFileReadPerms: (() -> Unit)? = null
-
-    /* Not needed unless we decide we like the xzing QR scanner better
-    fun scanQrCode(scanDone: (String)->Unit)
-    {
-        scanDoneFn = scanDone
-        val v = IntentIntegrator(this)
-        dynOrStaticOrientation = requestedOrientation
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_NOSENSOR
-        v.setPrompt(i18n(R.string.scanPaymentQRcode)).setBeepEnabled(false).setDesiredBarcodeFormats(BarcodeFormat.QR_CODE.name).setOrientationLocked(true).setCameraId(0).initiateScan()
-
-    }
-     */
 
     override fun splash(shown: Boolean)
     {
@@ -134,68 +133,9 @@ class ComposeActivity: CommonActivity()
                             }
                         }
                     }
-
-
-                    /*
-
-                    val path = URIPathHelper().getPath(this, im)
-                    if (path != null)
-                    {
-                        try
-                        {
-                            val qrdata = readQRcode(path)
-                            displayNotice(R.string.goodQR, qrdata)
-                            imageParsedFn?.let { it(qrdata)}
-                        }
-                        catch (e: com.google.zxing.NotFoundException)
-                        {
-                            displayError(R.string.badImageQR, R.string.badImageQRhelp)
-                        }
-                        catch(e: Exception)
-                        {
-                            displayException(R.string.badImageQR, e)
-                        }
-                    }
-                     */
                 }
             }
         }
-
-
-        // Android-specific QR code scanning
-        /*
-        val result: IntentResult? = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
-        if (result != null)
-        {
-            if (result.contents != null)
-            {
-                laterUI {
-                    val QRstring = result.contents.toString()
-                    displayNotice(i18n(R.string.scanSuccess), "QR text: " + QRstring, 2000)
-                    try
-                    {
-                        scanDoneFn?.invoke(QRstring)
-                    }
-                    catch (e: Exception)  // I can't handle it as plain text
-                    {
-                        logThreadException(e)
-                        // LogIt.info(sourceLoc() + ": QR contents invalid: " + QRstring)
-                        displayError(R.string.badAddress, QRstring)
-                    }
-
-                }
-                return
-            }
-            else
-            {
-                displayError(R.string.scanFailed)
-            }
-        }
-        else
-        {
-            super.onActivityResult(requestCode, resultCode, data)
-        }
-         */
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray)
@@ -277,18 +217,16 @@ class ComposeActivity: CommonActivity()
         return super.onCreateOptionsMenu(menu)
     }
 
+    override fun onResume()
+    {
+        super.onResume()
+        WindowCompat.setDecorFitsSystemWindows(window, true)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-
-        setContent {
-            val currentRootScreen = remember { mutableStateOf(ScreenId.Splash) }
-            nav.reset(currentRootScreen)
-            setTitle(nav.title())
-            NavigationRoot(nav)
-        }
-
+        getWindow().getDecorView().setBackgroundColor(BaseBkg.value.toInt())
         initializeGraphicsResources()
         backgroundOnly = false
 
@@ -298,11 +236,7 @@ class ComposeActivity: CommonActivity()
                 if (nav.back() == null) finish()
                 else setTitle(nav.title())
             }
-
         })
-
-        getWindow().getDecorView().setBackgroundColor(BaseBkg.value.toInt())
-
 
         // If the UI is opened, register background sync work.  But we don't want to reregister the background work whenever the background work
         // itself is launched, so this code can't be in the app class.
@@ -313,6 +247,22 @@ class ComposeActivity: CommonActivity()
         val bkgSyncOnce = OneTimeWorkRequestBuilder<BackgroundSync>().build()
         WorkManager.getInstance(this).enqueueUniqueWork("WallySyncOnce", ExistingWorkPolicy.REPLACE, bkgSyncOnce)
 
+        var actionb:Int? = null
+        setContent {
+            val currentRootScreen = remember { mutableStateOf(ScreenId.Splash) }
+            nav.reset(currentRootScreen)
+            setTitle(nav.title())
+            // Note that modern versions of android place the app view behind the system "insets". Old ones do not.
+            // DONT MESS WITH THIS CODE unless you are ready to test multiple android versions!
+            if (actionb == null)
+            {
+                val insets = ViewCompat.getRootWindowInsets(LocalView.current)
+                val sysInsets = insets!!.getInsets(WindowInsetsCompat.Type.systemBars())
+                actionb = if (android.os.Build.VERSION.SDK_INT < 35) 0 else sysInsets.top
+            }
+            val systemPadding = Modifier.padding(0.dp, pxToDp(actionb ?: 0), 0.dp, 0.dp) // pxToDp(sysInsets.bottom))
+            NavigationRoot(nav, systemPadding)
+        }
     }
 
     // If the title bar is touched, show all the errors and warnings the app has generated

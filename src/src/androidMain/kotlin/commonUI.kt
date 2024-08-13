@@ -19,6 +19,7 @@ import android.widget.CompoundButton
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
+import androidx.compose.ui.unit.Dp
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.zxing.BarcodeFormat
@@ -77,6 +78,14 @@ public fun dpToPx(dp: Float): Int
 {
     return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, displayMetrics).toInt()
 }
+
+public fun pxToDp(px:Int): Dp
+{
+    // API 34+
+    //return Dp(TypedValue.deriveDimension(TypedValue.COMPLEX_UNIT_DIP, px.toFloat(), displayMetrics))
+    return Dp(px / displayMetrics.density)
+}
+
 fun spToPx(sp: Float): Int
 {
     return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, displayMetrics).toInt()
@@ -168,25 +177,6 @@ fun Paint.setTextSizeForWidth(text: String, desiredWidth: Int, maxFontSizeInSp: 
     textSize = floor(desiredTextSize)
 }
 
-fun textChanged(cb: () -> Unit): TextWatcher
-{
-    return object : TextWatcher
-    {
-        override fun afterTextChanged(p0: Editable?)
-        {
-            cb()
-        }
-
-        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
-        {
-        }
-
-        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
-        {
-        }
-    }
-}
-
 
 @Throws(WriterException::class)
 fun textToQREncode(value: String, size: Int): Bitmap?
@@ -245,109 +235,6 @@ fun textToQREncode(value: String, size: Int): Bitmap?
     return bitmap
 }
 
-/** Connects a gui switch to a preference DB item.  To be called in onCreate.
- * Returns the current state of the preference item.
- * Uses setOnCheckedChangeListener, so you cannot call that yourself.  Instead pass your listener into this function
- * */
-fun SetupBooleanPreferenceGui(key: String, db: SharedPreferences, defaultValue: Boolean, button: CompoundButton, onChecked: ((CompoundButton?, Boolean) -> Unit)? = null): Boolean
-{
-    val ret = db.getBoolean(key, defaultValue)
-    button.setChecked(ret)
-
-    button.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener
-    {
-        override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean)
-        {
-            with(db.edit())
-            {
-                putBoolean(key, isChecked)
-                commit()
-            }
-            if (onChecked != null) onChecked(buttonView, isChecked)
-        }
-    })
-    return ret
-}
-
-/** Connects a gui text entry field to a preference DB item.  To be called in onCreate */
-fun SetupTextPreferenceGui(key: String, db: SharedPreferences, view: EditText)
-{
-    view.text.clear()
-    view.text.append(db.getString(key, ""))
-
-    view.addTextChangedListener(object : TextWatcher
-    {
-        override fun afterTextChanged(p: Editable?)
-        {
-            dbgAssertGuiThread()
-            if (p == null) return
-            val text = p.toString()
-            with(db.edit())
-            {
-                putString(key, text)
-                commit()
-            }
-        }
-
-        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
-        {
-        }
-
-        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
-        {
-        }
-    })
-}
-
-/** Connects a gui text entry field to a preference DB item.  To be called in onCreate */
-fun SetupNexCurrencyPreferenceGui(key: String, db: SharedPreferences, view: EditText)
-{
-    view.text.clear()
-    if (true)
-    {
-        val v = db.getString(key, "0") ?: "0"
-        val dec = try
-        {
-            CurrencyDecimal(v)
-        }
-        catch (e:Exception)
-        {
-            CurrencyDecimal(0)
-        }
-        view.text.append(db.getString(key, NexaFormat.format(dec)))
-    }
-
-    view.addTextChangedListener(object : TextWatcher
-    {
-        override fun afterTextChanged(p: Editable?)
-        {
-            dbgAssertGuiThread()
-            if (p == null) return
-            val text = p.toString()
-            try
-            {
-                val dec = CurrencyDecimal(text)
-                with(db.edit())
-                {
-                    putString(key, CurrencySerializeFormat.format(dec))
-                    commit()
-                }
-            }
-            catch (e:Exception)  // number format execption, for one
-            {
-                logThreadException(e)
-            }
-        }
-
-        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
-        {
-        }
-
-        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
-        {
-        }
-    })
-}
 
 /**
  * Convert a uri scheme to a url, and then plug it into the java URL parser.

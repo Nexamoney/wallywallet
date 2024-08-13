@@ -15,8 +15,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import info.bitcoinunlimited.www.wally.old.convertOldAccounts
+import info.bitcoinunlimited.www.wally.ui.softKeyboardBar
 import info.bitcoinunlimited.www.wally.ui.theme.colorError
 import info.bitcoinunlimited.www.wally.ui.theme.colorNotice
 import info.bitcoinunlimited.www.wally.ui.theme.colorWarning
@@ -261,7 +268,24 @@ actual fun getResourceFile(name: String): BufferedSource
 @OptIn(ExperimentalLayoutApi::class)
 @Composable actual fun isImeVisible(): Boolean
 {
+    // This is a "cheat"; this is set by text entry fields if they are in focus.  so we assume on ios that if this is set
+    // then the softkeyboard is up.
+    //if (softKeyboardBar != null) return true
+    //return false
+
     val act = currentActivity as? ComposeActivity
     if (act != null) return act.isKeyboardShown()
     return WindowInsets.isImeVisible  // Does not seem to work, but is the "compose" API
+}
+
+// Note that changing AndroidManifest.xml android:windowSoftInputMode="stateHidden|adjustPan" to something else will break this
+@Composable actual fun getImeHeight(): Dp
+{
+    val view = LocalView.current
+    val insets = ViewCompat.getRootWindowInsets(view)
+    var imeHeight = insets?.getInsets(WindowInsetsCompat.Type.ime())?.bottom ?: 0
+    val systemnavbar = insets?.getInsets(WindowInsetsCompat.Type.navigationBars())?.bottom ?: 0
+    if (android.os.Build.VERSION.SDK_INT < 35) imeHeight -= systemnavbar
+    val density = LocalDensity.current.density
+    return (imeHeight / density).dp
 }

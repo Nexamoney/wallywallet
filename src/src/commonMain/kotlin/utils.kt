@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.Dp
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import kotlinx.coroutines.*
 import org.nexa.libnexakotlin.*
@@ -493,6 +494,8 @@ expect fun isUiThread(): Boolean
 // expect fun readResourceFile(filename: String): InputStream
 
 @Composable expect fun isImeVisible(): Boolean
+
+@Composable expect fun getImeHeight(): Dp
 
 /** Split into set splits a list of items, separate by comma or space, into a set of individual items
  * This defines the standard way in the UX to specify a list of items, so must be used for EVERY field that

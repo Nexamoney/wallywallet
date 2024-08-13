@@ -442,7 +442,7 @@ fun buildMenuItems()
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun NavigationRoot(nav: ScreenNav)
+fun NavigationRoot(nav: ScreenNav, systemPadding: Modifier)
 {
     if (nav.currentScreen.value == ScreenId.Splash)
     {
@@ -459,8 +459,6 @@ fun NavigationRoot(nav: ScreenNav)
             if (nativeSplash) NativeSplash(false)
             nav.back()
         }
-
-
         return
     }
 
@@ -665,19 +663,22 @@ fun NavigationRoot(nav: ScreenNav)
         }
     }
 
-
     // This box is on top of the main screen
     Box(modifier = Modifier.zIndex(1000f).fillMaxSize()) {
         if (isSoftKeyboardShowing.collectAsState().value)
         {
             val keybar = softKeyboardBar.collectAsState().value
-            keybar?.invoke(Modifier.padding(0.dp).align(Alignment.BottomStart).fillMaxWidth().background(Color(0xe0d8d8d8)))
+            if (keybar != null)
+            {
+                val imeHeight = getImeHeight()
+                keybar.invoke(Modifier.align(Alignment.BottomStart).padding(bottom = imeHeight).fillMaxWidth().background(Color(0xe0d8d8d8)))
+            }
         }
     }
 
     // The main screen
     WallyTheme(darkTheme = false, dynamicColor = false) {
-        Box(modifier = WallyPageBase) {
+        Box(modifier = WallyPageBase .then(systemPadding)) {
             if (unlockDialog != null) UnlockView {  }
             Column(modifier = Modifier.fillMaxSize()) {
                 ConstructTitleBar(nav, errorText, warningText, noticeText)

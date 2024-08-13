@@ -3,6 +3,7 @@ package info.bitcoinunlimited.www.wally
 import androidx.compose.runtime.InternalComposeApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.uikit.ComposeUIViewControllerDelegate
 import androidx.compose.ui.window.ComposeUIViewController
 import info.bitcoinunlimited.www.wally.ui.BACKGROUND_SYNC_PREF
@@ -50,7 +51,7 @@ fun MainViewController(): UIViewController
       {
         val currentRootScreen = remember { mutableStateOf(ScreenId.Splash) }
         nav.reset(currentRootScreen)
-        NavigationRoot(nav)
+        NavigationRoot(nav, Modifier)
     })
     v = view
 

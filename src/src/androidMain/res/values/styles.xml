@@ -12,6 +12,8 @@
         <item name="actionBarPopupTheme">@style/ActionBarOverflowMenu</item>
         <!-- item name="actionBarSize">32dp</item -->
         <item name="actionBarStyle">@style/WallyActionBarStyle</item>
+        <item name="windowActionBar">true</item>
+        <item name="windowNoTitle">false</item>
     </style>
 
 
