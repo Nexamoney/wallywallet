@@ -447,6 +447,13 @@ fun AssetScreen(account: Account, nav: ScreenNav)
                 WallyBoringIconButton("icons/clipboard.xml", Modifier.width(26.dp).height(26.dp)) {
                     onCopyToClipboardButton(a.assetInfo)
                 }
+                assetFocus?.groupInfo?.groupId?.let {
+                    WallyBoringIconButton("icons/open_in_browser.png", Modifier.width(26.dp).height(26.dp)) {
+                        account.wallet.chainSelector.explorer("/token/$it").let {
+                            uriHandler.openUri(it)
+                        }
+                    }
+                }
                 WallyRoundedTextButton(S.Send, onClick = {
                     val defaultAmt = BigDecimal.fromInt(1, tokenDecimalMode(a.assetInfo?.tokenInfo?.genesisInfo?.decimal_places ?: 0)) // The default send is to transfer a single "one" (you can change in the send screen) -- whatever that means WRT the # of decimal places
                     account.addAssetToTransferList(a.groupInfo.groupId, defaultAmt)
