@@ -239,7 +239,7 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
     throw UnimplementedException("video icons")
 }
 
-@OptIn(UnstableApi::class) @Composable actual fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri: String?, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit): Boolean
+@OptIn(UnstableApi::class) @Composable actual fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri: String?, autoplay: Boolean, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit): Boolean
 {
     // Its cached
     if (mediaImage != null)
@@ -353,7 +353,7 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
               .also { exoPlayer ->
                   exoPlayer.setMediaItem(mediaItem)
                   exoPlayer.prepare()
-                  exoPlayer.playWhenReady = true
+                  if(autoplay) exoPlayer.playWhenReady = true
                   exoPlayer.repeatMode = REPEAT_MODE_ALL
               }
         }

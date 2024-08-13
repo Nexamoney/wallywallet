@@ -186,7 +186,7 @@ fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
                 val surfShape = RoundedCornerShape(20.dp)
 
                 // Do not show the cached icon since its small
-                MpMediaView(null, mediaBytes, url.toString()) { mi, draw ->
+                MpMediaView(null, mediaBytes, url.toString(), autoplay = true) { mi, draw ->
 
                     // Fill the media available space's x or y with the media, but draw a nice box around that space.
                     // Its is amazing that this is so hard.
@@ -224,7 +224,7 @@ fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
 
                 val surfShape = RoundedCornerShape(20.dp)
 
-                MpMediaView(null, mediaBytes, url.toString()) { mi, draw ->
+                MpMediaView(null, mediaBytes, url.toString(), autoplay = true) { mi, draw ->
 
                     // Fill the media available space's x or y with the media, but draw a nice box around that space.
                     // Its is amazing that this is so hard.
@@ -262,7 +262,7 @@ fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
 
                 val surfShape = RoundedCornerShape(20.dp)
 
-                MpMediaView(null, mediaBytes, url.toString()) { mi, draw ->
+                MpMediaView(null, mediaBytes, url.toString(), autoplay = true) { mi, draw ->
                     val ar = mi.width.toFloat()/mi.height.toFloat()
                     BoxWithConstraints(Modifier.fillMaxSize()) {
                         val spaceAr = minWidth/minHeight
@@ -288,7 +288,7 @@ fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
 
                 val surfShape = RoundedCornerShape(20.dp)
 
-                MpMediaView(null, mediaBytes, url.toString()) { mi, draw ->
+                MpMediaView(null, mediaBytes, url.toString(), autoplay = true) { mi, draw ->
                     val ar = mi.width.toFloat()/mi.height.toFloat()
                     BoxWithConstraints(Modifier.fillMaxSize()) {
                         val spaceAr = minWidth/minHeight

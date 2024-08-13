@@ -37,7 +37,7 @@ data class MediaInfo(val width: Int, val height: Int,
  * Your custom wrapper MUST call the passed composable to actually render the media.  You may pass a custom modifier.  If you pass null,
  * Modifier.fillMaxSize().background(Color.Transparent) is used.
  */
-@Composable expect fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri: String?, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit):Boolean
+@Composable expect fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri: String?, autoplay: Boolean = false, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit):Boolean
 
 
 expect fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
