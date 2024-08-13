@@ -491,7 +491,6 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
             LogIt.info(sourceLoc() + chain.name + ": Loading Asset: Process genesis info ${groupId.toStringNoPrefix()}")
             var tg = td.genesisInfo
             if (tg == null) return@synchronized
-            var dataChanged = false
 
             LogIt.info(sourceLoc() + chain.name + ": loaded: " + tg.name)
 
@@ -532,7 +531,6 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
                         if (iconBackUri == null) getTddIcon().let { iconBackUri = it.first; iconBackBytes = it.second }
                         LogIt.info("NFT download complete for ${groupId}")
                         loadState = AssetLoadState.COMPLETED
-                        dataChanged = true
                     }
                     finally
                     {
@@ -563,7 +561,6 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
                             iconBytes = it.second
                             iconBytes?.let { b -> iconImage = makeImageBitmap(b, ASSET_ICON_SIZE,ASSET_ICON_SIZE, ScaleMode.INSIDE) }
                         }
-                        dataChanged = true
                         loadState = AssetLoadState.COMPLETED
                     }
                     am.storeTokenDesc(groupId, td)
@@ -576,7 +573,6 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
                 {
                     try
                     {
-
                         tokenInfo = td
                         if (td.marketUri == null)
                         {
@@ -598,9 +594,6 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
                             // Something went wrong (probably out of memory).
                             logThreadException(e, "Exception opening NFT")
                         }
-                        dataChanged = true
-
-
                     }
                     finally
                     {
