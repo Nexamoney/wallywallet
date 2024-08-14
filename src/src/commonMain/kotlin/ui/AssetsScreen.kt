@@ -149,22 +149,22 @@ fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
         val a = asset
         // Token info buttons
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
-            if (a.iconUri != null) WallySmallTextButton(S.NftCardFront, onClick = {
+            if (a.iconUri != null) WallySmallTextButton(S.NftCardFront, selected = showing == S.NftCardFront, onClick = {
                 showing = S.NftCardFront
             })
-            if (a.publicMediaUri != null) WallySmallTextButton(S.NftPublicMedia, onClick = {
+            if (a.publicMediaUri != null) WallySmallTextButton(S.NftPublicMedia, selected = showing == S.NftPublicMedia, onClick = {
                 showing = S.NftPublicMedia
             })
-            if ((a.nft?.info ?: "") != "") WallySmallTextButton(S.NftInfo, onClick = {
+            if ((a.nft?.info ?: "") != "") WallySmallTextButton(S.NftInfo, selected = showing == S.NftInfo, onClick = {
                 showing = S.NftInfo
             })
-            if (a.ownerMediaUri != null) WallySmallTextButton(S.NftOwnerMedia, onClick = {
+            if (a.ownerMediaUri != null) WallySmallTextButton(S.NftOwnerMedia, selected = showing == S.NftOwnerMedia, onClick = {
                 showing = S.NftOwnerMedia
             })
-            if ((a.nft?.license ?: "") != "") WallySmallTextButton(S.NftLegal, onClick = {
+            if ((a.nft?.license ?: "") != "") WallySmallTextButton(S.NftLegal, selected = showing == S.NftLegal, onClick = {
                 showing = S.NftLegal
             })
-            if (a.iconBackUri != null) WallySmallTextButton(S.NftCardBack, onClick = {
+            if (a.iconBackUri != null) WallySmallTextButton(S.NftCardBack, selected = showing == S.NftCardBack, onClick = {
                 showing = S.NftCardBack
             })
         }

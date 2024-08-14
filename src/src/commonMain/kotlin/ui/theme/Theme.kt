@@ -122,10 +122,16 @@ fun WallyRoundedButton(onClick: () -> Unit, enabled: Boolean=true,  interactionS
 }
 
 @Composable
-fun WallySmallTextButton(textRes: Int, enabled: Boolean=true,  interactionSource: MutableInteractionSource= MutableInteractionSource(), onClick: () -> Unit)
+fun WallySmallTextButton(textRes: Int, enabled: Boolean=true,  interactionSource: MutableInteractionSource= MutableInteractionSource(), selected: Boolean = false, onClick: () -> Unit)
 {
-    val tmp = TextStyle.Default.copy(lineHeight = 0.em, fontSize = FontScale(0.75),
-      lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.Both), fontWeight = FontWeight.Normal)
+    val fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
+    val tmp = TextStyle.Default.copy(
+      lineHeight = 0.em,
+      fontSize = FontScale(0.75),
+      lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.Both),
+      fontWeight = fontWeight
+    )
+
     OutlinedButton(
       onClick = onClick,
       // Change button appearance based on current screen
@@ -141,7 +147,7 @@ fun WallySmallTextButton(textRes: Int, enabled: Boolean=true,  interactionSource
       modifier = Modifier.width(IntrinsicSize.Max).padding(0.dp).defaultMinSize(1.dp, 1.dp),
       interactionSource = interactionSource
     )
-    { Text(i18n(textRes), Modifier.padding(0.dp), style = tmp)}
+    { Text(i18n(textRes), Modifier.padding(2.dp), style = tmp)}
 }
 
 @Composable
