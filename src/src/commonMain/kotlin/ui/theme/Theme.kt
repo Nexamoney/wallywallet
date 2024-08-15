@@ -729,6 +729,90 @@ fun WallyDecimalEntry(value: MutableState<String>, modifier: Modifier = Modifier
 
 /** Standard Wally text entry field.*/
 @Composable
+fun WallyOutLineDecimalEntry(value: MutableState<String>, modifier: Modifier = Modifier, textStyle: TextStyle? = null, bkgCol: Color? = null, onValueChange: ((String) -> String) = { it })
+{
+    val tfv = remember { mutableStateOf(TextFieldValue(value.value)) }
+    val focusManager = LocalFocusManager.current
+    WallyOutlineDataEntry(tfv, modifier.onKeyEvent {
+        if ((it.key == Key.Enter) || (it.key == Key.NumPadEnter))
+        {
+            focusManager.moveFocus(FocusDirection.Next)
+            true
+        }
+        else false// Do not accept this key
+    }.onFocusChanged {
+        if (it.isFocused)
+        {
+            softKeyboardBar.value = { modifier ->
+                // imePadding() is not needed; the BottomStart is already just above the IME
+                Row(modifier, horizontalArrangement = Arrangement.SpaceEvenly) {
+                    WallyRoundedTextButton(S.sendAll) {
+                        val tmp = onValueChange.invoke("all")
+                        tfv.value = TextFieldValue(tmp, selection = TextRange(tmp.length))
+                    }
+                    WallyRoundedTextButton(S.thousand) {
+                        var amt = try
+                        {
+                            CurrencyDecimal(value.value)
+                        }
+                        catch (e: ArithmeticException)
+                        {
+                            if ((value.value.length == 0) || (value.value == "all")) CURRENCY_1
+                            else return@WallyRoundedTextButton
+                        }
+                        catch (e: NumberFormatException)
+                        {
+                            if ((value.value.length == 0) || (value.value == "all")) CURRENCY_1
+                            else return@WallyRoundedTextButton
+                        }
+                        amt *= BigDecimal.fromInt(1000)
+                        val tmp = onValueChange.invoke(amt.toPlainString())
+                        tfv.value = TextFieldValue(tmp, selection = TextRange(tmp.length))
+                    }
+                    WallyRoundedTextButton(S.million) {
+                        var amt = try
+                        {
+                            CurrencyDecimal(value.value)
+                        }
+                        catch (e: ArithmeticException)
+                        {
+                            if ((value.value.length == 0) || (value.value == "all")) CURRENCY_1
+                            else return@WallyRoundedTextButton
+                        }
+                        catch (e: NumberFormatException)
+                        {
+                            if ((value.value.length == 0) || (value.value == "all")) CURRENCY_1
+                            else return@WallyRoundedTextButton
+                        }
+                        amt *= BigDecimal.fromInt(1000000)
+                        val tmp = onValueChange.invoke(amt.toPlainString())
+                        tfv.value = TextFieldValue(tmp, selection = TextRange(tmp.length))
+                    }
+                    WallyRoundedTextButton(S.clear) {
+                        val tmp = onValueChange.invoke("")
+                        tfv.value = TextFieldValue(tmp, selection = TextRange(tmp.length))
+                    }
+                }
+            }
+        }
+        else
+        {
+            softKeyboardBar.value = null
+        }
+    },
+      textStyle, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Done), bkgCol,
+      {
+          if (it.text.onlyDecimal())  // Only allow characters to be entered that are part of decimal numbers
+          {
+              val tmp = onValueChange.invoke(it.text)
+              tfv.value = TextFieldValue(tmp, selection = it.selection)
+          }
+      }
+    )
+}
+
+/** Standard Wally text entry field.*/
+@Composable
 fun WallyDigitEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, bkgCol: Color? = null, onValueChange: ((String) -> String) = { it })
 {
     val tfv = remember { mutableStateOf(TextFieldValue(value)) }
@@ -903,6 +987,65 @@ fun WallyDataEntry(value: MutableState<TextFieldValue>, modifier: Modifier = Mod
     )
 }
 
+/** Standard Wally data entry field. */
+@Composable
+fun WallyOutlineDataEntry(value: MutableState<TextFieldValue>, modifier: Modifier = Modifier, textStyle: TextStyle? = null, keyboardOptions: KeyboardOptions?=null, bkgCol: Color? = null, onValueChange: ((TextFieldValue) -> Unit)? = null)
+{
+    val adjustedFontSize = FontScale(1.25)
+    val ts2 = LocalTextStyle.current.copy(fontSize = adjustedFontSize)
+    val ts = ts2.merge(textStyle)
+    val scope = rememberCoroutineScope()
+    val bkgColor = remember { Animatable(BaseBkg) }
+    val ia = remember { MutableInteractionSource() }
+
+    LaunchedEffect(ia)
+    {
+        var entries=0
+        try
+        {
+            ia.interactions.collect {
+                when (it)
+                {
+                    // Hover for mouse platforms, Focus for touch platforms
+                    is HoverInteraction.Enter, is FocusInteraction.Focus ->
+                    {
+                        scope.launch {
+                            bkgColor.animateTo(bkgCol ?: SelectedBkg, animationSpec = tween(500))
+                        }
+                        if (entries==0) UxInTextEntry(true)
+                        entries++
+                    }
+
+                    is HoverInteraction.Exit, is FocusInteraction.Unfocus ->
+                    {
+                        scope.launch {
+                            bkgColor.animateTo(bkgCol ?: BaseBkg, animationSpec = tween(500))
+                        }
+                        entries--
+                        if(entries==0) UxInTextEntry(false)
+                    }
+
+                }
+            }
+        }
+        catch(e: CancellationException)
+        {
+            // LogIt.info("WallyDataEntry cancelled $entries")
+            if (entries>0) UxInTextEntry(false)
+        }
+    }
+
+    OutlinedTextField(
+      value = value.value,
+      onValueChange = onValueChange ?: { },
+      label = { Text(i18n(S.Amount)) },
+      textStyle = ts,
+      interactionSource = ia,
+      modifier = modifier,
+      keyboardOptions = keyboardOptions ?: KeyboardOptions.Default
+    )
+}
+
 
 
 
@@ -1018,12 +1161,12 @@ fun SelectStringDropdownRes(
 )
 {
     Column(modifier = modifier) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
             Text(text = i18n(descriptionTextRes), style = textStyle)
             Spacer(modifier = Modifier.width(8.dp))
             Box {
                 Row(
-                  verticalAlignment = Alignment.CenterVertically
+                  verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                       text = selected,
@@ -1080,15 +1223,10 @@ fun StringInputField(descriptionRes: Int, labelRes: Int, text: String, style: Te
 @Composable
 fun AddressInputField(descriptionRes: Int, labelRes: Int, text: String, style: TextStyle = TextStyle(), modifier: Modifier = Modifier, onChange: (String) -> Unit)
 {
-    val focusManager = LocalFocusManager.current
     Row(
       modifier = Modifier.fillMaxWidth().then(modifier),
       verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(i18n(descriptionRes), style = style, modifier = Modifier.clickable {
-            focusManager.clearFocus()
-        })
-        Spacer(modifier = Modifier.width(4.dp))
         AddressInputTextField(labelRes, text, onChange)
     }
 }
@@ -1198,21 +1336,20 @@ fun StringInputTextField(labelRes: Int, text: String, modifier: Modifier = Modif
             if (entries>0) UxInTextEntry(false)
         }
     }
-    TextField(
+    OutlinedTextField(
       value = text,
       onValueChange = onChange,
       label = { Text(i18n(labelRes)) },
-      singleLine = true,
       interactionSource = ia,
       modifier = Modifier.fillMaxWidth().then(modifier),
       keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-
+      minLines = 2,
       colors = TextFieldDefaults.colors(
         focusedContainerColor = Color.Transparent,
         unfocusedContainerColor = Color.Transparent,
         disabledContainerColor = Color.Transparent,
       ),
-      textStyle = TextStyle(fontSize = 12.sp),
+      textStyle = TextStyle(fontSize = 14.sp),
     )
 }
 
@@ -1254,7 +1391,7 @@ fun AddressInputTextField(labelRes: Int, text: String, onChange: (String) -> Uni
             if (entries>0) UxInTextEntry(false)
         }
     }
-    TextField(
+    OutlinedTextField(
       value = text,
       onValueChange = onChange,
       label = { Text(i18n(labelRes)) },
@@ -1267,7 +1404,7 @@ fun AddressInputTextField(labelRes: Int, text: String, onChange: (String) -> Uni
         unfocusedContainerColor = Color.Transparent,
         disabledContainerColor = Color.Transparent,
       ),
-      textStyle = TextStyle(fontSize = 11.sp),
+      textStyle = TextStyle(fontSize = 12.sp),
     )
 }
 

@@ -70,7 +70,6 @@ class SendViewTest
          * Check is basic UI elements are displayed
          */
         onNodeWithText(i18n(S.fromAccountColon)).isDisplayed()
-        onNodeWithText(i18n(S.toColon)).isDisplayed()
         onNodeWithText(i18n(S.sendToAddressHint)).isDisplayed()
         onNodeWithText(i18n(S.Amount)).isDisplayed()
 

@@ -2,6 +2,7 @@ package info.bitcoinunlimited.www.wally.ui.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,8 +11,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -434,8 +437,13 @@ fun SendView(
     }
 
     // give some side margins if the platform supports it
-    val sendPadding = if (platform().spaceConstrained) 0.dp else 8.dp
-    Column(modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(sendPadding, 0.dp, sendPadding, 0.dp)) {
+    val sendPadding = if (platform().spaceConstrained) 5.dp else 8.dp
+    val localFocusManager = LocalFocusManager.current
+    Column(modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(sendPadding, 0.dp, sendPadding, 0.dp).pointerInput(Unit) {
+        detectTapGestures(onTap = {
+            localFocusManager.clearFocus()
+        })
+    }) {
         // Now show the actual content:
 
         val sendConfirmMsg:String = sendConfirm
@@ -458,17 +466,19 @@ fun SendView(
                 setToAddress(it)
             }
 
+
             // Display note input
             if (displayNoteInput || note.value.utf8Size() > 0)
+            {
+                Spacer(Modifier.height(8.dp))
                 StringInputTextField(S.editSendNoteHint, note.value, Modifier.testTag("noteInputFieldSendView"), { note.value = it })
-
-            Spacer(Modifier.height(4.dp))
+            }
+            Spacer(Modifier.height(8.dp))
             Row(
               modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
-                SectionText(S.Amount)
                 // Send quantity input
-                WallyDecimalEntry(sendQuantity, Modifier.weight(1f)) {
+                WallyOutLineDecimalEntry(sendQuantity, Modifier.weight(1f)) {
                     // TODO need to serialize clearing vs new accounts: Serialize ALL alerts.  clearAlerts()
                     setSendQuantity(it)
                     afterTextChanged()
@@ -485,9 +495,13 @@ fun SendView(
                     }
                 })
             }
-
-            OptionalInfoText(approximatelyText)
-            OptionalInfoText(xchgRateText)
+            Spacer(modifier = Modifier.height(8.dp))
+            Row (horizontalArrangement = Arrangement.Start, modifier = Modifier.padding(0.dp, 5.dp)) {
+                OptionalInfoText(approximatelyText)
+            }
+            Row (horizontalArrangement = Arrangement.Start, modifier = Modifier.padding(0.dp, 5.dp)) {
+                OptionalInfoText(xchgRateText)
+            }
             Spacer(modifier = Modifier.size(16.dp))
 
 
@@ -563,8 +577,9 @@ fun OptionalInfoText(text: String)
     if (text.utf8Size() > 0) Text(
       text = text,
       modifier = Modifier.fillMaxWidth().wrapContentHeight(),
-      textAlign = TextAlign.Center,
-      fontSize = 14.sp,
-      color = Color.Gray
+//      textAlign = TextAlign.Center,
+      fontSize = 16.sp,
+      color = Color.Gray,
+      fontWeight = FontWeight.Bold
     )
 }
