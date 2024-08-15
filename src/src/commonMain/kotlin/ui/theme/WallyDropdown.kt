@@ -108,7 +108,7 @@ fun <T> WallyDropdownMenu(
         else // succinct
         {
             Row {
-                Text(items.getOrNull(selectedIndex)?.toString() ?: label, modifier = Modifier.testTag("WallyDropdownMenuItemSelected"))
+                Text(items.getOrNull(selectedIndex)?.toString() ?: label, modifier = Modifier.testTag("WallyDropdownMenuItemSelected").padding(0.dp, 2.dp, 0.dp, 0.dp))
                 val icon = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Filled.ArrowDropDown
                 Icon(icon, "")
             }
