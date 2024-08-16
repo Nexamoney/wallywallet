@@ -281,6 +281,9 @@ kotlin {
 
                 // Animation library binding
                 implementation("org.jetbrains.skiko:skiko:$skikoVersion")
+
+                // Common ViewModel for all targets
+                implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
             }
         }
         val commonTest by getting {

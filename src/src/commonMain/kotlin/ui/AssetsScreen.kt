@@ -48,7 +48,7 @@ fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, allo
         Row {
             val hasImage = if (asset.iconImage != null) "yes" else "null"
             LogIt.info("Asset ${asset.name} icon Image ${hasImage} icon bytes: ${asset.iconBytes?.size} icon url: ${asset.iconUri}")
-            MpMediaView(asset.iconImage, asset.iconBytes, asset.iconUri?.toString()) { mi, draw ->
+            MpMediaView(asset.iconImage, asset.iconBytes, asset.iconUri?.toString(), hideMusicView = true) { mi, draw ->
                 val m = (if (verbosity > 0) Modifier.background(Color.Transparent).size(64.dp, 64.dp)
                 else  Modifier.background(Color.Transparent).size(26.dp, 26.dp)).align(Alignment.CenterVertically)
                 draw(m)
@@ -145,7 +145,22 @@ fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, allo
 fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
 {
     var asset by remember { mutableStateOf(assetInfo) }
-    var showing by remember { mutableStateOf(S.NftCardFront) }  // Reuse the i18n int to indicate what subscreen is being shown
+    var showing by remember { mutableStateOf(S.NftPublicMedia) }  // Reuse the i18n int to indicate what subscreen is being shown
+
+    LaunchedEffect(assetInfo.groupId){
+        if (asset.iconUri != null)
+            showing = S.NftCardFront
+        else if (asset.publicMediaUri != null)
+            showing = S.NftPublicMedia
+        else if ((asset.nft?.info ?: "") != "")
+            showing = S.NftInfo
+        else if (asset.ownerMediaUri != null)
+            showing = S.NftOwnerMedia
+        else if ((asset.nft?.license ?: "") != "")
+            showing = S.NftLegal
+        else if (asset.iconBackUri != null)
+            showing = S.NftCardBack
+    }
 
     Column(modifier = modifier) {
         val a = asset
