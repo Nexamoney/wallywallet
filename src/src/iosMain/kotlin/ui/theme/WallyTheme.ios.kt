@@ -2,44 +2,39 @@ package info.bitcoinunlimited.www.wally.ui.theme
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.interop.UIKitView
-import androidx.compose.ui.unit.dp
-import info.bitcoinunlimited.www.wally.toNSData
-import io.ktor.http.*
 import kotlinx.cinterop.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import okio.FileSystem
 import platform.AVKit.AVPlayerViewController
-import platform.CoreGraphics.CGRect
 import platform.CoreGraphics.CGRectMake
-import platform.QuartzCore.CATransaction
-import platform.QuartzCore.kCATransactionDisableActions
 import okio.Path.Companion.toPath
 import org.nexa.libnexakotlin.GetLog
 import platform.AVFoundation.*
-import platform.AVKit.AVPlayerViewControllerDelegateProtocol
 import platform.CoreMedia.CMTimeMake
-import platform.CoreMedia.CMTimeRange
 import platform.CoreMedia.CMTimeRangeMake
 import platform.UIKit.*
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.getResourceFile
 import info.bitcoinunlimited.www.wally.ui.isSoftKeyboardShowing
+import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.get
 import kotlinx.cinterop.usePinned
+import kotlinx.coroutines.*
 import okio.Path
 import org.jetbrains.skia.ColorAlphaType
 import org.jetbrains.skia.ColorType
@@ -60,8 +55,6 @@ import platform.CoreGraphics.CGImageGetHeight
 import platform.CoreGraphics.CGImageGetWidth
 import platform.Foundation.*
 import platform.UIKit.UIImage
-import platform.UIKit.UIImagePNGRepresentation
-import platform.posix.memcpy
 
 private val LogIt = GetLog("wally.theme.ios")
 
@@ -216,7 +209,7 @@ fun resolveLocalFilename(filename: String): Path?
 }
 
 @OptIn(ExperimentalForeignApi::class)
-@Composable actual fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri: String?, autoplay: Boolean, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit):Boolean
+@Composable actual fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri: String?, autoplay: Boolean, hideMusicView: Boolean, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit):Boolean
 {
     // LogIt.info( "MpMediaView(${mediaData?.size} bytes, $mediaUri)")
     val mu = mediaUri
@@ -312,6 +305,40 @@ fun resolveLocalFilename(filename: String): Path?
             return true
         }
         else return false
+    }
+    else if (name.endsWith(".alac", true) ||
+      name.endsWith(".flac", true) ||
+      name.endsWith(".wma", true) ||
+      name.endsWith(".ogg", true))
+    {
+        wrapper(MediaInfo(200, 200, true, true)){
+            ResImageView("icons/media_not_supported.xml", modifier = Modifier.background(BaseBkg), null)
+        }
+    }
+    // Supported audio file formats for iOS:
+    // https://developer.apple.com/library/archive/documentation/MusicAudio/Conceptual/CoreAudioOverview/SupportedAudioFormatsMacOSX/SupportedAudioFormatsMacOSX.html
+    else if (name.endsWith(".aac", true) ||
+      name.endsWith(".adts", true) ||
+      name.endsWith(".ac3", true) ||
+      name.endsWith(".aif", true) ||
+      name.endsWith(".aiff", true) ||
+      name.endsWith(".aifc", true) ||
+      name.endsWith(".caf", true) ||
+      name.endsWith(".mp4", true) ||
+      name.endsWith(".m4a", true) ||
+      name.endsWith(".snd", true) ||
+      name.endsWith(".au", true) ||
+      name.endsWith(".sd2", true) ||
+      name.endsWith(".mp3", true) ||
+      name.endsWith(".wav", true))
+    {
+        val tmp = resolveLocalFilename(mu)
+        if (tmp!=null && !hideMusicView)
+        {
+            val furl = "file://" + tmp.toString()
+            MusicView(furl, wrapper)
+        }
+        return true
     }
     return false
 }
