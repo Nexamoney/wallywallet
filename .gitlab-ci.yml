@@ -194,6 +194,7 @@ androidEmulatorTest:
   stage: test
   tags:
     - m1-baremetal # default docker image is not working
+  resource_group: pixel5_mac_emulators
   script:
     - ./gradlew pixel5Check
     - ./gradlew pixel5DebugAndroidTest
