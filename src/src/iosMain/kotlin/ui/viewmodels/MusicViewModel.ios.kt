@@ -1,6 +1,19 @@
 package info.bitcoinunlimited.www.wally.ui.viewmodels
 
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import info.bitcoinunlimited.www.wally.ui.theme.MediaInfo
+import info.bitcoinunlimited.www.wally.ui.theme.WallyBoringIconButton
+import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import kotlinx.cinterop.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -10,8 +23,14 @@ import platform.Foundation.*
 
 private val LogIt = GetLog("BU.wally.AudiManagerViewModel.ios")
 
+data class MusicViewState(
+  val isPlaying: Boolean = false,
+  val currentTime: Int? = null,
+  val duration: Int? = null
+)
+
 @OptIn(ExperimentalForeignApi::class)
-actual class MusicViewModel actual constructor(musicViewState: MusicViewState, val filePath: String): ViewModel(), MusicViewModelI {
+class MusicViewModel (musicViewState: MusicViewState, val filePath: String): ViewModel() {
     private var audioPlayer: AVAudioPlayer? = null
     private var timer: NSTimer? = null
 
@@ -21,7 +40,7 @@ actual class MusicViewModel actual constructor(musicViewState: MusicViewState, v
         Use MusicViewModel to encapsulate setters to the _state variable
      */
     private val _state: MutableStateFlow<MusicViewState> = MutableStateFlow(musicViewState)
-    override val state = _state.asStateFlow()
+    val state = _state.asStateFlow()
 
     init {
         initPlayer()
@@ -59,7 +78,7 @@ actual class MusicViewModel actual constructor(musicViewState: MusicViewState, v
             }
     }
 
-    override fun play(filePath: String) {
+    fun play(filePath: String) {
         val filePathUrl = NSURL(string = filePath)
         try {
             audioPlayer = throwError { errorPointer: CPointer<ObjCObjectVar<NSError?>> ->
@@ -79,13 +98,13 @@ actual class MusicViewModel actual constructor(musicViewState: MusicViewState, v
         }
     }
 
-    override fun pause()
+    fun pause()
     {
         audioPlayer?.pause()
         _state.value = _state.value.copy(isPlaying = false)
     }
 
-    override fun stop()
+    fun stop()
     {
         audioPlayer?.stop()
         audioPlayer?.currentTime = 0.0
@@ -118,6 +137,55 @@ actual class MusicViewModel actual constructor(musicViewState: MusicViewState, v
                 throw NSErrorException(error)
             } else {
                 return result
+            }
+        }
+    }
+}
+
+
+@Composable
+fun MusicView(filePath: String, wrapper: @Composable (MediaInfo, @Composable (Modifier?) -> Unit) -> Unit)
+{
+    val musicViewModel: MusicViewModel = viewModel { MusicViewModel(MusicViewState(), filePath) }
+    val state = musicViewModel.state.collectAsState()
+    val isPlaying = state.value.isPlaying
+    val trackPosition = state.value.currentTime ?: "?"
+    val duration = state.value.duration ?: "?"
+
+    wrapper(MediaInfo(200, 200, false, true))
+    {
+        Column(
+          modifier = Modifier.padding(8.dp).fillMaxSize(),
+          horizontalAlignment = Alignment.CenterHorizontally,
+          verticalArrangement = Arrangement.Center
+        ) {
+            ResImageView("icons/note.png", modifier = Modifier.weight(4f).fillMaxSize())
+
+            // Track Position
+            Text(
+              text = "$trackPosition / $duration",
+              fontSize = 16.sp,
+              modifier = Modifier.weight(1f).fillMaxSize(),
+              textAlign = TextAlign.Center
+            )
+
+            // Controls
+            Row(
+              modifier = Modifier.weight(2f).fillMaxSize(),
+              horizontalArrangement = Arrangement.spacedBy(8.dp),
+              verticalAlignment = Alignment.CenterVertically
+            ) {
+                WallyBoringIconButton("icons/music.stop.png", Modifier.weight(1f).padding(8.dp)) {
+                    musicViewModel.stop()
+                }
+                if(isPlaying)
+                    WallyBoringIconButton("icons/music.pause.png", Modifier.weight(1f).padding(8.dp)) {
+                        musicViewModel.pause()
+                    }
+                else
+                    WallyBoringIconButton("icons/music.play.png", Modifier.weight(1f).padding(8.dp)) {
+                        musicViewModel.play(filePath)
+                    }
             }
         }
     }
