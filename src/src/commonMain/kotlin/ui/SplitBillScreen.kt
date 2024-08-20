@@ -4,15 +4,20 @@ import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.*
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.material3.TextFieldDefaults.textFieldColors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -157,18 +162,45 @@ fun SplitBillScreen(nav: ScreenNav, acct: Account? = wallyApp?.focusedAccount)
         }
         else qrString = null
     }
-
+    val localFocusManager = LocalFocusManager.current
+    val sendPadding = if (platform().spaceConstrained) 5.dp else 8.dp
     Column(
-      modifier = Modifier.padding(16.dp).fillMaxSize()
+      modifier = Modifier.padding(sendPadding).conditional(platform().spaceConstrained) {
+          fillMaxSize()
+      }.pointerInput(Unit) {
+          detectTapGestures(onTap = {
+              localFocusManager.clearFocus()
+          })
+      }
     ) {
-        Text(i18n(S.SplitBillDescription))
+        Text(i18n(S.SplitBillDescription), modifier = Modifier.padding(10.dp))
         Spacer(Modifier.height(10.dp))
         // Amount row:
         Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-            SectionText(S.Amount)
-            WallyDecimalEntry(
+            WallyOutLineDecimalEntry(
               amountString,
-              modifier = Modifier.weight(1.0f, false).testTag("SplitBillScreenAmountInput")
+              modifier = Modifier.weight(1.0f, false).testTag("SplitBillScreenAmountInput").fillMaxWidth(),
+              suffix = { WallyDropdownMenu(
+                modifier = Modifier.weight(0.75f, false),
+                label = "",
+                items = listOf(fiatCurrencyCode, cryptoCurrencyCode),
+                selectedIndex = usingCurrencySelectedIndex,
+                style = WallyDropdownStyle.Succinct,
+                onItemSelected = { index, _ ->
+                    usingCurrencySelectedIndex = index
+                    if (index == 0)
+                    {
+                        usingFiatCurrency = true
+                        usingCurrency = fiatCurrencyCode
+                    }
+                    else
+                    {
+                        usingFiatCurrency = false
+                        usingCurrency = cryptoCurrencyCode
+                    }
+                    updateNumbers()
+                },
+              ) }
             ) {
                 amountString.value = it
                 try
@@ -183,50 +215,24 @@ fun SplitBillScreen(nav: ScreenNav, acct: Account? = wallyApp?.focusedAccount)
                     ""
                 }
             }
-            Spacer(Modifier.width(rowSpacer/5))
-            WallyDropdownMenu(
-              modifier = Modifier.weight(0.75f, false),
-              label = "",
-              items = listOf(fiatCurrencyCode, cryptoCurrencyCode),
-              selectedIndex = usingCurrencySelectedIndex,
-              style = WallyDropdownStyle.Field,
-              onItemSelected = { index, _ ->
-                  usingCurrencySelectedIndex = index
-                  if (index == 0)
-                  {
-                      usingFiatCurrency = true
-                      usingCurrency = fiatCurrencyCode
-                  }
-                  else
-                  {
-                      usingFiatCurrency = false
-                      usingCurrency = cryptoCurrencyCode
-                  }
-                  updateNumbers()
-                               },
-            )
         }
         Spacer(Modifier.height(5.dp))
 
         // TIP line
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            SectionText(S.Tip)
-            Spacer(Modifier.width(rowSpacer))
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
             WallyDropdownMenu(
-              modifier = Modifier.width(IntrinsicSize.Min).weight(0.75f),
-              label = "",
+              modifier = Modifier.weight(0.75f).fillMaxWidth(),
+              label = i18n(S.Tip),
               items = tipAmounts.map { if (it == -1) "--" else it.toString() + "%"},
               selectedIndex = tipSelectedIndex,
-              style = WallyDropdownStyle.Field,
+              style = WallyDropdownStyle.Outlined,
               onItemSelected = { index, _ ->
                   tipSelectedIndex = index
                   updateNumbers()
               },
             )
-            Spacer(Modifier.width(rowSpacer))
-            Text(i18n(S.asciiArrow))
-            Spacer(Modifier.width(rowSpacer))
-            WallyDecimalEntry(tipAmountString,
+            Icon(Icons.Default.ArrowForward, contentDescription = null, modifier = Modifier.padding(20.dp, 5.dp, 20.dp, 0.dp))
+            WallyOutLineDecimalEntry(tipAmountString,
               onValueChange = {
                   try
                   {
@@ -244,7 +250,7 @@ fun SplitBillScreen(nav: ScreenNav, acct: Account? = wallyApp?.focusedAccount)
                       zero
                   }
               },
-              modifier = Modifier.testTag("SplitBillScreenTipInput").width(IntrinsicSize.Min).weight(1f))
+              modifier = Modifier.testTag("SplitBillScreenTipInput").weight(1f))
         }
         Spacer(Modifier.height(10.dp))
 
@@ -259,15 +265,14 @@ fun SplitBillScreen(nav: ScreenNav, acct: Account? = wallyApp?.focusedAccount)
         }
         // space commented out because text entry is so big
         // Spacer(Modifier.height(5.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            SectionText(S.Ways)
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
             WallyDropdownMenu(
-              modifier = Modifier.width(IntrinsicSize.Min),
+              modifier = Modifier.fillMaxWidth(),
               modalModifier = Modifier.width(IntrinsicSize.Min),
-              label = "",
+              label = i18n(S.Ways),
               items = List(10, { it+1 }),
               selectedIndex = waysSelectedIndex,
-              style = WallyDropdownStyle.Field,
+              style = WallyDropdownStyle.Outlined,
               onItemSelected = { index, _ ->
                   waysSelectedIndex = index
                   updateNumbers()
@@ -293,5 +298,12 @@ fun SplitBillScreen(nav: ScreenNav, acct: Account? = wallyApp?.focusedAccount)
                 QrCode(s, Modifier.background(Color.White).width(300.dp).height(300.dp).align(Alignment.Center))
             }
         }
+    }
+}
+fun Modifier.conditional(condition : Boolean, modifier : Modifier.() -> Modifier) : Modifier {
+    return if (condition) {
+        then(modifier(Modifier))
+    } else {
+        this
     }
 }
