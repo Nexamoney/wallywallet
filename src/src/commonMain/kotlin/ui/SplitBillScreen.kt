@@ -313,8 +313,8 @@ fun SplitBillScreen(nav: ScreenNav, acct: Account? = wallyApp?.focusedAccount)
         val s = qrString
         if (s != null)
         {
-            Box(Modifier.padding(20.dp).fillMaxWidth().fillMaxHeight().align(Alignment.CenterHorizontally)) {
-                QrCode(s, Modifier.background(Color.White).width(300.dp).height(300.dp).align(Alignment.Center))
+            Box(Modifier.fillMaxSize().align(Alignment.CenterHorizontally)) {
+                QrCode(s, Modifier.background(Color.White).width(300.dp).height(300.dp).align(Alignment.Center).border(BorderStroke(2.dp, WallyBorder)))
             }
         }
     }
