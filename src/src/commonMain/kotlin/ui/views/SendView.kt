@@ -478,7 +478,7 @@ fun SendView(
               modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
                 // Send quantity input
-                WallyOutLineDecimalEntry(sendQuantity, Modifier.weight(1f)) {
+                WallyOutLineDecimalEntry(sendQuantity, Modifier.weight(1f), label = i18n(S.Amount)) {
                     // TODO need to serialize clearing vs new accounts: Serialize ALL alerts.  clearAlerts()
                     setSendQuantity(it)
                     afterTextChanged()

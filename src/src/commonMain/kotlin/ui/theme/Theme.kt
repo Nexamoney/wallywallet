@@ -735,7 +735,7 @@ fun WallyDecimalEntry(value: MutableState<String>, modifier: Modifier = Modifier
 
 /** Standard Wally text entry field.*/
 @Composable
-fun WallyOutLineDecimalEntry(value: MutableState<String>, modifier: Modifier = Modifier, textStyle: TextStyle? = null, bkgCol: Color? = null, suffix: @Composable() (() -> Unit)? = null, onValueChange: ((String) -> String) = { it })
+fun WallyOutLineDecimalEntry(value: MutableState<String>, modifier: Modifier = Modifier, textStyle: TextStyle? = null, bkgCol: Color? = null, suffix: @Composable() (() -> Unit)? = null, label: String, onValueChange: ((String) -> String) = { it })
 {
     val tfv = remember { mutableStateOf(TextFieldValue(value.value)) }
     val focusManager = LocalFocusManager.current
@@ -813,7 +813,7 @@ fun WallyOutLineDecimalEntry(value: MutableState<String>, modifier: Modifier = M
               val tmp = onValueChange.invoke(it.text)
               tfv.value = TextFieldValue(tmp, selection = it.selection)
           }
-      }, suffix = suffix
+      }, suffix = suffix, label = label
     )
 }
 
@@ -995,7 +995,7 @@ fun WallyDataEntry(value: MutableState<TextFieldValue>, modifier: Modifier = Mod
 
 /** Standard Wally data entry field. */
 @Composable
-fun WallyOutlineDataEntry(value: MutableState<TextFieldValue>, modifier: Modifier = Modifier, textStyle: TextStyle? = null, keyboardOptions: KeyboardOptions?=null, bkgCol: Color? = null, onValueChange: ((TextFieldValue) -> Unit)? = null, suffix: @Composable() (() -> Unit)?)
+fun WallyOutlineDataEntry(value: MutableState<TextFieldValue>, modifier: Modifier = Modifier, textStyle: TextStyle? = null, keyboardOptions: KeyboardOptions?=null, bkgCol: Color? = null, onValueChange: ((TextFieldValue) -> Unit)? = null, suffix: @Composable() (() -> Unit)?, label: String)
 {
     val adjustedFontSize = FontScale(1.25)
     val ts2 = LocalTextStyle.current.copy(fontSize = adjustedFontSize)
@@ -1044,7 +1044,7 @@ fun WallyOutlineDataEntry(value: MutableState<TextFieldValue>, modifier: Modifie
     OutlinedTextField(
       value = value.value,
       onValueChange = onValueChange ?: { },
-      label = { Text(i18n(S.Amount)) },
+      label = { Text(label) },
       textStyle = ts,
       interactionSource = ia,
       modifier = modifier,

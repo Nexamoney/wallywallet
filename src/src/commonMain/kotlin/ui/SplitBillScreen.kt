@@ -1,5 +1,7 @@
 package info.bitcoinunlimited.www.wally.ui
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.*
 
@@ -52,6 +54,7 @@ fun SplitBillScreen(nav: ScreenNav, acct: Account? = wallyApp?.focusedAccount)
     var usingCurrencySelectedIndex by remember { mutableStateOf(0) }
 
     var total by remember { mutableStateOf(CurrencyDecimal(0)) }
+    var totalAmountString = remember { mutableStateOf<String>("") }
 
     var amount by remember { mutableStateOf(CurrencyDecimal(0)) }
     var amountString = remember { mutableStateOf(FiatFormat.format(amount)) }
@@ -131,6 +134,8 @@ fun SplitBillScreen(nav: ScreenNav, acct: Account? = wallyApp?.focusedAccount)
             tipAmountString.value = FiatFormat.format(tipAmount)
         }
         total = amount + tipAmount
+        totalAmountString.value = total.toString()
+        println("Total Amount String: "+totalAmountString.value)
 
         finalSplit = CurrencyDecimal(total)/CurrencyDecimal(waysSelectedIndex+1)
 
@@ -179,6 +184,7 @@ fun SplitBillScreen(nav: ScreenNav, acct: Account? = wallyApp?.focusedAccount)
         Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
             WallyOutLineDecimalEntry(
               amountString,
+              label = "Bill Amount",
               modifier = Modifier.weight(1.0f, false).testTag("SplitBillScreenAmountInput").fillMaxWidth(),
               suffix = { WallyDropdownMenu(
                 modifier = Modifier.weight(0.75f, false),
@@ -217,12 +223,11 @@ fun SplitBillScreen(nav: ScreenNav, acct: Account? = wallyApp?.focusedAccount)
             }
         }
         Spacer(Modifier.height(5.dp))
-
         // TIP line
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
             WallyDropdownMenu(
               modifier = Modifier.weight(0.75f).fillMaxWidth(),
-              label = i18n(S.Tip),
+              label = "Tip Percentage",
               items = tipAmounts.map { if (it == -1) "--" else it.toString() + "%"},
               selectedIndex = tipSelectedIndex,
               style = WallyDropdownStyle.Outlined,
@@ -231,8 +236,16 @@ fun SplitBillScreen(nav: ScreenNav, acct: Account? = wallyApp?.focusedAccount)
                   updateNumbers()
               },
             )
-            Icon(Icons.Default.ArrowForward, contentDescription = null, modifier = Modifier.padding(20.dp, 5.dp, 20.dp, 0.dp))
+            Text("OR",
+              style = LocalTextStyle.current.copy(
+                  color = Color.Black,
+                  textAlign = TextAlign.Center,
+                  fontWeight = FontWeight.Bold,
+                  fontSize = FontScale(1.25)
+              ),
+              modifier = Modifier.padding(20.dp, 5.dp, 20.dp, 0.dp))
             WallyOutLineDecimalEntry(tipAmountString,
+              label = "Tip Amount",
               onValueChange = {
                   try
                   {
@@ -250,35 +263,41 @@ fun SplitBillScreen(nav: ScreenNav, acct: Account? = wallyApp?.focusedAccount)
                       zero
                   }
               },
-              modifier = Modifier.testTag("SplitBillScreenTipInput").weight(1f))
+              modifier = Modifier.testTag("SplitBillScreenTipInput").weight(1f)
+            )
         }
         Spacer(Modifier.height(10.dp))
 
         // Total line: "Total: <amount> NEX"
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            SectionText(S.Total)
-            Spacer(Modifier.width(rowSpacer))
-            if (usingFiatCurrency) SectionText(FiatFormat.format(total))
-            else SectionText(NexaFormat.format(total))
-            Spacer(Modifier.width(rowSpacer))
-            SectionText(usingCurrency)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+            Column(modifier = Modifier.weight(0.75F)) {
+                OutlinedTextField(
+                  value = if (usingFiatCurrency) FiatFormat.format(total) else NexaFormat.format(total),
+                  {},
+                  label = {
+                      Text("Total Amount to split")
+                  },
+                  suffix = {Text(usingCurrency)}
+                )
+            }
+            Spacer(Modifier.width(10.dp))
+
+            Column {
+                WallyDropdownMenu(
+                  modifier = Modifier.width(100.dp),
+                  modalModifier = Modifier.width(IntrinsicSize.Min),
+                  label = i18n(S.Ways),
+                  items = List(10, { it+1 }),
+                  selectedIndex = waysSelectedIndex,
+                  style = WallyDropdownStyle.Outlined,
+                  onItemSelected = { index, _ ->
+                      waysSelectedIndex = index
+                      updateNumbers()
+                  },
+                )
+            }
         }
         // space commented out because text entry is so big
-        // Spacer(Modifier.height(5.dp))
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            WallyDropdownMenu(
-              modifier = Modifier.fillMaxWidth(),
-              modalModifier = Modifier.width(IntrinsicSize.Min),
-              label = i18n(S.Ways),
-              items = List(10, { it+1 }),
-              selectedIndex = waysSelectedIndex,
-              style = WallyDropdownStyle.Outlined,
-              onItemSelected = { index, _ ->
-                  waysSelectedIndex = index
-                  updateNumbers()
-              },
-            )
-        }
         Spacer(Modifier.height(30.dp))
 
 
