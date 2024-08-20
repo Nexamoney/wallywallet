@@ -298,21 +298,28 @@ fun SplitBillScreen(nav: ScreenNav, acct: Account? = wallyApp?.focusedAccount)
             }
         }
         // space commented out because text entry is so big
-        Spacer(Modifier.height(30.dp))
-
-
-        Text(finalSplitString,
-          modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally), //.background(Color.Magenta),
-          style = LocalTextStyle.current.copy(
-            color = Color.Black,
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold,
-            fontSize = FontScale(1.25)
-          ))
+        Spacer(Modifier.height(25.dp))
 
         val s = qrString
         if (s != null)
         {
+            Text("QR code for",
+              modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally), //.background(Color.Magenta),
+              style = LocalTextStyle.current.copy(
+                color = Color.Black,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold
+              )
+            )
+            Text(finalSplitString,
+              modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally), //.background(Color.Magenta),
+              style = LocalTextStyle.current.copy(
+                color = Color.Black,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                fontSize = FontScale(1.25)
+              )
+            )
             Box(Modifier.fillMaxSize().align(Alignment.CenterHorizontally)) {
                 QrCode(s, Modifier.background(Color.White).width(300.dp).height(300.dp).align(Alignment.Center).border(BorderStroke(2.dp, WallyBorder)))
             }
