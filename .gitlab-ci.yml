@@ -201,6 +201,8 @@ androidEmulatorTest:
   artifacts:
     reports:
       junit: src/build/test-results/connectedAndroidTest/TEST-*.xml
+    paths:
+      - src/build/reports/androidTests/managedDevice/debug/pixel5/**/**
 
 # Needs Android device in CI to run
 #androidDeviceTest:
