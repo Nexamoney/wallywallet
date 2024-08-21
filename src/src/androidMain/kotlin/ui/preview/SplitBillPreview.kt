@@ -17,6 +17,6 @@ fun SplitBillPreview()
 {
     val fakes = setUpPreview(accounts = 0)
     Box(modifier = WallyPageBase) {
-        SplitBillScreen(fakes.nav)
+        SplitBillScreen()
     }
 }

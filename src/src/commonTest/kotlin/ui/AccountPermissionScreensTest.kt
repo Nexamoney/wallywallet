@@ -2,10 +2,7 @@ package ui
 
 import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.AssetInfoPermScreen
-import info.bitcoinunlimited.www.wally.ui.IdentityPermScreen
-import info.bitcoinunlimited.www.wally.ui.ScreenNav
-import info.bitcoinunlimited.www.wally.ui.SendToPermScreen
+import info.bitcoinunlimited.www.wally.ui.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.runBlocking
@@ -81,7 +78,7 @@ class AccountPermissionScreensTest
         }
 
         setContent {
-            IdentityPermScreen(account, null, nav)
+            IdentityPermScreen(account, IdentitySession(null), nav)
         }
     }
 }

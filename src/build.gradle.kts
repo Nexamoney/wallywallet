@@ -11,7 +11,7 @@ import java.net.URL
 // Dependency versions
 val mpThreadsVersion = "0.2.9"
 val nexaRpcVersion = "1.2.2"
-val libNexaKotlinVersion = "0.2.3"
+val libNexaKotlinVersion = "0.2.6"
 val serializationVersion = "1.7.1"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.9.0-RC"     // https://github.com/Kotlin/kotlinx.coroutines
 val ktorVersion = "2.3.12"           // https://github.com/ktorio/ktor
@@ -269,7 +269,7 @@ kotlin {
 
                 // IO
                 implementation("com.squareup.okio:okio:3.9.0")
-                implementation("org.jetbrains.kotlinx:atomicfu:0.23.2")
+                implementation("org.jetbrains.kotlinx:atomicfu:0.25.0")
 
                 // nexa
                 implementation("org.nexa:mpthreads:$mpThreadsVersion")

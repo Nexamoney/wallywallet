@@ -235,10 +235,12 @@ fun TricklePayScreen(act: Account, startSess: TricklePaySession?, nav: ScreenNav
                             wallyApp!!.tpDomains.insert(pdc)
                             wallyApp!!.tpDomains.save()
                             sess = null
+                            s.whenDone?.invoke(s.proposalUrl.toString(), "ok", true)
                         })
                         WallyBoringLargeTextButton(S.remove, onClick = {
                             s.domain?.let { wallyApp!!.tpDomains.remove(it) }
                             sess = null
+                            s.whenDone?.invoke(s.proposalUrl.toString(), "", false)
                         })
                     }
                     else
@@ -247,10 +249,12 @@ fun TricklePayScreen(act: Account, startSess: TricklePaySession?, nav: ScreenNav
                             wallyApp!!.tpDomains.insert(pdc)
                             wallyApp!!.tpDomains.save()
                             displaySuccess(S.TpRegAccepted)
+                            s.whenDone?.invoke(s.proposalUrl.toString(), "ok", true)
                             nav.back()
                         })
                         WallyBoringLargeTextButton(S.reject, onClick = {
                             displayNotice(S.TpRegDenied)
+                            s.whenDone?.invoke(s.proposalUrl.toString(), "", false)
                             nav.back()
                         })
                     }
