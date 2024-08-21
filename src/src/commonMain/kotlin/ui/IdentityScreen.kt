@@ -83,12 +83,13 @@ fun IdentityDomainView(from: IdentityDomain?, to: IdentityDomain, newDomain: Boo
 }
 
 
+// The identity screen can either be navigated to (in which case sess is null) or be part of an identity request.
 @Composable
-fun IdentityScreen(account: Account, urip: Uri?, nav: ScreenNav)
+fun IdentityScreen(account: Account, sess: IdentitySession?, nav: ScreenNav)
 {
     var newDomain = false
 
-    var uri by remember { mutableStateOf<Uri?>(urip) }
+    var uri by remember { mutableStateOf<Uri?>(sess?.uri) }
     var domain by remember { mutableStateOf<IdentityDomain?>(null) }
 
     var origDomain by remember { mutableStateOf<IdentityDomain?>(null) }
@@ -98,6 +99,7 @@ fun IdentityScreen(account: Account, urip: Uri?, nav: ScreenNav)
     if (host != null)
     {
         origDomain = account.wallet.lookupIdentityDomain(host)
+        origDomain?.let { sess?.idData = it }
         val operation = u.getQueryParameter("op")
         if (operation == null)
         {
@@ -125,6 +127,7 @@ fun IdentityScreen(account: Account, urip: Uri?, nav: ScreenNav)
                 newDomain = true
             }
             domain!!.setReqs(u.queryMap().toMutableMap())
+            sess?.idData = domain
         }
     }
 
@@ -241,8 +244,8 @@ fun IdentityScreen(account: Account, urip: Uri?, nav: ScreenNav)
                         val saveDomain = d.clone()
                         wallet.upsertIdentityDomain(saveDomain)
                         wallet.save(true)
-                        val u1 = uri
-                        if (u1 != null) onProvideIdentity(u1, d, account)
+                        sess?.idData = d
+                        if (sess?.uri != null) onProvideIdentity(sess, account)
                         displaySuccess(S.TpRegAccepted)
                         nav.back()
                     })

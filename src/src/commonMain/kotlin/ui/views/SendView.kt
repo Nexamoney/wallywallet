@@ -1,7 +1,5 @@
 package info.bitcoinunlimited.www.wally.ui.views
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -15,7 +13,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
@@ -190,15 +187,15 @@ fun SendView(
                                 if (assetPerAccount != null)
                                 {
                                     val eAmt = assetPerAccount.editableAmount
-                                    val qty = if (eAmt == null) assetPerAccount.groupInfo.tokenAmt  // If they don't change the amount, send all of them (see default in AssetScreen.kt)
+                                    val tokqty = if (eAmt == null) assetPerAccount.groupInfo.tokenAmt  // If they don't change the amount, send all of them (see default in AssetScreen.kt)
                                     else assetPerAccount.tokenDecimalToFinestUnit(eAmt)
 
-                                    if (qty != null && qty > 0)
+                                    if (tokqty != null && tokqty > 0)
                                     {
                                         val aout = txOutputFor(cs)
                                         aout.amount = dust(cs)
                                         assetDustOut += aout.amount
-                                        aout.script = sendAddress.groupedLockingScript(groupId, qty)
+                                        aout.script = sendAddress.groupedLockingScript(groupId, tokqty)
                                         tx.add(aout)
                                     }
                                 }

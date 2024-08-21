@@ -65,7 +65,7 @@ actual fun NativeTitle(title: String)
     val ca = currentActivity
     if (ca != null)
     {
-        ca.setTitle(title)
+        ca.laterUI { ca.setTitle(title) }
     }
 }
 

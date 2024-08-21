@@ -28,12 +28,16 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.work.*
+import com.eygraber.uri.Uri
 import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.theme.BaseBkg
 import info.bitcoinunlimited.www.wally.ui.theme.NativeTitle
+import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.rem
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.toJavaDuration
+
+private val LogIt = GetLog("BU.wally.ComposeActivity")
 
 actual fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
 {
@@ -44,8 +48,6 @@ actual fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
 
 class ComposeActivity: CommonActivity()
 {
-    var nav = ScreenNav()
-
     // var dynOrStaticOrientation: Int = -1  // Used to remember the screen orientation when temporarily disabling int
     // var scanDoneFn: ((String)->Unit)? = null
     var imageParsedFn: ((String?)->Unit)? = null
@@ -248,9 +250,65 @@ class ComposeActivity: CommonActivity()
         WorkManager.getInstance(this).enqueueUniqueWork("WallySyncOnce", ExistingWorkPolicy.REPLACE, bkgSyncOnce)
 
         var actionb:Int? = null
+        val intentUri = com.eygraber.uri.Uri.parseOrNull(intent.toUri(0))
+        LogIt.info("Launched by intent URI: ${intent.toUri(0)}  intent: $intent")
         setContent {
-            val currentRootScreen = remember { mutableStateOf(ScreenId.Splash) }
-            nav.reset(currentRootScreen)
+            val scheme = intentUri?.scheme?.lowercase()
+            // If there's an incoming intent, go handle it don't pop the app up normally
+            if ((scheme == TDPP_URI_SCHEME) || (scheme == IDENTITY_URI_SCHEME))
+            {
+                // There is no reason for a local app to ask for the clipboard other then to hide its own clipboard use
+                if (intentUri.getQueryParameter("info")?.lowercase() == "clipboard")
+                {
+                    setResult(Activity.RESULT_CANCELED, intent)
+                    finish()
+                }
+                else
+                {
+                    // Push in the end
+                    nav.reset(ScreenId.None)
+                    // And make the back button finish the activity
+                    nav.onDepart {
+                        if (it == ScreenNav.Direction.LEAVING)
+                        {
+                            setResult(Activity.RESULT_CANCELED, intent)
+                            finish()
+                        }
+                    }
+                    // Now handle the request (which should set the screen to something)
+                    wallyApp!!.handlePaste(intent.toUri(0)) { uriBack: String, data: String, worked: Boolean? ->
+                        val result = Intent()
+                        result.putExtra("body", data)  // This data would be in the http POST body which is why its called body
+                        result.data = android.net.Uri.parse(uriBack)
+                        nav.reset(ScreenId.Home)  // get rid of our cancel onDepart
+                        if (worked == false) setResult(Activity.RESULT_CANCELED, result) else setResult(Activity.RESULT_OK, result)
+                        finish()
+                    }
+                }
+            }
+            // If a monetary transfer was requested
+            if ((scheme == "nexa") || (scheme == "nexatest") || (scheme == "nexareg"))
+            {
+                nav.reset(ScreenId.None)
+                // And make the back button finish the activity
+                nav.onDepart {
+                    if (it == ScreenNav.Direction.LEAVING)
+                    {
+                        setResult(Activity.RESULT_CANCELED, Intent())
+                        finish()
+                    }
+                }
+                wallyApp!!.handlePaste(intent.toUri(0)) { uriBack:String, data:String, worked:Boolean? ->
+                    // TODO what to reply with with just a successful money send
+                    val result = Intent()
+                    result.putExtra("body", data)  // This data would be in the http POST body which is why its called body
+                    result.data = android.net.Uri.parse(uriBack)
+                    nav.reset(ScreenId.Home)  // get rid of our cancel onDepart
+                    if (worked == false) setResult(Activity.RESULT_CANCELED, result) else setResult(Activity.RESULT_OK, result)
+                    finish()
+                }
+            }
+
             setTitle(nav.title())
             // Note that modern versions of android place the app view behind the system "insets". Old ones do not.
             // DONT MESS WITH THIS CODE unless you are ready to test multiple android versions!
@@ -261,8 +319,9 @@ class ComposeActivity: CommonActivity()
                 actionb = if (android.os.Build.VERSION.SDK_INT < 35) 0 else sysInsets.top
             }
             val systemPadding = Modifier.padding(0.dp, pxToDp(actionb ?: 0), 0.dp, 0.dp) // pxToDp(sysInsets.bottom))
-            NavigationRoot(nav, systemPadding)
+            NavigationRoot(systemPadding)
         }
+
     }
 
     // If the title bar is touched, show all the errors and warnings the app has generated

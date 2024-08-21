@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUnsignedTypes::class)
+
 package info.bitcoinunlimited.www.wally.ui.views
 
 import androidx.compose.foundation.*
