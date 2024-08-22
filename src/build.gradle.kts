@@ -560,7 +560,7 @@ val gitCommitHash: String by lazy {
       .trim()
 }
 
-val versionNumber = "3.2.2"
+val versionNumber = "3.3.0"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 
 version = "$versionNumber-$gitCommitHash"
