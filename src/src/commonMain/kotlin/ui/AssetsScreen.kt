@@ -147,7 +147,7 @@ fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
     var asset by remember { mutableStateOf(assetInfo) }
     var showing by remember { mutableStateOf(S.NftPublicMedia) }  // Reuse the i18n int to indicate what subscreen is being shown
 
-    LaunchedEffect(assetInfo.groupId){
+    LaunchedEffect(assetInfo.groupId) {
         if (asset.iconUri != null)
             showing = S.NftCardFront
         else if (asset.publicMediaUri != null)
@@ -342,8 +342,10 @@ fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
 private val assetListState: MutableMap<String, MutableStateFlow<LazyListState?> > = mutableMapOf() //MutableStateFlow(null)
 
 @Composable
-fun AssetScreen(account: Account, nav: ScreenNav)
+fun AssetScreen(account: Account)
 {
+    val scrn = nav.currentScreen.collectAsState()
+    val subScreen = nav.currentSubState.collectAsState()
     var assetFocus by remember { mutableStateOf<AssetPerAccount?>(null) }
     var assetFocusIndex by remember { mutableStateOf<Int>(0) }
     var assetList = remember { mutableStateListOf<Pair<AssetLoadState,AssetPerAccount>>() }
@@ -400,7 +402,7 @@ fun AssetScreen(account: Account, nav: ScreenNav)
         }
     }
 
-    if (nav.currentSubState.value == null)
+    if (subScreen.value == null)
     {
         if (assetFocus!=null) clearAlerts()
         assetFocus = null

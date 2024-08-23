@@ -8,6 +8,11 @@ import java.io.FileInputStream
 import java.time.Instant
 import java.net.URL
 
+// Wally Wallet version
+val versionNumber = "3.3.1"
+val androidVersionCode = versionNumber.replace(".", "").toInt()
+
+
 // Dependency versions
 val mpThreadsVersion = "0.2.9"
 val nexaRpcVersion = "1.2.2"
@@ -21,7 +26,7 @@ val androidTestCoreVersion = "1.6.0-rc01" // https://mvnrepository.com/artifact/
 val androidxActivityComposeVersion = "1.9.1"
 val uriKmpVersion = "0.0.16"  // https://github.com/eygraber/uri-kmp
 val skikoVersion = "0.8.9" // https://github.com/JetBrains/skiko/releases
-val workVersion = "2.9.0"
+val workVersion = "2.9.1"
 
 
 val secSinceEpoch = Instant.now().epochSecond
@@ -383,7 +388,7 @@ kotlin {
                     //implementation(project(":shared"))
 
                     // CameraX core library using the camera2 implementation
-                    val camerax_version = "1.4.0-beta02"  // https://developer.android.com/jetpack/androidx/releases/camera
+                    val camerax_version = "1.4.0-rc01"  // https://developer.android.com/jetpack/androidx/releases/camera
                     val lottieVersion = "6.4.1"
 
                     implementation(kotlin("stdlib-jdk8"))
@@ -440,7 +445,7 @@ kotlin {
                     implementation("androidx.camera:camera-camera2:${camerax_version}")
                     implementation("androidx.camera:camera-lifecycle:${camerax_version}")
                     implementation("androidx.camera:camera-view:${camerax_version}")
-                    implementation("com.google.mlkit:barcode-scanning:17.2.0")
+                    implementation("com.google.mlkit:barcode-scanning:17.3.0")
 
                     implementation("androidx.media3:media3-exoplayer:1.4.0")
                     // Dynamic Adaptive Streaming over HTTP: implementation("androidx.media3:media3-exoplayer-dash:1.X.X")
@@ -560,11 +565,7 @@ val gitCommitHash: String by lazy {
       .trim()
 }
 
-val versionNumber = "3.3.0"
-val androidVersionCode = versionNumber.replace(".", "").toInt()
-
 version = "$versionNumber-$gitCommitHash"
-
 
 android {
     namespace = "info.bitcoinunlimited.www.wally"

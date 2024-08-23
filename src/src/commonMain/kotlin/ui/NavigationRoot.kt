@@ -732,7 +732,7 @@ fun NavigationRoot(systemPadding: Modifier)
                         ScreenId.NewAccount -> NewAccountScreen(accountGuiSlots.collectAsState(), devMode, nav)
                         ScreenId.Settings -> SettingsScreen(nav)
                         ScreenId.AccountDetails -> withUnlockedAccount { AccountDetailScreen(it, nav) }
-                        ScreenId.Assets -> withAccount { AssetScreen(it, nav) }
+                        ScreenId.Assets -> withAccount { AssetScreen(it) }
                         ScreenId.Shopping -> ShoppingScreen(nav)
                         ScreenId.TricklePay -> withAccount { act -> TricklePayScreen(act, null, nav) }
                         ScreenId.Identity -> withAccount { act ->

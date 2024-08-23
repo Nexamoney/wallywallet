@@ -377,9 +377,9 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
               AndroidView(factory = {
                   PlayerView(context).apply {
                       player = exoPlayer
-                      useController = true
+                      useController = !hideMusicView
                       // artworkDisplayMode = ARTWORK_DISPLAY_MODE_FIT
-                      controllerAutoShow = true
+                      controllerAutoShow = !hideMusicView
                   }
               },
                 modifier = m)
@@ -436,8 +436,8 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
               AndroidView(factory = {
                   PlayerView(context).apply {
                       player = exoPlayer
-                      useController = true
-                      controllerAutoShow = true
+                      useController = !hideMusicView
+                      controllerAutoShow = !hideMusicView
                       setControllerHideOnTouch(false)
                       showController()
                   }
