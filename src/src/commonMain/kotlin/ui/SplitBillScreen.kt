@@ -169,162 +169,165 @@ fun SplitBillScreen(nav: ScreenNav, acct: Account? = wallyApp?.focusedAccount)
     }
     val localFocusManager = LocalFocusManager.current
     val sendPadding = if (platform().spaceConstrained) 5.dp else 8.dp
-    Column(
-      modifier = Modifier.padding(sendPadding).conditional(platform().spaceConstrained) {
-          fillMaxSize()
-      }.pointerInput(Unit) {
-          detectTapGestures(onTap = {
-              localFocusManager.clearFocus()
-          })
-      }
-    ) {
-        Text(i18n(S.SplitBillDescription), modifier = Modifier.padding(10.dp))
-        Spacer(Modifier.height(10.dp))
-        // Amount row:
-        Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-            WallyOutLineDecimalEntry(
-              amountString,
-              label = "Bill Amount",
-              modifier = Modifier.weight(1.0f, false).testTag("SplitBillScreenAmountInput").fillMaxWidth(),
-              suffix = { WallyDropdownMenu(
-                modifier = Modifier.weight(0.75f, false),
-                label = "",
-                items = listOf(fiatCurrencyCode, cryptoCurrencyCode),
-                selectedIndex = usingCurrencySelectedIndex,
-                style = WallyDropdownStyle.Succinct,
-                onItemSelected = { index, _ ->
-                    usingCurrencySelectedIndex = index
-                    if (index == 0)
+    Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth().pointerInput(Unit) {
+        detectTapGestures(onTap = {
+            localFocusManager.clearFocus()
+        })
+    }){
+        Column(
+          modifier = Modifier.padding(sendPadding).conditional(!platform().spaceConstrained) {
+              width(IntrinsicSize.Min)
+          }
+        ) {
+            Text(i18n(S.SplitBillDescription), modifier = Modifier.padding(10.dp))
+            Spacer(Modifier.height(10.dp))
+            // Amount row:
+            Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                WallyOutLineDecimalEntry(
+                  amountString,
+                  label = i18n(S.BillAmount),
+                  modifier = Modifier.weight(1.0f, false).testTag("SplitBillScreenAmountInput").fillMaxWidth(),
+                  suffix = { WallyDropdownMenu(
+                    modifier = Modifier.weight(0.75f, false),
+                    label = "",
+                    items = listOf(fiatCurrencyCode, cryptoCurrencyCode),
+                    selectedIndex = usingCurrencySelectedIndex,
+                    style = WallyDropdownStyle.Succinct,
+                    onItemSelected = { index, _ ->
+                        usingCurrencySelectedIndex = index
+                        if (index == 0)
+                        {
+                            usingFiatCurrency = true
+                            usingCurrency = fiatCurrencyCode
+                        }
+                        else
+                        {
+                            usingFiatCurrency = false
+                            usingCurrency = cryptoCurrencyCode
+                        }
+                        updateNumbers()
+                    },
+                  ) }
+                ) {
+                    amountString.value = it
+                    try
                     {
-                        usingFiatCurrency = true
-                        usingCurrency = fiatCurrencyCode
+                        amount = CurrencyDecimal(it)
+                        updateNumbers()
+                        amountString.value
                     }
-                    else
+                    catch(e: Exception)
                     {
-                        usingFiatCurrency = false
-                        usingCurrency = cryptoCurrencyCode
+                        // X it
+                        ""
                     }
-                    updateNumbers()
-                },
-              ) }
-            ) {
-                amountString.value = it
-                try
-                {
-                    amount = CurrencyDecimal(it)
-                    updateNumbers()
-                    amountString.value
-                }
-                catch(e: Exception)
-                {
-                    // X it
-                    ""
                 }
             }
-        }
-        Spacer(Modifier.height(5.dp))
-        // TIP line
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-            WallyDropdownMenu(
-              modifier = Modifier.weight(0.75f).fillMaxWidth(),
-              label = "Tip Percentage",
-              items = tipAmounts.map { if (it == -1) "--" else it.toString() + "%"},
-              selectedIndex = tipSelectedIndex,
-              style = WallyDropdownStyle.Outlined,
-              onItemSelected = { index, _ ->
-                  tipSelectedIndex = index
-                  updateNumbers()
-              },
-            )
-            Text("OR",
-              style = LocalTextStyle.current.copy(
-                  color = Color.Black,
-                  textAlign = TextAlign.Center,
-                  fontWeight = FontWeight.Bold,
-                  fontSize = FontScale(1.25)
-              ),
-              modifier = Modifier.padding(20.dp, 5.dp, 20.dp, 0.dp))
-            WallyOutLineDecimalEntry(tipAmountString,
-              label = "Tip Amount",
-              onValueChange = {
-                  try
-                  {
-                      tipAmount = CurrencyDecimal(it)
-                      tipSelectedIndex = 0  // If the user manually enters a tip, pop the combo box to --
-                      updateNumbers()
-                      tipAmountString.value = it
-                      it
-                  }
-                  catch(e: Exception)
-                  {
-                      val zero = ""
-                      tipAmount = CURRENCY_ZERO
-                      tipAmountString.value = zero
-                      zero
-                  }
-              },
-              modifier = Modifier.testTag("SplitBillScreenTipInput").weight(1f)
-            )
-        }
-        Spacer(Modifier.height(10.dp))
-
-        // Total line: "Total: <amount> NEX"
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-            Column(modifier = Modifier.weight(0.75F)) {
-                OutlinedTextField(
-                  value = if (usingFiatCurrency) FiatFormat.format(total) else NexaFormat.format(total),
-                  {},
-                  label = {
-                      Text("Total Amount to split")
-                  },
-                  suffix = {Text(usingCurrency)}
-                )
-            }
-            Spacer(Modifier.width(10.dp))
-
-            Column {
+            Spacer(Modifier.height(5.dp))
+            // TIP line
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                 WallyDropdownMenu(
-                  modifier = Modifier.width(100.dp),
-                  modalModifier = Modifier.width(IntrinsicSize.Min),
-                  label = i18n(S.Ways),
-                  items = List(10, { it+1 }),
-                  selectedIndex = waysSelectedIndex,
+                  modifier = Modifier.weight(0.75f).fillMaxWidth(),
+                  label = i18n(S.TipPercentage),
+                  items = tipAmounts.map { if (it == -1) "--" else it.toString() + "%"},
+                  selectedIndex = tipSelectedIndex,
                   style = WallyDropdownStyle.Outlined,
                   onItemSelected = { index, _ ->
-                      waysSelectedIndex = index
+                      tipSelectedIndex = index
                       updateNumbers()
                   },
                 )
+                Text(i18n(S.OR),
+                  style = LocalTextStyle.current.copy(
+                    color = Color.Black,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = FontScale(1.25)
+                  ),
+                  modifier = Modifier.padding(20.dp, 5.dp, 20.dp, 0.dp))
+                WallyOutLineDecimalEntry(tipAmountString,
+                  label = i18n(S.TipAmount),
+                  onValueChange = {
+                      try
+                      {
+                          tipAmount = CurrencyDecimal(it)
+                          tipSelectedIndex = 0  // If the user manually enters a tip, pop the combo box to --
+                          updateNumbers()
+                          tipAmountString.value = it
+                          it
+                      }
+                      catch(e: Exception)
+                      {
+                          val zero = ""
+                          tipAmount = CURRENCY_ZERO
+                          tipAmountString.value = zero
+                          zero
+                      }
+                  },
+                  modifier = Modifier.testTag("SplitBillScreenTipInput").weight(1f)
+                )
             }
-        }
-        // space commented out because text entry is so big
-        Spacer(Modifier.height(25.dp))
+            Spacer(Modifier.height(10.dp))
 
-        val s = qrString
-        if (s != null)
-        {
-            Text("QR code for",
-              modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally), //.background(Color.Magenta),
-              style = LocalTextStyle.current.copy(
-                color = Color.Black,
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold
-              )
-            )
-            Text(finalSplitString,
-              modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally), //.background(Color.Magenta),
-              style = LocalTextStyle.current.copy(
-                color = Color.Black,
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold,
-                fontSize = FontScale(1.25)
-              )
-            )
-            Box(Modifier.fillMaxSize().align(Alignment.CenterHorizontally)) {
-                QrCode(s, Modifier.background(Color.White).width(300.dp).height(300.dp).align(Alignment.Center).border(BorderStroke(2.dp, WallyBorder)))
+            // Total line: "Total: <amount> NEX"
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                Column(modifier = Modifier.weight(0.75F, true)) {
+                    OutlinedTextField(
+                      value = if (usingFiatCurrency) FiatFormat.format(total) else NexaFormat.format(total),
+                      {},
+                      label = {
+                          Text(i18n(S.Total))
+                      },
+                      suffix = {Text(usingCurrency)}
+                    )
+                }
+                Spacer(Modifier.width(5.dp))
+
+                Column {
+                    WallyDropdownMenu(
+                      modifier = Modifier.width(100.dp),
+                      modalModifier = Modifier.width(IntrinsicSize.Min),
+                      label = i18n(S.Ways),
+                      items = List(10, { it+1 }),
+                      selectedIndex = waysSelectedIndex,
+                      style = WallyDropdownStyle.Outlined,
+                      onItemSelected = { index, _ ->
+                          waysSelectedIndex = index
+                          updateNumbers()
+                      },
+                    )
+                }
+            }
+            // space commented out because text entry is so big
+            Spacer(Modifier.height(25.dp))
+
+            val s = qrString
+            if (s != null)
+            {
+                Text(i18n(S.QRCodeFor),
+                  modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally), //.background(Color.Magenta),
+                  style = LocalTextStyle.current.copy(
+                    color = Color.Black,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold
+                  )
+                )
+                Text(finalSplitString,
+                  modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally), //.background(Color.Magenta),
+                  style = LocalTextStyle.current.copy(
+                    color = Color.Black,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = FontScale(1.25)
+                  )
+                )
+                Box(Modifier.fillMaxSize().align(Alignment.CenterHorizontally)) {
+                    QrCode(s, Modifier.background(Color.White).width(300.dp).height(300.dp).align(Alignment.Center).border(BorderStroke(2.dp, WallyBorder)))
+                }
             }
         }
     }
+
 }
 fun Modifier.conditional(condition : Boolean, modifier : Modifier.() -> Modifier) : Modifier {
     return if (condition) {

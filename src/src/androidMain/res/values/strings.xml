@@ -219,11 +219,15 @@ Good luck!
 
     <!-- Split bill -->
     <string name="SplitBillDescription">You pay the bill (in fiat), then your friends pay you their portion via the QR code below.  Include yourself in the count of ways to split, unless your friends are buying!</string>
-    <string name="Total">Total:</string>
+    <string name="BillAmount">Bill Amount</string>
+    <string name="TipAmount">Tip Amount</string>
+    <string name="TipPercentage">Tip Percentage</string>
+    <string name="Total">Total amount to split</string>
+    <string name="OR">OR</string>
+    <string name="QRCodeFor">QR code for:</string>
     <!-- Ways refers to how many equal portions a bill is being split into -->
     <string name="Ways">Ways:</string>
     <!-- Tip (gratuity) is how much more money you want to pay above the value of the bill -->
-    <string name="Tip">Tip:</string>
 
     <string name="Amount">Amount:</string>
     <!-- Home Page -->
