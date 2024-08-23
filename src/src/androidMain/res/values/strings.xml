@@ -228,7 +228,7 @@ Good luck!
     <!-- Ways refers to how many equal portions a bill is being split into -->
     <string name="Ways">Ways:</string>
     <!-- Tip (gratuity) is how much more money you want to pay above the value of the bill -->
-
+    <string name="Tip">Tip:</string>
     <string name="Amount">Amount:</string>
     <!-- Home Page -->
 
