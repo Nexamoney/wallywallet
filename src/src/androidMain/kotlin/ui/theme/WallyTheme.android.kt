@@ -388,6 +388,8 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
             }
         }
     }
+    // Supported Audio formats for Android:
+    // https://developer.android.com/media/platform/supported-formats#audio-formats
     else if (ext.endsWith(".mp3", true) ||
       ext.endsWith(".ogg", true) ||
       ext.endsWith(".aac", true) ||
@@ -395,16 +397,56 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
       ext.endsWith(".wma", true) ||
       ext.endsWith(".flac", true) ||
       ext.endsWith(".alac", true) ||
-      ext.endsWith(".wav", true))
+      ext.endsWith(".wav", true) ||
+      ext.endsWith(".3gp", true) ||
+      ext.endsWith(".mp4", true) ||
+      ext.endsWith(".m4a", true) ||
+      ext.endsWith(".ts", true) ||
+      ext.endsWith(".amr", true) ||
+      ext.endsWith(".mid", true) ||
+      ext.endsWith(".xmf", true) ||
+      ext.endsWith(".mxmf", true) ||
+      ext.endsWith(".rtttl", true) ||
+      ext.endsWith(".rtx", true) ||
+      ext.endsWith(".ota", true) ||
+      ext.endsWith(".imy", true) ||
+      ext.endsWith(".mkv", true))
     {
-        val mi = MediaInfo(200, 200, false, false)
+        LogIt.info(sourceLoc()+": Audio URI: $name (url: ${url})")
+        val context = LocalContext.current
+        val mediaItem = MediaItem.Builder().setUri(name).build()
+        val mi = MediaInfo(200, 200, true)  // No idea so pick something not crazy
+
+        val exoPlayer = remember(context, mediaItem) {
+            ExoPlayer.Builder(context)
+              .build()
+              .also { exoPlayer ->
+                  exoPlayer.setMediaItem(mediaItem)
+                  exoPlayer.prepare()
+                  if(autoplay) exoPlayer.playWhenReady = true
+                  exoPlayer.repeatMode = REPEAT_MODE_ALL
+              }
+        }
+
         wrapper(mi) { mod ->
             val m = mod ?: Modifier
               .fillMaxSize()
               .background(Color.Transparent)
-            ResImageView("icons/note.png", modifier = m)
+            DisposableEffect(
+              AndroidView(factory = {
+                  PlayerView(context).apply {
+                      player = exoPlayer
+                      useController = true
+                      controllerAutoShow = true
+                      setControllerHideOnTouch(false)
+                      showController()
+                  }
+              },
+                modifier = m)
+            ) {
+                onDispose { exoPlayer.release() }
+            }
         }
-        return false
     }
     else  // Media is not displayable
     {
