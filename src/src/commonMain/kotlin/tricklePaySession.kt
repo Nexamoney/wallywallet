@@ -232,7 +232,7 @@ data class TdppDomain(
     }
 }
 
-class TricklePayDomains(val app: CommonApp)
+class TricklePayDomains()
 {
     val SER_VERSION: Byte = 1.toByte()
 
