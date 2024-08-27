@@ -11,6 +11,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -1003,6 +1004,7 @@ fun WallyOutlineDataEntry(value: MutableState<TextFieldValue>, modifier: Modifie
     val scope = rememberCoroutineScope()
     val bkgColor = remember { Animatable(BaseBkg) }
     val ia = remember { MutableInteractionSource() }
+    val localFocusManager = LocalFocusManager.current
 
     LaunchedEffect(ia)
     {
@@ -1048,7 +1050,10 @@ fun WallyOutlineDataEntry(value: MutableState<TextFieldValue>, modifier: Modifie
       textStyle = ts,
       interactionSource = ia,
       modifier = modifier,
-      keyboardOptions = keyboardOptions ?: KeyboardOptions.Default
+      keyboardOptions = keyboardOptions ?: KeyboardOptions(keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Done),
+      keyboardActions = KeyboardActions(
+        onDone = { localFocusManager.clearFocus() }
+      )
     )
 }
 
@@ -1311,6 +1316,7 @@ fun DecimalInputField(descriptionRes: Int, labelRes: Int, text: String, style: T
 fun StringInputTextField(labelRes: Int, text: String, modifier: Modifier = Modifier, onChange: (String) -> Unit)
 {
     val ia = remember { MutableInteractionSource() }
+    val localFocusManager = LocalFocusManager.current
     // Track whenever we are inside a data entry field, because the soft keyboard will appear & we want to modify the screen based on soft
     // keyboard state
     LaunchedEffect(ia) {
@@ -1348,7 +1354,10 @@ fun StringInputTextField(labelRes: Int, text: String, modifier: Modifier = Modif
       label = { Text(i18n(labelRes)) },
       interactionSource = ia,
       modifier = Modifier.fillMaxWidth().then(modifier),
-      keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+      keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+      keyboardActions = KeyboardActions(onNext = {
+          localFocusManager.moveFocus(FocusDirection.Down)
+      }),
       minLines = 2,
       colors = TextFieldDefaults.colors(
         focusedContainerColor = Color.Transparent,
@@ -1366,6 +1375,7 @@ fun StringInputTextField(labelRes: Int, text: String, modifier: Modifier = Modif
 fun AddressInputTextField(labelRes: Int, text: String, onChange: (String) -> Unit)
 {
     val ia = remember { MutableInteractionSource() }
+    val localFocusManager = LocalFocusManager.current
     // Track whenever we are inside a data entry field, because the soft keyboard will appear & we want to modify the screen based on soft
     // keyboard state
     LaunchedEffect(ia) {
@@ -1404,7 +1414,10 @@ fun AddressInputTextField(labelRes: Int, text: String, onChange: (String) -> Uni
       singleLine = true,
       interactionSource = ia,
       modifier = Modifier.fillMaxWidth(),
-      keyboardOptions = KeyboardOptions(autoCorrect = false, imeAction = ImeAction.Done),
+      keyboardOptions = KeyboardOptions(autoCorrect = false, imeAction = ImeAction.Next),
+      keyboardActions = KeyboardActions(onNext = {
+          localFocusManager.moveFocus(FocusDirection.Down)
+      }),
       colors = TextFieldDefaults.colors(
         focusedContainerColor = Color.Transparent,
         unfocusedContainerColor = Color.Transparent,
