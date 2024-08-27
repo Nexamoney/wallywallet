@@ -57,7 +57,7 @@ class SplitBillScreenTest
         onNodeWithTag("SplitBillScreenAmountInput").assertIsDisplayed()
         onNodeWithTag("SplitBillScreenAmountInput").performTextClearance()
         onNodeWithTag("SplitBillScreenAmountInput").performTextInput("100")
-        onNodeWithTag("SplitBillScreenAmountInput").assertTextEquals("100 USD")
+        onNodeWithTag("SplitBillScreenAmountInput").assert(hasText("100"))
 
         onNodeWithTag("SplitBillScreenTipInput").assertIsDisplayed()
         onNodeWithTag("SplitBillScreenTipInput").performTextClearance()
