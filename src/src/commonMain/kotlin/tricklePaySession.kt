@@ -13,13 +13,10 @@ import org.nexa.libnexakotlin.*
 import org.nexa.libnexakotlin.simpleapi.NexaScript
 
 import com.eygraber.uri.*
-import info.bitcoinunlimited.www.wally.ui.GuiDriver
-import info.bitcoinunlimited.www.wally.ui.ScreenId
-import info.bitcoinunlimited.www.wally.ui.externalDriver
-import info.bitcoinunlimited.www.wally.ui.triggerClipboardAction
-import io.ktor.http.*
+import info.bitcoinunlimited.www.wally.ui.*
 import io.ktor.http.Url
 import io.ktor.utils.io.errors.*
+import kotlinx.serialization.Serializable
 import org.nexa.threads.Mutex
 
 private val LogIt = GetLog("BU.wally.tpsess")
@@ -235,7 +232,7 @@ data class TdppDomain(
     }
 }
 
-class TricklePayDomains(val app: CommonApp)
+class TricklePayDomains()
 {
     val SER_VERSION: Byte = 1.toByte()
 
@@ -423,7 +420,7 @@ fun VerifyTdppSignature(uri: Uri, addressParam:String? = null): Boolean?
     return true
 }
 
-class TricklePaySession(val tpDomains: TricklePayDomains)
+class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String, String, Boolean?)->Unit)?= null)
 {
     var accepted: Boolean = false  // did the user accept this payment request
     var newDomain: Boolean = false // was a domain created during this session?
@@ -581,42 +578,59 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
     /* Issue the sendto style transaction */
     fun acceptSendToRequest()
     {
+        val d = domain ?: return
         val act = getRelevantAccount()
         val wal = act.wallet
-        val p = proposedDestinations
-
-        if (p == null)
-            return
-
-        wal.send(p, false, i18n(S.title_activity_trickle_pay) + " " + domainAndTopic + ". " + reason)
+        val domainSigningAddress = PayAddress(d.addr)
+        val p = proposedDestinations ?: return
+        // Prevent double send
         proposedDestinations = null
+
+        val tx = wal.send(p, false, i18n(S.title_activity_trickle_pay) + " " + domainAndTopic + ". " + reason)
+        val txh = wal.getTx(tx.idem)
+        if (txh != null)  // mark this as belonging to us
+        {
+            txh.relatedTo["tdpp_${d.addr}"] = (proposalUrl?.toString() ?: "").encodeUtf8()
+        }
+        @Serializable data class TricklePaySendToReply(val resultCode:Int, val txid:String, val txidem: String, val tx: String, val error: String)
+        val postData = TricklePaySendToReply(200, tx.id.toHex(), tx.idem.toHex(), tx.toHex(), "")
+        val js = Json {}
+
+        val postStr = js.encodeToString(TricklePaySendToReply.serializer(), postData)
+        val urlStr = replyProtocol + "://" + hostAndPort + "/sendto?" + cookieParam
+        respondWith(urlStr, postStr)
     }
 
     fun respondWith(url: String, postResp: String)
     {
-        wallyApp?.later {
-            LogIt.info("responding to server")
-            val client = HttpClient()
-            {
-                install(ContentNegotiation) {
-                    json()
+        val wd = whenDone
+        if (wd != null) wd.invoke(url, postResp, true)
+        else
+        {
+            wallyApp?.later {
+                LogIt.info("responding to server")
+                val client = HttpClient()
+                {
+                    install(ContentNegotiation) {
+                        json()
+                    }
+                    install(HttpTimeout) { requestTimeoutMillis = 5000 }
                 }
-                install(HttpTimeout) { requestTimeoutMillis = 5000 }
-            }
 
-            try
-            {
-                val response: HttpResponse = client.post(url) {
-                    setBody(postResp)
+                try
+                {
+                    val response: HttpResponse = client.post(url) {
+                        setBody(postResp)
+                    }
+                    val respText = response.bodyAsText()
+                    displayNotice(S.accept, respText)
                 }
-                val respText = response.bodyAsText()
-                displayNotice(S.accept, respText)
+                catch (e: IOException)
+                {
+                    displayError(S.connectionException)
+                }
+                client.close()
             }
-            catch (e: IOException)
-            {
-                displayError(S.connectionException)
-            }
-            client.close()
         }
     }
 
@@ -667,32 +681,42 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
 
         val url = replyProtocol + "://" + hostAndPort + "/assets?" + cookieParam
 
-        wallyApp?.later {
-            LogIt.info("responding to server")
-            val client = HttpClient()
-            {
-                install(ContentNegotiation) {
-                    json()
-                }
-                install(HttpTimeout) { requestTimeoutMillis = 5000 }
-            }
-
+        val wd = whenDone
+        if (wd != null)
+        {
             val js = Json {}
-            try
-            {
-                val response: HttpResponse = client.post(url) {
-                    val tmp = js.encodeToString(TricklePayAssetList.serializer(), assets)
-                    LogIt.info("JSON response ${tmp.length} : " + tmp.toString())
-                    setBody(tmp)
+            val tmp = js.encodeToString(TricklePayAssetList.serializer(), assets)
+            wd(url, tmp, true)
+        }
+        else // do the default accept action (send a response back to the server)
+        {
+            wallyApp?.later {
+                LogIt.info("responding to server")
+                val client = HttpClient()
+                {
+                    install(ContentNegotiation) {
+                        json()
+                    }
+                    install(HttpTimeout) { requestTimeoutMillis = 5000 }
                 }
-                val respText = response.bodyAsText()
-                // notice shown right when button pressed: displayNotice(S.TpAssetRequestAccepted, respText)
+
+                val js = Json {}
+                try
+                {
+                    val response: HttpResponse = client.post(url) {
+                        val tmp = js.encodeToString(TricklePayAssetList.serializer(), assets)
+                        LogIt.info("JSON response ${tmp.length} : " + tmp.toString())
+                        setBody(tmp)
+                    }
+                    val respText = response.bodyAsText()
+                    // notice shown right when button pressed: displayNotice(S.TpAssetRequestAccepted, respText)
+                }
+                catch (e: IOException)
+                {
+                    displayError(S.connectionException)
+                }
+                client.close()
             }
-            catch (e: IOException)
-            {
-                displayError(S.connectionException)
-            }
-            client.close()
         }
         return "Sent to: " + url
     }
@@ -909,7 +933,13 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
 
             val amt = amtS.toLong()
             if (amt <= 0) throw BadAmountException(S.Amount)
-            addrAmt.add(Pair(PayAddress(addrS), amt.toLong()))
+            val addrPa = PayAddress(addrS)
+            addrAmt.add(Pair(addrPa, amt.toLong()))
+            if (chainSelector == null) chainSelector = addrPa.blockchain
+            else if (addrPa.blockchain != chainSelector)  // You can only send on one blockchain at once
+            {
+                throw BadCryptoException(i18n(S.badCryptoCode))
+            }
             val priorTotal = total
             total += amt
             if (total < priorTotal)
@@ -971,21 +1001,28 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
                 {
                     val outpoint = spendable.outpoint!!
                     val serPrevout = spendable.prevout.BCHserialize(SerializationType.NETWORK).toHex()
-                    matches.add(
-                      TricklePayAssetInfo(
-                        outpoint.toHex(), spendable.amount, serPrevout,
-                        if (chalby != null && challengerId != null) makeChallengeTx(spendable, challengerId, chalby)?.toHex() else null,
-                      )
-                    )
+                    // For now, also check that this output is an asset, not nexa.  Later we may want to allow provable nexa amounts...
+                    val tmpl = constraint.parseTemplate(spendable.amount)
+                    val gi = tmpl?.groupInfo
+                    if (gi != null)
+                    {
+                        matches.add(
+                          TricklePayAssetInfo(
+                            outpoint.toHex(), spendable.amount, serPrevout,
+                            if (chalby != null && challengerId != null) makeChallengeTx(spendable, challengerId, chalby)?.toHex() else null,
+                          )
+                        )
+                    }
                 }
                 else
                 {
                     LogIt.info("Rejected: " + constraint.toHex() + "  ASM: " + constraint.toAsm())
-                    val tryAgain = constraint.matches(stemplate, true)
-                    LogIt.info(tryAgain.toString())
+                    //val tryAgain = constraint.matches(stemplate, true)
+                    //LogIt.info(tryAgain.toString())
                 }
             false
         }
+
         assetInfoList = TricklePayAssetList(matches)
 
         return d.assetInfo
@@ -1006,7 +1043,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
         var whatInfo = uri.getQueryParameter("info")
         if (whatInfo == null)
         {
-            whatInfo = "clipboard"
+            whatInfo = "address"
         }
 
         val url = replyProtocol + "://" + hostAndPort + "/_share?" + cookieParam
@@ -1016,9 +1053,12 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
             val addr = getRelevantAccount().currentReceive?.address?.toString()
             if (addr != null)
             {
-                wallyApp?.post(url, {
-                    it.setBody(addr.toString())
-                })
+                whenDone?.invoke(url, addr.toString(), true) ?: run {
+                    wallyApp?.post(url, {
+                        it.setBody(addr.toString())
+                    })
+                }
+
                 then?.invoke(S.Address)
             }
             else
@@ -1032,8 +1072,10 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
                 if (clipText == null) then?.invoke(S.pasteIsEmpty)
                 else
                 {
-                    wallyApp?.post(url) { hrb ->
-                        hrb.setBody(clipText)
+                    whenDone?.invoke(url, clipText, true) ?: run {
+                        wallyApp?.post(url) { hrb ->
+                            hrb.setBody(clipText)
+                        }
                     }
                     then?.invoke(S.clipboard)
                 }
@@ -1202,14 +1244,14 @@ class TricklePaySession(val tpDomains: TricklePayDomains)
 }
 
 
-fun HandleTdpp(iuri: Uri): Boolean
+fun HandleTdpp(iuri: Uri, then: ((String, String, Boolean?)->Unit)?= null): Boolean
 {
     val bkg = wallyApp!!.amIbackground()  // if the app is backgrounded, we need to notify and not just change the GUI
     val scheme = iuri.scheme
     val path = iuri.path
-    if (scheme == TDPP_URI_SCHEME)
+    if (scheme?.lowercase() == TDPP_URI_SCHEME)
     {
-        val tp = TricklePaySession(wallyApp!!.tpDomains)
+        val tp = TricklePaySession(wallyApp!!.tpDomains, then)
         tp.parseCommonFields(iuri, true)
         val address = iuri.getQueryParameter("addr")
         if (path == "/reg")  // Handle registration
@@ -1332,7 +1374,8 @@ fun HandleTdpp(iuri: Uri): Boolean
             {
                 TdppAction.ASK ->  // ASSETS
                 {
-                    later { externalDriver.send(GuiDriver(ScreenId.AssetInfoPerm, tpSession = tp)) }
+                    nav.go(ScreenId.AssetInfoPerm, data = tp)
+                    //later { externalDriver.send(GuiDriver(ScreenId.AssetInfoPerm, tpSession = tp)) }
                 }
                 TdppAction.ACCEPT -> // ASSETS
                 {

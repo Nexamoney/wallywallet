@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-//import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
@@ -85,6 +84,7 @@ enum class ScreenId
     {
         return when (this)
         {
+            None -> Home
             SplitBill -> Home
             AccountDetails -> Home
             NewAccount -> Home
@@ -94,7 +94,7 @@ enum class ScreenId
             TpSettings -> TricklePay
             IdentityEdit -> Identity
             Splash -> Home
-            else -> None
+            else -> Home
         }
     }
 
@@ -132,40 +132,58 @@ enum class ScreenId
 
 class ScreenNav()
 {
+    enum class Direction {
+        LEAVING, DEEPER
+    }
     // Screens can put anything into screenSubState to remember their context.
     // This allows them to make the "back" button change subscreen state by pushing the current screenId with a different
     // screenSubState.
-    data class ScreenState(val id: ScreenId, val departFn: (() -> Unit)?, val screenSubState: ByteArray?=null)
+    data class ScreenState(val id: ScreenId, val departFn: ((Direction) -> Unit)?, val screenSubState: ByteArray?=null, val data: Any? = null)
 
-    var currentScreen: MutableState<ScreenId> = mutableStateOf(ScreenId.Home)
-    val currentSubState: MutableState<ByteArray?> = mutableStateOf(null)
-    protected var currentScreenDepart: (() -> Unit)? = null
+    val curData: MutableStateFlow<Any?> = MutableStateFlow(null)
+    val currentScreen: MutableStateFlow<ScreenId> = MutableStateFlow(ScreenId.Splash)
+    val currentSubState: MutableStateFlow<ByteArray?> = MutableStateFlow(null)
+    protected var currentScreenDepart: ((dir: Direction) -> Unit)? = null
     val path = ArrayDeque<ScreenState>(10)
 
-    fun onDepart(fn: () -> Unit)
+    fun onDepart(fn: (Direction) -> Unit)
     {
         currentScreenDepart = fn
     }
 
     /** If everything is recomposed, we may have a new mutable screenid tracker */
-    fun reset(newMutable: MutableState<ScreenId>)
+    fun reset(newMutable: ScreenId)
     {
-        currentScreen = newMutable
+        currentScreen.value = newMutable
     }
 
     /** Add a screen onto the stack */
     fun push(screen: ScreenId) = path.add(ScreenState(screen,null))
 
 
-    /* push the current screen onto the stack, and set the passed screen to be the current one */
-    fun go(screen: ScreenId, screenSubState: ByteArray?=null)
+    /** push the current screen onto the stack, and set the passed screen to be the current one */
+    fun go(screen: ScreenId, screenSubState: ByteArray?=null, data: Any? = null): ScreenNav
     {
-        currentScreenDepart?.invoke()
-        path.add(ScreenState(currentScreen.value,currentScreenDepart, currentSubState.value ))
+        currentScreenDepart?.invoke(Direction.DEEPER)
+        path.add(ScreenState(currentScreen.value,currentScreenDepart, currentSubState.value, curData.value ))
         currentScreen.value = screen
         currentSubState.value = screenSubState
+        curData.value = data
         currentScreenDepart = null
         NativeTitle(title())
+        return this
+    }
+
+    /** move without pushing the current screen (but depart will be called if it exists) */
+    fun switch(screen: ScreenId, screenSubState: ByteArray?=null, data: Any? = null): ScreenNav
+    {
+        currentScreenDepart?.invoke(Direction.LEAVING)
+        currentScreen.value = screen
+        currentSubState.value = screenSubState
+        curData.value = data
+        currentScreenDepart = null
+        NativeTitle(title())
+        return this
     }
 
     fun title() = currentScreen.value.title()
@@ -184,7 +202,7 @@ class ScreenNav()
     /** pop the current screen from the stack and go there */
     fun back():ScreenId?
     {
-        currentScreenDepart?.invoke()
+        currentScreenDepart?.invoke(Direction.LEAVING)
         currentScreenDepart = null
         // See if there is anything in the back stack.
         var priorId:ScreenId? = null
@@ -200,12 +218,20 @@ class ScreenNav()
         else currentSubState.value = null
         if (priorId != null)
         {
-            currentScreen.value = priorId
+            // If the screen is none, that means to keep going back but this will execute any currentScreenDepart
+            // associated with the None screen which is how we install a "finish activity" in Android
+            if (priorId == ScreenId.None)
+            {
+                return back()
+            }
+            else currentScreen.value = priorId
         }  // actually trigger going back
         NativeTitle(title())
         return priorId
     }
 }
+/** Global top level navagation */
+val nav = ScreenNav()
 
 fun assignAccountsGuiSlots()
 {
@@ -267,7 +293,7 @@ fun onShareButton()
 
 // This function should build a title bar (with a back button) if the platform doesn't already have one.  Otherwise it should
 // set up the platform's title bar
-@Composable fun ConstructTitleBar(nav: ScreenNav, errorText: String, warningText: String, noticeText: String)
+@Composable fun ConstructTitleBar(errorText: String, warningText: String, noticeText: String)
 {
     if (!platform().hasNativeTitleBar)
     {
@@ -294,7 +320,7 @@ fun onShareButton()
             {
                 TitleText(nav.title(), Modifier.weight(1f).fillMaxSize())
                 ResImageView("icons/lock.xml", modifier = Modifier.clickable { triggerUnlockDialog() })
-                if (platform().hasShare && nav.currentScreen.value.hasShare) IconButton(onClick = { onShareButton() }) {
+                if (platform().hasShare && nav.currentScreen.collectAsState().value.hasShare) IconButton(onClick = { onShareButton() }) {
                     Icon(Icons.Default.Share, tint = colorTitleForeground, contentDescription = null)
                 }
             }
@@ -361,7 +387,7 @@ data class GuiDriver(val gotoPage: ScreenId? = null,
   val eventNum: Long = NextEvent()
 )
 
-val externalDriver = Channel<GuiDriver>()
+val externalDriver = Channel<GuiDriver>(10)
 
 @Composable fun RecoveryPhraseWarning(account:Account?=null)
 {
@@ -442,9 +468,10 @@ fun buildMenuItems()
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun NavigationRoot(nav: ScreenNav, systemPadding: Modifier)
+fun NavigationRoot(systemPadding: Modifier)
 {
-    if (nav.currentScreen.value == ScreenId.Splash)
+    val curScreen = nav.currentScreen.collectAsState()
+    if (curScreen.value == ScreenId.Splash)
     {
         val nativeSplash = NativeSplash(true)
         if (!nativeSplash)
@@ -457,7 +484,7 @@ fun NavigationRoot(nav: ScreenNav, systemPadding: Modifier)
         LaunchedEffect(true) {
             delay(2000)
             if (nativeSplash) NativeSplash(false)
-            nav.back()
+            nav.switch(ScreenId.Home)
         }
         return
     }
@@ -475,8 +502,7 @@ fun NavigationRoot(nav: ScreenNav, systemPadding: Modifier)
 
     val clipmgr: ClipboardManager = LocalClipboardManager.current
 
-    var currentTpSession by remember { mutableStateOf<TricklePaySession?>(null) }
-    var currentUri by remember { mutableStateOf<Uri?>(null) }
+    //var currentUri by remember { mutableStateOf<Uri?>(null) }
 
     buildMenuItems()
 
@@ -526,20 +552,16 @@ fun NavigationRoot(nav: ScreenNav, systemPadding: Modifier)
 
     @Composable fun withTp(then: @Composable (acc: Account, ctp: TricklePaySession) -> Unit)
     {
-        val ctp = currentTpSession
+        val ctp = nav.curData.value as? TricklePaySession
         if (ctp == null)
         {
             displayError(S.TpNoSession)  // TODO make this no TP session
-            return
         }
-
-        val pa = ctp.getRelevantAccount(selectedAccount.value?.name)
-        if (pa == null)
+        else
         {
-            displayError(S.NoAccounts)
-            nav.back()
+            val pa = ctp.getRelevantAccount(selectedAccount.value?.name)
+            then(pa, ctp)
         }
-        else then(pa, ctp)
     }
 
     // Periodic checking
@@ -564,13 +586,17 @@ fun NavigationRoot(nav: ScreenNav, systemPadding: Modifier)
         {
             LogIt.info(sourceLoc() +": external screen driver received")
             driver.value = c
+            //if (c.uri != null) currentUri = c.uri
             // If the driver specifies an account, we want to switch to it
             c.account?.let {
                 // assert(it.visible)
                 selectedAccount.value = it
                 wallyApp?.focusedAccount = it
             }
-            c.gotoPage?.let { nav.go(it) }
+            c.gotoPage?.let {
+                clearAlerts()  // If the user explicitly moved to a different screen, they must be aware of the alert
+                nav.go(it, data = c.tpSession)
+            }
             c.show?.forEach {
                 if (it == ShowIt.WARN_BACKUP_RECOVERY_KEY)
                 {
@@ -603,8 +629,6 @@ fun NavigationRoot(nav: ScreenNav, systemPadding: Modifier)
                 val s = clipmgr.getText()
                 c.withClipboard.invoke(s?.text)
             }
-            if (c.tpSession != null) currentTpSession = c.tpSession
-            if (c.uri != null) currentUri = c.uri
         }
     }
 
@@ -681,14 +705,14 @@ fun NavigationRoot(nav: ScreenNav, systemPadding: Modifier)
         Box(modifier = WallyPageBase .then(systemPadding)) {
             if (unlockDialog != null) UnlockView {  }
             Column(modifier = Modifier.fillMaxSize()) {
-                ConstructTitleBar(nav, errorText, warningText, noticeText)
+                ConstructTitleBar(errorText, warningText, noticeText)
 
                 clickDismiss.value?.let {
                     WallyBrightEmphasisBox(Modifier.fillMaxWidth().wrapContentSize().clickable { clickDismiss.value = null }) { it() }
                 }
 
                 // This will take up the most space but leave enough for the navigation menu
-                val mod = if (nav.currentScreen.value.isEntirelyScrollable)
+                val mod = if (curScreen.value.isEntirelyScrollable)
                 {
                     Modifier.weight(1f).verticalScroll(scrollState).fillMaxWidth()
                 }
@@ -699,21 +723,21 @@ fun NavigationRoot(nav: ScreenNav, systemPadding: Modifier)
                 Box(
                   modifier = mod
                 ) {
-                    when (nav.currentScreen.value)
+                    when (curScreen.value)
                     {
                         ScreenId.None -> HomeScreen(selectedAccount, driver, nav)
                         ScreenId.Splash -> run {} // splash screen is done at the top for max speed and to be outside of the theme
                         ScreenId.Home -> HomeScreen(selectedAccount, driver, nav)
-                        ScreenId.SplitBill -> SplitBillScreen(nav)
+                        ScreenId.SplitBill -> SplitBillScreen()
                         ScreenId.NewAccount -> NewAccountScreen(accountGuiSlots.collectAsState(), devMode, nav)
                         ScreenId.Settings -> SettingsScreen(nav)
                         ScreenId.AccountDetails -> withUnlockedAccount { AccountDetailScreen(it, nav) }
-                        ScreenId.Assets -> withAccount { AssetScreen(it, nav) }
+                        ScreenId.Assets -> withAccount { AssetScreen(it) }
                         ScreenId.Shopping -> ShoppingScreen(nav)
                         ScreenId.TricklePay -> withAccount { act -> TricklePayScreen(act, null, nav) }
                         ScreenId.Identity -> withAccount { act ->
-                            nav.onDepart { currentUri = null }
-                            IdentityScreen(act, currentUri, nav);
+                            val idsess = nav.curData.value as? IdentitySession
+                            IdentityScreen(act, idsess, nav)
                         }
                         ScreenId.IdentityEdit -> withAccount { act ->
                             IdentityEditScreen(act, nav);
@@ -724,7 +748,11 @@ fun NavigationRoot(nav: ScreenNav, systemPadding: Modifier)
                         ScreenId.SpecialTxPerm -> withTp { act, ctp -> SpecialTxPermScreen(act, ctp, nav) }
                         ScreenId.AssetInfoPerm -> withTp { act, ctp -> AssetInfoPermScreen(act, ctp, nav) }
                         ScreenId.SendToPerm -> withTp { act, ctp -> SendToPermScreen(act, ctp, nav) }
-                        ScreenId.IdentityOp -> withAccount { act -> IdentityPermScreen(act, currentUri, nav); }
+                        ScreenId.IdentityOp -> withAccount { act ->
+                            val idsess = nav.curData.value as? IdentitySession
+                            if (idsess != null) IdentityPermScreen(act, idsess, nav)
+                            else nav.back()
+                        }
                         ScreenId.Alerts -> HomeScreen(selectedAccount, driver, nav)  // not currently implemented
                     }
                 }
@@ -733,10 +761,8 @@ fun NavigationRoot(nav: ScreenNav, systemPadding: Modifier)
                     //Box(modifier = Modifier.align(Alignment.BottomStart).fillMaxWidth().background(NavBarBkg).height(IntrinsicSize.Min).padding(0.dp)) {
                     //    NavigationMenu(nav)
                     val modifier = Modifier.fillMaxWidth().background(NavBarBkg).height(IntrinsicSize.Min).padding(0.dp)
-                    NavigationMenu(nav, modifier)
-
+                    NavigationMenu(modifier)
                 }
-
             }
         }
     }
@@ -757,9 +783,10 @@ object ChildNav {
 data class NavChoice(val location: ScreenId, val textId: Int, val imagePath: String)
 
 @Composable
-fun NavigationMenu(nav: ScreenNav, modifier: Modifier)
+fun NavigationMenu(modifier: Modifier)
 {
     val items by menuItems.collectAsState()
+    val curScreen by nav.currentScreen.collectAsState()
 
     Column(modifier = modifier) {
         // Horizontal row to layout navigation buttons
@@ -771,10 +798,10 @@ fun NavigationMenu(nav: ScreenNav, modifier: Modifier)
                     Button(
                       onClick = {
                           clearAlerts()  // If the user explicitly moved to a different screen, they must be aware of the alert
-                          nav.go(ch.location)
+                          nav.switch(ch.location)
                                 },
                       // Change button appearance based on current screen
-                      enabled = nav.currentScreen.value != ch.location,
+                      enabled = curScreen != ch.location,
                       shape = RoundedCornerShape(30),
                       contentPadding = PaddingValues(0.dp, 0.dp),
                       // This is opposite of normal: The disabled button is our current screen, so should have the highlight
@@ -807,9 +834,12 @@ fun NavigationMenu(nav: ScreenNav, modifier: Modifier)
                       ),
                       contentPadding = PaddingValues(2.dp, 0.dp),
                       //Modifier.padding(2.dp, 0.dp),
-                      onClick = { nav.go(ch.location) },
+                      onClick = {
+                          clearAlerts()  // If the user explicitly moved to a different screen, they must be aware of the alert
+                          nav.go(ch.location)
+                                },
                       // Change button appearance based on current screen
-                      enabled = nav.currentScreen.value != ch.location,
+                      enabled = curScreen != ch.location,
                       modifier = Modifier.width(IntrinsicSize.Max).height(IntrinsicSize.Min).padding(0.dp, 0.dp).defaultMinSize(1.dp, 1.dp)
                     ) {
                         Text(i18n(ch.textId), modifier = Modifier.padding(0.dp)

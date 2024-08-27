@@ -33,7 +33,7 @@ class SplitBillScreenTest
             account = wallyApp!!.newAccount("mock", 0U, "", cs)!!
         }
         setContent {
-            SplitBillScreen(ScreenNav(), account)
+            SplitBillScreen(account)
         }
 
         onNodeWithText(i18n(S.SplitBillDescription)).assertIsDisplayed()
@@ -51,7 +51,7 @@ class SplitBillScreenTest
             account = wallyApp!!.newAccount("mock", 0U, "", cs)!!
         }
         setContent {
-            SplitBillScreen(ScreenNav(), account)
+            SplitBillScreen(account)
         }
 
         onNodeWithTag("SplitBillScreenAmountInput").assertIsDisplayed()

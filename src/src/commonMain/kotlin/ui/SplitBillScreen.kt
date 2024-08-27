@@ -46,7 +46,7 @@ fun CurrencyDecimal(b: BigDecimal): BigDecimal
 }
 
 @Composable
-fun SplitBillScreen(nav: ScreenNav, acct: Account? = wallyApp?.focusedAccount)
+fun SplitBillScreen(acct: Account? = wallyApp?.focusedAccount)
 {
     val cryptoCurrencyCode = acct?.currencyCode ?: chainToCurrencyCode[ChainSelector.NEXA] ?: "NEXA"
     var usingCurrency by remember { mutableStateOf(fiatCurrencyCode) }

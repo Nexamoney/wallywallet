@@ -30,6 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.getResourceFile
 import info.bitcoinunlimited.www.wally.ui.isSoftKeyboardShowing
+import info.bitcoinunlimited.www.wally.ui.viewmodels.MusicView
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.get

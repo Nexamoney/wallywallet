@@ -21,12 +21,15 @@ import io.ktor.utils.io.errors.*
 import okio.FileNotFoundException
 import org.nexa.libnexakotlin.CannotLoadException
 import org.nexa.libnexakotlin.simpleapi.NexaScript
+import kotlin.math.log
 
 private val LogIt = GetLog("wally.actperm")
 
+class IdentitySession(var uri: Uri?, var idData: IdentityDomain?=null, val whenDone: ((String, String, Boolean?)->Unit)?= null)
 
-fun HandleIdentity(uri: Uri): Boolean
+fun HandleIdentity(uri: Uri, then: ((String, String,Boolean?)->Unit)?= null): Boolean
 {
+    val sess = IdentitySession(uri, null, then)
     LogIt.info(sourceLoc() +": Handle identity operation")
 
     val operation = uri.getQueryParameter("op")
@@ -71,11 +74,15 @@ fun HandleIdentity(uri: Uri): Boolean
         }
     }
     LogIt.info(sourceLoc() +": Launch identity operation")
+    if (useOp) nav.go(ScreenId.IdentityOp, data = sess)
+    else nav.go(ScreenId.Identity, data = sess)
+    /*
     if (useOp) wallyApp?.later {
         LogIt.info(sourceLoc() +": send screen change")
         externalDriver.send(GuiDriver(ScreenId.IdentityOp, uri = uri))
     }
     else wallyApp?.later { externalDriver.send(GuiDriver(ScreenId.Identity, uri = uri)) }
+     */
     return true
 }
 
@@ -111,8 +118,9 @@ fun getSecretAndAddress(wallet: Wallet, host: String?, path: String?): Pair<Secr
 }
 
 @Composable
-fun IdentityPermScreen(account: Account, uri: Uri?, nav: ScreenNav)
+fun IdentityPermScreen(account: Account, sess: IdentitySession, nav: ScreenNav)
 {
+    val uri = sess.uri
     if (uri == null)
     {
         displayError(S.badQR)
@@ -144,9 +152,9 @@ fun IdentityPermScreen(account: Account, uri: Uri?, nav: ScreenNav)
 
     val h = uri.host
 
-    var idData:IdentityDomain? = null
     if (op != "sign")  // sign does not need a registered identity domain so skip all this checking for this op
     {
+        var idData:IdentityDomain? = null
         if (h == null)
         {
             displayError(S.badLink, "Identity request did not provide a host")
@@ -159,6 +167,7 @@ fun IdentityPermScreen(account: Account, uri: Uri?, nav: ScreenNav)
             nav.go(ScreenId.Identity)  // This should never be called because we should not have gone into the IdentityPermScreen if the domain does not exist
             return
         }
+        sess.idData = idData
     }
 
     val topText = when(op)
@@ -284,75 +293,90 @@ fun IdentityPermScreen(account: Account, uri: Uri?, nav: ScreenNav)
                         else
                         {
                             val sigStr = Codec.encode64(msgSig)
+                            val msgStr = msg.decodeUtf8()
+                            val clipboard = """{ "message":"${msgStr}", "address":"${address.toString()}", "signature": "${sigStr}" }"""
                             later {
-                                val msgStr = msg.decodeUtf8()
-                                val s = """{ "message":"${msgStr}", "address":"${address.toString()}", "signature": "${sigStr}" }"""
-                                LogIt.info(s)
-                                setTextClipboard(s)
+                                LogIt.info(clipboard)
+                                setTextClipboard(clipboard)
                             }
                             displayNotice(S.sigInClipboard)
 
-                            val reply = queries["reply"]
-                            if ((reply == null || reply == "true") && (h != "_"))
+                            // If a continuation was provided, give the response to that
+                            val then = sess.whenDone
+                            if (then != null)
                             {
                                 val responseProtocol = queries["proto"]
-                                var protocol = responseProtocol ?: uri.scheme  // Prefer the protocol requested by the other side, otherwise use the same protocol we got the request from
-                                val portStr = if ((uri.port > 0) && (uri.port != 80) && (uri.port != 443)) ":" + uri.port.toString() else ""
+                                var protocol = responseProtocol ?: uri.scheme
                                 val cookie = queries["cookie"]
 
-                                // Server BUG workaround: nexid defines a scheme, not a protocol, so "proto" must have been defined to tell me how to
-                                // actually contact the server.
-                                if (protocol == "nexid") protocol = "http"
-
-                                var sigReq = protocol + "://" + h + portStr + path
-                                sigReq += "?op=sign&addr=" + address.toString().urlEncode() + "&sig=" + sigStr.urlEncode() + if (cookie == null) "" else "&cookie=" + cookie.urlEncode()
-
-                                LogIt.info("signature reply: " + sigReq)
-                                try
-                                {
-                                    LogIt.info(sigReq)
-                                    val (resp, status) = Uri.parse(sigReq).loadTextAndStatus(HTTP_REQ_TIMEOUT_MS)
-                                    LogIt.info("signature response code:" + status.toString() + " response: " + resp)
-                                    if ((status >= 200) and (status < 250))
-                                    {
-                                        displayNotice(resp)
-                                        nav.back()
-                                    }
-                                    else
-                                    {
-                                        displayNotice(resp)
-                                        nav.back()
-                                    }
-
-                                }
-                                catch (e: FileNotFoundException)
-                                {
-                                    displayError(S.badLink)
-                                    nav.back()
-                                }
-                                catch (e: IOException)
-                                {
-                                    logThreadException(e)
-                                    displayError(S.connectionAborted)
-                                    nav.back()
-                                }
-                                catch (e: Exception)
-                                {
-                                    displayError(S.connectionException)
-                                    nav.back()
-                                }
+                                var sigReq = protocol + "://" + h + path +
+                                  "?op=sign&addr=" + address.toString().urlEncode() + "&sig=" + sigStr.urlEncode() + if (cookie == null) "" else "&cookie=" + cookie.urlEncode()
+                                then(sigReq, clipboard, true)
                             }
-                            else
+                            else  // Otherwise send it via the default response (http)
                             {
-                                nav.back()
+
+                                val reply = queries["reply"]
+                                if ((reply == null || reply == "true") && (h != "_"))
+                                {
+                                    val responseProtocol = queries["proto"]
+                                    var protocol = responseProtocol ?: uri.scheme  // Prefer the protocol requested by the other side, otherwise use the same protocol we got the request from
+                                    val portStr = if ((uri.port > 0) && (uri.port != 80) && (uri.port != 443)) ":" + uri.port.toString() else ""
+                                    val cookie = queries["cookie"]
+
+                                    // Server BUG workaround: nexid defines a scheme, not a protocol, so "proto" must have been defined to tell me how to
+                                    // actually contact the server.
+                                    if (protocol == "nexid") protocol = "http"
+
+                                    var sigReq = protocol + "://" + h + portStr + path
+                                    sigReq += "?op=sign&addr=" + address.toString().urlEncode() + "&sig=" + sigStr.urlEncode() + if (cookie == null) "" else "&cookie=" + cookie.urlEncode()
+
+                                    LogIt.info("signature reply: " + sigReq)
+                                    try
+                                    {
+                                        LogIt.info(sigReq)
+                                        val (resp, status) = Uri.parse(sigReq).loadTextAndStatus(HTTP_REQ_TIMEOUT_MS)
+                                        LogIt.info("signature response code:" + status.toString() + " response: " + resp)
+                                        if ((status >= 200) and (status < 250))
+                                        {
+                                            displayNotice(resp)
+                                            nav.back()
+                                        }
+                                        else
+                                        {
+                                            displayNotice(resp)
+                                            nav.back()
+                                        }
+
+                                    }
+                                    catch (e: FileNotFoundException)
+                                    {
+                                        displayError(S.badLink)
+                                        nav.back()
+                                    }
+                                    catch (e: IOException)
+                                    {
+                                        logThreadException(e)
+                                        displayError(S.connectionAborted)
+                                        nav.back()
+                                    }
+                                    catch (e: Exception)
+                                    {
+                                        displayError(S.connectionException)
+                                        nav.back()
+                                    }
+                                }
+                                else
+                                {
+                                    nav.back()
+                                }
                             }
                         }
                     }
                 }
                 else
                 {
-                    // idData cant be null here based on the logic above
-                    idData?.let { onProvideIdentity(uri,idData, account) }
+                    onProvideIdentity(sess, account)
                     nav.back()
                 }
             }
@@ -644,6 +668,7 @@ fun AssetInfoPermScreen(acc: Account, sess: TricklePaySession , nav: ScreenNav)
 
         Spacer(Modifier.height(10.dp))
         val alist = sess.assetInfoList?.assets
+        // combine utxos of assets of the same type for display purposes
         val aset = mutableSetOf<GroupId>()
         if (alist != null) for (a in alist)
         {
@@ -652,9 +677,13 @@ fun AssetInfoPermScreen(acc: Account, sess: TricklePaySession , nav: ScreenNav)
             val gi = tmpl?.groupInfo
             if (gi != null)
             {
-                val ai = wallyApp!!.assetManager.assets[gi.groupId]
                 aset.add(gi.groupId)
+                val ai = wallyApp!!.assetManager.assets[gi.groupId]
                 LogIt.info("info: ${a.amt} ${a.prevout} ${gi.groupId.toString()} ${ai?.ticker}")
+            }
+            else
+            {
+                LogIt.warning(sourceLoc() +": All non-asset prevouts should already be filtered out")
             }
         }
 
@@ -740,11 +769,9 @@ fun SendToPermScreen(acc: Account, sess: TricklePaySession , nav: ScreenNav)
         Row(modifier = Modifier.fillMaxWidth().padding(0.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
             WallyBoringLargeTextButton(S.accept)
             {
-                val s = sess.proposedDestinations
-                sess.proposedDestinations = null // This stops accidental double send
                 try
                 {
-                    if (s != null) acc.wallet.send(s, false, i18n(S.title_activity_trickle_pay) + " " + domainAndTopic + ". " + (sess.reason ?: ""))
+                    sess.acceptSendToRequest()
                     displaySuccess(S.TpSendRequestAccepted)
                 }
                 catch(e:WalletNotEnoughBalanceException)
@@ -772,9 +799,10 @@ fun SendToPermScreen(acc: Account, sess: TricklePaySession , nav: ScreenNav)
 
 
 
-fun onProvideIdentity(iuri: Uri, idData: IdentityDomain, account: Account? = null)
+fun onProvideIdentity(sess: IdentitySession, account: Account? = null)
 {
-    launch {
+    if (true) {
+        val iuri = sess.uri
         try
         {
             if (iuri != null)
@@ -783,12 +811,15 @@ fun onProvideIdentity(iuri: Uri, idData: IdentityDomain, account: Account? = nul
                 if (tmpHost == null)
                 {
                     displayError(S.badLink)
-                    return@launch
+                    return
                 }
                 val port = iuri.port
                 val path = iuri.encodedPath
                 val attribs = iuri.queryMap()
-                val challenge = attribs["chal"]
+                val challenge:String = attribs["chal"] ?: run {
+                    displayError(S.badLink)
+                    return
+                }
                 val cookie = attribs["cookie"]
                 val op = attribs["op"]
                 val responseProtocol = attribs["proto"]
@@ -805,16 +836,16 @@ fun onProvideIdentity(iuri: Uri, idData: IdentityDomain, account: Account? = nul
                 catch (e: PrimaryWalletInvalidException)
                 {
                     displayError(S.primaryAccountRequired)
-                    return@launch
+                    return
                 }
                 if (act.locked)
                 {
                     displayError(S.NoAccounts)
-                    return@launch
+                    return
                 }
 
                 val wallet = act.wallet
-
+                val idData = sess.idData
                 val seed = if (idData != null)
                 {
                     if (idData.useIdentity == IdentityDomain.COMMON_IDENTITY)
@@ -849,28 +880,28 @@ fun onProvideIdentity(iuri: Uri, idData: IdentityDomain, account: Account? = nul
                     var loginReq = protocol + "://" + tmpHost + portStr + path
                     loginReq += "?op=login&addr=" + address.toString().urlEncode() + "&sig=" + sigStr.urlEncode() + (if (cookie != null) "&cookie=" + cookie.urlEncode() else "")
 
-                    wallyApp!!.handleLogin(loginReq)
-                    return@launch
+                    sess.whenDone?.invoke(loginReq, "", true) ?: wallyApp!!.handleLogin(loginReq)
+                    return
                 }
                 else if ((op == "reg") || (op == "info"))
                 {
                     val chalToSign = tmpHost + portStr + "_nexid_" + op + "_" + challenge
-                    LogIt.info("Identity operation: reg or info: challenge: " + chalToSign + " cookie: " + cookie)
+                    LogIt.info("Identity operation: reg or info: address: " + identityDest.address + "  challenge: " + chalToSign + "  cookie: " + cookie)
 
                     val sig = libnexa.signMessage(chalToSign.toByteArray(), secret.getSecret())
                     if (sig == null || sig.size == 0) throw IdentityException("Wallet failed to provide a signable identity", "bad wallet", ErrorSeverity.Severe)
                     val sigStr = Codec.encode64(sig)
-                    LogIt.info("signature is: " + sigStr)
+                    LogIt.info("Signature is: " + sigStr + "  hex: " + sig.toHex())
 
                     val identityInfo = wallet.lookupIdentityInfo(address)
 
-                    var loginReq = protocol + "://" + tmpHost + portStr + path
+                    var loginReq = protocol + "://" + tmpHost + portStr + path + "?cookie=" + cookie.toString().urlEncode()
 
                     val params = mutableMapOf<String, String>()
                     params["op"] = op
-                    params["addr"] = address.toString()
-                    params["sig"] = sigStr
-                    params["cookie"] = cookie.toString()
+                    params["addr"] = address.toString().jsonString()
+                    params["sig"] = sigStr.jsonString()
+                    params["cookie"] = cookie.toString().jsonString()
 
                     val jsonBody = StringBuilder("{")
                     var firstTime = true
@@ -886,8 +917,8 @@ fun onProvideIdentity(iuri: Uri, idData: IdentityDomain, account: Account? = nul
                     }
                     jsonBody.append('}')
 
-                    wallyApp?.handlePostLogin(loginReq, jsonBody.toString())
-                    return@launch
+                    sess.whenDone?.invoke(loginReq, jsonBody.toString(), true) ?: wallyApp?.handlePostLogin(loginReq, jsonBody.toString())
+                    return
                 }
                 else if (op == "sign")
                 {
@@ -896,7 +927,7 @@ fun onProvideIdentity(iuri: Uri, idData: IdentityDomain, account: Account? = nul
                     if (msg == null)
                     {
                         displayError(S.nothingToSign)
-                        return@launch
+                        return
                     }
                     else
                     {
@@ -904,7 +935,7 @@ fun onProvideIdentity(iuri: Uri, idData: IdentityDomain, account: Account? = nul
                         if (msgSig == null || msgSig.size == 0)
                         {
                             displayError(S.badSignature)
-                            return@launch
+                            return
                         }
                         else
                         {
@@ -916,75 +947,28 @@ fun onProvideIdentity(iuri: Uri, idData: IdentityDomain, account: Account? = nul
                             setTextClipboard(s)
                             displayNotice(S.sigInClipboard)
 
-                            val reply = attribs["reply"]
-                            if (reply == null || reply == "true")
+                            var sigReq = protocol + "://" + tmpHost + portStr + path + "?op=sign&addr=" + address.toString() + "&sig=" + sigStr.urlEncode() + if (cookie == null) "" else "&cookie=" + cookie.urlEncode()
+                            val cb = sess.whenDone
+                            if (cb!=null) cb(sigReq, "", true)
+                            else
                             {
-                                var sigReq = protocol + "://" + tmpHost + portStr + path
-                                sigReq += "?op=sign&addr=" + address.toString() + "&sig=" + sigStr.urlEncode() + if (cookie == null) "" else "&cookie=" + cookie.urlEncode()
-
-                                try
+                                val reply = attribs["reply"]
+                                if (reply == null || reply == "true")
                                 {
-                                    val result = Url(sigReq).readBytes(HTTP_REQ_TIMEOUT_MS, 1000)
-                                    if (result.size < 100) displayNotice(result.decodeUtf8())
-                                }
-                                catch (e: CannotLoadException)
-                                {
-                                    displayError(S.connectionException)
-                                }
-                                catch (e: Exception)
-                                {
-                                    displayUnexpectedException(e)
-                                }
-
-
-                                /*
-                                var forwarded = 0  // Handle URL forwarding
-                                getloop@ while (forwarded < 3)
-                                {
-                                    LogIt.info("signature reply: " + sigReq)
                                     try
                                     {
-                                        LogIt.info(sigReq)
-                                        val (resp, status) = Uri.parse(sigReq).loadTextAndStatus(HTTP_REQ_TIMEOUT_MS)
-                                        LogIt.info("signature response code:" + status.toString() + " response: " + resp)
-                                        if ((status >= 200) and (status < 250))
-                                        {
-                                            displayNotice(resp)
-                                            return@launch
-                                        }
-                                        else if ((status == 301) or (status == 302))  // Handle URL forwarding (often switching from http to https)
-                                        {
-                                            sigReq = resp
-                                            forwarded += 1
-                                            continue@getloop
-                                        }
-                                        else
-                                        {
-                                            displayNotice(resp)
-                                            return@launch
-                                        }
-
+                                        val result = Url(sigReq).readBytes(HTTP_REQ_TIMEOUT_MS, 1000)
+                                        if (result.size < 100) displayNotice(result.decodeUtf8())
                                     }
-                                    catch (e: FileNotFoundException)
-                                    {
-                                        displayError(S.badLink)
-                                        return@launch
-                                    }
-                                    catch (e: java.io.IOException)
-                                    {
-                                        logThreadException(e)
-                                        displayError(S.connectionAborted)
-                                        return@launch
-                                    }
-                                    catch (e: java.net.ConnectException)
+                                    catch (e: CannotLoadException)
                                     {
                                         displayError(S.connectionException)
-                                        return@launch
                                     }
-                                    break@getloop  // only way to actually loop is to hit a 301 or 302
+                                    catch (e: Exception)
+                                    {
+                                        displayUnexpectedException(e)
+                                    }
                                 }
-
-                                 */
                             }
                         }
                     }
@@ -993,7 +977,7 @@ fun onProvideIdentity(iuri: Uri, idData: IdentityDomain, account: Account? = nul
             }
             else  // uri was null
             {
-                return@launch
+                return
             }
         }
         catch (e: IdentityException)

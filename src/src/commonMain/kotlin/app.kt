@@ -276,8 +276,8 @@ open class CommonApp
     // You can access the primary account object in a manner that throws an exception or returns a null, your choice
     var nullablePrimaryAccount: Account? = null
 
-    val assetManager = AssetManager(this)
-    val tpDomains: TricklePayDomains = TricklePayDomains(this)
+    val assetManager = AssetManager()
+    val tpDomains: TricklePayDomains = TricklePayDomains()
 
     var assetLoaderThread: iThread? = null
 
@@ -396,7 +396,9 @@ open class CommonApp
     // We wouldn't notify if this app produced the Intent from active user input (like QR scan)
     // but if it came from a long poll, then notify.
     // Notifying and startActivityForResult produces a double call to that intent
-    fun handlePaste(urlStr: String): Boolean
+    // the callback takes what is loosely the response URL, the response POST data, and a true/false value that if provided,
+    // sums up whether the paste was generally "accepted" or "rejected"
+    fun handlePaste(urlStr: String, then: ((String,String, Boolean?)->Unit)?= null): Boolean
     {
         try
         {
@@ -459,11 +461,11 @@ open class CommonApp
             }
             else if (scheme == IDENTITY_URI_SCHEME)
             {
-                HandleIdentity(uri)
+                HandleIdentity(uri, then)
             }
             else if (scheme == TDPP_URI_SCHEME)
             {
-                HandleTdpp(uri)
+                HandleTdpp(uri, then)
             }
             else
             {

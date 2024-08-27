@@ -49,9 +49,8 @@ fun MainViewController(): UIViewController
         }
     },
       {
-        val currentRootScreen = remember { mutableStateOf(ScreenId.Splash) }
-        nav.reset(currentRootScreen)
-        NavigationRoot(nav, Modifier)
+        nav.reset(ScreenId.Splash)
+        NavigationRoot(Modifier)
     })
     v = view
 

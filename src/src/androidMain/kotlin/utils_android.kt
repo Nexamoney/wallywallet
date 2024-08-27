@@ -287,5 +287,9 @@ actual fun getResourceFile(name: String): BufferedSource
     val systemnavbar = insets?.getInsets(WindowInsetsCompat.Type.navigationBars())?.bottom ?: 0
     if (android.os.Build.VERSION.SDK_INT < 35) imeHeight -= systemnavbar
     val density = LocalDensity.current.density
-    return (imeHeight / density).dp
+    val height = imeHeight / density
+    return if (height < 0)
+        0.dp
+    else
+        (imeHeight / density).dp
 }

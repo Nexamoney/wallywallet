@@ -13,6 +13,7 @@ import androidx.compose.ui.window.rememberWindowState
 import info.bitcoinunlimited.www.wally.ui.NavigationRoot
 import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.ScreenNav
+import info.bitcoinunlimited.www.wally.ui.nav
 import info.bitcoinunlimited.www.wally.ui.views.loadingAnimation
 import org.nexa.threads.millisleep
 import java.io.File
@@ -70,13 +71,11 @@ object WallyJvmApp
 
 fun guiNewPanel()
 {
-    val nav = ScreenNav()
-    val currentRootScreen = mutableStateOf(ScreenId.Splash)
     backgroundOnly = false
     application(true)
     {
         var isOpen by remember { mutableStateOf(true) }
-        nav.reset(currentRootScreen)
+        nav.reset(ScreenId.Splash)
 
         if (isOpen)
         {
@@ -86,7 +85,7 @@ fun guiNewPanel()
               state = rememberWindowState(width = (5 * 160).dp, height = (7 * 160).dp)
             )
             {
-                NavigationRoot(nav, Modifier)
+                NavigationRoot(Modifier)
             }
         }
     }
