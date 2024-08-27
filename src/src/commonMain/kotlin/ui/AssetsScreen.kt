@@ -41,7 +41,12 @@ fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, allo
 {
     var apc by remember { mutableStateOf(assetPerAccount) }
     val asset = apc.assetInfo
-    val nft = asset.nft
+    val nftRaw = asset.nftObservable.collectAsState()
+    val nft = nftRaw.value
+    val assetName = asset.nameObservable.collectAsState()
+    // This automatically re-renders the compose view on changes to loadStateObservable
+    @Suppress("unused")
+    val loadState = asset.loadStateObservable.collectAsState()
 
     Column(modifier = modifier) {
         if ((devMode)&&(verbosity>0)) SelectionContainer(Modifier.fillMaxWidth()) { CenteredFittedText(asset.groupId.toStringNoPrefix()) }
@@ -89,7 +94,7 @@ fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, allo
             }
 
             Column(Modifier.weight(1f).align(Alignment.CenterVertically)) {
-                var name = (if ((nft != null) && (nft.title.length > 0)) nft.title else asset.name)
+                var name = (if ((nft != null) && (nft.title.length > 0)) nft.title else assetName.value)
                 if (verbosity > 0)
                 {
                     if (name != null) Text(text = name, modifier = Modifier.padding(0.dp).fillMaxWidth(), style = WallySectionTextStyle(), textAlign = TextAlign.Center)
@@ -146,17 +151,19 @@ fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
 {
     var asset by remember { mutableStateOf(assetInfo) }
     var showing by remember { mutableStateOf(S.NftPublicMedia) }  // Reuse the i18n int to indicate what subscreen is being shown
+    val nftState = asset.nftObservable.collectAsState()
+    val nft = nftState.value
 
     LaunchedEffect(assetInfo.groupId) {
         if (asset.iconUri != null)
             showing = S.NftCardFront
         else if (asset.publicMediaUri != null)
             showing = S.NftPublicMedia
-        else if ((asset.nft?.info ?: "") != "")
+        else if ((nft?.info ?: "") != "")
             showing = S.NftInfo
         else if (asset.ownerMediaUri != null)
             showing = S.NftOwnerMedia
-        else if ((asset.nft?.license ?: "") != "")
+        else if ((nft?.license ?: "") != "")
             showing = S.NftLegal
         else if (asset.iconBackUri != null)
             showing = S.NftCardBack
@@ -172,13 +179,13 @@ fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
             if (a.publicMediaUri != null) WallySmallTextButton(S.NftPublicMedia, selected = showing == S.NftPublicMedia, onClick = {
                 showing = S.NftPublicMedia
             })
-            if ((a.nft?.info ?: "") != "") WallySmallTextButton(S.NftInfo, selected = showing == S.NftInfo, onClick = {
+            if ((nft?.info ?: "") != "") WallySmallTextButton(S.NftInfo, selected = showing == S.NftInfo, onClick = {
                 showing = S.NftInfo
             })
             if (a.ownerMediaUri != null) WallySmallTextButton(S.NftOwnerMedia, selected = showing == S.NftOwnerMedia, onClick = {
                 showing = S.NftOwnerMedia
             })
-            if ((a.nft?.license ?: "") != "") WallySmallTextButton(S.NftLegal, selected = showing == S.NftLegal, onClick = {
+            if ((nft?.license ?: "") != "") WallySmallTextButton(S.NftLegal, selected = showing == S.NftLegal, onClick = {
                 showing = S.NftLegal
             })
             if (a.iconBackUri != null) WallySmallTextButton(S.NftCardBack, selected = showing == S.NftCardBack, onClick = {
@@ -326,13 +333,13 @@ fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
             S.NftInfo ->
             {
                 // TODO formatting (support minimal HTML)
-                Text(asset.nft?.info ?: "")
+                Text(nft?.info ?: "")
             }
 
             S.NftLegal ->
             {
                 // TODO formatting (support minimal HTML)
-                Text(asset.nft?.license ?: "")
+                Text(nft?.license ?: "")
             }
         }
 
@@ -348,7 +355,9 @@ fun AssetScreen(account: Account)
     val subScreen = nav.currentSubState.collectAsState()
     var assetFocus by remember { mutableStateOf<AssetPerAccount?>(null) }
     var assetFocusIndex by remember { mutableStateOf<Int>(0) }
-    var assetList = remember { mutableStateListOf<Pair<AssetLoadState,AssetPerAccount>>() }
+    val assetsState = account.assetsObservable.collectAsState()
+    val assets = assetsState.value
+    val assetList = assets.values.toList().sortedBy { it.assetInfo.nft?.title ?: it.assetInfo.name ?: it.assetInfo.ticker ?: it.groupInfo.groupId.toString() }
 
     var asl = assetListState.get(account.name)
     if (asl == null)
@@ -356,53 +365,7 @@ fun AssetScreen(account: Account)
             assetListState[account.name] = MutableStateFlow(rememberLazyListState())
     }
 
-
-    // Every half second check whether assetList needs to be regenerated
-    LaunchedEffect(Unit) {
-        while(true)
-        {
-            val lst = account.assetList()
-            lst.sortBy { it.assetInfo.nft?.title ?: it.assetInfo.name ?: it.assetInfo.ticker ?: it.groupInfo.groupId.toString() }
-
-            var redo=false
-            if (lst.size != assetList.size)
-            {
-                LogIt.info("Asset list redraw: Size changed")
-                redo=true
-            }
-            else
-            {
-                // Check if either the token changed or its loadstate changed
-                for (item in lst.zip(assetList))
-                {
-                    if (item.first.assetInfo.loadState != item.second.first)
-                    {
-                        LogIt.info("Asset list redraw: loadstate changed for ${item.first.groupInfo.groupId}")
-                        redo = true
-                        break
-                    }
-                    if (item.first.groupInfo.groupId != item.second.second.groupInfo.groupId)
-                    {
-                        LogIt.info("Asset list redraw: order changed for ${item.first.groupInfo.groupId} was ${item.second.second.groupInfo.groupId}")
-                        redo = true
-                        break
-                    }
-                }
-            }
-
-            if (redo)
-            {
-                assetList.clear()
-                for (item in lst)
-                {
-                    assetList.add(Pair(item.assetInfo.loadState, item))
-                }
-            }
-            delay(500)
-        }
-    }
-
-    if (subScreen.value == null)
+    if (nav.currentSubState.value == null)
     {
         if (assetFocus!=null) clearAlerts()
         assetFocus = null
@@ -412,7 +375,7 @@ fun AssetScreen(account: Account)
         val a = assetFocus
         if (a == null)  // Nothing is in focus, show the whole list
         {
-            if (account.assets.size == 0)
+            if (assets.size == 0)
             {
                 Spacer(Modifier.height(10.dp))
                 CenteredFittedText(i18n(S.NoAssets) % mapOf("act" to account.name), 2.0, modifier=Modifier.background(WallyRowBbkg1).fillMaxWidth())
@@ -425,18 +388,17 @@ fun AssetScreen(account: Account)
                 LazyColumn(state=tmp, horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(0.2f)) {
                     var index = 0
                     assetList.forEach {
-                        val key = it.second.groupInfo.groupId
-                        val entry = it.second
+                        val key: GroupId = it.groupInfo.groupId
                         val indexFreezer = index  // To use this in the item composable, we need to freeze it to a val, because the composable is called out-of-scope
                         item(key = key.toByteArray()) {
                             //LogIt.info("asset item")
                             val bkg = WallyAssetRowColors[indexFreezer % WallyAssetRowColors.size]
                             Box(Modifier.padding(4.dp, 2.dp).fillMaxWidth().background(bkg).clickable {
-                                assetFocus = account.assets[key]
+                                assetFocus = assets[key]
                                 assetFocusIndex = indexFreezer
                                 nav.go(ScreenId.Assets, byteArrayOf(indexFreezer.toByte()))
                             }) {
-                                AssetListItemView(entry, 1, false, Modifier.padding(0.dp, 2.dp))
+                                AssetListItemView(it, 1, false, Modifier.padding(0.dp, 2.dp))
                             }
                         }
                         index++

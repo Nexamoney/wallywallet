@@ -5,6 +5,8 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import io.ktor.http.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -248,7 +250,13 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
         const val SERIALIZE_VERSION = 1.toByte()
     }
     @kotlinx.serialization.Transient var dataLock = Gate()
-    var name:String? = null
+    var name: String? = null
+        set(value) {
+            _nameState.value = value
+            field = value
+        }
+    @Transient private val _nameState: MutableStateFlow<String?> = MutableStateFlow(name)
+    @Transient val nameObservable = _nameState.asStateFlow()
     var ticker:String? = null
     var genesisHeight:Long = -1
     @Serializable(with = Hash256Serializer::class) var genesisTxidem: Hash256? = null
@@ -262,6 +270,12 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
     @Serializable(with = UrlSerializer::class) var iconBackUri: Url? = null
 
     var nft: NexaNFTv2? = null
+        set(value) {
+            _nftState.value = value
+            field = value
+        }
+    @Transient private var _nftState: MutableStateFlow<NexaNFTv2?> = MutableStateFlow(nft)
+    @Transient val nftObservable = _nftState.asStateFlow()
 
     var publicMediaCache: String? = null   // local storage location (if it exists)
     @Serializable(with = UrlSerializer::class)
@@ -276,7 +290,12 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
     var ownerMediaBytes: ByteArray? = null
 
     var loadState: AssetLoadState = AssetLoadState.UNLOADED
-
+        set(value) {
+            _loadState.value = value
+            field = value
+        }
+    @Transient private val _loadState: MutableStateFlow<AssetLoadState> = MutableStateFlow(loadState)
+    @Transient var loadStateObservable = _loadState.asStateFlow()
     /*
     // We know our serialization format is stable so its the safest choice to use
     override fun BCHdeserialize(stream: BCHserialized): BCHserialized
