@@ -7,6 +7,8 @@ import kotlin.concurrent.Volatile
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.serialization.Transient
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
 
@@ -139,7 +141,13 @@ class Account(
     /** A string denoting this wallet's currency units.  That is, the units that this wallet should use in display, in its BigDecimal amount representations, and is converted to and from in fromFinestUnit() and toFinestUnit() respectively */
     val currencyCode: String = chainToDisplayCurrencyCode[wallet.chainSelector]!!
 
-    var assets = mutableMapOf<GroupId, AssetPerAccount>()
+    var assets = mapOf<GroupId, AssetPerAccount>()
+        set(value) {
+            _assetsState.value = value
+            field = value
+        }
+    @Transient private val _assetsState = MutableStateFlow<Map<GroupId, AssetPerAccount>>(mapOf<GroupId, AssetPerAccount>())
+    @Transient val assetsObservable = _assetsState.asStateFlow()
     val assetTransferList = mutableListOf<GroupId>()
 
     // How to abort a fastforward (and its happening if non-null)
@@ -523,7 +531,11 @@ class Account(
                 // Insert it into our account if missing -- but do not reinsert if not missing so we don't accidentally remove other state (send quantity)
                 // just update the quantity
                 if (cur != null) cur.groupInfo.tokenAmt = asset.tokenAmt
-                else assets[asset.groupId] = AssetPerAccount(asset, assetInfo)
+                else {
+                    val tmp = assets.toMutableMap()
+                    tmp[asset.groupId] = AssetPerAccount(asset, assetInfo)
+                    assets = tmp
+                }
             }
         }
         access.lock {
@@ -531,7 +543,11 @@ class Account(
             val curKeys = assets.keys.toList()
             for (assetKey in curKeys)
             {
-                if (!(assetKey in ast)) assets.remove(assetKey)
+                if (!(assetKey in ast)){
+                    val tmp = assets.toMutableMap()
+                    tmp.remove(assetKey)
+                    assets = tmp
+                }
             }
         }
     }
