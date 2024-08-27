@@ -276,8 +276,8 @@ open class CommonApp
     // You can access the primary account object in a manner that throws an exception or returns a null, your choice
     var nullablePrimaryAccount: Account? = null
 
-    val assetManager = AssetManager(this)
-    val tpDomains: TricklePayDomains = TricklePayDomains(this)
+    val assetManager = AssetManager()
+    val tpDomains: TricklePayDomains = TricklePayDomains()
 
     var assetLoaderThread: iThread? = null
 

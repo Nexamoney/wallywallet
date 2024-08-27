@@ -663,7 +663,7 @@ fun ElectrumClientFactory(blockchain: Blockchain): ()->ElectrumClient
     }
 }
 
-class AssetManager(val app: CommonApp): AssetManagerStorage
+class AssetManager(): AssetManagerStorage
 {
     protected var access = Mutex("assetLock")
     var assets = mutableMapOf<GroupId, AssetInfo>()
