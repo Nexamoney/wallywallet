@@ -1,6 +1,7 @@
 package ui.views
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.views.AccountItemView
@@ -46,6 +47,7 @@ class AccountListViewTest
               index = 0,
               isSelected = iSelectedMock.value,
               devMode = false,
+              backgroundColor = Color.Transparent,
               onClickAccount = {
                   iSelectedMock.value = !iSelectedMock.value
               },

@@ -33,6 +33,7 @@ const val ACCESS_PRICE_DATA_PREF = "accessPriceData"
 const val BACKGROUND_SYNC_PREF = "backgroundSync"
 const val DARK_MODE_PREF = "darkModeMenu"
 const val DEV_MODE_PREF = "devinfo"
+const val EXPERIMENTAL_UX_MODE_PREF = "expUX"
 const val CONFIRM_ABOVE_PREF = "confirmAbove"
 const val CONFIGURED_NODE = "NodeAddress"
 
@@ -91,8 +92,9 @@ interface VersionI
 fun SettingsScreen(nav: ScreenNav)
 {
     val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
-    // TODO val darkMode = remember { mutableStateOf( preferenceDB.getBoolean(DARK_MODE_PREF, false)) }
     var devModeView by mutableStateOf(devMode)
+    var darkModeView by mutableStateOf(darkMode)
+    var experimentalUxView by mutableStateOf(experimentalUx)
     val generalSettingsSwitches = mutableListOf(
       GeneralSettingsSwitch(ACCESS_PRICE_DATA_PREF, S.AccessPriceData),
     )
@@ -101,7 +103,6 @@ fun SettingsScreen(nav: ScreenNav)
     {
         generalSettingsSwitches.add(GeneralSettingsSwitch(BACKGROUND_SYNC_PREF, S.backgroundSync))
     }
-
 
     // When we leave the settings screen, set global variables based on settings changes
     nav.onDepart {
@@ -159,12 +160,17 @@ fun SettingsScreen(nav: ScreenNav)
                 ShowScreenNavSwitch(SHOW_ASSETS_PREF, NavChoice(ScreenId.Assets, S.title_activity_assets, "icons/invoice.xml"), S.enableAssetsMenu, showAssetsPref)
             WallyHalfDivider()
             generalSettingsSwitches.forEach { GeneralSettingsSwitchView(it) }
-            /* TODO
-            DarkMode(darkMode) {
+
+            WallySwitchRow(darkModeView, S.enableDarkMode) {
                 preferenceDB.edit().putBoolean(DARK_MODE_PREF, it).commit()
-                darkMode.value = it
+                darkModeView = it
+                darkMode = it
             }
-             */
+            WallySwitchRow(experimentalUxView, S.enableExperimentalUx) {
+                preferenceDB.edit().putBoolean(EXPERIMENTAL_UX_MODE_PREF, it).commit()
+                experimentalUxView = it
+                experimentalUx = it
+            }
             WallySwitchRow(devModeView, S.enableDeveloperView) {
                 LogIt.info("devmode $it")
                 preferenceDB.edit().putBoolean(DEV_MODE_PREF, it).commit()
@@ -350,11 +356,6 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
     }
 }
 
-@Composable
-fun DevMode(devMode: MutableState<Boolean>, onClick: (Boolean) -> Unit)
-{
-    WallySwitch(devMode, S.enableDeveloperView, Modifier, onClick)
-}
 
 @Composable
 fun ConfirmAbove(preferenceDB: SharedPreferences)

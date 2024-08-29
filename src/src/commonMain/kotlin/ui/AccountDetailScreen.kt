@@ -173,12 +173,10 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
     val accountAction: MutableState<AccountAction?> = remember { mutableStateOf(null) }
     var checked by remember { mutableStateOf(acc.flags and ACCOUNT_FLAG_REUSE_ADDRESSES == 0UL) }
 
-
     fun displayNoticePrimaryAccount(name: String)
     {
         displayNotice(i18n(S.primaryAccountSuccess) % mapOf("name" to name))
     }
-
 
     if (accountAction.value == null)
     {
@@ -254,6 +252,7 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                             // TODO while we don't have Rostrum (electrum) we can't reassess, so just forget them under the assumption that they will be confirmed and accounted for, or are bad.
                             // coin.wallet.reassessUnconfirmedTx()
                             acc.wallet.cleanUnconfirmed()
+                            acc.wallet.cleanReserved()
                             displayNotice(S.unconfAssessmentNotice)
                         }
                         catch (e: Exception)

@@ -263,36 +263,54 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
 
     if (ext.endsWith(".svg", true))
     {
-        val svg = if (mediaData == null)
+        val svg = try
         {
-            if (url.protocol == null || url.protocol.name == "file" || url.toString().contains("://localhost"))
+            if (mediaData == null)
             {
-                SVG.getFromInputStream(FileInputStream(name))
+                if (url.protocol == null || url.protocol.name == "file" || url.toString().contains("://localhost"))
+                {
+                    SVG.getFromInputStream(FileInputStream(name))
+                }
+                else throw UnimplementedException("non-local data in NFT")
             }
-            else throw UnimplementedException("non-local data in NFT")
+            else
+            {
+                SVG.getFromInputStream(ByteArrayInputStream(mediaData))
+            }
+        }
+        catch(e: Exception) { null }
+
+        if (svg != null)
+        {
+            // This doesn't make sense because SVG is generally scalable and might be given to us with crazy dimensions
+            // val bitmap = Bitmap.createBitmap(svg.documentWidth.toInt(), svg.documentHeight.toInt(), Bitmap.Config.ARGB_8888)
+            val width = (512 * svg.documentAspectRatio).toInt()
+            val height = 512
+            val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+            val canvas = android.graphics.Canvas(bitmap)
+            svg.setDocumentHeight(height.toFloat())  // This tells the renderer to scale the SVG to fit the whole canvas
+            svg.setDocumentWidth(width.toFloat())
+            svg.renderToCanvas(canvas)
+            val im: ImageBitmap = bitmap.asImageBitmap()
+            wrapper(MediaInfo(im.width, im.height, false)) { mod ->
+                val m = mod ?: Modifier
+                  .fillMaxSize()
+                  .background(Color.Transparent)
+                Image(im, null, m, contentScale = ContentScale.Fit)
+            }
         }
         else
         {
-            SVG.getFromInputStream(ByteArrayInputStream(mediaData))
+            val mi = MediaInfo(200, 200, false, false)
+            wrapper(mi) { mod ->
+                val m = mod ?: Modifier
+                  .fillMaxSize()
+                  .background(Color.Transparent)
+                ResImageView("icons/media_not_supported.xml", modifier = m)
+            }
+            return false
         }
 
-
-        // This doesn't make sense because SVG is generally scalable and might be given to us with crazy dimensions
-        // val bitmap = Bitmap.createBitmap(svg.documentWidth.toInt(), svg.documentHeight.toInt(), Bitmap.Config.ARGB_8888)
-        val width = (512 * svg.documentAspectRatio).toInt()
-        val height = 512
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-        val canvas = android.graphics.Canvas(bitmap)
-        svg.setDocumentHeight(height.toFloat())  // This tells the renderer to scale the SVG to fit the whole canvas
-        svg.setDocumentWidth(width.toFloat())
-        svg.renderToCanvas(canvas)
-        val im: ImageBitmap = bitmap.asImageBitmap()
-        wrapper(MediaInfo(im.width, im.height, false)) { mod ->
-            val m = mod ?: Modifier
-              .fillMaxSize()
-              .background(Color.Transparent)
-            Image(im, null, m, contentScale = ContentScale.Fit)
-        }
     }
     else if (ext.endsWith(".jpg", true) ||
       ext.endsWith(".jpeg", true) ||

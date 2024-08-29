@@ -353,7 +353,16 @@ fun AssetScreen(account: Account)
 {
     val scrn = nav.currentScreen.collectAsState()
     val subScreen = nav.currentSubState.collectAsState()
-    var assetFocus by remember { mutableStateOf<AssetPerAccount?>(null) }
+    val sub = subScreen.value
+
+    // If the subscreen tells us to show a particular asset, then show it.
+    var assetFocus by remember { mutableStateOf<AssetPerAccount?>(
+      if (sub != null)
+      {
+          account.assets[GroupId(account.chain.chainSelector, sub)]
+      }
+      else null
+    ) }
     var assetFocusIndex by remember { mutableStateOf<Int>(0) }
     val assetsState = account.assetsObservable.collectAsState()
     val assets = assetsState.value
@@ -365,7 +374,7 @@ fun AssetScreen(account: Account)
             assetListState[account.name] = MutableStateFlow(rememberLazyListState())
     }
 
-    if (nav.currentSubState.value == null)
+    if (subScreen.value == null)
     {
         if (assetFocus!=null) clearAlerts()
         assetFocus = null
@@ -396,7 +405,7 @@ fun AssetScreen(account: Account)
                             Box(Modifier.padding(4.dp, 2.dp).fillMaxWidth().background(bkg).clickable {
                                 assetFocus = assets[key]
                                 assetFocusIndex = indexFreezer
-                                nav.go(ScreenId.Assets, byteArrayOf(indexFreezer.toByte()))
+                                nav.go(ScreenId.Assets, assetFocus?.groupInfo?.groupId?.toByteArray())
                             }) {
                                 AssetListItemView(it, 1, false, Modifier.padding(0.dp, 2.dp))
                             }

@@ -78,6 +78,12 @@ open class IncorrectTokenDescriptionDoc(details: String) : LibNexaException(deta
 val NIFTY_ART_IP = mapOf(
   ChainSelector.NEXA to "niftyart.cash",
   // Enable manually for niftyart development: ChainSelector.NEXAREGTEST to "192.168.1.5:8988"
+  ChainSelector.NEXATESTNET to "192.168.2.11:8988"
+)
+val NIFTY_ART_WEB = mapOf(
+  ChainSelector.NEXA to "https://niftyart.cash",
+  // Enable manually for niftyart development: ChainSelector.NEXAREGTEST to "192.168.1.5:8988"
+    ChainSelector.NEXATESTNET to "http://192.168.2.11:8988"
 )
 
 fun String.runCommand(): String?
@@ -853,7 +859,7 @@ class AssetManager(): AssetManagerStorage
         {
             try
             {
-                url = "https://niftyart.cash/_public/${groupId.toStringNoPrefix()}"
+                url = "${NIFTY_ART_WEB[groupId.blockchain]}/_public/${groupId.toStringNoPrefix()}"
                 LogIt.info(sourceLoc() + "${groupId} trying NFT URL: " + url)
                 zipBytes = Url(url).readBytes(context = tokenCoCtxt)
                 LogIt.info(sourceLoc() + "${groupId} received NFT URL: " + url)

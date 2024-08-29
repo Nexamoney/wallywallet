@@ -398,16 +398,29 @@ open class CommonApp
     // Notifying and startActivityForResult produces a double call to that intent
     // the callback takes what is loosely the response URL, the response POST data, and a true/false value that if provided,
     // sums up whether the paste was generally "accepted" or "rejected"
-    fun handlePaste(urlStr: String, then: ((String,String, Boolean?)->Unit)?= null): Boolean
+    fun handlePaste(urlStrParam: String, then: ((String,String, Boolean?)->Unit)?= null): Boolean
     {
+        var urlStr = urlStrParam
         try
         {
-            val uri = Uri.parse(urlStr)
-            val scheme = uri.scheme
+            var uri = Uri.parse(urlStr)
+            var scheme = uri.scheme?.lowercase()
             // TODO val notify = amIbackground()
             val app = wallyApp
             if (app == null) return false // should never occur
-            // LogIt.info("Handle Paste: $urlStr")
+
+            // This is a workaround to support apps that only link http or https but android can launch it into wally
+            // The transformation is http://fake_domain_to_trigger_the_wallet/<actual scheme>/<actual reply domain>/<rest of the intent>
+            if (scheme == "http" || scheme == "https")
+            {
+                //val actualScheme = uri.pathSegments[0]
+                //val actualDomain = uri.pathSegments[1]
+                val p = (uri.encodedPath?.drop(1) ?: "") + "?" + uri.encodedQuery
+                val actualUri = p.replaceFirst("/","://")
+                urlStr = actualUri
+                uri = Uri.parse(actualUri)
+                scheme = uri.scheme?.lowercase()
+            }
 
             // see if this is an address without the prefix
             val whichChain = if (scheme == null)
@@ -1117,9 +1130,13 @@ open class CommonApp
                 try
                 {
                     if (nullablePrimaryAccount == null) primaryAccount = defaultPrimaryAccount()
-                    if (nullablePrimaryAccount?.visible == true) focusedAccount = nullablePrimaryAccount
-                    else focusedAccount = defaultPrimaryAccount()
-                    assert(focusedAccount?.visible ?: true)
+                    // If there is only one visible account, select it by default
+                    if (visibleAccountNames().size == 1)
+                    {
+                        if (nullablePrimaryAccount?.visible == true) focusedAccount = nullablePrimaryAccount
+                        else focusedAccount = defaultPrimaryAccount()
+                        assert(focusedAccount?.visible ?: true)
+                    }
                 }
                 catch(e:PrimaryWalletInvalidException)
                 {

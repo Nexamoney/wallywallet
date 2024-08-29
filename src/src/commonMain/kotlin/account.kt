@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.Transient
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
+import kotlin.random.Random
 
 /** Account flags: No flag */
 const val ACCOUNT_FLAG_NONE = 0UL
@@ -198,7 +199,19 @@ class Account(
         }
 
         // Tell the net layer how to get potential electrum nodes
-        (cnxnMgr as MultiNodeCnxnMgr).getElectrumServerCandidate = { this.getElectrumServerOn(it) }
+        (cnxnMgr as MultiNodeCnxnMgr).getElectrumServerCandidate = { ch, excl, pref ->
+            if (excl!=null && excl.isNotEmpty())
+            {
+                IpPort(excl.random().split(':').first(), DefaultElectrumTCP[ch] ?: DEFAULT_NEXA_TCP_ELECTRUM_PORT)
+            }
+            else if (pref!=null && pref.isNotEmpty())
+            {
+                val tmp = Random.nextInt()%(pref.size+1)
+                if (tmp == pref.size) ElectrumServerOn(ch)
+                else IpPort(pref.random().split(':').first(), DefaultElectrumTCP[ch] ?: DEFAULT_NEXA_TCP_ELECTRUM_PORT)
+            }
+            this.getElectrumServerOn(ch)
+        }
 
         setBlockchainAccessModeFromPrefs()
         constructAssetMap()
