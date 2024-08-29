@@ -172,7 +172,9 @@ Good luck!
 
     <!-- Settings -->
     <string name="version" formatted="false">Wally Wallet Version: %ver</string>
-    <string name="enableDeveloperView"> Advanced/developer mode</string>
+    <string name="enableDeveloperView">Advanced/developer mode</string>
+    <string name="enableExperimentalUx">Experimental Interface</string>
+    <string name="enableDarkMode">Dark Mode</string>
     <string name="enableIdentityMenu">Enable identity screen</string>
     <string name="enableTricklePayMenu">Enable trickle pay screen</string>
     <string name="enableAssetsMenu">Enable assets screen</string>

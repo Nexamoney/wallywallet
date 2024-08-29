@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
@@ -16,13 +17,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.sp
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
@@ -50,7 +48,6 @@ private val accountListState:MutableStateFlow<LazyListState?> = MutableStateFlow
     val accounts = accountGuiSlots.collectAsState()
     if (accountListState.value == null) accountListState.value = rememberLazyListState()
 
-
     LaunchedEffect(true)
     {
         for(c in accountChangedNotification)
@@ -77,32 +74,44 @@ private val accountListState:MutableStateFlow<LazyListState?> = MutableStateFlow
     val tmp = accountListState.collectAsState(scope.coroutineContext).value ?: rememberLazyListState()
 
     val selAct = selectedAccount.collectAsState().value
-    LazyColumn(state=tmp, horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
-        accounts.value.forEachIndexed { idx, it ->
-            item(key=it.name) {
-                // I would think that capturing this data would control redraw of each item, but it appears to not do so.
-                // Redraw is controlled of the entire AccountListView, or not at all.
-                //val anyChanges: MutableState<AccountUIData> = remember { mutableStateOf(it.uiData()) }
-                // scope.launch { listState.animateScrollToItem(idx, -1) }  // -1 puts our item more in the center
-                if (accountUIData[it.name] == null) accountUIData[it.name] = it.uiData()
-                AccountItemView(accountUIData[it.name]!!, idx, selAct == it, devMode,
-                  onClickAccount = { onAccountSelected(it) },
-                  onClickGearIcon = {
-                      nav.go(ScreenId.AccountDetails)
-                  })
-            }
-        }
-        // Since the thumb buttons cover the bottom most row, this blank bottom row allows the user to scroll the account list upwards enough to
-        // uncover the last account.  Its not necessary if there are just a few accounts though.
-        if (accounts.value.size >= 2)
-        {
-            item(key = "") {
-                Spacer(Modifier.height(150.dp))
-            }
-        }
-
+    if ((selAct != null) && experimentalUx)
+    {
+        if (accountUIData[selAct.name] == null) accountUIData[selAct.name] = selAct.uiData()
+        AccountItemView(accountUIData[selAct.name]!!, 0, true, devMode, Color.Transparent,
+          onClickAccount = { onAccountSelected(selAct) },
+          onClickGearIcon = {
+              nav.go(ScreenId.AccountDetails)
+          })
     }
+    else
+    {
+        LazyColumn(state = tmp, horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
+            accounts.value.forEachIndexed { idx, it ->
+                item(key = it.name) {
+                    // I would think that capturing this data would control redraw of each item, but it appears to not do so.
+                    // Redraw is controlled of the entire AccountListView, or not at all.
+                    //val anyChanges: MutableState<AccountUIData> = remember { mutableStateOf(it.uiData()) }
+                    // scope.launch { listState.animateScrollToItem(idx, -1) }  // -1 puts our item more in the center
+                    if (accountUIData[it.name] == null) accountUIData[it.name] = it.uiData()
+                    val backgroundColor = if (selAct == it) defaultListHighlight else if (idx and 1 == 0) WallyRowAbkg1 else WallyRowAbkg2
+                    AccountItemView(accountUIData[it.name]!!, idx, selAct == it, devMode, backgroundColor,
+                      onClickAccount = { onAccountSelected(it) },
+                      onClickGearIcon = {
+                          nav.go(ScreenId.AccountDetails)
+                      })
+                }
+            }
+            // Since the thumb buttons cover the bottom most row, this blank bottom row allows the user to scroll the account list upwards enough to
+            // uncover the last account.  Its not necessary if there are just a few accounts though.
+            if (accounts.value.size >= 2)
+            {
+                item(key = "") {
+                    Spacer(Modifier.height(150.dp))
+                }
+            }
 
+        }
+    }
 }
 
 
@@ -123,7 +132,8 @@ data class AccountUIData(
   var locked: Boolean = false,
   var lockable: Boolean = false,
   var fastForwarding: Boolean = false,
-  var ffStatus: String? = null)
+  var ffStatus: String? = null,
+  var recentHistory: List<TransactionHistory> = listOf())
 
 /** Look into this account and produce the strings and modifications needed to display it */
 fun Account.uiData():AccountUIData
@@ -209,7 +219,6 @@ fun Account.uiData():AccountUIData
     }
     else
     {
-
         ret.approximately = if ((chainstate == null) || (chainstate.syncedDate <= 1231416000)) i18n(S.unsynced)  // for fun: bitcoin genesis block
         else
         {
@@ -226,6 +235,21 @@ fun Account.uiData():AccountUIData
         ret.balColor = unsyncedBalanceColor
     }
 
+    val txh = mutableListOf<TransactionHistory>()
+    /* This code puts a fake tx at the top that keeps updating based on the current time
+       so you can see how often this is regenerating.
+    val fakeTx = txFor(wallet.chainSelector)
+    val fakeHistory = TransactionHistory(wallet.chainSelector, fakeTx)
+    fakeHistory.date = millinow()
+    fakeHistory.outgoingAmt=0
+    fakeHistory.incomingAmt=millinow()
+    txh.add(fakeHistory)
+    */
+    wallet.forEachTxByDate {
+        txh.add(it)
+        (txh.size >= 10) // just get the most recent 10
+    }
+    ret.recentHistory = txh.toList()
     return ret
 }
 
@@ -342,9 +366,7 @@ fun Account.uiData():AccountUIData
                 // else Spacer(actButtonSize) // these would stop the buttons from moving when other buttons disappear
             }
         }
-
     }
-
 }
 
 @Composable
@@ -353,10 +375,10 @@ fun AccountItemView(
   index: Int,
   isSelected: Boolean,
   devMode: Boolean,
+  backgroundColor: Color,
   onClickAccount: () -> Unit,
   onClickGearIcon: () -> Unit
 ) {
-    val backgroundColor = if (isSelected) defaultListHighlight else if (index and 1 == 0) WallyRowAbkg1 else WallyRowAbkg2
     Box(modifier = Modifier.testTag("AccountItemView").fillMaxWidth().padding(2.dp).background(backgroundColor).clickable(onClick = onClickAccount), contentAlignment = Alignment.Center) {
         // Each account
         Row(modifier = Modifier.padding(5.dp, 2.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
@@ -396,9 +418,122 @@ fun AccountItemView(
                     }
                 }
 
+                if (experimentalUx && isSelected)
+                {
+                    Spacer(Modifier.height(4.dp))
+                    accountListDetail(uidata, index, devMode)
+                }
+
             }
         }
 
+    }
+}
+
+@Composable fun accountListDetail(uidata: AccountUIData, index:Int, devMode:Boolean)
+{
+    val acc = uidata.account
+    val ai = acc.assetList()
+    val nftlls = rememberLazyListState()
+    val toklls = rememberLazyListState()
+    val histlls = rememberLazyListState()
+
+    var numNFTs = 0
+    var numAssets = 0
+    var numContracts = 0  // TODO contracts
+    ai.forEach {
+        if (it.groupInfo.groupId.subgroupData().size >= 32) numNFTs++
+        if ((it.assetInfo.ticker != null) && (it.groupInfo.groupId.subgroupData().size < 32)) numAssets++
+    }
+
+    // Decide how many rows of NFTs to show by adding some as the # of NFTs owned grows
+    val NftRows = min(4,numNFTs/40)
+    // Show NFTs/SFTs by image
+    LazyRow(state = nftlls, modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+        var index = 0
+        val iter = ai.iterator()
+        val itemGroups = mutableListOf<List<AssetPerAccount>>()
+        var curRow = mutableListOf<AssetPerAccount>()
+        while(iter.hasNext())
+        {
+            val it = iter.next()
+            if (curRow.size == NftRows)
+            {
+                itemGroups.add(curRow.toList())
+                curRow.clear()
+            }
+            // What is a NFT vs a token?  We will use whether the group likely commits to a NFT data file as the differentiator
+            if (it.groupInfo.groupId.subgroupData().size >= 32)
+                curRow.add(it)
+        }
+
+        for (row in itemGroups)
+        {
+            item(key = index) {
+                Column {
+                    for (i in row)
+                    {
+                        var entry: AssetPerAccount = i
+                        val asset = entry.assetInfo
+                        MpMediaView(asset.iconImage, asset.iconBytes, asset.iconUri?.toString(), hideMusicView = true) { mi, draw ->
+                                val m = Modifier.background(Color.Transparent).padding(1.dp).size(40.dp, 40.dp).clickable {
+                                    nav.go(ScreenId.Assets,  entry?.groupInfo?.groupId?.toByteArray())
+                                }
+                                draw(m)
+                            }
+                    }
+                }
+            }
+            index++
+        }
+    }
+    // Show non-NFTs by ticker
+    Spacer(Modifier.height(2.dp))
+    if (numAssets>0)
+    {
+        Text(i18n(S.assetsColon))
+        LazyRow(state = toklls, modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+            var index = 0
+            ai.forEach {
+                val key = it.groupInfo.groupId
+                val entry = it
+                val indexFreezer = index  // To use this in the item composable, we need to freeze it to a val, because the composable is called out-of-scope
+                item(key = key.toByteArray()) {
+                    val asset = entry.assetInfo
+                    val tck = asset.ticker
+                    val qty = tokenAmountString(it.groupInfo.tokenAmt, asset.tokenInfo?.genesisInfo?.decimal_places)
+                    // What is a NFT vs a token with an icon?  We will use whether the group likely commits to a NFT data file as the differentiator
+                    if ((tck != null) && (it.groupInfo.groupId.subgroupData().size < 32))
+                    {
+                        Spacer(Modifier.width(2.dp))
+                        Text("$tck:$qty")
+                        Spacer(Modifier.width(2.dp))
+                    }
+                }
+                index++
+            }
+        }
+    }
+    WallyDivider()
+    Spacer(Modifier.height(2.dp))
+    // Show history
+    val SendRecvIconSize = 26.dp
+    // Making this a scrollable lazy column would require that the account history list be fully updated on every account change (expensive).
+    // Instead the "recentHistory" is only filled with the last 10 items, so no need to make this scrollable
+    Column(modifier = Modifier.clickable { nav.go(ScreenId.TxHistory) }) {
+        uidata.recentHistory.forEachIndexed { idx, txh ->
+            val color = Color.Transparent // if (idx % 2 == 1) WallyRowAbkg1 else WallyRowAbkg2
+            Row(modifier = Modifier.padding(2.dp).fillMaxWidth().background(color)) {
+                    val amt = txh.incomingAmt - txh.outgoingAmt
+                    if (amt !=0L)
+                        ResImageView(if (amt>0) "icons/receivearrow.xml" else "icons/sendarrow.xml", modifier = Modifier.size(SendRecvIconSize))
+                    else Spacer(Modifier.size(SendRecvIconSize))
+                    Spacer(Modifier.width(4.dp))
+                    //CenteredFittedWithinSpaceText(text = acc.cryptoFormat.format(acc.fromFinestUnit(amt)), startingFontScale = 1.5, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                    Text(acc.cryptoFormat.format(acc.fromFinestUnit(amt)), fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                    if (txh.date > 1577836800000) Text(formatLocalEpochMilliseconds(txh.date, " "))
+            }
+        }
     }
 }
 

@@ -6,10 +6,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.uikit.ComposeUIViewControllerDelegate
 import androidx.compose.ui.window.ComposeUIViewController
-import info.bitcoinunlimited.www.wally.ui.BACKGROUND_SYNC_PREF
-import info.bitcoinunlimited.www.wally.ui.NavigationRoot
-import info.bitcoinunlimited.www.wally.ui.ScreenId
-import info.bitcoinunlimited.www.wally.ui.ScreenNav
+import info.bitcoinunlimited.www.wally.ui.*
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.Bip44Wallet
@@ -30,7 +27,6 @@ fun OnAppStartup()
     wallyApp = CommonApp()
     wallyApp!!.onCreate()
 }
-val nav = ScreenNav()
 
 @OptIn(ExperimentalForeignApi::class, InternalComposeApi::class)
 fun MainViewController(): UIViewController

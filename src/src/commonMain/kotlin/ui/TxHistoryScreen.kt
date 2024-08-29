@@ -230,28 +230,15 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
         txes.forEachIndexed { idx, it ->
             item(key = it.tx.idem.toHex()) {
                 val amt = it.incomingAmt - it.outgoingAmt
-                val color = if (idx % 2 == 1)
-                {
-                    WallyRowAbkg1
-                }
-                else WallyRowAbkg2
-
-                if(idx != 0)
-                    Spacer(modifier = Modifier.height(2.dp))
+                val color = if (idx % 2 == 1) WallyRowAbkg1 else WallyRowAbkg2
+                if(idx != 0) Spacer(modifier = Modifier.height(2.dp))
 
                 Column(modifier = Modifier.fillMaxWidth().background(color).padding(1.dp).clickable {
                     onCopied(it.tx.idem.toHex())
                 }) {
                     Row {
                         val uriHandler = LocalUriHandler.current
-                        if (amt > 0)
-                        {
-                            ResImageView("icons/receivearrow.xml", modifier = Modifier.size(30.dp))
-                        }
-                        else if (amt < 0)
-                        {
-                            ResImageView("icons/sendarrow.xml", modifier = Modifier.size(30.dp))
-                        }
+                        if (amt !=0L) ResImageView(if (amt>0) "icons/receivearrow.xml" else "icons/sendarrow.xml", modifier = Modifier.size(30.dp))
                         else Spacer(Modifier.size(30.dp))
                         if (it.date > 1577836800000) Text(formatLocalEpochMilliseconds(it.date, "\n"))  // jan 1 2020, before the genesis block
                         else
