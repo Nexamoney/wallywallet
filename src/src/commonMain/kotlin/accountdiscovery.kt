@@ -215,51 +215,79 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
                     addrsFound++
                     for (h in history)
                     {
+                        val height = h.first
+
                         activeAddrs.add(dest)
                         // Its easy to get repeats because a wallet sends itself change, spends 2 inputs, etc.
                         // But I don't need to investigate any repeats
                         if (!ret.containsKey(h.second))
                         {
-                            LogIt.info("  all activity: Searching ${h.first} tx: ${h.second}")
+                            LogIt.info("  all activity: Searching ${height} tx: ${h.second}")
                             val tx = getEc().getTx(h.second)
                             val txh: TransactionHistory = TransactionHistory(chainSelector, tx)
-                            //  Load the header at this height from a little cache we keep, or from the server
-                            val header = hdrs[h.first] ?: run {
-                                var hdr: iBlockHeader? = null
-                                val bc = blockchains[chainSelector]
-                                if (bc != null)
-                                {
-                                    try
-                                    {
-                                        //LogIt.info("all activity: get block header")
-                                        hdr = bc.blockHeader(h.first.toLong())
-                                    }
-                                    catch (e: HeadersNotForthcoming)
-                                    {
-                                        // I dont have it saved, will load it via electrum
-                                    }
-                                }
-                                if (hdr == null)
-                                {
-                                    //LogIt.info("all activity: get header")
-                                    val headerBytes = getEc().getHeader(h.first)
-                                    hdr = blockHeaderFor(chainSelector, BCHserialized(SerializationType.NETWORK, headerBytes))
-                                }
-                                //LogIt.info("all activity: get header completed")
-                                hdr
-                            }
-                            if (header.validate(chainSelector))
+                            if (height >= 0)
                             {
-                                if (txh.confirmedHeight < WALLET_RECOVERY_NON_INCREMENTAL_ADDRESS_HEIGHT) gapMultiplier = 3
-                                txh.confirmedHeight = h.first.toLong()
-                                txh.confirmedHash = header.hash
-                                txh.date = header.time
+                                //  Load the header at this height from a little cache we keep, or from the server
+                                val header = hdrs[height] ?: run {
+                                    var hdr: iBlockHeader? = null
+                                    val bc = blockchains[chainSelector]
+                                    if (bc != null)
+                                    {
+                                        try
+                                        {
+                                            //LogIt.info("all activity: get block header")
+                                            hdr = bc.blockHeader(height.toLong())
+                                        }
+                                        catch (e: HeadersNotForthcoming)
+                                        {
+                                            // I dont have it saved, will load it via electrum
+                                        }
+                                    }
+                                    if (hdr == null)
+                                    {
+                                        //LogIt.info("all activity: get header")
+                                        var errCount = 0
+                                        while (true)
+                                        {
+                                            try
+                                            {
+                                                val headerBytes = getEc().getHeader(height)
+                                                hdr = blockHeaderFor(chainSelector, BCHserialized(SerializationType.NETWORK, headerBytes))
+                                                break
+                                            }
+                                            catch (e: ElectrumIncorrectRequest)
+                                            {
+                                                errCount++
+                                                logThreadException(e)
+                                                if (errCount > 5) throw e
+                                            }
+                                        }
+                                    }
+                                    //LogIt.info("all activity: get header completed")
+                                    hdr!!  // Can't be null, I would have thrown
+                                }
+                                if (header.validate(chainSelector))
+                                {
+                                    if (txh.confirmedHeight < WALLET_RECOVERY_NON_INCREMENTAL_ADDRESS_HEIGHT) gapMultiplier = 3
+                                    txh.confirmedHeight = height.toLong()
+                                    txh.confirmedHash = header.hash
+                                    txh.date = header.time
+                                    txh.dirty = true
+                                    ret[h.second] = txh
+                                    hdrs[height] = header
+                                }
+                                else
+                                {
+                                    LogIt.error("Illegal header when loading asset")
+                                }
+                            }
+                            else  // accept discovery of unconfirmed?
+                            {
+                                txh.confirmedHeight = -1
+                                txh.confirmedHash = null
+                                txh.date = millinow()
+                                txh.dirty = true
                                 ret[h.second] = txh
-                                hdrs[h.first] = header
-                            }
-                            else
-                            {
-                                LogIt.error("Illegal header when loading asset")
                             }
                         }
                         else

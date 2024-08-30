@@ -284,6 +284,7 @@ open class CommonApp
     init {
         // Set up the libnexakotlin translations
         appI18n = { libErr: Int -> i18n(i18nLbc[libErr] ?: libErr) }
+        // electrumLogging = true
     }
 
     /** Return an ordered map of the visible accounts (in display order) */
