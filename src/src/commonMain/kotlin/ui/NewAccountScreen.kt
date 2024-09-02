@@ -682,6 +682,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
 }
 
 
+/** Searches for activity, returning a pair of epoch time, height that corresponds to the first time the wallet was used */
 fun searchFirstActivity(getEc: () -> ElectrumClient, chainSelector: ChainSelector, count: Int, secretDerivation: (Int) -> ByteArray, activityFound: ((Long, Int) -> Boolean)? = null): Pair<Long, Int>?
 {
     var index = 0

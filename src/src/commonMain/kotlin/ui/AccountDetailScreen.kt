@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUnsignedTypes::class)
+
 package info.bitcoinunlimited.www.wally.ui
 
 import androidx.compose.foundation.clickable
@@ -26,7 +28,10 @@ import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
+import org.nexa.threads.millisleep
+import kotlin.random.Random
 
 enum class AccountAction
 {
@@ -166,6 +171,44 @@ fun AccountActions(acc: Account, txHistoryButtonClicked: () -> Unit, accountDele
     }
 }
 
+fun rediscoverPeekActivity(secretWords: String, chainSelector: ChainSelector, aborter: Objectify<Boolean>): Pair<Long, Int>?
+{
+    val net = connectBlockchain(chainSelector).net
+    var ec = retry(10) {
+        val ec = net?.getElectrum()
+        if (ec == null) millisleep(1000U)
+        ec
+    }
+
+    try
+    {
+        if (aborter.obj) return null
+        val passphrase = "" // TODO: support a passphrase
+        val secret = generateBip39Seed(secretWords, passphrase)
+        val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
+
+        var earliestActivityP =
+          searchFirstActivity( {
+              if (ec.open) return@searchFirstActivity ec
+              ec = net.getElectrum()
+              return@searchFirstActivity(ec)
+          }, chainSelector, 10, {
+              libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
+          }, { time, height ->
+              true
+          })
+        return earliestActivityP
+    }
+    finally
+    {
+        net?.returnElectrum(ec)
+    }
+}
+
+internal val rediscoverPrehistoryHeight = MutableStateFlow(0L)
+internal val rediscoverPrehistoryTime = MutableStateFlow(0L)
+internal var aborter = Objectify<Boolean>(false)
+
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accountDeleted: () -> Unit)
@@ -207,23 +250,60 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
             accountAction.value = AccountAction.Reassess
         }
         WallyBoringMediumTextButton(S.rediscoverWalletTx) {
+            // Launch a thread to find when the wallet was first used whenever this button is clicked
+            val wal = acc.wallet
+            val state = wal.chainstate
+            if (state != null)
+            {
+                rediscoverPrehistoryTime.value = state.prehistoryDate
+                rediscoverPrehistoryHeight.value = state.prehistoryHeight
+                laterJob {
+                    aborter.obj = true  // abort any old searches
+                    aborter = Objectify<Boolean>(false)
+                    val ret = rediscoverPeekActivity(wal.secretWords, wal.chainSelector, aborter)
+                    if (ret != null)
+                    {
+                        val (time, height) = ret
+
+                        state.prehistoryDate = time
+                        rediscoverPrehistoryTime.value = state.prehistoryDate
+                        state.prehistoryHeight = height.toLong()
+                        rediscoverPrehistoryHeight.value = state.prehistoryHeight
+                    }
+                }
+            }
+
             accountAction.value = AccountAction.Rediscover
         }
-        if (devMode) WallyBoringMediumTextButton(S.rediscoverBlockchain) {
-            accountAction.value = AccountAction.RediscoverBlockchain
-        }
+
         WallyBoringMediumTextButton(S.ViewRecoveryPhrase) {
             accountAction.value = AccountAction.RecoveryPhrase
         }
         WallyBoringMediumTextButton(S.deleteWalletAccount) {
             accountAction.value = AccountAction.Delete
         }
+
+
+        if (devMode)
+        {
+            Spacer(Modifier.size(8.dp))
+            WallyBoringMediumTextButton(S.rediscoverBlockchain) {
+                accountAction.value = AccountAction.RediscoverBlockchain
+            }
+            /*  Messes up the account prehistory to see if rediscover properly corrects it
+            WallyBoringTextButton("DEV: randomize prehistory") {
+                acc.wallet.chainstate?.prehistoryHeight = Random.nextLong(-10L, 100000L)
+                acc.wallet.chainstate?.prehistoryDate = 0
+            }
+             */
+        }
     }
     else
     {
         when(accountAction.value)
         {
-            AccountAction.PinChange -> {
+            AccountAction.PinChange ->
+            {
                 AccountDetailChangePinView(acc,
                   {
                       displayError(it)
@@ -236,16 +316,19 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                   }
                 )
             }
-            AccountAction.RecoveryPhrase -> {
+
+            AccountAction.RecoveryPhrase ->
+            {
                 RecoveryPhraseView(acc) {
                     accountAction.value = null
                 }
             }
+
             AccountAction.Reassess -> AccountDetailAcceptDeclineTextView(
-                S.reassessConfirmation
+              S.reassessConfirmation
             ) { accepted ->
                 accountAction.value = null
-                if(accepted)
+                if (accepted)
                     tlater("cleanUnconfirmed") {
                         try
                         {
@@ -261,24 +344,29 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                         }
                     }
             }
-            AccountAction.RediscoverBlockchain -> AccountDetailAcceptDeclineTextView(S.rediscoverConfirmation) {
-                if (it)
-                {
-                    tlater("rediscoverBlockchain") {
-                        val bc = acc.wallet.blockchain
-                        // If you reset the wallet first, it'll start rediscovering the existing blockchain before it gets reset.
-                        bc.rediscover()
-                        for (c in wallyApp!!.accounts)  // Rediscover tx for EVERY account using this blockchain
-                        {
-                            val act = c.value
-                            if (act.wallet.blockchain == bc)
-                                act.wallet.rediscover(true, true)
+
+            AccountAction.RediscoverBlockchain ->
+            {
+                AccountDetailAcceptDeclineTextView(S.rediscoverConfirmation) {
+                    if (it)
+                    {
+                        tlater("rediscoverBlockchain") {
+                            val bc = acc.wallet.blockchain
+                            // If you reset the wallet first, it'll start rediscovering the existing blockchain before it gets reset.
+                            bc.rediscover()
+                            for (c in wallyApp!!.accounts)  // Rediscover tx for EVERY account using this blockchain
+                            {
+                                val act = c.value
+                                if (act.wallet.blockchain == bc)
+                                    act.wallet.rediscover(true, true)
+                            }
                         }
+                        displayNotice(S.rediscoverNotice)
                     }
-                    displayNotice(S.rediscoverNotice)
+                    accountAction.value = null
                 }
-                accountAction.value = null
             }
+
             AccountAction.Delete -> AccountDetailAcceptDeclineTextView(i18n(S.deleteConfirmation) % mapOf("accountName" to acc.name, "blockchain" to acc.currencyCode)) {
                 if (it)
                 {
@@ -288,16 +376,31 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                 }
                 accountAction.value = null
             }
-            AccountAction.Rediscover -> AccountDetailAcceptDeclineTextView(S.rediscoverConfirmation) {
-                if (it)
+
+            AccountAction.Rediscover ->
+            {
+                val wal = acc.wallet
+                val state = wal.chainstate
+                if (state != null)
                 {
-                    tlater("rediscover") {
-                        acc.wallet.rediscover(true, false)
-                        displayNotice(S.rediscoverNotice)
-                    }
+                    val dateString = epochToDate(rediscoverPrehistoryTime.collectAsState().value)
+                    Spacer(Modifier.height(8.dp))
+                    Text(i18n(S.FirstUse) % mapOf("date" to dateString) )
+                    Text(i18n(S.Block) % mapOf("block" to rediscoverPrehistoryHeight.collectAsState().value.toString()))
+                    Spacer(Modifier.height(8.dp))
                 }
-                accountAction.value = null
+                AccountDetailAcceptDeclineTextView(S.rediscoverConfirmation) {
+                    if (it)
+                    {
+                        tlater("rediscover") {
+                            acc.wallet.rediscover(true, false)
+                            displayNotice(S.rediscoverNotice)
+                        }
+                    }
+                    accountAction.value = null
+                }
             }
+
             AccountAction.PrimaryAccount -> AccountDetailAcceptDeclineTextView(S.primaryAccountConfirmation) {
                 if (it)
                 {

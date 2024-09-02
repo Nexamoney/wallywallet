@@ -21,10 +21,10 @@ var localCurrency = "USD"
 // Search the first N addresses in a particular derivation path during wallet recovery.
 // Since wallets give out addresses in order, this will tend to find the activity.  The only reason we search a bunch of addresses
 // is because maybe some addresses were given out but payments weren't made.
-val WALLET_RECOVERY_DERIVATION_PATH_SEARCH_DEPTH = 100
+val WALLET_RECOVERY_DERIVATION_PATH_SEARCH_DEPTH = 200
 val WALLET_RECOVERY_IDENTITY_DERIVATION_PATH_SEARCH_DEPTH = 5
 
-val WALLET_RECOVERY_NON_INCREMENTAL_ADDRESS_HEIGHT = 300000  // This works around a bug in early wallets that accidentally would take addresses out of order
-val WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP = 100
+val WALLET_RECOVERY_NON_INCREMENTAL_ADDRESS_HEIGHT = 200000  // This works around a bug in early wallets that accidentally would take addresses out of order
+val WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP = 200
 val WALLET_FULL_RECOVERY_CHANGE_DERIVATION_PATH_MAX_GAP = 25
 val WALLET_FULL_RECOVERY_NONSTD_DERIVATION_PATH_MAX_GAP = 10
