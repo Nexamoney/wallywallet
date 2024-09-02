@@ -86,6 +86,7 @@ interface VersionI
     val VERSION_NUMBER: String
     val GIT_COMMIT_HASH: String
     val GITLAB_URL: String
+    val BUILD_DATE: String
 }
 
 @Composable
@@ -145,7 +146,7 @@ fun SettingsScreen(nav: ScreenNav)
 
             CenteredSectionText(i18n(S.GeneralSettings))
 
-            Text(i18n(S.version) % mapOf("ver" to Version.VERSION_NUMBER + "-" + Version.GIT_COMMIT_HASH), modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally), textAlign = TextAlign.Center)
+            Text(i18n(S.version) % mapOf("ver" to Version.VERSION_NUMBER + "-" + Version.GIT_COMMIT_HASH, "date" to Version.BUILD_DATE), modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally), textAlign = TextAlign.Center)
         }
 
         Column(

@@ -562,7 +562,11 @@ open class CommonApp
         {
             displayError(S.connectionException)
         }
-
+        catch(e: Exception)  // java.net.ConnectException (connectin refused probably)
+        {
+            logThreadException(e, "attempting to GET to $url")
+            displayError(S.connectionException)
+        }
         /*
         var loginReq = loginReqParam
         var forwarded = 0
@@ -619,7 +623,11 @@ open class CommonApp
         {
             displayError(S.connectionException)
         }
-
+        catch(e: Exception)  // java.net.ConnectException (connectin refused probably)
+        {
+            logThreadException(e, "attempting to POST to $url with contents\n$jsonBody")
+            displayError(S.connectionException)
+        }
 
         /*
         var loginReq = loginReqParam

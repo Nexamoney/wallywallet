@@ -171,7 +171,7 @@ Good luck!
     <string name="required">required</string>
 
     <!-- Settings -->
-    <string name="version" formatted="false">Wally Wallet Version: %ver</string>
+    <string name="version" formatted="false">Version: %ver (%date)</string>
     <string name="enableDeveloperView">Advanced/developer mode</string>
     <string name="enableExperimentalUx">Experimental Interface</string>
     <string name="enableDarkMode">Dark Mode</string>

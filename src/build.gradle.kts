@@ -1,4 +1,3 @@
-import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.android.build.api.dsl.ManagedVirtualDevice
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
@@ -6,10 +5,11 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import java.util.Properties
 import java.io.FileInputStream
 import java.time.Instant
-import java.net.URL
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 // Wally Wallet version
-val versionNumber = "3.3.1"
+val versionNumber = "3.3.2"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 
 
@@ -565,6 +565,11 @@ val gitCommitHash: String by lazy {
       .trim()
 }
 
+val nowDateTime: String by lazy {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+    LocalDateTime.now().format(formatter)
+}
+
 version = "$versionNumber-$gitCommitHash"
 
 android {
@@ -673,6 +678,7 @@ tasks.register("generateVersionFile") {
                 override val VERSION_NUMBER = "$versionNumber"
                 override val GIT_COMMIT_HASH = "$gitCommitHash"
                 override val GITLAB_URL = "https://gitlab.com/wallywallet/wallet/-/commit/$gitCommitHash"
+                override val BUILD_DATE = "${nowDateTime}"
             }
         """.trimIndent())
     }
@@ -681,6 +687,9 @@ tasks.register("generateVersionFile") {
         dependsOn("updateCFBundleShortVersionString")
 }
 
+tasks.named("preBuild").configure {
+    dependsOn("generateVersionFile")
+}
 
 // Task to update the iOS version based on versionNumber
 tasks.register<Exec>("updateCFBundleShortVersionString") {
