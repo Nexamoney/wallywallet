@@ -161,9 +161,13 @@ https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html
 ##### Android UI automated tests
   On Android phones, you can watch the tests on-device.
 
+Running `connectedAndroidTest` requires that an android device is connected to your computer:
+
 ```bash
 ./gradlew :src:connectedAndroidTest
 ```
+
+`pixel5DebugAndroidTest` uses a pixel5 emulator to run the tests:
 
 ```bash
 ./gradlew pixel5DebugAndroidTest
