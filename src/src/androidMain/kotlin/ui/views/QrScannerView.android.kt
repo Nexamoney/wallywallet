@@ -36,6 +36,7 @@ import android.media.RingtoneManager
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.util.Size
 import androidx.camera.core.ImageProxy
 import androidx.compose.runtime.*
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
@@ -157,6 +158,10 @@ fun QRCodeComposable(onQrCodeScanned: (String) -> Unit)
                       }
                   }
                   val imageAnalysis: ImageAnalysis = ImageAnalysis.Builder()
+                    // Analyzes the images in a higher resolution to allow QR-codes with more information
+                    // This is extremely high resolution and not typically necessary for QR code scanning.
+                    // It greatly impacts performance.
+                    .setTargetResolution(Size(3840, 2160))
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                     .build()
                     .also {
