@@ -126,7 +126,9 @@ data class PlatformCharacteristics(
   /** Return true if the platform supports the concept of "sharing" (setting to true adds a share button in various places in the UX) */
   val hasShare: Boolean,
   /** Return true if the platform supports the concept of background syncronization **/
-  val supportsBackgroundSync: Boolean
+  val supportsBackgroundSync: Boolean,
+  /** How much does the bottom system bar overlap the application */
+  var bottomSystemBarOverlap: Dp,
 )
 
 /** Return details about this platform */

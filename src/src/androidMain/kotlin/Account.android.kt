@@ -9,7 +9,6 @@ import com.ionspin.kotlin.bignum.decimal.*
 import info.bitcoinunlimited.www.wally.ui.triggerAccountsChanged
 import info.bitcoinunlimited.www.wally.ui.views.uiData
 import org.nexa.libnexakotlin.*
-//import org.nexa.walletoperations.*
 
 private val LogIt = GetLog("BU.wally.AccountAndroid")
 

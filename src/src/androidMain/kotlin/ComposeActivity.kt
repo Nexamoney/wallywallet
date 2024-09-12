@@ -6,32 +6,25 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import kotlinx.coroutines.delay
 import android.content.pm.PackageManager
-import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updateLayoutParams
 import androidx.work.*
-import com.eygraber.uri.Uri
 import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.theme.BaseBkg
-import info.bitcoinunlimited.www.wally.ui.theme.NativeTitle
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.rem
 import kotlin.time.Duration.Companion.milliseconds
@@ -73,12 +66,26 @@ class ComposeActivity: CommonActivity()
     // call this with a function to execute whenever that function needs file read permissions
     fun onReadMediaPermissionGranted(doit: () -> Unit): Boolean
     {
-        if (ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
-            doit()
-        else
+        // In later versions of android we can ask for a less intrusive permission
+        if (android.os.Build.VERSION.SDK_INT >= 33)
         {
-            doOnMediaReadPerms = doit
-            requestPermissions(arrayOf(Manifest.permission.READ_MEDIA_IMAGES), READ_MEDIA_IMAGES_RESULT)
+            if (ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED)
+                doit()
+            else
+            {
+                doOnMediaReadPerms = doit
+                requestPermissions(arrayOf(Manifest.permission.READ_MEDIA_IMAGES), READ_MEDIA_IMAGES_RESULT)
+            }
+        }
+        else // otherwise we have to ask for access to any external storage files to access the gallery
+        {
+            if (ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+                doit()
+            else
+            {
+                doOnMediaReadPerms = doit
+                requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), READ_MEDIA_IMAGES_RESULT)
+            }
         }
         return false
     }
@@ -228,7 +235,8 @@ class ComposeActivity: CommonActivity()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        getWindow().getDecorView().setBackgroundColor(BaseBkg.value.toInt())
+        val decorView: View = getWindow().getDecorView()
+        decorView.setBackgroundColor(BaseBkg.value.toInt())
         initializeGraphicsResources()
         backgroundOnly = false
 
@@ -239,6 +247,17 @@ class ComposeActivity: CommonActivity()
                 else setTitle(nav.title())
             }
         })
+
+        (decorView.findViewById(android.R.id.content) as View).setOnApplyWindowInsetsListener { v, insets ->
+            if (android.os.Build.VERSION.SDK_INT >= 30)
+            {
+                //TODO: insets.getInsets(WindowInsetsCompat.Type.ime())
+                val system = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                // We sanity check the system insets to 30 dp just in case something crazy is going on
+                androidPlatformCharacteristics.bottomSystemBarOverlap = min(30.dp, pxToDp(system.bottom))
+            }
+            insets
+        }
 
         // If the UI is opened, register background sync work.  But we don't want to reregister the background work whenever the background work
         // itself is launched, so this code can't be in the app class.
