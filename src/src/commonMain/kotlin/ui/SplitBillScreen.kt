@@ -8,6 +8,7 @@ import info.bitcoinunlimited.www.wally.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowForward
@@ -23,6 +24,9 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,13 +44,11 @@ private val LogIt = GetLog("BU.wally.SplitBillScreen")
 
 private val tipAmounts = listOf(-1, 0, 5, 10, 15, 20, 25, 30,50)
 
-fun CurrencyDecimal(b: BigDecimal): BigDecimal
-{
-    return BigDecimal.fromBigDecimal(b, CurrencyMath)
-}
+// Remove when supported by libnexakotlin
+val FiatInputFormat = DecimalFormat("#########0.00")
 
 @Composable
-fun SplitBillScreen(acct: Account? = wallyApp?.focusedAccount)
+fun SplitBillScreen(acct: Account? = wallyApp?.preferredVisibleAccount())
 {
     val cryptoCurrencyCode = acct?.currencyCode ?: chainToCurrencyCode[ChainSelector.NEXA] ?: "NEXA"
     var usingCurrency by remember { mutableStateOf(fiatCurrencyCode) }
@@ -60,8 +62,8 @@ fun SplitBillScreen(acct: Account? = wallyApp?.focusedAccount)
     var amountString = remember { mutableStateOf(FiatFormat.format(amount)) }
 
     var tipSelectedIndex by remember { mutableStateOf(0) }
-    var tipAmount = CurrencyDecimal(0)
-    val tipAmountString = remember { mutableStateOf(FiatFormat.format(tipAmount)) }
+    var tipAmount by remember  { mutableStateOf(CurrencyDecimal(0)) }
+    val tipAmountString = remember { mutableStateOf(TextFieldValue(FiatFormat.format(tipAmount))) }
 
     var waysSelectedIndex by remember { mutableStateOf(0) }
 
@@ -122,21 +124,8 @@ fun SplitBillScreen(acct: Account? = wallyApp?.focusedAccount)
         }
     }
 
-    fun updateNumbers()
+    fun updateGivenTotal()
     {
-        if (tipSelectedIndex == 0)  // selected manual entry, not a percent, so don't change the tip amount
-        {
-        }
-        else
-        {
-            val pct = tipAmounts[tipSelectedIndex]
-            tipAmount = (amount*pct)/100
-            tipAmountString.value = FiatFormat.format(tipAmount)
-        }
-        total = amount + tipAmount
-        totalAmountString.value = total.toString()
-        println("Total Amount String: "+totalAmountString.value)
-
         finalSplit = CurrencyDecimal(total)/CurrencyDecimal(waysSelectedIndex+1)
 
         val qty = toCrypto(finalSplit)
@@ -167,6 +156,25 @@ fun SplitBillScreen(acct: Account? = wallyApp?.focusedAccount)
         }
         else qrString = null
     }
+
+    fun updateNumbers()
+    {
+        if (tipSelectedIndex == 0)  // selected manual entry, not a percent, so don't change the tip amount
+        {
+        }
+        else
+        {
+            val pct = tipAmounts[tipSelectedIndex]
+            tipAmount = (amount * pct) / 100
+            tipAmountString.value = tipAmountString.value.copy(FiatInputFormat.format(tipAmount))
+        }
+        total = amount + tipAmount
+        totalAmountString.value = if (usingFiatCurrency) FiatInputFormat.format(total) else NexaInputFormat.format(total)
+        LogIt.info("Total Amount String: " + totalAmountString.value)
+        updateGivenTotal()
+    }
+
+
     val localFocusManager = LocalFocusManager.current
     val sendPadding = if (platform().spaceConstrained) 5.dp else 8.dp
     Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth().pointerInput(Unit) {
@@ -245,22 +253,26 @@ fun SplitBillScreen(acct: Account? = wallyApp?.focusedAccount)
                     fontSize = FontScale(1.25)
                   ),
                   modifier = Modifier.padding(20.dp, 5.dp, 20.dp, 0.dp))
-                WallyOutLineDecimalEntry(tipAmountString,
+                WallyOutLineDecimalEntryTFV(tipAmountString,
                   label = i18n(S.TipAmount),
                   onValueChange = {
                       try
                       {
-                          tipAmount = CurrencyDecimal(it)
-                          tipSelectedIndex = 0  // If the user manually enters a tip, pop the combo box to --
-                          updateNumbers()
-                          tipAmountString.value = it
+                          val tmp = CurrencyDecimal(it)
+                          if (tmp != tipAmount)
+                          {
+                              tipAmount = tmp
+                              tipSelectedIndex = 0  // If the user manually enters a tip, pop the combo box to --
+                              updateNumbers()
+                              tipAmountString.value = tipAmountString.value.copy(it)
+                          }
                           it
                       }
                       catch(e: Exception)
                       {
                           val zero = ""
                           tipAmount = CURRENCY_ZERO
-                          tipAmountString.value = zero
+                          tipAmountString.value = tipAmountString.value.copy(zero)
                           zero
                       }
                   },
@@ -273,13 +285,33 @@ fun SplitBillScreen(acct: Account? = wallyApp?.focusedAccount)
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                 Column(modifier = Modifier.weight(0.75F, true)) {
                     OutlinedTextField(
-                      value = if (usingFiatCurrency) FiatFormat.format(total) else NexaFormat.format(total),
-                      {},
-                      label = {
-                          Text(i18n(S.Total))
-                      },
-                      suffix = {Text(usingCurrency)}
-                    )
+                        value = totalAmountString.value,
+                        {
+                            // If the user manually enters a total, update the various fields (change the tip amount and final QR)
+                            try
+                            {
+                                val tmp = it.toBigDecimal()
+                                if (tmp != total)
+                                {
+                                    total = tmp
+                                    tipAmount = total - amount
+                                    tipSelectedIndex = 0  // If the user manually enters a tip, pop the combo box to --
+                                    tipAmountString.value = tipAmountString.value.copy(FiatFormat.format(tipAmount))
+                                    updateGivenTotal()
+                                }
+
+                            } catch(e:Exception)
+                            {
+                                // Ignore bad input (nothing to do)
+                            }
+                            totalAmountString.value = it // but we still want to show it so user can clean it up
+                        },
+                        label = {
+                            Text(i18n(S.Total))
+                        },
+                        suffix = {Text(usingCurrency)},
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Done)
+                      )
                 }
                 Spacer(Modifier.width(5.dp))
 

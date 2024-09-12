@@ -204,6 +204,7 @@ fun AlertLevel.color(): Color
     }
 }
 
+
 val androidPlatformCharacteristics = PlatformCharacteristics(
   hasQrScanner = true,
   hasGallery = true,
@@ -214,7 +215,8 @@ val androidPlatformCharacteristics = PlatformCharacteristics(
   spaceConstrained = true,
   landscape = false,
   hasShare = true,
-  supportsBackgroundSync = true)
+  supportsBackgroundSync = true,
+  bottomSystemBarOverlap = if (android.os.Build.VERSION.SDK_INT < 33) 0.dp else 10.dp)  // This is overwritten when the view is created and we can check the insets
 
 actual fun platform(): PlatformCharacteristics = androidPlatformCharacteristics
 

@@ -1,3 +1,4 @@
+@file:Suppress("RedundantExplicitInitializer")
 package info.bitcoinunlimited.www.wally.ui
 
 import androidx.compose.foundation.*
@@ -5,7 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -73,11 +74,11 @@ enum class ScreenId
         return false
     }
 
+    /** Returns true if this screen should have a share button in the topbar */
     val hasShare:Boolean
         get()
     {
-        if (this == Home) return true
-        return false
+        return this == Home
     }
 
     fun up(): ScreenId
@@ -130,7 +131,7 @@ enum class ScreenId
 
 }
 
-class ScreenNav()
+open class ScreenNav()
 {
     enum class Direction {
         LEAVING, DEEPER
@@ -194,8 +195,7 @@ class ScreenNav()
         var priorId:ScreenId = ScreenId.None
         val prior = path.lastOrNull()
         // If I can't go back, go up
-        if (prior == null) priorId = currentScreen.value.up()
-        else priorId = prior.id
+        priorId = prior?.id ?: currentScreen.value.up()
         return priorId
     }
 
@@ -305,7 +305,7 @@ fun onShareButton()
             if (nav.hasBack() != ScreenId.None)
             {
                 IconButton(onClick = { nav.back() }) {
-                    Icon(Icons.Default.ArrowBack, tint = colorTitleForeground, contentDescription = null)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, tint = colorTitleForeground, contentDescription = null)
                 }
             }
             // We can only fillMaxSize() here because we constrained the height of the row
@@ -342,6 +342,7 @@ fun triggerAccountsChanged(vararg accounts: Account)
 }
 
 /** Call this function to cause the GUI to update any view of any accounts.  Provide no arguments to update all of them */
+/*
 suspend fun suspendTriggerAccountsChanged(vararg accounts: Account)
 {
     delay(100)
@@ -352,6 +353,7 @@ suspend fun suspendTriggerAccountsChanged(vararg accounts: Account)
         accountChangedNotification.send(account.name)
     }
 }
+*/
 
 // Add other information as needed to drive each page
 enum class ShowIt
@@ -489,20 +491,19 @@ fun NavigationRoot(systemPadding: Modifier)
         return
     }
 
+    val softKeyboardShowing = isSoftKeyboardShowing.collectAsState().value
     val scrollState = rememberScrollState()
-    var driver = remember { mutableStateOf<GuiDriver?>(null) }
+    val driver = remember { mutableStateOf<GuiDriver?>(null) }
     var errorText by remember { mutableStateOf("") }
     var warningText by remember { mutableStateOf("") }
     var noticeText by remember { mutableStateOf("") }
-    var clickDismiss = remember { mutableStateOf<(@Composable () -> Unit)?>(null) }
+    val clickDismiss = remember { mutableStateOf<(@Composable () -> Unit)?>(null) }
 
     val selectedAccount = remember { MutableStateFlow<Account?>(wallyApp?.focusedAccount) }
 
     var unlockDialog by remember { mutableStateOf<(()->Unit)?>(null) }
 
     val clipmgr: ClipboardManager = LocalClipboardManager.current
-
-    //var currentUri by remember { mutableStateOf<Uri?>(null) }
 
     buildMenuItems()
 
@@ -570,7 +571,7 @@ fun NavigationRoot(systemPadding: Modifier)
         while (true)
         {
             // Check every 10 seconds to see if there are assets in this wallet & enable the menu item if there are
-            if (showAssetsPref.value == false && wallyApp?.hasAssets() == true)
+            if (!showAssetsPref.value && (wallyApp?.hasAssets() == true))
             {
                 enableNavMenuItem(ScreenId.Assets)
             }
@@ -689,7 +690,7 @@ fun NavigationRoot(systemPadding: Modifier)
 
     // This box is on top of the main screen
     Box(modifier = Modifier.zIndex(1000f).fillMaxSize()) {
-        if (isSoftKeyboardShowing.collectAsState().value)
+        if (softKeyboardShowing)
         {
             val keybar = softKeyboardBar.collectAsState().value
             if (keybar != null)
@@ -740,7 +741,7 @@ fun NavigationRoot(systemPadding: Modifier)
                             IdentityScreen(act, idsess, nav)
                         }
                         ScreenId.IdentityEdit -> withAccount { act ->
-                            IdentityEditScreen(act, nav);
+                            IdentityEditScreen(act, nav)
                         }
                         ScreenId.AddressHistory ->  withAccount { AddressHistoryScreen(it, nav) }
                         ScreenId.TxHistory -> withAccount { TxHistoryScreen(it, nav) }
@@ -756,7 +757,7 @@ fun NavigationRoot(systemPadding: Modifier)
                         ScreenId.Alerts -> HomeScreen(selectedAccount, driver, nav)  // not currently implemented
                     }
                 }
-                if (!isSoftKeyboardShowing.collectAsState().value)
+                if (!softKeyboardShowing)
                 {
                     //Box(modifier = Modifier.align(Alignment.BottomStart).fillMaxWidth().background(NavBarBkg).height(IntrinsicSize.Min).padding(0.dp)) {
                     //    NavigationMenu(nav)
@@ -788,62 +789,35 @@ fun NavigationMenu(modifier: Modifier)
     val items by menuItems.collectAsState()
     val curScreen by nav.currentScreen.collectAsState()
 
-    Column(modifier = modifier) {
+    Column(modifier = modifier.padding(0.dp,0.dp,0.dp,platform().bottomSystemBarOverlap)) {
         // Horizontal row to layout navigation buttons
         Row(modifier = Modifier.padding(0.dp, 0.dp).fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.SpaceEvenly) {
             for (ch in items)
             {
-                if (ch.imagePath != null)
-                {
-                    Button(
-                      onClick = {
-                          clearAlerts()  // If the user explicitly moved to a different screen, they must be aware of the alert
-                          nav.switch(ch.location)
-                                },
-                      // Change button appearance based on current screen
-                      enabled = curScreen != ch.location,
-                      shape = RoundedCornerShape(30),
-                      contentPadding = PaddingValues(0.dp, 0.dp),
-                      // This is opposite of normal: The disabled button is our current screen, so should have the highlight
-                      colors = ButtonDefaults.buttonColors(
-                        disabledContainerColor = NavBarBkg,
-                        disabledContentColor = colorPrimary,
-                        containerColor = NavBarBkg,
-                        contentColor = colorDefault),
-                      //modifier = Modifier.padding(4.dp, 0.dp)
-                      modifier = Modifier.width(IntrinsicSize.Max).height(IntrinsicSize.Min).padding(0.dp, 0.dp).defaultMinSize(1.dp, 1.dp)  //width(100.dp)
+                Button(
+                  onClick = {
+                      clearAlerts()  // If the user explicitly moved to a different screen, they must be aware of the alert
+                      nav.switch(ch.location)
+                  },
+                  // Change button appearance based on current screen
+                  enabled = curScreen != ch.location,
+                  shape = RoundedCornerShape(30),
+                  contentPadding = PaddingValues(0.dp, 0.dp),
+                  // This is opposite of normal: The disabled button is our current screen, so should have the highlight
+                  colors = ButtonDefaults.buttonColors(
+                    disabledContainerColor = NavBarBkg,
+                    disabledContentColor = colorPrimary,
+                    containerColor = NavBarBkg,
+                    contentColor = colorDefault),
+                  //modifier = Modifier.padding(4.dp, 0.dp)
+                  modifier = Modifier.width(IntrinsicSize.Max).height(IntrinsicSize.Min).padding(0.dp, 0.dp).defaultMinSize(1.dp, 1.dp)  //width(100.dp)
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(0.dp), horizontalAlignment = Alignment.CenterHorizontally,
+                      modifier = Modifier.width(IntrinsicSize.Max).height(IntrinsicSize.Min).padding(0.dp, 4.dp, 0.dp, 0.dp)
                     ) {
-                        Column(verticalArrangement = Arrangement.spacedBy(0.dp), horizontalAlignment = Alignment.CenterHorizontally,
-                          modifier = Modifier.width(IntrinsicSize.Max).height(IntrinsicSize.Min).padding(0.dp,4.dp,0.dp,0.dp)
-                        ) {
-                            ResImageView(ch.imagePath, Modifier.width(30.dp).height(30.dp), description = ch.imagePath)
-                            Text(text = i18n(ch.textId), fontSize = 9.sp, modifier = Modifier.padding(0.dp, 0.dp,0.dp, 2.dp).wrapContentWidth(Alignment.CenterHorizontally, true),
-                              textAlign = TextAlign.Center, softWrap = false, maxLines = 1)
-                        }
-                    }
-                }
-                else
-                {
-                    // This is opposite of normal: The disabled button is our current screen, so should have the highlight
-                    Button(
-                      colors = ButtonDefaults.textButtonColors(
-                        disabledContainerColor = NavBarBkg,
-                        disabledContentColor = colorPrimary,
-                        containerColor = NavBarBkg,
-                        contentColor = colorDefault,
-                      ),
-                      contentPadding = PaddingValues(2.dp, 0.dp),
-                      //Modifier.padding(2.dp, 0.dp),
-                      onClick = {
-                          clearAlerts()  // If the user explicitly moved to a different screen, they must be aware of the alert
-                          nav.go(ch.location)
-                                },
-                      // Change button appearance based on current screen
-                      enabled = curScreen != ch.location,
-                      modifier = Modifier.width(IntrinsicSize.Max).height(IntrinsicSize.Min).padding(0.dp, 0.dp).defaultMinSize(1.dp, 1.dp)
-                    ) {
-                        Text(i18n(ch.textId), modifier = Modifier.padding(0.dp)
-                        )
+                        ResImageView(ch.imagePath, Modifier.width(30.dp).height(30.dp), description = ch.imagePath)
+                        Text(text = i18n(ch.textId), fontSize = 9.sp, modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 2.dp).wrapContentWidth(Alignment.CenterHorizontally, true),
+                          textAlign = TextAlign.Center, softWrap = false, maxLines = 1)
                     }
                 }
                 // Some space between buttons
@@ -851,6 +825,5 @@ fun NavigationMenu(modifier: Modifier)
             }
 
         }
-        WallyDivider()
     }
 }

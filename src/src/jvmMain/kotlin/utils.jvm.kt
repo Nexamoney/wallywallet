@@ -215,7 +215,8 @@ val jvmPlatformCharacteristics = PlatformCharacteristics(
   spaceConstrained = false,
   landscape = true,
   hasShare = true,
-  supportsBackgroundSync = false)
+  supportsBackgroundSync = false,
+  0.dp)
 
 actual fun displayAlert(alert: Alert)
 {}

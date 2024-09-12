@@ -33,11 +33,11 @@ const val TDPP_FLAG_FUND_GROUPS = 16
 
 // Must be top level for the serializer to handle it
 //@Keep
-@kotlinx.serialization.Serializable
+@Serializable
 data class TricklePayAssetInfo(val outpointHash: String, val amt: Long, val prevout: String, val proof: String? = null)
 
 //@Keep
-@kotlinx.serialization.Serializable
+@Serializable
 data class TricklePayAssetList(val assets: List<TricklePayAssetInfo>)
 
 // Structured data type to make it cleaner to return tx analysis data from the analysis function.
@@ -250,17 +250,19 @@ class TricklePayDomains()
     fun insert(d: TdppDomain)
     {
         domains[domainKey(d.domain, d.topic)] = d
-        later { save() }
+        save()
     }
 
     fun remove(d: TdppDomain)
     {
         domains.remove(domainKey(d.domain, d.topic))
+        save()
     }
 
     fun clear()
     {
         domains.clear()
+        save()
     }
 
     /** Load domain if it exists or create it */
@@ -292,7 +294,7 @@ class TricklePayDomains()
 
     fun load()
     {
-        later {
+        laterJob {
             dataLock.lock {
                 if (db == null)
                 {
@@ -327,7 +329,7 @@ class TricklePayDomains()
 
     fun save()
     {
-        later {
+        laterJob {
             dataLock.lock {
                 if (domainsLoaded)  // If we save the domains before we load them, we'll erase them!
                 {
@@ -339,9 +341,7 @@ class TricklePayDomains()
                       {
                           it.BCHserialize()
                       }, SerializationType.DISK))
-                    db?.let {
-                        it.set("tdppDomains", ser.toByteArray())
-                    }
+                    db?.set("tdppDomains", ser.toByteArray())
                 }
             }
         }
@@ -559,7 +559,9 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
             if (chainSelector == null || act.chain.chainSelector == chainSelector) return act
         }
         catch(e:PrimaryWalletInvalidException)
-        {}
+        {
+            // pass thru
+        }
 
         val walChoices = wallyApp!!.accountsFor(chainSelector ?: ChainSelector.NEXA)
         if (walChoices.size == 0)
@@ -666,11 +668,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         d.accountName = acc.name
 
         respondWith(url, addr)
-
-        wallyApp?.later {  // Because I changed the lastPayAddress and maybe mainPayAddress
-            tpDomains.save()
-        }
-
+        tpDomains.save()  // Because I changed the lastPayAddress and maybe mainPayAddress
         return "Sent to: " + url
     }
 
@@ -684,7 +682,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         val wd = whenDone
         if (wd != null)
         {
-            val js = Json {}
+            val js = Json
             val tmp = js.encodeToString(TricklePayAssetList.serializer(), assets)
             wd(url, tmp, true)
         }
@@ -700,7 +698,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                     install(HttpTimeout) { requestTimeoutMillis = 5000 }
                 }
 
-                val js = Json {}
+                val js = Json
                 try
                 {
                     val response: HttpResponse = client.post(url) {
@@ -1293,7 +1291,7 @@ fun HandleTdpp(iuri: Uri, then: ((String, String, Boolean?)->Unit)?= null): Bool
                     TdppAction.ASK ->
                     {
                         if (bkg) platformNotification(i18n(S.PaymentRequest), i18n(S.AuthAutopay) % mapOf("domain" to tp.domainAndTopic, "amt" to amtS), iuri.toString())
-                        later { externalDriver.send(GuiDriver(ScreenId.SendToPerm, tpSession = tp)) }
+                        nav.go(ScreenId.SendToPerm, data = tp)
                         return false
                     }
                     TdppAction.ACCEPT ->
@@ -1375,7 +1373,6 @@ fun HandleTdpp(iuri: Uri, then: ((String, String, Boolean?)->Unit)?= null): Bool
                 TdppAction.ASK ->  // ASSETS
                 {
                     nav.go(ScreenId.AssetInfoPerm, data = tp)
-                    //later { externalDriver.send(GuiDriver(ScreenId.AssetInfoPerm, tpSession = tp)) }
                 }
                 TdppAction.ACCEPT -> // ASSETS
                 {
@@ -1393,21 +1390,13 @@ fun HandleTdpp(iuri: Uri, then: ((String, String, Boolean?)->Unit)?= null): Bool
             {
                 TdppAction.ASK ->  // special tx
                 {
-                    later { externalDriver.send(GuiDriver(gotoPage = ScreenId.SpecialTxPerm, tpSession = tp))}
-                    //var intent = Intent(this, TricklePayActivity::class.java)
-                    //intent.data = android.net.Uri.parse(intentUri)
-                    //if (act != null) autoPayNotificationId =
-                    //  notifyPopup(intent, i18n(R.string.PaymentRequest), i18n(R.string.SpecialTpTransactionFrom) + " " + tp.domainAndTopic, act, false, autoPayNotificationId)
+                    nav.go(ScreenId.SpecialTxPerm, data = tp)
                     return false
                 }
                 TdppAction.ACCEPT ->  // special tx auto accepted
                 {
-                    // Intent() means unclickable -- change to pop up configuration if clicked
-                    TODO()
-                    //if (act != null) autoPayNotificationId =
-                    //  notifyPopup(Intent(), i18n(R.string.AuthAutopayTitle), tp.domainAndTopic, act, false, autoPayNotificationId)
+                    tp.acceptSpecialTx()
                 }
-
                 // special tx auto-deny
                 TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
             }

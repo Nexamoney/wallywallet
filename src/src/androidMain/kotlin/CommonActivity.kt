@@ -22,6 +22,8 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -73,23 +75,44 @@ fun isKeyboardShown(root: View): Boolean
     return keyboardShown
 }
 
-open class KeyboardToggleListener(private val root: View, private val onKeyboardToggleAction: (shown: Boolean) -> Unit) : ViewTreeObserver.OnGlobalLayoutListener
+open class KeyboardToggleListener(private val activity: Activity, private val onKeyboardToggleAction: (shown: Boolean) -> Unit) : ViewTreeObserver.OnGlobalLayoutListener
 {
+    var root: View = (activity.findViewById(android.R.id.content) as View).getRootView()
     var lastHeight = root.height
+    var maxHeight = lastHeight
+    var currentlyShown = false
+    val rect = Rect()
     init {
         root.viewTreeObserver.addOnGlobalLayoutListener(this)
     }
-    //private var shown = isKeyboardShown(root)
 
     override fun onGlobalLayout()
     {
-        var rect = Rect()
+        root = (activity.findViewById(android.R.id.content) as View).getRootView()
         root.getWindowVisibleDisplayFrame(rect)
         val curHeight = (rect.bottom - rect.top)
         val heightChange = curHeight - lastHeight
+        val screenHeight = (activity.findViewById(android.R.id.content) as View).getRootView().height
+        if (screenHeight > maxHeight) maxHeight = screenHeight
+        val maxDiff = maxHeight - curHeight
 
-        //val heightDiff = root.height - rect.bottom
-        //val keyboardShown = heightDiff > root.dpToPx(150f)
+        LogIt.info("screen dim: ")
+
+        if (maxDiff > maxHeight*0.15)
+        {
+            if (!currentlyShown)
+            {
+                currentlyShown = true
+                onKeyboardToggleAction.invoke(true)
+            }
+        }
+        else if (currentlyShown)
+        {
+            currentlyShown = false
+            onKeyboardToggleAction.invoke(false)
+        }
+
+        /*  The delta from the current alg is not reliable
         if (heightChange >= 150)
         {
             onKeyboardToggleAction.invoke(false)
@@ -99,11 +122,12 @@ open class KeyboardToggleListener(private val root: View, private val onKeyboard
             onKeyboardToggleAction.invoke(true)
         }
         lastHeight = curHeight
+         */
     }
 
     fun remove()
     {
-        var iam = this
+        val iam = this
         root.viewTreeObserver?.run {
             removeOnGlobalLayoutListener(iam)
         }
@@ -182,7 +206,7 @@ open class CommonActivity : AppCompatActivity()
         val view: View = findViewById(android.R.id.content)
         val rootView = view.rootView
 
-        softkeyboardChangeHandler = KeyboardToggleListener(rootView) { onSoftKeyboard(it) }
+        softkeyboardChangeHandler = KeyboardToggleListener(this) { onSoftKeyboard(it) }
 
         setWindowInsetsAnimationCallback(rootView, object : WindowInsetsAnimationCompat.Callback(DISPATCH_MODE_CONTINUE_ON_SUBTREE) {
             override fun onProgress(insets: WindowInsetsCompat, runningAnimations: MutableList<WindowInsetsAnimationCompat>): WindowInsetsCompat
@@ -552,31 +576,6 @@ open class CommonActivity : AppCompatActivity()
                 handleThreadException(e)
             }
         }
-    }
-
-    fun onKeyboardToggle(v: EditText, onKeyboardToggleAction: (shown: Boolean) -> Unit): KeyboardToggleListener
-    {
-        val root = findViewById<View>(android.R.id.content)
-        val l = KeyboardToggleListener(root, onKeyboardToggleAction)
-        root?.viewTreeObserver?.run {
-            addOnGlobalLayoutListener(l)
-        }
-
-        v.setOnKeyListener( { _, keyCode, event ->
-        if(event.getAction() == KeyEvent.ACTION_DOWN)
-        {
-            if (keyCode == KeyEvent.KEYCODE_BACK)
-            {
-                onKeyboardToggleAction(false)
-            }
-            if (keyCode == KeyEvent.KEYCODE_ENTER)
-            {
-                onKeyboardToggleAction(false)
-            }
-        }
-        false
-    })
-        return l
     }
 
     fun isKeyboardShown(): Boolean
