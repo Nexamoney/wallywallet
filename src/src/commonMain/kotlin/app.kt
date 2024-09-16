@@ -280,6 +280,7 @@ open class CommonApp
     val tpDomains: TricklePayDomains = TricklePayDomains()
 
     var assetLoaderThread: iThread? = null
+    var periodicAnalysisThread: iThread? = null
 
     init {
         // Set up the libnexakotlin translations
@@ -747,6 +748,7 @@ open class CommonApp
         }
 
         assetLoaderThread = AssetLoaderThread()
+        periodicAnalysisThread = uxPeriodicAnalysis()
     }
 
     /** Iterate through all the accounts, looping */

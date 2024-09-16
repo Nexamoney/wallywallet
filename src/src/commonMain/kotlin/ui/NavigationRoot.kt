@@ -34,6 +34,7 @@ import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.rem
 import org.nexa.libnexakotlin.sourceLoc
+import org.nexa.threads.iThread
 import org.nexa.threads.millisleep
 
 private val LogIt = GetLog("wally.NavRoot")
@@ -458,6 +459,28 @@ fun enableNavMenuItem(item: ScreenId, enable:Boolean=true)
     }
 }
 
+// Periodic checking of the wallet's activity to auto-enable nav menu functionality when the wallet engages in it.
+fun updateNavMenuContents()
+{
+    // Check every 10 seconds to see if there are assets in this wallet & enable the menu item if there are
+    if (!showAssetsPref.value && (wallyApp?.hasAssets() == true))
+    {
+        enableNavMenuItem(ScreenId.Assets)
+    }
+}
+
+// UX related periodic analysis
+fun uxPeriodicAnalysis(): iThread
+{
+    return org.nexa.threads.Thread("periodicAnalysis") {
+        while (true)
+        {
+            updateNavMenuContents()
+            millisleep(5000U)
+        }
+    }
+}
+
 fun buildMenuItems()
 {
     val items = permanentMenuItems.toMutableSet()
@@ -467,6 +490,7 @@ fun buildMenuItems()
     if(showAssetsPref.value) items.add(NavChoice(ScreenId.Assets, S.title_activity_assets, "icons/invoice.xml"))
     menuItems.value = items.sortedBy { it.location }.toSet()
 }
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -562,20 +586,6 @@ fun NavigationRoot(systemPadding: Modifier)
         {
             val pa = ctp.getRelevantAccount(selectedAccount.value?.name)
             then(pa, ctp)
-        }
-    }
-
-    // Periodic checking
-    LaunchedEffect(true)
-    {
-        while (true)
-        {
-            // Check every 10 seconds to see if there are assets in this wallet & enable the menu item if there are
-            if (!showAssetsPref.value && (wallyApp?.hasAssets() == true))
-            {
-                enableNavMenuItem(ScreenId.Assets)
-            }
-            delay(10000)
         }
     }
 

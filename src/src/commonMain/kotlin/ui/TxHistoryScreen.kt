@@ -23,8 +23,11 @@ import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.*
 import org.nexa.libnexakotlin.*
+import org.nexa.threads.Mutex
+
 private val LogIt = GetLog("BU.wally.TxHistory")
 fun TransactionHistory.toCSV(): String
 {
@@ -194,6 +197,21 @@ fun TransactionHistory.gatherRelevantAddresses():Set<PayAddress>
     return addrs
 }
 
+private val txHistoryInfo = MutableStateFlow<List<TransactionHistory>?>(null)
+private val txHistoryAccount = MutableStateFlow<Account?>(null)
+private val txHistoryMutex = Mutex("txHistory")
+fun calcTxHistoryInfo(acc : Account)
+{
+    txHistoryMutex.lock {
+        val txes = mutableListOf<TransactionHistory>()
+        acc.wallet.forEachTxByDate {
+            txes.add(it)
+            false
+        }
+        txHistoryInfo.value = txes
+        txHistoryAccount.value = acc
+    }
+}
 /**
  * Transaction history for an account
  */
@@ -201,22 +219,21 @@ fun TransactionHistory.gatherRelevantAddresses():Set<PayAddress>
 @Composable
 fun TxHistoryScreen(acc: Account, nav: ScreenNav)
 {
-    val txes = remember { mutableStateListOf<TransactionHistory>() }
-    val timeZone = TimeZone.currentSystemDefault()
-
-    /**
-     * Populates all transactions
-     */
-    fun fillTxList()
+    // You cannot use a function call to trigger some action in compose since stuff can be randomly recomposed or cached and NOT recomposed
+    // We also can't regenerate the address history list inline with recomposition because its too slow.
+    // We don't need this view to be "live" WRT new transaction coming in.
+    // So we choose to asynchronously calculate it whenever its null or when the passed account changes.
+    // (and we erase it to null whenever we leave this screen)
+    if (txHistoryAccount.value != acc)
     {
-        txes.clear()
-        acc.wallet.forEachTxByDate {
-            txes.add(it)
-            false
-        }
+        txHistoryInfo.value = null
     }
-
-    fillTxList()
+    if ((txHistoryInfo.value == null) || (txHistoryAccount.value != acc)) laterJob {
+        calcTxHistoryInfo(acc)
+    }
+    nav.onDepart {
+        txHistoryInfo.value = null
+    }
 
     fun onCopied(text: String)
     {
@@ -224,72 +241,74 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
         displayNotice(S.copiedToClipboard)
     }
 
-    var inUsedSection = false
-    var inUnusedSection = false
-    LazyColumn {
-        txes.forEachIndexed { idx, it ->
-            item(key = it.tx.idem.toHex()) {
-                val amt = it.incomingAmt - it.outgoingAmt
-                val color = if (idx % 2 == 1) WallyRowAbkg1 else WallyRowAbkg2
-                if(idx != 0) Spacer(modifier = Modifier.height(2.dp))
+    val txes = txHistoryInfo.collectAsState().value
+    if (txes == null)
+    {
+        CenteredSectionText(S.Processing)
+    }
+    else
+    {
+        LazyColumn {
+            txes.forEachIndexed { idx, it ->
+                item(key = it.tx.idem.toHex()) {
+                    val amt = it.incomingAmt - it.outgoingAmt
+                    val color = if (idx % 2 == 1) WallyRowAbkg1 else WallyRowAbkg2
+                    if (idx != 0) Spacer(modifier = Modifier.height(2.dp))
 
-                Column(modifier = Modifier.fillMaxWidth().background(color).padding(1.dp).clickable {
-                    onCopied(it.tx.idem.toHex())
-                }) {
-                    Row {
-                        val uriHandler = LocalUriHandler.current
-                        if (amt !=0L) ResImageView(if (amt>0) "icons/receivearrow.xml" else "icons/sendarrow.xml", modifier = Modifier.size(30.dp))
-                        else Spacer(Modifier.size(30.dp))
-                        if (it.date > 1577836800000) Text(formatLocalEpochMilliseconds(it.date, "\n"))  // jan 1 2020, before the genesis block
-                        else
-                        {
-                            LogIt.info(sourceLoc() +": tx with date ${it.date}")
-                        }
-                        CenteredFittedWithinSpaceText(text = acc.cryptoFormat.format(acc.fromFinestUnit(amt)), startingFontScale = 1.5, fontWeight = FontWeight.Bold,
-                          modifier = Modifier.weight(1f))
-                        val uri = it.chainSelector.explorer("/tx/${it.tx.idem.toHex()}")
-                        if (uri != null)
-                        {
-                            WallyBoringButton({ uriHandler.openUri(uri) }, modifier = Modifier.padding(0.dp, 0.dp, 10.dp, 0.dp)
-                            ) {
+                    Column(modifier = Modifier.fillMaxWidth().background(color).padding(1.dp).clickable {
+                        onCopied(it.tx.idem.toHex())
+                    }) {
+                        Row {
+                            val uriHandler = LocalUriHandler.current
+                            if (amt != 0L) ResImageView(if (amt > 0) "icons/receivearrow.xml" else "icons/sendarrow.xml", modifier = Modifier.size(30.dp))
+                            else Spacer(Modifier.size(30.dp))
+                            if (it.date > 1577836800000) Text(formatLocalEpochMilliseconds(it.date, "\n"))  // jan 1 2020, before the genesis block
+                            else
+                            {
+                                LogIt.info(sourceLoc() + ": tx with date ${it.date}")
+                            }
+                            CenteredFittedWithinSpaceText(text = acc.cryptoFormat.format(acc.fromFinestUnit(amt)), startingFontScale = 1.5, fontWeight = FontWeight.Bold,
+                              modifier = Modifier.weight(1f))
+                            val uri = it.chainSelector.explorer("/tx/${it.tx.idem.toHex()}")
+                            WallyBoringButton({ uriHandler.openUri(uri) }, modifier = Modifier.padding(0.dp, 0.dp, 10.dp, 0.dp)) {
                                 Icon(Icons.Default.ExitToApp, tint = colorConfirm, contentDescription = "view transaction")
                             }
                         }
-                    }
-                    CenteredFittedText(text = it.tx.idem.toHex(), fontWeight = FontWeight.Bold, modifier = Modifier)
-                    Spacer(Modifier.size(3.dp))
+                        CenteredFittedText(text = it.tx.idem.toHex(), fontWeight = FontWeight.Bold, modifier = Modifier)
+                        Spacer(Modifier.size(3.dp))
 
-                    val addrs = it.gatherRelevantAddresses()
-                    for (a in addrs)
-                    {
-                       CenteredFittedText(text = a.toString())
-                    }
-
-                    if (it.note.isNotBlank()) CenteredText(text = it.note)
-                    val assets = it.tx.gatherAssets({
-                        // We are going to use the native coin as a hint as to whether this transaction is sending or receiving
-                        // If its sending, just look for assets that left this wallet
-                        // If its receiving, look for assets coming in.
-                        // TODO: look at inputs and accurately describing sending/receiving
-                        if (it == null) false
-                        else
+                        val addrs = it.gatherRelevantAddresses()
+                        for (a in addrs)
                         {
-                            val result:Boolean = if (amt > 0) acc.wallet.isWalletAddress(it)
-                            else !acc.wallet.isWalletAddress(it)
-                            result
+                            CenteredFittedText(text = a.toString())
                         }
-                    })
-                    if (assets.isNotEmpty())
-                    {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-                            var index = 0
-                            assets.forEach {
-                                val entry = it
-                                val indexFreezer = index  // To use this in the item composable, we need to freeze it to a val, because the composable is called out-of-scope
-                                Box(Modifier.padding(4.dp, 1.dp).fillMaxWidth().background(WallyAssetRowColors[indexFreezer % WallyAssetRowColors.size])) {
+
+                        if (it.note.isNotBlank()) CenteredText(text = it.note)
+                        val assets = it.tx.gatherAssets({
+                            // We are going to use the native coin as a hint as to whether this transaction is sending or receiving
+                            // If its sending, just look for assets that left this wallet
+                            // If its receiving, look for assets coming in.
+                            // TODO: look at inputs and accurately describing sending/receiving
+                            if (it == null) false
+                            else
+                            {
+                                val result: Boolean = if (amt > 0) acc.wallet.isWalletAddress(it)
+                                else !acc.wallet.isWalletAddress(it)
+                                result
+                            }
+                        })
+                        if (assets.isNotEmpty())
+                        {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                                var index = 0
+                                assets.forEach {
+                                    val entry = it
+                                    val indexFreezer = index  // To use this in the item composable, we need to freeze it to a val, because the composable is called out-of-scope
+                                    Box(Modifier.padding(4.dp, 1.dp).fillMaxWidth().background(WallyAssetRowColors[indexFreezer % WallyAssetRowColors.size])) {
                                         AssetListItemView(entry, 0, false, Modifier.padding(0.dp, 2.dp))
                                     }
-                                index++
+                                    index++
+                                }
                             }
                         }
                     }

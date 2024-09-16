@@ -41,14 +41,21 @@ enum class AccountAction
 @Composable
 fun AccountDetailScreen(account: Account, nav: ScreenNav)
 {
+    var curAddressText by remember { mutableStateOf<String>("") }
+
+    LaunchedEffect(curAddressText) {
+        // this is potentially blocking because it needs to ensure that the address is installed in the Bloom filter before its handed out
+        val curDest = account.wallet.getCurrentDestination()
+        curAddressText = i18n(S.CurrentAddress) % mapOf("num" to curDest.index.toString(), "addr" to curDest.address.toString())
+    }
+
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         CenteredSectionText(i18n(S.AccountStatistics))
         if (!account.wallet.isDeleted)
         {
             AccountBlockchainDetail(account)
             val stats = account.wallet.statistics()
-            val curDest = account.wallet.getCurrentDestination()
-            FittedText(i18n(S.CurrentAddress) % mapOf("num" to curDest.index.toString(), "addr" to curDest.address.toString()))
+            FittedText(curAddressText)
             AccountFirstLastSend(stats)
             GuiAccountTxStatisticsRow(stats, { nav.go(ScreenId.AddressHistory) }, { nav.go(ScreenId.TxHistory) })
         }

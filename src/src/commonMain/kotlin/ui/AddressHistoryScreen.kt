@@ -17,9 +17,10 @@ import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.*
 import org.nexa.libnexakotlin.*
-
+import org.nexa.threads.*
 /**
  * Address information to display in view
  */
@@ -55,23 +56,13 @@ val addressInfoComparator = object:  Comparator<AddressInfo>
     }
 }
 
-/**
- * Address history for an account
- */
-@OptIn(DelicateCoroutinesApi::class)
-@Composable
-fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
+private val addressHistoryInfo = MutableStateFlow<List<AddressInfo>?>(null)
+private val addressHistoryAccount = MutableStateFlow<Account?>(null)
+private val addressHistoryMutex = Mutex("addressHistory")
+fun calcAddressHistoryInfo(acc : Account)
 {
-    val addresses: MutableState<MutableList<AddressInfo>> = remember { mutableStateOf(mutableListOf()) }
-    val timeZone = TimeZone.currentSystemDefault()
-
-    /**
-     * Populates all addresses for one account with used, holding and received balance.
-     */
-    fun fillAddressList()
-    {
-        addresses.value.clear()
-        //val addrInfo = mutableMapOf<SatoshiScript, AddressInfo>()
+    addressHistoryMutex.lock {
+        val addresses: MutableList<AddressInfo> = mutableListOf()
         for (a in acc.wallet.allAddresses)
         {
             val used = acc.wallet.isAddressGivenOut(a)
@@ -109,13 +100,39 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
                 false
             }
 
-            addresses.value.add(AddressInfo(a, used, holding, totalReceived, first, last, assetTypes))
+            addresses.add(AddressInfo(a, used, holding, totalReceived, first, last, assetTypes))
         }
 
-        addresses.value.sortWith(addressInfoComparator)
+        addresses.sortWith(addressInfoComparator)
+        addressHistoryInfo.value = addresses
+        addressHistoryAccount.value = acc
     }
+}
 
-    fillAddressList()
+/**
+ * Address history for an account
+ */
+@OptIn(DelicateCoroutinesApi::class)
+@Composable
+fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
+{
+    val timeZone = TimeZone.currentSystemDefault()
+
+    // You cannot use a function call to trigger some action in compose since stuff can be randomly recomposed or cached and NOT recomposed
+    // We also can't regenerate the address history list inline with recomposition because its too slow.
+    // We don't need this view to be "live" WRT new transaction coming in.
+    // So we choose to asynchronously calculate it whenever its null or when the passed account changes.
+    // (and we erase it to null whenever we leave this screen)
+    if (addressHistoryAccount.value != acc)
+    {
+        addressHistoryInfo.value = null
+    }
+    if ((addressHistoryInfo.value == null) || (addressHistoryAccount.value != acc)) laterJob {
+          calcAddressHistoryInfo(acc)
+      }
+    nav.onDepart {
+        addressHistoryInfo.value = null
+    }
 
     fun onAddressCopied(address: String)
     {
@@ -125,19 +142,26 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
 
     var inUsedSection = false
     var inUnusedSection = false
-    LazyColumn {
-            addresses.value.forEachIndexed {idx, it ->
+    val addresses = addressHistoryInfo.collectAsState().value
+    if (addresses == null)
+    {
+        CenteredSectionText(S.Processing)
+    }
+    else
+    {
+        LazyColumn {
+            addresses.forEachIndexed { idx, it ->
                 // This section display code assumes that the address list is sorted as above
                 if ((idx == 0) && (it.amountHeld > 0))
                 {
-                    item(key="aa") {
+                    item(key = "aa") {
                         CenteredSectionText(S.ActiveAddresses)
                         WallyHalfDivider()
                     }
                 }
                 else if ((it.amountHeld == 0L) && (it.totalReceived > 0) && (!inUsedSection))
                 {
-                    item(key="ua") {
+                    item(key = "ua") {
                         WallyDivider()
                         CenteredSectionText(S.UsedAddresses)
                         WallyHalfDivider()
@@ -146,29 +170,33 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
                 }
                 else if ((it.amountHeld == 0L) && (it.totalReceived == 0L) && (it.assetTypesReceived == 0L) && (!inUnusedSection))
                 {
-                    item(key="unua") {
+                    item(key = "unua") {
                         WallyDivider()
                         CenteredSectionText(S.UnusedAddresses)
                         WallyHalfDivider()
                     }
                     inUnusedSection = true
                 }
-                item(key=it.address.toString()) {
-                    val color = if (idx % 2 == 1) { WallyRowAbkg1 } else WallyRowAbkg2
+                item(key = it.address.toString()) {
+                    val color = if (idx % 2 == 1)
+                    {
+                        WallyRowAbkg1
+                    }
+                    else WallyRowAbkg2
                     val address = it.address.toString()
 
-                    if(idx != 1)
+                    if (idx != 1)
                         Spacer(modifier = Modifier.height(6.dp))
 
-                    Column (modifier = Modifier.fillMaxWidth().background(color).padding(1.dp).clickable {
+                    Column(modifier = Modifier.fillMaxWidth().background(color).padding(1.dp).clickable {
                         onAddressCopied(it.address.toString())
                     }) {
                         val uriHandler = LocalUriHandler.current
                         val dest = acc.wallet.walletDestination(it.address)
-                        val addrText = if (devMode&&(dest!=null)) "${dest.index}:$address" else address
+                        val addrText = if (devMode && (dest != null)) "${dest.index}:$address" else address
                         FittedText(text = addrText, fontWeight = FontWeight.Bold, modifier = Modifier)
 
-                        Column (modifier = Modifier.fillMaxWidth().background(color).padding(8.dp)) {
+                        Column(modifier = Modifier.fillMaxWidth().background(color).padding(8.dp)) {
 
                             if ((it.amountHeld > 0) || (it.totalReceived > 0) || (it.assetTypesReceived > 0))
                             {
@@ -181,7 +209,7 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
                                     if (dest != null)
                                     {
                                         // These are dev mode only, so english
-                                        CenteredFittedText("Pubkey:" + dest.pubkey?.toHex() ?: "")
+                                        CenteredFittedText("Pubkey:" + (dest.pubkey?.toHex() ?: ""))
                                         //Text("Index: " + dest.index )
                                     }
                                 }
@@ -239,7 +267,7 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
                                             }
                                             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                                                 Text(totalReceived)
-                                                if ((it.assetTypesReceived>0) && (it.amountHeld==0L)) // if amountHeld > 0 we put this info somewhere else
+                                                if ((it.assetTypesReceived > 0) && (it.amountHeld == 0L)) // if amountHeld > 0 we put this info somewhere else
                                                 {
                                                     Text(assetsHeld)
                                                     Spacer(Modifier.width(1.dp))
@@ -270,4 +298,5 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
                 }
             }
         }
+    }
 }
