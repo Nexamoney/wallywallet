@@ -235,8 +235,10 @@ fun Account.uiData():AccountUIData
         ret.balColor = unsyncedBalanceColor
     }
 
-    val txh = mutableListOf<TransactionHistory>()
-    /* This code puts a fake tx at the top that keeps updating based on the current time
+    // Reload transaction history outside of the UI processing thread.
+    laterJob {
+        val txh = mutableListOf<TransactionHistory>()
+        /* This code puts a fake tx at the top that keeps updating based on the current time
        so you can see how often this is regenerating.
     val fakeTx = txFor(wallet.chainSelector)
     val fakeHistory = TransactionHistory(wallet.chainSelector, fakeTx)
@@ -245,11 +247,12 @@ fun Account.uiData():AccountUIData
     fakeHistory.incomingAmt=millinow()
     txh.add(fakeHistory)
     */
-    wallet.forEachTxByDate {
-        txh.add(it)
-        (txh.size >= 10) // just get the most recent 10
+        wallet.forEachTxByDate {
+            txh.add(it)
+            (txh.size >= 10) // just get the most recent 10
+        }
+        ret.recentHistory = txh.toList()
     }
-    ret.recentHistory = txh.toList()
     return ret
 }
 
