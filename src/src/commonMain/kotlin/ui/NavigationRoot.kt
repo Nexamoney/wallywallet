@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import androidx.compose.ui.text.style.TextAlign
@@ -299,9 +300,9 @@ fun onShareButton()
     if (!platform().hasNativeTitleBar)
     {
         val bkgCol = if (errorText.isNotEmpty()) colorError else if (warningText.isNotEmpty()) colorWarning else if (noticeText.isNotEmpty()) colorNotice else colorTitleBackground
-
+        val uriHandler = LocalUriHandler.current
         // Specifying the row height stops changes header bar content to change its height causing the entire window to jerk up or down
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.background(bkgCol).padding(0.dp).height(32.dp))
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.background(bkgCol).padding(0.dp).height(56.dp))
         {
             if (nav.hasBack() != ScreenId.None)
             {
@@ -310,20 +311,28 @@ fun onShareButton()
                 }
             }
             // We can only fillMaxSize() here because we constrained the height of the row
-            if (errorText.isNotEmpty())
-                ErrorText(errorText, Modifier.weight(1f).fillMaxSize())
-            else if (warningText.isNotEmpty())
-                WarningText(warningText, Modifier.weight(1f).fillMaxSize())
-            else if (noticeText.isNotEmpty())
-                NoticeText(noticeText, Modifier.weight(1f).fillMaxSize())
-            //NoticeText(i18n(S.copiedToClipboard))
-            else
+           if (errorText.isNotEmpty())
+               ErrorText(errorText, Modifier.weight(1f).fillMaxSize().padding(0.dp, 15.dp, 0.dp, 0.dp))
+           else if (warningText.isNotEmpty())
+               WarningText(warningText, Modifier.weight(1f).fillMaxSize().padding(0.dp, 15.dp, 0.dp, 0.dp))
+           else if (noticeText.isNotEmpty())
+               NoticeText(noticeText, Modifier.weight(1f).fillMaxSize().padding(0.dp, 15.dp, 0.dp, 0.dp))
+           //NoticeText(i18n(S.copiedToClipboard))
+           else
             {
-                TitleText(nav.title(), Modifier.weight(1f).fillMaxSize())
-                ResImageView("icons/lock.xml", modifier = Modifier.clickable { triggerUnlockDialog() })
-                if (platform().hasShare && nav.currentScreen.collectAsState().value.hasShare) IconButton(onClick = { onShareButton() }) {
-                    Icon(Icons.Default.Share, tint = colorTitleForeground, contentDescription = null)
+
+                TitleText(nav.title(), Modifier.weight(1f).fillMaxSize().padding(0.dp, 15.dp, 0.dp, 0.dp))
+
+                if (platform().hasShare && nav.currentScreen.collectAsState().value.hasShare) IconButton(onClick = { onShareButton() }, modifier = Modifier.size(36.dp).padding(5.dp, 0.dp)) {
+                    Icon(Icons.Default.Share, tint = Color.LightGray, contentDescription = null, modifier = Modifier.size(36.dp))
                 }
+
+                IconButton(onClick = {triggerUnlockDialog()}, modifier = Modifier.size(36.dp).padding(5.dp, 0.dp)){
+                    ResImageView("icons/lock.xml", modifier = Modifier.size(36.dp))
+                }
+                IconButton(onClick = {uriHandler.openUri("http://wallywallet.org/help")}, modifier = Modifier.size(36.dp).padding(5.dp, 0.dp)){
+                    ResImageView("icons/help.xml", modifier = Modifier.size(36.dp))
+            }
             }
         }
     }
