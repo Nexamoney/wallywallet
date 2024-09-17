@@ -73,7 +73,15 @@ kdoctor
 
 **Generate strings**
 
+1. Add a `<string>` xml tag to:
+
+`~/dev/wally/i18n/res/values/strings.xml`
+
+And other locales if possible.
+
 Generating strings requires the [Kotlin Native compiler](https://kotlinlang.org/docs/native-command-line-compiler.html) to be installed
+
+2. Enter the i18n directory and run `./run.sh` to re-generate the String files with the new string included.
 
 ```
 cd i18n
