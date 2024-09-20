@@ -163,4 +163,6 @@
 
     <string name="backgroundSync">Bakgrunnssynkronisering</string>
 
+    <string name="scanQr">Skann QR</string>
+    <string name="paste">Lim inn</string>
 </resources>
