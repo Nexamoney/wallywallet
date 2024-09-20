@@ -698,4 +698,8 @@ Thank you and enjoy your new wallet!</string>
 
     <string name="backgroundSync">Background sync</string>
 
+    <string name="scanQr">Scan QR</string>
+    <string name="imageQr">Image QR</string>
+
+    <string name="paste">Paste</string>
 </resources>

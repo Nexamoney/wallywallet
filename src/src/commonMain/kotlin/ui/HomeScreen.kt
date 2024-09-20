@@ -1,14 +1,20 @@
 package info.bitcoinunlimited.www.wally.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.ui.views.*
 import kotlinx.coroutines.delay
@@ -35,6 +41,37 @@ writing a vast amount of inscrutible garbage rather than actual useful code.
 * */
 
 private val sendFromAccountShared = MutableStateFlow<Account?>(null)
+
+@Composable fun IconTextButton(
+  textRes: Int,
+  resPath: String,
+  onClick: () -> Unit
+)
+{
+    val actionBarSpacerHeight = if (platform().hasGallery) // Android
+        8.dp
+    else // iOS
+        2.dp
+    Column(
+      modifier = Modifier.zIndex(1f).padding(
+        horizontal = 12.dp,
+        vertical = 12.dp
+      ).background(Color.Transparent).clickable { onClick() },
+      horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        ResImageView(
+          resPath = resPath,
+          modifier = Modifier.width(20.dp).height(20.dp).zIndex(1f).clickable { onClick() }
+        )
+        Spacer(Modifier.height(actionBarSpacerHeight).clickable { onClick() })
+        Text(
+          text = i18n(textRes),
+          modifier = Modifier.clickable { onClick() },
+          color = Color.White,
+          fontSize = FontScale(0.68)
+        )
+    }
+}
 
 @Composable fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState<GuiDriver?>, nav: ScreenNav)
 {
@@ -585,30 +622,66 @@ private val sendFromAccountShared = MutableStateFlow<Account?>(null)
         catch(e:Exception) {}
     }
 
-
     Box(modifier = WallyPageBase) {
         // Don't show the thumb buttons if the softkeyboard is up, because the user is keying something in, not one-handing the phone
         if (!isSoftKeyboardShowing.collectAsState().value)
         {
+            val actionBarIconHeight = 20.dp
+            val actionBarFontScale = 0.68
+            val actionBarButtonVerticalPadding = 12.dp
+            val actionBarButtonHorizontalPadding = 12.dp
+            val actionBarSpacerHeight = if (platform().hasGallery) // Android
+                8.dp
+            else // iOS
+                2.dp
+            val actionBarStartEndPadding = if (platform().hasGallery) // Android
+                56.dp
+            else // iOS
+                96.dp
+            val actionBarBottomPadding = if (platform().hasGallery) // Android
+                40.dp
+            else // iOS
+                20.dp
+
             // pad these buttons on the bottom to be convenient to press with your thumb
-            Row(Modifier.fillMaxWidth().align(Alignment.BottomCenter).zIndex(2f).padding(8.dp, 8.dp, 8.dp, 60.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+            Row(
+              modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .zIndex(2f).padding(actionBarStartEndPadding, 8.dp, actionBarStartEndPadding, actionBarBottomPadding)
+                .shadow(elevation = 8.dp, shape = RoundedCornerShape(32.dp))
+                .background(floatingActionBarBackground, shape = RoundedCornerShape(32.dp)),
+              horizontalArrangement = Arrangement.SpaceEvenly,
+            ) {
                 if (platform().hasGallery)
-                    WallyBoringIconButton("icons/gallery.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
+                {
+                    IconTextButton(
+                        textRes = S.imageQr,
+                        resPath = "icons/scan_image_qr_white.png"
+                    ) {
                         ImageQrCode {
                             it?.let {
                                 clearAlerts()
                                 if (!wallyApp!!.handlePaste(it)) wallyApp!!.handleNonIntentText(it) }
                         }
                     }
+                }
                 if (platform().hasQrScanner)
-                    WallyBoringIconButton("icons/scanqr2.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
+                {
+                    IconTextButton(
+                      textRes = S.scanQr,
+                      resPath = "icons/scan_qr_white.png"
+                    ) {
                         clearAlerts()
                         isScanningQr = true
                     }
-
+                }
                 if (!platform().usesMouse)
                 {
-                    WallyBoringIconButton("icons/clipboard.xml", Modifier.width(48.dp).height(48.dp).zIndex(1f)) {
+                    IconTextButton(
+                      S.paste,
+                      resPath = "icons/paste_clipboard_white.png"
+                    ) {
                         clearAlerts()
                         val cliptext = clipmgr.getText()?.text
                         if (cliptext != null && cliptext != "")
@@ -632,153 +705,153 @@ private val sendFromAccountShared = MutableStateFlow<Account?>(null)
                     return
                 }
                 SendView(
-                      selectedAccountName = fromAccount.name,
-                      accountNames = accountGuiSlots.value.map { it.name },
-                      toAddress = _sendToAddress,
-                      note = sendNote,
-                      sendQuantity = sendQuantity,
-                      paymentInProgress = paymentInProgress.value,
-                      setSendQuantity = {
-                          sendQuantity.value = it
-                      },
-                      setToAddress = { sendToAddress.value = it },
-                      onCancel = {
-                          isSending = false
-                          driver.value = null // hack to fix send section reappearing on nav after an address is provided
-                          clearAlerts()  // If user manually cancelled, they understood the problem
-                          sendFromAccountShared.value?.clearAssetTransferList()
-                                 },
-                      approximatelyText = approximatelyText,
-                      currencies = sendCurrencyChoices,
-                      xchgRateText = xchgRateText,
-                      onPaymentInProgress = {
-                          paymentInProgress.value = it
-                      },
-                      updateSendBasedOnPaymentInProgress = {
-                          updateSendBasedOnPaymentInProgress()
-                      },
-                      onApproximatelyText = {
-                          approximatelyText = it
-                      },
-                      checkSendQuantity = {s, account ->
-                          checkSendQuantity(s, account)
-                      },
-                      onSendSuccess = {
-                          sendFromAccountShared.value?.clearAssetTransferList()
-                          sendToAddress.value = ""
-                          sendQuantity.value = ""
-                          isSending = false
-                      },
-                      onAccountNameSelected = {
-                          val act = wallyApp!!.accounts[it]
-                          act?.let {
-                              updateSendAccount(it)
-                          }
-                      },
-                      account = fromAccount
-                    )
-                }
-                if (!isSending)
-                {
-                    Row(modifier = Modifier.fillMaxWidth().padding(0.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
-                        if (platform().usesMouse)
-                            WallyBoringLargeIconButton("icons/clipboard.xml") {
-                                val cliptext = clipmgr.getText()?.text
-                                if (cliptext != null && cliptext != "")
-                                {
-                                    if (!wallyApp!!.handlePaste(cliptext)) displayNotice(S.pasteUnintelligible)
-                                }
-                                else
-                                {
-                                    displayNotice(S.pasteIsEmpty)
-                                }
-                            }
-                        WallyBoringLargeTextButton(S.Send) {
-                            clearAlerts()
-                            isSending = true
-                        }
-                        WallyBoringLargeTextButton(S.title_split_bill) {
-                            clearAlerts()
-                            nav.go(ScreenId.SplitBill)
-                        }
-                    }
-                    WallyDivider()
-                    ReceiveView(
-                      onAccountNameSelected = { accountName ->
-                          val act = wallyApp!!.accounts[accountName]
-                          if (act != null)
-                          {
-                              selectedAccount.value = act
-                              wallyApp?.focusedAccount = act
-                          }
+                  selectedAccountName = fromAccount.name,
+                  accountNames = accountGuiSlots.value.map { it.name },
+                  toAddress = _sendToAddress,
+                  note = sendNote,
+                  sendQuantity = sendQuantity,
+                  paymentInProgress = paymentInProgress.value,
+                  setSendQuantity = {
+                      sendQuantity.value = it
+                  },
+                  setToAddress = { sendToAddress.value = it },
+                  onCancel = {
+                      isSending = false
+                      driver.value = null // hack to fix send section reappearing on nav after an address is provided
+                      clearAlerts()  // If user manually cancelled, they understood the problem
+                      sendFromAccountShared.value?.clearAssetTransferList()
+                  },
+                  approximatelyText = approximatelyText,
+                  currencies = sendCurrencyChoices,
+                  xchgRateText = xchgRateText,
+                  onPaymentInProgress = {
+                      paymentInProgress.value = it
+                  },
+                  updateSendBasedOnPaymentInProgress = {
+                      updateSendBasedOnPaymentInProgress()
+                  },
+                  onApproximatelyText = {
+                      approximatelyText = it
+                  },
+                  checkSendQuantity = {s, account ->
+                      checkSendQuantity(s, account)
+                  },
+                  onSendSuccess = {
+                      sendFromAccountShared.value?.clearAssetTransferList()
+                      sendToAddress.value = ""
+                      sendQuantity.value = ""
+                      isSending = false
+                  },
+                  onAccountNameSelected = {
+                      val act = wallyApp!!.accounts[it]
+                      act?.let {
+                          updateSendAccount(it)
                       }
-                    )
-                }
-
-                WallyDivider()
-                Spacer(modifier = Modifier.height(8.dp))
+                  },
+                  account = fromAccount
+                )
+            }
+            if (!isSending)
+            {
                 Row(modifier = Modifier.fillMaxWidth().padding(0.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
-                    Spacer(Modifier.width(8.dp))
-                    if(synced.value)
-                        ResImageView("icons/check.xml", modifier = Modifier.size(24.dp))
-                    else
-                    {
-                        Box(Modifier.size(24.dp)) { LoadingAnimationContent() }
-                    }
-                    Column(modifier = Modifier.weight(0.75f).height(IntrinsicSize.Min), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-                        SectionText(S.AccountListHeader, Modifier.weight(1f))
-                        HorizontalDivider(modifier = Modifier.width(100.dp), color = listDividerFg, thickness = 2.dp)
-                    }
-                    ResImageView("icons/plus.xml", modifier = Modifier.size(24.dp).clickable {
+                    if (platform().usesMouse)
+                        WallyBoringLargeIconButton("icons/clipboard.xml") {
+                            val cliptext = clipmgr.getText()?.text
+                            if (cliptext != null && cliptext != "")
+                            {
+                                if (!wallyApp!!.handlePaste(cliptext)) displayNotice(S.pasteUnintelligible)
+                            }
+                            else
+                            {
+                                displayNotice(S.pasteIsEmpty)
+                            }
+                        }
+                    WallyBoringLargeTextButton(S.Send) {
                         clearAlerts()
-                        nav.go(ScreenId.NewAccount)
-                    })
-                    Spacer(Modifier.width(8.dp))
+                        isSending = true
+                    }
+                    WallyBoringLargeTextButton(S.title_split_bill) {
+                        clearAlerts()
+                        nav.go(ScreenId.SplitBill)
+                    }
                 }
-                Spacer(Modifier.height(8.dp))
-                AccountListView(
-                  nav,
-                  selectedAccount,
-                  modifier = Modifier.weight(1f).testTag("AccountListView"),
-                  onAccountSelected = {
-                      if (selectedAccount.value == it)
+                WallyDivider()
+                ReceiveView(
+                  onAccountNameSelected = { accountName ->
+                      val act = wallyApp!!.accounts[accountName]
+                      if (act != null)
                       {
-                          // If you click on an already selected account, deselect it
-                          // This deselect functionality anticipates having the selected account's line item grow into a more detailed view.
-                          selectedAccount.value = null
-                          onAccountSelected(null)
-                      }
-                      else
-                      {
-                          selectedAccount.value = it
-                          updateSendAccount(it) // if an account is selected in the account list, the send from account is updated
-                          onAccountSelected(it)
+                          selectedAccount.value = act
+                          wallyApp?.focusedAccount = act
                       }
                   }
                 )
-                if (isScanningQr && platform().hasQrScanner)
+            }
+
+            WallyDivider()
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(modifier = Modifier.fillMaxWidth().padding(0.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
+                Spacer(Modifier.width(8.dp))
+                if(synced.value)
+                    ResImageView("icons/check.xml", modifier = Modifier.size(24.dp))
+                else
                 {
-                    QrScannerDialog(
-                      onDismiss = {
-                          LogIt.info("dismissed QR scan")
-                          clearAlerts()
-                          isScanningQr = false
-                      },
-                      onScan = {
-                          LogIt.info("handling QR scan $isScanningQr")
-                          if (it.isNotEmpty() && isScanningQr)
-                          {
-                              LogIt.info("actually handling QR scan")
-                              // Clean out an old payment protocol if you are pasting a new send in
-                              // paymentInProgress.value = null
-                              isScanningQr = false
-                              wallyApp!!.handlePaste(it)
-                          }
-                      }
-                    )
+                    Box(Modifier.size(24.dp)) { LoadingAnimationContent() }
                 }
+                Column(modifier = Modifier.weight(0.75f).height(IntrinsicSize.Min), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                    SectionText(S.AccountListHeader, Modifier.weight(1f))
+                    HorizontalDivider(modifier = Modifier.width(100.dp), color = listDividerFg, thickness = 2.dp)
+                }
+                ResImageView("icons/plus.xml", modifier = Modifier.size(24.dp).clickable {
+                    clearAlerts()
+                    nav.go(ScreenId.NewAccount)
+                })
+                Spacer(Modifier.width(8.dp))
+            }
+            Spacer(Modifier.height(8.dp))
+            AccountListView(
+              nav,
+              selectedAccount,
+              modifier = Modifier.weight(1f).testTag("AccountListView"),
+              onAccountSelected = {
+                  if (selectedAccount.value == it)
+                  {
+                      // If you click on an already selected account, deselect it
+                      // This deselect functionality anticipates having the selected account's line item grow into a more detailed view.
+                      selectedAccount.value = null
+                      onAccountSelected(null)
+                  }
+                  else
+                  {
+                      selectedAccount.value = it
+                      updateSendAccount(it) // if an account is selected in the account list, the send from account is updated
+                      onAccountSelected(it)
+                  }
+              }
+            )
+            if (isScanningQr && platform().hasQrScanner)
+            {
+                QrScannerDialog(
+                  onDismiss = {
+                      LogIt.info("dismissed QR scan")
+                      clearAlerts()
+                      isScanningQr = false
+                  },
+                  onScan = {
+                      LogIt.info("handling QR scan $isScanningQr")
+                      if (it.isNotEmpty() && isScanningQr)
+                      {
+                          LogIt.info("actually handling QR scan")
+                          // Clean out an old payment protocol if you are pasting a new send in
+                          // paymentInProgress.value = null
+                          isScanningQr = false
+                          wallyApp!!.handlePaste(it)
+                      }
+                  }
+                )
             }
         }
     }
+}
 
 
