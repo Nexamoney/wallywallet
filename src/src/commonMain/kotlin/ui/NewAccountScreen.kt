@@ -636,7 +636,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
               value = recoveryPhrase,
               onValueChange = onValueChange,
               interactionSource = ia,
-              colors = TextFieldDefaults.textFieldColors(containerColor = Color.Transparent),
+              colors = TextFieldDefaults.colors(unfocusedContainerColor = Color.Transparent, focusedContainerColor = Color.Transparent, disabledContainerColor = Color.Transparent),
               placeholder = { Text(i18n(S.LeaveEmptyNewWallet)) },
               minLines = 1,
               maxLines = 4,

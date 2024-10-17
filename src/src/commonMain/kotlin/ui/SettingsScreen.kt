@@ -124,10 +124,12 @@ fun SettingsScreen(nav: ScreenNav)
                 if (account.chain.chainSelector == chain.key)
                 {
                     val nodeSet: Set<String> = nodeAddr?.splitIntoSet() ?: setOf()
-                    if (!excl || (nodeSet.size == 0)) account.cnxnMgr.exclusiveNodes(null)
-                    else account.cnxnMgr.exclusiveNodes(nodeSet)
-                    if (!prefd || (nodeSet.size == 0)) account.cnxnMgr.preferNodes(null)
-                    else account.cnxnMgr.preferNodes(nodeSet)
+                    laterJob {  // Setting these can block when the cnxn manager is accessing them
+                        if (!excl || (nodeSet.size == 0)) account.cnxnMgr.exclusiveNodes(null)
+                        else account.cnxnMgr.exclusiveNodes(nodeSet)
+                        if (!prefd || (nodeSet.size == 0)) account.cnxnMgr.preferNodes(null)
+                        else account.cnxnMgr.preferNodes(nodeSet)
+                    }
                 }
             }
         }

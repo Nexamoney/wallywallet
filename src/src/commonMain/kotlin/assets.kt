@@ -910,9 +910,16 @@ class AssetManager(): AssetManagerStorage
         val json = kotlinx.serialization.json.Json { encodeDefaults = true; ignoreUnknownKeys = true }
         db.set(assetInfo.groupId.data, json.encodeToString(AssetInfo.serializer(), assetInfo).toByteArray())
          */
-        val json = kotlinx.serialization.json.Json { encodeDefaults = true; ignoreUnknownKeys = true }
-        val ais = json.encodeToString(AssetInfo.serializer(), assetInfo).toByteArray()
-        assetManagerStorage().storeAssetFile(assetInfo.groupId.toStringNoPrefix() + ".ai", ais)
+        try
+        {
+            val json = kotlinx.serialization.json.Json { encodeDefaults = true; ignoreUnknownKeys = true }
+            val ais = json.encodeToString(AssetInfo.serializer(), assetInfo).toByteArray()
+            assetManagerStorage().storeAssetFile(assetInfo.groupId.toStringNoPrefix() + ".ai", ais)
+        }
+        catch(e:Exception)
+        {
+            LogIt.info("Cannot store asset info: ${assetInfo.name}")
+        }
     }
 
     fun loadAssetInfo(groupId: GroupId): AssetInfo
