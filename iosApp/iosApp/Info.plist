@@ -7,6 +7,8 @@
 		<string>info.bitcoinunlimited.www.wally.backgroundProcessing</string>
 		<string>info.bitcoinunlimited.www.wally.appRefresh</string>
 	</array>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -24,7 +26,7 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>3.3.3</string>
+	<string>3.3.4</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

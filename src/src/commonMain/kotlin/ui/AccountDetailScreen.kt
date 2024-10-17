@@ -38,15 +38,22 @@ enum class AccountAction
     Delete, Rediscover, RediscoverBlockchain, Reassess, RecoveryPhrase, PrimaryAccount, PinChange
 }
 
+// We need to promote some blocking-access data to globals so we can launch threads to load them
+private var curAddressText = MutableStateFlow<String>("")
+private var accountDetailAccount:Account? = null
+
 @Composable
 fun AccountDetailScreen(account: Account, nav: ScreenNav)
 {
-    var curAddressText by remember { mutableStateOf<String>("") }
-
-    LaunchedEffect(curAddressText) {
-        // this is potentially blocking because it needs to ensure that the address is installed in the Bloom filter before its handed out
-        val curDest = account.wallet.getCurrentDestination()
-        curAddressText = i18n(S.CurrentAddress) % mapOf("num" to curDest.index.toString(), "addr" to curDest.address.toString())
+    if (account != accountDetailAccount)
+    {
+        accountDetailAccount = account
+        curAddressText.value = ""  // Account changed so clear this pending a reload
+        laterJob {
+            // this is potentially blocking because it ensures that the address is installed in the Bloom filter before its handed out
+            val curDest = account.wallet.getCurrentDestination()
+            curAddressText.value = i18n(S.CurrentAddress) % mapOf("num" to curDest.index.toString(), "addr" to curDest.address.toString())
+        }
     }
 
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
@@ -55,7 +62,7 @@ fun AccountDetailScreen(account: Account, nav: ScreenNav)
         {
             AccountBlockchainDetail(account)
             val stats = account.wallet.statistics()
-            FittedText(curAddressText)
+            FittedText(curAddressText.collectAsState().value)
             AccountFirstLastSend(stats)
             GuiAccountTxStatisticsRow(stats, { nav.go(ScreenId.AddressHistory) }, { nav.go(ScreenId.TxHistory) })
         }

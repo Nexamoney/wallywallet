@@ -9,23 +9,23 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 // Wally Wallet version
-val versionNumber = "3.3.3"
+val versionNumber = "3.3.4"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 
 
 // Dependency versions
 val mpThreadsVersion = "0.2.9"
 val nexaRpcVersion = "1.2.2"
-val libNexaKotlinVersion = "0.2.13"
+val libNexaKotlinVersion = "0.2.14"
 val serializationVersion = "1.7.1"  // https://github.com/Kotlin/kotlinx.serialization
-val coroutinesVersion = "1.9.0-RC"     // https://github.com/Kotlin/kotlinx.coroutines
+val coroutinesVersion = "1.9.0"     // https://github.com/Kotlin/kotlinx.coroutines
 val ktorVersion = "2.3.12"           // https://github.com/ktorio/ktor
 val bigNumVersion = "0.3.10"         // https://github.com/ionspin/kotlin-multiplatform-bignum
 val composeVersion = "1.6.11"        // https://github.com/JetBrains/compose-multiplatform/releases
-val androidTestCoreVersion = "1.6.0-rc01" // https://mvnrepository.com/artifact/androidx.test/core
-val androidxActivityComposeVersion = "1.9.1"
-val uriKmpVersion = "0.0.16"  // https://github.com/eygraber/uri-kmp
-val skikoVersion = "0.8.9" // https://github.com/JetBrains/skiko/releases
+val androidTestCoreVersion = "1.6.1" // https://mvnrepository.com/artifact/androidx.test/core
+val androidxActivityComposeVersion = "1.9.2"
+val uriKmpVersion = "0.0.18"  // https://github.com/eygraber/uri-kmp
+val skikoVersion = "0.8.15" // https://github.com/JetBrains/skiko/releases
 val workVersion = "2.9.1"
 
 
@@ -153,8 +153,8 @@ kotlin {
                 sourceSetTree.set(KotlinSourceSetTree.test)
 
                 dependencies {
-                    implementation("androidx.compose.ui:ui-test-junit4-android:1.6.8")
-                    debugImplementation("androidx.compose.ui:ui-test-manifest:1.6.8")
+                    testImplementation("androidx.compose.ui:ui-test-junit4-android:1.7.3")
+                    debugImplementation("androidx.compose.ui:ui-test-manifest:1.7.3")
                 }
             }
         }
@@ -273,7 +273,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-cio:$ktorVersion")
 
                 // IO
-                implementation("com.squareup.okio:okio:3.9.0")
+                implementation("com.squareup.okio:okio:3.9.1")
                 implementation("org.jetbrains.kotlinx:atomicfu:0.25.0")
 
                 // nexa
@@ -388,24 +388,24 @@ kotlin {
                     //implementation(project(":shared"))
 
                     // CameraX core library using the camera2 implementation
-                    val camerax_version = "1.4.0-rc01"  // https://developer.android.com/jetpack/androidx/releases/camera
+                    val camerax_version = "1.4.0-rc03"  // https://developer.android.com/jetpack/androidx/releases/camera
                     val lottieVersion = "6.4.1"
 
                     implementation(kotlin("stdlib-jdk8"))
                     implementation("androidx.activity:activity-compose:$androidxActivityComposeVersion")
                     implementation("androidx.tracing:tracing:1.2.0")
-                    implementation("androidx.compose.ui:ui:1.6.8")
-                    implementation("androidx.compose.ui:ui-tooling:1.6.8")
-                    implementation("androidx.compose.ui:ui-tooling-preview:1.6.8")
-                    implementation("androidx.compose.foundation:foundation:1.6.8")
-                    implementation("androidx.compose.material:material:1.6.8")
-                    implementation("androidx.activity:activity-compose:1.9.1")
-                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.7.1")
-                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.7.1")
+                    implementation("androidx.compose.ui:ui:1.7.3")
+                    implementation("androidx.compose.ui:ui-tooling:1.7.3")
+                    implementation("androidx.compose.ui:ui-tooling-preview:1.7.3")
+                    implementation("androidx.compose.foundation:foundation:1.7.3")
+                    implementation("androidx.compose.material:material:1.7.3")
+                    implementation("androidx.activity:activity-compose:1.9.2")
+                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.7.3")
+                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.7.3")
 
                     // android layout dependencies
                     //implementation("com.google.android.flexbox:flexbox:3.0.0")  // https://github.com/google/flexbox-layout/tags
-                    implementation("androidx.activity:activity:1.9.1")
+                    implementation("androidx.activity:activity:1.9.2")
                     //implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")  // https://developer.android.com/jetpack/androidx/releases/navigation
                     //implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
                     implementation("androidx.wear:wear:1.3.0")
@@ -447,9 +447,9 @@ kotlin {
                     implementation("androidx.camera:camera-view:${camerax_version}")
                     implementation("com.google.mlkit:barcode-scanning:17.3.0")
 
-                    implementation("androidx.media3:media3-exoplayer:1.4.0")
+                    implementation("androidx.media3:media3-exoplayer:1.4.1")
                     // Dynamic Adaptive Streaming over HTTP: implementation("androidx.media3:media3-exoplayer-dash:1.X.X")
-                    implementation("androidx.media3:media3-ui:1.4.0")
+                    implementation("androidx.media3:media3-ui:1.4.1")
 
                     // Animation
                     implementation("com.airbnb.android:lottie-compose:$lottieVersion")
@@ -514,6 +514,8 @@ kotlin {
                     implementation("org.nexa:nexarpc:$nexaRpcVersion")
                     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
                     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+                    implementation("androidx.test:core-ktx:1.6.1")
+                    implementation("androidx.test.ext:junit-ktx:1.2.1")
                 }
             }
         }

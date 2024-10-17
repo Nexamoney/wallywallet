@@ -57,9 +57,10 @@ fun UnlockView(enterPin: String = i18n(S.EnterPIN), onPinEntered: (String) -> Un
       text = {
               Column {
                   TextField(pin.value,
-                    colors = TextFieldDefaults.textFieldColors(
+                    colors = TextFieldDefaults.colors(
                       cursorColor = Color.Black,
-                      containerColor = Color.Transparent,
+                      focusedContainerColor = Color.Transparent,
+                      unfocusedContainerColor = Color.Transparent,
                       focusedIndicatorColor = Color.Black,
                       unfocusedIndicatorColor = Color.Black
                     ),
