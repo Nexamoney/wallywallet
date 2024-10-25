@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.Transient
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
+import org.nexa.threads.ThreadJob
 import kotlin.random.Random
 
 /** Account flags: No flag */
@@ -45,14 +46,17 @@ fun WallyGetCnxnMgr(chain: ChainSelector, name: String? = null, start:Boolean = 
     val ret = GetCnxnMgr(chain, name, start)
     if (chain == ChainSelector.NEXA)
     {
-        later {
-            ret.add("nexa.wallywallet.org", NexaPort, 100, true)
-            ret.add("p2p.wallywallet.org", NexaPort, 90, true)
+        laterJob {
+            ret.add("nexa.wallywallet.org", NexaPort, Random.nextInt(90,101), true)
+            ret.add("p2p.wallywallet.org", NexaPort, Random.nextInt(90,101), true)
+            ret.add("usa.wallywallet.org", NexaPort, Random.nextInt(90,101), true)
+            ret.add("india.wallywallet.org", NexaPort, Random.nextInt(90,101), true)
+            ret.add("eu.wallywallet.org", NexaPort, Random.nextInt(90,101), true)
+            ret.add("w.nexa.org", NexaPort, Random.nextInt(90,101), true)
         }
     }
     return ret
 }
-
 
 class Account(
   val name: String, //* The name of this account
@@ -733,8 +737,7 @@ class Account(
         unconfirmedBalance = BigDecimal.ZERO
     }
 
-    fun changeAsyncProcessing()
-    {
+    val actChanged = ThreadJob("accountUpdate") {
         try
         {
             // Update our cache of the balances
@@ -748,12 +751,25 @@ class Account(
         }
     }
 
+    fun changeAsyncProcessing()
+    {
+        try
+            {
+                // Update our cache of the balances
+                unconfirmedBalance = fromFinestUnit(wallet.unconfirmedBalanceDwim)
+                confirmedBalance = fromFinestUnit(wallet.balanceConfirmed)
+                balance = fromFinestUnit(wallet.balance)
+            }
+            catch (e: WalletDisconnectedException)
+            {
+                // I cannot update the balance if the wallet is not connected, but it will update once the connected so benign
+            }
+    }
+
     /** This is called by the underlying layers whenever something in the wallet has changed */
     fun onChange(force: Boolean = false)
     {
-        changeAsyncProcessing()
-        onChanged(this, force)
-        constructAssetMap()
+        onChanged(this, force)  // calls changeAsyncProcessing
     }
 
     /**

@@ -95,9 +95,6 @@ open class KeyboardToggleListener(private val activity: Activity, private val on
         val screenHeight = (activity.findViewById(android.R.id.content) as View).getRootView().height
         if (screenHeight > maxHeight) maxHeight = screenHeight
         val maxDiff = maxHeight - curHeight
-
-        LogIt.info("screen dim: ")
-
         if (maxDiff > maxHeight*0.15)
         {
             if (!currentlyShown)
@@ -548,7 +545,7 @@ open class CommonActivity : AppCompatActivity()
     /** Do whatever you pass but not within the user interface context, asynchronously */
     fun later(fn: suspend () -> Unit): Unit
     {
-        coMiscScope.launch {
+        coMiscScope.launch(exceptionHandler) {
             try
             {
                 fn()
@@ -563,7 +560,7 @@ open class CommonActivity : AppCompatActivity()
     /** Do whatever you pass within the user interface context, asynchronously */
     fun laterUI(fn: suspend () -> Unit): Unit
     {
-        coGuiScope.launch {
+        coGuiScope.launch(exceptionHandler) {
             try
             {
                 fn()

@@ -372,7 +372,7 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                             {
                                 val act = c.value
                                 if (act.wallet.blockchain == bc)
-                                    act.wallet.rediscover(true, true)
+                                    act.wallet.rediscover(true, false)
                             }
                         }
                         displayNotice(S.rediscoverNotice)

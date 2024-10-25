@@ -2,6 +2,7 @@ package info.bitcoinunlimited.www.wally
 
 import kotlinx.coroutines.*
 import org.nexa.libnexakotlin.GetLog
+import org.nexa.libnexakotlin.exceptionHandler
 
 private val LogIt = GetLog("BU.wally.jvmUtils")
 
@@ -12,7 +13,7 @@ fun notInUI(fn: () -> Unit)
     val tname = Thread.currentThread().name
     if (tname == "main")  // main is the UI thread so need to launch this
     {
-        (notInUIscope ?: GlobalScope).launch {
+        (notInUIscope ?: GlobalScope).launch(exceptionHandler) {
             try
             {
                 fn()

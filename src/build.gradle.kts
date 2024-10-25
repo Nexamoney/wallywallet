@@ -9,15 +9,15 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 // Wally Wallet version
-val versionNumber = "3.3.4"
+val versionNumber = "3.3.5"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 
 
 // Dependency versions
-val mpThreadsVersion = "0.2.9"
+val mpThreadsVersion = "0.3.3"
 val nexaRpcVersion = "1.2.2"
-val libNexaKotlinVersion = "0.2.14"
-val serializationVersion = "1.7.1"  // https://github.com/Kotlin/kotlinx.serialization
+val libNexaKotlinVersion = "0.3.4"
+val serializationVersion = "1.7.3"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.9.0"     // https://github.com/Kotlin/kotlinx.coroutines
 val ktorVersion = "2.3.12"           // https://github.com/ktorio/ktor
 val bigNumVersion = "0.3.10"         // https://github.com/ionspin/kotlin-multiplatform-bignum
@@ -25,7 +25,7 @@ val composeVersion = "1.6.11"        // https://github.com/JetBrains/compose-mul
 val androidTestCoreVersion = "1.6.1" // https://mvnrepository.com/artifact/androidx.test/core
 val androidxActivityComposeVersion = "1.9.2"
 val uriKmpVersion = "0.0.18"  // https://github.com/eygraber/uri-kmp
-val skikoVersion = "0.8.15" // https://github.com/JetBrains/skiko/releases
+val skikoVersion = "0.8.9" // https://github.com/JetBrains/skiko/releases
 val workVersion = "2.9.1"
 
 
@@ -35,7 +35,7 @@ plugins {
     //trick: for the same plugin versions in all sub-modulesly
     kotlin("multiplatform")
     id("com.android.application")
-    kotlin("plugin.serialization").version("2.0.0")
+    kotlin("plugin.serialization").version("2.0.20")
     //id("org.jetbrains.kotlin.android").version("2.0.0")
     id("org.jetbrains.kotlin.plugin.compose").version("2.0.0")
     id("org.jetbrains.compose")   // https://github.com/JetBrains/compose-multiplatform/releases

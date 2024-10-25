@@ -1,7 +1,6 @@
 package info.bitcoinunlimited.www.wally
 
-import info.bitcoinunlimited.www.wally.ui.accountChangedNotification
-import info.bitcoinunlimited.www.wally.ui.views.uiData
+import info.bitcoinunlimited.www.wally.ui.triggerAccountsChanged
 import org.nexa.libnexakotlin.*
 
 actual fun EncodePIN(actName: String, pin: String, size: Int): ByteArray {
@@ -14,5 +13,12 @@ actual fun EncodePIN(actName: String, pin: String, size: Int): ByteArray {
 
 actual fun onChanged(account: Account, force: Boolean)
 {
-    later { accountChangedNotification.send(account.name) }
+    onetlater("accountChanged_${account.name}") {
+        account.changeAsyncProcessing()
+        triggerAccountsChanged(account)
+    }
+    onetlater("accountAssetMap_${account.name}") {
+        account.constructAssetMap()
+        triggerAccountsChanged(account)
+    }
 }

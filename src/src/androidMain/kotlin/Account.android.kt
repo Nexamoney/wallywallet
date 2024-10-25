@@ -9,6 +9,7 @@ import com.ionspin.kotlin.bignum.decimal.*
 import info.bitcoinunlimited.www.wally.ui.triggerAccountsChanged
 import info.bitcoinunlimited.www.wally.ui.views.uiData
 import org.nexa.libnexakotlin.*
+import org.nexa.threads.millisleep
 
 private val LogIt = GetLog("BU.wally.AccountAndroid")
 
@@ -120,11 +121,14 @@ fun Account.onResumeAndroid()
 }
 
 /** Call whenever the state of this account has changed so needs to be redrawn.  Or on first draw (with force = true) */
-var accountOnChangedLater = false
 actual fun onChanged(account: Account, force: Boolean)
 {
-    onetlater("accountChanged") {
+    onetlater("accountChanged_${account.name}") {
         account.changeAsyncProcessing()
+        triggerAccountsChanged(account)
+    }
+    onetlater("accountAssetMap_${account.name}") {
+        account.constructAssetMap()
         triggerAccountsChanged(account)
     }
 }

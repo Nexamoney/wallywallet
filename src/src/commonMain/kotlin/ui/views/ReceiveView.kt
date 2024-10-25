@@ -66,7 +66,7 @@ fun AddressQrCode(address: String)
     {
         setTextClipboard(address)
         displayCopiedNotice = true
-        coroutineScope.launch {
+        coroutineScope.launch(exceptionHandler) {
             delay(NORMAL_NOTICE_DISPLAY_TIME)  // Delay of 5 seconds
             displayCopiedNotice = false
         }
