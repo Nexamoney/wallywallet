@@ -50,6 +50,7 @@ import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import org.nexa.libnexakotlin.CURRENCY_1
 import org.nexa.libnexakotlin.CurrencyDecimal
 import org.nexa.libnexakotlin.GetLog
+import org.nexa.libnexakotlin.exceptionHandler
 
 private val LogIt = GetLog("wally.theme")
 
@@ -948,7 +949,7 @@ fun WallyDataEntry(value: String, modifier: Modifier = Modifier, textStyle: Text
                     // Hover for mouse platforms, Focus for touch platforms
                     is HoverInteraction.Enter, is FocusInteraction.Focus ->
                     {
-                        scope.launch {
+                        scope.launch(exceptionHandler) {
                             bkgColor.animateTo(bkgCol ?: SelectedBkg, animationSpec = tween(500))
                         }
                         if (entries==0) UxInTextEntry(true)
@@ -957,7 +958,7 @@ fun WallyDataEntry(value: String, modifier: Modifier = Modifier, textStyle: Text
 
                     is HoverInteraction.Exit, is FocusInteraction.Unfocus ->
                     {
-                        scope.launch {
+                        scope.launch(exceptionHandler) {
                             bkgColor.animateTo(bkgCol ?: BaseBkg, animationSpec = tween(500))
                         }
                         entries--

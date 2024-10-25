@@ -132,7 +132,7 @@ class AssetPerAccount(
 
 val assetCheckTrigger = Gate("assetCheckTrigger")
 // will take 30 (trigger every 30 seconds on average, max 3 times in a row)
-var assetCheckPacer = LeakyBucket(90*1000, 1000, 25*1000)
+var assetCheckPacer = LeakyBucket(90*1000, 1000, 0)
 fun triggerAssetCheck()
 {
     assetCheckPacer.level = 90*1000  // force recheck regardless of leaky bucket

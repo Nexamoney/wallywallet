@@ -289,7 +289,7 @@ var notInUIscope: CoroutineScope? = null
 /** Do whatever you pass but not within the user interface context, asynchronously */
 fun later(scope: CoroutineScope? = null, fn: suspend () -> Unit): Unit
 {
-    (scope ?: notInUIscope ?: GlobalScope).launch {
+    (scope ?: notInUIscope ?: GlobalScope).launch(exceptionHandler) {
         try
         {
             fn()

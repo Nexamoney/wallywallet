@@ -126,6 +126,7 @@ class BackgroundSync(appContext: Context, workerParams: WorkerParameters): Worke
     var cancelled = false
     override fun doWork(): Result
     {
+        if (backgroundOnly == false) return Result.success()
         val skip = backgroundLock.lock {
             if (backgroundCount > 0) true
             else

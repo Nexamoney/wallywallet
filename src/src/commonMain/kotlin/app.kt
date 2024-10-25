@@ -84,7 +84,6 @@ fun backgroundSync(completion: () -> Unit)
     // Perform your background synchronization work here
     // ...
     backgroundStop = false
-    LogIt.info(sourceLoc() + ": backgroundSync()")
     wallyApp!!.openAllAccounts()  // Creating an account will automatically launch blockchain and wallet sync threads
     millisleep(10000U)     // Give those threads time to connect to another node and get block headers.
                                   // Otherwise the system may think accounts are synced simply because it doesn't have any up to date info.
@@ -98,6 +97,8 @@ fun backgroundSync(completion: () -> Unit)
             unsynced = 0
             for (a in wallyApp!!.accounts)
             {
+                // We only want to do this if we are in background mode, otherwise the foreground code handles it
+                if (backgroundOnly == false) return
                 val wal = a.value.wallet
                 if (!wal.synced())
                 {
@@ -871,7 +872,7 @@ open class CommonApp
             val ac = try
             {
                 val prehistoryDate = (epochMilliSeconds() / 1000L) - PREHISTORY_SAFEFTY_FACTOR // Set prehistory to 2 hours ago to account for block timestamp variations
-                Account(name, flags, chainSelector, startDate = prehistoryDate, startHeight = bc?.curHeight)
+                Account(name, flags, chainSelector, startDate = prehistoryDate, startHeight = bc.curHeight)
             } catch (e: IllegalStateException)
             {
                 LogIt.warning("Error creating account: ${e.message}")

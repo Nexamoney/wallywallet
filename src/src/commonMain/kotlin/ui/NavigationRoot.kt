@@ -344,7 +344,6 @@ val accountChangedNotification = Channel<String>(100, BufferOverflow.DROP_OLDEST
 /** Call this function to cause the GUI to update any view of any accounts.  Provide no arguments to update all of them */
 fun triggerAccountsChanged(vararg accounts: Account)
 {
-    millisleep(100U)
     if (accounts.size == 0)
         accountChangedNotification.trySend("*all changed*")
     for (account in accounts)
