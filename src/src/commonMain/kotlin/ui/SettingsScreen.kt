@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
+import info.bitcoinunlimited.www.wally.ui2.newUI
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
 
@@ -171,8 +172,7 @@ fun SettingsScreen(nav: ScreenNav)
             }
             WallySwitchRow(experimentalUxView, S.enableExperimentalUx) {
                 preferenceDB.edit().putBoolean(EXPERIMENTAL_UX_MODE_PREF, it).commit()
-                experimentalUxView = it
-                experimentalUx = it
+                newUI.value = it
             }
             WallySwitchRow(devModeView, S.enableDeveloperView) {
                 LogIt.info("devmode $it")

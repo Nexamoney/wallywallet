@@ -96,6 +96,13 @@ class Account(
 
     //? Current bch balance (cached from accessing the wallet), in the display units
     var balance: BigDecimal = CurrencyDecimal(0)
+        set(value) {
+            _balanceState.value = value
+            field = value
+        }
+    private val _balanceState = MutableStateFlow(balance)
+    val balanceState = _balanceState.asStateFlow()
+
     var unconfirmedBalance: BigDecimal = CurrencyDecimal(0)
     var confirmedBalance: BigDecimal = CurrencyDecimal(0)
 
@@ -158,6 +165,12 @@ class Account(
     // How to abort a fastforward (and its happening if non-null)
     var fastforward:Objectify<Boolean>? = null
     var fastforwardStatus:String? = null
+        set(value) {
+            _fastForwardStatusState.value = value
+            field = value
+        }
+    private val _fastForwardStatusState = MutableStateFlow<String?>(null)
+    val fastForwardStatusState = _fastForwardStatusState.asStateFlow()
 
     init
     {

@@ -49,18 +49,21 @@ enum class ScreenId
     None,
     Splash,
     Home,
+    Assets,
+    Shopping,
+    Send,
+    Receive,
     Identity,
     IdentityOp,
     IdentityEdit,
     TricklePay,
-    Assets,
-    Shopping,
     Settings,
     SplitBill,
     NewAccount,
     AccountDetails,
     AddressHistory,
     TxHistory,
+    MoreMenu,
 
     TpSettings,
     SpecialTxPerm,
@@ -105,14 +108,14 @@ enum class ScreenId
     {
         return when (this)
         {
-            None -> i18n(S.app_name)
+            None -> ""
             Splash -> ""
-            Home -> i18n(S.app_name)
+            Home -> ""
             IdentityEdit -> i18n(S.title_activity_identity)
             Identity -> i18n(S.title_activity_identity)
             IdentityOp -> i18n(S.title_activity_identity_op)
             TricklePay -> i18n(S.title_activity_trickle_pay)
-            Assets -> i18n(S.assetsColon) + (wallyApp?.preferredVisibleAccount()?.name ?: "")
+            Assets -> i18n(S.assets)
             Shopping -> i18n(S.title_activity_shopping)
             Settings -> i18n(S.title_activity_settings)
             SplitBill -> i18n(S.title_split_bill)
@@ -128,6 +131,7 @@ enum class ScreenId
             SpecialTxPerm -> i18n(S.title_activity_trickle_pay)
             AssetInfoPerm -> i18n(S.title_activity_trickle_pay)
             SendToPerm -> i18n(S.title_activity_trickle_pay)
+            else -> i18n(S.app_name)
         }
     }
 
@@ -167,6 +171,7 @@ open class ScreenNav()
     /** push the current screen onto the stack, and set the passed screen to be the current one */
     fun go(screen: ScreenId, screenSubState: ByteArray?=null, data: Any? = null): ScreenNav
     {
+        clearAlerts()
         currentScreenDepart?.invoke(Direction.DEEPER)
         path.add(ScreenState(currentScreen.value,currentScreenDepart, currentSubState.value, curData.value ))
         currentScreen.value = screen
@@ -204,6 +209,7 @@ open class ScreenNav()
     /** pop the current screen from the stack and go there */
     fun back():ScreenId?
     {
+        clearAlerts()
         currentScreenDepart?.invoke(Direction.LEAVING)
         currentScreenDepart = null
         // See if there is anything in the back stack.
@@ -773,6 +779,7 @@ fun NavigationRoot(systemPadding: Modifier)
                             else nav.back()
                         }
                         ScreenId.Alerts -> HomeScreen(selectedAccount, driver, nav)  // not currently implemented
+                        else -> run {}
                     }
                 }
                 if (!softKeyboardShowing)

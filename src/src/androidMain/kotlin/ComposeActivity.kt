@@ -14,6 +14,8 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
@@ -25,6 +27,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.work.*
 import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.theme.BaseBkg
+import info.bitcoinunlimited.www.wally.ui2.UiRoot
+import info.bitcoinunlimited.www.wally.ui2.newUI
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.rem
 import kotlin.time.Duration.Companion.milliseconds
@@ -198,31 +202,45 @@ class ComposeActivity: CommonActivity()
     {
         val inflater: MenuInflater = menuInflater
 
-        inflater.inflate(R.menu.options_menu, menu);
+        // New UI
+        if (newUI.value)
+        {
+            inflater.inflate(R.menu.options_menu_ui2, menu)
 
-        // Locate MenuItem with ShareActionProvider
-        val shareItem = menu.findItem(R.id.menu_item_share)
-        shareItem.setOnMenuItemClickListener {
-            onShareButton()
-            true
+            val settingsItem = menu.findItem(R.id.settings)
+            settingsItem.setOnMenuItemClickListener {
+                nav.go(ScreenId.Settings)
+                true
+            }
+            val shareItemUi2 = menu.findItem(R.id.menu_item_share_ui2)
+            shareItemUi2.setOnMenuItemClickListener {
+                onShareButton()
+                true
+            }
+            val unlockItem = menu.findItem(R.id.unlock_ui2)
+            unlockItem.setOnMenuItemClickListener {
+                triggerUnlockDialog()
+                true
+            }
+        }
+        // Old UI
+        else
+        {
+            inflater.inflate(R.menu.options_menu, menu)
+            // Locate MenuItem with ShareActionProvider
+            val shareItem = menu.findItem(R.id.menu_item_share)
+            shareItem.setOnMenuItemClickListener {
+                onShareButton()
+                true
+            }
+            val unlockItem = menu.findItem(R.id.unlock)
+            unlockItem.setOnMenuItemClickListener {
+                triggerUnlockDialog()
+                true
+            }
+            initializeHelpOption(menu)
         }
 
-        //val settingsItem = menu.findItem(R.id.settings)
-        //settingsItem.setOnMenuItemClickListener {
-        //    nav.go(ScreenId.Settings)
-        //    true
-        //}
-
-        val unlockItem = menu.findItem(R.id.unlock)
-        unlockItem.setOnMenuItemClickListener {
-            triggerUnlockDialog()
-            true
-        }
-
-        //val item4 = menu.findItem(R.id.compose)
-        //item4.intent = Intent(this, MainActivity::class.java)
-
-        initializeHelpOption(menu)
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -272,7 +290,9 @@ class ComposeActivity: CommonActivity()
         val intentUri = com.eygraber.uri.Uri.parseOrNull(intent.toUri(0))
         LogIt.info("Launched by intent URI: ${intent.toUri(0)}  intent: $intent")
         setContent {
+            val newUi = newUI.collectAsState().value
             val scheme = intentUri?.scheme?.lowercase()
+
             // If there's an incoming intent, go handle it don't pop the app up normally
             if ((scheme == TDPP_URI_SCHEME) || (scheme == IDENTITY_URI_SCHEME))
             {
@@ -338,7 +358,11 @@ class ComposeActivity: CommonActivity()
                 actionb = if (android.os.Build.VERSION.SDK_INT < 35) 0 else sysInsets.top
             }
             val systemPadding = Modifier.padding(0.dp, pxToDp(actionb ?: 0), 0.dp, 0.dp) // pxToDp(sysInsets.bottom))
-            NavigationRoot(systemPadding)
+            UiRoot(systemPadding)
+
+            LaunchedEffect(newUi) {
+                invalidateOptionsMenu()
+            }
         }
 
     }

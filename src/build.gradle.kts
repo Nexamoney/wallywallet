@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 // Wally Wallet version
-val versionNumber = "3.3.5"
+val versionNumber = "4.0.1"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 
 
@@ -250,7 +250,7 @@ kotlin {
                 // implementation(compose.materialIconsExtended)
                 //@OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
-
+                api(compose.materialIconsExtended)
                 // multiplatform replacements
 
                 // for bigintegers
@@ -289,6 +289,9 @@ kotlin {
 
                 // Common ViewModel for all targets
                 implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
+
+                // Icons
+                implementation(compose.materialIconsExtended)
             }
         }
         val commonTest by getting {
@@ -453,6 +456,8 @@ kotlin {
 
                     // Animation
                     implementation("com.airbnb.android:lottie-compose:$lottieVersion")
+
+                    implementation("androidx.compose.material:material-icons-extended:1.7.1")
                 }
             }
         }

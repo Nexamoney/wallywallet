@@ -6,7 +6,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Rect
@@ -17,25 +16,20 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.*
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
-import androidx.core.view.ViewCompat
 import androidx.core.view.ViewCompat.setWindowInsetsAnimationCallback
 import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updateLayoutParams
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.navigation.NavigationBarView
+import info.bitcoinunlimited.www.wally.ui.ScreenId
+import info.bitcoinunlimited.www.wally.ui2.newUI
+import info.bitcoinunlimited.www.wally.ui.nav
 import kotlinx.coroutines.*
-import java.time.Instant
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import java.util.*
 import java.util.concurrent.Executors
 
@@ -141,6 +135,7 @@ open class CommonActivity : AppCompatActivity()
     var origTitleBackground: ColorDrawable? = null  //* The app's title background color (I will sometimes overwrite it with a temporary error message)
     var errorCount = 0 // Used to make sure one error's clear doesn't prematurely clear out a different problem
     var currentNumShowing = 0
+    var newUiJob: Job? = null
 
     protected val coGuiScope = MainScope()
     protected val coMiscCtxt: CoroutineContext = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
@@ -202,6 +197,7 @@ open class CommonActivity : AppCompatActivity()
 
         val view: View = findViewById(android.R.id.content)
         val rootView = view.rootView
+        var currentScreenJob: Job? = null
 
         softkeyboardChangeHandler = KeyboardToggleListener(this) { onSoftKeyboard(it) }
 
@@ -227,8 +223,47 @@ open class CommonActivity : AppCompatActivity()
 
         })
 
-        getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
-        getSupportActionBar()?.setDisplayShowHomeEnabled(true)
+        fun useNewUiNavBar()
+        {
+            if (nav.currentScreen.value == ScreenId.Home)
+            {
+                supportActionBar?.setDisplayHomeAsUpEnabled(false)
+                supportActionBar?.setHomeAsUpIndicator(R.drawable.wally_logo_small)
+            }
+            currentScreenJob = nav.currentScreen.onEach {
+                if (nav.currentScreen.value == ScreenId.Home)
+                {
+                    supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                    supportActionBar?.setHomeAsUpIndicator(R.drawable.wally_logo_small)
+                }
+                else
+                {
+                    supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                    supportActionBar?.setHomeAsUpIndicator(0)
+                }
+            }.launchIn(this.coGuiScope)
+        }
+
+        fun toggleOldOrNewTopBar(usesNewUi: Boolean)
+        {
+            currentScreenJob?.cancel()
+            if (usesNewUi)
+            {
+                useNewUiNavBar()
+            }
+            else // Old UI
+            {
+                getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
+                getSupportActionBar()?.setDisplayShowHomeEnabled(true)
+            }
+        }
+
+        toggleOldOrNewTopBar(newUI.value)
+
+        // Cancel the new UI job when Android app comes back into the foreground and onResume runs again
+        newUiJob?.cancel()
+        newUiJob = newUI.onEach { toggleOldOrNewTopBar(it) }.launchIn(this.coGuiScope)
+
         super.onStart()
     }
 
