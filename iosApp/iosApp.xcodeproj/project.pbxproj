@@ -9,6 +9,16 @@
 /* Begin PBXBuildFile section */
 		058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557BA273AAA24004C7B11 /* Assets.xcassets */; };
 		058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */; };
+		0B0353D32CCBA968004A28C5 /* ActionPermissionScreens.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0353C52CCBA968004A28C5 /* ActionPermissionScreens.kt */; };
+		0B0353D52CCBA968004A28C5 /* IdentityScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0353CA2CCBA968004A28C5 /* IdentityScreen.kt */; };
+		0B0353D72CCBA968004A28C5 /* AddressHistoryScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0353C72CCBA968004A28C5 /* AddressHistoryScreen.kt */; };
+		0B0353DE2CCBA968004A28C5 /* ActionPermissionScreens.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0353C52CCBA968004A28C5 /* ActionPermissionScreens.kt */; };
+		0B0353E02CCBA968004A28C5 /* IdentityScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0353CA2CCBA968004A28C5 /* IdentityScreen.kt */; };
+		0B0353E22CCBA968004A28C5 /* AddressHistoryScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0353C72CCBA968004A28C5 /* AddressHistoryScreen.kt */; };
+		0B0353E72CCBA976004A28C5 /* TxHistoryScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0353E62CCBA976004A28C5 /* TxHistoryScreen.kt */; };
+		0B0353E82CCBA976004A28C5 /* TricklePayScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0353E52CCBA976004A28C5 /* TricklePayScreen.kt */; };
+		0B0353E92CCBA976004A28C5 /* TxHistoryScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0353E62CCBA976004A28C5 /* TxHistoryScreen.kt */; };
+		0B0353EA2CCBA976004A28C5 /* TricklePayScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0353E52CCBA976004A28C5 /* TricklePayScreen.kt */; };
 		0B512D6C2C62BFC200215158 /* AssetsScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B512D6B2C62BFC200215158 /* AssetsScreen.kt */; };
 		0B53DA162BA282B300EFA082 /* iosAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B53DA152BA282B300EFA082 /* iosAppUITests.swift */; };
 		0B53DA182BA282B300EFA082 /* iosAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B53DA172BA282B300EFA082 /* iosAppUITestsLaunchTests.swift */; };
@@ -153,6 +163,11 @@
 /* Begin PBXFileReference section */
 		058557BA273AAA24004C7B11 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		0B0353C52CCBA968004A28C5 /* ActionPermissionScreens.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ActionPermissionScreens.kt; sourceTree = "<group>"; };
+		0B0353C72CCBA968004A28C5 /* AddressHistoryScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = AddressHistoryScreen.kt; sourceTree = "<group>"; };
+		0B0353CA2CCBA968004A28C5 /* IdentityScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = IdentityScreen.kt; sourceTree = "<group>"; };
+		0B0353E52CCBA976004A28C5 /* TricklePayScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = TricklePayScreen.kt; sourceTree = "<group>"; };
+		0B0353E62CCBA976004A28C5 /* TxHistoryScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = TxHistoryScreen.kt; sourceTree = "<group>"; };
 		0B512D6B2C62BFC200215158 /* AssetsScreen.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AssetsScreen.kt; sourceTree = "<group>"; };
 		0B53DA132BA282B300EFA082 /* iosAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iosAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0B53DA152BA282B300EFA082 /* iosAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iosAppUITests.swift; sourceTree = "<group>"; };
@@ -438,6 +453,11 @@
 		0B551C072AFE910D00BA0052 /* ui */ = {
 			isa = PBXGroup;
 			children = (
+				0B0353E52CCBA976004A28C5 /* TricklePayScreen.kt */,
+				0B0353E62CCBA976004A28C5 /* TxHistoryScreen.kt */,
+				0B0353C52CCBA968004A28C5 /* ActionPermissionScreens.kt */,
+				0B0353C72CCBA968004A28C5 /* AddressHistoryScreen.kt */,
+				0B0353CA2CCBA968004A28C5 /* IdentityScreen.kt */,
 				0B512D6B2C62BFC200215158 /* AssetsScreen.kt */,
 				0B551C082AFE910D00BA0052 /* SplitBillScreen.kt */,
 				0B551C092AFE910D00BA0052 /* NewAccountScreen.kt */,
@@ -674,6 +694,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B0353DE2CCBA968004A28C5 /* ActionPermissionScreens.kt in Resources */,
+				0B0353E92CCBA976004A28C5 /* TxHistoryScreen.kt in Resources */,
+				0B0353EA2CCBA976004A28C5 /* TricklePayScreen.kt in Resources */,
+				0B0353E02CCBA968004A28C5 /* IdentityScreen.kt in Resources */,
+				0B0353E22CCBA968004A28C5 /* AddressHistoryScreen.kt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -686,6 +711,9 @@
 				0B551C612AFE910D00BA0052 /* settings.kt in Resources */,
 				0B551C392AFE910D00BA0052 /* strings_en.bin in Resources */,
 				0B551C472AFE910D00BA0052 /* ani_syncing.xml in Resources */,
+				0B0353D32CCBA968004A28C5 /* ActionPermissionScreens.kt in Resources */,
+				0B0353D52CCBA968004A28C5 /* IdentityScreen.kt in Resources */,
+				0B0353D72CCBA968004A28C5 /* AddressHistoryScreen.kt in Resources */,
 				0B551C5A2AFE910D00BA0052 /* HomeScreen.kt in Resources */,
 				8E1ECA662AA957D300759B4F /* strings_en.bin in Resources */,
 				0B551C662AFE910D00BA0052 /* account.kt in Resources */,
@@ -790,6 +818,8 @@
 				83B6BE2F2C69130D00978E7C /* UnlockView.kt in Resources */,
 				0B551C582AFE910D00BA0052 /* Theme.kt in Resources */,
 				83B6BE342C69130D00978E7C /* Shapes.kt in Resources */,
+				0B0353E72CCBA976004A28C5 /* TxHistoryScreen.kt in Resources */,
+				0B0353E82CCBA976004A28C5 /* TricklePayScreen.kt in Resources */,
 				83B6BE272C69130D00978E7C /* AddressHistoryScreen.kt in Resources */,
 				83B6BE2E2C69130D00978E7C /* SendView.kt in Resources */,
 				83B6BE302C69130D00978E7C /* TxHistoryScreen.kt in Resources */,

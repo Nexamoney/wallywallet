@@ -170,6 +170,14 @@ Good luck!
 
     <string name="required">required</string>
 
+    <string name="account">Account</string>
+
+    <string name="addAccountPlus">+ Add Account</string>
+
+    <string name="receivingTokens">Receiving tokens</string>
+
+    <string name="spendingTokens">Spending tokens</string>
+
     <!-- Settings -->
     <string name="version" formatted="false">Version: %ver (%date)</string>
     <string name="enableDeveloperView">Advanced/developer mode</string>
@@ -187,6 +195,7 @@ Good luck!
     <string name="rediscoverTooltip">Delete blockchain state and search anew for all transactions relevant to the wallet</string>
     <string name="wordSeed">Account Recovery Secret Phrase</string>
     <string name="deleteWalletAccount">Delete Account</string>
+    <string name="more">More</string>
 
     <!-- a PIN is a numeric password that gives you access to your account -->
     <string name="SetChangePin">Set or Change Unlocking PIN</string>
@@ -197,6 +206,7 @@ Good luck!
     <string name="PinInvalid">Invalid PIN</string>
     <string name="PinTooShort">new PIN is too short</string>
     <string name="WriteDownRecoveryPhraseWarning">Warning: you have not written down the secret recovery phrases for some accounts!  To ensure funds are not lost if this device is lost or broken, write the secret recovery keys down on paper or other non-electronic format. Recovery keys are accessible within each account\'s settings page.</string>
+    <string name="WriteDownRecoveryPhraseWarningUi2">Warning: you have not written down the secret recovery phrases for some accounts! To ensure funds are not lost if this device is lost or broken, write the secret recovery keys down on paper or other non-electronic format.</string>
     <string name="WroteRecoveryPhraseDown">I wrote it down</string>
     <string name="RecoveryPhraseKeepRemindingMe">Keep reminding me</string>
     <string name="ViewRecoveryPhrase">View Account Recovery Secret Phrase</string>
@@ -217,6 +227,7 @@ Good luck!
     <string name="GeneralSettings">General Settings</string>
     <string name="BlockchainSettings">Blockchain Sources</string>
     <string name="AccessPriceData">Access Price Data</string>
+    <string name="oldUi">Old user interface</string>
     <!-- not used right now string name="AccessPriceDataHint">This option allows the wallet to display the value of your cryptocurrency.  However, this data may not be accurate.  And the access uses more data and divulges your IP address to the service providing the data.</string -->
 
     <!-- Split bill -->
@@ -238,6 +249,7 @@ Good luck!
     IF YOU SEE %something (in this case date), THEN DO NOT translate the "something".  It will be replaced with the actual value by the program (in this case the date).
     -->
     <string name="balanceOnTheDate">as of %date</string>
+    <string name="fastSync">Fast sync</string>
 
     <!-- A QR is the 2-dimensional black and white boxes of pixels that wallets scan to read info -->
     <string name="goodQR">QR readable</string>
@@ -259,10 +271,13 @@ Good luck!
     <!-- As in "Send to" -->
     <string name="toColon">To:</string>
     <string name="assetsColon">Assets:</string>
+    <string name="assets">Assets</string>
     <string name="NoAssets">No assets available in account %act</string>
+    <string name="NoAssetsAccount">No assets currently available in your account. Ready to deposit assets?</string>
     <!-- As in what entity is requesting information -->
     <string name="fromColon">From:</string>
-    <string name="Receive">Receive into account</string>
+    <string name="ReceiveIntoAccount">Receive into account</string>
+    <string name="Receive">Receive</string>
     <string name="AccountListHeader">Accounts</string>
     <!-- This is referring to a cryptocurrency address, not a physical address -->
     <string name="Address">Address</string>
@@ -299,6 +314,7 @@ Good luck!
     <string name="chainIncompatibleWithAddressDetails" formatted="false">Account currency is %walletCrypto, address is %addressCrypto.  Use the combo box to change the send from account to one that matches the address\'s blockchain.</string>
     <string name="incoming" formatted="false">includes %delta %unit pending</string>
     <string name="approximatelyT" formatted="false">approximately %qty %fiat</string>
+    <string name="fastForward" formatted="false">Fast forward</string>
     <string name="fastforwardStatus" formatted="false">fast forward analysis: %info</string>
     <string name="fastforwardStart" formatted="false">started</string>
     <string name="exchangeRate" formatted="false">(exchange rate: 1 %fiat is worth %amt %crypto)</string>
@@ -647,12 +663,17 @@ Good luck!
     <string name="NftCardBack">Back</string>
     <string name="NftPublicMedia">Contents</string>
     <string name="NftOwnerMedia">Owner\'s Content</string>
+    <string name="Content">Content</string>
+    <string name="Private">Private</string>
     <string name="NftInfo">Info</string>
     <string name="NftLegal">License</string>
     <string name="NftSeries" formatted="false">Series: %series</string>
     <string name="NftAuthor" formatted="false">Author: %author</string>
     <string name="NftNoInfoProvidedHTML"><![CDATA[<body><h1><center>...No Information Provided...</h1></center></body>]]></string>
     <string name="IssuedToConnection">Launched in connected site</string>
+
+    <string name ="demonstratingOwnership">Demonstrating Ownership</string>
+
     <!-- this message tells users that some assets will be part of a proposed transaction -->
     <string name="AndSomeAssets"> and some assets</string>
     <string name="AssetTypes" formatted="false">%assetTypes asset types</string>
@@ -702,4 +723,18 @@ Thank you and enjoy your new wallet!</string>
     <string name="imageQr">Image QR</string>
 
     <string name="paste">Paste</string>
+    <string name="recentTransactions">Recent Transactions</string>
+
+    <!-- Send screen -->
+    <string name="sendingFrom">Sending From</string>
+    <string name="enterAddress">Enter address...</string>
+    <string name="noteOptional">Note (Optional)</string>
+    <string name="clearNote">Clear Note</string>
+    <string name="clearAddress">Clear Address</string>
+    <string name="clearAmount">Clear Amount</string>
+    <string name="available">Available</string>
+    <string name="amountPlain">Amount</string>
+    <string name="enterNEXAmount">Enter NEX amount...</string>
+    <string name="note">Note</string>
+    <string name="confirmSend">Confirm send</string>
 </resources>

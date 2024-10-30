@@ -1,18 +1,17 @@
 package info.bitcoinunlimited.www.wally
 
 import androidx.compose.runtime.InternalComposeApi
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.uikit.ComposeUIViewControllerDelegate
 import androidx.compose.ui.window.ComposeUIViewController
 import info.bitcoinunlimited.www.wally.ui.*
+import info.bitcoinunlimited.www.wally.ui2.UiRoot
+import info.bitcoinunlimited.www.wally.ui2.newUI
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.Bip44Wallet
 import org.nexa.libnexakotlin.initializeLibNexa
 import org.nexa.libnexakotlin.handleThreadException
-import platform.CoreGraphics.CGColorRef
 import platform.UIKit.UIColor
 import platform.UIKit.UIViewController
 
@@ -46,7 +45,7 @@ fun MainViewController(): UIViewController
     },
       {
         nav.reset(ScreenId.Splash)
-        NavigationRoot(Modifier)
+        UiRoot(Modifier)
     })
     v = view
 
@@ -84,6 +83,9 @@ fun iosCancelBackgroundSync()
 @Throws(Throwable::class, Exception::class, NullPointerException::class, RuntimeException::class)
 fun onQrCodeScannedWithDefaultCameraApp(qr: String)
 {
+    val newUi = newUI.value
+
     LogIt.info("onQrCodeScannedWithDefaultCameraApp: $qr")
-    wallyApp!!.handlePaste(qr)
+
+    wallyApp?.handlePaste(qr)
 }

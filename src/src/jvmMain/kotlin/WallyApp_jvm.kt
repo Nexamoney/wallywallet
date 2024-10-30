@@ -6,16 +6,12 @@ import androidx.compose.ui.window.Window
 //import androidx.compose.ui.window.Events
 import androidx.compose.runtime.*
 import androidx.compose.ui.unit.*
-import androidx.compose.material.*
 import androidx.compose.ui.Modifier
 
 import androidx.compose.ui.window.rememberWindowState
-import info.bitcoinunlimited.www.wally.ui.NavigationRoot
-import info.bitcoinunlimited.www.wally.ui.ScreenId
-import info.bitcoinunlimited.www.wally.ui.ScreenNav
-import info.bitcoinunlimited.www.wally.ui.nav
+import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.views.loadingAnimation
-import org.nexa.threads.millisleep
+import info.bitcoinunlimited.www.wally.ui2.UiRoot
 import java.io.File
 
 private val LogIt = GetLog("BU.wally.IdentityActivity")
@@ -85,7 +81,7 @@ fun guiNewPanel()
               state = rememberWindowState(width = (5 * 160).dp, height = (7 * 160).dp)
             )
             {
-                NavigationRoot(Modifier)
+                UiRoot(Modifier)
             }
         }
     }

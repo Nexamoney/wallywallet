@@ -165,4 +165,5 @@
 
     <string name="scanQr">Skann QR</string>
     <string name="paste">Lim inn</string>
+    <string name="recentTransactions">Nylige Transaksjoner</string>
 </resources>

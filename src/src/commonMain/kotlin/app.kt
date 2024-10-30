@@ -6,6 +6,8 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.ACCESS_PRICE_DATA_PREF
 import info.bitcoinunlimited.www.wally.ui.DEV_MODE_PREF
+import info.bitcoinunlimited.www.wally.ui2.SendScreenNavParams
+import info.bitcoinunlimited.www.wally.ui2.newUI
 import io.ktor.client.*
 import io.ktor.client.network.sockets.*
 import io.ktor.client.network.sockets.SocketTimeoutException
@@ -470,10 +472,20 @@ open class CommonApp
                     // providing no amount is fine
                 }
 
-                // Inject a change into the GUI
-                wallyApp!!.later {
-                    externalDriver.send(GuiDriver(ScreenId.Home, sendAddress = chainToURI[whichChain] + ":" + uri.body(), amount = amt, note = attribs["label"], chainSelector = whichChain))
+                // When deep linking from native camera that is currently only supported on iOS, and handling the
+                // String content from the QR code navigating directly to the desired screen is enough.
+                // I don't think we need an external GUI drive to do this now that nav is a global variable
+                if (newUI.value)
+                {
+                    val sendAddress = chainToURI[whichChain] + ":" + uri.body()
+                    nav.go(screen = ScreenId.Send, data = SendScreenNavParams(sendAddress))
                 }
+                else // external driver for navigating using driver from before nav was a global variable
+                    // Inject a change into the GUI
+                    wallyApp!!.later {
+                        externalDriver.send(GuiDriver(ScreenId.Home, sendAddress = chainToURI[whichChain] + ":" + uri.body(), amount = amt, note = attribs["label"], chainSelector = whichChain))
+                    }
+
             }
             else if (scheme == IDENTITY_URI_SCHEME)
             {
