@@ -62,4 +62,4 @@ val accountSelectionBorder = WallyBorder
 val nuggetBody = Color(0xFFFFdfbc00)
 val nuggetChip = Color(0xFFFFFF9b8d44)
 
-val floatingActionBarBackground = Color(0xFF735092)
+val floatingActionBarBackground = Color(0xD0735092)

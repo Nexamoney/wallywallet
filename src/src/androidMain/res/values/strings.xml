@@ -426,6 +426,7 @@ Good luck!
     <string name="AccountStatistics">Account Statistics</string>
     <string name="AccountBlockchainSync">Currently %sync on blockchain %chain.</string>
     <string name="AccountBlockchainDetails">At %actBlockDate, block %actBlock of %chainBlockCount.</string>
+    <string name="AccountEarliestActivity">First use: block %actPrehistoryBlock on %actPrehistoryDate.</string>
     <string name="AccountBlockchainConnectionDetails">Connected to %num nodes: %names</string>
     <string name="AccountNumAddresses" formatted="false">%num addresses</string>
     <string name="CurrentAddress" formatted="false">At address %num: %addr</string>

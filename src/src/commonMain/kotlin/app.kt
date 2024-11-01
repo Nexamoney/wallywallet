@@ -1026,10 +1026,12 @@ open class CommonApp
                 veryEarly = min(n.second.startTime, veryEarly ?: n.second.startTime)
             }
         }
-        if (veryEarly != null) veryEarly = veryEarly - 1  // Must be earlier than the first activity
+        if (veryEarly != null) veryEarly = veryEarly - (30*60)  // Must be earlier than the first activity, so subtract 30 min
 
         return accountLock.lock {
-            val ac = Account(name, flags, chainSelector, secretWords, veryEarly, earliestHeight, retrieveOnlyActivity = nonstandardActivity)
+            // If I'm doing a recovery, the prehistory needs to be 1 block before the activity
+            val eh = if (earliestHeight != null && earliestHeight > 0) earliestHeight-1 else earliestHeight
+            val ac = Account(name, flags, chainSelector, secretWords, veryEarly, eh, retrieveOnlyActivity = nonstandardActivity)
             ac.encodedPin = epin
             ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
             ac.start()
