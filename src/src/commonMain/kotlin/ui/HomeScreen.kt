@@ -45,30 +45,28 @@ private val sendFromAccountShared = MutableStateFlow<Account?>(null)
 @Composable fun IconTextButton(
   textRes: Int,
   resPath: String,
+  modifier: Modifier = Modifier,
   onClick: () -> Unit
 )
 {
     val actionBarSpacerHeight = if (platform().hasGallery) // Android
-        8.dp
+        4.dp
     else // iOS
         2.dp
     Column(
-      modifier = Modifier.zIndex(1f).padding(
-        horizontal = 12.dp,
-        vertical = 12.dp
-      ).background(Color.Transparent).clickable { onClick() },
+      modifier = modifier.zIndex(1f).padding(8.dp, 12.dp, 8.dp, 0.dp).background(Color.Transparent).clickable { onClick() },
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         ResImageView(
           resPath = resPath,
-          modifier = Modifier.width(20.dp).height(20.dp).zIndex(1f).clickable { onClick() }
+          modifier = Modifier.width(24.dp).height(24.dp).zIndex(1f).clickable { onClick() }
         )
         Spacer(Modifier.height(actionBarSpacerHeight).clickable { onClick() })
         Text(
           text = i18n(textRes),
           modifier = Modifier.clickable { onClick() },
           color = Color.White,
-          fontSize = FontScale(0.68)
+          fontSize = FontScale(0.55)
         )
     }
 }
@@ -635,18 +633,19 @@ private val sendFromAccountShared = MutableStateFlow<Account?>(null)
             else // iOS
                 2.dp
             val actionBarStartEndPadding = if (platform().hasGallery) // Android
-                56.dp
+                0.dp // 56.dp
             else // iOS
-                96.dp
+                0.dp // 96.dp
             val actionBarBottomPadding = if (platform().hasGallery) // Android
-                40.dp
+                60.dp
             else // iOS
                 20.dp
 
+            val tbSize = Modifier.size(64.dp, 60.dp)
             // pad these buttons on the bottom to be convenient to press with your thumb
             Row(
               modifier = Modifier
-                .fillMaxWidth()
+                // .fillMaxWidth()
                 .align(Alignment.BottomCenter)
                 .zIndex(2f).padding(actionBarStartEndPadding, 8.dp, actionBarStartEndPadding, actionBarBottomPadding)
                 .shadow(elevation = 8.dp, shape = RoundedCornerShape(32.dp))
@@ -655,9 +654,11 @@ private val sendFromAccountShared = MutableStateFlow<Account?>(null)
             ) {
                 if (platform().hasGallery)
                 {
+                    Spacer(Modifier.width(8.dp))
                     IconTextButton(
                         textRes = S.imageQr,
-                        resPath = "icons/scan_image_qr_white.png"
+                        resPath = "icons/scan_image_qr_white.png",
+                      modifier = tbSize
                     ) {
                         ImageQrCode {
                             it?.let {
@@ -668,9 +669,11 @@ private val sendFromAccountShared = MutableStateFlow<Account?>(null)
                 }
                 if (platform().hasQrScanner)
                 {
+                    Spacer(Modifier.width(2.dp))
                     IconTextButton(
                       textRes = S.scanQr,
-                      resPath = "icons/scan_qr_white.png"
+                      resPath = "icons/scan_qr_white.png",
+                      modifier = tbSize
                     ) {
                         clearAlerts()
                         isScanningQr = true
@@ -678,9 +681,11 @@ private val sendFromAccountShared = MutableStateFlow<Account?>(null)
                 }
                 if (!platform().usesMouse)
                 {
+                    Spacer(Modifier.width(2.dp))
                     IconTextButton(
                       S.paste,
-                      resPath = "icons/paste_clipboard_white.png"
+                      resPath = "icons/paste_clipboard_white.png",
+                      modifier = tbSize
                     ) {
                         clearAlerts()
                         val cliptext = clipmgr.getText()?.text
@@ -694,6 +699,7 @@ private val sendFromAccountShared = MutableStateFlow<Account?>(null)
                         }
                     }
                 }
+                Spacer(Modifier.width(8.dp))
             }
         }
 

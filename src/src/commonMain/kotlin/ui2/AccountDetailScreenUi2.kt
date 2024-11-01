@@ -56,6 +56,16 @@ class AccountStatisticsViewModel(chainState: GlueWalletBlockchain?, stat: Wallet
     }
     else
         ""
+
+    val prehistory = if (chainState != null)
+    {
+        i18n(S.AccountEarliestActivity) % mapOf(
+            "actPrehistoryBlock" to chainState.prehistoryHeight.toString(),
+            "actPrehistoryDate" to epochToDate(chainState.prehistoryDate)
+            )
+    }
+    else ""
+
     val peerCountNames = if (chainState != null)
     {
         val cnxnLst = chainState.chain.net.mapConnections { it.name }
@@ -166,10 +176,16 @@ fun AccountStatisticsCard(viewModel: AccountStatisticsViewModel)
                   tint = Color.Gray
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                  text = viewModel.latestBlockTimeHeight,
-                  style = MaterialTheme.typography.bodyMedium
-                )
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                      text = viewModel.latestBlockTimeHeight,
+                      style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(
+                      text = viewModel.prehistory,
+                      style = MaterialTheme.typography.bodySmall
+                    )
+                }
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
@@ -321,9 +337,9 @@ fun AccountActionButtonsUi2(acc: Account, txHistoryButtonClicked: () -> Unit, ac
                         {
                             val (time, height) = ret
 
-                            state.prehistoryDate = time
+                            state.prehistoryDate = time - (30*60)
                             rediscoverPrehistoryTime.value = state.prehistoryDate
-                            state.prehistoryHeight = height.toLong()
+                            state.prehistoryHeight = height.toLong() - 1
                             rediscoverPrehistoryHeight.value = state.prehistoryHeight
                         }
                     }

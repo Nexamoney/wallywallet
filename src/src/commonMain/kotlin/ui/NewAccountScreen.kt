@@ -180,13 +180,13 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
         }
     }
 
-    var newAcState = newAccountState.collectAsState()
+    val newAcState = newAccountState.collectAsState()
 
     var recoverySearchText by remember { mutableStateOf("") }
     var fastForwardText by remember { mutableStateOf<String?>(null) }
     var creatingAccountLoading by remember { mutableStateOf(false) }
 
-    var aborter = remember { mutableStateOf(Objectify<Boolean>(false)) }
+    val aborter = remember { mutableStateOf(Objectify<Boolean>(false)) }
     var createClicks by remember {mutableStateOf(0) }  // Some operations require you click create twice
 
     var firstActThread:iThread? = null

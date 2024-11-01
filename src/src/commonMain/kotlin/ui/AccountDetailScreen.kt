@@ -115,8 +115,15 @@ fun AccountBlockchainBlockDetails(chainState: GlueWalletBlockchain)
       "chainBlockCount" to chainState.chain.curHeight.toString()
     )
 
-    val fontSize = if (platform().spaceConstrained && !platform().landscape) FontScale(0.90) else FontScale(1.0)
+    var fontSize = if (platform().spaceConstrained && !platform().landscape) FontScale(0.90) else FontScale(1.0)
     Text(text = text, maxLines = 2, fontSize = fontSize)
+    fontSize = if (platform().spaceConstrained && !platform().landscape) FontScale(0.80) else FontScale(1.0)
+
+    val text2 = i18n(S.AccountEarliestActivity) % mapOf(
+      "actPrehistoryBlock" to chainState.prehistoryHeight.toString(),
+      "actPrehistoryDate" to epochToDate(chainState.prehistoryDate)
+    )
+    Text(text2, maxLines = 1, fontSize = fontSize)
 }
 
 @Composable
@@ -278,10 +285,10 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                     if (ret != null)
                     {
                         val (time, height) = ret
-
-                        state.prehistoryDate = time
+                        // We need to start looking on the block with the first activity, so the prehistory needs to be before that
+                        state.prehistoryDate = time - (30*60)
                         rediscoverPrehistoryTime.value = state.prehistoryDate
-                        state.prehistoryHeight = height.toLong()
+                        state.prehistoryHeight = height.toLong() - 1
                         rediscoverPrehistoryHeight.value = state.prehistoryHeight
                     }
                 }
