@@ -21,6 +21,7 @@ import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.platform
 import info.bitcoinunlimited.www.wally.ui.theme.FontScale
 import info.bitcoinunlimited.www.wally.ui.theme.WallyModalOutline
+import info.bitcoinunlimited.www.wally.ui.theme.colorCredit
 import info.bitcoinunlimited.www.wally.ui.theme.colorDebit
 import org.nexa.libnexakotlin.GetLog
 
@@ -91,7 +92,7 @@ fun <T> WallyDropDownUi2(
       horizontalArrangement = Arrangement.SpaceEvenly,
       verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(Icons.Default.Check, tint = colorDebit ,contentDescription = "Check or not check")
+        Icon(Icons.Default.Check, tint = colorCredit ,contentDescription = "Check or not check")
         Spacer(Modifier.width(8.dp))
         Text(i18n(S.Blockchain))
         Spacer(Modifier.width(8.dp))
