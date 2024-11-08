@@ -95,7 +95,7 @@ fun AssetListItemViewUi2(assetPerAccount: AssetPerAccount, verbosity: Int = 1, a
           trailingContent = {
               // If its an NFT, don't show the quantity if they have just 1
               if ((nft == null)||(apc.groupInfo.tokenAmt != 1L))
-                  Text(amt)
+                  Text(amt, style = MaterialTheme.typography.bodyLarge)
           }
         )
     }
