@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.*
@@ -35,59 +36,108 @@ import info.bitcoinunlimited.www.wally.ui.rediscoverPrehistoryHeight
 import info.bitcoinunlimited.www.wally.ui.rediscoverPrehistoryTime
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
+import info.bitcoinunlimited.www.wally.ui2.selectedAccountUi2
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallySwitchRowUi2
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.*
 
-class AccountStatisticsViewModel(chainState: GlueWalletBlockchain?, stat: Wallet.WalletStatistics): ViewModel() {
-    val synced = if (chainState?.isSynchronized() == true) S.synced else S.unsynced
-    val chainName = chainState?.chain?.name ?: ""
-    val syncStatus = i18n(S.AccountBlockchainSync) % mapOf(
-      "sync" to i18n(synced),
-      "chain" to chainName,
-    )
-    val latestBlockTimeHeight = if (chainState != null)
-    {
-        i18n(S.AccountBlockchainDetails) % mapOf(
-          "actBlock" to chainState.syncedHeight.toString(),
-          "actBlockDate" to epochToDate(chainState.syncedDate),
-          "chainBlockCount" to chainState.chain.curHeight.toString()
-        )
-    }
-    else
-        ""
+data class AccountStatistics(
+  val chainState: GlueWalletBlockchain?,
+  val stat: Wallet.WalletStatistics,
+  val synced: Int = if (chainState?.isSynchronized() == true) S.synced else S.unsynced,
+  val chainName: String = chainState?.chain?.name ?: "",
+  val syncStatus: String = i18n(S.AccountBlockchainSync) % mapOf(
+    "sync" to i18n(synced),
+    "chain" to chainName,
+  ),
+  val latestBlockTimeHeight: String = if (chainState != null)
+  {
+      i18n(S.AccountBlockchainDetails) % mapOf(
+        "actBlock" to chainState.syncedHeight.toString(),
+        "actBlockDate" to epochToDate(chainState.syncedDate),
+        "chainBlockCount" to chainState.chain.curHeight.toString()
+      )
+  }
+  else
+      "",
+  val preHistory: String = if (chainState != null)
+  {
+      i18n(S.AccountEarliestActivity) % mapOf(
+        "actPrehistoryBlock" to chainState.prehistoryHeight.toString(),
+        "actPrehistoryDate" to epochToDate(chainState.prehistoryDate)
+      )
+  }
+  else
+      "",
+  val prehistory: String = if (chainState != null)
+      i18n(S.AccountEarliestActivity) % mapOf(
+        "actPrehistoryBlock" to chainState.prehistoryHeight.toString(),
+        "actPrehistoryDate" to epochToDate(chainState.prehistoryDate)
+      )
+  else
+      "",
+  val peerCountNames: String = if (chainState != null)
+  {
+      val cnxnLst = chainState.chain.net.mapConnections { it.name }
+      val trying:List<String> = if (chainState.chain.net is MultiNodeCnxnMgr) (chainState.chain.net as MultiNodeCnxnMgr).initializingCnxns().map { it.name } else listOf()
+      val peers = cnxnLst.joinToString(", ") + if (trying.isNotEmpty()) (" " + i18n(S.trying) + " " + trying.joinToString(", ")) else ""
+      i18n(S.AccountBlockchainConnectionDetails) % mapOf(
+        "num" to cnxnLst.size.toString(),
+        "names" to peers
+      )
+  }
+  else
+      "",
+  val firstLastSend: String = if (stat.lastSendHeight > 0L) i18n(S.FirstLastSend) % mapOf(
+    "first" to (if (stat.firstSendHeight == Long.MAX_VALUE) "never" else stat.firstSendHeight.toString()),
+    "last" to (if (stat.lastSendHeight==0L) "never" else stat.lastSendHeight.toString()))
+  else
+      i18n(S.FirstWithdraw) + " " + i18n(S.never),
+  val firstLastReceive: String = if (stat.lastReceiveHeight > 0L) i18n(S.FirstLastReceive) % mapOf(
+    "first" to (if (stat.firstReceiveHeight == Long.MAX_VALUE) "never" else stat.firstReceiveHeight.toString()),
+    "last" to (if (stat.lastReceiveHeight == 0L) "never" else stat.lastReceiveHeight.toString()))
+  else
+      i18n(S.FirstDeposit) + " " + i18n(S.never)
+)
 
-    val prehistory = if (chainState != null)
-    {
-        i18n(S.AccountEarliestActivity) % mapOf(
-            "actPrehistoryBlock" to chainState.prehistoryHeight.toString(),
-            "actPrehistoryDate" to epochToDate(chainState.prehistoryDate)
-            )
-    }
-    else ""
-
-    val peerCountNames = if (chainState != null)
-    {
-        val cnxnLst = chainState.chain.net.mapConnections { it.name }
-        val trying:List<String> = if (chainState.chain.net is MultiNodeCnxnMgr) (chainState.chain.net as MultiNodeCnxnMgr).initializingCnxns().map { it.name } else listOf()
-        val peers = cnxnLst.joinToString(", ") + if (trying.isNotEmpty()) (" " + i18n(S.trying) + " " + trying.joinToString(", ")) else ""
-        i18n(S.AccountBlockchainConnectionDetails) % mapOf(
-          "num" to cnxnLst.size.toString(),
-          "names" to peers
-        )
-    }
-    else
-        ""
-    val firstLastSend = i18n(S.FirstLastSend) % mapOf(
-      "first" to (if (stat.firstSendHeight == Long.MAX_VALUE) "never" else stat.firstSendHeight.toString()),
-      "last" to (if (stat.lastSendHeight==0L) "never" else stat.lastSendHeight.toString()))
-    val firstLastReceive = i18n(S.FirstLastReceive) % mapOf(
-      "first" to (if (stat.firstReceiveHeight == Long.MAX_VALUE) "never" else stat.firstReceiveHeight.toString()),
-      "last" to (if (stat.lastReceiveHeight == 0L) "never" else stat.lastReceiveHeight.toString()))
-
+class AccountStatisticsViewModel(): ViewModel() {
+    val accountStats = MutableStateFlow<AccountStatistics?>(null)
     // We need to promote some blocking-access data to globals so we can launch threads to load them
     val curAddressText = MutableStateFlow<String>("")
     var accountDetailAccount: Account? = null
+    var accountJob: Job? = null
+
+    init {
+        selectedAccountUi2.value?.let {
+            updateStats(it)
+            fetchCurAddressText(it)
+        }
+        observeSelectedAccount()
+    }
+
+    private fun observeSelectedAccount()
+    {
+        accountJob?.cancel()
+        accountJob = viewModelScope.launch {
+            selectedAccountUi2.onEach { selectedAccount ->
+                selectedAccount?.let {
+                    updateStats(selectedAccount)
+                    fetchCurAddressText(selectedAccount)
+                }
+            }.launchIn(this)
+        }
+    }
+
+    fun updateStats(account: Account)
+    {
+        val chainState = account.wallet.chainstate
+        val stats = account.wallet.statistics()
+        accountStats.value = AccountStatistics(chainState, stats)
+    }
 
     fun fetchCurAddressText(account: Account)
     {
@@ -102,18 +152,19 @@ class AccountStatisticsViewModel(chainState: GlueWalletBlockchain?, stat: Wallet
             }
         }
     }
+
+    override fun onCleared()
+    {
+        super.onCleared()
+        accountJob?.cancel()
+    }
 }
 
 @Composable
 fun AccountDetailScreenUi2(account: Account)
 {
-    val stats = account.wallet.statistics()
-    val viewModel = viewModel { AccountStatisticsViewModel(account.wallet.chainstate, account.wallet.statistics()) }
+    val viewModel = viewModel { AccountStatisticsViewModel() }
     val scrollState = rememberScrollState()
-
-    LaunchedEffect(account.name) {
-        viewModel.fetchCurAddressText(account)
-    }
 
     Column(modifier = Modifier.verticalScroll(scrollState)) {
         Spacer(Modifier.height(16.dp))
@@ -122,7 +173,7 @@ fun AccountDetailScreenUi2(account: Account)
         AccountStatisticsCard(viewModel)
         WallyDivider()
         Spacer(modifier = Modifier.height(4.dp))
-        TxStatistics(stats, { nav.go(ScreenId.AddressHistory) }, { nav.go(ScreenId.TxHistory) })
+        TxStatistics(viewModel, { nav.go(ScreenId.AddressHistory) }, { nav.go(ScreenId.TxHistory) })
         Spacer(modifier = Modifier.height(4.dp))
         WallyDivider()
         Spacer(modifier = Modifier.height(8.dp))
@@ -137,119 +188,122 @@ fun AccountDetailScreenUi2(account: Account)
 @Composable
 fun AccountStatisticsCard(viewModel: AccountStatisticsViewModel)
 {
-    Card(
-      modifier = Modifier
-        .padding(16.dp)
-        .fillMaxWidth(),
-      colors = CardDefaults.cardColors(
-        containerColor = Color.White,
-      ),
-      shape = RoundedCornerShape(12.dp),
-      elevation = CardDefaults.cardElevation(2.dp)
-    ) {
-        Column(
-          modifier = Modifier.padding(16.dp)
+    val accountStats = viewModel.accountStats.collectAsState().value
+
+    if (accountStats != null)
+        Card(
+          modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth(),
+          colors = CardDefaults.cardColors(
+            containerColor = Color.White,
+          ),
+          shape = RoundedCornerShape(12.dp),
+          elevation = CardDefaults.cardElevation(2.dp)
         ) {
-            Text(i18n(S.AccountStatistics), style = MaterialTheme.typography.headlineMedium,textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
-            Spacer(Modifier.height(8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                  imageVector = Icons.Default.Public,
-                  contentDescription = "Blockchain status",
-                  modifier = Modifier.size(24.dp),
-                  tint = Color.Gray
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                  text = viewModel.syncStatus,
-                  style = MaterialTheme.typography.bodyMedium
-                )
-            }
-            Row(
-              verticalAlignment = Alignment.CenterVertically,
-              modifier = Modifier.padding(top = 8.dp)
+            Column(
+              modifier = Modifier.padding(16.dp)
             ) {
-                Icon(
-                  imageVector = Icons.Default.DateRange,
-                  contentDescription = "Date",
-                  modifier = Modifier.size(24.dp),
-                  tint = Color.Gray
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                      text = viewModel.latestBlockTimeHeight,
-                      style = MaterialTheme.typography.bodySmall
+                Text(i18n(S.AccountStatistics), style = MaterialTheme.typography.headlineMedium,textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                Spacer(Modifier.height(8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                      imageVector = Icons.Default.Public,
+                      contentDescription = "Blockchain status",
+                      modifier = Modifier.size(24.dp),
+                      tint = Color.Gray
                     )
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                      text = viewModel.prehistory,
-                      style = MaterialTheme.typography.bodySmall
+                      text = accountStats.syncStatus,
+                      style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                Row(
+                  verticalAlignment = Alignment.CenterVertically,
+                  modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Icon(
+                      imageVector = Icons.Default.DateRange,
+                      contentDescription = "Date",
+                      modifier = Modifier.size(24.dp),
+                      tint = Color.Gray
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                          text = accountStats.latestBlockTimeHeight,
+                          style = MaterialTheme.typography.bodySmall
+                        )
+                        Text(
+                          text = accountStats.prehistory,
+                          style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                      imageVector = Icons.Default.NetworkCheck,
+                      contentDescription = "Nodes",
+                      modifier = Modifier.size(24.dp),
+                      tint = Color.Gray
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                      text = accountStats.peerCountNames,
+                      style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                Row(
+                  verticalAlignment = Alignment.CenterVertically,
+                  modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Icon(
+                      imageVector = Icons.Default.AlternateEmail,
+                      contentDescription = "Address",
+                      modifier = Modifier.size(24.dp),
+                      tint = Color.Gray
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                      text = viewModel.curAddressText.collectAsState().value,
+                      style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                Row(
+                  verticalAlignment = Alignment.CenterVertically,
+                  modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Icon(
+                      imageVector = Icons.Default.ArrowUpward,
+                      contentDescription = "Withdraw",
+                      modifier = Modifier.size(24.dp),
+                      tint = Color.Gray
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                      text = accountStats.firstLastSend,
+                      style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                Row(
+                  verticalAlignment = Alignment.CenterVertically,
+                  modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Icon(
+                      imageVector = Icons.Default.ArrowDownward,
+                      contentDescription = "Deposit",
+                      modifier = Modifier.size(24.dp),
+                      tint = Color.Gray
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                      text = accountStats.firstLastReceive,
+                      style = MaterialTheme.typography.bodyMedium
                     )
                 }
             }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                  imageVector = Icons.Default.NetworkCheck,
-                  contentDescription = "Nodes",
-                  modifier = Modifier.size(24.dp),
-                  tint = Color.Gray
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                  text = viewModel.peerCountNames,
-                  style = MaterialTheme.typography.bodyMedium
-                )
-            }
-            Row(
-              verticalAlignment = Alignment.CenterVertically,
-              modifier = Modifier.padding(top = 8.dp)
-            ) {
-                Icon(
-                  imageVector = Icons.Default.AlternateEmail,
-                  contentDescription = "Address",
-                  modifier = Modifier.size(24.dp),
-                  tint = Color.Gray
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                  text = viewModel.curAddressText.collectAsState().value,
-                  style = MaterialTheme.typography.bodyMedium
-                )
-            }
-            Row(
-              verticalAlignment = Alignment.CenterVertically,
-              modifier = Modifier.padding(top = 8.dp)
-            ) {
-                Icon(
-                  imageVector = Icons.Default.ArrowUpward,
-                  contentDescription = "Withdraw",
-                  modifier = Modifier.size(24.dp),
-                  tint = Color.Gray
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                  text = viewModel.firstLastSend,
-                  style = MaterialTheme.typography.bodyMedium
-                )
-            }
-            Row(
-              verticalAlignment = Alignment.CenterVertically,
-              modifier = Modifier.padding(top = 8.dp)
-            ) {
-                Icon(
-                  imageVector = Icons.Default.ArrowDownward,
-                  contentDescription = "Deposit",
-                  modifier = Modifier.size(24.dp),
-                  tint = Color.Gray
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                  text = viewModel.firstLastReceive,
-                  style = MaterialTheme.typography.bodyMedium
-                )
-            }
         }
-    }
 }
 
 @Composable
@@ -268,26 +322,29 @@ fun AccountFirstLastSendIterati(stat: Wallet.WalletStatistics)
 
 
 @Composable
-fun TxStatistics(stat: Wallet.WalletStatistics, onAddressesButtonClicked: () -> Unit, onTxHistoryButtonClicked: () -> Unit)
+fun TxStatistics(viewModel: AccountStatisticsViewModel, onAddressesButtonClicked: () -> Unit, onTxHistoryButtonClicked: () -> Unit)
 {
-    Column {
-        Text("  " + (i18n(S.AccountNumUtxos) % mapOf("num" to stat.numUnspentTxos.toString())) + "  ", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
-        Row(
-          modifier = Modifier.padding(0.dp).fillMaxWidth(),
-          horizontalArrangement = Arrangement.SpaceEvenly,
-          verticalAlignment = Alignment.CenterVertically
-        ) {
-            Button(
-              content = { Text("  " + (i18n(S.AccountNumAddresses) % mapOf("num" to stat.numUsedAddrs.toString())) + "  ", color = Color.White) },
-              onClick = { onAddressesButtonClicked() }
-            )
+    val stat = viewModel.accountStats.value?.stat
 
-            Button(
-              content = { Text("  " +  (i18n(S.AccountNumTx) % mapOf("num" to stat.numTransactions.toString()))  + "  ", color = Color.White) },
-              onClick = { onTxHistoryButtonClicked() }
-            )
+    if (stat != null)
+        Column {
+            Text("  " + (i18n(S.AccountNumUtxos) % mapOf("num" to stat.numUnspentTxos.toString())) + "  ", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+            Row(
+              modifier = Modifier.padding(0.dp).fillMaxWidth(),
+              horizontalArrangement = Arrangement.SpaceEvenly,
+              verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(
+                  content = { Text("  " + (i18n(S.AccountNumAddresses) % mapOf("num" to stat.numUsedAddrs.toString())) + "  ", color = Color.White) },
+                  onClick = { onAddressesButtonClicked() }
+                )
+
+                Button(
+                  content = { Text("  " +  (i18n(S.AccountNumTx) % mapOf("num" to stat.numTransactions.toString()))  + "  ", color = Color.White) },
+                  onClick = { onTxHistoryButtonClicked() }
+                )
+            }
         }
-    }
 }
 
 @Composable
