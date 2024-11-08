@@ -225,16 +225,7 @@ fun HomeScreenUi2(isShowingRecoveryWarning: Boolean = false)
               pasteIcon = Icons.Outlined.ContentPasteGo,
               onScanQr = { isScanningQr = true },
               onResult = {
-                  clearAlerts()
-                  val cliptext = clipmgr.getText()?.text
-                  if (cliptext != null && cliptext != "")
-                  {
-                      wallyApp?.handlePaste(cliptext)
-                  }
-                  else
-                  {
-                      displayNotice(S.pasteIsEmpty)
-                  }
+                  wallyApp?.handlePaste(it)
               }
             )
             Spacer(Modifier.height(80.dp))
