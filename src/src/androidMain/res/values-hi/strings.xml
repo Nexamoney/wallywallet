@@ -213,7 +213,7 @@ Good luck!
 <string name="toColon">को:</string>
 <!-- As in what entity is requesting information -->
 <string name="fromColon">से:</string>
-<string name="Receive">खाते में लेना</string>
+<string name="ReceiveIntoAccount">खाते में लेना</string>
 <string name="AccountListHeader">खाते</string>
 <!-- This is referring to a cryptocurrency address, not a physical address -->
 <string name="Address">पता</string>

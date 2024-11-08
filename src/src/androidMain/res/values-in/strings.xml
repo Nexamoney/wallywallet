@@ -235,7 +235,7 @@ Good luck!
     <string name="assetsColon">Aset:</string>
     <!-- As in what entity is requesting information -->
     <string name="fromColon">dari:</string>
-    <string name="Receive">Terima dari akun</string>
+    <string name="ReceiveIntoAccount">Terima dari akun</string>
     <string name="AccountListHeader">Akun</string>
     <!-- This is referring to a cryptocurrency address, not a physical address -->
     <string name="Address">Alamat</string>

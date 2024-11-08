@@ -235,7 +235,7 @@ Good luck!
     <string name="toColon">Kellele:</string>
     <!-- As in what entity is requesting information -->
     <string name="fromColon">Kellelt:</string>
-    <string name="Receive">Võta vastu kontole</string>
+    <string name="ReceiveIntoAccount">Võta vastu kontole</string>
     <string name="AccountListHeader">Kontod</string>
     <!-- This is referring to a cryptocurrency address, not a physical address -->
     <string name="Address">Krüptoaadress</string>
