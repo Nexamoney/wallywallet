@@ -242,7 +242,7 @@ Good luck!
     <string name="assetsColon">자산:</string>
     <!-- As in what entity is requesting information -->
     <string name="fromColon">송신인주소:</string>
-    <string name="Receive">계정으로 받기</string>
+    <string name="ReceiveIntoAccount">계정으로 받기</string>
     <string name="AccountListHeader">계정</string>
     <!-- This is referring to a cryptocurrency address, not a physical address -->
     <string name="Address">주소</string>

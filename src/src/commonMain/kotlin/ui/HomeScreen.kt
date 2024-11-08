@@ -119,7 +119,7 @@ private val sendFromAccountShared = MutableStateFlow<Account?>(null)
     {
         Column(Modifier.fillMaxWidth()) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically) {
-                SectionText(text = i18n(S.Receive))  // Receive into account
+                SectionText(text = i18n(S.ReceiveIntoAccount))  // Receive into account
                 Spacer(modifier = Modifier.width(8.dp))
                 AccountDropDownSelector(
                   ags.value,

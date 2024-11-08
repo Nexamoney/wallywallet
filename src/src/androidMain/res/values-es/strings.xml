@@ -213,7 +213,7 @@ Good luck!
     <string name="toColon">A:</string>
     <!-- As in what entity is requesting information -->
     <string name="fromColon">De:</string>
-    <string name="Receive">Recibir en cuenta</string>
+    <string name="ReceiveIntoAccount">Recibir en cuenta</string>
     <string name="AccountListHeader">Cuentas</string>
     <!-- This is referring to a cryptocurrency address, not a physical address -->
     <string name="Address">Dirección</string>

@@ -140,7 +140,7 @@
 	<string name="chooseAccountError">einen Account auswählen</string>
 	<string name="toColon">An:</string>
 	<string name="fromColon">Von:</string>
-	<string name="Receive">Im Account empfangen</string>
+	<string name="ReceiveIntoAccount">Im Account empfangen</string>
 	<string name="AccountListHeader">Accounts</string>
 	<string name="Address">Adresse</string>
 	<string name="clipboard">Zwischenablage</string>
