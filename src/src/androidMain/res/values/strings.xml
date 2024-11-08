@@ -432,6 +432,9 @@ Good luck!
     <string name="CurrentAddress" formatted="false">At address %num: %addr</string>
     <string name="FirstLastReceive" formatted="false">First deposit in block %first, most recent in block %last.</string>
     <string name="FirstLastSend" formatted="false">First withdraw in block %first, most recent in block %last.</string>
+    <string name="FirstWithdraw">First withdraw</string>
+    <string name="FirstDeposit">First deposit</string>
+    <string name="never">never</string>
     <string name="FirstUse">First use: %date</string>
     <string name="LastUse">Last use: %date</string>
     <string name="Block">Block: %block</string>
