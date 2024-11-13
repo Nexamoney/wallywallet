@@ -942,14 +942,13 @@ fun AssetListItemEditable(assetPerAccount: AssetPerAccount, editable: Boolean = 
 
         if(expandable && editable)
             AnimatedVisibility(visible = expanded) {
-                WallyNumericInputField(
+                WallyNumericInputFieldAsset(
                   amountString = quantity,
                   label = "Amount",
                   placeholder = "Enter amount",
                   decimals = false,
                   isReadOnly = isConfirming,
                   hasIosDoneButton = !isConfirming,
-                  vm = viewModel,
                   onValueChange = {
                       quantity = it
                       if (it.isEmpty())
@@ -1087,6 +1086,84 @@ fun WallyNumericInputField(
                   softKeyboardBar.value = null
               }
           },
+          singleLine = singleLine,
+          readOnly = isReadOnly,
+          colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color.Black,
+            unfocusedBorderColor = Color.Black,
+          )
+        )
+
+        /*
+            This is a temporary workaround because compose does not support Done button for iOS numeric keyboard
+            I think it is possible to a native iOS input in the iosMain module that adds a Done button
+         */
+        if (isIos && hasIosDoneButton)
+        {
+            Spacer(Modifier.width(2.dp))
+            Button(
+              modifier = Modifier.align(Alignment.CenterVertically),
+              onClick = {
+                  // Also manually dismiss the keyboard on Done button click
+                  keyboardController?.hide()
+              }
+            ) {
+                Text(text = i18n(S.done))
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun WallyNumericInputFieldAsset(
+  amountString: String,
+  label: String,
+  placeholder: String,
+  singleLine: Boolean = true,
+  decimals: Boolean = true,
+  action: ImeAction = ImeAction.Done,
+  isReadOnly: Boolean = true,
+  hasIosDoneButton: Boolean = true,
+  onValueChange: (String) -> Unit
+)
+{
+    val isIos = !platform().hasGallery
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    // Validate input and allow max 2 decimal places
+    fun validateInput(input: String): Boolean {
+        val regex = if (decimals)
+        // Allow empty input or input that matches the regex for numbers with max 2 decimal places
+            Regex("^\\d*(\\.\\d{0,2})?\$")
+        else
+        // Allow only whole numbers (no decimals)
+            Regex("^\\d*\$")
+        return input.matches(regex)
+    }
+
+    Row {
+        OutlinedTextField(
+          value = amountString,
+          onValueChange = { newValue ->
+              if (validateInput(newValue)) {
+                  onValueChange(newValue)
+              }
+          },
+          keyboardOptions = KeyboardOptions(
+            imeAction = action,
+            keyboardType = KeyboardType.Number
+          ),
+          label = { Text(label) },
+          placeholder = { Text(placeholder) },
+          trailingIcon = {
+              if (amountString.isNotEmpty()) {
+                  IconButton(onClick = { if (!isReadOnly) onValueChange("") }) {
+                      Icon(Icons.Filled.Close, contentDescription = i18n(S.clearAmount))
+                  }
+              }
+          },
+          modifier = Modifier.weight(1f),
           singleLine = singleLine,
           readOnly = isReadOnly,
           colors = TextFieldDefaults.outlinedTextFieldColors(
