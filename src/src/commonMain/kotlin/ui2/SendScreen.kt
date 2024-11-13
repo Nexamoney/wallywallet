@@ -34,21 +34,7 @@ import com.eygraber.uri.Uri
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.DecimalMode
 import com.ionspin.kotlin.bignum.decimal.RoundingMode
-import info.bitcoinunlimited.www.wally.Account
-import info.bitcoinunlimited.www.wally.AssetPerAccount
-import info.bitcoinunlimited.www.wally.ImageQrCode
-import info.bitcoinunlimited.www.wally.PREF_MODE_PRIVATE
-import info.bitcoinunlimited.www.wally.S
-import info.bitcoinunlimited.www.wally.body
-import info.bitcoinunlimited.www.wally.clearAlerts
-import info.bitcoinunlimited.www.wally.displayError
-import info.bitcoinunlimited.www.wally.displayNotice
-import info.bitcoinunlimited.www.wally.displayUnexpectedException
-import info.bitcoinunlimited.www.wally.fiatCurrencyCode
-import info.bitcoinunlimited.www.wally.getSharedPreferences
-import info.bitcoinunlimited.www.wally.i18n
-import info.bitcoinunlimited.www.wally.platform
-import info.bitcoinunlimited.www.wally.tlater
+import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.currencyCodeShared
 import info.bitcoinunlimited.www.wally.ui.nav
@@ -101,20 +87,59 @@ class SendScreenViewModel(account: Account): ViewModel()
         populateAssetsList(account.assetTransferList, account.assets)
     }
 
-    fun checkAndSetAddress(paste: String)
+    fun checkUriAndSetUi(urlStr: String)
     {
+        var amt: BigDecimal? = null
+
         try {
-            val uri = Uri.parse(paste)
+            val uri = Uri.parse(urlStr)
+            val scheme = uri.scheme?.lowercase()
+            val attribs = uri.queryMap()
+            val note = attribs["label"]
+
+            attribs["amount"]?.let {
+                amt = try
+                {
+                    it.toCurrency()
+                }
+                catch (e: NumberFormatException)
+                {
+                    throw BadAmountException(S.detailsOfBadAmountFromIntent)
+                }
+                catch (e: ArithmeticException)  // Rounding error
+                {
+                    // If someone is asking for sub-satoshi quantities, round up and overpay them
+                    LogIt.warning("Sub-satoshi quantity ${it} requested.  Rounding up")
+                    BigDecimal.fromString(it, NexaMathMode)
+                }
+            }
+
             // see if this is an address without the prefix
-            val whichChain = ChainSelectorFromAddress(paste)
+            // Check if Uri contains a valid chain or else return
+            val whichChain = if (scheme == null)
+            {
+                try
+                {
+                    ChainSelectorFromAddress(urlStr)
+                }
+                catch (e: UnknownBlockchainException)
+                {
+                    displayError(S.unknownCryptoCurrency, urlStr)
+                    return
+                }
+            }
+            else uriToChain[scheme]
+
             val sendAddress = chainToURI[whichChain] + ":" + uri.body()
             uiState.value = uiState.value.copy(
-              toAddress = sendAddress
+              toAddress = sendAddress,
             )
+            note?.let { setNote(note) }
+            amt?.let { setSendQty(it) }
         }
         catch(e: Exception)
         {
-            LogIt.info("unexpected exception handling paste $paste")
+            LogIt.info("unexpected exception handling url string $urlStr")
             displayUnexpectedException(e)
         }
     }
@@ -138,6 +163,13 @@ class SendScreenViewModel(account: Account): ViewModel()
         val cleanedQty = sendQty.replace(",", "")
         uiState.value = uiState.value.copy(
           amount = cleanedQty
+        )
+    }
+
+    fun setSendQty(sendQty: BigDecimal)
+    {
+        uiState.value = uiState.value.copy(
+          amount = sendQty.toStringExpanded()
         )
     }
 
@@ -513,7 +545,9 @@ class SendScreenViewModel(account: Account): ViewModel()
 }
 
 data class SendScreenNavParams(
-  val toAddress: String = ""
+  val toAddress: String = "",
+  val amount: BigDecimal? = null,
+  val note: String? = null
 )
 
 @Composable
@@ -604,7 +638,7 @@ fun SendScreenContent(viewModel: SendScreenViewModel)
                 ThumbButtonFAB(
                   onScanQr = { isScanningQr = true },
                   onResult = {
-                      viewModel.setToAddress(it)
+                      viewModel.checkUriAndSetUi(it)
                   }
                 )
                 Spacer(Modifier.height(80.dp))
@@ -622,7 +656,7 @@ fun SendScreenContent(viewModel: SendScreenViewModel)
           onScan = {
               if (it.isNotEmpty() && isScanningQr)
                   isScanningQr = false
-              viewModel.checkAndSetAddress(it)
+              viewModel.checkUriAndSetUi(it)
           }
         )
     }
@@ -755,12 +789,25 @@ fun SendScreen(account: Account, navParams: SendScreenNavParams)
     LaunchedEffect(account) {
         viewModel.setAccount(account)
     }
-    /*
-       Update UI when sending to a new address
-     */
+
+    // Update UI when sending to a new address
     LaunchedEffect(navParams.toAddress) {
         if (navParams.toAddress.isNotEmpty())
             viewModel.setToAddress(navParams.toAddress)
+    }
+
+    // Update UI when amount is set in nav params
+    LaunchedEffect(navParams.amount) {
+        navParams.amount?.let {
+            viewModel.setSendQty(it)
+        }
+    }
+
+    // Update UI when note is set in nav params
+    LaunchedEffect(navParams.note) {
+        navParams.note?.let {
+            viewModel.setNote(it)
+        }
     }
 
     WallyThemeUi2 {
