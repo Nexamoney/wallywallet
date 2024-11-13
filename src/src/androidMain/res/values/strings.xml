@@ -273,7 +273,7 @@ Good luck!
     <string name="assetsColon">Assets:</string>
     <string name="assets">Assets</string>
     <string name="NoAssets">No assets available in account %act</string>
-    <string name="NoAssetsAccount">No assets currently available in your account. Ready to deposit assets?</string>
+    <string name="NoAssetsAccount">No assets currently available in your account.</string>
     <!-- As in what entity is requesting information -->
     <string name="fromColon">From:</string>
     <string name="ReceiveIntoAccount">Receive into account</string>
