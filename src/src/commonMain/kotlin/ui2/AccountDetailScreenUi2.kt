@@ -181,7 +181,6 @@ fun AccountDetailScreenUi2(account: Account)
             nav.back()
             triggerAssignAccountsGuiSlots()
         })
-        Spacer(modifier = Modifier.height(72.dp))
     }
 }
 

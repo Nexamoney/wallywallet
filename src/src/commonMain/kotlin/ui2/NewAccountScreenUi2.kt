@@ -441,9 +441,6 @@ private val LogIt = GetLog("BU.wally.NewAccountScreenUi2")
 
         }
         else CenteredSectionText(i18n(S.Processing))
-
-        // Space for the bottom bar
-        Spacer(Modifier.height(75.dp))
     }
 }
 

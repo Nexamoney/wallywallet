@@ -322,9 +322,6 @@ fun AssetViewUi2(asset: AssetInfo, parentMod: Modifier = Modifier)
                     }
                 }
             }
-
-        // Hack to not overlap with bottom buttons
-        Spacer(Modifier.height(100.dp))
     }
 }
 
