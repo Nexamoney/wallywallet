@@ -467,6 +467,7 @@ class BalanceViewModel: ViewModel()
 {
     val balanceViewModel = viewModel { BalanceViewModel() }
     val account = selectedAccountUi2.collectAsState().value
+    val currencyCode = account?.uiData()?.currencyCode ?: ""
     val fiatBalance = balanceViewModel.fiatBalance.collectAsState().value
     val balance = balanceViewModel.balance.collectAsState().value
 
@@ -481,7 +482,7 @@ class BalanceViewModel: ViewModel()
       modifier = Modifier.wrapContentHeight()
     ){
         Text(
-          text = "NEX",
+          text = currencyCode,
           style = MaterialTheme.typography.headlineMedium.copy(
             color = Color.White,
             fontWeight = FontWeight.Bold
