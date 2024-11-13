@@ -476,10 +476,14 @@ open class CommonApp
                 // String content from the QR code navigating directly to the desired screen is enough.
                 // I don't think we need an external GUI drive to do this now that nav is a global variable
                 if (newUI.value)
-                {
-                    val sendAddress = chainToURI[whichChain] + ":" + uri.body()
-                    nav.go(screen = ScreenId.Send, data = SendScreenNavParams(sendAddress))
-                }
+                    nav.go(
+                      screen = ScreenId.Send,
+                      data = SendScreenNavParams(
+                        toAddress = chainToURI[whichChain] + ":" + uri.body(),
+                        amount = amt,
+                        note = attribs["label"]
+                      )
+                    )
                 else // external driver for navigating using driver from before nav was a global variable
                     // Inject a change into the GUI
                     wallyApp!!.later {
