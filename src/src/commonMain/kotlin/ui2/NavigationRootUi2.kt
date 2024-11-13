@@ -801,10 +801,9 @@ fun NavigationRootUi2(systemPadding: Modifier)
           },
         ) {
             WallyThemeUi2 {
-                Box(modifier = Modifier.fillMaxSize().background(Color.White).then(systemPadding)) {
+                Box(modifier = Modifier.fillMaxSize().background(Color.White).padding(innerPadding).then(systemPadding)) {
                     if (unlockDialog != null) UnlockView {  }
                     Column(modifier = Modifier.fillMaxSize()) {
-                        TopBar(errorText, warningText, noticeText)
 
                         if (isShowingRecoveryWarning)
                             RecoveryPhraseWarningUi2(Modifier.clickable { isShowingRecoveryWarning = false})

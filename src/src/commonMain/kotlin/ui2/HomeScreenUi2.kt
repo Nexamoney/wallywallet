@@ -228,7 +228,7 @@ fun HomeScreenUi2(isShowingRecoveryWarning: Boolean = false)
                   wallyApp?.handlePaste(it)
               }
             )
-            Spacer(Modifier.height(80.dp))
+            Spacer(Modifier.height(24.dp))
         }
         if (isScanningQr && platform().hasQrScanner)
         {

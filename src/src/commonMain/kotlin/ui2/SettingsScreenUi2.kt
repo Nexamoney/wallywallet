@@ -228,7 +228,6 @@ fun SettingsScreenUi2()
                 }
             }
         }
-        Spacer(modifier = Modifier.height(64.dp))
     }
 }
 
