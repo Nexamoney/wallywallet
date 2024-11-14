@@ -14,7 +14,6 @@ val LAST_RESORT_NEXA_ELECTRS = "electrum.nexa.org"
 
 var allowAccessPriceData: Boolean = true
 var devMode = false
-var experimentalUx = false
 var darkMode = false
 var localCurrency = "USD"
 
