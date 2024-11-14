@@ -689,8 +689,8 @@ fun Syncing(syncColor: Color = Color.White) {
     val syncedText = "Synced" // TODO: Move to string resource
 
     val animation by infiniteTransition.animateFloat(
-      initialValue = 0f,
-      targetValue = 360f,
+      initialValue = 360f,
+      targetValue = 0f,
       animationSpec = infiniteRepeatable(
         animation = tween(1000, easing = LinearEasing), // 1 second for full rotation
         repeatMode = RepeatMode.Restart
