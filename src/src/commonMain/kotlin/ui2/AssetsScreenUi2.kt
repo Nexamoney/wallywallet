@@ -15,19 +15,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.eygraber.uri.Uri
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.ScreenId
-import info.bitcoinunlimited.www.wally.ui.nav
-import info.bitcoinunlimited.www.wally.ui.onCopyToClipboardButton
-import info.bitcoinunlimited.www.wally.ui.onInvokeButton
-import info.bitcoinunlimited.www.wally.ui.onTradeButton
+import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurple
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurpleExtraLight
@@ -330,7 +326,6 @@ private val assetListState: MutableMap<String, MutableStateFlow<LazyListState?> 
 @Composable
 fun AssetScreenUi2(account: Account)
 {
-    val uriHandler = LocalUriHandler.current
     val subScreen = nav.currentSubState.collectAsState()
     val sub = subScreen.value
 
@@ -447,7 +442,7 @@ fun AssetScreenUi2(account: Account)
                   description = i18n(S.AssetMarketplace),
                   color = wallyPurple,
                 ) {
-                    onTradeButton(a.assetInfo, uriHandler)
+                    onTradeButton(a.assetInfo)
                 }
                 IconTextButtonUi2(
                   icon = Icons.Outlined.ArrowBack,
@@ -503,8 +498,6 @@ fun HorizontalRadioButtonGroup(options: List<Int>, onClick: (Int) -> Unit) {
 
 @Composable fun AssetDetail(account: Account, a: AssetPerAccount, modifier: Modifier = Modifier)
 {
-    val uriHandler = LocalUriHandler.current
-
     Box (
       modifier = Modifier.fillMaxSize(),
     ) {
@@ -517,7 +510,7 @@ fun HorizontalRadioButtonGroup(options: List<Int>, onClick: (Int) -> Unit) {
         a.groupInfo.groupId.let {
             WallyBoringIconButton("icons/open_in_browser.png", Modifier.width(26.dp).height(26.dp)) {
                 account.wallet.chainSelector.explorer("/token/$it").let {
-                    uriHandler.openUri(it)
+                    openUrl(it)
                 }
             }
         }
@@ -527,10 +520,10 @@ fun HorizontalRadioButtonGroup(options: List<Int>, onClick: (Int) -> Unit) {
             displaySuccess(S.AssetAddedToTransferList)
         })
         if ((a.assetInfo.nft?.appuri ?: "") != "") WallyRoundedTextButton(S.AssetApplication, onClick = {
-            onInvokeButton(a.assetInfo, uriHandler)
+            onInvokeButton(a.assetInfo)
         })
         if ((a.assetInfo.tokenInfo?.marketUri ?: "") != "") WallyRoundedTextButton(S.AssetMarketplace, onClick = {
-            onTradeButton(a.assetInfo, uriHandler)
+            onTradeButton(a.assetInfo)
         })
     }
 }

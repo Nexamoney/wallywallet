@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
@@ -24,7 +23,6 @@ import okio.FileNotFoundException
 @Composable
 fun ShoppingDestination.compose()
 {
-    val uriHandler = LocalUriHandler.current
     val sd = this
     Row {
         val name = sd.icon
@@ -50,7 +48,7 @@ fun ShoppingDestination.compose()
         Column {
             Text(explain, Modifier.fillMaxWidth())
             WallyBoringTextButton(sd.buttonText) {
-                uriHandler.openUri(sd.url)
+                openUrl(sd.url)
             }
         }
     }

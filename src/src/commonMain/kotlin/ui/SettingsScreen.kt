@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.HorizontalAlignmentLine
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -141,7 +140,6 @@ fun SettingsScreen(nav: ScreenNav)
       horizontalAlignment = Alignment.Start,
       verticalArrangement = Arrangement.SpaceEvenly
     ) {
-        val uriHandler = LocalUriHandler.current
         Column(
           modifier = Modifier.fillMaxWidth(),
           horizontalAlignment = Alignment.Start
@@ -232,7 +230,7 @@ fun SettingsScreen(nav: ScreenNav)
                              */
                         }
                         Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
-                            WallyBoringButton({ uriHandler.openUri(Version.GITLAB_URL) }, modifier = Modifier
+                            WallyBoringButton({ openUrl(Version.GITLAB_URL) }, modifier = Modifier
                             ) {
                                 ResImageView("icons/gitlab-logo-300.png", modifier = Modifier.width(100.dp))
                             }

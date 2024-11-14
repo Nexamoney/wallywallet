@@ -269,3 +269,16 @@ actual fun isImeVisible(): Boolean
     // This isn't needed right now because we don't put the number bar above the IME
     return 0.dp
 }
+
+actual fun openUrl(url: String) {
+    val nsUrl = NSURL(string = url)
+    if (nsUrl != null) {
+        UIApplication.sharedApplication.openURL(nsUrl, options = emptyMap<Any?, Any>()) { success ->
+            if (!success) {
+                println("Failed to open URL: $url")
+            }
+        }
+    } else {
+        println("Invalid URL: $url")
+    }
+}

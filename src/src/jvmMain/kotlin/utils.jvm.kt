@@ -26,6 +26,8 @@ import java.io.File
 import java.io.InputStream
 import java.util.zip.Inflater
 import org.nexa.libnexakotlin.Objectify
+import java.awt.Desktop
+import java.net.URI
 import kotlin.math.abs
 
 
@@ -271,3 +273,15 @@ actual fun platformNotification(message:String, title: String?, onclickUrl:Strin
 @Composable actual fun isImeVisible(): Boolean = false
 
 @Composable actual fun getImeHeight(): Dp = 0.dp
+
+actual fun openUrl(url: String) {
+    try {
+        if (Desktop.isDesktopSupported()) {
+            Desktop.getDesktop().browse(URI(url))
+        } else {
+            println("Desktop is not supported on this system")
+        }
+    } catch (e: Exception) {
+        println("Failed to open URL: $url. Error: ${e.message}")
+    }
+}

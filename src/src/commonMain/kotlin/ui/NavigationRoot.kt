@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import androidx.compose.ui.text.style.TextAlign
@@ -306,7 +305,6 @@ fun onShareButton()
     if (!platform().hasNativeTitleBar)
     {
         val bkgCol = if (errorText.isNotEmpty()) colorError else if (warningText.isNotEmpty()) colorWarning else if (noticeText.isNotEmpty()) colorNotice else colorTitleBackground
-        val uriHandler = LocalUriHandler.current
         // Specifying the row height stops changes header bar content to change its height causing the entire window to jerk up or down
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.background(bkgCol).padding(0.dp).height(56.dp))
         {
@@ -336,7 +334,7 @@ fun onShareButton()
                 IconButton(onClick = {triggerUnlockDialog()}, modifier = Modifier.size(36.dp).padding(5.dp, 0.dp)){
                     ResImageView("icons/lock.xml", modifier = Modifier.size(36.dp))
                 }
-                IconButton(onClick = {uriHandler.openUri("http://wallywallet.org/help")}, modifier = Modifier.size(36.dp).padding(5.dp, 0.dp)){
+                IconButton(onClick = {openUrl("http://wallywallet.org/help")}, modifier = Modifier.size(36.dp).padding(5.dp, 0.dp)){
                     ResImageView("icons/help.xml", modifier = Modifier.size(36.dp))
             }
             }
