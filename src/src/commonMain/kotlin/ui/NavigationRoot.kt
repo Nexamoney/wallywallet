@@ -794,18 +794,6 @@ fun NavigationRoot(systemPadding: Modifier)
     }
 }
 
-object ChildNav {
-    private val _displayAccountDetailScreen = MutableStateFlow<Account?>(null)
-    val displayAccountDetailScreen: StateFlow<Account?> get() = _displayAccountDetailScreen
-
-    /**
-     * Input Account object to display or null to hide
-     */
-    fun displayAccount(account: Account?) {
-        _displayAccountDetailScreen.value = account
-    }
-}
-
 data class NavChoice(val location: ScreenId, val textId: Int, val imagePath: String)
 
 @Composable
