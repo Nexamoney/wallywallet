@@ -9,14 +9,14 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 // Wally Wallet version
-val versionNumber = "3.3.7"
+val versionNumber = "3.3.8"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 
 
 // Dependency versions
 val mpThreadsVersion = "0.3.3"
 val nexaRpcVersion = "1.2.2"
-val libNexaKotlinVersion = "0.3.4"
+val libNexaKotlinVersion = "0.3.5"
 val serializationVersion = "1.7.3"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.9.0"     // https://github.com/Kotlin/kotlinx.coroutines
 val ktorVersion = "2.3.12"           // https://github.com/ktorio/ktor

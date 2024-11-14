@@ -74,7 +74,7 @@ private val accountListState:MutableStateFlow<LazyListState?> = MutableStateFlow
     val tmp = accountListState.collectAsState(scope.coroutineContext).value ?: rememberLazyListState()
 
     val selAct = selectedAccount.collectAsState().value
-    if ((selAct != null) && experimentalUx)
+    if (false && selAct != null) // && experimentalUx)
     {
         if (accountUIData[selAct.name] == null) accountUIData[selAct.name] = selAct.uiData()
         AccountItemView(accountUIData[selAct.name]!!, 0, true, devMode, Color.Transparent,
@@ -251,7 +251,7 @@ fun Account.uiData():AccountUIData
             txh.add(it)
             (txh.size >= 10) // just get the most recent 10
         }
-        ret.recentHistory = txh.toList()
+        ret.recentHistory = txh.sortedByDescending { it.date }
     }
     return ret
 }
@@ -421,18 +421,20 @@ fun AccountItemView(
                     }
                 }
 
+                /*
                 if (experimentalUx && isSelected)
                 {
                     Spacer(Modifier.height(4.dp))
                     accountListDetail(uidata, index, devMode)
                 }
-
+                 */
             }
         }
 
     }
 }
 
+/*
 @Composable fun accountListDetail(uidata: AccountUIData, index:Int, devMode:Boolean)
 {
     val acc = uidata.account
@@ -539,6 +541,7 @@ fun AccountItemView(
         }
     }
 }
+*/
 
 private fun getAccountIconResPath(chainSelector: ChainSelector): String
 {

@@ -208,6 +208,7 @@ fun calcTxHistoryInfo(acc : Account)
             txes.add(it)
             false
         }
+        txes.sortByDescending { it.date }
         txHistoryInfo.value = txes
         txHistoryAccount.value = acc
     }

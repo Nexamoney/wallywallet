@@ -29,7 +29,6 @@ import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.AccountUIData
 import info.bitcoinunlimited.www.wally.ui.views.OFFER_FAST_FORWARD_GAP
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
-import info.bitcoinunlimited.www.wally.ui.views.accountListDetail
 import info.bitcoinunlimited.www.wally.ui.views.startAccountFastForward
 import info.bitcoinunlimited.www.wally.ui.views.uiData
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurpleExtraLight
@@ -488,13 +487,6 @@ fun AccountItemViewUi2(
                         Text(text = uidata.devinfo, fontSize = 12.sp, maxLines = 5, minLines = 3, style = devModeTextStyle, textAlign = TextAlign.Center)
                     }
                 }
-
-                if (experimentalUx && isSelected)
-                {
-                    Spacer(Modifier.height(4.dp))
-                    accountListDetail(uidata, index, devMode)
-                }
-
             }
         }
 }

@@ -96,7 +96,7 @@ fun SettingsScreen(nav: ScreenNav)
     val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
     var devModeView by mutableStateOf(devMode)
     var darkModeView by mutableStateOf(darkMode)
-    var experimentalUxView by mutableStateOf(experimentalUx)
+    var experimentalUxView by mutableStateOf(newUI.value)
     val generalSettingsSwitches = mutableListOf(
       GeneralSettingsSwitch(ACCESS_PRICE_DATA_PREF, S.AccessPriceData),
     )
@@ -165,11 +165,13 @@ fun SettingsScreen(nav: ScreenNav)
             WallyHalfDivider()
             generalSettingsSwitches.forEach { GeneralSettingsSwitchView(it) }
 
+            /*
             WallySwitchRow(darkModeView, S.enableDarkMode) {
                 preferenceDB.edit().putBoolean(DARK_MODE_PREF, it).commit()
                 darkModeView = it
                 darkMode = it
             }
+             */
             WallySwitchRow(experimentalUxView, S.enableExperimentalUx) {
                 preferenceDB.edit().putBoolean(EXPERIMENTAL_UX_MODE_PREF, it).commit()
                 newUI.value = it

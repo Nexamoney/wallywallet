@@ -414,7 +414,7 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                     if (it)
                     {
                         tlater("rediscover") {
-                            acc.wallet.rediscover(true, false)
+                            acc.wallet.rediscover(false, false)
                             displayNotice(S.rediscoverNotice)
                         }
                     }
