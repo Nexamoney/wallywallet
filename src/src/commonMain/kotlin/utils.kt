@@ -536,3 +536,5 @@ fun formatLocalEpochMilliseconds(epochMs:Long, splitter:String=" "): String
 }
 
 expect fun getResourceFile(name: String): BufferedSource
+
+expect fun openUrl(url: String)

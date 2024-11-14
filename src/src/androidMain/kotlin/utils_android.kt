@@ -5,8 +5,10 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
@@ -294,4 +296,14 @@ actual fun getResourceFile(name: String): BufferedSource
         0.dp
     else
         (imeHeight / density).dp
+}
+
+actual fun openUrl(url: String) {
+    val appContext:Context? = wallyAndroidApp as? Context //  currentActivity?.applicationContext
+    if (appContext!=null)
+    {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        appContext.startActivity(intent)
+    }
 }

@@ -11,7 +11,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.*
@@ -191,7 +190,6 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
                     Column(modifier = Modifier.fillMaxWidth().background(color).padding(1.dp).clickable {
                         onAddressCopied(it.address.toString())
                     }) {
-                        val uriHandler = LocalUriHandler.current
                         val dest = acc.wallet.walletDestination(it.address)
                         val addrText = if (devMode && (dest != null)) "${dest.index}:$address" else address
                         FittedText(text = addrText, fontWeight = FontWeight.Bold, modifier = Modifier)
@@ -279,7 +277,7 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
                                             if (uri != null)
                                             {
                                                 //Spacer(Modifier.height(1.dp).weight(1f))
-                                                WallyBoringButton({ uriHandler.openUri(uri) }, modifier = Modifier.padding(0.dp, 0.dp, 10.dp, 0.dp)
+                                                WallyBoringButton({ openUrl(uri) }, modifier = Modifier.padding(0.dp, 0.dp, 10.dp, 0.dp)
                                                 ) {
                                                     Icon(Icons.Default.ExitToApp, tint = colorConfirm, contentDescription = "view address activity")
                                                 }

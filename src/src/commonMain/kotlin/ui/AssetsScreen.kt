@@ -16,8 +16,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -428,7 +426,6 @@ fun AssetScreen(account: Account)
             }
 
             WallyDivider()
-            val uriHandler = LocalUriHandler.current
 
             AssetView(a.assetInfo, modifier = Modifier.weight(1f).padding(8.dp, 0.dp))
             WallyButtonRow {
@@ -438,7 +435,7 @@ fun AssetScreen(account: Account)
                 assetFocus?.groupInfo?.groupId?.let {
                     WallyBoringIconButton("icons/open_in_browser.png", Modifier.width(26.dp).height(26.dp)) {
                         account.wallet.chainSelector.explorer("/token/$it").let {
-                            uriHandler.openUri(it)
+                            openUrl(it)
                         }
                     }
                 }
@@ -448,10 +445,10 @@ fun AssetScreen(account: Account)
                     displaySuccess(S.AssetAddedToTransferList)
                 })
                 if ((a.assetInfo.nft?.appuri ?: "") != "") WallyRoundedTextButton(S.AssetApplication, onClick = {
-                    onInvokeButton(a.assetInfo, uriHandler)
+                    onInvokeButton(a.assetInfo)
                 })
                 if ((a.assetInfo.tokenInfo?.marketUri ?: "") != "") WallyRoundedTextButton(S.AssetMarketplace, onClick = {
-                    onTradeButton(a.assetInfo, uriHandler)
+                    onTradeButton(a.assetInfo)
                 })
             }
         }
@@ -470,15 +467,23 @@ fun onCopyToClipboardButton(a: AssetInfo?)
 }
 
 
-fun onTradeButton(a: AssetInfo?, uriHandler: UriHandler)
+fun onTradeButton(a: AssetInfo?)
 {
     if (a!=null)
     {
         try
         {
-            val market = a.tokenInfo?.marketUri
+            var market = a.tokenInfo?.marketUri
             if (market != null)
             {
+                /*
+                    Workaround to fix bug where somehow the url in iOS points to localhost/ instead of niftyart.cash.
+                    This is probably an issue with how data class TokenDesc.marketUri is set in libnexakotlin for iOS.
+                    See libnexakotlin issue: https://gitlab.com/nexa/libnexakotlin/-/issues/22
+                 */
+                if (market.contains("http://localhost"))
+                    market = market.replace("http://localhost", "https://niftyart.cash")
+
                 // TODO create Challenge Transaction proof-of-ownership
                 val uri = Uri.parse(market)
                 val app = wallyApp
@@ -511,7 +516,7 @@ fun onTradeButton(a: AssetInfo?, uriHandler: UriHandler)
                                 // If there are already params, add another with an &.  Otherwise add the first param with a ?
                                 val mkt = (if (market.contains("?")) market + "&"
                                 else market + "?" + "tokenid=") + a.groupId.toStringNoPrefix()
-                                uriHandler.openUri(mkt)
+                                openUrl(mkt)
                             }
                         }
                     }
@@ -521,7 +526,7 @@ fun onTradeButton(a: AssetInfo?, uriHandler: UriHandler)
                     // If there are already params, add another with an &.  Otherwise add the first param with a ?
                     val mkt = (if (market.contains("?")) market + "&"
                     else market + "?" + "tokenid=") + a.groupId.toStringNoPrefix()
-                    uriHandler.openUri(mkt)
+                    openUrl(mkt)
                 }
             }
         }
@@ -533,7 +538,7 @@ fun onTradeButton(a: AssetInfo?, uriHandler: UriHandler)
     }
 }
 
-fun onInvokeButton(a: AssetInfo?, uriHandler: UriHandler )
+fun onInvokeButton(a: AssetInfo?)
 {
     if (a!=null)
     {
@@ -552,7 +557,7 @@ fun onInvokeButton(a: AssetInfo?, uriHandler: UriHandler )
                 else appuri = appuri + "?" + "tokenid=" + a.groupId.toStringNoPrefix()
             }
 
-            uriHandler.openUri(appuri)
+            openUrl(appuri)
         }
     }
 }

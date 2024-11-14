@@ -18,7 +18,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -295,7 +294,6 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
     if (!platform().hasNativeTitleBar)
     {
         val bkgCol = if (errorText.isNotEmpty()) colorError else if (warningText.isNotEmpty()) colorWarning else if (noticeText.isNotEmpty()) colorNotice else colorTitleBackground
-        val uriHandler = LocalUriHandler.current
         // Specifying the row height stops changes header bar content to change its height causing the entire window to jerk up or down
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.background(bkgCol).padding(0.dp).height(56.dp))
         {
@@ -877,7 +875,6 @@ fun NavigationRootUi2(systemPadding: Modifier)
     if (!platform().hasNativeTitleBar)
     {
         val bkgCol = if (errorText.isNotEmpty()) colorError else if (warningText.isNotEmpty()) colorWarning else if (noticeText.isNotEmpty()) colorNotice else colorTitleBackground
-        val uriHandler = LocalUriHandler.current
         // Specifying the row height stops changes header bar content to change its height causing the entire window to jerk up or down
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.background(bkgCol).padding(0.dp).height(56.dp))
         {

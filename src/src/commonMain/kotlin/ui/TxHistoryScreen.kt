@@ -15,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -260,7 +259,6 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
                         onCopied(it.tx.idem.toHex())
                     }) {
                         Row {
-                            val uriHandler = LocalUriHandler.current
                             if (amt != 0L) ResImageView(if (amt > 0) "icons/receivearrow.xml" else "icons/sendarrow.xml", modifier = Modifier.size(30.dp))
                             else Spacer(Modifier.size(30.dp))
                             if (it.date > 1577836800000) Text(formatLocalEpochMilliseconds(it.date, "\n"))  // jan 1 2020, before the genesis block
@@ -271,7 +269,7 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
                             CenteredFittedWithinSpaceText(text = acc.cryptoFormat.format(acc.fromFinestUnit(amt)), startingFontScale = 1.5, fontWeight = FontWeight.Bold,
                               modifier = Modifier.weight(1f))
                             val uri = it.chainSelector.explorer("/tx/${it.tx.idem.toHex()}")
-                            WallyBoringButton({ uriHandler.openUri(uri) }, modifier = Modifier.padding(0.dp, 0.dp, 10.dp, 0.dp)) {
+                            WallyBoringButton({ openUrl(uri) }, modifier = Modifier.padding(0.dp, 0.dp, 10.dp, 0.dp)) {
                                 Icon(Icons.Default.ExitToApp, tint = colorConfirm, contentDescription = "view transaction")
                             }
                         }
