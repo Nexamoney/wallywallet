@@ -107,6 +107,17 @@ fun AssetViewUi2(asset: AssetInfo, parentMod: Modifier = Modifier)
     val assetName = asset.nameObservable.collectAsState()
     val name = (if ((nft != null) && (nft.title.length > 0)) nft.title else assetName.value) ?: "<name missing>"
     val options = remember { mutableStateOf(mutableSetOf<Int>()) }
+    val provider = asset.docUrl?.let { docUrl ->
+        val url = com.eygraber.uri.Url.parseOrNull(docUrl)
+        try
+        {
+            url?.host ?: "" // although host is supposedly not null, I can get "java.lang.IllegalArgumentException: Url requires a non-null host"
+        }
+        catch (e: IllegalArgumentException)
+        {
+            ""
+        }
+    } ?: ""
 
     LaunchedEffect(asset.groupId) {
         if (asset.iconUri != null) options.value.add(S.NftCardFront)
@@ -159,11 +170,12 @@ fun AssetViewUi2(asset: AssetInfo, parentMod: Modifier = Modifier)
                 }
             }
         Spacer(Modifier.height(8.dp))
-        Text( // TODO
-          text = "Provider: niftyart.cash",
-          style = MaterialTheme.typography.labelLarge,
-          fontStyle = FontStyle.Italic
-        )
+        if (provider.isNotEmpty())
+            Text(
+              text = "Provider: $provider",
+              style = MaterialTheme.typography.labelLarge,
+              fontStyle = FontStyle.Italic
+            )
         Spacer(Modifier.height(24.dp))
         if (options.value.isNotEmpty())
             HorizontalRadioButtonGroup(options.value.toList()) { option ->
