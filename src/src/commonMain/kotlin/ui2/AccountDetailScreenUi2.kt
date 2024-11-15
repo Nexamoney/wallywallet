@@ -36,6 +36,7 @@ import info.bitcoinunlimited.www.wally.ui.rediscoverPrehistoryHeight
 import info.bitcoinunlimited.www.wally.ui.rediscoverPrehistoryTime
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
+import info.bitcoinunlimited.www.wally.ui2.noSelectedAccount
 import info.bitcoinunlimited.www.wally.ui2.selectedAccountUi2
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallySwitchRowUi2
 import kotlinx.coroutines.Job
@@ -509,6 +510,7 @@ fun AccountActionButtonsUi2(acc: Account, txHistoryButtonClicked: () -> Unit, ac
                         wallyApp!!.deleteAccount(acc)
                         displayNotice(S.accountDeleteNotice)
                         accountDeleted()
+                        noSelectedAccount()  // If we are in the account details, this account is selected.  We need to unselect it.
                     }
                     accountAction.value = null
                 }

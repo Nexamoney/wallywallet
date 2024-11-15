@@ -754,7 +754,7 @@ open class CommonApp
             DEFAULT_MAX_RECENT_HEADER_CACHE = 25
         }
 
-        later {
+        tlater {
             val prefs = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
             devMode = prefs.getBoolean(DEV_MODE_PREF, false)
             allowAccessPriceData = prefs.getBoolean(ACCESS_PRICE_DATA_PREF, true)
@@ -921,10 +921,8 @@ open class CommonApp
             if (nullablePrimaryAccount == act) nullablePrimaryAccount = null
         }
 
-        later { // cannot access db in UI thread
+        tlater { // cannot access db in UI thread
             saveActiveAccountList()
-        }
-        later {
             act.delete()
         }
     }
@@ -1133,7 +1131,7 @@ open class CommonApp
         if (!forTestingDoNotAutoCreateWallets)  // If I'm running the unit tests, don't auto-create any wallets since the tests will do so
         {
             // Initialize the currencies supported by this wallet
-            later {
+            tlater {
                 openAllAccounts()
                 assignAccountsGuiSlots()
 
@@ -1183,7 +1181,7 @@ open class CommonApp
                     c.onChange()  // update all wallet UI fields since just starting up
                 }
                 // Going to block here until the GUI asks for this field
-                if (recoveryWarning != null) externalDriver.send(GuiDriver(show = setOf(ShowIt.WARN_BACKUP_RECOVERY_KEY), account = recoveryWarning))
+                if (recoveryWarning != null) later { externalDriver.send(GuiDriver(show = setOf(ShowIt.WARN_BACKUP_RECOVERY_KEY), account = recoveryWarning)) }
                 for (a in alist) a.getXchgRates("USD")
             }
         }
@@ -1192,8 +1190,7 @@ open class CommonApp
     /** If you need to do a POST operation within the App context (because you are ending the activity) call these functions */
     fun post(url: String, contents: (HttpRequestBuilder) -> Unit)
     {
-        info.bitcoinunlimited.www.wally.later()
-        {
+        later {
             LogIt.info(sourceLoc() + ": POST response to server: $url")
             val client = HttpClient()
             {
@@ -1223,8 +1220,7 @@ open class CommonApp
 
     fun postThen(url: String, contents: (HttpRequestBuilder) -> Unit, next: ()->Unit)
     {
-        info.bitcoinunlimited.www.wally.later()
-        {
+        later {
             LogIt.info(sourceLoc() + ": POST response to server: $url")
             val client = HttpClient()
             {

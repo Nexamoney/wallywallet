@@ -184,6 +184,13 @@ fun setSelectedAccount(account: Account)
     wallyApp!!.focusedAccount = account
 }
 
+fun noSelectedAccount()
+{
+    _selectedAccountUi2.value = null
+    preferenceDB.edit().putString(SELECTED_ACCOUNT_NAME, "").commit()
+    wallyApp!!.focusedAccount = null
+}
+
 /*
     This is the root Composable while we still have two implementations of the UI.
     hasNewUIShared toggled when the user select "new user interface" in settings.

@@ -744,8 +744,8 @@ class Account(
         netCb?.let { wallet.blockchain.net.changeCallback.remove(it) }
         currentReceive = null
         wallet.stop()
-        walletDb = null
         wallet.delete()
+        walletDb = null
         balance = BigDecimal.ZERO
         unconfirmedBalance = BigDecimal.ZERO
     }
