@@ -36,7 +36,6 @@ import org.nexa.threads.Thread
 import org.nexa.threads.iThread
 import org.nexa.threads.millisleep
 
-const val OFFER_FAST_FORWARD_GAP = 86400*7  // 1 week in seconds
 private val LogIt = GetLog("BU.wally.accountlistview")
 private val accountListState:MutableStateFlow<LazyListState?> = MutableStateFlow(null)
 

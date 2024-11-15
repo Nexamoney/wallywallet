@@ -72,7 +72,7 @@ import org.nexa.threads.millisleep
 
 private val LogIt = GetLog("wally.NavRoot.Ui2")
 const val SELECTED_ACCOUNT_NAME = "selectedAccountName"
-val newUI = MutableStateFlow(preferenceDB.getBoolean(EXPERIMENTAL_UX_MODE_PREF, false))
+val newUI = MutableStateFlow(preferenceDB.getBoolean(EXPERIMENTAL_UX_MODE_PREF, true))
 
 private val selectedAccountName = preferenceDB.getString(SELECTED_ACCOUNT_NAME, "")
 private val _selectedAccountUi2 =  MutableStateFlow<Account?>(wallyApp?.accounts?.get(
