@@ -110,7 +110,8 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
     var netSats = 0L
 
     var receivingTokenTypes = 0L
-    var spendingTokenTypes = 0L
+    var spendingTokenTypes = 0L   // Being pulled into this transaction
+    var sendingTokenTypes = 0L    // in this transaction's outputs
     var provingTokenTypes = 0L
 
 
@@ -143,10 +144,11 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
         {
             GuiCustomTxFee = ""
         }
+        sendingTokenTypes = proposal.sendingTokenTypes
     }
 
     // if I'm paying out something (negative net sats) or spending some token types I'm sending something
-    isSendingSomething = netSats < 0L || spendingTokenTypes < 0
+    isSendingSomething = netSats < 0L || spendingTokenTypes > 0 || sendingTokenTypes > 0
     // if I'm receiving some sats (positive net sats) or receiving some token types I'm receiving something
     isReceiving = netSats > 0L || receivingTokenTypes > 0
 
@@ -313,7 +315,7 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
                     Column (
                       modifier = Modifier.fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(32.dp)
+                        .padding(32.dp,16.dp,32.dp,16.dp)
                     ) {
                         Text(
                           text = i18n(S.sending),
@@ -321,7 +323,7 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
                           style = MaterialTheme.typography.headlineSmall,
                           textAlign = TextAlign.Center
                         )
-                        Spacer(Modifier.height(16.dp))
+                        Spacer(Modifier.height(8.dp))
                         Box(
                           modifier = Modifier.fillMaxWidth()
                             .wrapContentHeight()
@@ -375,7 +377,7 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
                     Column(
                       modifier = Modifier.fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(32.dp)
+                        .padding(32.dp,4.dp,32.dp,4.dp)
                     ) {
                         Text(
                           text = i18n(S.receiving),
@@ -383,7 +385,7 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
                           style = MaterialTheme.typography.headlineSmall,
                           textAlign = TextAlign.Center,
                         )
-                        Spacer(Modifier.height(16.dp))
+                        Spacer(Modifier.height(8.dp))
                         Box(
                           modifier = Modifier.fillMaxWidth()
                             .wrapContentHeight()
@@ -433,7 +435,8 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
 
             val tm = Modifier.padding(0.dp).fillMaxWidth().align(Alignment.CenterHorizontally)
             val ts = TextStyle(fontStyle = FontStyle.Italic, fontSize = FontScale(1.5))
-            Text(GuiCustomTxFee, modifier = tm, style = ts, textAlign = TextAlign.Center)
+            // This is redundant. It appears in the new UI send card
+            //Text(GuiCustomTxFee, modifier = tm, style = ts, textAlign = TextAlign.Center)
             Text(GuiCustomTxTokenSummary, modifier = tm, style = ts, textAlign = TextAlign.Center)
 
             Spacer(Modifier.defaultMinSize(1.dp,10.dp).weight(1f))

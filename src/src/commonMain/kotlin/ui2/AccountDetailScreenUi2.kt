@@ -169,18 +169,17 @@ fun AccountDetailScreenUi2(account: Account)
     Column(modifier = Modifier.verticalScroll(scrollState)) {
         Spacer(Modifier.height(16.dp))
         AccountPill(buttonsEnabled = true)
-        Spacer(Modifier.height(8.dp))
-        AccountStatisticsCard(viewModel)
-        WallyDivider()
+        Spacer(Modifier.height(2.dp))
         Spacer(modifier = Modifier.height(4.dp))
-        TxStatistics(viewModel, { nav.go(ScreenId.AddressHistory) }, { nav.go(ScreenId.TxHistory) })
-        Spacer(modifier = Modifier.height(4.dp))
-        WallyDivider()
-        Spacer(modifier = Modifier.height(8.dp))
         AccountActionButtonsUi2(account, txHistoryButtonClicked = { nav.go(ScreenId.TxHistory) }, accountDeleted = {
             nav.back()
             triggerAssignAccountsGuiSlots()
         })
+        Spacer(modifier = Modifier.height(4.dp))
+        WallyDivider()
+        TxStatistics(viewModel, { nav.go(ScreenId.AddressHistory) }, { nav.go(ScreenId.TxHistory) })
+        Spacer(modifier = Modifier.height(4.dp))
+        AccountStatisticsCard(viewModel)
     }
 }
 

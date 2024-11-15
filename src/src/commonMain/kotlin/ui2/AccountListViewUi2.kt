@@ -27,7 +27,6 @@ import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.AccountUIData
-import info.bitcoinunlimited.www.wally.ui.views.OFFER_FAST_FORWARD_GAP
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import info.bitcoinunlimited.www.wally.ui.views.startAccountFastForward
 import info.bitcoinunlimited.www.wally.ui.views.uiData
