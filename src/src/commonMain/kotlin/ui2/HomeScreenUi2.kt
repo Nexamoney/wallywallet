@@ -353,6 +353,7 @@ fun AssetCarouselItemNameOverlay(name: String, maxWidth: Dp, modifier: Modifier 
 @Composable
 fun AssetCarouselItem(asset: AssetInfo, hasNameOverLay: Boolean = false)
 {
+    val iconImage = asset.iconImageState.collectAsState().value
     val nft = asset.nft
     val maxSize = 60.dp
 
@@ -364,7 +365,7 @@ fun AssetCarouselItem(asset: AssetInfo, hasNameOverLay: Boolean = false)
             nav.go(ScreenId.Assets, asset.groupId.toByteArray())
         },
     ) {
-        MpMediaView(asset.iconImage, asset.iconBytes, asset.iconUri?.toString(), hideMusicView = true) { mi, draw ->
+        MpMediaView(iconImage, asset.iconBytes, asset.iconUri?.toString(), hideMusicView = true) { mi, draw ->
             val m = Modifier.background(Color.Transparent).size(maxSize).clickable {
                 nav.go(ScreenId.Assets)
                 nav.go(ScreenId.Assets, asset.groupId.toByteArray())
