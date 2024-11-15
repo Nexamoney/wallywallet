@@ -85,6 +85,11 @@ class SendScreenViewModel(account: Account): ViewModel()
     fun setAccount(account: Account)
     {
         populateAssetsList(account.assetTransferList, account.assets)
+        // Automatically switch the currency code to whatever the selected account is using
+        // currencyCodeShared is the currency that amount dialog boxes use
+        // TODO: What we really want to do here only set it if its currently a Crypto currency code. Obviously if you've selected an account holding a different crypto, you want to send that crypto.
+        // TODO: BUT if its a fiat code, do not set it and interpret the amount field as an amount of that fiat see (https://gitlab.com/wallywallet/wallet/-/issues/234)
+        currencyCodeShared.value = account.currencyCode
     }
 
     fun checkUriAndSetUi(urlStr: String)
