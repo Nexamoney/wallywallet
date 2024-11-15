@@ -270,7 +270,13 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
     var docUrl: String? = null
     var tokenInfo: TokenDesc? = null
     var iconBytes: ByteArray? = null
+    @Transient var iconImageState: MutableStateFlow<ImageBitmap?> = MutableStateFlow(null)
     @Transient var iconImage: ImageBitmap? = null
+        set(value)
+        {
+            iconImageState.value = value
+            field = value
+        }
     @Serializable(with = UrlSerializer::class) var iconUri: Url? = null
     var iconBackBytes: ByteArray? = null
     @Serializable(with = UrlSerializer::class) var iconBackUri: Url? = null
