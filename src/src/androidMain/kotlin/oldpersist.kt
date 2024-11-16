@@ -118,10 +118,11 @@ fun convertOldAccounts(app: WallyApp): Boolean
 
                 val earliestActivity = cs?.first
                 val earliestHeight = cs?.second
-
-                val acc = wallyApp!!.recoverAccount(w, flags, "",  wd.secretWords, wd.chainSelector, earliestActivity, earliestHeight, null)
-                // Write the encoded pin directly because we do not know its unencoded value
-                epin?.let { acc?.saveAccountPin(it) }
+                laterJob {
+                    val acc = wallyApp!!.recoverAccount(w, flags, "", wd.secretWords, wd.chainSelector, earliestActivity, earliestHeight, null)
+                    // Write the encoded pin directly because we do not know its unencoded value
+                    epin?.let { acc?.saveAccountPin(it) }
+                }
                 numAccounts += 1
             }
         }

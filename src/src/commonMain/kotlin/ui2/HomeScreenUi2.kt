@@ -472,6 +472,9 @@ class BalanceViewModel: ViewModel()
     val fiatBalance = balanceViewModel.fiatBalance.collectAsState().value
     val balance = balanceViewModel.balance.collectAsState().value
 
+    // If no account is available, do not show the pill
+    if (account == null) return
+
     /*
         Runs the callback every time account?.fiatPerCoin changes
      */
@@ -559,6 +562,9 @@ class BalanceViewModel: ViewModel()
     val account = selectedAccountUi2.collectAsState().value
     val accountUIData = accountUiDataViewModel.accountUIData.collectAsState().value
     val roundedCorner = 16.dp
+
+    // If no account is available, do not show the pill
+    if (account == null) return
 
     LaunchedEffect(true) {
         accountUiDataViewModel.setup()

@@ -105,6 +105,17 @@ enum class ScreenId
 
     fun title(): String
     {
+        fun pva(): String
+        {
+            try
+            {
+                return wallyApp?.preferredVisibleAccount()?.name ?: ""
+            }
+            catch(e:Exception) // No possible accounts
+            {
+                return ""
+            }
+        }
         return when (this)
         {
             None -> ""
@@ -119,9 +130,9 @@ enum class ScreenId
             Settings -> i18n(S.title_activity_settings)
             SplitBill -> i18n(S.title_split_bill)
             NewAccount -> i18n(S.title_activity_new_account)
-            AccountDetails -> i18n(S.title_activity_account_details) % mapOf("account" to (wallyApp?.preferredVisibleAccount()?.name ?: ""))
-            AddressHistory -> i18n(S.title_activity_address_history) % mapOf("account" to (wallyApp?.preferredVisibleAccount()?.name ?: ""))
-            TxHistory -> i18n(S.title_activity_tx_history) % mapOf("account" to (wallyApp?.preferredVisibleAccount()?.name ?: ""))
+            AccountDetails -> i18n(S.title_activity_account_details) % mapOf("account" to pva())
+            AddressHistory -> i18n(S.title_activity_address_history) % mapOf("account" to pva())
+            TxHistory -> i18n(S.title_activity_tx_history) % mapOf("account" to pva())
 
             TpSettings -> i18n(S.title_activity_trickle_pay)
             Alerts -> i18n(S.title_activity_alert_history)
