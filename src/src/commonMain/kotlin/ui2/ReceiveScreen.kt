@@ -2,6 +2,7 @@ package info.bitcoinunlimited.www.wally.ui2
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -105,6 +106,7 @@ fun ReceiveScreenContent(address: String, modifier: Modifier = Modifier)
                 .fillMaxWidth(0.7f) // Dynamically adjusts size to the screen width
                 .aspectRatio(1f) // Keeps the image square
                 .background(Color.White)
+                .clickable { setTextClipboard(address) }
             )
             Spacer(modifier = Modifier.height(32.dp))
             Text(
@@ -115,7 +117,7 @@ fun ReceiveScreenContent(address: String, modifier: Modifier = Modifier)
               text = address,
               style = MaterialTheme.typography.bodyLarge,
               textAlign = TextAlign.Center,
-              modifier = Modifier.fillMaxWidth(0.8f)
+              modifier = Modifier.fillMaxWidth(0.8f).clickable { setTextClipboard(address) }
             )
         }
     }
