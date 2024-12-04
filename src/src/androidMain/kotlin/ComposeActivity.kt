@@ -209,7 +209,9 @@ class ComposeActivity: CommonActivity()
 
             val settingsItem = menu.findItem(R.id.settings)
             settingsItem.setOnMenuItemClickListener {
-                nav.go(ScreenId.Settings)
+                // Clicking this settings icon while in settings screen was causing the back button to navigate to settings...
+                if(nav.currentScreen.value != ScreenId.Settings)
+                    nav.go(ScreenId.Settings)
                 true
             }
             val shareItemUi2 = menu.findItem(R.id.menu_item_share_ui2)

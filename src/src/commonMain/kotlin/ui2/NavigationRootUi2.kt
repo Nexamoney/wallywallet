@@ -338,7 +338,9 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
                     }
                 IconButton(onClick = {}, modifier = Modifier.size(iconButtonSize)){
                     Icon(Icons.Filled.Settings, tint = Color.White, contentDescription = "Settings", modifier = Modifier.clickable {
-                        nav.go(ScreenId.Settings)
+                        // Clicking this settings icon while in settings screen was causing the back button to navigate to settings...
+                        if(nav.currentScreen.value != ScreenId.Settings)
+                            nav.go(ScreenId.Settings)
                     })
                 }
             }
