@@ -254,7 +254,7 @@ class AssetViewModel: ViewModel()
     var accountJob: Job? = null
 
     init {
-        selectedAccountUi2.value?.let {
+        wallyApp?.focusedAccount?.value?.let {
             assets.value = getAssetInfoList(it)
         }
         observeSelectedAccount()
@@ -264,11 +264,10 @@ class AssetViewModel: ViewModel()
     {
         accountJob?.cancel()
         accountJob = viewModelScope.launch {
-            selectedAccountUi2.onEach {
-                it?.let { account ->
-                    observeAssets(account)
-                }
-            }.launchIn(this)
+            wallyApp?.focusedAccount?.onEach {
+                if (it != null) observeAssets(it)
+                else assets.value = listOf()
+            }?.launchIn(this)
         }
     }
 
@@ -304,7 +303,8 @@ class AssetViewModel: ViewModel()
 }
 
 @Composable
-fun AssetCarousel() {
+fun AssetCarousel()
+{
     val viewModel = viewModel { AssetViewModel() }
     val assets = viewModel.assets.collectAsState().value
     val assetList = assets.toList().sortedBy { it.nft?.title ?: it.name ?: it.ticker ?: it.groupId.toString() }
@@ -394,40 +394,42 @@ class BalanceViewModel: ViewModel()
     init {
         selectedAccountUi2.value?.let { account ->
             observeBalance(account)
+            setFiatBalance(account)
         }
         observeSelectedAccount()
-        setFiatBalance()
     }
 
-    fun setFiatBalance()
+    fun setFiatBalance(account: Account)
     {
-        selectedAccountUi2.value?.let {
-            val qty: BigDecimal = try
-            {
-                it.fromFinestUnit(it.wallet.balance)
-            }
-            catch (e: NumberFormatException)
-            {
-                displayError(i18n(S.invalidQuantity))
-                return@let
-            }
-            catch (e: ArithmeticException)
-            {
-                displayError(i18n(S.invalidQuantityTooManyDecimalDigits))
-                return@let
-            }
-            catch (e: Exception) // This used to be a catch (e: java.text.ParseException)
-            {
-                displayError(i18n(S.invalidQuantity))
-                return@let
-            }
+        laterJob {  // Do this outside of coroutines because getting the wallet balance may block with DB access
+            account.let {
+                val qty: BigDecimal = try
+                {
+                    it.fromFinestUnit(it.wallet.balance)
+                }
+                catch (e: NumberFormatException)
+                {
+                    displayError(i18n(S.invalidQuantity))
+                    return@let
+                }
+                catch (e: ArithmeticException)
+                {
+                    displayError(i18n(S.invalidQuantityTooManyDecimalDigits))
+                    return@let
+                }
+                catch (e: Exception) // This used to be a catch (e: java.text.ParseException)
+                {
+                    displayError(i18n(S.invalidQuantity))
+                    return@let
+                }
 
-            val fpc = it.fiatPerCoin
-            val fiatDisplay = qty * fpc
-            if(fpc < 0) // Usd value is not fetched
-                fiatBalance.value = ""
-            else
-                fiatBalance.value = FiatFormat.format(fiatDisplay)
+                val fpc = it.fiatPerCoin
+                val fiatDisplay = qty * fpc
+                if (fpc < 0) // Usd value is not fetched
+                    fiatBalance.value = ""
+                else
+                    fiatBalance.value = FiatFormat.format(fiatDisplay)
+            }
         }
     }
 
@@ -437,7 +439,7 @@ class BalanceViewModel: ViewModel()
         accountJob = viewModelScope.launch {
             selectedAccountUi2.onEach {
                 it?.let { account ->
-                    setFiatBalance()
+                    setFiatBalance(account)
                     observeBalance(account)
                 }
             }.launchIn(this)
@@ -450,8 +452,15 @@ class BalanceViewModel: ViewModel()
         balance.value = account.format(account.balanceState.value)
         balanceJob = viewModelScope.launch {
             account.balanceState.onEach {
-                balance.value = account.format(it)
-                setFiatBalance()
+                try
+                {
+                    balance.value = account.format(it)
+                }
+                catch (e: Exception)
+                {
+                    balance.value = ""
+                }
+                setFiatBalance(account)
             }.launchIn(this)
         }
     }
@@ -478,8 +487,8 @@ class BalanceViewModel: ViewModel()
     /*
         Runs the callback every time account?.fiatPerCoin changes
      */
-    LaunchedEffect(account?.fiatPerCoin) {
-        balanceViewModel.setFiatBalance()
+    LaunchedEffect(account.fiatPerCoin) {
+        balanceViewModel.setFiatBalance(account)
     }
 
     Row(
@@ -558,25 +567,24 @@ class BalanceViewModel: ViewModel()
 
 @Composable fun AccountPill(buttonsEnabled: Boolean = true)
 {
-    val accountUiDataViewModel = viewModel { AccountUiDataViewModel() }
     val account = selectedAccountUi2.collectAsState().value
-    val accountUIData = accountUiDataViewModel.accountUIData.collectAsState().value
-    val roundedCorner = 16.dp
-
     // If no account is available, do not show the pill
     if (account == null) return
+
+    val accountUiDataViewModel = viewModel { AccountUiDataViewModel() }
+    val accountUIData = accountUiDataViewModel.accountUIData.collectAsState().value
+    val roundedCorner = 16.dp
 
     LaunchedEffect(true) {
         accountUiDataViewModel.setup()
     }
 
-    account?.let { selAct ->
+    account.let { selAct ->
         if (accountUIData[selAct.name] == null) accountUiDataViewModel.setAccountUiDataForAccount(selAct)
     }
-    val selectedAccountUIData = account?.uiData()
-    val curSync = selectedAccountUIData?.account?.wallet?.chainstate?.syncedDate ?: 0
+    val curSync = account.wallet.chainstate?.syncedDate ?: 0
     val offerFastForward = (millinow()/1000 - curSync) > OFFER_FAST_FORWARD_GAP
-    val isFastForwarding = accountUIData[account?.name]?.fastForwarding ?: false
+    val isFastForwarding = accountUIData[account.name]?.fastForwarding ?: false
 
     Box(
       modifier = Modifier.fillMaxWidth(),
@@ -762,44 +770,55 @@ class TxHistoryViewModel: ViewModel()
 
     fun getAllTransactions(acc: Account)
     {
-        val transactions = mutableListOf<RecentTransactionUIData>()
-        acc.wallet.forEachTxByDate {
-            val amount = it.incomingAmt - it.outgoingAmt
-            val txType = if (amount == 0L) "Unknown" else if (amount > 0) "Received" else "Send"
-            val txIcon = if (amount == 0L) Icons.Outlined.QuestionMark else if (amount > 0) Icons.Outlined.ArrowDownward else Icons.Outlined.ArrowUpward
-            val assetsTransacted = it.tx.gatherAssets({
-                // We are going to use the native coin as a hint as to whether this transaction is sending or receiving
-                // If its sending, just look for assets that left this wallet
-                // If its receiving, look for assets coming in.
-                // TODO: look at inputs and accurately describing sending/receiving
-                if (it == null) false
-                else
+        laterJob {  // Do not do anything blocking (in this case DB access) within a UI or coroutine thread
+            val transactions = mutableListOf<RecentTransactionUIData>()
+            acc.wallet.forEachTxByDate {
+                val amount = it.incomingAmt - it.outgoingAmt
+                val txType = if (amount == 0L) "Unknown" else if (amount > 0) "Received" else "Send"
+                val txIcon = if (amount == 0L) Icons.Outlined.QuestionMark else if (amount > 0) Icons.Outlined.ArrowDownward else Icons.Outlined.ArrowUpward
+                val assetsTransacted = it.tx.gatherAssets({
+                    // We are going to use the native coin as a hint as to whether this transaction is sending or receiving
+                    // If its sending, just look for assets that left this wallet
+                    // If its receiving, look for assets coming in.
+                    // TODO: look at inputs and accurately describing sending/receiving
+                    if (it == null) false
+                    else
+                    {
+                        val result: Boolean = if (amount > 0) acc.wallet.isWalletAddress(it)
+                        else !acc.wallet.isWalletAddress(it)
+                        result
+                    }
+                })
+                val txUiData = RecentTransactionUIData(
+                  type = txType,
+                  icon = txIcon,
+                  contentDescription = "Transaction",
+                  amount = acc.cryptoFormat.format(acc.fromFinestUnit(amount)),
+                  currency = acc.currencyCode,
+                  dateEpochMiliseconds = it.date,
+                  assets = assetsTransacted,
+                  transaction = it
+                )
+                transactions.add(txUiData)
+                // This places some data onscreen, in case the actual number of transactions is so large that it takes a lot of time to go through them all
+                if (transactions.size == 10 && txHistory.value.size == 0)
                 {
-                    val result: Boolean = if (amount > 0) acc.wallet.isWalletAddress(it)
-                    else !acc.wallet.isWalletAddress(it)
-                    result
+                    transactions.sortByDescending { it.dateEpochMiliseconds }
+                    txHistory.value = transactions
                 }
-            })
-            val txUiData = RecentTransactionUIData(
-              type = txType,
-              icon = txIcon,
-              contentDescription = "Transaction",
-              amount = acc.cryptoFormat.format(acc.fromFinestUnit(amount)),
-              currency = acc.currencyCode,
-              dateEpochMiliseconds = it.date,
-              assets = assetsTransacted,
-              transaction = it
-            )
-            transactions.add(txUiData)
-            false
+                false
+            }
+            // all transactions loaded, so add to the list
+            transactions.sortByDescending { it.dateEpochMiliseconds }
+            txHistory.value = transactions
         }
-        txHistory.value = transactions.toList().sortedByDescending { it.dateEpochMiliseconds }
     }
 
     override fun onCleared()
     {
         super.onCleared()
         accountJob?.cancel()
+        txHistory.value = listOf()
     }
 }
 
@@ -809,22 +828,23 @@ fun TransactionsList(modifier: Modifier = Modifier)
     val viewModel = viewModel { TxHistoryViewModel() }
     val transactions = viewModel.txHistory.collectAsState().value
     val account = selectedAccountUi2.collectAsState().value
-    account?.let {
-        val balance = it.balanceState.collectAsState().value
+    if (account != null)
+    {
+        val balance = account.balanceState.collectAsState().value
         LaunchedEffect(balance) {
-            viewModel.getAllTransactions(it)
+            viewModel.getAllTransactions(account)
         }
+    }
+    else
+    {
+        viewModel.txHistory.value = listOf()
     }
 
     if (transactions.isEmpty())
-        Column(
-          modifier = Modifier.fillMaxWidth(),
-          horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(Modifier.height(32.dp))
-            Text("No transaction history available.")
-            Text("Start by receiving funds")
-        }
+    {
+        Spacer(Modifier.height(32.dp))
+        CenteredText(i18n(S.NoAccountActivity))
+    }
 
     LazyColumn(
       modifier = modifier

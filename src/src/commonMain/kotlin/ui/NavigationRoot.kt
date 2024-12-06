@@ -107,14 +107,7 @@ enum class ScreenId
     {
         fun pva(): String
         {
-            try
-            {
-                return wallyApp?.preferredVisibleAccount()?.name ?: ""
-            }
-            catch(e:Exception) // No possible accounts
-            {
-                return ""
-            }
+            return wallyApp?.preferredVisibleAccountOrNull()?.name ?: ""
         }
         return when (this)
         {
@@ -263,6 +256,12 @@ const val TRIGGER_BUG_DELAY = 100L
 
 fun triggerAssignAccountsGuiSlots()
 {
+    // If the focused account got hidden, then it can't be focused
+    val fa = wallyApp?.focusedAccount?.value
+    if (fa != null)
+    {
+        if (fa.visible == false) wallyApp?.focusedAccount?.value = null
+    }
     // If the slots got shuffled around, maybe the current receive was deleted or hidden
     assignAccountsGuiSlots()
     val act = wallyApp!!.accounts[currentReceiveShared.value.first]
@@ -278,8 +277,6 @@ fun triggerAssignAccountsGuiSlots()
     {
         currentReceiveShared.value = Pair("", "")
     }
-
-    // later { delay(TRIGGER_BUG_DELAY); externalDriver.send(GuiDriver(regenAccountGui = true)) }
 }
 
 fun triggerUnlockDialog(show: Boolean = true, then: (()->Unit)? = null)
@@ -546,8 +543,6 @@ fun NavigationRoot(systemPadding: Modifier)
     var noticeText by remember { mutableStateOf("") }
     val clickDismiss = remember { mutableStateOf<(@Composable () -> Unit)?>(null) }
 
-    val selectedAccount = remember { MutableStateFlow<Account?>(wallyApp?.focusedAccount) }
-
     var unlockDialog by remember { mutableStateOf<(()->Unit)?>(null) }
 
     val clipmgr: ClipboardManager = LocalClipboardManager.current
@@ -556,27 +551,18 @@ fun NavigationRoot(systemPadding: Modifier)
 
     @Composable fun withAccount(then: @Composable (acc: Account) -> Unit)
     {
-        // make sure the UX and the app are both tracking the correct focused account
-        if (selectedAccount.value != wallyApp!!.focusedAccount)
-        {
-            // Pick the one the UX set preferentially
-            if(selectedAccount.value != null) wallyApp!!.focusedAccount = selectedAccount.value
-            else selectedAccount.value = wallyApp!!.focusedAccount
-        }
-        val pa = selectedAccount.value ?: wallyApp!!.focusedAccount ?: wallyApp?.nullablePrimaryAccount
-        //assert(pa?.visible ?: true)
+        val pa = wallyApp!!.focusedAccount()
         if (pa == null)
         {
             displayError(S.NoAccounts)
             nav.back()
         }
         else then(pa)
-
     }
 
     @Composable fun withUnlockedAccount(then: @Composable (acc: Account) -> Unit)
     {
-        val pa = selectedAccount.collectAsState().value
+        val pa = wallyApp!!.focusedAccount()
         if (pa == null)
         {
             displayError(S.NoAccounts)
@@ -607,7 +593,7 @@ fun NavigationRoot(systemPadding: Modifier)
         }
         else
         {
-            val pa = ctp.getRelevantAccount(selectedAccount.value?.name)
+            val pa = ctp.getRelevantAccount(wallyApp?.focusedAccount()?.name)
             then(pa, ctp)
         }
     }
@@ -623,9 +609,7 @@ fun NavigationRoot(systemPadding: Modifier)
             //if (c.uri != null) currentUri = c.uri
             // If the driver specifies an account, we want to switch to it
             c.account?.let {
-                // assert(it.visible)
-                selectedAccount.value = it
-                wallyApp?.focusedAccount = it
+                wallyApp?.focusedAccount?.value = it
             }
             c.gotoPage?.let {
                 clearAlerts()  // If the user explicitly moved to a different screen, they must be aware of the alert
@@ -759,9 +743,9 @@ fun NavigationRoot(systemPadding: Modifier)
                 ) {
                     when (curScreen.value)
                     {
-                        ScreenId.None -> HomeScreen(selectedAccount, driver, nav)
+                        ScreenId.None -> HomeScreen(wallyApp!!.focusedAccount, driver, nav)
                         ScreenId.Splash -> run {} // splash screen is done at the top for max speed and to be outside of the theme
-                        ScreenId.Home -> HomeScreen(selectedAccount, driver, nav)
+                        ScreenId.Home -> HomeScreen(wallyApp!!.focusedAccount, driver, nav)
                         ScreenId.SplitBill -> SplitBillScreen()
                         ScreenId.NewAccount -> NewAccountScreen(accountGuiSlots.collectAsState(), devMode, nav)
                         ScreenId.Settings -> SettingsScreen(nav)
@@ -787,7 +771,7 @@ fun NavigationRoot(systemPadding: Modifier)
                             if (idsess != null) IdentityPermScreen(act, idsess, nav)
                             else nav.back()
                         }
-                        ScreenId.Alerts -> HomeScreen(selectedAccount, driver, nav)  // not currently implemented
+                        ScreenId.Alerts -> HomeScreen(wallyApp!!.focusedAccount, driver, nav)  // not currently implemented
                         else -> run {}
                     }
                 }

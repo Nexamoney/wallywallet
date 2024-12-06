@@ -47,7 +47,7 @@ private val tipAmounts = listOf(-1, 0, 5, 10, 15, 20, 25, 30,50)
 val FiatInputFormat = DecimalFormat("#########0.00")
 
 @Composable
-fun SplitBillScreen(acct: Account? = wallyApp?.preferredVisibleAccount())
+fun SplitBillScreen(acct: Account? = wallyApp?.preferredVisibleAccountOrNull() )
 {
     val cryptoCurrencyCode = acct?.currencyCode ?: chainToCurrencyCode[ChainSelector.NEXA] ?: "NEXA"
     var usingCurrency by remember { mutableStateOf(fiatCurrencyCode) }
