@@ -64,6 +64,7 @@ import info.bitcoinunlimited.www.wally.uiv2.AssetScreenUi2
 import info.bitcoinunlimited.www.wally.uiv2.HomeScreenUi2
 import info.bitcoinunlimited.www.wally.uiv2.SpecialTxPermScreenUi2
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.sourceLoc
@@ -71,14 +72,19 @@ import org.nexa.threads.iThread
 import org.nexa.threads.millisleep
 
 private val LogIt = GetLog("wally.NavRoot.Ui2")
-const val SELECTED_ACCOUNT_NAME = "selectedAccountName"
 val newUI = MutableStateFlow(preferenceDB.getBoolean(EXPERIMENTAL_UX_MODE_PREF, true))
 
-private val selectedAccountName = preferenceDB.getString(SELECTED_ACCOUNT_NAME, "")
+/*
+private val selectedAccountName = preferenceDB.getString(SELECTED_ACCOUNT_NAME_PREF, "")
 private val _selectedAccountUi2 =  MutableStateFlow<Account?>(wallyApp?.accounts?.get(
     selectedAccountName
 ))
-val selectedAccountUi2 =  _selectedAccountUi2.asStateFlow() // Move to viewmodel for selected account?
+ */
+
+val selectedAccountUi2: StateFlow<Account?> //=  //_selectedAccountUi2.asStateFlow() // Move to viewmodel for selected account?
+    get() {
+        return wallyApp!!.focusedAccount
+    }
 
 var permanentMenuItemsUi2: Set<NavChoiceUi2> = setOf(
     NavChoiceUi2(ScreenId.Home, S.title_home, Icons.Default.Home),
@@ -179,16 +185,20 @@ fun uxPeriodicAnalysisUi2(): iThread
  */
 fun setSelectedAccount(account: Account)
 {
-    _selectedAccountUi2.value = account
-    preferenceDB.edit().putString(SELECTED_ACCOUNT_NAME, account.name).commit()
-    wallyApp!!.focusedAccount = account
+    if (wallyApp!!.focusedAccount.value != account)
+    {
+        preferenceDB.edit().putString(SELECTED_ACCOUNT_NAME_PREF, account.name).commit()
+        wallyApp!!.focusedAccount.value = account
+    }
 }
 
 fun noSelectedAccount()
 {
-    _selectedAccountUi2.value = null
-    preferenceDB.edit().putString(SELECTED_ACCOUNT_NAME, "").commit()
-    wallyApp!!.focusedAccount = null
+    if (wallyApp!!.focusedAccount.value != null)
+    {
+        preferenceDB.edit().putString(SELECTED_ACCOUNT_NAME_PREF, "").commit()
+        wallyApp!!.focusedAccount.value = null
+    }
 }
 
 /*
@@ -487,38 +497,18 @@ fun NavigationRootUi2(systemPadding: Modifier)
         Select an account when opening the app.
         Either user an account name from local preferences or use the first account found.
      */
-    fun selectAccount()
+    try
     {
-        val accounts = wallyApp!!.accounts
-        if (accounts.isNotEmpty())
-        {
-            val selectedAccountName = preferenceDB.getString(SELECTED_ACCOUNT_NAME, null)
-            val selectedAccountPref = accounts[selectedAccountName]
-            if (selectedAccountPref != null)
-            {
-                setSelectedAccount(selectedAccountPref)
-            }
-            else
-            {
-                setSelectedAccount(accounts.values.first())
-            }
-        }
+        setSelectedAccount(wallyApp!!.preferredVisibleAccount())
     }
-
-    selectAccount()
+    catch(e: Exception)
+    {
+    }
 
     @Composable
     fun withAccount(then: @Composable (acc: Account) -> Unit)
     {
-        // make sure the UX and the app are both tracking the correct focused account
-        if (selectedAccount != wallyApp!!.focusedAccount)
-        {
-            // Pick the one the UX set preferentially
-            if (selectedAccount != null) wallyApp!!.focusedAccount = selectedAccount
-            else wallyApp!!.focusedAccount?.let { setSelectedAccount(it) }
-        }
-        val pa = selectedAccount ?: wallyApp!!.focusedAccount ?: wallyApp?.nullablePrimaryAccount
-        //assert(pa?.visible ?: true)
+        val pa = selectedAccount ?: wallyApp!!.focusedAccount.value ?: wallyApp?.nullablePrimaryAccount
         if (pa == null)
         {
             displayError(S.NoAccounts)
@@ -586,8 +576,7 @@ fun NavigationRootUi2(systemPadding: Modifier)
             //if (c.uri != null) currentUri = c.uri
             // If the driver specifies an account, we want to switch to it
             c.account?.let {
-                // assert(it.visible)
-                wallyApp?.focusedAccount = it
+                wallyApp?.focusedAccount?.value = it
             }
             c.gotoPage?.let {
                 clearAlerts()  // If the user explicitly moved to a different screen, they must be aware of the alert

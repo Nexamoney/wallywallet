@@ -547,7 +547,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         }
 
         // Get a handle on the relevant wallets
-        var act = wallyApp!!.focusedAccount
+        var act = wallyApp!!.focusedAccount.value
         if (act != null)
         {
             if (chainSelector == null || act.chain.chainSelector == chainSelector) return act

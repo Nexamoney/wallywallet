@@ -31,11 +31,10 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.millisleep
-import kotlin.random.Random
 
 enum class AccountAction
 {
-    Delete, Rediscover, RediscoverBlockchain, Reassess, RecoveryPhrase, PrimaryAccount, PinChange
+    Delete, Search, Rediscover, RediscoverBlockchain, Reassess, RecoveryPhrase, PrimaryAccount, PinChange
 }
 
 // We need to promote some blocking-access data to globals so we can launch threads to load them
@@ -270,7 +269,43 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
         WallyBoringMediumTextButton(S.assessUnconfirmed) {
             accountAction.value = AccountAction.Reassess
         }
-        WallyBoringMediumTextButton(S.rediscoverWalletTx) {
+        WallyBoringMediumTextButton(S.searchWalletTx) {
+            // Launch a thread to find when the wallet was first used whenever this button is clicked
+            val wal = acc.wallet
+            val state = wal.chainstate
+            if (state != null)
+            {
+                rediscoverPrehistoryTime.value = state.prehistoryDate
+                rediscoverPrehistoryHeight.value = state.prehistoryHeight
+                laterJob {
+                    aborter.obj = true  // abort any old searches
+                    aborter = Objectify<Boolean>(false)
+                    val ret = rediscoverPeekActivity(wal.secretWords, wal.chainSelector, aborter)
+                    if (ret != null)
+                    {
+                        val (time, height) = ret
+                        // We need to start looking on the block with the first activity, so the prehistory needs to be before that
+                        state.prehistoryDate = time - (30*60)
+                        rediscoverPrehistoryTime.value = state.prehistoryDate
+                        state.prehistoryHeight = height.toLong() - 1
+                        rediscoverPrehistoryHeight.value = state.prehistoryHeight
+                    }
+                }
+            }
+            accountAction.value = AccountAction.Search
+        }
+
+        WallyBoringMediumTextButton(S.ViewRecoveryPhrase) {
+            accountAction.value = AccountAction.RecoveryPhrase
+        }
+        WallyBoringMediumTextButton(S.deleteWalletAccount) {
+            accountAction.value = AccountAction.Delete
+        }
+
+
+        if (devMode)
+        {
+            WallyBoringMediumTextButton(S.rediscoverWalletTx) {
             // Launch a thread to find when the wallet was first used whenever this button is clicked
             val wal = acc.wallet
             val state = wal.chainstate
@@ -296,17 +331,6 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
 
             accountAction.value = AccountAction.Rediscover
         }
-
-        WallyBoringMediumTextButton(S.ViewRecoveryPhrase) {
-            accountAction.value = AccountAction.RecoveryPhrase
-        }
-        WallyBoringMediumTextButton(S.deleteWalletAccount) {
-            accountAction.value = AccountAction.Delete
-        }
-
-
-        if (devMode)
-        {
             Spacer(Modifier.size(8.dp))
             WallyBoringMediumTextButton(S.rediscoverBlockchain) {
                 accountAction.value = AccountAction.RediscoverBlockchain
@@ -379,7 +403,7 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                             {
                                 val act = c.value
                                 if (act.wallet.blockchain == bc)
-                                    act.wallet.rediscover(true, false)
+                                    act.wallet.rediscover(true, false, true)
                             }
                         }
                         displayNotice(S.rediscoverNotice)
@@ -416,6 +440,30 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                         tlater("rediscover") {
                             acc.wallet.rediscover(false, false)
                             displayNotice(S.rediscoverNotice)
+                        }
+                    }
+                    accountAction.value = null
+                }
+            }
+
+            AccountAction.Search ->
+            {
+                val wal = acc.wallet
+                val state = wal.chainstate
+                if (state != null)
+                {
+                    val dateString = epochToDate(rediscoverPrehistoryTime.collectAsState().value)
+                    Spacer(Modifier.height(8.dp))
+                    Text(i18n(S.FirstUse) % mapOf("date" to dateString) )
+                    Text(i18n(S.Block) % mapOf("block" to rediscoverPrehistoryHeight.collectAsState().value.toString()))
+                    Spacer(Modifier.height(8.dp))
+                }
+                AccountDetailAcceptDeclineTextView(S.searchConfirmation) {
+                    if (it)
+                    {
+                        tlater("rediscover") {
+                            acc.wallet.rediscover(false, false, false)
+                            displayNotice(S.searchNotice)
                         }
                     }
                     accountAction.value = null

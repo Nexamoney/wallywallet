@@ -724,7 +724,7 @@ fun searchAllActivityUi2(secretWords: String, chainSelector: ChainSelector, abor
         var fromText = ""
         var activity = try
         {
-            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP, {
+            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP, true, {
                 if (aborter.obj) throw EarlyExitException()
                 val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
                 val us = UnsecuredSecret(key)
@@ -758,7 +758,7 @@ fun searchAllActivityUi2(secretWords: String, chainSelector: ChainSelector, abor
         // Look for activity in the identity and common location
         var activity4 = try
         {
-            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_NONSTD_DERIVATION_PATH_MAX_GAP, {
+            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_NONSTD_DERIVATION_PATH_MAX_GAP, true, {
                 if (aborter.obj) throw EarlyExitException()
                 val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
                 val us = UnsecuredSecret(key)
@@ -790,7 +790,7 @@ fun searchAllActivityUi2(secretWords: String, chainSelector: ChainSelector, abor
         // Look for activity in the identity and common location
         var activity2 = try
         {
-            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_NONSTD_DERIVATION_PATH_MAX_GAP, {
+            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_NONSTD_DERIVATION_PATH_MAX_GAP, true, {
                 if (aborter.obj) throw EarlyExitException()
                 val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, false, it).first
                 val us = UnsecuredSecret(key)
@@ -817,7 +817,7 @@ fun searchAllActivityUi2(secretWords: String, chainSelector: ChainSelector, abor
         }
         var activity3 = try
         {
-            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_CHANGE_DERIVATION_PATH_MAX_GAP, {
+            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_CHANGE_DERIVATION_PATH_MAX_GAP, true, {
                 if (aborter.obj) throw EarlyExitException()
                 val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, true, it).first
                 val us = UnsecuredSecret(key)

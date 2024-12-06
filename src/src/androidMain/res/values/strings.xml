@@ -189,6 +189,7 @@ Good luck!
     <string name="only">only</string>
     <string name="prefer">prefer</string>
     <string name="rediscoverWalletTx">Rediscover All Transactions</string>
+    <string name="searchWalletTx">Search for Missing Transactions</string>
     <string name="rediscoverBlockchain">Rediscover Blockchain Headers</string>
     <string name="logDebugData">Log Debug Data</string>
     <string name="clearIdentityDomains">Clear Identity Domains</string>
@@ -213,9 +214,11 @@ Good luck!
     <string name="localCurrency">Local currency</string>
     <string name="assessUnconfirmed">Assess Unconfirmed Transactions</string>
     <string name="rediscoverNotice">Account rediscover started</string>
+    <string name="searchNotice">Account search started</string>
     <string name="unconfAssessmentNotice">Unconfirmed assessment started</string>
     <string name="accountDeleteNotice">Account deleted</string>
-    <string name="rediscoverConfirmation">Rediscovering an account will search the blockchain since this wallet was created for missing payments.  This process can take a long time.  However, a "fast forward" button may appear that gives you the option to ask a database for your wallet activity.  If the date above is incorrect, wait for a few seconds for it to be updated.</string>
+    <string name="rediscoverConfirmation">Rediscovering an account will zero the wallet and search the blockchain for payments, as if the account is being newly created.  This process can take a long time.  However, a "fast forward" button may appear that gives you the option to ask a database for your wallet activity.  If the date above is incorrect, wait for a few seconds for it to be updated.</string>
+    <string name="searchConfirmation">This function searches the blockchain for missing payments.  This process can take a long time.  However, a "fast forward" button may appear that gives you the option to ask a database for your wallet activity.</string>
     <string name="rediscoverBlockchainConfirmation">Rediscovering a blockchain will delete all blockchain header data from this wallet and re-download it from full nodes.  This process can take a long time.  Only use if you are sure that there is a blockchain header problem.</string>
     <string name="deleteConfirmation" formatted="false">Deleting an account will make all balances, identities, and history unavailable unless the account is recovered via the account recovery secret phrase!  Only do this if you are ABSOLUTELY SURE!\n\nDelete account "%accountName" (on %blockchain)?</string>
     <string name="reassessConfirmation">This operation will check the blockchain for recent transactions you have sent.  Based on their presence or absence, it will either confirm or erase them.  If transactions are erased, the money will seem to disappear.  You will need to "rediscover" to regain the spent balance.  Do not use if you have recently issued a transaction, since that transaction may be latent in the network, waiting for confirmation.</string>
@@ -415,6 +418,7 @@ Good luck!
     <string name="CapitalGain">capital gain</string>
     <string name="OverrideSalesPrice">enter price when sold</string>
     <string name="AccountHistory">Transactions</string>
+    <string name="NoAccountActivity">No Account Activity</string>
     <string name="AccountAddresses">Addresses</string>
     <string name="ActiveAddresses">Active Addresses</string>
     <string name="UsedAddresses">Used Addresses</string>

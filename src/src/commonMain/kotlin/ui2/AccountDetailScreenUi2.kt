@@ -376,7 +376,7 @@ fun AccountActionButtonsUi2(acc: Account, txHistoryButtonClicked: () -> Unit, ac
                 }
             }
 
-            fun rediscoverWalletTx()
+            fun rediscoverWalletTx(aa: AccountAction)
             {
                 // Launch a thread to find when the wallet was first used whenever this button is clicked
                 val wal = acc.wallet
@@ -401,7 +401,7 @@ fun AccountActionButtonsUi2(acc: Account, txHistoryButtonClicked: () -> Unit, ac
                     }
                 }
 
-                accountAction.value = AccountAction.Rediscover
+                accountAction.value = aa
             }
 
             val mod = Modifier.fillMaxWidth(0.90f)
@@ -416,7 +416,7 @@ fun AccountActionButtonsUi2(acc: Account, txHistoryButtonClicked: () -> Unit, ac
             OutlinedButton(content = {Text(i18n(S.assessUnconfirmed))}, onClick = { accountAction.value =
                 AccountAction.Reassess
             }, modifier = mod)
-            OutlinedButton(content = {Text(i18n(S.rediscoverWalletTx))}, onClick = { rediscoverWalletTx() }, modifier = mod)
+            OutlinedButton(content = {Text(i18n(S.searchWalletTx))}, onClick = { rediscoverWalletTx(AccountAction.Search) }, modifier = mod)
             OutlinedButton(content = {Text(i18n(S.ViewRecoveryPhrase))}, onClick = { accountAction.value =
                 AccountAction.RecoveryPhrase
             }, modifier = mod)
@@ -426,6 +426,7 @@ fun AccountActionButtonsUi2(acc: Account, txHistoryButtonClicked: () -> Unit, ac
 
             if (devMode)
             {
+                OutlinedButton(content = {Text(i18n(S.rediscoverWalletTx))}, onClick = { rediscoverWalletTx(AccountAction.Rediscover) }, modifier = mod)
                 OutlinedButton(content = {Text(i18n(S.rediscoverBlockchain))}, onClick = { accountAction.value =
                     AccountAction.RediscoverBlockchain
                 }, modifier = mod)
@@ -534,8 +535,34 @@ fun AccountActionButtonsUi2(acc: Account, txHistoryButtonClicked: () -> Unit, ac
                                 // Choosing to not forget the addresses is kind of cheating, but there is an issue that is hard to resolve with very busy wallets
                                 // where a chunk of addresses is consumed in a single block, preventing the bloom filter to be updated to the new addresses
                                 // for that block.  This can cause transactions to be missed.  By keeping addresses around, repeated rediscovers find all the transactions.
-                                acc.wallet.rediscover(false, false)
+                                acc.wallet.rediscover(false, false, true)
                                 displayNotice(S.rediscoverNotice)
+                            }
+                        }
+                        accountAction.value = null
+                    }
+                }
+                AccountAction.Search ->
+                {
+                    val wal = acc.wallet
+                    val state = wal.chainstate
+                    if (state != null)
+                    {
+                        val dateString = epochToDate(rediscoverPrehistoryTime.collectAsState().value)
+                        Spacer(Modifier.height(8.dp))
+                        Text(i18n(S.FirstUse) % mapOf("date" to dateString) )
+                        Text(i18n(S.Block) % mapOf("block" to rediscoverPrehistoryHeight.collectAsState().value.toString()))
+                        Spacer(Modifier.height(8.dp))
+                    }
+                    AccountDetailAcceptDeclineTextViewUi2(i18n(S.searchConfirmation)) {
+                        if (it)
+                        {
+                            tlater("search") {
+                                // Choosing to not forget the addresses is kind of cheating, but there is an issue that is hard to resolve with very busy wallets
+                                // where a chunk of addresses is consumed in a single block, preventing the bloom filter to be updated to the new addresses
+                                // for that block.  This can cause transactions to be missed.  By keeping addresses around, repeated rediscovers find all the transactions.
+                                acc.wallet.rediscover(false, false, false)
+                                displayNotice(S.searchNotice)
                             }
                         }
                         accountAction.value = null

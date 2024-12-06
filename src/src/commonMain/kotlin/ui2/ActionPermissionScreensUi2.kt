@@ -419,19 +419,19 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
                         }
                     }
             }
-            else if (error.isNotEmpty())
-            /*
-                Error message
-            */
+            else // error.isNotEmpty()
+            {
                 Box(
                   modifier = Modifier.weight(1f)
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .padding(32.dp)
                 ) {
-                    SectionText(S.CannotCompleteTransaction)
-                    Text(error)
+                    CenteredSectionText(S.CannotCompleteTransaction)
+                    Spacer(Modifier.height(8.dp))
+                    Text(error, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, maxLines = 10)
                 }
+            }
 
             val tm = Modifier.padding(0.dp).fillMaxWidth().align(Alignment.CenterHorizontally)
             val ts = TextStyle(fontStyle = FontStyle.Italic, fontSize = FontScale(1.5))
@@ -441,13 +441,12 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
 
             Spacer(Modifier.defaultMinSize(1.dp,10.dp).weight(1f))
 
-            // TODO get all this on the bottom (?)
             if (GuiCustomTxError != "")
             {
                 CenteredSectionText(S.CannotCompleteTransaction)
-                Text(GuiCustomTxError, maxLines = 10, softWrap = true)
+                Spacer(Modifier.height(8.dp))
+                Text(GuiCustomTxError, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, maxLines = 10, softWrap = true)
             }
-            Spacer(Modifier.height(100.dp))
         }
 
         // Bottom button row

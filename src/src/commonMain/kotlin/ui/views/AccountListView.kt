@@ -9,7 +9,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
@@ -575,19 +574,16 @@ fun derivationPathSearch(progress: DerivationPathSearchProgress, wallet: Bip44Wa
                 {
                     progress.progress = i18n(S.trying)
                     ec = cnxn.getElectrum()
-                    if (ec == null)
-                    {
-                        progress.progress = i18n(S.NoNodes)
-                        event?.invoke()
-                        millisleep(200U)
-                    }
+                    progress.progress = i18n(S.NoNodes)
+                    event?.invoke()
+                    millisleep(200U)
                     ec
                 }
             }
         }
         progress.results = try
         {
-            searchDerivationPathActivity(::getEc, wallet.chainSelector, idxMaxGap, {
+            searchDerivationPathActivity(::getEc, wallet.chainSelector, idxMaxGap, false, {
                 if (progress.aborter.obj) throw EarlyExitException()
                 val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, coin, account, change, it).first
                 val us = UnsecuredSecret(key)
@@ -628,14 +624,14 @@ fun startAccountFastForward(account: Account, displayFastForwardInfo: (String?) 
     // val passphrase = "" // TODO: support a passphrase
     val addressDerivationCoin = Bip44AddressDerivationByChain(wallet.chainSelector)
 
-    var aborter = Objectify<Boolean>(false)
+    val aborter = Objectify<Boolean>(false)
     account.fastforward = aborter
     displayFastForwardInfo(i18n(S.fastforwardStart))
 
     Thread("fastforward_${wallet.name}")
     {
-        var normal: DerivationPathSearchProgress = DerivationPathSearchProgress(aborter, null, 0, null)
-        var change: DerivationPathSearchProgress = DerivationPathSearchProgress(aborter, null, 0, null)
+        val normal: DerivationPathSearchProgress = DerivationPathSearchProgress(aborter, null, 0, null)
+        val change: DerivationPathSearchProgress = DerivationPathSearchProgress(aborter, null, 0, null)
 
         // This code basically assumes that the contacted Rostrum nodes are synced with each other (which basically means on the tip)
         // otherwise you could get into a situation where some Rostrum connection says no activity on address X, but its really
@@ -644,13 +640,12 @@ fun startAccountFastForward(account: Account, displayFastForwardInfo: (String?) 
             // displayFastForwardInfo((normal.progressInt + change.progressInt).toString() + " " + (normal.progress ?: "") + " " + (change.progress ?: ""))
             displayFastForwardInfo(normal.progressInt.toString() + " " + (normal.progress ?: ""))
         }
-        t1.join()
         /* skip searching the change for speed */
         val t2 = derivationPathSearch(change, wallet, addressDerivationCoin, 0, true, WALLET_FULL_RECOVERY_CHANGE_DERIVATION_PATH_MAX_GAP) {
             displayFastForwardInfo((normal.progressInt + change.progressInt).toString() + " " + (normal.progress ?: "") + " " + (change.progress ?: ""))
         }
+        t1.join()
         t2.join()
-
         normal.results?.let {
             var lastHeight = it.lastHeight
             var lastDate = it.lastDate
@@ -670,6 +665,7 @@ fun startAccountFastForward(account: Account, displayFastForwardInfo: (String?) 
             }
             wallet.generateAddressesUntil(it.lastAddressIndex)
             wallet.fastforward(lastHeight, lastDate, lastHash, txh)
+            wallet.save(true)
         }
         triggerAssetCheck()
         displayFastForwardInfo(null)

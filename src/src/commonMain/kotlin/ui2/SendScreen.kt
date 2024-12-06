@@ -67,8 +67,14 @@ data class SendScreenUi(
 {
     val amountFinal: BigDecimal = if (amount.isEmpty())
         BigDecimal.ZERO
-    else
+    else try
+    {
         BigDecimal.fromString(amount, NexaMathMode)
+    }
+    catch (e: Exception)  // NumberFormatException is expected if amount is not a number, but no matter what we do not want to crash here
+    {
+        BigDecimal.ZERO
+    }
 }
 
 class SendScreenViewModel(account: Account): ViewModel()

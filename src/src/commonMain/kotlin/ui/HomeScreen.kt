@@ -474,7 +474,7 @@ private val sendFromAccountShared = MutableStateFlow<Account?>(null)
 
     fun onAccountSelected(c: Account?)
     {
-        wallyApp!!.focusedAccount = c
+        wallyApp!!.focusedAccount.value = c
         var errorShown = false
         try
         {
@@ -583,7 +583,7 @@ private val sendFromAccountShared = MutableStateFlow<Account?>(null)
         while(selectedAccount.value == null)
         {
             delay(100)
-            val tmp = wallyApp?.focusedAccount
+            val tmp = wallyApp?.focusedAccount?.value
             if ((selectedAccount.value == null) && (tmp != null))
             {
                 selectedAccount.value = tmp
@@ -788,7 +788,7 @@ private val sendFromAccountShared = MutableStateFlow<Account?>(null)
                       if (act != null)
                       {
                           selectedAccount.value = act
-                          wallyApp?.focusedAccount = act
+                          wallyApp?.focusedAccount?.value = act
                       }
                   }
                 )

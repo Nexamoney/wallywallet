@@ -296,7 +296,7 @@ private fun getAccountIconResPath(chainSelector: ChainSelector): String
 }
 
 @Composable
-fun AssetListItem(
+fun AccountListItem(
   uidata: AccountUIData,
   hasFastForwardButton: Boolean = true,
   isSelected: Boolean,
@@ -308,7 +308,7 @@ fun AssetListItem(
 
     ListItem(
       colors = ListItemDefaults.colors(containerColor = backgroundColor),
-      modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)),
+      modifier = Modifier.fillMaxWidth(),
       leadingContent = {
           // Show blockchain icon
           ResImageView(getAccountIconResPath(uidata.chainSelector), Modifier.size(32.dp), "Blockchain icon")
@@ -359,11 +359,17 @@ fun AssetListItem(
                     }
                   )
               }
-              // Approximately amount or as of date (we don't want to show a fiat amount if we are syncing)
-              Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-                  uidata.approximately?.let {
-                      Text(modifier = Modifier.fillMaxWidth(), text = it, fontSize = 16.sp, color = uidata.approximatelyColor, fontWeight = uidata.approximatelyWeight, textAlign = TextAlign.Start)
-                  }
+
+              if (uidata.fastForwarding)
+              {
+                // Fast Forwarding status
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+                    val ffs = uidata.account.fastForwardStatusState.collectAsState().value
+                    if (uidata.fastForwarding && (ffs != null))
+                    {
+                        Text(modifier = Modifier.fillMaxWidth(), text = i18n(S.fastforwardStatus) % mapOf("info" to ffs), fontSize = 16.sp, textAlign = TextAlign.Center)
+                    }
+                }
               }
           }
       },
@@ -453,37 +459,34 @@ fun AccountItemViewUi2(
           verticalAlignment = Alignment.CenterVertically
         ) {
 
-            Column(modifier = Modifier.weight(2f), verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(modifier = Modifier.weight(2f).fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(backgroundColor),
+              verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
                 // top line, icon, quantity, and fastforward
                 // AccountItemLineTop(uidata, hasFastForwardButton, isSelected, onClickAccount)
-                AssetListItem(uidata, hasFastForwardButton, isSelected, backgroundColor, onClickAccount)
+                AccountListItem(uidata, hasFastForwardButton, isSelected, backgroundColor, onClickAccount)
 
-                // Fast Forwarding status
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-                    val ffs = account.fastForwardStatusState.collectAsState().value
-                    if (uidata.fastForwarding && (ffs != null))
-                    {
-                        Text(modifier = Modifier.fillMaxWidth(), text = i18n(S.fastforwardStatus) % mapOf("info" to ffs), fontSize = 16.sp, textAlign = TextAlign.Center)
+                if (!uidata.fastForwarding)
+                {
+                    // Approximately amount or as of date (we don't want to show a fiat amount if we are syncing)
+                    Row(modifier = Modifier.fillMaxWidth().padding(4.dp,0.dp,4.dp, 0.dp), horizontalArrangement = Arrangement.Center) {
+                        uidata.approximately?.let {
+                            Text(modifier = Modifier.fillMaxWidth(), text = it, fontSize = 16.sp, color = uidata.approximatelyColor, fontWeight = uidata.approximatelyWeight, textAlign = TextAlign.Center)
+                        }
+                    }
+                    // includes (amount)   --- NEXA pending amount
+                    if (uidata.unconfBal.isNotEmpty()) Row(modifier = Modifier.fillMaxWidth().padding(4.dp,0.dp,4.dp, 0.dp), horizontalArrangement = Arrangement.Center) {
+                        Text(text = uidata.unconfBal, color = uidata.unconfBalColor, textAlign = TextAlign.Center)
                     }
                 }
 
-                // includes (amount)   --- NEXA pending amount
-                if (uidata.unconfBal.isNotEmpty()) Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-                    Text(text = uidata.unconfBal, color = uidata.unconfBalColor)
-                }
                 // Devmode connectivity text
                 if (devMode)
                 {
                     // Give a little extra height because the unicode up and down arrows don't fit causing the line to go bigger.
-                    var lh = LocalTextStyle.current.lineHeight
-                    if (lh == TextUnit.Unspecified) lh = defaultFontSize
-                    val devModeTextStyle = LocalTextStyle.current.copy(lineHeightStyle = LineHeightStyle(
-                      alignment = LineHeightStyle.Alignment.Proportional,
-                      trim = LineHeightStyle.Trim.None),
-                      lineHeight = lh.times(1.05)
-                    )
-                    Row(modifier = Modifier.fillMaxWidth().padding(4.dp,4.dp,4.dp, 4.dp), horizontalArrangement = Arrangement.Start) {
-                        Text(text = uidata.devinfo, fontSize = 12.sp, maxLines = 5, minLines = 3, style = devModeTextStyle, textAlign = TextAlign.Center)
+                    val devModeTextStyle = MaterialTheme.typography.bodySmall.copy(fontSize = MaterialTheme.typography.bodySmall.fontSize.times(0.90),
+                      lineHeight = MaterialTheme.typography.bodySmall.fontSize.times(0.91))
+                    Row(modifier = Modifier.fillMaxWidth().padding(4.dp,2.dp,4.dp, 2.dp), horizontalArrangement = Arrangement.Start) {
+                        Text(text = uidata.devinfo, maxLines = 5, minLines = 3, style = devModeTextStyle, textAlign = TextAlign.Center)
                     }
                 }
             }

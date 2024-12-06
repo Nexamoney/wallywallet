@@ -1,6 +1,8 @@
 // Copyright (c) 2023 Bitcoin Unlimited
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import com.eygraber.uri.Uri
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.ui.*
@@ -20,6 +22,7 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.utils.io.errors.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.newFixedThreadPoolContext
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.*
@@ -27,6 +30,7 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.concurrent.Volatile
 
 private val LogIt = GetLog("BU.wally.app")
+const val SELECTED_ACCOUNT_NAME_PREF = "selectedAccountName"
 
 val i18nLbc = mapOf(
   RinsufficentBalance to S.insufficentBalance,
@@ -274,7 +278,7 @@ open class CommonApp
     val accounts: MutableMap<String, Account> = mutableMapOf()
 
     // The currently selected account
-    var focusedAccount: Account? = null
+    var focusedAccount: MutableStateFlow<Account?> = MutableStateFlow(null)
 
     // You can access the primary account object in a manner that throws an exception or returns a null, your choice
     var nullablePrimaryAccount: Account? = null
@@ -334,12 +338,29 @@ open class CommonApp
             }
         }
 
+    /** Return some account that's visible in order of focused, primary, then any visible account starting with Nexa then testnet, regtest.
+     * Throws throw PrimaryWalletInvalidException() is there is nothing */
+    @Composable
+    fun focusedAccount(): Account?
+    {
+        focusedAccount.collectAsState().value?.let { if (it.visible) return it }
+        nullablePrimaryAccount?.let { if (it.visible) return it }
+        return defaultPrimaryAccount()
+    }
 
     /** Return some account that's visible in order of focused, primary, then any visible account starting with Nexa then testnet, regtest.
      * Throws throw PrimaryWalletInvalidException() is there is nothing */
     fun preferredVisibleAccount(): Account
     {
-        focusedAccount?.let { if (it.visible) return it }
+        focusedAccount.value?.let { if (it.visible) return it }
+        nullablePrimaryAccount?.let { if (it.visible) return it }
+        return defaultPrimaryAccount()
+    }
+    /** Return some account that's visible in order of focused, primary, then any visible account starting with Nexa then testnet, regtest.
+     * @return null if there is no matching account */
+    fun preferredVisibleAccountOrNull(): Account?
+    {
+        focusedAccount.value?.let { if (it.visible) return it }
         nullablePrimaryAccount?.let { if (it.visible) return it }
         return defaultPrimaryAccount()
     }
@@ -347,7 +368,15 @@ open class CommonApp
     fun defaultPrimaryAccount(): Account
     {
         return accountLock.lock {
-            // return the first Nexa wallet
+            // return the one stored in preferences
+            val selectedAccountName = preferenceDB.getString(SELECTED_ACCOUNT_NAME_PREF, null)
+            val selectedAccountPref = accounts[selectedAccountName]
+            if (selectedAccountPref != null && selectedAccountPref.visible)
+            {
+                return@lock selectedAccountPref
+            }
+
+            // return the first visible Nexa wallet
             for (i in accounts.values)
             {
                 LogIt.info("looking for primary at wallet " + i.name + "blockchain: " + i.chain.name)
@@ -801,7 +830,7 @@ open class CommonApp
         val ret = mutableListOf<Account>()
 
         // put the selected account first
-        focusedAccount?.let {
+        focusedAccount.value?.let {
             if (chain == it.chain.chainSelector && it.visible) ret.add(it)
         }
         // put the primary account first
@@ -813,7 +842,7 @@ open class CommonApp
             // Look for any other match
             for (account in orderedAccounts(true))
             {
-                if ((chain == account.wallet.chainSelector) && (nullablePrimaryAccount != account) && (focusedAccount != account))
+                if ((chain == account.wallet.chainSelector) && (nullablePrimaryAccount != account) && (focusedAccount.value != account))
                 {
                     ret.add(account)
                 }
@@ -1161,9 +1190,9 @@ open class CommonApp
                     // If there is only one visible account, select it by default
                     if (visibleAccountNames().size == 1)
                     {
-                        if (nullablePrimaryAccount?.visible == true) focusedAccount = nullablePrimaryAccount
-                        else focusedAccount = defaultPrimaryAccount()
-                        assert(focusedAccount?.visible ?: true)
+                        if (nullablePrimaryAccount?.visible == true) focusedAccount.value = nullablePrimaryAccount
+                        else focusedAccount.value = defaultPrimaryAccount()
+                        assert(focusedAccount.value?.visible ?: true)
                     }
                 }
                 catch(e:PrimaryWalletInvalidException)
