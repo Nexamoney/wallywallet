@@ -180,15 +180,23 @@ struct iOSApp: App {
             _isFinished = true
         }
     }
-
+    
     private func registerBackgroundTask()
     {
+        let isBackgroundSyncEnabled: Bool = false
+
         BGTaskScheduler.shared.register(forTaskWithIdentifier: Self.backgroundProcessingIdentifier, using: nil) { task in
-            handleBackgroundProcessing(task: task as! BGProcessingTask)
+            if (isBackgroundSyncEnabled)
+            {
+                handleBackgroundProcessing(task: task as! BGProcessingTask)
+            }
         }
 
         BGTaskScheduler.shared.register(forTaskWithIdentifier: Self.appRefreshIdentifier, using: nil) { task in
-            handleBackgroundAppRefresh(task: task as! BGAppRefreshTask)
+            if (isBackgroundSyncEnabled)
+            {
+                handleBackgroundAppRefresh(task: task as! BGAppRefreshTask)
+            }
         }
     }
 
