@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -826,7 +827,7 @@ class TxHistoryViewModel: ViewModel()
 fun TransactionsList(modifier: Modifier = Modifier)
 {
     val viewModel = viewModel { TxHistoryViewModel() }
-    val transactions = viewModel.txHistory.collectAsState().value
+    val transactions = viewModel.txHistory.collectAsState(emptyList()).value
     val account = selectedAccountUi2.collectAsState().value
     if (account != null)
     {
@@ -849,17 +850,15 @@ fun TransactionsList(modifier: Modifier = Modifier)
     LazyColumn(
       modifier = modifier
     ) {
-        transactions.forEach { tx ->
-            item {
-                RecentTransactionListItem(tx)
-                Spacer(Modifier.height(8.dp))
-                if (tx.assets.isNotEmpty())
-                {
-                    tx.assets.forEach { asset ->
-                        // TODO: Check if assets were actually sent or received here. How?
-                        AssetListItem(asset, tx)
-                        Spacer(Modifier.height(8.dp))
-                    }
+        items(transactions) { tx ->
+            RecentTransactionListItem(tx)
+            Spacer(Modifier.height(8.dp))
+            if (tx.assets.isNotEmpty())
+            {
+                tx.assets.forEach { asset ->
+                    // TODO: Check if assets were actually sent or received here. How?
+                    AssetListItem(asset, tx)
+                    Spacer(Modifier.height(8.dp))
                 }
             }
         }
