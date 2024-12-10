@@ -362,7 +362,13 @@ open class CommonApp
     {
         focusedAccount.value?.let { if (it.visible) return it }
         nullablePrimaryAccount?.let { if (it.visible) return it }
-        return defaultPrimaryAccount()
+        return try {
+            defaultPrimaryAccount()
+        }
+        catch (exception: PrimaryWalletInvalidException)
+        {
+            null
+        }
     }
 
     fun defaultPrimaryAccount(): Account
