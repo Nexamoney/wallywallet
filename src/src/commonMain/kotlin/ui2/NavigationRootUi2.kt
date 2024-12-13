@@ -158,6 +158,22 @@ fun enableNavMenuItemUi2(item: ScreenId, enable:Boolean=true)
     }
 }
 
+/** There are some error display race conditions that are happening
+ * The error Alert is passed in a coroutine Channel and processed asynchronously.
+ * However, if you've just entered a screen, the code clears prior alerts -- which wins the "prior" clear or the processing of this error?
+ * Until these race conditions are solved, call this function which delays stuff a bit (TBH its nicer for the user to see these small delays)
+ * avoiding the race conditions.
+ */
+fun displayErrorAndGoBack(errNo: Int)
+{
+    later {
+        delay(100)
+        displayError(S.NoAccounts)
+        delay(200)
+        nav.back()
+    }
+}
+
 // Periodic checking of the wallet's activity to auto-enable nav menu functionality when the wallet engages in it.
 fun updateNavMenuContentsUi2()
 {
@@ -482,6 +498,7 @@ fun NavigationRootUi2(systemPadding: Modifier)
     var errorText by remember { mutableStateOf("") }
     var warningText by remember { mutableStateOf("") }
     var noticeText by remember { mutableStateOf("") }
+    var alertPersistAcrossScreens by remember { mutableStateOf(0) }
     var isShowingRecoveryWarning by remember { mutableStateOf(false) }
 
     val selectedAccountState = selectedAccountUi2.collectAsState()
@@ -511,8 +528,7 @@ fun NavigationRootUi2(systemPadding: Modifier)
         val pa = selectedAccount ?: wallyApp!!.focusedAccount.value ?: wallyApp?.nullablePrimaryAccount
         if (pa == null)
         {
-            displayError(S.NoAccounts)
-            nav.back()
+            displayErrorAndGoBack(S.NoAccounts)
         }
         else then(pa)
 
@@ -524,8 +540,7 @@ fun NavigationRootUi2(systemPadding: Modifier)
         val pa = selectedAccount
         if (pa == null)
         {
-            displayError(S.NoAccounts)
-            nav.back()
+            displayErrorAndGoBack(S.NoAccounts)
         }
         else
         {
@@ -543,18 +558,27 @@ fun NavigationRootUi2(systemPadding: Modifier)
         }
     }
 
+
     @Composable
     fun withTp(then: @Composable (acc: Account, ctp: TricklePaySession) -> Unit)
     {
         val ctp = nav.curData.value as? TricklePaySession
         if (ctp == null)
         {
-            displayError(S.TpNoSession)  // TODO make this no TP session
+            displayErrorAndGoBack(S.TpNoSession)  // TODO make this no TP session
         }
         else
         {
-            val pa = ctp.getRelevantAccount(selectedAccount?.name)
-            then(pa, ctp)
+            val pa = try
+            {
+                ctp.getRelevantAccount(selectedAccount?.name)
+            }
+            catch (e: WalletInvalidException)
+            {
+                displayErrorAndGoBack(S.NoAccounts)
+                null
+            }
+            pa?.let { then(it, ctp) }
         }
     }
 
@@ -623,8 +647,9 @@ fun NavigationRootUi2(systemPadding: Modifier)
         {
             if (alert.level.level >= AlertLevel.ERROR.level)
             {
-                if (alert.msg == "") // clear all alerts this level or below
+                if (alert.msg == "" && (alert.persistAcrossScreens >= alertPersistAcrossScreens) ) // clear all alerts this level or below
                 {
+                    alertPersistAcrossScreens = 0
                     errorText = ""
                     noticeText = ""
                     warningText = ""
@@ -638,10 +663,11 @@ fun NavigationRootUi2(systemPadding: Modifier)
                     }
                 }
             }
-            else if (alert.level.level >= AlertLevel.WARN.level)
+            else if (alert.level.level >= AlertLevel.WARN.level && (alert.persistAcrossScreens >= alertPersistAcrossScreens) )
             {
                 if (alert.msg == "") // clear all alerts this level or below
                 {
+                    alertPersistAcrossScreens = 0
                     warningText = ""
                     noticeText = ""
                 }
@@ -654,10 +680,11 @@ fun NavigationRootUi2(systemPadding: Modifier)
                     }
                 }
             }
-            else if (alert.level.level >= AlertLevel.NOTICE.level)
+            else if (alert.level.level >= AlertLevel.NOTICE.level && (alert.persistAcrossScreens >= alertPersistAcrossScreens) )
             {
                 if (alert.msg == "") // clear all alerts this level or below
                 {
+                    alertPersistAcrossScreens = 0
                     warningText = ""
                 }
                 else

@@ -101,6 +101,8 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
         return
     }
 
+    LogIt.info("Proposal URI: ${sess.proposalUrl}")
+    LogIt.info("Proposed Special Tx: ${pTx.toHex()}")
 
     val proposal = sess.proposalAnalysis
     var GuiCustomTxFee = ""

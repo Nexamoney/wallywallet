@@ -135,6 +135,7 @@ open class CommonActivity : AppCompatActivity()
     var origTitleBackground: ColorDrawable? = null  //* The app's title background color (I will sometimes overwrite it with a temporary error message)
     var errorCount = 0 // Used to make sure one error's clear doesn't prematurely clear out a different problem
     var currentNumShowing = 0
+    var currentAlertPersist = 0
     var newUiJob: Job? = null
 
     protected val coGuiScope = MainScope()
@@ -462,6 +463,7 @@ open class CommonActivity : AppCompatActivity()
                     {
                         invalidateOptionsMenu()
                         super.setTitle(origTitle)
+                        currentAlertPersist = 0
                         origTitleBackground?.let { titlebar.background = it }
                     }
                 }
@@ -477,7 +479,11 @@ open class CommonActivity : AppCompatActivity()
             // This coroutine has to be limited to this thread because only the main thread can touch UI views
             // Display the error by changing the title and title bar color temporarily
             val titlebar: View = findViewById(actionBarId)
-            if (alert.msg == "") finishShowingNotice()
+            if (alert.msg == "")  // If the msg is empty it means to wipe out the shown alert
+            {
+                // But only wipe persistent ones if the "wipe" alert is also marked as persistent
+                if (alert.persistAcrossScreens >= currentAlertPersist) finishShowingNotice()
+            }
             else
             {
                 val myError = synchronized(errorSync)
@@ -487,6 +493,7 @@ open class CommonActivity : AppCompatActivity()
                     errorCount += 1
                     menuHidden += 1
                     currentNumShowing += 1
+                    currentAlertPersist = alert.persistAcrossScreens
                     invalidateOptionsMenu()
                     titlebar.background = ColorDrawable(alert.level.color().toArgb())
                     errorCount
@@ -513,6 +520,7 @@ open class CommonActivity : AppCompatActivity()
                 errorCount += 1
                 menuHidden += 1
                 currentNumShowing += 1
+                currentAlertPersist = 1  // default alert behavior is to persist across screens (if automatic screen change)
                 alerts.add(Alert(err, details, AlertLevel.ERROR, trace))
                 invalidateOptionsMenu()
                 val errorColor = ContextCompat.getColor(applicationContext, R.color.error)
@@ -560,6 +568,7 @@ open class CommonActivity : AppCompatActivity()
                 titlebar.background = ColorDrawable(errorColor)
                 errorCount += 1
                 currentNumShowing += 1
+                currentAlertPersist = 1
                 errorCount
             }
             delay(time)
