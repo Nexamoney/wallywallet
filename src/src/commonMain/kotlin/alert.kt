@@ -43,11 +43,24 @@ val defaultIgnoreFiles = mutableListOf<String>("ZygoteInit.java", "RuntimeInit.j
 
 fun clearAlert(msg: String)
 {
-    val alert = Alert(msg, null, AlertLevel.CLEAR, null, 0, 0)
+    val alert = Alert(msg, null, AlertLevel.CLEAR, null, 1, 0)
     launch { alertChannel.send(alert) }
 }
 
+/** Clears all alerts, even those marked to persist across screens.
+ * This is typically done in response to a user action since any explicit action implies that the user has seen the alert
+ */
 fun clearAlerts(maxLevel: AlertLevel = AlertLevel.EXCEPTION)
+{
+    val alert = Alert("", null, maxLevel, null, 1, 0)
+    if (platform().hasNativeTitleBar) displayAlert(alert)
+    else
+    {
+        launch { alertChannel.send(alert) }
+    }
+}
+/** Clears nonpersistent alerts.  Typically done as part of an automatic action */
+fun clearScreenAlerts(maxLevel: AlertLevel = AlertLevel.EXCEPTION)
 {
     val alert = Alert("", null, maxLevel, null, 0, 0)
     if (platform().hasNativeTitleBar) displayAlert(alert)

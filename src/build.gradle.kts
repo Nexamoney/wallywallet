@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 // Wally Wallet version
-val versionNumber = "3.3.10"
+val versionNumber = "3.3.11"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 
 

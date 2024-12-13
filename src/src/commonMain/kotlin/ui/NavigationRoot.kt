@@ -212,7 +212,7 @@ open class ScreenNav()
     /** pop the current screen from the stack and go there */
     fun back():ScreenId?
     {
-        clearAlerts()
+        clearScreenAlerts()
         currentScreenDepart?.invoke(Direction.LEAVING)
         currentScreenDepart = null
         // See if there is anything in the back stack.
