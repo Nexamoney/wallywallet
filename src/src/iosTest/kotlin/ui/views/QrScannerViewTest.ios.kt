@@ -1,7 +1,8 @@
 package ui.views
 
 import androidx.compose.ui.test.*
-import info.bitcoinunlimited.www.wally.ui.views.QrScannerDialog
+import info.bitcoinunlimited.www.wally.ui.views.CodeType
+import info.bitcoinunlimited.www.wally.ui.views.ScannerWithPermissions
 import kotlin.test.Test
 
 class QrScannerViewTest {
@@ -10,16 +11,7 @@ class QrScannerViewTest {
     @Test
     fun qrScannerDialogTest() = runComposeUiTest {
         setContent {
-            QrScannerDialog(
-                onDismiss = {
-
-                },
-                onScan = {
-
-                }
-            )
+            ScannerWithPermissions(onScanned = { println(it); true }, types = listOf(CodeType.QR))
         }
-
-        onNodeWithTag("QrScannerView").isDisplayed()
     }
 }
