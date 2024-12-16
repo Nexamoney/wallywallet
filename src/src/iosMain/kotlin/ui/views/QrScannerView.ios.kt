@@ -1,283 +1,406 @@
 package info.bitcoinunlimited.www.wally.ui.views
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.interop.UIKitView
-import androidx.compose.ui.platform.testTag
-import kotlinx.cinterop.CValue
-import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.ObjCAction
-import kotlinx.coroutines.*
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.UIKitInteropProperties
+import androidx.compose.ui.viewinterop.UIKitView
+import kotlinx.cinterop.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.GetLog
 import platform.AVFoundation.*
-import platform.AVFoundation.AVCaptureDeviceDiscoverySession.Companion.discoverySessionWithDeviceTypes
-import platform.AVFoundation.AVCaptureDeviceInput.Companion.deviceInputWithDevice
-import platform.AudioToolbox.AudioServicesPlaySystemSound
-import platform.AudioToolbox.kSystemSoundID_Vibrate
 import platform.CoreGraphics.CGRect
-import platform.Foundation.NSNotification
-import platform.Foundation.NSNotificationCenter
-import platform.Foundation.NSSelectorFromString
+import platform.CoreGraphics.CGRectZero
+import platform.Foundation.*
+import platform.QuartzCore.CALayer
 import platform.QuartzCore.CATransaction
 import platform.QuartzCore.kCATransactionDisableActions
-import platform.UIKit.UIDevice
-import platform.UIKit.UIDeviceOrientation
-import platform.UIKit.UIView
+import platform.UIKit.*
 import platform.darwin.NSObject
 import platform.darwin.dispatch_get_main_queue
-import org.nexa.threads.millisleep
-import info.bitcoinunlimited.www.wally.*
-
-private sealed interface CameraAccess {
-    object Undefined : CameraAccess
-    object Denied : CameraAccess
-    object Authorized : CameraAccess
-}
-
-private val deviceTypes = listOf(
-  AVCaptureDeviceTypeBuiltInWideAngleCamera,
-  AVCaptureDeviceTypeBuiltInDualWideCamera,
-  AVCaptureDeviceTypeBuiltInDualCamera,
-  AVCaptureDeviceTypeBuiltInUltraWideCamera,
-  AVCaptureDeviceTypeBuiltInDuoCamera
-)
 
 private val LogIt = GetLog("QrCodeScannerScreen.ios")
 
+enum class CodeType {
+    Codabar, Code39, Code93, Code128, EAN8, EAN13, ITF, UPCE, Aztec, DataMatrix, PDF417, QR
+}
+
+enum class CameraPermissionStatus {
+    Denied, Granted
+}
+
+interface CameraPermissionState {
+    val status: CameraPermissionStatus
+    fun requestCameraPermission()
+    fun goToSettings()
+}
+
+fun List<CodeType>.toFormat(): List<AVMetadataObjectType> = map {
+    when(it) {
+        CodeType.Codabar -> AVMetadataObjectTypeCodabarCode
+        CodeType.Code39 -> AVMetadataObjectTypeCode39Code
+        CodeType.Code93 -> AVMetadataObjectTypeCode93Code
+        CodeType.Code128 -> AVMetadataObjectTypeCode128Code
+        CodeType.EAN8 -> AVMetadataObjectTypeEAN8Code
+        CodeType.EAN13 -> AVMetadataObjectTypeEAN13Code
+        CodeType.ITF -> AVMetadataObjectTypeITF14Code
+        CodeType.UPCE -> AVMetadataObjectTypeUPCECode
+        CodeType.Aztec -> AVMetadataObjectTypeAztecCode
+        CodeType.DataMatrix -> AVMetadataObjectTypeDataMatrixCode
+        CodeType.PDF417 -> AVMetadataObjectTypePDF417Code
+        CodeType.QR -> AVMetadataObjectTypeQRCode
+    }
+}
+
 @Composable
+@Deprecated("Moved to https://github.com/kalinjul/EasyQRScan library for iOS")
 actual fun QrScannerView(
   modifier: Modifier,
   onQrCodeScanned: (String) -> Unit
 ) {
-    var cameraAccess: CameraAccess by remember { mutableStateOf(CameraAccess.Undefined) }
-    LaunchedEffect(Unit) {
-        when (AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo)) {
-            AVAuthorizationStatusAuthorized -> {
-                cameraAccess = CameraAccess.Authorized
-            }
-
-            AVAuthorizationStatusDenied, AVAuthorizationStatusRestricted -> {
-                cameraAccess = CameraAccess.Denied
-            }
-
-            AVAuthorizationStatusNotDetermined -> {
-                AVCaptureDevice.requestAccessForMediaType(
-                  mediaType = AVMediaTypeVideo
-                ) { success ->
-                    cameraAccess = if (success) CameraAccess.Authorized else CameraAccess.Denied
-                }
-            }
-        }
-    }
-    Box(
-      modifier.fillMaxSize().background(Color.Black),
-      contentAlignment = Alignment.Center
-    ) {
-        when (cameraAccess) {
-            CameraAccess.Undefined -> {
-                // Waiting for the user to accept permission
-            }
-            CameraAccess.Denied -> {
-                Text("Camera access denied", color = Color.White)
-            }
-            CameraAccess.Authorized -> {
-                AuthorizedCamera(onQrCodeScanned)
-            }
-            else ->
-            {
-                LogIt.info("Unexpected camera access issue $cameraAccess")
-            }
-        }
-    }
+    ScannerWithPermissions(modifier, onScanned = {onQrCodeScanned(it); true }, types = listOf(CodeType.QR))
 }
 
+/**
+ * Code Scanner with permission handling.
+ *
+ * @param types Code types to scan.
+ * @param onScanned Called when a code was scanned. The given lambda should return true
+ *                  if scanning was successful and scanning should be aborted.
+ *                  Return false if scanning should continue.
+ * @param permissionText Text to show if permission was denied.
+ * @param openSettingsLabel Label to show on the "Go to settings" Button
+ */
 @Composable
-private fun BoxScope.AuthorizedCamera(onQrCodeScanned: (String) -> Unit) {
-    val camera: AVCaptureDevice? = remember {
-        discoverySessionWithDeviceTypes(
-          deviceTypes = deviceTypes,
-          mediaType = AVMediaTypeVideo,
-          position = AVCaptureDevicePositionBack,
-        ).devices.firstOrNull() as? AVCaptureDevice
+fun ScannerWithPermissions(
+  modifier: Modifier = Modifier,
+  onScanned: (String) -> Boolean,
+  types: List<CodeType>,
+  permissionText: String = "Camera is required for QR Code scanning",
+  openSettingsLabel: String = "Open Settings",
+) {
+    ScannerWithPermissions(
+      modifier = modifier.clipToBounds(),
+      onScanned = onScanned,
+      types = types,
+      permissionDeniedContent = { permissionState ->
+          Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+              Text(
+                modifier = Modifier.padding(6.dp),
+                text = permissionText
+              )
+              Button(onClick = { permissionState.goToSettings() }) {
+                  Text(openSettingsLabel)
+              }
+          }
+      }
+    )
+}
+
+/**
+ * Code Scanner with permission handling.
+ *
+ * @param types Code types to scan.
+ * @param onScanned Called when a code was scanned. The given lambda should return true
+ *                  if scanning was successful and scanning should be aborted.
+ *                  Return false if scanning should continue.
+ * @param permissionDeniedContent Content to show if permission was denied.
+ */
+@Composable
+fun ScannerWithPermissions(
+  modifier: Modifier = Modifier,
+  onScanned: (String) -> Boolean,
+  types: List<CodeType>,
+  permissionDeniedContent: @Composable (CameraPermissionState) -> Unit,
+) {
+    val permissionState = rememberCameraPermissionState()
+
+    LaunchedEffect(Unit) {
+        if (permissionState.status == CameraPermissionStatus.Denied)
+        {
+            permissionState.requestCameraPermission()
+        }
     }
-    if (camera != null)
+
+    if (permissionState.status == CameraPermissionStatus.Granted)
     {
-        RealDeviceCamera(camera, onQrCodeScanned)
+        Scanner(modifier, types = types, onScanned = onScanned)
     }
     else
     {
-        Text(
-          """
-            Camera is not available on simulator.
-            Please try to run on a real iOS device.
-        """.trimIndent(), color = Color.White
-        )
+        permissionDeniedContent(permissionState)
     }
 }
 
-private val coExceptionHandler = CoroutineExceptionHandler() { ctx, err ->
-    LogIt.error(ctx.toString())
-    LogIt.error(err.message ?: err.toString())
-}
-@OptIn(ExperimentalForeignApi::class)
+
 @Composable
-private fun RealDeviceCamera(camera: AVCaptureDevice, onQrCodeScanned: (String) -> Unit)
+fun Scanner(
+  modifier: Modifier,
+  onScanned: (String) -> Boolean, // return true to abort scanning
+  types: List<CodeType>
+) {
+    UiScannerView(
+      modifier = modifier,
+      onScanned = {
+          onScanned(it)
+      },
+      allowedMetadataTypes = types.toFormat()
+    )
+}
+
+@Composable
+fun rememberCameraPermissionState(): CameraPermissionState
 {
-    val capturePhotoOutput = remember { AVCapturePhotoOutput() }
-    var actualOrientation by remember {
-        mutableStateOf(
-          AVCaptureVideoOrientationPortrait
-        )
+    return remember {
+        IosMutableCameraPermissionState()
     }
+}
 
-    LogIt.info("RealDeviceCamera")
+abstract class MutableCameraPermissionState: CameraPermissionState
+{
+    override var status: CameraPermissionStatus by mutableStateOf(getCameraPermissionStatus())
 
-    val captureSession: AVCaptureSession = remember {
-        AVCaptureSession().also { captureSession ->
-            if (true)
-            {
-                //LogIt.info("AvCapture also")
-                captureSession.sessionPreset = AVCaptureSessionPresetPhoto
-                val captureDeviceInput: AVCaptureDeviceInput = deviceInputWithDevice(device = camera, error = null)!!
-                captureSession.addInput(captureDeviceInput)
-                captureSession.addOutput(capturePhotoOutput)
+}
 
-                // Initialize an AVCaptureMetadataOutput object and set it as the output device to the capture session.
-                val metadataOutput = AVCaptureMetadataOutput()
-                if (captureSession.canAddOutput(metadataOutput))
-                {
-                    //LogIt.info("adding output")
-                    // Set delegate and use default dispatch queue to execute the call back
-                    // fixed with https://youtrack.jetbrains.com/issue/KT-45755/iOS-delegate-protocol-is-empty
-                    //metadataOutput.metadataObjectTypes = metadataOutput.availableMetadataObjectTypes()
-                    captureSession.addOutput(metadataOutput)
-                    metadataOutput.metadataObjectTypes = listOf(AVMetadataObjectTypeQRCode)
-                    metadataOutput.setMetadataObjectsDelegate(objectsDelegate = object : NSObject(),
-                                                                                         AVCaptureMetadataOutputObjectsDelegateProtocol
-                    {
-                        override fun captureOutput(output: AVCaptureOutput, didOutputMetadataObjects: List<*>, fromConnection: AVCaptureConnection)
-                        {
-                            for (mo in didOutputMetadataObjects)
-                            {
-                                if (mo != null)
-                                {
-                                    val readableObject = mo as? AVMetadataMachineReadableCodeObject
-                                    if (readableObject != null)
-                                    {
-                                        val code = readableObject.stringValue
-                                        if (code != null)
-                                        {
-                                            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
-                                            LogIt.info("QR code scanned: $code")
-                                            onQrCodeScanned(code)
-                                            captureSession.stopRunning()
-                                        }
-                                        else
-                                        {
-                                            LogIt.info("scanned $readableObject is not a string")
-                                        }
-                                    }
-                                    else
-                                    {
-                                        LogIt.info("scanned $readableObject")
-                                    }
-                                }
-                            }
-                        }
-                    }, queue = dispatch_get_main_queue())
-                
-                }
-                else
-                {
-                    LogIt.info("QR cap unavailable")
-                    throw UiUnavailableException()
-                }
-            }
+class IosMutableCameraPermissionState: MutableCameraPermissionState() {
+    override fun requestCameraPermission() {
+        AVCaptureDevice.requestAccessForMediaType(AVMediaTypeVideo)
+        {
+            this.status = getCameraPermissionStatus()
         }
     }
-    val cameraPreviewLayer = remember {
-        AVCaptureVideoPreviewLayer(session = captureSession)
+
+    override fun goToSettings() {
+        val appSettingsUrl = NSURL(string = UIApplicationOpenSettingsURLString)
+        if (UIApplication.sharedApplication.canOpenURL(appSettingsUrl))
+        {
+            UIApplication.sharedApplication.openURL(appSettingsUrl)
+        }
+    }
+}
+
+fun getCameraPermissionStatus(): CameraPermissionStatus
+{
+    val authorizationStatus = AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo)
+    return if (authorizationStatus == AVAuthorizationStatusAuthorized) CameraPermissionStatus.Granted else CameraPermissionStatus.Denied
+}
+
+@Composable
+fun UiScannerView(
+  modifier: Modifier = Modifier,
+  // https://developer.apple.com/documentation/avfoundation/avmetadataobjecttype?language=objc
+  allowedMetadataTypes: List<AVMetadataObjectType>,
+  onScanned: (String) -> Boolean
+) {
+    val coordinator = remember {
+        ScannerCameraCoordinator(
+          onScanned = onScanned
+        )
     }
 
     DisposableEffect(Unit) {
-        class OrientationListener : NSObject()
+        val listener = OrientationListener { orientation ->
+            coordinator.setCurrentOrientation(orientation)
+        }
+
+        listener.register()
+
+        onDispose {
+            listener.unregister()
+        }
+    }
+
+    UIKitView<UIView>(
+      modifier = modifier.fillMaxSize(),
+      factory = {
+          val previewContainer = ScannerPreviewView(coordinator)
+          LogIt.info("Calling prepare")
+          coordinator.prepare(previewContainer.layer, allowedMetadataTypes)
+          previewContainer
+      },
+      properties = UIKitInteropProperties(
+        isInteractive = true,
+        isNativeAccessibilityEnabled = true,
+      )
+    )
+
+//    DisposableEffect(Unit) {
+//        onDispose {
+//            // stop capture
+//            coordinator.
+//        }
+//    }
+
+}
+
+@OptIn(ExperimentalForeignApi::class)
+class ScannerPreviewView(private val coordinator: ScannerCameraCoordinator): UIView(frame = cValue { CGRectZero }) {
+    @OptIn(ExperimentalForeignApi::class)
+    override fun layoutSubviews() {
+        super.layoutSubviews()
+        CATransaction.begin()
+        CATransaction.setValue(true, kCATransactionDisableActions)
+
+        layer.setFrame(frame)
+        coordinator.setFrame(frame)
+        CATransaction.commit()
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+class ScannerCameraCoordinator(
+  val onScanned: (String) -> Boolean
+): AVCaptureMetadataOutputObjectsDelegateProtocol, NSObject() {
+
+    private var previewLayer: AVCaptureVideoPreviewLayer? = null
+    lateinit var captureSession: AVCaptureSession
+
+    @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
+    fun prepare(layer: CALayer, allowedMetadataTypes: List<AVMetadataObjectType>) {
+        captureSession = AVCaptureSession()
+        val device = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
+        if (device == null)
         {
-            @Suppress("UNUSED_PARAMETER")
-            @ObjCAction
-            fun orientationDidChange(arg: NSNotification)
+            LogIt.warning("Device has no camera")
+            return
+        }
+
+        LogIt.info("Initializing video input")
+        val videoInput = memScoped {
+            val error: ObjCObjectVar<NSError?> = alloc<ObjCObjectVar<NSError?>>()
+            val videoInput = AVCaptureDeviceInput(device = device, error = error.ptr)
+            if (error.value != null)
             {
-                val cameraConnection = cameraPreviewLayer.connection
-                if (cameraConnection != null)
-                {
-                    LogIt.info("QR scan orientation change")
-                    actualOrientation = when (UIDevice.currentDevice.orientation)
-                    {
-                        UIDeviceOrientation.UIDeviceOrientationPortrait ->
-                            AVCaptureVideoOrientationPortrait
-
-                        UIDeviceOrientation.UIDeviceOrientationLandscapeLeft ->
-                            AVCaptureVideoOrientationLandscapeRight
-
-                        UIDeviceOrientation.UIDeviceOrientationLandscapeRight ->
-                            AVCaptureVideoOrientationLandscapeLeft
-
-                        UIDeviceOrientation.UIDeviceOrientationPortraitUpsideDown ->
-                            AVCaptureVideoOrientationPortrait
-
-                        else -> cameraConnection.videoOrientation
-                    }
-                    cameraConnection.videoOrientation = actualOrientation
-                }
-                capturePhotoOutput.connectionWithMediaType(AVMediaTypeVideo)
-                  ?.videoOrientation = actualOrientation
+                LogIt.error(error.value.toString())
+                null
+            }
+            else
+            {
+                videoInput
             }
         }
 
-        val listener = OrientationListener()
-        val notificationName = platform.UIKit.UIDeviceOrientationDidChangeNotification
+        LogIt.info("Adding video input")
+        if (videoInput != null && captureSession.canAddInput(videoInput))
+        {
+            captureSession.addInput(videoInput)
+        } else {
+            LogIt.error("Could not add input")
+            return
+        }
+
+        val metadataOutput = AVCaptureMetadataOutput()
+
+        LogIt.info("Adding metadata output")
+        if (captureSession.canAddOutput(metadataOutput))
+        {
+            captureSession.addOutput(metadataOutput)
+
+            metadataOutput.setMetadataObjectsDelegate(this, queue = dispatch_get_main_queue())
+            metadataOutput.metadataObjectTypes = allowedMetadataTypes
+        }
+        else
+        {
+            LogIt.error("Could not add output")
+            return
+        }
+        LogIt.info("Adding preview layer")
+        previewLayer = AVCaptureVideoPreviewLayer(session = captureSession).also {
+            it.frame = layer.bounds
+            it.videoGravity = AVLayerVideoGravityResizeAspectFill
+            LogIt.info("Set orientation")
+            setCurrentOrientation(newOrientation = UIDevice.currentDevice.orientation)
+            LogIt.info("Adding sublayer")
+            layer.bounds.useContents {
+                LogIt.info("Bounds: ${this.size.width}x${this.size.height}")
+
+            }
+            layer.frame.useContents {
+                LogIt.info("Frame: ${this.size.width}x${this.size.height}")
+            }
+            layer.addSublayer(it)
+        }
+
+        LogIt.info("Launching capture session")
+        GlobalScope.launch(Dispatchers.Default) {
+            captureSession.startRunning()
+        }
+    }
+
+
+    fun setCurrentOrientation(newOrientation: UIDeviceOrientation) {
+        when(newOrientation) {
+            UIDeviceOrientation.UIDeviceOrientationLandscapeLeft ->
+                previewLayer?.connection?.videoOrientation = AVCaptureVideoOrientationLandscapeRight
+            UIDeviceOrientation.UIDeviceOrientationLandscapeRight ->
+                previewLayer?.connection?.videoOrientation = AVCaptureVideoOrientationLandscapeLeft
+            UIDeviceOrientation.UIDeviceOrientationPortrait ->
+                previewLayer?.connection?.videoOrientation = AVCaptureVideoOrientationPortrait
+            UIDeviceOrientation.UIDeviceOrientationPortraitUpsideDown ->
+                previewLayer?.connection?.videoOrientation = AVCaptureVideoOrientationPortraitUpsideDown
+            else ->
+                previewLayer?.connection?.videoOrientation = AVCaptureVideoOrientationPortrait
+        }
+    }
+
+    override fun captureOutput(output: AVCaptureOutput, didOutputMetadataObjects: List<*>, fromConnection: AVCaptureConnection) {
+        val metadataObject = didOutputMetadataObjects.firstOrNull() as? AVMetadataMachineReadableCodeObject
+        metadataObject?.stringValue?.let { onFound(it) }
+    }
+
+    fun onFound(code: String) {
+        captureSession.stopRunning()
+        if (!onScanned(code))
+        {
+            GlobalScope.launch(Dispatchers.Default) {
+                captureSession.startRunning()
+            }
+        }
+    }
+
+    fun setFrame(rect: CValue<CGRect>) {
+        previewLayer?.setFrame(rect)
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+class OrientationListener(
+  val orientationChanged: (UIDeviceOrientation) -> Unit
+) : NSObject() {
+
+    val notificationName = UIDeviceOrientationDidChangeNotification
+
+    @Suppress("UNUSED_PARAMETER")
+    @ObjCAction
+    fun orientationDidChange(arg: NSNotification) {
+        orientationChanged(UIDevice.currentDevice.orientation)
+    }
+
+    fun register() {
         NSNotificationCenter.defaultCenter.addObserver(
-          observer = listener,
+          observer = this,
           selector = NSSelectorFromString(
             OrientationListener::orientationDidChange.name + ":"
           ),
           name = notificationName,
           `object` = null
         )
-        onDispose {
-            LogIt.info("dispose")
-            NSNotificationCenter.defaultCenter.removeObserver(
-              observer = listener,
-              name = notificationName,
-              `object` = null
-            )
-        }
     }
-    UIKitView(
-      modifier = Modifier.fillMaxSize(),
-      background = Color.Black,
-      factory = {
-          val cameraContainer = UIView()
-          cameraContainer.layer.addSublayer(cameraPreviewLayer)
-          cameraPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
-          wallyApp!!.later {
-              //LogIt.info("cap session started")
-              //millisleep(250U)
-              captureSession.startRunning()
-          }
-          cameraContainer
-      },
-      onResize = { view: UIView, rect: CValue<CGRect> ->
-          //LogIt.info("QR scan resize")
-          CATransaction.begin()
-          CATransaction.setValue(true, kCATransactionDisableActions)
-          view.layer.setFrame(rect)
-          cameraPreviewLayer.setFrame(rect)
-          CATransaction.commit()
-      },
-    )
+
+    fun unregister() {
+        NSNotificationCenter.defaultCenter.removeObserver(
+          observer = this,
+          name = notificationName,
+          `object` = null
+        )
+    }
 }

@@ -1001,11 +1001,7 @@ fun WallyInputField(
       },
       modifier = Modifier.fillMaxWidth(),
       singleLine = isSingleLine,
-      readOnly = isReadOnly,
-      colors = TextFieldDefaults.outlinedTextFieldColors(
-        focusedBorderColor = Color.Black,
-        unfocusedBorderColor = Color.Black,
-      )
+      readOnly = isReadOnly
     )
 }
 
@@ -1098,11 +1094,7 @@ fun WallyNumericInputField(
               }
           },
           singleLine = singleLine,
-          readOnly = isReadOnly,
-          colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = Color.Black,
-            unfocusedBorderColor = Color.Black,
-          )
+          readOnly = isReadOnly
         )
 
         /*
@@ -1176,11 +1168,7 @@ fun WallyNumericInputFieldAsset(
           },
           modifier = Modifier.weight(1f),
           singleLine = singleLine,
-          readOnly = isReadOnly,
-          colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = Color.Black,
-            unfocusedBorderColor = Color.Black,
-          )
+          readOnly = isReadOnly
         )
 
         /*

@@ -5,7 +5,7 @@ plugins {
     kotlin("android").version("2.0.21").apply(false)
     kotlin("multiplatform").version("2.0.21").apply(false)  // https://kotlinlang.org/docs/multiplatform-dsl-reference.html#top-level-blocks
     id("com.dorongold.task-tree").version("2.1.1")
-    id("org.jetbrains.compose").version("1.6.11").apply(false)
+    id("org.jetbrains.compose").version("1.7.1").apply(false)
     kotlin("plugin.compose").version("2.0.0").apply(false)
 }
 
