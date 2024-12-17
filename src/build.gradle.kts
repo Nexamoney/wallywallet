@@ -154,6 +154,7 @@ kotlin {
 
                 dependencies {
                     testImplementation("androidx.compose.ui:ui-test-junit4-android:1.7.5")
+                    androidTestImplementation("androidx.compose.ui:ui-test-junit4-android:1.7.5")
                     debugImplementation("androidx.compose.ui:ui-test-manifest:1.7.5")
                 }
             }

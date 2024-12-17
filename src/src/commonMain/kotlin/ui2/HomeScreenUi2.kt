@@ -43,7 +43,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.ScreenId
-import info.bitcoinunlimited.www.wally.ui.ScreenNav
 import info.bitcoinunlimited.www.wally.ui2.ThumbButtonFAB
 import info.bitcoinunlimited.www.wally.ui.accountGuiSlots
 import info.bitcoinunlimited.www.wally.ui.gatherAssets
@@ -59,6 +58,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.nexa.libnexakotlin.*
 
+private val LogIt = GetLog("wally.HomeScreen.Ui2")
 
 class SyncViewModel : ViewModel() {
     val isSynced = MutableStateFlow(false)
@@ -385,10 +385,21 @@ fun AssetCarouselItem(asset: AssetInfo, hasNameOverLay: Boolean = false)
     }
 }
 
-class BalanceViewModel: ViewModel()
+/*
+    Root class for BalanceViewModel used for testing
+ */
+open class BalanceViewModel: ViewModel()
 {
-    val balance = MutableStateFlow("Loading...")
-    val fiatBalance = MutableStateFlow("")
+    open val balance = MutableStateFlow("Loading...")
+    open val fiatBalance = MutableStateFlow("Loading...")
+
+    open fun setFiatBalance(account: Account) {}
+}
+
+class BalanceViewModelImpl: BalanceViewModel()
+{
+    override val balance = MutableStateFlow("Loading...")
+    override val fiatBalance = MutableStateFlow("")
     var balanceJob: Job? = null
     var accountJob: Job? = null
 
@@ -400,7 +411,7 @@ class BalanceViewModel: ViewModel()
         observeSelectedAccount()
     }
 
-    fun setFiatBalance(account: Account)
+    override fun setFiatBalance(account: Account)
     {
         laterJob {  // Do this outside of coroutines because getting the wallet balance may block with DB access
             account.let {
@@ -474,9 +485,11 @@ class BalanceViewModel: ViewModel()
     }
 }
 
-@Composable fun AccountPillHeader()
+@Composable fun AccountPillHeader(
+  balanceViewModel: BalanceViewModel = viewModel { BalanceViewModel() }
+)
 {
-    val balanceViewModel = viewModel { BalanceViewModel() }
+
     val account = selectedAccountUi2.collectAsState().value
     val currencyCode = account?.uiData()?.currencyCode ?: ""
     val fiatBalance = balanceViewModel.fiatBalance.collectAsState().value
