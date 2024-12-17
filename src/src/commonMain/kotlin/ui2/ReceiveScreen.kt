@@ -16,36 +16,41 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import info.bitcoinunlimited.www.wally.S
-import info.bitcoinunlimited.www.wally.displayNotice
-import info.bitcoinunlimited.www.wally.i18n
-import info.bitcoinunlimited.www.wally.setTextClipboard
+import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.ScreenNav
 import info.bitcoinunlimited.www.wally.ui.currentReceiveShared
 import info.bitcoinunlimited.www.wally.ui.nav
+import info.bitcoinunlimited.www.wally.ui2.themeUi2.CenteredText
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurple
 import info.bitcoinunlimited.www.wally.uiv2.AccountPill
 import info.bitcoinunlimited.www.wally.uiv2.IconTextButtonUi2
-import info.bitcoinunlimited.www.wally.wallyApp
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
+import org.nexa.libnexakotlin.PayDestination
+import org.nexa.libnexakotlin.chainToURI
+import org.nexa.libnexakotlin.rem
 
 @Composable
 fun ReceiveScreen()
 {
     val selectedAccountState = selectedAccountUi2.collectAsState()
-    val addressState = currentReceiveShared.collectAsState()
     val selectedAccount = selectedAccountState.value
-    val address = addressState.value.second
-
     // Select the first available account if none are available
     if (selectedAccount == null)
         wallyApp?.accounts?.values?.first()?.let {
             setSelectedAccount(it)
         }
 
+
+    if (selectedAccount == null)
+    {
+        displayErrorAndGoBack(S.NoAccounts)
+        return
+    }
+    val address = selectedAccount.wallet.getCurrentDestination()
+
     // If the selected account changes, we need to update the receiving address
     LaunchedEffect(selectedAccount) {
-        selectedAccount?.onUpdatedReceiveInfo { address ->
+        selectedAccount.onUpdatedReceiveInfo { address ->
             currentReceiveShared.value = Pair(selectedAccount.name, address)
         }
     }
@@ -65,16 +70,16 @@ fun ReceiveScreen()
             IconTextButtonUi2(
               icon = Icons.Outlined.ContentCopy,
               modifier = Modifier.weight(1f),
-              description = "Copy address",
+              description = i18n(S.CopyAddress),
               color = wallyPurple,
             ) {
-                setTextClipboard(address)
+                setTextClipboard(address.address.toString())
                 displayNotice(i18n(S.copiedToClipboard))
             }
             IconTextButtonUi2(
               icon = Icons.AutoMirrored.Outlined.ArrowBack,
               modifier = Modifier.weight(1f),
-              description = "Back",
+              description = i18n(S.Back),
               color = wallyPurple,
             ) {
                 nav.back()
@@ -84,9 +89,10 @@ fun ReceiveScreen()
 }
 
 @Composable
-fun ReceiveScreenContent(address: String, modifier: Modifier = Modifier)
+fun ReceiveScreenContent(address: PayDestination, modifier: Modifier = Modifier)
 {
-    val qrcodePainter = rememberQrCodePainter(address)
+    val addrStr = address.address.toString()
+    val qrcodePainter = rememberQrCodePainter(addrStr)
     Surface(
       modifier = modifier.fillMaxWidth(),
       color = Color.White
@@ -106,19 +112,25 @@ fun ReceiveScreenContent(address: String, modifier: Modifier = Modifier)
                 .fillMaxWidth(0.7f) // Dynamically adjusts size to the screen width
                 .aspectRatio(1f) // Keeps the image square
                 .background(Color.White)
-                .clickable { setTextClipboard(address) }
+                .clickable { setTextClipboard(addrStr) }
             )
             Spacer(modifier = Modifier.height(32.dp))
             Text(
-              text = "Your nexa address", // TODO: Move to string resource
+              text = i18n(S.YourAddress) % mapOf("blockchain" to (chainToURI[address.chainSelector] ?: "")),
               style = MaterialTheme.typography.headlineSmall
             )
             Text(
-              text = address,
+              text = addrStr,
               style = MaterialTheme.typography.bodyLarge,
               textAlign = TextAlign.Center,
-              modifier = Modifier.fillMaxWidth(0.8f).clickable { setTextClipboard(address) }
+              modifier = Modifier.fillMaxWidth(0.8f).clickable { setTextClipboard(addrStr) }
             )
+            Spacer(modifier = Modifier.height(16.dp))
+            if (devMode)
+            {
+                // Dev mode so don't need i18n
+                CenteredText(text = "Providing address ${address.index}", textStyle = MaterialTheme.typography.bodySmall)
+            }
         }
     }
 }

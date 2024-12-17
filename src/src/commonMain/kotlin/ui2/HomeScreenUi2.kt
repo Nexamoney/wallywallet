@@ -60,9 +60,9 @@ import kotlinx.coroutines.flow.*
 import org.nexa.libnexakotlin.*
 
 
-class SyncViewModel : ViewModel() {
+class SyncViewModel : ViewModel()
+{
     val isSynced = MutableStateFlow(false)
-
     /*
         Checks every second if all accounts are synced
      */

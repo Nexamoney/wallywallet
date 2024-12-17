@@ -16,6 +16,7 @@ import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyThemeUi2
 import info.bitcoinunlimited.www.wally.uiv2.AccountPill
 import info.bitcoinunlimited.www.wally.uiv2.IconTextButtonUi2
 import info.bitcoinunlimited.www.wally.uiv2.TransactionsList
+import org.nexa.libnexakotlin.*
 
 @Composable
 @Preview
@@ -64,7 +65,7 @@ fun RecentTransactionsListPreview()
 @Preview
 fun ReceiveScreenPreview()
 {
-    val mockAddress = "nexa:nqtsq5g55t9699mcue00frjqql5275r3et45c3dqtxzfz8ru"
+    val mockAddress = Pay2PubKeyTemplateDestination(ChainSelector.NEXA, UnsecuredSecret(ByteArray(32, { 1.toByte()})), 1234)
     WallyThemeUi2() {
         ReceiveScreenContent(mockAddress)
     }

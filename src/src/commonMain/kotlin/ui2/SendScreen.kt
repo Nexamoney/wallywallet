@@ -77,15 +77,15 @@ data class SendScreenUi(
     }
 }
 
-class SendScreenViewModel(account: Account): ViewModel()
+class SendScreenViewModel(act: Account): ViewModel()
 {
     var balanceJob: Job? = null
-    val account = MutableStateFlow(account)
+    val account = MutableStateFlow(act)
     val assetsToSend: MutableStateFlow<List<AssetPerAccount>> = MutableStateFlow(listOf())
     val uiState = MutableStateFlow(SendScreenUi())
 
     init {
-        setAccount(account)
+        setAccount(act)
     }
 
     fun setAccount(account: Account)
@@ -688,7 +688,7 @@ fun ConfirmSend(viewModel: SendScreenViewModel)
       modifier = Modifier.fillMaxWidth().wrapContentHeight()
     ) {
         Text(
-          text = "Confirm Transaction", // TODO: Asset resource
+          text = i18n(S.confirmSend),
           modifier = Modifier.fillMaxWidth(),
           style = MaterialTheme.typography.headlineSmall,
           textAlign = TextAlign.Center
@@ -711,7 +711,7 @@ fun ConfirmSend(viewModel: SendScreenViewModel)
             ) {
                 IconLabelValueRow(
                   icon = Icons.Outlined.Mail,
-                  label = "To",
+                  label = i18n(S.To),
                   value = toAddress // spendingTokenTypes.toString()
                 )
                 if (quantity.isNotEmpty())
@@ -729,7 +729,7 @@ fun ConfirmSend(viewModel: SendScreenViewModel)
                     IconLabelValueRow(
                       icon = Icons.Outlined.Image,
                       labelRes = S.assets,
-                      value = "$assetsToSend" // spendingTokenTypes.toString()
+                      value = assetsToSend.toString()
                     )
                 }
                 if (note.isNotEmpty())
@@ -857,7 +857,6 @@ fun AssetListItemEditable(assetPerAccount: AssetPerAccount, editable: Boolean = 
     val expandable: Boolean = if(tokenAmount == 1L) false else true
     var expanded by remember { mutableStateOf(false) }
     var quantity by remember { mutableStateOf(assetPerAccount.editableAmount?.toPlainString() ?: "") }
-    val amountToSend = assetPerAccount.editableAmount?.toPlainString()
     val assetNameState = asset.nameObservable.collectAsState()
     val nft = asset.nft
     val creator = nft?.author ?: "" // author missing
@@ -947,9 +946,9 @@ fun AssetListItemEditable(assetPerAccount: AssetPerAccount, editable: Boolean = 
         }
         val amount = assetPerAccount.editableAmount ?: BigDecimal.ZERO
         if (amount > BigDecimal.ONE)
-            Text("${i18n(S.Amount)} $amountToSend")
+            Text(i18n(S.Amount) % mapOf("amt" to amount.toString()))
         else if (amount == BigDecimal.ONE  || amount == BigDecimal.ZERO)
-            Text("${i18n(S.Amount)} 1")
+            Text(i18n(S.Amount) % mapOf("amt" to "1"))
 
         if(expandable && editable)
             AnimatedVisibility(visible = expanded) {

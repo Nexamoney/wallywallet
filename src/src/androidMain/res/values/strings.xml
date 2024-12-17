@@ -90,8 +90,11 @@ Good luck!
     <string name="remove">remove</string>
     <!-- you have asked the app to do something, but the app is double checking.  This means yes do it -->
     <string name="confirm">confirm</string>
+    <!-- Confirm send of assets and nexa -->
     <!-- you have asked the app to do something, but the app is double checking.  This means no user changed their mind -->
     <string name="cancel">cancel</string>
+    <!-- go back.  This is like cancel but there isn't really an action that's being cancelled -->
+    <string name="Back">Back</string>
 
     <string name="removeAll">remove all</string>
     <!-- done is like "yes" but more means "go to the next thing" rather than explicit acceptance of something.  The implication is that whatever is showing on the screen will be used.
@@ -246,6 +249,7 @@ Good luck!
     <!-- Tip (gratuity) is how much more money you want to pay above the value of the bill -->
     <string name="Tip">Tip:</string>
     <string name="Amount">Amount:</string>
+    <string name="AmountWithValue">Amount: %amt</string>
     <!-- Home Page -->
 
     <!-- As the wallet is syncing, it shows you a balance.  But if the wallet is not caught up to NOW it shows this so you know that the balance that is being shown is not up to date.
@@ -273,6 +277,7 @@ Good luck!
     <string name="chooseAccountError">choose an account</string>
     <!-- As in "Send to" -->
     <string name="toColon">To:</string>
+    <string name="To">To</string>
     <string name="assetsColon">Assets:</string>
     <string name="assets">Assets</string>
     <string name="NoAssets">No assets available in account %act</string>
@@ -281,6 +286,8 @@ Good luck!
     <string name="fromColon">From:</string>
     <string name="ReceiveIntoAccount">Receive into account</string>
     <string name="Receive">Receive</string>
+    <string name="YourAddress">Your %blockchain address</string>
+    <string name="CopyAddress">Copy address</string>
     <string name="AccountListHeader">Accounts</string>
     <!-- This is referring to a cryptocurrency address, not a physical address -->
     <string name="Address">Address</string>
