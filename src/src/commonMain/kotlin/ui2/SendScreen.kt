@@ -46,7 +46,7 @@ import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyThemeUi2
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.samsungKeyBoardGray
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurple
 import info.bitcoinunlimited.www.wally.uiv2.AccountPill
-import info.bitcoinunlimited.www.wally.uiv2.BalanceViewModel
+import info.bitcoinunlimited.www.wally.uiv2.BalanceViewModelImpl
 import info.bitcoinunlimited.www.wally.uiv2.IconLabelValueRow
 import info.bitcoinunlimited.www.wally.uiv2.IconTextButtonUi2
 import kotlinx.coroutines.Job
@@ -1022,7 +1022,7 @@ fun WallyNumericInputField(
 {
     val isIos = !platform().hasGallery
     val keyboardController = LocalSoftwareKeyboardController.current
-    val balanceViewModel = viewModel { BalanceViewModel() }
+    val balanceViewModel = viewModel { BalanceViewModelImpl() }
     val balanceState = balanceViewModel.balance.collectAsState()
     val balance = balanceState.value
 
