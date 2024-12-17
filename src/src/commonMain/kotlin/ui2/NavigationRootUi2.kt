@@ -168,7 +168,7 @@ fun displayErrorAndGoBack(errNo: Int)
 {
     later {
         delay(100)
-        displayError(S.NoAccounts)
+        displayError(errNo)
         delay(200)
         nav.back()
     }

@@ -60,9 +60,9 @@ import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("wally.HomeScreen.Ui2")
 
-class SyncViewModel : ViewModel() {
+class SyncViewModel : ViewModel()
+{
     val isSynced = MutableStateFlow(false)
-
     /*
         Checks every second if all accounts are synced
      */
