@@ -59,6 +59,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.nexa.libnexakotlin.*
 
+private val LogIt = GetLog("wally.HomeScreen.Ui2")
 
 class SyncViewModel : ViewModel() {
     val isSynced = MutableStateFlow(false)
@@ -474,9 +475,11 @@ class BalanceViewModel: ViewModel()
     }
 }
 
-@Composable fun AccountPillHeader()
+@Composable fun AccountPillHeader(
+  balanceViewModel: BalanceViewModel = viewModel { BalanceViewModel() }
+)
 {
-    val balanceViewModel = viewModel { BalanceViewModel() }
+
     val account = selectedAccountUi2.collectAsState().value
     val currencyCode = account?.uiData()?.currencyCode ?: ""
     val fiatBalance = balanceViewModel.fiatBalance.collectAsState().value
