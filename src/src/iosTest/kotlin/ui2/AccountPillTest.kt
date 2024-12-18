@@ -1,6 +1,7 @@
 package ui2
 
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
@@ -81,7 +82,23 @@ class AccountPillTest
          */
         onNodeWithText(accountName).assertIsDisplayed()
         onNodeWithText(currencyCode).assertIsDisplayed()
-        onNodeWithText(balance).assertIsDisplayed()
+        /*
+            The initial value for both viewModel.balance and viewModel.fiatBalance is the same ("Loading...").
+            Therefore we can't use onNodeWithText because it crashes when it finds more than one node with the same text.
+         */
+        onAllNodesWithText(balance).apply {
+            fetchSemanticsNodes().let { nodes ->
+                require(nodes.isNotEmpty()) { "No nodes found with text: $balance" }
+
+                // Check if any node is visible (has LayoutInfo and not marked hidden)
+                val isAnyNodeVisible = nodes.any { node ->
+                    node.config.contains(SemanticsProperties.Text) &&
+                      node.boundsInRoot.height > 0 && node.boundsInRoot.width > 0
+                }
+
+                check(isAnyNodeVisible) { "None of the nodes with text '$balance' are displayed" }
+            }
+        }
 
         /*
             Update balance view model to trigger an UI update and verify the result
