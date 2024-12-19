@@ -147,7 +147,7 @@ fun SettingsScreenUi2()
             ShowScreenNavSwitchUi2(SHOW_TRICKLEPAY_PREF, NavChoiceUi2(ScreenId.TricklePay, S.title_activity_trickle_pay, Icons.Default.WaterDrop), S.enableTricklePayMenu, showTricklePayPref)
             // Only let them choose to not show assets if they don't have any assets
             if (showAssetsPref.value == false || wallyApp?.hasAssets()==false)
-                ShowScreenNavSwitchUi2(SHOW_ASSETS_PREF, NavChoiceUi2(ScreenId.Assets, S.title_activity_assets, Icons.Default.Menu), S.enableAssetsMenu, showAssetsPref)
+                ShowScreenNavSwitchUi2(SHOW_ASSETS_PREF, NavChoiceUi2(ScreenId.Assets, S.title_activity_assets, Icons.Default.Image), S.enableAssetsMenu, showAssetsPref)
             WallyHalfDivider()
             generalSettingsSwitches.forEach { GeneralSettingsSwitchView(it) }
 
