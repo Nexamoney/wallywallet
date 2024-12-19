@@ -437,7 +437,7 @@ val externalDriver = Channel<GuiDriver>(10)
 val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
 val showIdentityPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_IDENTITY_PREF, false))
 val showTricklePayPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_TRICKLEPAY_PREF, false))
-val showAssetsPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_ASSETS_PREF, false))
+val showAssetsPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_ASSETS_PREF, true))
 
 var permanentMenuItems: Set<NavChoice> = setOf(
   NavChoice(ScreenId.Home, S.title_home, "icons/home.xml"),
