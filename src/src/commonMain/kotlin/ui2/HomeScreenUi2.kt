@@ -388,12 +388,30 @@ fun AssetCarouselItem(asset: AssetInfo, hasNameOverLay: Boolean = false)
 /*
     Root class for BalanceViewModel used for testing
  */
-open class BalanceViewModel: ViewModel()
+abstract class BalanceViewModel: ViewModel()
 {
     open val balance = MutableStateFlow("Loading...")
     open val fiatBalance = MutableStateFlow("Loading...")
 
-    open fun setFiatBalance(account: Account) {}
+    abstract fun setFiatBalance(account: Account)
+    abstract fun observeBalance(account: Account)
+    abstract fun observeSelectedAccount()
+}
+
+class BalanceViewModelFake: BalanceViewModel()
+{
+    override fun setFiatBalance(account: Account)
+    {
+    }
+
+    override fun observeBalance(account: Account)
+    {
+
+    }
+
+    override fun observeSelectedAccount()
+    {
+    }
 }
 
 class BalanceViewModelImpl: BalanceViewModel()
@@ -445,7 +463,7 @@ class BalanceViewModelImpl: BalanceViewModel()
         }
     }
 
-    private fun observeSelectedAccount()
+    override fun observeSelectedAccount()
     {
         accountJob?.cancel()
         accountJob = viewModelScope.launch {
@@ -458,7 +476,7 @@ class BalanceViewModelImpl: BalanceViewModel()
         }
     }
 
-    private fun observeBalance(account: Account)
+    override fun observeBalance(account: Account)
     {
         balanceJob?.cancel()
         balance.value = account.format(account.balanceState.value)
@@ -486,7 +504,7 @@ class BalanceViewModelImpl: BalanceViewModel()
 }
 
 @Composable fun AccountPillHeader(
-  balanceViewModel: BalanceViewModel = viewModel { BalanceViewModel() }
+  balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() }
 )
 {
 
