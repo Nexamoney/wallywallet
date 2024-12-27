@@ -39,36 +39,13 @@ import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.millinow
 import org.nexa.libnexakotlin.rem
 
-
-class AccountUiDataViewModel: ViewModel()
+abstract class AccountUiDataViewModel: ViewModel()
 {
     val accountUIData: MutableStateFlow<Map<String, AccountUIData>> = MutableStateFlow(mapOf())
 
-    fun setup() = viewModelScope.launch {
-        for(c in accountChangedNotification)
-        {
-            if (c == "*all changed*")  // this is too long to be a valid account name
-            {
-                wallyApp?.orderedAccounts(true)?.forEach { account ->
-                    setAccountUiDataForAccount(account)
-                }
-            }
-            else
-            {
-                val act = wallyApp?.accounts?.get(c)
-                if (act != null)
-                {
-                    accountUIData.update {
-                        val updatedMap = it.toMutableMap()
-                        updatedMap[c] = act.uiData()
-                        updatedMap.toMap()
-                    }
-                }
-            }
-        }
-    }
+    abstract fun setup()
 
-    fun setAccountUiDataForAccount(account: Account)
+    open fun setAccountUiDataForAccount(account: Account)
     {
         // Updates the MutableStateFlow.value atomically
         accountUIData.update {
@@ -78,8 +55,57 @@ class AccountUiDataViewModel: ViewModel()
         }
     }
 
+    abstract fun fastForwardSelectedAccount()
+}
+
+class AccountUiDataViewModelFake: AccountUiDataViewModel()
+{
+    override fun setup()
+    {
+
+    }
+
+    override fun setAccountUiDataForAccount(account: Account)
+    {
+
+    }
+
+    override fun fastForwardSelectedAccount()
+    {
+
+    }
+}
+
+class AccountUiDataViewModelImpl: AccountUiDataViewModel()
+{
+    override fun setup() {
+        viewModelScope.launch {
+            for(c in accountChangedNotification)
+            {
+                if (c == "*all changed*")  // this is too long to be a valid account name
+                {
+                    wallyApp?.orderedAccounts(true)?.forEach { account ->
+                        setAccountUiDataForAccount(account)
+                    }
+                }
+                else
+                {
+                    val act = wallyApp?.accounts?.get(c)
+                    if (act != null)
+                    {
+                        accountUIData.update {
+                            val updatedMap = it.toMutableMap()
+                            updatedMap[c] = act.uiData()
+                            updatedMap.toMap()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     // This should probably be moved to a viewModel with only one account
-    fun fastForwardSelectedAccount()
+    override fun fastForwardSelectedAccount()
     {
         selectedAccountUi2.value?.let { selectedAccount ->
             val allAccountsUiData = accountUIData.value.toMutableMap()

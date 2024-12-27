@@ -36,15 +36,21 @@ import info.bitcoinunlimited.www.wally.ui.rediscoverPrehistoryHeight
 import info.bitcoinunlimited.www.wally.ui.rediscoverPrehistoryTime
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
+import info.bitcoinunlimited.www.wally.ui2.AccountUiDataViewModel
+import info.bitcoinunlimited.www.wally.ui2.AccountUiDataViewModelImpl
 import info.bitcoinunlimited.www.wally.ui2.noSelectedAccount
 import info.bitcoinunlimited.www.wally.ui2.selectedAccountUi2
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallySwitchRowUi2
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.*
+
+private val LogIt = GetLog("wally.ui2.AccountDetailScreenUi2")
 
 data class AccountStatistics(
   val chainState: GlueWalletBlockchain?,
@@ -104,13 +110,12 @@ data class AccountStatistics(
   else
       i18n(S.FirstDeposit) + " " + i18n(S.never)
 )
+abstract class AccountStatisticsViewModel : ViewModel() {
 
-class AccountStatisticsViewModel(): ViewModel() {
     val accountStats = MutableStateFlow<AccountStatistics?>(null)
-    // We need to promote some blocking-access data to globals so we can launch threads to load them
     val curAddressText = MutableStateFlow<String>("")
     var accountDetailAccount: Account? = null
-    var accountJob: Job? = null
+    private var accountJob: Job? = null
 
     init {
         selectedAccountUi2.value?.let {
@@ -120,10 +125,14 @@ class AccountStatisticsViewModel(): ViewModel() {
         observeSelectedAccount()
     }
 
-    private fun observeSelectedAccount()
-    {
+    open fun observeSelectedAccount() {
         accountJob?.cancel()
-        accountJob = viewModelScope.launch {
+        accountJob = viewModelScope.launch(
+          Dispatchers.Default + CoroutineExceptionHandler { context, throwable ->
+              LogIt.error(context.toString())
+              LogIt.error(throwable.toString())
+          }
+        ) {
             selectedAccountUi2.onEach { selectedAccount ->
                 selectedAccount?.let {
                     updateStats(selectedAccount)
@@ -133,43 +142,63 @@ class AccountStatisticsViewModel(): ViewModel() {
         }
     }
 
-    fun updateStats(account: Account)
-    {
+    open fun updateStats(account: Account) {
         val chainState = account.wallet.chainstate
         val stats = account.wallet.statistics()
         accountStats.value = AccountStatistics(chainState, stats)
     }
 
-    fun fetchCurAddressText(account: Account)
-    {
-        if (account != accountDetailAccount)
-        {
+    open fun fetchCurAddressText(account: Account) {
+        if (account != accountDetailAccount) {
             accountDetailAccount = account
             curAddressText.value = ""  // Account changed so clear this pending a reload
             laterJob {
-                // this is potentially blocking because it ensures that the address is installed in the Bloom filter before its handed out
                 val curDest = account.wallet.getCurrentDestination()
-                curAddressText.value = i18n(S.CurrentAddress) % mapOf("num" to curDest.index.toString(), "addr" to curDest.address.toString())
+                curAddressText.value = i18n(S.CurrentAddress) % mapOf(
+                  "num" to curDest.index.toString(),
+                  "addr" to curDest.address.toString()
+                )
             }
         }
     }
 
-    override fun onCleared()
-    {
+    override fun onCleared() {
         super.onCleared()
         accountJob?.cancel()
+    }
+
+    companion object {
+        fun i18n(key: String): String {
+            // Stub for i18n functionality, should be overridden or replaced in subclasses if needed
+            return key
+        }
+    }
+}
+
+class AccountStatisticsViewModelImpl() : AccountStatisticsViewModel()
+
+class AccountStatisticsViewModelFake(): AccountStatisticsViewModel()
+{
+    override fun observeSelectedAccount()
+    {
+        // Do nothing or else the UI test fails...
     }
 }
 
 @Composable
-fun AccountDetailScreenUi2(account: Account)
+fun AccountDetailScreenUi2(
+  account: Account,
+  accountStatsViewModel: AccountStatisticsViewModel = viewModel { AccountStatisticsViewModelImpl() },
+  balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
+  syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl()},
+  accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModelImpl() }
+)
 {
-    val viewModel = viewModel { AccountStatisticsViewModel() }
     val scrollState = rememberScrollState()
 
     Column(modifier = Modifier.verticalScroll(scrollState)) {
         Spacer(Modifier.height(16.dp))
-        AccountPill(buttonsEnabled = true)
+        AccountPill(buttonsEnabled = true, balanceViewModel, syncViewModel, accountUiDataViewModel)
         Spacer(Modifier.height(2.dp))
         Spacer(modifier = Modifier.height(4.dp))
         AccountActionButtonsUi2(account, txHistoryButtonClicked = { nav.go(ScreenId.TxHistory) }, accountDeleted = {
@@ -178,9 +207,9 @@ fun AccountDetailScreenUi2(account: Account)
         })
         Spacer(modifier = Modifier.height(4.dp))
         WallyDivider()
-        TxStatistics(viewModel, { nav.go(ScreenId.AddressHistory) }, { nav.go(ScreenId.TxHistory) })
+        TxStatistics(accountStatsViewModel, { nav.go(ScreenId.AddressHistory) }, { nav.go(ScreenId.TxHistory) })
         Spacer(modifier = Modifier.height(4.dp))
-        AccountStatisticsCard(viewModel)
+        AccountStatisticsCard(accountStatsViewModel)
     }
 }
 

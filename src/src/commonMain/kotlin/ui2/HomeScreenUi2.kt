@@ -43,15 +43,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.ScreenId
-import info.bitcoinunlimited.www.wally.ui2.ThumbButtonFAB
 import info.bitcoinunlimited.www.wally.ui.accountGuiSlots
 import info.bitcoinunlimited.www.wally.ui.gatherAssets
 import info.bitcoinunlimited.www.wally.ui.nav
-import info.bitcoinunlimited.www.wally.ui2.selectedAccountUi2
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.*
-import info.bitcoinunlimited.www.wally.ui2.AccountListViewUi2
-import info.bitcoinunlimited.www.wally.ui2.AccountUiDataViewModel
+import info.bitcoinunlimited.www.wally.ui2.*
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurple
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurpleExtraLight
 import kotlinx.coroutines.*
@@ -145,7 +142,10 @@ data class TabRowItem(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomeScreenUi2(isShowingRecoveryWarning: Boolean = false)
+fun HomeScreenUi2(
+  isShowingRecoveryWarning: Boolean = false,
+  accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModelImpl() }
+)
 {
     val assetViewModel = viewModel { AssetViewModel() }
     val assets = assetViewModel.assets.collectAsState().value
@@ -156,7 +156,6 @@ fun HomeScreenUi2(isShowingRecoveryWarning: Boolean = false)
       pageCount = { 2 }
     )
     var isScanningQr by remember { mutableStateOf(false) }
-    val accountUiDataViewModel = viewModel { AccountUiDataViewModel() }
     val accountUIData = accountUiDataViewModel.accountUIData.collectAsState().value
     val accounts = accountGuiSlots.collectAsState().value
 
@@ -604,13 +603,17 @@ class BalanceViewModelImpl: BalanceViewModel()
     }
 }
 
-@Composable fun AccountPill(buttonsEnabled: Boolean = true)
+@Composable fun AccountPill
+  (buttonsEnabled: Boolean = true,
+    balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
+    syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl()},
+    accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModelImpl() }
+)
 {
     val account = selectedAccountUi2.collectAsState().value
     // If no account is available, do not show the pill
     if (account == null) return
 
-    val accountUiDataViewModel = viewModel { AccountUiDataViewModel() }
     val accountUIData = accountUiDataViewModel.accountUIData.collectAsState().value
     val roundedCorner = 16.dp
 
@@ -657,7 +660,7 @@ class BalanceViewModelImpl: BalanceViewModel()
           horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(Modifier.height(8.dp))
-            AccountPillHeader()
+            AccountPillHeader(balanceViewModel, syncViewModel)
             if (buttonsEnabled)
             {
                 Spacer(Modifier.height(4.dp))
