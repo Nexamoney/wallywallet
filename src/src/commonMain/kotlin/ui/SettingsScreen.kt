@@ -24,7 +24,11 @@ import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import info.bitcoinunlimited.www.wally.ui2.newUI
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.SettingsScreen")
@@ -386,10 +390,11 @@ fun ConfirmAbove(preferenceDB: SharedPreferences)
                       "0"
                   }
                   val newDec = CurrencyDecimal(newStr)
-                  with(preferenceDB.edit())
-                  {
-                      putString(CONFIRM_ABOVE_PREF, CurrencySerializeFormat.format(newDec))
-                      commit()
+                  CoroutineScope(Dispatchers.IO).launch {
+                      preferenceDB.edit().apply {
+                          putString(CONFIRM_ABOVE_PREF, CurrencySerializeFormat.format(newDec))
+                          commit()
+                      }
                   }
               }
               catch (e:Exception) // number format exception, for one
@@ -403,7 +408,7 @@ fun ConfirmAbove(preferenceDB: SharedPreferences)
           //colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent,
           //  unfocusedContainerColor = Color.Transparent
           ,
-          modifier = Modifier.weight(1f).padding(4.dp,0.dp,0.dp,0.dp)
+          modifier = Modifier.weight(1f).padding(4.dp,0.dp,0.dp,0.dp).testTag("ConfirmAboveEntry")
         )
         Text(chainToCurrencyCode[ChainSelector.NEXA]!!)
     }
