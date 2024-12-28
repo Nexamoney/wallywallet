@@ -1,46 +1,64 @@
 package ui2
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
-import info.bitcoinunlimited.www.wally.ui.theme.WallyDropdownMenu
+import info.bitcoinunlimited.www.wally.platform
 import info.bitcoinunlimited.www.wally.ui2.WallyDropDownUi2
 import info.bitcoinunlimited.www.wally.ui2.supportedBlockchains
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import org.nexa.libnexakotlin.ChainSelector
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
 class WallyDropDownTestUi2
 {
+    @BeforeTest
+    fun setup()
+    {
+        // jvm only
+        if (platform().usesMouse)
+            Dispatchers.setMain(StandardTestDispatcher())
+    }
+
+    @AfterTest
+    fun clean()
+    {
+        // jvm only
+        if (platform().usesMouse)
+            Dispatchers.resetMain()
+    }
+
     @Test
     fun wallyDropdownMenuTest() = runComposeUiTest {
-        val blockchains = supportedBlockchains.filter { true || it.value.isMainNet }
+        val blockchains = supportedBlockchains
+        val selectedBlockChain = mutableStateOf(blockchains.entries.first().toPair())
         val secondBlockchain = blockchains.entries.elementAt(1).toPair()
         val thirdBlockchain = blockchains.entries.elementAt(2).toPair()
-        val itemsMock = listOf("one", "two", "three", "five", "balloon")
-        var selectedIndexMock by mutableStateOf(0)
+
         setContent {
             WallyDropDownUi2<ChainSelector>(
-              selected = blockchains.entries.first().toPair(),
+              selected =selectedBlockChain.value,
               options = blockchains,
               onSelect = {
-
+                  selectedBlockChain.value = it
               }
             )
         }
 
         onNodeWithTag("DropdownMenuItemSelectedUi2").assertIsDisplayed().assertTextContains(blockchains.entries.first().key)
-
-        /*
-
-        onNodeWithTag("DropdownMenuItem-${blockchains.entries.first().key}").performClick()
+        onNodeWithTag("DropdownMenuItemSelectedUi2").performClick()
+        onNodeWithText(secondBlockchain.first).assertIsDisplayed()
+        onNodeWithText(thirdBlockchain.first).assertIsDisplayed()
         onNodeWithText(secondBlockchain.first).performClick()
-        onNodeWithTag("DropdownMenuItem-${secondBlockchain.first}").assertIsDisplayed().assertTextContains(secondBlockchain.first)
-        onNodeWithTag("DropdownMenuItem-${secondBlockchain.first}").performClick()
+        onNodeWithTag("DropdownMenuItemSelectedUi2").assertIsDisplayed().assertTextContains(secondBlockchain.first)
+        onNodeWithText(secondBlockchain.first).performClick()
+        onNodeWithText(thirdBlockchain.first).assertIsDisplayed()
         onNodeWithText(thirdBlockchain.first).performClick()
-        onNodeWithTag("DropdownMenuItem-${thirdBlockchain.first}").assertIsDisplayed().assertTextContains(thirdBlockchain.first)
-         */
+        onNodeWithTag("DropdownMenuItemSelectedUi2").assertIsDisplayed().assertTextContains(thirdBlockchain.first)
     }
 }
