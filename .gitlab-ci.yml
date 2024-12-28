@@ -81,6 +81,11 @@ assemble:
   stage: assemble
   tags:
     - m1-baremetal
+  rules: # this job is very slow (90 min ++). Therefore we restrict this job to run only on MR approval and always on the main branch.
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_MERGE_REQUEST_APPROVED == "true"'
+    - when: on_success # Will only run if all previous jobs in the pipeline complete successfully.
+    - when: never # Exclude the job in all other cases
   variables:
     ANDROID_HOME: "/opt/homebrew/share/android-commandlinetools"
   script:
