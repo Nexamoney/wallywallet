@@ -27,6 +27,7 @@ import info.bitcoinunlimited.www.wally.ui.LocalCurrency
 import info.bitcoinunlimited.www.wally.ui.chainToName
 import info.bitcoinunlimited.www.wally.wallyApp
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -40,6 +41,23 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalTestApi::class)
 class SettingsScreenTestUi2 {
+
+    @BeforeTest
+    fun setup()
+    {
+        // jvm only
+        if (platform().usesMouse)
+            Dispatchers.setMain(StandardTestDispatcher())
+    }
+
+    @AfterTest
+    fun clean()
+    {
+        // jvm only
+        if (platform().usesMouse)
+            Dispatchers.resetMain()
+    }
+
     @Test
     fun confirmAboveTest() = runComposeUiTest {
         wallyApp = CommonApp()
