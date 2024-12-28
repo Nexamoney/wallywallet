@@ -102,7 +102,7 @@ fun <T> WallyDropDownUi2(
             ) {
                 Text(
                   text = selected.first,
-                  modifier = Modifier.clickable(onClick = { expanded = true })
+                  modifier = Modifier.clickable(onClick = { expanded = true }).testTag("DropdownMenuItemSelectedUi2")
                 )
                 IconButton(onClick = {expanded = true}) {
                     Icon(Icons.Default.ArrowDropDown, null)
