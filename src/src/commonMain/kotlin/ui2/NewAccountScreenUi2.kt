@@ -36,7 +36,7 @@ import org.nexa.threads.millisleep
 
 const val MAX_NAME_LEN_UI2 = 16
 
-private val supportedBlockchains =
+val supportedBlockchains =
   mapOf(
     "NEXA" to ChainSelector.NEXA,
     // "BCH (Bitcoin Cash)" to ChainSelector.BCH,
