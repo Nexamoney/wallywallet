@@ -358,7 +358,7 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
     ) {
         WallySwitch(darkMode, Modifier, onClick)
         Text(
-          text = "Enable dark mode",
+          text = i18n(S.darkMode),
         )
     }
 }

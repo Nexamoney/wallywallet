@@ -954,8 +954,8 @@ fun AssetListItemEditable(assetPerAccount: AssetPerAccount, editable: Boolean = 
             AnimatedVisibility(visible = expanded) {
                 WallyNumericInputFieldAsset(
                   amountString = quantity,
-                  label = "Amount",
-                  placeholder = "Enter amount",
+                  label = i18n(S.amountPlain),
+                  placeholder = i18n(S.enterAmount),
                   decimals = false,
                   isReadOnly = isConfirming,
                   hasIosDoneButton = !isConfirming,

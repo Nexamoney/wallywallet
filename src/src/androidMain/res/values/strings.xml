@@ -200,6 +200,7 @@ Good luck!
     <string name="wordSeed">Account Recovery Secret Phrase</string>
     <string name="deleteWalletAccount">Delete Account</string>
     <string name="more">More</string>
+    <string name="darkMode">Dark mode</string>
 
     <!-- a PIN is a numeric password that gives you access to your account -->
     <string name="SetChangePin">Set or Change Unlocking PIN</string>
@@ -752,4 +753,8 @@ Thank you and enjoy your new wallet!</string>
     <string name="enterNEXAmount">Enter NEX amount...</string>
     <string name="note">Note</string>
     <string name="confirmSend">Confirm send</string>
+
+    <string name="syncing">Syncing...</string>
+    <string name="enterAmount">Enter Amount</string>
+    <string name="fee">Fee</string>
 </resources>
