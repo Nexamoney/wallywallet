@@ -194,6 +194,8 @@ jvmTest-intelmac: #
   artifacts:
     reports:
       junit: src/build/test-results/jvmTest/TEST-*.xml
+    paths:
+      - src/build/reports/tests/jvmTest/**/**
 
 androidEmulatorTest:
   stage: test

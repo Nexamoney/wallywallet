@@ -21,11 +21,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import info.bitcoinunlimited.www.wally.old.convertOldAccounts
-import info.bitcoinunlimited.www.wally.ui.softKeyboardBar
 import info.bitcoinunlimited.www.wally.ui.theme.colorError
 import info.bitcoinunlimited.www.wally.ui.theme.colorNotice
 import info.bitcoinunlimited.www.wally.ui.theme.colorWarning
@@ -33,13 +31,10 @@ import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.*
 import okio.*
-import org.jetbrains.skia.EncodedImageFormat
-import org.jetbrains.skia.Image
 import org.nexa.libnexakotlin.*
 import java.io.File
 import java.io.InputStream
 import java.util.zip.Inflater
-import kotlin.math.abs
 
 /*
 actual fun scaleTo(imageBytes: ByteArray, width: Int, height: Int, outFormat: EncodedImageFormat): ByteArray?
@@ -218,7 +213,9 @@ val androidPlatformCharacteristics = PlatformCharacteristics(
   landscape = false,
   hasShare = true,
   supportsBackgroundSync = true,
-  bottomSystemBarOverlap = if (android.os.Build.VERSION.SDK_INT < 33) 0.dp else 10.dp)  // This is overwritten when the view is created and we can check the insets
+  bottomSystemBarOverlap = if (android.os.Build.VERSION.SDK_INT < 33) 0.dp else 10.dp, // This is overwritten when the view is created and we can check the insets
+  hasLinkToNiftyArt = true
+)
 
 actual fun platform(): PlatformCharacteristics = androidPlatformCharacteristics
 

@@ -192,7 +192,8 @@ val iosPlatformCharacteristics = PlatformCharacteristics(
   landscape = false,
   hasShare = true,
   supportsBackgroundSync = true,
-  bottomSystemBarOverlap = 0.dp
+  bottomSystemBarOverlap = 0.dp,
+  hasLinkToNiftyArt = false
   )
 actual fun platform(): PlatformCharacteristics = iosPlatformCharacteristics
 
