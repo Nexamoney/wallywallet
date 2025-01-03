@@ -2,7 +2,6 @@ package info.bitcoinunlimited.www.wally
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -28,7 +27,6 @@ import java.util.zip.Inflater
 import org.nexa.libnexakotlin.Objectify
 import java.awt.Desktop
 import java.net.URI
-import kotlin.math.abs
 
 
 // on android this fails with couldn't find "libskiko-android-arm64.so", see https://github.com/JetBrains/skiko/issues/531
@@ -218,7 +216,9 @@ val jvmPlatformCharacteristics = PlatformCharacteristics(
   landscape = true,
   hasShare = true,
   supportsBackgroundSync = false,
-  0.dp)
+  0.dp,
+  hasLinkToNiftyArt = true
+)
 
 actual fun displayAlert(alert: Alert)
 {}

@@ -30,10 +30,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
 import okio.BufferedSource
-import okio.utf8Size
-import org.nexa.threads.Gate
-import org.nexa.threads.Thread
-import org.nexa.threads.iThread
 
 private val LogIt = GetLog("BU.wally.utils")
 
@@ -129,6 +125,8 @@ data class PlatformCharacteristics(
   val supportsBackgroundSync: Boolean,
   /** How much does the bottom system bar overlap the application */
   var bottomSystemBarOverlap: Dp,
+  /** True if the shopping screen is enabled for this platform, disabled for iOS because of app store rejections **/
+  val hasLinkToNiftyArt: Boolean
 )
 
 /** Return details about this platform */
