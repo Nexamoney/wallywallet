@@ -364,7 +364,7 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
                                 {
                                     IconLabelValueRow(
                                       icon = Icons.Outlined.RequestQuote,
-                                      label = "Fee",
+                                      label = i18n(S.fee),
                                       value = (i18n(S.ForAFeeOf) % mapOf("fee" to acc.cryptoFormat.format(acc.fromFinestUnit(fee)), "units" to acc.currencyCode))
                                     )
                                 }

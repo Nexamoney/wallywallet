@@ -53,6 +53,8 @@
     <string name="rediscoverTooltip">Slett blockchain-tilstanden og søk på ny etter transaksjoner som tilhører lommeboken</string>
     <string name="wordSeed">Fraser for å sikkerhetskopiere lommebok</string>
     <string name="deleteWalletAccount">Slett konto</string>
+    <string name="darkMode">Nattmodus</string>
+
     <!-- Split bill -->
     <string name="Total">Totalt</string>
     <string name="Ways">Deler</string>
@@ -166,4 +168,9 @@
     <string name="scanQr">Skann QR</string>
     <string name="paste">Lim inn</string>
     <string name="recentTransactions">Nylige Transaksjoner</string>
+
+    <string name="syncing">Synkroniserer...</string>
+
+    <string name="enterAmount">Angi Beløp</string>
+    <string name="fee">Avgift</string>
 </resources>
