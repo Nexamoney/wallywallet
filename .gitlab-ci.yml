@@ -175,7 +175,7 @@ iosDeviceUiTest:
       junit: iosApp/iphone-ui-test-report.xml
     expire_in: 4 week
 
-jvmTest: #
+jvmTest-m1: #
   stage: test
   tags:
     - m1-baremetal
