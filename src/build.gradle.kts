@@ -865,3 +865,12 @@ tasks.withType<Test> {
     }
     outputs.upToDateWhen { false }  // Always rerun test tasks
 }
+kotlin {
+    sourceSets {
+        getByName("commonTest") {
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+            }
+        }
+    }
+}
