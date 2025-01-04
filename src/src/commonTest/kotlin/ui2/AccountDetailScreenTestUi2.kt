@@ -31,7 +31,9 @@ class AccountDetailScreenTestUi2
 {
     @BeforeTest
     fun setUp() {
-        Dispatchers.setMain(StandardTestDispatcher())
+        // Jvm
+        if (platform().usesMouse)
+            Dispatchers.setMain(StandardTestDispatcher())
         initializeLibNexa()
         runningTheTests = true
         forTestingDoNotAutoCreateWallets = true
@@ -40,7 +42,9 @@ class AccountDetailScreenTestUi2
 
     @AfterTest
     fun tearDown() {
-        Dispatchers.resetMain()
+        // Jvm
+        if (platform().usesMouse)
+            Dispatchers.resetMain()
     }
 
     @Test
@@ -89,7 +93,5 @@ class AccountDetailScreenTestUi2
         onNodeWithText(i18n(S.SetChangePin)).performClick()
         onNodeWithText(i18n(S.PinHidesAccount)).isDisplayed()
         onNodeWithText(i18n(S.cancel)).performClick()
-
-        // TODO: mock AccountStatisticsViewModel?
     }
 }
