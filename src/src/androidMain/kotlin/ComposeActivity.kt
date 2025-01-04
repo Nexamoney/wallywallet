@@ -39,7 +39,7 @@ private val LogIt = GetLog("BU.wally.ComposeActivity")
 actual fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
 {
     val ca = currentActivity
-    (ca as ComposeActivity).ImageQrCode(imageParsed)
+    (ca as ComposeActivity?)?.ImageQrCode(imageParsed)
     return true
 }
 
