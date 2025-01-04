@@ -102,6 +102,7 @@ class ThumbButtonFABTest
             onNodeWithContentDescription(i18n(S.imageQr)).performClick()
         }
 
+
         // Test QR Code Scanner button
         if (platform().hasQrScanner) {
             onNodeWithContentDescription(i18n(S.scanQr)).performClick()
