@@ -211,6 +211,26 @@ androidEmulatorTest:
     paths:
       - src/build/reports/androidTests/managedDevice/debug/pixel5/**/**
 
+# Randomly clicks around for ten minutes
+# Requires an Android device to be connected to the m1-baremetal runner
+androidMonkeyTest:
+  stage: test
+  tags:
+    - m1-baremetal # Requires an Android device to be connected to the target runner
+  resource_group: android_device
+  when: manual # Requires the connected device to be safe for absolute random clicks anywhere in the OS and any app.
+  needs:
+    - androidEmulatorTest
+  before_script:
+    # Install adb
+    - brew install android-platform-tools
+
+    # Verify adb installation
+    - adb version
+    - adb devices
+  script:
+    - adb shell monkey -p info.bitcoinunlimited.www.wally --throttle 500 -v 1000
+
 # Needs Android device in CI to run
 #androidDeviceTest:
 #  image: inovex/gitlab-ci-android
