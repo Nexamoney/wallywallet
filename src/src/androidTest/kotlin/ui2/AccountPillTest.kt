@@ -11,6 +11,7 @@ import info.bitcoinunlimited.www.wally.ui2.setSelectedAccount
 import info.bitcoinunlimited.www.wally.uiv2.AccountPillHeader
 import info.bitcoinunlimited.www.wally.uiv2.BalanceViewModelFake
 import info.bitcoinunlimited.www.wally.uiv2.SyncViewModelFake
+import info.bitcoinunlimited.www.wally.uiv2.BalanceViewModelImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
