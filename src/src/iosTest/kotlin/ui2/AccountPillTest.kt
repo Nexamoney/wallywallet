@@ -8,10 +8,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.setSelectedAccount
-import info.bitcoinunlimited.www.wally.uiv2.AccountPillHeader
-import info.bitcoinunlimited.www.wally.uiv2.BalanceViewModel
-import info.bitcoinunlimited.www.wally.uiv2.BalanceViewModelFake
-import info.bitcoinunlimited.www.wally.uiv2.BalanceViewModelImpl
+import info.bitcoinunlimited.www.wally.uiv2.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.runBlocking
@@ -69,13 +66,14 @@ class AccountPillTest
         val accountName = account.name
         val currencyCode = account.currencyCode
         val balanceViewModel = BalanceViewModelFake()
+        val syncViewModel = SyncViewModelFake()
         val balance = balanceViewModel.balance.value
 
         setContent {
             CompositionLocalProvider(
               LocalViewModelStoreOwner provides viewModelStoreOwner
             ) {
-                AccountPillHeader(balanceViewModel)
+                AccountPillHeader(balanceViewModel, syncViewModel)
             }
         }
 

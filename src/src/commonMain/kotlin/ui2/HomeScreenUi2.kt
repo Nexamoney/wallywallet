@@ -60,9 +60,15 @@ import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("wally.HomeScreen.Ui2")
 
-class SyncViewModel : ViewModel()
+abstract class SyncViewModel: ViewModel()
 {
     val isSynced = MutableStateFlow(false)
+}
+
+class SyncViewModelFake: SyncViewModel()
+
+class SyncViewModelImpl : SyncViewModel()
+{
     /*
         Checks every second if all accounts are synced
      */
@@ -504,7 +510,8 @@ class BalanceViewModelImpl: BalanceViewModel()
 }
 
 @Composable fun AccountPillHeader(
-  balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() }
+  balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
+  syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() }
 )
 {
 
@@ -593,7 +600,7 @@ class BalanceViewModelImpl: BalanceViewModel()
             .align(Alignment.CenterVertically)
         )
         Spacer(Modifier.width(12.dp))
-        Syncing()
+        Syncing(Color.White, syncViewModel)
     }
 }
 
@@ -728,8 +735,8 @@ class BalanceViewModelImpl: BalanceViewModel()
 }
 
 @Composable
-fun Syncing(syncColor: Color = Color.White) {
-    val syncViewModel = viewModel { SyncViewModel() }
+fun Syncing(syncColor: Color = Color.White, syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() })
+{
     val isSynced = syncViewModel.isSynced.collectAsState().value
     val infiniteTransition = rememberInfiniteTransition()
     val syncingText = "Syncing" // TODO: Move to string resource
