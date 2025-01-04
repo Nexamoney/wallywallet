@@ -1206,10 +1206,8 @@ fun ThumbButton(icon: ImageVector, textRes: Int, mod: Modifier = Modifier, color
 }
 
 @Composable
-fun ThumbButtonFAB(pasteIcon: ImageVector = Icons.Outlined.ContentPaste, onResult: (String) -> Unit, onScanQr: () -> Unit)
+fun ThumbButtonFAB(pasteIcon: ImageVector = Icons.Outlined.ContentPaste, onResult: (String) -> Unit, onScanQr: () -> Unit, clipmgr: ClipboardManager = LocalClipboardManager.current)
 {
-    val clipmgr: ClipboardManager = LocalClipboardManager.current
-
     Row(
       modifier = Modifier.wrapContentHeight().fillMaxWidth(),
       horizontalArrangement = Arrangement.Center
