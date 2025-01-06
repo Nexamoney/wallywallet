@@ -180,7 +180,21 @@ iosDeviceUiTest:
       junit: iosApp/iphone-ui-test-report.xml
     expire_in: 4 week
 
-jvmTest-m1:
+jvmTest-ubuntu-docker:
+  stage: test
+  script:
+    # https://github.com/BitcoinUnlimited/gitlab-ci-android/pull/3
+    # TODO:
+    #   1. Merge this^ MR and deploy andrewstone/nexaadk:latest with boost installed
+    #   2. Delete the apt-get update and install script from this job.
+    - apt-get update
+    - apt-get install -y build-essential libboost-all-dev
+    - ./gradlew :src:cleanJvmTest :src:jvmTest
+  artifacts:
+    reports:
+      junit: src/build/test-results/jvmTest/TEST-*.xml
+
+jvmTest-m1: #
   stage: test
   tags:
     - m1-baremetal
