@@ -5,13 +5,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.AssetListItemView
 import info.bitcoinunlimited.www.wally.ui.AssetView
 import org.nexa.libnexakotlin.*
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 class AssetScreenTest
 {
+    @BeforeTest
+    fun setup()
+    {
+        initializeLibNexa()
+    }
+
     @OptIn(ExperimentalTestApi::class)
     @Test
     fun displayAssetViewTest() = runComposeUiTest {
