@@ -37,7 +37,6 @@ import info.bitcoinunlimited.www.wally.ui.rediscoverPrehistoryTime
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import info.bitcoinunlimited.www.wally.ui2.AccountUiDataViewModel
-import info.bitcoinunlimited.www.wally.ui2.AccountUiDataViewModelImpl
 import info.bitcoinunlimited.www.wally.ui2.noSelectedAccount
 import info.bitcoinunlimited.www.wally.ui2.selectedAccountUi2
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallySwitchRowUi2
@@ -191,7 +190,7 @@ fun AccountDetailScreenUi2(
   accountStatsViewModel: AccountStatisticsViewModel = viewModel { AccountStatisticsViewModelImpl() },
   balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
   syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl()},
-  accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModelImpl() }
+  accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() }
 )
 {
     val scrollState = rememberScrollState()

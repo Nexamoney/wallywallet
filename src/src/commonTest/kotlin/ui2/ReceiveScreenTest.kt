@@ -1,23 +1,90 @@
 package ui2
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
-import info.bitcoinunlimited.www.wally.*
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import info.bitcoinunlimited.www.wally.Account
+import info.bitcoinunlimited.www.wally.CommonApp
+import info.bitcoinunlimited.www.wally.platform
+import info.bitcoinunlimited.www.wally.ui2.AccountUiDataViewModelFake
 import info.bitcoinunlimited.www.wally.ui2.ReceiveScreenContent
+import info.bitcoinunlimited.www.wally.ui2.setSelectedAccount
+import info.bitcoinunlimited.www.wally.uiv2.BalanceViewModelFake
+import info.bitcoinunlimited.www.wally.uiv2.SyncViewModelFake
+import info.bitcoinunlimited.www.wally.wallyApp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import org.nexa.libnexakotlin.*
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
 class ReceiveScreenTest
 {
-    @Test
-    fun receiveScreenContentTest() = runComposeUiTest {
+    lateinit var viewModelStoreOwner: ViewModelStoreOwner
+    lateinit var address: Pay2PubKeyTemplateDestination
+
+    @BeforeTest
+    fun setup()
+    {
+        // JVM only
+        if (platform().usesMouse)
+            Dispatchers.setMain(StandardTestDispatcher())
         initializeLibNexa()
         wallyApp = CommonApp()
-        val address = Pay2PubKeyTemplateDestination(ChainSelector.NEXA, UnsecuredSecret(ByteArray(32, { 1.toByte()})), 1234)
+        viewModelStoreOwner = object : ViewModelStoreOwner
+        {
+            override val viewModelStore: ViewModelStore
+                get() = ViewModelStore()
+        }
+        address = Pay2PubKeyTemplateDestination(ChainSelector.NEXA, UnsecuredSecret(ByteArray(32, { 1.toByte()})), 1234)
+    }
+
+    @AfterTest
+    fun clean()
+    {
+        // JVM only
+        if (platform().usesMouse)
+            Dispatchers.resetMain()
+        wallyApp = null
+    }
+
+    @Test
+    fun receiveScreenContentTest() = runComposeUiTest {
+        /*
+            Start the app
+         */
+        val cs = ChainSelector.NEXA
+        wallyApp = CommonApp()
+        wallyApp!!.onCreate()
+        wallyApp!!.openAllAccounts()
+        lateinit var account: Account
+        runBlocking(Dispatchers.IO) {
+            account = wallyApp!!.newAccount("receiveScreenContentTest", 0U, "", cs)!!
+        }
+
+        /*
+            Set selected account to populate the UI
+         */
+        setSelectedAccount(account)
+        val balanceViewModel = BalanceViewModelFake()
+        val syncViewModel = SyncViewModelFake()
+        val accountUiDataViewModel = AccountUiDataViewModelFake()
 
         setContent {
-            ReceiveScreenContent(address, Modifier)
+            CompositionLocalProvider(
+              LocalViewModelStoreOwner provides viewModelStoreOwner
+            ) {
+                ReceiveScreenContent(address, Modifier, balanceViewModel, syncViewModel, accountUiDataViewModel)
+            }
         }
 
         onNodeWithText(address.address.toString()).isDisplayed()

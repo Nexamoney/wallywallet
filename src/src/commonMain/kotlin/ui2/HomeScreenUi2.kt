@@ -144,7 +144,7 @@ data class TabRowItem(
 @Composable
 fun HomeScreenUi2(
   isShowingRecoveryWarning: Boolean = false,
-  accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModelImpl() }
+  accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() }
 )
 {
     val assetViewModel = viewModel { AssetViewModel() }
@@ -607,7 +607,7 @@ class BalanceViewModelImpl: BalanceViewModel()
   (buttonsEnabled: Boolean = true,
     balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
     syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl()},
-    accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModelImpl() }
+    accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() }
 )
 {
     val account = selectedAccountUi2.collectAsState().value

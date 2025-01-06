@@ -1,3 +1,4 @@
+# https://github.com/BitcoinUnlimited/gitlab-ci-android
 image: andrewstone/nexaadk:latest
 
 # These "stages" are actually separately initiated VMs, so better used for different configurations, etc
@@ -202,18 +203,17 @@ jvmTest-intelmac: #
     paths:
       - src/build/reports/tests/jvmTest/**/**
 
-androidEmulatorTest:
+# Runs Compose UI tests for Android on a Pixel 5 emulator
+androidPixel5Test:
   stage: test
   tags:
     - m1-baremetal # default docker image is not working
   resource_group: pixel5_mac_emulators
   script:
     - ./gradlew pixel5Check
-    - ./gradlew pixel5DebugAndroidTest
   artifacts:
-    reports:
-      junit: src/build/test-results/connectedAndroidTest/TEST-*.xml
     paths:
+      - src/build/reports/androidTests/managedDevice/debug/pixel5/index.html
       - src/build/reports/androidTests/managedDevice/debug/pixel5/**/**
 
 # Randomly clicks around for ten minutes
@@ -225,7 +225,7 @@ androidMonkeyTest:
   resource_group: android_device
   when: manual # Requires the connected device to be safe for absolute random clicks anywhere in the OS and any app.
   needs:
-    - androidEmulatorTest
+    - androidPixel5Test
   before_script:
     # Install adb
     - brew install android-platform-tools
