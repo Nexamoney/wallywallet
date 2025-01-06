@@ -5,7 +5,6 @@ stages:
   - docs
   - lint
   - test
-  - coverage
   - assemble # This job should be last before deploy because it runs for one hour. This job can be decoupled (see taskTree).
   - deploy_internally
   - deploy_beta
@@ -180,7 +179,7 @@ iosDeviceUiTest:
       junit: iosApp/iphone-ui-test-report.xml
     expire_in: 4 week
 
-jvmTest-m1: #
+jvmTest-m1:
   stage: test
   tags:
     - m1-baremetal
@@ -190,7 +189,33 @@ jvmTest-m1: #
     reports:
       junit: src/build/test-results/jvmTest/TEST-*.xml
 
-jvmTest-intelmac: #
+jvmTestCoverageXml:
+  stage: test
+  tags:
+    - intelmac-baremetal
+  script:
+    - ./gradlew :src:koverXmlReportJvm # koverXmlReportJvm runs jvmTest as a child job
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: jacoco
+        path: src/build/reports/kover/reportJvm.xml
+      junit: src/build/test-results/jvmTest/TEST-*.xml
+      # cobertura: src/build/reports/kover/reportJvm.xml
+      # Maybe this? https://docs.gitlab.com/ee/ci/testing/test_coverage_visualization/jacoco.html
+    paths:
+      - src/build/reports/kover/reportJvm.xml
+      - src/build/reports/tests/jvmTest/**/**
+
+jvmTestCoverageLog: #
+  stage: test
+  tags:
+    - intelmac-baremetal
+  script:
+    - ./gradlew :src:koverLogJvm # koverLogJvm runs jvmTest as a child job
+  coverage: '/application line coverage: (\d+\.\d+)%/' # Regex to extract coverage percentage
+
+jvmTest-intelmac:
   stage: test
   tags:
     - intelmac-baremetal

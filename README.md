@@ -187,6 +187,21 @@ To successfully run the units tests, you must have a local "regtest" Nexa full n
 ./gradlew :src:jvmTest
 ```
 
+#### Code coverage reporting
+
+Generate a code coverage .html report for jvm and Android with Kover (https://github.com/Kotlin/kotlinx-kover):
+```
+./gradlew koverHtmlReport
+```
+
+##### JVM
+koverXmlReportJvm runs jvmTest as a child job
+```
+./gradlew :src:koverXmlReportJvm
+```
+
+The coverage report is written to `src/build/reports/kover/reportJvm.xmll`
+
 #### Trigger iOS background processing task from Xcode
 Physical device is required. Background processing is not supported in emulator
 
