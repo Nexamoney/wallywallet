@@ -499,8 +499,11 @@ fun AccountItemViewUi2(
                     }
                 }
 
-                // Devmode connectivity text
-                if (devMode)
+                /*
+                    Devmode connectivity text.
+                    Don't occupy space with row .padding if the text is empty.
+                 */
+                if (devMode && uidata.devinfo.isNotBlank())
                 {
                     // Give a little extra height because the unicode up and down arrows don't fit causing the line to go bigger.
                     val devModeTextStyle = MaterialTheme.typography.bodySmall.copy(fontSize = MaterialTheme.typography.bodySmall.fontSize.times(0.90),
