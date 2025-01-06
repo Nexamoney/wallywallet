@@ -17,9 +17,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -32,6 +30,7 @@ import info.bitcoinunlimited.www.wally.ui.views.startAccountFastForward
 import info.bitcoinunlimited.www.wally.ui.views.uiData
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurpleExtraLight
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurpleLight
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch

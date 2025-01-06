@@ -18,12 +18,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.AddressHistoryScreen
 import info.bitcoinunlimited.www.wally.ui.AssetInfoPermScreen
@@ -59,10 +61,7 @@ import kotlinx.coroutines.*
 import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyThemeUi2
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurple
-import info.bitcoinunlimited.www.wally.uiv2.AccountDetailScreenUi2
-import info.bitcoinunlimited.www.wally.uiv2.AssetScreenUi2
-import info.bitcoinunlimited.www.wally.uiv2.HomeScreenUi2
-import info.bitcoinunlimited.www.wally.uiv2.SpecialTxPermScreenUi2
+import info.bitcoinunlimited.www.wally.uiv2.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.nexa.libnexakotlin.GetLog
@@ -449,7 +448,13 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NavigationRootUi2(systemPadding: Modifier)
+fun NavigationRootUi2(
+  systemPadding: Modifier,
+  assetViewModel: AssetViewModel = viewModel { AssetViewModelImpl() },
+  balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
+  syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() },
+  accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() }
+)
 {
     val curScreen = nav.currentScreen.collectAsState().value
     val subScreen = nav.currentSubState.collectAsState().value
@@ -732,7 +737,7 @@ fun NavigationRootUi2(systemPadding: Modifier)
               }
               lastClicked.value = curScreen.toString()
           })
-      },
+      }.testTag("RootScaffold"),
       contentColor = Color.Black,
       topBar = {
           TopBar(errorText, warningText, noticeText, lastClicked)
@@ -849,10 +854,10 @@ fun NavigationRootUi2(systemPadding: Modifier)
                             }
                             when (curScreen)
                             {
-                                ScreenId.None -> HomeScreenUi2(isShowingRecoveryWarning)
+                                ScreenId.None -> HomeScreenUi2(isShowingRecoveryWarning, assetViewModel, balanceViewModel, syncViewModel, accountUiDataViewModel)
                                 ScreenId.Splash -> run {} // splash screen is done at the top for max speed and to be outside of the theme
                                 ScreenId.MoreMenu -> run {}
-                                ScreenId.Home -> { HomeScreenUi2(isShowingRecoveryWarning) }
+                                ScreenId.Home -> { HomeScreenUi2(isShowingRecoveryWarning, assetViewModel, balanceViewModel, syncViewModel, accountUiDataViewModel) }
                                 ScreenId.Send -> withAccount { act -> withSendNavParams { SendScreen(act, it) } }
                                 ScreenId.Receive -> { ReceiveScreen() }
                                 ScreenId.SplitBill -> SplitBillScreen()
@@ -880,7 +885,7 @@ fun NavigationRootUi2(systemPadding: Modifier)
                                     if (idsess != null) IdentityPermScreen(act, idsess, nav)
                                     else nav.back()
                                 }
-                                ScreenId.Alerts -> HomeScreenUi2(isShowingRecoveryWarning)
+                                ScreenId.Alerts -> HomeScreenUi2(isShowingRecoveryWarning, assetViewModel, balanceViewModel, syncViewModel, accountUiDataViewModel)
                             }
                         }
                     }

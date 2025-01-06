@@ -1,7 +1,6 @@
 package info.bitcoinunlimited.www.wally.uiv2
 
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -140,14 +139,14 @@ data class TabRowItem(
   val description: String
 )
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreenUi2(
   isShowingRecoveryWarning: Boolean = false,
+  assetViewModel: AssetViewModel = viewModel { AssetViewModel() },
+  balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
+  syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl()},
   accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() }
-)
-{
-    val assetViewModel = viewModel { AssetViewModel() }
+){
     val assets = assetViewModel.assets.collectAsState().value
     val coroutineScope = rememberCoroutineScope()
     val clipmgr: ClipboardManager = LocalClipboardManager.current
@@ -180,12 +179,12 @@ fun HomeScreenUi2(
         Column {
             if (!isShowingRecoveryWarning)
                 Spacer(Modifier.height(16.dp))
-            AccountPill()
+            AccountPill(true, balanceViewModel, syncViewModel, accountUiDataViewModel)
             Spacer(modifier = Modifier.height(8.dp))
             if (assets.isNotEmpty())
             {
                 Spacer(Modifier.height(8.dp))
-                AssetCarousel()
+                AssetCarousel(assetViewModel)
                 Spacer(Modifier.height(8.dp))
             }
             TabRow(
@@ -253,9 +252,11 @@ fun HomeScreenUi2(
     }
 }
 
-class AssetViewModel: ViewModel()
+open class AssetViewModel: ViewModel()
 {
     val assets = MutableStateFlow(listOf<AssetInfo>())
+
+
     var assetsJob: Job? = null
     var accountJob: Job? = null
 
@@ -266,7 +267,7 @@ class AssetViewModel: ViewModel()
         observeSelectedAccount()
     }
 
-    private fun observeSelectedAccount()
+    open fun observeSelectedAccount()
     {
         accountJob?.cancel()
         accountJob = viewModelScope.launch {
@@ -277,7 +278,7 @@ class AssetViewModel: ViewModel()
         }
     }
 
-    private fun getAssetInfoList(account: Account): List<AssetInfo>
+    open fun getAssetInfoList(account: Account): List<AssetInfo>
     {
         val assetInfoList = mutableListOf<AssetInfo>()
         account.assets.values.forEach {
@@ -286,7 +287,7 @@ class AssetViewModel: ViewModel()
         return assetInfoList
     }
 
-    private fun observeAssets(account: Account)
+    open fun observeAssets(account: Account)
     {
         assetsJob?.cancel()
         assetsJob = viewModelScope.launch {
@@ -308,10 +309,32 @@ class AssetViewModel: ViewModel()
     }
 }
 
-@Composable
-fun AssetCarousel()
+class AssetsViewModelFake: AssetViewModel()
 {
-    val viewModel = viewModel { AssetViewModel() }
+    override fun observeSelectedAccount()
+    {
+
+    }
+
+    override fun getAssetInfoList(account: Account): List<AssetInfo>
+    {
+        return listOf()
+    }
+
+    override fun observeAssets(account: Account)
+    {
+
+    }
+
+}
+
+class AssetViewModelImpl: AssetViewModel()
+{
+}
+
+@Composable
+fun AssetCarousel(viewModel: AssetViewModel = viewModel { AssetViewModel() })
+{
     val assets = viewModel.assets.collectAsState().value
     val assetList = assets.toList().sortedBy { it.nft?.title ?: it.name ?: it.ticker ?: it.groupId.toString() }
 
@@ -603,11 +626,11 @@ class BalanceViewModelImpl: BalanceViewModel()
     }
 }
 
-@Composable fun AccountPill
-  (buttonsEnabled: Boolean = true,
-    balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
-    syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl()},
-    accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() }
+@Composable fun AccountPill(
+  buttonsEnabled: Boolean = true,
+  balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
+  syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl()},
+  accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() }
 )
 {
     val account = selectedAccountUi2.collectAsState().value
