@@ -5,7 +5,6 @@ stages:
   - docs
   - lint
   - test
-  - coverage
   - assemble # This job should be last before deploy because it runs for one hour. This job can be decoupled (see taskTree).
   - deploy_internally
   - deploy_beta
@@ -180,7 +179,7 @@ iosDeviceUiTest:
       junit: iosApp/iphone-ui-test-report.xml
     expire_in: 4 week
 
-jvmTest-m1: #
+jvmTest-m1:
   stage: test
   tags:
     - m1-baremetal
@@ -190,7 +189,33 @@ jvmTest-m1: #
     reports:
       junit: src/build/test-results/jvmTest/TEST-*.xml
 
-jvmTest-intelmac: #
+jvmTestCoverageXml:
+  stage: test
+  tags:
+    - intelmac-baremetal
+  script:
+    - ./gradlew :src:koverXmlReportJvm # koverXmlReportJvm runs jvmTest as a child job
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: jacoco
+        path: src/build/reports/kover/reportJvm.xml
+      junit: src/build/test-results/jvmTest/TEST-*.xml
+      # cobertura: src/build/reports/kover/reportJvm.xml
+      # Maybe this? https://docs.gitlab.com/ee/ci/testing/test_coverage_visualization/jacoco.html
+    paths:
+      - src/build/reports/kover/reportJvm.xml
+      - src/build/reports/tests/jvmTest/**/**
+
+jvmTestCoverageLog: #
+  stage: test
+  tags:
+    - intelmac-baremetal
+  script:
+    - ./gradlew :src:koverLogJvm # koverLogJvm runs jvmTest as a child job
+  coverage: '/application line coverage: (\d+\.\d+)%/' # Regex to extract coverage percentage
+
+jvmTest-intelmac:
   stage: test
   tags:
     - intelmac-baremetal
@@ -202,18 +227,17 @@ jvmTest-intelmac: #
     paths:
       - src/build/reports/tests/jvmTest/**/**
 
-androidEmulatorTest:
+# Runs Compose UI tests for Android on a Pixel 5 emulator
+androidPixel5Test:
   stage: test
   tags:
     - m1-baremetal # default docker image is not working
   resource_group: pixel5_mac_emulators
   script:
     - ./gradlew pixel5Check
-    - ./gradlew pixel5DebugAndroidTest
   artifacts:
-    reports:
-      junit: src/build/test-results/connectedAndroidTest/TEST-*.xml
     paths:
+      - src/build/reports/androidTests/managedDevice/debug/pixel5/index.html
       - src/build/reports/androidTests/managedDevice/debug/pixel5/**/**
 
 # Randomly clicks around for ten minutes
@@ -225,7 +249,7 @@ androidMonkeyTest:
   resource_group: android_device
   when: manual # Requires the connected device to be safe for absolute random clicks anywhere in the OS and any app.
   needs:
-    - androidEmulatorTest
+    - androidPixel5Test
   before_script:
     # Install adb
     - brew install android-platform-tools

@@ -67,6 +67,6 @@ fun ReceiveScreenPreview()
 {
     val mockAddress = Pay2PubKeyTemplateDestination(ChainSelector.NEXA, UnsecuredSecret(ByteArray(32, { 1.toByte()})), 1234)
     WallyThemeUi2() {
-        ReceiveScreenContent(mockAddress)
+        ReceiveScreenContent(address = mockAddress)
     }
 }

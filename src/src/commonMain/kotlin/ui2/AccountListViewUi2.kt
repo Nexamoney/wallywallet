@@ -39,46 +39,12 @@ import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.millinow
 import org.nexa.libnexakotlin.rem
 
-abstract class AccountUiDataViewModel: ViewModel()
+open class AccountUiDataViewModel: ViewModel()
 {
     val accountUIData: MutableStateFlow<Map<String, AccountUIData>> = MutableStateFlow(mapOf())
 
-    abstract fun setup()
 
-    open fun setAccountUiDataForAccount(account: Account)
-    {
-        // Updates the MutableStateFlow.value atomically
-        accountUIData.update {
-            val updatedMap = it.toMutableMap()
-            updatedMap[account.name] = account.uiData()
-            updatedMap.toMap()
-        }
-    }
-
-    abstract fun fastForwardSelectedAccount()
-}
-
-class AccountUiDataViewModelFake: AccountUiDataViewModel()
-{
-    override fun setup()
-    {
-
-    }
-
-    override fun setAccountUiDataForAccount(account: Account)
-    {
-
-    }
-
-    override fun fastForwardSelectedAccount()
-    {
-
-    }
-}
-
-class AccountUiDataViewModelImpl: AccountUiDataViewModel()
-{
-    override fun setup() {
+    open fun setup() {
         viewModelScope.launch {
             for(c in accountChangedNotification)
             {
@@ -104,8 +70,19 @@ class AccountUiDataViewModelImpl: AccountUiDataViewModel()
         }
     }
 
+    open fun setAccountUiDataForAccount(account: Account)
+    {
+        // Updates the MutableStateFlow.value atomically
+        accountUIData.update {
+            val updatedMap = it.toMutableMap()
+            updatedMap[account.name] = account.uiData()
+            updatedMap.toMap()
+        }
+    }
+
+
     // This should probably be moved to a viewModel with only one account
-    override fun fastForwardSelectedAccount()
+    open fun fastForwardSelectedAccount()
     {
         selectedAccountUi2.value?.let { selectedAccount ->
             val allAccountsUiData = accountUIData.value.toMutableMap()
@@ -125,6 +102,24 @@ class AccountUiDataViewModelImpl: AccountUiDataViewModel()
                 triggerAccountsChanged(uiData.account)
             }
         }
+    }
+}
+
+class AccountUiDataViewModelFake: AccountUiDataViewModel()
+{
+    override fun setup()
+    {
+
+    }
+
+    override fun setAccountUiDataForAccount(account: Account)
+    {
+
+    }
+
+    override fun fastForwardSelectedAccount()
+    {
+
     }
 }
 
