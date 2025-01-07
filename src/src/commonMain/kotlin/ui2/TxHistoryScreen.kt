@@ -1,26 +1,32 @@
-package info.bitcoinunlimited.www.wally.ui
+package info.bitcoinunlimited.www.wally.ui2
 
-import WalletDb.TxHistory
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 //import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.theme.*
-import info.bitcoinunlimited.www.wally.ui.views.ResImageView
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyRowAbkg1
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyRowAbkg2
+import info.bitcoinunlimited.www.wally.ui2.theme.colorConfirm
+import info.bitcoinunlimited.www.wally.ui2.theme.colorWarning
+import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyAssetRowColors
+import info.bitcoinunlimited.www.wally.ui2.themeUi2.defaultFontSize
+import info.bitcoinunlimited.www.wally.ui2.views.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.*
@@ -316,3 +322,113 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
         }
     }
 }
+
+@Composable
+fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, allowAmountEdit: Boolean = false, modifier: Modifier = Modifier)
+{
+    var apc by remember { mutableStateOf(assetPerAccount) }
+    val asset = apc.assetInfo
+    val nftRaw = asset.nftObservable.collectAsState()
+    val nft = nftRaw.value
+    val assetName = asset.nameObservable.collectAsState()
+    // This automatically re-renders the compose view on changes to loadStateObservable
+    @Suppress("unused")
+    val loadState = asset.loadStateObservable.collectAsState()
+
+    Column(modifier = modifier) {
+        if ((devMode)&&(verbosity>0)) SelectionContainer(Modifier.fillMaxWidth()) { CenteredFittedText(asset.groupId.toStringNoPrefix()) }
+        Row {
+            val hasImage = if (asset.iconImage != null) "yes" else "null"
+            LogIt.info("Asset ${asset.name} icon Image ${hasImage} icon bytes: ${asset.iconBytes?.size} icon url: ${asset.iconUri}")
+            MpMediaView(asset.iconImage, asset.iconBytes, asset.iconUri?.toString(), hideMusicView = true) { mi, draw ->
+                val m = (if (verbosity > 0) Modifier.background(Color.Transparent).size(64.dp, 64.dp)
+                else  Modifier.background(Color.Transparent).size(26.dp, 26.dp)).align(Alignment.CenterVertically)
+                draw(m)
+            }
+
+            // If its an NFT, don't show the quantity if they have just 1
+            if ((nft == null)||(apc.groupInfo.tokenAmt != 1L))
+            {
+                if (allowAmountEdit)
+                {
+                    // Note the "default" (unedited) amount is ALL tokens.  If you change this default, you must also change it in the actuallySend() function.
+                    val amt = assetPerAccount.editableAmount?.toPlainString() ?: tokenAmountString(apc.groupInfo.tokenAmt, asset.tokenInfo?.genesisInfo?.decimal_places)
+                    WallyDecimalEntry(mutableStateOf(amt)) {
+                        try
+                        {
+                            assetPerAccount.editableAmount = assetPerAccount.tokenDecimalFromString(it)
+                        }
+                        catch (e: Exception) // If we can't parse it for any reason, ignore
+                        {
+                            LogIt.info("Can't parse editable amount ${it}")
+                        }
+                        it
+                    }
+                }
+                else
+                {
+                    Spacer(modifier.width(2.dp))
+                    val amt = tokenAmountString(apc.groupInfo.tokenAmt, asset.tokenInfo?.genesisInfo?.decimal_places)
+                    val lenAdjust = 1.0 // 5.0/max(amt.length,5)
+                    val fontSize = if (verbosity > 0) 2.0*lenAdjust else 1.0*lenAdjust
+                    Box(modifier = modifier.weight(0.50f).align(Alignment.CenterVertically)) {
+                        SelectionContainer {
+                            CenteredFittedText(amt, fontSize)
+                        }
+                    }
+                }
+                Spacer(modifier.width(4.dp))
+            }
+
+            Column(Modifier.weight(1f).align(Alignment.CenterVertically)) {
+                var name = (if ((nft != null) && (nft.title.length > 0)) nft.title else assetName.value)
+                if (verbosity > 0)
+                {
+                    if (name != null) Text(text = name, modifier = Modifier.padding(0.dp).fillMaxWidth(), style = WallySectionTextStyle(), textAlign = TextAlign.Center)
+                    else Text(text = i18n(S.loading), modifier = Modifier.padding(0.dp).fillMaxWidth(), textAlign = TextAlign.Center, style = TextStyle(fontWeight = FontWeight.Light,  fontStyle = FontStyle.Italic))
+                    if ((nft?.author != null) && (nft.author.length > 0))
+                    {
+                        CenteredText(i18n(S.NftAuthor) % mapOf("author" to nft.author))
+                    }
+                    if (nft?.series != null)
+                    {
+                        CenteredText(i18n(S.NftSeries) % mapOf("series" to nft.series))
+                    }
+                    val ti = asset.tokenInfo
+                    if ((ti!=null) && (ti.tddSig == null))
+                    {
+                        CenteredText(i18n(S.NftImproperConstruction), modifier.background(colorWarning))
+                    }
+                    else
+                    {
+                        val urlS = asset.docUrl
+                        if (urlS != null)
+                        {
+                            val url = com.eygraber.uri.Url.parseOrNull(urlS)
+                            val host = try
+                            {
+                                url?.host  // although host is supposedly not null, I can get "java.lang.IllegalArgumentException: Url requires a non-null host"
+                            }
+                            catch (e: IllegalArgumentException)
+                            {
+                                null
+                            }
+                            if (host != null)
+                            {
+                                CenteredText(host, TextStyle(fontSize = defaultFontSize * 0.75, fontWeight = FontWeight.Light,  fontStyle = FontStyle.Italic))
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (name == null) name = asset.ticker ?: asset.groupId.toString()
+                    var author = if ((nft?.author != null) && (nft.author.length > 0)) ", " + nft.author else ""
+                    CenteredFittedText(name + author)
+                }
+            }
+
+        }
+    }
+}
+

@@ -11,9 +11,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import info.bitcoinunlimited.www.wally.ui.theme.MediaInfo
-import info.bitcoinunlimited.www.wally.ui.theme.WallyBoringIconButton
-import info.bitcoinunlimited.www.wally.ui.views.ResImageView
+import info.bitcoinunlimited.www.wally.ui2.views.MediaInfo
+import info.bitcoinunlimited.www.wally.ui2.views.ResImageView
+import info.bitcoinunlimited.www.wally.ui2.views.WallyBoringIconButton
 import kotlinx.cinterop.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

@@ -6,13 +6,8 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui2.AccountUiDataViewModel
-import info.bitcoinunlimited.www.wally.ui2.AccountUiDataViewModelFake
-import info.bitcoinunlimited.www.wally.ui2.setSelectedAccount
-import info.bitcoinunlimited.www.wally.uiv2.AccountDetailScreenUi2
-import info.bitcoinunlimited.www.wally.uiv2.AccountStatisticsViewModelFake
-import info.bitcoinunlimited.www.wally.uiv2.BalanceViewModelFake
-import info.bitcoinunlimited.www.wally.uiv2.SyncViewModelFake
+import info.bitcoinunlimited.www.wally.ui2.*
+import info.bitcoinunlimited.www.wally.ui2.views.AccountUiDataViewModelFake
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.runBlocking

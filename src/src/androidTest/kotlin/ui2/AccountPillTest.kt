@@ -7,11 +7,10 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import info.bitcoinunlimited.www.wally.*
+import info.bitcoinunlimited.www.wally.ui2.AccountPillHeader
+import info.bitcoinunlimited.www.wally.ui2.BalanceViewModelFake
+import info.bitcoinunlimited.www.wally.ui2.SyncViewModelFake
 import info.bitcoinunlimited.www.wally.ui2.setSelectedAccount
-import info.bitcoinunlimited.www.wally.uiv2.AccountPillHeader
-import info.bitcoinunlimited.www.wally.uiv2.BalanceViewModelFake
-import info.bitcoinunlimited.www.wally.uiv2.BalanceViewModelImpl
-import info.bitcoinunlimited.www.wally.uiv2.SyncViewModelFake
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.junit.Before

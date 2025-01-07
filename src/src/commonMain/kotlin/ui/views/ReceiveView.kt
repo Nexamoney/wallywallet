@@ -18,6 +18,11 @@ import kotlinx.coroutines.*
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.ui.theme.*
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyAddressColor
+import info.bitcoinunlimited.www.wally.ui2.views.FontScale
+import info.bitcoinunlimited.www.wally.ui2.views.WallyBrightEmphasisBox
+import info.bitcoinunlimited.www.wally.ui2.views.WallyDropdownMenu
+import info.bitcoinunlimited.www.wally.ui2.views.WallyDropdownStyle
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import org.nexa.libnexakotlin.exceptionHandler
 

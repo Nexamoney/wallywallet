@@ -1,4 +1,4 @@
-package info.bitcoinunlimited.www.wally.ui.theme
+package info.bitcoinunlimited.www.wally.ui2.views
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -24,6 +25,12 @@ import androidx.compose.ui.window.Dialog
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.platform
+import info.bitcoinunlimited.www.wally.ui2.theme.BaseBkg
+import info.bitcoinunlimited.www.wally.ui2.theme.BrightBkg
+import info.bitcoinunlimited.www.wally.ui2.theme.Shapes
+import info.bitcoinunlimited.www.wally.ui2.theme.colorCredit
+import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyModalOutline
+import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyThemeUi2
 import org.nexa.libnexakotlin.GetLog
 
 private val LogIt = GetLog("BU.wally.dropdown")
@@ -35,21 +42,27 @@ enum class WallyDropdownStyle
     Succinct
 }
 
+
+@Composable fun WallyDropdownItemFontStyle(): TextStyle
+{
+    return FontScaleStyle(1.5)
+}
+
 @Composable
 fun <T> WallyDropdownMenu(
-  modalModifier: Modifier = Modifier,
-  modifier: Modifier = Modifier.fillMaxWidth(),
-  enabled: Boolean = true,
-  label: String,
-  notSetLabel: String? = null,
-  items: List<T>,
-  selectedIndex: Int = -1,
-  onItemSelected: (index: Int, item: T) -> Unit,
-  selectedItemToString: (T) -> String = { it.toString() },
-  style: WallyDropdownStyle = WallyDropdownStyle.Succinct,
-  labelFontStyle: FontStyle? = null,
-  itemDivider: (@Composable () -> Unit)? = null,
-  drawItem: @Composable (T, Boolean, Boolean, () -> Unit) -> Unit = { item, selected, itemEnabled, onClick ->
+    modalModifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.fillMaxWidth(),
+    enabled: Boolean = true,
+    label: String,
+    notSetLabel: String? = null,
+    items: List<T>,
+    selectedIndex: Int = -1,
+    onItemSelected: (index: Int, item: T) -> Unit,
+    selectedItemToString: (T) -> String = { it.toString() },
+    style: WallyDropdownStyle = WallyDropdownStyle.Succinct,
+    labelFontStyle: FontStyle? = null,
+    itemDivider: (@Composable () -> Unit)? = null,
+    drawItem: @Composable (T, Boolean, Boolean, () -> Unit) -> Unit = { item, selected, itemEnabled, onClick ->
       WallyDropdownMenuItem(
         text = item.toString(),
         selected = selected,
@@ -131,7 +144,7 @@ fun <T> WallyDropdownMenu(
     if (expanded)
     {
         Dialog(onDismissRequest = { expanded = false }) {
-            WallyTheme(false, false) {  // TODO dark mode
+            WallyThemeUi2 (false, false) {  // TODO dark mode
                 val surfShape = RoundedCornerShape(32.dp)
                 Surface(
                   shape = surfShape,

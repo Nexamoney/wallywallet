@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.HorizontalAlignmentLine
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -20,14 +21,72 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import info.bitcoinunlimited.www.wally.S
-import info.bitcoinunlimited.www.wally.ui.*
-import info.bitcoinunlimited.www.wally.ui.theme.*
-import info.bitcoinunlimited.www.wally.ui.views.ResImageView
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallySwitchRowUi2
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyDivider
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyHalfDivider
+import info.bitcoinunlimited.www.wally.ui2.views.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.SettingsScreen")
+
+const val LOCAL_CURRENCY_PREF = "localCurrency"
+const val ACCESS_PRICE_DATA_PREF = "accessPriceData"
+const val BACKGROUND_SYNC_PREF = "backgroundSync"
+const val DARK_MODE_PREF = "darkModeMenu"
+const val DEV_MODE_PREF = "devinfo"
+const val EXPERIMENTAL_UX_MODE_PREF = "expUX"
+const val CONFIRM_ABOVE_PREF = "confirmAbove"
+const val CONFIGURED_NODE = "NodeAddress"
+
+data class GeneralSettingsSwitch(
+  val prefKey: String,
+  val textRes: Int
+)
+
+
+@Composable
+fun LocalCurrency(preferenceDB: SharedPreferences)
+{
+    var expanded by remember { mutableStateOf(false) }
+    val fiatCurrencies = listOf("BRL", "CAD", "CNY", "EUR", "GBP", "JPY", "RUB", "USD", "XAU")
+    val selectedFiatCurrency = remember { mutableStateOf(preferenceDB.getString(info.bitcoinunlimited.www.wally.LOCAL_CURRENCY_PREF, "")) }
+
+    Row(
+      horizontalArrangement = Arrangement.SpaceEvenly,
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text = i18n(S.localCurrency), Modifier.testTag(i18n(S.localCurrency)))
+        Spacer(modifier = Modifier.width(8.dp))
+        Box {
+            Row(
+              verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                  text = selectedFiatCurrency.value ?: "",
+                  modifier = Modifier.clickable(onClick = { expanded = true })
+                )
+                IconButton(onClick = {expanded = true}) {
+                    Icon(Icons.Default.ArrowDropDown, contentDescription = "Fiat currency dropdown")
+                }
+            }
+            DropdownMenu(
+              expanded = expanded,
+              onDismissRequest = { expanded = false },
+            ) {
+                fiatCurrencies.forEachIndexed { _, s ->
+                    DropdownMenuItem(
+                      onClick = {
+                          preferenceDB.edit().putString(info.bitcoinunlimited.www.wally.LOCAL_CURRENCY_PREF, s).commit()
+                          selectedFiatCurrency.value = s
+                          expanded = false
+                      },
+                      text = { Text(text = s) }
+                    )
+                }
+            }
+        }
+    }
+}
 
 @Composable fun ShowScreenNavSwitchUi2(preference: String, navChoice: NavChoiceUi2, textRes: Int, globalPref: MutableStateFlow<Boolean>)
 {
@@ -78,6 +137,17 @@ private val LogIt = GetLog("BU.wally.SettingsScreen")
     }
 }
 
+@Composable fun GeneralSettingsSwitchView(generalSettingsSwitch: GeneralSettingsSwitch)
+{
+    val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
+    val isChecked = remember { mutableStateOf(preferenceDB.getBoolean(generalSettingsSwitch.prefKey, true)) }
+
+    WallySwitch(isChecked, generalSettingsSwitch.textRes) {
+        isChecked.value = it
+        preferenceDB.edit().putBoolean(generalSettingsSwitch.prefKey, it).commit()
+    }
+}
+
 @Composable
 fun SettingsScreenUi2()
 {
@@ -85,7 +155,7 @@ fun SettingsScreenUi2()
     var devModeView by mutableStateOf(devMode)
     var darkModeView by mutableStateOf(darkMode)
     val generalSettingsSwitches = mutableListOf(
-      GeneralSettingsSwitch(info.bitcoinunlimited.www.wally.ui.ACCESS_PRICE_DATA_PREF, S.AccessPriceData),
+      GeneralSettingsSwitch(ACCESS_PRICE_DATA_PREF, S.AccessPriceData),
     )
     val hasNewUIState = newUI.collectAsState()
     val hasNewUI = hasNewUIState.value
@@ -99,12 +169,12 @@ fun SettingsScreenUi2()
     nav.onDepart {
         var nodeAddr: String? = null
 
-        allowAccessPriceData = preferenceDB.getBoolean(info.bitcoinunlimited.www.wally.ui.ACCESS_PRICE_DATA_PREF, true)
+        allowAccessPriceData = preferenceDB.getBoolean(ACCESS_PRICE_DATA_PREF, true)
 
         for (chain in chainToURI)
         {
             val name = chain.value
-            nodeAddr = preferenceDB.getString(name + "." + info.bitcoinunlimited.www.wally.ui.CONFIGURED_NODE, null)
+            nodeAddr = preferenceDB.getString(name + "." + CONFIGURED_NODE, null)
             val excl = preferenceDB.getBoolean(name + "." + EXCLUSIVE_NODE_SWITCH, false)
             val prefd = preferenceDB.getBoolean(name + "." + PREFER_NODE_SWITCH, false)
 
@@ -163,7 +233,7 @@ fun SettingsScreenUi2()
             }
             WallySwitchRowUi2(devModeView, S.enableDeveloperView) {
                 LogIt.info("devmode $it")
-                preferenceDB.edit().putBoolean(info.bitcoinunlimited.www.wally.ui.DEV_MODE_PREF, it).commit()
+                preferenceDB.edit().putBoolean(DEV_MODE_PREF, it).commit()
                 devModeView = it
                 devMode = it
             }
@@ -232,7 +302,7 @@ fun SettingsScreenUi2()
 @Composable
 fun ConfirmAboveUi2(preferenceDB: SharedPreferences)
 {
-    val v = preferenceDB.getString(info.bitcoinunlimited.www.wally.ui.CONFIRM_ABOVE_PREF, "0") ?: "0"
+    val v = preferenceDB.getString(CONFIRM_ABOVE_PREF, "0") ?: "0"
     val dec = try {
         CurrencyDecimal(v)
     }
@@ -240,7 +310,7 @@ fun ConfirmAboveUi2(preferenceDB: SharedPreferences)
     {
         CurrencyDecimal(0)
     }
-    var textState = remember { mutableStateOf<String>(preferenceDB.getString(info.bitcoinunlimited.www.wally.ui.CONFIRM_ABOVE_PREF, NexaFormat.format(dec)) ?: "0") }
+    var textState = remember { mutableStateOf<String>(preferenceDB.getString(CONFIRM_ABOVE_PREF, NexaFormat.format(dec)) ?: "0") }
 
     Row(
       horizontalArrangement = Arrangement.SpaceBetween,
@@ -258,7 +328,7 @@ fun ConfirmAboveUi2(preferenceDB: SharedPreferences)
                   val newDec = CurrencyDecimal(newStr)
                   with(preferenceDB.edit())
                   {
-                      putString(info.bitcoinunlimited.www.wally.ui.CONFIRM_ABOVE_PREF, CurrencySerializeFormat.format(newDec))
+                      putString(CONFIRM_ABOVE_PREF, CurrencySerializeFormat.format(newDec))
                       commit()
                   }
               }
@@ -285,7 +355,7 @@ fun BlockchainSourceUi2(chain: ChainSelector, preferenceDB: SharedPreferences, s
     val name = chainToURI[chain] ?: ""
     val exclusiveNodeKey = "$name.$EXCLUSIVE_NODE_SWITCH"
     val preferNodeKey = "$name.$PREFER_NODE_SWITCH"
-    val configuredNodeKey = "$name.${info.bitcoinunlimited.www.wally.ui.CONFIGURED_NODE}"
+    val configuredNodeKey = "$name.${CONFIGURED_NODE}"
     val onlyChecked = remember { mutableStateOf(preferenceDB.getBoolean(exclusiveNodeKey, false)) }
     val preferChecked = remember { mutableStateOf(preferenceDB.getBoolean(preferNodeKey, false)) }
     var textState by remember { mutableStateOf(preferenceDB.getString(configuredNodeKey, "") ?: "") }
@@ -330,3 +400,52 @@ fun BlockchainSourceUi2(chain: ChainSelector, preferenceDB: SharedPreferences, s
         }
     }
 }
+
+fun onWipeDatabase()
+{
+    later {
+        wallyApp?.accounts?.forEach {
+            it.value.delete()
+            deleteWallet(it.key, it.value.chain.chainSelector)
+        }
+    }
+}
+
+fun onLogDebugData()
+{
+    later {
+        val coins: MutableMap<String, Account> = wallyApp!!.accounts
+        LogIt.info("LOG DEBUG BUTTON")
+        for (c in coins)
+            c.value.wallet.debugDump()
+        displayNotice("Log written")
+    }
+}
+
+fun onReloadAssets()
+{
+    later {
+        val app = wallyApp!!
+        app.assetManager.clear()
+
+        LogIt.info("Reload Assets Button")
+        displayNotice("Reloading assets")
+        triggerAssetCheck()
+    }
+}
+
+fun onCloseP2pConnections()
+{
+    later {
+        for (bc in blockchains)
+        {
+            for (cxn in bc.value.net.p2pCnxns)
+            {
+                cxn.close()
+            }
+        }
+        LogIt.info("All P2P connections closed")
+        displayNotice("Connections closed")
+    }
+}
+

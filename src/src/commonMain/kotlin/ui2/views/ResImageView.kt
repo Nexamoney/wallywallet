@@ -1,4 +1,4 @@
-package info.bitcoinunlimited.www.wally.ui.views
+package info.bitcoinunlimited.www.wally.ui2.views
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -10,13 +10,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
-import info.bitcoinunlimited.www.wally.ui.theme.MediaInfo
-import info.bitcoinunlimited.www.wally.ui.theme.MpIcon
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.InternalResourceApi
 import org.jetbrains.compose.resources.ResourceItem
 
-@OptIn(ExperimentalComposeUiApi::class, InternalResourceApi::class)
+@OptIn(InternalResourceApi::class)
 @Composable
 fun ResImageView(resPath: String, modifier: Modifier, description: String? = null)
 {

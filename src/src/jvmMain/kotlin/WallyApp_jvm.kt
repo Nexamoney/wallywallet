@@ -3,15 +3,14 @@ package info.bitcoinunlimited.www.wally
 import org.nexa.libnexakotlin.*
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.Window
-//import androidx.compose.ui.window.Events
 import androidx.compose.runtime.*
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.Modifier
-
 import androidx.compose.ui.window.rememberWindowState
-import info.bitcoinunlimited.www.wally.ui.*
-import info.bitcoinunlimited.www.wally.ui.views.loadingAnimation
+import info.bitcoinunlimited.www.wally.ui2.ScreenId
+import info.bitcoinunlimited.www.wally.ui2.views.loadingAnimation
 import info.bitcoinunlimited.www.wally.ui2.UiRoot
+import info.bitcoinunlimited.www.wally.ui2.nav
 import java.io.File
 
 private val LogIt = GetLog("BU.wally.IdentityActivity")

@@ -6,10 +6,7 @@ import androidx.compose.runtime.collectAsState
 import com.eygraber.uri.Uri
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.ui.*
-import info.bitcoinunlimited.www.wally.ui.ACCESS_PRICE_DATA_PREF
-import info.bitcoinunlimited.www.wally.ui.DEV_MODE_PREF
-import info.bitcoinunlimited.www.wally.ui2.SendScreenNavParams
-import info.bitcoinunlimited.www.wally.ui2.newUI
+import info.bitcoinunlimited.www.wally.ui2.*
 import io.ktor.client.*
 import io.ktor.client.network.sockets.*
 import io.ktor.client.network.sockets.SocketTimeoutException

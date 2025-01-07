@@ -7,11 +7,9 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.NewAccountScreen
-import info.bitcoinunlimited.www.wally.ui.NewAccountState
-import info.bitcoinunlimited.www.wally.ui.ScreenNav
-import info.bitcoinunlimited.www.wally.ui.newAccountState
 import info.bitcoinunlimited.www.wally.ui2.NewAccountScreenUi2
+import info.bitcoinunlimited.www.wally.ui2.NewAccountState
+import info.bitcoinunlimited.www.wally.ui2.newAccountState
 import info.bitcoinunlimited.www.wally.ui2.setSelectedAccount
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO

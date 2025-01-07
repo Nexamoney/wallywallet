@@ -19,7 +19,10 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.theme.*
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyDivider
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyShoppingRowColors
+import info.bitcoinunlimited.www.wally.ui2.views.MpMediaView
+import info.bitcoinunlimited.www.wally.ui2.views.WallyBoldText
 import okio.FileNotFoundException
 
 @Composable

@@ -25,21 +25,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.theme.*
-import info.bitcoinunlimited.www.wally.ui.views.ResImageView
+import info.bitcoinunlimited.www.wally.ui.theme.FittedText
+import info.bitcoinunlimited.www.wally.ui2.*
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyDivider
+import info.bitcoinunlimited.www.wally.ui2.views.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
-import org.nexa.threads.millisleep
-
-enum class AccountAction
-{
-    Delete, Search, Rediscover, RediscoverBlockchain, Reassess, RecoveryPhrase, PrimaryAccount, PinChange
-}
-
-// We need to promote some blocking-access data to globals so we can launch threads to load them
-private var curAddressText = MutableStateFlow<String>("")
-private var accountDetailAccount:Account? = null
 
 @Composable
 fun AccountDetailScreen(account: Account, nav: ScreenNav)
@@ -190,44 +181,6 @@ fun AccountActions(acc: Account, txHistoryButtonClicked: () -> Unit, accountDele
         AccountActionButtons(acc, txHistoryButtonClicked = txHistoryButtonClicked, accountDeleted)
     }
 }
-
-fun rediscoverPeekActivity(secretWords: String, chainSelector: ChainSelector, aborter: Objectify<Boolean>): Pair<Long, Int>?
-{
-    val net = connectBlockchain(chainSelector).net
-    var ec = retry(10) {
-        val ec = net?.getElectrum()
-        if (ec == null) millisleep(1000U)
-        ec
-    }
-
-    try
-    {
-        if (aborter.obj) return null
-        val passphrase = "" // TODO: support a passphrase
-        val secret = generateBip39Seed(secretWords, passphrase)
-        val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
-
-        var earliestActivityP =
-          searchFirstActivity( {
-              if (ec.open) return@searchFirstActivity ec
-              ec = net.getElectrum()
-              return@searchFirstActivity(ec)
-          }, chainSelector, 10, {
-              libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
-          }, { time, height ->
-              true
-          })
-        return earliestActivityP
-    }
-    finally
-    {
-        net?.returnElectrum(ec)
-    }
-}
-
-internal val rediscoverPrehistoryHeight = MutableStateFlow(0L)
-internal val rediscoverPrehistoryTime = MutableStateFlow(0L)
-internal var aborter = Objectify<Boolean>(false)
 
 @OptIn(DelicateCoroutinesApi::class)
 @Composable

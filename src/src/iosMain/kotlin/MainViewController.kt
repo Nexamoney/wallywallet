@@ -5,8 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.uikit.ComposeUIViewControllerDelegate
 import androidx.compose.ui.window.ComposeUIViewController
 import info.bitcoinunlimited.www.wally.ui.*
-import info.bitcoinunlimited.www.wally.ui2.UiRoot
-import info.bitcoinunlimited.www.wally.ui2.newUI
+import info.bitcoinunlimited.www.wally.ui2.*
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.Bip44Wallet

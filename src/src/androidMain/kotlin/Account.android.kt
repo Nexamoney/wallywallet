@@ -1,15 +1,11 @@
 package info.bitcoinunlimited.www.wally
 
 import android.graphics.Bitmap
-
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
-
 import com.ionspin.kotlin.bignum.decimal.*
-import info.bitcoinunlimited.www.wally.ui.triggerAccountsChanged
-import info.bitcoinunlimited.www.wally.ui.views.uiData
+import info.bitcoinunlimited.www.wally.ui2.triggerAccountsChanged
 import org.nexa.libnexakotlin.*
-import org.nexa.threads.millisleep
 
 private val LogIt = GetLog("BU.wally.AccountAndroid")
 

@@ -26,123 +26,20 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
+import info.bitcoinunlimited.www.wally.ui2.*
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyDivider
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyRowBbkg1
+import info.bitcoinunlimited.www.wally.ui2.theme.colorWarning
+import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyAssetRowColors
+import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyModalOutline
+import info.bitcoinunlimited.www.wally.ui2.themeUi2.defaultFontSize
+import info.bitcoinunlimited.www.wally.ui2.views.*
 import io.ktor.http.*
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
 
 
 private val LogIt = GetLog("wally.assets")
-
-@Composable
-fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, allowAmountEdit: Boolean = false, modifier: Modifier = Modifier)
-{
-    var apc by remember { mutableStateOf(assetPerAccount) }
-    val asset = apc.assetInfo
-    val nftRaw = asset.nftObservable.collectAsState()
-    val nft = nftRaw.value
-    val assetName = asset.nameObservable.collectAsState()
-    // This automatically re-renders the compose view on changes to loadStateObservable
-    @Suppress("unused")
-    val loadState = asset.loadStateObservable.collectAsState()
-
-    Column(modifier = modifier) {
-        if ((devMode)&&(verbosity>0)) SelectionContainer(Modifier.fillMaxWidth()) { CenteredFittedText(asset.groupId.toStringNoPrefix()) }
-        Row {
-            val hasImage = if (asset.iconImage != null) "yes" else "null"
-            LogIt.info("Asset ${asset.name} icon Image ${hasImage} icon bytes: ${asset.iconBytes?.size} icon url: ${asset.iconUri}")
-            MpMediaView(asset.iconImage, asset.iconBytes, asset.iconUri?.toString(), hideMusicView = true) { mi, draw ->
-                val m = (if (verbosity > 0) Modifier.background(Color.Transparent).size(64.dp, 64.dp)
-                else  Modifier.background(Color.Transparent).size(26.dp, 26.dp)).align(Alignment.CenterVertically)
-                draw(m)
-            }
-
-            // If its an NFT, don't show the quantity if they have just 1
-            if ((nft == null)||(apc.groupInfo.tokenAmt != 1L))
-            {
-                if (allowAmountEdit)
-                {
-                    // Note the "default" (unedited) amount is ALL tokens.  If you change this default, you must also change it in the actuallySend() function.
-                    val amt = assetPerAccount.editableAmount?.toPlainString() ?: tokenAmountString(apc.groupInfo.tokenAmt, asset.tokenInfo?.genesisInfo?.decimal_places)
-                    WallyDecimalEntry(mutableStateOf(amt)) {
-                        try
-                        {
-                            assetPerAccount.editableAmount = assetPerAccount.tokenDecimalFromString(it)
-                        }
-                        catch (e: Exception) // If we can't parse it for any reason, ignore
-                        {
-                            LogIt.info("Can't parse editable amount ${it}")
-                        }
-                        it
-                    }
-                }
-                else
-                {
-                    Spacer(modifier.width(2.dp))
-                    val amt = tokenAmountString(apc.groupInfo.tokenAmt, asset.tokenInfo?.genesisInfo?.decimal_places)
-                    val lenAdjust = 1.0 // 5.0/max(amt.length,5)
-                    val fontSize = if (verbosity > 0) 2.0*lenAdjust else 1.0*lenAdjust
-                    Box(modifier = modifier.weight(0.50f).align(Alignment.CenterVertically)) {
-                        SelectionContainer {
-                            CenteredFittedText(amt, fontSize)
-                        }
-                    }
-                }
-                Spacer(modifier.width(4.dp))
-            }
-
-            Column(Modifier.weight(1f).align(Alignment.CenterVertically)) {
-                var name = (if ((nft != null) && (nft.title.length > 0)) nft.title else assetName.value)
-                if (verbosity > 0)
-                {
-                    if (name != null) Text(text = name, modifier = Modifier.padding(0.dp).fillMaxWidth(), style = WallySectionTextStyle(), textAlign = TextAlign.Center)
-                    else Text(text = i18n(S.loading), modifier = Modifier.padding(0.dp).fillMaxWidth(), textAlign = TextAlign.Center, style = TextStyle(fontWeight = FontWeight.Light,  fontStyle = FontStyle.Italic))
-                    if ((nft?.author != null) && (nft.author.length > 0))
-                    {
-                        CenteredText(i18n(S.NftAuthor) % mapOf("author" to nft.author))
-                    }
-                    if (nft?.series != null)
-                    {
-                        CenteredText(i18n(S.NftSeries) % mapOf("series" to nft.series))
-                    }
-                    val ti = asset.tokenInfo
-                    if ((ti!=null) && (ti.tddSig == null))
-                    {
-                        CenteredText(i18n(S.NftImproperConstruction), modifier.background(colorWarning))
-                    }
-                    else
-                    {
-                        val urlS = asset.docUrl
-                        if (urlS != null)
-                        {
-                            val url = com.eygraber.uri.Url.parseOrNull(urlS)
-                            val host = try
-                            {
-                                url?.host  // although host is supposedly not null, I can get "java.lang.IllegalArgumentException: Url requires a non-null host"
-                            }
-                            catch (e: IllegalArgumentException)
-                            {
-                                null
-                            }
-                            if (host != null)
-                            {
-                                CenteredText(host, TextStyle(fontSize = defaultFontSize * 0.75, fontWeight = FontWeight.Light,  fontStyle = FontStyle.Italic))
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    if (name == null) name = asset.ticker ?: asset.groupId.toString()
-                    var author = if ((nft?.author != null) && (nft.author.length > 0)) ", " + nft.author else ""
-                    CenteredFittedText(name + author)
-                }
-            }
-
-        }
-    }
-}
-
 
 @Composable
 fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
@@ -455,110 +352,3 @@ fun AssetScreen(account: Account)
 
     }
 }
-
-fun onCopyToClipboardButton(a: AssetInfo?)
-{
-    if (a!=null)
-    {
-        setTextClipboard(a.groupId.toString())
-        // TODO: if (android.os.Build.VERSION.SDK_INT <= 32)  // system toasts above this version
-        displayNotice(S.copiedToClipboard)
-    }
-}
-
-
-fun onTradeButton(a: AssetInfo?)
-{
-    if (a!=null)
-    {
-        try
-        {
-            var market = a.tokenInfo?.marketUri
-            if (market != null)
-            {
-                /*
-                    Workaround to fix bug where somehow the url in iOS points to localhost/ instead of niftyart.cash.
-                    This is probably an issue with how data class TokenDesc.marketUri is set in libnexakotlin for iOS.
-                    See libnexakotlin issue: https://gitlab.com/nexa/libnexakotlin/-/issues/22
-                 */
-                if (market.contains("http://localhost"))
-                    market = market.replace("http://localhost", "https://niftyart.cash")
-
-                // TODO create Challenge Transaction proof-of-ownership
-                val uri = Uri.parse(market)
-                val app = wallyApp
-                var cnxn:LongPollInfo? = null
-                if (app != null)
-                {
-                    val cnxns = app.accessHandler
-                    val h = uri.host
-                    if (h != null)
-                        cnxn = cnxns.activeTo(h)
-                }
-
-                if (cnxn != null && cnxn.active)
-                {
-                    displayNotice(S.IssuedToConnection)
-                    val c = cnxn
-                    later {  // Can't do network in UI thread
-                        // If we are connected, open the URL in the connected device (computer)
-                        val connectedUrl = Url(c.proto + "://" + c.hostPort + "/").resolve( uri.path + "?cookie=${c.cookie}")
-
-                        try
-                        {
-                            val result = connectedUrl.readText(HTTP_REQ_TIMEOUT_MS)
-                            LogIt.info(sourceLoc() + "read: ${connectedUrl} ->\n${result.toString()}")
-                        }
-                        catch (e: Exception)  // otherwise open it here
-                        {
-                            if (market.lowercase().startsWith("http"))
-                            {
-                                // If there are already params, add another with an &.  Otherwise add the first param with a ?
-                                val mkt = (if (market.contains("?")) market + "&"
-                                else market + "?" + "tokenid=") + a.groupId.toStringNoPrefix()
-                                openUrl(mkt)
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    // If there are already params, add another with an &.  Otherwise add the first param with a ?
-                    val mkt = (if (market.contains("?")) market + "&"
-                    else market + "?" + "tokenid=") + a.groupId.toStringNoPrefix()
-                    openUrl(mkt)
-                }
-            }
-        }
-        catch(e: Exception)
-        {
-            LogIt.info("asset marketplace activity not found: ${a.tokenInfo?.marketUri}")
-            displayUnexpectedException(e)
-        }
-    }
-}
-
-fun onInvokeButton(a: AssetInfo?)
-{
-    if (a!=null)
-    {
-        var appuri = a.nft?.appuri
-
-        if (appuri != null && appuri.length > 0)
-        {
-            if (!appuri.contains(":")) appuri = "http://" + appuri
-            LogIt.info("launching " + appuri)
-
-            // TODO create Challenge Transaction proof-of-ownership
-
-            if (appuri.lowercase().startsWith("http"))
-            {
-                if (appuri.contains("?")) appuri = appuri + "&" + "tokenid=" + a.groupId.toStringNoPrefix()
-                else appuri = appuri + "?" + "tokenid=" + a.groupId.toStringNoPrefix()
-            }
-
-            openUrl(appuri)
-        }
-    }
-}
-

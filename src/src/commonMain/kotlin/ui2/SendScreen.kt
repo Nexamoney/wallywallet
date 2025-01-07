@@ -35,20 +35,11 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.DecimalMode
 import com.ionspin.kotlin.bignum.decimal.RoundingMode
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.ScreenId
-import info.bitcoinunlimited.www.wally.ui.currencyCodeShared
-import info.bitcoinunlimited.www.wally.ui.nav
-import info.bitcoinunlimited.www.wally.ui.softKeyboardBar
-import info.bitcoinunlimited.www.wally.ui.theme.*
-import info.bitcoinunlimited.www.wally.ui.views.QrScannerDialog
-import info.bitcoinunlimited.www.wally.ui.views.SEND_ALL_TEXT
+import info.bitcoinunlimited.www.wally.ui2.views.QrScannerDialog
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyThemeUi2
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.samsungKeyBoardGray
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurple
-import info.bitcoinunlimited.www.wally.uiv2.AccountPill
-import info.bitcoinunlimited.www.wally.uiv2.BalanceViewModelImpl
-import info.bitcoinunlimited.www.wally.uiv2.IconLabelValueRow
-import info.bitcoinunlimited.www.wally.uiv2.IconTextButtonUi2
+import info.bitcoinunlimited.www.wally.ui2.views.MpMediaView
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
@@ -244,7 +235,7 @@ class SendScreenViewModel(act: Account): ViewModel()
         else try
         {
             // Special case transferring everything
-            if (amount.lowercase() == SEND_ALL_TEXT)
+            if (amount.lowercase() == i18n(S.sendAll))
             {
                 // spendAll = true
                 acc.fromFinestUnit(acc.wallet.balance)

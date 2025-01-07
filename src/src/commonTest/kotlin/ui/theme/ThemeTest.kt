@@ -12,13 +12,8 @@ import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.CommonApp
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
-import info.bitcoinunlimited.www.wally.ui.theme.*
+import info.bitcoinunlimited.www.wally.ui2.views.*
 import info.bitcoinunlimited.www.wally.wallyApp
-import org.nexa.libnexakotlin.REG_TEST_ONLY
-import info.bitcoinunlimited.www.wally.ui.theme.FontScale
-import info.bitcoinunlimited.www.wally.ui.theme.FontScaleStyle
-import info.bitcoinunlimited.www.wally.ui.theme.WallyRoundedButton
-import info.bitcoinunlimited.www.wally.ui.theme.WallySectionTextStyle
 import kotlin.test.Test
 import kotlin.test.assertTrue
 

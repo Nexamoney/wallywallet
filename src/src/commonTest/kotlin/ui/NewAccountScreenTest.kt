@@ -4,6 +4,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.*
+import info.bitcoinunlimited.www.wally.ui2.NewAccountState
+import info.bitcoinunlimited.www.wally.ui2.ScreenNav
+import info.bitcoinunlimited.www.wally.ui2.newAccountState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.ChainSelector

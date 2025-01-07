@@ -3,7 +3,7 @@ package ui.views
 import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
-import info.bitcoinunlimited.www.wally.ui.UnlockView
+import info.bitcoinunlimited.www.wally.ui2.views.UnlockView
 import kotlin.test.Test
 
 class UnlockViewTest

@@ -1,4 +1,4 @@
-package info.bitcoinunlimited.www.wally.ui2
+package info.bitcoinunlimited.www.wally.ui2.views
 
 import androidx.compose.foundation.*
 import androidx.compose.ui.Alignment
@@ -21,22 +21,175 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.*
-import info.bitcoinunlimited.www.wally.ui.theme.*
-import info.bitcoinunlimited.www.wally.ui.views.AccountUIData
-import info.bitcoinunlimited.www.wally.ui.views.ResImageView
-import info.bitcoinunlimited.www.wally.ui.views.startAccountFastForward
-import info.bitcoinunlimited.www.wally.ui.views.uiData
+import info.bitcoinunlimited.www.wally.ui2.EarlyExitException
+import info.bitcoinunlimited.www.wally.ui2.ScreenId
+import info.bitcoinunlimited.www.wally.ui2.ScreenNav
+import info.bitcoinunlimited.www.wally.ui2.accountChangedNotification
+import info.bitcoinunlimited.www.wally.ui2.nav
+import info.bitcoinunlimited.www.wally.ui2.selectedAccountUi2
+import info.bitcoinunlimited.www.wally.ui2.setSelectedAccount
+import info.bitcoinunlimited.www.wally.ui2.theme.*
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurpleExtraLight
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurpleLight
 import kotlinx.coroutines.Job
+import info.bitcoinunlimited.www.wally.ui2.triggerAccountsChanged
+import info.bitcoinunlimited.www.wally.ui2.triggerAssignAccountsGuiSlots
+import info.bitcoinunlimited.www.wally.ui2.triggerUnlockDialog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.nexa.libnexakotlin.ChainSelector
-import org.nexa.libnexakotlin.millinow
-import org.nexa.libnexakotlin.rem
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
+import kotlinx.datetime.toLocalDateTime
+import org.nexa.libnexakotlin.*
+import org.nexa.threads.Thread
+import org.nexa.threads.iThread
+import org.nexa.threads.millisleep
+import kotlin.math.roundToLong
+
+
+data class AccountUIData(
+  val account: Account,
+  var name: String = "",
+  var chainSelector: ChainSelector = ChainSelector.NEXA,
+  var currencyCode: String = "",
+  var balance: String = "",
+  var balFontWeight: FontWeight = FontWeight.Normal,
+  var balColor: Color = colorCredit,
+  var unconfBal: String="",
+  var unconfBalColor: Color = colorCredit,
+  var approximately: String? = null,
+  var approximatelyColor: Color = colorPrimaryDark,
+  var approximatelyWeight: FontWeight = FontWeight.Normal,
+  var devinfo: String="",
+  var locked: Boolean = false,
+  var lockable: Boolean = false,
+  var fastForwarding: Boolean = false,
+  var ffStatus: String? = null,
+  var recentHistory: List<TransactionHistory> = listOf())
+
+/** Look into this account and produce the strings and modifications needed to display it */
+fun Account.uiData(): AccountUIData
+{
+    val ret = AccountUIData(this)
+
+    var delta = unconfirmedBalance
+
+    ret.name = name
+    ret.lockable = lockable
+    ret.locked = locked
+    ret.chainSelector = wallet.chainSelector
+    ret.currencyCode = currencyCode
+    ret.fastForwarding = (fastforward != null)
+    ret.ffStatus = fastforwardStatus
+    val chainstate = wallet.chainstate
+    var synced = true
+    if (chainstate != null)
+    {
+        synced = chainstate.isSynchronized(1, 60 * 60)
+        if (synced)  // ignore 1 block desync or this displays every time a new block is found
+        {
+            ret.unconfBal =
+              if (CURRENCY_ZERO == delta)
+                  ""
+              else
+                  i18n(S.incoming) % mapOf(
+                    "delta" to (if (delta > BigDecimal.ZERO) "+" else "") + format(delta),
+                    "unit" to currencyCode
+                  )
+
+            ret.balFontWeight = FontWeight.Normal
+            ret.unconfBalColor = if (delta > BigDecimal.ZERO) colorCredit else colorDebit
+        }
+        else
+        {
+        }
+    }
+    else
+    {
+        ret.balFontWeight = FontWeight.Light
+        ret.unconfBal = i18n(S.walletDisconnectedFromBlockchain)
+    }
+
+    ret.balance = format(balance)
+
+    if (!devMode) ret.devinfo = ""
+    else
+    {
+        if (chainstate != null)
+        {
+            val now = millinow()
+            val cnxnLst = chainstate.chain.net.mapConnections()
+            {
+                val recentRecv = (now - it.lastReceiveTime) < 75L
+                val recentSend = (now - it.lastSendTime) < 75L
+                val sr = (if (recentSend&&recentRecv) "⇅" else if (recentSend) "↑" else if (recentRecv) "↓" else " ")
+                val latencyStr = if (it.bytesReceived + it.bytesSent > 2000) (it.aveLatency.roundToLong().toString() + "ms") else ""
+                it.name + " (" + sr + latencyStr + ")"
+            }
+            val trying:List<String> = if (chainstate.chain.net is MultiNodeCnxnMgr) (chainstate.chain.net as MultiNodeCnxnMgr).initializingCnxns().map { it.name } else listOf()
+            val peers = cnxnLst.joinToString(", ") + (if (trying.isNotEmpty()) (" " + i18n(S.trying) + " " + trying.joinToString(", ")) else "")
+
+            ret.devinfo = i18n(S.at) + " " + chainstate.syncedHash.toHex().take(8) + ", " + chainstate.syncedHeight + " " + i18n(S.of) + " " + chainstate.chain.curHeight + " blocks, " + (chainstate.chain.net.size ?: "") + " peers\n" + peers
+        }
+        else
+        {
+            ret.devinfo = i18n(S.walletDisconnectedFromBlockchain)
+        }
+    }
+
+    // Only show the approx fiat amount if synced and we have the conversion data
+    if (synced)
+    {
+        if (fiatPerCoin > BigDecimal.ZERO)
+        {
+            var fiatDisplay = balance * fiatPerCoin
+            ret.approximately = i18n(S.approximatelyT) % mapOf("qty" to FiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode)
+            ret.approximatelyColor = colorPrimaryDark
+            ret.approximatelyWeight = FontWeight.Normal
+        }
+        else ret.approximately = null
+    }
+    else
+    {
+        ret.approximately = if ((chainstate == null) || (chainstate.syncedDate <= 1231416000)) i18n(S.unsynced)  // for fun: bitcoin genesis block
+        else
+        {
+            val instant = kotlinx.datetime.Instant.fromEpochSeconds(chainstate.syncedDate)
+            val localTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+
+            val td = localTime.format(DATE_TIME_FORMAT)
+            i18n(S.balanceOnTheDate) % mapOf("date" to td)
+        }
+
+        ret.balFontWeight = FontWeight.Light
+        ret.approximatelyColor = unsyncedStatusColor
+        ret.approximatelyWeight = FontWeight.Bold
+        ret.balColor = unsyncedBalanceColor
+    }
+
+    // Reload transaction history outside of the UI processing thread.
+    laterJob {
+        val txh = mutableListOf<TransactionHistory>()
+        /* This code puts a fake tx at the top that keeps updating based on the current time
+       so you can see how often this is regenerating.
+    val fakeTx = txFor(wallet.chainSelector)
+    val fakeHistory = TransactionHistory(wallet.chainSelector, fakeTx)
+    fakeHistory.date = millinow()
+    fakeHistory.outgoingAmt=0
+    fakeHistory.incomingAmt=millinow()
+    txh.add(fakeHistory)
+    */
+        wallet.forEachTxByDate {
+            txh.add(it)
+            (txh.size >= 10) // just get the most recent 10
+        }
+        ret.recentHistory = txh.sortedByDescending { it.date }
+    }
+    return ret
+}
 
 open class AccountUiDataViewModel: ViewModel()
 {
@@ -78,7 +231,6 @@ open class AccountUiDataViewModel: ViewModel()
             updatedMap.toMap()
         }
     }
-
 
     // This should probably be moved to a viewModel with only one account
     open fun fastForwardSelectedAccount()
@@ -171,7 +323,7 @@ class AccountUiDataViewModelFake: AccountUiDataViewModel()
     }
 }
 
-private fun getAccountIconResPath(chainSelector: ChainSelector): String
+fun getAccountIconResPath(chainSelector: ChainSelector): String
 {
     return when(chainSelector)
     {
@@ -516,3 +668,120 @@ fun AccountItemViewUi2(
         }
 }
 
+data class DerivationPathSearchProgress(var aborter: Objectify<Boolean>,var progress: String?, var progressInt: Int, var results:AccountSearchResults? = null)
+
+fun derivationPathSearch(progress: DerivationPathSearchProgress, wallet: Bip44Wallet, coin: Long, account: Long, change: Boolean, idxMaxGap: Int, start: Long = 0, event: (()->Unit)? = null): iThread
+{
+    val cnxn = wallet.blockchain.net
+    val secret = wallet.secret
+
+    return Thread("ff_${wallet.name}")
+    {
+        var ec: ElectrumClient? = null
+        fun getEc():ElectrumClient {
+            return retry(10) {
+                val tmp = ec
+                if (tmp != null && tmp.open) ec
+                else
+                {
+                    progress.progress = i18n(S.trying)
+                    ec = cnxn.getElectrum()
+                    progress.progress = i18n(S.NoNodes)
+                    event?.invoke()
+                    millisleep(200U)
+                    ec
+                }
+            }
+        }
+        progress.results = try
+        {
+            searchDerivationPathActivity(::getEc, wallet.chainSelector, idxMaxGap, false, {
+                if (progress.aborter.obj) throw EarlyExitException()
+                val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, coin, account, change, it).first
+                val us = UnsecuredSecret(key)
+                val dest = Pay2PubKeyTemplateDestination(wallet.chainSelector, us, it.toLong())
+                progress.progress = ""
+                progress.progressInt = it
+                event?.invoke()
+                dest
+            },
+              {
+                  //summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
+                  //  "bal" to NexaFormat.format(fromFinestUnit(it.balance, chainSelector = chainSelector)), "units" to (chainToDisplayCurrencyCode[chainSelector] ?:""))
+                  // displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + addrText + summaryText)
+                  event?.invoke()
+              }
+            )
+        }
+        catch (e: EarlyExitException)
+        {
+            null
+        }
+        catch (e: Exception)
+        {
+            displayUnexpectedException(e)
+            null
+        }
+    }
+}
+
+fun startAccountFastForward(account: Account, displayFastForwardInfo: (String?) -> Unit)
+{
+    if (account.fastforward != null)
+    {
+        displayNotice(i18n(S.inProgress))
+        return
+    }
+    val wallet = account.wallet
+    // val passphrase = "" // TODO: support a passphrase
+    val addressDerivationCoin = Bip44AddressDerivationByChain(wallet.chainSelector)
+
+    val aborter = Objectify<Boolean>(false)
+    account.fastforward = aborter
+    displayFastForwardInfo(i18n(S.fastforwardStart))
+
+    Thread("fastforward_${wallet.name}")
+    {
+        val normal: DerivationPathSearchProgress = DerivationPathSearchProgress(aborter, null, 0, null)
+        val change: DerivationPathSearchProgress = DerivationPathSearchProgress(aborter, null, 0, null)
+
+        // This code basically assumes that the contacted Rostrum nodes are synced with each other (which basically means on the tip)
+        // otherwise you could get into a situation where some Rostrum connection says no activity on address X, but its really
+        // reporting that for blocks 0-N whereas another request reports for blocks 0-N+10.  And so N+10 is used as the synced height.
+        val t1 = derivationPathSearch(normal, wallet, addressDerivationCoin, 0, false, WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP) {
+            // displayFastForwardInfo((normal.progressInt + change.progressInt).toString() + " " + (normal.progress ?: "") + " " + (change.progress ?: ""))
+            displayFastForwardInfo(normal.progressInt.toString() + " " + (normal.progress ?: ""))
+        }
+        /* skip searching the change for speed */
+        val t2 = derivationPathSearch(change, wallet, addressDerivationCoin, 0, true, WALLET_FULL_RECOVERY_CHANGE_DERIVATION_PATH_MAX_GAP) {
+            displayFastForwardInfo((normal.progressInt + change.progressInt).toString() + " " + (normal.progress ?: "") + " " + (change.progress ?: ""))
+        }
+        t1.join()
+        t2.join()
+        normal.results?.let {
+            var lastHeight = it.lastHeight
+            var lastDate = it.lastDate
+            var lastHash = it.lastHash
+            val ch: AccountSearchResults? = change.results
+            var txh = it.txh
+
+            if (ch!=null)
+            {
+                if (ch.lastHeight > it.lastHeight)
+                {
+                    lastHeight = ch.lastHeight
+                    lastDate = ch.lastDate
+                    lastHash = ch.lastHash
+                }
+                txh = it.txh + ch.txh
+            }
+            wallet.generateAddressesUntil(it.lastAddressIndex)
+            wallet.fastforward(lastHeight, lastDate, lastHash, txh)
+            wallet.save(true)
+        }
+        triggerAssetCheck()
+        displayFastForwardInfo(null)
+        account.fastforward = null
+        triggerAccountsChanged(account)
+    }
+}

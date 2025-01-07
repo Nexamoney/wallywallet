@@ -2,7 +2,7 @@ package ui2
 
 import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.uiv2.AssetListItemViewUi2
+import info.bitcoinunlimited.www.wally.ui2.AssetListItemViewUi2
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain

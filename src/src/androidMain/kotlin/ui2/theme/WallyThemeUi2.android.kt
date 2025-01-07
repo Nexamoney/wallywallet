@@ -10,7 +10,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import info.bitcoinunlimited.www.wally.ui.theme.DarkColorPalette
-import info.bitcoinunlimited.www.wally.ui.theme.Shapes
+import info.bitcoinunlimited.www.wally.ui2.theme.Shapes
 
 @Composable
 actual fun WallyThemeUi2(

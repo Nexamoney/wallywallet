@@ -12,7 +12,6 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.*
 import android.service.notification.StatusBarNotification
-import android.view.View
 import android.widget.Toast
 import androidx.annotation.RawRes
 import androidx.appcompat.app.AppCompatActivity
@@ -26,7 +25,7 @@ import org.nexa.libnexakotlin.*
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 import com.eygraber.uri.*
-import info.bitcoinunlimited.www.wally.ui.views.loadingAnimation
+import info.bitcoinunlimited.www.wally.ui2.views.loadingAnimation
 import org.nexa.threads.Mutex
 import org.nexa.threads.setThreadName
 

@@ -1,4 +1,4 @@
-package info.bitcoinunlimited.www.wally.ui
+package info.bitcoinunlimited.www.wally.ui2
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,7 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.theme.*
+import info.bitcoinunlimited.www.wally.ui2.theme.*
+import info.bitcoinunlimited.www.wally.ui2.views.CenteredFittedText
+import info.bitcoinunlimited.www.wally.ui2.views.CenteredSectionText
+import info.bitcoinunlimited.www.wally.ui2.views.FittedText
+import info.bitcoinunlimited.www.wally.ui2.views.WallyBoringButton
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.*

@@ -25,10 +25,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.work.*
-import info.bitcoinunlimited.www.wally.ui.*
-import info.bitcoinunlimited.www.wally.ui.theme.BaseBkg
-import info.bitcoinunlimited.www.wally.ui2.UiRoot
-import info.bitcoinunlimited.www.wally.ui2.newUI
+import info.bitcoinunlimited.www.wally.ui2.theme.BaseBkg
+import info.bitcoinunlimited.www.wally.ui2.*
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.rem
 import kotlin.time.Duration.Companion.milliseconds
