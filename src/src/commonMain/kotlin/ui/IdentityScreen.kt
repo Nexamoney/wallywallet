@@ -133,8 +133,8 @@ fun IdentityScreen(account: Account, sess: IdentitySession?, nav: ScreenNav)
 
 
     val wallet = account.wallet
-    val identities: ArrayList<IdentityDomain> = ArrayList(wallet.allIdentityDomains())
-    LogIt.info("identity domain count:" + identities.size.toString())
+    var identities: MutableState<ArrayList<IdentityDomain>> = mutableStateOf(ArrayList(wallet.allIdentityDomains()))
+    LogIt.info("identity domain count:" + identities.value.size.toString())
     LogIt.info(wallet.allIdentityDomains().map { it.domain }.toString())
 
     val d = domain
@@ -185,14 +185,14 @@ fun IdentityScreen(account: Account, sess: IdentitySession?, nav: ScreenNav)
 
         WallyDivider()
         CenteredSectionText(S.IdentityRegistrations)
-        if (identities.size == 0)
+        if (identities.value.size == 0)
         {
             Text(i18n(S.NoIdentitiesRegistered), Modifier.background(WallyRowBbkg1).fillMaxWidth())
         }
         else
         {
             LazyColumn(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(0.1f)) {
-                identities.forEachIndexed { index, entry ->
+                identities.value.forEachIndexed { index, entry ->
                     item(key = entry.domain) {
                         Box(Modifier.padding(4.dp, 2.dp).fillMaxWidth().background(if (index % 1 == 0) WallyRowBbkg1 else WallyRowBbkg2).clickable {
                             val d1 = domain?.clone()
@@ -262,8 +262,11 @@ fun IdentityScreen(account: Account, sess: IdentitySession?, nav: ScreenNav)
             {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
                     WallyBoringLargeTextButton(S.removeAll, onClick = {
-                        account.wallet.identityInfo.clear()
-                        account.wallet.identityInfoChanged = true
+                        wallet.allIdentityDomains().forEach {
+                            wallet.removeIdentityDomain(it.domain)
+                        }
+                        identities.value = ArrayList(wallet.allIdentityDomains())
+                        laterJob { wallet.save(true) }
                     })
                 }
             }
@@ -322,6 +325,10 @@ fun IdentityEditScreen(account: Account, nav: ScreenNav)
         Spacer(Modifier.height(1.dp).weight(1.0f))
         CenteredText(i18n(S.IdentityInfoNote), Modifier.padding(8.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+            WallyBoringLargeTextButton(S.clear) {
+                account.wallet.identityInfo.clear()
+                account.wallet.identityInfoChanged = true
+            }
             WallyBoringLargeTextButton(S.done) { nav.back() }
         }
     }
