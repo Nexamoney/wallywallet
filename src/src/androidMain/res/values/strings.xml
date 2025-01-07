@@ -550,6 +550,7 @@ Good luck!
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_exchange">Exchange</string>
     <string name="title_activity_shopping">Shopping</string>
+    <string name="ecosystem">Ecosystem</string>
     <string name="title_activity_shopping_settings">Custom Shopping Buttons</string>
     <string name="title_activity_trickle_pay">Trickle Pay</string>
     <string name="title_home">Home</string>

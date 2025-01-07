@@ -9,14 +9,35 @@ import info.bitcoinunlimited.www.wally.ui2.SendScreenViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.initializeLibNexa
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalTestApi::class)
 class SendScreenTestUi2
 {
+    @BeforeTest
+    fun init()
+    {
+        // jvm only
+        if (platform().usesMouse)
+            Dispatchers.setMain(StandardTestDispatcher())
+    }
+
+    @AfterTest
+    fun after()
+    {
+        // jvm only
+        if (platform().usesMouse)
+            Dispatchers.resetMain()
+    }
+
     @Test
     fun sendBottomButtonsTest() = runComposeUiTest {
         initializeLibNexa()
