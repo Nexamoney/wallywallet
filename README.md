@@ -1,3 +1,8 @@
+
+![Pipeline Status](https://gitlab.com/wallywallet/wallet/badges/main/pipeline.svg) ![Coverage Status](https://gitlab.com/wallywallet/wallet/badges/main/coverage.svg)
+
+
+
 # Wally Personal Wallet
 
 This is a non-custodial SPV & Electrum protocol wallet for Nexa and Bitcoin Cash.
