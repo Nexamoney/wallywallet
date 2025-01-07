@@ -2,9 +2,8 @@ package ui
 
 import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.IdentityScreen
-import info.bitcoinunlimited.www.wally.ui.ScreenNav
-import info.bitcoinunlimited.www.wally.ui.TxHistoryScreen
+import info.bitcoinunlimited.www.wally.ui2.IdentityScreen
+import info.bitcoinunlimited.www.wally.ui2.ScreenNav
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.runBlocking

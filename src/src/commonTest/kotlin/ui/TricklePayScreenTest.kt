@@ -1,10 +1,9 @@
 package ui
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.TricklePayDomainView
+import info.bitcoinunlimited.www.wally.ui2.TricklePayDomainView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.nexa.libnexakotlin.ChainSelector

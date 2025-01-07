@@ -1,14 +1,21 @@
-package info.bitcoinunlimited.www.wally.ui.views
-
+package info.bitcoinunlimited.www.wally.ui2.views
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
+import android.media.AudioManager
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
+import android.util.Size
 import android.view.ViewGroup
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -18,42 +25,26 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.google.common.util.concurrent.ListenableFuture
-import android.annotation.SuppressLint
-import android.content.Context
-import android.media.AudioManager
-import android.media.MediaPlayer
-import android.media.RingtoneManager
-import android.os.Build
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.util.Size
-import androidx.camera.core.ImageProxy
-import androidx.compose.runtime.*
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
-import org.nexa.libnexakotlin.GetLog
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
-
-/**
- * Open camera and scan QR-code with android
- */
 @Composable
 actual fun QrScannerView(modifier: Modifier, onQrCodeScanned: (String) -> Unit)
 {

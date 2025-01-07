@@ -19,9 +19,11 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.DecimalMode
 import com.ionspin.kotlin.bignum.decimal.RoundingMode
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.AssetListItemView
-import info.bitcoinunlimited.www.wally.ui.currencyCodeShared
 import info.bitcoinunlimited.www.wally.ui.theme.*
+import info.bitcoinunlimited.www.wally.ui2.AssetListItemView
+import info.bitcoinunlimited.www.wally.ui2.currencyCodeShared
+import info.bitcoinunlimited.www.wally.ui2.theme.colorTitleBackground
+import info.bitcoinunlimited.www.wally.ui2.views.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.asStateFlow
 import okio.utf8Size

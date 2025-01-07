@@ -17,13 +17,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.ScreenNav
-import info.bitcoinunlimited.www.wally.ui.currentReceiveShared
-import info.bitcoinunlimited.www.wally.ui.nav
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.CenteredText
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurple
-import info.bitcoinunlimited.www.wally.uiv2.*
+import info.bitcoinunlimited.www.wally.S
+import info.bitcoinunlimited.www.wally.displayNotice
+import info.bitcoinunlimited.www.wally.i18n
+import info.bitcoinunlimited.www.wally.setTextClipboard
+import info.bitcoinunlimited.www.wally.*import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurple
+import info.bitcoinunlimited.www.wally.ui2.views.AccountUiDataViewModel
+import info.bitcoinunlimited.www.wally.ui2.views.CenteredText
+import info.bitcoinunlimited.www.wally.wallyApp
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import org.nexa.libnexakotlin.PayDestination
 import org.nexa.libnexakotlin.chainToURI

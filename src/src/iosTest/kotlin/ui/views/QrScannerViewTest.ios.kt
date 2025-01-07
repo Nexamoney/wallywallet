@@ -1,8 +1,8 @@
 package ui.views
 
 import androidx.compose.ui.test.*
-import info.bitcoinunlimited.www.wally.ui.views.CodeType
-import info.bitcoinunlimited.www.wally.ui.views.ScannerWithPermissions
+import info.bitcoinunlimited.www.wally.ui2.views.CodeType
+import info.bitcoinunlimited.www.wally.ui2.views.ScannerWithPermissions
 import kotlin.test.Test
 
 class QrScannerViewTest {

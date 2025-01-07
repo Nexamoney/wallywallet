@@ -19,10 +19,9 @@ import androidx.compose.ui.window.Dialog
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.platform
-import info.bitcoinunlimited.www.wally.ui.theme.FontScale
-import info.bitcoinunlimited.www.wally.ui.theme.WallyModalOutline
-import info.bitcoinunlimited.www.wally.ui.theme.colorCredit
-import info.bitcoinunlimited.www.wally.ui.theme.colorDebit
+import info.bitcoinunlimited.www.wally.ui2.theme.colorCredit
+import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyModalOutline
+import info.bitcoinunlimited.www.wally.ui2.views.FontScale
 import org.nexa.libnexakotlin.GetLog
 
 private val LogIt = GetLog("BU.wally.dropdown.ui2")

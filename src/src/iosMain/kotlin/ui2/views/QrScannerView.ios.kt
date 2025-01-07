@@ -1,4 +1,4 @@
-package info.bitcoinunlimited.www.wally.ui.views
+package info.bitcoinunlimited.www.wally.ui2.views
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -67,7 +67,9 @@ actual fun QrScannerView(
   modifier: Modifier,
   onQrCodeScanned: (String) -> Unit
 ) {
-    ScannerWithPermissions(modifier, onScanned = {onQrCodeScanned(it); true }, types = listOf(CodeType.QR))
+    ScannerWithPermissions(modifier, onScanned = {onQrCodeScanned(it); true }, types = listOf(
+        CodeType.QR
+    ))
 }
 
 /**
@@ -82,11 +84,11 @@ actual fun QrScannerView(
  */
 @Composable
 fun ScannerWithPermissions(
-  modifier: Modifier = Modifier,
-  onScanned: (String) -> Boolean,
-  types: List<CodeType>,
-  permissionText: String = "Camera is required for QR Code scanning",
-  openSettingsLabel: String = "Open Settings",
+    modifier: Modifier = Modifier,
+    onScanned: (String) -> Boolean,
+    types: List<CodeType>,
+    permissionText: String = "Camera is required for QR Code scanning",
+    openSettingsLabel: String = "Open Settings",
 ) {
     ScannerWithPermissions(
       modifier = modifier.clipToBounds(),
@@ -117,10 +119,10 @@ fun ScannerWithPermissions(
  */
 @Composable
 fun ScannerWithPermissions(
-  modifier: Modifier = Modifier,
-  onScanned: (String) -> Boolean,
-  types: List<CodeType>,
-  permissionDeniedContent: @Composable (CameraPermissionState) -> Unit,
+    modifier: Modifier = Modifier,
+    onScanned: (String) -> Boolean,
+    types: List<CodeType>,
+    permissionDeniedContent: @Composable (CameraPermissionState) -> Unit,
 ) {
     val permissionState = rememberCameraPermissionState()
 

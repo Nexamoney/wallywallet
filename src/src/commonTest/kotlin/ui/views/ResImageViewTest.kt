@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
 import androidx.compose.ui.unit.dp
-import info.bitcoinunlimited.www.wally.ui.views.ResImageView
+import info.bitcoinunlimited.www.wally.ui2.views.ResImageView
 import kotlin.test.Test
 
 class ResImageViewTest

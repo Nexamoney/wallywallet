@@ -4,8 +4,8 @@ import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.platform
-import info.bitcoinunlimited.www.wally.ui.ScreenNav
 import info.bitcoinunlimited.www.wally.ui.ShoppingScreen
+import info.bitcoinunlimited.www.wally.ui2.ScreenNav
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)

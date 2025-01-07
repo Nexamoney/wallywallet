@@ -1,10 +1,9 @@
-package info.bitcoinunlimited.www.wally.ui
+package info.bitcoinunlimited.www.wally.ui2
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,9 +12,12 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.eygraber.uri.Uri
-
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.theme.*
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyDivider
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyHalfDivider
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyRowBbkg1
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyRowBbkg2
+import info.bitcoinunlimited.www.wally.ui2.views.*
 import org.nexa.libnexakotlin.*
 
 

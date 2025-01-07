@@ -1,14 +1,9 @@
 package info.bitcoinunlimited.www.wally.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,7 +12,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
-import info.bitcoinunlimited.www.wally.ui.views.ResImageView
+import info.bitcoinunlimited.www.wally.ui2.ScreenNav
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyDivider
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyShoppingRowColors
+import info.bitcoinunlimited.www.wally.ui2.views.MpMediaView
+import info.bitcoinunlimited.www.wally.ui2.views.WallyBoldText
+import info.bitcoinunlimited.www.wally.ui2.views.WallyBoringTextButton
 import okio.FileNotFoundException
 
 @Composable

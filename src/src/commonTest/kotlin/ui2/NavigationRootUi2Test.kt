@@ -7,12 +7,12 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.theme.NativeSplash
-import info.bitcoinunlimited.www.wally.ui2.AccountUiDataViewModelFake
+import info.bitcoinunlimited.www.wally.ui2.AssetsViewModelFake
+import info.bitcoinunlimited.www.wally.ui2.BalanceViewModelFake
 import info.bitcoinunlimited.www.wally.ui2.NavigationRootUi2
-import info.bitcoinunlimited.www.wally.uiv2.AssetsViewModelFake
-import info.bitcoinunlimited.www.wally.uiv2.BalanceViewModelFake
-import info.bitcoinunlimited.www.wally.uiv2.SyncViewModelFake
+import info.bitcoinunlimited.www.wally.ui2.SyncViewModelFake
+import info.bitcoinunlimited.www.wally.ui2.views.AccountUiDataViewModelFake
+import info.bitcoinunlimited.www.wally.ui2.views.NativeSplash
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.initializeLibNexa
 import org.nexa.libnexakotlin.runningTheTests

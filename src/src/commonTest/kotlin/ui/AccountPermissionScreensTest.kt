@@ -3,6 +3,7 @@ package ui
 import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.*
+import info.bitcoinunlimited.www.wally.ui2.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.runBlocking

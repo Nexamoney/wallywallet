@@ -1,4 +1,4 @@
-package info.bitcoinunlimited.www.wally.uiv2
+package info.bitcoinunlimited.www.wally.ui2
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -30,24 +30,30 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.*
-import info.bitcoinunlimited.www.wally.ui.aborter
-import info.bitcoinunlimited.www.wally.ui.rediscoverPrehistoryHeight
-import info.bitcoinunlimited.www.wally.ui.rediscoverPrehistoryTime
-import info.bitcoinunlimited.www.wally.ui.theme.*
-import info.bitcoinunlimited.www.wally.ui.views.ResImageView
-import info.bitcoinunlimited.www.wally.ui2.AccountUiDataViewModel
-import info.bitcoinunlimited.www.wally.ui2.noSelectedAccount
-import info.bitcoinunlimited.www.wally.ui2.selectedAccountUi2
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallySwitchRowUi2
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyDivider
+import info.bitcoinunlimited.www.wally.ui2.views.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.*
+import org.nexa.threads.millisleep
+
+internal val rediscoverPrehistoryHeight = MutableStateFlow(0L)
+internal val rediscoverPrehistoryTime = MutableStateFlow(0L)
+internal var aborter = Objectify<Boolean>(false)
+
+// We need to promote some blocking-access data to globals so we can launch threads to load them
+var curAddressText = MutableStateFlow<String>("")
+var accountDetailAccount:Account? = null
+
+enum class AccountAction
+{
+    Delete, Search, Rediscover, RediscoverBlockchain, Reassess, RecoveryPhrase, PrimaryAccount, PinChange
+}
 
 private val LogIt = GetLog("wally.ui2.AccountDetailScreenUi2")
 
@@ -109,7 +115,43 @@ data class AccountStatistics(
   else
       i18n(S.FirstDeposit) + " " + i18n(S.never)
 )
-abstract class AccountStatisticsViewModel : ViewModel() {
+
+fun rediscoverPeekActivity(secretWords: String, chainSelector: ChainSelector, aborter: Objectify<Boolean>): Pair<Long, Int>?
+{
+    val net = connectBlockchain(chainSelector).net
+    var ec = retry(10) {
+        val ec = net?.getElectrum()
+        if (ec == null) millisleep(1000U)
+        ec
+    }
+
+    try
+    {
+        if (aborter.obj) return null
+        val passphrase = "" // TODO: support a passphrase
+        val secret = generateBip39Seed(secretWords, passphrase)
+        val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
+
+        var earliestActivityP =
+          searchFirstActivity({
+              if (ec.open) return@searchFirstActivity ec
+              ec = net.getElectrum()
+              return@searchFirstActivity (ec)
+          }, chainSelector, 10, {
+              libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
+          }, { time, height ->
+              true
+          })
+        return earliestActivityP
+    }
+    finally
+    {
+        net?.returnElectrum(ec)
+    }
+}
+
+open class AccountStatisticsViewModel : ViewModel()
+{
 
     val accountStats = MutableStateFlow<AccountStatistics?>(null)
     val curAddressText = MutableStateFlow<String>("")
@@ -172,11 +214,10 @@ abstract class AccountStatisticsViewModel : ViewModel() {
             return key
         }
     }
+
 }
 
-class AccountStatisticsViewModelImpl() : AccountStatisticsViewModel()
-
-class AccountStatisticsViewModelFake(): AccountStatisticsViewModel()
+class AccountStatisticsViewModelFake() : AccountStatisticsViewModel()
 {
     override fun observeSelectedAccount()
     {
@@ -187,9 +228,9 @@ class AccountStatisticsViewModelFake(): AccountStatisticsViewModel()
 @Composable
 fun AccountDetailScreenUi2(
   account: Account,
-  accountStatsViewModel: AccountStatisticsViewModel = viewModel { AccountStatisticsViewModelImpl() },
+  accountStatsViewModel: AccountStatisticsViewModel = viewModel { AccountStatisticsViewModel() },
   balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
-  syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl()},
+  syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() },
   accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() }
 )
 {
@@ -231,7 +272,7 @@ fun AccountStatisticsCard(viewModel: AccountStatisticsViewModel)
             Column(
               modifier = Modifier.padding(16.dp)
             ) {
-                Text(i18n(S.AccountStatistics), style = MaterialTheme.typography.headlineMedium,textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                Text(i18n(S.AccountStatistics), style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                 Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
@@ -338,7 +379,7 @@ fun AccountFirstLastSendIterati(stat: Wallet.WalletStatistics)
 {
     val firstLastSend = i18n(S.FirstLastSend) % mapOf(
       "first" to (if (stat.firstSendHeight == Long.MAX_VALUE) "never" else stat.firstSendHeight.toString()),
-      "last" to (if (stat.lastSendHeight==0L) "never" else stat.lastSendHeight.toString()))
+      "last" to (if (stat.lastSendHeight == 0L) "never" else stat.lastSendHeight.toString()))
     val firstLastReceive = i18n(S.FirstLastReceive) % mapOf(
       "first" to (if (stat.firstReceiveHeight == Long.MAX_VALUE) "never" else stat.firstReceiveHeight.toString()),
       "last" to (if (stat.lastReceiveHeight == 0L) "never" else stat.lastReceiveHeight.toString()))
@@ -367,7 +408,7 @@ fun TxStatistics(viewModel: AccountStatisticsViewModel, onAddressesButtonClicked
                 )
 
                 Button(
-                  content = { Text("  " +  (i18n(S.AccountNumTx) % mapOf("num" to stat.numTransactions.toString()))  + "  ", color = Color.White) },
+                  content = { Text("  " + (i18n(S.AccountNumTx) % mapOf("num" to stat.numTransactions.toString())) + "  ", color = Color.White) },
                   onClick = { onTxHistoryButtonClicked() }
                 )
             }
@@ -421,7 +462,7 @@ fun AccountActionButtonsUi2(acc: Account, txHistoryButtonClicked: () -> Unit, ac
                         {
                             val (time, height) = ret
 
-                            state.prehistoryDate = time - (30*60)
+                            state.prehistoryDate = time - (30 * 60)
                             rediscoverPrehistoryTime.value = state.prehistoryDate
                             state.prehistoryHeight = height.toLong() - 1
                             rediscoverPrehistoryHeight.value = state.prehistoryHeight
@@ -433,42 +474,48 @@ fun AccountActionButtonsUi2(acc: Account, txHistoryButtonClicked: () -> Unit, ac
             }
 
             val mod = Modifier.fillMaxWidth(0.90f)
-            OutlinedButton(content = {Text(i18n(S.txHistoryButton))}, onClick = txHistoryButtonClicked, modifier = mod)
-            OutlinedButton(content = {Text(i18n(S.SetChangePin))}, onClick = { accountAction.value =
-                AccountAction.PinChange
+            OutlinedButton(content = { Text(i18n(S.txHistoryButton)) }, onClick = txHistoryButtonClicked, modifier = mod)
+            OutlinedButton(content = { Text(i18n(S.SetChangePin)) }, onClick = {
+                accountAction.value =
+                  AccountAction.PinChange
             }, modifier = mod)
-            if(wallyApp?.nullablePrimaryAccount != acc)    // it not primary
-                OutlinedButton(content = {Text(i18n(S.setAsPrimaryAccountButton))}, onClick = { accountAction.value =
-                    AccountAction.PrimaryAccount
+            if (wallyApp?.nullablePrimaryAccount != acc)    // it not primary
+                OutlinedButton(content = { Text(i18n(S.setAsPrimaryAccountButton)) }, onClick = {
+                    accountAction.value =
+                      AccountAction.PrimaryAccount
                 }, modifier = mod)
-            OutlinedButton(content = {Text(i18n(S.assessUnconfirmed))}, onClick = { accountAction.value =
-                AccountAction.Reassess
+            OutlinedButton(content = { Text(i18n(S.assessUnconfirmed)) }, onClick = {
+                accountAction.value =
+                  AccountAction.Reassess
             }, modifier = mod)
-            OutlinedButton(content = {Text(i18n(S.searchWalletTx))}, onClick = { rediscoverWalletTx(AccountAction.Search) }, modifier = mod)
-            OutlinedButton(content = {Text(i18n(S.ViewRecoveryPhrase))}, onClick = { accountAction.value =
-                AccountAction.RecoveryPhrase
+            OutlinedButton(content = { Text(i18n(S.searchWalletTx)) }, onClick = { rediscoverWalletTx(AccountAction.Search) }, modifier = mod)
+            OutlinedButton(content = { Text(i18n(S.ViewRecoveryPhrase)) }, onClick = {
+                accountAction.value =
+                  AccountAction.RecoveryPhrase
             }, modifier = mod)
-            OutlinedButton(content = {Text(i18n(S.deleteWalletAccount))}, onClick = { accountAction.value =
-                AccountAction.Delete
+            OutlinedButton(content = { Text(i18n(S.deleteWalletAccount)) }, onClick = {
+                accountAction.value =
+                  AccountAction.Delete
             }, modifier = mod)
 
             if (devMode)
             {
-                OutlinedButton(content = {Text(i18n(S.rediscoverWalletTx))}, onClick = { rediscoverWalletTx(AccountAction.Rediscover) }, modifier = mod)
-                OutlinedButton(content = {Text(i18n(S.rediscoverBlockchain))}, onClick = { accountAction.value =
-                    AccountAction.RediscoverBlockchain
+                OutlinedButton(content = { Text(i18n(S.rediscoverWalletTx)) }, onClick = { rediscoverWalletTx(AccountAction.Rediscover) }, modifier = mod)
+                OutlinedButton(content = { Text(i18n(S.rediscoverBlockchain)) }, onClick = {
+                    accountAction.value =
+                      AccountAction.RediscoverBlockchain
                 }, modifier = mod)
                 /*  Messes up the account prehistory to see if rediscover properly corrects it
-                WallyBoringTextButton("DEV: randomize prehistory") {
-                    acc.wallet.chainstate?.prehistoryHeight = Random.nextLong(-10L, 100000L)
-                    acc.wallet.chainstate?.prehistoryDate = 0
-                }
-                 */
+            WallyBoringTextButton("DEV: randomize prehistory") {
+                acc.wallet.chainstate?.prehistoryHeight = Random.nextLong(-10L, 100000L)
+                acc.wallet.chainstate?.prehistoryDate = 0
+            }
+             */
             }
         }
         else
         {
-            when(accountAction.value)
+            when (accountAction.value)
             {
                 AccountAction.PinChange ->
                 {
@@ -552,7 +599,7 @@ fun AccountActionButtonsUi2(acc: Account, txHistoryButtonClicked: () -> Unit, ac
                     {
                         val dateString = epochToDate(rediscoverPrehistoryTime.collectAsState().value)
                         Spacer(Modifier.height(8.dp))
-                        Text(i18n(S.FirstUse) % mapOf("date" to dateString) )
+                        Text(i18n(S.FirstUse) % mapOf("date" to dateString))
                         Text(i18n(S.Block) % mapOf("block" to rediscoverPrehistoryHeight.collectAsState().value.toString()))
                         Spacer(Modifier.height(8.dp))
                     }
@@ -570,6 +617,7 @@ fun AccountActionButtonsUi2(acc: Account, txHistoryButtonClicked: () -> Unit, ac
                         accountAction.value = null
                     }
                 }
+
                 AccountAction.Search ->
                 {
                     val wal = acc.wallet
@@ -578,7 +626,7 @@ fun AccountActionButtonsUi2(acc: Account, txHistoryButtonClicked: () -> Unit, ac
                     {
                         val dateString = epochToDate(rediscoverPrehistoryTime.collectAsState().value)
                         Spacer(Modifier.height(8.dp))
-                        Text(i18n(S.FirstUse) % mapOf("date" to dateString) )
+                        Text(i18n(S.FirstUse) % mapOf("date" to dateString))
                         Text(i18n(S.Block) % mapOf("block" to rediscoverPrehistoryHeight.collectAsState().value.toString()))
                         Spacer(Modifier.height(8.dp))
                     }
@@ -605,7 +653,10 @@ fun AccountActionButtonsUi2(acc: Account, txHistoryButtonClicked: () -> Unit, ac
                     }
                     accountAction.value = null
                 }
-                else -> {}
+
+                else ->
+                {
+                }
             }
         }
     }
@@ -634,7 +685,7 @@ fun AccountDetailChangePinViewUi2(acc: Account, displayError: (String) -> Unit, 
     {
 
         AccountDetailPinInputUi2(i18n(S.CurrentPin), i18n(S.EnterPIN), currentPin, currentPinOk) {
-            if(it.onlyDigits())
+            if (it.onlyDigits())
             {
                 currentPin = it
 
@@ -646,7 +697,7 @@ fun AccountDetailChangePinViewUi2(acc: Account, displayError: (String) -> Unit, 
             }
         }
         AccountDetailPinInputUi2(i18n(S.NewPin), i18n(S.EnterPINorBlankToRemove), newPin, newPinOk) {
-            if(it.onlyDigits())
+            if (it.onlyDigits())
             {
                 newPin = it
                 newPinOk = it.length >= 4 || it.isEmpty()
@@ -656,7 +707,7 @@ fun AccountDetailChangePinViewUi2(acc: Account, displayError: (String) -> Unit, 
     else  // No current PIN
     {
         AccountDetailPinInputUi2(i18n(S.NewPin), i18n(S.EnterPINorBlankToRemove), newPin, newPinOk) {
-            if(it.onlyDigits())
+            if (it.onlyDigits())
             {
                 newPin = it
                 newPinOk = it.length >= 4 || it.isEmpty()
@@ -712,7 +763,8 @@ fun AccountDetailChangePinViewUi2(acc: Account, displayError: (String) -> Unit, 
                   processNewPin()
               }
           },
-          content = { Text(i18n(S.accept))
+          content = {
+              Text(i18n(S.accept))
           })
         Button(
           onClick = { pinChangedOrCancelled() },
@@ -770,13 +822,13 @@ fun AccountDetailPinInputUi2(description: String, placeholder: String, currentPi
               ),
               // visualTransformation = PasswordVisualTransformation(),
               modifier = Modifier.padding(start = 8.dp, end = 8.dp).wrapContentWidth().wrapContentHeight().onKeyEvent {
-                    val k = it.key
-                    if ((k == androidx.compose.ui.input.key.Key.Enter)||(k == androidx.compose.ui.input.key.Key.NumPadEnter))
-                    {
-                        focusManager.moveFocus(FocusDirection.Next)
-                        true
-                    }
-                    else false// do not accept this key
+                  val k = it.key
+                  if ((k == androidx.compose.ui.input.key.Key.Enter) || (k == androidx.compose.ui.input.key.Key.NumPadEnter))
+                  {
+                      focusManager.moveFocus(FocusDirection.Next)
+                      true
+                  }
+                  else false// do not accept this key
               },
             )
         }
@@ -861,7 +913,7 @@ fun AccountDetailAcceptDeclineTextViewUi2(text: String, accept: (Boolean) -> Uni
           verticalAlignment = Alignment.CenterVertically
         ) {
             Button(
-              onClick = { accept(true)},
+              onClick = { accept(true) },
               content = { Text(i18n(S.accept)) }
             )
             Button(

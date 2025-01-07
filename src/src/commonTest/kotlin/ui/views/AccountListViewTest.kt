@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.views.AccountItemView
-import info.bitcoinunlimited.www.wally.ui.views.AccountUIData
+import info.bitcoinunlimited.www.wally.ui2.views.AccountUIData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.runBlocking

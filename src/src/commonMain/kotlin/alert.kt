@@ -1,5 +1,4 @@
 package info.bitcoinunlimited.www.wally
-import info.bitcoinunlimited.www.wally.ui.ScreenId
 import kotlinx.coroutines.channels.Channel
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.launch

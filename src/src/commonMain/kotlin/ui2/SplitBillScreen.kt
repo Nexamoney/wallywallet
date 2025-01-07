@@ -1,18 +1,12 @@
-package info.bitcoinunlimited.www.wally.ui
+package info.bitcoinunlimited.www.wally.ui2
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.*
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,22 +15,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
-import com.ionspin.kotlin.bignum.decimal.DecimalMode
-import com.ionspin.kotlin.bignum.decimal.RoundingMode
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
-import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.S
-import info.bitcoinunlimited.www.wally.ui.theme.WallySwitch
-import info.bitcoinunlimited.www.wally.ui.theme.WallySwitchRow
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyBorder
+import info.bitcoinunlimited.www.wally.ui2.views.*
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.SplitBillScreen")

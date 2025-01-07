@@ -1,4 +1,4 @@
-package info.bitcoinunlimited.www.wally.ui.views
+package info.bitcoinunlimited.www.wally.ui2.views
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable

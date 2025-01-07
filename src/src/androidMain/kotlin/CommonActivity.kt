@@ -24,9 +24,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat.setWindowInsetsAnimationCallback
 import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
-import info.bitcoinunlimited.www.wally.ui.ScreenId
+import info.bitcoinunlimited.www.wally.ui2.ScreenId
+import info.bitcoinunlimited.www.wally.ui2.nav
 import info.bitcoinunlimited.www.wally.ui2.newUI
-import info.bitcoinunlimited.www.wally.ui.nav
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach

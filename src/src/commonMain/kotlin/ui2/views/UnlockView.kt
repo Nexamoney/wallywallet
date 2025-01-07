@@ -1,4 +1,4 @@
-package info.bitcoinunlimited.www.wally.ui
+package info.bitcoinunlimited.www.wally.ui2.views
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.AlertDialog
@@ -19,7 +19,10 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.theme.BrightBkg
+import info.bitcoinunlimited.www.wally.ui2.theme.BrightBkg
+import info.bitcoinunlimited.www.wally.ui2.triggerAccountsChanged
+import info.bitcoinunlimited.www.wally.ui2.triggerAssignAccountsGuiSlots
+import info.bitcoinunlimited.www.wally.ui2.triggerUnlockDialog
 import org.nexa.libnexakotlin.GetLog
 
 private val LogIt = GetLog("BU.wally.unlockview")

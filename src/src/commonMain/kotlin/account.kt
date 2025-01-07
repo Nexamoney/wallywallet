@@ -2,7 +2,6 @@ package info.bitcoinunlimited.www.wally
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
-import info.bitcoinunlimited.www.wally.ui.CONFIGURED_NODE
 import kotlin.concurrent.Volatile
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow

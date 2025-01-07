@@ -1,4 +1,4 @@
-package info.bitcoinunlimited.www.wally.uiv2
+package info.bitcoinunlimited.www.wally.ui2
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -24,10 +24,11 @@ import androidx.compose.ui.unit.dp
 import com.eygraber.uri.Uri
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.*
-import info.bitcoinunlimited.www.wally.ui.theme.*
+import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyAssetRowColors
+import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyModalOutline
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurple
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurpleExtraLight
+import info.bitcoinunlimited.www.wally.ui2.views.*
 import io.ktor.http.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
@@ -541,3 +542,110 @@ fun HorizontalRadioButtonGroup(options: List<Int>, onClick: (Int) -> Unit) {
         })
     }
 }
+
+fun onCopyToClipboardButton(a: AssetInfo?)
+{
+    if (a!=null)
+    {
+        setTextClipboard(a.groupId.toString())
+        // TODO: if (android.os.Build.VERSION.SDK_INT <= 32)  // system toasts above this version
+        displayNotice(S.copiedToClipboard)
+    }
+}
+
+
+fun onTradeButton(a: AssetInfo?)
+{
+    if (a!=null)
+    {
+        try
+        {
+            var market = a.tokenInfo?.marketUri
+            if (market != null)
+            {
+                /*
+                    Workaround to fix bug where somehow the url in iOS points to localhost/ instead of niftyart.cash.
+                    This is probably an issue with how data class TokenDesc.marketUri is set in libnexakotlin for iOS.
+                    See libnexakotlin issue: https://gitlab.com/nexa/libnexakotlin/-/issues/22
+                 */
+                if (market.contains("http://localhost"))
+                    market = market.replace("http://localhost", "https://niftyart.cash")
+
+                // TODO create Challenge Transaction proof-of-ownership
+                val uri = Uri.parse(market)
+                val app = wallyApp
+                var cnxn:LongPollInfo? = null
+                if (app != null)
+                {
+                    val cnxns = app.accessHandler
+                    val h = uri.host
+                    if (h != null)
+                        cnxn = cnxns.activeTo(h)
+                }
+
+                if (cnxn != null && cnxn.active)
+                {
+                    displayNotice(S.IssuedToConnection)
+                    val c = cnxn
+                    later {  // Can't do network in UI thread
+                        // If we are connected, open the URL in the connected device (computer)
+                        val connectedUrl = Url(c.proto + "://" + c.hostPort + "/").resolve( uri.path + "?cookie=${c.cookie}")
+
+                        try
+                        {
+                            val result = connectedUrl.readText(HTTP_REQ_TIMEOUT_MS)
+                            LogIt.info(sourceLoc() + "read: ${connectedUrl} ->\n${result.toString()}")
+                        }
+                        catch (e: Exception)  // otherwise open it here
+                        {
+                            if (market.lowercase().startsWith("http"))
+                            {
+                                // If there are already params, add another with an &.  Otherwise add the first param with a ?
+                                val mkt = (if (market.contains("?")) market + "&"
+                                else market + "?" + "tokenid=") + a.groupId.toStringNoPrefix()
+                                openUrl(mkt)
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // If there are already params, add another with an &.  Otherwise add the first param with a ?
+                    val mkt = (if (market.contains("?")) market + "&"
+                    else market + "?" + "tokenid=") + a.groupId.toStringNoPrefix()
+                    openUrl(mkt)
+                }
+            }
+        }
+        catch(e: Exception)
+        {
+            LogIt.info("asset marketplace activity not found: ${a.tokenInfo?.marketUri}")
+            displayUnexpectedException(e)
+        }
+    }
+}
+
+fun onInvokeButton(a: AssetInfo?)
+{
+    if (a!=null)
+    {
+        var appuri = a.nft?.appuri
+
+        if (appuri != null && appuri.length > 0)
+        {
+            if (!appuri.contains(":")) appuri = "http://" + appuri
+            LogIt.info("launching " + appuri)
+
+            // TODO create Challenge Transaction proof-of-ownership
+
+            if (appuri.lowercase().startsWith("http"))
+            {
+                if (appuri.contains("?")) appuri = appuri + "&" + "tokenid=" + a.groupId.toStringNoPrefix()
+                else appuri = appuri + "?" + "tokenid=" + a.groupId.toStringNoPrefix()
+            }
+
+            openUrl(appuri)
+        }
+    }
+}
+

@@ -23,53 +23,35 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import info.bitcoinunlimited.www.wally.ui.theme.*
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.eygraber.uri.Uri
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.AddressHistoryScreen
-import info.bitcoinunlimited.www.wally.ui.AssetInfoPermScreen
-import info.bitcoinunlimited.www.wally.ui.EXPERIMENTAL_UX_MODE_PREF
-import info.bitcoinunlimited.www.wally.ui.GuiDriver
-import info.bitcoinunlimited.www.wally.ui.IdentityEditScreen
-import info.bitcoinunlimited.www.wally.ui.IdentityPermScreen
-import info.bitcoinunlimited.www.wally.ui.IdentityScreen
-import info.bitcoinunlimited.www.wally.ui.IdentitySession
 import info.bitcoinunlimited.www.wally.ui.NavigationRoot
-import info.bitcoinunlimited.www.wally.ui.ScreenId
-import info.bitcoinunlimited.www.wally.ui.SendToPermScreen
-import info.bitcoinunlimited.www.wally.ui.ShowIt
-import info.bitcoinunlimited.www.wally.ui.SplitBillScreen
-import info.bitcoinunlimited.www.wally.ui.ToBeShared
-import info.bitcoinunlimited.www.wally.ui.TricklePayScreen
-import info.bitcoinunlimited.www.wally.ui.TxHistoryScreen
-import info.bitcoinunlimited.www.wally.ui.UnlockView
-import info.bitcoinunlimited.www.wally.ui.accountGuiSlots
-import info.bitcoinunlimited.www.wally.ui.assignAccountsGuiSlots
-import info.bitcoinunlimited.www.wally.ui.currentReceiveShared
-import info.bitcoinunlimited.www.wally.ui.externalDriver
-import info.bitcoinunlimited.www.wally.ui.isSoftKeyboardShowing
-import info.bitcoinunlimited.www.wally.ui.nav
-import info.bitcoinunlimited.www.wally.ui.onShareButton
-import info.bitcoinunlimited.www.wally.ui.preferenceDB
-import info.bitcoinunlimited.www.wally.ui.showAssetsPref
-import info.bitcoinunlimited.www.wally.ui.showIdentityPref
-import info.bitcoinunlimited.www.wally.ui.showTricklePayPref
-import info.bitcoinunlimited.www.wally.ui.softKeyboardBar
-import info.bitcoinunlimited.www.wally.ui.triggerUnlockDialog
+import info.bitcoinunlimited.www.wally.ui2.theme.*
 import kotlinx.coroutines.*
-import info.bitcoinunlimited.www.wally.ui.views.ResImageView
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyThemeUi2
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurple
-import info.bitcoinunlimited.www.wally.uiv2.*
+import info.bitcoinunlimited.www.wally.ui2.views.*
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.GetLog
+import org.nexa.libnexakotlin.rem
 import org.nexa.libnexakotlin.sourceLoc
 import org.nexa.threads.iThread
 import org.nexa.threads.millisleep
 
 private val LogIt = GetLog("wally.NavRoot.Ui2")
+
+val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
+val showIdentityPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_IDENTITY_PREF, false))
+val showTricklePayPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_TRICKLEPAY_PREF, false))
+val showAssetsPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_ASSETS_PREF, false))
+
 val newUI = MutableStateFlow(preferenceDB.getBoolean(EXPERIMENTAL_UX_MODE_PREF, true))
 
 /*
@@ -106,6 +88,337 @@ var menuItemsUi2: MutableStateFlow<Set<NavChoiceUi2>> = MutableStateFlow(
 var moreMenuItems: MutableStateFlow<Set<NavChoiceUi2>> = MutableStateFlow(setOf())
 const val BOTTOM_NAV_ITEMS = 5
 
+
+val softKeyboardBar:MutableStateFlow<(@Composable (Modifier)->Unit)?> = MutableStateFlow(null)
+val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())
+val isSoftKeyboardShowing = MutableStateFlow(false)
+
+
+// Only needed if we need to reassign the account slots outside of the GUI's control
+val accountChangedNotification = Channel<String>(100, BufferOverflow.DROP_OLDEST)
+
+/** Call this function to cause the GUI to update any view of any accounts.  Provide no arguments to update all of them */
+fun triggerAccountsChanged(vararg accounts: Account)
+{
+    if (accounts.size == 0)
+        accountChangedNotification.trySend("*all changed*")
+    for (account in accounts)
+        accountChangedNotification.trySend(account.name)
+}
+
+/** Call this function to cause the GUI to update any view of any accounts.  Provide no arguments to update all of them */
+/*
+suspend fun suspendTriggerAccountsChanged(vararg accounts: Account)
+{
+    delay(100)
+    if (accounts.size == 0)
+        accountChangedNotification.send("*all changed*")
+    else for (account in accounts)
+    {
+        accountChangedNotification.send(account.name)
+    }
+}
+*/
+
+// Add other information as needed to drive each page
+enum class ShowIt
+{
+    NONE,
+    WARN_BACKUP_RECOVERY_KEY,
+    ENTER_PIN
+}
+
+var curEventNum = 0L
+fun NextEvent(): Long
+{
+    curEventNum++
+    return curEventNum
+}
+
+data class GuiDriver(val gotoPage: ScreenId? = null,
+  val show: Set<ShowIt>? = null,
+  val noshow: Set<ShowIt>? = null,
+  val sendAddress: String?=null,
+  val amount: BigDecimal?=null,
+  val note: String? = null,
+  val chainSelector: ChainSelector?=null,
+  val account: Account? = null,
+  val regenAccountGui: Boolean? = null,
+  val withClipboard: ((String?) -> Unit)? = null,
+  val tpSession: TricklePaySession? = null,
+  val afterUnlock: (()->Unit)? = null,
+  val uri: Uri? = null,
+
+  // This is used when the event itself is a recomposable trigger.  Generally this is true, so NextEvent automatically increments.
+  // But if you choose this number to be the same as a prior object, the screen will not recompose unless some other state changed.
+  val eventNum: Long = NextEvent()
+)
+
+val externalDriver = Channel<GuiDriver>(10)
+
+enum class ScreenId
+{
+    None,
+    Splash,
+    Home,
+    Assets,
+    Shopping,
+    Send,
+    Receive,
+    Identity,
+    IdentityOp,
+    IdentityEdit,
+    TricklePay,
+    Settings,
+    SplitBill,
+    NewAccount,
+    AccountDetails,
+    AddressHistory,
+    TxHistory,
+    MoreMenu,
+
+    TpSettings,
+    SpecialTxPerm,
+    AssetInfoPerm,
+    SendToPerm,
+    Alerts;
+
+    val isEntirelyScrollable:Boolean
+        get()
+        {
+            if (this == Settings) return true
+            if (this == NewAccount) return true
+            return false
+        }
+
+    /** Returns true if this screen should have a share button in the topbar */
+    val hasShare:Boolean
+        get()
+        {
+            return this == Home
+        }
+
+    fun up(): ScreenId
+    {
+        return when (this)
+        {
+            None -> Home
+            SplitBill -> Home
+            AccountDetails -> Home
+            NewAccount -> Home
+            SpecialTxPerm -> Home
+            AssetInfoPerm -> Home
+            SendToPerm -> Home
+            TpSettings -> TricklePay
+            IdentityEdit -> Identity
+            Splash -> Home
+            else -> Home
+        }
+    }
+
+    fun title(): String
+    {
+        fun pva(): String
+        {
+            return wallyApp?.preferredVisibleAccountOrNull()?.name ?: ""
+        }
+        return when (this)
+        {
+            None -> ""
+            Splash -> ""
+            Home -> ""
+            IdentityEdit -> i18n(S.title_activity_identity)
+            Identity -> i18n(S.title_activity_identity)
+            IdentityOp -> i18n(S.title_activity_identity_op)
+            TricklePay -> i18n(S.title_activity_trickle_pay)
+            Assets -> i18n(S.assets)
+            Shopping -> i18n(S.title_activity_shopping)
+            Settings -> i18n(S.title_activity_settings)
+            SplitBill -> i18n(S.title_split_bill)
+            NewAccount -> i18n(S.title_activity_new_account)
+            AccountDetails -> i18n(S.title_activity_account_details) % mapOf("account" to pva())
+            AddressHistory -> i18n(S.title_activity_address_history) % mapOf("account" to pva())
+            TxHistory -> i18n(S.title_activity_tx_history) % mapOf("account" to pva())
+
+            TpSettings -> i18n(S.title_activity_trickle_pay)
+            Alerts -> i18n(S.title_activity_alert_history)
+
+            // TODO make a better title for these permissions screens
+            SpecialTxPerm -> i18n(S.title_activity_trickle_pay)
+            AssetInfoPerm -> i18n(S.title_activity_trickle_pay)
+            SendToPerm -> i18n(S.title_activity_trickle_pay)
+            else -> i18n(S.app_name)
+        }
+    }
+
+}
+
+open class ScreenNav()
+{
+    enum class Direction {
+        LEAVING, DEEPER
+    }
+    // Screens can put anything into screenSubState to remember their context.
+    // This allows them to make the "back" button change subscreen state by pushing the current screenId with a different
+    // screenSubState.
+    data class ScreenState(val id: ScreenId, val departFn: ((Direction) -> Unit)?, val screenSubState: ByteArray?=null, val data: Any? = null)
+
+    val curData: MutableStateFlow<Any?> = MutableStateFlow(null)
+    val currentScreen: MutableStateFlow<ScreenId> = MutableStateFlow(ScreenId.Splash)
+    val currentSubState: MutableStateFlow<ByteArray?> = MutableStateFlow(null)
+    protected var currentScreenDepart: ((dir: Direction) -> Unit)? = null
+    val path = ArrayDeque<ScreenState>(10)
+
+    fun onDepart(fn: (Direction) -> Unit)
+    {
+        currentScreenDepart = fn
+    }
+
+    /** If everything is recomposed, we may have a new mutable screenid tracker */
+    fun reset(newMutable: ScreenId)
+    {
+        currentScreen.value = newMutable
+    }
+
+    /** Add a screen onto the stack */
+    fun push(screen: ScreenId) = path.add(ScreenState(screen,null))
+
+
+    /** push the current screen onto the stack, and set the passed screen to be the current one */
+    fun go(screen: ScreenId, screenSubState: ByteArray?=null, data: Any? = null): ScreenNav
+    {
+        clearAlerts()
+        currentScreenDepart?.invoke(Direction.DEEPER)
+        path.add(ScreenState(currentScreen.value,currentScreenDepart, currentSubState.value, curData.value ))
+        currentScreen.value = screen
+        currentSubState.value = screenSubState
+        curData.value = data
+        currentScreenDepart = null
+        NativeTitle(title())
+        return this
+    }
+
+    /** move without pushing the current screen (but depart will be called if it exists) */
+    fun switch(screen: ScreenId, screenSubState: ByteArray?=null, data: Any? = null): ScreenNav
+    {
+        currentScreenDepart?.invoke(Direction.LEAVING)
+        currentScreen.value = screen
+        currentSubState.value = screenSubState
+        curData.value = data
+        currentScreenDepart = null
+        NativeTitle(title())
+        return this
+    }
+
+    fun title() = currentScreen.value.title()
+
+    /** return the destination screenId if you can go back from here, otherwise ScreenId.None */
+    fun hasBack(): ScreenId
+    {
+        var priorId:ScreenId = ScreenId.None
+        val prior = path.lastOrNull()
+        // If I can't go back, go up
+        priorId = prior?.id ?: currentScreen.value.up()
+        return priorId
+    }
+
+    /** pop the current screen from the stack and go there */
+    fun back():ScreenId?
+    {
+        clearScreenAlerts()
+        currentScreenDepart?.invoke(Direction.LEAVING)
+        currentScreenDepart = null
+        // See if there is anything in the back stack.
+        var priorId:ScreenId? = null
+        val prior = path.removeLastOrNull()
+        // If I can't go back, go up
+        if (prior == null) priorId = currentScreen.value.up()
+        if (prior != null)
+        {
+            priorId = prior.id
+            currentScreenDepart = prior.departFn
+            currentSubState.value = prior.screenSubState
+        }
+        else currentSubState.value = null
+        if (priorId != null)
+        {
+            // If the screen is none, that means to keep going back but this will execute any currentScreenDepart
+            // associated with the None screen which is how we install a "finish activity" in Android
+            if (priorId == ScreenId.None)
+            {
+                return back()
+            }
+            else currentScreen.value = priorId
+        }  // actually trigger going back
+        NativeTitle(title())
+        return priorId
+    }
+}
+/** Global top level navagation */
+val nav = ScreenNav()
+
+fun assignAccountsGuiSlots()
+{
+    // We have a Map of account names to values, but we need a list
+    // Sort the accounts based on account name
+    accountGuiSlots.value = wallyApp!!.orderedAccounts()
+}
+
+
+const val TRIGGER_BUG_DELAY = 100L
+
+fun triggerAssignAccountsGuiSlots()
+{
+    // If the focused account got hidden, then it can't be focused
+    val fa = wallyApp?.focusedAccount?.value
+    if (fa != null)
+    {
+        if (fa.visible == false) wallyApp?.focusedAccount?.value = null
+    }
+    // If the slots got shuffled around, maybe the current receive was deleted or hidden
+    assignAccountsGuiSlots()
+    val act = wallyApp!!.accounts[currentReceiveShared.value.first]
+    if (act == null || act.visible == false) try
+    {
+        wallyApp?.preferredVisibleAccount()?.let {
+            it.onUpdatedReceiveInfo { recvAddrStr ->
+                currentReceiveShared.value = Pair(it.name, recvAddrStr)
+            }
+        }
+    }
+    catch (e:PrimaryWalletInvalidException)
+    {
+        currentReceiveShared.value = Pair("", "")
+    }
+}
+
+fun triggerUnlockDialog(show: Boolean = true, then: (()->Unit)? = null)
+{
+    if (show)
+    {
+        later {
+            delay(TRIGGER_BUG_DELAY); externalDriver.send(GuiDriver(show = setOf(ShowIt.ENTER_PIN), afterUnlock = then))
+        }
+    }
+    else later { delay(TRIGGER_BUG_DELAY); externalDriver.send(GuiDriver(noshow = setOf(ShowIt.ENTER_PIN))) }
+}
+
+fun triggerClipboardAction(doit: (String?) -> Unit)
+{
+    later { delay(TRIGGER_BUG_DELAY); externalDriver.send(GuiDriver(withClipboard = doit))}
+
+}
+
+// implement a share button (whose behavior may change based on what screen we are on)
+
+// As part of your recompose, update this callback function so that the proper data will be constructed to be shared based on the GUI context
+var ToBeShared:(()->String)? = null
+fun onShareButton()
+{
+    ToBeShared?.let { platformShare(it()) }
+    LogIt.info("Share Button pressed")
+}
+
 fun buildMenuItemsUi2()
 {
     val items = permanentMenuItemsUi2.toMutableSet()
@@ -126,7 +439,7 @@ fun buildMenuItemsUi2()
 
 
 /** Change showing or hiding a menu item */
-fun enableNavMenuItemUi2(item: ScreenId, enable:Boolean=true)
+fun enableNavMenuItem(item: ScreenId, enable:Boolean=true)
 {
     later {
         var changed = false
@@ -151,7 +464,7 @@ fun enableNavMenuItemUi2(item: ScreenId, enable:Boolean=true)
         }
         if (changed)
         {
-            // buildMenuItemsUi2()
+            buildMenuItemsUi2()
             e.commit()
         }
     }
@@ -179,7 +492,7 @@ fun updateNavMenuContentsUi2()
     // Check every 10 seconds to see if there are assets in this wallet & enable the menu item if there are
     if (!showAssetsPref.value && (wallyApp?.hasAssets() == true))
     {
-        enableNavMenuItemUi2(ScreenId.Assets)
+        enableNavMenuItem(ScreenId.Assets)
     }
 }
 
@@ -607,7 +920,7 @@ fun NavigationRootUi2(
             c.account?.let {
                 wallyApp?.focusedAccount?.value = it
             }
-            c.gotoPage?.let {
+            c.gotoPage?.let {it ->
                 clearAlerts()  // If the user explicitly moved to a different screen, they must be aware of the alert
                 nav.go(it, data = c.tpSession)
             }

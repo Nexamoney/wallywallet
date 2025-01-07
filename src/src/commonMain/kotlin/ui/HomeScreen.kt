@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.ui.views.*
 import kotlinx.coroutines.delay
@@ -25,14 +24,16 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
+import info.bitcoinunlimited.www.wally.ui2.*
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyDivider
+import info.bitcoinunlimited.www.wally.ui2.theme.floatingActionBarBackground
+import info.bitcoinunlimited.www.wally.ui2.theme.listDividerFg
+import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyPageBase
+import info.bitcoinunlimited.www.wally.ui2.views.*
 import kotlinx.coroutines.flow.asStateFlow
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.HomeScreen")
-// stores the account name we are receiving into and the receive address as a pair
-val currentReceiveShared: MutableStateFlow<Pair<String,String>> = MutableStateFlow(Pair("",""))
-var sendToAddress: MutableStateFlow<String> = MutableStateFlow("")
-val currencyCodeShared: MutableStateFlow<String> = MutableStateFlow("NEX")
 
 /* Since composable state needs to be defined within a composable, imagine this composable is actually a singleton class,
 with member variables and member functions defined in it.
