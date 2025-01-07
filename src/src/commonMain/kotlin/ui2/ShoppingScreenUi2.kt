@@ -1,16 +1,23 @@
 package info.bitcoinunlimited.www.wally.ui2
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import okio.FileNotFoundException
@@ -42,11 +49,53 @@ fun ShoppingDestination.composeUi2()
 
         Column {
             Text(explain, Modifier.fillMaxWidth())
-            Button(onClick = { openUrl(sd.url) }) {
-                Text(sd.buttonText, color = Color.White)
-            }
+            if (sd.destinationType == DestinationType.OTHER)
+                Button(onClick = { openUrl(sd.url) }) {
+                    Text(sd.buttonText, style = MaterialTheme.typography.labelSmall.copy(color = Color.White))
+                }
+            else if (sd.destinationType == DestinationType.EXCHANGE)
+                ClickableLink(sd.buttonText)
         }
     }
+}
+
+@Composable
+fun ClickableLink(url: String) {
+    val annotatedString = buildAnnotatedString {
+        append(url)
+        addStyle(
+          style = SpanStyle(
+            color = Color.Blue,
+            textDecoration = TextDecoration.Underline,
+            fontSize = 16.sp
+          ),
+          start = 0,
+          end = url.length
+        )
+        addStringAnnotation(
+          tag = "URL",
+          annotation = url,
+          start = 0,
+          end = url.length
+        )
+    }
+
+    Text(
+      text = annotatedString,
+      modifier = Modifier
+        .padding(8.dp)
+        .clickable {
+            annotatedString.getStringAnnotations(tag = "URL", start = 0, end = url.length)
+              .firstOrNull()?.let { annotation ->
+                  openUrl(annotation.item) // Opens the URL in a browser
+              }
+        },
+      style = TextStyle(
+        fontSize = 16.sp,
+        color = Color.Blue,
+        textDecoration = TextDecoration.Underline
+      )
+    )
 }
 
 @Composable

@@ -119,7 +119,7 @@ enum class ScreenId
             IdentityOp -> i18n(S.title_activity_identity_op)
             TricklePay -> i18n(S.title_activity_trickle_pay)
             Assets -> i18n(S.assets)
-            Shopping -> i18n(S.title_activity_shopping)
+            Shopping -> i18n(S.ecosystem)
             Settings -> i18n(S.title_activity_settings)
             SplitBill -> i18n(S.title_split_bill)
             NewAccount -> i18n(S.title_activity_new_account)
@@ -441,7 +441,7 @@ val showAssetsPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_ASSETS_PREF, 
 
 var permanentMenuItems: Set<NavChoice> = setOf(
   NavChoice(ScreenId.Home, S.title_home, "icons/home.xml"),
-  NavChoice(ScreenId.Shopping, S.title_activity_shopping, "icons/shopping.xml"),
+  NavChoice(ScreenId.Shopping, S.ecosystem, "icons/shopping.xml"),
   NavChoice(ScreenId.Settings, S.title_activity_settings, "icons/gear.xml"),
 )
 
