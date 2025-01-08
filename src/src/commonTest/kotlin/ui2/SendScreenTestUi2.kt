@@ -5,7 +5,7 @@ import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.SendBottomButtons
 import info.bitcoinunlimited.www.wally.ui2.SendScreenUi
-import info.bitcoinunlimited.www.wally.ui2.SendScreenViewModel
+import info.bitcoinunlimited.www.wally.ui2.SendScreenViewModelImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.runBlocking
@@ -50,7 +50,7 @@ class SendScreenTestUi2
             account = wallyApp!!.newAccount("itemvie", 0U, "", cs)!!
         }
 
-        val viewModel = SendScreenViewModel(account)
+        val viewModel = SendScreenViewModelImpl(account)
 
         setContent {
             SendBottomButtons(Modifier, viewModel)

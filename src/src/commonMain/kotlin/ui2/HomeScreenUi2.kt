@@ -408,7 +408,9 @@ fun AssetCarouselItem(asset: AssetInfo, hasNameOverLay: Boolean = false)
 /*
     Root class for BalanceViewModel used for testing
  */
-abstract class BalanceViewModel: ViewModel()
+abstract class BalanceViewModel(
+  val dispatcher: CoroutineDispatcher = Dispatchers.Main
+): ViewModel()
 {
     open val balance = MutableStateFlow("Loading...")
     open val fiatBalance = MutableStateFlow("Loading...")
@@ -486,7 +488,7 @@ class BalanceViewModelImpl: BalanceViewModel()
     override fun observeSelectedAccount()
     {
         accountJob?.cancel()
-        accountJob = viewModelScope.launch {
+        accountJob = viewModelScope.launch(dispatcher) {
             selectedAccountUi2.onEach {
                 it?.let { account ->
                     setFiatBalance(account)
@@ -500,7 +502,7 @@ class BalanceViewModelImpl: BalanceViewModel()
     {
         balanceJob?.cancel()
         balance.value = account.format(account.balanceState.value)
-        balanceJob = viewModelScope.launch {
+        balanceJob = viewModelScope.launch(dispatcher) {
             account.balanceState.onEach {
                 try
                 {
@@ -528,7 +530,6 @@ class BalanceViewModelImpl: BalanceViewModel()
   syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() }
 )
 {
-
     val account = selectedAccountUi2.collectAsState().value
     val currencyCode = account?.uiData()?.currencyCode ?: ""
     val fiatBalance = balanceViewModel.fiatBalance.collectAsState().value
