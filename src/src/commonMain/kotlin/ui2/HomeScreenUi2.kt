@@ -43,7 +43,6 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.*
-import info.bitcoinunlimited.www.wally.ui2.*
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurple
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurpleExtraLight
 import info.bitcoinunlimited.www.wally.ui2.views.*
@@ -146,9 +145,10 @@ fun HomeScreenUi2(
   isShowingRecoveryWarning: Boolean = false,
   assetViewModel: AssetViewModel = viewModel { AssetViewModel() },
   balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
-  syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl()},
+  syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() },
   accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() }
-){
+)
+{
     val assets = assetViewModel.assets.collectAsState().value
     val coroutineScope = rememberCoroutineScope()
     val clipmgr: ClipboardManager = LocalClipboardManager.current
@@ -257,8 +257,6 @@ fun HomeScreenUi2(
 open class AssetViewModel: ViewModel()
 {
     val assets = MutableStateFlow(listOf<AssetInfo>())
-
-
     var assetsJob: Job? = null
     var accountJob: Job? = null
 
@@ -311,27 +309,19 @@ open class AssetViewModel: ViewModel()
     }
 }
 
-class AssetsViewModelFake: AssetViewModel()
+class AssetViewModelFake: AssetViewModel()
 {
     override fun observeSelectedAccount()
     {
 
     }
-
     override fun getAssetInfoList(account: Account): List<AssetInfo>
     {
         return listOf()
     }
-
     override fun observeAssets(account: Account)
     {
-
     }
-
-}
-
-class AssetViewModelImpl: AssetViewModel()
-{
 }
 
 @Composable
@@ -631,7 +621,7 @@ class BalanceViewModelImpl: BalanceViewModel()
 @Composable fun AccountPill(
   buttonsEnabled: Boolean = true,
   balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
-  syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl()},
+  syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() },
   accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() }
 )
 {

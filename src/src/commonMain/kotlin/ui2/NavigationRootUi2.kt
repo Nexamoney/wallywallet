@@ -763,7 +763,7 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
 @Composable
 fun NavigationRootUi2(
   systemPadding: Modifier,
-  assetViewModel: AssetViewModel = viewModel { AssetViewModelImpl() },
+  assetViewModel: AssetViewModel = viewModel { AssetViewModel() },
   balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
   syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() },
   accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() }
