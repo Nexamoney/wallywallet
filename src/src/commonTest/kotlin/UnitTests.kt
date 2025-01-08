@@ -15,6 +15,9 @@ class CommonTest
     @Test
     fun testManyNfts()
     {
+        /*
+        // NOTE: This needs to be moved. Its not a unit test when it imports the whole libnexakotlin library.
+
         initializeLibNexa()
         val ProjectDir = "../" // Note that this is not correct on macos/ios
         /* for debugging specific zip files
@@ -74,6 +77,7 @@ class CommonTest
         {
             println("UnitTests.kt: testManyNfts [You did not provide the correct path to run this test]")
         }
+         */
     }
 
 

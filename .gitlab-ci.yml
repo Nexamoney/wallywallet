@@ -6,7 +6,9 @@ stages:
   - docs
   - lint
   - test
-  - assemble # This job should be last before deploy because it runs for one hour. This job can be decoupled (see taskTree).
+  - coverage
+  - assemble
+  - build # This job should be last before deploy because it runs for one hour. This job can be decoupled (see taskTree).
   - deploy_internally
   - deploy_beta
 
@@ -77,8 +79,8 @@ appJar:
     paths:
       - src/build/libs/wpw.jar
 
-assemble:
-  stage: assemble
+build:
+  stage: build
   tags:
     - m1-baremetal
   rules: # this job is very slow (90 min ++). Therefore we restrict this job to run only on MR approval and always on the main branch.
@@ -94,10 +96,12 @@ assemble:
   variables:
     ANDROID_HOME: "/opt/homebrew/share/android-commandlinetools"
   script:
-    - ./gradlew assemble
-    - ./gradlew :src:allMetadataJar
-    - ./gradlew :src:assembleDebug
-    - ./gradlew :src:assembleRelease
+    - ./gradlew build
+  artifacts:
+    when: always
+    paths:
+      - src/build/reports/tests/testDebugUnitTest/index.html
+      - src/build/reports/tests/testDebugUnitTest/**/**.html
 
 compileIos:
   stage: assemble
@@ -251,6 +255,7 @@ androidPixel5Test:
   script:
     - ./gradlew pixel5Check
   artifacts:
+    when: always
     paths:
       - src/build/reports/androidTests/managedDevice/debug/pixel5/index.html
       - src/build/reports/androidTests/managedDevice/debug/pixel5/**/**

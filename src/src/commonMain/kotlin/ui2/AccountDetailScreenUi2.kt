@@ -30,6 +30,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import info.bitcoinunlimited.www.wally.*
+import info.bitcoinunlimited.www.wally.ui.*
+import info.bitcoinunlimited.www.wally.ui.theme.*
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import info.bitcoinunlimited.www.wally.ui2.theme.WallyDivider

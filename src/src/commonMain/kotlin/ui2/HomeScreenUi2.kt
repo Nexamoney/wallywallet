@@ -257,8 +257,6 @@ fun HomeScreenUi2(
 open class AssetViewModel: ViewModel()
 {
     val assets = MutableStateFlow(listOf<AssetInfo>())
-
-
     var assetsJob: Job? = null
     var accountJob: Job? = null
 
