@@ -251,6 +251,7 @@ androidPixel5Test:
   script:
     - ./gradlew pixel5Check
   artifacts:
+    when: always
     paths:
       - src/build/reports/androidTests/managedDevice/debug/pixel5/index.html
       - src/build/reports/androidTests/managedDevice/debug/pixel5/**/**
