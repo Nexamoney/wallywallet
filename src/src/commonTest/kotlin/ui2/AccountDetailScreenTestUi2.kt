@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.*
-import info.bitcoinunlimited.www.wally.ui2.views.AccountUiDataViewModelFake
+import info.bitcoinunlimited.www.wally.ui2.views.AccountUiDataViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.runBlocking
@@ -26,8 +26,7 @@ class AccountDetailScreenTestUi2
 {
     @BeforeTest
     fun setUp() {
-        // Jvm
-        if (platform().usesMouse)
+        if (platform().target == KotlinTarget.JVM)
             Dispatchers.setMain(StandardTestDispatcher())
         initializeLibNexa()
         runningTheTests = true
@@ -37,8 +36,7 @@ class AccountDetailScreenTestUi2
 
     @AfterTest
     fun tearDown() {
-        // Jvm
-        if (platform().usesMouse)
+        if (platform().target == KotlinTarget.JVM)
             Dispatchers.resetMain()
     }
 
@@ -69,7 +67,7 @@ class AccountDetailScreenTestUi2
         val accountStatsViewModel = AccountStatisticsViewModelFake()
         val balanceViewModel = BalanceViewModelFake()
         val syncViewModel = SyncViewModelFake()
-        val accountUiDataViewModel = AccountUiDataViewModelFake()
+        val accountUiDataViewModel = AccountUiDataViewModel()
 
         setContent {
             CompositionLocalProvider(

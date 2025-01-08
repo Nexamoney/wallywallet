@@ -203,6 +203,7 @@ fun AlertLevel.color(): Color
 
 
 val androidPlatformCharacteristics = PlatformCharacteristics(
+  target = KotlinTarget.Android,
   hasQrScanner = true,
   hasGallery = true,
   usesMouse = false,

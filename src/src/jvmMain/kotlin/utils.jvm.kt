@@ -206,6 +206,7 @@ fun loadIcon(ins: InputStream): ImageVector?
 }
 
 val jvmPlatformCharacteristics = PlatformCharacteristics(
+  target = KotlinTarget.JVM,
   hasQrScanner = false,
   hasGallery = false,
   usesMouse = true,

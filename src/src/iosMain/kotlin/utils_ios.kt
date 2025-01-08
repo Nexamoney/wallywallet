@@ -182,6 +182,7 @@ actual fun platformShare(textToShare: String)
 }
 
 val iosPlatformCharacteristics = PlatformCharacteristics(
+  target = KotlinTarget.iOS,
   hasQrScanner = true,
   hasGallery = false,
   usesMouse = false,

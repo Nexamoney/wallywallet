@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.test.*
 import androidx.compose.ui.text.AnnotatedString
+import info.bitcoinunlimited.www.wally.KotlinTarget
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.platform
@@ -66,7 +67,7 @@ class ThumbButtonFABTest
         }
 
         val pasteText = i18n(S.paste)
-        if (!platform().usesMouse) {
+        if (platform().target != KotlinTarget.JVM) {
             onNodeWithContentDescription(pasteText).assertIsDisplayed()
         } else {
             onNodeWithContentDescription(pasteText).assertDoesNotExist()
@@ -110,7 +111,7 @@ class ThumbButtonFABTest
         }
 
         // Test Content Paste button
-        if (!platform().usesMouse) {
+        if (platform().target != KotlinTarget.JVM) {
             onNodeWithContentDescription(i18n(S.paste)).performClick()
             assertEquals(clipboardText, qrResult)
         }

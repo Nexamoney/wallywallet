@@ -66,21 +66,38 @@ val selectedAccountUi2: StateFlow<Account?> //=  //_selectedAccountUi2.asStateFl
         return wallyApp!!.focusedAccount
     }
 
-var permanentMenuItemsUi2: Set<NavChoiceUi2> = setOf(
-  NavChoiceUi2(ScreenId.Home, S.title_home, Icons.Default.Home),
-  NavChoiceUi2(ScreenId.Assets, S.title_activity_assets, Icons.Default.Image),
-  NavChoiceUi2(ScreenId.Shopping, S.title_activity_shopping, Icons.Default.ShoppingCart),
-  NavChoiceUi2(ScreenId.MoreMenu, S.more, Icons.Default.MoreVert),
-)
+var permanentMenuItemsUi2: Set<NavChoiceUi2> = if (platform().target == KotlinTarget.iOS)
+    setOf(
+      NavChoiceUi2(ScreenId.Home, S.title_home, Icons.Default.Home),
+      NavChoiceUi2(ScreenId.Assets, S.title_activity_assets, Icons.Default.Image),
+      NavChoiceUi2(ScreenId.MoreMenu, S.more, Icons.Default.MoreVert),
+    )
+else
+    setOf(
+      NavChoiceUi2(ScreenId.Home, S.title_home, Icons.Default.Home),
+      NavChoiceUi2(ScreenId.Assets, S.title_activity_assets, Icons.Default.Image),
+      NavChoiceUi2(ScreenId.Shopping, S.title_activity_shopping, Icons.Default.ShoppingCart),
+      NavChoiceUi2(ScreenId.MoreMenu, S.more, Icons.Default.MoreVert),
+    )
 
-val allMenuItems = setOf(
-  NavChoiceUi2(ScreenId.Home, S.title_home, Icons.Default.Home),
-  NavChoiceUi2(ScreenId.Assets, S.title_activity_assets, Icons.Default.Image),
-  NavChoiceUi2(ScreenId.Shopping, S.title_activity_shopping, Icons.Default.ShoppingCart),
-  NavChoiceUi2(ScreenId.Identity, S.title_activity_identity, Icons.Default.Person),
-  NavChoiceUi2(ScreenId.TricklePay, S.title_activity_trickle_pay, Icons.Default.WaterDrop),
-  NavChoiceUi2(ScreenId.Settings, S.title_activity_settings, Icons.Default.Settings),
-)
+
+val allMenuItems = if (platform().target == KotlinTarget.iOS)
+    setOf(
+        NavChoiceUi2(ScreenId.Home, S.title_home, Icons.Default.Home),
+        NavChoiceUi2(ScreenId.Assets, S.title_activity_assets, Icons.Default.Image),
+        NavChoiceUi2(ScreenId.Identity, S.title_activity_identity, Icons.Default.Person),
+        NavChoiceUi2(ScreenId.TricklePay, S.title_activity_trickle_pay, Icons.Default.WaterDrop),
+        NavChoiceUi2(ScreenId.Settings, S.title_activity_settings, Icons.Default.Settings),
+    )
+else
+    setOf(
+        NavChoiceUi2(ScreenId.Home, S.title_home, Icons.Default.Home),
+        NavChoiceUi2(ScreenId.Assets, S.title_activity_assets, Icons.Default.Image),
+      NavChoiceUi2(ScreenId.Shopping, S.title_activity_shopping, Icons.Default.ShoppingCart),
+      NavChoiceUi2(ScreenId.Identity, S.title_activity_identity, Icons.Default.Person),
+        NavChoiceUi2(ScreenId.TricklePay, S.title_activity_trickle_pay, Icons.Default.WaterDrop),
+        NavChoiceUi2(ScreenId.Settings, S.title_activity_settings, Icons.Default.Settings),
+    )
 
 var menuItemsUi2: MutableStateFlow<Set<NavChoiceUi2>> = MutableStateFlow(
     permanentMenuItemsUi2

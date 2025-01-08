@@ -2,6 +2,7 @@ package ui2
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
+import info.bitcoinunlimited.www.wally.KotlinTarget
 import info.bitcoinunlimited.www.wally.platform
 import info.bitcoinunlimited.www.wally.ui2.WallyDropDownUi2
 import info.bitcoinunlimited.www.wally.ui2.supportedBlockchains
@@ -20,16 +21,14 @@ class WallyDropDownTestUi2
     @BeforeTest
     fun setup()
     {
-        // jvm only
-        if (platform().usesMouse)
+        if (platform().target == KotlinTarget.JVM)
             Dispatchers.setMain(StandardTestDispatcher())
     }
 
     @AfterTest
     fun clean()
     {
-        // jvm only
-        if (platform().usesMouse)
+        if (platform().target == KotlinTarget.JVM)
             Dispatchers.resetMain()
     }
 
