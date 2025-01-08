@@ -15,12 +15,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -40,6 +43,7 @@ import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyThemeUi2
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.samsungKeyBoardGray
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurple
 import info.bitcoinunlimited.www.wally.ui2.views.MpMediaView
+import info.bitcoinunlimited.www.wally.ui.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
@@ -68,18 +72,97 @@ data class SendScreenUi(
     }
 }
 
-class SendScreenViewModel(act: Account): ViewModel()
+abstract class SendScreenViewModel(act: Account): ViewModel()
 {
-    var balanceJob: Job? = null
     val account = MutableStateFlow(act)
     val assetsToSend: MutableStateFlow<List<AssetPerAccount>> = MutableStateFlow(listOf())
     val uiState = MutableStateFlow(SendScreenUi())
+
+    abstract fun setAccount(account: Account)
+    abstract fun checkUriAndSetUi(urlStr: String)
+
+    fun setToAddress(address: String)
+    {
+        uiState.value = uiState.value.copy(
+          toAddress = address
+        )
+    }
+
+    fun setNote(newNote: String)
+    {
+        uiState.value = uiState.value.copy(
+          note = newNote
+        )
+    }
+
+    fun setSendQty(sendQty: String)
+    {
+        val cleanedQty = sendQty.replace(",", "")
+        uiState.value = uiState.value.copy(
+          amount = cleanedQty
+        )
+    }
+
+    fun setSendQty(sendQty: BigDecimal)
+    {
+        uiState.value = uiState.value.copy(
+          amount = sendQty.toStringExpanded()
+        )
+    }
+
+    abstract fun multiplySendQty(multiplier: Int)
+    abstract fun populateAssetsList(assetTransferList: MutableList<GroupId>, assets: Map<GroupId, AssetPerAccount>)
+    abstract fun onSendButtonClicked()
+    abstract fun actuallySend(toAddress: PayAddress? = null, amount: BigDecimal? = null)
+
+    fun resetUi()
+    {
+        uiState.value = SendScreenUi()
+    }
+}
+
+class SendScreenViewModelFake(act: Account): SendScreenViewModel(act)
+{
+    override fun setAccount(account: Account)
+    {
+
+    }
+
+    override fun checkUriAndSetUi(urlStr: String)
+    {
+
+    }
+
+    override fun multiplySendQty(multiplier: Int)
+    {
+
+    }
+
+    override fun populateAssetsList(assetTransferList: MutableList<GroupId>, assets: Map<GroupId, AssetPerAccount>)
+    {
+
+    }
+
+    override fun onSendButtonClicked()
+    {
+
+    }
+
+    override fun actuallySend(toAddress: PayAddress?, amount: BigDecimal?)
+    {
+
+    }
+}
+
+class SendScreenViewModelImpl(act: Account): SendScreenViewModel(act)
+{
+    var balanceJob: Job? = null
 
     init {
         setAccount(act)
     }
 
-    fun setAccount(account: Account)
+    override fun setAccount(account: Account)
     {
         populateAssetsList(account.assetTransferList, account.assets)
         // Automatically switch the currency code to whatever the selected account is using
@@ -89,7 +172,7 @@ class SendScreenViewModel(act: Account): ViewModel()
         currencyCodeShared.value = account.currencyCode
     }
 
-    fun checkUriAndSetUi(urlStr: String)
+    override fun checkUriAndSetUi(urlStr: String)
     {
         var amt: BigDecimal? = null
 
@@ -146,36 +229,7 @@ class SendScreenViewModel(act: Account): ViewModel()
         }
     }
 
-    fun setToAddress(address: String)
-    {
-        uiState.value = uiState.value.copy(
-          toAddress = address
-        )
-    }
-
-    fun setNote(newNote: String)
-    {
-        uiState.value = uiState.value.copy(
-          note = newNote
-        )
-    }
-
-    fun setSendQty(sendQty: String)
-    {
-        val cleanedQty = sendQty.replace(",", "")
-        uiState.value = uiState.value.copy(
-          amount = cleanedQty
-        )
-    }
-
-    fun setSendQty(sendQty: BigDecimal)
-    {
-        uiState.value = uiState.value.copy(
-          amount = sendQty.toStringExpanded()
-        )
-    }
-
-    fun multiplySendQty(multiplier: Int)
+    override fun multiplySendQty(multiplier: Int)
     {
         val amount = uiState.value.amountFinal
         val bigDecMultiplier = BigDecimal.fromInt(multiplier)
@@ -190,7 +244,7 @@ class SendScreenViewModel(act: Account): ViewModel()
         )
     }
 
-    fun populateAssetsList(assetTransferList: MutableList<GroupId>, assets: Map<GroupId, AssetPerAccount>)
+    override fun populateAssetsList(assetTransferList: MutableList<GroupId>, assets: Map<GroupId, AssetPerAccount>)
     {
         val assetsToSendTmp: MutableList<AssetPerAccount> = mutableListOf()
 
@@ -204,7 +258,7 @@ class SendScreenViewModel(act: Account): ViewModel()
         assetsToSend.value = assetsToSendTmp.toList()
     }
 
-    fun onSendButtonClicked()
+    override fun onSendButtonClicked()
     {
         val acc = account.value
         val sendingTheseAssets = acc.assetTransferList
@@ -407,7 +461,7 @@ class SendScreenViewModel(act: Account): ViewModel()
         }
     }
 
-    fun actuallySend(toAddress: PayAddress? = null, amount: BigDecimal? = null)
+    override fun actuallySend(toAddress: PayAddress?, amount: BigDecimal?)
     {
         val account = selectedAccountUi2.value ?: return
         val note = uiState.value.note
@@ -533,11 +587,6 @@ class SendScreenViewModel(act: Account): ViewModel()
         }
     }
 
-    fun resetUi()
-    {
-        uiState.value = SendScreenUi()
-    }
-
     override fun onCleared()
     {
         super.onCleared()
@@ -553,10 +602,16 @@ data class SendScreenNavParams(
 )
 
 @Composable
-fun SendScreenContent(viewModel: SendScreenViewModel)
+fun SendScreenContent(
+  viewModel: SendScreenViewModel,
+  balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
+  syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() },
+  params: SendScreenNavParams
+)
 {
     val keyboardController = LocalSoftwareKeyboardController.current
     var isScanningQr by remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
     val uiState = viewModel.uiState.collectAsState()
     val assetsToSendState = viewModel.assetsToSend.collectAsState()
     val sendingTheseAssets = assetsToSendState.value
@@ -564,6 +619,11 @@ fun SendScreenContent(viewModel: SendScreenViewModel)
     val note = uiState.value.note
     val amount = uiState.value.amount
     val isConfirming = uiState.value.isConfirming
+
+    LaunchedEffect(params.toAddress) {
+        if (params.toAddress.isEmpty() && uiState.value.toAddress.isEmpty())
+            focusRequester.requestFocus()
+    }
 
     Box (
       modifier = Modifier.fillMaxSize(),
@@ -577,7 +637,7 @@ fun SendScreenContent(viewModel: SendScreenViewModel)
             ) { keyboardController?.hide() }
         ) {
             Spacer(Modifier.height(16.dp))
-            AccountPill(buttonsEnabled = false)
+            AccountPill(buttonsEnabled = false, balanceViewModel, syncViewModel)
             Column(
               modifier = Modifier.wrapContentHeight()
                 .fillMaxWidth()
@@ -586,6 +646,7 @@ fun SendScreenContent(viewModel: SendScreenViewModel)
                   interactionSource = remember { MutableInteractionSource() },
                   indication = null
                 ) { keyboardController?.hide() }
+                .testTag("SendScreenContentColumn")
             ) {
                 if (isConfirming)
                 {
@@ -593,6 +654,7 @@ fun SendScreenContent(viewModel: SendScreenViewModel)
                     Spacer(Modifier.height(16.dp))
                 }
                 WallyInputField(
+                  mod = Modifier.focusRequester(focusRequester).testTag("sendToAddress"),
                   text = toAddress,
                   label = i18n(S.sendToAddressHint),
                   placeholder = i18n(S.enterAddress),
@@ -604,6 +666,7 @@ fun SendScreenContent(viewModel: SendScreenViewModel)
                 }
                 Spacer(Modifier.height(8.dp))
                 WallyInputField(
+                  mod = Modifier.testTag("noteInput"),
                   text = note,
                   label = i18n(S.noteOptional),
                   placeholder = i18n(S.editSendNoteHint),
@@ -613,7 +676,8 @@ fun SendScreenContent(viewModel: SendScreenViewModel)
                     viewModel.setNote(it)
                 }
                 Spacer(Modifier.height(8.dp))
-                WallyNumericInputField(
+                WallyNumericInputFieldBalance(
+                  mod = Modifier.testTag("amountToSendInput"),
                   amountString = amount,
                   label = i18n(S.amountPlain),
                   placeholder = i18n(S.enterNEXAmount),
@@ -781,10 +845,8 @@ fun SendBottomButtons(mod: Modifier, viewModel: SendScreenViewModel)
 }
 
 @Composable
-fun SendScreen(account: Account, navParams: SendScreenNavParams)
+fun SendScreen(account: Account, navParams: SendScreenNavParams, viewModel: SendScreenViewModel = viewModel { SendScreenViewModelImpl(account) })
 {
-    val viewModel = viewModel { SendScreenViewModel(account) }
-
     /*
        Update UI when sending with a new account or the account has changed.
      */
@@ -816,7 +878,7 @@ fun SendScreen(account: Account, navParams: SendScreenNavParams)
         Surface(
           modifier = Modifier.fillMaxSize().background(Color.White)
         ) {
-            SendScreenContent(viewModel)
+            SendScreenContent(viewModel, params = navParams)
         }
     }
 }
@@ -965,6 +1027,7 @@ fun AssetListItemEditable(assetPerAccount: AssetPerAccount, editable: Boolean = 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WallyInputField(
+  mod: Modifier = Modifier,
   text: String,
   label: String,
   placeholder: String,
@@ -989,15 +1052,15 @@ fun WallyInputField(
               }
           }
       },
-      modifier = Modifier.fillMaxWidth(),
+      modifier = mod.fillMaxWidth(),
       singleLine = isSingleLine,
       readOnly = isReadOnly
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WallyNumericInputField(
+fun WallyNumericInputFieldBalance(
+    mod: Modifier = Modifier,
     amountString: String,
     label: String,
     placeholder: String,
@@ -1048,7 +1111,7 @@ fun WallyNumericInputField(
                   }
               }
           },
-          modifier = Modifier.weight(1f).onFocusChanged {
+          modifier = mod.weight(1f).onFocusChanged {
               if (it.isFocused)
               {
                   softKeyboardBar.value = { modifier ->
@@ -1107,7 +1170,6 @@ fun WallyNumericInputField(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WallyNumericInputFieldAsset(
   amountString: String,
