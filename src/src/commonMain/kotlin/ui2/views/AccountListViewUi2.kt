@@ -75,6 +75,7 @@ fun Account.uiData(): AccountUIData
 {
     val ret = AccountUIData(this)
 
+open class AccountUiDataViewModel: ViewModel()
     var delta = unconfirmedBalance
 
     ret.name = name
