@@ -3,7 +3,9 @@ package info.bitcoinunlimited.www.wally.ui2
 import androidx.compose.foundation.clickable
 import info.bitcoinunlimited.www.wally.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -24,6 +26,9 @@ import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.ui2.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.ui2.theme.WallyHalfDivider
 import info.bitcoinunlimited.www.wally.ui2.views.*
+import info.bitcoinunlimited.www.wally.ui.*
+import info.bitcoinunlimited.www.wally.ui.theme.*
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
 
@@ -149,15 +154,13 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
 }
 
 @Composable
-fun SettingsScreenUi2()
+fun SettingsScreenUi2(preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE), hasNewUIState: State<Boolean> = newUI.collectAsState())
 {
-    val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
     var devModeView by mutableStateOf(devMode)
     var darkModeView by mutableStateOf(darkMode)
     val generalSettingsSwitches = mutableListOf(
       GeneralSettingsSwitch(ACCESS_PRICE_DATA_PREF, S.AccessPriceData),
     )
-    val hasNewUIState = newUI.collectAsState()
     val hasNewUI = hasNewUIState.value
 
     if (platform().supportsBackgroundSync)
@@ -194,7 +197,7 @@ fun SettingsScreenUi2()
     }
 
     Column(
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).testTag("SettingsScreenScrollable"),
       horizontalAlignment = Alignment.Start,
       verticalArrangement = Arrangement.SpaceEvenly
     ) {
@@ -223,17 +226,23 @@ fun SettingsScreenUi2()
 
             if (false) // Dark mode is not implemented so don't show the button
                 WallySwitchRowUi2(darkModeView, S.enableDarkMode) {
-                    preferenceDB.edit().putBoolean(DARK_MODE_PREF, it).commit()
+                    CoroutineScope(Dispatchers.IO).launch {
+                        preferenceDB.edit().putBoolean(DARK_MODE_PREF, it).commit()
+                    }
                     darkModeView = it
                     darkMode = it
                 }
             WallySwitchRowUi2(hasNewUI, S.enableExperimentalUx) {
-                preferenceDB.edit().putBoolean(EXPERIMENTAL_UX_MODE_PREF, it).commit()
+                CoroutineScope(Dispatchers.IO).launch {
+                    preferenceDB.edit().putBoolean(EXPERIMENTAL_UX_MODE_PREF, it).commit()
+                }
                 newUI.value = it
             }
             WallySwitchRowUi2(devModeView, S.enableDeveloperView) {
                 LogIt.info("devmode $it")
-                preferenceDB.edit().putBoolean(DEV_MODE_PREF, it).commit()
+                CoroutineScope(Dispatchers.IO).launch {
+                    preferenceDB.edit().putBoolean(DEV_MODE_PREF, it).commit()
+                }
                 devModeView = it
                 devMode = it
             }
@@ -249,7 +258,7 @@ fun SettingsScreenUi2()
             Text(text  = i18n(S.BlockchainSettings), fontSize = 18.sp, fontWeight = FontWeight.Bold)
         }
         Column(
-          modifier = Modifier.padding(start = 4.dp, end = 4.dp)
+          modifier = Modifier.padding(start = 4.dp, end = 4.dp).testTag("BlockchainSelectors")
         ) {
             val horizontalAlignmentLine = HorizontalAlignmentLine(merger = { old, new -> max(old, new)})
 
@@ -356,9 +365,12 @@ fun BlockchainSourceUi2(chain: ChainSelector, preferenceDB: SharedPreferences, s
     val exclusiveNodeKey = "$name.$EXCLUSIVE_NODE_SWITCH"
     val preferNodeKey = "$name.$PREFER_NODE_SWITCH"
     val configuredNodeKey = "$name.${CONFIGURED_NODE}"
-    val onlyChecked = remember { mutableStateOf(preferenceDB.getBoolean(exclusiveNodeKey, false)) }
-    val preferChecked = remember { mutableStateOf(preferenceDB.getBoolean(preferNodeKey, false)) }
-    var textState by remember { mutableStateOf(preferenceDB.getString(configuredNodeKey, "") ?: "") }
+    val configuredNode: String = preferenceDB.getString(exclusiveNodeKey, "") ?: ""
+    val preferNode: Boolean = preferenceDB.getBoolean(preferNodeKey, false)
+    val exclusiveNode: Boolean = preferenceDB.getBoolean(exclusiveNodeKey, false)
+    val onlyChecked = remember { mutableStateOf(exclusiveNode) }
+    val preferChecked = remember { mutableStateOf(preferNode) }
+    var textState by remember { mutableStateOf(configuredNode) }
 
     val dispName = chainToName[chain]?.replaceFirstChar { it.uppercase() } ?: ""
     val focusManager = LocalFocusManager.current
@@ -375,10 +387,12 @@ fun BlockchainSourceUi2(chain: ChainSelector, preferenceDB: SharedPreferences, s
           onValueChange = {
               textState = it
               LogIt.info(configuredNodeKey)
-              with(preferenceDB.edit())
-              {
-                  putString(configuredNodeKey, it)
-                  commit()
+              CoroutineScope(Dispatchers.IO).launch {
+                  with(preferenceDB.edit())
+                  {
+                      putString(configuredNodeKey, it)
+                      commit()
+                  }
               }
           },
           keyboardOptions = KeyboardOptions(autoCorrect = false, imeAction = ImeAction.Done),
@@ -390,13 +404,17 @@ fun BlockchainSourceUi2(chain: ChainSelector, preferenceDB: SharedPreferences, s
         WallySwitch(onlyChecked, S.only) {
             onlyChecked.value = it
             if (it) preferChecked.value = false  // if one is true the other must be false
-            preferenceDB.edit().putBoolean(exclusiveNodeKey, it).putBoolean(preferNodeKey, preferChecked.value).commit()
+            CoroutineScope(Dispatchers.IO).launch {
+                preferenceDB.edit().putBoolean(exclusiveNodeKey, it).putBoolean(preferNodeKey, preferChecked.value).commit()
+            }
         }
         Spacer(modifier = Modifier.weight(0.01f))
         WallySwitch(preferChecked, S.prefer) {
             preferChecked.value = it
             if (it) onlyChecked.value = false  // if one is true the other must be false
-            preferenceDB.edit().putBoolean(preferNodeKey, it).putBoolean(exclusiveNodeKey, onlyChecked.value).commit()
+            CoroutineScope(Dispatchers.IO).launch {
+                preferenceDB.edit().putBoolean(preferNodeKey, it).putBoolean(exclusiveNodeKey, onlyChecked.value).commit()
+            }
         }
     }
 }

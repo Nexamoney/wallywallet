@@ -236,6 +236,66 @@ fun SettingsScreen(nav: ScreenNav)
         }
     }
 }
+
+fun onWipeDatabase()
+{
+    later {
+        wallyApp?.accounts?.forEach {
+            it.value.delete()
+            deleteWallet(it.key, it.value.chain.chainSelector)
+        }
+    }
+}
+
+fun onLogDebugData()
+{
+    later {
+        val coins: MutableMap<String, Account> = wallyApp!!.accounts
+        LogIt.info("LOG DEBUG BUTTON")
+        for (c in coins)
+            c.value.wallet.debugDump()
+        displayNotice("Log written")
+    }
+}
+
+fun onReloadAssets()
+{
+    later {
+        val app = wallyApp!!
+        app.assetManager.clear()
+
+        LogIt.info("Reload Assets Button")
+        displayNotice("Reloading assets")
+        triggerAssetCheck()
+    }
+}
+
+fun onCloseP2pConnections()
+{
+    later {
+        for (bc in blockchains)
+        {
+            for (cxn in bc.value.net.p2pCnxns)
+            {
+                cxn.close()
+            }
+        }
+        LogIt.info("All P2P connections closed")
+        displayNotice("Connections closed")
+    }
+}
+
+@Composable fun GeneralSettingsSwitchView(generalSettingsSwitch: GeneralSettingsSwitch)
+{
+    val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
+    val isChecked = remember { mutableStateOf(preferenceDB.getBoolean(generalSettingsSwitch.prefKey, true)) }
+
+    WallySwitch(isChecked, generalSettingsSwitch.textRes) {
+        isChecked.value = it
+        preferenceDB.edit().putBoolean(generalSettingsSwitch.prefKey, it).commit()
+    }
+}
+
 @Composable fun DarkMode(darkMode: MutableState<Boolean>, onClick: (Boolean) -> Unit)
 {
     Row(
