@@ -32,8 +32,7 @@ class NewAccountScreenTestUi2
 
     @BeforeTest
     fun setUp() {
-        // jvm only
-        if (platform().usesMouse)
+        if (platform().target == KotlinTarget.JVM)
             Dispatchers.setMain(StandardTestDispatcher())
         initializeLibNexa()
         runningTheTests = true
@@ -44,8 +43,7 @@ class NewAccountScreenTestUi2
     @AfterTest
     fun clean()
     {
-        // jvm only
-        if (platform().usesMouse)
+        if (platform().target == KotlinTarget.JVM)
             Dispatchers.resetMain()
     }
 

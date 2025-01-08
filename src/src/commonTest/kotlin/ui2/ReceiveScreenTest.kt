@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import info.bitcoinunlimited.www.wally.Account
 import info.bitcoinunlimited.www.wally.CommonApp
+import info.bitcoinunlimited.www.wally.KotlinTarget
 import info.bitcoinunlimited.www.wally.platform
 import info.bitcoinunlimited.www.wally.ui2.BalanceViewModelFake
 import info.bitcoinunlimited.www.wally.ui2.ReceiveScreenContent
@@ -35,8 +36,7 @@ class ReceiveScreenTest
     @BeforeTest
     fun setup()
     {
-        // JVM only
-        if (platform().usesMouse)
+        if (platform().target == KotlinTarget.JVM)
             Dispatchers.setMain(StandardTestDispatcher())
         initializeLibNexa()
         wallyApp = CommonApp()
@@ -51,8 +51,7 @@ class ReceiveScreenTest
     @AfterTest
     fun clean()
     {
-        // JVM only
-        if (platform().usesMouse)
+        if (platform().target == KotlinTarget.JVM)
             Dispatchers.resetMain()
         wallyApp = null
     }

@@ -39,7 +39,7 @@ class SettingsScreenTestUi2 {
     fun setup()
     {
         // jvm only
-        if (platform().usesMouse)
+        if (platform().target == KotlinTarget.JVM)
             Dispatchers.setMain(StandardTestDispatcher())
     }
 
@@ -47,7 +47,7 @@ class SettingsScreenTestUi2 {
     fun clean()
     {
         // jvm only
-        if (platform().usesMouse)
+        if (platform().target == KotlinTarget.JVM)
             Dispatchers.resetMain()
     }
 

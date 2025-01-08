@@ -99,7 +99,18 @@ val DATE_TIME_FORMAT = kotlinx.datetime.LocalDateTime.Format {
     second()
 }
 
+/*
+    The current execution target
+ */
+enum class KotlinTarget
+{
+    iOS,
+    Android,
+    JVM
+}
+
 data class PlatformCharacteristics(
+  val target: KotlinTarget,
   /** Does this platform support QR code scanning */
   val hasQrScanner: Boolean,
   val hasGallery: Boolean,
@@ -126,7 +137,7 @@ data class PlatformCharacteristics(
   /** How much does the bottom system bar overlap the application */
   var bottomSystemBarOverlap: Dp,
   /** True if the shopping screen is enabled for this platform, disabled for iOS because of app store rejections **/
-  val hasLinkToNiftyArt: Boolean
+  val hasLinkToNiftyArt: Boolean,
 )
 
 /** Return details about this platform */

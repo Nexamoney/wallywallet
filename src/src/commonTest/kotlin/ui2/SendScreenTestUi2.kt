@@ -25,16 +25,14 @@ class SendScreenTestUi2
     @BeforeTest
     fun init()
     {
-        // jvm only
-        if (platform().usesMouse)
+        if (platform().target == KotlinTarget.JVM)
             Dispatchers.setMain(StandardTestDispatcher())
     }
 
     @AfterTest
     fun after()
     {
-        // jvm only
-        if (platform().usesMouse)
+        if (platform().target == KotlinTarget.JVM)
             Dispatchers.resetMain()
     }
 

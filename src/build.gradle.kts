@@ -9,7 +9,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 // Wally Wallet version
-val versionNumber = "3.4.0"
+// On version bump: Run ./gradlew generateVersionFile and commit the updates iosApp/iosApp/info.plist file
+val versionNumber = "3.5.0"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 
 
