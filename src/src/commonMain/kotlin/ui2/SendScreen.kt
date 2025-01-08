@@ -895,16 +895,14 @@ fun AssetsList(assetList: List<AssetPerAccount>, editable: Boolean = true, viewM
         )
         Spacer(Modifier.height(16.dp).clickable { keyboardController?.hide() })
         assetList.forEach { asset ->
-            AssetListItemEditable(asset, editable, viewModel)
+            AssetListItemEditable(asset, editable, viewModel.uiState.collectAsState().value.isConfirming)
             Spacer(Modifier.height(8.dp))
         }
     }
 }
 
 @Composable
-fun AssetListItemEditable(assetPerAccount: AssetPerAccount, editable: Boolean = true, viewModel: SendScreenViewModel) {
-    val uiState = viewModel.uiState.collectAsState()
-    val isConfirming = uiState.value.isConfirming
+fun AssetListItemEditable(assetPerAccount: AssetPerAccount, editable: Boolean = true, isConfirming: Boolean = false) {
     val asset = assetPerAccount.assetInfo
     val tokenAmount = assetPerAccount.groupInfo.tokenAmt
     val expandable: Boolean = if(tokenAmount == 1L) false else true
@@ -1218,7 +1216,7 @@ fun WallyNumericInputFieldAsset(
                   }
               }
           },
-          modifier = Modifier.weight(1f),
+          modifier = Modifier.weight(1f).testTag("WallyNumericInputFieldAsset"),
           singleLine = singleLine,
           readOnly = isReadOnly
         )
