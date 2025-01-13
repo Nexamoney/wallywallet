@@ -600,6 +600,7 @@ Good luck!
     <string name="WebsiteUnavailable" formatted="false">Website unavailable</string>
     <string name="ExplainBitmart">bitmart.com: Trade NEXA for other cryptocurrencies</string>
     <string name="ExplainMexc">mexc.com: Trade NEXA for other cryptocurrencies</string>
+    <string name="ExplainBiconomy">biconomy.com: Trade NEXA for other cryptocurrencies</string>
     <string name="CexButton">exchange</string>
 
     <!-- Trickle Pay -->

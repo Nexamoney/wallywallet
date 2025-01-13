@@ -173,4 +173,6 @@
 
     <string name="enterAmount">Angi Beløp</string>
     <string name="fee">Avgift</string>
+
+    <string name="ExplainBiconomy">biconomy.com: Handle NEXA for andre kryptovalutaer</string>
 </resources>
