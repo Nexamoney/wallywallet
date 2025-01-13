@@ -21,6 +21,7 @@ val initialShopping: ArrayList<ShoppingDestination> = if (platform().hasLinkToNi
       ShoppingDestination(i18n(S.NFTs), i18n(S.ExplainNFTs), i18n(S.NftUrl), "", "icons/niftyart.png" ), // R.drawable.ic_niftyart_logo_plain),
       ShoppingDestination(i18n(S.CexButton), i18n(S.ExplainBitmart), "https://www.bitmart.com/trade/en-US?symbol=NEXA_USDT", "","icons/bitmart.png"),
       ShoppingDestination(i18n(S.CexButton), i18n(S.ExplainMexc), "https://www.mexc.com/exchange/NEXA_USDT", "", "icons/mexc.png"),
+      ShoppingDestination(i18n(S.CexButton), i18n(S.ExplainBiconomy), "https://www.biconomy.com/exchange/NEXA_USDT", "", "icons/biconomy.png")
     )
 else
     arrayListOf(
@@ -32,4 +33,5 @@ else
        */
       ShoppingDestination("https://www.bitmart.com/trade/en-US?symbol=NEXA_USDT", i18n(S.ExplainBitmart),"https://www.bitmart.com/trade/en-US?symbol=NEXA_USDT", "","icons/bitmart.png", destinationType = DestinationType.EXCHANGE),
       ShoppingDestination("https://www.mexc.com/exchange/NEXA_USDT", i18n(S.ExplainMexc), "https://www.mexc.com/exchange/NEXA_USDT", "", "icons/mexc.png", destinationType = DestinationType.EXCHANGE),
+      ShoppingDestination("https://www.biconomy.com/exchange/NEXA_USDT", i18n(S.ExplainBiconomy), "https://www.biconomy.com/exchange/NEXA_USDT", "", "icons/biconomy.png")
     )
