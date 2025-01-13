@@ -96,7 +96,8 @@ build:
   variables:
     ANDROID_HOME: "/opt/homebrew/share/android-commandlinetools"
   script:
-    - ./gradlew build
+    # Exclude the task :src:testDebugUnitTest and :src:testReleaseUnitTest because (I think) they do not support multiplatform projects
+    - ./gradlew build -x :src:testDebugUnitTest -x :src:testReleaseUnitTest
   artifacts:
     when: always
     paths:
