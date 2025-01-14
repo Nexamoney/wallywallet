@@ -281,6 +281,16 @@ androidMonkeyTest:
   script:
     - adb shell monkey -p info.bitcoinunlimited.www.wally --throttle 500 -v 1000
 
+deployAndroidApk:
+  needs:
+    - androidPixel5Test
+  script:
+    - ./gradlew assembleRelease
+    - cp src/build/outputs/apk/release/src-release.apk wally.apk
+  artifacts:
+    paths:
+      - wally.apk
+
 # Needs Android device in CI to run
 #androidDeviceTest:
 #  image: inovex/gitlab-ci-android
