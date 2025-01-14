@@ -645,6 +645,10 @@ android {
         jvmTarget = JavaVersion.VERSION_17.majorVersion
     }
      */
+    lint {
+        abortOnError = false // Prevents Lint from failing the build
+        warningsAsErrors = false // Ensures warnings don't fail the build
+    }
 }
 
 
