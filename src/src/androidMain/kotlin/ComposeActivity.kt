@@ -9,13 +9,22 @@ import androidx.activity.compose.setContent
 import kotlinx.coroutines.delay
 import android.content.pm.PackageManager
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.material.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
@@ -40,6 +49,8 @@ actual fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
     (ca as ComposeActivity?)?.ImageQrCode(imageParsed)
     return true
 }
+
+private lateinit var pickMediaLauncher: ActivityResultLauncher<PickVisualMediaRequest>
 
 class ComposeActivity: CommonActivity()
 {
@@ -66,18 +77,11 @@ class ComposeActivity: CommonActivity()
     }
 
     // call this with a function to execute whenever that function needs file read permissions
-    fun onReadMediaPermissionGranted(doit: () -> Unit): Boolean
+    fun onReadMediaPermissionGrantedLegacy(doit: () -> Unit): Boolean
     {
-        // In later versions of android we can ask for a less intrusive permission
-        if (android.os.Build.VERSION.SDK_INT >= 33)
-        {
-            if (ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED)
-                doit()
-            else
-            {
-                doOnMediaReadPerms = doit
-                requestPermissions(arrayOf(Manifest.permission.READ_MEDIA_IMAGES), READ_MEDIA_IMAGES_RESULT)
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Do nothing, this is not legacy
+            return false
         }
         else // otherwise we have to ask for access to any external storage files to access the gallery
         {
@@ -87,6 +91,7 @@ class ComposeActivity: CommonActivity()
             {
                 doOnMediaReadPerms = doit
                 requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), READ_MEDIA_IMAGES_RESULT)
+                return true
             }
         }
         return false
@@ -100,9 +105,14 @@ class ComposeActivity: CommonActivity()
     fun ImageQrCode(imageParsed: (String?) -> Unit)
     {
         imageParsedFn = imageParsed
-        onReadMediaPermissionGranted {
-            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            startActivityForResult(intent, IMAGE_RESULT)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            pickMediaLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        } else {
+            // Handle fallback for older Android versions
+            onReadMediaPermissionGrantedLegacy {
+                val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                startActivityForResult(intent, IMAGE_RESULT)
+            }
         }
     }
 
@@ -110,9 +120,11 @@ class ComposeActivity: CommonActivity()
      * a QR code scan.  We want to accept QR codes of any different format and "do what I mean" based on the QR code's contents
      * an image selection (presumably its a QR code)
      * an identity or trickle pay activity completion
+     * This is a legacy callback for Android 12 and below.
      * */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
     {
+        super.onActivityResult(requestCode, resultCode, data)
         // Gallery Image selection (presumably a QR code)
         if (requestCode == IMAGE_RESULT)
         {
@@ -136,6 +148,7 @@ class ComposeActivity: CommonActivity()
                             }
                             catch (e: com.google.zxing.NotFoundException)
                             {
+                                LogIt.info("QR code not found in image: ${e.message}")
                                 displayError(R.string.badImageQR, R.string.badImageQRhelp)
                             }
                             catch(e: Exception)
@@ -365,6 +378,39 @@ class ComposeActivity: CommonActivity()
             }
         }
 
+        // Initialize the launcher
+        pickMediaLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            // LogIt.info(sourceLoc() + ": Parse QR from image: " + im)
+            if (uri != null)
+            {
+                val resolver = applicationContext.contentResolver
+                //resolver.openFileDescriptor(im, "r").use { pfd ->
+                resolver.openInputStream(uri).use { s ->
+                    if (s == null)  displayError(S.badImageQR)
+                    else
+                    {
+                        try
+                        {
+                            val qrdata = readQRcode(s)
+                            displayNotice(R.string.goodQR, qrdata)
+                            imageParsedFn?.let { it(qrdata) }
+                        }
+                        catch (e: com.google.zxing.NotFoundException)
+                        {
+                            displayError(R.string.badImageQR, R.string.badImageQRhelp)
+                        }
+                        catch(e: Exception)
+                        {
+                            displayException(R.string.badImageQR, e)
+                        }
+                    }
+                }
+            }
+            else
+            {
+                LogIt.info("No image selected")
+            }
+        }
     }
 
     // If the title bar is touched, show all the errors and warnings the app has generated
@@ -382,7 +428,6 @@ class ComposeActivity: CommonActivity()
         }
          */
     }
-
 
     override fun onDestroy()
     {
