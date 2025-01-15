@@ -76,9 +76,9 @@ fun readQRcode(strm: InputStream): String
     reader.setHints(mapOf(DecodeHintType.POSSIBLE_FORMATS to listOf(BarcodeFormat.QR_CODE)))
 
     var bmp: Bitmap = BitmapFactory.decodeStream(strm)
-    if (bmp.height > 2000 || bmp.width > 2000)  // Keep things sane for the analysis code
+    if (bmp.height > 5000 || bmp.width > 5000)  // Keep things sane for the analysis code
     {
-        bmp = getResizedBitmap(bmp, 2000, 2000) ?: bmp
+        bmp = getResizedBitmap(bmp, 5000, 5000) ?: bmp
     }
     val lsource = BitmapLuminance(bmp)
     val binarizer = HybridBinarizer(lsource)
