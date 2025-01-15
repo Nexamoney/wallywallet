@@ -13,11 +13,17 @@ import info.bitcoinunlimited.www.wally.ui2.NavigationRootUi2
 import info.bitcoinunlimited.www.wally.ui2.SyncViewModelFake
 import info.bitcoinunlimited.www.wally.ui2.views.AccountUiDataViewModelFake
 import info.bitcoinunlimited.www.wally.ui2.views.NativeSplash
-import org.nexa.libnexakotlin.ChainSelector
-import org.nexa.libnexakotlin.initializeLibNexa
-import org.nexa.libnexakotlin.runningTheTests
+import org.nexa.libnexakotlin.*
+import org.nexa.threads.millisleep
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+
+// Wait for all asynchronously launched routines to complete
+fun testWaitForAsync()
+{
+    while ((libNexaJobPool.jobs.size != 0) && (libNexaJobPool.availableThreads != libNexaJobPool.allThreads.size)) millisleep(50U)
+    millisleep(500U) // TODO check pending coroutine jobs
+}
 
 @OptIn(ExperimentalTestApi::class)
 class NavigationRootUi2Test
