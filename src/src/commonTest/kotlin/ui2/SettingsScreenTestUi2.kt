@@ -27,6 +27,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.chainToCurrencyCode
+import org.nexa.threads.millisleep
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -91,6 +92,7 @@ class SettingsScreenTestUi2 {
         onNodeWithTag("ConfirmAboveEntry").performTextClearance()
         onNodeWithTag("ConfirmAboveEntry").performTextInput(textInput)
         onNodeWithTag("ConfirmAboveEntry").assertTextContains(textInput)
+        testWaitForAsync()
         val confirmAbove = preferenceDB.getString(CONFIRM_ABOVE_PREF, "0") ?: "0"
         assertEquals(textInput, confirmAbove)
     }

@@ -203,7 +203,7 @@ enum class ScreenId
     val isEntirelyScrollable:Boolean
         get()
         {
-            if (this == Settings) return true
+            if (this == Settings) return false
             if (this == NewAccount) return true
             return false
         }
