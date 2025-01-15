@@ -215,7 +215,8 @@ val androidPlatformCharacteristics = PlatformCharacteristics(
   hasShare = true,
   supportsBackgroundSync = true,
   bottomSystemBarOverlap = if (android.os.Build.VERSION.SDK_INT < 33) 0.dp else 10.dp, // This is overwritten when the view is created and we can check the insets
-  hasLinkToNiftyArt = true
+  hasLinkToNiftyArt = true,
+  hasDoneButton = false
 )
 
 actual fun platform(): PlatformCharacteristics = androidPlatformCharacteristics

@@ -1071,8 +1071,6 @@ fun WallyNumericInputFieldBalance(
     onValueChange: (String) -> Unit
 )
 {
-    val isIos = !platform().hasGallery
-    val keyboardController = LocalSoftwareKeyboardController.current
     val balanceViewModel = viewModel { BalanceViewModelImpl() }
     val balanceState = balanceViewModel.balance.collectAsState()
     val balance = balanceState.value
@@ -1148,22 +1146,34 @@ fun WallyNumericInputFieldBalance(
           readOnly = isReadOnly
         )
 
-        /*
-            This is a temporary workaround because compose does not support Done button for iOS numeric keyboard
-            I think it is possible to a native iOS input in the iosMain module that adds a Done button
-         */
-        if (isIos && hasIosDoneButton)
-        {
-            Spacer(Modifier.width(2.dp))
-            Button(
-              modifier = Modifier.align(Alignment.CenterVertically),
-              onClick = {
-                  // Also manually dismiss the keyboard on Done button click
-                  keyboardController?.hide()
-              }
-            ) {
-                Text(text = i18n(S.done))
-            }
+        if (hasIosDoneButton)
+            DoneButtonOptional(Modifier.align(Alignment.CenterVertically))
+    }
+}
+
+
+/*
+    This is a temporary workaround because compose does not support Done button for iOS numeric keyboard
+    I think it is possible to a native iOS input in the iosMain module that adds a Done button
+ */
+@Composable
+fun DoneButtonOptional(mod: Modifier = Modifier, onClick: () -> Unit = {})
+{
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val hasDoneButton = platform().hasDoneButton
+
+    if (hasDoneButton)
+    {
+        Spacer(Modifier.width(2.dp))
+        Button(
+          modifier = mod,
+          onClick = {
+              // Also manually dismiss the keyboard on Done button click
+              keyboardController?.hide()
+              onClick()
+          }
+        ) {
+            Text(text = i18n(S.done))
         }
     }
 }
