@@ -1,6 +1,5 @@
 package info.bitcoinunlimited.www.wally.ui2.views
 
-import androidx.compose.foundation.layout.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.text.KeyboardActions
@@ -18,11 +17,12 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui2.theme.BrightBkg
 import info.bitcoinunlimited.www.wally.ui2.triggerAccountsChanged
 import info.bitcoinunlimited.www.wally.ui2.triggerAssignAccountsGuiSlots
 import info.bitcoinunlimited.www.wally.ui2.triggerUnlockDialog
+import info.bitcoinunlimited.www.wally.ui2.DoneButtonOptional
 import org.nexa.libnexakotlin.GetLog
 
 private val LogIt = GetLog("BU.wally.unlockview")
@@ -30,7 +30,6 @@ private val LogIt = GetLog("BU.wally.unlockview")
 /**
  * Displays a confirm/dismiss dialog to users with optional confirm/dismiss button text and description
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UnlockView(enterPin: String = i18n(S.EnterPIN), onPinEntered: (String) -> Unit)
 {
@@ -56,9 +55,7 @@ fun UnlockView(enterPin: String = i18n(S.EnterPIN), onPinEntered: (String) -> Un
     }
 
     AlertDialog(title = { Text(enterPin) },
-      containerColor = BrightBkg,
       text = {
-              Column {
                   TextField(pin.value,
                     colors = TextFieldDefaults.colors(
                       cursorColor = Color.Black,
@@ -81,15 +78,15 @@ fun UnlockView(enterPin: String = i18n(S.EnterPIN), onPinEntered: (String) -> Un
                         focusRequester.requestFocus()
                     },
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number),
                     keyboardActions = KeyboardActions(
                         onDone = { attemptUnlock() }
                     ),
                   )
-              }
              },
       confirmButton = {
-          },
+          DoneButtonOptional( onClick = { attemptUnlock() })
+      },
       dismissButton = {
           },
       onDismissRequest = {

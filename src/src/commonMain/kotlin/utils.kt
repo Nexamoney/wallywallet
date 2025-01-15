@@ -138,6 +138,8 @@ data class PlatformCharacteristics(
   var bottomSystemBarOverlap: Dp,
   /** True if the shopping screen is enabled for this platform, disabled for iOS because of app store rejections **/
   val hasLinkToNiftyArt: Boolean,
+  /** Done button for input fields **/
+  val hasDoneButton: Boolean
 )
 
 /** Return details about this platform */
