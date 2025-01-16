@@ -26,6 +26,21 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
+val TESTWALLET = "newAccountScreenTest"
+
+fun setupTest(cs: ChainSelector, selectAccount: Boolean = true): Account
+{
+    wallyApp = CommonApp()
+    wallyApp!!.onCreate()
+    wallyApp!!.openAllAccounts()
+    lateinit var account: Account
+    runBlocking(Dispatchers.IO) {
+        account = wallyApp!!.newAccount(TESTWALLET, 0U, "", cs)!!
+    }
+    if (selectAccount) setSelectedAccount(account)
+    return account
+}
+
 @OptIn(ExperimentalTestApi::class)
 class NewAccountScreenTestUi2
 {
@@ -47,6 +62,7 @@ class NewAccountScreenTestUi2
             Dispatchers.resetMain()
     }
 
+    /** Test opening the new account screen */
     @Test
     fun newAccountScreenTest() = runComposeUiTest {
         val viewModelStoreOwner = object : ViewModelStoreOwner
@@ -54,22 +70,8 @@ class NewAccountScreenTestUi2
             override val viewModelStore: ViewModelStore = ViewModelStore()
         }
 
-        /*
-            Start the app
-         */
         val cs = ChainSelector.NEXA
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
-        wallyApp!!.openAllAccounts()
-        lateinit var account: Account
-        runBlocking(Dispatchers.IO) {
-            account = wallyApp!!.newAccount("NewAccountScreenTest", 0U, "", cs)!!
-        }
-
-        /*
-            Set selected account to populate the UI
-        */
-        setSelectedAccount(account)
+        val account = setupTest(cs)
 
         val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())
 
@@ -82,6 +84,7 @@ class NewAccountScreenTestUi2
         }
     }
 
+    /** Test creating a Nexa account */
     @Test
     fun selectBlockchainAndCreateAccount() = runComposeUiTest {
         val viewModelStoreOwner = object : ViewModelStoreOwner
@@ -89,22 +92,8 @@ class NewAccountScreenTestUi2
             override val viewModelStore: ViewModelStore = ViewModelStore()
         }
 
-        /*
-            Start the app
-         */
         val cs = ChainSelector.NEXA
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
-        wallyApp!!.openAllAccounts()
-        lateinit var account: Account
-        runBlocking(Dispatchers.IO) {
-            account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
-        }
-
-        /*
-            Set selected account to populate the UI
-        */
-        setSelectedAccount(account)
+        val account = setupTest(cs)
 
         val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())
         setContent {
@@ -130,6 +119,7 @@ class NewAccountScreenTestUi2
         assertTrue { newAccountState.value == NewAccountState() }
     }
 
+    /** Test changing the new account's name */
     @Test
     fun enterNameAndCreateAccount() = runComposeUiTest {
         val viewModelStoreOwner = object : ViewModelStoreOwner
@@ -137,18 +127,8 @@ class NewAccountScreenTestUi2
             override val viewModelStore: ViewModelStore = ViewModelStore()
         }
 
-        /*
-            Start the app
-         */
         val cs = ChainSelector.NEXA
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
-        wallyApp!!.openAllAccounts()
-        lateinit var account: Account
-        runBlocking(Dispatchers.IO) {
-            account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
-        }
-
+        val account = setupTest(cs, false)
         val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())
 
         setContent {
@@ -167,6 +147,7 @@ class NewAccountScreenTestUi2
         assertTrue { newAccountState.value == NewAccountState() }
     }
 
+    /** Test preventing an overly long name */
     @Test
     fun tooLongAccountName() = runComposeUiTest {
         val viewModelStoreOwner = object : ViewModelStoreOwner
@@ -174,18 +155,8 @@ class NewAccountScreenTestUi2
             override val viewModelStore: ViewModelStore = ViewModelStore()
         }
 
-        /*
-            Start the app
-         */
         val cs = ChainSelector.NEXA
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
-        wallyApp!!.openAllAccounts()
-        lateinit var account: Account
-        runBlocking(Dispatchers.IO) {
-            account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
-        }
-
+        val account = setupTest(cs, false)
         val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())
 
         setContent {
@@ -200,6 +171,7 @@ class NewAccountScreenTestUi2
         onNodeWithTag("AccountNameInput").performTextInput("longaccountname")
     }
 
+    /** Test specifying an account unlock PIN */
     @Test
     fun enterPinAndCreateAccount() = runComposeUiTest {
         val viewModelStoreOwner = object : ViewModelStoreOwner
@@ -207,18 +179,8 @@ class NewAccountScreenTestUi2
             override val viewModelStore: ViewModelStore = ViewModelStore()
         }
 
-        /*
-            Start the app
-         */
         val cs = ChainSelector.NEXA
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
-        wallyApp!!.openAllAccounts()
-        lateinit var account: Account
-        runBlocking(Dispatchers.IO) {
-            account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
-        }
-
+        val account = setupTest(cs, false)
         val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())
 
         setContent {
@@ -238,6 +200,7 @@ class NewAccountScreenTestUi2
         assertTrue { newAccountState.value == NewAccountState() }
     }
 
+    /** Test specifying a short PIN */
     @Test
     fun enterTooShortPin() = runComposeUiTest {
         val viewModelStoreOwner = object : ViewModelStoreOwner
@@ -245,18 +208,8 @@ class NewAccountScreenTestUi2
             override val viewModelStore: ViewModelStore = ViewModelStore()
         }
 
-        /*
-            Start the app
-         */
         val cs = ChainSelector.NEXA
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
-        wallyApp!!.openAllAccounts()
-        lateinit var account: Account
-        runBlocking(Dispatchers.IO) {
-            account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
-        }
-
+        val account = setupTest(cs, false)
         val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())
 
         setContent {
@@ -271,25 +224,16 @@ class NewAccountScreenTestUi2
         onNodeWithTag("NewAccountPinInput").performTextInput("12")
     }
 
+    /** Test specifying an overly long PIN */
     @Test
-    fun enterTooLongShortPin() = runComposeUiTest {
+    fun enterTooLongPin() = runComposeUiTest {
         val viewModelStoreOwner = object : ViewModelStoreOwner
         {
             override val viewModelStore: ViewModelStore = ViewModelStore()
         }
 
-        /*
-            Start the app
-         */
         val cs = ChainSelector.NEXA
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
-        wallyApp!!.openAllAccounts()
-        lateinit var account: Account
-        runBlocking(Dispatchers.IO) {
-            account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
-        }
-
+        val account = setupTest(cs, false)
         val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())
 
         setContent {
