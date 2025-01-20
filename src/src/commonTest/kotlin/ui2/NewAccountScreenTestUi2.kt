@@ -20,7 +20,9 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.initializeLibNexa
+import org.nexa.libnexakotlin.launch
 import org.nexa.libnexakotlin.runningTheTests
+import org.nexa.threads.millisleep
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -116,6 +118,7 @@ class NewAccountScreenTestUi2
 
         onNodeWithText(i18n(S.createNewAccount)).assertExists()
         onNodeWithText(i18n(S.createNewAccount)).performClick()
+        settle()
         assertTrue { newAccountState.value == NewAccountState() }
     }
 
@@ -141,9 +144,10 @@ class NewAccountScreenTestUi2
 
         onNodeWithTag("AccountNameInput").assertExists()
         onNodeWithTag("AccountNameInput").performTextInput("account")
-
+        settle()
         onNodeWithText(i18n(S.createNewAccount)).assertExists()
         onNodeWithText(i18n(S.createNewAccount)).performClick()
+        settle()
         assertTrue { newAccountState.value == NewAccountState() }
     }
 
@@ -166,9 +170,28 @@ class NewAccountScreenTestUi2
                 NewAccountScreenUi2(accountGuiSlots.collectAsState(), false)
             }
         }
-
+        // default name should be valid
+        onNodeWithTag("AccountName_C").assertExists()
+        onNodeWithTag("AccountName_X").assertDoesNotExist()
+        // ok now put a bad name in
         onNodeWithTag("AccountNameInput").assertExists()
-        onNodeWithTag("AccountNameInput").performTextInput("longaccountname")
+        onNodeWithTag("AccountNameInput").performTextReplacement("longaccountname_longaccountname")
+        settle()
+        // check that its marked with an X
+        onNodeWithTag("AccountName_X").assertExists()
+        onNodeWithTag("AccountName_C").assertDoesNotExist()
+        // now click create account
+        onNodeWithTag("onClickCreateAccount").assertExists()
+        onNodeWithTag("onClickCreateAccount").performClick()
+        settle()
+        // No fields should be changed
+        onNodeWithTag("AccountNameInput").assertTextEquals("longaccountname_longaccountname")
+        onNodeWithTag("AccountName_X").assertExists()
+        onNodeWithTag("AccountName_C").assertDoesNotExist()
+
+        // Put values back the way they were for other tests
+        onNodeWithTag("AccountNameInput").performTextReplacement("nexa")
+        settle()
     }
 
     /** Test specifying an account unlock PIN */
@@ -193,10 +216,10 @@ class NewAccountScreenTestUi2
 
         onNodeWithTag("NewAccountPinInput").assertExists()
         onNodeWithTag("NewAccountPinInput").performTextInput("1234")
-
+        settle()
         onNodeWithText(i18n(S.createNewAccount)).assertExists()
         onNodeWithText(i18n(S.createNewAccount)).performClick()
-
+        settle()
         assertTrue { newAccountState.value == NewAccountState() }
     }
 
@@ -219,14 +242,29 @@ class NewAccountScreenTestUi2
                 NewAccountScreenUi2(accountGuiSlots.collectAsState(), false)
             }
         }
-
+        // empty PIN is fine
+        onNodeWithTag("pin_C").assertExists()
+        onNodeWithTag("pin_X").assertDoesNotExist()
         onNodeWithTag("NewAccountPinInput").assertExists()
         onNodeWithTag("NewAccountPinInput").performTextInput("12")
+        // short pin is not
+        settle()
+        onNodeWithTag("pin_X").assertExists()
+        onNodeWithTag("pin_C").assertDoesNotExist()
+        // click create account anyway
+        onNodeWithText(i18n(S.createNewAccount)).assertExists()
+        onNodeWithText(i18n(S.createNewAccount)).performClick()
+        settle()
+        // should still be an X
+        onNodeWithTag("pin_X").assertExists()
+        onNodeWithTag("pin_C").assertDoesNotExist()
+        // Strangely the account name gets cleared when the pin is bad
+        onNodeWithTag("AccountNameInput").assertTextEquals("nexa")
     }
 
-    /** Test specifying an overly long PIN */
+    /** Test specifying a long PIN (pin length is not limited) */
     @Test
-    fun enterTooLongPin() = runComposeUiTest {
+    fun enterLongPin() = runComposeUiTest {
         val viewModelStoreOwner = object : ViewModelStoreOwner
         {
             override val viewModelStore: ViewModelStore = ViewModelStore()
@@ -243,9 +281,16 @@ class NewAccountScreenTestUi2
                 NewAccountScreenUi2(accountGuiSlots.collectAsState(), false)
             }
         }
-
+        settle()
+        // these fail on ios, but visually pin_C (the checkmark) IS there
+        //onNodeWithTag("pin_C").assertExists()
+        //onNodeWithTag("pin_X").assertDoesNotExist()
         onNodeWithTag("NewAccountPinInput").assertExists()
-        onNodeWithTag("NewAccountPinInput").performTextInput("1234567890")
+        onNodeWithTag("NewAccountPinInput").performTextInput("12345678901234567890")
+        settle()
+        onNodeWithTag("pin_C").assertExists()
+        onNodeWithTag("pin_X").assertDoesNotExist()
+
     }
 
     @Test

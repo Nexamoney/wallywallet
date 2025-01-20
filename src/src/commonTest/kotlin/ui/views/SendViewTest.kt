@@ -12,6 +12,7 @@ import org.nexa.libnexakotlin.Bip44Wallet
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.initializeLibNexa
 import org.nexa.libnexakotlin.runningTheTests
+import ui2.settle
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
@@ -78,6 +79,7 @@ class SendViewTest
          */
         onNodeWithTag("noteButtonSendView").isDisplayed()
         onNodeWithTag("noteButtonSendView").performClick()
+        settle()
         onNodeWithText(i18n(S.editSendNoteHint)).isDisplayed()
     }
 }
