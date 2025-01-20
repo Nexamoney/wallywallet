@@ -20,10 +20,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.NexaFormat
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui2.*
 import info.bitcoinunlimited.www.wally.ui2.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.ui2.theme.floatingActionBarBackground
@@ -72,7 +72,12 @@ private val sendFromAccountShared = MutableStateFlow<Account?>(null)
     }
 }
 
-@Composable fun HomeScreen(selectedAccount: MutableStateFlow<Account?>, driver: MutableState<GuiDriver?>, nav: ScreenNav)
+@Composable fun HomeScreen(
+  selectedAccount: MutableStateFlow<Account?>,
+  driver: MutableState<GuiDriver?>,
+  nav: ScreenNav,
+  walletViewModel: WalletViewModelImpl = viewModel { WalletViewModelImpl() }
+)
 {
     var sendNote = remember { mutableStateOf("") }
     val sendCurrencyChoices: MutableState<List<String>> = remember { mutableStateOf(listOf("NEX", "tNEX", "rNEX")) }
@@ -103,7 +108,7 @@ private val sendFromAccountShared = MutableStateFlow<Account?>(null)
 
     val ags = accountGuiSlots.collectAsState()
     val synced = remember { mutableStateOf(wallyApp!!.isSynced()) }
-    var currentReceive = currentReceiveShared.collectAsState()
+    val currentReceive = walletViewModel.receiveDestination.collectAsState()
     val sendFromAccount = sendFromAccountShared.collectAsState().value
     val _sendToAddress:String = sendToAddress.collectAsState().value
 
@@ -124,13 +129,13 @@ private val sendFromAccountShared = MutableStateFlow<Account?>(null)
                 Spacer(modifier = Modifier.width(8.dp))
                 AccountDropDownSelector(
                   ags.value,
-                  currentReceive.value.first,
+                  currentReceive.value?.first,
                   onAccountNameSelected = onAccountNameSelected,
                 )
             }
-            AddressQrCode(currentReceive.value.second)
+            AddressQrCode(currentReceive.value?.second?.address?.toString() ?: "")
             // update the share function based on whatever my current receive is
-            ToBeShared = { currentReceive.value.second }
+            ToBeShared = { currentReceive.value?.second?.address?.toString() ?: "" }
         }
     }
 
@@ -552,17 +557,6 @@ private val sendFromAccountShared = MutableStateFlow<Account?>(null)
 
 
     // Now specify some state collectors.  These are coroutines that update state from other areas of the code
-
-    // If the selected account changes, we need to update the receiving address
-    LaunchedEffect(selectedAccount) {
-        selectedAccount.collect {
-            selectedAccount.value?.let {
-                it.onUpdatedReceiveInfo { recvAddrStr ->
-                    currentReceiveShared.value = Pair(it.name, recvAddrStr)
-                }
-            }
-        }
-    }
 
     // Redisplay the accounts 4x a second in dev mode where data is being shown that does not normally
     // trigger an account update (like connection state changes)

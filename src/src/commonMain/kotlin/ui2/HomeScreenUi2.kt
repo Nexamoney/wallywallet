@@ -41,8 +41,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.theme.*
-import info.bitcoinunlimited.www.wally.ui.views.*
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurple
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurpleExtraLight
 import info.bitcoinunlimited.www.wally.ui2.views.*
@@ -53,7 +51,6 @@ import org.nexa.libnexakotlin.*
 private val LogIt = GetLog("wally.HomeScreen.Ui2")
 
 // stores the account name we are receiving into and the receive address as a pair
-val currentReceiveShared: MutableStateFlow<Pair<String,String>> = MutableStateFlow(Pair("",""))
 var sendToAddress: MutableStateFlow<String> = MutableStateFlow("")
 val currencyCodeShared: MutableStateFlow<String> = MutableStateFlow("NEX")
 
