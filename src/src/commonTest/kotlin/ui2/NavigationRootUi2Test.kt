@@ -18,11 +18,19 @@ import org.nexa.threads.millisleep
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
-// Wait for all asynchronously launched routines to complete
-fun testWaitForAsync()
+// Changing this value to several seconds (3000) makes the tests proceed at a human visible pace
+var testSlowdown = 0 // runCatching { System.getProperty("testSlowdown").toInt() }.getOrDefault(0)
+// Wait for a max of this time for the job pool to clear.  Its possible that periodic or long running jobs might make the pool never clear...
+// But if it takes longer than this for ephemeral jobs to finish we have a problem anyway.
+var maxPoolWait = 500
+
+@OptIn(ExperimentalTestApi::class)
+fun ComposeUiTest.settle()
 {
-    while ((libNexaJobPool.jobs.size != 0) && (libNexaJobPool.availableThreads != libNexaJobPool.allThreads.size)) millisleep(50U)
-    millisleep(500U) // TODO check pending coroutine jobs
+    val poolWaitStart = millinow()
+    while ((millinow()-poolWaitStart < ui2.maxPoolWait) && (libNexaJobPool.jobs.size != 0) && (libNexaJobPool.availableThreads != libNexaJobPool.allThreads.size)) millisleep(50U)
+    waitForIdle()
+    if (testSlowdown != 0) millisleep(testSlowdown.toULong())
 }
 
 @OptIn(ExperimentalTestApi::class)

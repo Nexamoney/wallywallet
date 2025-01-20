@@ -92,7 +92,7 @@ class SettingsScreenTestUi2 {
         onNodeWithTag("ConfirmAboveEntry").performTextClearance()
         onNodeWithTag("ConfirmAboveEntry").performTextInput(textInput)
         onNodeWithTag("ConfirmAboveEntry").assertTextContains(textInput)
-        testWaitForAsync()
+        settle()
         val confirmAbove = preferenceDB.getString(CONFIRM_ABOVE_PREF, "0") ?: "0"
         assertEquals(textInput, confirmAbove)
     }

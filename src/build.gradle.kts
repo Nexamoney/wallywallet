@@ -18,8 +18,8 @@ val androidVersionCode = versionNumber.replace(".", "").toInt()
 val mpThreadsVersion = "0.3.3"
 val nexaRpcVersion = "1.2.2"
 val libNexaKotlinVersion = "0.3.11"
-val serializationVersion = "1.7.3"  // https://github.com/Kotlin/kotlinx.serialization
-val coroutinesVersion = "1.9.0"     // https://github.com/Kotlin/kotlinx.coroutines
+val serializationVersion = "1.7.3"  // https://github.com/Kotlin/kotlinx.serialization  // DO NOT UPDATE to 1.8.0 until kotlin 2.1
+val coroutinesVersion = "1.9.0"     // https://github.com/Kotlin/kotlinx.coroutines     // DO NOT UPDATE to 1.10 until kot 2.1.0
 val ktorVersion = "2.3.12"           // https://github.com/ktorio/ktor
 val bigNumVersion = "0.3.10"         // https://github.com/ionspin/kotlin-multiplatform-bignum
 val composeVersion = "1.7.1"        // https://github.com/JetBrains/compose-multiplatform/releases
@@ -405,7 +405,6 @@ kotlin {
                     implementation("androidx.compose.ui:ui-tooling-preview:1.7.5")
                     implementation("androidx.compose.foundation:foundation:1.7.5")
                     implementation("androidx.compose.material:material:1.7.5")
-                    implementation("androidx.activity:activity-compose:1.9.3")
                     implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.7.3")
                     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.7.3")
 
@@ -864,18 +863,11 @@ fun prjFileMustExist(path:String):File
     return f
 }
 
-// makes the standard streams (err and out) visible at console when running tests
-tasks.withType<Test> {
-    testLogging {
-        showStandardStreams = true
-    }
-    outputs.upToDateWhen { false }  // Always rerun test tasks
-}
 kotlin {
     sourceSets {
         getByName("commonTest") {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
             }
         }
     }
@@ -886,4 +878,48 @@ kover {
     sourceSets {
         listOf("androidMain", "jvmMain")
     }
+}
+
+// Configure some tests for easy access
+
+// Always rerun this task (but it won't exist on android systems)
+kotlin.runCatching {
+    tasks.named("iosSimulatorArm64Test") {
+        group = "wallyTest"
+        description = "Run the UI tests on iOS simulator"
+        outputs.upToDateWhen { false }
+    }
+}
+
+// To see these tasks in Android Studio, go to settings->experimental and check "Configure All Gradle Tasks During Gradle Sync"
+tasks.register("testJvmUI") {
+    group = "wallyTest"
+    description = "Run the UI tests on the JVM"
+    dependsOn("jvmTest")
+    outputs.upToDateWhen { false }
+}
+
+// you cannot modify these tasks so I create a wrapper I can modify
+tasks.register("testAndroidUI") {
+    group = "wallyTest"
+    description = "Run the UI tests on a real android phone"
+    dependsOn("connectedAndroidTest")
+    outputs.upToDateWhen { false }
+    // systemProperty("testSlowdown", "4000")
+}
+
+// you cannot modify these tasks so I create a wrapper I can modify
+tasks.register("compileIos") {
+    group = "gitlab CI"
+    description = "Run the gitlab CI equivalent"
+    dependsOn("compileKotlinIosArm64","compileKotlinIosSimulatorArm64", "compileKotlinIosX64", "iosArm64MetadataElements", "iosSimulatorArm64MetadataElements", "iosX64MetadataElements")
+}
+
+// makes the standard streams (err and out) visible at console when running tests
+tasks.withType<Test> {
+    testLogging {
+        events("started", "passed", "failed", "skipped")
+        showStandardStreams = true
+    }
+    outputs.upToDateWhen { false }  // Always rerun test tasks
 }

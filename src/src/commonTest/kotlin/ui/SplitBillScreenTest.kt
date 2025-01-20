@@ -9,6 +9,7 @@ import kotlinx.coroutines.runBlocking
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.initializeLibNexa
 import org.nexa.libnexakotlin.runningTheTests
+import ui2.settle
 import kotlin.test.Test
 
 class SplitBillScreenTest
@@ -56,12 +57,13 @@ class SplitBillScreenTest
         onNodeWithTag("SplitBillScreenAmountInput").assertIsDisplayed()
         onNodeWithTag("SplitBillScreenAmountInput").performTextClearance()
         onNodeWithTag("SplitBillScreenAmountInput").performTextInput("100")
+        settle()
         onNodeWithTag("SplitBillScreenAmountInput").assert(hasText("100"))
 
         onNodeWithTag("SplitBillScreenTipInput").assertIsDisplayed()
         onNodeWithTag("SplitBillScreenTipInput").performTextClearance()
         onNodeWithTag("SplitBillScreenTipInput").performTextInput("42")
-
+        settle()
         onNodeWithText("42").assertIsDisplayed()
     }
 }

@@ -450,14 +450,18 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
           newAccountState.value = newAccountState.value.copy(hideUntilPinEnter = it)
       },
       onClickCreateAccount =  {
+          val inputValid = FinalDataCheck()
           aborter.value.obj = true
           CreateSyncAccount()
-          CleanState()
+          if (inputValid)
+            CleanState()
                               },
       onClickCreateDiscoveredAccount =  {
+          val inputValid = FinalDataCheck()
           aborter.value.obj = true
           CreateDiscoveredAccount()
-          CleanState()
+          if (inputValid)
+            CleanState()
                                         },
 
       creatingAccountLoading
@@ -553,7 +557,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
             }
             else Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth())
             {
-                 Button(onClick = onClickCreateAccount) {
+                 Button(onClick = onClickCreateAccount, modifier = Modifier.testTag("onClickCreateAccount")) {
                      Text(i18n(S.createNewAccount))
                  }
             }
@@ -563,15 +567,15 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
     }
 }
 
-@Composable fun CheckOrXUi2(valid: Boolean)
+@Composable fun CheckOrXUi2(valid: Boolean, testTag: String?=null)
 {
     val focusManager = LocalFocusManager.current
+    var mod = Modifier.clickable { focusManager.clearFocus() }
+    if (testTag != null) mod = mod.testTag(testTag + if (valid) "C" else "X")
     if (valid)
-        Icon(imageVector = Icons.Default.Check, tint = colorValid, contentDescription = null,
-          modifier = Modifier.clickable { focusManager.clearFocus() })
+        Icon(imageVector = Icons.Default.Check, tint = colorValid, contentDescription = null, modifier = mod)
     else  // For some reason Clear is a red X
-        Icon(Icons.Default.Clear, tint = colorError, contentDescription = null,
-          modifier = Modifier.clickable { focusManager.clearFocus() })
+        Icon(Icons.Default.Clear, tint = colorError, contentDescription = null, modifier = mod)
 }
 
 @Composable fun AccountNameInputUi2(accountName: String, validAccountName: Boolean, onNewAccountName: (String) -> Unit)
@@ -581,7 +585,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically
     ) {
-        CheckOrXUi2(validAccountName)
+        CheckOrXUi2(validAccountName, "AccountName_")
         Spacer(Modifier.width(8.dp))
         Text(i18n(S.AccountName), modifier = Modifier.clickable { focusManager.clearFocus() })
         Spacer(Modifier.width(8.dp))
@@ -621,7 +625,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
           horizontalArrangement = Arrangement.SpaceBetween,
           verticalAlignment = Alignment.CenterVertically
         ) {
-            CheckOrXUi2(validOrNoRecoveryPhrase)
+            CheckOrXUi2(validOrNoRecoveryPhrase, "recoveryPhrase_")
             TextField(
               value = recoveryPhrase,
               onValueChange = onValueChange,
@@ -648,7 +652,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
           horizontalArrangement = Arrangement.SpaceBetween,
           verticalAlignment = Alignment.CenterVertically
         ) {
-            CheckOrXUi2(validOrNoPin)
+            CheckOrXUi2(validOrNoPin, "pin_")
             WallyDigitEntry(pin,modifier = Modifier.weight(1f).testTag("NewAccountPinInput"), bkgCol = Color.White ,onValueChange = onPinChange)
         }
     }

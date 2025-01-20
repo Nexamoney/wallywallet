@@ -85,7 +85,7 @@ class ReceiveScreenTest
                 ReceiveScreenContent(address, Modifier, balanceViewModel, syncViewModel, accountUiDataViewModel)
             }
         }
-
+        settle()
         onNodeWithText(address.address.toString()).isDisplayed()
         onNodeWithText(address.address.toString()).performClick()
     }
