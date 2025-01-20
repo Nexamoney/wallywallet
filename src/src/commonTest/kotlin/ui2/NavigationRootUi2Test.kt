@@ -7,10 +7,7 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui2.AssetViewModelFake
-import info.bitcoinunlimited.www.wally.ui2.BalanceViewModelFake
-import info.bitcoinunlimited.www.wally.ui2.NavigationRootUi2
-import info.bitcoinunlimited.www.wally.ui2.SyncViewModelFake
+import info.bitcoinunlimited.www.wally.ui2.*
 import info.bitcoinunlimited.www.wally.ui2.views.AccountUiDataViewModelFake
 import info.bitcoinunlimited.www.wally.ui2.views.NativeSplash
 import org.nexa.libnexakotlin.*
@@ -55,12 +52,13 @@ class NavigationRootUi2Test
         val balanceViewModel = BalanceViewModelFake()
         val syncViewModel = SyncViewModelFake()
         val accountUiDataViewModel = AccountUiDataViewModelFake()
+        val walletViewModel = WalletViewModelFake()
 
         setContent {
             CompositionLocalProvider(
               LocalViewModelStoreOwner provides viewModelStoreOwner
             ) {
-                NavigationRootUi2(Modifier, assetViewModel, balanceViewModel, syncViewModel, accountUiDataViewModel)
+                NavigationRootUi2(Modifier, assetViewModel, balanceViewModel, syncViewModel, accountUiDataViewModel, walletViewModel)
             }
         }
 

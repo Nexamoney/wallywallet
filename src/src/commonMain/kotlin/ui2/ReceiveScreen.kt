@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.displayNotice
@@ -26,13 +28,87 @@ import info.bitcoinunlimited.www.wally.ui2.views.AccountUiDataViewModel
 import info.bitcoinunlimited.www.wally.ui2.views.CenteredText
 import info.bitcoinunlimited.www.wally.wallyApp
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.PayDestination
 import org.nexa.libnexakotlin.chainToURI
 import org.nexa.libnexakotlin.rem
 
-@Composable
-fun ReceiveScreen()
+typealias AccountName = String
+
+abstract class WalletViewModel: ViewModel()
 {
+    // Stores the account name we are receiving into and the receive address as a pair
+    val receiveDestination = MutableStateFlow<Pair<AccountName,PayDestination>?>(null)
+    var accountJob: Job? = null
+    var receiveDestinationJob: Job? = null
+
+    abstract fun observeSelectedAccount()
+
+    abstract fun observeReceiveDestination(account: Account)
+
+    override fun onCleared()
+    {
+        super.onCleared()
+        accountJob?.cancel()
+        receiveDestinationJob?.cancel()
+    }
+}
+class WalletViewModelFake(): WalletViewModel()
+{
+    override fun observeSelectedAccount()
+    {
+    }
+
+    override fun observeReceiveDestination(account: Account)
+    {
+    }
+
+}
+class WalletViewModelImpl: WalletViewModel()
+{
+
+    init {
+        wallyApp?.focusedAccount?.value?.let {
+            val destination = it.wallet.getCurrentDestination()
+            val accountName = it.name
+            receiveDestination.value = Pair(accountName, destination)
+        }
+        observeSelectedAccount()
+    }
+
+    override fun observeSelectedAccount()
+    {
+        accountJob?.cancel()
+        accountJob = viewModelScope.launch {
+            wallyApp?.focusedAccount?.onEach {
+                if (it != null) observeReceiveDestination(it)
+                else receiveDestination.value = null
+            }?.launchIn(this)
+        }
+    }
+
+    override fun observeReceiveDestination(account: Account)
+    {
+        receiveDestinationJob?.cancel()
+        receiveDestinationJob = viewModelScope.launch {
+            account.wallet.setOnWalletChange { wallet, _ ->
+                val destination = wallet.getCurrentDestination()
+                val accountName = account.name
+                account.currentReceive = destination
+                receiveDestination.value = Pair(accountName, destination)
+            }
+        }
+    }
+}
+
+@Composable
+fun ReceiveScreen(walletViewModel: WalletViewModelImpl = viewModel { WalletViewModelImpl() })
+{
+    val address = walletViewModel.receiveDestination.collectAsState().value?.second
     val selectedAccountState = selectedAccountUi2.collectAsState()
     val selectedAccount = selectedAccountState.value
     // Select the first available account if none are available
@@ -41,25 +117,19 @@ fun ReceiveScreen()
             setSelectedAccount(it)
         }
 
-
     if (selectedAccount == null)
     {
         displayErrorAndGoBack(S.NoAccounts)
         return
     }
-    val address = selectedAccount.wallet.getCurrentDestination()
-
-    // If the selected account changes, we need to update the receiving address
-    LaunchedEffect(selectedAccount) {
-        selectedAccount.onUpdatedReceiveInfo { address ->
-            currentReceiveShared.value = Pair(selectedAccount.name, address)
-        }
-    }
 
     Column (
       modifier = Modifier.fillMaxSize(),
     ) {
-        ReceiveScreenContent(address, Modifier.weight(1f))
+        if (address != null)
+            ReceiveScreenContent(address, Modifier.weight(1f))
+        else
+            Text("Address missing")
         // Row with buttons at the bottom
         Row(
           modifier = Modifier.fillMaxWidth()
@@ -74,7 +144,7 @@ fun ReceiveScreen()
               description = i18n(S.CopyAddress),
               color = wallyPurple,
             ) {
-                setTextClipboard(address.address.toString())
+                setTextClipboard(address?.address?.toString() ?: "Address missing")
                 displayNotice(i18n(S.copiedToClipboard))
             }
             IconTextButtonUi2(

@@ -391,21 +391,8 @@ fun triggerAssignAccountsGuiSlots()
     if (fa != null)
     {
         if (fa.visible == false) wallyApp?.focusedAccount?.value = null
-    }
-    // If the slots got shuffled around, maybe the current receive was deleted or hidden
-    assignAccountsGuiSlots()
-    val act = wallyApp!!.accounts[currentReceiveShared.value.first]
-    if (act == null || act.visible == false) try
-    {
-        wallyApp?.preferredVisibleAccount()?.let {
-            it.onUpdatedReceiveInfo { recvAddrStr ->
-                currentReceiveShared.value = Pair(it.name, recvAddrStr)
-            }
-        }
-    }
-    catch (e:PrimaryWalletInvalidException)
-    {
-        currentReceiveShared.value = Pair("", "")
+        // If the slots got shuffled around, maybe the current receive was deleted or hidden
+        assignAccountsGuiSlots()
     }
 }
 
@@ -783,14 +770,15 @@ fun NavigationRootUi2(
   assetViewModel: AssetViewModel = viewModel { AssetViewModel() },
   balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
   syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() },
-  accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() }
+  accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() },
+  walletViewModel: WalletViewModel = viewModel { WalletViewModelImpl() }
 )
 {
     val curScreen = nav.currentScreen.collectAsState().value
     val subScreen = nav.currentSubState.collectAsState().value
 
-    val currentReceiveAddrState = currentReceiveShared.collectAsState()
-    ToBeShared = { currentReceiveAddrState.value.second }
+    val receiveDestination = walletViewModel.receiveDestination.value?.second
+    ToBeShared = { receiveDestination?.address?.toString() ?: "Address missing" }
 
     var showBottomBar by remember { mutableStateOf(true) }
 
