@@ -14,7 +14,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
-@OptIn(ExperimentalTestApi::class, ExperimentalUnsignedTypes::class)
+@OptIn(ExperimentalTestApi::class)
 class AssetsScreenUi2Tests
 {
     @BeforeTest

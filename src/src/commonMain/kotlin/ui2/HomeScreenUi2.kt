@@ -73,7 +73,7 @@ class SyncViewModelImpl : SyncViewModel()
         viewModelScope.launch {
             while (true) {
                 isSynced.value = withContext(Dispatchers.IO) {
-                    wallyApp!!.isSynced()
+                    wallyApp?.isSynced() ?: false
                 }
                 delay(1000)
             }
