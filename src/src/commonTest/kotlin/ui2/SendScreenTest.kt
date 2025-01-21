@@ -14,6 +14,7 @@ import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.*
 import info.bitcoinunlimited.www.wally.ui2.AssetListItemEditable
 import info.bitcoinunlimited.www.wally.ui2.setSelectedAccount
+import info.bitcoinunlimited.www.wally.ui2.ConfirmSend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.runBlocking
@@ -33,10 +34,11 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalTestApi::class)
 class SendScreenTest
 {
+    val cs = ChainSelector.NEXA
+
     @BeforeTest
     fun setUp() {
-        // JVM only or this fails android
-        if (platform().usesMouse)
+        if (platform().target == KotlinTarget.JVM)
             Dispatchers.setMain(UnconfinedTestDispatcher())
         initializeLibNexa()
         runningTheTests = true
@@ -46,8 +48,7 @@ class SendScreenTest
 
     @AfterTest
     fun tearDown() {
-        // JVM only or this fails android
-        if (platform().usesMouse)
+        if (platform().target == KotlinTarget.JVM)
             Dispatchers.resetMain()
     }
 
@@ -61,7 +62,6 @@ class SendScreenTest
         /*
             Start the app
          */
-        val cs = ChainSelector.NEXA
         wallyApp = CommonApp()
         wallyApp!!.onCreate()
         wallyApp!!.openAllAccounts()
@@ -209,5 +209,37 @@ class SendScreenTest
         onNodeWithTag(inputTag).performTextInput("100")
         onNodeWithTag(inputTag).assertTextContains("100")
         assertEquals(quantity, "100")
+    }
+
+    @Test
+    fun confirmSendTest() = runComposeUiTest {
+        /*
+            Start the app
+         */
+        wallyApp = CommonApp()
+        wallyApp!!.onCreate()
+        wallyApp!!.openAllAccounts()
+        lateinit var account: Account
+        runBlocking(Dispatchers.IO) {
+            account = wallyApp!!.newAccount("testAcc", 0U, "", cs)!!
+        }
+        setSelectedAccount(account)
+        val viewModel = SendScreenViewModelFake(account)
+
+        setContent {
+            ConfirmSend(viewModel)
+        }
+
+        onNodeWithText(i18n(S.confirmSend)).assertIsDisplayed()
+
+        // TODO: Verify that uiState values such as toAddress is displayed:
+        // val toAddress = viewModel.uiState.value.toAddress
+        // onNodeWithText(toAddress).assertIsDisplayed()
+
+        // TODO: mock assetsToSend and verify that it is displayed
+        val assetsToSend = viewModel.assetsToSend.value.size
+        if (assetsToSend > 0)
+            onNodeWithText(assetsToSend.toString()).assertExists()
+
     }
 }

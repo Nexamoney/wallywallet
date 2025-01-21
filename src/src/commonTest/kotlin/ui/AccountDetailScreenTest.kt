@@ -7,14 +7,32 @@ import info.bitcoinunlimited.www.wally.ui2.ScreenNav
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.initializeLibNexa
 import org.nexa.libnexakotlin.runningTheTests
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
 class AccountDetailScreenTest
 {
+    @BeforeTest
+    fun setup()
+    {
+        if (platform().target == KotlinTarget.JVM)
+            Dispatchers.setMain(StandardTestDispatcher())
+    }
+
+    @AfterTest
+    fun clean()
+    {
+        if (platform().target == KotlinTarget.JVM)
+            Dispatchers.resetMain()
+    }
 
     init {
         initializeLibNexa()
