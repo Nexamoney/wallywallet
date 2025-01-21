@@ -337,137 +337,6 @@ fun getAccountIconResPath(chainSelector: ChainSelector): String
     }
 }
 
-@Composable fun AccountItemLineTop(uidata: AccountUIData, hasFastForwardButton: Boolean = true, isSelected: Boolean, onClickAccount: () -> Unit)
-{
-    val curSync = uidata.account.wallet.chainstate?.syncedDate ?: 0
-    val offerFastForward = (millinow() /1000 - curSync) > OFFER_FAST_FORWARD_GAP
-
-    Row(modifier = Modifier.fillMaxWidth())
-    {
-        // Show blockchain icon
-        Column(Modifier.align(Alignment.CenterVertically).padding(0.dp,0.dp,4.dp, 0.dp)) {
-            ResImageView(getAccountIconResPath(uidata.chainSelector), Modifier.size(32.dp).align(Alignment.Start), "Blockchain icon")
-        }
-        // Account name and Nexa amount
-        Column(modifier = Modifier.weight(1f)) {
-            // Account Name
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                Text(text = uidata.name, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            }
-            // Nexa Amount
-            Row(horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                val startingBalStyle = FontScaleStyle(1.75)
-                val startingCcStyle = FontScaleStyle(0.6)
-                var balTextStyle by remember { mutableStateOf(startingBalStyle) }
-                var ccTextStyle by remember { mutableStateOf(startingCcStyle) }
-                var showingCurrencyCode:String by remember { mutableStateOf(uidata.currencyCode) }
-                var drawBal by remember { mutableStateOf(false) }
-                var drawCC by remember { mutableStateOf(false) }
-                var scale by remember { mutableStateOf(1.0) }
-                Text(text = uidata.balance, style = balTextStyle, color = uidata.balColor, modifier = Modifier.padding(0.dp).drawWithContent { if (drawBal) drawContent() }, textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
-                  onTextLayout = { textLayoutResult ->
-                      if (textLayoutResult.didOverflowWidth)
-                      {
-                          scale = scale * 0.90
-                          balTextStyle = startingBalStyle.copy(fontSize = startingBalStyle.fontSize * scale)
-                      }
-                      else drawBal = true
-                  })
-
-                if (showingCurrencyCode.length > 0) Text(text = showingCurrencyCode ?: "", style = ccTextStyle, modifier = Modifier.padding(5.dp, 0.dp).fillMaxWidth().drawWithContent { if (drawCC) drawContent() }, textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
-                  onTextLayout = { textLayoutResult ->
-                      if (textLayoutResult.didOverflowWidth)
-                      {
-                          scale = scale * 0.90
-                          if (scale > 0.40) // If this field gets too small, just drop it
-                          {
-                              ccTextStyle = ccTextStyle.copy(fontSize = startingCcStyle.fontSize * scale)
-                          }
-                          else
-                          {
-                              showingCurrencyCode = ""
-                              drawCC = true
-                          }
-                      }
-                      else drawCC = true
-                  }
-                )
-            }
-            // Approximately amount or as of date (we don't want to show a fiat amount if we are syncing)
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-                uidata.approximately?.let {
-                    Text(modifier = Modifier.fillMaxWidth(), text = it, fontSize = 16.sp, color = uidata.approximatelyColor, fontWeight = uidata.approximatelyWeight, textAlign = TextAlign.Start)
-                }
-            }
-        }
-
-        // Account-specific buttons
-        Column(modifier = Modifier.align(Alignment.CenterVertically)) {
-            Row(
-              modifier = Modifier.wrapContentWidth(),
-              horizontalArrangement = Arrangement.End,
-              verticalAlignment = Alignment.CenterVertically
-            ) {
-                val actButtonSize = Modifier.padding(5.dp, 0.dp).size(28.dp)
-                // Fast forward button
-                if (offerFastForward && !uidata.fastForwarding && hasFastForwardButton)
-                {
-                    ResImageView("icons/fastforward.png", modifier = actButtonSize.clickable {
-                        uidata.fastForwarding = true
-                        startAccountFastForward(uidata.account) {
-                            uidata.account.fastforwardStatus = it
-                            triggerAccountsChanged(uidata.account)
-                        }
-                    })
-                }
-                // Lock
-                if (uidata.lockable)
-                {
-                    if (uidata.locked)
-                        IconButton(
-                          onClick = {
-                              onClickAccount()
-                              triggerUnlockDialog()
-                          }
-                        ) {
-                            Icon(
-                              imageVector = Icons.Default.Lock,
-                              contentDescription = "Locked",
-                            )
-                        }
-                    else
-                        IconButton(
-                          onClick = {
-                              onClickAccount()
-                              uidata.account.pinEntered = false
-                              tlater("assignGuiSlots") {
-                                  triggerAssignAccountsGuiSlots()  // In case it should be hidden
-                                  later { accountChangedNotification.send(uidata.name) }
-                              }
-                          }
-                        ) {
-                            Icon(
-                              imageVector = Icons.Default.LockOpen,
-                              contentDescription = "Locked",
-                            )
-                        }
-                }
-
-                // Show the account settings gear at the end
-                if (isSelected)
-                {
-                    IconButton(
-                      onClick = { nav.go(ScreenId.AccountDetails) },
-                      content = {
-                          Icon(Icons.Outlined.ManageAccounts, contentDescription = "Account detail")
-                      }
-                    )
-                }
-            }
-        }
-    }
-}
-
 @Composable
 fun AccountListItem(
   uidata: AccountUIData,
@@ -555,6 +424,18 @@ fun AccountListItem(
                 verticalAlignment = Alignment.CenterVertically
               ) {
                   val actButtonSize = Modifier.padding(5.dp, 0.dp).size(28.dp)
+
+                  // Account settings gear
+                  if (isSelected)
+                  {
+                      IconButton(
+                        onClick = { nav.go(ScreenId.AccountDetails) },
+                        content = {
+                            Icon(Icons.Outlined.ManageAccounts, contentDescription = "Account detail")
+                        }
+                      )
+                  }
+
                   // Fast forward button
                   if (offerFastForward && !uidata.fastForwarding && hasFastForwardButton)
                   {
@@ -566,6 +447,7 @@ fun AccountListItem(
                           }
                       })
                   }
+
                   // Lock
                   if (uidata.lockable)
                   {
@@ -598,17 +480,6 @@ fun AccountListItem(
                               )
                           }
                   }
-
-                  // Show the account settings gear at the end
-                  if (isSelected)
-                  {
-                      IconButton(
-                        onClick = { nav.go(ScreenId.AccountDetails) },
-                        content = {
-                            Icon(Icons.Outlined.ManageAccounts, contentDescription = "Account detail")
-                        }
-                      )
-                  }
               }
           }
       }
@@ -634,8 +505,6 @@ fun AccountItemViewUi2(
 
             Column(modifier = Modifier.weight(2f).fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(backgroundColor),
               verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
-                // top line, icon, quantity, and fastforward
-                // AccountItemLineTop(uidata, hasFastForwardButton, isSelected, onClickAccount)
                 AccountListItem(uidata, hasFastForwardButton, isSelected, backgroundColor, onClickAccount)
 
                 if (!uidata.fastForwarding)
