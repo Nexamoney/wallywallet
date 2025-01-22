@@ -347,6 +347,7 @@ testflight:
   rules:
         - if: $CI_COMMIT_REF_PROTECTED == "true"
   stage: deploy_internally
+  resource_group: testflight-deployment
   tags:
     - m1-baremetal
   script:
