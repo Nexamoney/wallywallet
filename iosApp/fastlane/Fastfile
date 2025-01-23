@@ -28,8 +28,9 @@ platform :ios do
     )
   end
 
-  desc "Push a new beta build to TestFlight"
-  lane :beta do
+  desc "Push a new beta build to TestFlight internal testing"
+  lane :testflight_internal do
+    increment_build_number(build_number: ENV['CI_JOB_ID'])
     app_store_connect_api_key_path = ENV['APP_STORE_CONNECT_API_KEY_PATH']
     build_app(scheme: "iosApp", xcargs: "-allowProvisioningUpdates")
     upload_to_testflight(api_key_path: app_store_connect_api_key_path)
@@ -37,6 +38,7 @@ platform :ios do
 
   desc "Push a new beta build to public TestFlight"
   lane :beta_public do
+    increment_build_number(build_number: ENV['CI_JOB_ID'])
     app_store_connect_api_key_path = ENV['APP_STORE_CONNECT_API_KEY_PATH']
     build_app(scheme: "iosApp", xcargs: "-allowProvisioningUpdates")
     upload_to_testflight(

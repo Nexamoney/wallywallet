@@ -369,7 +369,7 @@ testflight:
     - gem install fastlane
     - bundle install
     - bundle update
-    - bundle exec fastlane ios beta --verbose
+    - bundle exec fastlane ios testflight_internal --verbose
 
 #testflight_public:
 #  environment:
