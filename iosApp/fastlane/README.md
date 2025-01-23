@@ -29,7 +29,7 @@ Run all the tests on emulator
 [bundle exec] fastlane ios beta
 ```
 
-Push a new beta build to TestFlight
+Push a new beta build to TestFlight internal testing
 
 ### ios beta_public
 
