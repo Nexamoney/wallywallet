@@ -28,7 +28,6 @@ import info.bitcoinunlimited.www.wally.ui2.ScreenId
 import info.bitcoinunlimited.www.wally.ui2.ScreenNav
 import info.bitcoinunlimited.www.wally.ui2.accountChangedNotification
 import info.bitcoinunlimited.www.wally.ui2.nav
-import info.bitcoinunlimited.www.wally.ui2.selectedAccountUi2
 import info.bitcoinunlimited.www.wally.ui2.setSelectedAccount
 import info.bitcoinunlimited.www.wally.ui2.theme.*
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurpleExtraLight
@@ -236,7 +235,7 @@ open class AccountUiDataViewModel: ViewModel()
     // This should probably be moved to a viewModel with only one account
     open fun fastForwardSelectedAccount()
     {
-        selectedAccountUi2.value?.let { selectedAccount ->
+        wallyApp!!.focusedAccount.value?.let { selectedAccount ->
             val allAccountsUiData = accountUIData.value.toMutableMap()
             val uiData = allAccountsUiData[selectedAccount.name] ?: AccountUIData(selectedAccount)
             uiData.fastForwarding = true
@@ -281,7 +280,7 @@ class AccountUiDataViewModelFake: AccountUiDataViewModel()
     accounts: ListifyMap<String, Account>
 )
 {
-    val selAct = selectedAccountUi2.collectAsState().value
+    val selAct = wallyApp!!.focusedAccount.collectAsState().value
 
     Column (
       modifier = Modifier.wrapContentHeight()

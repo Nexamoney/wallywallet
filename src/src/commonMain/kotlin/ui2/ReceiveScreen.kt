@@ -109,7 +109,7 @@ class WalletViewModelImpl: WalletViewModel()
 fun ReceiveScreen(walletViewModel: WalletViewModelImpl = viewModel { WalletViewModelImpl() })
 {
     val address = walletViewModel.receiveDestination.collectAsState().value?.second
-    val selectedAccountState = selectedAccountUi2.collectAsState()
+    val selectedAccountState = wallyApp!!.focusedAccount.collectAsState()
     val selectedAccount = selectedAccountState.value
     // Select the first available account if none are available
     if (selectedAccount == null)

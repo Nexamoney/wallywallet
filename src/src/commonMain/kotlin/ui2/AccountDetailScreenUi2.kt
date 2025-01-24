@@ -161,7 +161,7 @@ open class AccountStatisticsViewModel : ViewModel()
     private var accountJob: Job? = null
 
     init {
-        selectedAccountUi2.value?.let {
+        wallyApp!!.focusedAccount.value?.let {
             updateStats(it)
             fetchCurAddressText(it)
         }
@@ -176,7 +176,7 @@ open class AccountStatisticsViewModel : ViewModel()
               LogIt.error(throwable.toString())
           }
         ) {
-            selectedAccountUi2.onEach { selectedAccount ->
+            wallyApp!!.focusedAccount.onEach { selectedAccount ->
                 selectedAccount?.let {
                     updateStats(selectedAccount)
                     fetchCurAddressText(selectedAccount)

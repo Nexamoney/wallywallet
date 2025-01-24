@@ -441,7 +441,7 @@ class BalanceViewModelImpl: BalanceViewModel()
     var accountJob: Job? = null
 
     init {
-        selectedAccountUi2.value?.let { account ->
+        wallyApp!!.focusedAccount.value?.let { account ->
             observeBalance(account)
             setFiatBalance(account)
         }
@@ -486,7 +486,7 @@ class BalanceViewModelImpl: BalanceViewModel()
     {
         accountJob?.cancel()
         accountJob = viewModelScope.launch(dispatcher) {
-            selectedAccountUi2.onEach {
+            wallyApp!!.focusedAccount.onEach {
                 it?.let { account ->
                     setFiatBalance(account)
                     observeBalance(account)
@@ -527,7 +527,7 @@ class BalanceViewModelImpl: BalanceViewModel()
   syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() }
 )
 {
-    val account = selectedAccountUi2.collectAsState().value
+    val account = wallyApp!!.focusedAccount.collectAsState().value
     val currencyCode = account?.uiData()?.currencyCode ?: ""
     val fiatBalance = balanceViewModel.fiatBalance.collectAsState().value
     val balance = balanceViewModel.balance.collectAsState().value
@@ -623,7 +623,7 @@ class BalanceViewModelImpl: BalanceViewModel()
   accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() }
 )
 {
-    val account = selectedAccountUi2.collectAsState().value
+    val account = wallyApp!!.focusedAccount.collectAsState().value
     // If no account is available, do not show the pill
     if (account == null) return
 
@@ -818,7 +818,7 @@ class TxHistoryViewModel: ViewModel()
     var accountJob: Job? = null
 
     init {
-        selectedAccountUi2.value?.let { account ->
+        wallyApp!!.focusedAccount.value?.let { account ->
             getAllTransactions(account)
         }
     }
@@ -882,7 +882,7 @@ fun TransactionsList(modifier: Modifier = Modifier)
 {
     val viewModel = viewModel { TxHistoryViewModel() }
     val transactions = viewModel.txHistory.collectAsState(emptyList()).value
-    val account = selectedAccountUi2.collectAsState().value
+    val account = wallyApp!!.focusedAccount.collectAsState().value
     if (account != null)
     {
         val balance = account.balanceState.collectAsState().value

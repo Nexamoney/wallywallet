@@ -463,7 +463,7 @@ class SendScreenViewModelImpl(act: Account): SendScreenViewModel(act)
 
     override fun actuallySend(toAddress: PayAddress?, amount: BigDecimal?)
     {
-        val account = selectedAccountUi2.value ?: return
+        val account = wallyApp!!.focusedAccount.value ?: return
         val note = uiState.value.note
         val sendAddressTmp = toAddress ?: uiState.value.toAddressFinal
         val qty = amount ?: uiState.value.amountFinal

@@ -54,18 +54,6 @@ val showAssetsPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_ASSETS_PREF, 
 
 val newUI = MutableStateFlow(preferenceDB.getBoolean(EXPERIMENTAL_UX_MODE_PREF, true))
 
-/*
-private val selectedAccountName = preferenceDB.getString(SELECTED_ACCOUNT_NAME_PREF, "")
-private val _selectedAccountUi2 =  MutableStateFlow<Account?>(wallyApp?.accounts?.get(
-    selectedAccountName
-))
- */
-
-val selectedAccountUi2: StateFlow<Account?> //=  //_selectedAccountUi2.asStateFlow() // Move to viewmodel for selected account?
-    get() {
-        return wallyApp!!.focusedAccount
-    }
-
 var permanentMenuItemsUi2: Set<NavChoiceUi2> = if (platform().target == KotlinTarget.iOS)
     setOf(
       NavChoiceUi2(ScreenId.Home, S.title_home, Icons.Default.Home),
@@ -824,7 +812,7 @@ fun NavigationRootUi2(
     var alertPersistAcrossScreens by remember { mutableStateOf(0) }
     var isShowingRecoveryWarning by remember { mutableStateOf(false) }
 
-    val selectedAccountState = selectedAccountUi2.collectAsState()
+    val selectedAccountState = wallyApp!!.focusedAccount.collectAsState()
     val selectedAccount = selectedAccountState.value
 
     var unlockDialog by remember { mutableStateOf<(() -> Unit)?>(null) }
