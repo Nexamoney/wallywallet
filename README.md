@@ -1,5 +1,6 @@
 
-![Pipeline Status](https://gitlab.com/wallywallet/wallet/-/pipelines/latest) ![Coverage Status](https://gitlab.com/wallywallet/wallet/badges/main/coverage.svg)
+[![Pipeline Status](https://gitlab.com/wallywallet/wallet/badges/main/pipeline.svg)](https://gitlab.com/wallywallet/wallet/pipelines/latest)
+![Coverage Status](https://gitlab.com/wallywallet/wallet/badges/main/coverage.svg)
 
 
 
