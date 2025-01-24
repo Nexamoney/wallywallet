@@ -40,14 +40,12 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.softKeyboardBar
 import info.bitcoinunlimited.www.wally.ui2.theme.*
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyBoringButtonOutline
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyModalOutline
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyRoundedButtonOutline
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.defaultFontSize
+import info.bitcoinunlimited.www.wally.ui2.themeUi2.*
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.CURRENCY_1
+import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.CurrencyDecimal
 import org.nexa.libnexakotlin.exceptionHandler
 
@@ -1120,4 +1118,32 @@ fun TitleText(text: String, modifier: Modifier = Modifier)
         fontSize = FontScale(1.5)
       )
     )
+}
+
+@Composable
+fun BlockchainIcon(label: String, value: String, chain: ChainSelector?)
+{
+    if (chain != null)
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.SpaceBetween,
+          verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+              verticalAlignment = Alignment.CenterVertically
+            ) {
+                ResImageView(getAccountIconResPath(chain), Modifier.size(32.dp), "Blockchain icon")
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                  text = label,
+                  style = MaterialTheme.typography.labelLarge,
+                  color = wallyPurple2
+                )
+            }
+            Spacer(Modifier.width(24.dp))
+            Text(
+              text = value,
+              style = MaterialTheme.typography.bodyMedium
+            )
+        }
 }
