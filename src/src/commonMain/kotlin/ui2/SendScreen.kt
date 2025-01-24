@@ -38,12 +38,10 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.DecimalMode
 import com.ionspin.kotlin.bignum.decimal.RoundingMode
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui2.views.QrScannerDialog
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyThemeUi2
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.samsungKeyBoardGray
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurple
-import info.bitcoinunlimited.www.wally.ui2.views.MpMediaView
-import info.bitcoinunlimited.www.wally.ui.*
+import info.bitcoinunlimited.www.wally.ui2.views.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
@@ -772,11 +770,7 @@ fun ConfirmSend(viewModel: SendScreenViewModel)
                 if (quantity.isNotEmpty())
                 {
                     Spacer(modifier = Modifier.height(16.dp))
-                    IconLabelValueRow(
-                      icon = Icons.Default.AttachMoney, // TODO: Nexa logo
-                      label = currencyCode,
-                      value = quantity, // cc.cryptoFormat.format(acc.fromFinestUnit(netSats))
-                    )
+                    BlockchainIcon(currencyCode, quantity, viewModel.account.collectAsState().value.chainSelector)
                 }
                 if (assetsToSend > 0)
                 {
