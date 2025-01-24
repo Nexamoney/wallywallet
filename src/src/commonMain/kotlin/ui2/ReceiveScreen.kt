@@ -34,6 +34,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.PayDestination
+import org.nexa.libnexakotlin.Wallet
 import org.nexa.libnexakotlin.chainToURI
 import org.nexa.libnexakotlin.rem
 
@@ -85,7 +86,11 @@ class WalletViewModelImpl: WalletViewModel()
         accountJob?.cancel()
         accountJob = viewModelScope.launch {
             wallyApp?.focusedAccount?.onEach {
-                if (it != null) observeReceiveDestination(it)
+                if (it != null)
+                {
+                    setReceiveDestination(it)
+                    observeReceiveDestination(it)
+                }
                 else receiveDestination.value = null
             }?.launchIn(this)
         }
@@ -96,12 +101,17 @@ class WalletViewModelImpl: WalletViewModel()
         receiveDestinationJob?.cancel()
         receiveDestinationJob = viewModelScope.launch {
             account.wallet.setOnWalletChange { wallet, _ ->
-                val destination = wallet.getCurrentDestination()
-                val accountName = account.name
-                account.currentReceive = destination
-                receiveDestination.value = Pair(accountName, destination)
+                setReceiveDestination(account)
             }
         }
+    }
+
+    fun setReceiveDestination(account: Account)
+    {
+        val destination = account.wallet.getCurrentDestination()
+        val accountName = account.name
+        account.currentReceive = destination
+        receiveDestination.value = Pair(accountName, destination)
     }
 }
 
