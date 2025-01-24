@@ -284,6 +284,8 @@ androidMonkeyTest:
   script:
     - adb shell monkey -p info.bitcoinunlimited.www.wally --throttle 500 -v 1000
 
+# Deploys an apk to:
+# https://gitlab.com/wallywallet/wallet/-/jobs/artifacts/main/wally.apk?job=deployAndroidApk
 deployAndroidApk:
   needs:
     - androidPixel5Test
@@ -293,6 +295,8 @@ deployAndroidApk:
   artifacts:
     paths:
       - wally.apk
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^release[0-9]+\.[0-9]+\.[0-9]+$/'
 
 testflight:
   rules:
