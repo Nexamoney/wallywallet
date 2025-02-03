@@ -10,6 +10,10 @@ import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.*
 import info.bitcoinunlimited.www.wally.ui2.views.AccountUiDataViewModelFake
 import info.bitcoinunlimited.www.wally.ui2.views.NativeSplash
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.withTimeout
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.millisleep
 import kotlin.test.BeforeTest
@@ -22,12 +26,30 @@ var testSlowdown = 0 // runCatching { System.getProperty("testSlowdown").toInt()
 var maxPoolWait = 500
 
 @OptIn(ExperimentalTestApi::class)
-fun ComposeUiTest.settle()
+fun ComposeUiTest.settle(scope: TestScope? = null)
 {
     val poolWaitStart = millinow()
     while ((millinow()-poolWaitStart < ui2.maxPoolWait) && (libNexaJobPool.jobs.size != 0) && (libNexaJobPool.availableThreads != libNexaJobPool.allThreads.size)) millisleep(50U)
-    waitForIdle()
-    if (testSlowdown != 0) millisleep(testSlowdown.toULong())
+
+    if (scope!=null)
+    {
+        scope.testScheduler.advanceTimeBy(1000)
+        scope.testScheduler.runCurrent()
+    }
+    else
+    {
+        // The above does waitForIdle with a timeout
+        waitForIdle()
+        //catch (e: TimeoutCancellationException)
+        //{
+        //    println("Warning: coroutine waitForIdle() never became idle.  However, we are seeing this without any actual busy resources, so continuing")
+        //}
+    }
+    if (testSlowdown != 0)
+    {
+        val leftover = testSlowdown - (millinow() - poolWaitStart)
+        if (leftover>0) millisleep(leftover.toULong())
+    }
 }
 
 @OptIn(ExperimentalTestApi::class)

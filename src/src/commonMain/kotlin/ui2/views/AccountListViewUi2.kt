@@ -243,7 +243,7 @@ fun AccountListItem(
           Column {
               // Account Name
               Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                  Text(text = uidata.name, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                  Text(text = uidata.name, fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.testTag("CarouselAccountName"))
               }
               // Nexa Amount
               Row(horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
@@ -255,7 +255,7 @@ fun AccountListItem(
                   var drawBal by remember { mutableStateOf(false) }
                   var drawCC by remember { mutableStateOf(false) }
                   var scale by remember { mutableStateOf(1.0) }
-                  Text(text = uidata.balance, style = balTextStyle, color = uidata.balColor, modifier = Modifier.padding(0.dp).drawWithContent { if (drawBal) drawContent() }, textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
+                  Text(text = uidata.balance, style = balTextStyle, color = uidata.balColor, modifier = Modifier.padding(0.dp).drawWithContent { if (drawBal) drawContent() }.testTag("AccountCarouselBalance_${uidata.name}"), textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
                     onTextLayout = { textLayoutResult ->
                         if (textLayoutResult.didOverflowWidth)
                         {
