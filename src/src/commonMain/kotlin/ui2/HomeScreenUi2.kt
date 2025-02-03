@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -551,7 +552,8 @@ class BalanceViewModelImpl: BalanceViewModel()
             color = Color.White,
             fontWeight = FontWeight.Bold
           ),
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
+          modifier = Modifier.testTag("AccountPillCurrencyCode") // Added test tag
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
@@ -560,7 +562,8 @@ class BalanceViewModelImpl: BalanceViewModel()
             color = Color.White,
             fontWeight = FontWeight.Bold
           ),
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
+          modifier = Modifier.testTag("AccountPillBalance") // Added test tag
         )
     }
     Spacer(Modifier.height(8.dp))
@@ -583,7 +586,8 @@ class BalanceViewModelImpl: BalanceViewModel()
               style = MaterialTheme.typography.labelLarge.copy(
                 color = Color.White
               ),
-              textAlign = TextAlign.Center
+              textAlign = TextAlign.Center,
+              modifier = Modifier.testTag("AccountPillFiatCurrencyCode") // Added test tag
             )
             Spacer(Modifier.width(12.dp))
             VerticalDivider(
@@ -601,7 +605,8 @@ class BalanceViewModelImpl: BalanceViewModel()
             color = Color.White,
             fontWeight = FontWeight.Bold
           ),
-          textAlign = TextAlign.Center
+          textAlign = TextAlign.Center,
+          modifier = Modifier.testTag("AccountPillAccountName")
         )
         Spacer(Modifier.width(12.dp))
         VerticalDivider(

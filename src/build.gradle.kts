@@ -155,9 +155,9 @@ kotlin {
                 sourceSetTree.set(KotlinSourceSetTree.test)
 
                 dependencies {
-                    testImplementation("androidx.compose.ui:ui-test-junit4-android:1.7.5")
-                    androidTestImplementation("androidx.compose.ui:ui-test-junit4-android:1.7.5")
-                    debugImplementation("androidx.compose.ui:ui-test-manifest:1.7.5")
+                    testImplementation("androidx.compose.ui:ui-test-junit4-android:1.7.7")
+                    androidTestImplementation("androidx.compose.ui:ui-test-junit4-android:1.7.7")
+                    debugImplementation("androidx.compose.ui:ui-test-manifest:1.7.7")
                 }
             }
         }
@@ -763,6 +763,7 @@ for (s in kotlin.sourceSets)
     println("    ${s.name}")
 }
 println("Kotlin targets:")
+
 for (s in kotlin.targets)
 {
     println("    ${s.name}")

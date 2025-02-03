@@ -8,11 +8,37 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.*
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.ui2.views.MpMediaView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineScheduler
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.nexa.threads.platformName
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
 class MpMediaViewTest
 {
+    private val sched = TestCoroutineScheduler()
+    private val testDispatcher = StandardTestDispatcher(sched, "testDispatcher")
+
+    @BeforeTest
+    fun setUp()
+    {
+        if ("JVM" in platformName())
+            Dispatchers.setMain(testDispatcher)
+    }
+    @AfterTest
+    fun tearDown()
+    {
+        // Solves the error: Module with the Main dispatcher had failed to initialize. For tests Dispatchers.setMain from kotlinx-coroutines-test module can be used
+        // On Android this code ends up running UI drawing in multiple threads which is disallowed.
+        if ("JVM" in platformName())
+          Dispatchers.resetMain()
+    }
+
     @Test
     fun mpMediaViewTest() = runComposeUiTest {
 
