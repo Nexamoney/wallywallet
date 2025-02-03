@@ -66,7 +66,7 @@ class NavigationRootUi2Test
             CompositionLocalProvider(
               LocalViewModelStoreOwner provides viewModelStoreOwner
             ) {
-                NavigationRootUi2(Modifier, assetViewModel, balanceViewModel, syncViewModel, accountUiDataViewModel, walletViewModel)
+                NavigationRootUi2(Modifier, Modifier, assetViewModel, balanceViewModel, syncViewModel, accountUiDataViewModel, walletViewModel)
             }
         }
 

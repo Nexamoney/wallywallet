@@ -371,7 +371,7 @@ class ComposeActivity: CommonActivity()
                 actionb = if (android.os.Build.VERSION.SDK_INT < 35) 0 else sysInsets.top
             }
             val systemPadding = Modifier.padding(0.dp, pxToDp(actionb ?: 0), 0.dp, 0.dp) // pxToDp(sysInsets.bottom))
-            UiRoot(systemPadding)
+            UiRoot(Modifier, systemPadding)
 
             LaunchedEffect(newUi) {
                 invalidateOptionsMenu()

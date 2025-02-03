@@ -526,12 +526,12 @@ fun noSelectedAccount()
     hasNewUIShared toggled when the user select "new user interface" in settings.
  */
 @Composable
-fun UiRoot(systemPadding: Modifier)
+fun UiRoot(rootModifier: Modifier, systemPadding: Modifier)
 {
     val newUi = newUI.collectAsState().value
 
     if (newUi)
-        NavigationRootUi2(Modifier)
+        NavigationRootUi2(rootModifier, systemPadding)
     else
         NavigationRoot(systemPadding)
 }
@@ -754,6 +754,7 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavigationRootUi2(
+  rootModifier: Modifier,
   systemPadding: Modifier,
   assetViewModel: AssetViewModel = viewModel { AssetViewModel() },
   balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
@@ -1032,7 +1033,7 @@ fun NavigationRootUi2(
     // The main screen
     Scaffold(
       modifier =
-      Modifier.pointerInput(Unit) {
+      rootModifier.pointerInput(Unit) {
           detectTapGestures(onTap = {
               scope.launch {
                   if (expanded.value)

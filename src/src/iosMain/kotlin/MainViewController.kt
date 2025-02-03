@@ -1,5 +1,6 @@
 package info.bitcoinunlimited.www.wally
 
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.InternalComposeApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.uikit.ComposeUIViewControllerDelegate
@@ -12,6 +13,7 @@ import org.nexa.libnexakotlin.Bip44Wallet
 import org.nexa.libnexakotlin.initializeLibNexa
 import org.nexa.libnexakotlin.handleThreadException
 import platform.UIKit.UIColor
+import platform.UIKit.UIRectEdgeAll
 import platform.UIKit.UIViewController
 
 private val LogIt = GetLog("BU.wally.iosMain.MainViewController")
@@ -26,7 +28,6 @@ fun OnAppStartup()
     wallyApp!!.onCreate()
 }
 
-@OptIn(ExperimentalForeignApi::class, InternalComposeApi::class)
 fun MainViewController(): UIViewController
 {
     backgroundOnly = false  // This function is called to instantiate the UI, so we must not be in background mode
@@ -44,13 +45,18 @@ fun MainViewController(): UIViewController
     },
       {
         nav.reset(ScreenId.Splash)
-        UiRoot(Modifier)
+        UiRoot(
+          // Add padding to allow .ignoresSafeArea in iOSApp.swift
+          Modifier.fillMaxSize().padding(WindowInsets.systemBars.asPaddingValues()),
+          Modifier
+        )
     })
     v = view
 
     // Wrong selector
     //    val dc = NSNotificationCenter.defaultCenter
     //    dc.addObserver(dc, selector = NSSelectorFromString("keyboardWillShow:"), name = UIKeyboardWillShowNotification, null)
+
     return view
 }
 

@@ -76,6 +76,7 @@ struct iOSApp: App {
 	var body: some Scene {
 		WindowGroup {
 			let composeView = ComposeContentView()
+			    .ignoresSafeArea(.all, edges: .all) // Extend to all edges of the screen
                 .onOpenURL(perform: { url in
                     print("App was opened via URL: \(url)")
                     do {
