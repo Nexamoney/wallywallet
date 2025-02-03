@@ -1,7 +1,7 @@
 package info.bitcoinunlimited.www.wally.ui2.views
 
 import androidx.compose.animation.Animatable
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.HoverInteraction
@@ -11,12 +11,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
@@ -36,8 +40,11 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
+import info.bitcoinunlimited.www.wally.ui2.SyncViewModel
+import info.bitcoinunlimited.www.wally.ui2.SyncViewModelImpl
 import info.bitcoinunlimited.www.wally.ui2.softKeyboardBar
 import info.bitcoinunlimited.www.wally.ui2.theme.*
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.*
@@ -1146,4 +1153,54 @@ fun BlockchainIcon(label: String, value: String, chain: ChainSelector?)
               style = MaterialTheme.typography.bodyMedium
             )
         }
+}
+
+@Composable
+fun Syncing(syncColor: Color = Color.White, syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() })
+{
+    val isSynced = syncViewModel.isSynced.collectAsState().value
+    val infiniteTransition = rememberInfiniteTransition()
+    val syncingText = "Syncing" // TODO: Move to string resource
+    val syncedText = "Synced" // TODO: Move to string resource
+
+    val animation by infiniteTransition.animateFloat(
+      initialValue = 360f,
+      targetValue = 0f,
+      animationSpec = infiniteRepeatable(
+        animation = tween(1000, easing = LinearEasing), // 1 second for full rotation
+        repeatMode = RepeatMode.Restart
+      )
+    )
+
+    Row {
+        if (isSynced)
+            Text(text = syncedText, style = MaterialTheme.typography.labelLarge.copy(
+              color = syncColor,
+              fontWeight = FontWeight.Bold,
+              textAlign = TextAlign.Center
+            ))
+        else
+            Text(text = syncingText, style = MaterialTheme.typography.labelLarge.copy(
+              color = syncColor,
+              fontWeight = FontWeight.Bold,
+              textAlign = TextAlign.Center
+            ))
+        Spacer(modifier = Modifier.width(4.dp))
+        if (isSynced)
+            Icon(
+              imageVector = Icons.Default.Check,
+              contentDescription = syncedText,
+              tint = syncColor,
+              modifier = Modifier.size(18.dp)
+            )
+        else
+            Icon(
+              imageVector = Icons.Default.Sync,
+              contentDescription = syncingText,
+              tint = syncColor,
+              modifier = Modifier
+                .size(18.dp)
+                .rotate(animation)
+            )
+    }
 }
