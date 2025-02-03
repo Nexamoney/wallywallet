@@ -750,56 +750,6 @@ class BalanceViewModelImpl: BalanceViewModel()
     }
 }
 
-@Composable
-fun Syncing(syncColor: Color = Color.White, syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() })
-{
-    val isSynced = syncViewModel.isSynced.collectAsState().value
-    val infiniteTransition = rememberInfiniteTransition()
-    val syncingText = "Syncing" // TODO: Move to string resource
-    val syncedText = "Synced" // TODO: Move to string resource
-
-    val animation by infiniteTransition.animateFloat(
-      initialValue = 360f,
-      targetValue = 0f,
-      animationSpec = infiniteRepeatable(
-        animation = tween(1000, easing = LinearEasing), // 1 second for full rotation
-        repeatMode = RepeatMode.Restart
-      )
-    )
-
-    Row {
-        if (isSynced)
-            Text(text = syncedText, style = MaterialTheme.typography.labelLarge.copy(
-              color = syncColor,
-              fontWeight = FontWeight.Bold,
-              textAlign = TextAlign.Center
-            ))
-        else
-            Text(text = syncingText, style = MaterialTheme.typography.labelLarge.copy(
-              color = syncColor,
-              fontWeight = FontWeight.Bold,
-              textAlign = TextAlign.Center
-            ))
-        Spacer(modifier = Modifier.width(4.dp))
-        if (isSynced)
-            Icon(
-              imageVector = Icons.Default.Check,
-              contentDescription = syncedText,
-              tint = syncColor,
-              modifier = Modifier.size(18.dp)
-            )
-        else
-            Icon(
-              imageVector = Icons.Default.Sync,
-              contentDescription = syncingText,
-              tint = syncColor,
-              modifier = Modifier
-                .size(18.dp)
-                .rotate(animation)
-            )
-    }
-}
-
 data class RecentTransactionUIData(
   val transaction: TransactionHistory,
   val type: String,
@@ -815,7 +765,6 @@ data class RecentTransactionUIData(
 class TxHistoryViewModel: ViewModel()
 {
     val txHistory = MutableStateFlow<List<RecentTransactionUIData>>(listOf())
-    var accountJob: Job? = null
 
     init {
         wallyApp!!.focusedAccount.value?.let { account ->
@@ -871,16 +820,14 @@ class TxHistoryViewModel: ViewModel()
 
     override fun onCleared()
     {
-        super.onCleared()
-        accountJob?.cancel()
         txHistory.value = listOf()
+        super.onCleared()
     }
 }
 
 @Composable
-fun TransactionsList(modifier: Modifier = Modifier)
+fun TransactionsList(modifier: Modifier = Modifier, viewModel: TxHistoryViewModel = viewModel { TxHistoryViewModel() })
 {
-    val viewModel = viewModel { TxHistoryViewModel() }
     val transactions = viewModel.txHistory.collectAsState(emptyList()).value
     val account = wallyApp!!.focusedAccount.collectAsState().value
     if (account != null)
