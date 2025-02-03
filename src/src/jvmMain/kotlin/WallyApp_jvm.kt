@@ -80,7 +80,7 @@ fun guiNewPanel()
               state = rememberWindowState(width = (5 * 160).dp, height = (7 * 160).dp)
             )
             {
-                UiRoot(Modifier)
+                UiRoot(Modifier, Modifier)
             }
         }
     }
