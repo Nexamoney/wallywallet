@@ -808,7 +808,7 @@ data class RecentTransactionUIData(
   val amount: String,
   val currency: String,
   val dateEpochMiliseconds: Long,
-  val date: String = formatLocalEpochMilliseconds(dateEpochMiliseconds),
+  val date: String = if (dateEpochMiliseconds > 1231006505000L) formatLocalEpochMilliseconds(dateEpochMiliseconds) else "",
   val assets: List<AssetPerAccount> = listOf()
 )
 
