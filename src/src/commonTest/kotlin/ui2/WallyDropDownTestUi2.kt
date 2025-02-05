@@ -16,22 +16,8 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
-class WallyDropDownTestUi2
+class WallyDropDownTestUi2:WallyUiTestBase()
 {
-    @BeforeTest
-    fun setup()
-    {
-        if (platform().target == KotlinTarget.JVM)
-            Dispatchers.setMain(StandardTestDispatcher())
-    }
-
-    @AfterTest
-    fun clean()
-    {
-        if (platform().target == KotlinTarget.JVM)
-            Dispatchers.resetMain()
-    }
-
     @Test
     fun wallyDropdownMenuTest() = runComposeUiTest {
         val blockchains = supportedBlockchains

@@ -12,19 +12,14 @@ import org.nexa.libnexakotlin.Bip44Wallet
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.initializeLibNexa
 import org.nexa.libnexakotlin.runningTheTests
+import ui2.WallyUiTestBase
 import ui2.settle
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @OptIn(ExperimentalUnsignedTypes::class)
-class SendViewTest
+class SendViewTest:WallyUiTestBase()
 {
-    @BeforeTest
-    fun initLibNexa()
-    {
-        initializeLibNexa()
-    }
-
     @OptIn(ExperimentalTestApi::class)
     @Test
     fun sendViewTest() = runComposeUiTest {
@@ -36,8 +31,6 @@ class SendViewTest
         val cs = ChainSelector.NEXA
         lateinit var account: Account
 
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
         wallyApp!!.openAllAccounts()
         runBlocking(Dispatchers.IO) {
             account = wallyApp!!.newAccount("itemvie", 0U, "", cs)!!
@@ -81,5 +74,6 @@ class SendViewTest
         onNodeWithTag("noteButtonSendView").performClick()
         settle()
         onNodeWithText(i18n(S.editSendNoteHint)).isDisplayed()
+        settle()
     }
 }

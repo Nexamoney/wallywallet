@@ -42,6 +42,7 @@ writing a vast amount of inscrutible garbage rather than actual useful code.
 * */
 
 private val sendFromAccountShared = MutableStateFlow<Account?>(null)
+val currencyCodeShared: MutableStateFlow<String> = MutableStateFlow("NEX")
 
 @Composable fun IconTextButton(
   textRes: Int,

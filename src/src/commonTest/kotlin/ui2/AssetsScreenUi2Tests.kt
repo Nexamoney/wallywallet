@@ -15,22 +15,8 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
-class AssetsScreenUi2Tests
+class AssetsScreenUi2Tests:WallyUiTestBase()
 {
-    @BeforeTest
-    fun init()
-    {
-        if (platform().target == KotlinTarget.JVM)
-            Dispatchers.setMain(StandardTestDispatcher())
-    }
-
-    @AfterTest
-    fun after()
-    {
-        if (platform().target == KotlinTarget.JVM)
-            Dispatchers.resetMain()
-    }
-
     @Test
     fun assetListItemViewTest() = runComposeUiTest {
         val groupIdData = ByteArray(520, { it.toByte() })

@@ -327,6 +327,10 @@ fun dbgAssertGuiThread()
 
 fun dbgAssertNotGuiThread()
 {
+    // The iOS tests "main" thread and the GUI are the same so this exception is triggering during iOS test setup
+    // in functions like creating accounts.
+    if ((runningTheTests)&&(platform().target == KotlinTarget.iOS)) return
+
     if (isUiThread())
     {
         val tname = "" // TODO this thread's name

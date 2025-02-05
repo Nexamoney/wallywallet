@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.*
 import info.bitcoinunlimited.www.wally.ui2.theme.BaseBkg
 import info.bitcoinunlimited.www.wally.ui2.theme.WallyBorder
 import info.bitcoinunlimited.www.wally.ui2.theme.WallyBoringButtonShadow
+import org.nexa.libnexakotlin.ChainSelector
 
 val colorPrimaryUi2 = Color(0xFFD0A6FF)
 val colorPrimaryDarkUi2 = Color(0xFF5B276B)
@@ -75,3 +76,18 @@ expect fun WallyThemeUi2(
     lightColors: ColorScheme = wallyLightColors,
     content: @Composable () -> Unit
 )
+
+// Get this theme's icon for a specific blockchain
+fun getAccountIconResPath(chainSelector: ChainSelector?): String
+{
+    if (chainSelector == null)  return "icons/nexa_icon.png"  // TODO, should never happen for a real account but maybe a blank icon would be better?
+    return when(chainSelector)
+    {
+        ChainSelector.NEXA -> "icons/nexa_icon.png"
+        ChainSelector.NEXATESTNET -> "icons/nexatest_icon.png"
+        ChainSelector.NEXAREGTEST -> "icons/nexareg_icon.png"
+        ChainSelector.BCH -> "icons/bitcoin_cash_token.xml"
+        ChainSelector.BCHTESTNET -> "icons/bitcoin_cash_token.xml"
+        ChainSelector.BCHREGTEST -> "icons/bitcoin_cash_token.xml"
+    }
+}

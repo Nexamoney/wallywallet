@@ -7,11 +7,12 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui2.AccountPillHeader
+import info.bitcoinunlimited.www.wally.ui2.AccountPillViewModelFake
 import info.bitcoinunlimited.www.wally.ui2.BalanceViewModelFake
 import info.bitcoinunlimited.www.wally.ui2.SyncViewModelFake
 import info.bitcoinunlimited.www.wally.ui2.setSelectedAccount
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
@@ -34,7 +35,8 @@ class AccountPillTest
     }
 
     @Test
-    fun accountPillHeaderTest() {
+    fun accountPillHeaderTest()
+    {
         val viewModelStoreOwner = object : ViewModelStoreOwner
         {
             override val viewModelStore = ViewModelStore()
@@ -64,11 +66,13 @@ class AccountPillTest
         balanceViewModel.fiatBalance.value = "5555"
         val balance = balanceViewModel.balance.value
 
+        val pill = AccountPillViewModelFake(MutableStateFlow(account), balanceViewModel, syncViewModel)
+
         composeTestRule.setContent {
             CompositionLocalProvider(
               LocalViewModelStoreOwner provides viewModelStoreOwner
             ) {
-                AccountPillHeader(balanceViewModel, syncViewModel)
+                pill.draw(false)
             }
         }
 
@@ -87,6 +91,7 @@ class AccountPillTest
         composeTestRule.onNodeWithText(balance2).assertIsDisplayed()
         val fiatBalance = "55555"
         balanceViewModel.fiatBalance.value = fiatBalance
-        composeTestRule.onNodeWithText(fiatBalance).assertIsDisplayed()
+        composeTestRule.onNodeWithTag("AccountPillFiatBalance").assertTextEquals(fiatBalance)
+        composeTestRule.onNodeWithTag("AccountPillFiatCurrencyCode").assertIsDisplayed()
     }
 }

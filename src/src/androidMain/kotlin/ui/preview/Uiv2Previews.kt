@@ -27,7 +27,7 @@ fun BalanceSendReceiveWidgetPreview()
         Surface(
           modifier = Modifier.wrapContentHeight().width(500.dp)
         ) {
-            AccountPill()
+            AccountPill(null)
         }
     }
 }

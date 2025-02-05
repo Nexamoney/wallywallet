@@ -32,8 +32,6 @@ val TESTWALLET = "newAccountScreenTest"
 
 fun setupTest(cs: ChainSelector, selectAccount: Boolean = true): Account
 {
-    wallyApp = CommonApp()
-    wallyApp!!.onCreate()
     wallyApp!!.openAllAccounts()
     lateinit var account: Account
     runBlocking(Dispatchers.IO) {
@@ -44,26 +42,8 @@ fun setupTest(cs: ChainSelector, selectAccount: Boolean = true): Account
 }
 
 @OptIn(ExperimentalTestApi::class)
-class NewAccountScreenTestUi2
+class NewAccountScreenTestUi2:WallyUiTestBase()
 {
-
-    @BeforeTest
-    fun setUp() {
-        if (platform().target == KotlinTarget.JVM)
-            Dispatchers.setMain(StandardTestDispatcher())
-        initializeLibNexa()
-        runningTheTests = true
-        forTestingDoNotAutoCreateWallets = true
-        dbPrefix = "test_"
-    }
-
-    @AfterTest
-    fun clean()
-    {
-        if (platform().target == KotlinTarget.JVM)
-            Dispatchers.resetMain()
-    }
-
     /** Test opening the new account screen */
     @Test
     fun newAccountScreenTest() = runComposeUiTest {
@@ -71,9 +51,6 @@ class NewAccountScreenTestUi2
         {
             override val viewModelStore: ViewModelStore = ViewModelStore()
         }
-
-        val cs = ChainSelector.NEXA
-        val account = setupTest(cs)
 
         val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())
 
@@ -84,6 +61,7 @@ class NewAccountScreenTestUi2
                 NewAccountScreenUi2(accountGuiSlots.collectAsState(), false)
             }
         }
+        settle()
     }
 
     /** Test creating a Nexa account */
@@ -105,6 +83,7 @@ class NewAccountScreenTestUi2
                 NewAccountScreenUi2(accountGuiSlots.collectAsState(), false)
             }
         }
+        settle()
 
         // Open Blockchain selector and select NEXA
         // Commented because using dropdown in UI tests only works on the JVM target...
@@ -149,6 +128,7 @@ class NewAccountScreenTestUi2
         onNodeWithText(i18n(S.createNewAccount)).performClick()
         settle()
         assertTrue { newAccountState.value == NewAccountState() }
+        settle()
     }
 
     /** Test preventing an overly long name */
@@ -213,6 +193,7 @@ class NewAccountScreenTestUi2
                 NewAccountScreenUi2(accountGuiSlots.collectAsState(), false)
             }
         }
+        settle()
 
         onNodeWithTag("NewAccountPinInput").assertExists()
         onNodeWithTag("NewAccountPinInput").performTextInput("1234")
@@ -221,6 +202,7 @@ class NewAccountScreenTestUi2
         onNodeWithText(i18n(S.createNewAccount)).performClick()
         settle()
         assertTrue { newAccountState.value == NewAccountState() }
+        settle()
     }
 
     /** Test specifying a short PIN */
@@ -231,8 +213,8 @@ class NewAccountScreenTestUi2
             override val viewModelStore: ViewModelStore = ViewModelStore()
         }
 
-        val cs = ChainSelector.NEXA
-        val account = setupTest(cs, false)
+        // If we have accounts from other tests, the default account name will be incorrect
+        wallyApp!!.accounts.clear()
         val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())
 
         setContent {
@@ -242,6 +224,7 @@ class NewAccountScreenTestUi2
                 NewAccountScreenUi2(accountGuiSlots.collectAsState(), false)
             }
         }
+        settle()
         // empty PIN is fine
         onNodeWithTag("pin_C").assertExists()
         onNodeWithTag("pin_X").assertDoesNotExist()
@@ -260,6 +243,7 @@ class NewAccountScreenTestUi2
         onNodeWithTag("pin_C").assertDoesNotExist()
         // Strangely the account name gets cleared when the pin is bad
         onNodeWithTag("AccountNameInput").assertTextEquals("nexa")
+        settle()
     }
 
     /** Test specifying a long PIN (pin length is not limited) */
@@ -270,8 +254,8 @@ class NewAccountScreenTestUi2
             override val viewModelStore: ViewModelStore = ViewModelStore()
         }
 
-        val cs = ChainSelector.NEXA
-        val account = setupTest(cs, false)
+        //val cs = ChainSelector.NEXA
+        //val account = setupTest(cs, false)
         val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())
 
         setContent {
@@ -290,7 +274,7 @@ class NewAccountScreenTestUi2
         settle()
         onNodeWithTag("pin_C").assertExists()
         onNodeWithTag("pin_X").assertDoesNotExist()
-
+        settle()
     }
 
     @Test

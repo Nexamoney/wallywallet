@@ -60,7 +60,7 @@ fun WallyGetCnxnMgr(chain: ChainSelector, name: String? = null, start:Boolean = 
 class Account(
   val name: String, //* The name of this account
   var flags: ULong = ACCOUNT_FLAG_NONE,
-  val chainSelector: ChainSelector? = null,
+  chainSelector: ChainSelector? = null,
   secretWords: String? = null,
   startDate: Long? = null, //* Where to start looking for transactions
   startHeight: Long? = null, //* block height of first activity
@@ -201,7 +201,7 @@ class Account(
         LogIt.info(sourceLoc() + name + ": wallet blockchain ${chain.name} connection completed")
         wallet.fillReceivingWithRetrieveOnly()
         wallet.prepareDestinations(2, 2)  // Make sure that there is at least a few addresses before we hook into the network
-        if (chainSelector != ChainSelector.NEXA)  // no fiat price for nextchain
+        if (wallet.chainSelector != ChainSelector.NEXA)  // no fiat price for nextchain
         {
             val SatPerDisplayUnit = CurrencyDecimal(SATperUBCH)
             wallet.spotPrice = { currencyCode ->

@@ -55,7 +55,7 @@ data class SendScreenUi(
   val toAddressFinal: PayAddress? = null,
   val isConfirming: Boolean = false,
   val fiatAmount: String = "",
-  val currencyCode: String = "NEX"
+  val currencyCode: String = chainToCurrencyCode[ChainSelector.NEXA] ?: "NEX"
 )
 {
     val amountFinal: BigDecimal = if (amount.isEmpty())
@@ -70,35 +70,36 @@ data class SendScreenUi(
     }
 }
 
-abstract class SendScreenViewModel(act: Account): ViewModel()
+abstract class SendScreenViewModel(val account:MutableStateFlow<Account?>): ViewModel()
 {
-    val account = MutableStateFlow(act)
+    constructor(act: Account?):this(MutableStateFlow(act))
+
     val assetsToSend: MutableStateFlow<List<AssetPerAccount>> = MutableStateFlow(listOf())
     val uiState = MutableStateFlow(SendScreenUi())
+
+    var balanceViewModel: BalanceViewModel = BalanceViewModelImpl(account)
+    var syncViewModel: SyncViewModel = SyncViewModelImpl()
 
     abstract fun setAccount(account: Account)
     abstract fun checkUriAndSetUi(urlStr: String)
 
     fun setToAddress(address: String)
     {
-        uiState.value = uiState.value.copy(
-          toAddress = address
-        )
+        uiState.value = uiState.value.copy(toAddress = address)
+        val tmp = wallyApp!!.visibleAccountFor(address, account.value)
+        if (tmp!= null)
+          setAccount(tmp)
     }
 
     fun setNote(newNote: String)
     {
-        uiState.value = uiState.value.copy(
-          note = newNote
-        )
+        uiState.value = uiState.value.copy(note = newNote)
     }
 
     fun setSendQty(sendQty: String)
     {
         val cleanedQty = sendQty.replace(",", "")
-        uiState.value = uiState.value.copy(
-          amount = cleanedQty
-        )
+        uiState.value = uiState.value.copy(amount = cleanedQty)
     }
 
     fun setSendQty(sendQty: BigDecimal)
@@ -121,53 +122,32 @@ abstract class SendScreenViewModel(act: Account): ViewModel()
 
 class SendScreenViewModelFake(act: Account): SendScreenViewModel(act)
 {
-    override fun setAccount(account: Account)
-    {
-
-    }
-
-    override fun checkUriAndSetUi(urlStr: String)
-    {
-
-    }
-
-    override fun multiplySendQty(multiplier: Int)
-    {
-
-    }
-
-    override fun populateAssetsList(assetTransferList: MutableList<GroupId>, assets: Map<GroupId, AssetPerAccount>)
-    {
-
-    }
-
-    override fun onSendButtonClicked()
-    {
-
-    }
-
-    override fun actuallySend(toAddress: PayAddress?, amount: BigDecimal?)
-    {
-
-    }
+    override fun setAccount(act: Account) { account.value = act }
+    override fun checkUriAndSetUi(urlStr: String) {}
+    override fun multiplySendQty(multiplier: Int) {}
+    override fun populateAssetsList(assetTransferList: MutableList<GroupId>, assets: Map<GroupId, AssetPerAccount>) {}
+    override fun onSendButtonClicked() {}
+    override fun actuallySend(toAddress: PayAddress?, amount: BigDecimal?) {}
 }
 
 class SendScreenViewModelImpl(act: Account): SendScreenViewModel(act)
 {
     var balanceJob: Job? = null
 
-    init {
-        setAccount(act)
+    init
+    {
+        populateAssetsList(act.assetTransferList, act.assets)
+        balanceViewModel.setAccount(act)
     }
 
-    override fun setAccount(account: Account)
+    override fun setAccount(act: Account)
     {
-        populateAssetsList(account.assetTransferList, account.assets)
-        // Automatically switch the currency code to whatever the selected account is using
-        // currencyCodeShared is the currency that amount dialog boxes use
-        // TODO: What we really want to do here only set it if its currently a Crypto currency code. Obviously if you've selected an account holding a different crypto, you want to send that crypto.
-        // TODO: BUT if its a fiat code, do not set it and interpret the amount field as an amount of that fiat see (https://gitlab.com/wallywallet/wallet/-/issues/234)
-        currencyCodeShared.value = account.currencyCode
+        if (account.value != act)
+        {
+            account.value = act
+            populateAssetsList(act.assetTransferList, act.assets)
+            balanceViewModel.setAccount(act)
+        }
     }
 
     override fun checkUriAndSetUi(urlStr: String)
@@ -259,22 +239,16 @@ class SendScreenViewModelImpl(act: Account): SendScreenViewModel(act)
     override fun onSendButtonClicked()
     {
         val acc = account.value
+        if (acc == null)
+        {
+            displayError(S.NoAccounts, "")
+            return
+        }
         val sendingTheseAssets = acc.assetTransferList
         val fpc = acc.fiatPerCoinObservable.value
         val amount = uiState.value.amount
         val toAddress = uiState.value.toAddress
-        val currencyCode = currencyCodeShared.value
-
-        /*
-            if (paymentInProgress != null)
-            {
-                displayNotice(S.Processing, null)
-                tlater("pipSend") {
-                    paymentInProgressSend()
-                }
-                return
-            }
-         */
+        val currencyCode = chainToCurrencyCode[acc.wallet.chainSelector]
 
         if (acc.locked)
         {
@@ -461,7 +435,12 @@ class SendScreenViewModelImpl(act: Account): SendScreenViewModel(act)
 
     override fun actuallySend(toAddress: PayAddress?, amount: BigDecimal?)
     {
-        val account = wallyApp!!.focusedAccount.value ?: return
+        val account = account.value
+        if (account == null)
+        {
+            displayError(S.NoAccounts, "")
+            return
+        }
         val note = uiState.value.note
         val sendAddressTmp = toAddress ?: uiState.value.toAddressFinal
         val qty = amount ?: uiState.value.amountFinal
@@ -602,8 +581,6 @@ data class SendScreenNavParams(
 @Composable
 fun SendScreenContent(
   viewModel: SendScreenViewModel,
-  balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
-  syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() },
   params: SendScreenNavParams
 )
 {
@@ -635,7 +612,7 @@ fun SendScreenContent(
             ) { keyboardController?.hide() }
         ) {
             Spacer(Modifier.height(16.dp))
-            AccountPill(buttonsEnabled = false, balanceViewModel, syncViewModel)
+            AccountPill(viewModel.account).draw(buttonsEnabled = false)
             Column(
               modifier = Modifier.wrapContentHeight()
                 .fillMaxWidth()
@@ -770,7 +747,7 @@ fun ConfirmSend(viewModel: SendScreenViewModel)
                 if (quantity.isNotEmpty())
                 {
                     Spacer(modifier = Modifier.height(16.dp))
-                    BlockchainIcon(currencyCode, quantity, viewModel.account.collectAsState().value.chainSelector)
+                    BlockchainIcon(currencyCode, quantity, viewModel.account.collectAsState().value?.wallet?.chainSelector)
                 }
                 if (assetsToSend > 0)
                 {
@@ -846,6 +823,7 @@ fun SendScreen(account: Account, navParams: SendScreenNavParams, viewModel: Send
      */
     LaunchedEffect(account) {
         viewModel.setAccount(account)
+
     }
 
     // Update UI when sending to a new address
@@ -1001,7 +979,7 @@ fun AssetListItemEditable(assetPerAccount: AssetPerAccount, editable: Boolean = 
                   amountString = quantity,
                   label = i18n(S.amountPlain),
                   placeholder = i18n(S.enterAmount),
-                  decimals = false,
+                  decimals = assetPerAccount.assetInfo.tokenInfo?.genesisInfo?.decimal_places ?: 0,
                   isReadOnly = isConfirming,
                   hasIosDoneButton = !isConfirming,
                   onValueChange = {
@@ -1065,9 +1043,6 @@ fun WallyNumericInputFieldBalance(
     onValueChange: (String) -> Unit
 )
 {
-    val balanceViewModel = viewModel { BalanceViewModelImpl() }
-    val balanceState = balanceViewModel.balance.collectAsState()
-    val balance = balanceState.value
 
     // Validate input and allow max 2 decimal places
     fun validateInput(input: String): Boolean {
@@ -1111,7 +1086,9 @@ fun WallyNumericInputFieldBalance(
                           TextButton(
                             modifier = mod,
                             content = { Text(i18n(S.sendAll), style = fontStyle) },
-                            onClick = { vm.setSendQty(balance) }
+                            onClick = {
+                                vm.setSendQty(vm.balanceViewModel.balance.value)
+                            }
                           )
                           TextButton(
                             modifier = mod,
@@ -1178,7 +1155,7 @@ fun WallyNumericInputFieldAsset(
   label: String,
   placeholder: String,
   singleLine: Boolean = true,
-  decimals: Boolean = true,
+  decimals: Int = 2,
   action: ImeAction = ImeAction.Done,
   isReadOnly: Boolean = true,
   hasIosDoneButton: Boolean = true,
@@ -1190,9 +1167,9 @@ fun WallyNumericInputFieldAsset(
 
     // Validate input and allow max 2 decimal places
     fun validateInput(input: String): Boolean {
-        val regex = if (decimals)
+        val regex = if (decimals != 0)
         // Allow empty input or input that matches the regex for numbers with max 2 decimal places
-            Regex("^\\d*(\\.\\d{0,2})?\$")
+            Regex("^\\d*(\\.\\d{0,$decimals})?\$")
         else
         // Allow only whole numbers (no decimals)
             Regex("^\\d*\$")

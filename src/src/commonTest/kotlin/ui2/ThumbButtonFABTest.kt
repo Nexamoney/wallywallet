@@ -19,7 +19,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTestApi::class)
-class ThumbButtonFABTest
+class ThumbButtonFABTest:WallyUiTestBase()
 {
     @Test
     fun thumbButtonTest() = runComposeUiTest {
@@ -35,11 +35,13 @@ class ThumbButtonFABTest
               }
             )
         }
-
+        settle()
         onNodeWithText(i18n(res)).assertIsDisplayed()
         onNodeWithContentDescription(i18n(res)).assertIsDisplayed()
         onNodeWithContentDescription(i18n(res)).performClick()
+        settle()
         assertTrue { isClicked }
+        settle()
     }
 
     @Test
@@ -51,25 +53,35 @@ class ThumbButtonFABTest
               pasteIcon = Icons.Outlined.ContentPaste
             )
         }
+        settle()
 
         val imageQrText = i18n(S.imageQr)
-        if (platform().hasGallery) {
+        if (platform().hasGallery)
+        {
             onNodeWithContentDescription(imageQrText).assertIsDisplayed()
-        } else {
+        }
+        else
+        {
             onNodeWithContentDescription(imageQrText).assertDoesNotExist()
         }
 
         val scanQrText = i18n(S.scanQr)
-        if (platform().hasQrScanner) {
+        if (platform().hasQrScanner)
+        {
             onNodeWithContentDescription(scanQrText).assertIsDisplayed()
-        } else {
+        }
+        else
+        {
             onNodeWithContentDescription(scanQrText).assertDoesNotExist()
         }
 
         val pasteText = i18n(S.paste)
-        if (platform().target != KotlinTarget.JVM) {
+        if (platform().target != KotlinTarget.JVM)
+        {
             onNodeWithContentDescription(pasteText).assertIsDisplayed()
-        } else {
+        }
+        else
+        {
             onNodeWithContentDescription(pasteText).assertDoesNotExist()
         }
     }
@@ -97,23 +109,30 @@ class ThumbButtonFABTest
               clipmgr = clipboardManager
             )
         }
-
+        settle()
         // Test Document Scanner button
-        if (platform().hasGallery) {
+        if (platform().hasGallery)
+        {
             onNodeWithContentDescription(i18n(S.imageQr)).performClick()
+            settle()
         }
 
 
         // Test QR Code Scanner button
-        if (platform().hasQrScanner) {
+        if (platform().hasQrScanner)
+        {
             onNodeWithContentDescription(i18n(S.scanQr)).performClick()
+            settle()
             assertTrue(qrScanCalled)
         }
 
         // Test Content Paste button
-        if (platform().target != KotlinTarget.JVM) {
+        if (platform().target != KotlinTarget.JVM)
+        {
             onNodeWithContentDescription(i18n(S.paste)).performClick()
+            settle()
             assertEquals(clipboardText, qrResult)
         }
+        settle()
     }
 }

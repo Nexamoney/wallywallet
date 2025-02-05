@@ -20,54 +20,38 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalTestApi::class)
-class SendScreenTestUi2
+class SendScreenTestUi2:WallyUiTestBase()
 {
-    @BeforeTest
-    fun init()
-    {
-        if (platform().target == KotlinTarget.JVM)
-            Dispatchers.setMain(StandardTestDispatcher())
-    }
-
-    @AfterTest
-    fun after()
-    {
-        if (platform().target == KotlinTarget.JVM)
-            Dispatchers.resetMain()
-    }
-
     @Test
-    fun sendBottomButtonsTest() = runComposeUiTest {
-        initializeLibNexa()
-        val cs = ChainSelector.NEXA
-        lateinit var account: Account
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
+    fun sendBottomButtonsTest()
+    {
         wallyApp!!.openAllAccounts()
-        runBlocking(Dispatchers.IO) {
-            account = wallyApp!!.newAccount("itemvie", 0U, "", cs)!!
+        val cs = ChainSelector.NEXA
+        val account = wallyApp!!.newAccount("itemvie", 0U, "", cs)!!
+
+        runComposeUiTest {
+            val viewModel = SendScreenViewModelImpl(account)
+            setContent {
+                SendBottomButtons(Modifier, viewModel)
+            }
+            settle()
+            onNodeWithText(i18n(S.confirmSend)).assertDoesNotExist()
+            onNodeWithText(i18n(S.Send)).assertIsDisplayed()
+            onNodeWithText(i18n(S.SendCancel)).assertIsDisplayed()
+
+            onNodeWithText(i18n(S.Send)).performClick()
+            settle()
+            onNodeWithText(i18n(S.SendCancel)).performClick()
+            settle()
+            assertEquals(viewModel.uiState.value.note, SendScreenUi().note)
+            assertEquals(viewModel.uiState.value.amount, SendScreenUi().amount)
+            assertEquals(viewModel.uiState.value.toAddress, SendScreenUi().toAddress)
+            assertEquals(viewModel.uiState.value.amountFinal, SendScreenUi().amountFinal)
+            assertEquals(viewModel.uiState.value.currencyCode, SendScreenUi().currencyCode)
+            assertEquals(viewModel.uiState.value.fiatAmount, SendScreenUi().fiatAmount)
+            assertEquals(viewModel.uiState.value.isConfirming, SendScreenUi().isConfirming)
+            assertEquals(viewModel.uiState.value.toAddressFinal, SendScreenUi().toAddressFinal)
+            settle()
         }
-
-        val viewModel = SendScreenViewModelImpl(account)
-
-        setContent {
-            SendBottomButtons(Modifier, viewModel)
-        }
-
-        onNodeWithText(i18n(S.confirmSend)).assertDoesNotExist()
-        onNodeWithText(i18n(S.Send)).assertIsDisplayed()
-        onNodeWithText(i18n(S.SendCancel)).assertIsDisplayed()
-
-        onNodeWithText(i18n(S.Send)).performClick()
-        onNodeWithText(i18n(S.SendCancel)).performClick()
-
-        assertEquals(viewModel.uiState.value.note, SendScreenUi().note)
-        assertEquals(viewModel.uiState.value.amount, SendScreenUi().amount)
-        assertEquals(viewModel.uiState.value.toAddress, SendScreenUi().toAddress)
-        assertEquals(viewModel.uiState.value.amountFinal, SendScreenUi().amountFinal)
-        assertEquals(viewModel.uiState.value.currencyCode, SendScreenUi().currencyCode)
-        assertEquals(viewModel.uiState.value.fiatAmount, SendScreenUi().fiatAmount)
-        assertEquals(viewModel.uiState.value.isConfirming, SendScreenUi().isConfirming)
-        assertEquals(viewModel.uiState.value.toAddressFinal, SendScreenUi().toAddressFinal)
     }
 }

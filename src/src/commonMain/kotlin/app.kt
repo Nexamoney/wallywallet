@@ -60,12 +60,12 @@ var kvpDb: KvpDatabase? = null
 
 fun tlater(name: String?=null, job: ()->Unit)
 {
-    wallyApp!!.threadJobPool.later(name, job)
+    wallyApp?.threadJobPool?.later(name, job)
 }
 
 fun onetlater(name: String, job: ()->Unit)
 {
-    wallyApp!!.threadJobPool.oneLater(name, job)
+    wallyApp?.threadJobPool?.oneLater(name, job)
 }
 
 data class LongPollInfo(val proto: String, val hostPort: String, val cookie: String?, var active: Boolean = true)
@@ -286,14 +286,15 @@ open class CommonApp
     var assetLoaderThread: iThread? = null
     var periodicAnalysisThread: iThread? = null
 
-    init {
+    init
+    {
         // Set up the libnexakotlin translations
         appI18n = { libErr: Int -> i18n(i18nLbc[libErr] ?: libErr) }
         // electrumLogging = true
     }
 
     /** Return an ordered map of the visible accounts (in display order) */
-    fun orderedAccounts(visibleOnly: Boolean = true):ListifyMap<String, Account>
+    fun orderedAccounts(visibleOnly: Boolean = true): ListifyMap<String, Account>
     {
         return accountLock.synchronized {
             ListifyMap(accounts, { if (visibleOnly) it.value.visible else true }, object : Comparator<String>
@@ -353,13 +354,15 @@ open class CommonApp
         nullablePrimaryAccount?.let { if (it.visible) return it }
         return defaultPrimaryAccount()
     }
+
     /** Return some account that's visible in order of focused, primary, then any visible account starting with Nexa then testnet, regtest.
      * @return null if there is no matching account */
     fun preferredVisibleAccountOrNull(): Account?
     {
         focusedAccount.value?.let { if (it.visible) return it }
         nullablePrimaryAccount?.let { if (it.visible) return it }
-        return try {
+        return try
+        {
             defaultPrimaryAccount()
         }
         catch (exception: PrimaryWalletInvalidException)
@@ -367,6 +370,38 @@ open class CommonApp
             null
         }
     }
+
+    // Returns a visible account that matches the blockchain of the passed address, in the following order of preference:
+    // The passed account
+    // The preferredVisibleAccount (focused/selected account)
+    // The defaultPrimaryAccount
+    // Order shown in the UI home page
+    //
+    // If no account matches the blockchain of the passed address (or if that text is not even an address), null is returned
+    fun visibleAccountFor(address: String, defaultAccount: Account? = null): Account?
+    {
+        try
+        {
+            val p = PayAddress(address)
+            if (defaultAccount?.wallet?.chainSelector == p.blockchain) return defaultAccount  // Stick with the current one if we can
+            var cand = preferredVisibleAccountOrNull()  // Or try our preferred account
+            if (cand?.wallet?.chainSelector == p.blockchain) return cand
+            cand = kotlin.runCatching { defaultPrimaryAccount() }.getOrNull()
+            if (cand?.wallet?.chainSelector == p.blockchain) return cand
+            for (act in orderedAccounts(true))
+            {
+                if (act.wallet.chainSelector == p.blockchain) return act
+            }
+            // there's nothing that will handle this address
+            return null
+        }
+        catch(e: Exception)  // not an address
+        {
+            return null
+        }
+    }
+
+
 
     fun defaultPrimaryAccount(): Account
     {
