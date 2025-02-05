@@ -28,106 +28,31 @@ import info.bitcoinunlimited.www.wally.ui2.views.AccountUiDataViewModel
 import info.bitcoinunlimited.www.wally.ui2.views.CenteredText
 import info.bitcoinunlimited.www.wally.wallyApp
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.PayDestination
-import org.nexa.libnexakotlin.Wallet
 import org.nexa.libnexakotlin.chainToURI
 import org.nexa.libnexakotlin.rem
+import info.bitcoinunlimited.www.wally.ui2.views.*
 
 typealias AccountName = String
 
-abstract class WalletViewModel: ViewModel()
-{
-    // Stores the account name we are receiving into and the receive address as a pair
-    val receiveDestination = MutableStateFlow<Pair<AccountName,PayDestination>?>(null)
-    var accountJob: Job? = null
-    var receiveDestinationJob: Job? = null
-
-    abstract fun observeSelectedAccount()
-
-    abstract fun observeReceiveDestination(account: Account)
-
-    override fun onCleared()
-    {
-        super.onCleared()
-        accountJob?.cancel()
-        receiveDestinationJob?.cancel()
-    }
-}
-class WalletViewModelFake(): WalletViewModel()
-{
-    override fun observeSelectedAccount()
-    {
-    }
-
-    override fun observeReceiveDestination(account: Account)
-    {
-    }
-
-}
-class WalletViewModelImpl: WalletViewModel()
-{
-
-    init {
-        wallyApp?.focusedAccount?.value?.let {
-            val destination = it.wallet.getCurrentDestination()
-            val accountName = it.name
-            receiveDestination.value = Pair(accountName, destination)
-        }
-        observeSelectedAccount()
-    }
-
-    override fun observeSelectedAccount()
-    {
-        accountJob?.cancel()
-        accountJob = viewModelScope.launch {
-            wallyApp?.focusedAccount?.onEach {
-                if (it != null)
-                {
-                    setReceiveDestination(it)
-                    observeReceiveDestination(it)
-                }
-                else receiveDestination.value = null
-            }?.launchIn(this)
-        }
-    }
-
-    override fun observeReceiveDestination(account: Account)
-    {
-        receiveDestinationJob?.cancel()
-        receiveDestinationJob = viewModelScope.launch {
-            account.wallet.setOnWalletChange { wallet, _ ->
-                setReceiveDestination(account)
-            }
-        }
-    }
-
-    fun setReceiveDestination(account: Account)
-    {
-        val destination = account.wallet.getCurrentDestination()
-        val accountName = account.name
-        account.currentReceive = destination
-        receiveDestination.value = Pair(accountName, destination)
-    }
-}
 
 @Composable
-fun ReceiveScreen(walletViewModel: WalletViewModelImpl = viewModel { WalletViewModelImpl() })
+fun ReceiveScreen()
 {
-    val address = walletViewModel.receiveDestination.collectAsState().value?.second
-    val selectedAccountState = wallyApp!!.focusedAccount.collectAsState()
-    val selectedAccount = selectedAccountState.value
+    val focusedAccount = wallyApp!!.focusedAccount.collectAsState().value
+    val address = focusedAccount?.currentReceiveObservable?.collectAsState()?.value
     // Select the first available account if none are available
-    if (selectedAccount == null)
+    if (focusedAccount == null)
         wallyApp?.accounts?.values?.first()?.let {
             setSelectedAccount(it)
         }
 
-    if (selectedAccount == null)
+    if (focusedAccount == null)
     {
         displayErrorAndGoBack(S.NoAccounts)
         return
@@ -139,33 +64,38 @@ fun ReceiveScreen(walletViewModel: WalletViewModelImpl = viewModel { WalletViewM
         if (address != null)
             ReceiveScreenContent(address, Modifier.weight(1f))
         else
-            Text("Address missing")
+            Row {
+                Syncing(Color.Black)
+                Text("fetching address")
+            }
+
         // Row with buttons at the bottom
-        Row(
-          modifier = Modifier.fillMaxWidth()
-            .wrapContentHeight()
-            .background(Color.White)
-            .padding(2.dp),
-          horizontalArrangement = Arrangement.Center
-        ) {
-            IconTextButtonUi2(
-              icon = Icons.Outlined.ContentCopy,
-              modifier = Modifier.weight(1f),
-              description = i18n(S.CopyAddress),
-              color = wallyPurple,
+        if (address != null)
+            Row(
+              modifier = Modifier.fillMaxWidth()
+                .wrapContentHeight()
+                .background(Color.White)
+                .padding(2.dp),
+              horizontalArrangement = Arrangement.Center
             ) {
-                setTextClipboard(address?.address?.toString() ?: "Address missing")
-                displayNotice(i18n(S.copiedToClipboard))
+                IconTextButtonUi2(
+                  icon = Icons.Outlined.ContentCopy,
+                  modifier = Modifier.weight(1f),
+                  description = i18n(S.CopyAddress),
+                  color = wallyPurple,
+                ) {
+                    setTextClipboard(address?.address?.toString() ?: "Address missing")
+                    displayNotice(i18n(S.copiedToClipboard))
+                }
+                IconTextButtonUi2(
+                  icon = Icons.AutoMirrored.Outlined.ArrowBack,
+                  modifier = Modifier.weight(1f),
+                  description = i18n(S.Back),
+                  color = wallyPurple,
+                ) {
+                    nav.back()
+                }
             }
-            IconTextButtonUi2(
-              icon = Icons.AutoMirrored.Outlined.ArrowBack,
-              modifier = Modifier.weight(1f),
-              description = i18n(S.Back),
-              color = wallyPurple,
-            ) {
-                nav.back()
-            }
-        }
     }
 }
 

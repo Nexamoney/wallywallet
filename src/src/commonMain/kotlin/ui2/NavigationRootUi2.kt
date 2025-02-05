@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eygraber.uri.Uri
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
@@ -37,11 +38,7 @@ import info.bitcoinunlimited.www.wally.ui2.views.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import org.nexa.libnexakotlin.ChainSelector
-import org.nexa.libnexakotlin.GetLog
-import org.nexa.libnexakotlin.rem
-import org.nexa.libnexakotlin.sourceLoc
+import org.nexa.libnexakotlin.*
 import org.nexa.threads.iThread
 import org.nexa.threads.millisleep
 
@@ -500,6 +497,23 @@ fun uxPeriodicAnalysisUi2(): iThread
     }
 }
 
+fun observeReceiveDestination(account: Account)
+{
+    account.wallet.setOnWalletChange { wallet, _ ->
+        CoroutineScope(Dispatchers.IO).launch {
+            val destination = wallet.getCurrentDestination()
+            val accountName = wallet.name
+            account.currentReceive = destination
+            launch(Dispatchers.Default) {
+                if (accountName == wallyApp?.focusedAccount?.value?.name)
+                {
+                    account.currentReceive = destination
+                }
+            }
+        }
+    }
+}
+
 /*
     Use this method ONLY to change the selected account
  */
@@ -509,6 +523,62 @@ fun setSelectedAccount(account: Account)
     {
         preferenceDB.edit().putString(SELECTED_ACCOUNT_NAME_PREF, account.name).commit()
         wallyApp!!.focusedAccount.value = account
+        // account.currentReceive = null
+        setReceiveDestination(account)
+        observeReceiveDestination(account)
+    }
+}
+
+val handler = CoroutineExceptionHandler {
+    _, exception -> LogIt.error("Caught in NavigationRootUi2 CoroutineExceptionHandler: $exception")
+}
+
+fun setReceiveDestination(account: Account)
+{
+    lateinit var payDestination: PayDestination
+    // This line of code hangs because of getCurrentDestination() when an account with many addresses and functions is syncing.
+    // Added a timeout to use a default unused address when getCurrentDestination() silently blocks while syncing.
+    // TODO: Refactor libnexakotlin's getCurrentDestination() to suspend function using delay(50) instead of millisleep(50..) so withTimeout can interrupt it
+    // TODO: https://gitlab.com/nexa/libnexakotlin/-/issues/24
+    val job = CoroutineScope(Dispatchers.IO + handler).launch {
+        payDestination = account.wallet.getCurrentDestination() // Blocking operation
+        CoroutineScope(Dispatchers.Default + handler).launch {
+            // TODO: Disable until sync is complete if address privacy is enabled?
+            account.currentReceive = payDestination
+        }
+    }
+    CoroutineScope(Dispatchers.IO + handler).launch {
+        delay(2000)
+        if (job.isActive)
+        {
+            // Timeout occurred, Get a non-private fallback address
+
+            // Disable if account privacy is set
+            val addressPrivacy = (account.flags and ACCOUNT_FLAG_REUSE_ADDRESSES) == 0UL
+            if (!addressPrivacy)
+            {
+                account.currentReceive?.let { destination ->
+                    launch(Dispatchers.Default + handler) {
+                        account.currentReceive = destination
+                    }
+                }
+                account.wallet.unusedAddresses.let { unusedAddresses ->
+                    account.wallet.generateDestinationsInto(unusedAddresses)
+                    if (unusedAddresses.size > 0)
+                    {
+                        val destination = account.wallet.walletDestination(unusedAddresses.first())
+                        if (destination != null)
+                            CoroutineScope(Dispatchers.Default + handler).launch {
+                                account.currentReceive = destination
+                            }
+                    }
+                }
+            }
+            else
+            {
+                account.currentReceive = null
+            }
+        }
     }
 }
 
@@ -760,14 +830,14 @@ fun NavigationRootUi2(
   balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
   syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() },
   accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() },
-  walletViewModel: WalletViewModel = viewModel { WalletViewModelImpl() }
 )
 {
     val curScreen = nav.currentScreen.collectAsState().value
     val subScreen = nav.currentSubState.collectAsState().value
 
-    val receiveDestination = walletViewModel.receiveDestination.value?.second
-    ToBeShared = { receiveDestination?.address?.toString() ?: "Address missing" }
+    ToBeShared = {
+        wallyApp!!.focusedAccount.value?.currentReceive?.address?.toString() ?: "Address missing"
+    }
 
     var showBottomBar by remember { mutableStateOf(true) }
 

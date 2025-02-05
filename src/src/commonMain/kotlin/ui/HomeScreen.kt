@@ -76,7 +76,6 @@ private val sendFromAccountShared = MutableStateFlow<Account?>(null)
   selectedAccount: MutableStateFlow<Account?>,
   driver: MutableState<GuiDriver?>,
   nav: ScreenNav,
-  walletViewModel: WalletViewModelImpl = viewModel { WalletViewModelImpl() }
 )
 {
     var sendNote = remember { mutableStateOf("") }
@@ -108,7 +107,6 @@ private val sendFromAccountShared = MutableStateFlow<Account?>(null)
 
     val ags = accountGuiSlots.collectAsState()
     val synced = remember { mutableStateOf(wallyApp!!.isSynced()) }
-    val currentReceive = walletViewModel.receiveDestination.collectAsState()
     val sendFromAccount = sendFromAccountShared.collectAsState().value
     val _sendToAddress:String = sendToAddress.collectAsState().value
 
@@ -129,13 +127,17 @@ private val sendFromAccountShared = MutableStateFlow<Account?>(null)
                 Spacer(modifier = Modifier.width(8.dp))
                 AccountDropDownSelector(
                   ags.value,
-                  currentReceive.value?.first,
+                  selectedAccount.value?.name,
                   onAccountNameSelected = onAccountNameSelected,
                 )
             }
-            AddressQrCode(currentReceive.value?.second?.address?.toString() ?: "")
+            val account = selectedAccount.collectAsState().value
+            if (account != null)
+                account.currentReceiveObservable.value?.let { currentReceive ->
+                    AddressQrCode(currentReceive.address?.toString() ?: "")
+                    ToBeShared = { currentReceive.address?.toString() ?: "" }
+                }
             // update the share function based on whatever my current receive is
-            ToBeShared = { currentReceive.value?.second?.address?.toString() ?: "" }
         }
     }
 

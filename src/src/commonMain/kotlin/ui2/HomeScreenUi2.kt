@@ -144,7 +144,7 @@ fun HomeScreenUi2(
   assetViewModel: AssetViewModel = viewModel { AssetViewModel() },
   balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
   syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() },
-  accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() }
+  accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() },
 )
 {
     val assets = assetViewModel.assets.collectAsState().value
