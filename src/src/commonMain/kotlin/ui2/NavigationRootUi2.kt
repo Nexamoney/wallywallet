@@ -827,8 +827,6 @@ fun NavigationRootUi2(
   rootModifier: Modifier,
   systemPadding: Modifier,
   assetViewModel: AssetViewModel = viewModel { AssetViewModel() },
-  balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
-  syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() },
   accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() },
 )
 {
@@ -1231,10 +1229,10 @@ fun NavigationRootUi2(
                             }
                             when (curScreen)
                             {
-                                ScreenId.None -> HomeScreenUi2(isShowingRecoveryWarning, assetViewModel, balanceViewModel, syncViewModel, accountUiDataViewModel)
+                                ScreenId.None -> HomeScreenUi2(isShowingRecoveryWarning, assetViewModel, accountUiDataViewModel)
                                 ScreenId.Splash -> run {} // splash screen is done at the top for max speed and to be outside of the theme
                                 ScreenId.MoreMenu -> run {}
-                                ScreenId.Home -> { HomeScreenUi2(isShowingRecoveryWarning, assetViewModel, balanceViewModel, syncViewModel, accountUiDataViewModel) }
+                                ScreenId.Home -> { HomeScreenUi2(isShowingRecoveryWarning, assetViewModel, accountUiDataViewModel) }
                                 ScreenId.Send -> withAccount { act -> withSendNavParams { SendScreen(act, it) } }
                                 ScreenId.Receive -> { ReceiveScreen() }
                                 ScreenId.SplitBill -> SplitBillScreen()
@@ -1262,7 +1260,7 @@ fun NavigationRootUi2(
                                     if (idsess != null) IdentityPermScreen(act, idsess, nav)
                                     else nav.back()
                                 }
-                                ScreenId.Alerts -> HomeScreenUi2(isShowingRecoveryWarning, assetViewModel, balanceViewModel, syncViewModel, accountUiDataViewModel)
+                                ScreenId.Alerts -> HomeScreenUi2(isShowingRecoveryWarning, assetViewModel, accountUiDataViewModel)
                             }
                         }
                     }

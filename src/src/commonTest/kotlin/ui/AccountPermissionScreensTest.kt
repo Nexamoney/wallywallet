@@ -10,24 +10,16 @@ import kotlinx.coroutines.runBlocking
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.initializeLibNexa
 import org.nexa.libnexakotlin.runningTheTests
+import ui2.WallyUiTestBase
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class, ExperimentalUnsignedTypes::class)
-class AccountPermissionScreensTest
+class AccountPermissionScreensTest:WallyUiTestBase()
 {
-    init {
-        initializeLibNexa()
-        runningTheTests = true
-        forTestingDoNotAutoCreateWallets = true
-        dbPrefix = "test_"
-    }
-
     @Test
     fun sendToPermScreenTest() = runComposeUiTest {
         val cs = ChainSelector.NEXA
         lateinit var account: Account
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
         wallyApp!!.openAllAccounts()
         runBlocking(Dispatchers.IO) {
             account = wallyApp!!.newAccount("sendto", 0U, "", cs)!!
@@ -43,8 +35,6 @@ class AccountPermissionScreensTest
     fun assetInfoPermScreenTest() = runComposeUiTest {
         val cs = ChainSelector.NEXA
         lateinit var account: Account
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
         wallyApp!!.openAllAccounts()
         runBlocking(Dispatchers.IO) {
             account = wallyApp!!.newAccount("sendto", 0U, "", cs)!!
@@ -71,8 +61,6 @@ class AccountPermissionScreensTest
         val cs = ChainSelector.NEXA
         val nav = ScreenNav()
         lateinit var account: Account
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
         wallyApp!!.openAllAccounts()
         runBlocking(Dispatchers.IO) {
             account = wallyApp!!.newAccount("sendto", 0U, "", cs)!!

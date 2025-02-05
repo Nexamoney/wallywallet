@@ -22,69 +22,48 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
-class AccountDetailScreenTestUi2
+class AccountDetailScreenTestUi2:WallyUiTestBase()
 {
-    @BeforeTest
-    fun setUp() {
-        if (platform().target == KotlinTarget.JVM)
-            Dispatchers.setMain(StandardTestDispatcher())
-        initializeLibNexa()
-        runningTheTests = true
-        forTestingDoNotAutoCreateWallets = true
-        dbPrefix = "test_"
-    }
-
-    @AfterTest
-    fun tearDown() {
-        if (platform().target == KotlinTarget.JVM)
-            Dispatchers.resetMain()
-    }
-
     @Test
-    fun accountDetailScreenTest() = runComposeUiTest {
-        val viewModelStoreOwner = object : ViewModelStoreOwner
-        {
-            override val viewModelStore: ViewModelStore = ViewModelStore()
-        }
-
-        /*
-            Start the app
-         */
+    fun accountDetailScreenTest()
+    {
         val cs = ChainSelector.NEXA
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
         wallyApp!!.openAllAccounts()
-        lateinit var account: Account
-        runBlocking(Dispatchers.IO) {
-            account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
-        }
+        val account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
 
-        /*
-            Set selected account to populate the UI
-        */
-        setSelectedAccount(account)
-
-        val accountStatsViewModel = AccountStatisticsViewModelFake()
-        val balanceViewModel = BalanceViewModelFake()
-        val syncViewModel = SyncViewModelFake()
-        val accountUiDataViewModel = AccountUiDataViewModel()
-
-        setContent {
-            CompositionLocalProvider(
-              LocalViewModelStoreOwner provides viewModelStoreOwner
-            ) {
-                AccountDetailScreenUi2(account, accountStatsViewModel, balanceViewModel, syncViewModel, accountUiDataViewModel)
+        runComposeUiTest {
+            val viewModelStoreOwner = object : ViewModelStoreOwner
+            {
+                override val viewModelStore: ViewModelStore = ViewModelStore()
             }
+
+            /*
+                Set selected account to populate the UI
+            */
+            setSelectedAccount(account)
+
+            val accountStatsViewModel = AccountStatisticsViewModelFake(account)
+
+            setContent {
+                CompositionLocalProvider(
+                  LocalViewModelStoreOwner provides viewModelStoreOwner
+                ) {
+                    AccountDetailScreenUi2(accountStatsViewModel)
+                }
+            }
+            settle()
+
+            onNodeWithText(i18n(S.AutomaticNewAddress)).assertIsDisplayed()
+
+            /**
+             * Open change pin View and click cancel button to close it.
+             */
+            onNodeWithText(i18n(S.AccountStatistics)).isDisplayed()
+            onNodeWithText(i18n(S.SetChangePin)).performClick()
+            settle()
+            onNodeWithText(i18n(S.PinHidesAccount)).isDisplayed()
+            onNodeWithText(i18n(S.cancel)).performClick()
+            settle()
         }
-
-        onNodeWithText(i18n(S.AutomaticNewAddress)).assertIsDisplayed()
-
-        /**
-         * Open change pin View and click cancel button to close it.
-         */
-        onNodeWithText(i18n(S.AccountStatistics)).isDisplayed()
-        onNodeWithText(i18n(S.SetChangePin)).performClick()
-        onNodeWithText(i18n(S.PinHidesAccount)).isDisplayed()
-        onNodeWithText(i18n(S.cancel)).performClick()
     }
 }

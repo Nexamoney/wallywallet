@@ -11,23 +11,18 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.ClipboardManager
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -45,6 +40,7 @@ import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurple
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurpleExtraLight
 import info.bitcoinunlimited.www.wally.ui2.views.*
+import info.bitcoinunlimited.www.wally.ui2.views.uiData
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.nexa.libnexakotlin.*
@@ -53,7 +49,6 @@ private val LogIt = GetLog("wally.HomeScreen.Ui2")
 
 // stores the account name we are receiving into and the receive address as a pair
 var sendToAddress: MutableStateFlow<String> = MutableStateFlow("")
-val currencyCodeShared: MutableStateFlow<String> = MutableStateFlow("NEX")
 
 abstract class SyncViewModel: ViewModel()
 {
@@ -142,25 +137,23 @@ data class TabRowItem(
 fun HomeScreenUi2(
   isShowingRecoveryWarning: Boolean = false,
   assetViewModel: AssetViewModel = viewModel { AssetViewModel() },
-  balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
-  syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() },
   accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() },
 )
 {
     val assets = assetViewModel.assets.collectAsState().value
     val coroutineScope = rememberCoroutineScope()
-    val clipmgr: ClipboardManager = LocalClipboardManager.current
     val pagerState = rememberPagerState(
       initialPage = 0,
       pageCount = { 2 }
     )
     var isScanningQr by remember { mutableStateOf(false) }
-    val accountUIData = accountUiDataViewModel.accountUIData.collectAsState().value
+    var accountUIData = accountUiDataViewModel.accountUIData.collectAsState().value
     val accounts = accountGuiSlots.collectAsState().value
 
     accounts.fastForEach {
         if (accountUIData[it.name] == null) accountUiDataViewModel.setAccountUiDataForAccount(it)
     }
+    accountUIData = accountUiDataViewModel.accountUIData.collectAsState().value
 
     val tabRowItems = listOf(
         TabRowItem(
@@ -179,7 +172,8 @@ fun HomeScreenUi2(
         Column {
             if (!isShowingRecoveryWarning)
                 Spacer(Modifier.height(16.dp))
-            AccountPill(true, balanceViewModel, syncViewModel, accountUiDataViewModel)
+            val pill = AccountPill(wallyApp!!.focusedAccount)
+            pill.draw(true)
             Spacer(modifier = Modifier.height(8.dp))
             if (assets.isNotEmpty())
             {
@@ -406,12 +400,13 @@ fun AssetCarouselItem(asset: AssetInfo, hasNameOverLay: Boolean = false)
 /*
     Root class for BalanceViewModel used for testing
  */
-abstract class BalanceViewModel(
-  val dispatcher: CoroutineDispatcher = Dispatchers.Main
-): ViewModel()
+abstract class BalanceViewModel(val dispatcher: CoroutineDispatcher = Dispatchers.Main): ViewModel()
 {
     open val balance = MutableStateFlow("Loading...")
     open val fiatBalance = MutableStateFlow("Loading...")
+
+    // Set which account's balance we are tracking
+    abstract fun setAccount(act: Account)
 
     abstract fun setFiatBalance(account: Account)
     abstract fun observeBalance(account: Account)
@@ -420,33 +415,35 @@ abstract class BalanceViewModel(
 
 class BalanceViewModelFake: BalanceViewModel()
 {
-    override fun setFiatBalance(account: Account)
-    {
-    }
-
-    override fun observeBalance(account: Account)
-    {
-
-    }
-
-    override fun observeSelectedAccount()
-    {
-    }
+    override fun setAccount(act: Account) {}
+    override fun setFiatBalance(account: Account) {}
+    override fun observeBalance(account: Account) {}
+    override fun observeSelectedAccount() {}
 }
 
-class BalanceViewModelImpl: BalanceViewModel()
+
+class BalanceViewModelImpl(val account : MutableStateFlow<Account?>): BalanceViewModel()
 {
+    constructor(act: Account?) : this(MutableStateFlow(act))
+
     override val balance = MutableStateFlow("Loading...")
     override val fiatBalance = MutableStateFlow("")
     var balanceJob: Job? = null
     var accountJob: Job? = null
 
     init {
-        wallyApp!!.focusedAccount.value?.let { account ->
-            observeBalance(account)
-            setFiatBalance(account)
+        account.value?.let { act ->
+            observeBalance(act)
+            setFiatBalance(act)
         }
-        observeSelectedAccount()
+    }
+
+    override fun setAccount(act: Account)
+    {
+        onCleared()
+        account.value = act
+        observeBalance(act)
+        setFiatBalance(act)
     }
 
     override fun setFiatBalance(account: Account)
@@ -496,21 +493,22 @@ class BalanceViewModelImpl: BalanceViewModel()
         }
     }
 
-    override fun observeBalance(account: Account)
+    override fun observeBalance(act: Account)
     {
         balanceJob?.cancel()
-        balance.value = account.format(account.balanceState.value)
+        account.value = act
+        balance.value = act.format(act.balanceState.value)
         balanceJob = viewModelScope.launch(dispatcher) {
-            account.balanceState.onEach {
+            act.balanceState.onEach {
                 try
                 {
-                    balance.value = account.format(it)
+                    balance.value = act.format(it)
                 }
                 catch (e: Exception)
                 {
                     balance.value = ""
                 }
-                setFiatBalance(account)
+                setFiatBalance(act)
             }.launchIn(this)
         }
     }
@@ -523,71 +521,97 @@ class BalanceViewModelImpl: BalanceViewModel()
     }
 }
 
-@Composable fun AccountPillHeader(
-  balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
-  syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() }
-)
+abstract class AccountPillViewModel(val account:MutableStateFlow<Account?>, val dispatcher: CoroutineDispatcher = Dispatchers.Main): ViewModel()
 {
-    val account = wallyApp!!.focusedAccount.collectAsState().value
-    val currencyCode = account?.uiData()?.currencyCode ?: ""
-    val fiatBalance = balanceViewModel.fiatBalance.collectAsState().value
-    val balance = balanceViewModel.balance.collectAsState().value
+    abstract val balance: BalanceViewModel
+    abstract val sync: SyncViewModel
+    // Set which account's balance we are tracking
+    abstract fun setAccount(act: Account?)
 
-    // If no account is available, do not show the pill
-    if (account == null) return
+    @Composable
+    fun AccountPillHeader()
+    {
+        val act = account.collectAsState().value
+        val currencyCode = act?.uiData()?.currencyCode ?: ""
+        val fiatBalance = balance.fiatBalance.collectAsState().value
+        val bal = balance.balance.collectAsState().value
 
-    /*
-        Runs the callback every time account?.fiatPerCoin changes
-     */
-    LaunchedEffect(account.fiatPerCoin) {
-        balanceViewModel.setFiatBalance(account)
-    }
+        // If no account is available, do not show the pill
+        if (account == null) return
 
-    Row(
-      modifier = Modifier.wrapContentHeight()
-    ){
-        Text(
-          text = currencyCode,
-          style = MaterialTheme.typography.headlineMedium.copy(
-            color = Color.White,
-            fontWeight = FontWeight.Bold
-          ),
-          textAlign = TextAlign.Center,
-          modifier = Modifier.testTag("AccountPillCurrencyCode") // Added test tag
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-          text = balance,
-          style = MaterialTheme.typography.headlineMedium.copy(
-            color = Color.White,
-            fontWeight = FontWeight.Bold
-          ),
-          textAlign = TextAlign.Center,
-          modifier = Modifier.testTag("AccountPillBalance") // Added test tag
-        )
-    }
-    Spacer(Modifier.height(8.dp))
-    Row(
-      modifier = Modifier.wrapContentHeight()
-    ){
-        if (fiatBalance.isNotEmpty())
+        // Runs the callback every time account?.fiatPerCoin changes
+        if (act != null)
         {
+            LaunchedEffect(act.fiatPerCoin) {
+                balance.setFiatBalance(act)
+            }
+        }
+
+        Row(
+          modifier = Modifier.wrapContentHeight()
+        ) {
             Text(
-              text = fiatCurrencyCode,
+              text = currencyCode,
+              style = MaterialTheme.typography.headlineMedium.copy(
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+              ),
+              textAlign = TextAlign.Center,
+              modifier = Modifier.testTag("AccountPillCurrencyCode") // Added test tag
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+              text = bal,
+              style = MaterialTheme.typography.headlineMedium.copy(
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+              ),
+              textAlign = TextAlign.Center,
+              modifier = Modifier.testTag("AccountPillBalance") // Added test tag
+            )
+        }
+        Spacer(Modifier.height(8.dp))
+        Row(
+          modifier = Modifier.wrapContentHeight()
+        ) {
+            if (fiatBalance.isNotEmpty())
+            {
+                Text(
+                  text = fiatCurrencyCode,
+                  style = MaterialTheme.typography.labelLarge.copy(
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                  ),
+                  textAlign = TextAlign.Center,
+                  modifier = Modifier.testTag("AccountPillFiatCurrencyCode") // Added test tag
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                  text = fiatBalance,
+                  style = MaterialTheme.typography.labelLarge.copy(
+                    color = Color.White
+                  ),
+                  textAlign = TextAlign.Center,
+                  modifier = Modifier.testTag("AccountPillFiatBalance") // Added test tag
+                )
+                Spacer(Modifier.width(12.dp))
+                VerticalDivider(
+                  color = Color.White,
+                  modifier = Modifier
+                    .width(1.dp)
+                    .height(12.dp)
+                    .align(Alignment.CenterVertically)
+                )
+                Spacer(Modifier.width(12.dp))
+            }
+            Text(
+              text = act?.name ?: "",
               style = MaterialTheme.typography.labelLarge.copy(
                 color = Color.White,
                 fontWeight = FontWeight.Bold
               ),
-              textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-              text = fiatBalance,
-              style = MaterialTheme.typography.labelLarge.copy(
-                color = Color.White
-              ),
               textAlign = TextAlign.Center,
-              modifier = Modifier.testTag("AccountPillFiatCurrencyCode") // Added test tag
+              modifier = Modifier.testTag("AccountPillAccountName")
             )
             Spacer(Modifier.width(12.dp))
             VerticalDivider(
@@ -598,160 +622,158 @@ class BalanceViewModelImpl: BalanceViewModel()
                 .align(Alignment.CenterVertically)
             )
             Spacer(Modifier.width(12.dp))
+            Syncing(Color.White, sync)
         }
-        Text(
-          text = account?.name ?: "",
-          style = MaterialTheme.typography.labelLarge.copy(
-            color = Color.White,
-            fontWeight = FontWeight.Bold
-          ),
-          textAlign = TextAlign.Center,
-          modifier = Modifier.testTag("AccountPillAccountName")
-        )
-        Spacer(Modifier.width(12.dp))
-        VerticalDivider(
-          color = Color.White,
-          modifier = Modifier
-            .width(1.dp)
-            .height(12.dp)
-            .align(Alignment.CenterVertically)
-        )
-        Spacer(Modifier.width(12.dp))
-        Syncing(Color.White, syncViewModel)
-    }
-}
-
-@Composable fun AccountPill(
-  buttonsEnabled: Boolean = true,
-  balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
-  syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() },
-  accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() }
-)
-{
-    val account = wallyApp!!.focusedAccount.collectAsState().value
-    // If no account is available, do not show the pill
-    if (account == null) return
-
-    val accountUIData = accountUiDataViewModel.accountUIData.collectAsState().value
-    val roundedCorner = 16.dp
-
-    LaunchedEffect(true) {
-        accountUiDataViewModel.setup()
     }
 
-    account.let { selAct ->
-        if (accountUIData[selAct.name] == null) accountUiDataViewModel.setAccountUiDataForAccount(selAct)
-    }
-    val curSync = account.wallet.chainstate?.syncedDate ?: 0
-    val offerFastForward = (millinow()/1000 - curSync) > OFFER_FAST_FORWARD_GAP
-    val isFastForwarding = accountUIData[account.name]?.fastForwarding ?: false
+    @Composable
+    fun draw(buttonsEnabled: Boolean = true)
+    {
+        val roundedCorner = 16.dp
+        val act = account.collectAsState().value
+        val curSync = act?.wallet?.chainstate?.syncedDate ?: 0
+        val offerFastForward = (millinow() / 1000 - curSync) > OFFER_FAST_FORWARD_GAP
+        val uiData = act?.uiData()  // TODO this data needs to be persistent?
+        val isFastForwarding = uiData?.fastForwarding ?: false
 
-    Box(
-      modifier = Modifier.fillMaxWidth(),
-      contentAlignment = Alignment.Center
-    ) {
-        Column(
-          modifier = Modifier
-            .shadow(
-              elevation = 4.dp,
-              shape = RoundedCornerShape(roundedCorner),
-              clip = false,
-            )
-            .clip(RoundedCornerShape(roundedCorner))
-            .background(wallyPurple)
-            .wrapContentHeight()
-            .fillMaxWidth(0.95f)
-            .background(
-              Brush.linearGradient(
-                colors = listOf(
-                  wallyPurple,
-                  Color.White.copy(alpha = 0.2f)
-                ),
-                start = Offset(0f, 0f),
-                end = Offset(Float.POSITIVE_INFINITY, 0f)
-              )
-            )
-            .padding(
-              horizontal = 32.dp,
-              vertical = 8.dp
-            ),
-          horizontalAlignment = Alignment.CenterHorizontally
+
+        Box(
+          modifier = Modifier.fillMaxWidth(),
+          contentAlignment = Alignment.Center
         ) {
-            Spacer(Modifier.height(8.dp))
-            AccountPillHeader(balanceViewModel, syncViewModel)
-            if (buttonsEnabled)
-            {
-                Spacer(Modifier.height(4.dp))
-                Row(
-                  modifier = Modifier.fillMaxWidth().wrapContentHeight(),
-                  horizontalArrangement = Arrangement.Center
-                ) {
-                    val verticalDividerModifier = Modifier
-                      .width(1.dp)
-                      .height(40.dp)
-                      .padding(vertical = 8.dp)
-                      .align(Alignment.CenterVertically)
+            Column(
+              modifier = Modifier
+                .shadow(
+                  elevation = 4.dp,
+                  shape = RoundedCornerShape(roundedCorner),
+                  clip = false,
+                )
+                .clip(RoundedCornerShape(roundedCorner))
+                .background(wallyPurple)
+                .wrapContentHeight()
+                .fillMaxWidth(0.95f)
+                .background(
+                  Brush.linearGradient(
+                    colors = listOf(
+                      wallyPurple,
+                      Color.White.copy(alpha = 0.2f)
+                    ),
+                    start = Offset(0f, 0f),
+                    end = Offset(Float.POSITIVE_INFINITY, 0f)
+                  )
+                )
+                .padding(
+                  horizontal = 32.dp,
+                  vertical = 8.dp
+                ),
+              horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(Modifier.height(8.dp))
+                AccountPillHeader()
+                if (buttonsEnabled)
+                {
+                    Spacer(Modifier.height(4.dp))
+                    Row(
+                      modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+                      horizontalArrangement = Arrangement.Center
+                    ) {
+                        val verticalDividerModifier = Modifier
+                          .width(1.dp)
+                          .height(40.dp)
+                          .padding(vertical = 8.dp)
+                          .align(Alignment.CenterVertically)
 
-                    IconTextButtonUi2(
-                      icon = Icons.Outlined.ArrowUpward,
-                      modifier = Modifier.weight(1f),
-                      description = i18n(S.Send),
-                    ) {
-                        nav.go(ScreenId.Send)
-                    }
-                    VerticalDivider(
-                      color = Color.White,
-                      modifier = verticalDividerModifier
-                    )
-                    IconTextButtonUi2(
-                      icon = Icons.Outlined.ArrowDownward,
-                      modifier = Modifier.weight(1f),
-                      description = i18n(S.Receive)
-                    ) {
-                        nav.go(ScreenId.Receive)
-                    }
-                    VerticalDivider(
-                      color = Color.White,
-                      modifier = verticalDividerModifier
-                    )
-                    IconTextButtonUi2(
-                      icon = Icons.Outlined.CallSplit,
-                      modifier = Modifier.weight(1f),
-                      description = i18n(S.title_split_bill),
-                      rotateIcon = true
-                    ) {
-                        nav.go(ScreenId.SplitBill)
-                    }
-                    VerticalDivider(
-                      color = Color.White,
-                      modifier = verticalDividerModifier
-                    )
-                    IconTextButtonUi2(
-                      icon = Icons.Outlined.ManageAccounts,
-                      modifier = Modifier.weight(1f),
-                      description = i18n(S.account)
-                    ) {
-                        nav.go(ScreenId.AccountDetails)
-                    }
-                    if (offerFastForward && !isFastForwarding)
-                    {
+                        IconTextButtonUi2(
+                          icon = Icons.Outlined.ArrowUpward,
+                          modifier = Modifier.weight(1f),
+                          description = i18n(S.Send),
+                        ) {
+                            nav.go(ScreenId.Send)
+                        }
                         VerticalDivider(
                           color = Color.White,
                           modifier = verticalDividerModifier
                         )
                         IconTextButtonUi2(
-                          icon = Icons.Outlined.FastForward,
+                          icon = Icons.Outlined.ArrowDownward,
                           modifier = Modifier.weight(1f),
-                          description = i18n(S.fastSync)
+                          description = i18n(S.Receive)
                         ) {
-                            accountUiDataViewModel.fastForwardSelectedAccount()
+                            nav.go(ScreenId.Receive)
+                        }
+                        VerticalDivider(
+                          color = Color.White,
+                          modifier = verticalDividerModifier
+                        )
+                        IconTextButtonUi2(
+                          icon = Icons.Outlined.CallSplit,
+                          modifier = Modifier.weight(1f),
+                          description = i18n(S.title_split_bill),
+                          rotateIcon = true
+                        ) {
+                            nav.go(ScreenId.SplitBill)
+                        }
+                        VerticalDivider(
+                          color = Color.White,
+                          modifier = verticalDividerModifier
+                        )
+                        IconTextButtonUi2(
+                          icon = Icons.Outlined.ManageAccounts,
+                          modifier = Modifier.weight(1f),
+                          description = i18n(S.account)
+                        ) {
+                            nav.go(ScreenId.AccountDetails)
+                        }
+                        if (offerFastForward && !isFastForwarding)
+                        {
+                            VerticalDivider(
+                              color = Color.White,
+                              modifier = verticalDividerModifier
+                            )
+                            IconTextButtonUi2(
+                              icon = Icons.Outlined.FastForward,
+                              modifier = Modifier.weight(1f),
+                              description = i18n(S.fastSync)
+                            ) {
+                                act?.let { fastForwardAccount(it) }
+                            }
                         }
                     }
                 }
+                else
+                    Spacer(Modifier.height(8.dp))
             }
-            else
-                Spacer(Modifier.height(8.dp))
         }
+    }
+}
+
+class AccountPillViewModelFake(account:MutableStateFlow<Account?>, override val balance: BalanceViewModel = BalanceViewModelImpl(account), override val sync: SyncViewModel = SyncViewModelImpl()): AccountPillViewModel(account)
+{
+    override fun setAccount(act: Account?) {}
+}
+
+class AccountPill(account:MutableStateFlow<Account?>): AccountPillViewModel(account)
+{
+    constructor(act: Account?) : this(MutableStateFlow(act))
+
+    override val balance = BalanceViewModelImpl(account.value)
+    override val sync = SyncViewModelImpl()
+
+    override fun setAccount(act: Account?)
+    {
+        account.value = act
+    }
+
+    var job: Job? = viewModelScope.launch(dispatcher) {
+        account.onEach {
+            if (it != null) balance.setAccount(it)
+        }.launchIn(this)
+    }
+
+    override fun onCleared()
+    {
+        super.onCleared()
+        job?.cancel()
     }
 }
 

@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.nexa.libnexakotlin.ChainSelector
@@ -23,6 +24,9 @@ class AccountDetailScreenTest
     @BeforeTest
     fun setup()
     {
+        // Solves:
+        //   java.lang.NoClassDefFoundError: android/os/Looper
+        //   Suppressed: java.lang.IllegalStateException: Module with the Main dispatcher had failed to initialize. For tests Dispatchers.setMain from kotlinx-coroutines-test module can be used
         if (platform().target == KotlinTarget.JVM)
             Dispatchers.setMain(StandardTestDispatcher())
     }

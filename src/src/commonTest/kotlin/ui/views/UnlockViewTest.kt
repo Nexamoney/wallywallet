@@ -5,9 +5,10 @@ import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.platform
 import info.bitcoinunlimited.www.wally.ui2.views.UnlockView
+import ui2.WallyUiTestBase
 import kotlin.test.Test
 
-class UnlockViewTest
+class UnlockViewTest:WallyUiTestBase()
 {
     @OptIn(ExperimentalTestApi::class)
     @Test

@@ -28,7 +28,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
-class ReceiveScreenTest
+class ReceiveScreenTest:WallyUiTestBase()
 {
     lateinit var viewModelStoreOwner: ViewModelStoreOwner
     lateinit var address: Pay2PubKeyTemplateDestination
@@ -36,10 +36,6 @@ class ReceiveScreenTest
     @BeforeTest
     fun setup()
     {
-        if (platform().target == KotlinTarget.JVM)
-            Dispatchers.setMain(StandardTestDispatcher())
-        initializeLibNexa()
-        wallyApp = CommonApp()
         viewModelStoreOwner = object : ViewModelStoreOwner
         {
             override val viewModelStore: ViewModelStore
@@ -51,42 +47,29 @@ class ReceiveScreenTest
     @AfterTest
     fun clean()
     {
-        if (platform().target == KotlinTarget.JVM)
-            Dispatchers.resetMain()
-        wallyApp = null
     }
 
     @Test
-    fun receiveScreenContentTest() = runComposeUiTest {
-        /*
-            Start the app
-         */
+    fun receiveScreenContentTest()
+    {
         val cs = ChainSelector.NEXA
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
-        wallyApp!!.openAllAccounts()
-        lateinit var account: Account
-        runBlocking(Dispatchers.IO) {
-            account = wallyApp!!.newAccount("receiveScreenContentTest", 0U, "", cs)!!
-        }
+        val account = wallyApp!!.newAccount("receiveScreenContentTest", 0U, "", cs)!!
 
-        /*
-            Set selected account to populate the UI
-         */
-        setSelectedAccount(account)
-        val balanceViewModel = BalanceViewModelFake()
-        val syncViewModel = SyncViewModelFake()
-        val accountUiDataViewModel = AccountUiDataViewModelFake()
+        runComposeUiTest {
+            // Set selected account to populate the UI
+            setSelectedAccount(account)
 
-        setContent {
-            CompositionLocalProvider(
-              LocalViewModelStoreOwner provides viewModelStoreOwner
-            ) {
-                ReceiveScreenContent(address, Modifier, balanceViewModel, syncViewModel, accountUiDataViewModel)
+            setContent {
+                CompositionLocalProvider(
+                  LocalViewModelStoreOwner provides viewModelStoreOwner
+                ) {
+                    ReceiveScreenContent(address, Modifier)
+                }
             }
+            settle()
+            onNodeWithText(address.address.toString()).isDisplayed()
+            onNodeWithText(address.address.toString()).performClick()
+            settle()
         }
-        settle()
-        onNodeWithText(address.address.toString()).isDisplayed()
-        onNodeWithText(address.address.toString()).performClick()
     }
 }

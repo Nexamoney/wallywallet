@@ -27,32 +27,8 @@ import org.nexa.threads.platformName
 
 
 @OptIn(ExperimentalTestApi::class)
-class HomeScreenUi2Test
+class HomeScreenUi2Test:WallyUiTestBase()
 {
-    private val sched = TestCoroutineScheduler()
-    private val testDispatcher = StandardTestDispatcher(sched, "testDispatcher")
-   // private val testScope = TestScope(testDispatcher)
-
-
-    @BeforeTest
-    fun setUp()
-    {
-        initializeLibNexa()
-        runningTheTests = true
-        forTestingDoNotAutoCreateWallets = true
-        dbPrefix = "test_"
-        wallyApp = null
-        // Solves the error: Module with the Main dispatcher had failed to initialize. For tests Dispatchers.setMain from kotlinx-coroutines-test module can be used
-        // On Android this code ends up running UI drawing in multiple threads which is disallowed.
-        if ("JVM" in platformName())
-            Dispatchers.setMain(testDispatcher)
-    }
-    @AfterTest
-    fun tearDown()
-    {
-        wallyApp = null // Reset the global state
-    }
-    
     @Test
     fun homeScreenTest() = runComposeUiTest {
         val viewModelStoreOwner = object : ViewModelStoreOwner
@@ -76,10 +52,9 @@ class HomeScreenUi2Test
               LocalViewModelStoreOwner provides viewModelStoreOwner
             ) {
                 val assetViewModel = AssetViewModel()
-                balanceViewModel = BalanceViewModelImpl()
-                val syncViewModelFake = SyncViewModelImpl()
+                balanceViewModel = BalanceViewModelImpl(account)
                 val accountUiDataViewModel = AccountUiDataViewModel()
-                HomeScreenUi2(false, assetViewModel, balanceViewModel, syncViewModelFake, accountUiDataViewModel)
+                HomeScreenUi2(false, assetViewModel, accountUiDataViewModel)
             }
         }
         settle()
@@ -109,67 +84,57 @@ class HomeScreenUi2Test
     }
 
     @Test
-    fun testMultipleAccountsInCarouselAndAccountPill() = runComposeUiTest {
-        val viewModelStoreOwner = object : ViewModelStoreOwner {
-            override val viewModelStore: ViewModelStore = ViewModelStore()
-        }
-
-        /*
-            Start the app
-         */
+    fun testMultipleAccountsInCarouselAndAccountPill()
+    {
         val cs = ChainSelector.NEXA
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
         wallyApp!!.openAllAccounts()
 
         // Create two accounts
         val account1 = wallyApp!!.newAccount("nexaTest1", 0U, "", cs)!!
         val account2 = wallyApp!!.newAccount("nexaTest2", 0U, "", cs)!!
 
-        /*
-            Set the first account as selected initially
-         */gi
-        setSelectedAccount(account1)
-        assignAccountsGuiSlots()
-        val assetViewModel = AssetViewModel()
-        val balanceViewModel = BalanceViewModelImpl()
-        val syncViewModel = SyncViewModelImpl()
-        val accountUiDataViewModel = AccountUiDataViewModel()
-
-        // Observe balance and set fiat balance for the first account
-        balanceViewModel.observeBalance(account1)
-        balanceViewModel.setFiatBalance(account1)
-
-        setContent {
-            CompositionLocalProvider(
-              LocalViewModelStoreOwner provides viewModelStoreOwner
-            ) {
-                HomeScreenUi2(
-                  isShowingRecoveryWarning = false,
-                  assetViewModel = assetViewModel,
-                  balanceViewModel = balanceViewModel,
-                  syncViewModel = syncViewModel,
-                  accountUiDataViewModel = accountUiDataViewModel
-                )
+        runComposeUiTest {
+            val viewModelStoreOwner = object : ViewModelStoreOwner {
+                override val viewModelStore: ViewModelStore = ViewModelStore()
             }
+
+            /*
+                Set the first account as selected initially
+             */
+            setSelectedAccount(account1)
+            assignAccountsGuiSlots()
+            val assetViewModel = AssetViewModel()
+            val accountUiDataViewModel = AccountUiDataViewModel()
+
+            setContent {
+                CompositionLocalProvider(
+                  LocalViewModelStoreOwner provides viewModelStoreOwner
+                ) {
+                    HomeScreenUi2(
+                      isShowingRecoveryWarning = false,
+                      assetViewModel = assetViewModel,
+                      accountUiDataViewModel = accountUiDataViewModel
+                    )
+                }
+            }
+            settle()
+
+            // Verify that both accounts are visible in the carousel
+            onNode(hasTestTag("CarouselAccountName") and hasText("nexaTest1"), useUnmergedTree = true).assertTextEquals("nexaTest1")
+            val expectedBalance1 = account1.format(account1.balanceState.value)
+            onNode(hasTestTag("AccountCarouselBalance_nexaTest1"), useUnmergedTree = true).assertTextEquals(expectedBalance1)
+            onNode(hasTestTag("CarouselAccountName") and hasText("nexaTest2"), useUnmergedTree = true).assertTextEquals("nexaTest2")
+            val expectedBalance2 = account2.format(account1.balanceState.value)
+            onNode(hasTestTag("AccountCarouselBalance_nexaTest2"), useUnmergedTree = true).assertTextEquals(expectedBalance2)
+
+            // Click on the second account in the carousel
+            onNode(hasTestTag("CarouselAccountName") and hasText("nexaTest2"), useUnmergedTree = true).performClick()
+            settle()
+
+            // Verify that the second account's name is displayed in the account pill
+            onNodeWithTag("AccountPillAccountName").assertTextEquals("nexaTest2")
+            onNodeWithTag("AccountPillBalance").assertTextEquals(expectedBalance2)
+            settle()
         }
-        settle()
-
-        // Verify that both accounts are visible in the carousel
-        onNode(hasTestTag("CarouselAccountName") and hasText("nexaTest1"), useUnmergedTree = true).assertTextEquals("nexaTest1")
-        val expectedBalance1 = account1.format(account1.balanceState.value)
-        onNode(hasTestTag("AccountCarouselBalance_nexaTest1"), useUnmergedTree = true).assertTextEquals(expectedBalance1)
-        onNode(hasTestTag("CarouselAccountName") and hasText("nexaTest2"), useUnmergedTree = true).assertTextEquals("nexaTest2")
-        val expectedBalance2 = account2.format(account1.balanceState.value)
-        onNode(hasTestTag("AccountCarouselBalance_nexaTest2"), useUnmergedTree = true).assertTextEquals(expectedBalance2)
-
-
-        // Click on the second account in the carousel
-        onNode(hasTestTag("CarouselAccountName") and hasText("nexaTest2"), useUnmergedTree = true).performClick()
-        settle()
-
-        // Verify that the second account's name is displayed in the account pill
-        onNodeWithTag("AccountPillAccountName").assertTextEquals("nexaTest2")
-        onNodeWithTag("AccountPillBalance").assertTextEquals(expectedBalance2)
     }
 }

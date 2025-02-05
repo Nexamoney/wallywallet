@@ -34,34 +34,17 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalTestApi::class)
-class SettingsScreenTestUi2 {
-
-    @BeforeTest
-    fun setup()
-    {
-        // jvm only
-        if (platform().target == KotlinTarget.JVM)
-            Dispatchers.setMain(StandardTestDispatcher())
-    }
-
-    @AfterTest
-    fun clean()
-    {
-        // jvm only
-        if (platform().target == KotlinTarget.JVM)
-            Dispatchers.resetMain()
-    }
-
+class SettingsScreenTestUi2:WallyUiTestBase()
+{
     @Test
     fun sendScreenContentTest() = runComposeUiTest {
         val preferenceDB: SharedPreferences = FakeSharedPreferences()
         val hasNewUIState: State<Boolean> = mutableStateOf(true)
 
-        wallyApp = CommonApp()
-
         setContent {
             SettingsScreenUi2(preferenceDB, hasNewUIState)
         }
+        settle()
 
         onNodeWithTag(i18n(S.localCurrency)).assertExists()
         onNodeWithTag(i18n(S.localCurrency)).assertTextEquals(i18n(S.localCurrency))
@@ -69,19 +52,20 @@ class SettingsScreenTestUi2 {
         // Enable developer mode and assert that the Reload Assets button is displayed
         onNodeWithText(i18n(S.enableDeveloperView)).assertIsDisplayed()
         onNodeWithText(i18n(S.enableDeveloperView)).performClick()
+        settle()
         onNodeWithTag("SettingsScreenScrollable").performScrollToNode(hasTestTag("BlockchainSelectors")).performTouchInput { swipeUp() }
         // Failing: Reason: Expected exactly '1' node but could not find any node that satisfies: (Text + EditableText contains 'Reload Assets' (ignoreCase: false))
         // onNodeWithText("Reload Assets").assertIsDisplayed()
+        settle()
     }
 
     @Test
     fun confirmAboveTest() = runComposeUiTest {
-        wallyApp = CommonApp()
-
         val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
         setContent {
             ConfirmAbove(preferenceDB)
         }
+        settle()
 
         val textInput = "123123"
 
@@ -89,12 +73,14 @@ class SettingsScreenTestUi2 {
         onNodeWithText(chainToCurrencyCode[ChainSelector.NEXA]!!).assertIsDisplayed()
         onNodeWithTag("ConfirmAboveEntry").assertIsDisplayed()
         onNodeWithTag("ConfirmAboveEntry").performTextInput("")
+        settle()
         onNodeWithTag("ConfirmAboveEntry").performTextClearance()
         onNodeWithTag("ConfirmAboveEntry").performTextInput(textInput)
-        onNodeWithTag("ConfirmAboveEntry").assertTextContains(textInput)
         settle()
+        onNodeWithTag("ConfirmAboveEntry").assertTextContains(textInput)
         val confirmAbove = preferenceDB.getString(CONFIRM_ABOVE_PREF, "0") ?: "0"
         assertEquals(textInput, confirmAbove)
+        settle()
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -104,9 +90,10 @@ class SettingsScreenTestUi2 {
         setContent {
             LocalCurrency(preferenceDB)
         }
-
+        settle()
         onNodeWithTag(i18n(S.localCurrency)).assertExists()
         onNodeWithTag(i18n(S.localCurrency)).assertTextEquals(i18n(S.localCurrency))
+        settle()
     }
 }
 

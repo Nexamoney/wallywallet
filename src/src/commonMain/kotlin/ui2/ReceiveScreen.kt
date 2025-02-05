@@ -102,10 +102,7 @@ fun ReceiveScreen()
 @Composable
 fun ReceiveScreenContent(
   address: PayDestination,
-  modifier: Modifier = Modifier,
-  balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
-  syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() },
-  accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() },
+  modifier: Modifier = Modifier
 )
 {
     val addrStr = address.address.toString()
@@ -120,7 +117,7 @@ fun ReceiveScreenContent(
           verticalArrangement = Arrangement.Top
         ) {
             Spacer(modifier = Modifier.height(16.dp))
-            AccountPill(buttonsEnabled = false, balanceViewModel, syncViewModel, accountUiDataViewModel)
+            AccountPill(wallyApp!!.focusedAccount).draw(buttonsEnabled = false)
             Spacer(modifier = Modifier.height(32.dp))
             Image(
               painter = qrcodePainter,

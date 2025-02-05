@@ -27,6 +27,7 @@ import info.bitcoinunlimited.www.wally.ui2.theme.WallyRowAbkg1
 import info.bitcoinunlimited.www.wally.ui2.theme.WallyRowAbkg2
 import info.bitcoinunlimited.www.wally.ui2.theme.defaultListHighlight
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.defaultFontSize
+import info.bitcoinunlimited.www.wally.ui2.themeUi2.getAccountIconResPath
 import info.bitcoinunlimited.www.wally.ui2.views.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
@@ -117,13 +118,13 @@ private val accountListState:MutableStateFlow<LazyListState?> = MutableStateFlow
     {
         // Show blockchain icon
         Column(Modifier.align(Alignment.CenterVertically).padding(0.dp,0.dp,4.dp, 0.dp)) {
-            ResImageView(getAccountIconResPath(uidata.chainSelector), Modifier.size(32.dp).align(Alignment.Start), "Blockchain icon")
+            ResImageView(getAccountIconResPath(uidata.account.wallet.chainSelector), Modifier.size(32.dp).align(Alignment.Start), "Blockchain icon")
         }
         // Account name and Nexa amount
         Column(modifier = Modifier.weight(1f)) {
             // Account Name
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                Text(text = uidata.name, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text(text = uidata.account.name, fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
             // Nexa Amount
             Row(horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
@@ -206,7 +207,7 @@ private val accountListState:MutableStateFlow<LazyListState?> = MutableStateFlow
                               uidata.account.pinEntered = false
                               tlater("assignGuiSlots") {
                                   triggerAssignAccountsGuiSlots()  // In case it should be hidden
-                                  later { accountChangedNotification.send(uidata.name) }
+                                  later { accountChangedNotification.send(uidata.account.name) }
                               }
                           }
                       })

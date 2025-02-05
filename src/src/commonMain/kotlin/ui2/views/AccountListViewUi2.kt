@@ -26,6 +26,7 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.*
 import info.bitcoinunlimited.www.wally.ui2.theme.*
+import info.bitcoinunlimited.www.wally.ui2.themeUi2.getAccountIconResPath
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurpleExtraLight
 import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurpleLight
 import kotlinx.coroutines.Job
@@ -43,9 +44,7 @@ import kotlin.math.roundToLong
 
 
 data class AccountUIData(
-  val account: Account,
-  var name: String = "",
-  var chainSelector: ChainSelector = ChainSelector.NEXA,
+  val account: Account, // Do not copy unchangeable fields from the account into this data structure, just use them from here
   var currencyCode: String = "",
   var balance: String = "",
   var balFontWeight: FontWeight = FontWeight.Normal,
@@ -65,7 +64,118 @@ data class AccountUIData(
 /** Look into this account and produce the strings and modifications needed to display it */
 fun Account.uiData(): AccountUIData
 {
-    return AccountUIData(this)
+    val ret = AccountUIData(this)
+    var delta = unconfirmedBalance
+    ret.lockable = lockable
+    ret.locked = locked
+    ret.currencyCode = currencyCode
+    ret.fastForwarding = (fastforward != null)
+    ret.ffStatus = fastforwardStatus
+    val chainstate = wallet.chainstate
+    var synced = true
+    if (chainstate != null)
+    {
+        synced = chainstate.isSynchronized(1, 60 * 60)
+        if (synced)  // ignore 1 block desync or this displays every time a new block is found
+        {
+            ret.unconfBal =
+              if (CURRENCY_ZERO == delta)
+                  ""
+              else
+                  i18n(S.incoming) % mapOf(
+                    "delta" to (if (delta > BigDecimal.ZERO) "+" else "") + format(delta),
+                    "unit" to currencyCode
+                  )
+
+            ret.balFontWeight = FontWeight.Normal
+            ret.unconfBalColor = if (delta > BigDecimal.ZERO) colorCredit else colorDebit
+        }
+        else
+        {
+        }
+    }
+    else
+    {
+        ret.balFontWeight = FontWeight.Light
+        ret.unconfBal = i18n(S.walletDisconnectedFromBlockchain)
+    }
+
+    ret.balance = format(balance)
+
+    if (!devMode) ret.devinfo = ""
+    else
+    {
+        if (chainstate != null)
+        {
+            val now = millinow()
+            val cnxnLst = chainstate.chain.net.mapConnections()
+            {
+                val recentRecv = (now - it.lastReceiveTime) < 75L
+                val recentSend = (now - it.lastSendTime) < 75L
+                val sr = (if (recentSend&&recentRecv) "⇅" else if (recentSend) "↑" else if (recentRecv) "↓" else " ")
+                val latencyStr = if (it.bytesReceived + it.bytesSent > 2000) (it.aveLatency.roundToLong().toString() + "ms") else ""
+                it.name + " (" + sr + latencyStr + ")"
+            }
+            val trying:List<String> = if (chainstate.chain.net is MultiNodeCnxnMgr) (chainstate.chain.net as MultiNodeCnxnMgr).initializingCnxns().map { it.name } else listOf()
+            val peers = cnxnLst.joinToString(", ") + (if (trying.isNotEmpty()) (" " + i18n(S.trying) + " " + trying.joinToString(", ")) else "")
+
+            ret.devinfo = i18n(S.at) + " " + chainstate.syncedHash.toHex().take(8) + ", " + chainstate.syncedHeight + " " + i18n(S.of) + " " + chainstate.chain.curHeight + " blocks, " + (chainstate.chain.net.size ?: "") + " peers\n" + peers
+        }
+        else
+        {
+            ret.devinfo = i18n(S.walletDisconnectedFromBlockchain)
+        }
+    }
+
+    // Only show the approx fiat amount if synced and we have the conversion data
+    if (synced)
+    {
+        if (fiatPerCoin > BigDecimal.ZERO)
+        {
+            var fiatDisplay = balance * fiatPerCoin
+            ret.approximately = i18n(S.approximatelyT) % mapOf("qty" to FiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode)
+            ret.approximatelyColor = colorPrimaryDark
+            ret.approximatelyWeight = FontWeight.Normal
+        }
+        else ret.approximately = null
+    }
+    else
+    {
+        ret.approximately = if ((chainstate == null) || (chainstate.syncedDate <= 1231416000)) i18n(S.unsynced)  // for fun: bitcoin genesis block
+        else
+        {
+            val instant = kotlinx.datetime.Instant.fromEpochSeconds(chainstate.syncedDate)
+            val localTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+
+            val td = localTime.format(DATE_TIME_FORMAT)
+            i18n(S.balanceOnTheDate) % mapOf("date" to td)
+        }
+
+        ret.balFontWeight = FontWeight.Light
+        ret.approximatelyColor = unsyncedStatusColor
+        ret.approximatelyWeight = FontWeight.Bold
+        ret.balColor = unsyncedBalanceColor
+    }
+
+    // Reload transaction history outside of the UI processing thread.
+    laterJob {
+        val txh = mutableListOf<TransactionHistory>()
+        /* This code puts a fake tx at the top that keeps updating based on the current time
+       so you can see how often this is regenerating.
+    val fakeTx = txFor(wallet.chainSelector)
+    val fakeHistory = TransactionHistory(wallet.chainSelector, fakeTx)
+    fakeHistory.date = millinow()
+    fakeHistory.outgoingAmt=0
+    fakeHistory.incomingAmt=millinow()
+    txh.add(fakeHistory)
+    */
+        wallet.forEachTxByDate {
+            txh.add(it)
+            (txh.size >= 10) // just get the most recent 10
+        }
+        ret.recentHistory = txh.sortedByDescending { it.date }
+    }
+    return ret
 }
 
 open class AccountUiDataViewModel: ViewModel()
@@ -130,6 +240,27 @@ open class AccountUiDataViewModel: ViewModel()
                 triggerAccountsChanged(uiData.account)
             }
         }
+    }
+}
+
+// This should probably be moved to a viewModel with only one account
+fun fastForwardAccount(act: Account)
+{
+    val t = AccountUiDataViewModel()  // TODO USE A SINGLETON
+    val allAccountsUiData = t.accountUIData.value.toMutableMap()
+    val uiData = allAccountsUiData[act.name] ?: AccountUIData(act)
+    uiData.fastForwarding = true
+    allAccountsUiData[act.name] = uiData
+    t.accountUIData.value = allAccountsUiData
+
+    startAccountFastForward(act) {
+        val tmp = t.accountUIData.value.toMutableMap()
+        val uiDatatmp = allAccountsUiData[act.name] ?: AccountUIData(act)
+        uiDatatmp.fastForwarding = it != null
+        tmp[act.name] = uiData
+        t.accountUIData.value = tmp
+        uiData.account.fastforwardStatus = it
+        triggerAccountsChanged(uiData.account)
     }
 }
 
@@ -200,18 +331,6 @@ class AccountUiDataViewModelFake: AccountUiDataViewModel()
     }
 }
 
-fun getAccountIconResPath(chainSelector: ChainSelector): String
-{
-    return when(chainSelector)
-    {
-        ChainSelector.NEXA -> "icons/nexa_icon.png"
-        ChainSelector.NEXATESTNET -> "icons/nexatest_icon.png"
-        ChainSelector.NEXAREGTEST -> "icons/nexareg_icon.png"
-        ChainSelector.BCH -> "icons/bitcoin_cash_token.xml"
-        ChainSelector.BCHTESTNET -> "icons/bitcoin_cash_token.xml"
-        ChainSelector.BCHREGTEST -> "icons/bitcoin_cash_token.xml"
-    }
-}
 
 @Composable
 fun AccountListItem(
@@ -229,14 +348,14 @@ fun AccountListItem(
       modifier = Modifier.fillMaxWidth(),
       leadingContent = {
           // Show blockchain icon
-          ResImageView(getAccountIconResPath(uidata.chainSelector), Modifier.size(32.dp), "Blockchain icon")
+          ResImageView(getAccountIconResPath(uidata.account.wallet.chainSelector), Modifier.size(32.dp), "Blockchain icon")
       },
       headlineContent = {
           // Account name and Nexa amount
           Column {
               // Account Name
               Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                  Text(text = uidata.name, fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.testTag("CarouselAccountName"))
+                  Text(text = uidata.account.name, fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.testTag("CarouselAccountName"))
               }
               // Nexa Amount
               Row(horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
@@ -248,7 +367,8 @@ fun AccountListItem(
                   var drawBal by remember { mutableStateOf(false) }
                   var drawCC by remember { mutableStateOf(false) }
                   var scale by remember { mutableStateOf(1.0) }
-                  Text(text = uidata.balance, style = balTextStyle, color = uidata.balColor, modifier = Modifier.padding(0.dp).drawWithContent { if (drawBal) drawContent() }.testTag("AccountCarouselBalance_${uidata.name}"), textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
+                  val mod = Modifier.padding(0.dp).drawWithContent { if (drawBal) drawContent() }.testTag("AccountCarouselBalance_${uidata.account.name}")
+                  Text(text = uidata.balance, style = balTextStyle, color = uidata.balColor, modifier = mod, textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
                     onTextLayout = { textLayoutResult ->
                         if (textLayoutResult.didOverflowWidth)
                         {
@@ -346,7 +466,7 @@ fun AccountListItem(
                                 uidata.account.pinEntered = false
                                 tlater("assignGuiSlots") {
                                     triggerAssignAccountsGuiSlots()  // In case it should be hidden
-                                    later { accountChangedNotification.send(uidata.name) }
+                                    later { accountChangedNotification.send(uidata.account.name) }
                                 }
                             }
                           ) {

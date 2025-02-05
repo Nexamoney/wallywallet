@@ -30,8 +30,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.*
-import info.bitcoinunlimited.www.wally.ui.theme.*
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import info.bitcoinunlimited.www.wally.ui2.theme.WallyDivider
@@ -152,23 +150,24 @@ fun rediscoverPeekActivity(secretWords: String, chainSelector: ChainSelector, ab
     }
 }
 
-open class AccountStatisticsViewModel : ViewModel()
+open class AccountStatisticsViewModel(val account:MutableStateFlow<Account?>) : ViewModel()
 {
+    constructor(act: Account) : this(MutableStateFlow(act))
 
     val accountStats = MutableStateFlow<AccountStatistics?>(null)
     val curAddressText = MutableStateFlow<String>("")
-    var accountDetailAccount: Account? = null
     private var accountJob: Job? = null
 
     init {
-        wallyApp!!.focusedAccount.value?.let {
+        account.value?.let {
             updateStats(it)
             fetchCurAddressText(it)
         }
-        observeSelectedAccount()
+        observeAccount()
     }
 
-    open fun observeSelectedAccount() {
+    protected open fun observeAccount()
+    {
         accountJob?.cancel()
         accountJob = viewModelScope.launch(
           Dispatchers.Default + CoroutineExceptionHandler { context, throwable ->
@@ -176,7 +175,7 @@ open class AccountStatisticsViewModel : ViewModel()
               LogIt.error(throwable.toString())
           }
         ) {
-            wallyApp!!.focusedAccount.onEach { selectedAccount ->
+            account.onEach { selectedAccount ->
                 selectedAccount?.let {
                     updateStats(selectedAccount)
                     fetchCurAddressText(selectedAccount)
@@ -185,73 +184,70 @@ open class AccountStatisticsViewModel : ViewModel()
         }
     }
 
-    open fun updateStats(account: Account) {
+    protected fun updateStats(account: Account)
+    {
         val chainState = account.wallet.chainstate
         val stats = account.wallet.statistics()
         accountStats.value = AccountStatistics(chainState, stats)
     }
 
-    open fun fetchCurAddressText(account: Account) {
-        if (account != accountDetailAccount) {
-            accountDetailAccount = account
-            curAddressText.value = ""  // Account changed so clear this pending a reload
-            laterJob {
-                val curDest = account.wallet.getCurrentDestination()
-                curAddressText.value = i18n(S.CurrentAddress) % mapOf(
+    protected fun fetchCurAddressText(account: Account)  // : Account)
+    {
+        curAddressText.value = ""  // Account changed so clear this pending a reload
+        laterJob {
+            val curDest = account.wallet.getCurrentDestination()
+            curAddressText.value = i18n(S.CurrentAddress) % mapOf(
                   "num" to curDest.index.toString(),
                   "addr" to curDest.address.toString()
                 )
-            }
         }
     }
 
-    override fun onCleared() {
+    override fun onCleared()
+    {
         super.onCleared()
         accountJob?.cancel()
     }
-
-    companion object {
-        fun i18n(key: String): String {
-            // Stub for i18n functionality, should be overridden or replaced in subclasses if needed
-            return key
-        }
-    }
-
 }
 
-class AccountStatisticsViewModelFake() : AccountStatisticsViewModel()
+class AccountStatisticsViewModelFake(act: Account) : AccountStatisticsViewModel(act)
 {
-    override fun observeSelectedAccount()
+    override fun observeAccount()
     {
         // Do nothing or else the UI test fails...
     }
 }
 
-@Composable
-fun AccountDetailScreenUi2(
-  account: Account,
-  accountStatsViewModel: AccountStatisticsViewModel = viewModel { AccountStatisticsViewModel() },
-  balanceViewModel: BalanceViewModel = viewModel { BalanceViewModelImpl() },
-  syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() },
-  accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() }
-)
+@Composable fun AccountDetailScreenUi2(account: Account)
 {
-    val scrollState = rememberScrollState()
+    AccountDetailScreenUi2(AccountStatisticsViewModel(account))
+}
 
-    Column(modifier = Modifier.verticalScroll(scrollState)) {
-        Spacer(Modifier.height(16.dp))
-        AccountPill(buttonsEnabled = true, balanceViewModel, syncViewModel, accountUiDataViewModel)
-        Spacer(Modifier.height(2.dp))
-        Spacer(modifier = Modifier.height(4.dp))
-        AccountActionButtonsUi2(account, txHistoryButtonClicked = { nav.go(ScreenId.TxHistory) }, accountDeleted = {
-            nav.back()
-            triggerAssignAccountsGuiSlots()
-        })
-        Spacer(modifier = Modifier.height(4.dp))
-        WallyDivider()
-        TxStatistics(accountStatsViewModel, { nav.go(ScreenId.AddressHistory) }, { nav.go(ScreenId.TxHistory) })
-        Spacer(modifier = Modifier.height(4.dp))
-        AccountStatisticsCard(accountStatsViewModel)
+@Composable fun AccountDetailScreenUi2(accountStatsViewModel: AccountStatisticsViewModel)
+{
+    val account = accountStatsViewModel.account
+    val act = account.collectAsState().value
+    if (act == null) nav.back()  // no account to show the details of
+    else  // we have an account
+    {
+        val scrollState = rememberScrollState()
+        val ap = AccountPill(account)
+
+        Column(modifier = Modifier.verticalScroll(scrollState)) {
+            Spacer(Modifier.height(16.dp))
+            ap.draw(buttonsEnabled = true)
+            Spacer(Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(4.dp))
+            AccountActionButtonsUi2(act, txHistoryButtonClicked = { nav.go(ScreenId.TxHistory) }, accountDeleted = {
+                nav.back()
+                triggerAssignAccountsGuiSlots()
+            })
+            Spacer(modifier = Modifier.height(4.dp))
+            WallyDivider()
+            TxStatistics(accountStatsViewModel, { nav.go(ScreenId.AddressHistory) }, { nav.go(ScreenId.TxHistory) })
+            Spacer(modifier = Modifier.height(4.dp))
+            AccountStatisticsCard(accountStatsViewModel)
+        }
     }
 }
 

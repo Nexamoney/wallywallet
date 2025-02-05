@@ -12,18 +12,94 @@ import info.bitcoinunlimited.www.wally.ui2.views.AccountUiDataViewModelFake
 import info.bitcoinunlimited.www.wally.ui2.views.NativeSplash
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.*
 import kotlinx.coroutines.withTimeout
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.millisleep
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 // Changing this value to several seconds (3000) makes the tests proceed at a human visible pace
 var testSlowdown = 0 // runCatching { System.getProperty("testSlowdown").toInt() }.getOrDefault(0)
+// Delay between tests to let async stuff finish.  NOTE: JVM tests WILL NOT RELIABLY WORK unless this delay is greater than about a half second
+var afterTestDelay = 500 // runCatching { System.getProperty("testSlowdown").toInt() }.getOrDefault(0)
 // Wait for a max of this time for the job pool to clear.  Its possible that periodic or long running jobs might make the pool never clear...
 // But if it takes longer than this for ephemeral jobs to finish we have a problem anyway.
 var maxPoolWait = 500
+
+// Reset WallyApp for every test under JVM?
+var jvmResetWallyApp = false
+
+
+//val sched = TestCoroutineScheduler()
+//val testDispatcher = StandardTestDispatcher(sched, "testDispatcher")
+var installedTestDispatcher = 0
+open class WallyUiTestBase
+{
+    var sched = TestCoroutineScheduler()
+    var testDispatcher = StandardTestDispatcher(sched)
+
+    // You only need to do this once
+    init {
+        initializeLibNexa()
+        runningTheTests = true
+        forTestingDoNotAutoCreateWallets = true
+        dbPrefix = "test_"
+        wallyApp = CommonApp()
+        wallyApp!!.onCreate()
+    }
+
+    @BeforeTest
+    fun testSetup()
+    {
+
+        // Solves the error: Module with the Main dispatcher had failed to initialize. For tests Dispatchers.setMain from kotlinx-coroutines-test module can be used
+        // On Android this code ends up running UI drawing in multiple threads which is disallowed.
+        if (platform().target == KotlinTarget.JVM)
+        {
+            if (installedTestDispatcher==0)
+            {
+                sched = TestCoroutineScheduler()
+                testDispatcher = StandardTestDispatcher(sched)
+                println("Installing test dispatcher")
+                Dispatchers.setMain(testDispatcher)
+                if (wallyApp == null)
+                {
+                    wallyApp = CommonApp()
+                    wallyApp!!.onCreate()
+                }
+            }
+            installedTestDispatcher++
+        }
+    }
+
+    @AfterTest
+    fun testDone()
+    {
+        if (platform().target == KotlinTarget.JVM)
+        {
+            println("settle scheduler")
+            sched.advanceTimeBy(1000)
+            sched.runCurrent()
+            val poolWaitStart = millinow()
+            while ((millinow() - poolWaitStart < ui2.maxPoolWait) && (libNexaJobPool.jobs.size != 0) && (libNexaJobPool.availableThreads != libNexaJobPool.allThreads.size)) millisleep(50U)
+        }
+
+        millisleep(afterTestDelay.toULong())
+
+        if (platform().target == KotlinTarget.JVM)
+        {
+            installedTestDispatcher--
+            if (installedTestDispatcher == 0)
+            {
+                println("Removing test dispatcher")
+                Dispatchers.resetMain()
+                if (jvmResetWallyApp) wallyApp = null
+            }
+        }
+    }
+}
 
 @OptIn(ExperimentalTestApi::class)
 fun ComposeUiTest.settle(scope: TestScope? = null)
@@ -53,15 +129,8 @@ fun ComposeUiTest.settle(scope: TestScope? = null)
 }
 
 @OptIn(ExperimentalTestApi::class)
-class NavigationRootUi2Test
+class NavigationRootUi2Test:WallyUiTestBase()
 {
-    @BeforeTest
-    fun setUp() {
-        initializeLibNexa()
-        runningTheTests = true
-        forTestingDoNotAutoCreateWallets = true
-        dbPrefix = "test_"
-    }
 
     @Test
     fun navRootTest() = runComposeUiTest {
@@ -79,15 +148,13 @@ class NavigationRootUi2Test
         wallyApp!!.openAllAccounts()
 
         val assetViewModel = AssetViewModelFake()
-        val balanceViewModel = BalanceViewModelFake()
-        val syncViewModel = SyncViewModelFake()
         val accountUiDataViewModel = AccountUiDataViewModelFake()
 
         setContent {
             CompositionLocalProvider(
               LocalViewModelStoreOwner provides viewModelStoreOwner
             ) {
-                NavigationRootUi2(Modifier, Modifier, assetViewModel, balanceViewModel, syncViewModel, accountUiDataViewModel)
+                NavigationRootUi2(Modifier, Modifier, assetViewModel, accountUiDataViewModel)
             }
         }
 
@@ -96,5 +163,6 @@ class NavigationRootUi2Test
         if (nativeSplash)
             onNodeWithTag("RootScaffold").assertIsNotDisplayed()
 
+        settle()
     }
 }
