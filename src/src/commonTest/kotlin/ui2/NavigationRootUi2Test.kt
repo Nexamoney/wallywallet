@@ -82,13 +82,12 @@ class NavigationRootUi2Test
         val balanceViewModel = BalanceViewModelFake()
         val syncViewModel = SyncViewModelFake()
         val accountUiDataViewModel = AccountUiDataViewModelFake()
-        val walletViewModel = WalletViewModelFake()
 
         setContent {
             CompositionLocalProvider(
               LocalViewModelStoreOwner provides viewModelStoreOwner
             ) {
-                NavigationRootUi2(Modifier, Modifier, assetViewModel, balanceViewModel, syncViewModel, accountUiDataViewModel, walletViewModel)
+                NavigationRootUi2(Modifier, Modifier, assetViewModel, balanceViewModel, syncViewModel, accountUiDataViewModel)
             }
         }
 

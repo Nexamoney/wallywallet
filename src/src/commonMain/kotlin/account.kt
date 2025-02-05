@@ -82,6 +82,11 @@ class Account(
     var encodedPin: ByteArray? = loadEncodedPin()
 
     var currentReceive: PayDestination? = null //? This receive address appears on the main screen for quickly receiving coins
+        set(value) {
+            currentReceiveObservable.value = value
+            field = value
+        }
+    val currentReceiveObservable: MutableStateFlow<PayDestination?> = MutableStateFlow(null)
 
     /** Current exchange rate between this currency (in this account's default unit -- NOT the finest unit or blockchain unit) and your selected fiat currency.
      * -1 means that the exchange rate cannot be determined */

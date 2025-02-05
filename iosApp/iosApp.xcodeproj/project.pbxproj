@@ -1130,6 +1130,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "\n8947683289\n8947683289\n\n8947683289\n8947683289\n8947683289\n8947683289\n8947683289\n8947683289";
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
 				DEVELOPMENT_TEAM = 8A87667ULD;
 				ENABLE_PREVIEWS = YES;
@@ -1144,6 +1145,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 8947683290;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
@@ -1164,6 +1166,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "\n8947683289\n8947683289\n8947683289\n8947683289\n8947683289\n8947683289";
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
 				DEVELOPMENT_TEAM = 8A87667ULD;
 				ENABLE_PREVIEWS = YES;
@@ -1178,6 +1181,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 8947683290;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
