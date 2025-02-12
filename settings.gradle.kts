@@ -12,7 +12,7 @@ dependencyResolutionManagement {
         google()
         gradlePluginPortal()
         mavenCentral()
-        // maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev/") }
+        maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev/") }  // for skiko
         // maven { url = uri("https://mvnrepository.com/artifact/androidx.test/core") } // Androidx Test Library ALFA builds
         // maven { url = uri("https://mvnrepository.com/artifact/org.jetbrains.compose.ui/ui-test") } // Compose multiplatform ALFA/BETA builds
         maven { url = uri("https://gitlab.com/api/v4/projects/48544966/packages/maven") }  // mpthreads

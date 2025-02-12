@@ -151,8 +151,8 @@ actual fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri
       name.endsWith(".wma", true) ||
       name.endsWith(".ogg", true))
     {
-        wrapper(MediaInfo(200, 200, true, true)){
-            ResImageView("icons/media_not_supported.xml", modifier = Modifier.background(BaseBkg), null)
+        wrapper(MediaInfo(200, 200, true, true)){ mod ->
+            ResImageView("icons/media_not_supported.xml", modifier = (mod?:Modifier).fillMaxSize().background(Color.Transparent), null)
         }
     }
     // Supported audio file formats for iOS:
