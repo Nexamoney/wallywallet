@@ -1,7 +1,9 @@
 import com.android.build.api.dsl.ManagedVirtualDevice
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Properties
 import java.io.FileInputStream
 import java.time.Instant
@@ -10,25 +12,26 @@ import java.time.format.DateTimeFormatter
 
 // Wally Wallet version
 // On version bump: Run ./gradlew generateVersionFile and commit the updates iosApp/iosApp/info.plist file
-val versionNumber = "3.6.0"
+val versionNumber = "3.7.0"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 
 
 // Dependency versions
-val mpThreadsVersion = "0.3.3"
-val nexaRpcVersion = "1.2.2"
-val libNexaKotlinVersion = "0.3.11"
-val serializationVersion = "1.7.3"  // https://github.com/Kotlin/kotlinx.serialization  // DO NOT UPDATE to 1.8.0 until kotlin 2.1
-val coroutinesVersion = "1.9.0"     // https://github.com/Kotlin/kotlinx.coroutines     // DO NOT UPDATE to 1.10 until kot 2.1.0
-val ktorVersion = "2.3.12"           // https://github.com/ktorio/ktor
+val mpThreadsVersion = "0.4.0"
+val nexaRpcVersion = "1.3.0"
+val libNexaKotlinVersion = "0.4.3"
+val serializationVersion = "1.8.0"  // https://github.com/Kotlin/kotlinx.serialization
+val coroutinesVersion = "1.10.1"     // https://github.com/Kotlin/kotlinx.coroutines
 val bigNumVersion = "0.3.10"         // https://github.com/ionspin/kotlin-multiplatform-bignum
-val composeVersion = "1.7.1"        // https://github.com/JetBrains/compose-multiplatform/releases
+val composeVersion = "1.7.3"        // https://github.com/JetBrains/compose-multiplatform/releases
 val androidTestCoreVersion = "1.6.1" // https://mvnrepository.com/artifact/androidx.test/core
-val androidxActivityComposeVersion = "1.9.3"
-val uriKmpVersion = "0.0.18"  // https://github.com/eygraber/uri-kmp
-val skikoVersion = "0.8.9" // https://github.com/JetBrains/skiko/releases
-val workVersion = "2.9.1"
+val androidxActivityComposeVersion = "1.10.0"
+val uriKmpVersion = "0.0.19"  // https://github.com/eygraber/uri-kmp
+val skikoVersion = "0.8.25" // https://github.com/JetBrains/skiko/releases
+val workVersion = "2.10.0" // https://developer.android.com/jetpack/androidx/releases/work
 
+// needs upgrade
+val ktorVersion = "3.0.3"           // https://github.com/ktorio/ktor
 
 val secSinceEpoch = Instant.now().epochSecond
 
@@ -36,14 +39,14 @@ plugins {
     //trick: for the same plugin versions in all sub-modulesly
     kotlin("multiplatform")
     id("com.android.application")
-    kotlin("plugin.serialization").version("2.0.21")
+    kotlin("plugin.serialization").version("2.1.10")
     //id("org.jetbrains.kotlin.android").version("2.0.0")
-    id("org.jetbrains.kotlin.plugin.compose").version("2.0.0")
+    id("org.jetbrains.kotlin.plugin.compose").version("2.1.10")
     id("org.jetbrains.compose")   // https://github.com/JetBrains/compose-multiplatform/releases
-    id("org.jetbrains.dokka").version("1.9.20").apply(false)
+    id("org.jetbrains.dokka").version("2.0.0").apply(false)
+    id("org.jetbrains.kotlinx.kover")
     // id("org.openjfx.javafxplugin") version "0.1.0"
     idea
-    id("org.jetbrains.kotlinx.kover").version("0.9.0")
     // application  // for JVM executables, but not compatible with android, have to do it by hand
 }
 
@@ -119,7 +122,7 @@ configurations.all {
 
 @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
 kotlin {
-    targetHierarchy.default()
+    applyDefaultHierarchyTemplate()
 
     jvm {
         //withJava()
@@ -127,14 +130,13 @@ kotlin {
             this.mainClass = "info.bitcoinunlimited.www.wally.WallyJvmApp"
 
         }
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "17"
+        tasks.withType<KotlinCompile>() {
+            compilerOptions {
+                jvmTarget.set(JvmTarget.JVM_17)
             }
         }
         compilations.getByName("main") {
         }
-
 
         //from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
         //from { configurations.jvmRuntimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
@@ -143,21 +145,20 @@ kotlin {
     if (ANDROID_TARGETS)
     {
         androidTarget {
-            compilations.all {
-                kotlinOptions {
-                    jvmTarget = "17"
+            tasks.withType<KotlinCompile>() {
+                compilerOptions {
+                    jvmTarget.set(JvmTarget.JVM_17)
                 }
             }
-            // publishLibraryVariants("release", "debug")
 
             @OptIn(ExperimentalKotlinGradlePluginApi::class)
             instrumentedTestVariant {
                 sourceSetTree.set(KotlinSourceSetTree.test)
 
                 dependencies {
-                    testImplementation("androidx.compose.ui:ui-test-junit4-android:1.7.5")
-                    androidTestImplementation("androidx.compose.ui:ui-test-junit4-android:1.7.5")
-                    debugImplementation("androidx.compose.ui:ui-test-manifest:1.7.5")
+                    testImplementation("androidx.compose.ui:ui-test-junit4-android:1.7.7")
+                    androidTestImplementation("androidx.compose.ui:ui-test-junit4-android:1.7.7")
+                    debugImplementation("androidx.compose.ui:ui-test-manifest:1.7.7")
                 }
             }
         }
@@ -181,31 +182,50 @@ kotlin {
 
         val iosX64def = iosX64 {
             compilations.getByName("main") {
-                compilerOptions.options.freeCompilerArgs.add("-verbose")
-                compilerOptions.options.freeCompilerArgs.add("-opt-in=kotlin.experimental.ExperimentalNativeApi")
-                //binaries.libnexaBinCfg()
+                //compilerOptions.options.freeCompilerArgs.add("-verbose")
+                //compilerOptions.options.freeCompilerArgs.add("-opt-in=kotlin.experimental.ExperimentalNativeApi")
+                compileTaskProvider {
+                    compilerOptions {
+                        freeCompilerArgs.addAll("-verbose", "-opt-in=kotlin.experimental.ExperimentalNativeApi")
+                    }
+                }
             }
         }
         val iosArm64def = iosArm64 {
             compilations.getByName("main") {
-                compilerOptions.options.freeCompilerArgs.add("-verbose")
-                compilerOptions.options.freeCompilerArgs.add("-opt-in=kotlin.experimental.ExperimentalNativeApi")
-                //binaries.libnexaBinCfg()
+                compileTaskProvider {
+                    compilerOptions {
+                        freeCompilerArgs.addAll("-verbose", "-opt-in=kotlin.experimental.ExperimentalNativeApi")
+                    }
+                }
             }
         }
 
         /* commented out because in libnexalight.def doesn't know how to point to the .a file */
         val iosSimArm64def = iosSimulatorArm64 {
             compilations.getByName("main") {
-                compilerOptions.options.freeCompilerArgs.add("-verbose")
-                compilerOptions.options.freeCompilerArgs.add("-opt-in=kotlin.experimental.ExperimentalNativeApi")
-                //binaries.libnexaBinCfg()
+                compileTaskProvider {
+                    compilerOptions {
+                        freeCompilerArgs.addAll("-verbose", "-opt-in=kotlin.experimental.ExperimentalNativeApi")
+                    }
+                }
             }
         }
 
+        val iosSdkVersion: String by lazy {
+            val process = ProcessBuilder("xcrun", "--show-sdk-version")
+              .redirectErrorStream(true)
+              .start()
+            process.inputStream.bufferedReader().readText().trim()
+        }
+        println("iOS SDK version is: $iosSdkVersion")
+
         listOf(iosX64def, iosArm64def, iosSimArm64def).forEach {
             it.binaries.framework {
-                baseName = "src"
+                baseName = "src" // Needs to be "src" so we can import the same module name in swift
+                //linkerOpts("-platform_version ios 15.0 $iosSdkVersion")
+                // -miphoneos-version-min=15.0
+                // linkerOpts("""-compiler-option "-miphoneos-version-min=15.0"""")
             }
         }
     }
@@ -228,7 +248,12 @@ kotlin {
         // MS windows
         mingwX64 {
             compilations.getByName("main") {
-                compilerOptions.options.freeCompilerArgs.add("-verbose")
+                //compilerOptions.options.freeCompilerArgs.add("-verbose")
+                compileTaskProvider {
+                    compilerOptions {
+                        freeCompilerArgs.addAll("-verbose")
+                    }
+                }
                 target.binaries.libnexaBinCfg()
             }
         }
@@ -244,7 +269,7 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
                 implementation(kotlin("stdlib-common"))
-                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
 
                 // Compose
                 implementation("org.jetbrains.compose.runtime:runtime:$composeVersion")
@@ -276,8 +301,8 @@ kotlin {
                 implementation("io.ktor:ktor-client-cio:$ktorVersion")
 
                 // IO
-                implementation("com.squareup.okio:okio:3.9.1")
-                implementation("org.jetbrains.kotlinx:atomicfu:0.25.0")
+                implementation("com.squareup.okio:okio:3.10.2")
+                implementation("org.jetbrains.kotlinx:atomicfu:0.26.1")
 
                 // nexa
                 implementation("org.nexa:mpthreads:$mpThreadsVersion")
@@ -340,7 +365,7 @@ kotlin {
                 implementation(compose.desktop.windows_x64)
                 implementation(compose.desktop.macos_x64)
                 implementation(compose.desktop.macos_arm64)
-                implementation("org.jetbrains.kotlin:kotlin-stdlib:2.0.21")
+                implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.10")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$coroutinesVersion")
                 // Required for Dispatchers.Main
                 // https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-dispatchers/-main.html
@@ -394,23 +419,23 @@ kotlin {
                     //implementation(project(":shared"))
 
                     // CameraX core library using the camera2 implementation
-                    val camerax_version = "1.4.0"  // https://developer.android.com/jetpack/androidx/releases/camera
+                    val camerax_version = "1.4.1"  // https://developer.android.com/jetpack/androidx/releases/camera
                     val lottieVersion = "6.4.1"
 
                     implementation(kotlin("stdlib-jdk8"))
                     implementation("androidx.activity:activity-compose:$androidxActivityComposeVersion")
                     implementation("androidx.tracing:tracing:1.2.0")
-                    implementation("androidx.compose.ui:ui:1.7.5")
-                    implementation("androidx.compose.ui:ui-tooling:1.7.5")
-                    implementation("androidx.compose.ui:ui-tooling-preview:1.7.5")
-                    implementation("androidx.compose.foundation:foundation:1.7.5")
-                    implementation("androidx.compose.material:material:1.7.5")
-                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.7.3")
-                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.7.3")
+                    implementation("androidx.compose.ui:ui:1.7.7")
+                    implementation("androidx.compose.ui:ui-tooling:1.7.7")
+                    implementation("androidx.compose.ui:ui-tooling-preview:1.7.7")
+                    implementation("androidx.compose.foundation:foundation:1.7.7")
+                    implementation("androidx.compose.material:material:1.7.7")
+                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.8.0")
+                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.0")
 
                     // android layout dependencies
                     //implementation("com.google.android.flexbox:flexbox:3.0.0")  // https://github.com/google/flexbox-layout/tags
-                    implementation("androidx.activity:activity:1.9.3")
+                    implementation("androidx.activity:activity:1.10.0")
                     //implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")  // https://developer.android.com/jetpack/androidx/releases/navigation
                     //implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
                     implementation("androidx.wear:wear:1.3.0")
@@ -452,14 +477,14 @@ kotlin {
                     implementation("androidx.camera:camera-view:${camerax_version}")
                     implementation("com.google.mlkit:barcode-scanning:17.3.0")
 
-                    implementation("androidx.media3:media3-exoplayer:1.5.0")
+                    implementation("androidx.media3:media3-exoplayer:1.5.1")
                     // Dynamic Adaptive Streaming over HTTP: implementation("androidx.media3:media3-exoplayer-dash:1.X.X")
-                    implementation("androidx.media3:media3-ui:1.5.0")
+                    implementation("androidx.media3:media3-ui:1.5.1")
 
                     // Animation
                     implementation("com.airbnb.android:lottie-compose:$lottieVersion")
 
-                    implementation("androidx.compose.material:material-icons-extended:1.7.5")
+                    implementation("androidx.compose.material:material-icons-extended:1.7.7")
                 }
             }
         }
@@ -649,7 +674,6 @@ android {
         warningsAsErrors = false // Ensures warnings don't fail the build
     }
 }
-
 
 
 if (MAC_TARGETS)
