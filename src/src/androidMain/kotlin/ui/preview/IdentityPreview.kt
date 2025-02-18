@@ -6,7 +6,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import info.bitcoinunlimited.www.wally.ui2.IdentityEditScreen
 import info.bitcoinunlimited.www.wally.ui2.IdentityScreen
 import info.bitcoinunlimited.www.wally.ui2.IdentitySession
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyPageBase
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyPageBase
 
 
 @Composable

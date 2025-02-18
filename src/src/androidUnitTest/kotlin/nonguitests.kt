@@ -355,7 +355,7 @@ class NonGuiTests
         check(srchResults.txh.size == NUM_REPEATS*3 + 1)
         check(srchResults.addrCount > NUM_REPEATS*2 + 1)
 
-        val a2 = wallyApp!!.recoverAccount("a2", 0U, "", account.wallet.secretWords, cs, srchResults.txh, srchResults.addresses, ectip, srchResults.addrCount.toInt())
+        val a2 = wallyApp!!.recoverAccount("a2", 0U, "", account.wallet.secretWords, cs, srchResults.txh.values.toList(), srchResults.addresses, ectip, srchResults.addrCount.toInt())
         waitFor(TIMEOUT, { a2!!.wallet.synced() }, { "a2 sync unsuccessful" })
         LogIt.info("a2 balance: ${a2!!.wallet.balance}  orig bal: $balance")
         check(a2.wallet.balance == balance)

@@ -54,11 +54,12 @@ class FakeTxDatabase: TxDatabase
         }
     }
 
-    override fun forEach(doit: (TransactionHistory) -> Boolean)
+    override fun forEach(doit: (TransactionHistory) -> Boolean, startingDate: Long, count: Long)
     {
         for(th in data.values)
         {
-            if (doit(th)) return
+            if (th.date <= startingDate)
+                if (doit(th)) return
         }
     }
 

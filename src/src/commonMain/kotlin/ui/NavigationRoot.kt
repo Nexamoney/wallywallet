@@ -24,7 +24,6 @@ import info.bitcoinunlimited.www.wally.*
 import kotlinx.coroutines.*
 import info.bitcoinunlimited.www.wally.ui2.*
 import info.bitcoinunlimited.www.wally.ui2.theme.*
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyPageBase
 import info.bitcoinunlimited.www.wally.ui2.views.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.GetLog

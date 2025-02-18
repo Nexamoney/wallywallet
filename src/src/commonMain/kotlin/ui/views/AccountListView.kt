@@ -26,8 +26,8 @@ import info.bitcoinunlimited.www.wally.ui2.*
 import info.bitcoinunlimited.www.wally.ui2.theme.WallyRowAbkg1
 import info.bitcoinunlimited.www.wally.ui2.theme.WallyRowAbkg2
 import info.bitcoinunlimited.www.wally.ui2.theme.defaultListHighlight
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.defaultFontSize
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.getAccountIconResPath
+import info.bitcoinunlimited.www.wally.ui2.theme.defaultFontSize
+import info.bitcoinunlimited.www.wally.ui2.theme.getAccountIconResPath
 import info.bitcoinunlimited.www.wally.ui2.views.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*

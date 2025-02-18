@@ -32,14 +32,14 @@ import info.bitcoinunlimited.www.wally.ui2.views.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
-import org.nexa.libnexakotlin.Objectify
+
 import org.nexa.threads.Thread
 import org.nexa.threads.iThread
 import org.nexa.threads.millisleep
 
 const val MAX_NAME_LEN_UI2 = 16
 
-private val LogIt = GetLog("BU.wally.NewAccountScreenUi2")
+private val LogIt = org.nexa.libnexakotlin.GetLog("BU.wally.NewAccountScreenUi2")
 
 val supportedBlockchains =
   mapOf(
@@ -970,10 +970,10 @@ fun searchAllActivityUi2(secretWords: String, chainSelector: ChainSelector, abor
 
         //val act = activity.txh + activity2.txh + activity3.txh
         val act = mutableMapOf<Hash256, TransactionHistory>()
-        activity.txh.forEach { act[it.tx.idem] = it }
-        activity2.txh.forEach { act[it.tx.idem] = it }
-        activity3.txh.forEach { act[it.tx.idem] = it }
-        activity4.txh.forEach { act[it.tx.idem] = it }
+        activity.txh.forEach { act[it.value.tx.idem] = it.value }
+        activity2.txh.forEach { act[it.value.tx.idem] = it.value }
+        activity3.txh.forEach { act[it.value.tx.idem] = it.value}
+        activity4.txh.forEach { act[it.value.tx.idem] = it.value}
 
         val addrs = activity.addresses + activity2.addresses + activity3.addresses + activity4.addresses
         val addrCount = activity.addrCount + activity2.addrCount + activity3.addrCount + activity4.addrCount
@@ -1397,10 +1397,10 @@ fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter
 
         //val act = activity.txh + activity2.txh + activity3.txh
         val act = mutableMapOf<Hash256, TransactionHistory>()
-        activity.txh.forEach { act[it.tx.idem] = it }
-        activity2.txh.forEach { act[it.tx.idem] = it }
-        activity3.txh.forEach { act[it.tx.idem] = it }
-        activity4.txh.forEach { act[it.tx.idem] = it }
+        activity.txh.forEach { act[it.value.tx.idem] = it.value }
+        activity2.txh.forEach { act[it.value.tx.idem] = it.value }
+        activity3.txh.forEach { act[it.value.tx.idem] = it.value }
+        activity4.txh.forEach { act[it.value.tx.idem] = it.value}
 
         val addrs = activity.addresses + activity2.addresses + activity3.addresses + activity4.addresses
         val addrCount = activity.addrCount + activity2.addrCount + activity3.addrCount + activity4.addrCount

@@ -30,9 +30,9 @@ import info.bitcoinunlimited.www.wally.ui2.*
 import info.bitcoinunlimited.www.wally.ui2.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.ui2.theme.WallyRowBbkg1
 import info.bitcoinunlimited.www.wally.ui2.theme.colorWarning
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyAssetRowColors
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyModalOutline
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.defaultFontSize
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyAssetRowColors
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyModalOutline
+import info.bitcoinunlimited.www.wally.ui2.theme.defaultFontSize
 import info.bitcoinunlimited.www.wally.ui2.views.*
 import io.ktor.http.*
 import kotlinx.coroutines.flow.MutableStateFlow

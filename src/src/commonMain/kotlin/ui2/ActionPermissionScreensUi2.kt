@@ -30,10 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.eygraber.uri.Uri
 import org.nexa.libnexakotlin.*
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui2.theme.WallyDivider
-import info.bitcoinunlimited.www.wally.ui2.theme.colorPrimaryDark
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurple
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurple2
+import info.bitcoinunlimited.www.wally.ui2.theme.*
 import info.bitcoinunlimited.www.wally.ui2.views.*
 import io.ktor.http.*
 import io.ktor.utils.io.errors.*

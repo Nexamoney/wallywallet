@@ -38,9 +38,9 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.DecimalMode
 import com.ionspin.kotlin.bignum.decimal.RoundingMode
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyThemeUi2
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.samsungKeyBoardGray
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurple
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyThemeUi2
+import info.bitcoinunlimited.www.wally.ui2.theme.samsungKeyBoardGray
+import info.bitcoinunlimited.www.wally.ui2.theme.wallyPurple
 import info.bitcoinunlimited.www.wally.ui2.views.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow

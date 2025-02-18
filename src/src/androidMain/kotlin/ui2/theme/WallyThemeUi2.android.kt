@@ -1,4 +1,4 @@
-package info.bitcoinunlimited.www.wally.ui2.themeUi2
+package info.bitcoinunlimited.www.wally.ui2.theme
 
 import android.app.Activity
 import android.os.Build

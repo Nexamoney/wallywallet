@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.*
 import info.bitcoinunlimited.www.wally.ui2.views.AccountUiDataViewModelFake
+import info.bitcoinunlimited.www.wally.ui2.views.AssetViewModelFake
 import info.bitcoinunlimited.www.wally.ui2.views.NativeSplash
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
