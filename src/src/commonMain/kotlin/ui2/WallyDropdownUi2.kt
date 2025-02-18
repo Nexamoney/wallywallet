@@ -20,7 +20,7 @@ import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.platform
 import info.bitcoinunlimited.www.wally.ui2.theme.colorCredit
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyModalOutline
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyModalOutline
 import info.bitcoinunlimited.www.wally.ui2.views.FontScale
 import org.nexa.libnexakotlin.GetLog
 

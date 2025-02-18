@@ -26,10 +26,6 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.*
 import info.bitcoinunlimited.www.wally.ui2.theme.*
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.getAccountIconResPath
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurpleExtraLight
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurpleLight
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -37,6 +33,8 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
 import kotlinx.datetime.toLocalDateTime
 import org.nexa.libnexakotlin.*
+import org.nexa.libnexakotlin.AccountSearchResults
+import org.nexa.libnexakotlin.EarlyExitException
 import org.nexa.threads.Thread
 import org.nexa.threads.iThread
 import org.nexa.threads.millisleep
@@ -534,7 +532,7 @@ fun AccountItemViewUi2(
         }
 }
 
-data class DerivationPathSearchProgress(var aborter: Objectify<Boolean>,var progress: String?, var progressInt: Int, var results:AccountSearchResults? = null)
+data class DerivationPathSearchProgress(var aborter: Objectify<Boolean>,var progress: String?, var progressInt: Int, var results: AccountSearchResults? = null)
 
 fun derivationPathSearch(progress: DerivationPathSearchProgress, wallet: Bip44Wallet, coin: Long, account: Long, change: Boolean, idxMaxGap: Int, start: Long = 0, event: (()->Unit)? = null): iThread
 {
@@ -639,10 +637,10 @@ fun startAccountFastForward(account: Account, displayFastForwardInfo: (String?) 
                     lastDate = ch.lastDate
                     lastHash = ch.lastHash
                 }
-                txh = it.txh + ch.txh
+                txh.putAll(ch.txh)
             }
             wallet.generateAddressesUntil(it.lastAddressIndex)
-            wallet.fastforward(lastHeight, lastDate, lastHash, txh)
+            wallet.fastforward(lastHeight, lastDate, lastHash, txh.values.toList())
             wallet.save(true)
         }
         triggerAssetCheck()

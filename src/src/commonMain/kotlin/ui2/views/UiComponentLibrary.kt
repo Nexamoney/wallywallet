@@ -26,6 +26,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
@@ -47,7 +48,6 @@ import info.bitcoinunlimited.www.wally.ui2.SyncViewModel
 import info.bitcoinunlimited.www.wally.ui2.SyncViewModelImpl
 import info.bitcoinunlimited.www.wally.ui2.softKeyboardBar
 import info.bitcoinunlimited.www.wally.ui2.theme.*
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.*
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
@@ -1202,5 +1202,59 @@ fun Syncing(syncColor: Color = Color.White, syncViewModel: SyncViewModel = viewM
                 .size(18.dp)
                 .rotate(animation)
             )
+    }
+}
+
+/** Wally standard icon text button */
+@Composable
+fun IconTextButtonUi2(
+  icon: ImageVector,
+  modifier: Modifier = Modifier,
+  description: String = "",
+  color: Color = Color.White,
+  rotateIcon: Boolean = false,
+  onClick: () -> Unit
+)
+{
+    val iconModifier = if (rotateIcon)
+        Modifier.graphicsLayer(
+          rotationZ = 90f // Rotate the icon 90 degrees
+        )
+    else
+        Modifier
+
+    Column(
+      modifier = modifier.wrapContentWidth().wrapContentHeight().padding(
+        top = 8.dp,
+        bottom = 8.dp,
+        start = 2.dp,
+        end = 2.dp
+      ),
+      horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+          modifier = iconModifier.wrapContentWidth().wrapContentHeight().clickable {
+              onClick()
+          },
+          imageVector = icon,
+          contentDescription = description,
+          tint = color,
+        )
+        Box(
+          modifier = Modifier.wrapContentWidth().wrapContentHeight().clickable {
+              onClick()
+          },
+          contentAlignment = Alignment.Center
+        ) {
+            Text(
+              modifier = Modifier.clickable {
+                  onClick()
+              },
+              style = MaterialTheme.typography.labelSmall.copy(
+                color = color
+              ),
+              text = description,
+            )
+        }
     }
 }

@@ -24,8 +24,8 @@ import info.bitcoinunlimited.www.wally.ui2.theme.WallyRowAbkg1
 import info.bitcoinunlimited.www.wally.ui2.theme.WallyRowAbkg2
 import info.bitcoinunlimited.www.wally.ui2.theme.colorConfirm
 import info.bitcoinunlimited.www.wally.ui2.theme.colorWarning
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyAssetRowColors
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.defaultFontSize
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyAssetRowColors
+import info.bitcoinunlimited.www.wally.ui2.theme.defaultFontSize
 import info.bitcoinunlimited.www.wally.ui2.views.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow

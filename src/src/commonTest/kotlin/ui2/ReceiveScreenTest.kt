@@ -10,7 +10,6 @@ import info.bitcoinunlimited.www.wally.Account
 import info.bitcoinunlimited.www.wally.CommonApp
 import info.bitcoinunlimited.www.wally.KotlinTarget
 import info.bitcoinunlimited.www.wally.platform
-import info.bitcoinunlimited.www.wally.ui2.BalanceViewModelFake
 import info.bitcoinunlimited.www.wally.ui2.ReceiveScreenContent
 import info.bitcoinunlimited.www.wally.ui2.SyncViewModelFake
 import info.bitcoinunlimited.www.wally.ui2.setSelectedAccount

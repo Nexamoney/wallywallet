@@ -32,8 +32,8 @@ import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.NavigationRoot
 import info.bitcoinunlimited.www.wally.ui2.theme.*
 import kotlinx.coroutines.*
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyThemeUi2
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurple
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyThemeUi2
+import info.bitcoinunlimited.www.wally.ui2.theme.wallyPurple
 import info.bitcoinunlimited.www.wally.ui2.views.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel

@@ -29,8 +29,8 @@ import info.bitcoinunlimited.www.wally.ui2.theme.BaseBkg
 import info.bitcoinunlimited.www.wally.ui2.theme.BrightBkg
 import info.bitcoinunlimited.www.wally.ui2.theme.Shapes
 import info.bitcoinunlimited.www.wally.ui2.theme.colorCredit
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyModalOutline
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyThemeUi2
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyModalOutline
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyThemeUi2
 import org.nexa.libnexakotlin.GetLog
 
 private val LogIt = GetLog("BU.wally.dropdown")

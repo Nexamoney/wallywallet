@@ -1,4 +1,4 @@
-package info.bitcoinunlimited.www.wally.ui2.themeUi2
+package info.bitcoinunlimited.www.wally.ui2.theme
 
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme

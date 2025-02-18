@@ -40,7 +40,7 @@ data class AccountSearchResults(
   val lastHash: Hash256
 )
 
-fun searchDerivationPathActivitySecret(getEc: () -> ElectrumClient, chainSelector: ChainSelector, maxGap:Int, secretDerivation: (Int) -> ByteArray?, ongoingResults: ((AccountSearchResults)->Unit)?=null): AccountSearchResults
+fun wallySearchDerivationPathActivitySecret(getEc: () -> ElectrumClient, chainSelector: ChainSelector, maxGap:Int, secretDerivation: (Int) -> ByteArray?, ongoingResults: ((AccountSearchResults)->Unit)?=null): AccountSearchResults
 {
     var addrsFound = 0L
     var index = 0
@@ -193,7 +193,7 @@ fun ElectrumClient.aGetHistory(scriptHash: String, timeoutInMs: Int, cb:(Array<P
     }
 }
 
-fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: ChainSelector, maxGap:Int, getBalance: Boolean, secretDerivation: (Int) -> PayDestination?, ongoingResults: ((AccountSearchResults)->Unit)?=null): AccountSearchResults
+fun wallySearchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: ChainSelector, maxGap:Int, getBalance: Boolean, secretDerivation: (Int) -> PayDestination?, ongoingResults: ((AccountSearchResults)->Unit)?=null): AccountSearchResults
 {
     val mutex = Mutex()
     var addrsFound = 0L
@@ -373,7 +373,7 @@ fun searchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: Cha
     return AccountSearchResults(ret.values.toList(), activeAddrs, addrsFound, lastAddressIndex, bal, lastHeight, lastDate, lastHash)
 }
 
-fun sequentialSearchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: ChainSelector, maxGap:Int, secretDerivation: (Int) -> PayDestination?, ongoingResults: ((AccountSearchResults)->Unit)?=null): AccountSearchResults
+fun wallySequentialSearchDerivationPathActivity(getEc: () -> ElectrumClient, chainSelector: ChainSelector, maxGap:Int, secretDerivation: (Int) -> PayDestination?, ongoingResults: ((AccountSearchResults)->Unit)?=null): AccountSearchResults
 {
     var addrsFound = 0L
     var index = 0

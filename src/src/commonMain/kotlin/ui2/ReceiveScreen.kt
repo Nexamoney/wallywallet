@@ -23,7 +23,9 @@ import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.displayNotice
 import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.setTextClipboard
-import info.bitcoinunlimited.www.wally.*import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurple
+import info.bitcoinunlimited.www.wally.*
+import info.bitcoinunlimited.www.wally.ui2.views.IconTextButtonUi2
+import info.bitcoinunlimited.www.wally.ui2.theme.wallyPurple
 import info.bitcoinunlimited.www.wally.ui2.views.AccountUiDataViewModel
 import info.bitcoinunlimited.www.wally.ui2.views.CenteredText
 import info.bitcoinunlimited.www.wally.wallyApp

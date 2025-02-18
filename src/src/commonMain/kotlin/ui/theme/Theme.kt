@@ -45,9 +45,9 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.softKeyboardBar
 import info.bitcoinunlimited.www.wally.ui2.theme.*
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyBoringButtonOutline
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyModalOutline
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyRoundedButtonOutline
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyBoringButtonOutline
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyModalOutline
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyRoundedButtonOutline
 import info.bitcoinunlimited.www.wally.ui2.views.*
 import org.nexa.libnexakotlin.CURRENCY_1
 import org.nexa.libnexakotlin.CurrencyDecimal

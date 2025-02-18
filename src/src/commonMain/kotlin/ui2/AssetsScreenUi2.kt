@@ -24,10 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.eygraber.uri.Uri
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyAssetRowColors
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyModalOutline
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurple
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.wallyPurpleExtraLight
+import info.bitcoinunlimited.www.wally.ui2.theme.*
 import info.bitcoinunlimited.www.wally.ui2.views.*
 import io.ktor.http.*
 import kotlinx.coroutines.flow.MutableStateFlow

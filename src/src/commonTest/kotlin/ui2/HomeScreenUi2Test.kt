@@ -7,10 +7,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.*
-import info.bitcoinunlimited.www.wally.ui2.BalanceViewModel
-import info.bitcoinunlimited.www.wally.ui2.views.AccountUiDataViewModel
-import info.bitcoinunlimited.www.wally.ui2.views.AccountUiDataViewModelFake
-import info.bitcoinunlimited.www.wally.ui2.views.uiData
+import info.bitcoinunlimited.www.wally.ui2.views.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope

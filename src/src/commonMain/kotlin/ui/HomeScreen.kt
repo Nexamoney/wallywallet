@@ -28,7 +28,7 @@ import info.bitcoinunlimited.www.wally.ui2.*
 import info.bitcoinunlimited.www.wally.ui2.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.ui2.theme.floatingActionBarBackground
 import info.bitcoinunlimited.www.wally.ui2.theme.listDividerFg
-import info.bitcoinunlimited.www.wally.ui2.themeUi2.WallyPageBase
+import info.bitcoinunlimited.www.wally.ui2.theme.WallyPageBase
 import info.bitcoinunlimited.www.wally.ui2.views.*
 import kotlinx.coroutines.flow.asStateFlow
 import org.nexa.libnexakotlin.*
