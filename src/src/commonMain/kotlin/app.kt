@@ -923,6 +923,7 @@ open class CommonApp
     /** Save the account list to the database */
     fun saveActiveAccountList()
     {
+        openKvpDbIfNeeded()
         val s: String = accounts.keys.joinToString(",")
         val db = kvpDb!!
         db.set("activeAccountNames", s.toByteArray())
@@ -938,7 +939,7 @@ open class CommonApp
     fun newAccount(name: String, flags: ULong, pin: String, chainSelector: ChainSelector): Account?
     {
         dbgAssertNotGuiThread()
-
+        openKvpDbIfNeeded()
         // I only want to write the PIN once when the account is first created
         val epin = if (pin.length > 0) EncodePIN(name, pin) else null
 
@@ -1006,12 +1007,12 @@ open class CommonApp
       dests: Set<PayDestination>,
       histEnd: iBlockHeader,
       histAddressCount: Int
-    ): Account?
+    ): Account
     {
         // If the account is being restored from a recovery key, then the user must have it saved somewhere already
         val flags = flags_p or ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY
         dbgAssertNotGuiThread()
-
+        openKvpDbIfNeeded()
         // I only want to write the PIN once when the account is first created
 
         val p = pin.trim()
@@ -1070,12 +1071,12 @@ open class CommonApp
       earliestActivity: Long?,
       earliestHeight: Long?,
       nonstandardActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, HDActivityBracket>>?
-    ): Account?
+    ): Account
     {
         // If the account is being restored from a recovery key, then the user must have it saved somewhere already
         val flags = flags_p or ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY
         dbgAssertNotGuiThread()
-
+        openKvpDbIfNeeded()
         // I only want to write the PIN once when the account is first created
         val epin = try
         {
@@ -1115,15 +1116,25 @@ open class CommonApp
         }
     }
 
+    /** Opens the key-value pair database (stored in the kvpDb global) if its not already opened
+     * Returns true if it needed to be opened, otherwise false
+     */
+    fun openKvpDbIfNeeded(): Boolean
+    {
+        return accountLock.lock {
+            if (kvpDb == null)
+            {
+                kvpDb = openKvpDB(dbPrefix + "wpw")
+                true
+            }
+            else false // do not open multiple times
+        }
+    }
+
     fun openAllAccounts()
     {
         val prefs = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
-        var alreadyDone = false
-        accountLock.lock {
-            if (kvpDb == null) kvpDb = openKvpDB(dbPrefix + "wpw")
-            else alreadyDone = true // do not open multiple times
-        }
-        if (alreadyDone) return
+        openKvpDbIfNeeded()
 
         if (REG_TEST_ONLY)  // If I want a regtest only wallet for manual debugging, just create it directly
         {

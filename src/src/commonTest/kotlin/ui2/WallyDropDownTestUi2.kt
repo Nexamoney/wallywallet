@@ -2,17 +2,9 @@ package ui2
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
-import info.bitcoinunlimited.www.wally.KotlinTarget
-import info.bitcoinunlimited.www.wally.platform
 import info.bitcoinunlimited.www.wally.ui2.WallyDropDownUi2
 import info.bitcoinunlimited.www.wally.ui2.supportedBlockchains
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import org.nexa.libnexakotlin.ChainSelector
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)

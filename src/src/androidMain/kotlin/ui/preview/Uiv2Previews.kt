@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import info.bitcoinunlimited.www.wally.Account
 import info.bitcoinunlimited.www.wally.ui.theme.WallyTheme
 import info.bitcoinunlimited.www.wally.ui2.ReceiveScreenContent
 import info.bitcoinunlimited.www.wally.ui2.theme.WallyThemeUi2
@@ -66,8 +67,9 @@ fun RecentTransactionsListPreview()
 @Preview
 fun ReceiveScreenPreview()
 {
+    val mockAccount = Account("mockaccount")
     val mockAddress = Pay2PubKeyTemplateDestination(ChainSelector.NEXA, UnsecuredSecret(ByteArray(32, { 1.toByte()})), 1234)
     WallyThemeUi2() {
-        ReceiveScreenContent(address = mockAddress)
+        ReceiveScreenContent(mockAccount, address = mockAddress)
     }
 }

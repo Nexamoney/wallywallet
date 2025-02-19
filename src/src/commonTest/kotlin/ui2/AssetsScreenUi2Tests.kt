@@ -3,15 +3,9 @@ package ui2
 import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.AssetListItemViewUi2
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.GroupId
 import org.nexa.libnexakotlin.GroupInfo
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)

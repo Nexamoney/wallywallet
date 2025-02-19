@@ -4,9 +4,7 @@ import info.bitcoinunlimited.www.wally.EfficientFile
 import info.bitcoinunlimited.www.wally.nftCardFront
 import info.bitcoinunlimited.www.wally.nftData
 import info.bitcoinunlimited.www.wally.zipForeach
-import io.ktor.http.ContentDisposition.Companion.File
 import okio.*
-import okio.Path.Companion.toPath
 import org.nexa.libnexakotlin.*
 import kotlin.test.*
 

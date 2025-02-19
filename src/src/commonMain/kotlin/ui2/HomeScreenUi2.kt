@@ -174,4 +174,3 @@ fun HomeScreenUi2(
         }
     }
 }
-

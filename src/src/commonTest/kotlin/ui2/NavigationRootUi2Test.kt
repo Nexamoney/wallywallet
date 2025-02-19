@@ -12,9 +12,7 @@ import info.bitcoinunlimited.www.wally.ui2.views.AccountUiDataViewModelFake
 import info.bitcoinunlimited.www.wally.ui2.views.AssetViewModelFake
 import info.bitcoinunlimited.www.wally.ui2.views.NativeSplash
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.test.*
-import kotlinx.coroutines.withTimeout
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.millisleep
 import kotlin.test.AfterTest
@@ -84,7 +82,7 @@ open class WallyUiTestBase
             sched.advanceTimeBy(1000)
             sched.runCurrent()
             val poolWaitStart = millinow()
-            while ((millinow() - poolWaitStart < ui2.maxPoolWait) && (libNexaJobPool.jobs.size != 0) && (libNexaJobPool.availableThreads != libNexaJobPool.allThreads.size)) millisleep(50U)
+            while ((millinow() - poolWaitStart < maxPoolWait) && (libNexaJobPool.jobs.size != 0) && (libNexaJobPool.availableThreads != libNexaJobPool.allThreads.size)) millisleep(50U)
         }
 
         millisleep(afterTestDelay.toULong())
@@ -99,6 +97,19 @@ open class WallyUiTestBase
                 if (jvmResetWallyApp) wallyApp = null
             }
         }
+    }
+}
+
+fun setupApp()
+{
+    if (wallyApp == null)
+    {
+        initializeLibNexa()
+        dbPrefix = "test_"
+        runningTheTests = true
+        wallyApp = CommonApp()
+        wallyApp!!.onCreate()
+        wallyApp!!.openAllAccounts()
     }
 }
 
@@ -132,38 +143,33 @@ fun ComposeUiTest.settle(scope: TestScope? = null)
 @OptIn(ExperimentalTestApi::class)
 class NavigationRootUi2Test:WallyUiTestBase()
 {
-
-    @Test
-    fun navRootTest() = runComposeUiTest {
-        val viewModelStoreOwner = object : ViewModelStoreOwner
-        {
-            override val viewModelStore: ViewModelStore = ViewModelStore()
-        }
-
-        /*
-            Start the app
-         */
-        val cs = ChainSelector.NEXA
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
-        wallyApp!!.openAllAccounts()
-
-        val assetViewModel = AssetViewModelFake()
-        val accountUiDataViewModel = AccountUiDataViewModelFake()
-
-        setContent {
-            CompositionLocalProvider(
-              LocalViewModelStoreOwner provides viewModelStoreOwner
-            ) {
-                NavigationRootUi2(Modifier, Modifier, assetViewModel, accountUiDataViewModel)
+    @Test fun navRootTest()
+    {
+        setupApp()
+        runComposeUiTest {
+            val viewModelStoreOwner = object : ViewModelStoreOwner
+            {
+                override val viewModelStore: ViewModelStore = ViewModelStore()
             }
+
+
+            val assetViewModel = AssetViewModelFake()
+            val accountUiDataViewModel = AccountUiDataViewModelFake()
+
+            setContent {
+                CompositionLocalProvider(
+                  LocalViewModelStoreOwner provides viewModelStoreOwner
+                ) {
+                    NavigationRootUi2(Modifier, Modifier, assetViewModel, accountUiDataViewModel)
+                }
+            }
+
+            val nativeSplash = NativeSplash(true)
+            // This is not visible because the splash screen is showing on some targets
+            if (nativeSplash)
+                onNodeWithTag("RootScaffold").assertIsNotDisplayed()
+
+            settle()
         }
-
-        val nativeSplash = NativeSplash(true)
-        // This is not visible because the splash screen is showing on some targets
-        if (nativeSplash)
-            onNodeWithTag("RootScaffold").assertIsNotDisplayed()
-
-        settle()
     }
 }

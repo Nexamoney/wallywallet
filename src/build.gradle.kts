@@ -19,7 +19,7 @@ val androidVersionCode = versionNumber.replace(".", "").toInt()
 // Dependency versions
 val mpThreadsVersion = "0.4.0"
 val nexaRpcVersion = "1.3.0"
-val libNexaKotlinVersion = "0.4.5"
+val libNexaKotlinVersion = "0.4.7"
 val serializationVersion = "1.8.0"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.10.1"     // https://github.com/Kotlin/kotlinx.coroutines
 val bigNumVersion = "0.3.10"         // https://github.com/ionspin/kotlin-multiplatform-bignum

@@ -273,6 +273,8 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
             // Freeze a copy of the data, for use in the deferred account creation
             val acState = newAccountState.value.copy()
             val chainSelector = selectedBlockChain.second
+            aborter.value.obj = true
+            CleanState()
             nav.back()  // since the data is wiped when we go back
             // get account creation out of the UI thread
             // launching a co-routine somehow delays the UI update by seconds
@@ -285,7 +287,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
 
     fun CreateSyncAccount()
     {
-        var inputValid = FinalDataCheck()
+        val inputValid = FinalDataCheck()
         // Grab all the data because when I go back it will be wiped from the UX
         val acState = newAccountState.value.copy()
         val chainSelector = selectedBlockChain.second
@@ -293,7 +295,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
 
         if (inputValid)
         {
-
+            CleanState()  // Clean it after taking a copy but right away
             val words = processSecretWords(acState.recoveryPhrase)
             if (words.size == 12) // account recovery
             {
@@ -449,21 +451,8 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
       onHideUntilPinEnterChanged = {
           newAccountState.value = newAccountState.value.copy(hideUntilPinEnter = it)
       },
-      onClickCreateAccount =  {
-          val inputValid = FinalDataCheck()
-          aborter.value.obj = true
-          CreateSyncAccount()
-          if (inputValid)
-            CleanState()
-                              },
-      onClickCreateDiscoveredAccount =  {
-          val inputValid = FinalDataCheck()
-          aborter.value.obj = true
-          CreateDiscoveredAccount()
-          if (inputValid)
-            CleanState()
-                                        },
-
+      onClickCreateAccount =  { CreateSyncAccount() },
+      onClickCreateDiscoveredAccount = { CreateDiscoveredAccount() },
       creatingAccountLoading
     )
 }
