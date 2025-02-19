@@ -68,5 +68,6 @@ class AccountDetailScreenTest
         onNodeWithText(i18n(S.SetChangePin)).performClick()
         onNodeWithText(i18n(S.PinHidesAccount)).isDisplayed()
         onNodeWithText(i18n(S.cancel)).performClick()
+        wallyApp!!.deleteAccount(account)
     }
 }

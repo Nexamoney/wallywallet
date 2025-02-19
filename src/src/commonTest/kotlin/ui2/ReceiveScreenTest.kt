@@ -6,21 +6,9 @@ import androidx.compose.ui.test.*
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import info.bitcoinunlimited.www.wally.Account
-import info.bitcoinunlimited.www.wally.CommonApp
-import info.bitcoinunlimited.www.wally.KotlinTarget
-import info.bitcoinunlimited.www.wally.platform
 import info.bitcoinunlimited.www.wally.ui2.ReceiveScreenContent
-import info.bitcoinunlimited.www.wally.ui2.SyncViewModelFake
 import info.bitcoinunlimited.www.wally.ui2.setSelectedAccount
-import info.bitcoinunlimited.www.wally.ui2.views.AccountUiDataViewModelFake
 import info.bitcoinunlimited.www.wally.wallyApp
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import org.nexa.libnexakotlin.*
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -62,7 +50,7 @@ class ReceiveScreenTest:WallyUiTestBase()
                 CompositionLocalProvider(
                   LocalViewModelStoreOwner provides viewModelStoreOwner
                 ) {
-                    ReceiveScreenContent(address, Modifier)
+                    ReceiveScreenContent(account, address, Modifier)
                 }
             }
             settle()
@@ -70,5 +58,6 @@ class ReceiveScreenTest:WallyUiTestBase()
             onNodeWithText(address.address.toString()).performClick()
             settle()
         }
+        wallyApp!!.deleteAccount(account)
     }
 }

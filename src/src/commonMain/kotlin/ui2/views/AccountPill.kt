@@ -339,7 +339,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                         )
                         IconTextButtonUi2(
                           icon = Icons.Outlined.ArrowDownward,
-                          modifier = Modifier.weight(1f),
+                          modifier = Modifier.weight(1f).testTag("ReceiveButton"),
                           description = i18n(S.Receive)
                         ) {
                             nav.go(ScreenId.Receive)

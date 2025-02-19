@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -47,12 +48,19 @@ typealias AccountName = String
 fun ReceiveScreen()
 {
     val focusedAccount = wallyApp!!.focusedAccount.collectAsState().value
-    val address = focusedAccount?.currentReceiveObservable?.collectAsState()?.value
     // Select the first available account if none are available
     if (focusedAccount == null)
-        wallyApp?.accounts?.values?.first()?.let {
-            setSelectedAccount(it)
+    {
+        try
+        {
+            setSelectedAccount(wallyApp!!.preferredVisibleAccount())
         }
+        catch (e: PrimaryWalletInvalidException)
+        {
+            displayErrorAndGoBack(S.NoAccounts)
+            return
+        }
+    }
 
     if (focusedAccount == null)
     {
@@ -60,11 +68,13 @@ fun ReceiveScreen()
         return
     }
 
+    val address = focusedAccount.currentReceiveObservable.collectAsState().value
+
     Column (
       modifier = Modifier.fillMaxSize(),
     ) {
         if (address != null)
-            ReceiveScreenContent(address, Modifier.weight(1f))
+            ReceiveScreenContent(focusedAccount, address, Modifier.weight(1f))
         else
             Row {
                 Syncing(Color.Black)
@@ -91,7 +101,7 @@ fun ReceiveScreen()
                 }
                 IconTextButtonUi2(
                   icon = Icons.AutoMirrored.Outlined.ArrowBack,
-                  modifier = Modifier.weight(1f),
+                  modifier = Modifier.weight(1f).testTag("BackButton"),
                   description = i18n(S.Back),
                   color = wallyPurple,
                 ) {
@@ -103,6 +113,7 @@ fun ReceiveScreen()
 
 @Composable
 fun ReceiveScreenContent(
+  account: Account,
   address: PayDestination,
   modifier: Modifier = Modifier
 )
@@ -118,19 +129,22 @@ fun ReceiveScreenContent(
           horizontalAlignment = Alignment.CenterHorizontally,
           verticalArrangement = Arrangement.Top
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
-            AccountPill(wallyApp!!.focusedAccount).draw(buttonsEnabled = false)
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.weight(0.04f))
+            AccountPill(account).draw(buttonsEnabled = false)
+            Spacer(modifier = Modifier.weight(0.01f))
             Image(
               painter = qrcodePainter,
               contentDescription = "QR Code",
               modifier = Modifier
-                .fillMaxWidth(0.7f) // Dynamically adjusts size to the screen width
+                .weight(0.5f)
+                .fillMaxWidth(0.7f)   // Dynamically adjusts size to the screen width
                 .aspectRatio(1f) // Keeps the image square
                 .background(Color.White)
-                .clickable { setTextClipboard(addrStr) }
+                .testTag("qrcode")
+                .clickable { setTextClipboard(addrStr)}
+
             )
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.weight(0.01f))
             Text(
               text = i18n(S.YourAddress) % mapOf("blockchain" to (chainToURI[address.chainSelector] ?: "")),
               style = MaterialTheme.typography.headlineSmall
@@ -139,11 +153,11 @@ fun ReceiveScreenContent(
               text = addrStr,
               style = MaterialTheme.typography.bodyLarge,
               textAlign = TextAlign.Center,
-              modifier = Modifier.fillMaxWidth(0.8f).clickable { setTextClipboard(addrStr) }
+              modifier = Modifier.fillMaxWidth(0.8f).clickable { setTextClipboard(addrStr) }.testTag("receiveScreen:receiveAddress")
             )
-            Spacer(modifier = Modifier.height(16.dp))
             if (devMode)
             {
+                Spacer(modifier = Modifier.weight(0.01f))
                 // Dev mode so don't need i18n
                 CenteredText(text = "Providing address ${address.index}", textStyle = MaterialTheme.typography.bodySmall)
             }

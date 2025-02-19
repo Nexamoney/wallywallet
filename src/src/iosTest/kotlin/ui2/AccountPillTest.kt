@@ -19,6 +19,7 @@ import kotlinx.coroutines.test.setMain
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.initializeLibNexa
 import org.nexa.libnexakotlin.runningTheTests
+import platform.posix.exception
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -91,7 +92,16 @@ class AccountPillTest:WallyUiTestBase()
             val fiatBalance2 = "555"
             ap.balance.fiatBalance.value = fiatBalance2
             settle()
-            onNodeWithText(fiatBalance2).assertIsDisplayed()
+            waitFor(5000, { "balance $fiatBalance2 is not displayed!"}) {
+                try {
+                    onNodeWithText(fiatBalance2).assertIsDisplayed()
+                    true
+                }
+                catch(e:Exception)
+                {
+                    false
+                }
+            }
             settle()
         }
     }

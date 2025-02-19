@@ -19,17 +19,9 @@ import info.bitcoinunlimited.www.wally.*
 import androidx.compose.ui.test.swipeUp
 import info.bitcoinunlimited.www.wally.ui.ConfirmAbove
 import info.bitcoinunlimited.www.wally.ui2.LocalCurrency
-import info.bitcoinunlimited.www.wally.wallyApp
 import info.bitcoinunlimited.www.wally.ui2.SettingsScreenUi2
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.chainToCurrencyCode
-import org.nexa.threads.millisleep
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -100,7 +92,7 @@ class SettingsScreenTestUi2:WallyUiTestBase()
 class FakeSharedPreferences : SharedPreferences {
     private val data = mutableMapOf<String, Any>()
 
-    override fun getString(key: String, defValue: String?): String? = data[key] as? String ?: defValue
+    override fun getString(key: String, defaultValue: String?): String? = data[key] as? String ?: defaultValue
     override fun getInt(key: String, defaultValue: Int): Int
     {
         TODO("Not yet implemented")

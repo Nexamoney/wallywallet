@@ -16,14 +16,7 @@ import info.bitcoinunlimited.www.wally.ui2.AssetListItemEditable
 import info.bitcoinunlimited.www.wally.ui2.setSelectedAccount
 import info.bitcoinunlimited.www.wally.ui2.ConfirmSend
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
-import org.nexa.libnexakotlin.*
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import info.bitcoinunlimited.www.wally.ui2.WallyNumericInputFieldAsset
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.GroupId
@@ -96,12 +89,13 @@ class SendScreenTest:WallyUiTestBase()
             println(uiState)
             settle()
         }
+        wallyApp!!.deleteAccount(account)
     }
 
     @Test
     fun sendBottomButtonsTest()
     {
-        val account = wallyApp!!.newAccount("itemvie", 0U, "", cs)!!
+        val account = wallyApp!!.newAccount("sendBottomButtonsTest", 0U, "", cs)!!
         runComposeUiTest {
             val viewModel = SendScreenViewModelFake(account)
 
@@ -127,6 +121,7 @@ class SendScreenTest:WallyUiTestBase()
             assertEquals(viewModel.uiState.value.toAddressFinal, SendScreenUi().toAddressFinal)
             settle()
         }
+        wallyApp!!.deleteAccount(account)
     }
 
     @Test
@@ -191,33 +186,31 @@ class SendScreenTest:WallyUiTestBase()
     }
 
     @Test
-    fun confirmSendTest() = runComposeUiTest {
-        /*
-            Start the app
-         */
-        wallyApp!!.openAllAccounts()
-        lateinit var account: Account
-        runBlocking(Dispatchers.IO) {
-            account = wallyApp!!.newAccount("testAcc", 0U, "", cs)!!
+    fun confirmSendTest()
+    {
+        setupApp()
+        val account = wallyApp!!.newAccount("testAcc", 0U, "", cs)!!
+        runComposeUiTest {
+            setSelectedAccount(account)
+            val viewModel = SendScreenViewModelFake(account)
+
+            setContent {
+                ConfirmSend(viewModel)
+            }
+            settle()
+
+            onNodeWithText(i18n(S.confirmSend)).assertIsDisplayed()
+
+            // TODO: Verify that uiState values such as toAddress is displayed:
+            // val toAddress = viewModel.uiState.value.toAddress
+            // onNodeWithText(toAddress).assertIsDisplayed()
+
+            // TODO: mock assetsToSend and verify that it is displayed
+            val assetsToSend = viewModel.assetsToSend.value.size
+            if (assetsToSend > 0)
+                onNodeWithText(assetsToSend.toString()).assertExists()
+            settle()
         }
-        setSelectedAccount(account)
-        val viewModel = SendScreenViewModelFake(account)
-
-        setContent {
-            ConfirmSend(viewModel)
-        }
-        settle()
-
-        onNodeWithText(i18n(S.confirmSend)).assertIsDisplayed()
-
-        // TODO: Verify that uiState values such as toAddress is displayed:
-        // val toAddress = viewModel.uiState.value.toAddress
-        // onNodeWithText(toAddress).assertIsDisplayed()
-
-        // TODO: mock assetsToSend and verify that it is displayed
-        val assetsToSend = viewModel.assetsToSend.value.size
-        if (assetsToSend > 0)
-            onNodeWithText(assetsToSend.toString()).assertExists()
-        settle()
+        wallyApp!!.deleteAccount(account)
     }
 }

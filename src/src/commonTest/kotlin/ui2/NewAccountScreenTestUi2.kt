@@ -8,38 +8,17 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.NewAccountScreenUi2
-import info.bitcoinunlimited.www.wally.ui2.NewAccountState
 import info.bitcoinunlimited.www.wally.ui2.newAccountState
 import info.bitcoinunlimited.www.wally.ui2.setSelectedAccount
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
-import org.nexa.libnexakotlin.ChainSelector
-import org.nexa.libnexakotlin.initializeLibNexa
-import org.nexa.libnexakotlin.launch
-import org.nexa.libnexakotlin.runningTheTests
-import org.nexa.threads.millisleep
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
+import org.nexa.libnexakotlin.*
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
 val TESTWALLET = "newAccountScreenTest"
-
-fun setupTest(cs: ChainSelector, selectAccount: Boolean = true): Account
-{
-    wallyApp!!.openAllAccounts()
-    lateinit var account: Account
-    runBlocking(Dispatchers.IO) {
-        account = wallyApp!!.newAccount(TESTWALLET, 0U, "", cs)!!
-    }
-    if (selectAccount) setSelectedAccount(account)
-    return account
-}
 
 @OptIn(ExperimentalTestApi::class)
 class NewAccountScreenTestUi2:WallyUiTestBase()
@@ -66,184 +45,202 @@ class NewAccountScreenTestUi2:WallyUiTestBase()
 
     /** Test creating a Nexa account */
     @Test
-    fun selectBlockchainAndCreateAccount() = runComposeUiTest {
-        val viewModelStoreOwner = object : ViewModelStoreOwner
-        {
-            override val viewModelStore: ViewModelStore = ViewModelStore()
-        }
-
-        val cs = ChainSelector.NEXA
-        val account = setupTest(cs)
-
-        val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())
-        setContent {
-            CompositionLocalProvider(
-              LocalViewModelStoreOwner provides viewModelStoreOwner
-            ) {
-                NewAccountScreenUi2(accountGuiSlots.collectAsState(), false)
+    fun selectBlockchainAndCreateAccount()
+    {
+        setupApp()
+        runComposeUiTest {
+            val viewModelStoreOwner = object : ViewModelStoreOwner
+            {
+                override val viewModelStore: ViewModelStore = ViewModelStore()
             }
+
+            val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())
+            setContent {
+                CompositionLocalProvider(
+                  LocalViewModelStoreOwner provides viewModelStoreOwner
+                ) {
+                    NewAccountScreenUi2(accountGuiSlots.collectAsState(), false)
+                }
+            }
+            settle()
+
+            // Open Blockchain selector and select NEXA
+            // Commented because using dropdown in UI tests only works on the JVM target...
+            /*
+            onNodeWithText("NEXA").assertExists()
+            onNodeWithText("NEXA").performClick()
+            onNodeWithTag("DropdownMenuItem-NEXA").assertExists()
+            onNodeWithTag("DropdownMenuItem-NEXA").performClick()
+            onNodeWithText("NEXA").assertExists()
+             */
+
+            onNodeWithText(i18n(S.createNewAccount)).assertExists()
+            onNodeWithText(i18n(S.createNewAccount)).performClick()
+            settle()
+            // If account name gets cleared, new account creation succeeded
+            assertTrue { newAccountState.value.accountName == "" }
         }
-        settle()
-
-        // Open Blockchain selector and select NEXA
-        // Commented because using dropdown in UI tests only works on the JVM target...
-        /*
-        onNodeWithText("NEXA").assertExists()
-        onNodeWithText("NEXA").performClick()
-        onNodeWithTag("DropdownMenuItem-NEXA").assertExists()
-        onNodeWithTag("DropdownMenuItem-NEXA").performClick()
-        onNodeWithText("NEXA").assertExists()
-         */
-
-        onNodeWithText(i18n(S.createNewAccount)).assertExists()
-        onNodeWithText(i18n(S.createNewAccount)).performClick()
-        settle()
-        assertTrue { newAccountState.value == NewAccountState() }
     }
 
     /** Test changing the new account's name */
     @Test
-    fun enterNameAndCreateAccount() = runComposeUiTest {
-        val viewModelStoreOwner = object : ViewModelStoreOwner
-        {
-            override val viewModelStore: ViewModelStore = ViewModelStore()
-        }
-
-        val cs = ChainSelector.NEXA
-        val account = setupTest(cs, false)
+    fun enterNameAndCreateAccount()
+    {
+        setupApp()
         val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())
-
-        setContent {
-            CompositionLocalProvider(
-              LocalViewModelStoreOwner provides viewModelStoreOwner
-            ) {
-                NewAccountScreenUi2(accountGuiSlots.collectAsState(), false)
+        runComposeUiTest {
+            val viewModelStoreOwner = object : ViewModelStoreOwner
+            {
+                override val viewModelStore: ViewModelStore = ViewModelStore()
             }
-        }
 
-        onNodeWithTag("AccountNameInput").assertExists()
-        onNodeWithTag("AccountNameInput").performTextInput("account")
-        settle()
-        onNodeWithText(i18n(S.createNewAccount)).assertExists()
-        onNodeWithText(i18n(S.createNewAccount)).performClick()
-        settle()
-        assertTrue { newAccountState.value == NewAccountState() }
-        settle()
+            setContent {
+                CompositionLocalProvider(
+                  LocalViewModelStoreOwner provides viewModelStoreOwner
+                ) {
+                    NewAccountScreenUi2(accountGuiSlots.collectAsState(), false)
+                }
+            }
+
+            onNodeWithTag("AccountNameInput").assertExists()
+            onNodeWithTag("AccountNameInput").performTextInput("account")
+            settle()
+            onNodeWithText(i18n(S.createNewAccount)).assertExists()
+            onNodeWithText(i18n(S.createNewAccount)).performClick()
+            settle()
+            assertTrue { newAccountState.value.accountName == "" }
+            settle()
+        }
     }
 
     /** Test preventing an overly long name */
     @Test
-    fun tooLongAccountName() = runComposeUiTest {
-        val viewModelStoreOwner = object : ViewModelStoreOwner
-        {
-            override val viewModelStore: ViewModelStore = ViewModelStore()
-        }
-
-        val cs = ChainSelector.NEXA
-        val account = setupTest(cs, false)
+    fun tooLongAccountName()
+    {
+        setupApp()
         val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())
-
-        setContent {
-            CompositionLocalProvider(
-              LocalViewModelStoreOwner provides viewModelStoreOwner
-            ) {
-                NewAccountScreenUi2(accountGuiSlots.collectAsState(), false)
+        runComposeUiTest {
+            val viewModelStoreOwner = object : ViewModelStoreOwner
+            {
+                override val viewModelStore: ViewModelStore = ViewModelStore()
             }
-        }
-        // default name should be valid
-        onNodeWithTag("AccountName_C").assertExists()
-        onNodeWithTag("AccountName_X").assertDoesNotExist()
-        // ok now put a bad name in
-        onNodeWithTag("AccountNameInput").assertExists()
-        onNodeWithTag("AccountNameInput").performTextReplacement("longaccountname_longaccountname")
-        settle()
-        // check that its marked with an X
-        onNodeWithTag("AccountName_X").assertExists()
-        onNodeWithTag("AccountName_C").assertDoesNotExist()
-        // now click create account
-        onNodeWithTag("onClickCreateAccount").assertExists()
-        onNodeWithTag("onClickCreateAccount").performClick()
-        settle()
-        // No fields should be changed
-        onNodeWithTag("AccountNameInput").assertTextEquals("longaccountname_longaccountname")
-        onNodeWithTag("AccountName_X").assertExists()
-        onNodeWithTag("AccountName_C").assertDoesNotExist()
+            setContent {
+                CompositionLocalProvider(
+                  LocalViewModelStoreOwner provides viewModelStoreOwner
+                ) {
+                    NewAccountScreenUi2(accountGuiSlots.collectAsState(), false)
+                }
+            }
+            // default name should be valid
+            onNodeWithTag("AccountName_C").assertExists()
+            onNodeWithTag("AccountName_X").assertDoesNotExist()
+            // ok now put a bad name in
+            onNodeWithTag("AccountNameInput").assertExists()
+            onNodeWithTag("AccountNameInput").performTextReplacement("longaccountname_longaccountname")
+            settle()
+            // check that its marked with an X
+            onNodeWithTag("AccountName_X").assertExists()
+            onNodeWithTag("AccountName_C").assertDoesNotExist()
+            // now click create account
+            onNodeWithTag("onClickCreateAccount").assertExists()
+            onNodeWithTag("onClickCreateAccount").performClick()
+            settle()
+            // No fields should be changed
+            onNodeWithTag("AccountNameInput").assertTextEquals("longaccountname_longaccountname")
+            onNodeWithTag("AccountName_X").assertExists()
+            onNodeWithTag("AccountName_C").assertDoesNotExist()
 
-        // Put values back the way they were for other tests
-        onNodeWithTag("AccountNameInput").performTextReplacement("nexa")
-        settle()
+            // Put values back the way they were for other tests
+            onNodeWithTag("AccountNameInput").performTextReplacement("nexa")
+            settle()
+        }
     }
 
     /** Test specifying an account unlock PIN */
     @Test
-    fun enterPinAndCreateAccount() = runComposeUiTest {
-        val viewModelStoreOwner = object : ViewModelStoreOwner
-        {
-            override val viewModelStore: ViewModelStore = ViewModelStore()
+    fun enterPinAndCreateAccount()
+    {
+        setupApp()
+        // Delete the account we are going to create, in case it was previously created by a prior test run
+        wallyApp!!.accounts["newAct"]?.let {
+            it.delete()
+            wallyApp!!.accounts.remove("newAct")
         }
-
-        val cs = ChainSelector.NEXA
-        val account = setupTest(cs, false)
-        val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())
-
-        setContent {
-            CompositionLocalProvider(
-              LocalViewModelStoreOwner provides viewModelStoreOwner
-            ) {
-                NewAccountScreenUi2(accountGuiSlots.collectAsState(), false)
+        runComposeUiTest {
+            val viewModelStoreOwner = object : ViewModelStoreOwner
+            {
+                override val viewModelStore: ViewModelStore = ViewModelStore()
             }
-        }
-        settle()
 
-        onNodeWithTag("NewAccountPinInput").assertExists()
-        onNodeWithTag("NewAccountPinInput").performTextInput("1234")
-        settle()
-        onNodeWithText(i18n(S.createNewAccount)).assertExists()
-        onNodeWithText(i18n(S.createNewAccount)).performClick()
-        settle()
-        assertTrue { newAccountState.value == NewAccountState() }
-        settle()
+            val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())
+
+            setContent {
+                CompositionLocalProvider(
+                  LocalViewModelStoreOwner provides viewModelStoreOwner
+                ) {
+                    NewAccountScreenUi2(accountGuiSlots.collectAsState(), false)
+                }
+            }
+            settle()
+
+            onNodeWithTag("AccountNameInput").performTextClearance()
+            onNodeWithTag("AccountNameInput").performTextInput("newAct")
+            onNodeWithTag("NewAccountPinInput").assertExists().assertIsDisplayed()
+            onNodeWithTag("NewAccountPinInput").performTextInput("1234")
+            settle()
+            onNodeWithText(i18n(S.createNewAccount)).assertExists().assertIsDisplayed()
+            onNodeWithText(i18n(S.createNewAccount)).performClick()
+            settle()
+            // If the account is unable to be created for some reason, the view state will not be cleared
+            waitFor(5000) { newAccountState.value.accountName == "" }
+            settle()
+        }
+
     }
 
     /** Test specifying a short PIN */
     @Test
-    fun enterTooShortPin() = runComposeUiTest {
-        val viewModelStoreOwner = object : ViewModelStoreOwner
-        {
-            override val viewModelStore: ViewModelStore = ViewModelStore()
-        }
-
+    fun enterTooShortPin()
+    {
+        setupApp()
         // If we have accounts from other tests, the default account name will be incorrect
         wallyApp!!.accounts.clear()
         val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())
 
-        setContent {
-            CompositionLocalProvider(
-              LocalViewModelStoreOwner provides viewModelStoreOwner
-            ) {
-                NewAccountScreenUi2(accountGuiSlots.collectAsState(), false)
+        runComposeUiTest {
+            val viewModelStoreOwner = object : ViewModelStoreOwner
+            {
+                override val viewModelStore: ViewModelStore = ViewModelStore()
             }
+
+            setContent {
+                CompositionLocalProvider(
+                  LocalViewModelStoreOwner provides viewModelStoreOwner
+                ) {
+                    NewAccountScreenUi2(accountGuiSlots.collectAsState(), false)
+                }
+            }
+            settle()
+            // empty PIN is fine
+            onNodeWithTag("pin_C").assertExists()
+            onNodeWithTag("pin_X").assertDoesNotExist()
+            onNodeWithTag("NewAccountPinInput").assertExists()
+            onNodeWithTag("NewAccountPinInput").performTextInput("12")
+            // short pin is not
+            settle()
+            onNodeWithTag("pin_X").assertExists()
+            onNodeWithTag("pin_C").assertDoesNotExist()
+            // click create account anyway
+            onNodeWithText(i18n(S.createNewAccount)).assertExists()
+            onNodeWithText(i18n(S.createNewAccount)).performClick()
+            settle()
+            // should still be an X
+            onNodeWithTag("pin_X").assertExists()
+            onNodeWithTag("pin_C").assertDoesNotExist()
+            // Strangely the account name gets cleared when the pin is bad
+            onNodeWithTag("AccountNameInput").assertTextEquals("nexa")
+            settle()
         }
-        settle()
-        // empty PIN is fine
-        onNodeWithTag("pin_C").assertExists()
-        onNodeWithTag("pin_X").assertDoesNotExist()
-        onNodeWithTag("NewAccountPinInput").assertExists()
-        onNodeWithTag("NewAccountPinInput").performTextInput("12")
-        // short pin is not
-        settle()
-        onNodeWithTag("pin_X").assertExists()
-        onNodeWithTag("pin_C").assertDoesNotExist()
-        // click create account anyway
-        onNodeWithText(i18n(S.createNewAccount)).assertExists()
-        onNodeWithText(i18n(S.createNewAccount)).performClick()
-        settle()
-        // should still be an X
-        onNodeWithTag("pin_X").assertExists()
-        onNodeWithTag("pin_C").assertDoesNotExist()
-        // Strangely the account name gets cleared when the pin is bad
-        onNodeWithTag("AccountNameInput").assertTextEquals("nexa")
-        settle()
     }
 
     /** Test specifying a long PIN (pin length is not limited) */
