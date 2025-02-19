@@ -611,6 +611,7 @@ class Account(
             {
                 LogIt.error(e.message ?: "loadAccountAddress:DataMissingException")
                 // its fine we'll grab a new one
+                getAndCacheWalletAddress()
             }
         }
 
@@ -787,6 +788,13 @@ class Account(
     fun onChange(force: Boolean = false)
     {
         onChanged(this, force)  // calls changeAsyncProcessing
+    }
+
+    fun getAndCacheWalletAddress()
+    {
+        val ret = wallet.getCurrentDestination()  // Will pop forward but only if needed  //getNewDestination()
+        currentReceive = ret
+        saveAccountAddress()
     }
 
     /**
