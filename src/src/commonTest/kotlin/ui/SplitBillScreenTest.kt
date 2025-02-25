@@ -3,67 +3,57 @@ package ui
 import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.SplitBillScreen
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.runBlocking
 import org.nexa.libnexakotlin.ChainSelector
-import org.nexa.libnexakotlin.initializeLibNexa
-import org.nexa.libnexakotlin.runningTheTests
 import ui2.settle
+import ui2.setupTestEnv
 import kotlin.test.Test
 
 class SplitBillScreenTest
 {
     init {
-        initializeLibNexa()
-        runningTheTests = true
-        forTestingDoNotAutoCreateWallets = true
-        dbPrefix = "test_"
+        setupTestEnv()
     }
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun displaySplitBillScreen() = runComposeUiTest {
+    fun displaySplitBillScreen()
+    {
         val cs = ChainSelector.NEXA
-        lateinit var account: Account
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
-        wallyApp!!.openAllAccounts()
-        runBlocking(Dispatchers.IO) {
-            account = wallyApp!!.newAccount("mock", 0U, "", cs)!!
+        val account: Account = wallyApp!!.newAccount("mock", 0U, "", cs)!!
+        runComposeUiTest {
+            setContent {
+                SplitBillScreen(account)
+            }
+            settle()
+            onNodeWithText(i18n(S.SplitBillDescription)).assertIsDisplayed()
         }
-        setContent {
-            SplitBillScreen(account)
-        }
-
-        onNodeWithText(i18n(S.SplitBillDescription)).assertIsDisplayed()
+        account.delete()
     }
 
     @OptIn(ExperimentalTestApi::class)
     @Test
-    fun amountInputTest() = runComposeUiTest {
+    fun amountInputTest()
+    {
         val cs = ChainSelector.NEXA
-        lateinit var account: Account
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
-        wallyApp!!.openAllAccounts()
-        runBlocking(Dispatchers.IO) {
-            account = wallyApp!!.newAccount("mock", 0U, "", cs)!!
-        }
-        setContent {
-            SplitBillScreen(account)
-        }
+        val account: Account = wallyApp!!.newAccount("mock", 0U, "", cs)!!
+        runComposeUiTest {
+            setContent {
+                SplitBillScreen(account)
+            }
+            settle()
 
-        onNodeWithTag("SplitBillScreenAmountInput").assertIsDisplayed()
-        onNodeWithTag("SplitBillScreenAmountInput").performTextClearance()
-        onNodeWithTag("SplitBillScreenAmountInput").performTextInput("100")
-        settle()
-        onNodeWithTag("SplitBillScreenAmountInput").assert(hasText("100"))
+            onNodeWithTag("SplitBillScreenAmountInput").assertIsDisplayed()
+            onNodeWithTag("SplitBillScreenAmountInput").performTextClearance()
+            onNodeWithTag("SplitBillScreenAmountInput").performTextInput("100")
+            settle()
+            onNodeWithTag("SplitBillScreenAmountInput").assert(hasText("100"))
 
-        onNodeWithTag("SplitBillScreenTipInput").assertIsDisplayed()
-        onNodeWithTag("SplitBillScreenTipInput").performTextClearance()
-        onNodeWithTag("SplitBillScreenTipInput").performTextInput("42")
-        settle()
-        onNodeWithText("42").assertIsDisplayed()
+            onNodeWithTag("SplitBillScreenTipInput").assertIsDisplayed()
+            onNodeWithTag("SplitBillScreenTipInput").performTextClearance()
+            onNodeWithTag("SplitBillScreenTipInput").performTextInput("42")
+            settle()
+            onNodeWithText("42").assertIsDisplayed()
+        }
+        account.delete()
     }
 }

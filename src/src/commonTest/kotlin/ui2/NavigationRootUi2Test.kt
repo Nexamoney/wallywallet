@@ -30,6 +30,19 @@ var maxPoolWait = 500
 // Reset WallyApp for every test under JVM?
 var jvmResetWallyApp = false
 
+internal fun setupTestEnv()
+{
+    initializeLibNexa()
+    runningTheTests = true
+    forTestingDoNotAutoCreateWallets = true
+    dbPrefix = "test_"
+    if (wallyApp == null)
+    {
+        wallyApp = CommonApp()
+        wallyApp!!.onCreate()
+        wallyApp!!.openAllAccounts()
+    }
+}
 
 //val sched = TestCoroutineScheduler()
 //val testDispatcher = StandardTestDispatcher(sched, "testDispatcher")
@@ -41,12 +54,7 @@ open class WallyUiTestBase
 
     // You only need to do this once
     init {
-        initializeLibNexa()
-        runningTheTests = true
-        forTestingDoNotAutoCreateWallets = true
-        dbPrefix = "test_"
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
+        setupTestEnv()
     }
 
     @BeforeTest
@@ -100,18 +108,6 @@ open class WallyUiTestBase
     }
 }
 
-fun setupApp()
-{
-    if (wallyApp == null)
-    {
-        initializeLibNexa()
-        dbPrefix = "test_"
-        runningTheTests = true
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
-        wallyApp!!.openAllAccounts()
-    }
-}
 
 @OptIn(ExperimentalTestApi::class)
 fun ComposeUiTest.settle(scope: TestScope? = null)
@@ -145,7 +141,6 @@ class NavigationRootUi2Test:WallyUiTestBase()
 {
     @Test fun navRootTest()
     {
-        setupApp()
         runComposeUiTest {
             val viewModelStoreOwner = object : ViewModelStoreOwner
             {

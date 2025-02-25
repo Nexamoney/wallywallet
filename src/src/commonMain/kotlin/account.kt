@@ -35,6 +35,12 @@ var dbPrefix = ""
 /** Currently selected fiat currency code */
 var fiatCurrencyCode: String = "USD"
 
+/** What file name wally wallet uses to open accounts */
+fun wallyAccountDbFileName(name: String):String
+{
+    return dbPrefix + name + "_wallet"
+}
+
 // Note that this returns the last time and block when a new address was FIRST USED, so this may not be what you wanted
 data class HDActivityBracket(val startTime: Long, val startBlockHeight: Int, val lastTime: Long, val lastBlockHeight: Int, val lastAddressIndex: Int)
 
@@ -74,12 +80,13 @@ class Account(
     val handler = CoroutineExceptionHandler {
         _, exception -> LogIt.error("Caught in Account CoroutineExceptionHandler: $exception")
     }
-    var walletDb: WalletDatabase? = db ?: openWalletDB(dbPrefix + name + "_wallet", chainSelector)
+    var walletDb: WalletDatabase? = db ?: openWalletDB(wallyAccountDbFileName(name), chainSelector)
     @Volatile
     var started = false  // Have the cnxnmgr and blockchain services been started or are we in initialization?
     //? Was the PIN entered properly since the last 15 second sleep?
     var pinEntered = false
     var encodedPin: ByteArray? = loadEncodedPin()
+    var walletOnChange: Int = -1
 
     var currentReceive: PayDestination? = null //? This receive address appears on the main screen for quickly receiving coins
         set(value) {
@@ -183,7 +190,7 @@ class Account(
             for (r in retrieveOnlyActivity)
             {
                 assert(r.first.index == r.second.lastAddressIndex) // Caller should have properly set this.  Doublecheck.
-                var tmp = r.first
+                val tmp = r.first
                 tmp.index += RETRIEVE_ONLY_ADDITIONAL_ADDRESSES
                 wallet.retrieveOnlyDerivationPaths.add(tmp)
             }
@@ -749,7 +756,7 @@ class Account(
         netCb?.let { wallet.blockchain.net.changeCallback.remove(it) }
         currentReceive = null
         wallet.stop()
-        wallet.delete()
+        wallet.delete(wallyAccountDbFileName(wallet.name))
         walletDb = null
         balance = BigDecimal.ZERO
         unconfirmedBalance = BigDecimal.ZERO

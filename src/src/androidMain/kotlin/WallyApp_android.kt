@@ -116,7 +116,6 @@ fun initializeGraphicsResources()
     }
 }
 
-
 val backgroundLock = Mutex("background")
 var backgroundCount = 0
 
@@ -183,16 +182,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         RsendMoreTokensThanBalance = S.sendMoreTokensThanBalance
     }
 
-    var commonApp = CommonApp()
-    val focusedAccount
-      get() = commonApp.focusedAccount
-
-    // Current notification ID
-    var notifId = 0
-
-    protected val coMiscCtxt: CoroutineContext = Executors.newFixedThreadPool(6).asCoroutineDispatcher()
-    protected val coMiscScope: CoroutineScope = kotlinx.coroutines.CoroutineScope(coMiscCtxt)
-
     companion object
     {
         // Used to load the 'native-lib' library on application startup.
@@ -205,6 +194,21 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
 
     val init = org.nexa.libnexakotlin.initializeLibNexa()
 
+    var commonApp = CommonApp()
+    init
+    {
+        wallyApp = commonApp
+    }
+    val focusedAccount
+      get() = commonApp.focusedAccount
+
+    // Current notification ID
+    var notifId = 0
+
+    protected val coMiscCtxt: CoroutineContext = Executors.newFixedThreadPool(6).asCoroutineDispatcher()
+    protected val coMiscScope: CoroutineScope = kotlinx.coroutines.CoroutineScope(coMiscCtxt)
+
+
     // Track notifications
     val notifs: MutableList<Triple<Int, PendingIntent, Intent>> = mutableListOf()
 
@@ -213,8 +217,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
      * Since the implicit activity wasn't launched for result, we can't return an indicator that wally main should finish().
      * Whenever wally resumes, if finishParent > 0, it will immediately finish. */
     var finishParent = 0
-
-
 
     private fun createNotificationChannel()
     {
@@ -423,7 +425,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         intent.putExtra("wallyNotificationId", nid)
 
         val pendingIntent = PendingIntent.getActivity(activity, nid, intent, PendingIntent.FLAG_IMMUTABLE)
-        var builder = NotificationCompat.Builder(activity, if (priority == NotificationCompat.PRIORITY_DEFAULT) NORMAL_NOTIFICATION_CHANNEL_ID else PRIORITY_NOTIFICATION_CHANNEL_ID)
+        val builder = NotificationCompat.Builder(activity, if (priority == NotificationCompat.PRIORITY_DEFAULT) NORMAL_NOTIFICATION_CHANNEL_ID else PRIORITY_NOTIFICATION_CHANNEL_ID)
           //.setSmallIcon(R.drawable.ic_notifications_black_24dp)
           .setSmallIcon(R.mipmap.ic_wally)
           .setContentTitle(title)

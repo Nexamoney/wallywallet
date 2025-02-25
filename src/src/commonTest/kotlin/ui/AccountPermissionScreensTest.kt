@@ -20,7 +20,6 @@ class AccountPermissionScreensTest:WallyUiTestBase()
     fun sendToPermScreenTest() = runComposeUiTest {
         val cs = ChainSelector.NEXA
         lateinit var account: Account
-        wallyApp!!.openAllAccounts()
         runBlocking(Dispatchers.IO) {
             account = wallyApp!!.newAccount("sendto", 0U, "", cs)!!
         }
@@ -29,13 +28,13 @@ class AccountPermissionScreensTest:WallyUiTestBase()
         setContent {
             SendToPermScreen(account, tp, ScreenNav())
         }
+        account.delete()
     }
 
     @Test
     fun assetInfoPermScreenTest() = runComposeUiTest {
         val cs = ChainSelector.NEXA
         lateinit var account: Account
-        wallyApp!!.openAllAccounts()
         runBlocking(Dispatchers.IO) {
             account = wallyApp!!.newAccount("sendto", 0U, "", cs)!!
         }
@@ -54,6 +53,7 @@ class AccountPermissionScreensTest:WallyUiTestBase()
         onNodeWithText(i18n(S.accept)).assertIsDisplayed()
         onNodeWithText(i18n(S.deny)).assertIsDisplayed()
         onNodeWithText(i18n(S.deny)).performClick()
+        account.delete()
     }
 
     @Test
@@ -61,7 +61,6 @@ class AccountPermissionScreensTest:WallyUiTestBase()
         val cs = ChainSelector.NEXA
         val nav = ScreenNav()
         lateinit var account: Account
-        wallyApp!!.openAllAccounts()
         runBlocking(Dispatchers.IO) {
             account = wallyApp!!.newAccount("sendto", 0U, "", cs)!!
         }
@@ -69,5 +68,6 @@ class AccountPermissionScreensTest:WallyUiTestBase()
         setContent {
             IdentityPermScreen(account, IdentitySession(null), nav)
         }
+        account.delete()
     }
 }

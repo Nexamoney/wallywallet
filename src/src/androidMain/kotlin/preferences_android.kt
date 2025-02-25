@@ -33,7 +33,7 @@ class AndroidPrefsEdit(prefs:AndroidPrefs): PreferencesEdit
 
 class AndroidPrefs(prefDbName: String, mode: Int): info.bitcoinunlimited.www.wally.SharedPreferences
 {
-    val db = (appContext() as android.content.Context)!!.getSharedPreferences(prefDbName, mode)
+    val db = (appContext() as android.content.Context).getSharedPreferences(prefDbName, mode)
     override fun edit(): PreferencesEdit = AndroidPrefsEdit(this)
 
     override fun getBoolean(key: String, defaultValue: Boolean): Boolean = db.getBoolean(key, defaultValue)

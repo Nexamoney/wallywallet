@@ -511,7 +511,7 @@ fun HorizontalRadioButtonGroup(options: List<Int>, onClick: (Int) -> Unit) {
 @Composable fun AssetDetail(account: Account, a: AssetPerAccount, modifier: Modifier = Modifier)
 {
     Box (
-      modifier = Modifier.fillMaxSize(),
+      modifier = modifier.fillMaxSize(),
     ) {
         AssetViewUi2(a.assetInfo)
     }

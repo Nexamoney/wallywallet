@@ -161,6 +161,7 @@ fun ReceiveScreenContent(
                 // Dev mode so don't need i18n
                 CenteredText(text = "Providing address ${address.index}", textStyle = MaterialTheme.typography.bodySmall)
             }
+            Spacer(modifier = Modifier.weight(0.02f))
         }
     }
 }

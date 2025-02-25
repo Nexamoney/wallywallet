@@ -23,6 +23,9 @@ val TESTWALLET = "newAccountScreenTest"
 @OptIn(ExperimentalTestApi::class)
 class NewAccountScreenTestUi2:WallyUiTestBase()
 {
+    init {
+        setupTestEnv()
+    }
     /** Test opening the new account screen */
     @Test
     fun newAccountScreenTest() = runComposeUiTest {
@@ -47,7 +50,6 @@ class NewAccountScreenTestUi2:WallyUiTestBase()
     @Test
     fun selectBlockchainAndCreateAccount()
     {
-        setupApp()
         runComposeUiTest {
             val viewModelStoreOwner = object : ViewModelStoreOwner
             {
@@ -86,7 +88,6 @@ class NewAccountScreenTestUi2:WallyUiTestBase()
     @Test
     fun enterNameAndCreateAccount()
     {
-        setupApp()
         val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())
         runComposeUiTest {
             val viewModelStoreOwner = object : ViewModelStoreOwner
@@ -117,7 +118,6 @@ class NewAccountScreenTestUi2:WallyUiTestBase()
     @Test
     fun tooLongAccountName()
     {
-        setupApp()
         val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())
         runComposeUiTest {
             val viewModelStoreOwner = object : ViewModelStoreOwner
@@ -160,7 +160,6 @@ class NewAccountScreenTestUi2:WallyUiTestBase()
     @Test
     fun enterPinAndCreateAccount()
     {
-        setupApp()
         // Delete the account we are going to create, in case it was previously created by a prior test run
         wallyApp!!.accounts["newAct"]?.let {
             it.delete()
@@ -202,7 +201,6 @@ class NewAccountScreenTestUi2:WallyUiTestBase()
     @Test
     fun enterTooShortPin()
     {
-        setupApp()
         // If we have accounts from other tests, the default account name will be incorrect
         wallyApp!!.accounts.clear()
         val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())

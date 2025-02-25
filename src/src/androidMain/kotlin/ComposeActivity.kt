@@ -268,7 +268,6 @@ class ComposeActivity: CommonActivity()
         super.onCreate(savedInstanceState)
         val decorView: View = getWindow().getDecorView()
         decorView.setBackgroundColor(BaseBkg.value.toInt())
-        initializeGraphicsResources()
         backgroundOnly = false
 
         onBackPressedDispatcher.addCallback(object: OnBackPressedCallback(true) {
@@ -302,6 +301,7 @@ class ComposeActivity: CommonActivity()
         var actionb:Int? = null
         val intentUri = com.eygraber.uri.Uri.parseOrNull(intent.toUri(0))
         LogIt.info("Launched by intent URI: ${intent.toUri(0)}  intent: $intent")
+        initializeGraphicsResources()
         setContent {
             val newUi = newUI.collectAsState().value
             val scheme = intentUri?.scheme?.lowercase()

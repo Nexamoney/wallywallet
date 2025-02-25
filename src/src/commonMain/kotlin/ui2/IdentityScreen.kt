@@ -230,7 +230,7 @@ fun IdentityScreen(account: Account, sess: IdentitySession?, nav: ScreenNav)
                         uri = null
                         domain = null
                     })
-                    WallyBoringLargeTextButton(S.remove, modifier = Modifier.testTag("EditIdentityButton"), onClick = {
+                    WallyBoringLargeTextButton(S.remove, modifier = Modifier.testTag("RemoveIdentityButton"), onClick = {
                         wallet.removeIdentityDomain(d.domain)
                         displayNotice(S.removed)
                         uri = null

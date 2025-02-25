@@ -10,6 +10,7 @@ import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.*
 import info.bitcoinunlimited.www.wally.ui2.views.*
 import org.nexa.libnexakotlin.ChainSelector
+import org.nexa.libnexakotlin.sourceLoc
 import org.nexa.threads.millisleep
 import kotlin.test.Test
 
@@ -18,7 +19,7 @@ fun<T> waitFor(timeout: Int = 10000, lazyErrorMsg: (()->String)? = null, checkIt
 {
     var count = timeout
     var ret:T? = checkIt()
-    while(ret == null || ret == false)
+    while(ret == null || ret as? Boolean == false)
     {
         millisleep(100U)
         count-=100
@@ -32,21 +33,39 @@ fun<T> waitFor(timeout: Int = 10000, lazyErrorMsg: (()->String)? = null, checkIt
     }
     return ret
 }
-
-
-internal fun setupTest()
+/** Wait for the predicate, retrying if any exception happens */
+fun<T> waitForCatching(timeout: Int = 10000, lazyErrorMsg: (()->String)? = null, checkIt: ()->T?):T
 {
-    if (wallyApp == null)
+    var count = timeout
+    var ret:T? = try { checkIt() } catch(e:Exception) { null }
+    while(ret == null || ret as? Boolean == false)
     {
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
-        wallyApp!!.openAllAccounts()
+        millisleep(100U)
+        count-=100
+        if (count < 0 )
+        {
+            val msg = lazyErrorMsg?.invoke()
+            if (msg != null) println(msg)
+            throw TestTimeoutException("Timeout waiting for predicate: $msg")
+        }
+        try
+        {
+            ret = checkIt()
+        }
+        catch(_:Exception)
+        {}
     }
+    return ret
 }
+
 
 @OptIn(ExperimentalTestApi::class)
 class HomeScreenUi2Test:WallyUiTestBase()
 {
+    init
+    {
+        setupTestEnv()
+    }
     @Test
     fun homeScreenTest() = runComposeUiTest {
         val viewModelStoreOwner = object : ViewModelStoreOwner
@@ -55,7 +74,6 @@ class HomeScreenUi2Test:WallyUiTestBase()
         }
 
         val cs = ChainSelector.NEXA
-        setupTest()
         val account = wallyApp!!.newAccount("nexaTest", 0U, "", cs)!!
 
         // Set selected account to populate the UI
@@ -103,11 +121,28 @@ class HomeScreenUi2Test:WallyUiTestBase()
     @Test
     fun testMultipleAccountsInCarouselAndAccountPill()
     {
+
         val cs = ChainSelector.NEXA
-        setupTest()
         // Create two accounts
-        val account1 = wallyApp!!.newAccount("nexaTest1", 0U, "", cs)!!
-        val account2 = wallyApp!!.newAccount("nexaTest2", 0U, "", cs)!!
+        val account1 = try
+        {
+            wallyApp!!.newAccount("nexaTest1", 0U, "", cs)!!
+        }
+        catch (e: Exception)
+        {
+            println(sourceLoc() + ": ERROR creating nexaTest1: $e")
+            throw e
+        }
+
+        val account2 = try
+        {
+            wallyApp!!.newAccount("nexaTest2", 0U, "", cs)!!
+        }
+        catch (e: Exception)
+        {
+            println(sourceLoc() + ": ERROR creating nexaTest2: $e")
+            throw e
+        }
 
         runComposeUiTest {
             val viewModelStoreOwner = object : ViewModelStoreOwner {
@@ -158,7 +193,6 @@ class HomeScreenUi2Test:WallyUiTestBase()
     @Test
     fun testNavigationToReceiveScreenWithTwoAccounts()
     {
-        setupTest()
         // Create a normal account
         val normalAccount = wallyApp!!.newAccount("nexaAccount", 0U, "", ChainSelector.NEXA)!!
         // Create a testnet account

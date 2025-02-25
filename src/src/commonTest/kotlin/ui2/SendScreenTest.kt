@@ -188,7 +188,6 @@ class SendScreenTest:WallyUiTestBase()
     @Test
     fun confirmSendTest()
     {
-        setupApp()
         val account = wallyApp!!.newAccount("testAcc", 0U, "", cs)!!
         runComposeUiTest {
             setSelectedAccount(account)

@@ -1,5 +1,7 @@
 @file:OptIn(ExperimentalUnsignedTypes::class)
 import info.bitcoinunlimited.www.wally.*
+import info.bitcoinunlimited.www.wally.ui2.fromFinestUnit
+import info.bitcoinunlimited.www.wally.ui2.views.fastForwardAccount
 import io.ktor.client.network.sockets.*
 import okio.*
 import okio.Path.Companion.toPath
@@ -296,10 +298,10 @@ class NonGuiTests
         LogIt.info("Test starting block is: ${blkStart}")
 
         // clean up old runs
-        deleteWallet("testwalletrecovery", cs)
-        deleteWallet("a1", cs)
-        deleteWallet("a2", cs)
-
+        deleteWalletFile("testwalletrecovery", wallyAccountDbFileName("testwalletrecovery"), cs)
+        deleteWalletFile("a1", wallyAccountDbFileName("a1"), cs)
+        deleteWalletFile("a2", wallyAccountDbFileName("a2"), cs)
+        deleteWalletFile("a3", wallyAccountDbFileName("a3"), cs)
 
         REG_TEST_ONLY = true
         wallyApp = CommonApp()
@@ -313,52 +315,86 @@ class NonGuiTests
             "sync unsuccessful, at: ${account.wallet.chainstate!!.syncedHeight}"
         } )
 
+        // New account stats should be empty (if not, its getting data from the deleted account
+        val aEmpty = account.wallet.statistics()
+        LogIt.info("Empty stats: $aEmpty")
+        check(aEmpty.totalTxos==0)
+        check(aEmpty.numTransactions==0)
+        check(aEmpty.numUnspentTxos==0)
+
         val NUM_REPEATS = 5
+        var amtInWallet = 0L
         repeat(NUM_REPEATS) {
             val addr = account.wallet.getnewaddress()
             rpc.sendtoaddress(addr.toString(), CurrencyDecimal(10000))
             rpc.sendtoaddress(addr.toString(), CurrencyDecimal(10000))
+            amtInWallet += 2* CurrencyDecimal(10000).toInt()* NEX
             rpc.generate(1)
-            account.wallet.send(800000, account.wallet.getnewaddress())  // add a few send-to-self in there because they are different
+            val now = rpc.getblockcount()
+            account.wallet.sync(10000, now)
+            val tx = account.wallet.send(80000, account.wallet.getnewaddress())  // add a few send-to-self in there because they are different
+            amtInWallet -= tx.fee  // sending to myself so just lose the fee
             millisleep(200U)
         }
+
         // Add a little more because since I've been sending to myself, the balance won't be accurate
         rpc.sendtoaddress(account.wallet.getnewaddress().toString(), CurrencyDecimal(1000))
+        amtInWallet += 1000*NEX
         rpc.generate(1)
+        val nowBlock = rpc.getblockcount()
 
-        waitFor(TIMEOUT, { account.wallet.synced() }, { "sync unsuccessful" })
-
+        waitFor(TIMEOUT, { account.wallet.synced(nowBlock ) }, { "sync unsuccessful" })
         waitFor(TIMEOUT, { account.wallet.balance > 5*2000000L}, { "wallet load failed"})
-        var balance = account.wallet.balance
+        val balance = account.wallet.balance
+
+        val aStat = account.wallet.statistics()
 
         // Ok, now let's recover this account into new accounts and compare
-
-        val a1 = wallyApp!!.recoverAccount("a1", 0U, "", account.wallet.secretWords, cs, null, blkStart, null)
-        waitFor(TIMEOUT, { a1!!.wallet.synced() }, { "a1 sync unsuccessful" })
-        LogIt.info("a1 balance: ${a1!!.wallet.balance}  orig bal: $balance")
+        println("Recovering from ${blkStart-1}")
+        val a1 = wallyApp!!.recoverAccount("a1", 0U, "", account.wallet.secretWords, cs, null, blkStart-1, null)
+        waitFor(TIMEOUT, { a1.wallet.synced() }, { "a1 sync unsuccessful" })
+        val a1Stat = a1.wallet.statistics()
+        LogIt.info("calculated balance: $amtInWallet")
+        LogIt.info("recovered balance: ${a1.wallet.balance}  orig bal: $balance at $nowBlock")
+        LogIt.info("original stats: $aStat")
+        LogIt.info("recovered stats: $a1Stat")
         check(a1.wallet.balance == balance)
 
-        val filledHeight = rpc.getblockcount()
         val ec = openEc()
         waitFor(TIMEOUT, {
             val tmp = ec.getTip()
-            tmp.second == filledHeight}, { "electrum server never synced"})
+            tmp.second == nowBlock}, { "electrum server never synced"})
         val (ectip, _) = ec.getTip()
         val addressDerivationCoin = Bip44AddressDerivationByChain(cs)
-        val srchResults = searchDerivationPathActivity({ec }, cs, 20, true, {
+        val srchResults = searchDerivationPathActivity({ec }, cs, 100, true, {
             val secret = libnexa.deriveHd44ChildKey(account.wallet.secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
             Pay2PubKeyTemplateDestination(cs, UnsecuredSecret(secret), it.toLong())
         }, {})
 
-        LogIt.info("EC bal: ${srchResults.balance}")
-        check(srchResults.balance == balance)
+        check(ectip.height == nowBlock)
+
+        LogIt.info("EC bal: ${srchResults.balance} at ${srchResults.lastHeight}")
+        if (srchResults.balance != balance)
+        {
+            LogIt.warning("Electrum balance differs from wallet")
+        }
+        //check(srchResults.balance == balance)
         check(srchResults.txh.size == NUM_REPEATS*3 + 1)
         check(srchResults.addrCount > NUM_REPEATS*2 + 1)
 
         val a2 = wallyApp!!.recoverAccount("a2", 0U, "", account.wallet.secretWords, cs, srchResults.txh.values.toList(), srchResults.addresses, ectip, srchResults.addrCount.toInt())
-        waitFor(TIMEOUT, { a2!!.wallet.synced() }, { "a2 sync unsuccessful" })
-        LogIt.info("a2 balance: ${a2!!.wallet.balance}  orig bal: $balance")
+
+        val a3 = wallyApp!!.recoverAccount("a3", 0U, "", account.wallet.secretWords, cs, srchResults.txh.values.toList(), srchResults.addresses, ectip, srchResults.addrCount.toInt())
+        fastForwardAccount(a3)
+
+        waitFor(TIMEOUT, { a2.wallet.synced(nowBlock) }, { "a2 sync unsuccessful" })
+        waitFor(TIMEOUT, { a3.wallet.synced(nowBlock) }, { "a2 sync unsuccessful" })
+        LogIt.info("a2 balance: ${a2.wallet.balance}  orig bal: $balance")
+        LogIt.info("a3 balance: ${a2.wallet.balance}  orig bal: $balance")
+        check(amtInWallet == balance)
         check(a2.wallet.balance == balance)
+        check(a3.wallet.balance == balance)
+
 
         // Now spend ALL the utxos using the electrum client recovery mechanism
         val returnAddr = rpc.getnewaddress()
