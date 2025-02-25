@@ -14,6 +14,7 @@ import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.ui2.views.*
 import info.bitcoinunlimited.www.wally.wallyApp
+import ui2.waitFor
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -50,7 +51,7 @@ class ThemeTest
             })
         }
 
-        onNodeWithText(i18n(S.ButtonTextHere)).isDisplayed()
+        waitFor { onNodeWithText(i18n(S.ButtonTextHere)).isDisplayed() }
         onNodeWithText(i18n(S.ButtonTextHere)).performClick()
         assertTrue(clicked)
     }
@@ -67,7 +68,7 @@ class ThemeTest
             }
         }
 
-        onNodeWithText(text).isDisplayed()
+        waitFor { onNodeWithText(text).isDisplayed() }
         onNodeWithText(text).performClick()
         assertTrue(clicked)
     }
@@ -77,7 +78,8 @@ class ThemeTest
         setContent {
             NoticeText(text, Modifier)
         }
-        onNodeWithText(text).isDisplayed()
+        waitFor { onNodeWithText(text).isDisplayed() }
+        true
     }
 
     @Test
@@ -97,7 +99,8 @@ class ThemeTest
         setContent {
             TitleText(text, Modifier.fillMaxSize())
         }
-        onNodeWithText(text).isDisplayed()
+        waitFor(10000, { "title is missing"}) { onNodeWithText(text).isDisplayed() }
+        true
     }
 
     @Test

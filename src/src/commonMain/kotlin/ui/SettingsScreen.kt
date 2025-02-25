@@ -242,7 +242,6 @@ fun onWipeDatabase()
     later {
         wallyApp?.accounts?.forEach {
             it.value.delete()
-            deleteWallet(it.key, it.value.chain.chainSelector)
         }
     }
 }

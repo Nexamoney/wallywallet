@@ -8,20 +8,21 @@ import info.bitcoinunlimited.www.wally.ui.views.SendView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.nexa.libnexakotlin.ChainSelector
-import ui2.WallyUiTestBase
-import ui2.settle
-import ui2.setupApp
+import ui2.*
 import kotlin.test.Test
 
 @OptIn(ExperimentalUnsignedTypes::class)
 class SendViewTest:WallyUiTestBase()
 {
+    init
+    {
+        setupTestEnv()
+    }
     @OptIn(ExperimentalTestApi::class)
     @Test
     fun sendViewTest()
     {
         val cs = ChainSelector.NEXA
-        setupApp()
         val account =  wallyApp!!.newAccount("itemvie", 0U, "", cs)!!
         runComposeUiTest {
             val selectedAccountNameMock = "selectedAccountName"
@@ -59,17 +60,18 @@ class SendViewTest:WallyUiTestBase()
             /**
              * Check is basic UI elements are displayed
              */
-            onNodeWithText(i18n(S.fromAccountColon)).isDisplayed()
-            onNodeWithText(i18n(S.sendToAddressHint)).isDisplayed()
-            onNodeWithText(i18n(S.Amount)).isDisplayed()
+            waitFor { onNodeWithText(i18n(S.fromAccountColon)).isDisplayed() }
+            onNodeWithText(i18n(S.fromAccountColon)).assertIsDisplayed()
+            onNodeWithText(i18n(S.sendToAddressHint)).assertIsDisplayed()
+            onNodeWithText(i18n(S.Amount)).assertIsDisplayed()
 
             /**
              * Click note button and check for UI changes
              */
-            onNodeWithTag("noteButtonSendView").isDisplayed()
+            waitFor { onNodeWithTag("noteButtonSendView").isDisplayed() }
             onNodeWithTag("noteButtonSendView").performClick()
             settle()
-            onNodeWithText(i18n(S.editSendNoteHint)).isDisplayed()
+            waitFor { onNodeWithText(i18n(S.editSendNoteHint)).isDisplayed() }
             settle()
         }
         wallyApp!!.deleteAccount(account)

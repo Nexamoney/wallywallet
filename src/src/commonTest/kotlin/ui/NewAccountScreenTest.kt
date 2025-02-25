@@ -7,10 +7,10 @@ import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui2.NewAccountState
 import info.bitcoinunlimited.www.wally.ui2.ScreenNav
 import info.bitcoinunlimited.www.wally.ui2.newAccountState
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.initializeLibNexa
+import ui2.setupTestEnv
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -28,9 +28,7 @@ class NewAccountScreenTest
     @BeforeTest
     fun init()
     {
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
-        wallyApp!!.openAllAccounts()
+        setupTestEnv()
     }
 
     @Test

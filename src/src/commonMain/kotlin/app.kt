@@ -1138,6 +1138,7 @@ open class CommonApp
 
         if (REG_TEST_ONLY)  // If I want a regtest only wallet for manual debugging, just create it directly
         {
+            /*  Removed as our test infra has expanded
             accountLock.lock {
                 accounts.getOrPut("RKEX") {
                     try
@@ -1152,6 +1153,7 @@ open class CommonApp
                     }
                 }
             }
+             */
         }
         else  // OK, recreate the wallets saved on this phone
         {

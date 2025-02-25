@@ -14,6 +14,7 @@ import kotlinx.coroutines.test.setMain
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.initializeLibNexa
 import org.nexa.libnexakotlin.runningTheTests
+import ui2.setupTestEnv
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -39,10 +40,7 @@ class AccountDetailScreenTest
     }
 
     init {
-        initializeLibNexa()
-        runningTheTests = true
-        forTestingDoNotAutoCreateWallets = true
-        dbPrefix = "test_"
+        setupTestEnv()
     }
 
     @Test
@@ -50,9 +48,6 @@ class AccountDetailScreenTest
 
         val cs = ChainSelector.NEXA
         lateinit var account: Account
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
-        wallyApp!!.openAllAccounts()
         runBlocking(Dispatchers.IO) {
             account = wallyApp!!.newAccount("itemvie", 0U, "", cs)!!
         }

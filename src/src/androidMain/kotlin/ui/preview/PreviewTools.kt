@@ -16,6 +16,11 @@ class RamKvpDatabase: KvpDatabase
         data.clear()
     }
 
+    override fun close()
+    {
+        data.clear()
+    }
+
     override fun delete(key: ByteArray)
     {
         data.remove(key)
@@ -42,6 +47,11 @@ class FakeTxDatabase: TxDatabase
 {
     val data = mutableMapOf<ByteArray, TransactionHistory>()
     override fun clear()
+    {
+        data.clear()
+    }
+
+    override fun close()
     {
         data.clear()
     }
@@ -130,6 +140,10 @@ class RamTxoDatabase: TxoDatabase
 {
     val data = mutableMapOf<ByteArray, Spendable>()
     override fun clear()
+    {
+        data.clear()
+    }
+    override fun close()
     {
         data.clear()
     }
@@ -268,6 +282,13 @@ class RamWalletDatabase: WalletDatabase
     override val kvp: KvpDatabase = RamKvpDatabase()
     override val tx: TxDatabase = FakeTxDatabase()
     override val txo: TxoDatabase = RamTxoDatabase()
+
+    override fun close()
+    {
+        kvp.close()
+        tx.close()
+        txo.clear()
+    }
 }
 
 data class PreviewObjects(val nav: ScreenNav, val accounts: Set<Account>)

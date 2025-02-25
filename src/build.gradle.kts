@@ -19,7 +19,7 @@ val androidVersionCode = versionNumber.replace(".", "").toInt()
 // Dependency versions
 val mpThreadsVersion = "0.4.0"
 val nexaRpcVersion = "1.3.0"
-val libNexaKotlinVersion = "0.4.7"
+val libNexaKotlinVersion = "0.4.8"
 val serializationVersion = "1.8.0"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.10.1"     // https://github.com/Kotlin/kotlinx.coroutines
 val bigNumVersion = "0.3.10"         // https://github.com/ionspin/kotlin-multiplatform-bignum
@@ -462,7 +462,6 @@ kotlin {
                     // Background syncing
                     // java: implementation("androidx.work:work-runtime:$workVersion")
                     implementation("androidx.work:work-runtime-ktx:$workVersion")
-
                     // QR scanning (and read from gallery)
                     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
                     // Image file conversion

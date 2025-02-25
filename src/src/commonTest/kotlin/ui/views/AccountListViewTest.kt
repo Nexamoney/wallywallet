@@ -13,7 +13,8 @@ import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.initializeLibNexa
 import org.nexa.libnexakotlin.runningTheTests
 import ui2.settle
-import ui2.setupApp
+import ui2.setupTestEnv
+import ui2.waitFor
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -22,8 +23,7 @@ class AccountListViewTest
 {
     init
     {
-        forTestingDoNotAutoCreateWallets = true
-        setupApp()
+        setupTestEnv()
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -54,11 +54,11 @@ class AccountListViewTest
                 )
             }
             settle()
-            onNodeWithTag("AccountItemView").isDisplayed()
+            waitFor { onNodeWithTag("AccountItemView").isDisplayed() }
             onNodeWithTag("AccountItemView").performClick()
             settle()
             assertTrue(iSelectedMock.value)
-            onNodeWithTag("accountSettingsGearIcon").isDisplayed()
+            waitFor {onNodeWithTag("accountSettingsGearIcon").isDisplayed() }
             onNodeWithTag("accountSettingsGearIcon").performClick()
             settle()
             assertTrue(gearIconCLicked.value)

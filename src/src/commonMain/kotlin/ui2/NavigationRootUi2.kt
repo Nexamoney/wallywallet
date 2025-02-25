@@ -499,15 +499,29 @@ fun uxPeriodicAnalysisUi2(): iThread
 
 fun observeReceiveDestination(account: Account)
 {
-    account.wallet.setOnWalletChange { wallet, _ ->
-        CoroutineScope(Dispatchers.IO).launch {
-            val destination = wallet.getCurrentDestination()
-            val accountName = wallet.name
-            account.currentReceive = destination
-            launch(Dispatchers.Default) {
-                if (accountName == wallyApp?.focusedAccount?.value?.name)
-                {
-                    account.currentReceive = destination
+    if (account.walletOnChange != -1)
+    {
+        account.access.lock {
+            account.walletOnChange = account.wallet.setOnWalletChange { wallet, _ ->
+                CoroutineScope(Dispatchers.IO).launch {
+                    try
+                    {
+                        account.currentReceive = wallet.getCurrentDestination()
+                    }
+                    catch (e: WalletException) // closed
+                    {
+                        account.access.lock {
+                            if (account.wallet.isDeleted)
+                            {
+                                if (account.walletOnChange != -1)
+                                {
+                                    account.wallet.removeOnWalletChange(account.walletOnChange)
+                                    account.walletOnChange = -1
+                                }
+                                wallyApp?.accounts?.remove(account.name)
+                            }
+                        }
+                    }
                 }
             }
         }

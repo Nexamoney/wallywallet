@@ -18,6 +18,7 @@ import okio.FileNotFoundException
 import okio.buffer
 import okio.source
 import org.jetbrains.skia.*
+import org.nexa.libnexakotlin.GetLog
 import org.xml.sax.InputSource
 import java.awt.Toolkit
 import java.awt.datatransfer.*
@@ -28,6 +29,7 @@ import org.nexa.libnexakotlin.Objectify
 import java.awt.Desktop
 import java.net.URI
 
+private val LogIt = GetLog("BU.utils.jvm")
 
 // on android this fails with couldn't find "libskiko-android-arm64.so", see https://github.com/JetBrains/skiko/issues/531
 fun scaleUsingSurface(image: Image, width: Int, height: Int): Image
@@ -139,9 +141,17 @@ actual fun getTextClipboard(): List<String>
 /** Sets the clipboard, potentially asynchronously. */
 actual fun setTextClipboard(msg: String)
 {
-    val c: Clipboard = Toolkit.getDefaultToolkit().systemClipboard
-    val sel = StringSelection(msg)
-    c.setContents(sel, sel)
+    try
+    {
+        val c: Clipboard = Toolkit.getDefaultToolkit().systemClipboard
+        val sel = StringSelection(msg)
+        c.setContents(sel, sel)
+    }
+    catch(_: java.awt.HeadlessException)
+    {
+        // In tests, the GUI might run in headless mode, in which case there is no clipboard
+        LogIt.warning("Cannot set clipboard, this is a headless test!")
+    }
 }
 
 
