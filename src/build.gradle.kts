@@ -369,7 +369,7 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$coroutinesVersion")
                 // Required for Dispatchers.Main
                 // https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-dispatchers/-main.html
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+                // implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
                 // implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:$coroutinesVersion")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:$coroutinesVersion")
 

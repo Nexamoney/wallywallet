@@ -22,9 +22,9 @@ class UnlockViewTest:WallyUiTestBase()
         }
 
         onNodeWithText(content).assertIsDisplayed()
-        onNodeWithTag(i18n(S.EnterPIN)).assertExists()
-        onNodeWithTag(i18n(S.EnterPIN)).performTextInput(input)
-        onNodeWithTag(i18n(S.EnterPIN)).assert(hasText(input))
+        onNodeWithTag("EnterPIN").assertExists()
+        onNodeWithTag("EnterPIN").performTextInput(input)
+        onNodeWithTag("EnterPIN").assert(hasText(input))
         if (platform().hasDoneButton)
             onNodeWithText(i18n(S.done)).assertIsDisplayed()
     }

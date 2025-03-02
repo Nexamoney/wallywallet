@@ -9,7 +9,7 @@ import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.rem
 import ui2.settle
 import ui2.setupTestEnv
-import ui2.waitFor
+import ui2.waitForCatching
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
@@ -34,7 +34,7 @@ class IdentityScreenTest
             /**
              * Check that titles are displayed, click edit button and verify that some titles in edit view are displayed
              */
-            waitFor {  onNodeWithText(i18n(S.commonIdentityForAccount) % mapOf("act" to account.name)).isDisplayed() }
+            waitForCatching {  onNodeWithText(i18n(S.commonIdentityForAccount) % mapOf("act" to account.name)).isDisplayed() }
             onNodeWithText(i18n(S.IdentityRegistrations)).assertIsDisplayed()
             account.delete()
         }

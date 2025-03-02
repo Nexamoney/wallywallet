@@ -340,7 +340,6 @@ fun AccountListItem(
 ) {
     val curSync = uidata.account.wallet.chainstate?.syncedDate ?: 0
     val offerFastForward = (millinow() /1000 - curSync) > OFFER_FAST_FORWARD_GAP
-
     ListItem(
       colors = ListItemDefaults.colors(containerColor = backgroundColor),
       modifier = Modifier.fillMaxWidth(),
@@ -424,6 +423,7 @@ fun AccountListItem(
                   {
                       IconButton(
                         onClick = { nav.go(ScreenId.AccountDetails) },
+                        modifier=Modifier.testTag("AccountDetailsButton"),
                         content = {
                             Icon(Icons.Outlined.ManageAccounts, contentDescription = "Account detail")
                         }
@@ -450,7 +450,7 @@ fun AccountListItem(
                             onClick = {
                                 onClickAccount()
                                 triggerUnlockDialog()
-                            }
+                            },modifier = Modifier.testTag("LockIcon(${uidata.account.name})")
                           ) {
                               Icon(
                                 imageVector = Icons.Default.Lock,
@@ -460,13 +460,13 @@ fun AccountListItem(
                       else
                           IconButton(
                             onClick = {
-                                onClickAccount()
                                 uidata.account.pinEntered = false
+                                onClickAccount()
                                 tlater("assignGuiSlots") {
                                     triggerAssignAccountsGuiSlots()  // In case it should be hidden
-                                    later { accountChangedNotification.send(uidata.account.name) }
+                                    triggerAccountsChanged(uidata.account)
                                 }
-                            }
+                            }, modifier = Modifier.testTag("UnlockIcon(${uidata.account.name})")
                           ) {
                               Icon(
                                 imageVector = Icons.Default.LockOpen,
@@ -488,7 +488,6 @@ fun AccountItemViewUi2(
     devMode: Boolean,
     backgroundColor: Color,
     hasFastForwardButton: Boolean,
-    account: Account = uidata.account,
     onClickAccount: () -> Unit
 ) {
         Row(
