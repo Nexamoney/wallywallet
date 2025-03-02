@@ -5,8 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.views.SendView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import org.nexa.libnexakotlin.ChainSelector
 import ui2.*
 import kotlin.test.Test
@@ -60,7 +58,7 @@ class SendViewTest:WallyUiTestBase()
             /**
              * Check is basic UI elements are displayed
              */
-            waitFor { onNodeWithText(i18n(S.fromAccountColon)).isDisplayed() }
+            waitForCatching { onNodeWithText(i18n(S.fromAccountColon)).isDisplayed() }
             onNodeWithText(i18n(S.fromAccountColon)).assertIsDisplayed()
             onNodeWithText(i18n(S.sendToAddressHint)).assertIsDisplayed()
             onNodeWithText(i18n(S.Amount)).assertIsDisplayed()
@@ -68,10 +66,10 @@ class SendViewTest:WallyUiTestBase()
             /**
              * Click note button and check for UI changes
              */
-            waitFor { onNodeWithTag("noteButtonSendView").isDisplayed() }
+            waitForCatching { onNodeWithTag("noteButtonSendView").isDisplayed() }
             onNodeWithTag("noteButtonSendView").performClick()
             settle()
-            waitFor { onNodeWithText(i18n(S.editSendNoteHint)).isDisplayed() }
+            waitForCatching { onNodeWithText(i18n(S.editSendNoteHint)).isDisplayed() }
             settle()
         }
         wallyApp!!.deleteAccount(account)

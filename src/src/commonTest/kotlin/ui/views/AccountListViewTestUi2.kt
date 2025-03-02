@@ -9,7 +9,7 @@ import info.bitcoinunlimited.www.wally.ui2.views.AccountUIData
 import org.nexa.libnexakotlin.ChainSelector
 import ui2.settle
 import ui2.setupTestEnv
-import ui2.waitFor
+import ui2.waitForCatching
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -48,7 +48,7 @@ class AccountListViewTestUi2
                 )
             }
             settle()
-            waitFor { onNodeWithTag("AccountItemView").isDisplayed() }
+            waitForCatching { onNodeWithTag("AccountItemView").isDisplayed() }
             onNodeWithTag("AccountItemView").performClick()
             settle()
             assertTrue(iSelectedMock.value)

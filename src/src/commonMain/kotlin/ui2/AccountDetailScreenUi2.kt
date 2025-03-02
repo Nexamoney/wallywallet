@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -476,7 +477,7 @@ fun AccountActionButtonsUi2(acc: Account, txHistoryButtonClicked: () -> Unit, ac
             OutlinedButton(content = { Text(i18n(S.SetChangePin)) }, onClick = {
                 accountAction.value =
                   AccountAction.PinChange
-            }, modifier = mod)
+            }, modifier = mod.testTag("SetChangePinButton"))
             if (wallyApp?.nullablePrimaryAccount != acc)    // it not primary
                 OutlinedButton(content = { Text(i18n(S.setAsPrimaryAccountButton)) }, onClick = {
                     accountAction.value =
@@ -670,7 +671,7 @@ fun AccountDetailChangePinViewUi2(acc: Account, displayError: (String) -> Unit, 
     var newPin by remember { mutableStateOf("") }
     var pinHidesAccount by remember { mutableStateOf((acc.flags and ACCOUNT_FLAG_HIDE_UNTIL_PIN) > 0u) }
 
-    WallySwitch(pinHidesAccount, S.PinHidesAccount)
+    WallySwitch(pinHidesAccount, S.PinHidesAccount, modifier = Modifier.testTag("PinHidesAccountToggle"))
     {
         pinHidesAccount = it
         if (it) acc.flags = acc.flags or ACCOUNT_FLAG_HIDE_UNTIL_PIN
@@ -739,6 +740,7 @@ fun AccountDetailChangePinViewUi2(acc: Account, displayError: (String) -> Unit, 
             displayNotice(S.PinRemoved)
             pinChangedOrCancelled()
         }
+        triggerAccountsChanged(acc)
     }
 
     Row(
@@ -760,7 +762,7 @@ fun AccountDetailChangePinViewUi2(acc: Account, displayError: (String) -> Unit, 
               {
                   processNewPin()
               }
-          },
+          }, modifier = Modifier.testTag("AcceptPinButton"),
           content = {
               Text(i18n(S.accept))
           })
@@ -827,7 +829,7 @@ fun AccountDetailPinInputUi2(description: String, placeholder: String, currentPi
                       true
                   }
                   else false// do not accept this key
-              },
+              }.testTag("PinInputField"),
             )
         }
     }

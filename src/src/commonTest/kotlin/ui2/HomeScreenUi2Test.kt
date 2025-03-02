@@ -14,6 +14,15 @@ import org.nexa.libnexakotlin.sourceLoc
 import org.nexa.threads.millisleep
 import kotlin.test.Test
 
+fun SemanticsNodeInteraction.multiplatformImeAction()
+{
+    // There is no IME action on iOS
+    // TODO create a specific platform() "hasSoftKeyboardAction" parameter
+    // TODO is there some other way to "ok" or "dismiss" the IME on iOS?
+    if (platform().target == KotlinTarget.iOS) return
+    else this.performImeAction()
+}
+
 class TestTimeoutException(what: String): Exception(what)
 fun<T> waitFor(timeout: Int = 10000, lazyErrorMsg: (()->String)? = null, checkIt: ()->T?):T
 {
@@ -32,12 +41,31 @@ fun<T> waitFor(timeout: Int = 10000, lazyErrorMsg: (()->String)? = null, checkIt
         ret = checkIt()
     }
     return ret
+
+}
+fun<Boolean> waitFor1(timeout: Int = 10000, lazyErrorMsg: (()->String)? = null, checkIt: () -> Boolean):Boolean
+{
+    var count = timeout
+    var ret: Boolean? = checkIt()
+    while (ret == null || ret as? Boolean == false)
+    {
+        millisleep(100U)
+        count -= 100
+        if (count < 0)
+        {
+            val msg = lazyErrorMsg?.invoke()
+            if (msg != null) println(msg)
+            throw TestTimeoutException("Timeout waiting for predicate: $msg")
+        }
+        ret = checkIt()
+    }
+    return ret
 }
 /** Wait for the predicate, retrying if any exception happens */
 fun<T> waitForCatching(timeout: Int = 10000, lazyErrorMsg: (()->String)? = null, checkIt: ()->T?):T
 {
     var count = timeout
-    var ret:T? = try { checkIt() } catch(e:Exception) { null }
+    var ret:T? = try { checkIt() } catch(e:Throwable) { null }
     while(ret == null || ret as? Boolean == false)
     {
         millisleep(100U)
@@ -52,7 +80,7 @@ fun<T> waitForCatching(timeout: Int = 10000, lazyErrorMsg: (()->String)? = null,
         {
             ret = checkIt()
         }
-        catch(_:Exception)
+        catch(_:Throwable)
         {}
     }
     return ret
@@ -252,7 +280,7 @@ class HomeScreenUi2Test:WallyUiTestBase()
                 // Verify that the Receive Screen is displayed
                 // Receive addresses need to be installed into connected nodes' bloom filters before they are
                 // shown, so showing this QR code can actually take a lot of time
-                waitFor(6000,{"QR code not displayed"}) {
+                waitForCatching(6000,{"QR code not displayed"}) {
                     var result = false
                     try
                     {

@@ -6,15 +6,10 @@ import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.views.AccountItemView
 import info.bitcoinunlimited.www.wally.ui2.views.AccountUIData
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.runBlocking
 import org.nexa.libnexakotlin.ChainSelector
-import org.nexa.libnexakotlin.initializeLibNexa
-import org.nexa.libnexakotlin.runningTheTests
 import ui2.settle
 import ui2.setupTestEnv
-import ui2.waitFor
+import ui2.waitForCatching
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -54,11 +49,11 @@ class AccountListViewTest
                 )
             }
             settle()
-            waitFor { onNodeWithTag("AccountItemView").isDisplayed() }
+            waitForCatching { onNodeWithTag("AccountItemView").isDisplayed() }
             onNodeWithTag("AccountItemView").performClick()
             settle()
             assertTrue(iSelectedMock.value)
-            waitFor {onNodeWithTag("accountSettingsGearIcon").isDisplayed() }
+            waitForCatching {onNodeWithTag("accountSettingsGearIcon").isDisplayed() }
             onNodeWithTag("accountSettingsGearIcon").performClick()
             settle()
             assertTrue(gearIconCLicked.value)

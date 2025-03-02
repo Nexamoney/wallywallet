@@ -684,7 +684,7 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
                     containerColor = Color.White,
                     contentColor = Color.Gray
                   ),
-                  modifier = Modifier.width(IntrinsicSize.Max).wrapContentHeight().padding(0.dp, 0.dp).defaultMinSize(1.dp, 1.dp)
+                  modifier = Modifier.width(IntrinsicSize.Max).wrapContentHeight().padding(0.dp, 0.dp).defaultMinSize(1.dp, 1.dp).testTag(if (ch.location == ScreenId.Home) "HomeButton" else "${ch.location}Button")
                 ) {
                     Column(verticalArrangement = Arrangement.spacedBy(0.dp), horizontalAlignment = Alignment.CenterHorizontally,
                       modifier = Modifier.width(IntrinsicSize.Max).wrapContentHeight().padding(0.dp, 0.dp, 0.dp, 0.dp)
@@ -716,7 +716,7 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
     {
         val bkgCol = if (errorText.isNotEmpty()) colorError else if (warningText.isNotEmpty()) colorWarning else if (noticeText.isNotEmpty()) colorNotice else colorTitleBackground
         // Specifying the row height stops changes header bar content to change its height causing the entire window to jerk up or down
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.background(bkgCol).padding(0.dp).height(56.dp))
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.background(bkgCol).padding(0.dp).height(56.dp).testTag("TopBar"))
         {
             if (currentScreen == ScreenId.Home)
                 ResImageView(
@@ -728,7 +728,7 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
                 IconButton(onClick = {
                     lastClicked.value = nav.hasBack().toString()
                     nav.back()
-                }) {
+                }, modifier = Modifier.testTag("backButton")) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, tint = colorTitleForeground, contentDescription = null)
                 }
             }
@@ -743,7 +743,7 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
             {
                 val iconButtonSize = 32.dp
                 TitleText(nav.title(), Modifier.weight(1f).fillMaxSize().padding(0.dp, 15.dp, 0.dp, 0.dp))
-                IconButton(onClick = { triggerUnlockDialog() }, modifier = Modifier.size(iconButtonSize)){
+                IconButton(onClick = { triggerUnlockDialog() }, modifier = Modifier.size(iconButtonSize).testTag("GlobalLockIcon")){
                     Icon(Icons.Filled.Lock, tint = Color.White, contentDescription = "Lock")
                 }
                 if (platform().hasShare && nav.currentScreen.collectAsState().value.hasShare)

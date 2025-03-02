@@ -65,7 +65,7 @@ fun UnlockView(enterPin: String = i18n(S.EnterPIN), onPinEntered: (String) -> Un
                       unfocusedIndicatorColor = Color.Black
                     ),
                     onValueChange = { pin.value = it },
-                    modifier = Modifier.testTag(i18n(S.EnterPIN))
+                    modifier = Modifier.testTag("EnterPIN")
                       .focusRequester(focusRequester)
                       .onKeyEvent {
                         if ((it.key == Key.Enter)||(it.key == Key.NumPadEnter))

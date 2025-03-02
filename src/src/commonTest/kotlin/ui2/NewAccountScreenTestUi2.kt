@@ -9,12 +9,7 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.NewAccountScreenUi2
 import info.bitcoinunlimited.www.wally.ui2.newAccountState
-import info.bitcoinunlimited.www.wally.ui2.setSelectedAccount
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.runBlocking
-import org.nexa.libnexakotlin.*
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -191,7 +186,7 @@ class NewAccountScreenTestUi2:WallyUiTestBase()
             onNodeWithText(i18n(S.createNewAccount)).performClick()
             settle()
             // If the account is unable to be created for some reason, the view state will not be cleared
-            waitFor(5000) { newAccountState.value.accountName == "" }
+            waitForCatching(5000) { newAccountState.value.accountName == "" }
             settle()
         }
 

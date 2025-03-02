@@ -47,10 +47,10 @@ class AccountDetailScreenTestUi2:WallyUiTestBase()
             /**
              * Open change pin View and click cancel button to close it.
              */
-            waitFor { onNodeWithText(i18n(S.AccountStatistics)).isDisplayed() }
+            waitForCatching { onNodeWithText(i18n(S.AccountStatistics)).isDisplayed() }
             onNodeWithText(i18n(S.SetChangePin)).performClick()
             settle()
-            waitFor { onNodeWithText(i18n(S.PinHidesAccount)).isDisplayed() }
+            waitForCatching { onNodeWithText(i18n(S.PinHidesAccount)).isDisplayed() }
             onNodeWithText(i18n(S.cancel)).performClick()
             settle()
         }

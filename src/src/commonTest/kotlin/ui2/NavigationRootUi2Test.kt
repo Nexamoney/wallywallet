@@ -139,6 +139,27 @@ fun ComposeUiTest.settle(scope: TestScope? = null)
 @OptIn(ExperimentalTestApi::class)
 class NavigationRootUi2Test:WallyUiTestBase()
 {
+    @Test fun unlockTest()
+    {
+        runComposeUiTest {
+            val viewModelStoreOwner = object : ViewModelStoreOwner { override val viewModelStore: ViewModelStore = ViewModelStore() }
+            setContent {
+                CompositionLocalProvider(LocalViewModelStoreOwner provides viewModelStoreOwner) {
+                    NavigationRootUi2(Modifier, Modifier)
+                }
+            }
+            settle()
+            nav.switch(ScreenId.Home)
+            settle()
+            waitForCatching { onNodeWithTag("AccountPillAccountName").isDisplayed() }
+            triggerUnlockDialog(true, { println("Unlock attempted")})
+            settle()
+            waitForCatching { onNodeWithTag("EnterPIN").isDisplayed() }
+            onNodeWithTag("EnterPIN").performTextInput("1111")
+            settle()
+            onNodeWithTag("EnterPIN").multiplatformImeAction()
+        }
+    }
     @Test fun navRootTest()
     {
         runComposeUiTest {

@@ -68,7 +68,7 @@ class ReceiveScreenTest:WallyUiTestBase()
             }
             settle()
             val tag = "receiveScreen:receiveAddress"
-            waitFor(60000) { onNodeWithTag(tag).isDisplayed() }
+            waitForCatching(60000) { onNodeWithTag(tag).isDisplayed() }
             println("address: ${address.address.toString()}")
             onNodeWithTag(tag).assertTextEquals(address.address.toString())
             println("Performing click")
