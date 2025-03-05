@@ -11,6 +11,7 @@ import kotlinx.serialization.Transient
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
 import org.nexa.threads.ThreadJob
+import org.nexa.threads.millisleep
 import kotlin.random.Random
 
 /** Account flags: No flag */
@@ -262,7 +263,11 @@ class Account(
                   val isTdpp = txh.relatedTo["TDPP"]
                   if (isTdpp != null)  // OK so I oked this, but its actually a bad tx in a way I couldn't verify so its going away
                   {
-                      displayWarning(i18n(S.staleTransaction),i18n(S.staleTransactionDetails))
+                      laterJob {
+                          // This error coming back from the full node races with the UI, so give plenty of time for the UI to settle
+                          millisleep(1000U)
+                          displayWarning(i18n(S.staleTransaction),i18n(S.staleTransactionDetails))
+                      }
                   }
               }
           }

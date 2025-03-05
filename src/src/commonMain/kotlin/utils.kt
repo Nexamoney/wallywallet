@@ -256,7 +256,7 @@ fun scanForFirstAddress(s: String):PayAddress?
 
 /** Convert a ChainSelector to its currency code at 100M/1000 units */
 val chainToDisplayCurrencyCode: Map<ChainSelector, String> = mapOf(
-  ChainSelector.NEXATESTNET to "tNEX", ChainSelector.NEXAREGTEST to "rNEX", ChainSelector.NEXA to "NEX",
+  ChainSelector.NEXATESTNET to "tNEX", ChainSelector.NEXAREGTEST to "rNEX", ChainSelector.NEXA to "NEXA",
   ChainSelector.BCH to "uBCH", ChainSelector.BCHTESTNET to "tuBCH", ChainSelector.BCHREGTEST to "ruBCH"
 )
 

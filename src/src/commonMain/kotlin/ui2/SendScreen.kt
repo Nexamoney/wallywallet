@@ -55,7 +55,7 @@ data class SendScreenUi(
   val toAddressFinal: PayAddress? = null,
   val isConfirming: Boolean = false,
   val fiatAmount: String = "",
-  val currencyCode: String = chainToCurrencyCode[ChainSelector.NEXA] ?: "NEX"
+  val currencyCode: String = ""
 )
 {
     val amountFinal: BigDecimal = if (amount.isEmpty())
@@ -102,11 +102,14 @@ abstract class SendScreenViewModel(val account:MutableStateFlow<Account?>): View
         uiState.value = uiState.value.copy(amount = cleanedQty)
     }
 
+    fun setChain(chain: ChainSelector)
+    {
+        uiState.value = uiState.value.copy(currencyCode = chainToCurrencyCode[chain] ?: "")
+    }
+
     fun setSendQty(sendQty: BigDecimal)
     {
-        uiState.value = uiState.value.copy(
-          amount = sendQty.toStringExpanded()
-        )
+        uiState.value = uiState.value.copy(amount = sendQty.toStringExpanded())
     }
 
     abstract fun multiplySendQty(multiplier: Int)
@@ -118,11 +121,32 @@ abstract class SendScreenViewModel(val account:MutableStateFlow<Account?>): View
     {
         uiState.value = SendScreenUi()
     }
+
+    fun clear()
+    {
+        assetsToSend.value = listOf()
+        val act = account.value
+        act?.clearAssetTransferList()  // If you cancel a send (verses going back), you clear out the state
+    }
+
+    override fun onCleared()
+    {
+        super.onCleared()
+        clear()
+    }
 }
 
 class SendScreenViewModelFake(act: Account): SendScreenViewModel(act)
 {
-    override fun setAccount(act: Account) { account.value = act }
+    init
+    {
+        setAccount(act)
+    }
+    override fun setAccount(act: Account)
+    {
+        account.value = act
+        setChain(act.chain.chainSelector)
+    }
     override fun checkUriAndSetUi(urlStr: String) {}
     override fun multiplySendQty(multiplier: Int) {}
     override fun populateAssetsList(assetTransferList: MutableList<GroupId>, assets: Map<GroupId, AssetPerAccount>) {}
@@ -136,18 +160,17 @@ class SendScreenViewModelImpl(act: Account): SendScreenViewModel(act)
 
     init
     {
-        populateAssetsList(act.assetTransferList, act.assets)
-        balanceViewModel.setAccount(act)
+        setAccount(act)
     }
 
     override fun setAccount(act: Account)
     {
-        if (account.value != act)
-        {
-            account.value = act
-            populateAssetsList(act.assetTransferList, act.assets)
-            balanceViewModel.setAccount(act)
-        }
+        // Always set this, regardless of whether it was already set
+        // because state may have changed (like other assets chosen)
+        account.value = act
+        populateAssetsList(act.assetTransferList, act.assets)
+        balanceViewModel.setAccount(act)
+        setChain(act.chain.chainSelector)
     }
 
     override fun checkUriAndSetUi(urlStr: String)
@@ -194,9 +217,8 @@ class SendScreenViewModelImpl(act: Account): SendScreenViewModel(act)
             else uriToChain[scheme]
 
             val sendAddress = chainToURI[whichChain] + ":" + uri.body()
-            uiState.value = uiState.value.copy(
-              toAddress = sendAddress,
-            )
+            setToAddress(sendAddress)
+
             note?.let { setNote(note) }
             amt?.let { setSendQty(it) }
         }
@@ -248,7 +270,7 @@ class SendScreenViewModelImpl(act: Account): SendScreenViewModel(act)
         val fpc = acc.fiatPerCoinObservable.value
         val amount = uiState.value.amount
         val toAddress = uiState.value.toAddress
-        val currencyCode = chainToCurrencyCode[acc.wallet.chainSelector]
+        val currencyCode = chainToDisplayCurrencyCode[acc.wallet.chainSelector]
 
         if (acc.locked)
         {
@@ -529,7 +551,7 @@ class SendScreenViewModelImpl(act: Account): SendScreenViewModel(act)
                         LogIt.info("Sending TX: ${tx.toHex()}")
                         clearAlerts()
                         displayNotice(S.sendSuccess, "$atomAmt -> $sendAddress: ${tx.idem}")
-                        account.clearAssetTransferList()
+                        clear()
                         nav.go(ScreenId.Home)
                         uiState.value = SendScreenUi() // We are done with a send so reset state machine
                     }
@@ -568,7 +590,6 @@ class SendScreenViewModelImpl(act: Account): SendScreenViewModel(act)
     {
         super.onCleared()
         balanceJob?.cancel()
-        assetsToSend.value = listOf()
     }
 }
 
@@ -628,42 +649,46 @@ fun SendScreenContent(
                     ConfirmSend(viewModel)
                     Spacer(Modifier.height(16.dp))
                 }
-                WallyInputField(
-                  mod = Modifier.focusRequester(focusRequester).testTag("sendToAddress"),
-                  text = toAddress,
-                  label = i18n(S.sendToAddressHint),
-                  placeholder = i18n(S.enterAddress),
-                  iconContentDescription = i18n(S.clearAddress),
-                  isSingleLine = false,
-                  isReadOnly = isConfirming
-                ) {
-                    viewModel.setToAddress(it)
+                else  // We do not want to show the redundant edit boxes if we have the confirmation box up.
+                {
+                    WallyInputField(
+                      mod = Modifier.focusRequester(focusRequester).testTag("sendToAddress"),
+                      text = toAddress,
+                      label = i18n(S.sendToAddressHint),
+                      placeholder = i18n(S.enterAddress),
+                      iconContentDescription = i18n(S.clearAddress),
+                      isSingleLine = false,
+                      isReadOnly = isConfirming
+                    ) {
+                        viewModel.setToAddress(it)
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    WallyInputField(
+                      mod = Modifier.testTag("noteInput"),
+                      text = note,
+                      label = i18n(S.noteOptional),
+                      placeholder = i18n(S.editSendNoteHint),
+                      iconContentDescription = i18n(S.clearNote),
+                      isReadOnly = isConfirming
+                    ) {
+                        viewModel.setNote(it)
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    WallyNumericInputFieldBalance(
+                      mod = Modifier.testTag("amountToSendInput"),
+                      amountString = amount,
+                      label = i18n(S.amountPlain),
+                      placeholder = i18n(S.enterNEXAmount),
+                      isReadOnly = isConfirming,
+                      hasIosDoneButton = !isConfirming,
+                      vm = viewModel
+                    ) {
+                        viewModel.setSendQty(it)
+                    }
                 }
-                Spacer(Modifier.height(8.dp))
-                WallyInputField(
-                  mod = Modifier.testTag("noteInput"),
-                  text = note,
-                  label = i18n(S.noteOptional),
-                  placeholder = i18n(S.editSendNoteHint),
-                  iconContentDescription = i18n(S.clearNote),
-                  isReadOnly = isConfirming
-                ) {
-                    viewModel.setNote(it)
-                }
-                Spacer(Modifier.height(8.dp))
-                WallyNumericInputFieldBalance(
-                  mod = Modifier.testTag("amountToSendInput"),
-                  amountString = amount,
-                  label = i18n(S.amountPlain),
-                  placeholder = i18n(S.enterNEXAmount),
-                  isReadOnly = isConfirming,
-                  hasIosDoneButton = !isConfirming,
-                  vm = viewModel
-                ) {
-                    viewModel.setSendQty(it)
-                }
-                Spacer(Modifier.height(16.dp))
-                if (sendingTheseAssets.isNotEmpty()) {
+                if (sendingTheseAssets.isNotEmpty())
+                {
+                    Spacer(Modifier.height(16.dp))
                     AssetsList(sendingTheseAssets, true, viewModel)
                     Spacer(Modifier.height(160.dp))
                 }
@@ -809,8 +834,14 @@ fun SendBottomButtons(mod: Modifier, viewModel: SendScreenViewModel)
           description = i18n(S.SendCancel),
           color = wallyPurple,
         ) {
-            nav.back()
-            viewModel.resetUi()
+            if (isConfirming)  // If cancel confirming, just go back to editing the send
+                viewModel.uiState.value = viewModel.uiState.value.copy(isConfirming = false)
+            else
+            {
+                viewModel.clear()  // If you cancel the gui clears (if you want to preserve the values use the back button)
+                nav.back()
+                viewModel.resetUi()
+            }
         }
     }
 }
@@ -823,7 +854,6 @@ fun SendScreen(account: Account, navParams: SendScreenNavParams, viewModel: Send
      */
     LaunchedEffect(account) {
         viewModel.setAccount(account)
-
     }
 
     // Update UI when sending to a new address
@@ -967,30 +997,39 @@ fun AssetListItemEditable(assetPerAccount: AssetPerAccount, editable: Boolean = 
                 }
             }
         }
-        val amount = assetPerAccount.editableAmount ?: BigDecimal.ZERO
-        if (amount > BigDecimal.ONE)
-            Text(i18n(S.Amount) % mapOf("amt" to amount.toString()))
-        else if (amount == BigDecimal.ONE  || amount == BigDecimal.ZERO)
-            Text(i18n(S.Amount) % mapOf("amt" to "1"))
 
-        if(expandable && editable)
-            AnimatedVisibility(visible = expanded) {
-                WallyNumericInputFieldAsset(
-                  amountString = quantity,
-                  label = i18n(S.amountPlain),
-                  placeholder = i18n(S.enterAmount),
-                  decimals = assetPerAccount.assetInfo.tokenInfo?.genesisInfo?.decimal_places ?: 0,
-                  isReadOnly = isConfirming,
-                  hasIosDoneButton = !isConfirming,
-                  onValueChange = {
-                      quantity = it
-                      if (it.isEmpty())
-                          assetPerAccount.editableAmount = BigDecimal.ZERO
-                      else
-                          assetPerAccount.editableAmount = assetPerAccount.tokenDecimalFromString(it)
-                  }
-                )
-            }
+        // Its overwhelmingly likely this is an NFT so has no concept of an amount
+        if (assetPerAccount.groupInfo.isSubgroup() && (tokenAmount == 1L))
+        {
+
+        }
+        else // Otherwise show the amount (and let it be edited)
+        {
+            val amount = assetPerAccount.editableAmount ?: BigDecimal.ZERO
+            if (amount > BigDecimal.ONE)
+                Text(i18n(S.Amount) % mapOf("amt" to amount.toString()))
+            else if (amount == BigDecimal.ONE || amount == BigDecimal.ZERO)
+                Text(i18n(S.Amount) % mapOf("amt" to "1"))
+
+            if (expandable && editable)
+                AnimatedVisibility(visible = expanded) {
+                    WallyNumericInputFieldAsset(
+                      amountString = quantity,
+                      label = i18n(S.amountPlain),
+                      placeholder = i18n(S.enterAmount),
+                      decimals = assetPerAccount.assetInfo.tokenInfo?.genesisInfo?.decimal_places ?: 0,
+                      isReadOnly = isConfirming,
+                      hasIosDoneButton = !isConfirming,
+                      onValueChange = {
+                          quantity = it
+                          if (it.isEmpty())
+                              assetPerAccount.editableAmount = BigDecimal.ZERO
+                          else
+                              assetPerAccount.editableAmount = assetPerAccount.tokenDecimalFromString(it)
+                      }
+                    )
+                }
+        }
     }
 }
 
@@ -1081,7 +1120,6 @@ fun WallyNumericInputFieldBalance(
               {
                   softKeyboardBar.value = { modifier ->
                       Row(modifier.background(samsungKeyBoardGray), horizontalArrangement = Arrangement.SpaceEvenly) {
-                          val mod = Modifier.weight(1f)
                           val fontStyle = MaterialTheme.typography.labelLarge
                           TextButton(
                             modifier = mod,

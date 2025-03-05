@@ -183,13 +183,13 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
         }
     }
 
-    var newAcState = newAccountState.collectAsState().value
+    val newAcState = newAccountState.collectAsState().value
 
     var recoverySearchText by remember { mutableStateOf("") }
     var fastForwardText by remember { mutableStateOf<String?>(null) }
     var creatingAccountLoading by remember { mutableStateOf(false) }
 
-    var aborter = remember { mutableStateOf(Objectify<Boolean>(false)) }
+    val aborter = remember { mutableStateOf(Objectify<Boolean>(false)) }
     var createClicks by remember {mutableStateOf(0) }  // Some operations require you click create twice
 
     var firstActThread:iThread? = null
@@ -295,17 +295,18 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
 
         if (inputValid)
         {
-            CleanState()  // Clean it after taking a copy but right away
             val words = processSecretWords(acState.recoveryPhrase)
             if (words.size == 12) // account recovery
             {
                 if ((createClicks == 0) && (acState.earliestActivity == null))
                 {
+                    // We are looking for confirmation here so do not clean the state
                     createClicks += 1
                     recoverySearchText = i18n(S.creatingNoHistoryAccountWarning)
                 }
                 else
                 {
+                    CleanState()  // Clean it after taking a copy but right away
                     creatingAccountLoading = true
                     launchRecoverAccountThread(acState, flags, words.joinToString(" "), chainSelector)
                     nav.back()
@@ -313,6 +314,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
             }
             else if (words.isEmpty())
             {
+                CleanState()  // Clean it after taking a copy but right away
                 nav.back()
                 later {
                     val account = wallyApp!!.newAccount(acState.accountName, flags, acState.pin, chainSelector)
