@@ -26,6 +26,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.eygraber.uri.Uri
 import org.nexa.libnexakotlin.*
@@ -39,6 +40,17 @@ import okio.FileNotFoundException
 private val LogIt = GetLog("wally.actperm.ui2")
 
 class IdentitySession(var uri: Uri?, var idData: IdentityDomain?=null, val whenDone: ((String, String, Boolean?)->Unit)?= null)
+
+// Proportional vertical spacer that allows you to specify a max and min spacing
+@Composable fun ColumnScope.VSpacer(spaceWeight: Float, max: Dp = Dp.Unspecified, min: Dp = Dp.Unspecified )
+{
+    Spacer(modifier = Modifier.heightIn(min, max).weight(spaceWeight))
+}
+// Proportional horizontal spacer that allows you to specify a max and min spacing
+@Composable fun RowScope.VSpacer(spaceWeight: Float, max: Dp = Dp.Unspecified, min: Dp = Dp.Unspecified )
+{
+    Spacer(modifier = Modifier.heightIn(min, max).weight(spaceWeight))
+}
 
 @Composable
 fun IconLabelValueRow(icon: ImageVector, labelRes: Int, value: String){
@@ -81,14 +93,14 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
         if (it == null) ""
         else ":" + it
     }
-    val fromAccount = acc.name
+    val fromAccount = acc.nameAndChain
     val currencyCode = acc.currencyCode
     val fromEntity = sess.host + tpc
     var breakIt = false // TODO allow a debug mode that produces bad tx
 
     // TODO: Handle locked accounts
-    var accountUnlockTrigger = remember { mutableStateOf(0) }
-    var oldAccountUnlockTrigger = remember { mutableStateOf(0) }
+    val accountUnlockTrigger = remember { mutableStateOf(0) }
+    val oldAccountUnlockTrigger = remember { mutableStateOf(0) }
 
     var isSendingSomething by remember { mutableStateOf(false) }
     var isReceiving by remember { mutableStateOf(false) }
@@ -296,7 +308,7 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
               modifier = Modifier.fillMaxWidth(),
               horizontalAlignment = Alignment.CenterHorizontally
             ){
-                Spacer(modifier = Modifier.height(16.dp))
+                VSpacer(0.02f, 16.dp)
                 Text(
                   modifier = Modifier.padding(start = 48.dp, end = 48.dp),
                   text = i18n(titleRes),
@@ -304,13 +316,24 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
                   fontWeight = FontWeight.Bold,
                   textAlign = TextAlign.Center
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                VSpacer(0.01f, 8.dp)
                 Text(
                   text = fromEntity,
-                  style = MaterialTheme.typography.headlineSmall,
+                  style = MaterialTheme.typography.headlineMedium,
                   fontWeight = FontWeight.Bold,
                   color = Color.Black
                 )
+                val reason = sess.reason
+                if (reason != null)
+                {
+                    VSpacer(0.01f, 4.dp)
+                    Text(
+                      text = reason,
+                      style = MaterialTheme.typography.headlineSmall,
+                      fontWeight = FontWeight.Normal,
+                      color = Color.Black
+                    )
+                }
             }
 
             if (error.isEmpty())
@@ -320,9 +343,7 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
                  */
                 if (isSendingSomething)
                     Column (
-                      modifier = Modifier.fillMaxWidth()
-                        .wrapContentHeight()
-                        .padding(32.dp,16.dp,32.dp,16.dp)
+                      modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(32.dp,16.dp,32.dp,16.dp)
                     ) {
                         Text(
                           text = i18n(S.sending),
@@ -330,7 +351,7 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
                           style = MaterialTheme.typography.headlineSmall,
                           textAlign = TextAlign.Center
                         )
-                        Spacer(Modifier.height(8.dp))
+                        VSpacer(0.01f, 16.dp)
                         Box(
                           modifier = Modifier.fillMaxWidth()
                             .wrapContentHeight()
@@ -351,6 +372,7 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
                                   labelRes = S.account,
                                   value = fromAccount
                                 )
+                                VSpacer(0.01f, 16.dp)
                                 // netSats: what's being paid to me - what I'm contributing.  So if I pay out then its a negative number
                                 if (netSats < 0L)
                                     IconLabelValueRow(
@@ -358,7 +380,7 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
                                       label = currencyCode,
                                       value = acc.cryptoFormat.format(acc.fromFinestUnit(netSats))
                                     )
-                                Spacer(modifier = Modifier.height(16.dp))
+                                VSpacer(0.01f, 16.dp)
                                 if (spendingTokenTypes > 0L)
                                     IconLabelValueRow(
                                       icon = Icons.Outlined.Image,
@@ -367,6 +389,7 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
                                     )
                                 if (fee > 0L)
                                 {
+                                    VSpacer(0.01f, 16.dp)
                                     IconLabelValueRow(
                                       icon = Icons.Outlined.RequestQuote,
                                       label = i18n(S.fee),
@@ -392,7 +415,7 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
                           style = MaterialTheme.typography.headlineSmall,
                           textAlign = TextAlign.Center,
                         )
-                        Spacer(Modifier.height(8.dp))
+                        VSpacer(0.01f, 8.dp)
                         Box(
                           modifier = Modifier.fillMaxWidth()
                             .wrapContentHeight()
@@ -408,34 +431,48 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
                                 .padding(16.dp),
                               horizontalAlignment = Alignment.CenterHorizontally
                             ) {
+                                // If the account isn't shown as part of what is being sent, we need to show it here
+                                if (!isSendingSomething)
+                                {
+                                    IconLabelValueRow(
+                                      icon = Icons.Default.AccountBalance,
+                                      labelRes = S.account,
+                                      value = fromAccount
+                                    )
+                                    VSpacer(0.01f, 16.dp)
+                                }
                                 // netSats: what's being paid to me - what I'm contributing.  So if I pay out then its a negative number
                                 if (netSats > 0L)
+                                {
                                     IconLabelValueRow(
                                       icon = Icons.Default.AttachMoney,
                                       label = currencyCode,
                                       value = acc.cryptoFormat.format(acc.fromFinestUnit(netSats))
                                     )
-                                Spacer(modifier = Modifier.height(16.dp))
+                                }
+                                VSpacer(0.01f, 16.dp)
                                 if (receivingTokenTypes > 0L)
+                                {
                                     IconLabelValueRow(
                                       icon = Icons.Outlined.Image,
                                       labelRes = S.assets,
                                       value = "$receivingTokenTypes"
                                     )
+                                }
                             }
                         }
                     }
             }
             else // error.isNotEmpty()
             {
-                Box(
+                Column(
                   modifier = Modifier.weight(1f)
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .padding(32.dp)
                 ) {
                     CenteredSectionText(S.CannotCompleteTransaction)
-                    Spacer(Modifier.height(8.dp))
+                    VSpacer(0.01f, 8.dp)
                     Text(error, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, maxLines = 10)
                 }
             }
@@ -446,7 +483,7 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
             //Text(GuiCustomTxFee, modifier = tm, style = ts, textAlign = TextAlign.Center)
             Text(GuiCustomTxTokenSummary, modifier = tm, style = ts, textAlign = TextAlign.Center)
 
-            Spacer(Modifier.defaultMinSize(1.dp,10.dp).weight(1f))
+            Spacer(Modifier.defaultMinSize(1.dp,10.dp).weight(0.05f))
 
             if (GuiCustomTxError != "")
             {

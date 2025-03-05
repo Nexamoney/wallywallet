@@ -19,11 +19,10 @@ import io.ktor.http.Url
 import io.ktor.utils.io.errors.*
 import kotlinx.serialization.Serializable
 import org.nexa.threads.Mutex
+import org.nexa.threads.millisleep
 
 private val LogIt = GetLog("BU.wally.tpsess")
 
-// val TDPP_URI_SCHEME = "tdpp"
-val TDPP_DEFAULT_UOA = "NEX"
 val TDPP_DEFAULT_PROTOCOL = "http"
 
 const val TDPP_FLAG_NOFUND = 1
@@ -288,7 +287,7 @@ class TricklePayDomains()
     {
         return dataLock.lock {
             if (!domainsLoaded) load()
-            var d = domains[domainKey(host, topic)]
+            val d = domains[domainKey(host, topic)]
             d
         }
     }
@@ -597,7 +596,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         }
         @Serializable data class TricklePaySendToReply(val resultCode:Int, val txid:String, val txidem: String, val tx: String, val error: String)
         val postData = TricklePaySendToReply(200, tx.id.toHex(), tx.idem.toHex(), tx.toHex(), "")
-        val js = Json {}
+        val js = Json
 
         val postStr = js.encodeToString(TricklePaySendToReply.serializer(), postData)
         val urlStr = replyProtocol + "://" + hostAndPort + "/sendto?" + cookieParam
@@ -769,7 +768,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                         var completed = pTx.inputs.isNotEmpty()  // It can't be completed if there are no inputs at all
                         for (inp in pTx.inputs)
                         {
-                            if (inp.script == null || inp.script.size == 0)
+                            if (inp.script.size == 0)
                             {
                                 LogIt.warning(sourceLoc() +": TDPP special transaction: Counterparty indicated that I could post the completed transaction, but they still need to sign")
                                 completed = false
@@ -780,9 +779,9 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                             val wallet = getRelevantAccount(domain?.accountName).wallet
                             wallet.send(pTx)
                             // Now asynchronously wait for the wallet to process the tx, and then annotate it
-                            launch {
+                            laterJob {
                                 var retries = 0
-                                while(retries<10)
+                                while(retries<20)
                                 {
                                     val txRecord = wallet.getTx(pTx.idem)
                                     if (txRecord != null)
@@ -791,13 +790,15 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                                         txRecord.relatedTo["TDPP"] = byteArrayOf(1)
                                         break
                                     }
-                                    delay(100)
+                                    millisleep(300U)
+                                    retries++
                                 }
                             }
                         }
                     }
                     catch(e:Exception)  // Its possible that the tx is partial but the caller didn't set the bit, so if the tx is rejected ignore
                     {
+                        logThreadException(e)
                     }
 
                 // And hand it back to the requester...
@@ -805,7 +806,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                 val rp = replyProtocol
                 val hp = hostAndPort
                 val cp = cookieParam
-                app.later {
+                laterJob {
                     val req = Url(rp + "://" + hp + "/tx?tx=${pTx.toHex()}&${cp}")
                     LogIt.info("Sending special tx response: ${req}")
                     val data = try
@@ -816,16 +817,20 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                     {
                         LogIt.info("Error submitting transaction: " + e.message)
                         displayError(S.WebsiteUnavailable)
-                        return@later
+                        return@laterJob
                     }
                     catch (e: Exception)
                     {
                         LogIt.info("Error submitting transaction: " + e.message)
                         displayError(S.WebsiteUnavailable)
-                        return@later
+                        return@laterJob
                     }
                     LogIt.info(sourceLoc() + " TP response to the response: " + data)
-                    displayNotice(S.TpTxAccepted)
+                    // if the other side did not like the transaction it will return invalid
+                    if (!data.contains("invalid"))
+                        displayNotice(S.TpTxAccepted)
+                    else
+                        displayWarning(i18n(S.staleTransaction),i18n(S.staleTransactionDetails))
                 }
             }
         }

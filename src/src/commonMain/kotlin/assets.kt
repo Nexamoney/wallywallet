@@ -767,6 +767,11 @@ class AssetManager(): AssetManagerStorage
                 // nothing to do, electrum not available
                 LogIt.info("Cannot load ${groupId}, no electrum servers")
             }
+            catch(e: ElectrumNotFound)
+            {
+                // Very possibly a token from testnet or regtest
+                LogIt.info("Cannot load ${groupId}, no known token")
+            }
         }
         return ret
     }
@@ -821,6 +826,11 @@ class AssetManager(): AssetManagerStorage
                     LogIt.info(sourceLoc() + ": Incorrect or non-existent token desc document for ${groupId}")
                     return td
                 }
+        }
+        catch(e: ElectrumNotFound)
+        {
+            LogIt.warning(sourceLoc() + ": Token genesis not found. parent: ${groupId.parentGroup().toHex()} token: ${groupId.toHex()}")
+            throw e
         }
         catch(e: Exception)  // Normalize exceptions
         {
