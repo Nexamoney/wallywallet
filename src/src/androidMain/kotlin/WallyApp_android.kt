@@ -7,8 +7,10 @@ package info.bitcoinunlimited.www.wally
 
 import android.app.*
 import android.app.PendingIntent.CanceledException
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.res.Configuration
 import android.os.*
 import android.service.notification.StatusBarNotification
@@ -24,14 +26,18 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import org.nexa.libnexakotlin.*
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
-import com.eygraber.uri.*
 import info.bitcoinunlimited.www.wally.ui2.views.loadingAnimation
 import org.nexa.threads.Mutex
 import org.nexa.threads.setThreadName
 
-
 const val DEBUG_VM = true
 var brokenMode: Boolean = false
+
+// Includes both screen off AND app minimized
+// This has to be long enough to not be tiresome if you are browsing some other app to interact with wally
+const val LOCK_IF_PAUSED_FOR_MILLIS = 10*60*1000
+// We want it to auto-lock if you minimize your screen and forget to lock, but it cannot be instant or its very irritating if you accidentally hit the blank button
+const val LOCK_IF_SCREEN_OFF_FOR_MILLIS = 20*1000
 
 const val NORMAL_NOTIFICATION_CHANNEL_ID = "n"
 const val PRIORITY_NOTIFICATION_CHANNEL_ID = "p"
@@ -152,6 +158,27 @@ class BackgroundSync(appContext: Context, workerParams: WorkerParameters): Worke
     }
 }
 
+class ScreenStateReceiver : BroadcastReceiver()
+{
+    var lastScreenOffTime = millinow()
+    override fun onReceive(context: Context, intent: Intent)
+    {
+        when (intent.action)
+        {
+            Intent.ACTION_SCREEN_OFF -> {
+                lastScreenOffTime = millinow()
+            }
+            Intent.ACTION_SCREEN_ON -> {
+                if (millinow() - lastScreenOffTime > LOCK_IF_SCREEN_OFF_FOR_MILLIS)
+                {
+                    lastScreenOffTime = millinow()
+                    wallyApp?.lockAccounts()
+                }
+            }
+        }
+    }
+}
+
 class WallyApp : Application.ActivityLifecycleCallbacks, Application()
 {
     init
@@ -184,7 +211,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
 
     companion object
     {
-        // Used to load the 'native-lib' library on application startup.
         init
         {
             //System.loadLibrary("native-lib")
@@ -199,8 +225,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     {
         wallyApp = commonApp
     }
-    val focusedAccount
-      get() = commonApp.focusedAccount
 
     // Current notification ID
     var notifId = 0
@@ -217,6 +241,11 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
      * Since the implicit activity wasn't launched for result, we can't return an indicator that wally main should finish().
      * Whenever wally resumes, if finishParent > 0, it will immediately finish. */
     var finishParent = 0
+    /** used to determine whether this app is backgrounded or not */
+    var activityCount = 0
+    /** when was this app left */
+    var appDefocusedAtTime = millinow()
+    val screenState = ScreenStateReceiver()
 
     private fun createNotificationChannel()
     {
@@ -260,6 +289,8 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         nexaElectrum.add(0, IpPort("rostrum.wallywallet.org", DEFAULT_NEXA_TCP_ELECTRUM_PORT))
 
         createNotificationChannel()
+        registerReceiver(screenState, IntentFilter(Intent.ACTION_SCREEN_ON))
+        registerReceiver(screenState, IntentFilter(Intent.ACTION_SCREEN_OFF))
 
         appResources = getResources()
         displayMetrics = getResources().getDisplayMetrics()
@@ -296,18 +327,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     {
         super.onLowMemory()
     }
-
-
-    /** TODO: Move to commonApp
-     * Automatically handle this intent if its something that can be done without user intervention.
-    Returns true if it was handled, false if user-intervention needed.
-    * */
-    var autoPayNotificationId = -1
-    fun autoHandle(intentUri: String): Boolean
-    {
-        return HandleTdpp(Uri.parse(intentUri))
-    }
-
 
     /** send a casual popup message that's not a notification */
     fun toast(Rstring: Int) = toast(i18n(Rstring))

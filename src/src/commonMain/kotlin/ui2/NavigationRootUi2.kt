@@ -24,7 +24,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eygraber.uri.Uri
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
@@ -381,21 +380,48 @@ fun triggerAssignAccountsGuiSlots()
     }
 }
 
-fun triggerUnlockDialog(show: Boolean = true, then: (()->Unit)? = null)
+fun MutableStateFlow<Int>.interpolate(timeMs: Int, start: Int?=0, end: Int)
+{
+    val FRAME_TIME = 20  // how
+    var numSteps = timeMs/FRAME_TIME
+    val st = start ?: value
+    val delta = end-st
+    val incr = delta.toFloat()/(numSteps+1)
+    var cur:Float = st.toFloat()
+    tlater {
+        for (i in 0 until numSteps)
+        {
+            cur = cur + incr
+            this.value = cur.toInt()
+            millisleep(FRAME_TIME.toULong())
+        }
+        this.value = end.toInt()
+    }
+}
+
+fun triggerUnlockDialog(show: Boolean = true, then: ((String)->Unit)? = {})
 {
     if (show)
     {
+        /*
         later {
             delay(TRIGGER_BUG_DELAY); externalDriver.send(GuiDriver(show = setOf(ShowIt.ENTER_PIN), afterUnlock = then))
         }
+         */
+        clearAlerts()
+        unlockThen = then
+        unlockTileSize.interpolate(300, null, 300)
     }
-    else later { delay(TRIGGER_BUG_DELAY); externalDriver.send(GuiDriver(noshow = setOf(ShowIt.ENTER_PIN))) }
+    else
+    {
+        //later { delay(TRIGGER_BUG_DELAY); externalDriver.send(GuiDriver(noshow = setOf(ShowIt.ENTER_PIN))) }
+        unlockTileSize.interpolate(300, null, 0)
+    }
 }
 
 fun triggerClipboardAction(doit: (String?) -> Unit)
 {
     later { delay(TRIGGER_BUG_DELAY); externalDriver.send(GuiDriver(withClipboard = doit))}
-
 }
 
 // implement a share button (whose behavior may change based on what screen we are on)
@@ -743,7 +769,7 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
             {
                 val iconButtonSize = 32.dp
                 TitleText(nav.title(), Modifier.weight(1f).fillMaxSize().padding(0.dp, 15.dp, 0.dp, 0.dp))
-                IconButton(onClick = { triggerUnlockDialog() }, modifier = Modifier.size(iconButtonSize).testTag("GlobalLockIcon")){
+                IconButton(onClick = { triggerUnlockDialog(true) }, modifier = Modifier.size(iconButtonSize).testTag("GlobalLockIcon")){
                     Icon(Icons.Filled.Lock, tint = Color.White, contentDescription = "Lock")
                 }
                 if (platform().hasShare && nav.currentScreen.collectAsState().value.hasShare)
@@ -862,7 +888,7 @@ fun NavigationRootUi2(
     else if (curScreen == ScreenId.Send || curScreen == ScreenId.Receive || curScreen == ScreenId.SpecialTxPerm)
         showBottomBar = false
     // Asset detail screen
-    else if (curScreen == ScreenId.Assets && subScreen != null)
+    else if (curScreen == ScreenId.Assets)
         showBottomBar = false
 
     LaunchedEffect(Unit) {
@@ -928,6 +954,7 @@ fun NavigationRootUi2(
 
     }
 
+    /** Show the passed composable with the selected account if its unlocked, otherwise ask for an unlock first. */
     @Composable
     fun withUnlockedAccount(then: @Composable (acc: Account) -> Unit)
     {
@@ -945,7 +972,9 @@ fun NavigationRootUi2(
             else
             {
                 triggerUnlockDialog {
-                    if (pa.locked) nav.back()  // fail
+                    // If the unlock failed, then we need to go back because the user did not gain permission to see this screen
+                    if (pa.locked) nav.back()
+                    // Regardless, dismiss the unlock dialog
                     triggerUnlockDialog(false)
                 }
             }
@@ -1005,22 +1034,11 @@ fun NavigationRootUi2(
                 {
                     isShowingRecoveryWarning = true
                 }
-                if (it == ShowIt.ENTER_PIN)
-                {
-                    LogIt.info(sourceLoc() + ": open PIN entry window")
-                    unlockDialog = c.afterUnlock ?: {}
-                }
             }
             c.noshow?.forEach {
                 if (it == ShowIt.WARN_BACKUP_RECOVERY_KEY)
                 {
                     isShowingRecoveryWarning = false
-                }
-                if (it == ShowIt.ENTER_PIN)
-                {
-                    LogIt.info(sourceLoc() + ": close PIN entry window")
-                    unlockDialog?.invoke()
-                    unlockDialog = null
                 }
             }
             if (c.regenAccountGui == true)
@@ -1219,11 +1237,11 @@ fun NavigationRootUi2(
         ) {
             WallyThemeUi2 {
                 Box(modifier = Modifier.fillMaxSize().background(Color.White).padding(innerPadding).then(systemPadding)) {
-                    if (unlockDialog != null) UnlockView {  }
                     Column(modifier = Modifier.fillMaxSize()) {
 
                         if (isShowingRecoveryWarning)
                             RecoveryPhraseWarningUi2(Modifier.clickable { isShowingRecoveryWarning = false})
+                        UnlockTile()
 
                         // This will take up the most space but leave enough for the navigation menu
                         val mod = if (curScreen.isEntirelyScrollable)

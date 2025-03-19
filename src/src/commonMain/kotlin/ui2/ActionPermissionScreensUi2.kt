@@ -89,13 +89,13 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
 {
     // Change the title if the request is for a partial transaction
     val titleRes = if (sess.tflags and TDPP_FLAG_PARTIAL != 0) S.IncompleteTpTransactionFrom else S.SpecialTpTransactionFrom
-    val tpc = sess.topic.let {
+    val topic = sess.topic.let {
         if (it == null) ""
-        else ":" + it
+        else it
     }
     val fromAccount = acc.nameAndChain
     val currencyCode = acc.currencyCode
-    val fromEntity = sess.host + tpc
+    val fromEntity = sess.host
     var breakIt = false // TODO allow a debug mode that produces bad tx
 
     // TODO: Handle locked accounts
@@ -316,13 +316,17 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
                   fontWeight = FontWeight.Bold,
                   textAlign = TextAlign.Center
                 )
-                VSpacer(0.01f, 8.dp)
-                Text(
-                  text = fromEntity,
-                  style = MaterialTheme.typography.headlineMedium,
-                  fontWeight = FontWeight.Bold,
-                  color = Color.Black
-                )
+                if (fromEntity != null)
+                {
+                    VSpacer(0.01f, 8.dp)
+                    CenteredFittedWithinSpaceText(text = fromEntity, startingFontScale = 2.0, FontWeight.Bold, fontColor = Color.Black)
+                }
+                if (topic != "")
+                {
+                    VSpacer(0.01f, 8.dp)
+                    CenteredFittedWithinSpaceText(text = topic, startingFontScale = 1.5, FontWeight.Medium, fontColor = Color.Black)
+                }
+
                 val reason = sess.reason
                 if (reason != null)
                 {
@@ -334,6 +338,7 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
                       color = Color.Black
                     )
                 }
+                VSpacer(0.04f, 16.dp)
             }
 
             if (error.isEmpty())

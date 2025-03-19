@@ -36,9 +36,39 @@ class AndroidPrefs(prefDbName: String, mode: Int): info.bitcoinunlimited.www.wal
     val db = (appContext() as android.content.Context).getSharedPreferences(prefDbName, mode)
     override fun edit(): PreferencesEdit = AndroidPrefsEdit(this)
 
-    override fun getBoolean(key: String, defaultValue: Boolean): Boolean = db.getBoolean(key, defaultValue)
-    override fun getString(key: String, defaultValue: String?): String? = db.getString(key, defaultValue)
-    override fun getInt(key: String, defaultValue: Int): Int = db.getInt(key, defaultValue)
+    override fun getBoolean(key: String, defaultValue: Boolean): Boolean
+    {
+        try
+        {
+            return db.getBoolean(key, defaultValue)
+        }
+        catch (e: Exception)  // if the preference has any errors (for example, its not the right type) then return the default
+        {
+            return defaultValue
+        }
+    }
+    override fun getString(key: String, defaultValue: String?): String?
+    {
+        try
+        {
+            return db.getString(key, defaultValue)
+        }
+        catch (e: Exception)  // if the preference has any errors (for example, its not the right type) then return the default
+        {
+            return defaultValue
+        }
+    }
+    override fun getInt(key: String, defaultValue: Int): Int
+    {
+        try
+        {
+            return db.getInt(key, defaultValue)
+        }
+        catch (e: Exception)  // if the preference has any errors (for example, its not the right type) then return the default
+        {
+            return defaultValue
+        }
+    }
 }
 
 actual fun getSharedPreferences(prefDbName: String, mode: Int): info.bitcoinunlimited.www.wally.SharedPreferences

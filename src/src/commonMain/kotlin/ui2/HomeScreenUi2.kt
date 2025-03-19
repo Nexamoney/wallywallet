@@ -62,11 +62,13 @@ data class TabRowItem(
   val description: String
 )
 
+val txHistViewModel = TxHistoryViewModel()
+
 @Composable
 fun HomeScreenUi2(
   isShowingRecoveryWarning: Boolean = false,
   assetViewModel: AssetViewModel = viewModel { AssetViewModel() },
-  accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() },
+  accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() }
 )
 {
     val assets = assetViewModel.assets.collectAsState().value
@@ -106,9 +108,9 @@ fun HomeScreenUi2(
             Spacer(modifier = Modifier.height(8.dp))
             if (assets.isNotEmpty())
             {
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(6.dp))
                 AssetCarousel(assetViewModel)
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(6.dp))
             }
             TabRow(
               selectedTabIndex = pagerState.currentPage
@@ -139,7 +141,7 @@ fun HomeScreenUi2(
                         Column(
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            TransactionsList()
+                            TransactionsList(Modifier, txHistViewModel)
                         }
                 }
             }
