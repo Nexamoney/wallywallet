@@ -19,6 +19,8 @@ import info.bitcoinunlimited.www.wally.ui2.gatherAssets
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
 
+private val LogIt = GetLog("wally.TxHistory")
+
 data class RecentTransactionUIData(
   val transaction: TransactionHistory,
   val type: String,
@@ -34,6 +36,8 @@ data class RecentTransactionUIData(
 class TxHistoryViewModel: ViewModel()
 {
     val txHistory = MutableStateFlow<List<RecentTransactionUIData>>(listOf())
+    var priorAccount: Account? = null
+    val loading = MutableStateFlow<Boolean>(false)
 
     init {
         wallyApp!!.focusedAccount.value?.let { account ->
@@ -43,8 +47,18 @@ class TxHistoryViewModel: ViewModel()
 
     fun getAllTransactions(acc: Account)
     {
-        laterJob {  // Do not do anything blocking (in this case DB access) within a UI or coroutine thread
+        //LogIt.info(sourceLoc() + ": Started supplying tx data for ${acc.name}")
+        // If the acocunt has changed, we want to clear the tx list right away, so there's not slow-update confusion
+        // but if the account is the same, go with the cached values until reloaded
+        if (priorAccount != acc)
+        {
+            loading.value = true
+            txHistory.value = listOf()
+            priorAccount = acc
+        }
+        tlater {  // Do not do anything blocking (in this case DB access) within a UI or coroutine thread
             val transactions = mutableListOf<RecentTransactionUIData>()
+            //LogIt.info(sourceLoc() + ": Thread supplying tx data for ${acc.name}")
             acc.wallet.forEachTxByDate {
                 val amount = it.incomingAmt - it.outgoingAmt
                 val txType = if (amount == 0L) "Unknown" else if (amount > 0) "Received" else "Send"
@@ -74,9 +88,10 @@ class TxHistoryViewModel: ViewModel()
                 )
                 transactions.add(txUiData)
                 // This places some data onscreen, in case the actual number of transactions is so large that it takes a lot of time to go through them all
-                if (transactions.size == 10 && txHistory.value.size == 0)
+                if (((transactions.size == 8) || (transactions.size % 16 == 0)) && (txHistory.value.size < transactions.size))
                 {
                     transactions.sortByDescending { it.dateEpochMiliseconds }
+                    // LogIt.info(sourceLoc() + ": Supplied ${transactions.size} tx data for ${acc.name}")
                     txHistory.value = transactions
                 }
                 false
@@ -84,6 +99,7 @@ class TxHistoryViewModel: ViewModel()
             // all transactions loaded, so add to the list
             transactions.sortByDescending { it.dateEpochMiliseconds }
             txHistory.value = transactions
+            loading.value = false
         }
     }
 
@@ -95,7 +111,7 @@ class TxHistoryViewModel: ViewModel()
 }
 
 @Composable
-fun TransactionsList(modifier: Modifier = Modifier, viewModel: TxHistoryViewModel = viewModel { TxHistoryViewModel() })
+fun TransactionsList(modifier: Modifier = Modifier, viewModel: TxHistoryViewModel)
 {
     val transactions = viewModel.txHistory.collectAsState(emptyList()).value
     val account = wallyApp!!.focusedAccount.collectAsState().value
@@ -114,7 +130,10 @@ fun TransactionsList(modifier: Modifier = Modifier, viewModel: TxHistoryViewMode
     if (transactions.isEmpty())
     {
         Spacer(Modifier.height(32.dp))
-        CenteredText(i18n(S.NoAccountActivity))
+        if (viewModel.loading.collectAsState().value == true)
+            CenteredText(i18n(S.loading))
+        else
+            CenteredText(i18n(S.NoAccountActivity))
     }
 
     LazyColumn(

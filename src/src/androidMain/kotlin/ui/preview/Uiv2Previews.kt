@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import info.bitcoinunlimited.www.wally.Account
 import info.bitcoinunlimited.www.wally.ui.theme.WallyTheme
 import info.bitcoinunlimited.www.wally.ui2.ReceiveScreenContent
@@ -16,6 +17,7 @@ import info.bitcoinunlimited.www.wally.ui2.theme.WallyThemeUi2
 import info.bitcoinunlimited.www.wally.ui2.views.AccountPill
 import info.bitcoinunlimited.www.wally.ui2.views.IconTextButtonUi2
 import info.bitcoinunlimited.www.wally.ui2.views.TransactionsList
+import info.bitcoinunlimited.www.wally.ui2.views.TxHistoryViewModel
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.Pay2PubKeyTemplateDestination
 import org.nexa.libnexakotlin.UnsecuredSecret
@@ -60,7 +62,7 @@ fun RecentTransactionItemPreview()
 @Preview
 fun RecentTransactionsListPreview()
 {
-    TransactionsList(Modifier)
+    TransactionsList(Modifier, TxHistoryViewModel())
 }
 
 @Composable

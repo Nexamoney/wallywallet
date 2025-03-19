@@ -11,30 +11,22 @@ import kotlinx.coroutines.runBlocking
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.initializeLibNexa
 import org.nexa.libnexakotlin.runningTheTests
+import ui2.WallyUiTestBase
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
-class TxHistoryScreenTest
+class TxHistoryScreenTest: WallyUiTestBase()
 {
-    init {
-        initializeLibNexa()
-        runningTheTests = true
-        forTestingDoNotAutoCreateWallets = true
-        dbPrefix = "test_"
-    }
-
     @Test
     fun txHistoryScreenTest() = runComposeUiTest {
         val cs = ChainSelector.NEXA
         lateinit var account: Account
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
-        wallyApp!!.openAllAccounts()
         runBlocking(Dispatchers.IO) {
             account = wallyApp!!.newAccount("txhis", 0U, "", cs)!!
         }
         setContent {
             TxHistoryScreen(account, ScreenNav())
         }
+        wallyApp!!.deleteAccount(account)
     }
 }

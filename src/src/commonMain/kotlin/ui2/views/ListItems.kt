@@ -213,14 +213,14 @@ fun AssetCarouselItemNameOverlay(name: String, maxWidth: Dp, modifier: Modifier 
 }
 
 @Composable
-fun AssetCarouselItem(asset: AssetInfo, hasNameOverLay: Boolean = false)
+fun AssetCarouselItem(asset: AssetInfo, hasNameOverLay: Boolean = false, leadSpacing: Dp = 0.dp)
 {
     val iconImage = asset.iconImageState.collectAsState().value
     val nft = asset.nft
     val maxSize = 60.dp
 
     Box (
-      modifier = Modifier
+      modifier = Modifier.padding(leadSpacing, 0.dp, 0.dp,0.dp)
         .wrapContentSize()
         .clip(RoundedCornerShape(16.dp)).clickable {
             nav.go(ScreenId.Assets)

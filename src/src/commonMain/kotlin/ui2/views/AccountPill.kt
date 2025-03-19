@@ -28,6 +28,7 @@ import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.*
 import info.bitcoinunlimited.www.wally.ui2.theme.wallyPurple
+import info.bitcoinunlimited.www.wally.ui2.theme.wallyTileHeader
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -180,7 +181,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
         val bal = balance.balance.collectAsState().value
 
         // If no account is available, do not show the pill
-        if (account == null) return
+        if (act == null) return
 
         // Runs the callback every time account?.fiatPerCoin changes
         if (act != null)
@@ -195,20 +196,14 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
         ) {
             Text(
               text = currencyCode,
-              style = MaterialTheme.typography.headlineMedium.copy(
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-              ),
+              style = wallyTileHeader(),
               textAlign = TextAlign.Center,
               modifier = Modifier.testTag("AccountPillCurrencyCode") // Added test tag
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
               text = bal,
-              style = MaterialTheme.typography.headlineMedium.copy(
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-              ),
+              style = wallyTileHeader(),
               textAlign = TextAlign.Center,
               modifier = Modifier.testTag("AccountPillBalance") // Added test tag
             )
@@ -248,7 +243,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                 Spacer(Modifier.width(12.dp))
             }
             Text(
-              text = act?.name ?: "",
+              text = act.name ?: "",
               style = MaterialTheme.typography.labelLarge.copy(
                 color = Color.White,
                 fontWeight = FontWeight.Bold

@@ -41,6 +41,7 @@ import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.theme.WallyThemeUi2
 import info.bitcoinunlimited.www.wally.ui2.theme.samsungKeyBoardGray
 import info.bitcoinunlimited.www.wally.ui2.theme.wallyPurple
+import info.bitcoinunlimited.www.wally.ui2.theme.wallyTranslucentPurple
 import info.bitcoinunlimited.www.wally.ui2.views.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -1286,7 +1287,7 @@ fun ThumbButtonFAB(pasteIcon: ImageVector = Icons.Outlined.ContentPaste, onResul
           modifier = Modifier.wrapContentHeight()
             .wrapContentWidth()
             .shadow(elevation = 8.dp, shape = RoundedCornerShape(32.dp))
-            .background(wallyPurple, shape = RoundedCornerShape(32.dp)),
+            .background(wallyTranslucentPurple, shape = RoundedCornerShape(32.dp)),
           horizontalArrangement = Arrangement.Center
         ) {
             Spacer(Modifier.width(32.dp))

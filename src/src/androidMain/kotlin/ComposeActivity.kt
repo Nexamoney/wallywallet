@@ -105,6 +105,9 @@ class ComposeActivity: CommonActivity()
     fun ImageQrCode(imageParsed: (String?) -> Unit)
     {
         imageParsedFn = imageParsed
+
+        pickMediaLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        /*
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             pickMediaLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         } else {
@@ -114,6 +117,7 @@ class ComposeActivity: CommonActivity()
                 startActivityForResult(intent, IMAGE_RESULT)
             }
         }
+         */
     }
 
     /** this handles the result of variety of launched subactivities including:

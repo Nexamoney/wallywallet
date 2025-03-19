@@ -2,6 +2,20 @@ package info.bitcoinunlimited.www.wally.ui2.theme
 
 import androidx.compose.ui.graphics.Color
 
+val colorPrimaryUi2 = Color(0xFFD0A6FF)
+val colorPrimaryDarkUi2 = Color(0xFF5B276B)
+val wallyPurple = Color(0xFF735092)
+val wallyTranslucentPurple = Color(0xCF735092)
+val wallyPurple2 = Color(0xFF5F3C7E)
+val wallyPurpleLight = Color(0xFFDDDAF3)
+val wallyPurpleExtraLight = Color(0xFFF9F8FF)
+val wallyBeige = Color(0xFFFFFCF0D9)
+val wallyBeige2 = Color(0xFFF9F3E6)
+
+val wallyAttention = Color(0xFF7053c2)
+
+val samsungKeyBoardGray= Color(0xFFf4f6f8)
+
 val colorPrimary = Color(0xFFD0A6FF)
 val colorPrimaryDark = Color(0xFF5B276B)
 val colorDefault = Color(0xFF808080)  // gray

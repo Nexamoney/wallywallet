@@ -96,12 +96,13 @@ fun AssetCarousel(viewModel: AssetViewModel = androidx.lifecycle.viewmodel.compo
     val assetList = assets.toList().sortedBy { it.nft?.title ?: it.name ?: it.ticker ?: it.groupId.toString() }
 
     LazyRow(
-      modifier = Modifier.fillMaxWidth().padding(start = 16.dp),
-      horizontalArrangement = Arrangement.spacedBy(8.dp)
+      modifier = Modifier.fillMaxWidth().padding(start = 0.dp),
+      horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        assetList.forEach { assetInfo ->
+
+        assetList.forEachIndexed { idx,assetInfo ->
             item {
-                AssetCarouselItem(assetInfo)
+                AssetCarouselItem(assetInfo, leadSpacing = if (idx == 0) 6.dp else 0.dp)
             }
         }
     }

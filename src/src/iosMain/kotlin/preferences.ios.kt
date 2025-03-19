@@ -36,21 +36,43 @@ class IosPrefs(val prefPrefix: String, mode: Int): info.bitcoinunlimited.www.wal
 
     override fun getBoolean(key: String, defaultValue: Boolean): Boolean
     {
-        val k = prefPrefix + key
-        if (db.objectForKey(k) == null) return defaultValue
-        return db.boolForKey(k)
+        try
+        {
+            val k = prefPrefix + key
+            if (db.objectForKey(k) == null) return defaultValue
+            return db.boolForKey(k)
+        }
+        catch (e: Exception)  // if the preference has any errors (for example, its not the right type) then return the default rather than crashing
+        {
+            return defaultValue
+        }
     }
     override fun getString(key: String, defaultValue: String?): String?
     {
-        val k = prefPrefix + key
-        if (db.objectForKey(k) == null) return defaultValue
-        return db.stringForKey(k)
+        try
+        {
+            val k = prefPrefix + key
+            if (db.objectForKey(k) == null) return defaultValue
+            return db.stringForKey(k)
+        }
+        catch (e: Exception)  // if the preference has any errors (for example, its not the right type) then return the default rather than crashing
+        {
+            return defaultValue
+        }
+
     }
     override fun getInt(key: String, defaultValue: Int): Int
     {
-        val k = prefPrefix + key
-        if (db.objectForKey(k) == null) return defaultValue
-        return db.integerForKey(k).toInt()
+        try
+        {
+            val k = prefPrefix + key
+            if (db.objectForKey(k) == null) return defaultValue
+            return db.integerForKey(k).toInt()
+        }
+        catch (e: Exception)  // if the preference has any errors (for example, its not the right type) then return the default rather than crashing
+        {
+            return defaultValue
+        }
     }
 }
 

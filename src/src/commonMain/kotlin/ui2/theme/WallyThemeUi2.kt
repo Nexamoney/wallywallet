@@ -19,16 +19,8 @@ import info.bitcoinunlimited.www.wally.ui2.theme.WallyBorder
 import info.bitcoinunlimited.www.wally.ui2.theme.WallyBoringButtonShadow
 import org.nexa.libnexakotlin.ChainSelector
 
-val colorPrimaryUi2 = Color(0xFFD0A6FF)
-val colorPrimaryDarkUi2 = Color(0xFF5B276B)
-val wallyPurple = Color(0xFF735092)
-val wallyPurple2 = Color(0xFF5F3C7E)
-val wallyPurpleLight = Color(0xFFDDDAF3)
-val wallyPurpleExtraLight = Color(0xFFF9F8FF)
-val wallyBeige = Color(0xFFFFFCF0D9)
-val wallyBeige2 = Color(0xFFF9F3E6)
-
-val samsungKeyBoardGray= Color(0xFFf4f6f8)
+@Composable
+fun wallyTileHeader(col: Color = Color.White) = MaterialTheme.typography.headlineMedium.copy(color = Color.White, fontWeight = FontWeight.Bold)
 
 val wallyLightColors = lightColorScheme(
   background = wallyBeige, // Change to Color.White when fixing colors.

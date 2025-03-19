@@ -892,11 +892,23 @@ open class CommonApp
     /** lock all previously unlocked accounts */
     fun lockAccounts()
     {
+        var somethingChanged = false
+        val changed = mutableListOf<Account>()
         accountLock.lock {
             for (account in accounts.values)
             {
-                account.pinEntered = false
+                if (account.pinEntered)
+                {
+                    account.pinEntered = false
+                    somethingChanged = true
+                    changed.add(account)
+                }
             }
+        }
+        if (changed.size > 0)
+        {
+            assignAccountsGuiSlots()
+            triggerAccountsChanged(*changed.toTypedArray())
         }
     }
 

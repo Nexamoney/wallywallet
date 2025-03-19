@@ -282,6 +282,7 @@ fun NavigationRoot(systemPadding: Modifier)
                 if (it == ShowIt.ENTER_PIN)
                 {
                     LogIt.info(sourceLoc() +": open PIN entry window")
+                    clearAlerts()
                     unlockDialog = c.afterUnlock ?: {}
                 }
             }
@@ -380,10 +381,9 @@ fun NavigationRoot(systemPadding: Modifier)
     // The main screen
     WallyTheme(darkTheme = false, dynamicColor = false) {
         Box(modifier = WallyPageBase .then(systemPadding)) {
-            if (unlockDialog != null) UnlockView {  }
             Column(modifier = Modifier.fillMaxSize()) {
                 ConstructTitleBar(errorText, warningText, noticeText)
-
+                UnlockTile()
                 clickDismiss.value?.let {
                     WallyBrightEmphasisBox(Modifier.fillMaxWidth().wrapContentSize().clickable { clickDismiss.value = null }) { it() }
                 }

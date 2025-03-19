@@ -199,7 +199,7 @@ import org.nexa.libnexakotlin.exceptionHandler
     )
 }
 
-@Composable fun WallyTextStyle(fontScale: Double=1.0, fw: FontWeight = FontWeight.Normal) = TextStyle.Default.copy(lineHeight = 0.em, fontSize = FontScale(fontScale),
+@Composable fun WallyTextStyle(fontScale: Double=1.0, fw: FontWeight = FontWeight.Normal, col:Color = Color.Unspecified) = TextStyle.Default.copy(color= col, lineHeight = 0.em, fontSize = FontScale(fontScale),
   lineHeightStyle = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.Both), fontWeight = fw)
 
 /* Shortcut to center text */
@@ -230,22 +230,22 @@ fun CenteredText(text: String, textStyle: TextStyle, modifier: Modifier = Modifi
       onTextLayout = {
           textLayoutResult ->
           if (textLayoutResult.didOverflowWidth)
-              textStyle = textStyle.copy(fontSize = textStyle.fontSize * 0.9)
+              textStyle = textStyle.copy(fontSize = textStyle.fontSize * 0.95)
           else drawIt = true
       })
 }
 
-@Composable fun CenteredFittedWithinSpaceText(text: String, startingFontScale: Double=1.0, fontWeight: FontWeight = FontWeight.Normal, modifier: Modifier = Modifier)
+@Composable fun CenteredFittedWithinSpaceText(text: String, startingFontScale: Double=1.0, fontWeight: FontWeight = FontWeight.Normal, fontColor: Color = Color.Unspecified, modifier: Modifier = Modifier)
 {
     // see https://stackoverflow.com/questions/63971569/androidautosizetexttype-in-jetpack-compose
-    val tmp = WallyTextStyle(startingFontScale, fontWeight)
+    val tmp = WallyTextStyle(startingFontScale, fontWeight, col = fontColor)
     var textStyle by remember { mutableStateOf(tmp) }
     var drawIt by remember { mutableStateOf(false) }
     Text(text = text, style = textStyle, modifier = modifier.padding(0.dp).drawWithContent { if (drawIt) drawContent() }. then(modifier), textAlign = TextAlign.Center, maxLines = 1, softWrap = false,
       onTextLayout = {
           textLayoutResult ->
           if (textLayoutResult.didOverflowWidth)
-              textStyle = textStyle.copy(fontSize = textStyle.fontSize * 0.9)
+              textStyle = textStyle.copy(fontSize = textStyle.fontSize * 0.95)
           else drawIt = true
       })
 }
@@ -260,7 +260,7 @@ fun CenteredText(text: String, textStyle: TextStyle, modifier: Modifier = Modifi
       onTextLayout = {
           textLayoutResult ->
           if (textLayoutResult.didOverflowWidth)
-              rtextStyle = rtextStyle.copy(fontSize = rtextStyle.fontSize * 0.9)
+              rtextStyle = rtextStyle.copy(fontSize = rtextStyle.fontSize * 0.95)
           else drawIt = true
       })
 }

@@ -27,6 +27,8 @@ import androidx.core.view.WindowInsetsCompat
 import info.bitcoinunlimited.www.wally.ui2.ScreenId
 import info.bitcoinunlimited.www.wally.ui2.nav
 import info.bitcoinunlimited.www.wally.ui2.newUI
+import kotlinx.atomicfu.AtomicInt
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -291,6 +293,7 @@ open class CommonActivity : AppCompatActivity()
         s?.let { wallyApp?.handlePaste(it) }
     }
 
+    var lastPauseMillis = millinow()
     override fun onResume()
     {
         super.onResume()
@@ -305,14 +308,18 @@ open class CommonActivity : AppCompatActivity()
                 it.finishParent = fp -1
             }
         }
-
         isRunning = true
+        if (millinow() - lastPauseMillis > LOCK_IF_PAUSED_FOR_MILLIS)
+        {
+            wallyApp?.lockAccounts()
+        }
     }
 
     override fun onPause()
     {
         super.onPause()
         isRunning = false
+        lastPauseMillis = millinow()
     }
 
     /*
@@ -419,7 +426,7 @@ open class CommonActivity : AppCompatActivity()
     var menuHidden = 0
     override fun onCreateOptionsMenu(menu: Menu): Boolean
     {
-        var ret = super.onCreateOptionsMenu(menu)
+        val ret = super.onCreateOptionsMenu(menu)
 
         for (i in 0 until menu.size())
         {
@@ -459,9 +466,11 @@ open class CommonActivity : AppCompatActivity()
                     {
                         menuHidden = 0
                     } // Abort all errors shown (returned from other activity)
-                    if (errorCount == errNo || errNo == null)
+                    invalidateOptionsMenu()
+                    // If we are finishing what is currently being shown,
+                    // or nothing is being shown then set it all back
+                    if (currentNumShowing == 0 || errorCount == errNo || errNo == null)
                     {
-                        invalidateOptionsMenu()
                         super.setTitle(origTitle)
                         currentAlertPersist = 0
                         origTitleBackground?.let { titlebar.background = it }
@@ -513,9 +522,10 @@ open class CommonActivity : AppCompatActivity()
             // This coroutine has to be limited to this thread because only the main thread can touch UI views
             // Display the error by changing the title and title bar color temporarily
             val titlebar: View = findViewById(actionBarId)
+            super.setTitle(err)
+            val errorColor = ContextCompat.getColor(applicationContext, R.color.error)
             val myError = synchronized(errorSync)
             {
-                super.setTitle(err)
                 lastErrorString = err
                 errorCount += 1
                 menuHidden += 1
@@ -523,7 +533,6 @@ open class CommonActivity : AppCompatActivity()
                 currentAlertPersist = 1  // default alert behavior is to persist across screens (if automatic screen change)
                 alerts.add(Alert(err, details, AlertLevel.ERROR, trace))
                 invalidateOptionsMenu()
-                val errorColor = ContextCompat.getColor(applicationContext, R.color.error)
                 titlebar.background = ColorDrawable(errorColor)
                 errorCount
             }
@@ -555,7 +564,7 @@ open class CommonActivity : AppCompatActivity()
         laterUI {
             // This coroutine has to be limited to this thread because only the main thread can touch UI views
             // Display the error by changing the title and title bar color temporarily
-            var titlebar: View = findViewById(actionBarId)
+            val titlebar: View = findViewById(actionBarId)
             val errorColor = ContextCompat.getColor(applicationContext, R.color.notice)
             val myError = synchronized(errorSync)
             {

@@ -121,9 +121,9 @@ fun displayWarning(summary: String, message: String?=null, persistAcrossScreens:
 /** Display an error message, and add it to the list of alerts */
 fun displayError(summary: Int, message: String?=null, persistAcrossScreens: Int = 1)
 {
-    val e = Exception()
-    LogIt.error("displayError")
-    LogIt.error(e.stackTraceToString())
+    //val e = Exception()
+    //LogIt.error("displayError")
+    //LogIt.error(e.stackTraceToString())
     val alert = Alert(i18n(summary), message, AlertLevel.ERROR, null, persistAcrossScreens, ERROR_DISPLAY_TIME)
 
     if (platform().hasNativeTitleBar)
@@ -145,9 +145,9 @@ fun displayError(summary: Int, message: Int, persistAcrossScreens: Int = 1) = di
  * */
 fun displayError(summary: String, message: String?=null, persistAcrossScreens: Int = 1)
 {
-    val e = Exception()
-    LogIt.error("displayError")
-    LogIt.error(e.stackTraceToString())
+    //val e = Exception()
+    //LogIt.error("displayError")
+    //LogIt.error(e.stackTraceToString())
     val alert = Alert(summary, message, AlertLevel.ERROR, null, persistAcrossScreens, ERROR_DISPLAY_TIME)
 
     if (platform().hasNativeTitleBar)

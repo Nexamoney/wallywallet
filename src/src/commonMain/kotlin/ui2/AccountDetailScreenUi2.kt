@@ -729,6 +729,7 @@ fun AccountDetailChangePinViewUi2(acc: Account, displayError: (String) -> Unit, 
         {
             val epin = EncodePIN(name, newPin)
             acc.encodedPin = epin
+            acc.pinEntered = true
             displayNotice(S.PinChanged)
             tlater("savePin") { acc.saveAccountPin(epin) }
             pinChangedOrCancelled()
