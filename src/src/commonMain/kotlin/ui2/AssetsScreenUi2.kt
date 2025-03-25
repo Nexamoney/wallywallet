@@ -107,15 +107,21 @@ fun AssetViewUi2(asset: AssetInfo, parentMod: Modifier = Modifier)
     val assetName = asset.nameObservable.collectAsState()
     val name = (if ((nft != null) && (nft.title.length > 0)) nft.title else assetName.value) ?: "<name missing>"
     val options = remember { mutableStateOf(mutableSetOf<Int>()) }
+    val sigIsBad = (asset.tokenInfo?.let { (it.tddSig != null) && (it.pubkey == null) } ?: false)
+    val sigIsUnverified = (asset.tokenInfo?.let { (it.tddSig == null) } ?: true)
     val provider = asset.docUrl?.let { docUrl ->
-        val url = com.eygraber.uri.Url.parseOrNull(docUrl)
-        try
+        if (sigIsBad or sigIsUnverified) ""  // Do not offer the provider until we verify their signature
+        else
         {
-            url?.host ?: "" // although host is supposedly not null, I can get "java.lang.IllegalArgumentException: Url requires a non-null host"
-        }
-        catch (e: IllegalArgumentException)
-        {
-            ""
+            val url = com.eygraber.uri.Url.parseOrNull(docUrl)
+            try
+            {
+                url?.host ?: "" // although host is supposedly not null, I can get "java.lang.IllegalArgumentException: Url requires a non-null host"
+            }
+            catch (e: IllegalArgumentException)
+            {
+                ""
+            }
         }
     } ?: ""
 
@@ -182,9 +188,15 @@ fun AssetViewUi2(asset: AssetInfo, parentMod: Modifier = Modifier)
                 showing = option
             }
 
-        if ((a.tokenInfo != null) && (a.tokenInfo?.tddSig == null))
+        // If the sig is not null, but the pubkey is null, that means that the sig did not match
+        // Its a BAD signature.
+        if (sigIsBad)
         {
-            CenteredText(i18n(S.TokenUnsigned))
+            CenteredText(i18n(S.TokenBadSig))
+        }
+        if (sigIsUnverified)
+        {
+            // TODO should we show some little caution sign or something? (we are not showing the provider so that helps)
         }
 
             when(showing)

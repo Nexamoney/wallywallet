@@ -29,6 +29,10 @@ import kotlin.concurrent.Volatile
 private val LogIt = GetLog("BU.wally.app")
 const val SELECTED_ACCOUNT_NAME_PREF = "selectedAccountName"
 
+// set to something to have a difference set of preference (for testing).  It is important to ALWAYS set something when testing
+// or the list of active wallets may be overwritten.
+var TEST_PREF = ""
+
 val i18nLbc = mapOf(
   RinsufficentBalance to S.insufficentBalance,
   RbadWalletImplementation to S.badWalletImplementation,
@@ -210,30 +214,55 @@ class AccessHandler(val app: CommonApp)
             val start = epochMilliSeconds()
             try
             {
-
+                LogIt.info(sourceLoc() + ": Long poll to $url begin.")
                 val response: HttpResponse = client.get(url + "&i=${count}") {}
                 val respText = response.bodyAsText()
                 connectProblems = 0
-                LogIt.info(sourceLoc() + ": Long poll to $url returned with this request: $respText")
-                if (respText == "Q")
+
+                // Server tells us to quit long polling
+                if ((response.status == HttpStatusCode.BadRequest)||(response.status == HttpStatusCode.NotFound))
+                {
+                    LogIt.warning(sourceLoc() + ": Long polling to $url stopped due to error response ${response.status}.")
+                    // You can get NotFound if you scan an old QR code
+                    displayWarning(i18n(S.refreshQR))
+                    endLongPolling(hostPort)
+                    return
+                }
+
+                if (respText == "A")  // Accept will only be returned if we provide a count of 0
+                {
+                    LogIt.info(sourceLoc() + ": Long poll to $url accepted.")
+                    displaySuccess(S.connectionEstablished)
+                }
+                else if (respText == "Q")
                 {
                     LogIt.info(sourceLoc() + ": Long poll to $url ended (server request).")
+                    displaySuccess(S.connectionClosed)
                     endLongPolling(hostPort)
                     return // Server tells us to quit long polling
                 }
-                if (respText != "")
+                // error 503: This is a typical response from apache if the underlying server goes down
+                else if ("Service Unavailable" in respText)
                 {
+                    LogIt.info(sourceLoc() + ": Long poll to $url ended (server returned 503).")
+                    displayWarning(i18n(S.connectionClosed))
+                    endLongPolling(hostPort)
+                    return // Server tells us to quit long polling
+                }
+                else if (respText != "")
+                {
+                    LogIt.info(sourceLoc() + ": Long poll to $url returned with this request: $respText")
                     app.handlePaste(respText)
-                    count += 1
                 }
                 else
                 {
                     LogIt.info(sourceLoc() + ": Long poll to $url finished with no activity.")
                 }
+                count += 1
             }
             catch (e: ConnectTimeoutException)  // network error?  TODO retry a few times
             {
-                if (connectProblems > 500)
+                if (connectProblems > 50)
                 {
                     LogIt.info(sourceLoc() + ": Long poll to $url connection exception $e, stopping.")
                     endLongPolling(hostPort)
@@ -245,14 +274,17 @@ class AccessHandler(val app: CommonApp)
             catch (e: Throwable)
             {
                 LogIt.info(sourceLoc() + ": Long poll to $url error, stopping: ")
+                displayWarning(i18n(S.connectionClosed))
                 //handleThreadException(e, "Long poll to $url error, stopping.", sourceLoc())
                 endLongPolling(hostPort)
                 return
             }
             val end = epochMilliSeconds()
             avgResponse = ((avgResponse*49f)+(end-start))/50.0f
+            // limit runaway polling, if the server misbehaves by responding right away
+            // but this will allow a burst of messages before things slow down
             if (avgResponse<1000)
-                delay(500) // limit runaway polling, if the server misbehaves by responding right away
+                delay(500)
         }
         LogIt.info(sourceLoc() + ": Long poll to $hostPort ($url) ended (done).")
         endLongPolling(hostPort)
@@ -285,6 +317,8 @@ open class CommonApp
 
     var assetLoaderThread: iThread? = null
     var periodicAnalysisThread: iThread? = null
+
+    lateinit var preferenceDB: SharedPreferences
 
     init
     {
@@ -326,8 +360,7 @@ open class CommonApp
         {
             accountLock.synchronized()
             {
-                val prefs = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
-                with(prefs.edit())
+                with(preferenceDB.edit())
                 {
                     putString(PRIMARY_ACT_PREF, act.name)
                     commit()
@@ -806,7 +839,9 @@ open class CommonApp
 
     fun onCreate()
     {
+        preferenceDB = getSharedPreferences(TEST_PREF + i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
         notInUIscope = coMiscScope
+
         LogIt.info(sourceLoc() + " Wally Wallet App Started")
 
         val availableRam = platformRam()
@@ -821,11 +856,15 @@ open class CommonApp
             DEFAULT_MAX_RECENT_HEADER_CACHE = 25
         }
 
+        // Set up all the preference globals
         tlater {
-            val prefs = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
-            devMode = prefs.getBoolean(DEV_MODE_PREF, false)
-            allowAccessPriceData = prefs.getBoolean(ACCESS_PRICE_DATA_PREF, true)
-            localCurrency = prefs.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"
+            devMode = preferenceDB.getBoolean(DEV_MODE_PREF, false)
+            allowAccessPriceData = preferenceDB.getBoolean(ACCESS_PRICE_DATA_PREF, true)
+            localCurrency = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"
+            showIdentityPref.value = preferenceDB.getBoolean(SHOW_IDENTITY_PREF, false)
+            showTricklePayPref.value = preferenceDB.getBoolean(SHOW_TRICKLEPAY_PREF, false)
+            showAssetsPref.value = preferenceDB.getBoolean(SHOW_ASSETS_PREF, false)
+            newUI.value = preferenceDB.getBoolean(EXPERIMENTAL_UX_MODE_PREF, true)
 
             openAccountsTriggerGui()
             tpDomains.load()
@@ -938,6 +977,7 @@ open class CommonApp
         openKvpDbIfNeeded()
         val s: String = accounts.keys.joinToString(",")
         val db = kvpDb!!
+        LogIt.info("Saving active accounts: $s")
         db.set("activeAccountNames", s.toByteArray())
         db.set("wallyDataVersion", WALLY_DATA_VERSION)
     }
@@ -1000,11 +1040,8 @@ open class CommonApp
             // clean up the a reference to this account, if its the primary
             if (nullablePrimaryAccount == act) nullablePrimaryAccount = null
         }
-
-        tlater { // cannot access db in UI thread
-            saveActiveAccountList()
-            act.delete()
-        }
+        saveActiveAccountList()
+        act.delete()
     }
 
     /** Create an account given a recovery key and the account's earliest activity.
@@ -1136,7 +1173,9 @@ open class CommonApp
         return accountLock.lock {
             if (kvpDb == null)
             {
-                kvpDb = openKvpDB(dbPrefix + "wpw")
+                val name = dbPrefix + "wpw"
+                LogIt.info(sourceLoc() +" Opening KVP db ${name}")
+                kvpDb = openKvpDB(name)
                 true
             }
             else false // do not open multiple times
@@ -1145,7 +1184,6 @@ open class CommonApp
 
     fun openAllAccounts()
     {
-        val prefs = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
         openKvpDbIfNeeded()
 
         if (REG_TEST_ONLY)  // If I want a regtest only wallet for manual debugging, just create it directly
@@ -1179,6 +1217,7 @@ open class CommonApp
             }
             catch (e: Exception)
             {
+                LogIt.info(sourceLoc() + " No account names found")
                 byteArrayOf()
             }
 
@@ -1189,7 +1228,7 @@ open class CommonApp
             }
 
             val accountNameStr = accountNames.decodeUtf8()
-            LogIt.info("Loading active accounts: $accountNameStr")
+            LogIt.info(sourceLoc() + " Loading active accounts: $accountNameStr")
             val accountNameList = accountNameStr.split(",")
             for (name in accountNameList)
             {
@@ -1202,7 +1241,7 @@ open class CommonApp
                         accountLock.lock {
                             if (!accounts.containsKey(name))  // only create account if its not previously created
                             {
-                                val ac = Account(name, prefDB = prefs)
+                                val ac = Account(name, prefDB = preferenceDB)
                                 accounts[ac.name] = ac
                             }
                         }
@@ -1243,9 +1282,8 @@ open class CommonApp
                 {
                     newAccount("nexa", ACCOUNT_FLAG_NONE,"", ChainSelector.NEXA)
                 }
-                val prefs = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
                 // Cannot pick the primary account until accounts are loaded
-                val primaryActName = prefs.getString(PRIMARY_ACT_PREF, null)
+                val primaryActName = preferenceDB.getString(PRIMARY_ACT_PREF, null)
                 nullablePrimaryAccount = accountLock.lock { if (primaryActName != null) accounts[primaryActName] else null }
                 try
                 {

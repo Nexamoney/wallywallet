@@ -1329,7 +1329,7 @@ fun HandleTdpp(iuri: Uri, then: ((String, String, Boolean?)->Unit)?= null): Bool
         {
             //displayNotice(S.connected)
             wallyApp?.accessHandler?.startLongPolling(tp.replyProtocol, tp.hostAndPort, tp.cookie)
-            displaySuccess(S.connectionEstablished)
+            displaySuccess(S.trying)
             return true
         }
         if (path == "/share")

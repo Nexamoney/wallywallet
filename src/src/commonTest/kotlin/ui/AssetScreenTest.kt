@@ -7,17 +7,12 @@ import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.AssetView
 import org.nexa.libnexakotlin.*
+import ui2.WallyUiTestBase
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
-class AssetScreenTest
+class AssetScreenTest: WallyUiTestBase()
 {
-    @BeforeTest
-    fun setup()
-    {
-        initializeLibNexa()
-    }
-
     @OptIn(ExperimentalTestApi::class)
     @Test
     fun displayAssetViewTest() = runComposeUiTest {
@@ -26,14 +21,12 @@ class AssetScreenTest
         val assetInfoMock = AssetInfo(groupIdMock)
         assetInfoMock.tokenInfo = TokenDesc("MOCK")
 
-        // This causes the test to run indefinetively
         setContent {
             Box(Modifier.padding(4.dp, 1.dp).fillMaxWidth()
             ) {
                 AssetView(assetInfoMock, Modifier.padding(0.dp, 2.dp).fillMaxSize())
             }
         }
-
-        onNodeWithText(i18n(S.TokenUnsigned)).assertIsDisplayed()
+        onNodeWithText(i18n(S.TokenBadSig)).assertIsDisplayed()
     }
 }

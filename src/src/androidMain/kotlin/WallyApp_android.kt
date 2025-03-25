@@ -215,10 +215,10 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         {
             //System.loadLibrary("native-lib")
             System.loadLibrary("nexalight")
+            org.nexa.libnexakotlin.initializeLibNexa()
         }
     }
 
-    val init = org.nexa.libnexakotlin.initializeLibNexa()
 
     var commonApp = CommonApp()
     init
@@ -276,6 +276,12 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     override fun onCreate()
     {
         LogIt.info("------------  WALLY APP CREATED  ---------------")
+        val files: Array<String> = fileList()
+        LogIt.info(sourceLoc() +" App Files ${files.joinToString(", ")}")
+
+        val dbs: Array<String> = databaseList()
+        LogIt.info(sourceLoc() +" Databases ${dbs.joinToString(", ")}")
+
         if (DEBUG_VM)
         {
             StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder().detectLeakedClosableObjects().detectActivityLeaks()

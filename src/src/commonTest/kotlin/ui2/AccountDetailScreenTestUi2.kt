@@ -17,7 +17,6 @@ class AccountDetailScreenTestUi2:WallyUiTestBase()
     fun accountDetailScreenTest()
     {
         val cs = ChainSelector.NEXA
-        wallyApp!!.openAllAccounts()
         val account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
 
         runComposeUiTest {
@@ -54,5 +53,6 @@ class AccountDetailScreenTestUi2:WallyUiTestBase()
             onNodeWithText(i18n(S.cancel)).performClick()
             settle()
         }
+        wallyApp!!.deleteAccount(account)
     }
 }

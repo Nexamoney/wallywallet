@@ -48,7 +48,7 @@ private val LogIt = GetLog("wally.settingsscreen")
           checked = globalPref.collectAsState().value,
           onCheckedChange = {
               globalPref.value = it
-              preferenceDB.edit().putBoolean(preference, it).commit()
+              wallyApp?.preferenceDB?.edit()?.putBoolean(preference, it)?.commit()
 
               if(it)
               {
@@ -87,7 +87,7 @@ interface VersionI
 @Composable
 fun SettingsScreen(nav: ScreenNav)
 {
-    val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
+    val preferenceDB: SharedPreferences = getSharedPreferences(TEST_PREF + i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
     var devModeView by mutableStateOf(devMode)
     var darkModeView by mutableStateOf(darkMode)
     var experimentalUxView by mutableStateOf(newUI.value)
@@ -286,7 +286,7 @@ fun onCloseP2pConnections()
 
 @Composable fun GeneralSettingsSwitchView(generalSettingsSwitch: GeneralSettingsSwitch)
 {
-    val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
+    val preferenceDB: SharedPreferences = getSharedPreferences(TEST_PREF + i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
     val isChecked = remember { mutableStateOf(preferenceDB.getBoolean(generalSettingsSwitch.prefKey, true)) }
 
     WallySwitch(isChecked, generalSettingsSwitch.textRes) {

@@ -48,7 +48,7 @@ fun MainViewController(): UIViewController
         UiRoot(
           // Add padding to allow .ignoresSafeArea in iOSApp.swift
           Modifier.fillMaxSize().padding(WindowInsets.systemBars.asPaddingValues()),
-          Modifier
+          WindowInsets(0,0,0,0)
         )
     })
     v = view

@@ -24,7 +24,7 @@ class NonGuiTestsCommon
     fun testNexaTransaction()
     {
         val cs = ChainSelector.NEXAREGTEST
-        var tx = NexaTransaction(cs)
+        val tx = NexaTransaction(cs)
         try
         {
             Spendable(cs, BchTxOutpoint("00112233445566778899aabbccddeeff000102030405060708090a0b0c0d0e0f", 0), 10001)

@@ -140,6 +140,7 @@ class ThemeTest
     fun wallyDecimalEntryTest() = runComposeUiTest {
         val valueMock = mutableStateOf("0")
         wallyApp = CommonApp()
+        wallyApp!!.onCreate()
 
         setContent {
             WallyDecimalEntry(valueMock, modifier = Modifier.testTag("WallyDataEntryTextField"))

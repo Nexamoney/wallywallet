@@ -21,18 +21,10 @@ import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.initializeLibNexa
 import org.nexa.libnexakotlin.runningTheTests
 
-class AccountPillTest
+class AccountPillTest:WallyUiTestBase()
 {
     @get:Rule
     val composeTestRule = createComposeRule()
-
-    @Before
-    fun setUp() {
-        initializeLibNexa()
-        runningTheTests = true
-        forTestingDoNotAutoCreateWallets = true
-        dbPrefix = "test_"
-    }
 
     @Test
     fun accountPillHeaderTest()
@@ -46,9 +38,6 @@ class AccountPillTest
             Start the app
          */
         val cs = ChainSelector.NEXA
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
-        wallyApp!!.openAllAccounts()
         lateinit var account: Account
         runBlocking(Dispatchers.IO) {
             account = wallyApp!!.newAccount("accountPillHeaderTest", 0U, "", cs)!!

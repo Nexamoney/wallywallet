@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
@@ -184,29 +185,30 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
         if (act == null) return
 
         // Runs the callback every time account?.fiatPerCoin changes
-        if (act != null)
-        {
-            LaunchedEffect(act.fiatPerCoin) {
-                balance.setFiatBalance(act)
-            }
+        LaunchedEffect(act.fiatPerCoin) {
+            balance.setFiatBalance(act)
         }
 
         Row(
           modifier = Modifier.wrapContentHeight()
         ) {
-            Text(
-              text = currencyCode,
-              style = wallyTileHeader(),
-              textAlign = TextAlign.Center,
-              modifier = Modifier.testTag("AccountPillCurrencyCode") // Added test tag
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-              text = bal,
-              style = wallyTileHeader(),
-              textAlign = TextAlign.Center,
-              modifier = Modifier.testTag("AccountPillBalance") // Added test tag
-            )
+            FittedText(2, 6.sp, wallyTileHeader()) { mod, ts, onTlr ->
+                Text(
+                  text = currencyCode,
+                  style = ts,
+                  textAlign = TextAlign.Center,
+                  modifier = mod.testTag("AccountPillCurrencyCode"),
+                  onTextLayout = onTlr
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                  text = bal,
+                  style = ts,
+                  textAlign = TextAlign.Center,
+                  modifier = mod.testTag("AccountPillBalance"),
+                  onTextLayout = onTlr
+                )
+            }
         }
         Spacer(Modifier.height(8.dp))
         Row(

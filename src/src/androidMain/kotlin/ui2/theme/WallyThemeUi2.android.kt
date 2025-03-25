@@ -37,7 +37,7 @@ actual fun WallyThemeUi2(
         val activity = view.context as? Activity
         SideEffect {
             activity?.window?.apply {
-                statusBarColor = wallyPurple.toArgb()
+                statusBarColor = colorTitleBackground.toArgb()
                 WindowCompat
                   .getInsetsController(this, view).apply {
                       isAppearanceLightStatusBars = darkTheme

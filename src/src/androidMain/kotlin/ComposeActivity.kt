@@ -17,15 +17,18 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
@@ -36,8 +39,11 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.work.*
 import info.bitcoinunlimited.www.wally.ui2.theme.BaseBkg
 import info.bitcoinunlimited.www.wally.ui2.*
+import info.bitcoinunlimited.www.wally.ui2.theme.colorTitleBackground
+import info.bitcoinunlimited.www.wally.ui2.theme.wallyTileHeader
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.rem
+import org.nexa.libnexakotlin.runningTheTests
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.toJavaDuration
 
@@ -270,6 +276,10 @@ class ComposeActivity: CommonActivity()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.statusBarColor = colorTitleBackground.toArgb()
+        window.navigationBarColor = colorTitleBackground.toArgb()
         val decorView: View = getWindow().getDecorView()
         decorView.setBackgroundColor(BaseBkg.value.toInt())
         backgroundOnly = false
@@ -288,7 +298,7 @@ class ComposeActivity: CommonActivity()
                 //TODO: insets.getInsets(WindowInsetsCompat.Type.ime())
                 val system = insets.getInsets(WindowInsetsCompat.Type.systemBars())
                 // We sanity check the system insets to 30 dp just in case something crazy is going on
-                androidPlatformCharacteristics.bottomSystemBarOverlap = min(30.dp, pxToDp(system.bottom))
+                androidPlatformCharacteristics.bottomSystemBarOverlap = min(60.dp, pxToDp(system.bottom))
             }
             insets
         }
@@ -296,11 +306,14 @@ class ComposeActivity: CommonActivity()
         // If the UI is opened, register background sync work.  But we don't want to reregister the background work whenever the background work
         // itself is launched, so this code can't be in the app class.
         // This starts up every 15 min
-        val bkgSync = PeriodicWorkRequestBuilder<BackgroundSync>(BACKGROUND_PERIOD_MSEC.milliseconds.toJavaDuration()).build()
-        bkgSync.let { WorkManager.getInstance(this).enqueueUniquePeriodicWork("WallySync", ExistingPeriodicWorkPolicy.UPDATE, it) }
-        // This will start up a few seconds after the app is closed, but only once (once it reports its finished)
-        val bkgSyncOnce = OneTimeWorkRequestBuilder<BackgroundSync>().build()
-        WorkManager.getInstance(this).enqueueUniqueWork("WallySyncOnce", ExistingWorkPolicy.REPLACE, bkgSyncOnce)
+        if (!runningTheTests)
+        {
+            val bkgSync = PeriodicWorkRequestBuilder<BackgroundSync>(BACKGROUND_PERIOD_MSEC.milliseconds.toJavaDuration()).build()
+            bkgSync.let { WorkManager.getInstance(this).enqueueUniquePeriodicWork("WallySync", ExistingPeriodicWorkPolicy.UPDATE, it) }
+            // This will start up a few seconds after the app is closed, but only once (once it reports its finished)
+            val bkgSyncOnce = OneTimeWorkRequestBuilder<BackgroundSync>().build()
+            WorkManager.getInstance(this).enqueueUniqueWork("WallySyncOnce", ExistingWorkPolicy.REPLACE, bkgSyncOnce)
+        }
 
         var actionb:Int? = null
         val intentUri = com.eygraber.uri.Uri.parseOrNull(intent.toUri(0))
@@ -368,13 +381,16 @@ class ComposeActivity: CommonActivity()
             setTitle(nav.title())
             // Note that modern versions of android place the app view behind the system "insets". Old ones do not.
             // DONT MESS WITH THIS CODE unless you are ready to test multiple android versions!
+            val insets = ViewCompat.getRootWindowInsets(LocalView.current)
             if (actionb == null)
             {
-                val insets = ViewCompat.getRootWindowInsets(LocalView.current)
                 val sysInsets = insets!!.getInsets(WindowInsetsCompat.Type.systemBars())
                 actionb = if (android.os.Build.VERSION.SDK_INT < 35) 0 else sysInsets.top
             }
-            val systemPadding = Modifier.padding(0.dp, pxToDp(actionb ?: 0), 0.dp, 0.dp) // pxToDp(sysInsets.bottom))
+            val navInsets = insets!!.getInsets(WindowInsetsCompat.Type.navigationBars())
+            val navBottom = if (android.os.Build.VERSION.SDK_INT < 35) 0 else navInsets.bottom
+            val systemPadding = WindowInsets(0.dp, pxToDp(actionb ?: 0), 0.dp, pxToDp(navBottom)) // pxToDp(sysInsets.bottom))
+
             UiRoot(Modifier, systemPadding)
 
             LaunchedEffect(newUi) {

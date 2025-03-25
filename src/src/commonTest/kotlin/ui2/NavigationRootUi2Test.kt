@@ -1,5 +1,6 @@
 package ui2
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.*
@@ -34,6 +35,7 @@ internal fun setupTestEnv()
 {
     initializeLibNexa()
     runningTheTests = true
+    TEST_PREF = "test_"
     forTestingDoNotAutoCreateWallets = true
     dbPrefix = "test_"
     if (wallyApp == null)
@@ -60,7 +62,6 @@ open class WallyUiTestBase
     @BeforeTest
     fun testSetup()
     {
-
         // Solves the error: Module with the Main dispatcher had failed to initialize. For tests Dispatchers.setMain from kotlinx-coroutines-test module can be used
         // On Android this code ends up running UI drawing in multiple threads which is disallowed.
         if (platform().target == KotlinTarget.JVM)
@@ -71,11 +72,7 @@ open class WallyUiTestBase
                 testDispatcher = StandardTestDispatcher(sched)
                 println("Installing test dispatcher")
                 Dispatchers.setMain(testDispatcher)
-                if (wallyApp == null)
-                {
-                    wallyApp = CommonApp()
-                    wallyApp!!.onCreate()
-                }
+                assert(wallyApp!=null)
             }
             installedTestDispatcher++
         }
@@ -145,7 +142,7 @@ class NavigationRootUi2Test:WallyUiTestBase()
             val viewModelStoreOwner = object : ViewModelStoreOwner { override val viewModelStore: ViewModelStore = ViewModelStore() }
             setContent {
                 CompositionLocalProvider(LocalViewModelStoreOwner provides viewModelStoreOwner) {
-                    NavigationRootUi2(Modifier, Modifier)
+                    NavigationRootUi2(Modifier, WindowInsets(0,0,0,0))
                 }
             }
             settle()
@@ -176,7 +173,7 @@ class NavigationRootUi2Test:WallyUiTestBase()
                 CompositionLocalProvider(
                   LocalViewModelStoreOwner provides viewModelStoreOwner
                 ) {
-                    NavigationRootUi2(Modifier, Modifier, assetViewModel, accountUiDataViewModel)
+                    NavigationRootUi2(Modifier, WindowInsets(0,0,0,0), assetViewModel, accountUiDataViewModel)
                 }
             }
 

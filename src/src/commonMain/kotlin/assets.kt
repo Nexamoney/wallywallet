@@ -78,12 +78,12 @@ open class IncorrectTokenDescriptionDoc(details: String) : LibNexaException(deta
 val NIFTY_ART_IP = mapOf(
   ChainSelector.NEXA to "niftyart.cash",
   // Enable manually for niftyart development: ChainSelector.NEXAREGTEST to "192.168.1.5:8988"
-  ChainSelector.NEXATESTNET to "192.168.2.11:8988"
+  ChainSelector.NEXATESTNET to "testnet.niftyart.cash"
 )
 val NIFTY_ART_WEB = mapOf(
   ChainSelector.NEXA to "https://niftyart.cash",
   // Enable manually for niftyart development: ChainSelector.NEXAREGTEST to "192.168.1.5:8988"
-    ChainSelector.NEXATESTNET to "http://192.168.2.11:8988"
+  ChainSelector.NEXATESTNET to "https://testnet.niftyart.cash"
 )
 
 fun String.runCommand(): String?
@@ -515,19 +515,19 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
     {
         if (loadState == AssetLoadState.COMPLETED) return
         LogIt.info(sourceLoc() + chain.name + ": Loading Asset: Get Token Desc ${groupId}")
-        var td:TokenDesc = am.getTokenDesc(chain, groupId, getEc)
+        val td:TokenDesc = am.getTokenDesc(chain, groupId, getEc)
         LogIt.info(sourceLoc() + chain.name + ": Get Token Desc complete: ${groupId} td: ${td}")
         synchronized(dataLock)
         {
             LogIt.info(sourceLoc() + chain.name + ": Loading Asset: Process genesis info ${groupId.toStringNoPrefix()}")
-            var tg = td.genesisInfo
+            val tg = td.genesisInfo
             if (tg == null) return@synchronized
 
             LogIt.info(sourceLoc() + chain.name + ": loaded: " + tg.name)
 
             name = tg.name ?: td.name
             ticker = tg.ticker ?: td.ticker
-            genesisHeight = tg?.height ?: -1
+            genesisHeight = tg.height ?: -1
             genesisTxidem = if (tg.txidem.length > 0) Hash256(tg.txidem) else null
 
             val du = tg.document_url
@@ -752,9 +752,8 @@ class AssetManager(): AssetManagerStorage
             if (ret.loadState == AssetLoadState.COMPLETED)
                 storeAssetInfo(ret)
         }
-        else later(CoroutineScope(assetCoCtxt))
-        {
-            delay(1000)
+        else laterJob {
+            millisleep(1000U)
             LogIt.info("Deferred asset load for ${groupId} happening now")
             try
             {

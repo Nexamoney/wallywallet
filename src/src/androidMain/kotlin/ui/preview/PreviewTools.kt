@@ -292,16 +292,22 @@ class RamWalletDatabase: WalletDatabase
 }
 
 data class PreviewObjects(val nav: ScreenNav, val accounts: Set<Account>)
+@OptIn(ExperimentalUnsignedTypes::class)
 @Composable
 fun setUpPreview(accounts: Int, pos: ScreenId = ScreenId.Home, language: String="en", country:String="us"): PreviewObjects
 {
     dbPrefix = "preview_"
     androidContext = LocalContext.current
     setLocale(language, country, LocalContext.current)
-    val w = wallyApp?.let { it } ?: CommonApp()
+    val w:CommonApp = wallyApp?.let { it } ?: run {
+        val ret = CommonApp()
+        ret.onCreate()
+        ret
+    }
     try
     {
-        if (kvpDb == null) kvpDb = openKvpDB(dbPrefix + "wpw")
+        val name = dbPrefix + "wpw"
+        if (kvpDb == null) kvpDb = openKvpDB(name)
     }
     catch(e:Exception)
     {

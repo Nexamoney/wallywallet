@@ -1,4 +1,5 @@
 package ui2
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -29,9 +30,12 @@ class AccountLockTest:WallyUiTestBase()
     @Test
     fun testLockAccount()
     {
+        for(a in wallyApp!!.accounts.values) wallyApp!!.deleteAccount(a)
         // Create a normal account
         val actName = "nexaAccount"
         val account = wallyApp!!.newAccount(actName, 0U, "", ChainSelector.NEXA)!!
+
+        val wInsets = WindowInsets(0,0,0,0)
 
         runComposeUiTest {
             val viewModelStoreOwner = object : ViewModelStoreOwner {
@@ -49,7 +53,7 @@ class AccountLockTest:WallyUiTestBase()
                 CompositionLocalProvider(
                     LocalViewModelStoreOwner provides viewModelStoreOwner
                 ) {
-                    NavigationRootUi2(Modifier, Modifier,
+                    NavigationRootUi2(Modifier, wInsets,
                         assetViewModel = assetViewModel,
                         accountUiDataViewModel = accountUiDataViewModel
                     )
@@ -100,14 +104,15 @@ class AccountLockTest:WallyUiTestBase()
             settle()
 
             // Verify that the account purple pill is not showing this hidden account
-            if (onNodeWithTag("AccountPillAccountName").isDisplayed())
+            if (try { onNodeWithTag("AccountPillAccountName").isDisplayed() } catch(e:AssertionError) {false})
             {
                 val tmp: List<AnnotatedString>? = onNodeWithTag("AccountPillAccountName").fetchSemanticsNode().config.getOrNull(SemanticsProperties.Text)
-                if (tmp!= null)
+                if (tmp != null)
                 {
                     check(tmp.first().text != account.name)
                 }
             }
+
 
             settle()
             triggerUnlockDialog(true, { println("Unlock attempted")})
@@ -117,9 +122,13 @@ class AccountLockTest:WallyUiTestBase()
             LogIt.info("PIN NODES:" + onAllNodesWithTag("EnterPIN").printToString())
             onNodeWithTag("EnterPIN").performTextInput("1111")
             settle()
-            onNodeWithTag("EnterPIN").multiplatformImeAction()
+            onNodeWithTag("UnlockTileAccept").performClick()
             settle()
+            waitForCatching { account.visible }
+            LogIt.info("account is visible")
+            wallyApp!!.focusedAccount.value = account
             waitForCatching { onNodeWithTag("AccountPillAccountName").isDisplayed() }
+            LogIt.info("Purple tile name shown")
             settle()
             }
         wallyApp!!.deleteAccount(account)

@@ -1,5 +1,6 @@
 package info.bitcoinunlimited.www.wally
 
+import androidx.compose.foundation.layout.WindowInsets
 import org.nexa.libnexakotlin.*
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.Window
@@ -80,7 +81,7 @@ fun guiNewPanel()
               state = rememberWindowState(width = (5 * 160).dp, height = (7 * 160).dp)
             )
             {
-                UiRoot(Modifier, Modifier)
+                UiRoot(Modifier,  WindowInsets(0,0,0,0))
             }
         }
     }

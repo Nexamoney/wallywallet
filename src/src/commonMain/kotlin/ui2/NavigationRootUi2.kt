@@ -43,12 +43,11 @@ import org.nexa.threads.millisleep
 
 private val LogIt = GetLog("wally.NavRoot.Ui2")
 
-val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
-val showIdentityPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_IDENTITY_PREF, false))
-val showTricklePayPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_TRICKLEPAY_PREF, false))
-val showAssetsPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_ASSETS_PREF, false))
-
-val newUI = MutableStateFlow(preferenceDB.getBoolean(EXPERIMENTAL_UX_MODE_PREF, true))
+// Actually inited from preferences by the CommonApp
+val showIdentityPref = MutableStateFlow(false)
+val showTricklePayPref = MutableStateFlow(false)
+val showAssetsPref = MutableStateFlow(false)
+val newUI = MutableStateFlow(true)
 
 var permanentMenuItemsUi2: Set<NavChoiceUi2> = if (platform().target == KotlinTarget.iOS)
     setOf(
@@ -375,15 +374,15 @@ fun triggerAssignAccountsGuiSlots()
     if (fa != null)
     {
         if (fa.visible == false) wallyApp?.focusedAccount?.value = null
-        // If the slots got shuffled around, maybe the current receive was deleted or hidden
-        assignAccountsGuiSlots()
     }
+    // If the slots got shuffled around, maybe the current receive was deleted or hidden
+    assignAccountsGuiSlots()
 }
 
 fun MutableStateFlow<Int>.interpolate(timeMs: Int, start: Int?=0, end: Int)
 {
     val FRAME_TIME = 20  // how
-    var numSteps = timeMs/FRAME_TIME
+    val numSteps = timeMs/FRAME_TIME
     val st = start ?: value
     val delta = end-st
     val incr = delta.toFloat()/(numSteps+1)
@@ -458,7 +457,7 @@ fun enableNavMenuItem(item: ScreenId, enable:Boolean=true)
 {
     later {
         var changed = false
-        val e = preferenceDB.edit()
+        val e = wallyApp!!.preferenceDB.edit()
         if (item == ScreenId.Identity && showIdentityPref.value != enable)
         {
             changed = true
@@ -561,7 +560,7 @@ fun setSelectedAccount(account: Account)
 {
     if (wallyApp!!.focusedAccount.value != account)
     {
-        preferenceDB.edit().putString(SELECTED_ACCOUNT_NAME_PREF, account.name).commit()
+        wallyApp!!.preferenceDB.edit().putString(SELECTED_ACCOUNT_NAME_PREF, account.name).commit()
         wallyApp!!.focusedAccount.value = account
         // account.currentReceive = null
         setReceiveDestination(account)
@@ -624,10 +623,12 @@ fun setReceiveDestination(account: Account)
 
 fun noSelectedAccount()
 {
-    if (wallyApp!!.focusedAccount.value != null)
-    {
-        preferenceDB.edit().putString(SELECTED_ACCOUNT_NAME_PREF, "").commit()
-        wallyApp!!.focusedAccount.value = null
+    wallyApp?.let {
+        if (it.focusedAccount.value != null)
+        {
+            it.preferenceDB.edit().putString(SELECTED_ACCOUNT_NAME_PREF, "").commit()
+            it.focusedAccount.value = null
+        }
     }
 }
 
@@ -636,7 +637,7 @@ fun noSelectedAccount()
     hasNewUIShared toggled when the user select "new user interface" in settings.
  */
 @Composable
-fun UiRoot(rootModifier: Modifier, systemPadding: Modifier)
+fun UiRoot(rootModifier: Modifier, systemPadding: WindowInsets)
 {
     val newUi = newUI.collectAsState().value
 
@@ -865,7 +866,7 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
 @Composable
 fun NavigationRootUi2(
   rootModifier: Modifier,
-  systemPadding: Modifier,
+  systemPadding: WindowInsets,
   assetViewModel: AssetViewModel = viewModel { AssetViewModel() },
   accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() },
 )
@@ -1111,7 +1112,7 @@ fun NavigationRootUi2(
         }
     }
 
-    // This box is on top of the main screen
+    // This is the IME keyboard bar.  So this box is on top of the main screen
     Box(modifier = Modifier.zIndex(1000f).fillMaxSize()) {
         if (softKeyboardShowing)
         {
@@ -1130,30 +1131,36 @@ fun NavigationRootUi2(
     val moreMenuItemsState = moreMenuItems.collectAsState()
     val moreMenuItems = moreMenuItemsState.value
 
+    // TODO insets are not working on Compose for android
+    //val navBars = WindowInsets.navigationBars
+    //val sysBars = WindowInsets.systemBars
+    //LogIt.info("navBars ${navBars} sysBars ${sysBars}")
+
     // The main screen
     Scaffold(
-      modifier =
-      rootModifier.pointerInput(Unit) {
-          detectTapGestures(onTap = {
-              scope.launch {
-                  if (expanded.value)
-                  {
-                      scaffoldSheetState.bottomSheetState.hide()
-                      expanded.value = false
+          modifier =
+          // Make both the title and the bottom system menu the same color, to bracket the main part of the app
+          rootModifier.background(colorTitleBackground).padding(systemPadding.asPaddingValues()).pointerInput(Unit) {
+              detectTapGestures(onTap = {
+                  scope.launch {
+                      if (expanded.value)
+                      {
+                          scaffoldSheetState.bottomSheetState.hide()
+                          expanded.value = false
+                      }
                   }
-              }
-              lastClicked.value = curScreen.toString()
-          })
-      }.testTag("RootScaffold"),
-      contentColor = Color.Black,
-      topBar = {
-          TopBar(errorText, warningText, noticeText, lastClicked)
-      },
-      bottomBar = {
-          if (showBottomBar)
-              BottomNavMenu(scope, scaffoldSheetState, expanded, lastClicked)
-      },
-    ) { innerPadding ->
+                  lastClicked.value = curScreen.toString()
+              })
+          }.testTag("RootScaffold"),
+          contentColor = Color.Black,
+          topBar = {
+              TopBar(errorText, warningText, noticeText, lastClicked)
+          },
+          bottomBar = {
+              if (showBottomBar)
+                  BottomNavMenu(scope, scaffoldSheetState, expanded, lastClicked)
+          },
+        ) { innerPadding ->
         BottomSheetScaffold(
           sheetTonalElevation = 10.dp,
           sheetShadowElevation = 10.dp,
@@ -1178,17 +1185,24 @@ fun NavigationRootUi2(
                             scope.launch {
                                 if (ch.location != ScreenId.MoreMenu)
                                     lastClicked.value = ch.location.toString()
-                                if (ch.location == ScreenId.MoreMenu) {
-                                    if (!expanded.value) {
+                                if (ch.location == ScreenId.MoreMenu)
+                                {
+                                    if (!expanded.value)
+                                    {
                                         scaffoldSheetState.bottomSheetState.expand()
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         scope.launch {
                                             scaffoldSheetState.bottomSheetState.hide()
                                         }
                                     }
                                     expanded.value = !expanded.value
-                                } else {
-                                    if (expanded.value) {
+                                }
+                                else
+                                {
+                                    if (expanded.value)
+                                    {
                                         scope.launch {
                                             scaffoldSheetState.bottomSheetState.hide()
                                         }
@@ -1215,7 +1229,8 @@ fun NavigationRootUi2(
                           ) {
                               // TODO: Reuse fun IconTextButton()
                               val fontSize = 12.sp
-                              if (lastClicked.value != ch.location.toString()){
+                              if (lastClicked.value != ch.location.toString())
+                              {
                                   Icon(ch.icon, "", Modifier.width(30.dp).height(30.dp))
                                   Spacer(Modifier.width(8.dp))
                                   Text(text = i18n(ch.textId), fontSize = fontSize, modifier = Modifier.wrapContentWidth(Alignment.CenterHorizontally, true),
@@ -1236,11 +1251,11 @@ fun NavigationRootUi2(
           },
         ) {
             WallyThemeUi2 {
-                Box(modifier = Modifier.fillMaxSize().background(Color.White).padding(innerPadding).then(systemPadding)) {
+                Box(modifier = Modifier.fillMaxSize().background(Color.White).padding(innerPadding)) {
                     Column(modifier = Modifier.fillMaxSize()) {
 
                         if (isShowingRecoveryWarning)
-                            RecoveryPhraseWarningUi2(Modifier.clickable { isShowingRecoveryWarning = false})
+                            RecoveryPhraseWarningUi2(Modifier.clickable { isShowingRecoveryWarning = false })
                         UnlockTile()
 
                         // This will take up the most space but leave enough for the navigation menu
@@ -1250,12 +1265,12 @@ fun NavigationRootUi2(
                         }
                         else
                         {
-                           Modifier.weight(1f).fillMaxWidth().fillMaxHeight()
+                            Modifier.weight(1f).fillMaxWidth().fillMaxHeight()
                         }
                         Box(
                           modifier = mod
                         ) {
-                            LaunchedEffect(curScreen){
+                            LaunchedEffect(curScreen) {
                                 if (curScreen != ScreenId.MoreMenu)
                                     lastClicked.value = curScreen.toString()
                             }
@@ -1264,11 +1279,23 @@ fun NavigationRootUi2(
                                 ScreenId.None -> HomeScreenUi2(isShowingRecoveryWarning, assetViewModel, accountUiDataViewModel)
                                 ScreenId.Splash -> run {} // splash screen is done at the top for max speed and to be outside of the theme
                                 ScreenId.MoreMenu -> run {}
-                                ScreenId.Home -> { HomeScreenUi2(isShowingRecoveryWarning, assetViewModel, accountUiDataViewModel) }
+                                ScreenId.Home ->
+                                {
+                                    HomeScreenUi2(isShowingRecoveryWarning, assetViewModel, accountUiDataViewModel)
+                                }
+
                                 ScreenId.Send -> withAccount { act -> withSendNavParams { SendScreen(act, it) } }
-                                ScreenId.Receive -> { ReceiveScreen() }
+                                ScreenId.Receive ->
+                                {
+                                    ReceiveScreen()
+                                }
+
                                 ScreenId.SplitBill -> SplitBillScreen()
-                                ScreenId.NewAccount -> { NewAccountScreenUi2(accountGuiSlots.collectAsState(), devMode) }
+                                ScreenId.NewAccount ->
+                                {
+                                    NewAccountScreenUi2(accountGuiSlots.collectAsState(), devMode)
+                                }
+
                                 ScreenId.Settings -> SettingsScreenUi2()
                                 ScreenId.AccountDetails -> withUnlockedAccount { AccountDetailScreenUi2(it) }
                                 ScreenId.Assets -> withAccount { AssetScreenUi2(it) }
@@ -1278,10 +1305,12 @@ fun NavigationRootUi2(
                                     val idsess = nav.curData.value as? IdentitySession
                                     IdentityScreen(act, idsess, nav)
                                 }
+
                                 ScreenId.IdentityEdit -> withAccount { act ->
                                     IdentityEditScreen(act, nav)
                                 }
-                                ScreenId.AddressHistory ->  withAccount { AddressHistoryScreen(it, nav) }
+
+                                ScreenId.AddressHistory -> withAccount { AddressHistoryScreen(it, nav) }
                                 ScreenId.TxHistory -> withAccount { TxHistoryScreen(it, nav) }
                                 ScreenId.TpSettings -> withTp { act, ctp -> TricklePayScreen(act, ctp, nav) }
                                 ScreenId.SpecialTxPerm -> withTp { act, ctp -> SpecialTxPermScreenUi2(act, ctp) }
@@ -1292,6 +1321,7 @@ fun NavigationRootUi2(
                                     if (idsess != null) IdentityPermScreen(act, idsess, nav)
                                     else nav.back()
                                 }
+
                                 ScreenId.Alerts -> HomeScreenUi2(isShowingRecoveryWarning, assetViewModel, accountUiDataViewModel)
                             }
                         }
@@ -1299,8 +1329,6 @@ fun NavigationRootUi2(
                 }
             }
         }
-
     }
-
     // The material theme for the whole app is set here.
 }
