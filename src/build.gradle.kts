@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter
 // On version bump: Run ./gradlew generateVersionFile and commit the updates iosApp/iosApp/info.plist file
 val versionNumber = "3.7.03"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
-
+val kotlinVersion = "2.1.20"
 
 // Dependency versions
 val mpThreadsVersion = "0.4.0"
@@ -39,9 +39,9 @@ plugins {
     //trick: for the same plugin versions in all sub-modulesly
     kotlin("multiplatform")
     id("com.android.application")
-    kotlin("plugin.serialization").version("2.1.10")
+    kotlin("plugin.serialization").version("2.1.20")
     //id("org.jetbrains.kotlin.android").version("2.0.0")
-    id("org.jetbrains.kotlin.plugin.compose").version("2.1.10")
+    id("org.jetbrains.kotlin.plugin.compose").version("2.1.20")
     id("org.jetbrains.compose")   // https://github.com/JetBrains/compose-multiplatform/releases
     id("org.jetbrains.dokka").version("2.0.0").apply(false)
     id("org.jetbrains.kotlinx.kover")
@@ -365,7 +365,7 @@ kotlin {
                 implementation(compose.desktop.windows_x64)
                 implementation(compose.desktop.macos_x64)
                 implementation(compose.desktop.macos_arm64)
-                implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.10")
+                implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.20")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$coroutinesVersion")
                 // Required for Dispatchers.Main
                 // https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-dispatchers/-main.html
