@@ -32,6 +32,7 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -50,6 +51,7 @@ import info.bitcoinunlimited.www.wally.ui2.softKeyboardBar
 import info.bitcoinunlimited.www.wally.ui2.theme.*
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.CURRENCY_1
 import org.nexa.libnexakotlin.ChainSelector
@@ -265,6 +267,32 @@ fun CenteredText(text: String, textStyle: TextStyle, modifier: Modifier = Modifi
       })
 }
 
+/** This fits multiple pieces of text into a single line
+ * @param adjCount Provide the number of individual adjustable pieces of text
+ * @param minFontSize Provide the smallest font size you are willing to see
+ * @param textStyle Provide the initial text style
+ * @param aLine Provide your composable for the line.  You must use the passed Modifier and TextStyle for every Text component that should be adjusted.  And onTextLayout must call the passed function
+ *
+ * This function currently has an issue where recompositions with different content keep the smaller font size of old content
+*/
+@Composable fun FittedText(adjCount: Int, minFontSize: TextUnit, textStyle: TextStyle?=null, aLine: @Composable (Modifier, TextStyle, (TextLayoutResult) -> Unit)->Unit)
+{
+    val tmp = textStyle ?: WallyTextStyle(1.0)
+    val rtextStyle = remember { mutableStateOf(tmp) } // MutableStateFlow(tmp)
+    var drawIt by remember { mutableStateOf(0) }
+    val mod = Modifier.drawWithContent { if (drawIt>=adjCount) drawContent() }
+    // rtextStyle.collectAsState().value
+    aLine(mod, rtextStyle.value, { tlr ->
+       // println("width ${tlr.didOverflowWidth} ${tlr.lineCount}")
+        val ts = rtextStyle.value
+       if ((tlr.didOverflowWidth || tlr.lineCount>1) && ts.fontSize > minFontSize)
+       {
+           rtextStyle.value = ts.copy(fontSize = ts.fontSize * 0.95)
+           drawIt = 0
+       }
+       else drawIt+=1
+    } )
+}
 
 /** Sets the title (at the native/platform level) if needed */
 expect fun NativeTitle(title: String)

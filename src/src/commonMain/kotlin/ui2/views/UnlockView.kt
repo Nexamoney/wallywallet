@@ -29,10 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import info.bitcoinunlimited.www.wally.ui2.theme.*
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui2.triggerAccountsChanged
-import info.bitcoinunlimited.www.wally.ui2.triggerAssignAccountsGuiSlots
-import info.bitcoinunlimited.www.wally.ui2.triggerUnlockDialog
-import info.bitcoinunlimited.www.wally.ui2.DoneButtonOptional
+import info.bitcoinunlimited.www.wally.ui2.*
 import info.bitcoinunlimited.www.wally.ui2.theme.wallyTile
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,14 +43,15 @@ var unlockThen:((String)->Unit)? = null
 
 fun attemptUnlock(pin: String)
 {
-    if (wallyApp!!.unlockAccounts(pin) == 0)  // nothing got unlocked
+    val actsUnlocked = wallyApp!!.unlockAccounts(pin)
+    if (actsUnlocked == 0)  // nothing got unlocked
         displayError(S.InvalidPIN, persistAcrossScreens = 0)
     else
     {
+        LogIt.info("Unlocked ${actsUnlocked} accounts")
         clearAlerts()
         triggerAccountsChanged()
-        triggerAssignAccountsGuiSlots()  // In case accounts should be showed
-
+        assignAccountsGuiSlots()  // In case accounts should be showed
     }  // We don't know what accounts got unlocked so just redraw them all in this non-performance change
     triggerUnlockDialog(false)
     unlockThen?.invoke(pin)

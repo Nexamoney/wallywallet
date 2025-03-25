@@ -73,7 +73,7 @@ class Account(
   startHeight: Long? = null, //* block height of first activity
   autoInit: Boolean = true, /** Automatically begin the asynchronous initialization phase */
   retrieveOnlyActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, HDActivityBracket>>? = null,  //* jam in other derivation paths to grab coins from (but use addresses of) (if new account)
-  val prefDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE),
+  val prefDB: SharedPreferences = getSharedPreferences(TEST_PREF + i18n(S.preferenceFileName), PREF_MODE_PRIVATE),
   db: WalletDatabase? = null
 )
 {

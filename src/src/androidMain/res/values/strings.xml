@@ -126,6 +126,9 @@ Good luck!
     <!-- wallet is still connecting to the blockchain -->
     <string name="unsynced">synchronizing</string>
     <string name="connected">connected</string>
+    <string name="connectionEstablished">connection established</string>
+    <string name="connectionClosed">connection closed</string>
+    <string name="connectionException">cannot connect to site</string>
     <string name="balance">current balance</string>
     <string name="totalReceived">Total received</string>
     <string name="inProgress">in progress</string>
@@ -159,6 +162,8 @@ Good luck!
     <string name="NoNodes">No blockchain access</string>
     <!-- The user chose not to proceed with some operation -->
     <string name="cancelled">cancelled</string>
+    <!-- The QR code you scanned is no longer valid -->
+    <string name="refreshQR">refresh QR code</string>
     <!-- Issued if initialization is not yet complete, but user tries to access the services -->
     <string name="pleaseWait">please wait</string>
     <!-- Uses in the sense of attempting an operation, such as connecting to a node  -->
@@ -413,8 +418,6 @@ Good luck!
     <string name="firstName">first name</string>
     <string name="lastName">last name</string>
 
-    <string name="connectionEstablished">connection established</string>
-    <string name="connectionException">cannot connect to site</string>
     <string name="withholdingMandatoryInfo">site requires info that you refuse to provide</string>
     <string name="badLink">bad link</string>
     <string name="BadWebLink">Invalid web link</string>
@@ -594,7 +597,7 @@ Good luck!
     <string name="NftUrl">http://niftyart.cash</string>
     <string name="NftImproperConstruction">Warning: Fake or improperly constructed!</string>
     <string name="TokenSourceWebsite">Token source:</string>
-    <string name="TokenUnsigned">This token\'s information was not properly signed.  This token may be a fake or a spoof.  It may also mean that the token creator simply has not properly signed the token.</string>
+    <string name="TokenBadSig">This token\'s information was not properly signed.  This token may be a fake or a spoof.  It may also mean that the token creator simply has not properly signed the token.</string>
 
     <string name="OpenWebsite" formatted="false">Access %siteName</string>
     <string name="WebsiteUnavailable" formatted="false">Website unavailable</string>

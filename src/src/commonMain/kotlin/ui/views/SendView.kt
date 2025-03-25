@@ -390,8 +390,7 @@ fun SendView(
             }
         }
 
-        val preferenceDB = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
-        val confirmAmtString = preferenceDB.getString(CONFIRM_ABOVE_PREF, "0") ?: "0"
+        val confirmAmtString = wallyApp?.preferenceDB?.getString(CONFIRM_ABOVE_PREF, "0") ?: "0"
         val confirmAmt = try
         {
             CurrencyDecimal(confirmAmtString)

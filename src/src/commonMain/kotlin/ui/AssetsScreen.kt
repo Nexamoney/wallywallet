@@ -90,7 +90,7 @@ fun AssetView(assetInfo: AssetInfo, modifier: Modifier = Modifier)
 
         if ((a.tokenInfo != null) && (a.tokenInfo?.tddSig == null))
         {
-            CenteredText(i18n(S.TokenUnsigned))
+            CenteredText(i18n(S.TokenBadSig))
         }
 
         CenteredSectionText(showing)

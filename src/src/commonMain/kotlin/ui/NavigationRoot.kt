@@ -126,10 +126,6 @@ fun onShareButton()
     }
 }
 
-val showIdentityPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_IDENTITY_PREF, false))
-val showTricklePayPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_TRICKLEPAY_PREF, false))
-val showAssetsPref = MutableStateFlow(preferenceDB.getBoolean(SHOW_ASSETS_PREF, true))
-
 var permanentMenuItems: Set<NavChoice> = setOf(
   NavChoice(ScreenId.Home, S.title_home, "icons/home.xml"),
   NavChoice(ScreenId.Shopping, S.ecosystem, "icons/shopping.xml"),
@@ -173,7 +169,7 @@ fun buildMenuItems()
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun NavigationRoot(systemPadding: Modifier)
+fun NavigationRoot(systemPadding: WindowInsets)
 {
     val curScreen = nav.currentScreen.collectAsState()
     if (curScreen.value == ScreenId.Splash)
@@ -380,7 +376,7 @@ fun NavigationRoot(systemPadding: Modifier)
 
     // The main screen
     WallyTheme(darkTheme = false, dynamicColor = false) {
-        Box(modifier = WallyPageBase .then(systemPadding)) {
+        Box(modifier = WallyPageBase.padding(systemPadding.asPaddingValues())) {
             Column(modifier = Modifier.fillMaxSize()) {
                 ConstructTitleBar(errorText, warningText, noticeText)
                 UnlockTile()

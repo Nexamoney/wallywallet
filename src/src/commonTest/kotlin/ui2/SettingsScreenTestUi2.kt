@@ -53,7 +53,7 @@ class SettingsScreenTestUi2:WallyUiTestBase()
 
     @Test
     fun confirmAboveTest() = runComposeUiTest {
-        val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
+        val preferenceDB: SharedPreferences = getSharedPreferences(TEST_PREF + i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
         setContent {
             ConfirmAbove(preferenceDB)
         }

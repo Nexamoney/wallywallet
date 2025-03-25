@@ -19,4 +19,3 @@ const val EXCLUSIVE_NODE_SWITCH = "exclusiveNodeSwitch"
 val CONFIGURED_NODE = "NodeAddress"
 const val PREFER_NODE_SWITCH = "preferNodeSwitch"
 
-var currentlySelectedAccount = chainToURI[ChainSelector.NEXA]  // The default crypto I'm using

@@ -582,10 +582,12 @@ fun AccountActionButtonsUi2(acc: Account, txHistoryButtonClicked: () -> Unit, ac
                 AccountAction.Delete -> AccountDetailAcceptDeclineTextViewUi2(i18n(S.deleteConfirmation) % mapOf("accountName" to acc.name, "blockchain" to acc.currencyCode)) {
                     if (it)
                     {
-                        wallyApp!!.deleteAccount(acc)
-                        displayNotice(S.accountDeleteNotice)
-                        accountDeleted()
-                        noSelectedAccount()  // If we are in the account details, this account is selected.  We need to unselect it.
+                        laterJob {
+                            wallyApp!!.deleteAccount(acc)
+                            displayNotice(S.accountDeleteNotice)
+                            accountDeleted()
+                            noSelectedAccount()  // If we are in the account details, this account is selected.  We need to unselect it.
+                        }
                     }
                     accountAction.value = null
                 }

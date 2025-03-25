@@ -107,7 +107,7 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
           checked = globalPref.collectAsState().value,
           onCheckedChange = {
               globalPref.value = it
-              preferenceDB.edit().putBoolean(preference, it).commit()
+              wallyApp?.preferenceDB?.edit()?.putBoolean(preference, it)?.commit()
 
               if(it)
               {
@@ -144,7 +144,7 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
 
 @Composable fun GeneralSettingsSwitchView(generalSettingsSwitch: GeneralSettingsSwitch)
 {
-    val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
+    val preferenceDB: SharedPreferences = wallyApp!!.preferenceDB
     val isChecked = remember { mutableStateOf(preferenceDB.getBoolean(generalSettingsSwitch.prefKey, true)) }
 
     WallySwitch(isChecked, generalSettingsSwitch.textRes) {
@@ -154,7 +154,7 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
 }
 
 @Composable
-fun SettingsScreenUi2(preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE), hasNewUIState: State<Boolean> = newUI.collectAsState())
+fun SettingsScreenUi2(preferenceDB: SharedPreferences = wallyApp!!.preferenceDB, hasNewUIState: State<Boolean> = newUI.collectAsState())
 {
     var devModeView by mutableStateOf(devMode)
     var darkModeView by mutableStateOf(darkMode)

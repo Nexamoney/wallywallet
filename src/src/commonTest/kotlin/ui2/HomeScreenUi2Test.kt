@@ -1,5 +1,6 @@
 package ui2
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
@@ -225,12 +226,12 @@ class HomeScreenUi2Test:WallyUiTestBase()
         val normalAccount = wallyApp!!.newAccount("nexaAccount", 0U, "", ChainSelector.NEXA)!!
         // Create a testnet account
         val testnetAccount = wallyApp!!.newAccount("nexaTestnetAccount", 0U, "", ChainSelector.NEXATESTNET)!!
+        val wInsets = WindowInsets(0,0,0,0)
 
         runComposeUiTest {
             val viewModelStoreOwner = object : ViewModelStoreOwner {
                 override val viewModelStore: ViewModelStore = ViewModelStore()
             }
-
 
             // Initialize ViewModels
             val assetViewModel = AssetViewModel()
@@ -244,7 +245,7 @@ class HomeScreenUi2Test:WallyUiTestBase()
                 CompositionLocalProvider(
                   LocalViewModelStoreOwner provides viewModelStoreOwner
                 ) {
-                    NavigationRootUi2(Modifier, Modifier,
+                    NavigationRootUi2(Modifier, wInsets,
                       assetViewModel = assetViewModel,
                       accountUiDataViewModel = accountUiDataViewModel
                     )

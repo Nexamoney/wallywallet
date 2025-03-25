@@ -153,7 +153,7 @@ private val LogIt = GetLog("BU.wally.NewAccountScreen")
 
     fun CreateSyncAccount()
     {
-        var inputValid = FinalDataCheck()
+        val inputValid = FinalDataCheck()
         // Grab all the data because when I go back it will be wiped from the UX
         val acState = newAccountState.value.copy()
         val chainSelector = selectedBlockChain.second

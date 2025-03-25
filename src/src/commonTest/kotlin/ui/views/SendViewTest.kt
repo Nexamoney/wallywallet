@@ -12,10 +12,7 @@ import kotlin.test.Test
 @OptIn(ExperimentalUnsignedTypes::class)
 class SendViewTest:WallyUiTestBase()
 {
-    init
-    {
-        setupTestEnv()
-    }
+
     @OptIn(ExperimentalTestApi::class)
     @Test
     fun sendViewTest()
