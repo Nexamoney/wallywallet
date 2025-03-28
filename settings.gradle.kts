@@ -9,6 +9,7 @@ pluginManagement {
 
 dependencyResolutionManagement {
     repositories {
+        mavenLocal()
         google()
         gradlePluginPortal()
         mavenCentral()
@@ -19,7 +20,6 @@ dependencyResolutionManagement {
         maven { url = uri("https://gitlab.com/api/v4/projects/38119368/packages/maven") }  // libnexarpc
         maven { url = uri("https://gitlab.com/api/v4/projects/48545045/packages/maven") }  // Libnexakotlin
         maven { url = uri("https://jitpack.io") }
-        mavenLocal()
     }
 }
 

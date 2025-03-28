@@ -68,43 +68,27 @@ fun ReceiveScreen()
         return
     }
 
-    val address = focusedAccount.currentReceiveObservable.collectAsState().value
+    val dest = focusedAccount.currentReceiveObservable.collectAsState().value
+    val payAddress = dest?.address
 
-    Column (
-      modifier = Modifier.fillMaxSize(),
-    ) {
-        if (address != null)
-            ReceiveScreenContent(focusedAccount, address, Modifier.weight(1f))
+    Column (modifier = Modifier.fillMaxSize()) {
+        if (payAddress != null)
+            ReceiveScreenContent(focusedAccount, dest, Modifier.weight(1f))
         else
             Row {
                 Syncing(Color.Black)
-                Text("fetching address")
+                Text(i18n(S.loading))
             }
 
         // Row with buttons at the bottom
-        if (address != null)
-            Row(
-              modifier = Modifier.fillMaxWidth()
-                .wrapContentHeight()
-                .background(Color.White)
-                .padding(2.dp),
-              horizontalArrangement = Arrangement.Center
-            ) {
-                IconTextButtonUi2(
-                  icon = Icons.Outlined.ContentCopy,
-                  modifier = Modifier.weight(1f),
-                  description = i18n(S.CopyAddress),
-                  color = wallyPurple,
-                ) {
-                    setTextClipboard(address?.address?.toString() ?: "Address missing")
+        if (payAddress != null)
+            Row(modifier = Modifier.fillMaxWidth().wrapContentHeight().background(Color.White).padding(2.dp),
+              horizontalArrangement = Arrangement.Center) {
+                IconTextButtonUi2(icon = Icons.Outlined.ContentCopy, modifier = Modifier.weight(1f), description = i18n(S.CopyAddress), color = wallyPurple) {
+                    setTextClipboard(payAddress.toString())
                     displayNotice(i18n(S.copiedToClipboard))
                 }
-                IconTextButtonUi2(
-                  icon = Icons.AutoMirrored.Outlined.ArrowBack,
-                  modifier = Modifier.weight(1f).testTag("BackButton"),
-                  description = i18n(S.Back),
-                  color = wallyPurple,
-                ) {
+                IconTextButtonUi2(icon = Icons.AutoMirrored.Outlined.ArrowBack, modifier = Modifier.weight(1f).testTag("BackButton"), description = i18n(S.Back), color = wallyPurple, ) {
                     nav.back()
                 }
             }
@@ -112,23 +96,13 @@ fun ReceiveScreen()
 }
 
 @Composable
-fun ReceiveScreenContent(
-  account: Account,
-  address: PayDestination,
-  modifier: Modifier = Modifier
-)
+fun ReceiveScreenContent(account: Account, address: PayDestination, modifier: Modifier = Modifier)
 {
+    if (address.address == null) return  // This PayDestination does not have an address
     val addrStr = address.address.toString()
     val qrcodePainter = rememberQrCodePainter(addrStr)
-    Surface(
-      modifier = modifier.fillMaxWidth(),
-      color = Color.White
-    ) {
-        Column(
-          modifier = Modifier.fillMaxWidth(),
-          horizontalAlignment = Alignment.CenterHorizontally,
-          verticalArrangement = Arrangement.Top
-        ) {
+    Surface(modifier = modifier.fillMaxWidth(), color = Color.White) {
+        Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
             Spacer(modifier = Modifier.weight(0.04f))
             AccountPill(account).draw(buttonsEnabled = false)
             Spacer(modifier = Modifier.weight(0.01f))
@@ -141,7 +115,7 @@ fun ReceiveScreenContent(
                 .aspectRatio(1f) // Keeps the image square
                 .background(Color.White)
                 .testTag("qrcode")
-                .clickable { setTextClipboard(addrStr)}
+                .clickable { setTextClipboard(addrStr) }
 
             )
             Spacer(modifier = Modifier.weight(0.01f))

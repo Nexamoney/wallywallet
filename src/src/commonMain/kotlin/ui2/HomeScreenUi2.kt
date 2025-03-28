@@ -67,8 +67,9 @@ val txHistViewModel = TxHistoryViewModel()
 @Composable
 fun HomeScreenUi2(
   isShowingRecoveryWarning: Boolean = false,
+  pill: AccountPillViewModel,
   assetViewModel: AssetViewModel = viewModel { AssetViewModel() },
-  accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() }
+  accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() },
 )
 {
     val assets = assetViewModel.assets.collectAsState().value
@@ -103,7 +104,6 @@ fun HomeScreenUi2(
         Column {
             if (!isShowingRecoveryWarning)
                 Spacer(Modifier.height(16.dp))
-            val pill = AccountPill(wallyApp!!.focusedAccount)
             pill.draw(true)
             Spacer(modifier = Modifier.height(8.dp))
             if (assets.isNotEmpty())

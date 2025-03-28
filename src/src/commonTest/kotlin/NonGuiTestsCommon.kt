@@ -36,15 +36,15 @@ class NonGuiTestsCommon
 
         val in1 = Spendable(cs, NexaTxOutpoint("00112233445566778899aabbccddeeff000102030405060708090a0b0c0d0e0f"), 10001)
         tx._inputs.add(NexaTxInput(cs, in1, SatoshiScript(cs), 0xffffffff))
-        var out1 = NexaTxOutput(cs, 10001, SatoshiScript(cs, "76a914431ecec94e0a920a7972b084dcfabbd69f61691288ac"))
+        val out1 = NexaTxOutput(cs, 10001, SatoshiScript(cs, "76a914431ecec94e0a920a7972b084dcfabbd69f61691288ac"))
         tx._outputs.add(out1)
-        var ser = tx.BCHserialize(SerializationType.NETWORK)
+        val ser = tx.BCHserialize(SerializationType.NETWORK)
         LogIt.info("tx: " + ser.toHex())
         assertEquals(4, 2 + 2)
 
         // ser.flatten()
-        var tx2 = NexaTransaction(cs, ser)
-        var ser2 = tx2.BCHserialize(SerializationType.NETWORK)
+        val tx2 = NexaTransaction(cs, ser)
+        val ser2 = tx2.BCHserialize(SerializationType.NETWORK)
         // ser2.flatten()
         LogIt.info("tx: " + ser2.toHex())
         assert(ser.toHex() == ser2.toHex())
@@ -80,7 +80,7 @@ class NonGuiTestsCommon
         val coScope = CoroutineScope(coCtxt)
 
         runBlocking {
-            var c1 = CoCond<Nothing?>(coScope)
+            val c1 = CoCond<Nothing?>(coScope)
             var v = 1;
             val cor = GlobalScope.launch { c1.yield(); v = 3 }
             c1.wake(null)
@@ -90,7 +90,7 @@ class NonGuiTestsCommon
 
         runBlocking {
 
-            var c1 = CoCond<Int>(coScope)
+            val c1 = CoCond<Int>(coScope)
             var v = 1
             val cor = GlobalScope.launch { v = c1.yield()!!; }
             //val cor2 = GlobalScope.launch { v = c1.yield()!!; }
@@ -107,16 +107,16 @@ class NonGuiTestsCommon
     {
         // run against some test vectors...
 
-        var hash1 = libnexa.sha256(ByteArray(64, { _ -> 1 }))
+        val hash1 = libnexa.sha256(ByteArray(64, { _ -> 1 }))
         assertEquals("7c8975e1e60a5c8337f28edf8c33c3b180360b7279644a9bc1af3c51e6220bf5", hash1.toHex())
-        var hash2 = libnexa.hash256(ByteArray(64, { _ -> 1 }))
+        val hash2 = libnexa.hash256(ByteArray(64, { _ -> 1 }))
         assertEquals("61a088b4cf1f244e52e5e88fcd91b3b7d6135ebff53476ecc8436e23b5e7f095", hash2.toHex())
-        var hash3 = libnexa.hash160(ByteArray(64, { _ -> 1 }))
+        val hash3 = libnexa.hash160(ByteArray(64, { _ -> 1 }))
         assertEquals("171073b9bee66e89f657f50532412e3539bb1d6b", hash3.toHex())
 
         val data =
           "0100000001ef128218b638f8b34e125d3a87f074974522b07be629f84b72bba549d493abcb0000000049483045022100dbd9a860d31ef53b9ae12306f25a5f64ac732d5951e1d843314ced89d80c585b02202697cd52be31156a1c30f094aa388cb0d5e8e7f767472fd0b03cb1b7e666c23841feffffff0277800f04000000001976a9148132c3672810992a3c780772b980b1d690598af988ac80969800000000001976a914444b7eaa50459a727a4238778cde09a21f9b579a88ac81531400".fromHex()
-        var hash4 = Hash256(libnexa.hash256(data))
+        val hash4 = Hash256(libnexa.hash256(data))
         assertEquals(hash4.toHex(), "1605af3f8beb87fa26fc12a45e52ce5e0e296d0da551c0775916634d451ca664")
 
         val tx = BchTransaction(ChainSelector.BCHTESTNET, data, SerializationType.NETWORK)
@@ -132,11 +132,11 @@ class NonGuiTestsCommon
     fun testCodec()
     {
         LogIt.error("testCodec testCodec start")
-        var data = byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, -1, 127, -127)
-        var str = Codec.encode64(data)
+        val data = byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, -1, 127, -127)
+        val str = Codec.encode64(data)
         LogIt.info(str)
         LogIt.error("testCodec + $str")
-        var data2 = Codec.decode64(str)
+        val data2 = Codec.decode64(str)
         check(data contentEquals data2)
     }
 

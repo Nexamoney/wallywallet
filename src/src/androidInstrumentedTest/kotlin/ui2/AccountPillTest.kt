@@ -82,5 +82,6 @@ class AccountPillTest:WallyUiTestBase()
         balanceViewModel.fiatBalance.value = fiatBalance
         composeTestRule.onNodeWithTag("AccountPillFiatBalance").assertTextEquals(fiatBalance)
         composeTestRule.onNodeWithTag("AccountPillFiatCurrencyCode").assertIsDisplayed()
+        wallyApp!!.deleteAccount(account)
     }
 }

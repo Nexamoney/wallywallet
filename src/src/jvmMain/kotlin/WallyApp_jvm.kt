@@ -49,6 +49,23 @@ fun initializeGraphicsResources()
 
 object WallyJvmApp
 {
+    fun runningTest(): Boolean
+    {
+        return try
+        {
+            Class.forName("kotlin.test.Test")
+            true
+        }
+        catch (e: ClassNotFoundException)
+        {
+            false
+        }
+        catch (e: Exception)
+        {
+            false
+        }
+    }
+
     @JvmStatic
     fun main(args: Array<String>)
     {
@@ -56,7 +73,7 @@ object WallyJvmApp
         initializeGraphicsResources()
         setLocale()
         LogIt.warning("Starting Wally Enterprise Wallet")
-        wallyApp = CommonApp()
+        wallyApp = CommonApp(runningTest())
         wallyApp!!.onCreate()
         guiNewPanel()
     }

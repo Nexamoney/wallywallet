@@ -300,7 +300,7 @@ fun setUpPreview(accounts: Int, pos: ScreenId = ScreenId.Home, language: String=
     androidContext = LocalContext.current
     setLocale(language, country, LocalContext.current)
     val w:CommonApp = wallyApp?.let { it } ?: run {
-        val ret = CommonApp()
+        val ret = CommonApp(true)
         ret.onCreate()
         ret
     }

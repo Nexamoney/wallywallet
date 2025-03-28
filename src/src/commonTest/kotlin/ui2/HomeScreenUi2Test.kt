@@ -117,7 +117,8 @@ class HomeScreenUi2Test:WallyUiTestBase()
                 val assetViewModel = AssetViewModel()
                 balanceViewModel = BalanceViewModelImpl(account)
                 val accountUiDataViewModel = AccountUiDataViewModel()
-                HomeScreenUi2(false, assetViewModel, accountUiDataViewModel)
+                val apvm = AccountPill(wallyApp!!.focusedAccount)
+                HomeScreenUi2(false, apvm, assetViewModel, accountUiDataViewModel)
             }
         }
         settle()
@@ -185,6 +186,7 @@ class HomeScreenUi2Test:WallyUiTestBase()
             assignAccountsGuiSlots()
             val assetViewModel = AssetViewModel()
             val accountUiDataViewModel = AccountUiDataViewModel()
+            val apvm = AccountPill(wallyApp!!.focusedAccount)
 
             setContent {
                 CompositionLocalProvider(
@@ -192,6 +194,7 @@ class HomeScreenUi2Test:WallyUiTestBase()
                 ) {
                     HomeScreenUi2(
                       isShowingRecoveryWarning = false,
+                      apvm,
                       assetViewModel = assetViewModel,
                       accountUiDataViewModel = accountUiDataViewModel
                     )

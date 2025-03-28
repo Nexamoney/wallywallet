@@ -731,6 +731,7 @@ class Account(
     // Load the exchange rate
     fun getXchgRates(fiatCurrencyCode: String)
     {
+        LogIt.info(sourceLoc() + "getXchgRates: $fiatCurrencyCode")
         if (chain.chainSelector == ChainSelector.NEXA)
         {
             if (fiatCurrencyCode == "USD")

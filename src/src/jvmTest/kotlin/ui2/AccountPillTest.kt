@@ -101,5 +101,6 @@ class AccountPillTest:WallyUiTestBase()
                 throw e
             }
         }
+        wallyApp!!.deleteAccount(account)
     }
 }

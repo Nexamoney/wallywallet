@@ -14,6 +14,7 @@ import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.ui2.views.*
 import info.bitcoinunlimited.www.wally.wallyApp
+import ui2.setupTestEnv
 import ui2.waitForCatching
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -137,16 +138,17 @@ class ThemeTest
     }
 
     @Test
-    fun wallyDecimalEntryTest() = runComposeUiTest {
-        val valueMock = mutableStateOf("0")
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
-
-        setContent {
-            WallyDecimalEntry(valueMock, modifier = Modifier.testTag("WallyDataEntryTextField"))
+    fun wallyDecimalEntryTest()
+    {
+        setupTestEnv()
+        runComposeUiTest {
+            val valueMock = mutableStateOf("0")
+            setContent {
+                WallyDecimalEntry(valueMock, modifier = Modifier.testTag("WallyDataEntryTextField"))
+            }
+            onNodeWithText(valueMock.value).assertIsDisplayed()
+            onNodeWithTag("WallyDataEntryTextField").assertIsDisplayed()
+            onNodeWithTag("WallyDataEntryTextField").performTextInput("0.1")
         }
-        onNodeWithText(valueMock.value).assertIsDisplayed()
-        onNodeWithTag("WallyDataEntryTextField").assertIsDisplayed()
-        onNodeWithTag("WallyDataEntryTextField").performTextInput("0.1")
     }
 }

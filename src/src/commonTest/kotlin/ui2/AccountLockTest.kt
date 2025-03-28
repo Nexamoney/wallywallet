@@ -15,6 +15,7 @@ import org.nexa.libnexakotlin.ChainSelector
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.text.AnnotatedString
 import org.nexa.libnexakotlin.GetLog
+import org.nexa.libnexakotlin.sourceLoc
 
 import kotlin.test.Test
 
@@ -23,16 +24,18 @@ private val LogIt = GetLog("BU.wally.test")
 @OptIn(ExperimentalTestApi::class)
 class AccountLockTest:WallyUiTestBase()
 {
-    init
-    {
-        setupTestEnv()
-    }
     @Test
     fun testLockAccount()
     {
-        for(a in wallyApp!!.accounts.values) wallyApp!!.deleteAccount(a)
+        // Clear out all test accounts
+        val acts = wallyApp!!.accounts.values.toList()
+        for(a in acts)
+        {
+            LogIt.info(sourceLoc() +": Deleting account ${a.name}")
+            wallyApp!!.deleteAccount(a)
+        }
         // Create a normal account
-        val actName = "nexaAccount"
+        val actName = "lockAct"
         val account = wallyApp!!.newAccount(actName, 0U, "", ChainSelector.NEXA)!!
 
         val wInsets = WindowInsets(0,0,0,0)

@@ -135,8 +135,9 @@ val currencyCodeShared: MutableStateFlow<String> = MutableStateFlow("NEX")
             val account = selectedAccount.collectAsState().value
             if (account != null)
                 account.currentReceiveObservable.value?.let { currentReceive ->
-                    AddressQrCode(currentReceive.address?.toString() ?: "")
-                    ToBeShared = { currentReceive.address?.toString() ?: "" }
+                    val tmp = currentReceive.address?.toString() ?: ""
+                    AddressQrCode(tmp)
+                    ToBeShared = { tmp }
                 }
             // update the share function based on whatever my current receive is
         }

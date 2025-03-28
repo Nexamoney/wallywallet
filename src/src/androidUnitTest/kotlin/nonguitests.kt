@@ -304,9 +304,13 @@ class NonGuiTests
         deleteWalletFile("a3", wallyAccountDbFileName("a3"), cs)
 
         REG_TEST_ONLY = true
-        wallyApp = CommonApp()
-        wallyApp!!.onCreate()
-        wallyApp!!.openAllAccounts()
+        if (wallyApp == null)
+        {
+            wallyApp = CommonApp(true)
+            wallyApp!!.onCreate()
+            wallyApp!!.openAllAccounts()
+        }
+
         val account = wallyApp!!.newAccount("testwalletrecovery", 0U, "", cs)!!
         account.start()
         rpc.generate(1)
@@ -405,7 +409,6 @@ class NonGuiTests
 
         waitFor(TIMEOUT, { account.wallet.balance == 0L}, { "send all did not work: $tx"})
         check(a1.wallet.balance == 0L)
-
         LogIt.info("recovery test completed")
     }
 

@@ -19,13 +19,20 @@ import platform.UIKit.UIViewController
 private val LogIt = GetLog("BU.wally.iosMain.MainViewController")
 val accounts = mutableMapOf<String, Bip44Wallet>()
 
+
 @Throws(Throwable::class, Exception::class, NullPointerException::class, RuntimeException::class)
 fun OnAppStartup()
 {
     initializeLibNexa()
     setLocale()
-    wallyApp = CommonApp()
+    // TODO discover if we are running in test mode and set this appropriately
+    // This is not that necessary for ios tests now, because the tests only run in
+    // a simulation environment, so we do not need to isolate real and test states as we should
+    // in a real wallet.
+    wallyApp = CommonApp(false)
     wallyApp!!.onCreate()
+    LogIt.info("Wally APP startup")
+
 }
 
 fun MainViewController(): UIViewController

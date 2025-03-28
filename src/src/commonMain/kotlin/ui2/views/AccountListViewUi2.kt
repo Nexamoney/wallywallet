@@ -63,7 +63,7 @@ data class AccountUIData(
 fun Account.uiData(): AccountUIData
 {
     val ret = AccountUIData(this)
-    var delta = unconfirmedBalance
+    val delta = unconfirmedBalance
     ret.lockable = lockable
     ret.locked = locked
     ret.currencyCode = currencyCode
@@ -130,7 +130,7 @@ fun Account.uiData(): AccountUIData
     {
         if (fiatPerCoin > BigDecimal.ZERO)
         {
-            var fiatDisplay = balance * fiatPerCoin
+            val fiatDisplay = balance * fiatPerCoin
             ret.approximately = i18n(S.approximatelyT) % mapOf("qty" to FiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode)
             ret.approximatelyColor = colorPrimaryDark
             ret.approximatelyWeight = FontWeight.Normal
@@ -369,7 +369,7 @@ fun AccountListItem(
                     onTextLayout = { textLayoutResult ->
                         if (textLayoutResult.didOverflowWidth)
                         {
-                            scale = scale * 0.90
+                            scale = scale * 0.95
                             balTextStyle = startingBalStyle.copy(fontSize = startingBalStyle.fontSize * scale)
                         }
                         else drawBal = true
@@ -379,8 +379,8 @@ fun AccountListItem(
                     onTextLayout = { textLayoutResult ->
                         if (textLayoutResult.didOverflowWidth)
                         {
-                            scale = scale * 0.90
-                            if (scale > 0.40) // If this field gets too small, just drop it
+                            scale = scale * 0.95
+                            if (scale > 0.40) // If this field gets too small, just drop the currency code
                             {
                                 ccTextStyle = ccTextStyle.copy(fontSize = startingCcStyle.fontSize * scale)
                             }

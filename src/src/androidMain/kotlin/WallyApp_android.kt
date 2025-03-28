@@ -29,6 +29,7 @@ import kotlin.coroutines.CoroutineContext
 import info.bitcoinunlimited.www.wally.ui2.views.loadingAnimation
 import org.nexa.threads.Mutex
 import org.nexa.threads.setThreadName
+import java.lang.Exception
 
 const val DEBUG_VM = true
 var brokenMode: Boolean = false
@@ -219,10 +220,31 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         }
     }
 
+    fun runningTest(): Boolean
+    {
+        return try
+        {
+            Class.forName("androidx.test.platform.app.InstrumentationRegistry")
+            true
+        }
+        catch (e: ClassNotFoundException)
+        {
+            false
+        }
+        catch (e: Exception)
+        {
+            false
+        }
+    }
 
-    var commonApp = CommonApp()
+
+    var commonApp = CommonApp(runningTest())
     init
     {
+        if (runningTest())
+        {
+            LogIt.warning(sourceLoc()+": NOTE, App launched in test mode!")
+        }
         wallyApp = commonApp
     }
 
@@ -275,7 +297,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     // Overriding this method is totally optional!
     override fun onCreate()
     {
-        LogIt.info("------------  WALLY APP CREATED  ---------------")
+        LogIt.info(sourceLoc() + ": ------------  WALLY APP CREATED  ---------------")
         val files: Array<String> = fileList()
         LogIt.info(sourceLoc() +" App Files ${files.joinToString(", ")}")
 
@@ -315,7 +337,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         // If I do not have any translations for their locales then default to english
         if (!localeSet) setLocale("en","US")
         wallyAndroidApp = this
-        wallyApp = commonApp
         commonApp.onCreate()
     }
 

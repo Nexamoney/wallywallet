@@ -75,7 +75,7 @@ class NewAccountScreenTestUi2:WallyUiTestBase()
             onNodeWithText(i18n(S.createNewAccount)).performClick()
             settle()
             // If account name gets cleared, new account creation succeeded
-            assertTrue { newAccountState.value.accountName == "" }
+            waitUntil { newAccountState.value.accountName == "" }
         }
     }
 

@@ -291,7 +291,7 @@ class AccessHandler(val app: CommonApp)
     }
 }
 
-open class CommonApp
+open class CommonApp(val runningTests: Boolean)
 {
     // Set to true if this is the first time this app has ever been run
     var firstRun = false
@@ -322,6 +322,13 @@ open class CommonApp
 
     init
     {
+        if (runningTests)
+        {
+            runningTheTests = true
+            TEST_PREF = "test_"
+            forTestingDoNotAutoCreateWallets = true
+            dbPrefix = "test_"
+        }
         // Set up the libnexakotlin translations
         appI18n = { libErr: Int -> i18n(i18nLbc[libErr] ?: libErr) }
         // electrumLogging = true
@@ -685,48 +692,6 @@ open class CommonApp
             logThreadException(e, "attempting to GET to $url")
             displayError(S.connectionException)
         }
-        /*
-        var loginReq = loginReqParam
-        var forwarded = 0
-        getloop@ while (forwarded < 3)
-        {
-            LogIt.info(sourceLoc() +": login reply: " + loginReq)
-            try
-            {
-                val req: HttpURLConnection = URL(loginReq).openConnection() as HttpURLConnection
-                req.setConnectTimeout(HTTP_REQ_TIMEOUT_MS)
-                val resp = req.inputStream.bufferedReader().readText()
-                LogIt.info("login response code:" + req.responseCode.toString() + " response: " + resp)
-                if ((req.responseCode >= 200) and (req.responseCode < 250))
-                {
-                    displayNotice(resp)
-                    return
-                }
-                else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding (often switching from http to https)
-                {
-                    loginReq = req.getHeaderField("Location")
-                    forwarded += 1
-                    continue@getloop
-                }
-                else
-                {
-                    displayNotice(resp)
-                    return
-                }
-            } catch (e: FileNotFoundException)
-            {
-                displayError(S.badLink, loginReq)
-            } catch (e: java.io.IOException)
-            {
-                displayError(S.connectionAborted, loginReq)
-            } catch (e: java.net.ConnectException)
-            {
-                displayError(S.connectionException)
-            }
-
-            break@getloop  // only way to actually loop is to hit a 301 or 302
-        }
-        */
     }
 
     fun handlePostLogin(loginReqParam: String, jsonBody: String)
@@ -746,81 +711,6 @@ open class CommonApp
             logThreadException(e, "attempting to POST to $url with contents\n$jsonBody")
             displayError(S.connectionException)
         }
-
-        /*
-        var loginReq = loginReqParam
-        var forwarded = 0
-
-        postloop@ while (forwarded < 3)
-        {
-            val url = Url(loginReq)
-            LogIt.info("sending registration reply: " + loginReq)
-            try
-            {
-                //val body = """[1,2,3]"""  // URLEncoder.encode("""[1,2,3]""","UTF-8")
-                val req: HttpURLConnection = URL(loginReq).openConnection() as HttpURLConnection
-                req.requestMethod = "POST"
-                req.setRequestProperty("Content-Type", "application/json")
-                req.setRequestProperty("Accept", "xxx") // should be: star slash star but that doesn't work in a comment
-                req.setRequestProperty("Content-Length", jsonBody.length.toString())
-                req.setConnectTimeout(HTTP_REQ_TIMEOUT_MS)
-                req.doOutput = true
-                req.useCaches = false
-                val os = DataOutputStream(req.outputStream)
-                //os.write(jsonBody.toByteArray())
-                os.writeBytes(jsonBody.toString())
-                os.flush()
-                os.close()
-                val resp = req.inputStream.bufferedReader().readText()
-                LogIt.info("reg response code:" + req.responseCode.toString() + " response: " + resp)
-                if ((req.responseCode >= 200) and (req.responseCode < 300))
-                {
-                    displayNotice(resp)
-                    return
-                }
-                else if ((req.responseCode == 301) or (req.responseCode == 302))  // Handle URL forwarding
-                {
-                    loginReq = req.getHeaderField("Location")
-                    forwarded += 1
-                    continue@postloop
-                }
-                else
-                {
-                    displayNotice(resp)
-                    return
-                }
-            }
-            catch (e: java.net.SocketTimeoutException)
-            {
-                LogIt.info("SOCKET TIMEOUT:  If development, check phone's network.  Ensure you can route from phone to target!  " + e.toString())
-                displayError(S.connectionException)
-                return
-            }
-            catch (e: java.io.IOException)
-            {
-                LogIt.info("registration IOException: " + e.toString())
-                displayError(S.connectionAborted)
-                return
-            }
-            catch (e: FileNotFoundException)
-            {
-                LogIt.info("registration FileNotFoundException: " + e.toString())
-                displayError(S.badLink)
-                return
-            }
-            catch (e: java.net.ConnectException)
-            {
-                displayError(S.connectionException)
-                return
-            }
-            catch (e: Throwable)
-            {
-                displayError(S.unknownError)
-                return
-            }
-            break@postloop  // Only way to actually loop is to get a http 301 or 302
-        }
-*/
     }
 
 
@@ -842,7 +732,7 @@ open class CommonApp
         preferenceDB = getSharedPreferences(TEST_PREF + i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
         notInUIscope = coMiscScope
 
-        LogIt.info(sourceLoc() + " Wally Wallet App Started")
+        LogIt.info(sourceLoc(10) + " Wally Wallet App Started")
 
         val availableRam = platformRam()
         LogIt.info("Available RAM: $availableRam")
@@ -857,18 +747,16 @@ open class CommonApp
         }
 
         // Set up all the preference globals
-        tlater {
-            devMode = preferenceDB.getBoolean(DEV_MODE_PREF, false)
-            allowAccessPriceData = preferenceDB.getBoolean(ACCESS_PRICE_DATA_PREF, true)
-            localCurrency = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"
-            showIdentityPref.value = preferenceDB.getBoolean(SHOW_IDENTITY_PREF, false)
-            showTricklePayPref.value = preferenceDB.getBoolean(SHOW_TRICKLEPAY_PREF, false)
-            showAssetsPref.value = preferenceDB.getBoolean(SHOW_ASSETS_PREF, false)
-            newUI.value = preferenceDB.getBoolean(EXPERIMENTAL_UX_MODE_PREF, true)
+        devMode = preferenceDB.getBoolean(DEV_MODE_PREF, false)
+        allowAccessPriceData = preferenceDB.getBoolean(ACCESS_PRICE_DATA_PREF, true)
+        localCurrency = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"
+        showIdentityPref.value = preferenceDB.getBoolean(SHOW_IDENTITY_PREF, false)
+        showTricklePayPref.value = preferenceDB.getBoolean(SHOW_TRICKLEPAY_PREF, false)
+        showAssetsPref.value = preferenceDB.getBoolean(SHOW_ASSETS_PREF, false)
+        newUI.value = preferenceDB.getBoolean(EXPERIMENTAL_UX_MODE_PREF, true)
 
-            openAccountsTriggerGui()
-            tpDomains.load()
-        }
+        openAccountsTriggerGui()
+        tpDomains.load()
 
         assetLoaderThread = AssetLoaderThread()
         periodicAnalysisThread = uxPeriodicAnalysis()
@@ -1168,13 +1056,13 @@ open class CommonApp
     /** Opens the key-value pair database (stored in the kvpDb global) if its not already opened
      * Returns true if it needed to be opened, otherwise false
      */
-    fun openKvpDbIfNeeded(): Boolean
+    private fun openKvpDbIfNeeded(): Boolean
     {
         return accountLock.lock {
             if (kvpDb == null)
             {
                 val name = dbPrefix + "wpw"
-                LogIt.info(sourceLoc() +" Opening KVP db ${name}")
+                LogIt.info(sourceLoc(10) +" Opening KVP db ${name}")
                 kvpDb = openKvpDB(name)
                 true
             }
@@ -1257,12 +1145,13 @@ open class CommonApp
         }
     }
 
-    fun openAccountsTriggerGui()
+    private fun openAccountsTriggerGui()
     {
         if (!forTestingDoNotAutoCreateWallets)  // If I'm running the unit tests, don't auto-create any wallets since the tests will do so
         {
             // Initialize the currencies supported by this wallet
             tlater {
+                if (forTestingDoNotAutoCreateWallets) return@tlater
                 openAllAccounts()
                 assignAccountsGuiSlots()
 

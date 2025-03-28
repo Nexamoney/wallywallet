@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.*
+import info.bitcoinunlimited.www.wally.ui2.views.AccountPill
 import info.bitcoinunlimited.www.wally.ui2.views.AccountUiDataViewModelFake
 import info.bitcoinunlimited.www.wally.ui2.views.AssetViewModelFake
 import info.bitcoinunlimited.www.wally.ui2.views.NativeSplash
@@ -19,6 +20,7 @@ import org.nexa.threads.millisleep
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+private val LogIt = GetLog("BU.wally.navRootTest")
 
 // Changing this value to several seconds (3000) makes the tests proceed at a human visible pace
 var testSlowdown = 0 // runCatching { System.getProperty("testSlowdown").toInt() }.getOrDefault(0)
@@ -33,17 +35,17 @@ var jvmResetWallyApp = false
 
 internal fun setupTestEnv()
 {
-    initializeLibNexa()
-    runningTheTests = true
-    TEST_PREF = "test_"
-    forTestingDoNotAutoCreateWallets = true
-    dbPrefix = "test_"
+    LogIt.info(sourceLoc() + ": Setting up TEST environment")
+    // On some platforms, wallyApp is set up by the platform-specific app instantiation.
+    // This happens before any test code is given the chance to run.
+    // In other platforms or contexts, the platform-specific app appears to not be instantiated (during tests).
     if (wallyApp == null)
     {
-        wallyApp = CommonApp()
+        initializeLibNexa()
+        wallyApp = CommonApp(true)
         wallyApp!!.onCreate()
-        wallyApp!!.openAllAccounts()
     }
+    wallyApp!!.openAllAccounts()
 }
 
 //val sched = TestCoroutineScheduler()
@@ -168,12 +170,12 @@ class NavigationRootUi2Test:WallyUiTestBase()
 
             val assetViewModel = AssetViewModelFake()
             val accountUiDataViewModel = AccountUiDataViewModelFake()
-
+            val apvm = AccountPill(wallyApp!!.focusedAccount)
             setContent {
                 CompositionLocalProvider(
                   LocalViewModelStoreOwner provides viewModelStoreOwner
                 ) {
-                    NavigationRootUi2(Modifier, WindowInsets(0,0,0,0), assetViewModel, accountUiDataViewModel)
+                    NavigationRootUi2(Modifier, WindowInsets(0,0,0,0), apvm, assetViewModel, accountUiDataViewModel)
                 }
             }
 

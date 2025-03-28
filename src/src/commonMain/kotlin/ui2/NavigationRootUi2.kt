@@ -524,14 +524,15 @@ fun uxPeriodicAnalysisUi2(): iThread
 
 fun observeReceiveDestination(account: Account)
 {
-    if (account.walletOnChange != -1)
-    {
-        account.access.lock {
+    account.access.lock {
+        if (account.walletOnChange == -1)
+        {
             account.walletOnChange = account.wallet.setOnWalletChange { wallet, _ ->
                 CoroutineScope(Dispatchers.IO).launch {
                     try
                     {
-                        account.currentReceive = wallet.getCurrentDestination()
+                        val tmp = wallet.getCurrentDestination()
+                        account.access.lock { account.currentReceive  = tmp }
                     }
                     catch (e: WalletException) // closed
                     {
@@ -560,11 +561,10 @@ fun setSelectedAccount(account: Account)
 {
     if (wallyApp!!.focusedAccount.value != account)
     {
-        wallyApp!!.preferenceDB.edit().putString(SELECTED_ACCOUNT_NAME_PREF, account.name).commit()
         wallyApp!!.focusedAccount.value = account
-        // account.currentReceive = null
         setReceiveDestination(account)
         observeReceiveDestination(account)
+        wallyApp!!.preferenceDB.edit().putString(SELECTED_ACCOUNT_NAME_PREF, account.name).commit()
     }
 }
 
@@ -574,11 +574,19 @@ val handler = CoroutineExceptionHandler {
 
 fun setReceiveDestination(account: Account)
 {
+    laterJob {
+        // Blocking operation, we don't offer a destination until we are sure its installed in connected nodes
+        val payDestination = account.wallet.getCurrentDestination()
+        account.currentReceive = payDestination
+    }
+
+    /*
     lateinit var payDestination: PayDestination
     // This line of code hangs because of getCurrentDestination() when an account with many addresses and functions is syncing.
     // Added a timeout to use a default unused address when getCurrentDestination() silently blocks while syncing.
     // TODO: Refactor libnexakotlin's getCurrentDestination() to suspend function using delay(50) instead of millisleep(50..) so withTimeout can interrupt it
     // TODO: https://gitlab.com/nexa/libnexakotlin/-/issues/24
+
     val job = CoroutineScope(Dispatchers.IO + handler).launch {
         payDestination = account.wallet.getCurrentDestination() // Blocking operation
         CoroutineScope(Dispatchers.Default + handler).launch {
@@ -619,6 +627,7 @@ fun setReceiveDestination(account: Account)
             }
         }
     }
+     */
 }
 
 fun noSelectedAccount()
@@ -867,6 +876,7 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
 fun NavigationRootUi2(
   rootModifier: Modifier,
   systemPadding: WindowInsets,
+  accountPillViewModel: AccountPillViewModel = viewModel { AccountPill(wallyApp!!.focusedAccount) },
   assetViewModel: AssetViewModel = viewModel { AssetViewModel() },
   accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() },
 )
@@ -1276,12 +1286,12 @@ fun NavigationRootUi2(
                             }
                             when (curScreen)
                             {
-                                ScreenId.None -> HomeScreenUi2(isShowingRecoveryWarning, assetViewModel, accountUiDataViewModel)
+                                ScreenId.None -> HomeScreenUi2(isShowingRecoveryWarning, accountPillViewModel, assetViewModel, accountUiDataViewModel)
                                 ScreenId.Splash -> run {} // splash screen is done at the top for max speed and to be outside of the theme
                                 ScreenId.MoreMenu -> run {}
                                 ScreenId.Home ->
                                 {
-                                    HomeScreenUi2(isShowingRecoveryWarning, assetViewModel, accountUiDataViewModel)
+                                    HomeScreenUi2(isShowingRecoveryWarning, accountPillViewModel, assetViewModel, accountUiDataViewModel)
                                 }
 
                                 ScreenId.Send -> withAccount { act -> withSendNavParams { SendScreen(act, it) } }
@@ -1322,7 +1332,7 @@ fun NavigationRootUi2(
                                     else nav.back()
                                 }
 
-                                ScreenId.Alerts -> HomeScreenUi2(isShowingRecoveryWarning, assetViewModel, accountUiDataViewModel)
+                                ScreenId.Alerts -> HomeScreenUi2(isShowingRecoveryWarning, accountPillViewModel, assetViewModel, accountUiDataViewModel)
                             }
                         }
                     }
