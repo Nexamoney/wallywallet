@@ -39,7 +39,7 @@ import org.nexa.threads.Thread
 import org.nexa.threads.iThread
 import org.nexa.threads.millisleep
 import kotlin.math.roundToLong
-
+private val LogIt = GetLog("BU.wally.AccountListView")
 
 data class AccountUIData(
   val account: Account, // Do not copy unchangeable fields from the account into this data structure, just use them from here
@@ -360,24 +360,15 @@ fun AccountListItem(
                   var drawBal by remember { mutableStateOf(false) }
                   var drawCC by remember { mutableStateOf(false) }
                   var scale by remember { mutableStateOf(1.0) }
-                  val mod = Modifier.padding(0.dp).drawWithContent { if (drawBal) drawContent() }.testTag("AccountCarouselBalance_${uidata.account.name}")
+                  val mod = Modifier.padding(0.dp).drawWithContent { if (drawBal and drawCC) drawContent() }.testTag("AccountCarouselBalance_${uidata.account.name}")
                   Text(text = uidata.balance, style = balTextStyle, color = uidata.balColor, modifier = mod, textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
                     onTextLayout = { textLayoutResult ->
                         if (textLayoutResult.didOverflowWidth)
                         {
-                            scale = scale * 0.95
-                            balTextStyle = startingBalStyle.copy(fontSize = startingBalStyle.fontSize * scale)
-                        }
-                        else drawBal = true
-                    })
-
-                  if (showingCurrencyCode.length > 0) Text(text = showingCurrencyCode ?: "", style = ccTextStyle, modifier = Modifier.padding(5.dp, 0.dp).fillMaxWidth().drawWithContent { if (drawCC) drawContent() }, textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
-                    onTextLayout = { textLayoutResult ->
-                        if (textLayoutResult.didOverflowWidth)
-                        {
-                            scale = scale * 0.95
+                            scale = scale * 0.97
                             if (scale > 0.40) // If this field gets too small, just drop the currency code
                             {
+                                balTextStyle = startingBalStyle.copy(fontSize = startingBalStyle.fontSize * scale)
                                 ccTextStyle = ccTextStyle.copy(fontSize = startingCcStyle.fontSize * scale)
                             }
                             else
@@ -385,6 +376,27 @@ fun AccountListItem(
                                 showingCurrencyCode = ""
                                 drawCC = true
                             }
+                            // LogIt.info("Scale is $scale (num)")
+                        }
+                        else drawBal = true
+                    })
+
+                  if (showingCurrencyCode.length > 0) Text(text = showingCurrencyCode ?: "", style = ccTextStyle, modifier = Modifier.padding(5.dp, 0.dp).fillMaxWidth().drawWithContent { if (drawBal and drawCC) drawContent() }, textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
+                    onTextLayout = { textLayoutResult ->
+                        if (textLayoutResult.didOverflowWidth)
+                        {
+                            scale = scale * 0.97
+                            if (scale > 0.50) // If this field gets too small, just drop the currency code
+                            {
+                                ccTextStyle = ccTextStyle.copy(fontSize = startingCcStyle.fontSize * scale)
+                                balTextStyle = startingBalStyle.copy(fontSize = startingBalStyle.fontSize * scale)
+                            }
+                            else
+                            {
+                                showingCurrencyCode = ""
+                                drawCC = true
+                            }
+                            // LogIt.info("Scale is $scale (currency code)")
                         }
                         else drawCC = true
                     }
