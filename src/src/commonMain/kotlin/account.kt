@@ -273,26 +273,31 @@ class Account(
           }
           onChange()
       }
-    var wCb: Int? = null
-    var blkCb: Int? = null
-    var netCb: Int? = null
+    @Volatile var wCb: Int? = null
+    @Volatile var blkCb: Int? = null
+    @Volatile var netCb: Int? = null
 
     @Suppress("UNUSED_PARAMETER")
     fun start()
     {
-        later {
+        laterJob {
             if (!started)
             {
                 LogIt.info(sourceLoc() + " " + name + ": Account startup: starting threads")
                 cnxnMgr.start()
                 chain.start()
                 started = true
-                // Set all the underlying change callbacks to trigger the account update
-                if (wCb==null) wCb = wallet.setOnWalletChange(cb1)
-                if (blkCb == null) blkCb = wallet.blockchain.onChange.add({ onChange() })
-                if (netCb == null) netCb = wallet.blockchain.net.changeCallback.add({ _, _ -> onChange() })
+                installChangeHandlers()
             }
         }
+    }
+
+    fun installChangeHandlers()
+    {
+        // Set all the underlying change callbacks to trigger the account update
+        if (wCb==null) wCb = wallet.setOnWalletChange(cb1)
+        if (blkCb == null) blkCb = wallet.blockchain.onChange.add({ onChange() })
+        if (netCb == null) netCb = wallet.blockchain.net.changeCallback.add({ _, _ -> onChange() })
     }
 
     /**

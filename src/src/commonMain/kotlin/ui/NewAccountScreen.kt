@@ -264,7 +264,7 @@ private val LogIt = GetLog("BU.wally.NewAccountScreen")
                 allActThread = Thread("actSearch") {
                     try
                     {
-                        searchAllActivity(words.joinToString(" "), selectedBlockChain.second, aborter.value)
+                        assert(false, "UI1 is being removed")
                     }
                     catch (e: Exception)
                     {

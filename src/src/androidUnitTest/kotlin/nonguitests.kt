@@ -370,10 +370,10 @@ class NonGuiTests
             tmp.second == nowBlock}, { "electrum server never synced"})
         val (ectip, _) = ec.getTip()
         val addressDerivationCoin = Bip44AddressDerivationByChain(cs)
-        val srchResults = searchDerivationPathActivity({ec }, cs, 100, true, {
+        val srchResults = SearchDerivationPathActivity(cs, {ec }, true) {}.search(100) {
             val secret = libnexa.deriveHd44ChildKey(account.wallet.secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
             Pay2PubKeyTemplateDestination(cs, UnsecuredSecret(secret), it.toLong())
-        }, {})
+        }
 
         check(ectip.height == nowBlock)
 

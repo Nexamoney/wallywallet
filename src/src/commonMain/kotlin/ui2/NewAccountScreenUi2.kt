@@ -29,13 +29,15 @@ import info.bitcoinunlimited.www.wally.ui2.theme.WallyHalfDivider
 import info.bitcoinunlimited.www.wally.ui2.theme.colorError
 import info.bitcoinunlimited.www.wally.ui2.theme.colorValid
 import info.bitcoinunlimited.www.wally.ui2.views.*
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
-
-import org.nexa.threads.Thread
-import org.nexa.threads.iThread
-import org.nexa.threads.millisleep
+import org.nexa.libnexakotlin.ContiguousSequenceTracker
+import org.nexa.libnexakotlin.AccountSearchResults
+import org.nexa.libnexakotlin.millinow
+import org.nexa.libnexakotlin.SearchDerivationPathActivity
+import org.nexa.threads.*
 
 const val MAX_NAME_LEN_UI2 = 16
 
@@ -405,8 +407,8 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
                     catch (e: Exception)
                     {
                         displayFastForwardInfo(i18n(S.NoNodes))
-                        LogIt.severe(sourceLoc() + "wallet search error: " + e.toString())
-                        LogIt.severe(e.stackTraceToString())
+                        //LogIt.severe(sourceLoc() + " wallet search error: " + e.toString())
+                        //LogIt.severe(e.stackTraceToString())
                         displayUnexpectedException(e)
                     }
                 }
@@ -482,7 +484,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
         {
             WallyError(newAcState.errorMessage)
         }
-        WallyDropDownUi2<ChainSelector>(selectedChain, blockchains, onChainSelected)
+        WallyDropDownUi2<ChainSelector>(selectedChain, blockchains, onChainSelected, modifier = Modifier.testTag("selectBlockchain"))
         AccountNameInputUi2(newAcState.accountName, newAcState.validAccountName, onNewAccountName)
         Spacer(Modifier.height(5.dp))
         RecoveryPhraseInputUi2(newAcState.recoveryPhrase, newAcState.validOrNoRecoveryPhrase, onNewRecoveryPhrase)
@@ -504,7 +506,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
                       "bal" to NexaFormat.format(fromFinestUnit(newAcState.discoveredAccountBalance, chainSelector = selectedChain.second)), "units" to (chainToDisplayCurrencyCode[selectedChain.second] ?:"")))
                 }
                 Row(Modifier.fillMaxWidth()) { CenteredText(i18n(S.discoveredWarning)) }
-                Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth())
+                Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth().testTag("CreateDiscoveredAccount"))
                 {
                     WallyRoundedTextButton(i18n(S.createDiscoveredAccount), onClick = onClickCreateDiscoveredAccount)
                 }
@@ -625,7 +627,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
               placeholder = { Text(i18n(S.LeaveEmptyNewWallet)) },
               minLines = 1,
               maxLines = 4,
-              modifier = Modifier.fillMaxWidth(),
+              modifier = Modifier.fillMaxWidth().testTag("RecoveryPhraseInput"),
               textStyle = TextStyle(fontSize = scale),
               keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
             )
@@ -700,6 +702,7 @@ fun searchFirstActivityUi2(getEc: () -> ElectrumClient, chainSelector: ChainSele
     return ret
 }
 
+var WALLET_RECOVERY_DERIVATION_PATH_FIRST_USE_DEPTH = 30
 fun peekFirstActivityUi2(secretWords: String, chainSelector: ChainSelector, aborter: Objectify<Boolean>)
 {
     val net = connectBlockchain(chainSelector).net
@@ -729,7 +732,7 @@ fun peekFirstActivityUi2(secretWords: String, chainSelector: ChainSelector, abor
               if (ec.open) return@searchFirstActivityUi2 ec
               ec = net.getElectrum()
               return@searchFirstActivityUi2(ec)
-          }, chainSelector, WALLET_RECOVERY_DERIVATION_PATH_SEARCH_DEPTH, {
+          }, chainSelector, WALLET_RECOVERY_DERIVATION_PATH_FIRST_USE_DEPTH, {
               libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
           }, { time, height ->
 
@@ -749,7 +752,7 @@ fun peekFirstActivityUi2(secretWords: String, chainSelector: ChainSelector, abor
 
         LogIt.info("Searching in ${AddressDerivationKey.ANY}")
         // Look for activity in the identity and common location
-        var earliestActivityId =
+        val earliestActivityId =
           searchFirstActivity({
               if (ec.open) return@searchFirstActivity ec
               ec = net.getElectrum()
@@ -790,10 +793,11 @@ fun peekFirstActivityUi2(secretWords: String, chainSelector: ChainSelector, abor
     }
     finally
     {
-        net?.returnElectrum(ec)
+        net.returnElectrum(ec)
     }
     LogIt.info(sourceLoc() +": Activity peek is complete")
 }
+
 
 fun searchAllActivityUi2(secretWords: String, chainSelector: ChainSelector, aborter: Objectify<Boolean>, ecCnxn: ElectrumClient? = null)
 {
@@ -807,9 +811,12 @@ fun searchAllActivityUi2(secretWords: String, chainSelector: ChainSelector, abor
             if (tmp != null && tmp.open) ec
             else
             {
-                LogIt.info(sourceLoc() + ": search activity, getting Electrum connection")
-                ec = net.getElectrum()
-                if (ec == null)
+                // LogIt.info(sourceLoc() + ": search activity, getting Electrum connection")
+                try
+                {
+                    ec = net.getElectrum()
+                }
+                catch (e: ElectrumNoNodesException)
                 {
                     displayFastForwardInfo(i18n(S.ElectrumNetworkUnavailable))
                     millisleep(200U)
@@ -820,41 +827,55 @@ fun searchAllActivityUi2(secretWords: String, chainSelector: ChainSelector, abor
         }
     }
 
+    val passphrase = "" // TODO: support a passphrase
+    val secret = generateBip39Seed(secretWords, passphrase)
+    var addrText = ""
+    var summaryText = ""
+    var fromText = ""
+    val runningBalance = atomic(0L)
+
+    fun tderivation(coin: Long, account: Long, change: Boolean, index: Int): PayDestination
+    {
+        if (aborter.obj) throw EarlyExitException()
+        val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, coin, account, change, index).first
+        val us = UnsecuredSecret(key)
+        val dest = Pay2PubKeyTemplateDestination(chainSelector, us, index.toLong())
+        addrText = "\n${i18n(S.Address)} ${index}"
+        fromText = if (ec != null) "\n${i18n(S.fromColon)} ${ec?.logName}" else "\n${i18n(S.NoNodes)}"
+        displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + fromText + addrText + summaryText)
+        return dest
+    }
+
+    fun pderivation(coin: Long, account: Long, change: Boolean, index: Int): PayDestination
+    {
+        if (aborter.obj) throw EarlyExitException()
+        val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, coin, account, change, index).first
+        val us = UnsecuredSecret(key)
+        val dest = Pay2PubKeyHashDestination(chainSelector, us, index.toLong())
+        addrText = "\n${i18n(S.Address)} ${index}"
+        fromText = if (ec != null) "\n${i18n(S.fromColon)} ${ec?.logName}" else "\n${i18n(S.NoNodes)}"
+        displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + fromText + addrText + summaryText)
+        return dest
+    }
 
     try
     {
         if (aborter.obj) return
-
         val (tip, tipHeight) = getEc().getTip()
-
-        val passphrase = "" // TODO: support a passphrase
-        val secret = generateBip39Seed(secretWords, passphrase)
-
         val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
-
         LogIt.info("Searching all activity in ${addressDerivationCoin}")
-        var addrText = ""
-        var summaryText = ""
-        var fromText = ""
-        var activity = try
-        {
-            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP, true, {
-                if (aborter.obj) throw EarlyExitException()
-                val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
-                val us = UnsecuredSecret(key)
-                val dest = Pay2PubKeyTemplateDestination(chainSelector, us, it.toLong())
-                addrText = "\n ${it} at ${dest.address.toString()}"
-                fromText = if (ec != null) "\n from ${ec?.logName}" else ""
-                displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + fromText + addrText + summaryText)
-                dest
-            },
-              {
-                  summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
-                    "bal" to NexaFormat.format(fromFinestUnit(it.balance, chainSelector = chainSelector)), "units" to (chainToDisplayCurrencyCode[chainSelector] ?:""))
 
-                  displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + addrText + summaryText)
-              }
-            )
+
+        val activity = try
+        {
+            val sdpa = SearchDerivationPathActivity(chainSelector,::getEc,true) {
+                summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
+                  "bal" to NexaFormat.format(fromFinestUnit(runningBalance.value + it.balance, chainSelector = chainSelector)), "units" to (chainToDisplayCurrencyCode[chainSelector] ?: ""))
+                displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + fromText + addrText + summaryText)
+            }
+            val r = sdpa.search(WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP) { tderivation(addressDerivationCoin, 0, false, it) }
+            sdpa.finalize()
+            r
         }
         catch (e: EarlyExitException)
         {
@@ -865,28 +886,23 @@ fun searchAllActivityUi2(secretWords: String, chainSelector: ChainSelector, abor
             displayFastForwardInfo("")
             return
         }
+        runningBalance += activity.balance
 
         // TODO need to explicitly push nonstandard addresses into the wallet, by explicitly returning them.
         // otherwise the transactions won't be noticed by the wallet when we jam them in.
         LogIt.info("Searching in p2pkh ${addressDerivationCoin}")
         // Look for activity in the identity and common location
-        var activity4 = try
+        val activity4 = try
         {
-            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_NONSTD_DERIVATION_PATH_MAX_GAP, true, {
-                if (aborter.obj) throw EarlyExitException()
-                val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
-                val us = UnsecuredSecret(key)
-                val dest = Pay2PubKeyHashDestination(chainSelector, us, it.toLong())
-                displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + "\n ${it} at ${dest.address.toString()}")
-                dest
-            },
-              {
-                  summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
-                    "bal" to NexaFormat.format(fromFinestUnit(it.balance, chainSelector = chainSelector)), "units" to (chainToDisplayCurrencyCode[chainSelector] ?:""))
+            val sdpa = SearchDerivationPathActivity(chainSelector, ::getEc,true) {
+                summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
+                    "bal" to NexaFormat.format(fromFinestUnit(runningBalance.value + it.balance, chainSelector = chainSelector)), "units" to (chainToDisplayCurrencyCode[chainSelector] ?:""))
 
-                  displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + addrText + summaryText)
-              }
-            )
+                  displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + fromText + addrText + summaryText)
+            }
+            val r = sdpa.search(WALLET_FULL_RECOVERY_NONSTD_DERIVATION_PATH_MAX_GAP) { pderivation(addressDerivationCoin, 0, false, it) }
+            sdpa.finalize()
+            r
         }
         catch (e: EarlyExitException)
         {
@@ -897,57 +913,38 @@ fun searchAllActivityUi2(secretWords: String, chainSelector: ChainSelector, abor
             displayFastForwardInfo("")
             return
         }
+        runningBalance += activity4.balance
 
         // TODO need to explicitly push nonstandard addresses into the wallet, by explicitly returning them.
         // otherwise the transactions won't be noticed by the wallet when we jam them in.
         LogIt.info("Searching in ${AddressDerivationKey.ANY}")
         // Look for activity in the identity and common location
-        var activity2 = try
+        val activity2 = try
         {
-            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_NONSTD_DERIVATION_PATH_MAX_GAP, true, {
-                if (aborter.obj) throw EarlyExitException()
-                val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, false, it).first
-                val us = UnsecuredSecret(key)
-                val dest = Pay2PubKeyTemplateDestination(chainSelector, us, it.toLong())
-                displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + "\n ${it} at ${dest.address.toString()}")
-                dest
-            },
-              {
-                  summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
-                    "bal" to NexaFormat.format(fromFinestUnit(it.balance, chainSelector = chainSelector)), "units" to (chainToDisplayCurrencyCode[chainSelector] ?:""))
-
-                  displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + addrText + summaryText)
-              }
-            )
-        }
-        catch (e: EarlyExitException)
-        {
-            return
-        }
-        if (aborter.obj)
-        {
-            displayFastForwardInfo("")
-            return
-        }
-        var activity3 = try
-        {
-            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_CHANGE_DERIVATION_PATH_MAX_GAP, true, {
-                if (aborter.obj) throw EarlyExitException()
-                val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, true, it).first
-                val us = UnsecuredSecret(key)
-                val dest = Pay2PubKeyTemplateDestination(chainSelector, us, it.toLong())
-                addrText = "\n ${it} at ${dest.address}"
-                fromText = if (ec != null) "\n from ${ec?.logName}" else ""
+            SearchDerivationPathActivity(chainSelector, ::getEc, true) {
+                summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
+                  "bal" to NexaFormat.format(fromFinestUnit(runningBalance.value + it.balance, chainSelector = chainSelector)), "units" to (chainToDisplayCurrencyCode[chainSelector] ?:""))
                 displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + fromText + addrText + summaryText)
-                dest
-            },
-              {
-                  summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
-                    "bal" to NexaFormat.format(fromFinestUnit(it.balance, chainSelector = chainSelector)), "units" to (chainToDisplayCurrencyCode[chainSelector] ?:""))
+            }.search(WALLET_FULL_RECOVERY_NONSTD_DERIVATION_PATH_MAX_GAP) { tderivation(AddressDerivationKey.ANY, 0, false, it) }
+        }
+        catch (e: EarlyExitException)
+        {
+            return
+        }
+        if (aborter.obj)
+        {
+            displayFastForwardInfo("")
+            return
+        }
+        runningBalance += activity2.balance
 
-                  displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + addrText + summaryText)
-              }
-            )
+        val activity3 = try
+        {
+            SearchDerivationPathActivity(chainSelector, ::getEc, true) {
+                summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
+                  "bal" to NexaFormat.format(fromFinestUnit(runningBalance.value + it.balance, chainSelector = chainSelector)), "units" to (chainToDisplayCurrencyCode[chainSelector] ?:""))
+                displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + fromText + addrText + summaryText)
+            }.search(WALLET_FULL_RECOVERY_CHANGE_DERIVATION_PATH_MAX_GAP) { tderivation(addressDerivationCoin, 0, true, it) }
         }
         catch (e: EarlyExitException)
         {
@@ -959,17 +956,20 @@ fun searchAllActivityUi2(secretWords: String, chainSelector: ChainSelector, abor
             return
         }
 
-        //val act = activity.txh + activity2.txh + activity3.txh
-        val act = mutableMapOf<Hash256, TransactionHistory>()
-        activity.txh.forEach { act[it.value.tx.idem] = it.value }
-        activity2.txh.forEach { act[it.value.tx.idem] = it.value }
-        activity3.txh.forEach { act[it.value.tx.idem] = it.value}
-        activity4.txh.forEach { act[it.value.tx.idem] = it.value}
+        val act = mutableListOf<TransactionHistory>()
+        act.addAll(activity.txh.values)
+        activity.txh.clear()
+        act.addAll(activity2.txh.values)
+        activity2.txh.clear()
+        act.addAll(activity3.txh.values)
+        activity3.txh.clear()
+        act.addAll(activity4.txh.values)
+        activity4.txh.clear()
 
         val addrs = activity.addresses + activity2.addresses + activity3.addresses + activity4.addresses
         val addrCount = activity.addrCount + activity2.addrCount + activity3.addrCount + activity4.addrCount
         val bal = activity.balance + activity2.balance + activity3.balance + activity4.balance
-        newAccountState.value = newAccountState.value.copy(discoveredAccountHistory = act.values.toList(), discoveredAddresses = addrs, discoveredAddressCount = addrCount, discoveredAccountBalance = bal, discoveredAddressIndex = activity.lastAddressIndex, discoveredTip = tip)
+        newAccountState.value = newAccountState.value.copy(discoveredAccountHistory = act, discoveredAddresses = addrs, discoveredAddressCount = addrCount, discoveredAccountBalance = bal, discoveredAddressIndex = activity.lastAddressIndex, discoveredTip = tip)
     }
     finally
     {
@@ -1134,7 +1134,7 @@ fun peekFirstActivity(secretWords: String, chainSelector: ChainSelector, aborter
 
         LogIt.info("Searching in ${AddressDerivationKey.ANY}")
         // Look for activity in the identity and common location
-        var earliestActivityId =
+        val earliestActivityId =
           searchFirstActivity({
               if (ec.open) return@searchFirstActivity ec
               ec = net.getElectrum()
@@ -1220,187 +1220,3 @@ fun peekFirstActivity(secretWords: String, chainSelector: ChainSelector, aborter
     LogIt.info(sourceLoc() +": Activity peek is complete")
 }
 
-class EarlyExitException:Exception()
-
-fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter: Objectify<Boolean>, ecCnxn: ElectrumClient? = null)
-{
-    val net = connectBlockchain(chainSelector).net
-    var ec: ElectrumClient? = null
-
-    fun getEc():ElectrumClient
-    {
-        return retry(10) {
-            val tmp = ec
-            if (tmp != null && tmp.open) ec
-            else
-            {
-                LogIt.info(sourceLoc() + ": search activity, getting Electrum connection")
-                ec = net.getElectrum()
-                if (ec == null)
-                {
-                    displayFastForwardInfo(i18n(S.ElectrumNetworkUnavailable))
-                    millisleep(200U)
-                }
-                LogIt.info(sourceLoc() + ": search activity, getting Electrum connection is $ec")
-                ec
-            }
-        }
-    }
-
-
-    try
-    {
-        if (aborter.obj) return
-
-        val (tip, tipHeight) = getEc().getTip()
-
-        val passphrase = "" // TODO: support a passphrase
-        val secret = generateBip39Seed(secretWords, passphrase)
-
-        val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
-
-        LogIt.info("Searching all activity in ${addressDerivationCoin}")
-        var addrText = ""
-        var summaryText = ""
-        var fromText = ""
-        var activity = try
-        {
-            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP, true, {
-                if (aborter.obj) throw EarlyExitException()
-                val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
-                val us = UnsecuredSecret(key)
-                val dest = Pay2PubKeyTemplateDestination(chainSelector, us, it.toLong())
-                addrText = "\n ${it} at ${dest.address.toString()}"
-                fromText = if (ec != null) "\n from ${ec?.logName}" else ""
-                displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + fromText + addrText + summaryText)
-                dest
-            },
-              {
-                  summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
-                    "bal" to NexaFormat.format(fromFinestUnit(it.balance, chainSelector = chainSelector)), "units" to (chainToDisplayCurrencyCode[chainSelector] ?:""))
-
-                  displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + addrText + summaryText)
-              }
-            )
-        }
-        catch (e: EarlyExitException)
-        {
-            return
-        }
-        if (aborter.obj)
-        {
-            displayFastForwardInfo("")
-            return
-        }
-
-        // TODO need to explicitly push nonstandard addresses into the wallet, by explicitly returning them.
-        // otherwise the transactions won't be noticed by the wallet when we jam them in.
-        LogIt.info("Searching in p2pkh ${addressDerivationCoin}")
-        // Look for activity in the identity and common location
-        var activity4 = try
-        {
-            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_NONSTD_DERIVATION_PATH_MAX_GAP, true, {
-                if (aborter.obj) throw EarlyExitException()
-                val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
-                val us = UnsecuredSecret(key)
-                val dest = Pay2PubKeyHashDestination(chainSelector, us, it.toLong())
-                displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + "\n ${it} at ${dest.address.toString()}")
-                dest
-            },
-              {
-                  summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
-                    "bal" to NexaFormat.format(fromFinestUnit(it.balance, chainSelector = chainSelector)), "units" to (chainToDisplayCurrencyCode[chainSelector] ?:""))
-
-                  displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + addrText + summaryText)
-              }
-            )
-        }
-        catch (e: EarlyExitException)
-        {
-            return
-        }
-        if (aborter.obj)
-        {
-            displayFastForwardInfo("")
-            return
-        }
-
-        // TODO need to explicitly push nonstandard addresses into the wallet, by explicitly returning them.
-        // otherwise the transactions won't be noticed by the wallet when we jam them in.
-        LogIt.info("Searching in ${AddressDerivationKey.ANY}")
-        // Look for activity in the identity and common location
-        var activity2 = try
-        {
-            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_NONSTD_DERIVATION_PATH_MAX_GAP, true, {
-                if (aborter.obj) throw EarlyExitException()
-                val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, AddressDerivationKey.ANY, 0, false, it).first
-                val us = UnsecuredSecret(key)
-                val dest = Pay2PubKeyTemplateDestination(chainSelector, us, it.toLong())
-                displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + "\n ${it} at ${dest.address.toString()}")
-                dest
-            },
-              {
-                  summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
-                    "bal" to NexaFormat.format(fromFinestUnit(it.balance, chainSelector = chainSelector)), "units" to (chainToDisplayCurrencyCode[chainSelector] ?:""))
-
-                  displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + addrText + summaryText)
-              }
-            )
-        }
-        catch (e: EarlyExitException)
-        {
-            return
-        }
-        if (aborter.obj)
-        {
-            displayFastForwardInfo("")
-            return
-        }
-        var activity3 = try
-        {
-            searchDerivationPathActivity(::getEc, chainSelector, WALLET_FULL_RECOVERY_CHANGE_DERIVATION_PATH_MAX_GAP, true, {
-                if (aborter.obj) throw EarlyExitException()
-                val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, true, it).first
-                val us = UnsecuredSecret(key)
-                val dest = Pay2PubKeyTemplateDestination(chainSelector, us, it.toLong())
-                addrText = "\n ${it} at ${dest.address}"
-                fromText = if (ec != null) "\n from ${ec?.logName}" else ""
-                displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + fromText + addrText + summaryText)
-                dest
-            },
-              {
-                  summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
-                    "bal" to NexaFormat.format(fromFinestUnit(it.balance, chainSelector = chainSelector)), "units" to (chainToDisplayCurrencyCode[chainSelector] ?:""))
-
-                  displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + addrText + summaryText)
-              }
-            )
-        }
-        catch (e: EarlyExitException)
-        {
-            return
-        }
-        if (aborter.obj)
-        {
-            displayFastForwardInfo("")
-            return
-        }
-
-        //val act = activity.txh + activity2.txh + activity3.txh
-        val act = mutableMapOf<Hash256, TransactionHistory>()
-        activity.txh.forEach { act[it.value.tx.idem] = it.value }
-        activity2.txh.forEach { act[it.value.tx.idem] = it.value }
-        activity3.txh.forEach { act[it.value.tx.idem] = it.value }
-        activity4.txh.forEach { act[it.value.tx.idem] = it.value}
-
-        val addrs = activity.addresses + activity2.addresses + activity3.addresses + activity4.addresses
-        val addrCount = activity.addrCount + activity2.addrCount + activity3.addrCount + activity4.addrCount
-        val bal = activity.balance + activity2.balance + activity3.balance + activity4.balance
-        newAccountState.value = newAccountState.value.copy(discoveredAccountHistory = act.values.toList(), discoveredAddresses = addrs, discoveredAddressCount = addrCount, discoveredAccountBalance = bal, discoveredAddressIndex = activity.lastAddressIndex, discoveredTip = tip)
-    }
-    finally
-    {
-        ec?.let { net.returnElectrum(it) }
-    }
-    LogIt.info("Account search is complete")
-}

@@ -21,10 +21,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.*
+import org.nexa.libnexakotlin.SearchDerivationPathActivity
 import info.bitcoinunlimited.www.wally.ui2.theme.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -180,8 +180,8 @@ open class AccountUiDataViewModel: ViewModel()
 {
     val accountUIData: MutableStateFlow<Map<String, AccountUIData>> = MutableStateFlow(mapOf())
 
-
-    open fun setup() {
+    open fun setup()
+    {
         viewModelScope.launch {
             for(c in accountChangedNotification)
             {
@@ -307,25 +307,21 @@ class AccountUiDataViewModelFake: AccountUiDataViewModel()
         }
 
         Spacer(modifier = Modifier.height(4.dp))
-        Button(
-            modifier = Modifier.fillMaxWidth(0.8f)
-                .align(Alignment.CenterHorizontally),
-            colors = ButtonDefaults.buttonColors().copy(
-                contentColor = Color.Black,
-                containerColor = Color.White,
-            ),
-            onClick = {
-                clearAlerts()
-                nav.go(ScreenId.NewAccount)
+        Box(Modifier.fillMaxWidth(0.8f).wrapContentHeight(), contentAlignment = Alignment.Center) {
+            Button(modifier = Modifier.wrapContentSize().testTag("AddAccount"),
+              colors = ButtonDefaults.buttonColors().copy(contentColor = Color.Black, containerColor = Color.White),
+              onClick = {
+                  clearAlerts()
+                  nav.go(ScreenId.NewAccount)
+              }) {
+                Text(i18n(S.addAccountPlus))
             }
-        ) {
-            Text(i18n(S.addAccountPlus))
         }
 
         // Since the thumb buttons cover the bottom most row, this blank bottom row allows the user to scroll the account list upwards enough to
         // uncover the last account.  Its not necessary if there are just a few accounts though.
         if (accounts.size >= 2)
-            Spacer(Modifier.height(144.dp))
+            Spacer(Modifier.height(144.dp).testTag("AccountListBottomSpace"))
     }
 }
 
@@ -558,7 +554,9 @@ fun derivationPathSearch(progress: DerivationPathSearchProgress, wallet: Bip44Wa
         }
         progress.results = try
         {
-            searchDerivationPathActivity(::getEc, wallet.chainSelector, idxMaxGap, false, {
+            SearchDerivationPathActivity(wallet.chainSelector, ::getEc, false) {
+                event?.invoke()
+            }.search(idxMaxGap) {
                 if (progress.aborter.obj) throw EarlyExitException()
                 val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, coin, account, change, it).first
                 val us = UnsecuredSecret(key)
@@ -567,14 +565,7 @@ fun derivationPathSearch(progress: DerivationPathSearchProgress, wallet: Bip44Wa
                 progress.progressInt = it
                 event?.invoke()
                 dest
-            },
-              {
-                  //summaryText = "\n" + i18n(S.discoveredAccountDetails) % mapOf("tx" to it.txh.size.toString(), "addr" to it.addrCount.toString(),
-                  //  "bal" to NexaFormat.format(fromFinestUnit(it.balance, chainSelector = chainSelector)), "units" to (chainToDisplayCurrencyCode[chainSelector] ?:""))
-                  // displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + addrText + summaryText)
-                  event?.invoke()
               }
-            )
         }
         catch (e: EarlyExitException)
         {

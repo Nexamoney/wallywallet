@@ -289,11 +289,15 @@ fun SettingsScreenUi2(preferenceDB: SharedPreferences = wallyApp!!.preferenceDB,
                             Button(onClick = { onCloseP2pConnections() }) {
                                 Text("Close P2P")
                             }
-                            /*  uncomment if you need this for dev
-                            Button(onClick = { onWipeDatabase() }) {
-                                Text("WIPE DATABASE")
+                        }
+                        Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
+                            /* This is dangerous enough, devs should uncomment if they want to use
+                            Button(onClick = { onWipeAccounts() }) {
+                                Text("del Accounts")
+                            }*/
+                            Button(onClick = { onWipeHeaders() }) {
+                                Text("del Headers")
                             }
-                             */
                         }
                         Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
                             WallyBoringButton({ openUrl(Version.GITLAB_URL) }, modifier = Modifier
@@ -419,12 +423,21 @@ fun BlockchainSourceUi2(chain: ChainSelector, preferenceDB: SharedPreferences, s
     }
 }
 
-fun onWipeDatabase()
+fun onWipeAccounts()
 {
-    later {
+    laterJob {
         wallyApp?.accounts?.forEach {
             it.value.delete()
         }
+    }
+}
+fun onWipeHeaders()
+{
+    laterJob {
+        blockchains.forEach {
+            it.value.db.clear()
+        }
+
     }
 }
 

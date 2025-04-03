@@ -18,6 +18,7 @@
     <application
         android:requestLegacyExternalStorage="true"
         android:name="info.bitcoinunlimited.www.wally.WallyApp"
+        android:largeHeap="true"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/icon2024a"

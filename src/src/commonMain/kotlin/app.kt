@@ -457,17 +457,17 @@ open class CommonApp(val runningTests: Boolean)
             // return the first visible Nexa wallet
             for (i in accounts.values)
             {
-                LogIt.info("looking for primary at wallet " + i.name + "blockchain: " + i.chain.name)
+                // LogIt.info("looking for primary at wallet " + i.name + "blockchain: " + i.chain.name)
                 if ((i.wallet.chainSelector == ChainSelector.NEXA) && i.visible) return@lock i
             }
             for (i in accounts.values)
             {
-                LogIt.info("falling back to testnet")
+                // LogIt.info("falling back to testnet")
                 if ((i.wallet.chainSelector == ChainSelector.NEXATESTNET) && i.visible) return@lock i
             }
             for (i in accounts.values)
             {
-                LogIt.info("falling back to regtest")
+                // LogIt.info("falling back to regtest")
                 if ((i.wallet.chainSelector == ChainSelector.NEXAREGTEST) && i.visible) return@lock i
             }
             throw PrimaryWalletInvalidException()
@@ -977,24 +977,28 @@ open class CommonApp(val runningTests: Boolean)
             }
         ac.encodedPin = epin
         ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
-
         // normally this can be done asynchronously to account creation, but we need to do it before fastforwarding
         // because if it accidentally runs after the fast forward, it will set the sync point back to these start points
         ac.asyncInit(earliestHeight, earliestDate)
+        ac.installChangeHandlers()  // Do this before starting the account so that the GUI sees the fastforward happening
+        assignAccountsGuiSlots()
+        triggerAccountsChanged(ac)
+
         // We need to pregenerate all the destinations used in the provided transactions, or we won't recognise these transactions as our own
         ac.wallet.prepareDestinations(histAddressCount, histAddressCount)
         (ac.wallet as CommonWallet).injectReceivingAddresses(dests.toList())
-        ac.wallet.fastforward(histEnd.height, histEnd.time, histEnd.hash, txhist)
+        ac.wallet.save(force=true)  // force the save
+        accountLock.lock {
+            // Write the list of existing accounts, so we know what to load
+            saveActiveAccountList()
+        }
         ac.start()
+        ac.wallet.fastforward(histEnd.height, histEnd.time, histEnd.hash, txhist)
         ac.constructAssetMap()
         ac.onChange()
         ac.saveAccountPin(epin)
         ac.wallet.save(force=true)  // force the save
         ac.wallet.saveBip44Wallet() // because we jammed in a bunch of tx
-        accountLock.lock {
-            // Write the list of existing accounts, so we know what to load
-            saveActiveAccountList()
-        }
         return ac
     }
 

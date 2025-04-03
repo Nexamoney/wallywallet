@@ -12,14 +12,14 @@ import java.time.format.DateTimeFormatter
 
 // Wally Wallet version
 // On version bump: Run ./gradlew generateVersionFile and commit the updates iosApp/iosApp/info.plist file
-val versionNumber = "3.7.05"
+val versionNumber = "3.7.06"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 val kotlinVersion = "2.1.20"
 
 // Dependency versions
 val mpThreadsVersion = "0.4.0"
 val nexaRpcVersion = "1.3.0"
-val libNexaKotlinVersion = "0.4.19"
+val libNexaKotlinVersion = "0.4.20"
 val serializationVersion = "1.8.0"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.10.1"     // https://github.com/Kotlin/kotlinx.coroutines
 val bigNumVersion = "0.3.10"         // https://github.com/ionspin/kotlin-multiplatform-bignum
@@ -159,6 +159,7 @@ kotlin {
                     testImplementation("androidx.compose.ui:ui-test-junit4-android:1.7.8")
                     androidTestImplementation("androidx.compose.ui:ui-test-junit4-android:1.7.8")
                     debugImplementation("androidx.compose.ui:ui-test-manifest:1.7.8")
+                    // debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
                 }
             }
         }

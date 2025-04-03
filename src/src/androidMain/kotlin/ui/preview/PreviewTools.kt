@@ -220,6 +220,16 @@ class RamTxoDatabase: TxoDatabase
         return data[outpoint.toByteArray()]
     }
 
+    override fun readMany(outpoints: Collection<iTxOutpoint>): Map<iTxOutpoint, Spendable>
+    {
+        val ret = mutableMapOf<iTxOutpoint, Spendable>()
+        for (outpoint in outpoints)
+        {
+            data[outpoint.toByteArray()]?.let { ret[outpoint] = it }
+        }
+        return ret
+    }
+
     override fun readAll(): MutableMap<iTxOutpoint, Spendable>
     {
         val ret = mutableMapOf<iTxOutpoint, Spendable>()

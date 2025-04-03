@@ -32,6 +32,7 @@ fun <T> WallyDropDownUi2(
   selected: Pair<String, T>,
   options: Map<String, T>,
   onSelect: (Pair<String, T>) -> Unit,
+  modifier: Modifier = Modifier,
   usesMouse: Boolean = platform().usesMouse
 )
 {
@@ -42,7 +43,7 @@ fun <T> WallyDropDownUi2(
     {
         Dialog(onDismissRequest = { expanded = false }) {
             LazyColumn (
-              modifier = Modifier.background(color = Color.White, shape = RoundedCornerShape(32.dp)).border(
+              modifier = modifier.background(color = Color.White, shape = RoundedCornerShape(32.dp)).border(
                   WallyModalOutline, RoundedCornerShape(32.dp)).padding(16.dp)
             ) {
                 itemsIndexed(options.keys.toList()) {_, key ->

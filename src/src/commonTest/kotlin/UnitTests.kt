@@ -1,15 +1,58 @@
 @file:OptIn(ExperimentalUnsignedTypes::class)
 
-import info.bitcoinunlimited.www.wally.EfficientFile
-import info.bitcoinunlimited.www.wally.nftCardFront
-import info.bitcoinunlimited.www.wally.nftData
-import info.bitcoinunlimited.www.wally.zipForeach
+import info.bitcoinunlimited.www.wally.*
 import okio.*
 import org.nexa.libnexakotlin.*
+import kotlin.math.log
 import kotlin.test.*
 
 class CommonTest
 {
+    @Test fun testContiguousSequence()
+    {
+        val cseq = ContiguousSequenceTracker()
+        run()
+        {
+            val testvec = mutableListOf(5, 3, 6, 9, 1, 2)
+            cseq.insert(testvec)
+            check(cseq.maxSeq == 3)  // 1,2,3
+            cseq.clear()
+        }
+        run()  // Test sequence extend and join
+        {
+            val testvec = mutableListOf(1,2,3,4,5,7,8,9,10)
+            cseq.insert(testvec)
+            check(cseq.maxSeq == 5)
+            cseq.insert(6)
+            check(cseq.maxSeq == 10)
+            cseq.clear()
+        }
+        run()  // big probabilistic test
+        {
+            val nums = (1..10_000).shuffled()
+            for((idx, i) in nums.withIndex())
+            {
+                cseq.insert(i)
+                //check(cseq.maxSeq == 10)
+                //val logNdM = log(10_000.toDouble() / (idx+1).toDouble(), 10.0)
+                //val approx = log(idx.toDouble(),10.0) / logNdM
+                // println("$idx: max len: ${cseq.maxSeq} at: ${cseq.maxSeqIsAt} tracker size: ${cseq.size()}")
+                // We can verify that that sequence exists
+                val start = cseq.maxSeqIsAt
+                if (start != null)
+                {
+                    val sub = nums.subList(0, idx + 1)
+                    for (j in 0 until cseq.maxSeq)
+                    {
+                        check((j + start) in sub)
+                    }
+                }
+            }
+            cseq.clear()
+        }
+
+    }
+
     @Test
     fun testManyNfts()
     {
