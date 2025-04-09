@@ -77,6 +77,8 @@ abstract class SendScreenViewModel(val account:MutableStateFlow<Account?>): View
 
     val assetsToSend: MutableStateFlow<List<AssetPerAccount>> = MutableStateFlow(listOf())
     val uiState = MutableStateFlow(SendScreenUi())
+    // TODO: Figure out how to set this to false for various platforms...
+    val hasP2pConnection: MutableStateFlow<Boolean> = MutableStateFlow(true)
 
     var balanceViewModel: BalanceViewModel = BalanceViewModelImpl(account)
     var syncViewModel: SyncViewModel = SyncViewModelImpl()
@@ -111,6 +113,13 @@ abstract class SendScreenViewModel(val account:MutableStateFlow<Account?>): View
     fun setSendQty(sendQty: BigDecimal)
     {
         uiState.value = uiState.value.copy(amount = sendQty.toStringExpanded())
+    }
+
+    fun checkForBlockchainConnection()
+    {
+        account.value?.wallet?.blockchain?.net?.let { connectionManager ->
+            hasP2pConnection.value = connectionManager.p2pCnxns.isNotEmpty()
+        }
     }
 
     abstract fun multiplySendQty(multiplier: Int)
@@ -611,6 +620,7 @@ fun SendScreenContent(
     val focusRequester = remember { FocusRequester() }
     val uiState = viewModel.uiState.collectAsState()
     val assetsToSendState = viewModel.assetsToSend.collectAsState()
+    val hasInternet = viewModel.hasP2pConnection.collectAsState().value
     val sendingTheseAssets = assetsToSendState.value
     val toAddress = uiState.value.toAddress
     val note = uiState.value.note
@@ -631,7 +641,10 @@ fun SendScreenContent(
           .clickable (
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
-            ) { keyboardController?.hide() }
+            ) {
+              keyboardController?.hide()
+              viewModel.checkForBlockchainConnection()
+          }
         ) {
             Spacer(Modifier.height(16.dp))
             AccountPill(viewModel.account).draw(buttonsEnabled = false)
@@ -642,7 +655,10 @@ fun SendScreenContent(
                 .clickable (
                   interactionSource = remember { MutableInteractionSource() },
                   indication = null
-                ) { keyboardController?.hide() }
+                ) {
+                    keyboardController?.hide()
+                    viewModel.checkForBlockchainConnection()
+                }
                 .testTag("SendScreenContentColumn")
             ) {
                 if (isConfirming)
@@ -686,6 +702,9 @@ fun SendScreenContent(
                     ) {
                         viewModel.setSendQty(it)
                     }
+                    Spacer(Modifier.height(16.dp))
+                    if (!hasInternet)
+                        ConnectionWarning()
                 }
                 if (sendingTheseAssets.isNotEmpty())
                 {
@@ -854,7 +873,9 @@ fun SendScreen(account: Account, navParams: SendScreenNavParams, viewModel: Send
        Update UI when sending with a new account or the account has changed.
      */
     LaunchedEffect(account) {
+        viewModel.hasP2pConnection
         viewModel.setAccount(account)
+        viewModel.checkForBlockchainConnection()
     }
 
     // Update UI when sending to a new address

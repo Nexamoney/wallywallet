@@ -762,4 +762,6 @@ Thank you and enjoy your new wallet!</string>
     <string name="syncing">Syncing...</string>
     <string name="enterAmount">Enter Amount</string>
     <string name="fee">Fee</string>
+
+    <string name="connectionWarning">Warning: No blockchain/network connection is available. If you send now, the recipient will not immediately see this transfer. The send will be issued once connectivity is restored.</string>
 </resources>
