@@ -806,8 +806,11 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                 val rp = replyProtocol
                 val hp = hostAndPort
                 val cp = cookieParam
+                val txHex = pTx.toHex()
+                //LogIt.info("Sending special tx response: ${pTx.toHex()}")
+                //pTx.debugDump()
                 laterJob {
-                    val req = Url(rp + "://" + hp + "/tx?tx=${pTx.toHex()}&${cp}")
+                    val req = Url(rp + "://" + hp + "/tx?tx=$txHex&$cp")
                     LogIt.info("Sending special tx response: ${req}")
                     val data = try
                     {
@@ -827,10 +830,18 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                     }
                     LogIt.info(sourceLoc() + " TP response to the response: " + data)
                     // if the other side did not like the transaction it will return invalid
-                    if (!data.contains("invalid"))
-                        displayNotice(S.TpTxAccepted)
-                    else
+                    if (data == "unknown session")
+                    {
+                        displayWarning(i18n(S.TpNoSession),i18n(S.TpNoSession))
+                    }
+                    else if (data.contains("invalid"))
+                    {
                         displayWarning(i18n(S.staleTransaction),i18n(S.staleTransactionDetails))
+                    }
+                    else if (data.contains("error"))
+                        displayWarning(i18n(S.reject))
+                    else
+                       displayNotice(S.TpTxAccepted)
                 }
             }
         }

@@ -107,7 +107,7 @@ class Account(
     val fiatPerCoinObservable: StateFlow<BigDecimal> = _fiatPerCoinState
 
     //? Current bch balance (cached from accessing the wallet), in the display units
-    var balance: BigDecimal = CurrencyDecimal(0)
+    var balance: BigDecimal = NexaDecimal(0)
         set(value) {
             _balanceState.value = value
             field = value
@@ -681,7 +681,7 @@ class Account(
             ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> SATperNEX
             ChainSelector.BCH, ChainSelector.BCHREGTEST, ChainSelector.BCHTESTNET -> SATperUBCH
         }
-        val ret = CurrencyDecimal(amount) / factor.toBigDecimal()
+        val ret = NexaDecimal(amount) / factor.toBigDecimal()
         return ret
     }
 
@@ -710,9 +710,12 @@ class Account(
     //? Convert the passed quantity to a string in the decimal format suitable for this currency
     fun format(qty: BigDecimal): String
     {
+        // TODO replace with NexaFormat when a new version of lnk is released
+        val nexaFormat = DecimalFormat("##,###,###,###,##0.00")
+        LogIt.info("format ${qty.toPlainString()} -> ${nexaFormat.format(qty)}")
         return when (chain.chainSelector)
         {
-            ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> NexaFormat.format(qty)
+            ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> nexaFormat.format(qty)
             ChainSelector.BCH, ChainSelector.BCHREGTEST, ChainSelector.BCHTESTNET -> uBchFormat.format(qty)
         }
     }

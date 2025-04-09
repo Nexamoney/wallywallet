@@ -46,8 +46,8 @@ import org.nexa.libnexakotlin.millinow
  */
 abstract class BalanceViewModel(val dispatcher: CoroutineDispatcher = Dispatchers.Main): ViewModel()
 {
-    open val balance = MutableStateFlow("Loading...")
-    open val fiatBalance = MutableStateFlow("Loading...")
+    open val balance = MutableStateFlow(i18n(S.loading))
+    open val fiatBalance = MutableStateFlow(i18n(S.loading))
 
     // Set which account's balance we are tracking
     abstract fun setAccount(act: Account)
@@ -70,8 +70,6 @@ class BalanceViewModelImpl(val account : MutableStateFlow<Account?>): BalanceVie
 {
     constructor(act: Account?) : this(MutableStateFlow(act))
 
-    override val balance = MutableStateFlow("Loading...")
-    override val fiatBalance = MutableStateFlow("")
     var balanceJob: Job? = null
     var accountJob: Job? = null
 
@@ -192,7 +190,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
         Row(
           modifier = Modifier.wrapContentHeight()
         ) {
-            FittedText(2, 6.sp, wallyTileHeader()) { mod, ts, onTlr ->
+            FittedText(2, 4.sp, wallyTileHeader()) { mod, ts, onTlr ->
                 Text(
                   text = currencyCode,
                   style = ts,
