@@ -40,7 +40,6 @@ class RecoverTests:WallyUiTestBase()
         val actName = "nexaAccount"
         val account = wallyApp!!.accounts[actName] ?: wallyApp!!.newAccount(actName, 0U, "", ChainSelector.NEXA)!!
 
-
         runComposeUiTest {
             val viewModelStoreOwner = object : ViewModelStoreOwner
             {
@@ -104,11 +103,12 @@ class RecoverTests:WallyUiTestBase()
                 // Verify that the testnet is now selected
                 onNodeWithText("TNEX (Testnet Nexa)").assertExists()
             }
-                catch (e: AssertionError) {
+            catch (e: AssertionError)
+            {
                     // If testnet option is not found, it might mean dev mode is not active
                     // or the dropdown implementation differs from expectations
                     throw AssertionError("Testnet option not found. Dev mode might not be active.", e)
-                }
+            }
 
             onNodeWithTag("RecoveryPhraseInput")
               .performTextInput("enrich swamp domain cushion produce music visa raven demand seminar pledge erosion")
@@ -117,13 +117,6 @@ class RecoverTests:WallyUiTestBase()
             waitForCatching(5*60000) { onNodeWithTag("CreateDiscoveredAccount").isDisplayed() }
             onNodeWithTag("CreateDiscoveredAccount").performClick()
             settle()
-
-//
-//            // Wait for fast-forwarding process to complete
-//            // This might take some time as the account is being recovered and synced
-//            waitForCatching(60000, {"Account recovery timed out"}) {
-//                onNodeWithTag("FastForwardingProgress").isDisplayed()
-//            }
 
             // Verify we're redirected to the Home screen after recovery
             waitForCatching{

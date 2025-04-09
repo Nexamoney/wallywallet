@@ -120,8 +120,8 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
 
     LogIt.info("Proposal URI: ${sess.proposalUrl}")
     LogIt.info("Proposed Special Tx: ${pTx.toHex()}")
+    // pTx.debugDump()
 
-    val proposal = sess.proposalAnalysis
     var GuiCustomTxFee = ""
     var GuiCustomTxTokenSummary = ""
     var GuiCustomTxError = ""
@@ -134,8 +134,8 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
     var provingTokenTypes = 0L
 
 
-    proposal?.myNetTokenInfo?.let {
-        for ((_, v) in proposal.myNetTokenInfo)
+    panalysis?.myNetTokenInfo?.let {
+        for ((_, v) in panalysis.myNetTokenInfo)
         {
             if (v > 0) receivingTokenTypes++
             else if (v < 0) spendingTokenTypes++
@@ -143,13 +143,13 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
         }
     }
 
-    proposal?.let {
+    panalysis?.let {
         // what's being paid to me - what I'm contributing.  So if I pay out then its a negative number
-        netSats = proposal.receivingSats - proposal.myInputSatoshis
+        netSats = panalysis.receivingSats - panalysis.myInputSatoshis
 
-        if (proposal.otherInputSatoshis != null)
+        if (panalysis.otherInputSatoshis != null)
         {
-            val fee = (proposal.myInputSatoshis + proposal.otherInputSatoshis) - (proposal.receivingSats + proposal.sendingSats)
+            val fee = (panalysis.myInputSatoshis + panalysis.otherInputSatoshis) - (panalysis.receivingSats + panalysis.sendingSats)
             if (fee > 0)
             {
                 GuiCustomTxFee = (i18n(S.ForAFeeOf) % mapOf("fee" to acc.cryptoFormat.format(acc.fromFinestUnit(fee)), "units" to acc.currencyCode))
@@ -163,7 +163,7 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
         {
             GuiCustomTxFee = ""
         }
-        sendingTokenTypes = proposal.sendingTokenTypes
+        sendingTokenTypes = panalysis.sendingTokenTypes
     }
 
     // if I'm paying out something (negative net sats) or spending some token types I'm sending something
@@ -201,12 +201,12 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
 
     var fee = 0L
     var tokenSummary = ""
-    if (proposal != null)
+    if (panalysis != null)
     {
 
-        if (proposal.otherInputSatoshis != null)
+        if (panalysis.otherInputSatoshis != null)
         {
-            fee = (proposal.myInputSatoshis + proposal.otherInputSatoshis) - (proposal.receivingSats + proposal.sendingSats)
+            fee = (panalysis.myInputSatoshis + panalysis.otherInputSatoshis) - (panalysis.receivingSats + panalysis.sendingSats)
             // TODO: only show the fee if this wallet is paying it (tx is complete)
         }
 
@@ -219,7 +219,7 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
             error = i18n(S.TpHasNoPurpose)
         }
 
-        proposal.completionException?.let { error = it.message ?: "" }
+        panalysis.completionException?.let { error = it.message ?: "" }
 
         if (error.isNotEmpty())  // If there's an exception, the only possibility is to abort
         {

@@ -12,26 +12,25 @@ import java.time.format.DateTimeFormatter
 
 // Wally Wallet version
 // On version bump: Run ./gradlew generateVersionFile and commit the updates iosApp/iosApp/info.plist file
-val versionNumber = "3.7.06"
+val versionNumber = "3.7.07"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 val kotlinVersion = "2.1.20"
 
 // Dependency versions
 val mpThreadsVersion = "0.4.0"
 val nexaRpcVersion = "1.3.0"
-val libNexaKotlinVersion = "0.4.20"
-val serializationVersion = "1.8.0"  // https://github.com/Kotlin/kotlinx.serialization
+val libNexaKotlinVersion = "0.4.21"
+val serializationVersion = "1.8.1"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.10.1"     // https://github.com/Kotlin/kotlinx.coroutines
 val bigNumVersion = "0.3.10"         // https://github.com/ionspin/kotlin-multiplatform-bignum
 val composeVersion = "1.7.3"        // https://github.com/JetBrains/compose-multiplatform/releases
 val androidTestCoreVersion = "1.6.1" // https://mvnrepository.com/artifact/androidx.test/core
 val androidxActivityComposeVersion = "1.10.1"
 val uriKmpVersion = "0.0.19"  // https://github.com/eygraber/uri-kmp
-val skikoVersion = "0.8.25" // https://github.com/JetBrains/skiko/releases
+val skikoVersion = "0.9.7" // https://github.com/JetBrains/skiko/releases
 val workVersion = "2.10.0" // https://developer.android.com/jetpack/androidx/releases/work
 
-// needs upgrade
-val ktorVersion = "3.1.0"           // https://github.com/ktorio/ktor
+val ktorVersion = "3.1.2"     // https://github.com/ktorio/ktor
 
 val secSinceEpoch = Instant.now().epochSecond
 
