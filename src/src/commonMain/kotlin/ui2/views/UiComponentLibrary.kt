@@ -14,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -1282,6 +1283,37 @@ fun IconTextButtonUi2(
                 color = color
               ),
               text = description,
+            )
+        }
+    }
+}
+
+@Composable
+fun ConnectionWarning()
+{
+    Card(
+      colors = CardDefaults.cardColors(
+        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+      )
+    ) {
+        Row(
+          modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth(),
+          verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+              imageVector = Icons.Default.WifiOff,
+              contentDescription = "Connection Warning",
+              tint = MaterialTheme.colorScheme.secondary,
+              modifier = Modifier
+                .padding(end = 8.dp)
+                .size(24.dp)
+            )
+            Text(
+              text = i18n(S.connectionWarning),
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+              style = MaterialTheme.typography.bodyMedium
             )
         }
     }
