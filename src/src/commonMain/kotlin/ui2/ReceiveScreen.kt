@@ -105,20 +105,19 @@ fun ReceiveScreenContent(account: Account, address: PayDestination, modifier: Mo
         Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
             Spacer(modifier = Modifier.weight(0.04f))
             AccountPill(account).draw(buttonsEnabled = false)
-            Spacer(modifier = Modifier.weight(0.01f))
+            Spacer(modifier = Modifier.weight(0.1f))
             Image(
               painter = qrcodePainter,
               contentDescription = "QR Code",
               modifier = Modifier
-                .weight(0.5f)
-                .fillMaxWidth(0.7f)   // Dynamically adjusts size to the screen width
+                // .fillMaxWidth(0.7f) // Dynamically adjusts size to the screen width
+                .weight(1f) // Take remaining space, but allow other components to take their intrinsic size
                 .aspectRatio(1f) // Keeps the image square
                 .background(Color.White)
                 .testTag("qrcode")
                 .clickable { setTextClipboard(addrStr) }
-
             )
-            Spacer(modifier = Modifier.weight(0.01f))
+            Spacer(modifier = Modifier.weight(0.1f))
             Text(
               text = i18n(S.YourAddress) % mapOf("blockchain" to (chainToURI[address.chainSelector] ?: "")),
               style = MaterialTheme.typography.headlineSmall
@@ -131,7 +130,7 @@ fun ReceiveScreenContent(account: Account, address: PayDestination, modifier: Mo
             )
             if (devMode)
             {
-                Spacer(modifier = Modifier.weight(0.01f))
+                Spacer(modifier = Modifier.weight(0.1f))
                 // Dev mode so don't need i18n
                 CenteredText(text = "Providing address ${address.index}", textStyle = MaterialTheme.typography.bodySmall)
             }
