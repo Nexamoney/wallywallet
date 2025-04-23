@@ -578,34 +578,32 @@ fun AssetInfoPermScreen(acc: Account, sess: TricklePaySession , nav: ScreenNav)
         WallyDivider()
         Spacer(Modifier.height(5.dp))
 
-        Row(modifier = Modifier.fillMaxWidth().padding(0.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
-            WallyBoringLargeTextButton(S.accept)
-            {
-                // Turn the menu on since user has accepted an operation of this type
-                enableNavMenuItem(ScreenId.TricklePay)
+        ButtonRowAcceptDeny(
+          accept = {
+              // Turn the menu on since user has accepted an operation of this type
+              enableNavMenuItem(ScreenId.TricklePay)
 
-                try
-                {
-                    val details = sess.acceptAssetRequest()
-                    displaySuccess(S.TpAssetRequestAccepted, details)
-                }
-                catch (e: LibNexaExceptionI)
-                {
-                    displayUnexpectedException(e)
-                }
-                catch(e: Exception)
-                {
-                    handleThreadException(e)
-                    displayError(S.unknownError, e.toString())
-                }
-                nav.back()
-            }
-            WallyBoringLargeTextButton(S.deny)
-            {
-                nav.back()
-                displayNotice(S.TpAssetRequestDenied)
-            }
-        }
+              try
+              {
+                  val details = sess.acceptAssetRequest()
+                  displaySuccess(S.TpAssetRequestAccepted, details)
+              }
+              catch (e: LibNexaExceptionI)
+              {
+                  displayUnexpectedException(e)
+              }
+              catch(e: Exception)
+              {
+                  handleThreadException(e)
+                  displayError(S.unknownError, e.toString())
+              }
+              nav.back()
+          },
+          deny = {
+              nav.back()
+              displayNotice(S.TpAssetRequestDenied)
+          }
+        )
     }
 }
 
