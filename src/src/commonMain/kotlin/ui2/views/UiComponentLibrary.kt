@@ -15,6 +15,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.WifiOff
+import androidx.compose.material.icons.outlined.Cancel
+import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -52,7 +54,6 @@ import info.bitcoinunlimited.www.wally.ui2.softKeyboardBar
 import info.bitcoinunlimited.www.wally.ui2.theme.*
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.CURRENCY_1
 import org.nexa.libnexakotlin.ChainSelector
@@ -1315,6 +1316,33 @@ fun ConnectionWarning()
               color = MaterialTheme.colorScheme.onSurfaceVariant,
               style = MaterialTheme.typography.bodyMedium
             )
+        }
+    }
+}
+
+@Composable
+fun ButtonRowAcceptDeny(accept: () -> Unit, deny: () -> Unit)
+{
+    Row(
+      modifier = Modifier.fillMaxWidth().padding(0.dp),
+      horizontalArrangement = Arrangement.SpaceAround,
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconTextButtonUi2(
+          icon = Icons.Outlined.Send,
+          modifier = Modifier.weight(1f),
+          description = i18n(S.accept),
+          color = wallyPurple,
+        ) {
+            accept()
+        }
+        IconTextButtonUi2(
+          icon = Icons.Outlined.Cancel,
+          modifier = Modifier.weight(1f),
+          description = i18n(S.deny),
+          color = wallyPurple,
+        ) {
+            deny()
         }
     }
 }
