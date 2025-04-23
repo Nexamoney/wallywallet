@@ -320,6 +320,9 @@ kotlin {
 
                 // Icons
                 implementation(compose.materialIconsExtended)
+
+                // Parse HTML from a string
+                implementation("com.fleeksoft.ksoup:ksoup:0.2.2")
             }
         }
         val commonTest by getting {

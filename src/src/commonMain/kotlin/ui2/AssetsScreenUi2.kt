@@ -22,6 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.eygraber.uri.Uri
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Document
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.theme.*
@@ -337,8 +339,15 @@ fun AssetViewUi2(asset: AssetInfo, parentMod: Modifier = Modifier)
                       modifier = Modifier.verticalScroll(rememberScrollState())
                     ) {
                         Spacer(Modifier.height(16.dp))
-                        // TODO formatting (support minimal HTML)
-                        Text(nft?.license ?: "")
+
+                        nft?.license?.let { html ->
+                            val document: Document = Ksoup.parse(html)
+                            val body = document.body()
+                            body.childElementsList().forEach { element ->
+                                Text(element.text())
+                                Spacer(Modifier.height(1.dp))
+                            }
+                        }
                     }
                 }
             }
