@@ -18,13 +18,19 @@ actual fun setLocale():Boolean
 {
     // we want whatever the phone is set to, not where the user is currently located, so system locale.
     var locale = NSLocale.autoupdatingCurrentLocale
+    val preferredLanguage = NSLocale.preferredLanguages.first() as? String ?: "en"
     //var locale = NSLocale.systemLocale()
     if (locale.languageCode == null)
     {
         locale = NSLocale.currentLocale()
     }
     println("LANGUAGE: ${locale.languageCode}, COUNTRY: ${locale.countryCode}")
-    return setLocale(locale.languageCode, locale.countryCode ?: "")
+    println("PREFERRED LANGUAGE: $preferredLanguage")
+    // Split the preferred language to extract language and country
+    // Get the last part (e.g., "NO" from "nb-NO")
+    val languageCode = preferredLanguage.split("-").lastOrNull()?.lowercase() ?: "en"
+    println("LANGUAGE CODE: $languageCode")
+    return setLocale(languageCode, locale.countryCode ?: "")
 }
 
 fun provideLocaleFilesData(data:ByteArray)
