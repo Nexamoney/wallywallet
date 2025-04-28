@@ -1346,3 +1346,45 @@ fun ButtonRowAcceptDeny(accept: () -> Unit, deny: () -> Unit)
         }
     }
 }
+enum class AmountSelector
+{
+    ALL,
+    THOUSAND,
+    MILLION,
+    CLEAR
+}
+
+@Composable
+fun WallyAmountSelectorRow(setAmount: (AmountSelector) -> Unit)
+{
+    Row(horizontalArrangement = Arrangement.SpaceEvenly) {
+        val fontStyle = MaterialTheme.typography.labelLarge
+        val mod = Modifier.weight(1f).background(
+          color = samsungKeyBoardGray,
+          shape = RoundedCornerShape(32.dp)
+        )
+
+        TextButton(
+          modifier = mod,
+          content = { Text(i18n(S.sendAll), style = fontStyle) },
+          contentPadding = PaddingValues(
+            vertical = 2.dp
+          ),
+          onClick = { setAmount(AmountSelector.ALL) }
+        )
+        TextButton(
+          modifier = mod,
+          content = { Text(i18n(S.thousand), style = fontStyle) },
+          onClick = { setAmount(AmountSelector.THOUSAND) }
+        )
+        TextButton(
+          modifier = mod,
+          content = { Text(i18n(S.million), style = fontStyle) },
+          onClick = { setAmount(AmountSelector.MILLION) }
+        )
+        TextButton(
+          modifier = mod,
+          content = { Text(i18n(S.cancel), style = fontStyle) }, onClick = { setAmount(AmountSelector.CLEAR) }
+        )
+    }
+}

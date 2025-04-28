@@ -24,10 +24,12 @@ import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -701,6 +703,16 @@ fun SendScreenContent(
                       vm = viewModel
                     ) {
                         viewModel.setSendQty(it)
+                    }
+                    Spacer(Modifier.height(16.dp))
+                    WallyAmountSelectorRow {
+                        when (it)
+                        {
+                            AmountSelector.ALL -> viewModel.setSendQty(viewModel.balanceViewModel.balance.value)
+                            AmountSelector.THOUSAND -> viewModel.multiplySendQty(1000)
+                            AmountSelector.MILLION -> viewModel.multiplySendQty(1000000)
+                            AmountSelector.CLEAR -> viewModel.setSendQty("")
+                        }
                     }
                     Spacer(Modifier.height(16.dp))
                     if (!hasInternet)
