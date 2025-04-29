@@ -64,12 +64,22 @@ var kvpDb: KvpDatabase? = null
 
 fun tlater(name: String?=null, job: ()->Unit)
 {
-    wallyApp?.threadJobPool?.later(name, job)
+    val jp = wallyApp?.threadJobPool
+    if (jp != null)
+    {
+        // LogIt.info("Launching ${job} named ${jp?.wakey?.name} running threads: ${jp.allThreads.size} available: ${jp.availableThreads} jobs: ${jp.jobs.size}. Into: into ${jp} ")
+        jp.later(name, job)
+    }
 }
 
 fun onetlater(name: String, job: ()->Unit)
 {
-    wallyApp?.threadJobPool?.oneLater(name, job)
+    val jp = wallyApp?.threadJobPool
+    if (jp != null)
+    {
+        // LogIt.info("Launching singleton ${job} named ${jp.wakey?.name} running threads: ${jp.allThreads.size} available: ${jp.availableThreads} jobs: ${jp.jobs.size}. Into: into ${jp} ")
+        wallyApp?.threadJobPool?.oneLater(name, job)
+    }
 }
 
 data class LongPollInfo(val proto: String, val hostPort: String, val cookie: String?, var active: Boolean = true)
@@ -322,6 +332,11 @@ open class CommonApp(val runningTests: Boolean)
 
     init
     {
+        threadJobPool.excessiveThreadHandler = {
+            LogIt.info(sourceLoc() + ": Out of Wally Job threads Num threads: ${it.allThreads.size}  Jobs: ${it.jobCount}")
+            true
+        }
+        threadJobPool.start()
         if (runningTests)
         {
             runningTheTests = true
@@ -338,6 +353,7 @@ open class CommonApp(val runningTests: Boolean)
     fun orderedAccounts(visibleOnly: Boolean = true): ListifyMap<String, Account>
     {
         return accountLock.synchronized {
+            LogIt.info("got lock")
             ListifyMap(accounts, { if (visibleOnly) it.value.visible else true }, object : Comparator<String>
             {
                 override fun compare(p0: String, p1: String): Int
@@ -365,14 +381,15 @@ open class CommonApp(val runningTests: Boolean)
         }
         set(act: Account)
         {
-            accountLock.synchronized()
+            val name = accountLock.synchronized()
             {
-                with(preferenceDB.edit())
-                {
-                    putString(PRIMARY_ACT_PREF, act.name)
-                    commit()
-                }
                 nullablePrimaryAccount = act
+                act.name
+            }
+            with(preferenceDB.edit())
+            {
+                putString(PRIMARY_ACT_PREF, name)
+                commit()
             }
         }
 
@@ -445,9 +462,9 @@ open class CommonApp(val runningTests: Boolean)
 
     fun defaultPrimaryAccount(): Account
     {
+        val selectedAccountName = preferenceDB.getString(SELECTED_ACCOUNT_NAME_PREF, null)
         return accountLock.lock {
             // return the one stored in preferences
-            val selectedAccountName = preferenceDB.getString(SELECTED_ACCOUNT_NAME_PREF, null)
             val selectedAccountPref = accounts[selectedAccountName]
             if (selectedAccountPref != null && selectedAccountPref.visible)
             {
@@ -717,14 +734,13 @@ open class CommonApp(val runningTests: Boolean)
     /** Returns true if accounts are synced */
     fun isSynced(visibleOnly: Boolean = true): Boolean
     {
-        val ret = accountLock.lock {
-            for (ac in accounts)
-            {
-                if ((!visibleOnly || ac.value.visible) && (!ac.value.wallet.synced())) return@lock false
-            }
-            true
+        // take a copy because wallet.synced() is a blocking function
+        val cpy = accountLock.lock { accounts.toMap() }
+        for (ac in cpy)
+        {
+            if ((!visibleOnly || ac.value.visible) && (!ac.value.wallet.synced())) return false
         }
-        return ret
+        return true
     }
 
     fun onCreate()
@@ -766,8 +782,8 @@ open class CommonApp(val runningTests: Boolean)
     fun nextAccount(accountIdx: Int):Pair<Int, Account?>
     {
         var actIdx = accountIdx
+        val actList = visibleAccountNames()
         val ret = accountLock.lock {
-            val actList = visibleAccountNames()
             actIdx++
             if (actIdx >= actList.size) actIdx=0
             accounts[actList[actIdx]]
@@ -819,7 +835,6 @@ open class CommonApp(val runningTests: Boolean)
     /** lock all previously unlocked accounts */
     fun lockAccounts()
     {
-        var somethingChanged = false
         val changed = mutableListOf<Account>()
         accountLock.lock {
             for (account in accounts.values)
@@ -827,7 +842,6 @@ open class CommonApp(val runningTests: Boolean)
                 if (account.pinEntered)
                 {
                     account.pinEntered = false
-                    somethingChanged = true
                     changed.add(account)
                 }
             }
@@ -863,7 +877,8 @@ open class CommonApp(val runningTests: Boolean)
     fun saveActiveAccountList()
     {
         openKvpDbIfNeeded()
-        val s: String = accounts.keys.joinToString(",")
+
+        val s: String = accountLock.lock { accounts.keys.joinToString(",") }
         val db = kvpDb!!
         LogIt.info("Saving active accounts: $s")
         db.set("activeAccountNames", s.toByteArray())
@@ -892,31 +907,32 @@ open class CommonApp(val runningTests: Boolean)
         // whatever the stored blockchain height is rather than the real height.
         if (tip == null || tip.time < (epochMilliSeconds() / 1000L) - PREHISTORY_SAFEFTY_FACTOR) millisleep(250U)
 
-        return accountLock.lock {
-            val ac = try
-            {
-                val prehistoryDate = (epochMilliSeconds() / 1000L) - PREHISTORY_SAFEFTY_FACTOR // Set prehistory to 2 hours ago to account for block timestamp variations
-                Account(name, flags, chainSelector, startDate = prehistoryDate, startHeight = bc.curHeight)
-            } catch (e: IllegalStateException)
-            {
-                LogIt.warning("Error creating account: ${e.message}")
-                return@lock null
-            }
 
-            ac.encodedPin = epin
-            ac.pinEntered = true  // for convenience, new accounts begin as if the pin has been entered
-            ac.start()
-            ac.onChange()
-            // I save a blank if no pin just in case there's old data in the database
-            ac.saveAccountPin(epin)
-            ac.wallet.save(true)
-
-            accounts[name] = ac
-            // Write the list of existing accounts, so we know what to load
-            saveActiveAccountList()
-            // wallet is saved in wallet constructor so no need to: ac.wallet.SaveBip44Wallet()
-            return@lock ac
+        val ac = try
+        {
+            val prehistoryDate = (epochMilliSeconds() / 1000L) - PREHISTORY_SAFEFTY_FACTOR // Set prehistory to 2 hours ago to account for block timestamp variations
+            Account(name, flags, chainSelector, startDate = prehistoryDate, startHeight = bc.curHeight)
         }
+        catch (e: IllegalStateException)
+        {
+            LogIt.warning("Error creating account: ${e.message}")
+            return null
+        }
+
+        ac.encodedPin = epin
+        ac.pinEntered = true  // for convenience, new accounts begin as if the pin has been entered
+        ac.start()
+        ac.onChange()
+        // I save a blank if no pin just in case there's old data in the database
+        ac.saveAccountPin(epin)
+        ac.wallet.save(true)
+
+        accountLock.lock { accounts[name] = ac }
+        // Write the list of existing accounts, so we know what to load
+        saveActiveAccountList()
+        // wallet is saved in wallet constructor so no need to: ac.wallet.SaveBip44Wallet()
+        return ac
+
     }
 
 
@@ -988,10 +1004,8 @@ open class CommonApp(val runningTests: Boolean)
         ac.wallet.prepareDestinations(histAddressCount, histAddressCount)
         (ac.wallet as CommonWallet).injectReceivingAddresses(dests.toList())
         ac.wallet.save(force=true)  // force the save
-        accountLock.lock {
-            // Write the list of existing accounts, so we know what to load
-            saveActiveAccountList()
-        }
+        // Write the list of existing accounts, so we know what to load
+        saveActiveAccountList()
         ac.start()
         ac.wallet.fastforward(histEnd.height, histEnd.time, histEnd.hash, txhist)
         ac.constructAssetMap()
@@ -1037,24 +1051,22 @@ open class CommonApp(val runningTests: Boolean)
                 veryEarly = min(n.second.startTime, veryEarly ?: n.second.startTime)
             }
         }
-        if (veryEarly != null) veryEarly = veryEarly - (30*60)  // Must be earlier than the first activity, so subtract 30 min
+        if (veryEarly != null) veryEarly = veryEarly - (30 * 60)  // Must be earlier than the first activity, so subtract 30 min
 
-        return accountLock.lock {
-            // If I'm doing a recovery, the prehistory needs to be 1 block before the activity
-            val eh = if (earliestHeight != null && earliestHeight > 0) earliestHeight-1 else earliestHeight
-            val ac = Account(name, flags, chainSelector, secretWords, veryEarly, eh, retrieveOnlyActivity = nonstandardActivity)
-            ac.encodedPin = epin
-            ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
-            ac.start()
-            ac.onChange()
-            ac.saveAccountPin(epin)
+        // If I'm doing a recovery, the prehistory needs to be 1 block before the activity
+        val eh = if (earliestHeight != null && earliestHeight > 0) earliestHeight - 1 else earliestHeight
+        val ac = Account(name, flags, chainSelector, secretWords, veryEarly, eh, retrieveOnlyActivity = nonstandardActivity)
+        ac.encodedPin = epin
+        ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
+        ac.start()
+        ac.onChange()
+        ac.saveAccountPin(epin)
 
-            accounts[name] = ac
-            // Write the list of existing accounts, so we know what to load
-            saveActiveAccountList()
-            // wallet is saved in wallet constructor so no need to: ac.wallet.SaveBip44Wallet()
-            ac
-        }
+        accountLock.lock { accounts[name] = ac }
+        // Write the list of existing accounts, so we know what to load
+        saveActiveAccountList()
+        // wallet is saved in wallet constructor so no need to: ac.wallet.SaveBip44Wallet()
+        return ac
     }
 
     /** Opens the key-value pair database (stored in the kvpDb global) if its not already opened
@@ -1130,12 +1142,11 @@ open class CommonApp(val runningTests: Boolean)
                     LogIt.info(sourceLoc() + " " + name + ": Loading account")
                     try
                     {
-                        accountLock.lock {
-                            if (!accounts.containsKey(name))  // only create account if its not previously created
-                            {
-                                val ac = Account(name, prefDB = preferenceDB)
-                                accounts[ac.name] = ac
-                            }
+                        val hasName = accountLock.lock { accounts.containsKey(name) }
+                        if (!hasName)  // only create account if its not previously created
+                        {
+                            val ac = Account(name, prefDB = preferenceDB)
+                            accounts[ac.name] = ac
                         }
                     }
                     catch (e: DataMissingException)

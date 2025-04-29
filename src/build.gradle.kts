@@ -12,23 +12,23 @@ import java.time.format.DateTimeFormatter
 
 // Wally Wallet version
 // On version bump: Run ./gradlew generateVersionFile and commit the updates iosApp/iosApp/info.plist file
-val versionNumber = "3.7.07"
+val versionNumber = "3.7.08"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 val kotlinVersion = "2.1.20"
 
 // Dependency versions
-val mpThreadsVersion = "0.4.0"
+val mpThreadsVersion = "0.4.2"
 val nexaRpcVersion = "1.3.0"
-val libNexaKotlinVersion = "0.4.21"
+val libNexaKotlinVersion = "0.4.27"
 val serializationVersion = "1.8.1"  // https://github.com/Kotlin/kotlinx.serialization
-val coroutinesVersion = "1.10.1"     // https://github.com/Kotlin/kotlinx.coroutines
+val coroutinesVersion = "1.10.2"     // https://github.com/Kotlin/kotlinx.coroutines
 val bigNumVersion = "0.3.10"         // https://github.com/ionspin/kotlin-multiplatform-bignum
 val composeVersion = "1.7.3"        // https://github.com/JetBrains/compose-multiplatform/releases
 val androidTestCoreVersion = "1.6.1" // https://mvnrepository.com/artifact/androidx.test/core
 val androidxActivityComposeVersion = "1.10.1"
 val uriKmpVersion = "0.0.19"  // https://github.com/eygraber/uri-kmp
 val skikoVersion = "0.9.7" // https://github.com/JetBrains/skiko/releases
-val workVersion = "2.10.0" // https://developer.android.com/jetpack/androidx/releases/work
+val workVersion = "2.10.1" // https://developer.android.com/jetpack/androidx/releases/work
 
 val ktorVersion = "3.1.2"     // https://github.com/ktorio/ktor
 
@@ -155,9 +155,9 @@ kotlin {
                 sourceSetTree.set(KotlinSourceSetTree.test)
 
                 dependencies {
-                    testImplementation("androidx.compose.ui:ui-test-junit4-android:1.7.8")
-                    androidTestImplementation("androidx.compose.ui:ui-test-junit4-android:1.7.8")
-                    debugImplementation("androidx.compose.ui:ui-test-manifest:1.7.8")
+                    testImplementation("androidx.compose.ui:ui-test-junit4-android:1.8.0")
+                    androidTestImplementation("androidx.compose.ui:ui-test-junit4-android:1.8.0")
+                    debugImplementation("androidx.compose.ui:ui-test-manifest:1.8.0")
                     // debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
                 }
             }
@@ -301,11 +301,13 @@ kotlin {
                 implementation("io.ktor:ktor-client-cio:$ktorVersion")
 
                 // IO
-                implementation("com.squareup.okio:okio:3.10.2")
+                implementation("com.squareup.okio:okio:3.11.0")
                 implementation("org.jetbrains.kotlinx:atomicfu:0.27.0")
 
                 // nexa
-                implementation("org.nexa:mpthreads:$mpThreadsVersion")
+                implementation("org.nexa:mpthreads:$mpThreadsVersion") {
+                    isChanging = true
+                }
                 implementation("org.nexa:libnexakotlin:$libNexaKotlinVersion") { setChanging(true) }
                 //implementation("org.nexa:walletoperations:0.0.1")
 
@@ -316,7 +318,7 @@ kotlin {
                 implementation("org.jetbrains.skiko:skiko:$skikoVersion")
 
                 // Common ViewModel for all targets
-                implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
+                implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
 
                 // Icons
                 implementation(compose.materialIconsExtended)
@@ -377,7 +379,7 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:$coroutinesVersion")
 
                 // SVG rendering
-                implementation("com.github.weisj:jsvg:1.4.0")
+                implementation("com.github.weisj:jsvg:2.0.0")
 
                 // https://mvnrepository.com/artifact/org.openjfx/javafx-media
                 //implementation("org.openjfx:javafx-media:17.0.10")
@@ -422,19 +424,19 @@ kotlin {
                     //implementation(project(":shared"))
 
                     // CameraX core library using the camera2 implementation
-                    val camerax_version = "1.4.1"  // https://developer.android.com/jetpack/androidx/releases/camera
-                    val lottieVersion = "6.4.1"
+                    val camerax_version = "1.4.2"  // https://developer.android.com/jetpack/androidx/releases/camera
+                    val lottieVersion = "6.6.6"
 
                     implementation(kotlin("stdlib-jdk8"))
                     implementation("androidx.activity:activity-compose:$androidxActivityComposeVersion")
-                    implementation("androidx.tracing:tracing:1.2.0")
-                    implementation("androidx.compose.ui:ui:1.7.8")
-                    implementation("androidx.compose.ui:ui-tooling:1.7.8")
-                    implementation("androidx.compose.ui:ui-tooling-preview:1.7.8")
-                    implementation("androidx.compose.foundation:foundation:1.7.8")
-                    implementation("androidx.compose.material:material:1.7.8")
-                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.8.0")
-                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.0")
+                    implementation("androidx.tracing:tracing:1.3.0")
+                    implementation("androidx.compose.ui:ui:1.8.0")
+                    implementation("androidx.compose.ui:ui-tooling:1.8.0")
+                    implementation("androidx.compose.ui:ui-tooling-preview:1.8.0")
+                    implementation("androidx.compose.foundation:foundation:1.8.0")
+                    implementation("androidx.compose.material:material:1.8.0")
+                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.8.1")
+                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.1")
 
                     // android layout dependencies
                     //implementation("com.google.android.flexbox:flexbox:3.0.0")  // https://github.com/google/flexbox-layout/tags
@@ -479,9 +481,9 @@ kotlin {
                     implementation("androidx.camera:camera-view:${camerax_version}")
                     implementation("com.google.mlkit:barcode-scanning:17.3.0")
 
-                    implementation("androidx.media3:media3-exoplayer:1.5.1")
+                    implementation("androidx.media3:media3-exoplayer:1.6.1")
                     // Dynamic Adaptive Streaming over HTTP: implementation("androidx.media3:media3-exoplayer-dash:1.X.X")
-                    implementation("androidx.media3:media3-ui:1.5.1")
+                    implementation("androidx.media3:media3-ui:1.6.1")
 
                     // Animation
                     implementation("com.airbnb.android:lottie-compose:$lottieVersion")

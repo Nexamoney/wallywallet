@@ -19,10 +19,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import info.bitcoinunlimited.www.wally.ui2.WallyNumericInputFieldAsset
 import org.nexa.libnexakotlin.ChainSelector
+import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.GroupId
 import org.nexa.libnexakotlin.GroupInfo
 import kotlin.test.Test
 import kotlin.test.assertEquals
+
+private val LogIt = GetLog("wally.test")
 
 @OptIn(ExperimentalTestApi::class)
 class SendScreenTest:WallyUiTestBase()
@@ -32,7 +35,6 @@ class SendScreenTest:WallyUiTestBase()
     @Test
     fun sendScreenContentTest()
     {
-        wallyApp!!.openAllAccounts()
         val account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
 
         runComposeUiTest {
@@ -85,8 +87,8 @@ class SendScreenTest:WallyUiTestBase()
             // onNodeWithText("Send").assertIsDisplayed()
             // onNodeWithText("Cancel").assertIsDisplayed()
 
-            val uiState = sendScreenViewModel.uiState.value
-            println(uiState)
+            // val uiState = sendScreenViewModel.uiState.value
+            // println(uiState)
             settle()
         }
         wallyApp!!.deleteAccount(account)
@@ -95,6 +97,7 @@ class SendScreenTest:WallyUiTestBase()
     @Test
     fun sendBottomButtonsTest()
     {
+        LogIt.info("TEST sendBottomButtonsTest")
         val account = wallyApp!!.newAccount("sendBottomButtonsTest", 0U, "", cs)!!
         runComposeUiTest {
             val viewModel = SendScreenViewModelFake(account)
@@ -102,6 +105,7 @@ class SendScreenTest:WallyUiTestBase()
             setContent {
                 SendBottomButtons(Modifier, viewModel)
             }
+            LogIt.info("Settle 1")
             settle()
 
             onNodeWithText(i18n(S.confirmSend)).assertDoesNotExist()
@@ -119,9 +123,11 @@ class SendScreenTest:WallyUiTestBase()
             assertEquals(viewModel.uiState.value.fiatAmount, SendScreenUi().fiatAmount)
             assertEquals(viewModel.uiState.value.isConfirming, SendScreenUi().isConfirming)
             assertEquals(viewModel.uiState.value.toAddressFinal, SendScreenUi().toAddressFinal)
+            LogIt.info("settle 2")
             settle()
         }
         wallyApp!!.deleteAccount(account)
+        LogIt.info("TEST sendBottomButtonsTest COMPLETED")
     }
 
     @Test

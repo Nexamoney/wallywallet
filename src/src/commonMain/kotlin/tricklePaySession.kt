@@ -1208,7 +1208,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                 {
                     imSpendingTokenTypes++
                     if (!iSuppliedTokens.isAuthority())
-                        myInputTokenInfo[iSuppliedTokens.groupId] = (myInputTokenInfo[iSuppliedTokens.groupId] ?: 0) + iSuppliedTokens.tokenAmt
+                        myInputTokenInfo[iSuppliedTokens.groupId] = (myInputTokenInfo[iSuppliedTokens.groupId] ?: 0) + iSuppliedTokens.tokenAmount
                 }
             }
         }
@@ -1225,7 +1225,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                 if ((groupInfo != null) && (!groupInfo.isAuthority()))
                 {
                     receivingTokenTypes++
-                    receivingTokenInfo[groupInfo.groupId] = (receivingTokenInfo[groupInfo.groupId] ?: 0) + groupInfo.tokenAmt
+                    receivingTokenInfo[groupInfo.groupId] = (receivingTokenInfo[groupInfo.groupId] ?: 0) + groupInfo.tokenAmount
                 }
             }
             else
@@ -1234,7 +1234,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                 if ((groupInfo != null) && (!groupInfo.isAuthority()))
                 {
                     sendingTokenTypes++
-                    sendingTokenInfo[groupInfo.groupId] = (receivingTokenInfo[groupInfo.groupId] ?: 0) + groupInfo.tokenAmt
+                    sendingTokenInfo[groupInfo.groupId] = (receivingTokenInfo[groupInfo.groupId] ?: 0) + groupInfo.tokenAmount
                 }
             }
         }

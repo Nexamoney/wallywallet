@@ -29,6 +29,26 @@ You can change the order of the replaced words just by moving where the %word is
 
 Good luck!
 -->
+    <string name="asset_statements">
+[
+  {
+  \"relation\": [\"delegate_permission/common.handle_all_urls\"],
+  \"target\": {
+    \"namespace\": \"web\",
+    \"site\": \"https://w.nexa.org\"
+  }
+},
+  {
+    \"relation\": [\"delegate_permission/common.handle_all_urls\"],
+    \"target\": {
+      \"namespace\": \"android_app\",
+      \"package_name\": \"info.bitcoinunlimited.www.wally\",
+      \"sha256_cert_fingerprints\":
+        ["5E:E9:B4:62:6C:11:40:04:FF:5B:70:12:54:B2:2E:12:F8:FC:10:2E:3F:C8:CC:27:AC:E6:CB:79:41:84:E3:08"]
+    }
+  }
+]
+    </string>
     <string name="app_name" translatable="false">Wally</string>
     <string-array name="CurrencyTypes">
         <item>NEX</item>

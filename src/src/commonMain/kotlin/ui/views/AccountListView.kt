@@ -69,14 +69,17 @@ private val accountListState:MutableStateFlow<LazyListState?> = MutableStateFlow
     val tmp = accountListState.collectAsState(scope.coroutineContext).value ?: rememberLazyListState()
 
     val selAct = selectedAccount.collectAsState().value
-    if (false && selAct != null) // && experimentalUx)
+    if (false) // && selAct != null) // && experimentalUx)
     {
+        /*
         if (accountUIData[selAct.name] == null) accountUIData[selAct.name] = selAct.uiData()
         AccountItemView(accountUIData[selAct.name]!!, 0, true, devMode, Color.Transparent,
           onClickAccount = { onAccountSelected(selAct) },
           onClickGearIcon = {
               nav.go(ScreenId.AccountDetails)
           })
+
+         */
     }
     else
     {
@@ -359,7 +362,7 @@ fun AccountItemView(
                 item(key = key.toByteArray()) {
                     val asset = entry.assetInfo
                     val tck = asset.ticker
-                    val qty = tokenAmountString(it.groupInfo.tokenAmt, asset.tokenInfo?.genesisInfo?.decimal_places)
+                    val qty = tokenAmountString(it.groupInfo.tokenAmount, asset.tokenInfo?.genesisInfo?.decimal_places)
                     // What is a NFT vs a token with an icon?  We will use whether the group likely commits to a NFT data file as the differentiator
                     if ((tck != null) && (it.groupInfo.groupId.subgroupData().size < 32))
                     {

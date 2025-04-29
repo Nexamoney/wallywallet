@@ -530,7 +530,7 @@ class SendScreenViewModelImpl(act: Account): SendScreenViewModel(act)
                                 if (assetPerAccount != null)
                                 {
                                     val eAmt = assetPerAccount.editableAmount
-                                    val tokqty = if (eAmt == null) assetPerAccount.groupInfo.tokenAmt  // If they don't change the amount, send all of them (see default in AssetScreen.kt)
+                                    val tokqty = if (eAmt == null) assetPerAccount.groupInfo.tokenAmount  // If they don't change the amount, send all of them (see default in AssetScreen.kt)
                                     else assetPerAccount.tokenDecimalToFinestUnit(eAmt)
 
                                     if (tokqty != null && tokqty > 0)
@@ -928,7 +928,7 @@ fun AssetsList(assetList: List<AssetPerAccount>, editable: Boolean = true, viewM
 @Composable
 fun AssetListItemEditable(assetPerAccount: AssetPerAccount, editable: Boolean = true, isConfirming: Boolean = false) {
     val asset = assetPerAccount.assetInfo
-    val tokenAmount = assetPerAccount.groupInfo.tokenAmt
+    val tokenAmount = assetPerAccount.groupInfo.tokenAmount
     val expandable: Boolean = if(tokenAmount == 1L) false else true
     var expanded by remember { mutableStateOf(false) }
     var quantity by remember { mutableStateOf(assetPerAccount.editableAmount?.toPlainString() ?: "") }
