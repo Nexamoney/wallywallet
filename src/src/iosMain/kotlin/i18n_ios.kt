@@ -27,8 +27,8 @@ actual fun setLocale():Boolean
     println("LANGUAGE: ${locale.languageCode}, COUNTRY: ${locale.countryCode}")
     println("PREFERRED LANGUAGE: $preferredLanguage")
     // Split the preferred language to extract language and country
-    // Get the last part (e.g., "NO" from "nb-NO")
-    val languageCode = preferredLanguage.split("-").lastOrNull()?.lowercase() ?: "en"
+    // Get the first part (e.g., "nb" from "nb-NO"), or "en" from "en-us"
+    val languageCode = preferredLanguage.split("-").firstOrNull()?.lowercase() ?: "en"
     println("LANGUAGE CODE: $languageCode")
     return setLocale(languageCode, locale.countryCode ?: "")
 }
@@ -50,6 +50,7 @@ actual fun setLocale(language: String, country: String, context: Any?):Boolean
       }
     catch(e: Exception)
     {
+        println("NO strings_${language}_$country, trying strings_$language")
         try
         {
             val url = NSBundle.mainBundle.URLForResource("strings_$language", "bin")

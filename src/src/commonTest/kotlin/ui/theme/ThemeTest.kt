@@ -80,7 +80,7 @@ class ThemeTest
             NoticeText(text, Modifier)
         }
         waitForCatching { onNodeWithText(text).isDisplayed() }
-        true
+        Unit
     }
 
     @Test
@@ -101,7 +101,7 @@ class ThemeTest
             TitleText(text, Modifier.fillMaxSize())
         }
         waitForCatching(10000, { "title is missing"}) { onNodeWithText(text).isDisplayed() }
-        true
+        Unit
     }
 
     @Test

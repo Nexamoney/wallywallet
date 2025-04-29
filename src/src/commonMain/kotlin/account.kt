@@ -77,6 +77,9 @@ class Account(
   db: WalletDatabase? = null
 )
 {
+    init {
+        LogIt.info(sourceLoc() + ": Creating Account Object")
+    }
     val access = Mutex("actMut")
     val handler = CoroutineExceptionHandler {
         _, exception -> LogIt.error("Caught in Account CoroutineExceptionHandler: $exception")
@@ -126,6 +129,9 @@ class Account(
     val nameAndChain: String
         get() { return name + " " + i18n(S.onBlockchain) + " " + chainToURI[chain.chainSelector] }
 
+    init {
+        LogIt.info(sourceLoc() + ": Wallet")
+    }
 
     val wallet: Bip44Wallet = if (chainSelector == null)  // Load existing account
     {
@@ -152,6 +158,7 @@ class Account(
     }
     else  // New account
     {
+        LogIt.info(sourceLoc() + ": Creating new wallet")
         saveAccountFlags()
         if (secretWords == null)
             Bip44Wallet(walletDb!!, name, chainSelector, NEW_WALLET)   // New wallet
@@ -165,11 +172,15 @@ class Account(
     /** A string denoting this wallet's currency units.  That is, the units that this wallet should use in display, in its BigDecimal amount representations, and is converted to and from in fromFinestUnit() and toFinestUnit() respectively */
     val currencyCode: String = chainToDisplayCurrencyCode[wallet.chainSelector]!!
 
+    init { LogIt.info(sourceLoc() + ": Assets") }
+
     var assets = mapOf<GroupId, AssetPerAccount>()
         set(value) {
             _assetsState.value = value
             field = value
         }
+
+    init { LogIt.info(sourceLoc() + ": Flows") }
     @Transient private val _assetsState = MutableStateFlow<Map<GroupId, AssetPerAccount>>(mapOf<GroupId, AssetPerAccount>())
     @Transient val assetsObservable = _assetsState.asStateFlow()
     val assetTransferList = mutableListOf<GroupId>()
@@ -186,6 +197,7 @@ class Account(
 
     init
     {
+        LogIt.info(sourceLoc() + ": Connect blockchain to wallet")
         if (retrieveOnlyActivity != null)  // push in nonstandard addresses before we connect to the blockchain.
         {
             for (r in retrieveOnlyActivity)
@@ -196,9 +208,19 @@ class Account(
                 wallet.retrieveOnlyDerivationPaths.add(tmp)
             }
         }
-
+        //LogIt.info(sourceLoc() + ": Uses chain")
         wallet.usesChain(chain)
-        if (autoInit) tlater { asyncInit(startHeight, startDate) }
+
+        if (autoInit)
+        {
+            //LogIt.info(sourceLoc() + ": Launch account asyncInit job")
+            tlater {
+                //LogIt.info(sourceLoc() + ": account asyncInit is running")
+                asyncInit(startHeight, startDate)
+            }
+            //LogIt.info(sourceLoc() + ": Job launch finished")
+        }
+        LogIt.info(sourceLoc() + ": Connect completed.  Account setup complete")
     }
 
     fun asyncInit(startHeight: Long?, startDate: Long?)
@@ -297,7 +319,7 @@ class Account(
         // Set all the underlying change callbacks to trigger the account update
         if (wCb==null) wCb = wallet.setOnWalletChange(cb1)
         if (blkCb == null) blkCb = wallet.blockchain.onChange.add({ onChange() })
-        if (netCb == null) netCb = wallet.blockchain.net.changeCallback.add({ _, _ -> onChange() })
+        if (netCb == null) netCb = wallet.blockchain.net.changeCallback.add({ it -> onChange() })
     }
 
     /**
@@ -557,7 +579,10 @@ class Account(
                     if (!grp.isAuthority())  // TODO not dealing with authority txos in Wally mobile
                     {
                         val gi: GroupInfo? = ast[grp.groupId]
-                        if (gi != null) gi.tokenAmt += grp.tokenAmt
+                        if (gi != null)
+                        {
+                            gi.tokenAmount += grp.tokenAmount
+                        }
                         else ast[grp.groupId] = grp
                     }
                 }
@@ -581,7 +606,7 @@ class Account(
                 val cur = assets[asset.groupId]
                 // Insert it into our account if missing -- but do not reinsert if not missing so we don't accidentally remove other state (send quantity)
                 // just update the quantity
-                if (cur != null) cur.groupInfo.tokenAmt = asset.tokenAmt
+                if (cur != null) cur.groupInfo.tokenAmount = asset.tokenAmount
                 else {
                     val tmp = assets.toMutableMap()
                     tmp[asset.groupId] = AssetPerAccount(asset, assetInfo)
@@ -712,7 +737,7 @@ class Account(
     {
         // TODO replace with NexaFormat when a new version of lnk is released
         val nexaFormat = DecimalFormat("##,###,###,###,##0.00")
-        LogIt.info("format ${qty.toPlainString()} -> ${nexaFormat.format(qty)}")
+        //LogIt.info("format ${qty.toPlainString()} -> ${nexaFormat.format(qty)}")
         return when (chain.chainSelector)
         {
             ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> nexaFormat.format(qty)

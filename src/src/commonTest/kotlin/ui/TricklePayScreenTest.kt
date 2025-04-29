@@ -45,8 +45,9 @@ class TricklePayScreenTest: WallyUiTestBase()
             setContent {
                 TricklePayDomainView(null, td, Modifier, account)
             }
-            check(waitForCatching { onNodeWithTag("TricklePayDomainViewTag").isDisplayed() })
+            check(waitForCatching { onNodeWithTag("TricklePayDomainViewDomainName").isDisplayed() })
         }
         wallyApp!!.deleteAccount(account)
+        println("tricklePayDomainViewTest COMPLETED!")
     }
 }

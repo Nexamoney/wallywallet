@@ -347,12 +347,12 @@ fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, allo
             }
 
             // If its an NFT, don't show the quantity if they have just 1
-            if ((nft == null)||(apc.groupInfo.tokenAmt != 1L))
+            if ((nft == null)||(apc.groupInfo.tokenAmount != 1L))
             {
                 if (allowAmountEdit)
                 {
                     // Note the "default" (unedited) amount is ALL tokens.  If you change this default, you must also change it in the actuallySend() function.
-                    val amt = assetPerAccount.editableAmount?.toPlainString() ?: tokenAmountString(apc.groupInfo.tokenAmt, asset.tokenInfo?.genesisInfo?.decimal_places)
+                    val amt = assetPerAccount.editableAmount?.toPlainString() ?: tokenAmountString(apc.groupInfo.tokenAmount, asset.tokenInfo?.genesisInfo?.decimal_places)
                     WallyDecimalEntry(mutableStateOf(amt)) {
                         try
                         {
@@ -368,7 +368,7 @@ fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, allo
                 else
                 {
                     Spacer(modifier.width(2.dp))
-                    val amt = tokenAmountString(apc.groupInfo.tokenAmt, asset.tokenInfo?.genesisInfo?.decimal_places)
+                    val amt = tokenAmountString(apc.groupInfo.tokenAmount, asset.tokenInfo?.genesisInfo?.decimal_places)
                     val lenAdjust = 1.0 // 5.0/max(amt.length,5)
                     val fontSize = if (verbosity > 0) 2.0*lenAdjust else 1.0*lenAdjust
                     Box(modifier = modifier.weight(0.50f).align(Alignment.CenterVertically)) {

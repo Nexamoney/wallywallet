@@ -249,3 +249,69 @@ From release: https://gitlab.com/nexa/nexa/-/releases/nexa1.4.0.0
 2. Uncompress
 3. Copy nexa-1.4.0.0/lib/libnexa.0.dylib into wally root as libnexa.dylib
 4. codesign --deep --force --sign - ./libnexa.dylib
+
+
+## App links and adb cheat sheet
+```
+cd ~/Android/Sdk/platform-tools
+```
+
+View device logs:
+```bash
+./adb logcat
+```
+
+Uninstall/reinstall your app:
+```bash
+./adb uninstall info.bitcoinunlimited.www.wally
+```
+
+```bash
+adb install path/to/your.apk
+```
+
+List packages:
+```
+./adb shell pm list packages | grep wally
+```
+
+
+You can manually enable the updated verification process. To do so, run the following command in a terminal window:
+```
+./adb shell am compat enable 175408749 info.bitcoinunlimited.www.wally
+```
+
+Reset the state of Android App Links on a device
+
+```agsl
+./adb shell pm set-app-links --package info.bitcoinunlimited.www.wally 0 all
+```
+
+Invoke the domain verification process
+```
+./adb shell pm verify-app-links --re-verify info.bitcoinunlimited.www.wally
+sleep 30
+./adb shell pm get-app-links info.bitcoinunlimited.www.wally
+```
+```
+Code | State
+0 | UNVERIFIED
+1 | VERIFIED
+1024 | NO_RESPONSE (no assetlinks.json, unreachable, invalid)
+2048 | USER_DENIED
+4096 | USER_SELECTED (accepted manually)
+```
+
+Trigger the link and see if it works:
+```agsl
+./adb shell am start -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d "http://w.nexa.org/nqtsq5g52pv6hwe2xpserv8nacn8lf6ygxwc8jkwgqzvjkc9"
+```
+```agsl
+./adb shell am start -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d "https://w.nexa.org/nqtsq5g52pv6hwe2xpserv8nacn8lf6ygxwc8jkwgqzvjkc9"
+```
+
+Check your device's connectivity to the file (curl, wget aren't installed for me):
+```
+./adb shell 'curl -I https://w.nexa.org/.well-known/assetlinks.json'
+./adb shell 'wget -O - https://w.nexa.org/.well-known/assetlinks.json'
+```

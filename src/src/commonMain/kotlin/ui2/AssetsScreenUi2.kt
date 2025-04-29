@@ -49,7 +49,7 @@ fun AssetListItemViewUi2(assetPerAccount: AssetPerAccount, verbosity: Int = 1, a
 
     val hasImage = if (asset.iconImage != null) "yes" else "null"
     LogIt.info("Asset ${asset.name} icon Image ${hasImage} icon bytes: ${asset.iconBytes?.size} icon url: ${asset.iconUri}")
-    val amt = tokenAmountString(apc.groupInfo.tokenAmt, asset.tokenInfo?.genesisInfo?.decimal_places)
+    val amt = tokenAmountString(apc.groupInfo.tokenAmount, asset.tokenInfo?.genesisInfo?.decimal_places)
     val name = (if ((nft != null) && (nft.title.isNotEmpty())) nft.title else assetName)
 
     Spacer(Modifier.height(8.dp))
@@ -92,7 +92,7 @@ fun AssetListItemViewUi2(assetPerAccount: AssetPerAccount, verbosity: Int = 1, a
           },
           trailingContent = {
               // If its an NFT, don't show the quantity if they have just 1
-              if ((nft == null)||(apc.groupInfo.tokenAmt != 1L))
+              if ((nft == null)||(apc.groupInfo.tokenAmount != 1L))
                   Text(amt, style = MaterialTheme.typography.bodyLarge)
           }
         )

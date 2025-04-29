@@ -68,10 +68,10 @@ fun TricklePayDomainView(from: TdppDomain?, to: TdppDomain, modifier: Modifier =
     }
 
     var assetInfo by remember { mutableStateOf(to.assetInfo)}
-    var maxper = remember { mutableStateOf(fmtMax(to.maxper)) }
-    var maxday = remember { mutableStateOf(fmtMax(to.maxday)) }
-    var maxweek = remember { mutableStateOf(fmtMax(to.maxweek)) }
-    var maxmonth = remember { mutableStateOf(fmtMax(to.maxmonth)) }
+    val maxper = remember { mutableStateOf(fmtMax(to.maxper)) }
+    val maxday = remember { mutableStateOf(fmtMax(to.maxday)) }
+    val maxweek = remember { mutableStateOf(fmtMax(to.maxweek)) }
+    val maxmonth = remember { mutableStateOf(fmtMax(to.maxmonth)) }
 
 
     var maxperBkg by remember { mutableStateOf<Color?>(null) }
@@ -84,7 +84,7 @@ fun TricklePayDomainView(from: TdppDomain?, to: TdppDomain, modifier: Modifier =
     Column(modifier = modifier.testTag("TricklePayDomainViewTag")) {
         if (from == to) CenteredSectionText(S.EditTpRegistration)
         else CenteredSectionText(S.AcceptTpRegistration)
-        Text(to.domain)
+        Text(to.domain, modifier.testTag("TricklePayDomainViewDomainName"))
         CenteredSectionText(S.AcceptTpRegistrationTopic)
         Text(to.topic)
         CenteredSectionText(S.Actions)

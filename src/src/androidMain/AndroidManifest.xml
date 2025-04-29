@@ -28,6 +28,8 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
 
+        <!-- this is for web credentials meta-data android:name="asset_statements" android:resource="@string/asset_statements" / -->
+
         <!-- Prompt Google Play services to install the backported photo picker module -->
         <service android:name="com.google.android.gms.metadata.ModuleDependencies" android:enabled="false" android:exported="false">
             <intent-filter>
@@ -43,7 +45,7 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustPan"
             >
-            <intent-filter android:label="">
+            <intent-filter android:autoVerify="true" android:label="">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -51,7 +53,7 @@
                     android:host="app.wallywallet.org"
                     android:pathPrefix="/" />
             </intent-filter>
-            <intent-filter android:label="">
+            <intent-filter android:autoVerify="true" android:label="">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -59,21 +61,17 @@
                     android:host="app.wallywallet.org"
                     android:pathPrefix="/" />
             </intent-filter>
-            <intent-filter android:label="">
+            <intent-filter android:autoVerify="true" android:label="">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="http"
-                    android:host="w.nexa.org"
-                    android:pathPrefix="/" />
+                <data android:scheme="http" android:host="w.nexa.org" />
             </intent-filter>
-            <intent-filter android:label="">
+            <intent-filter android:autoVerify="true" android:label="">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https"
-                    android:host="w.nexa.org"
-                    android:pathPrefix="/" />
+                <data android:scheme="https" android:host="w.nexa.org" />
             </intent-filter>
 
             <intent-filter>

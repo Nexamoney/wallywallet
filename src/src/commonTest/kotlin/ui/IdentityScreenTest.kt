@@ -7,19 +7,15 @@ import info.bitcoinunlimited.www.wally.ui2.IdentityScreen
 import info.bitcoinunlimited.www.wally.ui2.ScreenNav
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.rem
+import ui2.WallyUiTestBase
 import ui2.settle
 import ui2.setupTestEnv
 import ui2.waitForCatching
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
-class IdentityScreenTest
+class IdentityScreenTest:  WallyUiTestBase(false)
 {
-    init
-    {
-       setupTestEnv()
-    }
-
     @Test
     fun identityScreenTest()
     {

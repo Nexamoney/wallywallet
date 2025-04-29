@@ -33,7 +33,7 @@ var maxPoolWait = 500
 // Reset WallyApp for every test under JVM?
 var jvmResetWallyApp = false
 
-internal fun setupTestEnv()
+internal fun setupTestEnv(openAllAccounts:Boolean = true)
 {
     LogIt.info(sourceLoc() + ": Setting up TEST environment")
     // On some platforms, wallyApp is set up by the platform-specific app instantiation.
@@ -41,24 +41,41 @@ internal fun setupTestEnv()
     // In other platforms or contexts, the platform-specific app appears to not be instantiated (during tests).
     if (wallyApp == null)
     {
+        LogIt.info(sourceLoc() + ": initializing libnexa")
         initializeLibNexa()
+        BLOCKCHAIN_LOGGING = true
+        LogIt.info(sourceLoc() + ": creating wallyApp")
         wallyApp = CommonApp(true)
+        LogIt.info(sourceLoc() + ": wallyApp.onCreate")
         wallyApp!!.onCreate()
     }
-    wallyApp!!.openAllAccounts()
+    if (openAllAccounts)
+    {
+        LogIt.info(sourceLoc() + ": opening all accounts")
+        wallyApp!!.openAllAccounts()
+        LogIt.info(sourceLoc() + ": holding blockchain refs")
+    }
+    // HACK: In these tests, wallets are created and deleted rapidly.  This can cause the blockchains to be started up and shutdown
+    // rapidly as well.  This means connecting and disconnecting from nodes repeatedly, which gets IPs banned.
+    // So force the blockchains to remain open even if all wallets are deleted from it
+    for(b in blockchains.values)
+    {
+        b.attachedWallets++
+    }
+    LogIt.info(sourceLoc() + ": setupTestEnv complete")
 }
 
 //val sched = TestCoroutineScheduler()
 //val testDispatcher = StandardTestDispatcher(sched, "testDispatcher")
 var installedTestDispatcher = 0
-open class WallyUiTestBase
+open class WallyUiTestBase(openAllAccounts: Boolean = true)
 {
     var sched = TestCoroutineScheduler()
     var testDispatcher = StandardTestDispatcher(sched)
 
     // You only need to do this once
     init {
-        setupTestEnv()
+        setupTestEnv(openAllAccounts)
     }
 
     @BeforeTest
@@ -89,7 +106,7 @@ open class WallyUiTestBase
             sched.advanceTimeBy(1000)
             sched.runCurrent()
             val poolWaitStart = millinow()
-            while ((millinow() - poolWaitStart < maxPoolWait) && (libNexaJobPool.jobs.size != 0) && (libNexaJobPool.availableThreads != libNexaJobPool.allThreads.size)) millisleep(50U)
+            while ((millinow() - poolWaitStart < maxPoolWait) && (libNexaJobPool.jobs.size != 0) && (libNexaJobPool.availableThreads.value!= libNexaJobPool.allThreads.size)) millisleep(50U)
         }
 
         millisleep(afterTestDelay.toULong())
@@ -112,16 +129,22 @@ open class WallyUiTestBase
 fun ComposeUiTest.settle(scope: TestScope? = null)
 {
     val poolWaitStart = millinow()
-    while ((millinow()-poolWaitStart < ui2.maxPoolWait) && (libNexaJobPool.jobs.size != 0) && (libNexaJobPool.availableThreads != libNexaJobPool.allThreads.size)) millisleep(50U)
+    while ((millinow()-poolWaitStart < ui2.maxPoolWait) && (libNexaJobPool.jobs.size != 0) && (libNexaJobPool.availableThreads.value != libNexaJobPool.allThreads.size))
+    {
+        LogIt.info("Settling")
+        millisleep(1000U)
+    }
 
     if (scope!=null)
     {
+        LogIt.info("advanceTimeBy")
         scope.testScheduler.advanceTimeBy(1000)
         scope.testScheduler.runCurrent()
     }
     else
     {
         // The above does waitForIdle with a timeout
+        LogIt.info("waitForIdle")
         waitForIdle()
         //catch (e: TimeoutCancellationException)
         //{

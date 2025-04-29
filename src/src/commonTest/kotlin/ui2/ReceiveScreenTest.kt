@@ -13,10 +13,12 @@ import org.nexa.libnexakotlin.*
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+private val LogIt = GetLog("wally.test")
 
 @OptIn(ExperimentalTestApi::class)
-class ReceiveScreenTest:WallyUiTestBase()
+class ReceiveScreenTest:WallyUiTestBase(false)
 {
+    val cs = ChainSelector.NEXAREGTEST
     lateinit var viewModelStoreOwner: ViewModelStoreOwner
 
     @BeforeTest
@@ -37,11 +39,11 @@ class ReceiveScreenTest:WallyUiTestBase()
     @Test
     fun receiveScreenContentTest()
     {
-        val cs = ChainSelector.NEXAREGTEST
+        LogIt.info("TEST receiveScreenContentTest")
         //val account = wallyApp!!.newAccount("receiveScreenContentTest", 0U, "", cs)!!
         val account = Account("rcvScrnContent", chainSelector = cs)
         val address = Pay2PubKeyTemplateDestination(ChainSelector.NEXAREGTEST, UnsecuredSecret(ByteArray(32, { 1.toByte()})), 1234)
-
+        LogIt.info("SETUP receiveScreenContentTest complete")
         runComposeUiTest {
             //val clipboardText = mutableStateOf<String?>(null)
             // Set selected account to populate the UI
@@ -66,6 +68,7 @@ class ReceiveScreenTest:WallyUiTestBase()
                 }
 
             }
+            LogIt.info("UI content set")
             settle()
             val tag = "receiveScreen:receiveAddress"
             waitForCatching(60000) { onNodeWithTag(tag).isDisplayed() }

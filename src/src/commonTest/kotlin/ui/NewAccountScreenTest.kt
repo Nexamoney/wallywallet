@@ -10,26 +10,19 @@ import info.bitcoinunlimited.www.wally.ui2.newAccountState
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.initializeLibNexa
+import ui2.WallyUiTestBase
+import ui2.settle
 import ui2.setupTestEnv
+import ui2.waitForCatching
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTestApi::class)
 @kotlin.ExperimentalUnsignedTypes
-class NewAccountScreenTest
+class NewAccountScreenTest: WallyUiTestBase(false)
 {
     val cs = ChainSelector.NEXA
-
-    init {
-        initializeLibNexa()
-    }
-
-    @BeforeTest
-    fun init()
-    {
-        setupTestEnv()
-    }
 
     @Test
     fun selectBlockchainAndCreateAccount() = runComposeUiTest {
@@ -48,7 +41,7 @@ class NewAccountScreenTest
         onNodeWithText("NEXA").assertExists()
          */
 
-        onNodeWithText(i18n(S.createNewAccount)).assertExists()
+        waitForCatching {  onNodeWithText(i18n(S.createNewAccount)).isDisplayed() }
         onNodeWithText(i18n(S.createNewAccount)).performClick()
         assertTrue { newAccountState.value == NewAccountState() }
     }
@@ -60,7 +53,7 @@ class NewAccountScreenTest
             NewAccountScreen(accountGuiSlots.collectAsState(), false, ScreenNav())
         }
 
-        onNodeWithTag("AccountNameInput").assertExists()
+        waitForCatching {  onNodeWithTag("AccountNameInput").isDisplayed() }
         onNodeWithTag("AccountNameInput").performTextInput("account")
 
         onNodeWithText(i18n(S.createNewAccount)).assertExists()
@@ -75,7 +68,7 @@ class NewAccountScreenTest
             NewAccountScreen(accountGuiSlots.collectAsState(), false, ScreenNav())
         }
 
-        onNodeWithTag("AccountNameInput").assertExists()
+        waitForCatching { onNodeWithTag("AccountNameInput").isDisplayed() }
         onNodeWithTag("AccountNameInput").performTextInput("longaccountname")
     }
 
@@ -85,8 +78,8 @@ class NewAccountScreenTest
         setContent {
             NewAccountScreen(accountGuiSlots.collectAsState(), false, ScreenNav())
         }
-
-        onNodeWithTag("NewAccountPinInput").assertExists()
+        settle()
+        waitForCatching { onNodeWithTag("NewAccountPinInput").isDisplayed() }
         onNodeWithTag("NewAccountPinInput").performTextInput("1234")
 
         onNodeWithText(i18n(S.createNewAccount)).assertExists()
@@ -101,8 +94,9 @@ class NewAccountScreenTest
         setContent {
             NewAccountScreen(accountGuiSlots.collectAsState(), false, ScreenNav())
         }
+        settle()
 
-        onNodeWithTag("NewAccountPinInput").assertExists()
+        waitForCatching {  onNodeWithTag("NewAccountPinInput").isDisplayed() }
         onNodeWithTag("NewAccountPinInput").performTextInput("12")
     }
 
@@ -113,7 +107,7 @@ class NewAccountScreenTest
             NewAccountScreen(accountGuiSlots.collectAsState(), false, ScreenNav())
         }
 
-        onNodeWithTag("NewAccountPinInput").assertExists()
+        waitForCatching { onNodeWithTag("NewAccountPinInput").isDisplayed() }
         onNodeWithTag("NewAccountPinInput").performTextInput("1234567890")
     }
 

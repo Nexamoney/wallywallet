@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import com.github.weisj.jsvg.parser.LoaderContext
 import com.github.weisj.jsvg.parser.SVGLoader
 import info.bitcoinunlimited.www.wally.getResourceFile
 import io.ktor.http.*
@@ -41,7 +42,7 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
     if (name.endsWith(".svg", true))
     {
         val loader = SVGLoader()
-        val svgdoc = if (bytes != null) loader.load(bytes.inputStream())
+        val svgdoc = if (bytes != null) loader.load(bytes.inputStream(), null, LoaderContext.createDefault())
         else try
         {
             loader.load(java.net.URL(mediaUri))
@@ -122,7 +123,7 @@ actual fun MpIcon(mediaUri: String, widthPx: Int, heightPx: Int): ImageBitmap
     else if (lcasename.endsWith(".svg", true))
     {
         val loader = SVGLoader()
-        val svgdoc = if (mediaData != null) loader.load(ByteArrayInputStream(mediaData))
+        val svgdoc = if (mediaData != null) loader.load(ByteArrayInputStream(mediaData), null, LoaderContext.createDefault() )
         else try
         {
             loader.load(java.net.URL(mediaUri))

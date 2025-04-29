@@ -315,6 +315,7 @@
 		8E1ECA712AAA001F00759B4F /* strings_no.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_no.bin; path = ../src/src/commonMain/resources/strings_no.bin; sourceTree = "<group>"; };
 		8E1ECA722AAA001F00759B4F /* strings_de.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_de.bin; path = ../src/src/commonMain/resources/strings_de.bin; sourceTree = "<group>"; };
 		8E1ECA732AAA002000759B4F /* strings_in.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_in.bin; path = ../src/src/commonMain/resources/strings_in.bin; sourceTree = "<group>"; };
+		EA4667B52DB9654A0001F96E /* iosApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iosApp.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -621,6 +622,7 @@
 		7555FF7D242A565900829871 /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
+				EA4667B52DB9654A0001F96E /* iosApp.entitlements */,
 				058557BA273AAA24004C7B11 /* Assets.xcassets */,
 				7555FF82242A565900829871 /* ContentView.swift */,
 				7555FF8C242A565B00829871 /* Info.plist */,
@@ -1128,6 +1130,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "\n8947683289\n8947683289\n\n8947683289\n8947683289\n8947683289\n8947683289\n8947683289\n8947683289";
@@ -1164,6 +1167,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = iosApp/iosApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "\n8947683289\n8947683289\n8947683289\n8947683289\n8947683289\n8947683289";
