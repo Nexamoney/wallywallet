@@ -1149,42 +1149,7 @@ fun WallyNumericInputFieldBalance(
                   }
               }
           },
-          modifier = mod.weight(1f).onFocusChanged {
-              if (it.isFocused)
-              {
-                  softKeyboardBar.value = { modifier ->
-                      Row(modifier.background(samsungKeyBoardGray), horizontalArrangement = Arrangement.SpaceEvenly) {
-                          val fontStyle = MaterialTheme.typography.labelLarge
-                          TextButton(
-                            modifier = mod,
-                            content = { Text(i18n(S.sendAll), style = fontStyle) },
-                            onClick = {
-                                vm.setSendQty(vm.balanceViewModel.balance.value)
-                            }
-                          )
-                          TextButton(
-                            modifier = mod,
-                            content = { Text(i18n(S.thousand), style = fontStyle) },
-                            onClick = {
-                              vm.multiplySendQty(1000) }
-                          )
-                          TextButton(
-                            modifier = mod,
-                            content = { Text(i18n(S.million), style = fontStyle) },
-                            onClick = { vm.multiplySendQty(1000000) }
-                          )
-                          TextButton(
-                            modifier = mod,
-                            content = { Text(i18n(S.cancel), style = fontStyle) }, onClick = { vm.setSendQty("") }
-                          )
-                      }
-                  }
-              }
-              else
-              {
-                  softKeyboardBar.value = null
-              }
-          },
+          modifier = mod.weight(1f),
           singleLine = singleLine,
           readOnly = isReadOnly
         )
