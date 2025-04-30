@@ -620,6 +620,7 @@ fun SendScreenContent(
     val keyboardController = LocalSoftwareKeyboardController.current
     var isScanningQr by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
+    val amountFocusRequester = remember { FocusRequester() }
     val uiState = viewModel.uiState.collectAsState()
     val assetsToSendState = viewModel.assetsToSend.collectAsState()
     val hasInternet = viewModel.hasP2pConnection.collectAsState().value
@@ -700,7 +701,7 @@ fun SendScreenContent(
                       placeholder = i18n(S.enterNEXAmount),
                       isReadOnly = isConfirming,
                       hasIosDoneButton = !isConfirming,
-                      vm = viewModel
+                      focusRequester = amountFocusRequester
                     ) {
                         viewModel.setSendQty(it)
                     }
@@ -713,6 +714,7 @@ fun SendScreenContent(
                             AmountSelector.MILLION -> viewModel.multiplySendQty(1000000)
                             AmountSelector.CLEAR -> viewModel.setSendQty("")
                         }
+                        amountFocusRequester.requestFocus()
                     }
                     Spacer(Modifier.height(16.dp))
                     if (!hasInternet)
@@ -1100,65 +1102,6 @@ fun WallyInputField(
       readOnly = isReadOnly
     )
 }
-
-@Composable
-fun WallyNumericInputFieldBalance(
-    mod: Modifier = Modifier,
-    amountString: String,
-    label: String,
-    placeholder: String,
-    singleLine: Boolean = true,
-    decimals: Boolean = true,
-    vm: SendScreenViewModel,
-    action: ImeAction = ImeAction.Done,
-    isReadOnly: Boolean = true,
-    hasIosDoneButton: Boolean = true,
-    onValueChange: (String) -> Unit
-)
-{
-
-    // Validate input and allow max 2 decimal places
-    fun validateInput(input: String): Boolean {
-        val regex = if (decimals)
-            // Allow empty input or input that matches the regex for numbers with max 2 decimal places
-            Regex("^\\d*(\\.\\d{0,2})?\$")
-        else
-            // Allow only whole numbers (no decimals)
-            Regex("^\\d*\$")
-        return input.matches(regex)
-    }
-
-    Row {
-        OutlinedTextField(
-          value = amountString,
-          onValueChange = { newValue ->
-              if (validateInput(newValue)) {
-                  onValueChange(newValue)
-              }
-          },
-          keyboardOptions = KeyboardOptions(
-            imeAction = action,
-            keyboardType = KeyboardType.Number
-          ),
-          label = { Text(label) },
-          placeholder = { Text(placeholder) },
-          trailingIcon = {
-              if (amountString.isNotEmpty()) {
-                  IconButton(onClick = { if (!isReadOnly) onValueChange("") }) {
-                      Icon(Icons.Filled.Close, contentDescription = i18n(S.clearAmount))
-                  }
-              }
-          },
-          modifier = mod.weight(1f),
-          singleLine = singleLine,
-          readOnly = isReadOnly
-        )
-
-        if (hasIosDoneButton)
-            DoneButtonOptional(Modifier.align(Alignment.CenterVertically))
-    }
-}
-
 
 /*
     This is a temporary workaround because compose does not support Done button for iOS numeric keyboard

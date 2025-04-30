@@ -13,6 +13,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material.icons.outlined.Cancel
@@ -25,6 +26,8 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -48,9 +51,7 @@ import androidx.compose.ui.unit.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui2.SyncViewModel
-import info.bitcoinunlimited.www.wally.ui2.SyncViewModelImpl
-import info.bitcoinunlimited.www.wally.ui2.softKeyboardBar
+import info.bitcoinunlimited.www.wally.ui2.*
 import info.bitcoinunlimited.www.wally.ui2.theme.*
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.CancellationException
@@ -1388,3 +1389,61 @@ fun WallyAmountSelectorRow(setAmount: (AmountSelector) -> Unit)
         )
     }
 }
+
+@Composable
+fun WallyNumericInputFieldBalance(
+  mod: Modifier = Modifier,
+  amountString: String,
+  label: String,
+  placeholder: String,
+  singleLine: Boolean = true,
+  decimals: Boolean = true,
+  action: ImeAction = ImeAction.Done,
+  isReadOnly: Boolean = true,
+  hasIosDoneButton: Boolean = true,
+  focusRequester: FocusRequester = remember { FocusRequester() },
+  onValueChange: (String) -> Unit
+)
+{
+    // Validate input and allow max 2 decimal places
+    fun validateInput(input: String): Boolean {
+        val regex = if (decimals)
+        // Allow empty input or input that matches the regex for numbers with max 2 decimal places
+            Regex("^\\d*(\\.\\d{0,2})?\$")
+        else
+        // Allow only whole numbers (no decimals)
+            Regex("^\\d*\$")
+        return input.matches(regex)
+    }
+
+    Row {
+        OutlinedTextField(
+          value = amountString,
+          onValueChange = { newValue ->
+              if (validateInput(newValue)) {
+                  onValueChange(newValue)
+              }
+          },
+          modifier = mod.weight(1f).focusRequester(focusRequester),
+          keyboardOptions = KeyboardOptions(
+            imeAction = action,
+            keyboardType = KeyboardType.Number
+          ),
+          label = { Text(label) },
+          placeholder = { Text(placeholder) },
+          trailingIcon = {
+              if (amountString.isNotEmpty()) {
+                  IconButton(onClick = { if (!isReadOnly) onValueChange("") }) {
+                      Icon(Icons.Filled.Close, contentDescription = i18n(S.clearAmount))
+                  }
+              }
+          },
+          singleLine = singleLine,
+          readOnly = isReadOnly
+        )
+
+        if (hasIosDoneButton)
+            DoneButtonOptional(Modifier.align(Alignment.CenterVertically))
+    }
+}
+
