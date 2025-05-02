@@ -683,17 +683,6 @@ fun SendScreenContent(
                         viewModel.setToAddress(it)
                     }
                     Spacer(Modifier.height(8.dp))
-                    WallyInputField(
-                      mod = Modifier.testTag("noteInput"),
-                      text = note,
-                      label = i18n(S.noteOptional),
-                      placeholder = i18n(S.editSendNoteHint),
-                      iconContentDescription = i18n(S.clearNote),
-                      isReadOnly = isConfirming
-                    ) {
-                        viewModel.setNote(it)
-                    }
-                    Spacer(Modifier.height(8.dp))
                     WallyNumericInputFieldBalance(
                       mod = Modifier.testTag("amountToSendInput"),
                       amountString = amount,
@@ -715,6 +704,17 @@ fun SendScreenContent(
                             AmountSelector.CLEAR -> viewModel.setSendQty("")
                         }
                         amountFocusRequester.requestFocus()
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    WallyInputField(
+                      mod = Modifier.testTag("noteInput"),
+                      text = note,
+                      label = i18n(S.noteOptional),
+                      placeholder = i18n(S.editSendNoteHint),
+                      iconContentDescription = i18n(S.clearNote),
+                      isReadOnly = isConfirming
+                    ) {
+                        viewModel.setNote(it)
                     }
                     Spacer(Modifier.height(16.dp))
                     if (!hasInternet)
