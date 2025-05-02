@@ -1385,7 +1385,7 @@ fun WallyAmountSelectorRow(setAmount: (AmountSelector) -> Unit)
         )
         TextButton(
           modifier = mod,
-          content = { Text(i18n(S.cancel), style = fontStyle) }, onClick = { setAmount(AmountSelector.CLEAR) }
+          content = { Text(i18n(S.clear), style = fontStyle) }, onClick = { setAmount(AmountSelector.CLEAR) }
         )
     }
 }
