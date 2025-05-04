@@ -367,6 +367,14 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         }
     }
 
+    /** Returns true is this app is visible on the screen
+     * (not background, not locked screen)
+     * */
+    fun visible(): Boolean
+    {
+        return (activityCount > 0)
+    }
+
     class LooperThread : Thread()
     {
         lateinit var handler: Handler
@@ -456,7 +464,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     /** Create a notification of a pending intent */
     fun notify(intent: Intent, content: String, activity: AppCompatActivity, actionRequired: Boolean = true, overwrite: Int = -1): Int
     {
-        return notify(intent, "Wally Wallet", content, activity, actionRequired, overwrite)
+        return notify(intent, i18n(S.app_long_name), content, activity, actionRequired, overwrite)
     }
 
     fun notifyPopup(intent: Intent, title: String, content: String, activity: AppCompatActivity, actionRequired: Boolean = true, overwrite: Int = -1): Int
@@ -501,6 +509,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
 
     override fun onActivityStarted(activity: Activity)
     {
+        activityCount++
     }
 
     override fun onActivityResumed(activity: Activity)
@@ -516,6 +525,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
 
     override fun onActivityStopped(activity: Activity)
     {
+        activityCount--
     }
 
     override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle)

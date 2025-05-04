@@ -605,7 +605,7 @@ fun onTradeButton(a: AssetInfo?)
                 {
                     displayNotice(S.IssuedToConnection)
                     val c = cnxn
-                    later {  // Can't do network in UI thread
+                    laterJob {  // Can't do network in UI thread
                         // If we are connected, open the URL in the connected device (computer)
                         val connectedUrl = Url(c.proto + "://" + c.hostPort + "/").resolve( uri.path + "?cookie=${c.cookie}")
 

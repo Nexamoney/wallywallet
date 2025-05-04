@@ -50,6 +50,7 @@ Good luck!
 ]
     </string>
     <string name="app_name" translatable="false">Wally</string>
+    <string name="app_long_name" translatable="false">Wally Nexa Wallet</string>
     <string-array name="CurrencyTypes">
         <item>NEX</item>
         <item>USD</item>
@@ -629,7 +630,6 @@ Good luck!
     <!-- Trickle Pay -->
     <string name="SharedNotification">shared %what</string>
     <string name="AuthAutopayTitle">Authorized Payment</string>
-    <string name="PaymentRequest">Payment requested</string>
     <string name="AuthAutopayDeniedTitle">Authorized Payment Denied</string>
     <string name="AuthAutopay" formatted="false">%amt to %domain</string>
     <string name="TpToBeDone">Your Trickle Pay connections will be displayed here</string>
@@ -641,6 +641,11 @@ Good luck!
     <string name="TpAssetInfoRequest">Asset information requests</string>
     <string name="TpAssociatedAccount" formatted="false">Associated With Account: %act</string>
     <string name="TpAssociatedAddress" formatted="false">%addr</string>
+
+    <string name="SpecialTxNotif">Transaction Authorization Request</string>
+    <string name="AssetNotif">Asset Information Request</string>
+    <string name="PaymentRequest">Payment Request</string>
+    <string name="IdentityNotif">Identity/Login Request</string>
 
     <string name="TpMaxHeading">Autopay Limits</string>
     <string name="TpMaxPer">Max per request</string>

@@ -26,6 +26,17 @@ import wpw.src.generated.resources.Res
 
 private val LogIt = GetLog("BU.wally.utils_ios")
 
+
+actual fun notify(title: String?, content: String, onlyIfBackground: Boolean): Int
+{
+    return -1
+}
+/* Remove the notification returned by notify */
+actual fun denotify(id: Int): Boolean
+{
+    return true
+}
+
 // on android this fails with couldn't find "libskiko-android-arm64.so", see https://github.com/JetBrains/skiko/issues/531
 fun scaleUsingSurface(image: Image, width: Int, height: Int): Image
 {
