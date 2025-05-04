@@ -47,7 +47,20 @@ expect fun GetHttpClient(timeoutInMs: Number):HttpClient
 /** Get a image from the file system (probably a QR code) and get a wally command string from it */
 expect fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
 
+/** Provides a stack trace, without the provided lines */
 expect fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: MutableSet<String>?=null): String
+
+/** Generates a notification, returns a handle to remove the notification.
+ * DO NOT call this to tell the user some information like $ has been received.
+ * This API is only to be used when a user decision is needed, probably triggered by active use of a connected service.
+ * onlyIfBackground is a suggestion as to what the platform specific implementation ought to do, but if true and there is no other
+ * audible means of drawing the user's attention, a notification could be generated anyway.
+ * @param title, if null, the app long name will be used -- "Wally Nexa Wallet"
+ * @param content, notifications can have details
+ * */
+expect fun notify(title: String? = null, content: String = "", onlyIfBackground: Boolean=true): Int
+/* Remove the notification returned by notify */
+expect fun denotify(id: Int): Boolean
 
 // For platforms that ktor can't do https on (ios)
 // expect fun loadhttps(url: String):ByteArray

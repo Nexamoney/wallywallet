@@ -55,6 +55,32 @@ actual fun scaleTo(imageBytes: ByteArray, width: Int, height: Int, outFormat: En
 }
  */
 
+var notificationId = -1
+actual fun notify(title: String?, content: String, onlyIfBackground: Boolean): Int
+{
+    val t = title ?: i18n(S.app_long_name)
+    val app = wallyAndroidApp
+    if (app != null)
+    {
+        if (!app.visible())
+        {
+            val intent = Intent(wallyAndroidApp, ComposeActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+            notificationId = app.notify(intent, t, content, currentActivity as AppCompatActivity, overwrite = notificationId)
+        }
+    }
+    return notificationId
+}
+
+actual fun denotify(id: Int): Boolean
+{
+    if (id == -1) return false
+    wallyAndroidApp?.denotify(id)
+    if (notificationId == id) notificationId = -1
+    return true
+}
+
 actual fun makeImageBitmap(imageBytes: ByteArray, width: Int, height: Int, scaleMode: ScaleMode): ImageBitmap?
 {
     val imIn = BitmapFactory.decodeByteArray(imageBytes,0, imageBytes.size)

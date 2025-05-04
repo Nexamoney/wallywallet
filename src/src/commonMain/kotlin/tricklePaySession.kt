@@ -1009,7 +1009,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         val wal = acc.wallet
         val challengerId = host?.toByteArray()
 
-        var matches = mutableListOf<TricklePayAssetInfo>()
+        val matches = mutableListOf<TricklePayAssetInfo>()
         wal.forEachUtxo { spendable ->
                 val constraint = spendable.priorOutScript
                 if (constraint.matches(stemplate, true) != null)
@@ -1261,6 +1261,16 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
 
 fun HandleTdpp(iuri: Uri, then: ((String, String, Boolean?)->Unit)?= null): Boolean
 {
+    // For certain screens, just ignore duplicate requests
+    if (nav.currentScreen.value == ScreenId.SpecialTxPerm)
+    {
+        val ctp = nav.curData.value as? TricklePaySession
+        if ((ctp != null)&&(ctp.proposalUrl == iuri))
+        {
+            return false
+        }
+    }
+
     val bkg = wallyApp!!.amIbackground()  // if the app is backgrounded, we need to notify and not just change the GUI
     val scheme = iuri.scheme
     val path = iuri.path
@@ -1383,6 +1393,11 @@ fun HandleTdpp(iuri: Uri, then: ((String, String, Boolean?)->Unit)?= null): Bool
         }
         else if (path == "/assets")
         {
+            // Repeated asset info requests makes no sense, just ignore if I'm already in the asset info page
+            if (nav.currentScreen.value == ScreenId.AssetInfoPerm)
+            {
+                return false
+            }
             val result = tp.handleAssetInfoRequest(iuri)
 
             when(result)

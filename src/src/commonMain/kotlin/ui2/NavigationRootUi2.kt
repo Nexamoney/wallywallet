@@ -216,6 +216,25 @@ enum class ScreenId
         }
     }
 
+    /** Return true if we want to generate a notification when we go to this screen, because a user decision is needed.
+     *  Typically this is only set for the screens that ask the user to authorize something (e.g. TDPP or identity requests)
+     *
+     *  Whether to generate a notification for a already-foregrounded app is a platform specific decision irrelevant to this return value.
+     *  Decide that inside the actual notify/denotify utils.kt implementatons
+     */
+    val notify:Int?
+        get()
+    {
+        return when (this)
+        {
+            SpecialTxPerm -> S.SpecialTxNotif
+            AssetInfoPerm -> S.AssetNotif
+            SendToPerm -> S.PaymentRequest
+            IdentityOp -> S.IdentityNotif
+            else -> null
+        }
+    }
+
     fun title(): String
     {
         fun pva(): String
@@ -295,6 +314,10 @@ open class ScreenNav()
         curData.value = data
         currentScreenDepart = null
         NativeTitle(title())
+        screen.notify?.let {
+            val notifId = notify(i18n(it), "", false)
+            currentScreenDepart = { denotify(notifId) }
+        }
         return this
     }
 
