@@ -112,6 +112,14 @@
 		0B6095E92D12E51200AAD40E /* UiComponentLibrary.ios.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095E12D12E51200AAD40E /* UiComponentLibrary.ios.kt */; };
 		0B6095EA2D12E51200AAD40E /* LoadingAnimationView.ios.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095DF2D12E51200AAD40E /* LoadingAnimationView.ios.kt */; };
 		0B6095EB2D12E51200AAD40E /* WallyThemeUi2.ios.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095DD2D12E51200AAD40E /* WallyThemeUi2.ios.kt */; };
+		0BBE60EE2DBB85D6009B1E46 /* AccountPill.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BBE60EA2DBB85D6009B1E46 /* AccountPill.kt */; };
+		0BBE60EF2DBB85D6009B1E46 /* TxHistory.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BBE60ED2DBB85D6009B1E46 /* TxHistory.kt */; };
+		0BBE60F02DBB85D6009B1E46 /* Assets.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BBE60EB2DBB85D6009B1E46 /* Assets.kt */; };
+		0BBE60F12DBB85D6009B1E46 /* ListItems.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BBE60EC2DBB85D6009B1E46 /* ListItems.kt */; };
+		0BBE60F22DBB85D6009B1E46 /* AccountPill.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BBE60EA2DBB85D6009B1E46 /* AccountPill.kt */; };
+		0BBE60F32DBB85D6009B1E46 /* TxHistory.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BBE60ED2DBB85D6009B1E46 /* TxHistory.kt */; };
+		0BBE60F42DBB85D6009B1E46 /* Assets.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BBE60EB2DBB85D6009B1E46 /* Assets.kt */; };
+		0BBE60F52DBB85D6009B1E46 /* ListItems.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BBE60EC2DBB85D6009B1E46 /* ListItems.kt */; };
 		0BCF999B2CE65EF5002F5F0E /* ActionPermissionScreensUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99902CE65EF5002F5F0E /* ActionPermissionScreensUi2.kt */; };
 		0BCF999C2CE65EF5002F5F0E /* ShoppingScreenUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99982CE65EF5002F5F0E /* ShoppingScreenUi2.kt */; };
 		0BCF999E2CE65EF5002F5F0E /* AssetsScreenUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99912CE65EF5002F5F0E /* AssetsScreenUi2.kt */; };
@@ -275,6 +283,10 @@
 		0B6095DF2D12E51200AAD40E /* LoadingAnimationView.ios.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LoadingAnimationView.ios.kt; sourceTree = "<group>"; };
 		0B6095E02D12E51200AAD40E /* QrScannerView.ios.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = QrScannerView.ios.kt; sourceTree = "<group>"; };
 		0B6095E12D12E51200AAD40E /* UiComponentLibrary.ios.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = UiComponentLibrary.ios.kt; sourceTree = "<group>"; };
+		0BBE60EA2DBB85D6009B1E46 /* AccountPill.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = AccountPill.kt; sourceTree = "<group>"; };
+		0BBE60EB2DBB85D6009B1E46 /* Assets.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Assets.kt; sourceTree = "<group>"; };
+		0BBE60EC2DBB85D6009B1E46 /* ListItems.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ListItems.kt; sourceTree = "<group>"; };
+		0BBE60ED2DBB85D6009B1E46 /* TxHistory.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = TxHistory.kt; sourceTree = "<group>"; };
 		0BCF998C2CE65EF5002F5F0E /* WallyThemeUi2.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = WallyThemeUi2.kt; sourceTree = "<group>"; };
 		0BCF998E2CE65EF5002F5F0E /* AccountDetailScreenUi2.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = AccountDetailScreenUi2.kt; sourceTree = "<group>"; };
 		0BCF99902CE65EF5002F5F0E /* ActionPermissionScreensUi2.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ActionPermissionScreensUi2.kt; sourceTree = "<group>"; };
@@ -512,6 +524,10 @@
 		0B6095CE2D12E41000AAD40E /* views */ = {
 			isa = PBXGroup;
 			children = (
+				0BBE60EA2DBB85D6009B1E46 /* AccountPill.kt */,
+				0BBE60EB2DBB85D6009B1E46 /* Assets.kt */,
+				0BBE60EC2DBB85D6009B1E46 /* ListItems.kt */,
+				0BBE60ED2DBB85D6009B1E46 /* TxHistory.kt */,
 				0B6095C72D12E41000AAD40E /* AccountListViewUi2.kt */,
 				0B6095C82D12E41000AAD40E /* LoadingAnimationView.kt */,
 				0B6095C92D12E41000AAD40E /* QrScannerView.kt */,
@@ -763,6 +779,10 @@
 				0B6095B72D12E3C900AAD40E /* IdentityScreen.kt in Resources */,
 				0B6095B82D12E3C900AAD40E /* AddressHistoryScreen.kt in Resources */,
 				0B6095B92D12E3C900AAD40E /* SplitBillScreen.kt in Resources */,
+				0BBE60F22DBB85D6009B1E46 /* AccountPill.kt in Resources */,
+				0BBE60F32DBB85D6009B1E46 /* TxHistory.kt in Resources */,
+				0BBE60F42DBB85D6009B1E46 /* Assets.kt in Resources */,
+				0BBE60F52DBB85D6009B1E46 /* ListItems.kt in Resources */,
 				0B6095BA2D12E3C900AAD40E /* TricklePayScreen.kt in Resources */,
 				0B6095BB2D12E3C900AAD40E /* TxHistoryScreen.kt in Resources */,
 				0BCF99A42CE65EF5002F5F0E /* HomeScreenUi2.kt in Resources */,
@@ -897,6 +917,10 @@
 				8E1ECA762AAA002000759B4F /* strings_round.bin in Resources */,
 				0B551C6E2AFE910D00BA0052 /* globals.kt in Resources */,
 				0B551C622AFE910D00BA0052 /* accountdiscovery.kt in Resources */,
+				0BBE60EE2DBB85D6009B1E46 /* AccountPill.kt in Resources */,
+				0BBE60EF2DBB85D6009B1E46 /* TxHistory.kt in Resources */,
+				0BBE60F02DBB85D6009B1E46 /* Assets.kt in Resources */,
+				0BBE60F12DBB85D6009B1E46 /* ListItems.kt in Resources */,
 				0B551C6B2AFE910D00BA0052 /* listifyMap.kt in Resources */,
 				0B551C582AFE910D00BA0052 /* Theme.kt in Resources */,
 				8E1ECA782AAA002000759B4F /* strings_et.bin in Resources */,
