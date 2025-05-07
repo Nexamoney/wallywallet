@@ -95,6 +95,11 @@ cd i18n
 ```
 
 ### Execution
+To execute just run
+
+```bash
+java -jar ./src/build/libs/wpw.jar
+```
 
 In Android Studio, create a "JAR Application" in edit run configurations.  Just put the application (fat) jar file into the "Path To Jar" field.
 Then go down to "Before Launch" and add a gradle task with this project "wpw" and task name "appJar".  The Jar file is located at:
