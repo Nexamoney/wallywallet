@@ -193,9 +193,10 @@ Good luck!
     <!-- meaning remove all the text in an edit box -->
     <string name="clear">clear</string>
 
-    <string name="thousand">thousand</string>
-
-    <string name="million">million</string>
+    <!-- multiply by 1 thousand -->
+    <string name="thousand">* thousand</string>
+    <!-- multiply by 1 million -->
+    <string name="million">* million</string>
 
     <string name="required">required</string>
 

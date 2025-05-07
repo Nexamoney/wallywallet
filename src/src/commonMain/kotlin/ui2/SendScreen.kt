@@ -102,7 +102,16 @@ abstract class SendScreenViewModel(val account:MutableStateFlow<Account?>): View
 
     fun setSendQty(sendQty: String)
     {
-        val cleanedQty = sendQty.replace(",", "")
+        // TODO we need to get the number grouping separator, not assume comma
+        // actual fun getGroupingSeparator(): Char { return java.text.DecimalFormatSymbols.getInstance().groupingSeparator }
+        /*actual fun getGroupingSeparator(): Char {
+    val formatter = NSNumberFormatter()
+    formatter.numberStyle = NSNumberFormatterDecimalStyle
+    val sep = formatter.groupingSeparator ?: ","
+    return sep.first()
+}
+         */
+        val cleanedQty:String = if (sendQty == "all") account.value?.balance?.toPlainString() ?: "0" else sendQty.replace(",", "")
         uiState.value = uiState.value.copy(amount = cleanedQty)
     }
 
@@ -689,19 +698,10 @@ fun SendScreenContent(
                       placeholder = i18n(S.enterNEXAmount),
                       isReadOnly = isConfirming,
                       hasIosDoneButton = !isConfirming,
+                      hasButtonRow = true,
                       focusRequester = amountFocusRequester
                     ) {
                         viewModel.setSendQty(it)
-                    }
-                    Spacer(Modifier.height(16.dp))
-                    WallyAmountSelectorRow {
-                        when (it)
-                        {
-                            AmountSelector.ALL -> viewModel.setSendQty(viewModel.balanceViewModel.balance.value)
-                            AmountSelector.THOUSAND -> viewModel.multiplySendQty(1000)
-                            AmountSelector.MILLION -> viewModel.multiplySendQty(1000000)
-                        }
-                        amountFocusRequester.requestFocus()
                     }
                     Spacer(Modifier.height(8.dp))
                     WallyInputField(
