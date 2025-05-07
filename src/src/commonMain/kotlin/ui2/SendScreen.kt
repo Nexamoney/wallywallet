@@ -700,7 +700,6 @@ fun SendScreenContent(
                             AmountSelector.ALL -> viewModel.setSendQty(viewModel.balanceViewModel.balance.value)
                             AmountSelector.THOUSAND -> viewModel.multiplySendQty(1000)
                             AmountSelector.MILLION -> viewModel.multiplySendQty(1000000)
-                            AmountSelector.CLEAR -> viewModel.setSendQty("")
                         }
                         amountFocusRequester.requestFocus()
                     }

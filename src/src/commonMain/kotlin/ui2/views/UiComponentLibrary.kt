@@ -1352,7 +1352,6 @@ enum class AmountSelector
     ALL,
     THOUSAND,
     MILLION,
-    CLEAR
 }
 
 @Composable
@@ -1364,7 +1363,6 @@ fun WallyAmountSelectorRow(setAmount: (AmountSelector) -> Unit)
           color = samsungKeyBoardGray,
           shape = RoundedCornerShape(32.dp)
         )
-
         TextButton(
           modifier = mod,
           content = { Text(i18n(S.sendAll), style = fontStyle) },
@@ -1373,19 +1371,17 @@ fun WallyAmountSelectorRow(setAmount: (AmountSelector) -> Unit)
           ),
           onClick = { setAmount(AmountSelector.ALL) }
         )
+        Spacer(Modifier.width(8.dp))
         TextButton(
           modifier = mod,
-          content = { Text(i18n(S.thousand), style = fontStyle) },
+          content = { Text("× " + i18n(S.thousand), style = fontStyle) },
           onClick = { setAmount(AmountSelector.THOUSAND) }
         )
+        Spacer(Modifier.width(8.dp))
         TextButton(
           modifier = mod,
-          content = { Text(i18n(S.million), style = fontStyle) },
+          content = { Text("× " + i18n(S.million), style = fontStyle) },
           onClick = { setAmount(AmountSelector.MILLION) }
-        )
-        TextButton(
-          modifier = mod,
-          content = { Text(i18n(S.clear), style = fontStyle) }, onClick = { setAmount(AmountSelector.CLEAR) }
         )
     }
 }
