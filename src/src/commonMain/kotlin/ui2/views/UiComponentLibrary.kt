@@ -13,6 +13,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material.icons.outlined.Cancel
@@ -25,6 +26,8 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -35,6 +38,7 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
@@ -48,9 +52,7 @@ import androidx.compose.ui.unit.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui2.SyncViewModel
-import info.bitcoinunlimited.www.wally.ui2.SyncViewModelImpl
-import info.bitcoinunlimited.www.wally.ui2.softKeyboardBar
+import info.bitcoinunlimited.www.wally.ui2.*
 import info.bitcoinunlimited.www.wally.ui2.theme.*
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.CancellationException
@@ -59,6 +61,9 @@ import org.nexa.libnexakotlin.CURRENCY_1
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.CurrencyDecimal
 import org.nexa.libnexakotlin.exceptionHandler
+import androidx.compose.material3.ButtonDefaults
+
+
 
 
 @Composable fun WallySwitch(isChecked: MutableState<Boolean>, modifier: Modifier = Modifier, onCheckedChange: (Boolean) -> Unit)
@@ -96,10 +101,7 @@ import org.nexa.libnexakotlin.exceptionHandler
       verticalAlignment = Alignment.CenterVertically
     ) {
         WallySwitch(isChecked, onCheckedChange)
-        Text(
-          text = i18n(textRes),
-          modifier = Modifier.padding(4.dp, 0.dp, 0.dp, 0.dp).then(modifier)
-        )
+        Text(text = i18n(textRes), modifier = Modifier.padding(4.dp, 0.dp, 0.dp, 0.dp).then(modifier))
     }
 }
 
@@ -516,8 +518,8 @@ fun CenteredSectionText(text: String, modifier: Modifier = Modifier)
     Box(Modifier.fillMaxWidth())
     {
         Text(text = text, modifier = Modifier.padding(0.dp).fillMaxWidth().align(Alignment.Center).clickable {
-            focusManager.clearFocus()
-        }.then(modifier),
+              focusManager.clearFocus()
+          }.then(modifier),
           //.background(Color.Red),  // for layout debugging
           style = WallySectionTextStyle(),
           textAlign = TextAlign.Center,
@@ -1346,3 +1348,172 @@ fun ButtonRowAcceptDeny(accept: () -> Unit, deny: () -> Unit)
         }
     }
 }
+enum class AmountSelector
+{
+    ALL,
+    THOUSAND,
+    MILLION,
+    DONE // for ios Done button workaround
+}
+
+@Composable
+fun WallyAmountSelectorRow(isActive: MutableState<Boolean>, doneButton:Boolean = false, setAmount: (AmountSelector) -> Unit)
+{
+    val fontStyle = MaterialTheme.typography.bodyLarge
+    val cpad = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+    val borderStroke = BorderStroke(width = if (isActive.value) OutlinedTextFieldDefaults.FocusedBorderThickness else OutlinedTextFieldDefaults.UnfocusedBorderThickness,
+      color = if (isActive.value) OutlinedTextFieldDefaults.colors().focusedLabelColor else OutlinedTextFieldDefaults.colors().unfocusedLabelColor
+    )
+    val mod = Modifier.wrapContentHeight(align = Alignment.Top).defaultMinSize(minWidth = 1.dp, minHeight = 1.dp) // not really 1.dp, just picking the min so the button sizes are not overridden
+    @Composable fun HelperButton(content: @Composable (RowScope.() -> Unit),onClick: () -> Unit)
+    {
+        OutlinedButton(
+          modifier = mod, content = content, contentPadding = cpad, border = borderStroke, onClick = onClick)
+    }
+
+    CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 8.dp) {
+        Spacer(Modifier.height(2.dp))
+        Row(Modifier.fillMaxWidth().wrapContentHeight(align = Alignment.Top), horizontalArrangement = Arrangement.SpaceEvenly) {
+
+        HelperButton(
+          content = { Text( i18n(S.sendAll), style = fontStyle) },
+          onClick = { setAmount(AmountSelector.ALL) }
+        )
+        HelperButton(
+          content = { Text(i18n(S.thousand), style = fontStyle) },
+          onClick = { setAmount(AmountSelector.THOUSAND) }
+        )
+        HelperButton(
+          content = { Text(i18n(S.million), style = fontStyle) },
+          onClick = { setAmount(AmountSelector.MILLION) }
+        )
+        if (doneButton)
+        {
+            HelperButton(
+              content = { Text(i18n(S.done), style = fontStyle) },
+              onClick = { setAmount(AmountSelector.DONE) }
+            )
+        }
+        }
+    }
+}
+
+@Composable
+fun WallyNumericInputFieldBalance(
+  mod: Modifier = Modifier,
+  amount: String,
+  label: String,
+  placeholder: String,
+  singleLine: Boolean = true,
+  decimals: Boolean = true,
+  action: ImeAction = ImeAction.Done,
+  isReadOnly: Boolean = true,
+  hasIosDoneButton: Boolean = true,
+  hasButtonRow: Boolean = true,
+  focusRequester: FocusRequester = remember { FocusRequester() },
+  onValueChange: (String) -> Unit
+)
+{
+    val isActive= remember { mutableStateOf(false) }
+    // Validate input and allow max 2 decimal places
+    fun validateInput(input: String): Boolean {
+        val regex = if (decimals)
+        // Allow empty input or input that matches the regex for numbers with max 2 decimal places
+            Regex("^\\d*(\\.\\d{0,2})?\$")
+        else
+        // Allow only whole numbers (no decimals)
+            Regex("^\\d*\$")
+        return input.matches(regex)
+    }
+
+    Column {
+        Row {
+            OutlinedTextField(
+              value = TextFieldValue(
+                text = amount,
+                selection = TextRange(amount.length)
+              ),
+              onValueChange = { newValue ->
+                  if (validateInput(newValue.text))
+                  {
+                      onValueChange(newValue.text)
+                  }
+              },
+              modifier = mod.weight(1f).focusRequester(focusRequester).onFocusChanged { isActive.value = it.isFocused },
+              keyboardOptions = KeyboardOptions(
+                imeAction = action,
+                keyboardType = KeyboardType.Number
+              ),
+              label = { Text(label) },
+              placeholder = { Text(placeholder) },
+              trailingIcon = {
+                  if (amount.isNotEmpty())
+                  {
+                      IconButton(onClick = { if (!isReadOnly) onValueChange("") }) {
+                          Icon(Icons.Filled.Close, contentDescription = i18n(S.clearAmount))
+                      }
+                  }
+              },
+              singleLine = singleLine,
+              readOnly = isReadOnly
+            )
+
+            if (!hasButtonRow)
+            {
+                if (hasIosDoneButton) DoneButtonOptional(Modifier.align(Alignment.CenterVertically))
+            }
+        }
+        if (hasButtonRow)
+        {
+            val keyboardController = LocalSoftwareKeyboardController.current
+            val ctxt = rememberCoroutineScope()
+            val platformNeedsDoneButton = platform().hasDoneButton
+
+            WallyAmountSelectorRow(isActive, hasIosDoneButton && platformNeedsDoneButton) {
+                when (it)
+                {
+                    AmountSelector.ALL ->
+                    {
+                        onValueChange("all")
+                    }
+
+                    AmountSelector.THOUSAND ->
+                    {
+                        try
+                        {
+                            var cur = BigDecimal.parseString(amount, 10)
+                            cur *= 1000
+                            onValueChange(cur.toPlainString())
+                        }
+                        catch(e: NumberFormatException)  // just do not work, I don't think we need to tell the user anything
+                        {}
+                        catch(e: ArithmeticException)
+                        {}
+                    }
+
+                    AmountSelector.MILLION ->
+                    {
+                        try
+                        {
+                            var cur = BigDecimal.parseString(amount, 10)
+                            cur *= 1000 * 1000
+                            onValueChange(cur.toPlainString())
+                        }
+                        catch(e: NumberFormatException)  // just do not work, I don't think we need to tell the user anything
+                        {}
+                        catch(e: ArithmeticException)
+                        {}
+                    }
+
+                    AmountSelector.DONE ->
+                    {
+                        keyboardController?.hide()
+                        focusRequester.freeFocus()
+                    }
+                }
+                ctxt.launch { focusRequester.requestFocus() }
+            }
+        }
+    }
+}
+

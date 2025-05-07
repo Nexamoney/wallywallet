@@ -24,10 +24,12 @@ import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,7 +41,6 @@ import com.ionspin.kotlin.bignum.decimal.DecimalMode
 import com.ionspin.kotlin.bignum.decimal.RoundingMode
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.theme.WallyThemeUi2
-import info.bitcoinunlimited.www.wally.ui2.theme.samsungKeyBoardGray
 import info.bitcoinunlimited.www.wally.ui2.theme.wallyPurple
 import info.bitcoinunlimited.www.wally.ui2.theme.wallyTranslucentPurple
 import info.bitcoinunlimited.www.wally.ui2.views.*
@@ -101,7 +102,16 @@ abstract class SendScreenViewModel(val account:MutableStateFlow<Account?>): View
 
     fun setSendQty(sendQty: String)
     {
-        val cleanedQty = sendQty.replace(",", "")
+        // TODO we need to get the number grouping separator, not assume comma
+        // actual fun getGroupingSeparator(): Char { return java.text.DecimalFormatSymbols.getInstance().groupingSeparator }
+        /*actual fun getGroupingSeparator(): Char {
+    val formatter = NSNumberFormatter()
+    formatter.numberStyle = NSNumberFormatterDecimalStyle
+    val sep = formatter.groupingSeparator ?: ","
+    return sep.first()
+}
+         */
+        val cleanedQty:String = if (sendQty == "all") account.value?.balance?.toPlainString() ?: "0" else sendQty.replace(",", "")
         uiState.value = uiState.value.copy(amount = cleanedQty)
     }
 
@@ -618,6 +628,7 @@ fun SendScreenContent(
     val keyboardController = LocalSoftwareKeyboardController.current
     var isScanningQr by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
+    val amountFocusRequester = remember { FocusRequester() }
     val uiState = viewModel.uiState.collectAsState()
     val assetsToSendState = viewModel.assetsToSend.collectAsState()
     val hasInternet = viewModel.hasP2pConnection.collectAsState().value
@@ -680,6 +691,19 @@ fun SendScreenContent(
                         viewModel.setToAddress(it)
                     }
                     Spacer(Modifier.height(8.dp))
+                    WallyNumericInputFieldBalance(
+                      mod = Modifier.testTag("amountToSendInput"),
+                      amount = uiState.value.amount,
+                      label = i18n(S.amountPlain),
+                      placeholder = i18n(S.enterNEXAmount),
+                      isReadOnly = isConfirming,
+                      hasIosDoneButton = !isConfirming,
+                      hasButtonRow = true,
+                      focusRequester = amountFocusRequester
+                    ) {
+                        viewModel.setSendQty(it)
+                    }
+                    Spacer(Modifier.height(8.dp))
                     WallyInputField(
                       mod = Modifier.testTag("noteInput"),
                       text = note,
@@ -689,18 +713,6 @@ fun SendScreenContent(
                       isReadOnly = isConfirming
                     ) {
                         viewModel.setNote(it)
-                    }
-                    Spacer(Modifier.height(8.dp))
-                    WallyNumericInputFieldBalance(
-                      mod = Modifier.testTag("amountToSendInput"),
-                      amountString = amount,
-                      label = i18n(S.amountPlain),
-                      placeholder = i18n(S.enterNEXAmount),
-                      isReadOnly = isConfirming,
-                      hasIosDoneButton = !isConfirming,
-                      vm = viewModel
-                    ) {
-                        viewModel.setSendQty(it)
                     }
                     Spacer(Modifier.height(16.dp))
                     if (!hasInternet)
@@ -1088,100 +1100,6 @@ fun WallyInputField(
       readOnly = isReadOnly
     )
 }
-
-@Composable
-fun WallyNumericInputFieldBalance(
-    mod: Modifier = Modifier,
-    amountString: String,
-    label: String,
-    placeholder: String,
-    singleLine: Boolean = true,
-    decimals: Boolean = true,
-    vm: SendScreenViewModel,
-    action: ImeAction = ImeAction.Done,
-    isReadOnly: Boolean = true,
-    hasIosDoneButton: Boolean = true,
-    onValueChange: (String) -> Unit
-)
-{
-
-    // Validate input and allow max 2 decimal places
-    fun validateInput(input: String): Boolean {
-        val regex = if (decimals)
-            // Allow empty input or input that matches the regex for numbers with max 2 decimal places
-            Regex("^\\d*(\\.\\d{0,2})?\$")
-        else
-            // Allow only whole numbers (no decimals)
-            Regex("^\\d*\$")
-        return input.matches(regex)
-    }
-
-    Row {
-        OutlinedTextField(
-          value = amountString,
-          onValueChange = { newValue ->
-              if (validateInput(newValue)) {
-                  onValueChange(newValue)
-              }
-          },
-          keyboardOptions = KeyboardOptions(
-            imeAction = action,
-            keyboardType = KeyboardType.Number
-          ),
-          label = { Text(label) },
-          placeholder = { Text(placeholder) },
-          trailingIcon = {
-              if (amountString.isNotEmpty()) {
-                  IconButton(onClick = { if (!isReadOnly) onValueChange("") }) {
-                      Icon(Icons.Filled.Close, contentDescription = i18n(S.clearAmount))
-                  }
-              }
-          },
-          modifier = mod.weight(1f).onFocusChanged {
-              if (it.isFocused)
-              {
-                  softKeyboardBar.value = { modifier ->
-                      Row(modifier.background(samsungKeyBoardGray), horizontalArrangement = Arrangement.SpaceEvenly) {
-                          val fontStyle = MaterialTheme.typography.labelLarge
-                          TextButton(
-                            modifier = mod,
-                            content = { Text(i18n(S.sendAll), style = fontStyle) },
-                            onClick = {
-                                vm.setSendQty(vm.balanceViewModel.balance.value)
-                            }
-                          )
-                          TextButton(
-                            modifier = mod,
-                            content = { Text(i18n(S.thousand), style = fontStyle) },
-                            onClick = {
-                              vm.multiplySendQty(1000) }
-                          )
-                          TextButton(
-                            modifier = mod,
-                            content = { Text(i18n(S.million), style = fontStyle) },
-                            onClick = { vm.multiplySendQty(1000000) }
-                          )
-                          TextButton(
-                            modifier = mod,
-                            content = { Text(i18n(S.cancel), style = fontStyle) }, onClick = { vm.setSendQty("") }
-                          )
-                      }
-                  }
-              }
-              else
-              {
-                  softKeyboardBar.value = null
-              }
-          },
-          singleLine = singleLine,
-          readOnly = isReadOnly
-        )
-
-        if (hasIosDoneButton)
-            DoneButtonOptional(Modifier.align(Alignment.CenterVertically))
-    }
-}
-
 
 /*
     This is a temporary workaround because compose does not support Done button for iOS numeric keyboard

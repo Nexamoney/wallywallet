@@ -110,10 +110,10 @@ fun ReceiveScreenContent(account: Account, address: PayDestination, modifier: Mo
               painter = qrcodePainter,
               contentDescription = "QR Code",
               modifier = Modifier
-                // .fillMaxWidth(0.7f) // Dynamically adjusts size to the screen width
+                .padding(32.dp)  // Some QR readers can't handle a QR code without at least some white border (and yes this is actually to the spec)
                 .weight(1f) // Take remaining space, but allow other components to take their intrinsic size
                 .aspectRatio(1f) // Keeps the image square
-                .background(Color.White)
+                .background(Color.White)  // QR codes MUST have a white background and darker pixels, NOT the opposite (and yes this is to the spec)
                 .testTag("qrcode")
                 .clickable { setTextClipboard(addrStr) }
             )
