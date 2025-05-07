@@ -41,7 +41,6 @@ import com.ionspin.kotlin.bignum.decimal.DecimalMode
 import com.ionspin.kotlin.bignum.decimal.RoundingMode
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.theme.WallyThemeUi2
-import info.bitcoinunlimited.www.wally.ui2.theme.samsungKeyBoardGray
 import info.bitcoinunlimited.www.wally.ui2.theme.wallyPurple
 import info.bitcoinunlimited.www.wally.ui2.theme.wallyTranslucentPurple
 import info.bitcoinunlimited.www.wally.ui2.views.*
@@ -685,7 +684,7 @@ fun SendScreenContent(
                     Spacer(Modifier.height(8.dp))
                     WallyNumericInputFieldBalance(
                       mod = Modifier.testTag("amountToSendInput"),
-                      amountString = amount,
+                      amount = uiState.value.amount,
                       label = i18n(S.amountPlain),
                       placeholder = i18n(S.enterNEXAmount),
                       isReadOnly = isConfirming,

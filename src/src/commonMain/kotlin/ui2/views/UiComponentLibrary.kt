@@ -1393,7 +1393,7 @@ fun WallyAmountSelectorRow(setAmount: (AmountSelector) -> Unit)
 @Composable
 fun WallyNumericInputFieldBalance(
   mod: Modifier = Modifier,
-  amountString: String,
+  amount: String,
   label: String,
   placeholder: String,
   singleLine: Boolean = true,
@@ -1418,10 +1418,13 @@ fun WallyNumericInputFieldBalance(
 
     Row {
         OutlinedTextField(
-          value = amountString,
+          value = TextFieldValue(
+            text = amount,
+            selection = TextRange(amount.length)
+          ),
           onValueChange = { newValue ->
-              if (validateInput(newValue)) {
-                  onValueChange(newValue)
+              if (validateInput(newValue.text)) {
+                  onValueChange(newValue.text)
               }
           },
           modifier = mod.weight(1f).focusRequester(focusRequester),
@@ -1432,7 +1435,7 @@ fun WallyNumericInputFieldBalance(
           label = { Text(label) },
           placeholder = { Text(placeholder) },
           trailingIcon = {
-              if (amountString.isNotEmpty()) {
+              if (amount.isNotEmpty()) {
                   IconButton(onClick = { if (!isReadOnly) onValueChange("") }) {
                       Icon(Icons.Filled.Close, contentDescription = i18n(S.clearAmount))
                   }
