@@ -12,25 +12,25 @@ import java.time.format.DateTimeFormatter
 
 // Wally Wallet version
 // On version bump: Run ./gradlew generateVersionFile and commit the updates iosApp/iosApp/info.plist file
-val versionNumber = "3.7.09"
+val versionNumber = "3.7.10"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 val kotlinVersion = "2.1.20"
 
 // Dependency versions
 val mpThreadsVersion = "0.4.2"
 val nexaRpcVersion = "1.3.0"
-val libNexaKotlinVersion = "0.4.27"
+val libNexaKotlinVersion = "0.4.28"
 val serializationVersion = "1.8.1"  // https://github.com/Kotlin/kotlinx.serialization
 val coroutinesVersion = "1.10.2"     // https://github.com/Kotlin/kotlinx.coroutines
 val bigNumVersion = "0.3.10"         // https://github.com/ionspin/kotlin-multiplatform-bignum
-val composeVersion = "1.7.3"        // https://github.com/JetBrains/compose-multiplatform/releases
+val composeVersion = "1.8.0"        // https://github.com/JetBrains/compose-multiplatform/releases
 val androidTestCoreVersion = "1.6.1" // https://mvnrepository.com/artifact/androidx.test/core
 val androidxActivityComposeVersion = "1.10.1"
 val uriKmpVersion = "0.0.19"  // https://github.com/eygraber/uri-kmp
 val skikoVersion = "0.9.7" // https://github.com/JetBrains/skiko/releases
 val workVersion = "2.10.1" // https://developer.android.com/jetpack/androidx/releases/work
 
-val ktorVersion = "3.1.2"     // https://github.com/ktorio/ktor
+val ktorVersion = "3.1.3"     // https://github.com/ktorio/ktor
 
 val secSinceEpoch = Instant.now().epochSecond
 
@@ -270,10 +270,10 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
                 implementation(kotlin("stdlib-common"))
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
-
                 // Compose
                 implementation("org.jetbrains.compose.runtime:runtime:$composeVersion")
                 implementation("org.jetbrains.compose.foundation:foundation:$composeVersion")
+
                 implementation("org.jetbrains.compose.material3:material3:$composeVersion")
                 // implementation(compose.materialIconsExtended)
                 //@OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
@@ -324,7 +324,7 @@ kotlin {
                 implementation(compose.materialIconsExtended)
 
                 // Parse HTML from a string
-                implementation("com.fleeksoft.ksoup:ksoup:0.2.2")
+                implementation("com.fleeksoft.ksoup:ksoup:0.2.3")
             }
         }
         val commonTest by getting {
@@ -430,11 +430,11 @@ kotlin {
                     implementation(kotlin("stdlib-jdk8"))
                     implementation("androidx.activity:activity-compose:$androidxActivityComposeVersion")
                     implementation("androidx.tracing:tracing:1.3.0")
-                    implementation("androidx.compose.ui:ui:1.8.0")
-                    implementation("androidx.compose.ui:ui-tooling:1.8.0")
-                    implementation("androidx.compose.ui:ui-tooling-preview:1.8.0")
-                    implementation("androidx.compose.foundation:foundation:1.8.0")
-                    implementation("androidx.compose.material:material:1.8.0")
+                    implementation("androidx.compose.ui:ui:1.8.1")
+                    implementation("androidx.compose.ui:ui-tooling:1.8.1")
+                    implementation("androidx.compose.ui:ui-tooling-preview:1.8.1")
+                    implementation("androidx.compose.foundation:foundation:1.8.1")
+                    implementation("androidx.compose.material:material:1.8.1")
                     implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.8.1")
                     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.1")
 

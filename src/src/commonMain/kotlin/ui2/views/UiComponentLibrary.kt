@@ -39,6 +39,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
@@ -62,8 +63,8 @@ import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.CurrencyDecimal
 import org.nexa.libnexakotlin.exceptionHandler
 import androidx.compose.material3.ButtonDefaults
-
-
+import androidx.compose.ui.layout.SubcomposeLayout
+import kotlin.math.exp
 
 
 @Composable fun WallySwitch(isChecked: MutableState<Boolean>, modifier: Modifier = Modifier, onCheckedChange: (Boolean) -> Unit)
@@ -113,10 +114,8 @@ import androidx.compose.material3.ButtonDefaults
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically
     ) {
-        WallySwitch(isChecked, onCheckedChange)
-        Text(
-          text = i18n(textRes),
-        )
+        WallySwitch(isChecked, true, onCheckedChange = onCheckedChange)
+        Text(i18n(textRes))
     }
 }
 
@@ -134,7 +133,8 @@ import androidx.compose.material3.ButtonDefaults
     )
 }
 
-@Composable fun WallySwitch(isChecked: Boolean, onCheckedChange: (Boolean) -> Unit) = WallySwitch(isChecked, true, Modifier, onCheckedChange)
+@Composable fun WallySwitch(isChecked: Boolean, testTag: String? = null, onCheckedChange: (Boolean) -> Unit) =
+  WallySwitch(isChecked, true, if (testTag!=null) Modifier.testTag(testTag) else Modifier, onCheckedChange)
 
 @Composable fun WallySwitch(isChecked: Boolean, textRes: Int, enabled: Boolean = true, modifier: Modifier=Modifier, onCheckedChange: (Boolean) -> Unit)
 {
@@ -163,13 +163,13 @@ import androidx.compose.material3.ButtonDefaults
 @Composable fun WallySwitch(isChecked: Boolean, textRes: Int, enabled: Boolean = true, onCheckedChange: (Boolean) -> Unit) = WallySwitch(isChecked, textRes, enabled,  Modifier, onCheckedChange)
 
 
-@Composable fun WallySwitchRowUi2(isChecked: Boolean, textRes: Int, onCheckedChange: (Boolean) -> Unit)
+@Composable fun WallySwitchRowUi2(isChecked: Boolean, textRes: Int, testTag: String? = null, onCheckedChange: (Boolean) -> Unit)
 {
     Row(
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically
     ) {
-        WallySwitch(isChecked, onCheckedChange)
+        WallySwitch(isChecked, testTag, onCheckedChange)
         Spacer(Modifier.width(4.dp))
         Text(
           text = i18n(textRes),
@@ -1359,11 +1359,14 @@ enum class AmountSelector
 @Composable
 fun WallyAmountSelectorRow(isActive: MutableState<Boolean>, doneButton:Boolean = false, setAmount: (AmountSelector) -> Unit)
 {
-    val fontStyle = MaterialTheme.typography.bodyLarge
+    val MIN_SPACE = 1.dp
+    val MAX_SPACE = 8.dp
     val cpad = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
-    val borderStroke = BorderStroke(width = if (isActive.value) OutlinedTextFieldDefaults.FocusedBorderThickness else OutlinedTextFieldDefaults.UnfocusedBorderThickness,
+    // if (isActive.value) OutlinedTextFieldDefaults.FocusedBorderThickness else OutlinedTextFieldDefaults.UnfocusedBorderThickness
+    val borderStroke = BorderStroke(width = 1.5.dp,
       color = if (isActive.value) OutlinedTextFieldDefaults.colors().focusedLabelColor else OutlinedTextFieldDefaults.colors().unfocusedLabelColor
     )
+    val numButtons = if (doneButton) 3 else 4
     val mod = Modifier.wrapContentHeight(align = Alignment.Top).defaultMinSize(minWidth = 1.dp, minHeight = 1.dp) // not really 1.dp, just picking the min so the button sizes are not overridden
     @Composable fun HelperButton(content: @Composable (RowScope.() -> Unit),onClick: () -> Unit)
     {
@@ -1371,29 +1374,79 @@ fun WallyAmountSelectorRow(isActive: MutableState<Boolean>, doneButton:Boolean =
           modifier = mod, content = content, contentPadding = cpad, border = borderStroke, onClick = onClick)
     }
 
-    CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 8.dp) {
-        Spacer(Modifier.height(2.dp))
-        Row(Modifier.fillMaxWidth().wrapContentHeight(align = Alignment.Top), horizontalArrangement = Arrangement.SpaceEvenly) {
-
-        HelperButton(
-          content = { Text( i18n(S.sendAll), style = fontStyle) },
-          onClick = { setAmount(AmountSelector.ALL) }
-        )
-        HelperButton(
-          content = { Text(i18n(S.thousand), style = fontStyle) },
-          onClick = { setAmount(AmountSelector.THOUSAND) }
-        )
-        HelperButton(
-          content = { Text(i18n(S.million), style = fontStyle) },
-          onClick = { setAmount(AmountSelector.MILLION) }
-        )
-        if (doneButton)
-        {
+    @Composable fun buttonRow(spaceBetween: Dp, fontStyle: TextStyle)
+    {
+        Row(Modifier.wrapContentHeight(align = Alignment.Top), horizontalArrangement = Arrangement.Start) {
             HelperButton(
-              content = { Text(i18n(S.done), style = fontStyle) },
-              onClick = { setAmount(AmountSelector.DONE) }
+              content = { Text(i18n(S.sendAll), style = fontStyle) },
+              onClick = { setAmount(AmountSelector.ALL) }
             )
+            Spacer(Modifier.width(spaceBetween))
+            HelperButton(
+              content = { Text(i18n(S.thousand), style = fontStyle) },
+              onClick = { setAmount(AmountSelector.THOUSAND) }
+            )
+            Spacer(Modifier.width(spaceBetween))
+            HelperButton(
+              content = { Text(i18n(S.million), style = fontStyle) },
+              onClick = { setAmount(AmountSelector.MILLION) }
+            )
+            if (doneButton)
+            {
+                Spacer(Modifier.width(spaceBetween))
+                HelperButton(
+                  content = { Text(i18n(S.done), style = fontStyle) },
+                  onClick = { setAmount(AmountSelector.DONE) }
+                )
+            }
         }
+    }
+
+    Spacer(Modifier.height(2.dp))
+    // overriding LocalMinimumInteractiveComponentSize allows us to create buttons that are smaller than material3 minimums, whose huge looks is not appropriate
+    // for a button that is of secondary importance
+    CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 8.dp) {
+        var spacing by remember { mutableStateOf(0.dp) }
+        val big = MaterialTheme.typography.bodyLarge
+        val small = MaterialTheme.typography.bodySmall
+        var face by remember { mutableStateOf(big) }
+        val expandedHeight = remember { mutableStateOf(0.dp) }
+        val targetHeight = remember { mutableStateOf(0.dp) }
+        val curHeight by animateDpAsState(
+            targetValue = targetHeight.value,
+            animationSpec = tween(durationMillis = 500),
+            label = "heightAnim")
+
+        SubcomposeLayout { constraints ->
+            var measurables = subcompose("content") { buttonRow(0.dp, face) }
+            var placeables = measurables.map { it.measure(Constraints())}
+            var actualWidth = placeables.sumOf { it.width }
+
+            var best = ((constraints.maxWidth - actualWidth) / numButtons).toDp()
+
+            if (best < 0.dp)  // Reduce the size of the actual button by reducing the font
+            {
+                face = small
+                // try again with a smaller font
+                measurables = subcompose("content1") { buttonRow(0.dp, face) }
+                placeables = measurables.map { it.measure(Constraints())}
+                actualWidth = placeables.sumOf { it.width }
+                best = ((constraints.maxWidth - actualWidth) / numButtons).toDp()
+            }
+
+            if (best < 0.dp) spacing = MIN_SPACE
+            else if (best > MAX_SPACE) spacing = MAX_SPACE  // MAX spacing
+            else spacing = best
+
+            expandedHeight.value = (placeables.maxOfOrNull { it.height } ?: 0).toDp()
+
+            // Do nothing, I'll actually do it below
+            layout(0,0) {}
+        }
+        if (isActive.value) targetHeight.value = expandedHeight.value
+        else targetHeight.value = 0.dp
+        Box(Modifier.height(curHeight)) {
+            buttonRow(spacing, face)
         }
     }
 }
@@ -1482,13 +1535,18 @@ fun WallyNumericInputFieldBalance(
                         try
                         {
                             var cur = BigDecimal.parseString(amount, 10)
-                            cur *= 1000
+                            if (cur == BigDecimal.ZERO) cur = BigDecimal.fromInt(1000)
+                            else cur *= 1000
                             onValueChange(cur.toPlainString())
                         }
                         catch(e: NumberFormatException)  // just do not work, I don't think we need to tell the user anything
-                        {}
+                        {
+                            onValueChange("1000")
+                        }
                         catch(e: ArithmeticException)
-                        {}
+                        {
+                             onValueChange("1000")
+                        }
                     }
 
                     AmountSelector.MILLION ->
@@ -1496,13 +1554,18 @@ fun WallyNumericInputFieldBalance(
                         try
                         {
                             var cur = BigDecimal.parseString(amount, 10)
-                            cur *= 1000 * 1000
+                            if (cur == BigDecimal.ZERO) cur = BigDecimal.fromInt(1000*1000)
+                            else cur *= 1000 * 1000
                             onValueChange(cur.toPlainString())
                         }
                         catch(e: NumberFormatException)  // just do not work, I don't think we need to tell the user anything
-                        {}
+                        {
+                            onValueChange("1000000")
+                        }
                         catch(e: ArithmeticException)
-                        {}
+                        {
+                            onValueChange("1000000")
+                        }
                     }
 
                     AmountSelector.DONE ->

@@ -492,7 +492,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
         pinInputUi2(newAcState.pin, newAcState.validOrNoPin, onPinChange)
         Text(i18n(S.PinSpendingUnprotected), fontSize = 14.sp)
         Spacer(Modifier.height(5.dp))
-        WallySwitchRowUi2(newAcState.hideUntilPinEnter, S.PinHidesAccount, onHideUntilPinEnterChanged)
+        WallySwitchRowUi2(newAcState.hideUntilPinEnter, S.PinHidesAccount, "PinHidesAccount", onHideUntilPinEnterChanged)
         Spacer(Modifier.height(5.dp))
         if (!creatingAccountLoading)
         {

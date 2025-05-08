@@ -431,7 +431,7 @@ fun AccountActionButtonsUi2(acc: Account, txHistoryButtonClicked: () -> Unit, ac
     ) {
         if (accountAction.value == null)
         {
-            WallySwitchRowUi2(checked, S.AutomaticNewAddress)
+            WallySwitchRowUi2(checked, S.AutomaticNewAddress, "addressPrivacy")
             {
                 checked = it
 
@@ -439,7 +439,7 @@ fun AccountActionButtonsUi2(acc: Account, txHistoryButtonClicked: () -> Unit, ac
                     acc.flags = acc.flags or ACCOUNT_FLAG_REUSE_ADDRESSES
                 else
                     acc.flags = acc.flags and ACCOUNT_FLAG_REUSE_ADDRESSES.inv()
-                launch {  // Can't be in UI thread
+                laterJob {  // Can't be in UI thread
                     acc.saveAccountFlags()
                 }
             }

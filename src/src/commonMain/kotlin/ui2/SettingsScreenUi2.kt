@@ -293,10 +293,10 @@ fun SettingsScreenUi2(preferenceDB: SharedPreferences = wallyApp!!.preferenceDB,
                         Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
                             /* This is dangerous enough, devs should uncomment if they want to use
                             Button(onClick = { onWipeAccounts() }) {
-                                Text("del Accounts")
+                                Text("Delete Accounts")
                             }*/
                             Button(onClick = { onWipeHeaders() }) {
-                                Text("del Headers")
+                                Text("Delete Headers")
                             }
                         }
                         Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {

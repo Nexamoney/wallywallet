@@ -90,7 +90,6 @@ class Account(
     //? Was the PIN entered properly since the last 15 second sleep?
     var pinEntered = false
     var encodedPin: ByteArray? = loadEncodedPin()
-    var walletOnChange: Int = -1
 
     var currentReceive: PayDestination? = null //? This receive address appears on the main screen for quickly receiving coins
         set(value) {
@@ -302,15 +301,13 @@ class Account(
     @Suppress("UNUSED_PARAMETER")
     fun start()
     {
-        laterJob {
-            if (!started)
-            {
-                LogIt.info(sourceLoc() + " " + name + ": Account startup: starting threads")
-                cnxnMgr.start()
-                chain.start()
-                started = true
-                installChangeHandlers()
-            }
+        if (!started)
+        {
+            installChangeHandlers()
+            LogIt.info(sourceLoc() + " " + name + ": Account startup: starting threads")
+            cnxnMgr.start()
+            chain.start()
+            started = true
         }
     }
 
@@ -823,6 +820,7 @@ class Account(
                 unconfirmedBalance = fromFinestUnit(wallet.unconfirmedBalanceDwim)
                 confirmedBalance = fromFinestUnit(wallet.balanceConfirmed)
                 balance = fromFinestUnit(wallet.balance)
+                onUpdatedReceiveInfo()
             }
             catch (e: WalletDisconnectedException)
             {
@@ -836,7 +834,8 @@ class Account(
         onChanged(this, force)  // calls changeAsyncProcessing
     }
 
-    fun getAndCacheWalletAddress()
+
+    protected fun getAndCacheWalletAddress()
     {
         val ret = wallet.getCurrentDestination()  // Will pop forward but only if needed  //getNewDestination()
         currentReceive = ret
@@ -846,27 +845,27 @@ class Account(
     /**
      * Common implementation of onUpdateReceiveInfo from androidMain
      */
-    fun onUpdatedReceiveInfo(refresh: ((String) -> Unit)): Unit
+    protected fun onUpdatedReceiveInfo(refresh: ((String) -> Unit)? = null): Unit
     {
         fun genNewAddress()
         {
             val ret = wallet.getCurrentDestination()  // Will pop forward but only if needed  //getNewDestination()
             currentReceive = ret
             saveAccountAddress()
-            refresh.invoke(ret.address.toString())
+            refresh?.invoke(ret.address.toString())
         }
 
         val cr = currentReceive
         if (cr == null)  tlater { genNewAddress() }
         else
         {
-            var addr: PayAddress? = cr.address
+            val addr: PayAddress? = cr.address
 
             if (addr != null)
             {
                 // If we have an address, then if re-use is true don't get another one
                 if ((flags and ACCOUNT_FLAG_REUSE_ADDRESSES) > 0U)
-                    refresh.invoke(addr.toString())
+                    refresh?.invoke(addr.toString())
                 // Otherwise get another one if our balance on this address is nonzero
                 else
                 {
@@ -875,7 +874,7 @@ class Account(
                             if (wallet.getBalanceIn(it) > 0)
                                 genNewAddress()
                             else
-                                refresh.invoke(addr.toString())
+                                refresh?.invoke(addr.toString())
                         }
                     }
                 }
@@ -893,10 +892,10 @@ class Account(
         val wdb = walletDb
         if (wdb != null)
         {
+            val addr = currentReceive?.address?.toString()
             tlater {
-                val tmp = currentReceive?.address?.toString()
-                if (tmp != null)
-                  wdb.set("accountAddress_" + name, tmp.toByteArray())
+                if (addr != null)
+                  wdb.set("accountAddress_" + name, addr.toByteArray())
             }
         }
     }

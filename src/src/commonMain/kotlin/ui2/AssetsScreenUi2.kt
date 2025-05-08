@@ -8,6 +8,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,8 +24,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.eygraber.uri.Uri
-import com.fleeksoft.ksoup.Ksoup
-import com.fleeksoft.ksoup.nodes.Document
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui2.theme.*
@@ -61,7 +61,8 @@ fun AssetListItemViewUi2(assetPerAccount: AssetPerAccount, verbosity: Int = 1, a
             containerColor = wallyPurpleExtraLight
           ),
           leadingContent = {
-              MpMediaView(asset.iconImage, asset.iconBytes, asset.iconUri?.toString(), hideMusicView = true) { mi, draw ->
+              val iconStr = if (asset.iconUri != null) asset.iconUri.toString() else ""
+              MpMediaView(asset.iconImage, asset.iconBytes, iconStr, hideMusicView = true) { mi, draw ->
                   val m = (if (verbosity > 0) Modifier.background(Color.Transparent).size(64.dp, 64.dp)
                   else  Modifier.background(Color.Transparent).size(26.dp, 26.dp))// .align(Alignment.CenterVertically)
                   draw(m)
@@ -109,6 +110,7 @@ fun AssetViewUi2(asset: AssetInfo, parentMod: Modifier = Modifier)
     val assetName = asset.nameObservable.collectAsState()
     val name = (if ((nft != null) && (nft.title.length > 0)) nft.title else assetName.value) ?: "<name missing>"
     val options = remember { mutableStateOf(mutableSetOf<Int>()) }
+    //val options = mutableStateOf(mutableSetOf<Int>())
     val sigIsBad = (asset.tokenInfo?.let { (it.tddSig != null) && (it.pubkey == null) } ?: false)
     val sigIsUnverified = (asset.tokenInfo?.let { (it.tddSig == null) } ?: true)
     val provider = asset.docUrl?.let { docUrl ->
@@ -147,11 +149,11 @@ fun AssetViewUi2(asset: AssetInfo, parentMod: Modifier = Modifier)
             showing = S.NftLegal
         else if (asset.iconBackUri != null)
             showing = S.NftCardBack
-    }
+   }
 
     Column(modifier = parentMod.fillMaxSize().padding(8.dp, 0.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         val a = asset
-        Spacer(Modifier.height(16.dp))
+        VSpacer(0.10f, 16.dp, 1.dp)
         Text(
           text = name,
           style = MaterialTheme.typography.headlineMedium,
@@ -159,7 +161,7 @@ fun AssetViewUi2(asset: AssetInfo, parentMod: Modifier = Modifier)
           modifier = Modifier.fillMaxWidth(),
           textAlign = TextAlign.Center
         )
-        Spacer(Modifier.height(8.dp))
+        VSpacer(0.10f, 8.dp, 0.dp)
         if (nft != null)
             Row {
                 nft.series?.let { series ->
@@ -169,7 +171,7 @@ fun AssetViewUi2(asset: AssetInfo, parentMod: Modifier = Modifier)
                       fontWeight = FontWeight.Bold
                     )
                 }
-                Spacer(Modifier.width(2.dp))
+                VSpacer(0.01f, 2.dp, 0.dp)
                 nft.author.let { author ->
                     Text(
                       text = author,
@@ -177,14 +179,14 @@ fun AssetViewUi2(asset: AssetInfo, parentMod: Modifier = Modifier)
                     )
                 }
             }
-        Spacer(Modifier.height(8.dp))
+        VSpacer(0.10f, 8.dp, 0.dp)
         if (provider.isNotEmpty())
             Text(
               text = "Provider: $provider",
               style = MaterialTheme.typography.labelLarge,
               fontStyle = FontStyle.Italic
             )
-        Spacer(Modifier.height(24.dp))
+        VSpacer(0.50f, 24.dp, 0.dp)
         if (options.value.isNotEmpty())
             HorizontalRadioButtonGroup(options.value.toList()) { option ->
                 showing = option
@@ -192,24 +194,26 @@ fun AssetViewUi2(asset: AssetInfo, parentMod: Modifier = Modifier)
 
         // If the sig is not null, but the pubkey is null, that means that the sig did not match
         // Its a BAD signature.
-        if (sigIsBad)
+        if (sigIsBad && (showing == S.NftCardFront))
         {
-            CenteredText(i18n(S.TokenBadSig))
+            // Do not show this for now.  There are issues like what if our data source feeds us a bad address (or no address) for the token genesis
+            //CenteredText(i18n(S.TokenBadSig))
         }
         if (sigIsUnverified)
         {
             // TODO should we show some little caution sign or something? (we are not showing the provider so that helps)
         }
-
+        val surfShape = RoundedCornerShape(20.dp)
             when(showing)
             {
                 S.NftCardFront ->
                 {
                     val url = a.iconUri
+                    val iconStr = url.toString()
                     val mediaBytes = a.iconBytes
                     if (mediaBytes == null && (url?.protocol == URLProtocol.HTTP || url?.protocol == URLProtocol.HTTPS)) throw UnimplementedException("load from URL")
-                    val surfShape = RoundedCornerShape(20.dp)
-                    MpMediaView(null, asset.iconBytes, asset.iconUri?.toString(), autoplay = true) { mi, draw ->
+
+                    MpMediaView(null, mediaBytes, iconStr, autoplay = true) { mi, draw ->
                         // Fill the media available space's x or y with the media, but draw a nice box around that space.
                         // Its is amazing that this is so hard.
                         // My approach is to determine the aspect ratio (x/y)of the image, and the aspect ratio of the available space.
@@ -221,7 +225,7 @@ fun AssetViewUi2(asset: AssetInfo, parentMod: Modifier = Modifier)
                             // maxWidth and maxHeight provide the screen size
                             // min W and H appears to provide not 0dp which makes sense but is trivial, but the minimum size of the Box with the modifiers
                             // applied, in this case fillMaxSize(), so the size of the view
-                            val spaceAr = minWidth/minHeight
+                            val spaceAr = this.minWidth/this.minHeight
 
                             val mod = if (ar >= spaceAr)  // media is wider than the space I have to show it in
                                 Modifier.fillMaxWidth().aspectRatio(ar)
@@ -239,14 +243,11 @@ fun AssetViewUi2(asset: AssetInfo, parentMod: Modifier = Modifier)
                 {
                     val mediaBytes = a.publicMediaBytes
                     LogIt.info("public media bytes: ${a.publicMediaBytes?.size} cache: ${a.publicMediaCache} uri: ${a.publicMediaUri} ")
-                    val url = a.publicMediaCache ?: a.publicMediaUri?.toString()
+                    val publicUrl = a.publicMediaCache ?: if (a.publicMediaUri != null) a.publicMediaUri.toString() else ""
 
                     //if (mediaBytes == null && (url?.protocol == URLProtocol.HTTP || url?.protocol == URLProtocol.HTTPS)) throw UnimplementedException("load from URL")
 
-                    val surfShape = RoundedCornerShape(20.dp)
-
-                    MpMediaView(null, mediaBytes, url.toString(), autoplay = true) { mi, draw ->
-
+                    MpMediaView(null, mediaBytes, publicUrl, autoplay = true) { mi, draw ->
                         // Fill the media available space's x or y with the media, but draw a nice box around that space.
                         // Its is amazing that this is so hard.
                         // My approach is to determine the aspect ratio (x/y)of the image, and the aspect ratio of the available space.
@@ -258,7 +259,7 @@ fun AssetViewUi2(asset: AssetInfo, parentMod: Modifier = Modifier)
                             // maxWidth and maxHeight provide the screen size
                             // min W and H appears to provide not 0dp which makes sense but is trivial, but the minimum size of the Box with the modifiers
                             // applied, in this case fillMaxSize(), so the size of the view
-                            val spaceAr = minWidth/minHeight
+                            val spaceAr = this.minWidth/this.minHeight
 
                             val mod = if (ar >= spaceAr)  // media is wider than the space I have to show it in
                                 Modifier.fillMaxWidth().aspectRatio(ar)
@@ -276,18 +277,15 @@ fun AssetViewUi2(asset: AssetInfo, parentMod: Modifier = Modifier)
                 S.Private ->
                 {
                     val mediaBytes = a.ownerMediaBytes
-                    val url = a.ownerMediaCache ?: a.ownerMediaUri?.toString()
-
-                    Text("This content belongs to the owner of the asset")
+                    val ownerUrl = a.ownerMediaCache ?: if (a.ownerMediaUri!=null) a.ownerMediaUri.toString() else ""
+                    Text(i18n(S.NftPrivateDescription))
 
                     //if (mediaBytes == null && (url?.protocol == URLProtocol.HTTP || url?.protocol == URLProtocol.HTTPS)) throw UnimplementedException("load from URL")
 
-                    val surfShape = RoundedCornerShape(20.dp)
-
-                    MpMediaView(null, mediaBytes, url.toString(), autoplay = true) { mi, draw ->
+                    MpMediaView(null, mediaBytes, ownerUrl, autoplay = true) { mi, draw ->
                         val ar = mi.width.toFloat()/mi.height.toFloat()
                         BoxWithConstraints(Modifier.fillMaxWidth().wrapContentHeight()) {
-                            val spaceAr = minWidth/minHeight
+                            val spaceAr = this.minWidth/this.minHeight
                             val mod = if (ar >= spaceAr)  // media is wider than the space I have to show it in
                                 Modifier.fillMaxWidth().aspectRatio(ar)
                             else
@@ -307,12 +305,10 @@ fun AssetViewUi2(asset: AssetInfo, parentMod: Modifier = Modifier)
                     val mediaBytes = asset.iconBackBytes
                     if (mediaBytes == null && (url?.protocol == URLProtocol.HTTP || url?.protocol == URLProtocol.HTTPS)) throw UnimplementedException("load from URL")
 
-                    val surfShape = RoundedCornerShape(20.dp)
-
                     MpMediaView(null, mediaBytes, url.toString(), autoplay = true) { mi, draw ->
                         val ar = mi.width.toFloat()/mi.height.toFloat()
                         BoxWithConstraints(Modifier.fillMaxWidth().wrapContentHeight()) {
-                            val spaceAr = minWidth/minHeight
+                            val spaceAr = this.minWidth/this.minHeight
                             val mod = if (ar >= spaceAr)  // media is wider than the space I have to show it in
                                 Modifier.fillMaxWidth().aspectRatio(ar)
                             else
@@ -328,25 +324,34 @@ fun AssetViewUi2(asset: AssetInfo, parentMod: Modifier = Modifier)
 
                 S.NftInfo ->
                 {
-                    Spacer(Modifier.height(16.dp))
-                    // TODO formatting (support minimal HTML)
-                    Text(nft?.info ?: "")
+                    VSpacer(0.30f, 32.dp, 2.dp)
+                    Column(modifier = Modifier.fillMaxWidth(0.95f).wrapContentHeight().verticalScroll(rememberScrollState())) {
+                        val tmp = nft?.info
+                        LogIt.info("NFT INFO: $tmp")
+                        if (tmp != null)
+                        {
+                            impreciseDisplayHtml(tmp, textAlign = TextAlign.Justify)
+                        }
+                        else
+                        {
+                            Text(i18n(S.NftNoInfoProvided), Modifier.fillMaxWidth(0.95f), textAlign = TextAlign.Center)
+                        }
+                    }
                 }
 
                 S.NftLegal ->
                 {
-                    Column(
-                      modifier = Modifier.verticalScroll(rememberScrollState())
-                    ) {
-                        Spacer(Modifier.height(16.dp))
-
-                        nft?.license?.let { html ->
-                            val document: Document = Ksoup.parse(html)
-                            val body = document.body()
-                            body.childElementsList().forEach { element ->
-                                Text(element.text())
-                                Spacer(Modifier.height(1.dp))
-                            }
+                    VSpacer(0.30f, 32.dp, 2.dp)
+                    Column(modifier = Modifier.fillMaxWidth(0.95f).wrapContentHeight().verticalScroll(rememberScrollState())) {
+                        val tmp = nft?.license
+                        LogIt.info("NFT LICENSE: $tmp")
+                        if (tmp != null)
+                        {
+                            impreciseDisplayHtml(tmp, textAlign = TextAlign.Justify)
+                        }
+                        else
+                        {
+                            Text(i18n(S.NftNoInfoProvided), Modifier.fillMaxWidth(0.95f), textAlign = TextAlign.Center)
                         }
                     }
                 }
@@ -370,12 +375,12 @@ fun AssetScreenUi2(account: Account)
       }
       else null
     ) }
-    var assetFocusIndex by remember { mutableStateOf<Int>(0) }
+    // var assetFocusIndex by remember { mutableStateOf<Int>(0) }
     val assetsState = account.assetsObservable.collectAsState()
     val assets = assetsState.value
     val assetList = assets.values.toList().sortedBy { it.assetInfo.nft?.title ?: it.assetInfo.name ?: it.assetInfo.ticker ?: it.groupInfo.groupId.toString() }
 
-    var asl = assetListState.get(account.name)
+    val asl = assetListState[account.name]
     if (asl == null)
     {
             assetListState[account.name] = MutableStateFlow(rememberLazyListState())
@@ -431,7 +436,6 @@ fun AssetScreenUi2(account: Account)
                             val bkg = WallyAssetRowColors[indexFreezer % WallyAssetRowColors.size]
                             Box(Modifier.padding(4.dp, 4.dp).fillMaxWidth().background(bkg).clickable {
                                 assetFocus = assets[key]
-                                assetFocusIndex = indexFreezer
                                 nav.go(ScreenId.Assets, assetFocus?.groupInfo?.groupId?.toByteArray())
                             }) {
                                 AssetListItemViewUi2(it, 1, false, modifier = Modifier.padding(0.dp, 2.dp))
@@ -460,7 +464,7 @@ fun AssetScreenUi2(account: Account)
               horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 IconTextButtonUi2(
-                  icon = Icons.Outlined.Send,
+                  icon = Icons.AutoMirrored.Outlined.Send,
                   modifier = Modifier.weight(1f),
                   description = i18n(S.Send),
                   color = wallyPurple,
@@ -478,7 +482,7 @@ fun AssetScreenUi2(account: Account)
                     onTradeButton(a.assetInfo)
                 }
                 IconTextButtonUi2(
-                  icon = Icons.Outlined.ArrowBack,
+                  icon = Icons.AutoMirrored.Outlined.ArrowBack,
                   modifier = Modifier.weight(1f),
                   description = "Back",
                   color = wallyPurple,

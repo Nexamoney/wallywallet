@@ -519,11 +519,9 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
         LogIt.info(sourceLoc() + chain.name + ": Get Token Desc complete: ${groupId} td: ${td}")
         synchronized(dataLock)
         {
-            LogIt.info(sourceLoc() + chain.name + ": Loading Asset: Process genesis info ${groupId.toStringNoPrefix()}")
             val tg = td.genesisInfo
             if (tg == null) return@synchronized
-
-            LogIt.info(sourceLoc() + chain.name + ": loaded: " + tg.name)
+            LogIt.info(sourceLoc() + chain.name + ": Loading Asset: Process genesis info ${groupId.toStringNoPrefix()} ${tg.name}")
 
             name = tg.name ?: td.name
             ticker = tg.ticker ?: td.ticker
@@ -727,7 +725,7 @@ class AssetManager(): AssetManagerStorage
         try
         {
             val ai = loadAssetInfo(groupId)
-            LogIt.info(sourceLoc() + ":   Asset manager: loaded ${ai.name} icon(${ai.iconBytes?.size ?: -1} bytes): ${ai.iconUri.toString()} group: ${groupId}")
+            // LogIt.info(sourceLoc() + ":   Asset manager: loaded ${ai.name} icon(${ai.iconBytes?.size ?: -1} bytes): ${ai.iconUri.toString()} group: ${groupId}")
             access.lock { assets[groupId] = ai }
             return ai
         }
@@ -892,7 +890,7 @@ class AssetManager(): AssetManagerStorage
             val hash = libnexa.hash256(zipBytes)
             if (groupId.subgroupData() contentEquals hash)
             {
-                LogIt.info(sourceLoc() + "nft zip file matches hash for ${groupId.toStringNoPrefix()}")
+                // LogIt.info(sourceLoc() + "nft zip file matches hash for ${groupId.toStringNoPrefix()}")
             }
             else
             {

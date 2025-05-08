@@ -712,11 +712,12 @@ Good luck!
     <string name="NftOwnerMedia">Owner\'s Content</string>
     <string name="Content">Content</string>
     <string name="Private">Private</string>
+    <string name="NftPrivateDescription">This content belongs to the owner of the asset</string>
     <string name="NftInfo">Info</string>
     <string name="NftLegal">License</string>
     <string name="NftSeries" formatted="false">Series: %series</string>
     <string name="NftAuthor" formatted="false">Author: %author</string>
-    <string name="NftNoInfoProvidedHTML"><![CDATA[<body><h1><center>...No Information Provided...</h1></center></body>]]></string>
+    <string name="NftNoInfoProvided">...No Information Provided...</string>
     <string name="IssuedToConnection">Launched in connected site</string>
 
     <string name ="demonstratingOwnership">Demonstrating Ownership</string>

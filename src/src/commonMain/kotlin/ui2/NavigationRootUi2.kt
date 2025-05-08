@@ -545,38 +545,6 @@ fun uxPeriodicAnalysisUi2(): iThread
     }
 }
 
-fun observeReceiveDestination(account: Account)
-{
-    account.access.lock {
-        if (account.walletOnChange == -1)
-        {
-            account.walletOnChange = account.wallet.setOnWalletChange { wallet, _ ->
-                CoroutineScope(Dispatchers.IO).launch {
-                    try
-                    {
-                        val tmp = wallet.getCurrentDestination()
-                        account.access.lock { account.currentReceive  = tmp }
-                    }
-                    catch (e: WalletException) // closed
-                    {
-                        account.access.lock {
-                            if (account.wallet.isDeleted)
-                            {
-                                if (account.walletOnChange != -1)
-                                {
-                                    account.wallet.removeOnWalletChange(account.walletOnChange)
-                                    account.walletOnChange = -1
-                                }
-                                wallyApp?.accounts?.remove(account.name)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 /*
     Use this method ONLY to change the selected account
  */
@@ -585,72 +553,12 @@ fun setSelectedAccount(account: Account)
     if (wallyApp!!.focusedAccount.value != account)
     {
         wallyApp!!.focusedAccount.value = account
-        setReceiveDestination(account)
-        observeReceiveDestination(account)
         wallyApp!!.preferenceDB.edit().putString(SELECTED_ACCOUNT_NAME_PREF, account.name).commit()
     }
 }
 
 val handler = CoroutineExceptionHandler {
     _, exception -> LogIt.error("Caught in NavigationRootUi2 CoroutineExceptionHandler: $exception")
-}
-
-fun setReceiveDestination(account: Account)
-{
-    laterJob {
-        // Blocking operation, we don't offer a destination until we are sure its installed in connected nodes
-        val payDestination = account.wallet.getCurrentDestination()
-        account.currentReceive = payDestination
-    }
-
-    /*
-    lateinit var payDestination: PayDestination
-    // This line of code hangs because of getCurrentDestination() when an account with many addresses and functions is syncing.
-    // Added a timeout to use a default unused address when getCurrentDestination() silently blocks while syncing.
-    // TODO: Refactor libnexakotlin's getCurrentDestination() to suspend function using delay(50) instead of millisleep(50..) so withTimeout can interrupt it
-    // TODO: https://gitlab.com/nexa/libnexakotlin/-/issues/24
-
-    val job = CoroutineScope(Dispatchers.IO + handler).launch {
-        payDestination = account.wallet.getCurrentDestination() // Blocking operation
-        CoroutineScope(Dispatchers.Default + handler).launch {
-            // TODO: Disable until sync is complete if address privacy is enabled?
-            account.currentReceive = payDestination
-        }
-    }
-    CoroutineScope(Dispatchers.IO + handler).launch {
-        delay(2000)
-        if (job.isActive)
-        {
-            // Timeout occurred, Get a non-private fallback address
-
-            // Disable if account privacy is set
-            val addressPrivacy = (account.flags and ACCOUNT_FLAG_REUSE_ADDRESSES) == 0UL
-            if (!addressPrivacy)
-            {
-                account.currentReceive?.let { destination ->
-                    launch(Dispatchers.Default + handler) {
-                        account.currentReceive = destination
-                    }
-                }
-                account.wallet.unusedAddresses.let { unusedAddresses ->
-                    account.wallet.generateDestinationsInto(unusedAddresses)
-                    if (unusedAddresses.size > 0)
-                    {
-                        val destination = account.wallet.walletDestination(unusedAddresses.first())
-                        if (destination != null)
-                            CoroutineScope(Dispatchers.Default + handler).launch {
-                                account.currentReceive = destination
-                            }
-                    }
-                }
-            }
-            else
-            {
-                account.currentReceive = null
-            }
-        }
-    }
-     */
 }
 
 fun noSelectedAccount()
