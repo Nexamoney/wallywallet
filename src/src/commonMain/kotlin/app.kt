@@ -353,7 +353,7 @@ open class CommonApp(val runningTests: Boolean)
     fun orderedAccounts(visibleOnly: Boolean = true): ListifyMap<String, Account>
     {
         return accountLock.synchronized {
-            LogIt.info("got lock")
+            // LogIt.info("got lock")
             ListifyMap(accounts, { if (visibleOnly) it.value.visible else true }, object : Comparator<String>
             {
                 override fun compare(p0: String, p1: String): Int
@@ -542,14 +542,16 @@ open class CommonApp(val runningTests: Boolean)
             // The transformation is http://fake_domain_to_trigger_the_wallet/<actual scheme>/<actual reply domain>/<rest of the intent>
             if (scheme == "http" || scheme == "https")
             {
-                //val actualScheme = uri.pathSegments[0]
-                //val actualDomain = uri.pathSegments[1]
-                val p = (uri.encodedPath?.drop(1) ?: "") + "?" + uri.encodedQuery
+                val uriq = if (uri.encodedQuery != null) "?" + uri.encodedQuery else ""
+                val p = (uri.encodedPath?.drop(1) ?: "") + uriq
                 val actualUri = p.replaceFirst("/","://")
                 urlStr = actualUri
                 uri = Uri.parse(actualUri)
                 scheme = uri.scheme?.lowercase()
             }
+
+            // This is just saying open wally, no additional command (http://w.nexa.org, for example)
+            if (urlStr == "") return true
 
             // see if this is an address without the prefix
             val whichChain = if (scheme == null)
@@ -560,8 +562,9 @@ open class CommonApp(val runningTests: Boolean)
                 }
                 catch (e: UnknownBlockchainException)
                 {
-                    displayError(S.unknownCryptoCurrency, urlStr)
-                    return false
+                    //displayError(S.unknownCryptoCurrency, urlStr)
+                    //return false
+                    null
                 }
             }
             else uriToChain[scheme]
