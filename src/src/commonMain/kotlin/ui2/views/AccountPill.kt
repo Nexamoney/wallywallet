@@ -301,7 +301,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                   )
                 )
                 .padding(
-                  horizontal = 32.dp,
+                  horizontal = 4.dp,
                   vertical = 8.dp
                 ),
               horizontalAlignment = Alignment.CenterHorizontally
@@ -313,17 +313,17 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                     Spacer(Modifier.height(4.dp))
                     Row(
                       modifier = Modifier.fillMaxWidth().wrapContentHeight(),
-                      horizontalArrangement = Arrangement.Center
+                      horizontalArrangement = Arrangement.SpaceEvenly,
                     ) {
                         val verticalDividerModifier = Modifier
                           .width(1.dp)
                           .height(40.dp)
-                          .padding(vertical = 8.dp)
+                          .padding(vertical = 2.dp)
                           .align(Alignment.CenterVertically)
 
                         IconTextButtonUi2(
                           icon = Icons.Outlined.ArrowUpward,
-                          modifier = Modifier.weight(1f),
+                          modifier = Modifier.weight(1f).testTag("SendButton"),
                           description = i18n(S.Send),
                         ) {
                             nav.go(ScreenId.Send)
@@ -345,7 +345,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                         )
                         IconTextButtonUi2(
                           icon = Icons.Outlined.CallSplit,
-                          modifier = Modifier.weight(1f),
+                          modifier = Modifier.weight(1f).testTag("SplitBillButton"),
                           description = i18n(S.title_split_bill),
                           rotateIcon = true
                         ) {
@@ -357,7 +357,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                         )
                         IconTextButtonUi2(
                           icon = Icons.Outlined.ManageAccounts,
-                          modifier = Modifier.weight(1f),
+                          modifier = Modifier.weight(1f).testTag("AccountButton"),
                           description = i18n(S.account)
                         ) {
                             nav.go(ScreenId.AccountDetails)

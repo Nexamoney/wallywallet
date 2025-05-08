@@ -1,8 +1,13 @@
 package info.bitcoinunlimited.www.wally
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,7 +18,18 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.fleeksoft.ksoup.Ksoup
+import com.fleeksoft.ksoup.nodes.Document
+import com.fleeksoft.ksoup.nodes.Element
+import com.fleeksoft.ksoup.nodes.Node
+import com.fleeksoft.ksoup.parser.Parser
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import kotlinx.coroutines.*
 import org.nexa.libnexakotlin.*
@@ -243,7 +259,44 @@ fun String.onlyDecimal(): Boolean
     return true
 }
 
+@Composable fun impreciseDisplayHtml(element: Node, textAlign: TextAlign = TextAlign.Unspecified)
+{
+    for (node in element.childNodes())
+    {
+        when (node)
+        {
+            is com.fleeksoft.ksoup.nodes.TextNode -> {
+                val t = node.getWholeText()
+                Text(t, Modifier.fillMaxWidth(), textAlign = textAlign, maxLines = 10000, softWrap = true, overflow = TextOverflow.Clip)
+            }
+            is com.fleeksoft.ksoup.nodes.Element -> impreciseDisplayHtml(node, textAlign)
+            else -> impreciseDisplayHtml(node, textAlign)
+        }
+        Spacer(Modifier.height(1.dp))
+    }
+}
 
+
+@Composable fun impreciseDisplayHtml(html: String, textAlign: TextAlign = TextAlign.Unspecified)
+{
+    // XML parser preserves whitespace.  We need this because this might not even be html
+    val body = try
+    {
+        //val document: Document = Ksoup.parse(html, Parser.xmlParser())
+        val document: Document = Ksoup.parse(html)
+        document
+    }
+    catch(e: Exception)
+    {
+        LogIt.warning(e.toString())
+        null  // Its probably text
+    }
+    if (body != null)
+    {
+        impreciseDisplayHtml(body, textAlign)
+    }
+    else Text(html, textAlign = textAlign)
+}
 
 /** dig through text looking for addresses */
 fun scanForFirstAddress(s: String):PayAddress?

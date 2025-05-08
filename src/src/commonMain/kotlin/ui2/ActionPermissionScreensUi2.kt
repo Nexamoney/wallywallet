@@ -44,12 +44,23 @@ class IdentitySession(var uri: Uri?, var idData: IdentityDomain?=null, val whenD
 // Proportional vertical spacer that allows you to specify a max and min spacing
 @Composable fun ColumnScope.VSpacer(spaceWeight: Float, max: Dp = Dp.Unspecified, min: Dp = Dp.Unspecified )
 {
-    Spacer(modifier = Modifier.heightIn(min, max).weight(spaceWeight))
+    Spacer(modifier = Modifier.weight(spaceWeight, false).heightIn(min,max))
 }
 // Proportional horizontal spacer that allows you to specify a max and min spacing
 @Composable fun RowScope.VSpacer(spaceWeight: Float, max: Dp = Dp.Unspecified, min: Dp = Dp.Unspecified )
 {
-    Spacer(modifier = Modifier.heightIn(min, max).weight(spaceWeight))
+    Spacer(modifier = Modifier.weight(spaceWeight, false).heightIn(min, max))
+}
+
+// Proportional vertical spacer that allows you to specify a max and min spacing
+@Composable fun ColumnScope.HSpacer(spaceWeight: Float, max: Dp = Dp.Unspecified, min: Dp = Dp.Unspecified )
+{
+    Spacer(modifier = Modifier.weight(spaceWeight, false).widthIn(min,max))
+}
+// Proportional horizontal spacer that allows you to specify a max and min spacing
+@Composable fun RowScope.HSpacer(spaceWeight: Float, max: Dp = Dp.Unspecified, min: Dp = Dp.Unspecified )
+{
+    Spacer(modifier = Modifier.weight(spaceWeight, false).widthIn(min, max))
 }
 
 @Composable
