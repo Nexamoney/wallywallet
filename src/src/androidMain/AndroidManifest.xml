@@ -45,7 +45,7 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustPan"
             >
-            <intent-filter android:autoVerify="true" android:label="">
+            <intent-filter android:autoVerify="true" android:label="@string/app_long_name">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -53,7 +53,7 @@
                     android:host="app.wallywallet.org"
                     android:pathPrefix="/" />
             </intent-filter>
-            <intent-filter android:autoVerify="true" android:label="">
+            <intent-filter android:autoVerify="true" android:label="@string/app_long_name">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -61,13 +61,13 @@
                     android:host="app.wallywallet.org"
                     android:pathPrefix="/" />
             </intent-filter>
-            <intent-filter android:autoVerify="true" android:label="">
+            <intent-filter android:autoVerify="true" android:label="@string/app_long_name">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="http" android:host="w.nexa.org" />
             </intent-filter>
-            <intent-filter android:autoVerify="true" android:label="">
+            <intent-filter android:autoVerify="true" android:label="@string/app_long_name">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />

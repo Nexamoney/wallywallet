@@ -505,7 +505,7 @@ fun SpecialTxPermScreenUi2(acc: Account, sess: TricklePaySession)
             {
                 CenteredSectionText(S.CannotCompleteTransaction)
                 Spacer(Modifier.height(8.dp))
-                Text(GuiCustomTxError, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, maxLines = 10, softWrap = true)
+                Text(GuiCustomTxError, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, maxLines = 100, softWrap = true)
             }
         }
 
