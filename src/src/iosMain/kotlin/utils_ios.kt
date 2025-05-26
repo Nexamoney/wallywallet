@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import info.bitcoinunlimited.www.wally.ui2.softKeyboardBar
+import info.bitcoinunlimited.www.wally.ui.softKeyboardBar
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
@@ -15,11 +15,12 @@ import okio.Buffer
 import okio.BufferedSource
 import okio.FileNotFoundException
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.skia.Image
-import org.jetbrains.skia.Paint
-import org.jetbrains.skia.Rect
-import org.jetbrains.skia.Surface
+import org.jetbrains.skia.*
 import org.nexa.libnexakotlin.GetLog
+import platform.CoreFoundation.CFDataGetBytePtr
+import platform.CoreFoundation.CFDataGetLength
+import platform.CoreFoundation.CFRelease
+import platform.CoreGraphics.*
 import platform.Foundation.*
 import platform.UIKit.*
 import wpw.src.generated.resources.Res
@@ -295,4 +296,55 @@ actual fun openUrl(url: String) {
     } else {
         println("Invalid URL: $url")
     }
+}
+
+// from https://slack-chats.kotlinlang.org/t/12086405/hi-all-how-to-convert-ios-uiimage-to-compose-imagebitmap-in-
+@OptIn(ExperimentalForeignApi::class)
+internal fun UIImage.toSkiaImage(): Image?
+{
+    val imageRef = CGImageCreateCopyWithColorSpace(this.CGImage, CGColorSpaceCreateDeviceRGB()) ?: return null
+
+    val width = CGImageGetWidth(imageRef).toInt()
+    val height = CGImageGetHeight(imageRef).toInt()
+
+    val bytesPerRow = CGImageGetBytesPerRow(imageRef)
+    val data = CGDataProviderCopyData(CGImageGetDataProvider(imageRef))
+    val bytePointer = CFDataGetBytePtr(data)
+    val length = CFDataGetLength(data)
+    val alphaInfo = CGImageGetAlphaInfo(imageRef)
+
+    val alphaType = when (alphaInfo) {
+        CGImageAlphaInfo.kCGImageAlphaPremultipliedFirst, CGImageAlphaInfo.kCGImageAlphaPremultipliedLast -> ColorAlphaType.PREMUL
+        CGImageAlphaInfo.kCGImageAlphaFirst, CGImageAlphaInfo.kCGImageAlphaLast -> ColorAlphaType.UNPREMUL
+        CGImageAlphaInfo.kCGImageAlphaNone, CGImageAlphaInfo.kCGImageAlphaNoneSkipFirst, CGImageAlphaInfo.kCGImageAlphaNoneSkipLast -> ColorAlphaType.OPAQUE
+        else -> ColorAlphaType.UNKNOWN
+    }
+
+    val byteArray = ByteArray(length.toInt()) { index ->
+        bytePointer!![index].toByte()
+    }
+    CFRelease(data)
+    CFRelease(imageRef)
+
+    return Image.makeRaster(
+      imageInfo = ImageInfo(width = width, height = height, colorType = ColorType.RGBA_8888, alphaType = alphaType),
+      bytes = byteArray,
+      rowBytes = bytesPerRow.toInt(),
+    )
+}
+
+@OptIn(ExperimentalForeignApi::class)
+fun UIImage.toImageBitmap(): ImageBitmap {
+    return this.toSkiaImage()!!.toComposeImageBitmap()
+    //todo <https://github.com/touchlab/DroidconKotlin/blob/fe5b7e8bb6cdf5d00eeaf7ee13f1f96b71857e8f/shared-ui/src/iosMain/kotlin/co/touchlab/droidcon/ui/util/ToSkiaImage.kt>
+    /*
+    val pngRepresentation = UIImagePNGRepresentation(this)!!
+    val byteArray = ByteArray(pngRepresentation.length.toInt()).apply {
+        usePinned {
+            memcpy(it.addressOf(0), pngRepresentation.bytes, pngRepresentation.length)
+        }
+    }
+    return org.jetbrains.skia.Image.makeFromEncoded(byteArray).toComposeImageBitmap()
+
+     */
 }

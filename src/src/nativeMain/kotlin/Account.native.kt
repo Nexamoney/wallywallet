@@ -1,6 +1,6 @@
 package info.bitcoinunlimited.www.wally
 
-import info.bitcoinunlimited.www.wally.ui2.triggerAccountsChanged
+import info.bitcoinunlimited.www.wally.ui.triggerAccountsChanged
 import org.nexa.libnexakotlin.*
 
 actual fun EncodePIN(actName: String, pin: String, size: Int): ByteArray {

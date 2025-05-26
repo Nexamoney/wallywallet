@@ -1,12 +1,12 @@
-package info.bitcoinunlimited.www.wally.previews
+package ui.preview
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import info.bitcoinunlimited.www.wally.ui2.IdentityEditScreen
-import info.bitcoinunlimited.www.wally.ui2.IdentityScreen
-import info.bitcoinunlimited.www.wally.ui2.IdentitySession
-import info.bitcoinunlimited.www.wally.ui2.theme.WallyPageBase
+import info.bitcoinunlimited.www.wally.ui.IdentityEditScreen
+import info.bitcoinunlimited.www.wally.ui.IdentityScreen
+import info.bitcoinunlimited.www.wally.ui.IdentitySession
+import info.bitcoinunlimited.www.wally.ui.theme.WallyPageBase
 
 
 @Composable

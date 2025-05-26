@@ -3,16 +3,9 @@ package ui
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui2.TricklePayDomainView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import info.bitcoinunlimited.www.wally.ui.TricklePayDomainView
 import org.nexa.libnexakotlin.ChainSelector
-import org.nexa.libnexakotlin.initializeLibNexa
-import org.nexa.libnexakotlin.runningTheTests
 import kotlin.test.Test
-import kotlinx.coroutines.IO
-import ui2.WallyUiTestBase
-import ui2.waitForCatching
 
 class TricklePayScreenTest: WallyUiTestBase()
 {

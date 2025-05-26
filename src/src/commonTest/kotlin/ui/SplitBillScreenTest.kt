@@ -2,10 +2,8 @@ package ui
 
 import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui2.SplitBillScreen
+import info.bitcoinunlimited.www.wally.ui.SplitBillScreen
 import org.nexa.libnexakotlin.ChainSelector
-import ui2.settle
-import ui2.setupTestEnv
 import kotlin.test.Test
 
 class SplitBillScreenTest

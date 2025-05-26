@@ -5,15 +5,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.views.AccountItemView
-import info.bitcoinunlimited.www.wally.ui2.views.AccountUIData
+import info.bitcoinunlimited.www.wally.ui.views.AccountUIData
 import org.nexa.libnexakotlin.ChainSelector
-import ui2.settle
-import ui2.setupTestEnv
-import ui2.waitForCatching
+import ui.settle
+import ui.setupTestEnv
+import ui.waitForCatching
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
-@OptIn(ExperimentalUnsignedTypes::class)
 class AccountListViewTest
 {
     init
@@ -26,25 +25,25 @@ class AccountListViewTest
     fun accountItemViewTest()
     {
         val cs = ChainSelector.NEXA
-        val account: Account = wallyApp!!.newAccount("itemvie", 0U, "", cs)!!
+        val account = wallyApp!!.newAccount("itemvie", 0U, "", cs)!!
         runComposeUiTest {
             val iSelectedMock = mutableStateOf(false)
-            val gearIconCLicked = mutableStateOf(false)
+
+            val accUiData = AccountUIData(
+              account = account,
+              balance = "10,000,000,000"
+            )
 
             setContent {
                 AccountItemView(
-                  uidata = AccountUIData(
-                    account = account
-                  ),
+                  uidata = accUiData,
                   index = 0,
                   isSelected = iSelectedMock.value,
                   devMode = false,
                   backgroundColor = Color.Transparent,
+                  hasFastForwardButton = false,
                   onClickAccount = {
                       iSelectedMock.value = !iSelectedMock.value
-                  },
-                  onClickGearIcon = {
-                      gearIconCLicked.value = true
                   }
                 )
             }
@@ -53,10 +52,6 @@ class AccountListViewTest
             onNodeWithTag("AccountItemView").performClick()
             settle()
             assertTrue(iSelectedMock.value)
-            waitForCatching {onNodeWithTag("accountSettingsGearIcon").isDisplayed() }
-            onNodeWithTag("accountSettingsGearIcon").performClick()
-            settle()
-            assertTrue(gearIconCLicked.value)
         }
         wallyApp!!.deleteAccount(account)
     }

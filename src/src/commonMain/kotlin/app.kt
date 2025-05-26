@@ -6,7 +6,6 @@ import androidx.compose.runtime.collectAsState
 import com.eygraber.uri.Uri
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.ui.*
-import info.bitcoinunlimited.www.wally.ui2.*
 import io.ktor.client.*
 import io.ktor.client.network.sockets.*
 import io.ktor.client.network.sockets.SocketTimeoutException
@@ -602,20 +601,14 @@ open class CommonApp(val runningTests: Boolean)
                 // When deep linking from native camera that is currently only supported on iOS, and handling the
                 // String content from the QR code navigating directly to the desired screen is enough.
                 // I don't think we need an external GUI drive to do this now that nav is a global variable
-                if (newUI.value)
-                    nav.go(
-                      screen = ScreenId.Send,
-                      data = SendScreenNavParams(
-                        toAddress = chainToURI[whichChain] + ":" + uri.body(),
-                        amount = amt,
-                        note = attribs["label"]
-                      )
-                    )
-                else // external driver for navigating using driver from before nav was a global variable
-                    // Inject a change into the GUI
-                    wallyApp!!.later {
-                        externalDriver.send(GuiDriver(ScreenId.Home, sendAddress = chainToURI[whichChain] + ":" + uri.body(), amount = amt, note = attribs["label"], chainSelector = whichChain))
-                    }
+                nav.go(
+                  screen = ScreenId.Send,
+                  data = SendScreenNavParams(
+                    toAddress = chainToURI[whichChain] + ":" + uri.body(),
+                    amount = amt,
+                    note = attribs["label"]
+                  )
+                )
 
             }
             else if (scheme == IDENTITY_URI_SCHEME)
@@ -772,7 +765,7 @@ open class CommonApp(val runningTests: Boolean)
         showIdentityPref.value = preferenceDB.getBoolean(SHOW_IDENTITY_PREF, false)
         showTricklePayPref.value = preferenceDB.getBoolean(SHOW_TRICKLEPAY_PREF, false)
         showAssetsPref.value = preferenceDB.getBoolean(SHOW_ASSETS_PREF, false)
-        newUI.value = preferenceDB.getBoolean(EXPERIMENTAL_UX_MODE_PREF, true)
+        experimentalUI.value = preferenceDB.getBoolean(EXPERIMENTAL_UX_MODE_PREF, false)
 
         openAccountsTriggerGui()
         tpDomains.load()

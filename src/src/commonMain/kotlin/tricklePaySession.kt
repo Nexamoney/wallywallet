@@ -6,7 +6,6 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
-import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 import kotlin.random.Random
 import org.nexa.libnexakotlin.*
@@ -14,7 +13,6 @@ import org.nexa.libnexakotlin.simpleapi.NexaScript
 
 import com.eygraber.uri.*
 import info.bitcoinunlimited.www.wally.ui.*
-import info.bitcoinunlimited.www.wally.ui2.*
 import io.ktor.http.Url
 import io.ktor.utils.io.errors.*
 import kotlinx.serialization.Serializable

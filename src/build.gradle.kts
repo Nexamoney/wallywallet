@@ -710,9 +710,7 @@ tasks.register("generateVersionFile") {
         val file = file("src/commonMain/kotlin/Version.kt")
         file.writeText("""
             package info.bitcoinunlimited.www.wally
-            
-            import info.bitcoinunlimited.www.wally.ui.VersionI
-            
+                        
             object Version: VersionI
             {
                 override val VERSION = "${project.version}"

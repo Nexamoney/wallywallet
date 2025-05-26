@@ -1,6 +1,6 @@
 package info.bitcoinunlimited.www.wally
 
-import info.bitcoinunlimited.www.wally.ui2.triggerAccountsChanged
+import info.bitcoinunlimited.www.wally.ui.triggerAccountsChanged
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.toByteArray
 import javax.crypto.SecretKeyFactory

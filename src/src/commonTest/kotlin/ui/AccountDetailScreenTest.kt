@@ -1,68 +1,60 @@
 package ui
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.*
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.AccountDetailScreen
-import info.bitcoinunlimited.www.wally.ui2.ScreenNav
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestCoroutineScheduler
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
+import info.bitcoinunlimited.www.wally.ui.AccountStatisticsViewModelFake
+import info.bitcoinunlimited.www.wally.ui.setSelectedAccount
 import org.nexa.libnexakotlin.ChainSelector
-import org.nexa.libnexakotlin.initializeLibNexa
-import org.nexa.libnexakotlin.runningTheTests
-import ui2.setupTestEnv
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
-class AccountDetailScreenTest
+class AccountDetailScreenTest:WallyUiTestBase()
 {
-    @BeforeTest
-    fun setup()
-    {
-        // Solves:
-        //   java.lang.NoClassDefFoundError: android/os/Looper
-        //   Suppressed: java.lang.IllegalStateException: Module with the Main dispatcher had failed to initialize. For tests Dispatchers.setMain from kotlinx-coroutines-test module can be used
-        if (platform().target == KotlinTarget.JVM)
-            Dispatchers.setMain(StandardTestDispatcher())
-    }
-
-    @AfterTest
-    fun clean()
-    {
-        if (platform().target == KotlinTarget.JVM)
-            Dispatchers.resetMain()
-    }
-
-    init {
-        setupTestEnv()
-    }
-
     @Test
-    fun accountDetailScreenTest() = runComposeUiTest {
-
+    fun accountDetailScreenTest()
+    {
         val cs = ChainSelector.NEXA
-        lateinit var account: Account
-        runBlocking(Dispatchers.IO) {
-            account = wallyApp!!.newAccount("itemvie", 0U, "", cs)!!
-        }
-        setContent {
-            AccountDetailScreen(account, ScreenNav())
-        }
+        val account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
 
-        /**
-         * Open change pin View and click cancel button to close it.
-         */
-        onNodeWithText(i18n(S.AccountStatistics)).isDisplayed()
-        onNodeWithText(i18n(S.AccountActions)).isDisplayed()
-        onNodeWithText(i18n(S.SetChangePin)).performClick()
-        onNodeWithText(i18n(S.PinHidesAccount)).isDisplayed()
-        onNodeWithText(i18n(S.cancel)).performClick()
+        runComposeUiTest {
+            val viewModelStoreOwner = object : ViewModelStoreOwner
+            {
+                override val viewModelStore: ViewModelStore = ViewModelStore()
+            }
+
+            /*
+                Set selected account to populate the UI
+            */
+            setSelectedAccount(account)
+
+            val accountStatsViewModel = AccountStatisticsViewModelFake(account)
+
+            setContent {
+                CompositionLocalProvider(
+                  LocalViewModelStoreOwner provides viewModelStoreOwner
+                ) {
+                    AccountDetailScreen(accountStatsViewModel)
+                }
+            }
+            settle()
+
+            onNodeWithText(i18n(S.AutomaticNewAddress)).assertIsDisplayed()
+
+            /**
+             * Open change pin View and click cancel button to close it.
+             */
+            waitForCatching { onNodeWithText(i18n(S.AccountStatistics)).isDisplayed() }
+            onNodeWithText(i18n(S.SetChangePin)).performClick()
+            settle()
+            waitForCatching { onNodeWithText(i18n(S.PinHidesAccount)).isDisplayed() }
+            onNodeWithText(i18n(S.cancel)).performClick()
+            settle()
+        }
         wallyApp!!.deleteAccount(account)
     }
 }

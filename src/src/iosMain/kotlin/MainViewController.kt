@@ -1,19 +1,18 @@
 package info.bitcoinunlimited.www.wally
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.InternalComposeApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.uikit.ComposeUIViewControllerDelegate
 import androidx.compose.ui.window.ComposeUIViewController
-import info.bitcoinunlimited.www.wally.ui.*
-import info.bitcoinunlimited.www.wally.ui2.*
-import kotlinx.cinterop.ExperimentalForeignApi
+import info.bitcoinunlimited.www.wally.ui.BACKGROUND_SYNC_PREF
+import info.bitcoinunlimited.www.wally.ui.ScreenId
+import info.bitcoinunlimited.www.wally.ui.UiRoot
+import info.bitcoinunlimited.www.wally.ui.nav
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.Bip44Wallet
 import org.nexa.libnexakotlin.initializeLibNexa
 import org.nexa.libnexakotlin.handleThreadException
 import platform.UIKit.UIColor
-import platform.UIKit.UIRectEdgeAll
 import platform.UIKit.UIViewController
 
 private val LogIt = GetLog("BU.wally.iosMain.MainViewController")
@@ -95,8 +94,6 @@ fun iosCancelBackgroundSync()
 @Throws(Throwable::class, Exception::class, NullPointerException::class, RuntimeException::class)
 fun onQrCodeScannedWithDefaultCameraApp(qr: String)
 {
-    val newUi = newUI.value
-
     LogIt.info("onQrCodeScannedWithDefaultCameraApp: $qr")
 
     wallyApp?.handlePaste(qr)

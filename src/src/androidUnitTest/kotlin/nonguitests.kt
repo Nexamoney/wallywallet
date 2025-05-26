@@ -1,7 +1,6 @@
 @file:OptIn(ExperimentalUnsignedTypes::class)
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui2.fromFinestUnit
-import info.bitcoinunlimited.www.wally.ui2.views.fastForwardAccount
+import info.bitcoinunlimited.www.wally.ui.views.fastForwardAccount
 import io.ktor.client.network.sockets.*
 import okio.*
 import okio.Path.Companion.toPath

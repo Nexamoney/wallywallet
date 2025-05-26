@@ -1,23 +1,28 @@
 package info.bitcoinunlimited.www.wally.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.theme.*
-import info.bitcoinunlimited.www.wally.ui2.ScreenNav
-import info.bitcoinunlimited.www.wally.ui2.theme.WallyDivider
-import info.bitcoinunlimited.www.wally.ui2.theme.WallyShoppingRowColors
-import info.bitcoinunlimited.www.wally.ui2.views.MpMediaView
-import info.bitcoinunlimited.www.wally.ui2.views.WallyBoldText
-import info.bitcoinunlimited.www.wally.ui2.views.WallyBoringTextButton
+import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
+import info.bitcoinunlimited.www.wally.ui.theme.WallyShoppingRowColors
+import info.bitcoinunlimited.www.wally.ui.views.MpMediaView
+import info.bitcoinunlimited.www.wally.ui.views.WallyBoldText
 import okio.FileNotFoundException
 
 @Composable
@@ -47,16 +52,57 @@ fun ShoppingDestination.compose()
 
         Column {
             Text(explain, Modifier.fillMaxWidth())
-            WallyBoringTextButton(sd.buttonText) {
-                openUrl(sd.url)
-            }
+            if (sd.destinationType == DestinationType.OTHER)
+                Button(onClick = { openUrl(sd.url) }) {
+                    Text(sd.buttonText, style = MaterialTheme.typography.labelSmall.copy(color = Color.White))
+                }
+            else if (sd.destinationType == DestinationType.EXCHANGE)
+                ClickableLink(sd.buttonText)
         }
     }
 }
 
+@Composable
+fun ClickableLink(url: String) {
+    val annotatedString = buildAnnotatedString {
+        append(url)
+        addStyle(
+          style = SpanStyle(
+            color = Color.Blue,
+            textDecoration = TextDecoration.Underline,
+            fontSize = 16.sp
+          ),
+          start = 0,
+          end = url.length
+        )
+        addStringAnnotation(
+          tag = "URL",
+          annotation = url,
+          start = 0,
+          end = url.length
+        )
+    }
+
+    Text(
+      text = annotatedString,
+      modifier = Modifier
+        .padding(8.dp)
+        .clickable {
+            annotatedString.getStringAnnotations(tag = "URL", start = 0, end = url.length)
+              .firstOrNull()?.let { annotation ->
+                  openUrl(annotation.item) // Opens the URL in a browser
+              }
+        },
+      style = TextStyle(
+        fontSize = 16.sp,
+        color = Color.Blue,
+        textDecoration = TextDecoration.Underline
+      )
+    )
+}
 
 @Composable
-fun ShoppingScreen(nav: ScreenNav)
+fun ShoppingScreen()
 {
     Column(
       modifier = Modifier.fillMaxWidth().fillMaxHeight(1f),

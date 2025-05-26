@@ -9,9 +9,65 @@
 /* Begin PBXBuildFile section */
 		058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557BA273AAA24004C7B11 /* Assets.xcassets */; };
 		058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */; };
-		0B0353D32CCBA968004A28C5 /* ActionPermissionScreens.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0353C52CCBA968004A28C5 /* ActionPermissionScreens.kt */; };
-		0B0353DE2CCBA968004A28C5 /* ActionPermissionScreens.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0353C52CCBA968004A28C5 /* ActionPermissionScreens.kt */; };
-		0B512D6C2C62BFC200215158 /* AssetsScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B512D6B2C62BFC200215158 /* AssetsScreen.kt */; };
+		0B0287012DDD0B1400526D3A /* TxHistory.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0286FD2DDD0B1400526D3A /* TxHistory.kt */; };
+		0B0287022DDD0B1400526D3A /* AccountPill.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0286F72DDD0B1400526D3A /* AccountPill.kt */; };
+		0B0287032DDD0B1400526D3A /* QrScannerView.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0286FB2DDD0B1400526D3A /* QrScannerView.kt */; };
+		0B0287042DDD0B1400526D3A /* ResImageView.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0286FC2DDD0B1400526D3A /* ResImageView.kt */; };
+		0B0287062DDD0B1400526D3A /* LoadingAnimationView.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0286FA2DDD0B1400526D3A /* LoadingAnimationView.kt */; };
+		0B0287072DDD0B1400526D3A /* UiComponentLibrary.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0286FE2DDD0B1400526D3A /* UiComponentLibrary.kt */; };
+		0B0287092DDD0B1400526D3A /* Assets.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0286F82DDD0B1400526D3A /* Assets.kt */; };
+		0B02870A2DDD0B1400526D3A /* ListItems.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0286F92DDD0B1400526D3A /* ListItems.kt */; };
+		0B02870B2DDD0B1400526D3A /* UnlockView.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0286FF2DDD0B1400526D3A /* UnlockView.kt */; };
+		0B02870C2DDD0B1400526D3A /* TxHistory.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0286FD2DDD0B1400526D3A /* TxHistory.kt */; };
+		0B02870D2DDD0B1400526D3A /* AccountPill.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0286F72DDD0B1400526D3A /* AccountPill.kt */; };
+		0B02870E2DDD0B1400526D3A /* QrScannerView.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0286FB2DDD0B1400526D3A /* QrScannerView.kt */; };
+		0B02870F2DDD0B1400526D3A /* ResImageView.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0286FC2DDD0B1400526D3A /* ResImageView.kt */; };
+		0B0287112DDD0B1400526D3A /* LoadingAnimationView.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0286FA2DDD0B1400526D3A /* LoadingAnimationView.kt */; };
+		0B0287122DDD0B1400526D3A /* UiComponentLibrary.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0286FE2DDD0B1400526D3A /* UiComponentLibrary.kt */; };
+		0B0287142DDD0B1400526D3A /* Assets.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0286F82DDD0B1400526D3A /* Assets.kt */; };
+		0B0287152DDD0B1400526D3A /* ListItems.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0286F92DDD0B1400526D3A /* ListItems.kt */; };
+		0B0287162DDD0B1400526D3A /* UnlockView.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0286FF2DDD0B1400526D3A /* UnlockView.kt */; };
+		0B02871B2DDD0B2700526D3A /* Color.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287172DDD0B2700526D3A /* Color.kt */; };
+		0B02871C2DDD0B2700526D3A /* Shapes.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287182DDD0B2700526D3A /* Shapes.kt */; };
+		0B02871E2DDD0B2700526D3A /* Color.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287172DDD0B2700526D3A /* Color.kt */; };
+		0B02871F2DDD0B2700526D3A /* Shapes.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287182DDD0B2700526D3A /* Shapes.kt */; };
+		0B0287632DDD0F6400526D3A /* TxHistoryScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287612DDD0F6400526D3A /* TxHistoryScreen.kt */; };
+		0B0287642DDD0F6400526D3A /* ActionPermissionScreens.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287542DDD0F6400526D3A /* ActionPermissionScreens.kt */; };
+		0B0287652DDD0F6400526D3A /* IdentityScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287582DDD0F6400526D3A /* IdentityScreen.kt */; };
+		0B0287662DDD0F6400526D3A /* NavigationRoot.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287592DDD0F6400526D3A /* NavigationRoot.kt */; };
+		0B0287672DDD0F6400526D3A /* WallyDropdown.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287622DDD0F6400526D3A /* WallyDropdown.kt */; };
+		0B0287682DDD0F6400526D3A /* TricklePayScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287602DDD0F6400526D3A /* TricklePayScreen.kt */; };
+		0B0287692DDD0F6400526D3A /* AccountDetailScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287532DDD0F6400526D3A /* AccountDetailScreen.kt */; };
+		0B02876A2DDD0F6400526D3A /* ReceiveScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B02875B2DDD0F6400526D3A /* ReceiveScreen.kt */; };
+		0B02876B2DDD0F6400526D3A /* HomeScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287572DDD0F6400526D3A /* HomeScreen.kt */; };
+		0B02876C2DDD0F6400526D3A /* AssetsScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287562DDD0F6400526D3A /* AssetsScreen.kt */; };
+		0B02876D2DDD0F6400526D3A /* NewAccountScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B02875A2DDD0F6400526D3A /* NewAccountScreen.kt */; };
+		0B02876E2DDD0F6400526D3A /* AddressHistoryScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287552DDD0F6400526D3A /* AddressHistoryScreen.kt */; };
+		0B02876F2DDD0F6400526D3A /* SendScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B02875C2DDD0F6400526D3A /* SendScreen.kt */; };
+		0B0287702DDD0F6400526D3A /* SettingsScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B02875D2DDD0F6400526D3A /* SettingsScreen.kt */; };
+		0B0287712DDD0F6400526D3A /* ShoppingScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B02875E2DDD0F6400526D3A /* ShoppingScreen.kt */; };
+		0B0287722DDD0F6400526D3A /* SplitBillScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B02875F2DDD0F6400526D3A /* SplitBillScreen.kt */; };
+		0B0287732DDD0F6400526D3A /* TxHistoryScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287612DDD0F6400526D3A /* TxHistoryScreen.kt */; };
+		0B0287742DDD0F6400526D3A /* ActionPermissionScreens.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287542DDD0F6400526D3A /* ActionPermissionScreens.kt */; };
+		0B0287752DDD0F6400526D3A /* IdentityScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287582DDD0F6400526D3A /* IdentityScreen.kt */; };
+		0B0287762DDD0F6400526D3A /* NavigationRoot.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287592DDD0F6400526D3A /* NavigationRoot.kt */; };
+		0B0287772DDD0F6400526D3A /* WallyDropdown.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287622DDD0F6400526D3A /* WallyDropdown.kt */; };
+		0B0287782DDD0F6400526D3A /* TricklePayScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287602DDD0F6400526D3A /* TricklePayScreen.kt */; };
+		0B0287792DDD0F6400526D3A /* AccountDetailScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287532DDD0F6400526D3A /* AccountDetailScreen.kt */; };
+		0B02877A2DDD0F6400526D3A /* ReceiveScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B02875B2DDD0F6400526D3A /* ReceiveScreen.kt */; };
+		0B02877B2DDD0F6400526D3A /* HomeScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287572DDD0F6400526D3A /* HomeScreen.kt */; };
+		0B02877C2DDD0F6400526D3A /* AssetsScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287562DDD0F6400526D3A /* AssetsScreen.kt */; };
+		0B02877D2DDD0F6400526D3A /* NewAccountScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B02875A2DDD0F6400526D3A /* NewAccountScreen.kt */; };
+		0B02877E2DDD0F6400526D3A /* AddressHistoryScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287552DDD0F6400526D3A /* AddressHistoryScreen.kt */; };
+		0B02877F2DDD0F6400526D3A /* SendScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B02875C2DDD0F6400526D3A /* SendScreen.kt */; };
+		0B0287802DDD0F6400526D3A /* SettingsScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B02875D2DDD0F6400526D3A /* SettingsScreen.kt */; };
+		0B0287812DDD0F6400526D3A /* ShoppingScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B02875E2DDD0F6400526D3A /* ShoppingScreen.kt */; };
+		0B0287822DDD0F6400526D3A /* SplitBillScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B02875F2DDD0F6400526D3A /* SplitBillScreen.kt */; };
+		0B0287842DDD0F7100526D3A /* WallyTheme.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287832DDD0F7100526D3A /* WallyTheme.kt */; };
+		0B0287852DDD0F7100526D3A /* WallyTheme.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287832DDD0F7100526D3A /* WallyTheme.kt */; };
+		0B0287872DDD0F7E00526D3A /* AccountListView.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287862DDD0F7E00526D3A /* AccountListView.kt */; };
+		0B0287882DDD0F7E00526D3A /* AccountListView.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287862DDD0F7E00526D3A /* AccountListView.kt */; };
+		0B02878A2DDD0F9D00526D3A /* WallyTheme.ios.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B0287892DDD0F9D00526D3A /* WallyTheme.ios.kt */; };
 		0B53DA162BA282B300EFA082 /* iosAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B53DA152BA282B300EFA082 /* iosAppUITests.swift */; };
 		0B53DA182BA282B300EFA082 /* iosAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B53DA172BA282B300EFA082 /* iosAppUITestsLaunchTests.swift */; };
 		0B53DA1F2BA2846600EFA082 /* iosAppBackgroundTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B53DA1E2BA2846600EFA082 /* iosAppBackgroundTests.swift */; };
@@ -49,16 +105,6 @@
 		0B551C4B2AFE910D00BA0052 /* bitcoin_cash_token.xml in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C032AFE910D00BA0052 /* bitcoin_cash_token.xml */; };
 		0B551C4C2AFE910D00BA0052 /* strings_tr.bin in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C042AFE910D00BA0052 /* strings_tr.bin */; };
 		0B551C4D2AFE910D00BA0052 /* strings_no.bin in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C052AFE910D00BA0052 /* strings_no.bin */; };
-		0B551C4F2AFE910D00BA0052 /* NewAccountScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C092AFE910D00BA0052 /* NewAccountScreen.kt */; };
-		0B551C502AFE910D00BA0052 /* NavigationRoot.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C0A2AFE910D00BA0052 /* NavigationRoot.kt */; };
-		0B551C512AFE910D00BA0052 /* SettingsScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C0B2AFE910D00BA0052 /* SettingsScreen.kt */; };
-		0B551C522AFE910D00BA0052 /* AccountDetailScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C0C2AFE910D00BA0052 /* AccountDetailScreen.kt */; };
-		0B551C552AFE910D00BA0052 /* WallyTheme.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C102AFE910D00BA0052 /* WallyTheme.kt */; };
-		0B551C582AFE910D00BA0052 /* Theme.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C132AFE910D00BA0052 /* Theme.kt */; };
-		0B551C592AFE910D00BA0052 /* Typography.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C142AFE910D00BA0052 /* Typography.kt */; };
-		0B551C5A2AFE910D00BA0052 /* HomeScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C152AFE910D00BA0052 /* HomeScreen.kt */; };
-		0B551C5B2AFE910D00BA0052 /* AccountListView.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C172AFE910D00BA0052 /* AccountListView.kt */; };
-		0B551C5D2AFE910D00BA0052 /* ShoppingScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C192AFE910D00BA0052 /* ShoppingScreen.kt */; };
 		0B551C5E2AFE910D00BA0052 /* i18n.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C1A2AFE910D00BA0052 /* i18n.kt */; };
 		0B551C5F2AFE910D00BA0052 /* exceptions.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C1B2AFE910D00BA0052 /* exceptions.kt */; };
 		0B551C602AFE910D00BA0052 /* app.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C1C2AFE910D00BA0052 /* app.kt */; };
@@ -76,74 +122,8 @@
 		0B551C6C2AFE910D00BA0052 /* preferences.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C282AFE910D00BA0052 /* preferences.kt */; };
 		0B551C6D2AFE910D00BA0052 /* payproto_21_72.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C292AFE910D00BA0052 /* payproto_21_72.kt */; };
 		0B551C6E2AFE910D00BA0052 /* globals.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B551C2A2AFE910D00BA0052 /* globals.kt */; };
-		0B6095B72D12E3C900AAD40E /* IdentityScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095B32D12E3C900AAD40E /* IdentityScreen.kt */; };
-		0B6095B82D12E3C900AAD40E /* AddressHistoryScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095B22D12E3C900AAD40E /* AddressHistoryScreen.kt */; };
-		0B6095B92D12E3C900AAD40E /* SplitBillScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095B42D12E3C900AAD40E /* SplitBillScreen.kt */; };
-		0B6095BA2D12E3C900AAD40E /* TricklePayScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095B52D12E3C900AAD40E /* TricklePayScreen.kt */; };
-		0B6095BB2D12E3C900AAD40E /* TxHistoryScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095B62D12E3C900AAD40E /* TxHistoryScreen.kt */; };
-		0B6095BC2D12E3C900AAD40E /* IdentityScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095B32D12E3C900AAD40E /* IdentityScreen.kt */; };
-		0B6095BD2D12E3C900AAD40E /* AddressHistoryScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095B22D12E3C900AAD40E /* AddressHistoryScreen.kt */; };
-		0B6095BE2D12E3C900AAD40E /* SplitBillScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095B42D12E3C900AAD40E /* SplitBillScreen.kt */; };
-		0B6095BF2D12E3C900AAD40E /* TricklePayScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095B52D12E3C900AAD40E /* TricklePayScreen.kt */; };
-		0B6095C02D12E3C900AAD40E /* TxHistoryScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095B62D12E3C900AAD40E /* TxHistoryScreen.kt */; };
-		0B6095C32D12E3D800AAD40E /* Color.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095C12D12E3D800AAD40E /* Color.kt */; };
-		0B6095C42D12E3D800AAD40E /* Shapes.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095C22D12E3D800AAD40E /* Shapes.kt */; };
-		0B6095C52D12E3D800AAD40E /* Color.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095C12D12E3D800AAD40E /* Color.kt */; };
-		0B6095C62D12E3D800AAD40E /* Shapes.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095C22D12E3D800AAD40E /* Shapes.kt */; };
-		0B6095CF2D12E41000AAD40E /* LoadingAnimationView.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095C82D12E41000AAD40E /* LoadingAnimationView.kt */; };
-		0B6095D02D12E41000AAD40E /* UnlockView.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095CC2D12E41000AAD40E /* UnlockView.kt */; };
-		0B6095D12D12E41000AAD40E /* ResImageView.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095CA2D12E41000AAD40E /* ResImageView.kt */; };
-		0B6095D22D12E41000AAD40E /* QrScannerView.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095C92D12E41000AAD40E /* QrScannerView.kt */; };
-		0B6095D32D12E41000AAD40E /* AccountListViewUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095C72D12E41000AAD40E /* AccountListViewUi2.kt */; };
-		0B6095D42D12E41000AAD40E /* UiComponentLibrary.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095CB2D12E41000AAD40E /* UiComponentLibrary.kt */; };
-		0B6095D52D12E41000AAD40E /* WallyDropdown.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095CD2D12E41000AAD40E /* WallyDropdown.kt */; };
-		0B6095D62D12E41000AAD40E /* LoadingAnimationView.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095C82D12E41000AAD40E /* LoadingAnimationView.kt */; };
-		0B6095D72D12E41000AAD40E /* UnlockView.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095CC2D12E41000AAD40E /* UnlockView.kt */; };
-		0B6095D82D12E41000AAD40E /* ResImageView.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095CA2D12E41000AAD40E /* ResImageView.kt */; };
-		0B6095D92D12E41000AAD40E /* QrScannerView.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095C92D12E41000AAD40E /* QrScannerView.kt */; };
-		0B6095DA2D12E41000AAD40E /* AccountListViewUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095C72D12E41000AAD40E /* AccountListViewUi2.kt */; };
-		0B6095DB2D12E41000AAD40E /* UiComponentLibrary.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095CB2D12E41000AAD40E /* UiComponentLibrary.kt */; };
-		0B6095DC2D12E41000AAD40E /* WallyDropdown.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095CD2D12E41000AAD40E /* WallyDropdown.kt */; };
-		0B6095E42D12E51200AAD40E /* QrScannerView.ios.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095E02D12E51200AAD40E /* QrScannerView.ios.kt */; };
-		0B6095E52D12E51200AAD40E /* UiComponentLibrary.ios.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095E12D12E51200AAD40E /* UiComponentLibrary.ios.kt */; };
-		0B6095E62D12E51200AAD40E /* LoadingAnimationView.ios.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095DF2D12E51200AAD40E /* LoadingAnimationView.ios.kt */; };
-		0B6095E72D12E51200AAD40E /* WallyThemeUi2.ios.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095DD2D12E51200AAD40E /* WallyThemeUi2.ios.kt */; };
-		0B6095E82D12E51200AAD40E /* QrScannerView.ios.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095E02D12E51200AAD40E /* QrScannerView.ios.kt */; };
-		0B6095E92D12E51200AAD40E /* UiComponentLibrary.ios.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095E12D12E51200AAD40E /* UiComponentLibrary.ios.kt */; };
-		0B6095EA2D12E51200AAD40E /* LoadingAnimationView.ios.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095DF2D12E51200AAD40E /* LoadingAnimationView.ios.kt */; };
-		0B6095EB2D12E51200AAD40E /* WallyThemeUi2.ios.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0B6095DD2D12E51200AAD40E /* WallyThemeUi2.ios.kt */; };
-		0BBE60EE2DBB85D6009B1E46 /* AccountPill.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BBE60EA2DBB85D6009B1E46 /* AccountPill.kt */; };
-		0BBE60EF2DBB85D6009B1E46 /* TxHistory.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BBE60ED2DBB85D6009B1E46 /* TxHistory.kt */; };
-		0BBE60F02DBB85D6009B1E46 /* Assets.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BBE60EB2DBB85D6009B1E46 /* Assets.kt */; };
-		0BBE60F12DBB85D6009B1E46 /* ListItems.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BBE60EC2DBB85D6009B1E46 /* ListItems.kt */; };
-		0BBE60F22DBB85D6009B1E46 /* AccountPill.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BBE60EA2DBB85D6009B1E46 /* AccountPill.kt */; };
-		0BBE60F32DBB85D6009B1E46 /* TxHistory.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BBE60ED2DBB85D6009B1E46 /* TxHistory.kt */; };
-		0BBE60F42DBB85D6009B1E46 /* Assets.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BBE60EB2DBB85D6009B1E46 /* Assets.kt */; };
-		0BBE60F52DBB85D6009B1E46 /* ListItems.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BBE60EC2DBB85D6009B1E46 /* ListItems.kt */; };
-		0BCF999B2CE65EF5002F5F0E /* ActionPermissionScreensUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99902CE65EF5002F5F0E /* ActionPermissionScreensUi2.kt */; };
-		0BCF999C2CE65EF5002F5F0E /* ShoppingScreenUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99982CE65EF5002F5F0E /* ShoppingScreenUi2.kt */; };
-		0BCF999E2CE65EF5002F5F0E /* AssetsScreenUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99912CE65EF5002F5F0E /* AssetsScreenUi2.kt */; };
-		0BCF999F2CE65EF5002F5F0E /* NewAccountScreenUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99942CE65EF5002F5F0E /* NewAccountScreenUi2.kt */; };
-		0BCF99A02CE65EF5002F5F0E /* WallyDropdownUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99992CE65EF5002F5F0E /* WallyDropdownUi2.kt */; };
-		0BCF99A12CE65EF5002F5F0E /* AccountDetailScreenUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF998E2CE65EF5002F5F0E /* AccountDetailScreenUi2.kt */; };
-		0BCF99A22CE65EF5002F5F0E /* NavigationRootUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99932CE65EF5002F5F0E /* NavigationRootUi2.kt */; };
-		0BCF99A32CE65EF5002F5F0E /* SettingsScreenUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99972CE65EF5002F5F0E /* SettingsScreenUi2.kt */; };
-		0BCF99A42CE65EF5002F5F0E /* HomeScreenUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99922CE65EF5002F5F0E /* HomeScreenUi2.kt */; };
-		0BCF99A52CE65EF5002F5F0E /* ReceiveScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99952CE65EF5002F5F0E /* ReceiveScreen.kt */; };
-		0BCF99A62CE65EF5002F5F0E /* WallyThemeUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF998C2CE65EF5002F5F0E /* WallyThemeUi2.kt */; };
-		0BCF99A72CE65EF5002F5F0E /* SendScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99962CE65EF5002F5F0E /* SendScreen.kt */; };
-		0BCF99A82CE65EF5002F5F0E /* ActionPermissionScreensUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99902CE65EF5002F5F0E /* ActionPermissionScreensUi2.kt */; };
-		0BCF99A92CE65EF5002F5F0E /* ShoppingScreenUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99982CE65EF5002F5F0E /* ShoppingScreenUi2.kt */; };
-		0BCF99AB2CE65EF5002F5F0E /* AssetsScreenUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99912CE65EF5002F5F0E /* AssetsScreenUi2.kt */; };
-		0BCF99AC2CE65EF5002F5F0E /* NewAccountScreenUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99942CE65EF5002F5F0E /* NewAccountScreenUi2.kt */; };
-		0BCF99AD2CE65EF5002F5F0E /* WallyDropdownUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99992CE65EF5002F5F0E /* WallyDropdownUi2.kt */; };
-		0BCF99AE2CE65EF5002F5F0E /* AccountDetailScreenUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF998E2CE65EF5002F5F0E /* AccountDetailScreenUi2.kt */; };
-		0BCF99AF2CE65EF5002F5F0E /* NavigationRootUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99932CE65EF5002F5F0E /* NavigationRootUi2.kt */; };
-		0BCF99B02CE65EF5002F5F0E /* SettingsScreenUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99972CE65EF5002F5F0E /* SettingsScreenUi2.kt */; };
-		0BCF99B12CE65EF5002F5F0E /* HomeScreenUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99922CE65EF5002F5F0E /* HomeScreenUi2.kt */; };
-		0BCF99B22CE65EF5002F5F0E /* ReceiveScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99952CE65EF5002F5F0E /* ReceiveScreen.kt */; };
-		0BCF99B32CE65EF5002F5F0E /* WallyThemeUi2.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF998C2CE65EF5002F5F0E /* WallyThemeUi2.kt */; };
-		0BCF99B42CE65EF5002F5F0E /* SendScreen.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BCF99962CE65EF5002F5F0E /* SendScreen.kt */; };
+		0BB85D232DDD139E00671EEB /* WallyDropdownMenu.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BB85D222DDD139E00671EEB /* WallyDropdownMenu.kt */; };
+		0BB85D242DDD139E00671EEB /* WallyDropdownMenu.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BB85D222DDD139E00671EEB /* WallyDropdownMenu.kt */; };
 		0BF0351B2C62CCD500E06677 /* assets.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BF0351A2C62CCD500E06677 /* assets.kt */; };
 		0BF0351D2C62CCF500E06677 /* assets_ios.kt in Resources */ = {isa = PBXBuildFile; fileRef = 0BF0351C2C62CCF500E06677 /* assets_ios.kt */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
@@ -154,8 +134,6 @@
 		83B6BE0D2C6912F500978E7C /* nftTools.kt in Resources */ = {isa = PBXBuildFile; fileRef = 83B6BE072C6912F500978E7C /* nftTools.kt */; };
 		83B6BE0E2C6912F500978E7C /* Version.kt in Resources */ = {isa = PBXBuildFile; fileRef = 83B6BE082C6912F500978E7C /* Version.kt */; };
 		83B6BE0F2C6912F500978E7C /* zip.kt in Resources */ = {isa = PBXBuildFile; fileRef = 83B6BE092C6912F500978E7C /* zip.kt */; };
-		83B6BE412C69132000978E7C /* WallyTheme.ios.kt in Resources */ = {isa = PBXBuildFile; fileRef = 83B6BE392C69131F00978E7C /* WallyTheme.ios.kt */; };
-		83B6BE422C69132000978E7C /* MusicViewModel.ios.kt in Resources */ = {isa = PBXBuildFile; fileRef = 83B6BE3B2C69131F00978E7C /* MusicViewModel.ios.kt */; };
 		8E1ECA662AA957D300759B4F /* strings_en.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA652AA957D200759B4F /* strings_en.bin */; };
 		8E1ECA742AAA002000759B4F /* strings_es.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA672AAA001B00759B4F /* strings_es.bin */; };
 		8E1ECA752AAA002000759B4F /* strings_hi.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA682AAA001C00759B4F /* strings_hi.bin */; };
@@ -198,8 +176,36 @@
 /* Begin PBXFileReference section */
 		058557BA273AAA24004C7B11 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		0B0353C52CCBA968004A28C5 /* ActionPermissionScreens.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ActionPermissionScreens.kt; sourceTree = "<group>"; };
-		0B512D6B2C62BFC200215158 /* AssetsScreen.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AssetsScreen.kt; sourceTree = "<group>"; };
+		0B0286F72DDD0B1400526D3A /* AccountPill.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = AccountPill.kt; sourceTree = "<group>"; };
+		0B0286F82DDD0B1400526D3A /* Assets.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Assets.kt; sourceTree = "<group>"; };
+		0B0286F92DDD0B1400526D3A /* ListItems.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ListItems.kt; sourceTree = "<group>"; };
+		0B0286FA2DDD0B1400526D3A /* LoadingAnimationView.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LoadingAnimationView.kt; sourceTree = "<group>"; };
+		0B0286FB2DDD0B1400526D3A /* QrScannerView.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = QrScannerView.kt; sourceTree = "<group>"; };
+		0B0286FC2DDD0B1400526D3A /* ResImageView.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ResImageView.kt; sourceTree = "<group>"; };
+		0B0286FD2DDD0B1400526D3A /* TxHistory.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = TxHistory.kt; sourceTree = "<group>"; };
+		0B0286FE2DDD0B1400526D3A /* UiComponentLibrary.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = UiComponentLibrary.kt; sourceTree = "<group>"; };
+		0B0286FF2DDD0B1400526D3A /* UnlockView.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = UnlockView.kt; sourceTree = "<group>"; };
+		0B0287172DDD0B2700526D3A /* Color.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Color.kt; sourceTree = "<group>"; };
+		0B0287182DDD0B2700526D3A /* Shapes.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Shapes.kt; sourceTree = "<group>"; };
+		0B0287532DDD0F6400526D3A /* AccountDetailScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = AccountDetailScreen.kt; sourceTree = "<group>"; };
+		0B0287542DDD0F6400526D3A /* ActionPermissionScreens.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ActionPermissionScreens.kt; sourceTree = "<group>"; };
+		0B0287552DDD0F6400526D3A /* AddressHistoryScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = AddressHistoryScreen.kt; sourceTree = "<group>"; };
+		0B0287562DDD0F6400526D3A /* AssetsScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = AssetsScreen.kt; sourceTree = "<group>"; };
+		0B0287572DDD0F6400526D3A /* HomeScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = HomeScreen.kt; sourceTree = "<group>"; };
+		0B0287582DDD0F6400526D3A /* IdentityScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = IdentityScreen.kt; sourceTree = "<group>"; };
+		0B0287592DDD0F6400526D3A /* NavigationRoot.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = NavigationRoot.kt; sourceTree = "<group>"; };
+		0B02875A2DDD0F6400526D3A /* NewAccountScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = NewAccountScreen.kt; sourceTree = "<group>"; };
+		0B02875B2DDD0F6400526D3A /* ReceiveScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ReceiveScreen.kt; sourceTree = "<group>"; };
+		0B02875C2DDD0F6400526D3A /* SendScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = SendScreen.kt; sourceTree = "<group>"; };
+		0B02875D2DDD0F6400526D3A /* SettingsScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = SettingsScreen.kt; sourceTree = "<group>"; };
+		0B02875E2DDD0F6400526D3A /* ShoppingScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ShoppingScreen.kt; sourceTree = "<group>"; };
+		0B02875F2DDD0F6400526D3A /* SplitBillScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = SplitBillScreen.kt; sourceTree = "<group>"; };
+		0B0287602DDD0F6400526D3A /* TricklePayScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = TricklePayScreen.kt; sourceTree = "<group>"; };
+		0B0287612DDD0F6400526D3A /* TxHistoryScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = TxHistoryScreen.kt; sourceTree = "<group>"; };
+		0B0287622DDD0F6400526D3A /* WallyDropdown.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = WallyDropdown.kt; sourceTree = "<group>"; };
+		0B0287832DDD0F7100526D3A /* WallyTheme.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = WallyTheme.kt; sourceTree = "<group>"; };
+		0B0287862DDD0F7E00526D3A /* AccountListView.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = AccountListView.kt; sourceTree = "<group>"; };
+		0B0287892DDD0F9D00526D3A /* WallyTheme.ios.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = WallyTheme.ios.kt; sourceTree = "<group>"; };
 		0B53DA132BA282B300EFA082 /* iosAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iosAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0B53DA152BA282B300EFA082 /* iosAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iosAppUITests.swift; sourceTree = "<group>"; };
 		0B53DA172BA282B300EFA082 /* iosAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iosAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
@@ -238,16 +244,6 @@
 		0B551C032AFE910D00BA0052 /* bitcoin_cash_token.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = bitcoin_cash_token.xml; sourceTree = "<group>"; };
 		0B551C042AFE910D00BA0052 /* strings_tr.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = strings_tr.bin; sourceTree = "<group>"; };
 		0B551C052AFE910D00BA0052 /* strings_no.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = strings_no.bin; sourceTree = "<group>"; };
-		0B551C092AFE910D00BA0052 /* NewAccountScreen.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NewAccountScreen.kt; sourceTree = "<group>"; };
-		0B551C0A2AFE910D00BA0052 /* NavigationRoot.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NavigationRoot.kt; sourceTree = "<group>"; };
-		0B551C0B2AFE910D00BA0052 /* SettingsScreen.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SettingsScreen.kt; sourceTree = "<group>"; };
-		0B551C0C2AFE910D00BA0052 /* AccountDetailScreen.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AccountDetailScreen.kt; sourceTree = "<group>"; };
-		0B551C102AFE910D00BA0052 /* WallyTheme.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = WallyTheme.kt; sourceTree = "<group>"; };
-		0B551C132AFE910D00BA0052 /* Theme.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Theme.kt; sourceTree = "<group>"; };
-		0B551C142AFE910D00BA0052 /* Typography.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Typography.kt; sourceTree = "<group>"; };
-		0B551C152AFE910D00BA0052 /* HomeScreen.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = HomeScreen.kt; sourceTree = "<group>"; };
-		0B551C172AFE910D00BA0052 /* AccountListView.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AccountListView.kt; sourceTree = "<group>"; };
-		0B551C192AFE910D00BA0052 /* ShoppingScreen.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ShoppingScreen.kt; sourceTree = "<group>"; };
 		0B551C1A2AFE910D00BA0052 /* i18n.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = i18n.kt; sourceTree = "<group>"; };
 		0B551C1B2AFE910D00BA0052 /* exceptions.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = exceptions.kt; sourceTree = "<group>"; };
 		0B551C1C2AFE910D00BA0052 /* app.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = app.kt; sourceTree = "<group>"; };
@@ -265,40 +261,7 @@
 		0B551C282AFE910D00BA0052 /* preferences.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = preferences.kt; sourceTree = "<group>"; };
 		0B551C292AFE910D00BA0052 /* payproto_21_72.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = payproto_21_72.kt; sourceTree = "<group>"; };
 		0B551C2A2AFE910D00BA0052 /* globals.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = globals.kt; sourceTree = "<group>"; };
-		0B6095B22D12E3C900AAD40E /* AddressHistoryScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = AddressHistoryScreen.kt; sourceTree = "<group>"; };
-		0B6095B32D12E3C900AAD40E /* IdentityScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = IdentityScreen.kt; sourceTree = "<group>"; };
-		0B6095B42D12E3C900AAD40E /* SplitBillScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = SplitBillScreen.kt; sourceTree = "<group>"; };
-		0B6095B52D12E3C900AAD40E /* TricklePayScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = TricklePayScreen.kt; sourceTree = "<group>"; };
-		0B6095B62D12E3C900AAD40E /* TxHistoryScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = TxHistoryScreen.kt; sourceTree = "<group>"; };
-		0B6095C12D12E3D800AAD40E /* Color.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Color.kt; sourceTree = "<group>"; };
-		0B6095C22D12E3D800AAD40E /* Shapes.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Shapes.kt; sourceTree = "<group>"; };
-		0B6095C72D12E41000AAD40E /* AccountListViewUi2.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = AccountListViewUi2.kt; sourceTree = "<group>"; };
-		0B6095C82D12E41000AAD40E /* LoadingAnimationView.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LoadingAnimationView.kt; sourceTree = "<group>"; };
-		0B6095C92D12E41000AAD40E /* QrScannerView.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = QrScannerView.kt; sourceTree = "<group>"; };
-		0B6095CA2D12E41000AAD40E /* ResImageView.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ResImageView.kt; sourceTree = "<group>"; };
-		0B6095CB2D12E41000AAD40E /* UiComponentLibrary.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = UiComponentLibrary.kt; sourceTree = "<group>"; };
-		0B6095CC2D12E41000AAD40E /* UnlockView.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = UnlockView.kt; sourceTree = "<group>"; };
-		0B6095CD2D12E41000AAD40E /* WallyDropdown.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = WallyDropdown.kt; sourceTree = "<group>"; };
-		0B6095DD2D12E51200AAD40E /* WallyThemeUi2.ios.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = WallyThemeUi2.ios.kt; sourceTree = "<group>"; };
-		0B6095DF2D12E51200AAD40E /* LoadingAnimationView.ios.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LoadingAnimationView.ios.kt; sourceTree = "<group>"; };
-		0B6095E02D12E51200AAD40E /* QrScannerView.ios.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = QrScannerView.ios.kt; sourceTree = "<group>"; };
-		0B6095E12D12E51200AAD40E /* UiComponentLibrary.ios.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = UiComponentLibrary.ios.kt; sourceTree = "<group>"; };
-		0BBE60EA2DBB85D6009B1E46 /* AccountPill.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = AccountPill.kt; sourceTree = "<group>"; };
-		0BBE60EB2DBB85D6009B1E46 /* Assets.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Assets.kt; sourceTree = "<group>"; };
-		0BBE60EC2DBB85D6009B1E46 /* ListItems.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ListItems.kt; sourceTree = "<group>"; };
-		0BBE60ED2DBB85D6009B1E46 /* TxHistory.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = TxHistory.kt; sourceTree = "<group>"; };
-		0BCF998C2CE65EF5002F5F0E /* WallyThemeUi2.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = WallyThemeUi2.kt; sourceTree = "<group>"; };
-		0BCF998E2CE65EF5002F5F0E /* AccountDetailScreenUi2.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = AccountDetailScreenUi2.kt; sourceTree = "<group>"; };
-		0BCF99902CE65EF5002F5F0E /* ActionPermissionScreensUi2.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ActionPermissionScreensUi2.kt; sourceTree = "<group>"; };
-		0BCF99912CE65EF5002F5F0E /* AssetsScreenUi2.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = AssetsScreenUi2.kt; sourceTree = "<group>"; };
-		0BCF99922CE65EF5002F5F0E /* HomeScreenUi2.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = HomeScreenUi2.kt; sourceTree = "<group>"; };
-		0BCF99932CE65EF5002F5F0E /* NavigationRootUi2.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = NavigationRootUi2.kt; sourceTree = "<group>"; };
-		0BCF99942CE65EF5002F5F0E /* NewAccountScreenUi2.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = NewAccountScreenUi2.kt; sourceTree = "<group>"; };
-		0BCF99952CE65EF5002F5F0E /* ReceiveScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ReceiveScreen.kt; sourceTree = "<group>"; };
-		0BCF99962CE65EF5002F5F0E /* SendScreen.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = SendScreen.kt; sourceTree = "<group>"; };
-		0BCF99972CE65EF5002F5F0E /* SettingsScreenUi2.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = SettingsScreenUi2.kt; sourceTree = "<group>"; };
-		0BCF99982CE65EF5002F5F0E /* ShoppingScreenUi2.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = ShoppingScreenUi2.kt; sourceTree = "<group>"; };
-		0BCF99992CE65EF5002F5F0E /* WallyDropdownUi2.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = WallyDropdownUi2.kt; sourceTree = "<group>"; };
+		0BB85D222DDD139E00671EEB /* WallyDropdownMenu.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = WallyDropdownMenu.kt; sourceTree = "<group>"; };
 		0BF0351A2C62CCD500E06677 /* assets.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = assets.kt; sourceTree = "<group>"; };
 		0BF0351C2C62CCF500E06677 /* assets_ios.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = assets_ios.kt; sourceTree = "<group>"; };
 		2152FB032600AC8F00CF470E /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
@@ -311,8 +274,6 @@
 		83B6BE072C6912F500978E7C /* nftTools.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = nftTools.kt; sourceTree = "<group>"; };
 		83B6BE082C6912F500978E7C /* Version.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Version.kt; sourceTree = "<group>"; };
 		83B6BE092C6912F500978E7C /* zip.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = zip.kt; sourceTree = "<group>"; };
-		83B6BE392C69131F00978E7C /* WallyTheme.ios.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = WallyTheme.ios.kt; sourceTree = "<group>"; };
-		83B6BE3B2C69131F00978E7C /* MusicViewModel.ios.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MusicViewModel.ios.kt; sourceTree = "<group>"; };
 		8E1ECA652AA957D200759B4F /* strings_en.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_en.bin; path = ../src/src/commonMain/resources/strings_en.bin; sourceTree = "<group>"; };
 		8E1ECA672AAA001B00759B4F /* strings_es.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_es.bin; path = ../src/src/commonMain/resources/strings_es.bin; sourceTree = "<group>"; };
 		8E1ECA682AAA001C00759B4F /* strings_hi.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_hi.bin; path = ../src/src/commonMain/resources/strings_hi.bin; sourceTree = "<group>"; };
@@ -387,7 +348,6 @@
 		0B551BDD2AFE910D00BA0052 /* kotlin */ = {
 			isa = PBXGroup;
 			children = (
-				0B6095E32D12E51200AAD40E /* ui2 */,
 				83B6BE402C69131F00978E7C /* ui */,
 				0BF0351C2C62CCF500E06677 /* assets_ios.kt */,
 				0B551BDE2AFE910D00BA0052 /* utils_ios.kt */,
@@ -456,7 +416,6 @@
 		0B551C062AFE910D00BA0052 /* kotlin */ = {
 			isa = PBXGroup;
 			children = (
-				0BCF999A2CE65EF5002F5F0E /* ui2 */,
 				83B6BE042C6912F500978E7C /* alert.kt */,
 				83B6BE052C6912F500978E7C /* BuildInfo.kt */,
 				83B6BE072C6912F500978E7C /* nftTools.kt */,
@@ -489,16 +448,24 @@
 		0B551C072AFE910D00BA0052 /* ui */ = {
 			isa = PBXGroup;
 			children = (
-				0B0353C52CCBA968004A28C5 /* ActionPermissionScreens.kt */,
-				0B512D6B2C62BFC200215158 /* AssetsScreen.kt */,
-				0B551C092AFE910D00BA0052 /* NewAccountScreen.kt */,
-				0B551C0A2AFE910D00BA0052 /* NavigationRoot.kt */,
-				0B551C0B2AFE910D00BA0052 /* SettingsScreen.kt */,
-				0B551C0C2AFE910D00BA0052 /* AccountDetailScreen.kt */,
+				0B0287532DDD0F6400526D3A /* AccountDetailScreen.kt */,
+				0B0287542DDD0F6400526D3A /* ActionPermissionScreens.kt */,
+				0B0287552DDD0F6400526D3A /* AddressHistoryScreen.kt */,
+				0B0287562DDD0F6400526D3A /* AssetsScreen.kt */,
+				0B0287572DDD0F6400526D3A /* HomeScreen.kt */,
+				0B0287582DDD0F6400526D3A /* IdentityScreen.kt */,
+				0B0287592DDD0F6400526D3A /* NavigationRoot.kt */,
+				0B02875A2DDD0F6400526D3A /* NewAccountScreen.kt */,
+				0B02875B2DDD0F6400526D3A /* ReceiveScreen.kt */,
+				0B02875C2DDD0F6400526D3A /* SendScreen.kt */,
+				0B02875D2DDD0F6400526D3A /* SettingsScreen.kt */,
+				0B02875E2DDD0F6400526D3A /* ShoppingScreen.kt */,
+				0B02875F2DDD0F6400526D3A /* SplitBillScreen.kt */,
+				0B0287602DDD0F6400526D3A /* TricklePayScreen.kt */,
+				0B0287612DDD0F6400526D3A /* TxHistoryScreen.kt */,
+				0B0287622DDD0F6400526D3A /* WallyDropdown.kt */,
 				0B551C0E2AFE910D00BA0052 /* theme */,
-				0B551C152AFE910D00BA0052 /* HomeScreen.kt */,
 				0B551C162AFE910D00BA0052 /* views */,
-				0B551C192AFE910D00BA0052 /* ShoppingScreen.kt */,
 			);
 			path = ui;
 			sourceTree = "<group>";
@@ -506,9 +473,9 @@
 		0B551C0E2AFE910D00BA0052 /* theme */ = {
 			isa = PBXGroup;
 			children = (
-				0B551C102AFE910D00BA0052 /* WallyTheme.kt */,
-				0B551C132AFE910D00BA0052 /* Theme.kt */,
-				0B551C142AFE910D00BA0052 /* Typography.kt */,
+				0B0287832DDD0F7100526D3A /* WallyTheme.kt */,
+				0B0287172DDD0B2700526D3A /* Color.kt */,
+				0B0287182DDD0B2700526D3A /* Shapes.kt */,
 			);
 			path = theme;
 			sourceTree = "<group>";
@@ -516,89 +483,19 @@
 		0B551C162AFE910D00BA0052 /* views */ = {
 			isa = PBXGroup;
 			children = (
-				0B551C172AFE910D00BA0052 /* AccountListView.kt */,
+				0BB85D222DDD139E00671EEB /* WallyDropdownMenu.kt */,
+				0B0287862DDD0F7E00526D3A /* AccountListView.kt */,
+				0B0286F72DDD0B1400526D3A /* AccountPill.kt */,
+				0B0286F82DDD0B1400526D3A /* Assets.kt */,
+				0B0286F92DDD0B1400526D3A /* ListItems.kt */,
+				0B0286FA2DDD0B1400526D3A /* LoadingAnimationView.kt */,
+				0B0286FB2DDD0B1400526D3A /* QrScannerView.kt */,
+				0B0286FC2DDD0B1400526D3A /* ResImageView.kt */,
+				0B0286FD2DDD0B1400526D3A /* TxHistory.kt */,
+				0B0286FE2DDD0B1400526D3A /* UiComponentLibrary.kt */,
+				0B0286FF2DDD0B1400526D3A /* UnlockView.kt */,
 			);
 			path = views;
-			sourceTree = "<group>";
-		};
-		0B6095CE2D12E41000AAD40E /* views */ = {
-			isa = PBXGroup;
-			children = (
-				0BBE60EA2DBB85D6009B1E46 /* AccountPill.kt */,
-				0BBE60EB2DBB85D6009B1E46 /* Assets.kt */,
-				0BBE60EC2DBB85D6009B1E46 /* ListItems.kt */,
-				0BBE60ED2DBB85D6009B1E46 /* TxHistory.kt */,
-				0B6095C72D12E41000AAD40E /* AccountListViewUi2.kt */,
-				0B6095C82D12E41000AAD40E /* LoadingAnimationView.kt */,
-				0B6095C92D12E41000AAD40E /* QrScannerView.kt */,
-				0B6095CA2D12E41000AAD40E /* ResImageView.kt */,
-				0B6095CB2D12E41000AAD40E /* UiComponentLibrary.kt */,
-				0B6095CC2D12E41000AAD40E /* UnlockView.kt */,
-				0B6095CD2D12E41000AAD40E /* WallyDropdown.kt */,
-			);
-			path = views;
-			sourceTree = "<group>";
-		};
-		0B6095DE2D12E51200AAD40E /* theme */ = {
-			isa = PBXGroup;
-			children = (
-				0B6095DD2D12E51200AAD40E /* WallyThemeUi2.ios.kt */,
-			);
-			path = theme;
-			sourceTree = "<group>";
-		};
-		0B6095E22D12E51200AAD40E /* views */ = {
-			isa = PBXGroup;
-			children = (
-				0B6095DF2D12E51200AAD40E /* LoadingAnimationView.ios.kt */,
-				0B6095E02D12E51200AAD40E /* QrScannerView.ios.kt */,
-				0B6095E12D12E51200AAD40E /* UiComponentLibrary.ios.kt */,
-			);
-			path = views;
-			sourceTree = "<group>";
-		};
-		0B6095E32D12E51200AAD40E /* ui2 */ = {
-			isa = PBXGroup;
-			children = (
-				0B6095DE2D12E51200AAD40E /* theme */,
-				0B6095E22D12E51200AAD40E /* views */,
-			);
-			path = ui2;
-			sourceTree = "<group>";
-		};
-		0BCF998D2CE65EF5002F5F0E /* theme */ = {
-			isa = PBXGroup;
-			children = (
-				0B6095C12D12E3D800AAD40E /* Color.kt */,
-				0B6095C22D12E3D800AAD40E /* Shapes.kt */,
-				0BCF998C2CE65EF5002F5F0E /* WallyThemeUi2.kt */,
-			);
-			path = theme;
-			sourceTree = "<group>";
-		};
-		0BCF999A2CE65EF5002F5F0E /* ui2 */ = {
-			isa = PBXGroup;
-			children = (
-				0B6095CE2D12E41000AAD40E /* views */,
-				0B6095B22D12E3C900AAD40E /* AddressHistoryScreen.kt */,
-				0B6095B32D12E3C900AAD40E /* IdentityScreen.kt */,
-				0B6095B42D12E3C900AAD40E /* SplitBillScreen.kt */,
-				0B6095B52D12E3C900AAD40E /* TricklePayScreen.kt */,
-				0B6095B62D12E3C900AAD40E /* TxHistoryScreen.kt */,
-				0BCF998D2CE65EF5002F5F0E /* theme */,
-				0BCF998E2CE65EF5002F5F0E /* AccountDetailScreenUi2.kt */,
-				0BCF99902CE65EF5002F5F0E /* ActionPermissionScreensUi2.kt */,
-				0BCF99912CE65EF5002F5F0E /* AssetsScreenUi2.kt */,
-				0BCF99922CE65EF5002F5F0E /* HomeScreenUi2.kt */,
-				0BCF99932CE65EF5002F5F0E /* NavigationRootUi2.kt */,
-				0BCF99942CE65EF5002F5F0E /* NewAccountScreenUi2.kt */,
-				0BCF99952CE65EF5002F5F0E /* ReceiveScreen.kt */,
-				0BCF99962CE65EF5002F5F0E /* SendScreen.kt */,
-				0BCF99972CE65EF5002F5F0E /* SettingsScreenUi2.kt */,
-				0BCF99982CE65EF5002F5F0E /* ShoppingScreenUi2.kt */,
-				0BCF99992CE65EF5002F5F0E /* WallyDropdownUi2.kt */,
-			);
-			path = ui2;
 			sourceTree = "<group>";
 		};
 		7555FF72242A565900829871 = {
@@ -658,7 +555,7 @@
 		83B6BE3A2C69131F00978E7C /* theme */ = {
 			isa = PBXGroup;
 			children = (
-				83B6BE392C69131F00978E7C /* WallyTheme.ios.kt */,
+				0B0287892DDD0F9D00526D3A /* WallyTheme.ios.kt */,
 			);
 			path = theme;
 			sourceTree = "<group>";
@@ -666,7 +563,6 @@
 		83B6BE3C2C69131F00978E7C /* viewmodels */ = {
 			isa = PBXGroup;
 			children = (
-				83B6BE3B2C69131F00978E7C /* MusicViewModel.ios.kt */,
 			);
 			path = viewmodels;
 			sourceTree = "<group>";
@@ -763,41 +659,36 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0B0353DE2CCBA968004A28C5 /* ActionPermissionScreens.kt in Resources */,
-				0BCF999B2CE65EF5002F5F0E /* ActionPermissionScreensUi2.kt in Resources */,
-				0BCF999C2CE65EF5002F5F0E /* ShoppingScreenUi2.kt in Resources */,
-				0BCF999E2CE65EF5002F5F0E /* AssetsScreenUi2.kt in Resources */,
-				0BCF999F2CE65EF5002F5F0E /* NewAccountScreenUi2.kt in Resources */,
-				0BCF99A02CE65EF5002F5F0E /* WallyDropdownUi2.kt in Resources */,
-				0BCF99A12CE65EF5002F5F0E /* AccountDetailScreenUi2.kt in Resources */,
-				0B6095E82D12E51200AAD40E /* QrScannerView.ios.kt in Resources */,
-				0B6095E92D12E51200AAD40E /* UiComponentLibrary.ios.kt in Resources */,
-				0B6095EA2D12E51200AAD40E /* LoadingAnimationView.ios.kt in Resources */,
-				0B6095EB2D12E51200AAD40E /* WallyThemeUi2.ios.kt in Resources */,
-				0BCF99A22CE65EF5002F5F0E /* NavigationRootUi2.kt in Resources */,
-				0BCF99A32CE65EF5002F5F0E /* SettingsScreenUi2.kt in Resources */,
-				0B6095B72D12E3C900AAD40E /* IdentityScreen.kt in Resources */,
-				0B6095B82D12E3C900AAD40E /* AddressHistoryScreen.kt in Resources */,
-				0B6095B92D12E3C900AAD40E /* SplitBillScreen.kt in Resources */,
-				0BBE60F22DBB85D6009B1E46 /* AccountPill.kt in Resources */,
-				0BBE60F32DBB85D6009B1E46 /* TxHistory.kt in Resources */,
-				0BBE60F42DBB85D6009B1E46 /* Assets.kt in Resources */,
-				0BBE60F52DBB85D6009B1E46 /* ListItems.kt in Resources */,
-				0B6095BA2D12E3C900AAD40E /* TricklePayScreen.kt in Resources */,
-				0B6095BB2D12E3C900AAD40E /* TxHistoryScreen.kt in Resources */,
-				0BCF99A42CE65EF5002F5F0E /* HomeScreenUi2.kt in Resources */,
-				0B6095D62D12E41000AAD40E /* LoadingAnimationView.kt in Resources */,
-				0B6095D72D12E41000AAD40E /* UnlockView.kt in Resources */,
-				0B6095D82D12E41000AAD40E /* ResImageView.kt in Resources */,
-				0B6095D92D12E41000AAD40E /* QrScannerView.kt in Resources */,
-				0B6095DA2D12E41000AAD40E /* AccountListViewUi2.kt in Resources */,
-				0B6095DB2D12E41000AAD40E /* UiComponentLibrary.kt in Resources */,
-				0B6095DC2D12E41000AAD40E /* WallyDropdown.kt in Resources */,
-				0BCF99A52CE65EF5002F5F0E /* ReceiveScreen.kt in Resources */,
-				0BCF99A62CE65EF5002F5F0E /* WallyThemeUi2.kt in Resources */,
-				0B6095C52D12E3D800AAD40E /* Color.kt in Resources */,
-				0B6095C62D12E3D800AAD40E /* Shapes.kt in Resources */,
-				0BCF99A72CE65EF5002F5F0E /* SendScreen.kt in Resources */,
+				0BB85D242DDD139E00671EEB /* WallyDropdownMenu.kt in Resources */,
+				0B02870C2DDD0B1400526D3A /* TxHistory.kt in Resources */,
+				0B0287842DDD0F7100526D3A /* WallyTheme.kt in Resources */,
+				0B02870D2DDD0B1400526D3A /* AccountPill.kt in Resources */,
+				0B0287632DDD0F6400526D3A /* TxHistoryScreen.kt in Resources */,
+				0B0287642DDD0F6400526D3A /* ActionPermissionScreens.kt in Resources */,
+				0B0287652DDD0F6400526D3A /* IdentityScreen.kt in Resources */,
+				0B0287662DDD0F6400526D3A /* NavigationRoot.kt in Resources */,
+				0B0287672DDD0F6400526D3A /* WallyDropdown.kt in Resources */,
+				0B0287682DDD0F6400526D3A /* TricklePayScreen.kt in Resources */,
+				0B0287692DDD0F6400526D3A /* AccountDetailScreen.kt in Resources */,
+				0B02876A2DDD0F6400526D3A /* ReceiveScreen.kt in Resources */,
+				0B02876B2DDD0F6400526D3A /* HomeScreen.kt in Resources */,
+				0B02876C2DDD0F6400526D3A /* AssetsScreen.kt in Resources */,
+				0B02876D2DDD0F6400526D3A /* NewAccountScreen.kt in Resources */,
+				0B02876E2DDD0F6400526D3A /* AddressHistoryScreen.kt in Resources */,
+				0B02876F2DDD0F6400526D3A /* SendScreen.kt in Resources */,
+				0B0287702DDD0F6400526D3A /* SettingsScreen.kt in Resources */,
+				0B0287712DDD0F6400526D3A /* ShoppingScreen.kt in Resources */,
+				0B0287722DDD0F6400526D3A /* SplitBillScreen.kt in Resources */,
+				0B0287882DDD0F7E00526D3A /* AccountListView.kt in Resources */,
+				0B02870E2DDD0B1400526D3A /* QrScannerView.kt in Resources */,
+				0B02871B2DDD0B2700526D3A /* Color.kt in Resources */,
+				0B02871C2DDD0B2700526D3A /* Shapes.kt in Resources */,
+				0B02870F2DDD0B1400526D3A /* ResImageView.kt in Resources */,
+				0B0287112DDD0B1400526D3A /* LoadingAnimationView.kt in Resources */,
+				0B0287122DDD0B1400526D3A /* UiComponentLibrary.kt in Resources */,
+				0B0287142DDD0B1400526D3A /* Assets.kt in Resources */,
+				0B0287152DDD0B1400526D3A /* ListItems.kt in Resources */,
+				0B0287162DDD0B1400526D3A /* UnlockView.kt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -810,21 +701,12 @@
 				0B551C612AFE910D00BA0052 /* settings.kt in Resources */,
 				0B551C392AFE910D00BA0052 /* strings_en.bin in Resources */,
 				0B551C472AFE910D00BA0052 /* ani_syncing.xml in Resources */,
-				0B0353D32CCBA968004A28C5 /* ActionPermissionScreens.kt in Resources */,
-				0B551C5A2AFE910D00BA0052 /* HomeScreen.kt in Resources */,
 				8E1ECA662AA957D300759B4F /* strings_en.bin in Resources */,
-				0B6095CF2D12E41000AAD40E /* LoadingAnimationView.kt in Resources */,
-				0B6095D02D12E41000AAD40E /* UnlockView.kt in Resources */,
-				0B6095D12D12E41000AAD40E /* ResImageView.kt in Resources */,
-				0B6095D22D12E41000AAD40E /* QrScannerView.kt in Resources */,
-				0B6095D32D12E41000AAD40E /* AccountListViewUi2.kt in Resources */,
-				0B6095D42D12E41000AAD40E /* UiComponentLibrary.kt in Resources */,
-				0B6095D52D12E41000AAD40E /* WallyDropdown.kt in Resources */,
 				0B551C662AFE910D00BA0052 /* account.kt in Resources */,
 				0BF0351B2C62CCD500E06677 /* assets.kt in Resources */,
 				83B6BE0B2C6912F500978E7C /* BuildInfo.kt in Resources */,
 				0B551C322AFE910D00BA0052 /* strings_ca.bin in Resources */,
-				0B551C502AFE910D00BA0052 /* NavigationRoot.kt in Resources */,
+				0BB85D232DDD139E00671EEB /* WallyDropdownMenu.kt in Resources */,
 				0B551C5E2AFE910D00BA0052 /* i18n.kt in Resources */,
 				0B551C452AFE910D00BA0052 /* nexatest_icon.png in Resources */,
 				0B551C462AFE910D00BA0052 /* W_152.png in Resources */,
@@ -837,41 +719,21 @@
 				8E1ECA752AAA002000759B4F /* strings_hi.bin in Resources */,
 				0B551C402AFE910D00BA0052 /* check.xml in Resources */,
 				8E1ECA7C2AAA002000759B4F /* strings_sv.bin in Resources */,
-				0B551C5B2AFE910D00BA0052 /* AccountListView.kt in Resources */,
 				0B551C642AFE910D00BA0052 /* utils.kt in Resources */,
-				83B6BE412C69132000978E7C /* WallyTheme.ios.kt in Resources */,
-				0BCF99A82CE65EF5002F5F0E /* ActionPermissionScreensUi2.kt in Resources */,
-				0BCF99A92CE65EF5002F5F0E /* ShoppingScreenUi2.kt in Resources */,
-				0BCF99AB2CE65EF5002F5F0E /* AssetsScreenUi2.kt in Resources */,
-				0BCF99AC2CE65EF5002F5F0E /* NewAccountScreenUi2.kt in Resources */,
-				0BCF99AD2CE65EF5002F5F0E /* WallyDropdownUi2.kt in Resources */,
-				0BCF99AE2CE65EF5002F5F0E /* AccountDetailScreenUi2.kt in Resources */,
-				0BCF99AF2CE65EF5002F5F0E /* NavigationRootUi2.kt in Resources */,
-				0BCF99B02CE65EF5002F5F0E /* SettingsScreenUi2.kt in Resources */,
-				0BCF99B12CE65EF5002F5F0E /* HomeScreenUi2.kt in Resources */,
-				0BCF99B22CE65EF5002F5F0E /* ReceiveScreen.kt in Resources */,
-				0B6095C32D12E3D800AAD40E /* Color.kt in Resources */,
-				0B6095C42D12E3D800AAD40E /* Shapes.kt in Resources */,
-				0BCF99B32CE65EF5002F5F0E /* WallyThemeUi2.kt in Resources */,
-				0BCF99B42CE65EF5002F5F0E /* SendScreen.kt in Resources */,
-				0B551C592AFE910D00BA0052 /* Typography.kt in Resources */,
 				83B6BE0E2C6912F500978E7C /* Version.kt in Resources */,
-				0B551C552AFE910D00BA0052 /* WallyTheme.kt in Resources */,
 				0B551C482AFE910D00BA0052 /* nexa_icon.png in Resources */,
-				83B6BE422C69132000978E7C /* MusicViewModel.ios.kt in Resources */,
-				0B551C522AFE910D00BA0052 /* AccountDetailScreen.kt in Resources */,
 				8E1ECA802AAA002000759B4F /* strings_in.bin in Resources */,
 				0B551C342AFE910D00BA0052 /* strings_ko.bin in Resources */,
 				0B551C692AFE910D00BA0052 /* baseexception.kt in Resources */,
 				83B6BE0C2C6912F500978E7C /* tricklePaySession.kt in Resources */,
 				8E1ECA7E2AAA002000759B4F /* strings_no.bin in Resources */,
+				0B02878A2DDD0F9D00526D3A /* WallyTheme.ios.kt in Resources */,
 				0B551C4B2AFE910D00BA0052 /* bitcoin_cash_token.xml in Resources */,
 				0B551C6D2AFE910D00BA0052 /* payproto_21_72.kt in Resources */,
 				8E1ECA7B2AAA002000759B4F /* strings_it.bin in Resources */,
 				0B551C4A2AFE910D00BA0052 /* W_120.png in Resources */,
 				0B551C422AFE910D00BA0052 /* lock.xml in Resources */,
 				0B551C5F2AFE910D00BA0052 /* exceptions.kt in Resources */,
-				0B551C512AFE910D00BA0052 /* SettingsScreen.kt in Resources */,
 				0B551C3A2AFE910D00BA0052 /* strings_hi.bin in Resources */,
 				83B6BE0D2C6912F500978E7C /* nftTools.kt in Resources */,
 				0B551C3B2AFE910D00BA0052 /* strings_in.bin in Resources */,
@@ -886,21 +748,26 @@
 				0B551C382AFE910D00BA0052 /* strings_et.bin in Resources */,
 				0B551C352AFE910D00BA0052 /* strings_sl.bin in Resources */,
 				0B551C492AFE910D00BA0052 /* unlock.xml in Resources */,
-				0B512D6C2C62BFC200215158 /* AssetsScreen.kt in Resources */,
-				0B6095BC2D12E3C900AAD40E /* IdentityScreen.kt in Resources */,
-				0B6095BD2D12E3C900AAD40E /* AddressHistoryScreen.kt in Resources */,
-				0B6095BE2D12E3C900AAD40E /* SplitBillScreen.kt in Resources */,
-				0B6095BF2D12E3C900AAD40E /* TricklePayScreen.kt in Resources */,
-				0B6095C02D12E3C900AAD40E /* TxHistoryScreen.kt in Resources */,
 				0B551C652AFE910D00BA0052 /* strings.kt in Resources */,
+				0B02871E2DDD0B2700526D3A /* Color.kt in Resources */,
+				0B02871F2DDD0B2700526D3A /* Shapes.kt in Resources */,
 				0BF0351D2C62CCF500E06677 /* assets_ios.kt in Resources */,
-				0B551C4F2AFE910D00BA0052 /* NewAccountScreen.kt in Resources */,
+				0B0287012DDD0B1400526D3A /* TxHistory.kt in Resources */,
+				0B0287022DDD0B1400526D3A /* AccountPill.kt in Resources */,
+				0B0287032DDD0B1400526D3A /* QrScannerView.kt in Resources */,
+				0B0287042DDD0B1400526D3A /* ResImageView.kt in Resources */,
+				0B0287062DDD0B1400526D3A /* LoadingAnimationView.kt in Resources */,
+				0B0287072DDD0B1400526D3A /* UiComponentLibrary.kt in Resources */,
+				0B0287092DDD0B1400526D3A /* Assets.kt in Resources */,
+				0B02870A2DDD0B1400526D3A /* ListItems.kt in Resources */,
+				0B0287872DDD0F7E00526D3A /* AccountListView.kt in Resources */,
+				0B02870B2DDD0B1400526D3A /* UnlockView.kt in Resources */,
 				0B551C2C2AFE910D00BA0052 /* baseexception.native.kt in Resources */,
 				8E1ECA742AAA002000759B4F /* strings_es.bin in Resources */,
 				8E1ECA7A2AAA002000759B4F /* strings_ca.bin in Resources */,
 				8E1ECA7F2AAA002000759B4F /* strings_de.bin in Resources */,
 				0B551C3E2AFE910D00BA0052 /* gear.xml in Resources */,
-				0B551C5D2AFE910D00BA0052 /* ShoppingScreen.kt in Resources */,
+				0B0287852DDD0F7100526D3A /* WallyTheme.kt in Resources */,
 				0B551C3F2AFE910D00BA0052 /* plus.xml in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
 				0B551C442AFE910D00BA0052 /* W_1024.png in Resources */,
@@ -914,20 +781,27 @@
 				83B6BE0F2C6912F500978E7C /* zip.kt in Resources */,
 				0B551C6C2AFE910D00BA0052 /* preferences.kt in Resources */,
 				0B551C412AFE910D00BA0052 /* nexareg_icon.png in Resources */,
+				0B0287732DDD0F6400526D3A /* TxHistoryScreen.kt in Resources */,
+				0B0287742DDD0F6400526D3A /* ActionPermissionScreens.kt in Resources */,
+				0B0287752DDD0F6400526D3A /* IdentityScreen.kt in Resources */,
+				0B0287762DDD0F6400526D3A /* NavigationRoot.kt in Resources */,
+				0B0287772DDD0F6400526D3A /* WallyDropdown.kt in Resources */,
+				0B0287782DDD0F6400526D3A /* TricklePayScreen.kt in Resources */,
+				0B0287792DDD0F6400526D3A /* AccountDetailScreen.kt in Resources */,
+				0B02877A2DDD0F6400526D3A /* ReceiveScreen.kt in Resources */,
+				0B02877B2DDD0F6400526D3A /* HomeScreen.kt in Resources */,
+				0B02877C2DDD0F6400526D3A /* AssetsScreen.kt in Resources */,
+				0B02877D2DDD0F6400526D3A /* NewAccountScreen.kt in Resources */,
+				0B02877E2DDD0F6400526D3A /* AddressHistoryScreen.kt in Resources */,
+				0B02877F2DDD0F6400526D3A /* SendScreen.kt in Resources */,
+				0B0287802DDD0F6400526D3A /* SettingsScreen.kt in Resources */,
+				0B0287812DDD0F6400526D3A /* ShoppingScreen.kt in Resources */,
+				0B0287822DDD0F6400526D3A /* SplitBillScreen.kt in Resources */,
 				8E1ECA762AAA002000759B4F /* strings_round.bin in Resources */,
 				0B551C6E2AFE910D00BA0052 /* globals.kt in Resources */,
 				0B551C622AFE910D00BA0052 /* accountdiscovery.kt in Resources */,
-				0BBE60EE2DBB85D6009B1E46 /* AccountPill.kt in Resources */,
-				0BBE60EF2DBB85D6009B1E46 /* TxHistory.kt in Resources */,
-				0BBE60F02DBB85D6009B1E46 /* Assets.kt in Resources */,
-				0BBE60F12DBB85D6009B1E46 /* ListItems.kt in Resources */,
 				0B551C6B2AFE910D00BA0052 /* listifyMap.kt in Resources */,
-				0B551C582AFE910D00BA0052 /* Theme.kt in Resources */,
 				8E1ECA782AAA002000759B4F /* strings_et.bin in Resources */,
-				0B6095E42D12E51200AAD40E /* QrScannerView.ios.kt in Resources */,
-				0B6095E52D12E51200AAD40E /* UiComponentLibrary.ios.kt in Resources */,
-				0B6095E62D12E51200AAD40E /* LoadingAnimationView.ios.kt in Resources */,
-				0B6095E72D12E51200AAD40E /* WallyThemeUi2.ios.kt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

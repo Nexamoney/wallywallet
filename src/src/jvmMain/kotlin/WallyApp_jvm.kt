@@ -8,10 +8,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.rememberWindowState
-import info.bitcoinunlimited.www.wally.ui2.ScreenId
-import info.bitcoinunlimited.www.wally.ui2.views.loadingAnimation
-import info.bitcoinunlimited.www.wally.ui2.UiRoot
-import info.bitcoinunlimited.www.wally.ui2.nav
+import info.bitcoinunlimited.www.wally.ui.ScreenId
+import info.bitcoinunlimited.www.wally.ui.views.loadingAnimation
+import info.bitcoinunlimited.www.wally.ui.UiRoot
+import info.bitcoinunlimited.www.wally.ui.nav
 import java.io.File
 
 private val LogIt = GetLog("BU.wally.IdentityActivity")
