@@ -2,15 +2,11 @@ package ui
 
 import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui2.IdentityEditScreen
-import info.bitcoinunlimited.www.wally.ui2.IdentityScreen
-import info.bitcoinunlimited.www.wally.ui2.ScreenNav
+import info.bitcoinunlimited.www.wally.ui.IdentityEditScreen
+import info.bitcoinunlimited.www.wally.ui.IdentityScreen
+import info.bitcoinunlimited.www.wally.ui.ScreenNav
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.rem
-import ui2.WallyUiTestBase
-import ui2.settle
-import ui2.setupTestEnv
-import ui2.waitForCatching
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)

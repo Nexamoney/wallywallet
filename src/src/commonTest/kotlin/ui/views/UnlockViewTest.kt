@@ -4,10 +4,10 @@ import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.platform
-import info.bitcoinunlimited.www.wally.ui2.views.UnlockTile
-import info.bitcoinunlimited.www.wally.ui2.views.unlockTileSize
-import ui2.WallyUiTestBase
-import ui2.waitForCatching
+import info.bitcoinunlimited.www.wally.ui.views.UnlockTile
+import info.bitcoinunlimited.www.wally.ui.views.unlockTileSize
+import ui.WallyUiTestBase
+import ui.waitForCatching
 import kotlin.test.Test
 
 class UnlockViewTest:WallyUiTestBase()

@@ -26,7 +26,7 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import org.nexa.libnexakotlin.*
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
-import info.bitcoinunlimited.www.wally.ui2.views.loadingAnimation
+import info.bitcoinunlimited.www.wally.ui.views.loadingAnimation
 import org.nexa.threads.Mutex
 import org.nexa.threads.setThreadName
 import java.lang.Exception

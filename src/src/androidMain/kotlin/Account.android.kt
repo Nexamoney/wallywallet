@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 import com.ionspin.kotlin.bignum.decimal.*
-import info.bitcoinunlimited.www.wally.ui2.triggerAccountsChanged
+import info.bitcoinunlimited.www.wally.ui.triggerAccountsChanged
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.AccountAndroid")

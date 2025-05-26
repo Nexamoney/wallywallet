@@ -362,6 +362,8 @@ Good luck!
     <string name="moreThanConfirmedAvailable">(more than confirmed)</string>
     <string name="actuallySendingT" formatted="false">actually sending %qty %crypto</string>
     <string name="copiedToClipboard">copied to\nclipboard</string>
+    <string name="copyId">Copy ID</string>
+    <string name="openInBrowser">Open in browser</string>
     <string name="cannotCopyToClipboard">Cannot copy to clipboard</string>
     <string name="tooLargeForClipboard">Too much data for clipboard</string>
     <string name="scanFailed">scan failed</string>

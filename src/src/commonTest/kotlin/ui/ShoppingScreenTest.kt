@@ -5,7 +5,6 @@ import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.platform
 import info.bitcoinunlimited.www.wally.ui.ShoppingScreen
-import info.bitcoinunlimited.www.wally.ui2.ScreenNav
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
@@ -13,9 +12,8 @@ class ShoppingScreenTest
 {
     @Test
     fun shoppingScreenTest() = runComposeUiTest {
-        val nav = ScreenNav()
         setContent {
-            ShoppingScreen(nav)
+            ShoppingScreen()
         }
 
         onNodeWithText(i18n(S.ShoppingWarning)).isDisplayed()

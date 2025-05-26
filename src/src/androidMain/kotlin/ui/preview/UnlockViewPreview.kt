@@ -1,9 +1,9 @@
-package info.bitcoinunlimited.www.wally.previews
+package ui.preview
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import info.bitcoinunlimited.www.wally.ui2.ScreenId
-import info.bitcoinunlimited.www.wally.ui2.views.UnlockTile
+import info.bitcoinunlimited.www.wally.ui.ScreenId
+import info.bitcoinunlimited.www.wally.ui.views.UnlockTile
 
 /*
 @Preview
@@ -19,6 +19,6 @@ fun UnlockViewPreview()
 @Composable
 fun UnlockViewInlinePreview()
 {
-    setUpPreview(0,ScreenId.Home, "en", "us")
+    setUpPreview(0, ScreenId.Home, "en", "us")
     UnlockTile()
 }

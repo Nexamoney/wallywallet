@@ -24,11 +24,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat.setWindowInsetsAnimationCallback
 import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
-import info.bitcoinunlimited.www.wally.ui2.ScreenId
-import info.bitcoinunlimited.www.wally.ui2.nav
-import info.bitcoinunlimited.www.wally.ui2.newUI
-import kotlinx.atomicfu.AtomicInt
-import kotlinx.atomicfu.atomic
+import info.bitcoinunlimited.www.wally.ui.ScreenId
+import info.bitcoinunlimited.www.wally.ui.nav
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -247,25 +244,10 @@ open class CommonActivity : AppCompatActivity()
             }.launchIn(this.coGuiScope)
         }
 
-        fun toggleOldOrNewTopBar(usesNewUi: Boolean)
-        {
-            currentScreenJob?.cancel()
-            if (usesNewUi)
-            {
-                useNewUiNavBar()
-            }
-            else // Old UI
-            {
-                getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
-                getSupportActionBar()?.setDisplayShowHomeEnabled(true)
-            }
-        }
-
-        toggleOldOrNewTopBar(newUI.value)
+        useNewUiNavBar()
 
         // Cancel the new UI job when Android app comes back into the foreground and onResume runs again
         newUiJob?.cancel()
-        newUiJob = newUI.onEach { toggleOldOrNewTopBar(it) }.launchIn(this.coGuiScope)
 
         super.onStart()
     }
@@ -437,17 +419,6 @@ open class CommonActivity : AppCompatActivity()
         if (menuHidden == 0) keepShowingLock = false  // Reset this every time we show the full menu
 
         return ret
-    }
-
-    fun initializeHelpOption(menu: Menu)
-    {
-        val item4 = menu.findItem(R.id.help)
-        if (item4 != null)
-        {
-            val temp = Intent(Intent.ACTION_VIEW)
-            temp.setData(Uri.parse("http://www.wallywallet.org/help"))
-            item4.intent = temp
-        }
     }
 
     /** If no parameter or null is passed, stop showing whatever is being shown */

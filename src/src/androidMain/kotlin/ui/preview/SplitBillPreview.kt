@@ -1,10 +1,10 @@
-package info.bitcoinunlimited.www.wally.previews
+package ui.preview
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import info.bitcoinunlimited.www.wally.ui2.SplitBillScreen
-import info.bitcoinunlimited.www.wally.ui2.theme.WallyPageBase
+import info.bitcoinunlimited.www.wally.ui.SplitBillScreen
+import info.bitcoinunlimited.www.wally.ui.theme.WallyPageBase
 
 
 @Composable

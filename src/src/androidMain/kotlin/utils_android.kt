@@ -32,9 +32,9 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import info.bitcoinunlimited.www.wally.old.convertOldAccounts
-import info.bitcoinunlimited.www.wally.ui2.theme.colorError
-import info.bitcoinunlimited.www.wally.ui2.theme.colorNotice
-import info.bitcoinunlimited.www.wally.ui2.theme.colorWarning
+import info.bitcoinunlimited.www.wally.ui.theme.colorError
+import info.bitcoinunlimited.www.wally.ui.theme.colorNotice
+import info.bitcoinunlimited.www.wally.ui.theme.colorWarning
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.*

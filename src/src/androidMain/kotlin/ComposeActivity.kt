@@ -9,23 +9,15 @@ import androidx.activity.compose.setContent
 import kotlinx.coroutines.delay
 import android.content.pm.PackageManager
 import android.graphics.drawable.ColorDrawable
-import android.net.Uri
 import android.os.Build
-import android.provider.MediaStore
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
@@ -37,10 +29,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.work.*
-import info.bitcoinunlimited.www.wally.ui2.theme.BaseBkg
-import info.bitcoinunlimited.www.wally.ui2.*
-import info.bitcoinunlimited.www.wally.ui2.theme.colorTitleBackground
-import info.bitcoinunlimited.www.wally.ui2.theme.wallyTileHeader
+import info.bitcoinunlimited.www.wally.ui.*
+import info.bitcoinunlimited.www.wally.ui.theme.BaseBkg
+import info.bitcoinunlimited.www.wally.ui.theme.colorTitleBackground
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.rem
 import org.nexa.libnexakotlin.runningTheTests
@@ -222,46 +213,24 @@ class ComposeActivity: CommonActivity()
     override fun onCreateOptionsMenu(menu: Menu): Boolean
     {
         val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.options_menu, menu)
 
-        // New UI
-        if (newUI.value)
-        {
-            inflater.inflate(R.menu.options_menu_ui2, menu)
-
-            val settingsItem = menu.findItem(R.id.settings)
-            settingsItem.setOnMenuItemClickListener {
-                // Clicking this settings icon while in settings screen was causing the back button to navigate to settings...
-                if(nav.currentScreen.value != ScreenId.Settings)
-                    nav.go(ScreenId.Settings)
-                true
-            }
-            val shareItemUi2 = menu.findItem(R.id.menu_item_share_ui2)
-            shareItemUi2.setOnMenuItemClickListener {
-                onShareButton()
-                true
-            }
-            val unlockItem = menu.findItem(R.id.unlock_ui2)
-            unlockItem.setOnMenuItemClickListener {
-                triggerUnlockDialog()
-                true
-            }
+        val settingsItem = menu.findItem(R.id.settings)
+        settingsItem.setOnMenuItemClickListener {
+            // Clicking this settings icon while in settings screen was causing the back button to navigate to settings...
+            if(nav.currentScreen.value != ScreenId.Settings)
+                nav.go(ScreenId.Settings)
+            true
         }
-        // Old UI
-        else
-        {
-            inflater.inflate(R.menu.options_menu, menu)
-            // Locate MenuItem with ShareActionProvider
-            val shareItem = menu.findItem(R.id.menu_item_share)
-            shareItem.setOnMenuItemClickListener {
-                onShareButton()
-                true
-            }
-            val unlockItem = menu.findItem(R.id.unlock)
-            unlockItem.setOnMenuItemClickListener {
-                triggerUnlockDialog()
-                true
-            }
-            initializeHelpOption(menu)
+        val shareItem = menu.findItem(R.id.menu_item_share)
+        shareItem.setOnMenuItemClickListener {
+            onShareButton()
+            true
+        }
+        val unlockItem = menu.findItem(R.id.unlock)
+        unlockItem.setOnMenuItemClickListener {
+            triggerUnlockDialog()
+            true
         }
 
         return super.onCreateOptionsMenu(menu)
@@ -320,7 +289,6 @@ class ComposeActivity: CommonActivity()
         LogIt.info("Launched by intent URI: ${intent.toUri(0)}  intent: $intent")
         initializeGraphicsResources()
         setContent {
-            val newUi = newUI.collectAsState().value
             val scheme = intentUri?.scheme?.lowercase()
 
             // If there's an incoming intent, go handle it don't pop the app up normally
@@ -393,7 +361,7 @@ class ComposeActivity: CommonActivity()
 
             UiRoot(Modifier, systemPadding)
 
-            LaunchedEffect(newUi) {
+            LaunchedEffect(Unit) {
                 invalidateOptionsMenu()
             }
         }

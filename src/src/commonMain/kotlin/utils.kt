@@ -620,3 +620,11 @@ expect fun getResourceFile(name: String): BufferedSource
 
 expect fun openUrl(url: String)
 
+interface VersionI
+{
+    val VERSION: String
+    val VERSION_NUMBER: String
+    val GIT_COMMIT_HASH: String
+    val GITLAB_URL: String
+    val BUILD_DATE: String
+}

@@ -1,11 +1,11 @@
-package info.bitcoinunlimited.www.wally.previews
+package ui.preview
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui2.gatherRelevantAddresses
-import info.bitcoinunlimited.www.wally.ui2.ScreenId
-import info.bitcoinunlimited.www.wally.ui2.ScreenNav
+import info.bitcoinunlimited.www.wally.ui.gatherRelevantAddresses
+import info.bitcoinunlimited.www.wally.ui.ScreenId
+import info.bitcoinunlimited.www.wally.ui.ScreenNav
 import org.nexa.libnexakotlin.*
 
 class RamKvpDatabase: KvpDatabase
