@@ -37,18 +37,8 @@ fun OnAppStartup()
 fun MainViewController(): UIViewController
 {
     backgroundOnly = false  // This function is called to instantiate the UI, so we must not be in background mode
-    var v: UIViewController?=null
-    // Trying to change the background to purple; does not work.
-    val view = ComposeUIViewController({
-        val bkgCol =  UIColor.colorWithRed(0x72/256.0, 0x50/256.0, 0x92/256.0, 1.0)
-        this.delegate = object: ComposeUIViewControllerDelegate {
-            override fun viewDidLoad() {
-                super.viewDidLoad()
-                v?.view?.backgroundColor = bkgCol
-                LogIt.info("VIEW ${v?.view}")
-            }
-        }
-    },
+
+    val view = ComposeUIViewController({},
       {
         nav.reset(ScreenId.Splash)
         UiRoot(
@@ -57,8 +47,6 @@ fun MainViewController(): UIViewController
           WindowInsets(0,0,0,0)
         )
     })
-    v = view
-
     // Wrong selector
     //    val dc = NSNotificationCenter.defaultCenter
     //    dc.addObserver(dc, selector = NSSelectorFromString("keyboardWillShow:"), name = UIKeyboardWillShowNotification, null)
