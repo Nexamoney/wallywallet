@@ -14,39 +14,18 @@ import java.time.format.DateTimeFormatter
 // On version bump: Run ./gradlew generateVersionFile and commit the updates iosApp/iosApp/info.plist file
 val versionNumber = "3.7.10"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
-val kotlinVersion = "2.1.21"
-
-// Dependency versions
-val mpThreadsVersion = "0.4.2"
-val nexaRpcVersion = "1.3.0"
-val libNexaKotlinVersion = "0.4.28"
-val serializationVersion = "1.8.1"  // https://github.com/Kotlin/kotlinx.serialization
-val coroutinesVersion = "1.10.2"     // https://github.com/Kotlin/kotlinx.coroutines
-val bigNumVersion = "0.3.10"         // https://github.com/ionspin/kotlin-multiplatform-bignum
-val composeVersion = "1.8.1"        // https://github.com/JetBrains/compose-multiplatform/releases
-val androidTestCoreVersion = "1.6.1" // https://mvnrepository.com/artifact/androidx.test/core
-val androidxActivityComposeVersion = "1.10.1"
-val uriKmpVersion = "0.0.19"  // https://github.com/eygraber/uri-kmp
-val skikoVersion = "0.9.7" // https://github.com/JetBrains/skiko/releases
-val workVersion = "2.10.1" // https://developer.android.com/jetpack/androidx/releases/work
-
-val ktorVersion = "3.1.3"     // https://github.com/ktorio/ktor
 
 val secSinceEpoch = Instant.now().epochSecond
 
 plugins {
-    //trick: for the same plugin versions in all sub-modulesly
-    kotlin("multiplatform")
-    id("com.android.application")
-    kotlin("plugin.serialization").version("2.1.21")
-    //id("org.jetbrains.kotlin.android").version("2.0.0")
-    id("org.jetbrains.kotlin.plugin.compose").version("2.1.21")
-    id("org.jetbrains.compose")   // https://github.com/JetBrains/compose-multiplatform/releases
-    id("org.jetbrains.dokka").version("2.0.0").apply(false)
-    id("org.jetbrains.kotlinx.kover")
-    // id("org.openjfx.javafxplugin") version "0.1.0"
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.compose)
+    alias(libs.plugins.dokka) apply false
+    alias(libs.plugins.kover)
     idea
-    // application  // for JVM executables, but not compatible with android, have to do it by hand
 }
 
 kover {
@@ -155,9 +134,9 @@ kotlin {
                 sourceSetTree.set(KotlinSourceSetTree.test)
 
                 dependencies {
-                    testImplementation("androidx.compose.ui:ui-test-junit4-android:1.8.0")
-                    androidTestImplementation("androidx.compose.ui:ui-test-junit4-android:1.8.0")
-                    debugImplementation("androidx.compose.ui:ui-test-manifest:1.8.0")
+                    testImplementation(libs.androidx.ui.test.junit4.android)
+                    androidTestImplementation(libs.androidx.ui.test.junit4.android)
+                    debugImplementation(libs.ui.test.manifest)
                     // debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
                 }
             }
@@ -266,15 +245,14 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 // core language features
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.kotlinx.coroutines.core)
                 implementation(kotlin("stdlib-common"))
-                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
+                implementation(libs.kotlinx.datetime)
                 // Compose
-                implementation("org.jetbrains.compose.runtime:runtime:$composeVersion")
-                implementation("org.jetbrains.compose.foundation:foundation:$composeVersion")
-
-                implementation("org.jetbrains.compose.material3:material3:$composeVersion")
+                implementation(libs.compose.runtime)
+                implementation(libs.compose.foundation)
+                implementation(libs.compose.material3)
                 // implementation(compose.materialIconsExtended)
                 //@OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
@@ -282,49 +260,43 @@ kotlin {
                 // multiplatform replacements
 
                 // for bigintegers
-                implementation("com.ionspin.kotlin:bignum:$bigNumVersion")
-                implementation("com.ionspin.kotlin:bignum-serialization-kotlinx:$bigNumVersion")
+                implementation(libs.bignum)
+                implementation(libs.bignum.serialization.kotlinx)
 
                 // for network
-                implementation("com.eygraber:uri-kmp:$uriKmpVersion")
-                implementation("io.ktor:ktor-client-core:$ktorVersion")
-                // implementation("io.ktor:ktor-client-websockets:$ktorVersion")
-                // implementation("io.ktor:ktor-client-logging:$ktorVersion")
-                implementation("io.ktor:ktor-client-serialization:$ktorVersion")
-                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-                // implementation("io.ktor:ktor-utils:$ktorVersion")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+                implementation(libs.uri.kmp)
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.serialization)
+                implementation(libs.ktor.client.content.negotiation)
+                implementation(libs.ktor.serialization.kotlinx.json)
 
                 // These deps don't exist on the mingw64 native target, which is why its disabled right now
-                implementation("io.ktor:ktor-network:$ktorVersion")
-                // implementation("io.ktor:ktor-network-tls:$ktorVersion")
-                implementation("io.ktor:ktor-client-cio:$ktorVersion")
+                implementation(libs.ktor.network)
+                implementation(libs.ktor.client.cio)
 
                 // IO
-                implementation("com.squareup.okio:okio:3.11.0")
-                implementation("org.jetbrains.kotlinx:atomicfu:0.27.0")
+                implementation(libs.okio)
+                implementation(libs.atomicfu)
 
                 // nexa
-                implementation("org.nexa:mpthreads:$mpThreadsVersion") {
-                    isChanging = true
-                }
-                implementation("org.nexa:libnexakotlin:$libNexaKotlinVersion") { setChanging(true) }
+                implementation(libs.nexa.mpthreads)
+                implementation(libs.nexa.libnexakotlin)
                 //implementation("org.nexa:walletoperations:0.0.1")
 
                 // Generate and display Compose Multiplaform QR code
-                implementation("io.github.alexzhirkevich:qrose:1.0.1")  // https://github.com/alexzhirkevich/qrose/releases
+                implementation(libs.qrose)  // https://github.com/alexzhirkevich/qrose/releases
 
                 // Animation library binding
-                implementation("org.jetbrains.skiko:skiko:$skikoVersion")
+                implementation(libs.skiko)
 
                 // Common ViewModel for all targets
-                implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
+                implementation(libs.lifecycle.viewmodel.compose)
 
                 // Icons
                 implementation(compose.materialIconsExtended)
 
                 // Parse HTML from a string
-                implementation("com.fleeksoft.ksoup:ksoup:0.2.3")
+                implementation(libs.ksoup)
             }
         }
         val commonTest by getting {
@@ -333,8 +305,8 @@ kotlin {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
                 //implementation(kotlin("LibNexaTests"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
-                implementation("org.nexa:nexarpc:$nexaRpcVersion")
+                implementation(libs.kotlinx.coroutines.test)
+                implementation(libs.nexa.rpc)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.uiTest)
             }
@@ -359,7 +331,7 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 // Strangely this appears to work on multiple platforms (win, macos) if the linux-built jar is copied to them
-                implementation("org.jetbrains.skiko:skiko-awt-runtime-$skikoTarget:$skikoVersion")
+                implementation("org.jetbrains.skiko:skiko-awt-runtime-$skikoTarget:${libs.versions.skiko}")
                 // These compose platform libs are necessary so that you can take the wpw.jar file and copy it to another
                 // platform and run it.  DO NOT remove without running this manual test!
                 // Note (when manually testing) that you also need the correct libnexa shared lib copied over.
@@ -370,16 +342,16 @@ kotlin {
                 implementation(compose.desktop.windows_x64)
                 implementation(compose.desktop.macos_x64)
                 implementation(compose.desktop.macos_arm64)
-                implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.21")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$coroutinesVersion")
+                implementation(libs.kotlin.stdlib)
+                implementation(libs.kotlinx.coroutines.core.jvm)
                 // Required for Dispatchers.Main
                 // https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-dispatchers/-main.html
                 // implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
                 // implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:$coroutinesVersion")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:$coroutinesVersion")
+                implementation(libs.kotlinx.coroutines.swing)
 
                 // SVG rendering
-                implementation("com.github.weisj:jsvg:2.0.0")
+                implementation(libs.jsvg)
 
                 // https://mvnrepository.com/artifact/org.openjfx/javafx-media
                 //implementation("org.openjfx:javafx-media:17.0.10")
@@ -397,9 +369,9 @@ kotlin {
                 // dependsOn(sourceSets.named("commonMain").get())
                 dependencies {
                     // Compose
-                    implementation("org.jetbrains.compose.runtime:runtime:$composeVersion")
-                    implementation("org.jetbrains.compose.foundation:foundation:$composeVersion")
-                    implementation("org.jetbrains.compose.material3:material3:$composeVersion")
+                    implementation(libs.compose.runtime)
+                    implementation(libs.compose.foundation)
+                    implementation(libs.compose.material3)
                 }
             }
         }
@@ -423,72 +395,63 @@ kotlin {
                 dependencies {
                     //implementation(project(":shared"))
 
-                    // CameraX core library using the camera2 implementation
-                    val camerax_version = "1.4.2"  // https://developer.android.com/jetpack/androidx/releases/camera
-                    val lottieVersion = "6.6.6"
-
                     implementation(kotlin("stdlib-jdk8"))
-                    implementation("androidx.activity:activity-compose:$androidxActivityComposeVersion")
-                    implementation("androidx.tracing:tracing:1.3.0")
-                    implementation("androidx.compose.ui:ui:1.8.1")
-                    implementation("androidx.compose.ui:ui-tooling:1.8.1")
-                    implementation("androidx.compose.ui:ui-tooling-preview:1.8.1")
-                    implementation("androidx.compose.foundation:foundation:1.8.1")
-                    implementation("androidx.compose.material:material:1.8.1")
-                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-cbor:1.8.1")
-                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.1")
+                    implementation(libs.androidx.activity.compose)
+                    implementation(libs.androidx.tracing)
+                    implementation(libs.androidx.ui)
+                    implementation(libs.androidx.ui.tooling)
+                    implementation(libs.androidx.ui.tooling.preview)
+                    implementation(libs.androidx.foundation)
+                    implementation(libs.androidx.material)
+                    implementation(libs.kotlinx.serialization.cbor)
+                    implementation(libs.kotlinx.serialization.json.jvm)
 
                     // android layout dependencies
-                    //implementation("com.google.android.flexbox:flexbox:3.0.0")  // https://github.com/google/flexbox-layout/tags
-                    implementation("androidx.activity:activity:1.10.1")
-                    //implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")  // https://developer.android.com/jetpack/androidx/releases/navigation
-                    //implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
-                    implementation("androidx.wear:wear:1.3.0")
-                    //implementation("com.android.support.constraint:constraint-layout:2.1.4") // https://developer.android.com/jetpack/androidx/releases/constraintlayout
-                    implementation("com.google.android.material:material:1.12.0")
-                    //implementation("androidx.preference:preference:1.2.1")  // https://developer.android.com/jetpack/androidx/releases/preference
+                    implementation(libs.androidx.activity)
+                    implementation(libs.androidx.wear)
+                    implementation(libs.material)
 
                     //implementation("org.jetbrains.skiko:skiko-android:$skikoVersion")
                     //implementation("org.jetbrains.skiko:skiko-android-runtime-x64:$skikoVersion")
                     //implementation("org.jetbrains.skiko:skiko-android-runtime-arm64:$skikoVersion")
 
                     // network access
-                    implementation("io.ktor:ktor-client-core:$ktorVersion")
-                    implementation("io.ktor:ktor-client-cio:$ktorVersion")
-                    implementation("io.ktor:ktor-client-android:$ktorVersion")
-                    implementation("io.ktor:ktor-client-serialization:$ktorVersion")
-                    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-                    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+                    implementation(libs.ktor.client.core)
+                    implementation(libs.ktor.client.cio)
+                    implementation(libs.ktor.client.android)
+                    implementation(libs.ktor.client.serialization)
+                    implementation(libs.ktor.serialization.kotlinx.json)
+                    implementation(libs.ktor.client.content.negotiation)
 
                     // for bigintegers
-                    implementation("com.ionspin.kotlin:bignum:0.3.10")
-                    implementation("com.ionspin.kotlin:bignum-serialization-kotlinx:0.3.10")
+                    implementation(libs.bignum)
+                    implementation(libs.bignum.serialization.kotlinx)
 
                     // Background syncing
                     // java: implementation("androidx.work:work-runtime:$workVersion")
-                    implementation("androidx.work:work-runtime-ktx:$workVersion")
+                    implementation(libs.androidx.work.runtime.ktx)
                     // QR scanning (and read from gallery)
-                    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+                    implementation(libs.zxing.android.embedded)
                     // Image file conversion
-                    implementation("com.caverock:androidsvg-aar:1.4")
+                    implementation(libs.androidsvg.aar)
 
                     // This calls your own startup code with the app context (see AndroidManifest.xml)
                     //implementation("androidx.startup:startup-runtime:1.1.1")
 
                     // Camera
-                    implementation("androidx.camera:camera-camera2:${camerax_version}")
-                    implementation("androidx.camera:camera-lifecycle:${camerax_version}")
-                    implementation("androidx.camera:camera-view:${camerax_version}")
-                    implementation("com.google.mlkit:barcode-scanning:17.3.0")
+                    implementation(libs.androidx.camera.camera2)
+                    implementation(libs.androidx.camera.lifecycle)
+                    implementation(libs.androidx.camera.view)
+                    implementation(libs.barcode.scanning)
 
-                    implementation("androidx.media3:media3-exoplayer:1.6.1")
+                    implementation(libs.androidx.media3.exoplayer)
                     // Dynamic Adaptive Streaming over HTTP: implementation("androidx.media3:media3-exoplayer-dash:1.X.X")
-                    implementation("androidx.media3:media3-ui:1.6.1")
+                    implementation(libs.androidx.media3.ui)
 
                     // Animation
-                    implementation("com.airbnb.android:lottie-compose:$lottieVersion")
+                    implementation(libs.lottie.compose)
 
-                    implementation("androidx.compose.material:material-icons-extended:1.7.8")
+                    implementation(libs.androidx.material.icons.extended)
                 }
             }
         }
@@ -535,7 +498,7 @@ kotlin {
         {
             val mingwMain by getting {
                 dependencies {
-                    implementation("app.cash.sqldelight:native-driver:2.0.2")
+                    implementation(libs.native.driver)
                 }
             }
         }
@@ -546,12 +509,11 @@ kotlin {
             val androidInstrumentedTest by getting {
                 dependencies {
                     implementation(kotlin("test-junit"))
-                    implementation("org.nexa:nexarpc:$nexaRpcVersion")
-                    implementation("org.nexa:nexarpc:$nexaRpcVersion")
-                    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
-                    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
-                    implementation("androidx.test:core-ktx:1.6.1")
-                    implementation("androidx.test.ext:junit-ktx:1.2.1")
+                    implementation(libs.nexa.rpc)
+                    implementation(libs.kotlinx.coroutines.test)
+                    implementation(libs.kotlinx.coroutines.android)
+                    implementation(libs.androidx.core.ktx)
+                    implementation(libs.androidx.junit.ktx)
                 }
             }
         }
@@ -894,7 +856,7 @@ kotlin {
     sourceSets {
         getByName("commonTest") {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+                implementation(libs.kotlinx.coroutines.core)
             }
         }
     }
