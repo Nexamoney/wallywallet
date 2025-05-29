@@ -1232,7 +1232,12 @@ fun NavigationRoot(
 
                                 ScreenId.Settings -> SettingsScreen()
                                 ScreenId.AccountDetails -> withUnlockedAccount { AccountDetailScreen(it) }
-                                ScreenId.Assets -> withAccount { AssetScreen(it) }
+                                ScreenId.Assets -> withAccount { AssetScreen(it) {
+                                    scope.launch {
+                                    expanded.value = false
+                                    scaffoldSheetState.bottomSheetState.hide()
+                                    }
+                                } }
                                 ScreenId.Shopping -> ShoppingScreen()
                                 ScreenId.TricklePay -> withAccount { act -> TricklePayScreen(act, null, nav) }
                                 ScreenId.Identity -> withAccount { act ->

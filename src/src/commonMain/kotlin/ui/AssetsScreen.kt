@@ -31,6 +31,8 @@ import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.*
 import io.ktor.http.*
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.nexa.libnexakotlin.*
 
 
@@ -362,8 +364,9 @@ fun AssetView(asset: AssetInfo, parentMod: Modifier = Modifier)
 
 private val assetListState: MutableMap<String, MutableStateFlow<LazyListState?> > = mutableMapOf() //MutableStateFlow(null)
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AssetScreen(account: Account)
+fun AssetScreen(account: Account, onAssetDetail: () -> Unit)
 {
     val subScreen = nav.currentSubState.collectAsState()
     val sub = subScreen.value
@@ -453,6 +456,7 @@ fun AssetScreen(account: Account)
     }
     else  // Show a specific asset
     {
+        onAssetDetail()
         Column (
           modifier = Modifier.fillMaxSize()
         ) {
