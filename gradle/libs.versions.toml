@@ -1,0 +1,113 @@
+[versions]
+androidsvgAar = "1.4"
+androidxActivityComposeVersion = "1.10.1"
+atomicfu = "0.27.0"
+barcodeScanning = "17.3.0"
+bigNumVersion = "0.3.10" # https://github.com/ionspin/kotlin-multiplatform-bignum
+cameraCamera2 = "1.4.2" # https://developer.android.com/jetpack/androidx/releases/camera
+coreKtx = "1.6.1" # https://mvnrepository.com/artifact/androidx.test/core
+coroutinesVersion = "1.10.2" # https://github.com/Kotlin/kotlinx.coroutines
+jsvg = "2.0.0"
+junitKtx = "1.2.1"
+kotlinStdlib = "2.1.21"
+kotlinxDatetime = "0.6.2"
+ksoup = "0.2.3"
+ktorVersion = "3.1.3" # https://github.com/ktorio/ktor
+libnexakotlin = "0.4.28" # https://gitlab.com/nexa/libnexakotlin
+lifecycleViewmodelCompose = "2.8.4"
+lottieVersion = "6.6.6"
+material = "1.12.0"
+materialIconsExtended = "1.7.8"
+media3Exoplayer = "1.6.1"
+nativeDriver = "2.0.2"
+nexaRpc = "1.3.0" # https://gitlab.com/nexa/nexarpckotlin
+mpthreads = "0.4.2" # https://gitlab.com/nexa/mpthreads
+kotlin = "2.1.21" # https://github.com/JetBrains/kotlin/releases
+compose = "1.8.1" # https://github.com/JetBrains/compose-multiplatform/releases
+composeAndroid = "1.8.2" # The Android-only version of compose. This version occasionally deviates from the multiplatform version of compose.
+android-gradle-plugin = "8.8.0" # https://developer.android.com/build/releases/gradle-plugin
+dokka = "2.0.0"
+kover = "0.9.1"
+okio = "3.11.0"
+qrose = "1.0.1"
+serializationVersion = "1.8.1" # https://github.com/Kotlin/kotlinx.serialization
+task-tree = "2.1.1"
+skiko = "0.9.7" # https://github.com/JetBrains/skiko/releases
+tracing = "1.3.0"
+uriKmpVersion = "0.0.19" # https://github.com/eygraber/uri-kmp
+wear = "1.3.0"
+workVersion = "2.10.1" # https://developer.android.com/jetpack/androidx/releases/work
+zxingAndroidEmbedded = "4.3.0"
+
+[libraries]
+androidsvg-aar = { module = "com.caverock:androidsvg-aar", version.ref = "androidsvgAar" }
+androidx-activity = { module = "androidx.activity:activity", version.ref = "androidxActivityComposeVersion" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivityComposeVersion" }
+androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCamera2" }
+androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraCamera2" }
+androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraCamera2" }
+androidx-core-ktx = { module = "androidx.test:core-ktx", version.ref = "coreKtx" }
+androidx-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "composeAndroid" }
+androidx-junit-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "junitKtx" }
+androidx-material = { module = "androidx.compose.material:material", version.ref = "composeAndroid" }
+androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3Exoplayer" }
+androidx-media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3Exoplayer" }
+androidx-tracing = { module = "androidx.tracing:tracing", version.ref = "tracing" }
+androidx-ui = { module = "androidx.compose.ui:ui", version.ref = "composeAndroid" }
+androidx-ui-test-junit4-android = { module = "androidx.compose.ui:ui-test-junit4-android", version.ref = "composeAndroid" }
+androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "composeAndroid" }
+androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "composeAndroid" }
+androidx-wear = { module = "androidx.wear:wear", version.ref = "wear" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workVersion" }
+atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
+barcode-scanning = { module = "com.google.mlkit:barcode-scanning", version.ref = "barcodeScanning" }
+bignum = { module = "com.ionspin.kotlin:bignum", version.ref = "bigNumVersion" }
+bignum-serialization-kotlinx = { module = "com.ionspin.kotlin:bignum-serialization-kotlinx", version.ref = "bigNumVersion" }
+compose-runtime = { group = "org.jetbrains.compose.runtime", name = "runtime", version.ref = "compose" }
+compose-foundation = { group = "org.jetbrains.compose.foundation", name = "foundation", version.ref = "compose" }
+compose-material3 = { group = "org.jetbrains.compose.material3", name = "material3", version.ref = "compose" }
+jsvg = { module = "com.github.weisj:jsvg", version.ref = "jsvg" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlinStdlib" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutinesVersion" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutinesVersion" }
+kotlinx-coroutines-core-jvm = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm", version.ref = "coroutinesVersion" }
+kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "coroutinesVersion" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutinesVersion" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
+kotlinx-serialization-cbor = { module = "org.jetbrains.kotlinx:kotlinx-serialization-cbor", version.ref = "serializationVersion" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serializationVersion" }
+kotlinx-serialization-json-jvm = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm", version.ref = "serializationVersion" }
+ksoup = { module = "com.fleeksoft.ksoup:ksoup", version.ref = "ksoup" }
+ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktorVersion" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktorVersion" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorVersion" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorVersion" }
+ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktorVersion" }
+ktor-network = { module = "io.ktor:ktor-network", version.ref = "ktorVersion" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorVersion" }
+lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
+lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieVersion" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
+native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "nativeDriver" }
+nexa-mpthreads = { module = "org.nexa:mpthreads", version.ref = "mpthreads"}
+nexa-rpc = { module = "org.nexa:nexarpc", version.ref = "nexaRpc" }
+nexa-libnexakotlin = { module = "org.nexa:libnexakotlin", version.ref = "libnexakotlin" }
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
+qrose = { module = "io.github.alexzhirkevich:qrose", version.ref = "qrose" }
+skiko = { module = "org.jetbrains.skiko:skiko", version.ref = "skiko" }
+ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "composeAndroid" }
+uri-kmp = { module = "com.eygraber:uri-kmp", version.ref = "uriKmpVersion" }
+zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxingAndroidEmbedded" }
+
+[plugins]
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
+android-library = { id = "com.android.library", version.ref = "android-gradle-plugin" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+task-tree = { id = "com.dorongold.task-tree", version.ref = "task-tree" }
+compose = { id = "org.jetbrains.compose", version.ref = "compose"}
