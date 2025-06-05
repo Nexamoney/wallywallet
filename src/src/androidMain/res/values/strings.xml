@@ -507,6 +507,8 @@ Good luck!
     <string name="IncorrectRecoveryWords" formatted="false">Invalid words: %words</string>
     <string name="ElectrumNetworkUnavailable">Electrum network unavailable.  Wallet recovery will be slow, and will not discover transactions prior to Jan 1, 2020</string>
     <string name="PinHidesAccount">Hide account until PIN is entered?</string>
+    <string name="HiddenAccountExplainer">Hide the account until a PIN is entered</string>
+    <string name="HiddenAccount">Hidden account</string>
     <string name="AutomaticNewAddress">Address Privacy</string>
     <string name="AutomaticNewAddressToolTip">A new address is automatically shown whenever the current one is used.</string>
     <string name="CreatePIN">PIN (optional)</string>
