@@ -312,26 +312,8 @@ kotlin {
             }
         }
 
-        val osName = System.getProperty("os.name")
-        val targetOs = when {
-            osName == "Mac OS X" -> "macos"
-            osName.startsWith("Win") -> "windows"
-            osName.startsWith("Linux") -> "linux"
-            else -> error("Unsupported OS: $osName")
-        }
-
-        val targetArch = when (val osArch = System.getProperty("os.arch")) {
-            "x86_64", "amd64" -> "x64"
-            "aarch64" -> "arm64"
-            else -> error("Unsupported arch: $osArch")
-        }
-
-        val skikoTarget = "${targetOs}-${targetArch}"
-
         val jvmMain by getting {
             dependencies {
-                // Strangely this appears to work on multiple platforms (win, macos) if the linux-built jar is copied to them
-                implementation("org.jetbrains.skiko:skiko-awt-runtime-$skikoTarget:${libs.versions.skiko}")
                 // These compose platform libs are necessary so that you can take the wpw.jar file and copy it to another
                 // platform and run it.  DO NOT remove without running this manual test!
                 // Note (when manually testing) that you also need the correct libnexa shared lib copied over.
