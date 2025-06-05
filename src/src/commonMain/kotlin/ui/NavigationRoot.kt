@@ -86,8 +86,6 @@ var menuItems: MutableStateFlow<Set<NavChoice>> = MutableStateFlow(
 var moreMenuItems: MutableStateFlow<Set<NavChoice>> = MutableStateFlow(setOf())
 const val BOTTOM_NAV_ITEMS = 5
 
-
-val softKeyboardBar:MutableStateFlow<(@Composable (Modifier)->Unit)?> = MutableStateFlow(null)
 val accountGuiSlots = MutableStateFlow(wallyApp!!.orderedAccounts())
 val isSoftKeyboardShowing = MutableStateFlow(false)
 
@@ -1046,18 +1044,6 @@ fun NavigationRoot(
         }
     }
 
-    // This is the IME keyboard bar.  So this box is on top of the main screen
-    Box(modifier = Modifier.zIndex(1000f).fillMaxSize()) {
-        if (softKeyboardShowing)
-        {
-            val keybar = softKeyboardBar.collectAsState().value
-            if (keybar != null)
-            {
-                val imeHeight = getImeHeight()
-                keybar.invoke(Modifier.align(Alignment.BottomStart).padding(bottom = imeHeight).fillMaxWidth())
-            }
-        }
-    }
     val scope = rememberCoroutineScope()
     val scaffoldSheetState = rememberBottomSheetScaffoldState(bottomSheetState = rememberStandardBottomSheetState(skipHiddenState = false))
     val expanded = remember { mutableStateOf(false) }

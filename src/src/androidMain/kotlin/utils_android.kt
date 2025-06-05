@@ -305,11 +305,6 @@ actual fun getResourceFile(name: String): BufferedSource
 @OptIn(ExperimentalLayoutApi::class)
 @Composable actual fun isImeVisible(): Boolean
 {
-    // This is a "cheat"; this is set by text entry fields if they are in focus.  so we assume on ios that if this is set
-    // then the softkeyboard is up.
-    //if (softKeyboardBar != null) return true
-    //return false
-
     val act = currentActivity as? ComposeActivity
     if (act != null) return act.isKeyboardShown()
     return WindowInsets.isImeVisible  // Does not seem to work, but is the "compose" API
