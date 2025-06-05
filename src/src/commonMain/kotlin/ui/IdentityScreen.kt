@@ -4,7 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.EditNote
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -150,9 +152,11 @@ fun IdentityScreen(account: Account, sess: IdentitySession?, nav: ScreenNav)
                   style = WallySectionTextStyle(),
                   textAlign = TextAlign.Center
                 )
-                WallyBoringLargeIconButton("icons/edit_pencil.png", onClick = {
-                    nav.go(ScreenId.IdentityEdit)
-                })
+                IconButton(
+                  onClick = { nav.go(ScreenId.IdentityEdit) }
+                ) {
+                    Icon(Icons.Filled.EditNote, contentDescription = "Edit pen", modifier = Modifier.size(32.dp))
+                }
             }
             // Show a share identity link on the front screen
             val dest = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
@@ -220,41 +224,58 @@ fun IdentityScreen(account: Account, sess: IdentitySession?, nav: ScreenNav)
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
                 if (uri == null)  // This is not a request to login; its just the user doing edits
                 {
-                    WallyBoringLargeTextButton(S.done, onClick = {
-                        // Turn the menu on since user has accepted an operation of this type
-                        enableNavMenuItem(ScreenId.TricklePay)
+                    Button(
+                      onClick = {
+                          // Turn the menu on since user has accepted an operation of this type
+                          enableNavMenuItem(ScreenId.TricklePay)
 
-                        val saveDomain = d.clone()
-                        wallet.upsertIdentityDomain(saveDomain)
-                        wallet.save(true)
-                        uri = null
-                        domain = null
-                    })
-                    WallyBoringLargeTextButton(S.remove, modifier = Modifier.testTag("RemoveIdentityButton"), onClick = {
-                        wallet.removeIdentityDomain(d.domain)
-                        displayNotice(S.removed)
-                        uri = null
-                        domain = null
-                    })
+                          val saveDomain = d.clone()
+                          wallet.upsertIdentityDomain(saveDomain)
+                          wallet.save(true)
+                          uri = null
+                          domain = null
+                      }
+                    ) {
+                        Text(i18n(S.done))
+                    }
+                    OutlinedButton(
+                      onClick = {
+                          wallet.removeIdentityDomain(d.domain)
+                          displayNotice(S.removed)
+                          uri = null
+                          domain = null
+                      },
+                      modifier = Modifier.testTag("RemoveIdentityButton")
+                    ) {
+                        Text(i18n(S.remove))
+                    }
                 }
                 else  // this is a login or registration request
                 {
-                    WallyBoringLargeTextButton(S.accept, onClick = {
-                        // Turn the menu on since user has accepted an operation of this type
-                        enableNavMenuItem(ScreenId.TricklePay)
+                    Button(
+                      onClick = {
+                          // Turn the menu on since user has accepted an operation of this type
+                          enableNavMenuItem(ScreenId.TricklePay)
 
-                        val saveDomain = d.clone()
-                        wallet.upsertIdentityDomain(saveDomain)
-                        wallet.save(true)
-                        sess?.idData = d
-                        if (sess?.uri != null) onProvideIdentity(sess, account)
-                        displaySuccess(S.TpRegAccepted)
-                        nav.back()
-                    })
-                    WallyBoringLargeTextButton(S.reject, onClick = {
-                        displayNotice(S.TpRegDenied)
-                        nav.back()
-                    })
+                          val saveDomain = d.clone()
+                          wallet.upsertIdentityDomain(saveDomain)
+                          wallet.save(true)
+                          sess?.idData = d
+                          if (sess?.uri != null) onProvideIdentity(sess, account)
+                          displaySuccess(S.TpRegAccepted)
+                          nav.back()
+                      }
+                    ) {
+                        Text(i18n(S.accept))
+                    }
+                    OutlinedButton(
+                      onClick = {
+                          displayNotice(S.TpRegDenied)
+                          nav.back()
+                      }
+                    ) {
+                        Text(i18n(S.reject))
+                    }
                 }
             }
         }
@@ -263,13 +284,17 @@ fun IdentityScreen(account: Account, sess: IdentitySession?, nav: ScreenNav)
             if (devMode)
             {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
-                    WallyBoringLargeTextButton(S.removeAll, onClick = {
-                        wallet.allIdentityDomains().forEach {
-                            wallet.removeIdentityDomain(it.domain)
-                        }
-                        identities.value = ArrayList(wallet.allIdentityDomains())
-                        laterJob { wallet.save(true) }
-                    })
+                    Button(
+                      onClick = {
+                          wallet.allIdentityDomains().forEach {
+                              wallet.removeIdentityDomain(it.domain)
+                          }
+                          identities.value = ArrayList(wallet.allIdentityDomains())
+                          laterJob { wallet.save(true) }
+                      }
+                    ) {
+                        Text(i18n(S.removeAll))
+                    }
                 }
             }
         }
@@ -327,11 +352,17 @@ fun IdentityEditScreen(account: Account, nav: ScreenNav)
         Spacer(Modifier.height(1.dp).weight(1.0f))
         CenteredText(i18n(S.IdentityInfoNote), Modifier.padding(8.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            WallyBoringLargeTextButton(S.clear) {
+            OutlinedButton(onClick = {
                 account.wallet.identityInfo.clear()
                 account.wallet.identityInfoChanged = true
+            }) {
+                Text(i18n(S.clear))
             }
-            WallyBoringLargeTextButton(S.done) { nav.back() }
+            Button(
+              onClick = { nav.back() }
+            ) {
+                Text(i18n(S.done))
+            }
         }
     }
 }
