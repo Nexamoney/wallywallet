@@ -11,6 +11,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.WallyHalfDivider
+import info.bitcoinunlimited.www.wally.ui.theme.colorDefault
 import info.bitcoinunlimited.www.wally.ui.theme.colorError
 import info.bitcoinunlimited.www.wally.ui.theme.colorValid
 import info.bitcoinunlimited.www.wally.ui.views.*
@@ -488,7 +491,24 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
         pinInput(newAcState.pin, newAcState.validOrNoPin, onPinChange)
         Text(i18n(S.PinSpendingUnprotected), fontSize = 14.sp)
         Spacer(Modifier.height(5.dp))
-        WallySwitchRow(newAcState.hideUntilPinEnter, S.PinHidesAccount, "PinHidesAccount", onHideUntilPinEnterChanged)
+
+        val enabled = newAcState.pin.length >= MIN_PIN_LEN
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier.fillMaxWidth()
+            .clickable(enabled) {
+                onHideUntilPinEnterChanged(!newAcState.hideUntilPinEnter)
+            }.testTag("PinHidesAccount")
+        ) {
+            Checkbox(
+              enabled = enabled,
+              checked = newAcState.hideUntilPinEnter,
+              onCheckedChange = { onHideUntilPinEnterChanged(it) }
+            )
+            val textColor = if (enabled) Color.Unspecified else Color.Gray
+            Text(i18n(S.HiddenAccount), color = textColor)
+        }
+        Text(i18n(S.HiddenAccountExplainer), fontSize = 14.sp)
         Spacer(Modifier.height(5.dp))
         if (!creatingAccountLoading)
         {
