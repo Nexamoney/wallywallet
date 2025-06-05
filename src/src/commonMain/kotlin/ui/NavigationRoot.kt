@@ -704,7 +704,7 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
                 val iconButtonSize = 32.dp
                 TitleText(nav.title(), Modifier.weight(1f).fillMaxSize().padding(0.dp, 15.dp, 0.dp, 0.dp))
                 IconButton(onClick = { triggerUnlockDialog(true) }, modifier = Modifier.size(iconButtonSize).testTag("GlobalLockIcon")){
-                    Icon(Icons.Filled.Lock, tint = Color.White, contentDescription = "Lock")
+                    Icon(Icons.Default.Key, tint = Color.White, contentDescription = "Unlock all accounts (including hidden accounts) with this pin")
                 }
                 if (platform().hasShare && nav.currentScreen.collectAsState().value.hasShare)
                     IconButton(onClick = { onShareButton() }, modifier = Modifier.size(iconButtonSize)) {

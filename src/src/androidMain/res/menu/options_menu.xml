@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/unlock"
-        android:icon="@drawable/ic_lock"
+        android:icon="@drawable/ic_key"
         android:title="@string/unlock"
         app:showAsAction="ifRoom" />
     <item
