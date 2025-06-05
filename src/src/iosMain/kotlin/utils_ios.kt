@@ -5,7 +5,6 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import info.bitcoinunlimited.www.wally.ui.softKeyboardBar
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
@@ -273,9 +272,6 @@ actual fun getResourceFile(name: String): BufferedSource
 @Composable
 actual fun isImeVisible(): Boolean
 {
-    // This is a "cheat"; this is set by text entry fields if they are in focus.  so we assume on ios that if this is set
-    // then the softkeyboard is up.
-    if (softKeyboardBar != null) return true
     return false
 }
 

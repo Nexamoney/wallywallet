@@ -696,65 +696,6 @@ fun WallyDecimalEntry(value: MutableState<String>, modifier: Modifier = Modifier
             true
         }
         else false// Do not accept this key
-    }.onFocusChanged {
-        if (it.isFocused)
-        {
-            softKeyboardBar.value = { modifier ->
-                // imePadding() is not needed; the BottomStart is already just above the IME
-                Row(modifier, horizontalArrangement = Arrangement.SpaceEvenly) {
-                    WallyRoundedTextButton(S.sendAll) {
-                        val tmp = onValueChange.invoke("all")
-                        tfv.value = TextFieldValue(tmp, selection = TextRange(tmp.length))
-                    }
-                    WallyRoundedTextButton(S.thousand) {
-                        var amt = try
-                        {
-                            CurrencyDecimal(value.value)
-                        }
-                        catch (e: ArithmeticException)
-                        {
-                            if ((value.value.length == 0) || (value.value == "all")) CURRENCY_1
-                            else return@WallyRoundedTextButton
-                        }
-                        catch (e: NumberFormatException)
-                        {
-                            if ((value.value.length == 0) || (value.value == "all")) CURRENCY_1
-                            else return@WallyRoundedTextButton
-                        }
-                        amt *= BigDecimal.fromInt(1000)
-                        val tmp = onValueChange.invoke(amt.toPlainString())
-                        tfv.value = TextFieldValue(tmp, selection = TextRange(tmp.length))
-                    }
-                    WallyRoundedTextButton(S.million) {
-                        var amt = try
-                        {
-                            CurrencyDecimal(value.value)
-                        }
-                        catch (e: ArithmeticException)
-                        {
-                            if ((value.value.length == 0) || (value.value == "all")) CURRENCY_1
-                            else return@WallyRoundedTextButton
-                        }
-                        catch (e: NumberFormatException)
-                        {
-                            if ((value.value.length == 0) || (value.value == "all")) CURRENCY_1
-                            else return@WallyRoundedTextButton
-                        }
-                        amt *= BigDecimal.fromInt(1000000)
-                        val tmp = onValueChange.invoke(amt.toPlainString())
-                        tfv.value = TextFieldValue(tmp, selection = TextRange(tmp.length))
-                    }
-                    WallyRoundedTextButton(S.clear) {
-                        val tmp = onValueChange.invoke("")
-                        tfv.value = TextFieldValue(tmp, selection = TextRange(tmp.length))
-                    }
-                }
-            }
-        }
-        else
-        {
-            softKeyboardBar.value = null
-        }
     },
       textStyle, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Done), bkgCol,
       {
@@ -873,65 +814,6 @@ fun WallyOutLineDecimalEntryTFV(tfv: MutableState<TextFieldValue>, modifier: Mod
             true
         }
         else false// Do not accept this key
-    }.onFocusChanged {
-        if (it.isFocused)
-        {
-            softKeyboardBar.value = { modifier ->
-                // imePadding() is not needed; the BottomStart is already just above the IME
-                Row(modifier, horizontalArrangement = Arrangement.SpaceEvenly) {
-                    WallyRoundedTextButton(S.sendAll) {
-                        val tmp = onValueChange.invoke("all")
-                        tfv.value = TextFieldValue(tmp, selection = TextRange(tmp.length))
-                    }
-                    WallyRoundedTextButton(S.thousand) {
-                        var amt = try
-                        {
-                            CurrencyDecimal(tfv.value.text)
-                        }
-                        catch (e: ArithmeticException)
-                        {
-                            if ((tfv.value.text.length == 0) || (tfv.value.text == "all")) CURRENCY_1
-                            else return@WallyRoundedTextButton
-                        }
-                        catch (e: NumberFormatException)
-                        {
-                            if ((tfv.value.text.length == 0) || (tfv.value.text == "all")) CURRENCY_1
-                            else return@WallyRoundedTextButton
-                        }
-                        amt *= BigDecimal.fromInt(1000)
-                        val tmp = onValueChange.invoke(amt.toPlainString())
-                        tfv.value = TextFieldValue(tmp, selection = TextRange(tmp.length))
-                    }
-                    WallyRoundedTextButton(S.million) {
-                        var amt = try
-                        {
-                            CurrencyDecimal(tfv.value.text)
-                        }
-                        catch (e: ArithmeticException)
-                        {
-                            if ((tfv.value.text.length == 0) || (tfv.value.text == "all")) CURRENCY_1
-                            else return@WallyRoundedTextButton
-                        }
-                        catch (e: NumberFormatException)
-                        {
-                            if ((tfv.value.text.length == 0) || (tfv.value.text == "all")) CURRENCY_1
-                            else return@WallyRoundedTextButton
-                        }
-                        amt *= BigDecimal.fromInt(1000000)
-                        val tmp = onValueChange.invoke(amt.toPlainString())
-                        tfv.value = TextFieldValue(tmp, selection = TextRange(tmp.length))
-                    }
-                    WallyRoundedTextButton(S.clear) {
-                        val tmp = onValueChange.invoke("")
-                        tfv.value = TextFieldValue(tmp, selection = TextRange(tmp.length))
-                    }
-                }
-            }
-        }
-        else
-        {
-            softKeyboardBar.value = null
-        }
     },
       textStyle, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Done), bkgCol,
       {
@@ -957,65 +839,6 @@ fun WallyOutLineDecimalEntry(value: MutableState<String>, modifier: Modifier = M
             true
         }
         else false// Do not accept this key
-    }.onFocusChanged {
-        if (it.isFocused)
-        {
-            softKeyboardBar.value = { modifier ->
-                // imePadding() is not needed; the BottomStart is already just above the IME
-                Row(modifier, horizontalArrangement = Arrangement.SpaceEvenly) {
-                    WallyRoundedTextButton(S.sendAll) {
-                        val tmp = onValueChange.invoke("all")
-                        tfv.value = TextFieldValue(tmp, selection = TextRange(tmp.length))
-                    }
-                    WallyRoundedTextButton(S.thousand) {
-                        var amt = try
-                        {
-                            CurrencyDecimal(value.value)
-                        }
-                        catch (e: ArithmeticException)
-                        {
-                            if ((value.value.length == 0) || (value.value == "all")) CURRENCY_1
-                            else return@WallyRoundedTextButton
-                        }
-                        catch (e: NumberFormatException)
-                        {
-                            if ((value.value.length == 0) || (value.value == "all")) CURRENCY_1
-                            else return@WallyRoundedTextButton
-                        }
-                        amt *= BigDecimal.fromInt(1000)
-                        val tmp = onValueChange.invoke(amt.toPlainString())
-                        tfv.value = TextFieldValue(tmp, selection = TextRange(tmp.length))
-                    }
-                    WallyRoundedTextButton(S.million) {
-                        var amt = try
-                        {
-                            CurrencyDecimal(value.value)
-                        }
-                        catch (e: ArithmeticException)
-                        {
-                            if ((value.value.length == 0) || (value.value == "all")) CURRENCY_1
-                            else return@WallyRoundedTextButton
-                        }
-                        catch (e: NumberFormatException)
-                        {
-                            if ((value.value.length == 0) || (value.value == "all")) CURRENCY_1
-                            else return@WallyRoundedTextButton
-                        }
-                        amt *= BigDecimal.fromInt(1000000)
-                        val tmp = onValueChange.invoke(amt.toPlainString())
-                        tfv.value = TextFieldValue(tmp, selection = TextRange(tmp.length))
-                    }
-                    WallyRoundedTextButton(S.clear) {
-                        val tmp = onValueChange.invoke("")
-                        tfv.value = TextFieldValue(tmp, selection = TextRange(tmp.length))
-                    }
-                }
-            }
-        }
-        else
-        {
-            softKeyboardBar.value = null
-        }
     },
       textStyle, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Done), bkgCol,
       {
