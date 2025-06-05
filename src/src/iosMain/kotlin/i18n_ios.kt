@@ -1,9 +1,13 @@
 package info.bitcoinunlimited.www.wally
 
+import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.readBytes
+import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.decodeUtf8
 import platform.Foundation.*
+
+private val LogIt = GetLog("BU.wally.i18n_ios.kt")
 
 var LocaleStrings = arrayOf<String>()
 
@@ -24,12 +28,12 @@ actual fun setLocale():Boolean
     {
         locale = NSLocale.currentLocale()
     }
-    println("LANGUAGE: ${locale.languageCode}, COUNTRY: ${locale.countryCode}")
-    println("PREFERRED LANGUAGE: $preferredLanguage")
+    LogIt.info("LANGUAGE: ${locale.languageCode}, COUNTRY: ${locale.countryCode}")
+    LogIt.info("PREFERRED LANGUAGE: $preferredLanguage")
     // Split the preferred language to extract language and country
     // Get the first part (e.g., "nb" from "nb-NO"), or "en" from "en-us"
     val languageCode = preferredLanguage.split("-").firstOrNull()?.lowercase() ?: "en"
-    println("LANGUAGE CODE: $languageCode")
+    LogIt.info("LANGUAGE CODE: $languageCode")
     return setLocale(languageCode, locale.countryCode ?: "")
 }
 
@@ -37,20 +41,22 @@ fun provideLocaleFilesData(data:ByteArray)
 {
     setLocaleStringsFrom(data)
 }
+
+@BetaInteropApi
 @OptIn(ExperimentalForeignApi::class)
 actual fun setLocale(language: String, country: String, context: Any?):Boolean
 {
     val data = try
-      {
-          val url = NSBundle.mainBundle.URLForResource("strings_${language}_$country", "bin")
-          if (url == null) throw NotUriException()
-          val data = NSData.create(url!!)
-          if (data == null) throw NotUriException()
-          data.bytes?.readBytes(data.length.toInt()) ?: throw NotUriException()
-      }
+    {
+        val url = NSBundle.mainBundle.URLForResource("strings_${language}_$country", "bin")
+        if (url == null) throw NotUriException()
+        val data = NSData.create(url!!)
+        if (data == null) throw NotUriException()
+        data.bytes?.readBytes(data.length.toInt()) ?: throw NotUriException()
+    }
     catch(e: Exception)
     {
-        println("NO strings_${language}_$country, trying strings_$language")
+        LogIt.info("NO strings_${language}_$country, trying strings_$language")
         try
         {
             val url = NSBundle.mainBundle.URLForResource("strings_$language", "bin")
@@ -61,7 +67,22 @@ actual fun setLocale(language: String, country: String, context: Any?):Boolean
         }
         catch (e: Exception)
         {
-            null
+            LogIt.info("Fall back to default English strings")
+            e.message?.let { LogIt.info(it) }
+            try {
+                // Fallback to english as the default locale if none of our translations match the default locale
+                val url = NSBundle.mainBundle.URLForResource("strings_en", "bin")
+                if (url == null) throw NotUriException()
+                val data = NSData.create(url)
+                if (data == null) throw NotUriException()
+                data.bytes?.readBytes(data.length.toInt()) ?: throw NotUriException()
+            }
+            catch (e: Exception)
+            {
+                e.message?.let { LogIt.info(it) }
+                LogIt.error("Cannot fall back")
+                null
+            }
         }
     }
 
