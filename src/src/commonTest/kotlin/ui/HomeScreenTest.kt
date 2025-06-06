@@ -63,7 +63,7 @@ fun<Boolean> waitFor1(timeout: Int = 10000, lazyErrorMsg: (()->String)? = null, 
     return ret
 }
 /** Wait for the predicate, retrying if any exception happens */
-fun<T> waitForCatching(timeout: Int = 10000, lazyErrorMsg: (()->String)? = null, checkIt: ()->T?):T
+fun<T> waitForCatching(timeout: Int = 100000, lazyErrorMsg: (()->String)? = null, checkIt: ()->T?):T
 {
     var count = timeout
     var ret:T? = try { checkIt() } catch(e:Throwable) { null }
