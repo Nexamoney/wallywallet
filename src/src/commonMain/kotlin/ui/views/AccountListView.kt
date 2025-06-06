@@ -570,7 +570,7 @@ fun derivationPathSearch(progress: DerivationPathSearchProgress, wallet: Bip44Wa
                 event?.invoke()
             }.search(idxMaxGap) {
                 if (progress.aborter.obj) throw EarlyExitException()
-                val key = libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, coin, account, change, it).first
+                val key = libnexa.deriveHd44ChildKey(secret.getSecret(), AddressDerivationKey.BIP44, coin, account, change, it).first
                 val us = UnsecuredSecret(key)
                 val dest = Pay2PubKeyTemplateDestination(wallet.chainSelector, us, it.toLong())
                 progress.progress = ""

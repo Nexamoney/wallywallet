@@ -51,6 +51,13 @@ class FakeTxDatabase: TxDatabase
         data.clear()
     }
 
+    override fun clearDecrypter()
+    {
+    }
+    override fun installDecrypter(decrypt: (ByteArray, Int) -> ByteArray)
+    {
+    }
+
     override fun close()
     {
         data.clear()
@@ -80,6 +87,7 @@ class FakeTxDatabase: TxDatabase
             if (addr in th.gatherRelevantAddresses()) doit(th)
         }
     }
+
 
     override fun read(idem: Hash256): TransactionHistory?
     {
@@ -139,10 +147,19 @@ class FakeTxDatabase: TxDatabase
 class RamTxoDatabase: TxoDatabase
 {
     val data = mutableMapOf<ByteArray, Spendable>()
+
+    override fun clearDecrypter()
+    {
+    }
+    override fun installDecrypter(decrypt: (ByteArray, Int) -> ByteArray)
+    {
+    }
+
     override fun clear()
     {
         data.clear()
     }
+
     override fun close()
     {
         data.clear()

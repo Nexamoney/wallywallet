@@ -455,7 +455,7 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                     laterJob {
                         aborter.obj = true  // abort any old searches
                         aborter = Objectify<Boolean>(false)
-                        val ret = rediscoverPeekActivity(wal.secretWords, wal.chainSelector, aborter)
+                        val ret = rediscoverPeekActivity(wal.secretWords.getSecret().decodeUtf8(), wal.chainSelector, aborter)
                         if (ret != null)
                         {
                             val (time, height) = ret
@@ -848,7 +848,7 @@ fun RecoveryPhraseView(account: Account, done: () -> Unit)
         var copied by remember { mutableStateOf(false) }
 
         val clickable = Modifier.clickable {
-            setTextClipboard(account.wallet.secretWords)
+            setTextClipboard(account.wallet.secretWords.getSecret().decodeUtf8())
             copied = true
         }
         SelectionContainer {
@@ -862,7 +862,7 @@ fun RecoveryPhraseView(account: Account, done: () -> Unit)
                     .padding(16.dp)
                 ) {
                     Text(
-                      text = account.wallet.secretWords,
+                      text = account.wallet.secretWords.getSecret().decodeUtf8(),
                       fontFamily = FontFamily.Monospace,
                       fontSize = 18.sp,
                       modifier = clickable.padding(vertical = 2.dp)

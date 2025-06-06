@@ -365,7 +365,7 @@ fun BlockchainSource(chain: ChainSelector, preferenceDB: SharedPreferences, swit
     val exclusiveNodeKey = "$name.$EXCLUSIVE_NODE_SWITCH"
     val preferNodeKey = "$name.$PREFER_NODE_SWITCH"
     val configuredNodeKey = "$name.$CONFIGURED_NODE"
-    val configuredNode: String = preferenceDB.getString(exclusiveNodeKey, "") ?: ""
+    val configuredNode: String = preferenceDB.getString(configuredNodeKey, "") ?: ""
     val preferNode: Boolean = preferenceDB.getBoolean(preferNodeKey, false)
     val exclusiveNode: Boolean = preferenceDB.getBoolean(exclusiveNodeKey, false)
     val onlyChecked = remember { mutableStateOf(exclusiveNode) }
@@ -384,13 +384,12 @@ fun BlockchainSource(chain: ChainSelector, preferenceDB: SharedPreferences, swit
         Spacer(modifier = Modifier.width(4.dp))
         WallyTextEntry(
           value = textState,
-          onValueChange = {
-              textState = it
-              LogIt.info(configuredNodeKey)
+          onValueChange = { newNode ->
+              textState = newNode
               CoroutineScope(Dispatchers.IO).launch {
                   with(preferenceDB.edit())
                   {
-                      putString(configuredNodeKey, it)
+                      putString(configuredNodeKey, newNode)
                       commit()
                   }
               }
