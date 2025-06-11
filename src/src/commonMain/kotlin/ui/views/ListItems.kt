@@ -217,13 +217,11 @@ fun AssetCarouselItem(asset: AssetInfo, hasNameOverLay: Boolean = false, leadSpa
       modifier = Modifier.padding(leadSpacing, 0.dp, 0.dp,0.dp)
         .wrapContentSize()
         .clip(RoundedCornerShape(16.dp)).clickable {
-            nav.go(ScreenId.Assets)
             nav.go(ScreenId.Assets, asset.groupId.toByteArray())
         },
     ) {
         MpMediaView(iconImage, asset.iconBytes, asset.iconUri?.toString(), hideMusicView = true) { mi, draw ->
             val m = Modifier.background(Color.Transparent).size(maxSize).clickable {
-                nav.go(ScreenId.Assets)
                 nav.go(ScreenId.Assets, asset.groupId.toByteArray())
             }
             draw(m)
@@ -233,7 +231,6 @@ fun AssetCarouselItem(asset: AssetInfo, hasNameOverLay: Boolean = false, leadSpa
               name = nft?.title ?: asset.name ?: "",
               maxWidth = maxSize,
               modifier = Modifier.matchParentSize().clickable {
-                  nav.go(ScreenId.Assets)
                   nav.go(ScreenId.Assets, asset.groupId.toByteArray())
               }
             )
