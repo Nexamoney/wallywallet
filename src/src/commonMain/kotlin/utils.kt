@@ -41,6 +41,8 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.util.cio.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.char
@@ -631,6 +633,44 @@ interface VersionI
     val GITLAB_URL: String
     val BUILD_DATE: String
 }
+
+enum class ReviewCode(vararg val codes: Int) {
+    NO_ERROR(0),
+    STORE_NOT_FOUND(-1),
+    INVALID_REQUEST(-2),
+    INTERNAL_ERROR(-100, 2000),
+    APP_NOT_RELEASED(101),
+    RATING_SUBMITTED(102),
+    COMMENT_SUBMITTED(103),
+    SIGN_IN_STATUS_INVALID(104, 5000),
+    CONDITIONS_NOT_MET(105),
+    COMMENTING_DISABLED(106),
+    COMMENTING_NOT_SUPPORTED(107),
+    CANCEL(108),
+    STORE_OUTDATED(200),
+    USER_BANNED(201),
+    APP_BANNED(202),
+    REQUEST_LIMIT_REACHED(203),
+    REVIEW_EXISTS(204),
+    INVALID_REVIEW_INFO(205),
+    MANDATORY_PARAMETER_NOT_AVAILABLE(1000),
+    CONTENT_NOT_AVAILABLE(4002),
+    REPEATED_REQUEST_IN_10_MINUTES(100015);
+
+    companion object {
+        fun fromCode(code: Int) = entries.firstOrNull { it.codes.contains(code) } ?: INTERNAL_ERROR
+    }
+}
+
+interface InAppReviewDelegate {
+    fun init() {}
+    fun requestInAppReview(): Flow<ReviewCode>
+    fun requestInMarketReview(): Flow<ReviewCode>
+}
+
+expect fun getReviewManager(): InAppReviewDelegate?
+
+expect fun requestInAppReview(): Unit
 
 // Convert the passed quantity to a string in the decimal format suitable for this currency
 fun formatAmount(qty: BigDecimal, chain: ChainSelector = ChainSelector.NEXA): String

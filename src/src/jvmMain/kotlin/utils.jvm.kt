@@ -41,7 +41,6 @@ actual fun denotify(id: Int): Boolean
     return false
 }
 
-
 // on android this fails with couldn't find "libskiko-android-arm64.so", see https://github.com/JetBrains/skiko/issues/531
 fun scaleUsingSurface(image: Image, width: Int, height: Int): Image
 {
@@ -308,3 +307,8 @@ actual fun openUrl(url: String) {
         println("Failed to open URL: $url. Error: ${e.message}")
     }
 }
+
+// Wally for JVM/Desktop will initially be distributed as a file with no App Store or such to review the app.
+actual fun getReviewManager(): InAppReviewDelegate? = null
+
+actual fun requestInAppReview() {}

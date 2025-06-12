@@ -571,6 +571,7 @@ class SendScreenViewModelImpl(act: Account): SendScreenViewModel(act)
                         clear()
                         nav.go(ScreenId.Home)
                         uiState.value = SendScreenUi() // We are done with a send so reset state machine
+                        requestInAppReview()
                     }
                     catch (e: Exception)  // We don't want to crash, we want to tell the user what went wrong
                     {

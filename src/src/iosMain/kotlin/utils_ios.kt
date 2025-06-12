@@ -9,6 +9,8 @@ import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import kotlinx.cinterop.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import okio.Buffer
 import okio.BufferedSource
@@ -21,8 +23,11 @@ import platform.CoreFoundation.CFDataGetLength
 import platform.CoreFoundation.CFRelease
 import platform.CoreGraphics.*
 import platform.Foundation.*
+import platform.StoreKit.SKStoreReviewController
 import platform.UIKit.*
 import wpw.src.generated.resources.Res
+import kotlin.math.pow
+import kotlinx.datetime.Clock
 
 private val LogIt = GetLog("BU.wally.utils_ios")
 
@@ -343,4 +348,61 @@ fun UIImage.toImageBitmap(): ImageBitmap {
     return org.jetbrains.skia.Image.makeFromEncoded(byteArray).toComposeImageBitmap()
 
      */
+}
+
+internal fun systemVersionMoreOrEqualThan(version: String): Boolean {
+    val systemVersion = UIDevice.currentDevice.systemVersion
+    return version.versionToNumber() >= systemVersion.versionToNumber()
+}
+
+private fun String.versionToNumber() = split(".")
+  .map { it.toInt() }
+  .take(3)
+  .run {
+      val appendedList = toMutableList()
+      repeat(3 - size) { appendedList.add(0) }
+      println(appendedList)
+      appendedList.foldIndexed(0) { index, acc, current ->
+          acc + current * 1000.0.pow(2 - index).toInt()
+      }
+  }
+
+class AppStoreInAppReviewInitParams(val appStoreId: String)
+
+class AppStoreInAppReviewManager(private val params: AppStoreInAppReviewInitParams) : InAppReviewDelegate {
+
+    // In iOS the app can ask for a review maximally three times a year
+    override fun requestInAppReview(): Flow<ReviewCode> = flow {
+        if (systemVersionMoreOrEqualThan("14.0")) {
+            val scene = UIApplication.sharedApplication.connectedScenes.map { it as UIWindowScene }
+              .first { it.activationState == UISceneActivationStateForegroundActive }
+            SKStoreReviewController.requestReviewInScene(scene)
+        } else {
+            SKStoreReviewController.requestReview()
+        }
+        emit(ReviewCode.NO_ERROR)
+    }
+
+    override fun requestInMarketReview() = flow {
+        val url = NSURL(string = "https://apps.apple.com/app/${params.appStoreId}?action=write-review")
+        UIApplication.sharedApplication.openURL(url)
+        emit(ReviewCode.NO_ERROR)
+    }
+}
+
+actual fun getReviewManager(): InAppReviewDelegate? = AppStoreInAppReviewManager(AppStoreInAppReviewInitParams("id6469619075"))
+
+// Requests in-app review and waits one month to ask again if no review is given.
+actual fun requestInAppReview() {
+    val now = Clock.System.now().toEpochMilliseconds()
+    val lastReviewRequest = wallyApp?.preferenceDB?.getString(LAST_REVIEW_TIMESTAMP, "0")?.toLong() ?: now
+    val oneWeekInMillis = 30 * 24 * 60 * 60 * 1000L
+
+    if ((now - lastReviewRequest) >= oneWeekInMillis)
+    {
+        val scene = UIApplication.sharedApplication.connectedScenes.map { it as UIWindowScene }
+          .first { it.activationState == UISceneActivationStateForegroundActive }
+        SKStoreReviewController.requestReviewInScene(scene)
+        wallyApp?.run { preferenceDB.edit().putString(LAST_REVIEW_TIMESTAMP, now.toString()).commit() }
+    }
 }

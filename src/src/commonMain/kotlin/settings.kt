@@ -12,6 +12,7 @@ val SHOW_IDENTITY_PREF = "showIdentityMenu"
 val SHOW_TRICKLEPAY_PREF = "showTricklePayMenu"
 val SHOW_ASSETS_PREF = "showAssetsMenu"
 val CONFIRM_ABOVE_PREF = "confirmAbove"
+val LAST_REVIEW_TIMESTAMP = "lastReviewTimestamp"
 
 val ACCESS_PRICE_DATA_PREF = "accessPriceData"
 
