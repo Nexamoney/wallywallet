@@ -524,7 +524,9 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
                 Row(Modifier.fillMaxWidth()) { CenteredText(i18n(S.discoveredWarning)) }
                 Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth().testTag("CreateDiscoveredAccount"))
                 {
-                    WallyRoundedTextButton(i18n(S.createDiscoveredAccount), onClick = onClickCreateDiscoveredAccount)
+                    Button(onClick = onClickCreateDiscoveredAccount) {
+                        Text(i18n(S.createDiscoveredAccount))
+                    }
                 }
             }
             else
@@ -562,7 +564,9 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
             }
             if (newAcState.earliestActivity != null) Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth())
             {
-                WallyRoundedTextButton(i18n(S.createSyncAccount), onClick = onClickCreateAccount)
+                OutlinedButton(onClick = onClickCreateAccount) {
+                    Text(i18n(S.createSyncAccount))
+                }
             }
             else Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth())
             {
