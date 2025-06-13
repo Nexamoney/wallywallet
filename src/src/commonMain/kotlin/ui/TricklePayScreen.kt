@@ -162,7 +162,7 @@ fun TricklePayDomainView(from: TdppDomain?, to: TdppDomain, modifier: Modifier =
 fun TricklePayScreen(act: Account, startSess: TricklePaySession?, nav: ScreenNav)
 {
     var sess by remember { mutableStateOf(startSess) }
-    val domains = wallyApp!!.tpDomains.domains
+    val domains = wallyApp!!.tpDomains.domains.collectAsState().value
 
     nav.onDepart {
         val s = sess

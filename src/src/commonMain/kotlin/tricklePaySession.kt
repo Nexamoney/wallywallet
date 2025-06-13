@@ -15,6 +15,7 @@ import com.eygraber.uri.*
 import info.bitcoinunlimited.www.wally.ui.*
 import io.ktor.http.Url
 import io.ktor.utils.io.errors.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.serialization.Serializable
 import org.nexa.threads.Mutex
 import org.nexa.threads.millisleep
@@ -239,27 +240,33 @@ class TricklePayDomains()
     var db: KvpDatabase? = null
 
     fun domainKey(host: String, topic: String? = null): String = host + "/" + (topic ?: "")
-    var domains: MutableMap<String, TdppDomain> = mutableMapOf()
+    var domains: MutableStateFlow<Map<String, TdppDomain>> = MutableStateFlow(mapOf())
     var domainsLoaded: Boolean = false
 
     val size:Int
-        get() = domains.size
+        get() = domains.value.size
 
     fun insert(d: TdppDomain)
     {
-        domains[domainKey(d.domain, d.topic)] = d
+        val tmp = domains.value.toMutableMap()
+        tmp[domainKey(d.domain, d.topic)] = d
+        domains.value = tmp
         save()
     }
 
     fun remove(d: TdppDomain)
     {
-        domains.remove(domainKey(d.domain, d.topic))
+        val tmp = domains.value.toMutableMap()
+        tmp.remove(domainKey(d.domain, d.topic))
+        domains.value = tmp
         save()
     }
 
     fun clear()
     {
-        domains.clear()
+        val tmp = domains.value.toMutableMap()
+        tmp.clear()
+        domains.value = tmp
         save()
     }
 
@@ -268,12 +275,14 @@ class TricklePayDomains()
     {
         return dataLock.lock {
             if (!domainsLoaded) load()
-            var d = domains[domainKey(host, topic)]
+            var d = domains.value[domainKey(host, topic)]
             if (d == null)
             {
                 // delay and try again because load() cannot happen in the gui thread
                 d = TdppDomain(host, topic)
-                domains[domainKey(host, topic)] = d
+                val tmp = domains.value.toMutableMap()
+                tmp[domainKey(host, topic)] = d
+                domains.value = tmp
                 save()
             }
             d
@@ -285,7 +294,7 @@ class TricklePayDomains()
     {
         return dataLock.lock {
             if (!domainsLoaded) load()
-            val d = domains[domainKey(host, topic)]
+            val d = domains.value[domainKey(host, topic)]
             d
         }
     }
@@ -308,7 +317,7 @@ class TricklePayDomains()
                             val bchser = BCHserialized(ser, SerializationType.DISK)
                             val ver = bchser.debytes(1)[0]
                             if (ver == SER_VERSION)
-                                domains = bchser.demap({ it.deString() }, { TdppDomain(it) })
+                                domains.value = bchser.demap({ it.deString() }, { TdppDomain(it) })
                         }
                     } catch (e: DataMissingException)
                     {
@@ -332,7 +341,7 @@ class TricklePayDomains()
                 if (domainsLoaded)  // If we save the domains before we load them, we'll erase them!
                 {
                     val ser = BCHserialized.uint8(SER_VERSION)
-                    ser.add(BCHserialized.map(domains,
+                    ser.add(BCHserialized.map(domains.value,
                       {
                           BCHserialized(SerializationType.DISK).add(it)
                       },
