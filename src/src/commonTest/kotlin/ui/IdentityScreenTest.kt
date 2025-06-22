@@ -28,8 +28,8 @@ class IdentityScreenTest:  WallyUiTestBase(false)
              */
             waitForCatching {  onNodeWithText(i18n(S.commonIdentityForAccount) % mapOf("act" to account.name)).isDisplayed() }
             onNodeWithText(i18n(S.IdentityRegistrations)).assertIsDisplayed()
-            account.delete()
         }
+        wallyApp!!.deleteAccount(account)
     }
 
     @Test
@@ -47,7 +47,7 @@ class IdentityScreenTest:  WallyUiTestBase(false)
             //onNodeWithText(i18n(S.IdentityAssociatedWith)).assertIsDisplayed()
             //onNodeWithText(i18n(S.provideEmail)).assertIsDisplayed()
             //onNodeWithText(i18n(S.NameText)).assertIsDisplayed()
-            account.delete()
         }
+        wallyApp!!.deleteAccount(account)
     }
 }

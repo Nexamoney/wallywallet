@@ -187,7 +187,7 @@ class NewAccountScreenTest: WallyUiTestBase(false)
             waitForCatching(5000) { newAccountState.value.accountName == "" }
             settle()
         }
-
+        wallyApp!!.accounts["newAct"]?.let { wallyApp!!.deleteAccount(it) }
     }
 
     /** Test specifying a short PIN */

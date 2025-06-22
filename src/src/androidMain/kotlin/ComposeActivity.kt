@@ -33,8 +33,10 @@ import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.theme.BaseBkg
 import info.bitcoinunlimited.www.wally.ui.theme.colorTitleBackground
 import org.nexa.libnexakotlin.GetLog
+import org.nexa.libnexakotlin.laterJob
 import org.nexa.libnexakotlin.rem
 import org.nexa.libnexakotlin.runningTheTests
+import org.nexa.threads.millisleep
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.toJavaDuration
 
@@ -48,6 +50,8 @@ actual fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
 }
 
 private lateinit var pickMediaLauncher: ActivityResultLauncher<PickVisualMediaRequest>
+
+var lastHandledIntent = ""
 
 class ComposeActivity: CommonActivity()
 {
@@ -285,8 +289,11 @@ class ComposeActivity: CommonActivity()
         }
 
         var actionb:Int? = null
-        val intentUri = com.eygraber.uri.Uri.parseOrNull(intent.toUri(0))
+        // Grab the intent if we haven't already marked it as handled
+        val tmp = com.eygraber.uri.Uri.parseOrNull(intent.toUri(0))
+        val intentUri = if (intent.data.toString() != lastHandledIntent) tmp else null
         LogIt.info("Launched by intent URI: ${intent.toUri(0)}  intent: $intent")
+        LogIt.info("Last handled: ${lastHandledIntent}")
         initializeGraphicsResources()
         setContent {
             val scheme = intentUri?.scheme?.lowercase()
@@ -297,6 +304,8 @@ class ComposeActivity: CommonActivity()
                 // There is no reason for a local app to ask for the clipboard other then to hide its own clipboard use
                 if (intentUri.getQueryParameter("info")?.lowercase() == "clipboard")
                 {
+                    setIntent(null)  // done handling this
+                    lastHandledIntent = intent.data.toString()
                     setResult(Activity.RESULT_CANCELED, intent)
                     finish()
                 }
@@ -308,12 +317,16 @@ class ComposeActivity: CommonActivity()
                     nav.onDepart {
                         if (it == ScreenNav.Direction.LEAVING)
                         {
+                            setIntent(null)  // done handling this
+                            lastHandledIntent = intent.data.toString()
                             setResult(Activity.RESULT_CANCELED, intent)
                             finish()
                         }
                     }
                     // Now handle the request (which should set the screen to something)
                     wallyApp!!.handlePaste(intent.toUri(0)) { uriBack: String, data: String, worked: Boolean? ->
+                        setIntent(null)  // done handling this
+                        lastHandledIntent = intent.data.toString()
                         val result = Intent()
                         result.putExtra("body", data)  // This data would be in the http POST body which is why its called body
                         result.data = android.net.Uri.parse(uriBack)
@@ -331,18 +344,52 @@ class ComposeActivity: CommonActivity()
                 nav.onDepart {
                     if (it == ScreenNav.Direction.LEAVING)
                     {
+                        setIntent(null)  // done handling this
+                        lastHandledIntent = intent.data.toString()
                         setResult(Activity.RESULT_CANCELED, Intent())
                         finish()
                     }
                 }
                 wallyApp!!.handlePaste(intent.toUri(0)) { uriBack:String, data:String, worked:Boolean? ->
                     // TODO what to reply with with just a successful money send
+                    setIntent(null)  // done handling this
+                    lastHandledIntent = intent.data.toString()
                     val result = Intent()
                     result.putExtra("body", data)  // This data would be in the http POST body which is why its called body
                     result.data = android.net.Uri.parse(uriBack)
                     nav.reset(ScreenId.Home)  // get rid of our cancel onDepart
                     if (worked == false) setResult(Activity.RESULT_CANCELED, result) else setResult(Activity.RESULT_OK, result)
                     finish()
+                }
+            }
+            else if ((scheme == "http") || (scheme == "https"))  // Deep link
+            {
+                // Push in the end
+                nav.reset(ScreenId.None)
+                // And make the back button finish the activity
+                nav.onDepart {
+                    if (it == ScreenNav.Direction.LEAVING)
+                    {
+                        lastHandledIntent = intent.data.toString()
+                        setIntent(null)  // done handling this
+                        nav.reset(ScreenId.Home)
+                        setResult(Activity.RESULT_CANCELED, intent)
+                        finish()
+                    }
+                }
+                // We need to open the accounts, etc before we can process a paste intent so add this to the whenReady queue.
+                wallyApp!!.runWhenReady {
+                    // Now handle the request (which should set the screen to something)
+                    wallyApp!!.handlePaste(intent.toUri(0)) { uriBack: String, data: String, worked: Boolean? ->
+                        setIntent(null)  // done handling this
+                        lastHandledIntent = intent.data.toString()
+                        val result = Intent()
+                        result.putExtra("body", data)  // This data would be in the http POST body which is why its called body
+                        result.data = android.net.Uri.parse(uriBack)
+                        nav.reset(ScreenId.Home)  // get rid of our cancel onDepart
+                        if (worked == false) setResult(Activity.RESULT_CANCELED, result) else setResult(Activity.RESULT_OK, result)
+                        finish()
+                    }
                 }
             }
 

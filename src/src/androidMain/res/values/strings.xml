@@ -237,7 +237,6 @@ Good luck!
     <string name="PinRemoved">PIN removed</string>
     <string name="PinInvalid">Invalid PIN</string>
     <string name="PinTooShort">new PIN is too short</string>
-    <string name="WriteDownRecoveryPhraseWarning">Warning: you have not written down the secret recovery phrases for some accounts!  To ensure funds are not lost if this device is lost or broken, write the secret recovery keys down on paper or other non-electronic format. Recovery keys are accessible within each account\'s settings page.</string>
     <string name="WriteDownRecoveryPhraseWarningUi2">Warning: you have not written down the secret recovery phrases for some accounts! To ensure funds are not lost if this device is lost or broken, write the secret recovery keys down on paper or other non-electronic format.</string>
     <string name="WroteRecoveryPhraseDown">I wrote it down</string>
     <string name="RecoveryPhraseKeepRemindingMe">Keep reminding me</string>
