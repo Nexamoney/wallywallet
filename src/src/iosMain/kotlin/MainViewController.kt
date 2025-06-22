@@ -12,6 +12,8 @@ import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.Bip44Wallet
 import org.nexa.libnexakotlin.initializeLibNexa
 import org.nexa.libnexakotlin.handleThreadException
+import org.nexa.libnexakotlin.laterJob
+import org.nexa.threads.millisleep
 import platform.UIKit.UIColor
 import platform.UIKit.UIViewController
 
@@ -84,5 +86,19 @@ fun onQrCodeScannedWithDefaultCameraApp(qr: String)
 {
     LogIt.info("onQrCodeScannedWithDefaultCameraApp: $qr")
 
-    wallyApp?.handlePaste(qr)
+    laterJob {
+        while(true)
+        {
+            val w = wallyApp
+            if (w != null)
+            {
+                w.runWhenReady {
+                    w.handlePaste(qr)
+                }
+                break
+            }
+            millisleep(200U)
+        }
+
+    }
 }

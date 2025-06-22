@@ -83,7 +83,11 @@ class RecoverTests:WallyUiTestBase()
 
             // Select "Recover an account" option
             // We scroll to the bottom space to make sure that the add account button isnt hidden behind the thumb buttons when we try to click it.
-            onNodeWithTag("AccountListBottomSpace").performScrollTo()
+            try
+            {
+                onNodeWithTag("AccountListBottomSpace", true).performScrollTo()
+            }
+            catch(e: Throwable)  {}  // We do not care if it can't scroll because there aren't enough accounts for it to be scrollable
             waitForCatching { onNodeWithTag("AddAccount").isDisplayed() }
             onNodeWithTag("AddAccount").performClick()
             settle()

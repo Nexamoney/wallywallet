@@ -724,9 +724,10 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
 {
     val curScreen = nav.currentScreen.collectAsState().value
 
-    // Don˙t show in send screen. This was messing with the amount selector in send screen under deadline and
+    // Don˙t show in send screen, or in any of the permission request screens.
+    // In the send screen this was messing with the amount selector in send screen under deadline and
     // When you are sending you don't need to back up your key because you are moving coins and assets to a new key.
-    if (curScreen != ScreenId.Send)
+    if ((curScreen != ScreenId.Send)&&(curScreen!=ScreenId.SpecialTxPerm)&&(curScreen!= ScreenId.AssetInfoPerm)&&(curScreen!=ScreenId.SendToPerm))
         Card(
           modifier = clickable
             .padding(12.dp)

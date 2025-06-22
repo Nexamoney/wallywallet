@@ -327,6 +327,25 @@ open class CommonApp(val runningTests: Boolean)
     var assetLoaderThread: iThread? = null
     var periodicAnalysisThread: iThread? = null
 
+    // these callbacks will be called when all the accounts are loaded up
+    // unless whenReady is null, in which case the callback is called right away
+    // protected because you should call runWhenReady
+    protected var whenReady: MutableList<()->Unit>? = mutableListOf<()->Unit>()
+
+    // Schedule something to run when all accounts are loaded
+    fun runWhenReady(thunk:()->Unit)
+    {
+        if(accountLock.lock {
+            val tmp = whenReady
+            if (tmp != null)
+            {
+                tmp.add(thunk)
+                false
+            }
+            else true
+        }) thunk()
+    }
+
     lateinit var preferenceDB: SharedPreferences
 
     init
@@ -1213,6 +1232,20 @@ open class CommonApp(val runningTests: Boolean)
                 // Going to block here until the GUI asks for this field
                 if (recoveryWarning != null) later { externalDriver.send(GuiDriver(show = setOf(ShowIt.WARN_BACKUP_RECOVERY_KEY), account = recoveryWarning)) }
                 for (a in alist) a.getXchgRates("USD")
+
+                val readyCopy = accountLock.lock {
+                    val tmp = whenReady
+                    whenReady = null
+                    tmp
+                }
+                if (readyCopy != null)
+                {
+                    while (readyCopy.isNotEmpty())
+                    {
+                        val task = readyCopy.removeAt(0)
+                        task()
+                    }
+                }
             }
         }
     }

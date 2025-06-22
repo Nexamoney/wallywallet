@@ -82,7 +82,17 @@ struct iOSApp: App {
                     do {
                         try MainViewControllerKt.onQrCodeScannedWithDefaultCameraApp(qr: url.absoluteString)
                     } catch {
-                        print("iosBackgroundSync error occurred in onOpenURL(): \(error)")
+                        print("error occurred in onOpenURL(): \(error)")
+                    }
+                })
+                .onContinueUserActivity(NSUserActivityTypeBrowsingWeb, perform: { act in
+                        if let urlString = act.webpageURL?.absoluteString {
+                        print("App was opened via Universal Link: \(urlString)")
+                        do {
+                            try MainViewControllerKt.onQrCodeScannedWithDefaultCameraApp(qr: urlString)
+                        } catch {
+                            print("error occurred in onContinueUserActivity(): \(error)")
+                        }
                     }
                 })
             composeView.ignoresSafeArea(.keyboard, edges: .all)

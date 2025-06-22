@@ -24,7 +24,7 @@ class AccountPermissionScreensTest:WallyUiTestBase()
         setContent {
             SendToPermScreen(account, tp, ScreenNav())
         }
-        account.delete()
+        wallyApp!!.deleteAccount(account)
     }
 
     @Test
@@ -49,7 +49,7 @@ class AccountPermissionScreensTest:WallyUiTestBase()
         onNodeWithText(i18n(S.accept)).assertIsDisplayed()
         onNodeWithText(i18n(S.deny)).assertIsDisplayed()
         onNodeWithText(i18n(S.deny)).performClick()
-        account.delete()
+        wallyApp!!.deleteAccount(account)
     }
 
     @Test
@@ -64,6 +64,6 @@ class AccountPermissionScreensTest:WallyUiTestBase()
         setContent {
             IdentityPermScreen(account, IdentitySession(null), nav)
         }
-        account.delete()
+        wallyApp!!.deleteAccount(account)
     }
 }

@@ -1,9 +1,14 @@
 [versions]
 androidsvgAar = "1.4"
 androidxActivityComposeVersion = "1.10.1"
-atomicfu = "0.27.0"
+atomicfu = "0.28.0"
 barcodeScanning = "17.3.0"
 bigNumVersion = "0.3.10" # https://github.com/ionspin/kotlin-multiplatform-bignum
+
+bu_libnexakotlin = "0.4.35" # https://gitlab.com/nexa/libnexakotlin
+bu_mpthreads = "0.4.2" # https://gitlab.com/nexa/mpthreads
+bu_nexaRpc = "1.3.0" # https://gitlab.com/nexa/nexarpckotlin
+
 cameraCamera2 = "1.4.2" # https://developer.android.com/jetpack/androidx/releases/camera
 coreKtx = "1.6.1" # https://mvnrepository.com/artifact/androidx.test/core
 coroutinesVersion = "1.10.2" # https://github.com/Kotlin/kotlinx.coroutines
@@ -13,22 +18,19 @@ kotlinStdlib = "2.1.21"
 kotlinxDatetime = "0.6.2"
 ksoup = "0.2.4"
 ktorVersion = "3.1.3" # https://github.com/ktorio/ktor
-libnexakotlin = "0.4.32" # https://gitlab.com/nexa/libnexakotlin
 lifecycleViewmodelCompose = "2.9.0"
 lottieVersion = "6.6.6"
 material = "1.12.0"
 materialIconsExtended = "1.7.8"
 media3Exoplayer = "1.7.1"
 nativeDriver = "2.1.0"
-nexaRpc = "1.3.0" # https://gitlab.com/nexa/nexarpckotlin
-mpthreads = "0.4.2" # https://gitlab.com/nexa/mpthreads
 kotlin = "2.1.21" # https://github.com/JetBrains/kotlin/releases
 compose = "1.8.1" # https://github.com/JetBrains/compose-multiplatform/releases
 composeAndroid = "1.8.2" # The Android-only version of compose. This version occasionally deviates from the multiplatform version of compose.
 android-gradle-plugin = "8.10.1" # https://developer.android.com/build/releases/gradle-plugin
 dokka = "2.0.0"
 kover = "0.9.1"
-okio = "3.12.0"
+okio = "3.13.0"
 qrose = "1.0.1"
 serializationVersion = "1.8.1" # https://github.com/Kotlin/kotlinx.serialization
 task-tree = "2.1.1"
@@ -90,9 +92,9 @@ lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifec
 lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieVersion" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "nativeDriver" }
-nexa-mpthreads = { module = "org.nexa:mpthreads", version.ref = "mpthreads"}
-nexa-rpc = { module = "org.nexa:nexarpc", version.ref = "nexaRpc" }
-nexa-libnexakotlin = { module = "org.nexa:libnexakotlin", version.ref = "libnexakotlin" }
+nexa-mpthreads = { module = "org.nexa:mpthreads", version.ref = "bu_mpthreads" }
+nexa-rpc = { module = "org.nexa:nexarpc", version.ref = "bu_nexaRpc" }
+nexa-libnexakotlin = { module = "org.nexa:libnexakotlin", version.ref = "bu_libnexakotlin" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 qrose = { module = "io.github.alexzhirkevich:qrose", version.ref = "qrose" }
 skiko = { module = "org.jetbrains.skiko:skiko", version.ref = "skiko" }
