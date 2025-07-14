@@ -28,7 +28,7 @@ const val DEV_MODE_PREF = "devinfo"
 @OptIn(ExperimentalTestApi::class)
 class RecoverTests:WallyUiTestBase()
 {
-    @Test
+    // DOES not work in CI (this test requires a good external net connection) @Test
     fun testRecoveryOfTestnet()
     {
         if (resolveDomain("www.nexa.org").size == 0)
