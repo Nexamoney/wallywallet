@@ -1038,9 +1038,9 @@ fun AssetListItemEditable(assetPerAccount: AssetPerAccount, editable: Boolean = 
         {
             val amount = assetPerAccount.editableAmount ?: BigDecimal.ZERO
             if (amount > BigDecimal.ONE)
-                Text(i18n(S.Amount) % mapOf("amt" to amount.toString()))
+                Text(i18n(S.AmountWithValue) % mapOf("amt" to amount.toString()))
             else if (amount == BigDecimal.ONE || amount == BigDecimal.ZERO)
-                Text(i18n(S.Amount) % mapOf("amt" to "1"))
+                Text(i18n(S.AmountWithValue) % mapOf("amt" to "1"))
 
             if (expandable && editable)
                 AnimatedVisibility(visible = expanded) {
