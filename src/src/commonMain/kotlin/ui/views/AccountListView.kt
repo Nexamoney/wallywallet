@@ -44,7 +44,6 @@ private val LogIt = GetLog("BU.wally.AccountListView")
 data class AccountUIData(
   val account: Account, // Do not copy unchangeable fields from the account into this data structure, just use them from here
   var currencyCode: String = "",
-  var balance: String = "",
   var balFontWeight: FontWeight = FontWeight.Normal,
   var balColor: Color = colorCredit,
   var unconfBal: String="",
@@ -63,7 +62,7 @@ data class AccountUIData(
 fun Account.uiData(): AccountUIData
 {
     val ret = AccountUIData(this)
-    val delta = unconfirmedBalance
+    val delta = unconfirmedBalance.value
     ret.lockable = lockable
     ret.locked = locked
     ret.currencyCode = currencyCode
@@ -77,19 +76,24 @@ fun Account.uiData(): AccountUIData
         if (synced)  // ignore 1 block desync or this displays every time a new block is found
         {
             ret.unconfBal =
-              if (CURRENCY_ZERO == delta)
+              if ((CURRENCY_ZERO == delta)||(null == delta))
+              {
+                  ret.unconfBalColor = colorCredit
                   ""
+              }
               else
+              {
+                  ret.unconfBalColor = if (delta > BigDecimal.ZERO) colorCredit else colorDebit
                   i18n(S.incoming) % mapOf(
                     "delta" to (if (delta > BigDecimal.ZERO) "+" else "") + format(delta),
                     "unit" to currencyCode
                   )
-
+              }
             ret.balFontWeight = FontWeight.Normal
-            ret.unconfBalColor = if (delta > BigDecimal.ZERO) colorCredit else colorDebit
         }
         else
         {
+            // If unsynced we don't want to show unconfirmed balances separately since they could actually be confirmed
         }
     }
     else
@@ -97,8 +101,6 @@ fun Account.uiData(): AccountUIData
         ret.balFontWeight = FontWeight.Light
         ret.unconfBal = i18n(S.walletDisconnectedFromBlockchain)
     }
-
-    ret.balance = format(balance)
 
     if (!devMode) ret.devinfo = ""
     else
@@ -128,9 +130,10 @@ fun Account.uiData(): AccountUIData
     // Only show the approx fiat amount if synced and we have the conversion data
     if (synced)
     {
-        if (fiatPerCoin > BigDecimal.ZERO)
+        val b = balance
+        if ((fiatPerCoin > BigDecimal.ZERO)&&(b != null))
         {
-            val fiatDisplay = balance * fiatPerCoin
+            val fiatDisplay = b * fiatPerCoin
             ret.approximately = i18n(S.approximatelyT) % mapOf("qty" to FiatFormat.format(fiatDisplay), "fiat" to fiatCurrencyCode)
             ret.approximatelyColor = colorPrimaryDark
             ret.approximatelyWeight = FontWeight.Normal
@@ -361,7 +364,10 @@ fun AccountListItem(
                   var drawCC by remember { mutableStateOf(false) }
                   var scale by remember { mutableStateOf(1.0) }
                   val mod = Modifier.padding(0.dp).drawWithContent { if (drawBal and drawCC) drawContent() }.testTag("AccountCarouselBalance_${uidata.account.name}")
-                  Text(text = uidata.balance, style = balTextStyle, color = uidata.balColor, modifier = mod, textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
+                  val balance = uidata.account.balanceState.collectAsState().value
+                  val balString = if (balance != null) uidata.account.cryptoFormat.format(balance) else i18n(S.loading)
+
+                  Text(text = balString, style = balTextStyle, color = uidata.balColor, modifier = mod, textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
                     onTextLayout = { textLayoutResult ->
                         if (textLayoutResult.didOverflowWidth)
                         {

@@ -108,18 +108,6 @@ class Account(
     private val _fiatPerCoinState = MutableStateFlow(fiatPerCoin)
     val fiatPerCoinObservable: StateFlow<BigDecimal> = _fiatPerCoinState
 
-    //? Current bch balance (cached from accessing the wallet), in the display units
-    var balance: BigDecimal = NexaDecimal(0)
-        set(value) {
-            _balanceState.value = value
-            field = value
-        }
-    private val _balanceState = MutableStateFlow(balance)
-    val balanceState = _balanceState.asStateFlow()
-
-    var unconfirmedBalance: BigDecimal = CurrencyDecimal(0)
-    var confirmedBalance: BigDecimal = CurrencyDecimal(0)
-
     //? specify how quantities should be formatted for display
     val cryptoFormat = NexaFormat
     val cryptoInputFormat = DecimalFormat("##########.##")  // I can't handle commas in field entry
@@ -164,6 +152,19 @@ class Account(
         else
             Bip44Wallet(walletDb!!, name, chainSelector, secretWords)  // Wallet recovery
     }
+
+    //? Current balance (cached from accessing the wallet), in the display units
+    var balance: BigDecimal? = null
+        set(value)
+        {
+            _balanceState.value = value
+            field = value
+        }
+    private val _balanceState = MutableStateFlow<BigDecimal?>(balance)
+    val balanceState = _balanceState.asStateFlow()
+
+    var unconfirmedBalance = MutableStateFlow<BigDecimal?>(null)
+    var confirmedBalance = MutableStateFlow<BigDecimal?>(null)
 
     var cnxnMgr: CnxnMgr = WallyGetCnxnMgr(wallet.chainSelector, name, false)
     var chain: Blockchain = GetBlockchain(wallet.chainSelector, cnxnMgr, chainToURI[wallet.chainSelector], false) // do not start right away so we can configure exclusive/preferred no
@@ -311,6 +312,19 @@ class Account(
         }
     }
 
+    /** Stop underlying changes from updating the state of this account
+     * This function is primarily used during test to prevent real events from overriding faked data.
+     */
+    fun removeChangeHandlers()
+    {
+        wCb?.let { wallet.removeOnWalletChange(it); wCb = null }
+        blkCb?.let { wallet.blockchain.onChange.remove(it); blkCb = null }
+        netCb?.let { wallet.blockchain.net.changeCallback.remove(it); netCb = null }
+    }
+
+    /** Install handlers for underlying changes to update the state in this account.
+     * These handlers are installed automatically upon account creation so you should not need to call this function.
+     */
     fun installChangeHandlers()
     {
         // Set all the underlying change callbacks to trigger the account update
@@ -787,45 +801,47 @@ class Account(
      */
     fun delete()
     {
-        wCb?.let { wallet.removeOnWalletChange(it) }
-        blkCb?.let { wallet.blockchain.onChange.remove(it) }
-        netCb?.let { wallet.blockchain.net.changeCallback.remove(it) }
+        removeChangeHandlers()
         currentReceive = null
         wallet.stop()
         wallet.delete(wallyAccountDbFileName(wallet.name))
         walletDb = null
-        balance = BigDecimal.ZERO
-        unconfirmedBalance = BigDecimal.ZERO
+        balance = null
+        unconfirmedBalance.value = null
+        confirmedBalance.value = null
     }
 
-    val actChanged = ThreadJob("accountUpdate") {
-        try
-        {
-            // Update our cache of the balances
-            unconfirmedBalance = fromFinestUnit(wallet.unconfirmedBalanceDwim)
-            confirmedBalance = fromFinestUnit(wallet.balanceConfirmed)
-            balance = fromFinestUnit(wallet.balance)
-        }
-        catch (e: WalletDisconnectedException)
-        {
-            // I cannot update the balance if the wallet is not connected, but it will update once the connected so benign
+    init
+    {
+        ThreadJob("accountUpdate") {
+            try
+            {
+                // Update our cache of the balances
+                unconfirmedBalance.value = fromFinestUnit(wallet.unconfirmedBalanceDwim)
+                confirmedBalance.value = fromFinestUnit(wallet.balanceConfirmed)
+                balance = fromFinestUnit(wallet.balance)
+            }
+            catch (e: WalletDisconnectedException)
+            {
+                // I cannot update the balance if the wallet is not connected, but it will update once the connected so benign
+            }
         }
     }
 
     fun changeAsyncProcessing()
     {
         try
-            {
-                // Update our cache of the balances
-                unconfirmedBalance = fromFinestUnit(wallet.unconfirmedBalanceDwim)
-                confirmedBalance = fromFinestUnit(wallet.balanceConfirmed)
-                balance = fromFinestUnit(wallet.balance)
-                onUpdatedReceiveInfo()
-            }
-            catch (e: WalletDisconnectedException)
-            {
-                // I cannot update the balance if the wallet is not connected, but it will update once the connected so benign
-            }
+        {
+            // Update our cache of the balances
+            balance = fromFinestUnit(wallet.balance)
+            unconfirmedBalance.value = fromFinestUnit(wallet.unconfirmedBalanceDwim)
+            confirmedBalance.value = fromFinestUnit(wallet.balanceConfirmed)
+            onUpdatedReceiveInfo()
+        }
+        catch (e: WalletDisconnectedException)
+        {
+        // I cannot update the balance if the wallet is not connected, but it will update once the connected so benign
+        }
     }
 
     /** This is called by the underlying layers whenever something in the wallet has changed */

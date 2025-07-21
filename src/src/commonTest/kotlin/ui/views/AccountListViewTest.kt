@@ -30,8 +30,7 @@ class AccountListViewTest
             val iSelectedMock = mutableStateOf(false)
 
             val accUiData = AccountUIData(
-              account = account,
-              balance = "10,000,000,000"
+              account = account
             )
 
             setContent {
