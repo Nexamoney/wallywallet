@@ -9,7 +9,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.SyncViewModel
@@ -41,7 +39,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.FiatFormat
-import org.nexa.libnexakotlin.laterJob
 import org.nexa.libnexakotlin.millinow
 
 /*
@@ -49,22 +46,29 @@ import org.nexa.libnexakotlin.millinow
  */
 abstract class BalanceViewModel(val dispatcher: CoroutineDispatcher = Dispatchers.Main): ViewModel()
 {
-    open val balance = MutableStateFlow(i18n(S.loading))
-    open val fiatBalance = MutableStateFlow(i18n(S.loading))
+    abstract @Composable fun cBalanceString(): String
+    abstract fun balanceString(): String
+
+    abstract @Composable fun cFiatBalance():String
+    abstract fun fiatBalance():String
 
     // Set which account's balance we are tracking
     abstract fun setAccount(act: Account)
 
-    abstract fun setFiatBalance(account: Account)
-    abstract fun observeBalance(account: Account)
+    // abstract fun setFiatBalance()
+    abstract fun observeBalance()
     abstract fun observeSelectedAccount()
 }
 
 class BalanceViewModelFake: BalanceViewModel()
 {
+    override @Composable fun cBalanceString(): String = "fake balance"
+    override fun balanceString(): String = "fake balance"
+    override @Composable fun cFiatBalance():String = "fake fiat bal"
+    override fun fiatBalance():String = "fake fiat bal"
+
     override fun setAccount(act: Account) {}
-    override fun setFiatBalance(account: Account) {}
-    override fun observeBalance(account: Account) {}
+    override fun observeBalance() {}
     override fun observeSelectedAccount() {}
 }
 
@@ -72,14 +76,31 @@ class BalanceViewModelFake: BalanceViewModel()
 class BalanceViewModelImpl(val account : MutableStateFlow<Account?>): BalanceViewModel()
 {
     constructor(act: Account?) : this(MutableStateFlow(act))
-
     var balanceJob: Job? = null
     var accountJob: Job? = null
 
+    override @Composable fun cBalanceString(): String
+    {
+        val act = account.collectAsState().value
+        if (act == null) return i18n(S.loading)
+        val bal = act.balanceState.collectAsState()
+        val bg = bal.value ?: return i18n(S.loading)
+        return act.cryptoFormat.format(bg)
+    }
+
+
+    override fun balanceString(): String
+    {
+        val act = account.value
+        if (act == null) return i18n(S.loading)
+        val bal = act.balanceState
+        val bg = bal.value ?: return i18n(S.loading)
+        return act.cryptoFormat.format(bg)
+    }
+
     init {
         account.value?.let { act ->
-            observeBalance(act)
-            setFiatBalance(act)
+            observeBalance()
         }
     }
 
@@ -87,42 +108,40 @@ class BalanceViewModelImpl(val account : MutableStateFlow<Account?>): BalanceVie
     {
         onCleared()
         account.value = act
-        observeBalance(act)
-        setFiatBalance(act)
+        observeBalance()
     }
 
-    override fun setFiatBalance(account: Account)
+    override @Composable fun cFiatBalance():String
     {
-        laterJob {  // Do this outside of coroutines because getting the wallet balance may block with DB access
-            account.let {
-                val qty: BigDecimal = try
-                {
-                    it.fromFinestUnit(it.wallet.balance)
-                }
-                catch (e: NumberFormatException)
-                {
-                    displayError(i18n(S.invalidQuantity))
-                    return@let
-                }
-                catch (e: ArithmeticException)
-                {
-                    displayError(i18n(S.invalidQuantityTooManyDecimalDigits))
-                    return@let
-                }
-                catch (e: Exception) // This used to be a catch (e: java.text.ParseException)
-                {
-                    displayError(i18n(S.invalidQuantity))
-                    return@let
-                }
+        val act = account.collectAsState().value
+        if (act == null) return ""
 
-                val fpc = it.fiatPerCoin
-                val fiatDisplay = qty * fpc
-                if (fpc < 0) // Usd value is not fetched
-                    fiatBalance.value = ""
-                else
-                    fiatBalance.value = FiatFormat.format(fiatDisplay)
-            }
-        }
+        val bal = act.balanceState.collectAsState()
+        val qty = bal.value ?: return i18n(S.loading)
+
+        val fpc = act.fiatPerCoinObservable.collectAsState().value
+        val fiatDisplay = qty * fpc
+        val ret = if (fpc <= 0) // Usd value is not fetched
+            ""
+        else
+            FiatFormat.format(fiatDisplay)
+        return ret
+    }
+    override fun fiatBalance():String
+    {
+        val act = account.value
+        if (act == null) return ""
+
+        val bal = act.balanceState
+        val qty = bal.value ?: return i18n(S.loading)
+
+        val fpc = act.fiatPerCoinObservable.value
+        val fiatDisplay = qty * fpc
+        val ret = if (fpc <= 0) // Usd value is not fetched
+            ""
+        else
+            FiatFormat.format(fiatDisplay)
+        return ret
     }
 
     override fun observeSelectedAccount()
@@ -131,30 +150,19 @@ class BalanceViewModelImpl(val account : MutableStateFlow<Account?>): BalanceVie
         accountJob = viewModelScope.launch(dispatcher) {
             wallyApp!!.focusedAccount.onEach {
                 it?.let { account ->
-                    setFiatBalance(account)
-                    observeBalance(account)
+                    setAccount(it)
                 }
             }.launchIn(this)
         }
     }
 
-    override fun observeBalance(act: Account)
+    override fun observeBalance()
     {
         balanceJob?.cancel()
-        account.value = act
-        balance.value = act.format(act.balanceState.value)
         balanceJob = viewModelScope.launch(dispatcher) {
-            act.balanceState.onEach {
-                try
-                {
-                    balance.value = act.format(it)
-                }
-                catch (e: Exception)
-                {
-                    balance.value = ""
-                }
-                setFiatBalance(act)
-            }.launchIn(this)
+            account.value?.balanceState?.onEach {
+                // setFiatBalance()
+            }?.launchIn(this)
         }
     }
 
@@ -179,16 +187,8 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
     {
         val act = account.collectAsState().value
         val currencyCode = act?.uiData()?.currencyCode ?: ""
-        val fiatBalance = balance.fiatBalance.collectAsState().value
-        val bal = balance.balance.collectAsState().value
-
         // If no account is available, do not show the pill
         if (act == null) return
-
-        // Runs the callback every time account?.fiatPerCoin changes
-        LaunchedEffect(act.fiatPerCoin) {
-            balance.setFiatBalance(act)
-        }
 
         Row(
           modifier = Modifier.wrapContentHeight()
@@ -203,7 +203,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                  text = bal,
+                  text = balance.cBalanceString(),
                   style = ts,
                   textAlign = TextAlign.Center,
                   modifier = mod.testTag("AccountPillBalance"),
@@ -215,6 +215,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
         Row(
           modifier = Modifier.wrapContentHeight()
         ) {
+            val fiatBalance = balance.cFiatBalance()
             if (fiatBalance.isNotEmpty())
             {
                 Text(
@@ -246,7 +247,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                 Spacer(Modifier.width(12.dp))
             }
             Text(
-              text = act.name ?: "",
+              text = act.name,
               style = MaterialTheme.typography.labelLarge.copy(
                 color = Color.White,
                 fontWeight = FontWeight.Bold

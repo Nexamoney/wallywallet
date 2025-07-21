@@ -15,6 +15,9 @@ import org.nexa.libnexakotlin.FiatFormat
 import org.nexa.threads.millisleep
 import kotlin.test.Test
 import info.bitcoinunlimited.www.wally.ui.theme.WallyTheme
+import org.nexa.libnexakotlin.NexaMathMode
+import org.nexa.libnexakotlin.fromString
+import org.nexa.threads.platformName
 
 @OptIn(ExperimentalTestApi::class)
 class AccountPillTest:WallyUiTestBase()
@@ -24,7 +27,7 @@ class AccountPillTest:WallyUiTestBase()
     {
         val cs = ChainSelector.NEXA
         wallyApp!!.openAllAccounts()
-        val account = wallyApp!!.newAccount("accountPillHeaderTest", 0U, "", cs)!!
+        val account = wallyApp!!.newAccount("actPill", 0U, "", cs)!!
 
         runComposeUiTest {
             try
@@ -52,14 +55,13 @@ class AccountPillTest:WallyUiTestBase()
                 settle()
 
                 //Check if initial values are displayed
-
                 onNodeWithText(accountName).assertIsDisplayed()
                 onNodeWithText(currencyCode).assertIsDisplayed()
 
                 //The initial value for both viewModel.balance and viewModel.fiatBalance is the same ("Loading...").
                 //Therefore we can't use onNodeWithText because it crashes when it finds more than one node with the same text.
 
-                val balance = ap.balance.balance.value
+                val balance = ap.balance.balanceString()
                 onAllNodesWithText(balance).apply {
                     fetchSemanticsNodes().let { nodes ->
                         require(nodes.isNotEmpty()) { "No nodes found with text: $balance" }
@@ -74,18 +76,32 @@ class AccountPillTest:WallyUiTestBase()
                     }
                 }
 
+                // Prevent underlying wallet updates from affecting this account's data (so we can jam in fake data)
+                account.removeChangeHandlers()
 
-                //Update balance view model to trigger an UI update and verify the result
-                val balance2 = "100.1"
+                // Update balance view model to trigger an UI update and verify the result
+                val balance2 = "100.10"
                 account.fiatPerCoin = BigDecimal.fromInt(5)
-                ap.balance.balance.value = balance2
+                val tmp = BigDecimal.fromString(balance2, NexaMathMode)
+                // make sure our formatter is using 2 decimal places
+                val s = account.cryptoFormat.format(tmp)
+                // TODO remove "100.1" check when decimal 0 extension fixed on native platforms
+                check(s == balance2 || s == "100.1")
+                account.balance = BigDecimal.fromString(balance2, NexaMathMode)
                 settle()
-                onNodeWithText(balance2).assertIsDisplayed()
+                onNodeWithTag("AccountPillBalance").assertIsDisplayed()
+                // println("PLATFORM: " + platformName())
+                // TODO remove "100.1" when decimal 0 extension fixed on native platforms
+                if (platformName().contains("JVM") || platformName().contains("Android"))
+                    onNodeWithTag("AccountPillBalance").assertTextEquals(balance2)
+                else
+                    onNodeWithTag("AccountPillBalance").assertTextEquals("100.1")
+
                 settle()
                 millisleep(1000UL)
                 println("Fiat per coin: ${account.fiatPerCoin} balance: ${account.balance}")
                 // We cannot trick the fiat balance because it is auto-updated based on the real account balance.
-                val fiatBalance2 = FiatFormat.format(account.fiatPerCoin * account.balance)
+                val fiatBalance2 = FiatFormat.format(account.fiatPerCoin * account.balance!!)
                 onNodeWithTag("AccountPillFiatBalance").assertTextEquals(fiatBalance2).assertIsDisplayed()
                 onNodeWithTag("AccountPillFiatCurrencyCode").assertIsDisplayed()
                 settle()

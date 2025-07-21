@@ -66,7 +66,7 @@ fun<Boolean> waitFor1(timeout: Int = 10000, lazyErrorMsg: (()->String)? = null, 
 fun<T> waitForCatching(timeout: Int = 100000, lazyErrorMsg: (()->String)? = null, checkIt: ()->T?):T
 {
     var count = timeout
-    var ret:T? = try { checkIt() } catch(e:Throwable) { null }
+    var ret:T? = try { checkIt() } catch(_:Throwable) { null }
     while(ret == null || ret as? Boolean == false)
     {
         millisleep(100U)
@@ -109,21 +109,20 @@ class HomeScreenTest: WallyUiTestBase()
         setSelectedAccount(account)
         assignAccountsGuiSlots()
 
-        lateinit var balanceViewModel: BalanceViewModel
+        val assetViewModel = AssetViewModel()
+        val balanceViewModel = BalanceViewModelImpl(account)
+        val accountUiDataViewModel = AccountUiDataViewModel()
+        val apvm = AccountPill(wallyApp!!.focusedAccount)
+
         setContent {
             CompositionLocalProvider(
               LocalViewModelStoreOwner provides viewModelStoreOwner
             ) {
-                val assetViewModel = AssetViewModel()
-                balanceViewModel = BalanceViewModelImpl(account)
-                val accountUiDataViewModel = AccountUiDataViewModel()
-                val apvm = AccountPill(wallyApp!!.focusedAccount)
                 HomeScreen(false, apvm, assetViewModel, accountUiDataViewModel)
             }
         }
         settle()
-        balanceViewModel.observeBalance(account)
-        balanceViewModel.setFiatBalance(account)
+        balanceViewModel.setAccount(account)
         settle()
 
         // Verify that the account name is displayed in the account carousel
@@ -135,11 +134,11 @@ class HomeScreenTest: WallyUiTestBase()
         onNodeWithTag("AccountPillCurrencyCode").assertTextEquals(expectedCurrencyCode)
 
         // Verify the balance in the account pill
-        val expectedBalance = account.format(account.balanceState.value)
+        val expectedBalance = account.format(account.balanceState.value!!)
         onNodeWithTag("AccountPillBalance").assertTextEquals(expectedBalance)
 
         // Verify the fiat currency code and balance (if applicable)
-        val expectedFiatBalance = balanceViewModel.fiatBalance.value
+        val expectedFiatBalance = balanceViewModel.fiatBalance()
         if (expectedFiatBalance.isNotEmpty())
         {
             onNodeWithTag("AccountPillFiatBalance").assertTextEquals(expectedFiatBalance)
@@ -204,10 +203,10 @@ class HomeScreenTest: WallyUiTestBase()
 
             // Verify that both accounts are visible in the carousel
             onNode(hasTestTag("CarouselAccountName") and hasText("nexaTest1"), useUnmergedTree = true).assertTextEquals("nexaTest1")
-            val expectedBalance1 = account1.format(account1.balanceState.value)
+            val expectedBalance1 = account1.format(account1.balanceState.value!!)
             onNode(hasTestTag("AccountCarouselBalance_nexaTest1"), useUnmergedTree = true).assertTextEquals(expectedBalance1)
             onNode(hasTestTag("CarouselAccountName") and hasText("nexaTest2"), useUnmergedTree = true).assertTextEquals("nexaTest2")
-            val expectedBalance2 = account2.format(account1.balanceState.value)
+            val expectedBalance2 = account2.format(account1.balanceState.value!!)
             onNode(hasTestTag("AccountCarouselBalance_nexaTest2"), useUnmergedTree = true).assertTextEquals(expectedBalance2)
 
             // Click on the second account in the carousel
@@ -238,7 +237,6 @@ class HomeScreenTest: WallyUiTestBase()
 
             // Initialize ViewModels
             val assetViewModel = AssetViewModel()
-            lateinit var balanceViewModel: BalanceViewModel
             val accountUiDataViewModel = AccountUiDataViewModel()
 
             /*
@@ -264,11 +262,6 @@ class HomeScreenTest: WallyUiTestBase()
                 // Select the account
                 setSelectedAccount(account)
                 assignAccountsGuiSlots()
-                balanceViewModel = BalanceViewModelImpl(account)
-
-                balanceViewModel.observeBalance(account)
-                balanceViewModel.setFiatBalance(account)
-
                 // Navigate to the Home Screen
                 nav.switch(ScreenId.Home)
                 settle()
@@ -280,7 +273,7 @@ class HomeScreenTest: WallyUiTestBase()
                 onNodeWithTag("ReceiveButton").performClick()
                 settle()
                 val expectedAddress = account.wallet.getCurrentDestination().address.toString()
-                println("Expected Address ${expectedAddress}")
+                println("Expected Address $expectedAddress")
                 // Verify that the Receive Screen is displayed
                 // Receive addresses need to be installed into connected nodes' bloom filters before they are
                 // shown, so showing this QR code can actually take a lot of time
@@ -293,7 +286,7 @@ class HomeScreenTest: WallyUiTestBase()
                         //onNodeWithText(expectedAddress).assertIsDisplayed()
                         result = true
                     }
-                    catch(e:AssertionError) { }
+                    catch(_:AssertionError) { }
                     result
                 }
                 onNodeWithTag("qrcode").assertIsDisplayed()

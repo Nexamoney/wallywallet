@@ -68,8 +68,7 @@ class AccountLockTest:WallyUiTestBase()
             setSelectedAccount(account)
             assignAccountsGuiSlots()
 
-            balanceViewModel.observeBalance(account)
-            balanceViewModel.setFiatBalance(account)
+            balanceViewModel.setAccount(account)
 
             // Navigate to the Home Screen
             nav.switch(ScreenId.Home)

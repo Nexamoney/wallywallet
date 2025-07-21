@@ -51,7 +51,6 @@ class RecoverTests:WallyUiTestBase()
 
             // Initialize ViewModels
             val assetViewModel = AssetViewModel()
-            val balanceViewModel: BalanceViewModel = BalanceViewModelImpl(account)
             val accountUiDataViewModel = AccountUiDataViewModel()
             /*
                 Set content to NavigationRoot (the root composable that handles navigation)
@@ -69,9 +68,6 @@ class RecoverTests:WallyUiTestBase()
             // Select the account
             setSelectedAccount(account)
             assignAccountsGuiSlots()
-
-            balanceViewModel.observeBalance(account)
-            balanceViewModel.setFiatBalance(account)
 
             // Navigate to the Home Screen
             nav.switch(ScreenId.Home)
