@@ -111,11 +111,12 @@ import androidx.compose.ui.layout.SubcomposeLayout
 @Composable fun WallySwitchRow(isChecked: Boolean, textRes: Int, onCheckedChange: (Boolean) -> Unit)
 {
     Row(
+      Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically
     ) {
-        WallySwitch(isChecked, true, onCheckedChange = onCheckedChange)
         Text(i18n(textRes))
+        WallySwitch(isChecked, true, onCheckedChange = onCheckedChange)
     }
 }
 

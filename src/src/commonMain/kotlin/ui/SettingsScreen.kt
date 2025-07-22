@@ -8,6 +8,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.ui.theme.WallyHalfDivider
+import info.bitcoinunlimited.www.wally.ui.theme.wallyPurple
 import info.bitcoinunlimited.www.wally.ui.views.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,6 +47,12 @@ data class GeneralSettingsSwitch(
   val prefKey: String,
   val textRes: Int
 )
+
+fun onCopyToClipBoardText(a: String) {
+    setTextClipboard(a)
+    // TODO: if (android.os.Build.VERSION.SDK_INT <= 32)  // system toasts above this version
+    displayNotice(S.copiedToClipboard)
+}
 
 
 @Composable
@@ -97,10 +105,13 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
     val moreMenuItemsState = moreMenuItems.collectAsState().value
 
     Row(
+      Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically
     ) {
-
+        Text(
+          text = i18n(textRes)
+        )
         Switch(
           checked = globalPref.collectAsState().value,
           onCheckedChange = {
@@ -133,10 +144,7 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
             uncheckedBorderColor = Color.Transparent,
           )
         )
-        Text(
-          text = i18n(textRes),
-          modifier = Modifier.padding(4.dp, 0.dp, 0.dp, 0.dp)
-        )
+
     }
 }
 
@@ -145,7 +153,7 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
     val preferenceDB: SharedPreferences = wallyApp!!.preferenceDB
     val isChecked = remember { mutableStateOf(preferenceDB.getBoolean(generalSettingsSwitch.prefKey, true)) }
 
-    WallySwitch(isChecked, generalSettingsSwitch.textRes) {
+    WallySwitchRow(isChecked.value, generalSettingsSwitch.textRes) {
         isChecked.value = it
         preferenceDB.edit().putBoolean(generalSettingsSwitch.prefKey, it).commit()
     }
@@ -156,6 +164,7 @@ fun SettingsScreen(preferenceDB: SharedPreferences = wallyApp!!.preferenceDB)
 {
     var devModeView by mutableStateOf(devMode)
     var darkModeView by mutableStateOf(darkMode)
+    val versionNumber = i18n(S.version) % mapOf("ver" to Version.VERSION_NUMBER + "-" + Version.GIT_COMMIT_HASH, "date" to Version.BUILD_DATE)
     val generalSettingsSwitches = mutableListOf(
       GeneralSettingsSwitch(ACCESS_PRICE_DATA_PREF, S.AccessPriceData),
     )
@@ -199,26 +208,35 @@ fun SettingsScreen(preferenceDB: SharedPreferences = wallyApp!!.preferenceDB)
       verticalArrangement = Arrangement.SpaceEvenly
     ) {
         Column(
-          modifier = Modifier.fillMaxWidth(),
+          modifier = Modifier.fillMaxWidth().padding(15.dp, 2.dp),
           horizontalAlignment = Alignment.Start
         ) {
-
-            CenteredSectionText(i18n(S.GeneralSettings))
-
-            Text(i18n(S.version) % mapOf("ver" to Version.VERSION_NUMBER + "-" + Version.GIT_COMMIT_HASH, "date" to Version.BUILD_DATE), modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally), textAlign = TextAlign.Center)
+            CenteredSectionText("Currency Settings")
+            WallyDivider()
         }
 
         Column(
-          modifier = Modifier.padding(start = 32.dp)
+          modifier = Modifier.fillMaxWidth().padding(15.dp, 2.dp)
         ) {
             LocalCurrency(preferenceDB)
             ConfirmAbove(preferenceDB)
+            Spacer(Modifier.height(16.dp))
+            CenteredFittedText(
+              versionNumber,
+              startingFontScale = .8,
+              modifier = Modifier.fillMaxWidth(),
+              fontWeight = FontWeight.Normal
+            )
+
+            Spacer(Modifier.height(16.dp))
+            CenteredSectionText(i18n(S.GeneralSettings))
+
+            WallyDivider()
             ShowScreenNavSwitch(SHOW_IDENTITY_PREF, NavChoice(ScreenId.Identity, S.title_activity_identity, Icons.Default.Person), S.enableIdentityMenu, showIdentityPref)
             ShowScreenNavSwitch(SHOW_TRICKLEPAY_PREF, NavChoice(ScreenId.TricklePay, S.title_activity_trickle_pay, Icons.Default.WaterDrop), S.enableTricklePayMenu, showTricklePayPref)
             // Only let them choose to not show assets if they don't have any assets
-            if (showAssetsPref.value == false || wallyApp?.hasAssets()==false)
+            if (showAssetsPref.value == false || wallyApp?.hasAssets() == false)
                 ShowScreenNavSwitch(SHOW_ASSETS_PREF, NavChoice(ScreenId.Assets, S.title_activity_assets, Icons.Default.Image), S.enableAssetsMenu, showAssetsPref)
-            WallyHalfDivider()
             generalSettingsSwitches.forEach { GeneralSettingsSwitchView(it) }
 
             if (false) // Dark mode is not implemented so don't show the button
@@ -242,63 +260,58 @@ fun SettingsScreen(preferenceDB: SharedPreferences = wallyApp!!.preferenceDB)
                 experimentalUI.value = it
             }
 
-        }
 
-        Spacer(Modifier.height(16.dp))
-        WallyDivider()
 
-        Box(
-          modifier = Modifier.fillMaxWidth(),
-          contentAlignment = Alignment.Center
-        ) {
-            Text(text  = i18n(S.BlockchainSettings), fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        }
-        Column(
-          modifier = Modifier.padding(start = 4.dp, end = 4.dp).testTag("BlockchainSelectors")
-        ) {
-            val horizontalAlignmentLine = HorizontalAlignmentLine(merger = { old, new -> max(old, new)})
+            Spacer(Modifier.height(16.dp))
+            CenteredSectionText(i18n(S.BlockchainSettings))
+            WallyDivider()
+            Column(
+              modifier = Modifier.padding(start = 4.dp, end = 4.dp).testTag("BlockchainSelectors")
+            ) {
+                val horizontalAlignmentLine = HorizontalAlignmentLine(merger = { old, new -> max(old, new) })
 
-            // Wrap a column around this so we can then drop all the sources in the center of the page
-            Column( modifier = Modifier.wrapContentSize().align(Alignment.CenterHorizontally))
-            {
-                BlockchainSource(ChainSelector.NEXA, preferenceDB, horizontalAlignmentLine)
+                // Wrap a column around this so we can then drop all the sources in the center of the page
+                Column(modifier = Modifier.wrapContentSize().align(Alignment.CenterHorizontally))
+                {
+                    BlockchainSource(ChainSelector.NEXA, preferenceDB, horizontalAlignmentLine)
+                    if (devMode)
+                    {
+                        BlockchainSource(ChainSelector.NEXATESTNET, preferenceDB, horizontalAlignmentLine)
+                        BlockchainSource(ChainSelector.NEXAREGTEST, preferenceDB, horizontalAlignmentLine)
+                    }
+                    // BlockchainSource(ChainSelector.BCH, preferenceDB, horizontalAlignmentLine)
+                }
+
                 if (devMode)
                 {
-                    BlockchainSource(ChainSelector.NEXATESTNET, preferenceDB, horizontalAlignmentLine)
-                    BlockchainSource(ChainSelector.NEXAREGTEST, preferenceDB, horizontalAlignmentLine)
-                }
-                // BlockchainSource(ChainSelector.BCH, preferenceDB, horizontalAlignmentLine)
-            }
-
-            if(devMode)
-            {
-                Spacer(Modifier.height(32.dp))
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    Column {
-                        Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
-                            Button(onClick = { onLogDebugData() }) {
-                                Text("Log Info")
+                    Spacer(Modifier.height(32.dp))
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        Column {
+                            Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
+                                Button(onClick = { onLogDebugData() }) {
+                                    Text("Log Info")
+                                }
+                                Button(onClick = { onReloadAssets() }) {
+                                    Text("Reload Assets")
+                                }
+                                Button(onClick = { onCloseP2pConnections() }) {
+                                    Text("Close P2P")
+                                }
                             }
-                            Button(onClick = { onReloadAssets() }) {
-                                Text("Reload Assets")
-                            }
-                            Button(onClick = { onCloseP2pConnections() }) {
-                                Text("Close P2P")
-                            }
-                        }
-                        Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
-                            /* This is dangerous enough, devs should uncomment if they want to use
+                            Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
+                                /* This is dangerous enough, devs should uncomment if they want to use
                             Button(onClick = { onWipeAccounts() }) {
                                 Text("Delete Accounts")
                             }*/
-                            Button(onClick = { onWipeHeaders() }) {
-                                Text("Delete Headers")
+                                Button(onClick = { onWipeHeaders() }) {
+                                    Text("Delete Headers")
+                                }
                             }
-                        }
-                        Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
-                            WallyBoringButton({ openUrl(Version.GITLAB_URL) }, modifier = Modifier
-                            ) {
-                                ResImageView("icons/gitlab-logo-300.png", modifier = Modifier.width(100.dp))
+                            Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
+                                WallyBoringButton({ openUrl(Version.GITLAB_URL) }, modifier = Modifier
+                                ) {
+                                    ResImageView("icons/gitlab-logo-300.png", modifier = Modifier.width(100.dp))
+                                }
                             }
                         }
                     }
