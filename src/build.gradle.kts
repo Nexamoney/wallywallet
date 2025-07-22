@@ -644,7 +644,7 @@ if (MAC_TARGETS)
 fun org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet.nexaLangSettings()
 {
     languageSettings {
-        languageVersion = "1.9"
+        languageVersion = "2.2"
     }
 }
 
