@@ -12,11 +12,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Sync
-import androidx.compose.material.icons.filled.WifiOff
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material3.*
@@ -1111,6 +1107,85 @@ fun IconTextButton(
               ),
               text = description,
             )
+        }
+    }
+}
+
+@Composable
+fun GeneralConfirmationCard(title: String = "", content: @Composable () -> Unit, accept: (Boolean) -> Unit)
+{
+    Card(
+      modifier = Modifier.fillMaxWidth().padding(16.dp),
+      colors = CardDefaults.cardColors(
+        containerColor = Color.White,
+      ),
+      shape = RoundedCornerShape(12.dp),
+      elevation = CardDefaults.cardElevation(2.dp)
+    ) {
+        Column(
+          modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth(),
+          verticalArrangement = Arrangement.SpaceBetween,
+          horizontalAlignment = Alignment.CenterHorizontally
+
+        ) {
+            Text(
+              text = title,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+              style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(Modifier.height(16.dp))
+            content()
+        }
+        Row(
+          modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth(),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.SpaceEvenly,
+        ) {
+            Button(
+              onClick = { accept(true) },
+              content = { Text(i18n(S.accept)) }
+            )
+            Button(
+              onClick = { accept(false) },
+              content = { Text(i18n(S.cancel)) }
+            )
+        }
+    }
+}
+
+@Composable
+fun GeneralWarningCard(icon: ImageVector, content: @Composable () -> Unit)
+{
+    Card(
+      modifier = Modifier.fillMaxWidth().padding(16.dp),
+      colors = CardDefaults.cardColors(
+        containerColor = Color.White,
+      ),
+      shape = RoundedCornerShape(12.dp),
+      elevation = CardDefaults.cardElevation(2.dp)
+    ) {
+        Column(
+          modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth(),
+          verticalArrangement = Arrangement.SpaceBetween,
+          horizontalAlignment = Alignment.CenterHorizontally
+
+        ) {
+            Icon(
+              imageVector = icon,
+              contentDescription = "Connection Warning",
+              tint = MaterialTheme.colorScheme.secondary,
+              modifier = Modifier
+                .padding(end = 8.dp)
+                .size(24.dp)
+            )
+            Spacer(Modifier.height(16.dp))
+            content()
         }
     }
 }
