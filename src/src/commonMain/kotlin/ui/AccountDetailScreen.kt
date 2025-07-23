@@ -517,17 +517,33 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
             {
                 AccountAction.PinChange ->
                 {
-                    AccountDetailChangePinView(acc,
-                      {
-                          displayError(it)
-                      },
-                      {
-                          displayNotice(it)
-                      },
-                      {
-                          accountAction.value = null
-                      }
-                    )
+                    Card(
+                      modifier = Modifier
+                        .padding(12.dp)
+                        .fillMaxWidth(),
+                      colors = CardDefaults.cardColors(
+                        containerColor = Color.White,
+                      ),
+                      shape = RoundedCornerShape(12.dp),
+                      elevation = CardDefaults.cardElevation(2.dp)
+                    ) {
+                        Column(
+                          modifier = Modifier.fillMaxWidth()
+                            .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 0.dp)
+                        ) {
+                            AccountDetailChangePinView(acc,
+                              {
+                                  displayError(it)
+                              },
+                              {
+                                  displayNotice(it)
+                              },
+                              {
+                                  accountAction.value = null
+                              }
+                            )
+                        }
+                    }
                 }
 
                 AccountAction.RecoveryPhrase ->
@@ -537,7 +553,16 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                     }
                 }
 
-                AccountAction.Reassess -> AccountDetailAcceptDeclineTextView(i18n(S.reassessConfirmation)) { accepted ->
+                AccountAction.Reassess -> GeneralConfirmationCard(
+                  i18n(S.assessUnconfirmed),
+                  {
+                    Text(
+                      text = i18n(S.reassessConfirmation),
+                      color = MaterialTheme.colorScheme.onSurfaceVariant,
+                      style = MaterialTheme.typography.bodySmall
+                    )
+                  }
+                ) { accepted ->
                     accountAction.value = null
                     if (accepted)
                         tlater("cleanUnconfirmed") {
@@ -558,7 +583,16 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
 
                 AccountAction.RediscoverBlockchain ->
                 {
-                    AccountDetailAcceptDeclineTextView(i18n(S.rediscoverConfirmation)) {
+                    GeneralConfirmationCard(
+                      i18n(S.rediscoverWalletTx),
+                      {
+                        Text(
+                          text = i18n(S.rediscoverConfirmation),
+                          color = MaterialTheme.colorScheme.onSurfaceVariant,
+                          style = MaterialTheme.typography.bodySmall
+                        )
+                      }
+                    ) {
                         if (it)
                         {
                             tlater("rediscoverBlockchain") {
@@ -578,7 +612,16 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                     }
                 }
 
-                AccountAction.Delete -> AccountDetailAcceptDeclineTextView(i18n(S.deleteConfirmation) % mapOf("accountName" to acc.name, "blockchain" to acc.currencyCode)) {
+                AccountAction.Delete -> GeneralConfirmationCard(
+                  i18n(S.deleteWalletAccount),
+                  {
+                    Text(
+                      text = i18n(S.deleteConfirmation) % mapOf("accountName" to acc.name, "blockchain" to acc.currencyCode),
+                      color = MaterialTheme.colorScheme.onSurfaceVariant,
+                      style = MaterialTheme.typography.bodySmall
+                    )
+                  }
+                ) {
                     if (it)
                     {
                         laterJob {
@@ -595,15 +638,25 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                 {
                     val wal = acc.wallet
                     val state = wal.chainstate
-                    if (state != null)
-                    {
-                        val dateString = epochToDate(rediscoverPrehistoryTime.collectAsState().value)
-                        Spacer(Modifier.height(8.dp))
-                        Text(i18n(S.FirstUse) % mapOf("date" to dateString))
-                        Text(i18n(S.Block) % mapOf("block" to rediscoverPrehistoryHeight.collectAsState().value.toString()))
-                        Spacer(Modifier.height(8.dp))
-                    }
-                    AccountDetailAcceptDeclineTextView(i18n(S.rediscoverConfirmation)) {
+
+                    GeneralConfirmationCard(
+                      i18n(S.searchWalletTx),
+                      {
+                        if (state != null)
+                        {
+                            val dateString = epochToDate(rediscoverPrehistoryTime.collectAsState().value)
+                            Spacer(Modifier.height(8.dp))
+                            Text(i18n(S.FirstUse) % mapOf("date" to dateString))
+                            Text(i18n(S.Block) % mapOf("block" to rediscoverPrehistoryHeight.collectAsState().value.toString()))
+                            Spacer(Modifier.height(8.dp))
+                        }
+                        Text(
+                          text = i18n(S.rediscoverConfirmation),
+                          color = MaterialTheme.colorScheme.onSurfaceVariant,
+                          style = MaterialTheme.typography.bodySmall
+                        )
+                      }
+                    ) {
                         if (it)
                         {
                             tlater("rediscover") {
@@ -622,15 +675,24 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                 {
                     val wal = acc.wallet
                     val state = wal.chainstate
-                    if (state != null)
-                    {
-                        val dateString = epochToDate(rediscoverPrehistoryTime.collectAsState().value)
-                        Spacer(Modifier.height(8.dp))
-                        Text(i18n(S.FirstUse) % mapOf("date" to dateString))
-                        Text(i18n(S.Block) % mapOf("block" to rediscoverPrehistoryHeight.collectAsState().value.toString()))
-                        Spacer(Modifier.height(8.dp))
-                    }
-                    AccountDetailAcceptDeclineTextView(i18n(S.searchConfirmation)) {
+                    GeneralConfirmationCard(
+                      i18n(S.searchWalletTx),
+                      {
+                        if (state != null)
+                        {
+                            val dateString = epochToDate(rediscoverPrehistoryTime.collectAsState().value)
+                            Spacer(Modifier.height(8.dp))
+                            Text(i18n(S.FirstUse) % mapOf("date" to dateString))
+                            Text(i18n(S.Block) % mapOf("block" to rediscoverPrehistoryHeight.collectAsState().value.toString()))
+                            Spacer(Modifier.height(8.dp))
+                        }
+                        Text(
+                          text = i18n(S.searchConfirmation),
+                          color = MaterialTheme.colorScheme.onSurfaceVariant,
+                          style = MaterialTheme.typography.bodySmall
+                        )
+                      }
+                    ) {
                         if (it)
                         {
                             tlater("search") {
@@ -645,7 +707,16 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                     }
                 }
 
-                AccountAction.PrimaryAccount -> AccountDetailAcceptDeclineTextView(i18n(S.primaryAccountConfirmation)) {
+                AccountAction.PrimaryAccount -> GeneralConfirmationCard(
+                    i18n(S.setAsPrimaryAccountButton),
+                  {
+                    Text(
+                      text = i18n(S.primaryAccountConfirmation),
+                      color = MaterialTheme.colorScheme.onSurfaceVariant,
+                      style = MaterialTheme.typography.bodySmall
+                    )
+                  }
+                ) {
                     if (it)
                     {
                         wallyApp?.primaryAccount = acc
@@ -744,6 +815,7 @@ fun AccountDetailChangePinView(acc: Account, displayError: (String) -> Unit, dis
         }
         triggerAccountsChanged(acc)
     }
+    Spacer(Modifier.height(16.dp))
 
     Row(
       modifier = Modifier.fillMaxWidth(),
@@ -844,7 +916,14 @@ fun RecoveryPhraseView(account: Account, done: () -> Unit)
       modifier = Modifier.fillMaxWidth(),
       horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(i18n(S.recoveryPhrase), modifier = Modifier.padding(8.dp))
+        GeneralWarningCard(
+          Icons.Default.Warning
+        ) {
+            Text(
+              i18n(S.recoveryPhrase),
+              style = MaterialTheme.typography.bodySmall
+            )
+        }
         var copied by remember { mutableStateOf(false) }
 
         val clickable = Modifier.clickable {
