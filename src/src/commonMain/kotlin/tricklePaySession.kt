@@ -27,7 +27,6 @@ val TDPP_DEFAULT_PROTOCOL = "http"
 const val TDPP_FLAG_NOFUND = 1
 const val TDPP_FLAG_NOPOST = 2
 const val TDPP_FLAG_NOSHUFFLE = 4
-const val TDPP_FLAG_PARTIAL = 8
 const val TDPP_FLAG_FUND_GROUPS = 16
 
 // Must be top level for the serializer to handle it

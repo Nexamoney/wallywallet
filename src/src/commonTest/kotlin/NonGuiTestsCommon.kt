@@ -1,6 +1,5 @@
 @file:OptIn(ExperimentalUnsignedTypes::class)
 
-import info.bitcoinunlimited.www.wally.historicalUbchInFiat
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.*
 import org.nexa.libnexakotlin.*
@@ -70,36 +69,6 @@ class NonGuiTestsCommon
         val sig: String = jsonArray[1].jsonPrimitive.content
         check(sig == "IDeKqpAh/uVJMTX8rEr1kQ/ItKY4fPnvF/iUPuJOtV52MhNongMBNRVPYoYf++HWB+IPOvFZwX225j3tFyyUV10=")
         println(je)
-    }
-
-
-    @Test
-    fun testCoCond()
-    {
-        val coCtxt: CoroutineContext = newFixedThreadPoolContext(2, "testCoCtxt")
-        val coScope = CoroutineScope(coCtxt)
-
-        runBlocking {
-            val c1 = CoCond<Nothing?>(coScope)
-            var v = 1;
-            val cor = GlobalScope.launch { c1.yield(); v = 3 }
-            c1.wake(null)
-            cor.join()
-            assertEquals(v, 3)
-        }
-
-        runBlocking {
-
-            val c1 = CoCond<Int>(coScope)
-            var v = 1
-            val cor = GlobalScope.launch { v = c1.yield()!!; }
-            //val cor2 = GlobalScope.launch { v = c1.yield()!!; }
-            c1.wake(3)
-            //c1.wake(4)
-            cor.join()
-            //cor2.join()
-            check(v == 3 || v == 4)
-        }
     }
 
     @Test
@@ -431,13 +400,13 @@ class NonGuiTestsCommon
         )
 
         LogIt.info("testBip39")
-        val result = GenerateEntropy(128)
+        val result = generateEntropy(128)
         check(result.size == 128 / 8)
 
         for (tv in bip39TestVector)
         {
             val b = tv[0].fromHex()
-            val words = GenerateBip39SecretWords(b)
+            val words = generateBip39SecretWords(b)
             check(words == tv[1])
             val seed = generateBip39Seed(words, "TREZOR", 64)
             LogIt.info(seed.toHex())

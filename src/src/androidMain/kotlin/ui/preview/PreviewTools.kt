@@ -80,7 +80,12 @@ class FakeTxDatabase: TxDatabase
         }
     }
 
-    override fun forEachWithAddress(addr: PayAddress, doit: (TransactionHistory) -> Unit)
+    override fun forEachForwards(doit: (TransactionHistory) -> Boolean, startingDate: Long, count: Long)
+    {
+        TODO("Not yet implemented")
+    }
+
+    override fun forEachWithAddress(addr: PayAddress, doit: (TransactionHistory) -> Boolean)
     {
         for(th in data.values)
         {

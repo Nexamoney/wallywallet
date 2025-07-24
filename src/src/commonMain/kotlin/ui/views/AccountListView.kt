@@ -39,6 +39,9 @@ import org.nexa.threads.Thread
 import org.nexa.threads.iThread
 import org.nexa.threads.millisleep
 import kotlin.math.roundToLong
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
+
 private val LogIt = GetLog("BU.wally.AccountListView")
 
 data class AccountUIData(
@@ -59,6 +62,7 @@ data class AccountUIData(
   var recentHistory: List<TransactionHistory> = listOf())
 
 /** Look into this account and produce the strings and modifications needed to display it */
+@OptIn(ExperimentalTime::class)
 fun Account.uiData(): AccountUIData
 {
     val ret = AccountUIData(this)
@@ -145,7 +149,7 @@ fun Account.uiData(): AccountUIData
         ret.approximately = if ((chainstate == null) || (chainstate.syncedDate <= 1231416000)) i18n(S.unsynced)  // for fun: bitcoin genesis block
         else
         {
-            val instant = kotlinx.datetime.Instant.fromEpochSeconds(chainstate.syncedDate)
+            val instant = Instant.fromEpochSeconds(chainstate.syncedDate)
             val localTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
 
             val td = localTime.format(DATE_TIME_FORMAT)
@@ -648,7 +652,7 @@ fun startAccountFastForward(account: Account, displayFastForwardInfo: (String?) 
                 txh.putAll(ch.txh)
             }
             wallet.generateAddressesUntil(it.lastAddressIndex)
-            wallet.fastforward(lastHeight, lastDate, lastHash, txh.values.toList())
+            wallet.fastForward(lastHeight, lastDate, lastHash, txh.values.toList())
             wallet.save(true)
         }
         triggerAssetCheck()
