@@ -26,8 +26,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.*
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 private val LogIt = GetLog("BU.wally.TxHistory")
+@OptIn(ExperimentalTime::class)
 fun TransactionHistory.toCSV(): String
 {
     val rcvWalletAddr = StringBuilder()
@@ -66,7 +69,7 @@ fun TransactionHistory.toCSV(): String
         }
     }
 
-    val instant = kotlinx.datetime.Instant.fromEpochMilliseconds(date)
+    val instant = Instant.fromEpochMilliseconds(date)
     val localTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
     val fdate = localTime.format(DATE_TIME_FORMAT)
     val ret = StringBuilder()

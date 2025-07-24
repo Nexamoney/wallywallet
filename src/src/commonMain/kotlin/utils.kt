@@ -46,6 +46,8 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
 import okio.BufferedSource
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 private val LogIt = GetLog("BU.wally.utils")
 
@@ -602,13 +604,14 @@ fun formatLocalDateTime(ldt: LocalDateTime,splitter:String=" "): String
     return "$year-$month-$day$splitter$hour:$minute:$second"
 }
 
+@OptIn(ExperimentalTime::class)
 fun formatLocalEpochMilliseconds(epochMs:Long, splitter:String=" "): String
 {
-    val instant = kotlinx.datetime.Instant.fromEpochMilliseconds(epochMs)
+    val instant = Instant.fromEpochMilliseconds(epochMs)
     val ldt = instant.toLocalDateTime(TimeZone.currentSystemDefault())
     val year = ldt.year.toString()
-    val month = ldt.monthNumber.toString().padStart(2, '0')
-    val day = ldt.dayOfMonth.toString().padStart(2, '0')
+    val month = ldt.month.toString().padStart(2, '0')
+    val day = ldt.day.toString().padStart(2, '0')
     val hour = ldt.hour.toString().padStart(2, '0')
     val minute = ldt.minute.toString().padStart(2, '0')
     val second = ldt.second.toString().padStart(2, '0')

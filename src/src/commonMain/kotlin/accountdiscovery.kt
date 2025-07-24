@@ -23,9 +23,9 @@ fun isValidOrEmptyRecoveryPhrase(words: List<String>): Boolean
     {
         return false
     }
-    val incorrectWords = Bip39InvalidWords(words)
+    val incorrectWords = bip39InvalidWords(words)
     if (!incorrectWords.isEmpty()) return false
-    return ValidBip39Checksum(words.toTypedArray())
+    return validBip39Checksum(words.toTypedArray())
 }
 
 

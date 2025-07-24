@@ -1022,7 +1022,7 @@ open class CommonApp(val runningTests: Boolean)
         // Write the list of existing accounts, so we know what to load
         saveActiveAccountList()
         ac.start()
-        ac.wallet.fastforward(histEnd.height, histEnd.time, histEnd.hash, txhist)
+        ac.wallet.fastForward(histEnd.height, histEnd.time, histEnd.hash, txhist)
         ac.constructAssetMap()
         ac.onChange()
         ac.saveAccountPin(epin)

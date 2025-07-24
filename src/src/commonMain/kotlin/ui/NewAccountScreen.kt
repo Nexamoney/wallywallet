@@ -218,7 +218,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
     {
         var inputValid = false
         val words = processSecretWords(newAcState.recoveryPhrase)
-        val incorrectWords = Bip39InvalidWords(words)
+        val incorrectWords = bip39InvalidWords(words)
 
         // Clear any old error
         newAccountState.value = newAccountState.value.copy(

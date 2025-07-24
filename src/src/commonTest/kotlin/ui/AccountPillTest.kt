@@ -86,16 +86,16 @@ class AccountPillTest:WallyUiTestBase()
                 // make sure our formatter is using 2 decimal places
                 val s = account.cryptoFormat.format(tmp)
                 // TODO remove "100.1" check when decimal 0 extension fixed on native platforms
-                check(s == balance2 || s == "100.1")
+                check(s == balance2)
                 account.balance = BigDecimal.fromString(balance2, NexaMathMode)
                 settle()
                 onNodeWithTag("AccountPillBalance").assertIsDisplayed()
-                // println("PLATFORM: " + platformName())
+
                 // TODO remove "100.1" when decimal 0 extension fixed on native platforms
-                if (platformName().contains("JVM") || platformName().contains("Android"))
-                    onNodeWithTag("AccountPillBalance").assertTextEquals(balance2)
-                else
-                    onNodeWithTag("AccountPillBalance").assertTextEquals("100.1")
+                //if (platformName().contains("JVM") || platformName().contains("Android"))
+                onNodeWithTag("AccountPillBalance").assertTextEquals(balance2)
+                //else
+                //    onNodeWithTag("AccountPillBalance").assertTextEquals("100.1")
 
                 settle()
                 millisleep(1000UL)
