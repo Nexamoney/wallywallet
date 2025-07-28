@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -37,6 +38,7 @@ import org.nexa.libnexakotlin.laterJob
 import org.nexa.libnexakotlin.rem
 import org.nexa.libnexakotlin.runningTheTests
 import org.nexa.threads.millisleep
+import java.io.File
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.toJavaDuration
 
@@ -472,11 +474,27 @@ class ComposeActivity: CommonActivity()
 
     fun share(text:String)
     {
-        val receiveAddrSendIntent: Intent = Intent(Intent.ACTION_SEND).apply {
-            putExtra(Intent.EXTRA_TEXT, text)
-            type = "text/plain"
+        LogIt.info("Sharing a string of ${text.length} ")
+        val sendIntent = if (text.length > 4*1024)
+        {
+            val file = File(cacheDir, "shared.txt")
+            file.writeText(text)
+            val uri = FileProvider.getUriForFile(this, "${packageName}.provider", file)
+            Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_STREAM, uri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
         }
-        val shareIntent = Intent.createChooser(receiveAddrSendIntent, null)
+        else
+        {
+            Intent(Intent.ACTION_SEND).apply {
+                putExtra(Intent.EXTRA_TEXT, text)
+                type = "text/plain"
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+        }
+        val shareIntent = Intent.createChooser(sendIntent, null)
         startActivity(shareIntent)
     }
 }

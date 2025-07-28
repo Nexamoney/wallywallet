@@ -55,10 +55,10 @@ data class WallyWalletOrgApiDailyPrice(val price: Array<@Serializable(with = Big
 
 val nexaPricePollSync = org.nexa.threads.Mutex()
 @OptIn(ExperimentalTime::class)
-val lastNexaPricePoll = mutableMapOf<String, Pair<TimeMark, BigDecimal>>()
+val lastNexaPricePoll = mutableMapOf<String, Pair<Long, BigDecimal>>()
 
 @OptIn(ExperimentalTime::class)
-val lastNexaHistoryPoll = mutableMapOf<String, Pair<TimeMark, Array<BigDecimal>>>()
+val lastNexaHistoryPoll = mutableMapOf<String, Pair<Long, Array<BigDecimal>>>()
 
 @OptIn(ExperimentalTime::class)
 fun NexDaily(fiat: String): Array<BigDecimal>?
@@ -69,7 +69,7 @@ fun NexDaily(fiat: String): Array<BigDecimal>?
     val prior = lastNexaHistoryPoll[fiat]
 
     // Time to refresh this data
-    if ((prior == null) || (prior.first.elapsedNow().inWholeMilliseconds < DAILY_POLL_INTERVAL)) launch {
+    if ((prior == null) || (millinow() - prior.first < DAILY_POLL_INTERVAL)) launch {
         val client = HttpClient()
         val data = try
         {
@@ -83,15 +83,66 @@ fun NexDaily(fiat: String): Array<BigDecimal>?
         LogIt.info(sourceLoc() + " " + data)
         val parser: Json = Json { isLenient = true; ignoreUnknownKeys = true }  // nonstrict mode ignores extra fields
         val obj = parser.decodeFromString(WallyWalletOrgApiDailyPrice.serializer(), data)
-        lastNexaHistoryPoll[fiat] = Pair(Monotonic.markNow(), obj.price)
+        lastNexaHistoryPoll[fiat] = Pair(millinow(), obj.price)
     }
 
     if (prior == null) return null
     else return prior.second
 }
 
+// Load the price and update all accounts (or other objects) that need it
+@OptIn(ExperimentalTime::class)
+fun UpdateNexaXchgRates(fiat: String)
+{
+    if (fiat != "USD") return
+    val prior = nexaPricePollSync.lock { lastNexaPricePoll[fiat] }
+    if ((prior == null) || (millinow() - prior.first > POLL_INTERVAL))
+    {
+        later {
+            val data = try
+            {
+                val route = "http://$WALLY_WALLET_ORG_HOST/_api/v0/now/nex/usdt"
+                LogIt.info(sourceLoc() + ": Loading exchange rate for: $fiatCurrencyCode from: $route")
+                Url(route).readText(10000, 20000, 10000)
+            }
+            catch (e: Exception)
+            {
+                LogIt.info("Error retrieving price: " + e.message)
+                return@later
+            }
+            if (data.startsWith("<!DOCTYPE HTML"))
+            {
+                LogIt.info("Error retrieving price, page is html not json (likely site offline)")
+                return@later
+            }
+
+            try
+            {
+                val parser = Json { isLenient = true; ignoreUnknownKeys = true }
+                val obj = parser.decodeFromString(WallyWalletOrgApiCurPrice.serializer(), data)
+                val v = (obj.Bid + obj.Ask) / CurrencyDecimal(2)
+                nexaPricePollSync.lock {
+                    lastNexaPricePoll[fiat] = Pair(millinow(), v)
+                }
+                // Update all interested accounts with this exchange rate
+                wallyApp?.accounts?.values?.forEach { act ->
+                    if (act.chain.chainSelector == ChainSelector.NEXA)
+                    {
+                        act.fiatPerCoin = CurrencyDecimal(v)
+                    }
+                }
+            }
+            catch (e: Exception)
+            {
+                LogIt.info("Error retrieving price: " + e.message)
+                return@later
+            }
+        }
+    }
+}
 
 
+/*  This variant will load the price multiple times if multiple entities need it
 @OptIn(ExperimentalTime::class)
 fun NexInFiat(fiat: String, setter: (BigDecimal) -> Unit)
 {
@@ -111,7 +162,9 @@ fun NexInFiat(fiat: String, setter: (BigDecimal) -> Unit)
     later {
         val data = try
         {
-            Url("http://$WALLY_WALLET_ORG_HOST/_api/v0/now/nex/usdt").readText(20000, 10000)
+            val route = "http://$WALLY_WALLET_ORG_HOST/_api/v0/now/nex/usdt"
+            LogIt.info(sourceLoc() + ": Loading exchange rate for: $fiatCurrencyCode from: $route")
+            Url(route).readText(10000, 20000, 10000)
         }
         catch (e: Exception)
         {
@@ -127,10 +180,8 @@ fun NexInFiat(fiat: String, setter: (BigDecimal) -> Unit)
 
         try
         {
-           val parser: Json = Json { isLenient = true; ignoreUnknownKeys = true }  // nonstrict mode ignores extra fields
+            val parser = Json { isLenient = true; ignoreUnknownKeys = true }
             val obj = parser.decodeFromString(WallyWalletOrgApiCurPrice.serializer(), data)
-                //LogIt.info(sourceLoc() + " " + obj.toString())
-                // Average the bid and ask prices
             val v = (obj.Bid + obj.Ask) / CurrencyDecimal(2)
             nexaPricePollSync.lock {
                 lastNexaPricePoll[fiat] = Pair(Monotonic.markNow(), v)
@@ -142,6 +193,6 @@ fun NexInFiat(fiat: String, setter: (BigDecimal) -> Unit)
             LogIt.info("Error retrieving price: " + e.message)
             return@later
         }
-
     }
 }
+*/

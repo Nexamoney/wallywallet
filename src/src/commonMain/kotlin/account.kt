@@ -773,9 +773,9 @@ class Account(
     }
 
     // Load the exchange rate
+    /*
     fun getXchgRates(fiatCurrencyCode: String)
     {
-        LogIt.info(sourceLoc() + "getXchgRates: $fiatCurrencyCode")
         if (chain.chainSelector == ChainSelector.NEXA)
         {
             if (fiatCurrencyCode == "USD")
@@ -796,6 +796,7 @@ class Account(
         fiatPerCoin = -1.toBigDecimal()  // Indicates that the exchange rate is unavailable
         return
     }
+     */
 
     /** Completely delete this wallet, rendering any money you may have in it inaccessible unless the wallet is restored from backup words
      */
@@ -813,7 +814,7 @@ class Account(
 
     init
     {
-        ThreadJob("accountUpdate") {
+        laterJob("accountUpdate") {
             try
             {
                 // Update our cache of the balances

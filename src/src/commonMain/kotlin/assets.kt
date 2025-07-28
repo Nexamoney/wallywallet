@@ -71,7 +71,7 @@ private val LogIt = GetLog("BU.wally.assets")
 // If true, do not cache asset info locally -- load it every time
 var DBG_NO_ASSET_CACHE = false
 
-val ASSET_ACCESS_TIMEOUT_MS = 30*60*1000L  // Check assets every half hour even if nothing happened
+val ASSET_ACCESS_TIMEOUT_MS = 60*1000L  // Check assets every minute even if nothing happened
 
 open class IncorrectTokenDescriptionDoc(details: String) : LibNexaException(details, "Incorrect token description document", ErrorSeverity.Expected)
 
@@ -170,8 +170,6 @@ fun AssetLoaderThread(): iThread
                 val accounts = wallyApp!!.accountLock.lock {
                     wallyApp!!.accounts.values.toList()
                 }
-                for (a in accounts)
-                    a.getXchgRates(localCurrency)
 
                 // Refresh all assets
                 for (a in accounts)
@@ -858,8 +856,9 @@ class AssetManager(): AssetManagerStorage
         {
             try
             {
-                LogIt.info(sourceLoc() + "${groupId} trying NFT URL: " + url)
+                LogIt.info(sourceLoc() + ": ${groupId} trying NFT URL: " + url)
                 zipBytes = Url(url).readBytes(context = tokenCoCtxt)
+                LogIt.info(sourceLoc() + ": ${groupId} received ${zipBytes.size} for NFT URL: " + url)
             }
             catch(e:Exception)
             {
@@ -873,9 +872,9 @@ class AssetManager(): AssetManagerStorage
             try
             {
                 url = "${NIFTY_ART_WEB[groupId.blockchain]}/_public/${groupId.toStringNoPrefix()}"
-                LogIt.info(sourceLoc() + "${groupId} trying NFT URL: " + url)
+                LogIt.info(sourceLoc() + "${groupId} trying Niftyart NFT URL: " + url)
                 zipBytes = Url(url).readBytes(context = tokenCoCtxt)
-                LogIt.info(sourceLoc() + "${groupId} received NFT URL: " + url)
+                LogIt.info(sourceLoc() + "${groupId} received ${zipBytes.size} for Niftyart NFT URL: " + url)
             }
             catch(e: Exception)
             {
@@ -885,7 +884,7 @@ class AssetManager(): AssetManagerStorage
 
         if (zipBytes != null && zipBytes.size > 0)
         {
-            LogIt.info("NFT file loaded for ${groupId.toStringNoPrefix()}")
+            LogIt.info("NFT file loaded for ${groupId}")
 
             val hash = libnexa.hash256(zipBytes)
             if (groupId.subgroupData() contentEquals hash)
@@ -898,7 +897,7 @@ class AssetManager(): AssetManagerStorage
                 val hash = libnexa.sha256(zipBytes)
                 if (groupId.subgroupData() contentEquals hash)
                 {
-                    LogIt.info(sourceLoc() + "nft zip file matches sha256 hash for ${groupId.toStringNoPrefix()}")
+                    LogIt.info(sourceLoc() + ": nft zip file matches sha256 hash for ${groupId}")
                 }
                 else return null
             }
@@ -906,7 +905,7 @@ class AssetManager(): AssetManagerStorage
             val nftData = nftData(ef)  // Sanity check the file
             if (nftData == null)
             {
-                LogIt.info("but is NOT an NFT file")
+                LogIt.error(sourceLoc() + ": but is NOT an NFT file for token ${groupId}")
                 return null
             }
             storeAssetFile(groupId.toHex() + ".zip", zipBytes)

@@ -1231,7 +1231,7 @@ open class CommonApp(val runningTests: Boolean)
                 }
                 // Going to block here until the GUI asks for this field
                 if (recoveryWarning != null) later { externalDriver.send(GuiDriver(show = setOf(ShowIt.WARN_BACKUP_RECOVERY_KEY), account = recoveryWarning)) }
-                for (a in alist) a.getXchgRates("USD")
+                UpdateNexaXchgRates(localCurrency)
 
                 val readyCopy = accountLock.lock {
                     val tmp = whenReady

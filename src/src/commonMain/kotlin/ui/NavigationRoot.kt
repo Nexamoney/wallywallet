@@ -536,6 +536,7 @@ fun uxPeriodicAnalysis(): iThread
         while (true)
         {
             updateNavMenuContents()
+            UpdateNexaXchgRates(localCurrency)
             millisleep(5000U)
         }
     }
