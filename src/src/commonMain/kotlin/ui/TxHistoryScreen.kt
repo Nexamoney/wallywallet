@@ -4,7 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.Icon
@@ -18,14 +21,18 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.*
+import io.ktor.http.Url
+import io.ktor.http.encodeURLParameter
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.*
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
+import org.nexa.threads.millisleep
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -35,12 +42,21 @@ fun TransactionHistory.toCSV(): String
 {
     val rcvWalletAddr = StringBuilder()
     val rcvForeignAddr = StringBuilder()
+
+    // Note asset change right now will show up as a spend and a receive
+    val assetsReceived = StringBuilder()
     for (i in 0 until tx.outputs.size)
     {
         val out = tx.outputs[i]
+        val scr = out.script
+        val gi = out.groupInfo()
         if (incomingIdxes.contains(i.toLong()))
         {
             rcvWalletAddr.append(" " + (out.script.address?.toString() ?: ""))
+            if (gi!=null)
+            {
+                assetsReceived.append("${gi.tokenAmount}_of_${gi.groupId} ")
+            }
         }
         else
         {
@@ -50,22 +66,26 @@ fun TransactionHistory.toCSV(): String
 
     val spentWalletAddr = StringBuilder()
     val spentForeignAddr = StringBuilder()
+    val assetsSent = StringBuilder()
     for (i in 0L until tx.inputs.size)
     {
         val inp = tx.inputs[i.toInt()]
         val idx = outgoingIdxes.find({ it == i })
-        if (idx != null)
+        if (idx != null)  // Its one of ours
         {
-            if (idx < spentTxos.size)
-                rcvWalletAddr.append(" " + (spentTxos[idx.toInt()].script.address?.toString() ?: "") )
-            else
+            val prevOutScript = inp.spendable.priorOutScript
+            val gi = prevOutScript.groupInfo(inp.spendable.amount)
+            if (gi!=null)
             {
-                LogIt.info(sourceLoc() + " data consistency error")
+                assetsSent.append("${gi.tokenAmount}_of_${gi.groupId} ")
             }
+            spentWalletAddr.append(" " + (prevOutScript.address?.toString() ?: "") )
         }
         else
         {
-            rcvForeignAddr.append(" " + inp)
+            val prevOutScript = inp.spendable.priorOutScript
+            if (prevOutScript.size > 0)
+                spentForeignAddr.append(" " + (prevOutScript.address?.toString() ?: "") )
         }
     }
 
@@ -73,12 +93,22 @@ fun TransactionHistory.toCSV(): String
     val localTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
     val fdate = localTime.format(DATE_TIME_FORMAT)
     val ret = StringBuilder()
+    // date
     ret.append(fdate)
     ret.append(",")
-    ret.append(incomingAmt - outgoingAmt)
+    // amount
+    ret.append(NexaInputFormat.format(SatToNexa(incomingAmt - outgoingAmt)))
     ret.append(",")
-    ret.append(if (incomingAmt > outgoingAmt) "received" else "payment")
+    // received
+    ret.append(NexaInputFormat.format(SatToNexa(incomingAmt)))
     ret.append(",")
+    // sent
+    ret.append(NexaInputFormat.format(SatToNexa(outgoingAmt)))
+    ret.append(",")
+    // fee
+    ret.append(NexaInputFormat.format(SatToNexa(tx.fee)))
+    ret.append(",")
+    // tx
     ret.append(tx.idem.toHex())
     ret.append(",")
     ret.append(basisOverride?.let { CurrencySerializeFormat.format(it) } ?: "")
@@ -97,6 +127,13 @@ fun TransactionHistory.toCSV(): String
     ret.append(",")
     ret.append(rcvForeignAddr.toString())
     ret.append(",")
+    // assets received
+    ret.append(assetsReceived.toString())
+    ret.append(",")
+    // assets sent
+    ret.append(assetsSent.toString())
+    ret.append(",")
+    // note
     ret.append("\"" + note + "\"")
     ret.append(",\n")
     return ret.toString()
@@ -107,11 +144,15 @@ fun TransactionHistoryHeaderCSV(): String
     val ret = StringBuilder()
     ret.append("date")
     ret.append(",")
-    ret.append("amount (Satoshi NEX)")
+    ret.append("amount")
     ret.append(",")
-    ret.append("change")
+    ret.append("amount incoming")
     ret.append(",")
-    ret.append("transaction and index")
+    ret.append("amount outgoing")
+    ret.append(",")
+    ret.append("fee")
+    ret.append(",")
+    ret.append("transaction")
     ret.append(",")
     ret.append("basis")
     ret.append(",")
@@ -123,13 +164,16 @@ fun TransactionHistoryHeaderCSV(): String
     ret.append(",")
     ret.append("spent wallet addresses")
     ret.append(",")
-    ret.append("spent foreign addresses")
+    ret.append("incoming from addresses")
     ret.append(",")
-    ret.append("received addresses")
+    ret.append("received into addresses")
     ret.append(",")
     ret.append("sent to addresses")
     ret.append(",")
-
+    ret.append("assets received")
+    ret.append(",")
+    ret.append("assets sent")
+    ret.append(",")
     ret.append("note")
     ret.append(",\n")
     return ret.toString()
@@ -199,22 +243,53 @@ fun TransactionHistory.gatherRelevantAddresses():Set<PayAddress>
     return addrs
 }
 
-private val txHistoryInfo = MutableStateFlow<List<TransactionHistory>?>(null)
+private val txHistoryInfo = MutableStateFlow<Array<MutableStateFlow<TransactionHistory?>>?>(null)
 private val txHistoryAccount = MutableStateFlow<Account?>(null)
 private val txHistoryMutex = Mutex("txHistory")
 fun calcTxHistoryInfo(acc : Account)
 {
+    val numTxes = min(10000, acc.wallet.getTxCount()+10)
+    val txes = Array<MutableStateFlow<TransactionHistory?>>(numTxes.toInt(), { MutableStateFlow<TransactionHistory?>(null) })
+
     txHistoryMutex.lock {
-        val txes = mutableListOf<TransactionHistory>()
-        acc.wallet.forEachTxByDate {
-            txes.add(it)
-            false
-        }
-        txes.sortByDescending { it.date }
-        txHistoryInfo.value = txes
         txHistoryAccount.value = acc
+        txHistoryInfo.value = txes
+    }
+
+    var count = 0
+    var date = Long.MAX_VALUE
+    while(count < numTxes)
+    {
+        var returnedNothing = true
+        acc.wallet.forEachTxByDate(date, 50) {
+            txes[count].value = it
+            count += 1
+            date = it.date-1
+            returnedNothing = false
+            (count > numTxes) // Stop if its too many
+        }
+        if (returnedNothing) break
+        millisleep(1U)  // give away the processor so the GUI can run
     }
 }
+
+fun makeShareableHistory(acc : Account):String
+{
+    val hinfo = txHistoryInfo.value
+    if (hinfo == null) return "account history not calculated"
+    val sb = StringBuilder()
+    sb.append(TransactionHistoryHeaderCSV())
+    for (msf in hinfo)
+    {
+        val txh = msf.value
+        if (txh != null)
+        {
+            sb.append(txh.toCSV())
+        }
+    }
+    return sb.toString()
+}
+
 /**
  * Transaction history for an account
  */
@@ -234,8 +309,14 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
     if ((txHistoryInfo.value == null) || (txHistoryAccount.value != acc)) laterJob {
         calcTxHistoryInfo(acc)
     }
+    val oldshare = ToBeShared
+    ToBeShared = {
+        makeShareableHistory(acc)
+    }
     nav.onDepart {
+        // actually keep this around in case the user goes back
         txHistoryInfo.value = null
+        ToBeShared = oldshare
     }
 
     fun onCopied(text: String)
@@ -253,65 +334,105 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
     {
         LazyColumn {
             txes.forEachIndexed { idx, it ->
-                item(key = it.tx.idem.toHex()) {
-                    val amt = it.incomingAmt - it.outgoingAmt
-                    val color = if (idx % 2 == 1) WallyRowAbkg1 else WallyRowAbkg2
-                    if (idx != 0) Spacer(modifier = Modifier.height(2.dp))
+                item(key = idx) {
+                    val txh = it.collectAsState().value
+                    if (txh == null)
+                    {
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+                    else
+                    {
+                        val amt = txh.incomingAmt - txh.outgoingAmt
+                        val color = wallyPurpleExtraLight // if (idx % 2 == 1) WallyRowAbkg1 else WallyRowAbkg2
+                        if (idx != 0) Spacer(modifier = Modifier.height(6.dp))  // Space in between each record
 
-                    Column(modifier = Modifier.fillMaxWidth().background(color).padding(1.dp).clickable {
-                        onCopied(it.tx.idem.toHex())
-                    }) {
-                        Row {
-                            if (amt != 0L) ResImageView(if (amt > 0) "icons/receivearrow.xml" else "icons/sendarrow.xml", modifier = Modifier.size(30.dp))
-                            else Spacer(Modifier.size(30.dp))
-                            if (it.date > 1577836800000) Text(formatLocalEpochMilliseconds(it.date, "\n"))  // jan 1 2020, before the genesis block
-                            else
-                            {
-                                LogIt.info(sourceLoc() + ": tx with date ${it.date}")
-                            }
-                            CenteredFittedWithinSpaceText(text = acc.cryptoFormat.format(acc.fromFinestUnit(amt)), startingFontScale = 1.5, fontWeight = FontWeight.Bold,
-                              modifier = Modifier.weight(1f))
-                            val uri = it.chainSelector.explorer("/tx/${it.tx.idem.toHex()}")
-                            WallyBoringButton({ openUrl(uri) }, modifier = Modifier.padding(0.dp, 0.dp, 10.dp, 0.dp)) {
-                                Icon(Icons.Default.ExitToApp, tint = colorConfirm, contentDescription = "view transaction")
-                            }
-                        }
-                        CenteredFittedText(text = it.tx.idem.toHex(), fontWeight = FontWeight.Bold, modifier = Modifier)
-                        Spacer(Modifier.size(3.dp))
-
-                        val addrs = it.gatherRelevantAddresses()
-                        for (a in addrs)
-                        {
-                            CenteredFittedText(text = a.toString())
-                        }
-
-                        if (it.note.isNotBlank()) CenteredText(text = it.note)
-                        val assets = it.tx.gatherAssets({
-                            // We are going to use the native coin as a hint as to whether this transaction is sending or receiving
-                            // If its sending, just look for assets that left this wallet
-                            // If its receiving, look for assets coming in.
-                            // TODO: look at inputs and accurately describing sending/receiving
-                            if (it == null) false
-                            else
-                            {
-                                val result: Boolean = if (amt > 0) acc.wallet.isWalletAddress(it)
-                                else !acc.wallet.isWalletAddress(it)
-                                result
-                            }
-                        })
-                        if (assets.isNotEmpty())
-                        {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-                                var index = 0
-                                assets.forEach {
-                                    val entry = it
-                                    val indexFreezer = index  // To use this in the item composable, we need to freeze it to a val, because the composable is called out-of-scope
-                                    Box(Modifier.padding(4.dp, 1.dp).fillMaxWidth().background(WallyAssetRowColors[indexFreezer % WallyAssetRowColors.size])) {
-                                        AssetListItemViewOld(entry, 0, false, Modifier.padding(0.dp, 2.dp))
+                        Column(modifier = Modifier.fillMaxWidth().background(color).padding(1.dp).clickable {
+                            onCopied(txh.tx.idem.toHex())
+                        }) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                if (devMode) Text(idx.toString(), fontSize = 8.sp)
+                                if (amt != 0L) ResImageView(if (amt > 0) "icons/receivearrow.xml" else "icons/sendarrow.xml", modifier = Modifier.size(30.dp))
+                                else Spacer(Modifier.size(30.dp))
+                                if (txh.date > 1577836800000) Text(formatLocalEpochMilliseconds(txh.date, "\n"), Modifier.padding(3.dp), maxLines = 2,
+                                  textAlign=TextAlign.Center)  // jan 1 2020, before the genesis block
+                                else
+                                {
+                                    LogIt.info(sourceLoc() + ": tx with date ${txh.date}")
+                                }
+                                Box(modifier = Modifier.padding(3.dp).weight(1f), contentAlignment = Alignment.Center) {
+                                    BasicText(text = acc.cryptoFormat.format(acc.fromFinestUnit(amt)), modifier = Modifier,
+                                      style = TextStyle(fontWeight = FontWeight.Bold),
+                                      maxLines = 1,
+                                      autoSize = TextAutoSize.StepBased(8.sp, 24.sp, 0.5.sp))
+                                }
+                                val uri = txh.chainSelector.explorer("/tx/${txh.tx.idem.toHex()}")
+                                if (devMode) WallyBoringButton({
+                                    LogIt.info("send tx to wallywallet.org")
+                                    val versionNumber = (i18n(S.version) % mapOf("ver" to Version.VERSION_NUMBER + "-" + Version.GIT_COMMIT_HASH, "date" to Version.BUILD_DATE)).encodeURLParameter()
+                                    val url = Url("http://wallywallet.org/debug/submit/tx?txhex=${txh.tx.toHex()}&info=wallywallet$versionNumber")
+                                    try
+                                    {
+                                        val result = url.readText()
+                                        LogIt.info("send tx to wallywallet.org: $result")
+                                        displayNotice(S.sending)
                                     }
-                                    index++
+                                    catch(e:Exception)
+                                    {
+                                        LogIt.error("cannot send tx to wallywallet.org: $e")
+                                        displayError(S.connectionException)
+                                    } }, modifier = Modifier.size(30.dp).padding(0.dp, 0.dp, 10.dp, 0.dp)) {
+                                    ResImageView("icons/bug.xml", modifier = Modifier.size(30.dp))
+                                }
+                                WallyBoringButton({ openUrl(uri) }, modifier = Modifier.padding(0.dp, 0.dp, 10.dp, 0.dp)) {
+                                    Icon(Icons.Default.ExitToApp, tint = colorConfirm, contentDescription = "view transaction")
                                 }
                             }
+                            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                                    BasicText(text = txh.tx.idem.toHex(), modifier = Modifier,
+                                      style = TextStyle(fontWeight = FontWeight.Bold),
+                                      maxLines = 1,
+                                      autoSize = TextAutoSize.StepBased(6.sp, 12.sp))
+                                }
+                            Spacer(Modifier.size(3.dp))
+
+                            val addrs = txh.gatherRelevantAddresses()
+                            for (a in addrs)
+                            {
+                                // padding indents the starting side
+                                Box(modifier = Modifier.padding(PaddingValues(10.dp,0.dp,0.dp,0.dp)).fillMaxWidth(), contentAlignment = Alignment.CenterStart) {
+                                    BasicText(text = a.toString(), maxLines = 1, autoSize = TextAutoSize.StepBased(4.sp, 12.sp))
+                                }
+                            }
+
+                            if (txh.note.isNotBlank()) CenteredText(text = txh.note)
+                            val assets = txh.tx.gatherAssets({
+                                // We are going to use the native coin as a hint as to whether this transaction is sending or receiving
+                                // If its sending, just look for assets that left this wallet
+                                // If its receiving, look for assets coming in.
+                                // TODO: look at inputs and accurately describing sending/receiving
+                                if (it == null) false
+                                else
+                                {
+                                    val result: Boolean = if (amt > 0) acc.wallet.isWalletAddress(it)
+                                    else !acc.wallet.isWalletAddress(it)
+                                    result
+                                }
+                            })
+                            if (assets.isNotEmpty())
+                            {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                                    var index = 0
+                                    assets.forEach {
+                                        val entry = it
+                                        val indexFreezer = index  // To use this in the item composable, we need to freeze it to a val, because the composable is called out-of-scope
+                                        Box(Modifier.padding(4.dp, 1.dp).fillMaxWidth().background(WallyAssetRowColors[indexFreezer % WallyAssetRowColors.size])) {
+                                            AssetListItemViewOld(entry, 0, false, Modifier.padding(0.dp, 2.dp))
+                                        }
+                                        index++
+                                    }
+                                }
+                            }
+                            Spacer(Modifier.size(4.dp))
                         }
                     }
                 }
@@ -422,7 +543,7 @@ fun AssetListItemViewOld(assetPerAccount: AssetPerAccount, verbosity: Int = 1, a
                 else
                 {
                     if (name == null) name = asset.ticker ?: asset.groupId.toString()
-                    var author = if ((nft?.author != null) && (nft.author.length > 0)) ", " + nft.author else ""
+                    val author = if ((nft?.author != null) && (nft.author.length > 0)) ", " + nft.author else ""
                     CenteredFittedText(name + author)
                 }
             }
