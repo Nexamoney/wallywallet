@@ -269,24 +269,17 @@ class AccessHandler(val app: CommonApp)
                 }
                 count += 1
             }
-            catch (e: ConnectTimeoutException)  // network error?  TODO retry a few times
+            catch (e: Throwable)  // network error?
             {
-                if (connectProblems > 50)
+                if (connectProblems > 60)
                 {
                     LogIt.info(sourceLoc() + ": Long poll to $url connection exception $e, stopping.")
                     endLongPolling(hostPort)
                     return
                 }
+                LogIt.info(sourceLoc() + ": Long poll to $url connection exception $e, retry count $connectProblems.")
                 connectProblems += 1
-                delay(1000)
-            }
-            catch (e: Throwable)
-            {
-                LogIt.info(sourceLoc() + ": Long poll to $url error, stopping: ")
-                displayWarning(i18n(S.connectionClosed))
-                //handleThreadException(e, "Long poll to $url error, stopping.", sourceLoc())
-                endLongPolling(hostPort)
-                return
+                delay(3000)
             }
             val end = epochMilliSeconds()
             avgResponse = ((avgResponse*49f)+(end-start))/50.0f
