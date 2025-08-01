@@ -132,12 +132,8 @@ kotlin {
             @OptIn(ExperimentalKotlinGradlePluginApi::class)
             instrumentedTestVariant {
                 sourceSetTree.set(KotlinSourceSetTree.test)
-
                 dependencies {
-                    testImplementation(libs.androidx.ui.test.junit4.android)
-                    androidTestImplementation(libs.androidx.ui.test.junit4.android)
-                    debugImplementation(libs.ui.test.manifest)
-                    // debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
+                    implementation(libs.ui.test.manifest)
                 }
             }
         }
@@ -377,7 +373,7 @@ kotlin {
                 dependencies {
                     //implementation(project(":shared"))
 
-                    implementation(kotlin("stdlib-jdk8"))
+                    implementation(kotlin("stdlib"))
                     implementation(libs.androidx.activity.compose)
                     implementation(libs.androidx.tracing)
                     implementation(libs.androidx.ui)
@@ -485,7 +481,6 @@ kotlin {
             }
         }
 
-
         if (ANDROID_TARGETS)
         {
             val androidInstrumentedTest by getting {
@@ -496,6 +491,9 @@ kotlin {
                     implementation(libs.kotlinx.coroutines.android)
                     implementation(libs.androidx.core.ktx)
                     implementation(libs.androidx.junit.ktx)
+                    implementation(libs.androidx.ui.test.junit4.android)
+                    implementation(libs.ui.test.manifest)
+                    // debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
                 }
             }
         }
