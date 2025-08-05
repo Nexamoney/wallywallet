@@ -271,7 +271,7 @@ class AccessHandler(val app: CommonApp)
             }
             catch (e: Throwable)  // network error?
             {
-                if (connectProblems > 60)
+                if (connectProblems > 600)
                 {
                     LogIt.info(sourceLoc() + ": Long poll to $url connection exception $e, stopping.")
                     endLongPolling(hostPort)
