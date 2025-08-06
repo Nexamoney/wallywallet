@@ -20,6 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.newFixedThreadPoolContext
+import kotlinx.io.files.FileNotFoundException
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.*
 import kotlin.coroutines.CoroutineContext
@@ -1156,13 +1157,21 @@ open class CommonApp(val runningTests: Boolean)
                             val ac = Account(name, prefDB = preferenceDB)
                             accounts[ac.name] = ac
                         }
+                        LogIt.info(sourceLoc() + " " + name + ": Loaded account")
                     }
                     catch (e: DataMissingException)
                     {
-                        LogIt.warning(sourceLoc() + " " + name + ": Active account $name was not found in the database. Error $e")
+                        LogIt.warning(sourceLoc() + " " + name + ": Active account $name was not found in the database.  Error $e")
                         // Nothing to really do but ignore the missing account
                     }
-                    LogIt.info(sourceLoc() + " " + name + ": Loaded account")
+                    catch (e: FileNotFoundException)
+                    {
+                        LogIt.warning(sourceLoc() + " " + name + ": Backing file for active account $name was not found.  Error $e")
+                    }
+                    catch (e: Exception)
+                    {
+                        LogIt.warning(sourceLoc() + " " + name + ": Unknown exception attempting to open file.  Error $e")
+                    }
                 }
             }
         }
