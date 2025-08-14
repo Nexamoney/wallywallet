@@ -132,9 +132,6 @@ kotlin {
             @OptIn(ExperimentalKotlinGradlePluginApi::class)
             instrumentedTestVariant {
                 sourceSetTree.set(KotlinSourceSetTree.test)
-                dependencies {
-                    implementation(libs.ui.test.manifest)
-                }
             }
         }
     }

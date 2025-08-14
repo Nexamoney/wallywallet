@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.outlined.*
@@ -31,8 +30,6 @@ import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.*
 import io.ktor.http.*
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.nexa.libnexakotlin.*
 
 
@@ -530,17 +527,18 @@ fun AssetScreen(account: Account, onAssetDetail: () -> Unit)
                 }
 
                 IconTextButton(
-                  icon = Icons.AutoMirrored.Outlined.ArrowBack,
+                  icon = Icons.Outlined.Sell,
                   modifier = Modifier.weight(1f),
-                  description = i18n(S.Back),
-                  color = wallyPurple,
+                  description = i18n(S.Sell),
+                  color = wallyPurple
                 ) {
-                    nav.back()
+                    nav.go(ScreenId.CreateAssetOffer, data = assetFocus)
                 }
             }
         }
     }
 }
+
 @Composable
 fun HorizontalRadioButtonGroup(options: List<Int>, onClick: (Int) -> Unit) {
     var selectedOption by remember { mutableStateOf(options.first()) }
@@ -590,7 +588,6 @@ fun onCopyToClipboardButton(a: AssetInfo?)
         displayNotice(S.copiedToClipboard)
     }
 }
-
 
 fun onTradeButton(a: AssetInfo?)
 {
