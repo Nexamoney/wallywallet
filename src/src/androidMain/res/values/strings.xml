@@ -408,7 +408,7 @@ Good luck!
     <string name="primaryAccountRequiredDetails" formatted="false">Some features are linked to certain cryptocurrencies.  You must create or unlock an account on that cryptocurrency before using the feature.</string>
     <string name="UnknownDomainRegisterFirst">Unknown domain, register first</string>
 
-    <string name="commonIdentityQRCode">QR code</string>
+    <string name="QrCode">QR code</string>
     <!-- An intent (aka link) specified an action that I do not know about -->
     <string name="unknownOperation" formatted="false">operation %op unknown</string>
     <!-- This wallet already has a registration for this site, so registration is not needed (informational notice) -->
@@ -790,8 +790,23 @@ Thank you and enjoy your new wallet!</string>
     <string name="confirmSend">Confirm send</string>
 
     <string name="syncing">Syncing...</string>
-    <string name="enterAmount">Enter Amount</string>
+    <string name="enterAmount">Enter $assetName amount</string>
     <string name="fee">Fee</string>
 
     <string name="connectionWarning">Warning: No blockchain/network connection is available. If you send now, the recipient will not immediately see this transfer. The send will be issued once connectivity is restored.</string>
+
+    <string name="Sell">Sell</string>
+
+    <string name="CreateAnOffer">Create an Offer</string>
+
+    <string name="Price">Price</string>
+    <string name="NexaPrice">Enter Nexa price</string>
+    <string name="AssetAmountName">You have %amount %assetName</string>
+
+    <string name="scanToBuyOne">Scan to buy %name</string>
+    <string name="scanToBuySeveral">Scan to buy %amount %name</string>
+    <string name="nexaOfferAmount">For %amount NEXA</string>
+    <string name="purchaseComplete">Purchase Complete</string>
+    <string name="setTheNexaPrice">Set the Nexa price</string>
+    <string name="setTheAssetAmount">Set the asset amount</string>
 </resources>

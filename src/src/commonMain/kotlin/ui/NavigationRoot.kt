@@ -23,7 +23,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eygraber.uri.Uri
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
@@ -172,6 +171,8 @@ enum class ScreenId
     AddressHistory,
     TxHistory,
     MoreMenu,
+    CreateAssetOffer,
+    AssetOffer,
 
     TpSettings,
     SpecialTxPerm,
@@ -1247,6 +1248,28 @@ fun NavigationRoot(
                                     val idsess = nav.curData.value as? IdentitySession
                                     if (idsess != null) IdentityPermScreen(act, idsess, nav)
                                     else nav.back()
+                                }
+                                ScreenId.CreateAssetOffer -> {
+                                    val assetPerAccount = nav.curData.value as? AssetPerAccount
+                                    if (assetPerAccount == null)
+                                    {
+                                        nav.back()
+                                    }
+                                    else
+                                    {
+                                        CreateAssetOfferScreen(assetPerAccount)
+                                    }
+                                }
+                                ScreenId.AssetOffer -> {
+                                    val offer = nav.curData.value as? AssetOffer
+                                    if (offer == null)
+                                    {
+                                        nav.back()
+                                    }
+                                    else
+                                    {
+                                        AssetOfferScreen(offer)
+                                    }
                                 }
 
                                 ScreenId.Alerts -> HomeScreen(isShowingRecoveryWarning, accountPillViewModel, assetViewModel, accountUiDataViewModel)

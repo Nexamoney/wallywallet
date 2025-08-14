@@ -631,3 +631,16 @@ interface VersionI
     val GITLAB_URL: String
     val BUILD_DATE: String
 }
+
+// Convert the passed quantity to a string in the decimal format suitable for this currency
+fun formatAmount(qty: BigDecimal, chain: ChainSelector = ChainSelector.NEXA): String
+{
+    // TODO replace with NexaFormat when a new version of lnk is released
+    val nexaFormat = DecimalFormat("##,###,###,###,##0.00")
+    //LogIt.info("format ${qty.toPlainString()} -> ${nexaFormat.format(qty)}")
+    return when (chain)
+    {
+        ChainSelector.NEXA, ChainSelector.NEXAREGTEST, ChainSelector.NEXATESTNET -> nexaFormat.format(qty)
+        ChainSelector.BCH, ChainSelector.BCHREGTEST, ChainSelector.BCHTESTNET -> uBchFormat.format(qty)
+    }
+}
