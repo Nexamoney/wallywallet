@@ -21,6 +21,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.io.files.FileNotFoundException
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.*
 import kotlin.coroutines.CoroutineContext
@@ -82,7 +84,20 @@ fun onetlater(name: String, job: ()->Unit)
     }
 }
 
-data class LongPollInfo(val proto: String, val hostPort: String, val cookie: String?, var active: Boolean = true)
+@Serializable
+data class LongPollInfo(val proto: String, val hostPort: String, val cookie: String?, var active: Boolean = true, var lastPing: Long = 0)
+{
+    fun url(): String
+    {
+        val cookieString = if (cookie != null) "?cookie=${cookie}" else ""
+        val url = urlRoute() + cookieString
+        return url
+    }
+    fun urlRoute(): String
+    {
+        return proto + "://" + hostPort + "/_lp"
+    }
+}
 
 /** incompatible changes, extra fields added, fields and field sizes are the same, but content may be extended (that is, addtl bits in enums) */
 val WALLY_DATA_VERSION = byteArrayOf(1, 0, 0)
@@ -158,22 +173,77 @@ fun cancelBackgroundSync()
 }
 
 
+const val LONG_POLL_MAX_DISCONNECTED_AGE_MS = 1000 * 60 * 30  // 30 minutes in milliseconds
 class AccessHandler(val app: CommonApp)
 {
     var done: Boolean = false
+    var nextSave: Long = 0L
 
     val sync: iMutex = Mutex()
-    val activeLongPolls = mutableMapOf<String, LongPollInfo>()
+    protected val activeLongPolls = mutableMapOf<String, LongPollInfo>()
 
     fun startLongPolling(proto: String, hostPort: String, cookie: String?)
     {
-        app.later { longPolling(proto, hostPort, cookie) }
+        val lpInfo = sync.synchronized()
+        {
+            if (activeLongPolls.contains(hostPort))
+            {
+                LogIt.info("Already long polling to $hostPort, replacing it with a new long poll.")
+                activeLongPolls[hostPort]?.active = false
+            }
+            activeLongPolls.put(hostPort, LongPollInfo(proto, hostPort, cookie))
+            activeLongPolls[hostPort]!!
+        }
+        app.later { longPolling(lpInfo) }
     }
 
-    fun endLongPolling(url: String)
+    protected fun endLongPolling(hostPort: String)
     {
         sync.synchronized {
-            activeLongPolls.remove(url)
+            activeLongPolls.remove(hostPort)
+        }
+    }
+
+    fun saveLongPollInfo(force: Boolean = false)
+    {
+        if (force || (nextSave < epochMilliSeconds()))
+          {
+              val db = kvpDb
+              if (db != null)  // Saving the long polling info is a convenience thing so tolerate it not working
+              {
+                  val lps = Json.encodeToString(activeLongPolls)
+                  db.set("activeLongPolls", lps.toByteArray())
+                  nextSave = epochMilliSeconds() + 15000L
+              }
+          }
+    }
+
+    /** Call on initialization to restore any long polling that has not timed out */
+    fun restoreLongPolling()
+    {
+        val db = kvpDb
+        if (db != null)  // Saving the long polling info is a convenience thing so tolerate it not working
+        {
+            val v = db.getOrNull("activeLongPolls")
+            if (v != null)
+            {
+                val alps = Json.decodeFromString<MutableMap<String, LongPollInfo>>(v.decodeUtf8())
+                val tooOld = epochMilliSeconds() - LONG_POLL_MAX_DISCONNECTED_AGE_MS
+                for (a in alps)
+                {
+                    sync.synchronized {
+                        if (!activeLongPolls.contains(a.key))  // We are not already connected
+                        {
+                            if (a.value.active && (a.value.lastPing > tooOld))  // We last connected to this long poll recently
+                            {
+                                activeLongPolls[a.key] = a.value  // add it to our active list
+                                app.later { longPolling(a.value, quietStart = true) }  // Start polling
+                            }
+                        }
+                    }
+                }
+            }
+            saveLongPollInfo()
         }
     }
 
@@ -198,22 +268,12 @@ class AccessHandler(val app: CommonApp)
         return null
     }
 
-    suspend fun longPolling(scheme: String, hostPort: String, cookie: String?)
+    protected suspend fun longPolling(lpInfo: LongPollInfo, quietStart: Boolean = false)
     {
         var connectProblems = 0
-        val cookieString = if (cookie != null) "?cookie=$cookie" else ""
-        val url = scheme + "://" + hostPort + "/_lp" + cookieString
+        val cookieString = if (lpInfo.cookie != null) "?cookie=${lpInfo.cookie}" else ""
+        val url = lpInfo.proto + "://" + lpInfo.hostPort + "/_lp" + cookieString
 
-        val lpInfo = sync.synchronized()
-        {
-            if (activeLongPolls.contains(hostPort))
-            {
-                LogIt.info("Already long polling to $hostPort, replacing it with $url.")
-                activeLongPolls[hostPort]?.active = false
-            }
-            activeLongPolls.put(hostPort, LongPollInfo(scheme, hostPort, cookie))
-            activeLongPolls[hostPort]!!
-        }
 
         val client = GetHttpClient(timeoutInMs=60000)
 
@@ -234,40 +294,47 @@ class AccessHandler(val app: CommonApp)
                 {
                     LogIt.warning(sourceLoc() + ": Long polling to $url stopped due to error response ${response.status}.")
                     // You can get NotFound if you scan an old QR code
-                    displayWarning(i18n(S.refreshQR))
-                    endLongPolling(hostPort)
+                    // don't show this if we are just starting up quietly
+                    if (!(quietStart && count<5)) displayWarning(i18n(S.refreshQR))
+                    endLongPolling(lpInfo.hostPort)
                     return
                 }
 
                 if (respText == "A")  // Accept will only be returned if we provide a count of 0
                 {
                     LogIt.info(sourceLoc() + ": Long poll to $url accepted.")
-                    displaySuccess(S.connectionEstablished)
+                    if (!quietStart) displaySuccess(S.connectionEstablished)
+                    lpInfo.lastPing = epochMilliSeconds()
                 }
                 else if (respText == "Q")
                 {
                     LogIt.info(sourceLoc() + ": Long poll to $url ended (server request).")
-                    displaySuccess(S.connectionClosed)
-                    endLongPolling(hostPort)
+                    // don't show this if we are just starting up quietly
+                    if (!(quietStart && count<5)) displaySuccess(S.connectionClosed)
+                    endLongPolling(lpInfo.hostPort)
                     return // Server tells us to quit long polling
                 }
                 // error 503: This is a typical response from apache if the underlying server goes down
                 else if ("Service Unavailable" in respText)
                 {
                     LogIt.info(sourceLoc() + ": Long poll to $url ended (server returned 503).")
-                    displayWarning(i18n(S.connectionClosed))
-                    endLongPolling(hostPort)
+                    // don't show this if we are just starting up quietly
+                    if (!(quietStart && count<5)) displayWarning(i18n(S.connectionClosed))
+                    endLongPolling(lpInfo.hostPort)
                     return // Server tells us to quit long polling
                 }
                 else if (respText != "")
                 {
                     LogIt.info(sourceLoc() + ": Long poll to $url returned with this request: $respText")
+                    lpInfo.lastPing = epochMilliSeconds()
                     app.handlePaste(respText)
                 }
                 else
                 {
+                    lpInfo.lastPing = epochMilliSeconds()
                     LogIt.info(sourceLoc() + ": Long poll to $url finished with no activity.")
                 }
+                saveLongPollInfo()  // It will only save every few seconds irrespective of how often the function is called
                 count += 1
             }
             catch (e: Throwable)  // network error?
@@ -275,7 +342,7 @@ class AccessHandler(val app: CommonApp)
                 if (connectProblems > 600)
                 {
                     LogIt.info(sourceLoc() + ": Long poll to $url connection exception $e, stopping.")
-                    endLongPolling(hostPort)
+                    endLongPolling(lpInfo.hostPort)
                     return
                 }
                 LogIt.info(sourceLoc() + ": Long poll to $url connection exception $e, retry count $connectProblems.")
@@ -289,8 +356,8 @@ class AccessHandler(val app: CommonApp)
             if (avgResponse<1000)
                 delay(500)
         }
-        LogIt.info(sourceLoc() + ": Long poll to $hostPort ($url) ended (done).")
-        endLongPolling(hostPort)
+        LogIt.info(sourceLoc() + ": Long poll to ${lpInfo.hostPort} ($url) ended (done).")
+        endLongPolling(lpInfo.hostPort)
     }
 }
 
@@ -1185,6 +1252,7 @@ open class CommonApp(val runningTests: Boolean)
             tlater {
                 if (forTestingDoNotAutoCreateWallets) return@tlater
                 openAllAccounts()
+                accessHandler.restoreLongPolling()
                 assignAccountsGuiSlots()
 
                 var recoveryWarning: Account? = null
