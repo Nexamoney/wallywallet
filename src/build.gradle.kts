@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter
 
 // Wally Wallet version
 // On version bump: Run ./gradlew generateVersionFile and commit the updates iosApp/iosApp/info.plist file
-val versionNumber = "3.8.01"
+val versionNumber = "3.9.00"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 
 val secSinceEpoch = Instant.now().epochSecond
@@ -21,7 +21,7 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.compose)  // Compose compiler
     alias(libs.plugins.compose)
     alias(libs.plugins.dokka) apply false
     alias(libs.plugins.kover)
@@ -553,11 +553,11 @@ android {
     namespace = "info.bitcoinunlimited.www.wally"
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
-    compileSdk = 35
+    compileSdk = libs.versions.androidSdk.get().toInt()
     defaultConfig {
         applicationId = "info.bitcoinunlimited.www.wally"
-        minSdk = 29
-        targetSdk = 35
+        minSdk = libs.versions.androidMinSdk.get().toInt()
+        targetSdk = libs.versions.androidSdk.get().toInt()
         versionCode = androidVersionCode
         versionName = versionNumber
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -566,9 +566,6 @@ android {
         compose = true
         viewBinding = true
         buildConfig = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
     }
     packaging {
         resources {
