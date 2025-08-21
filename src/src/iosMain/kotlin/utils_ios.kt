@@ -394,6 +394,7 @@ actual fun getReviewManager(): InAppReviewDelegate? = AppStoreInAppReviewManager
 
 // Requests in-app review and waits one month to ask again if no review is given.
 actual fun requestInAppReview() {
+    // TODO: Replace this with the new time function?
     val now = Instant.now().epochSecond
     val lastReviewRequest = wallyApp?.preferenceDB?.getString(LAST_REVIEW_TIMESTAMP, "0")?.toLong() ?: now
     val oneWeekInSeconds = 30 * 24 * 60 * 60
