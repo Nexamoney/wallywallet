@@ -27,7 +27,7 @@ import platform.StoreKit.SKStoreReviewController
 import platform.UIKit.*
 import wpw.src.generated.resources.Res
 import kotlin.math.pow
-import kotlinx.datetime.Clock
+import java.time.Instant
 
 private val LogIt = GetLog("BU.wally.utils_ios")
 
@@ -394,11 +394,11 @@ actual fun getReviewManager(): InAppReviewDelegate? = AppStoreInAppReviewManager
 
 // Requests in-app review and waits one month to ask again if no review is given.
 actual fun requestInAppReview() {
-    val now = Clock.System.now().toEpochMilliseconds()
+    val now = Instant.now().epochSecond
     val lastReviewRequest = wallyApp?.preferenceDB?.getString(LAST_REVIEW_TIMESTAMP, "0")?.toLong() ?: now
-    val oneWeekInMillis = 30 * 24 * 60 * 60 * 1000L
+    val oneWeekInSeconds = 30 * 24 * 60 * 60
 
-    if ((now - lastReviewRequest) >= oneWeekInMillis)
+    if ((now - lastReviewRequest) >= oneWeekInSeconds)
     {
         val scene = UIApplication.sharedApplication.connectedScenes.map { it as UIWindowScene }
           .first { it.activationState == UISceneActivationStateForegroundActive }
