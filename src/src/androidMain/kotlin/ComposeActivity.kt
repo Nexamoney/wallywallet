@@ -320,8 +320,11 @@ class ComposeActivity: CommonActivity()
                         if (it == ScreenNav.Direction.LEAVING)
                         {
                             setIntent(null)  // done handling this
-                            lastHandledIntent = intent.data.toString()
-                            setResult(Activity.RESULT_CANCELED, intent)
+                            if (intent != null)  // Even though this is seen as not nullable, we see null object references in the play console errors
+                            {
+                                lastHandledIntent = intent.data.toString()
+                                setResult(Activity.RESULT_CANCELED, intent)
+                            }
                             finish()
                         }
                     }
