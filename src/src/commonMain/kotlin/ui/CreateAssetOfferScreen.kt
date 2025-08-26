@@ -120,8 +120,14 @@ class CreateAssetOfferViewModel(apc: AssetPerAccount): ViewModel() {
                 displayNotice(S.offerCreated, persistAcrossScreens = 2)
                 nav.go(ScreenId.AssetOffer, data = offer)
             }
-        } catch (e: WalletNotEnoughTokenBalanceException) {
+        }
+        catch (e: WalletNotEnoughTokenBalanceException)
+        {
             displayWarning(e.shortMsg ?: "")
+        }
+        catch (e: Exception)
+        {
+            displayError(e.message ?: "Something went wrong when creating the offer")
         }
     }
 }
