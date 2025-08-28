@@ -79,7 +79,7 @@ class FileIdentifier(protected val bytes: ByteArray, protected val offset: Int)
     {
         if (this === other) return true
         if (other is FileIdentifier && this.bytes contentEquals other.bytes) return true
-        if (other is ByteArray && this.bytes contentEquals other.sliceArray(IntRange(offset, offset+bytes.size-1))) return true
+        if (other is ByteArray && (other.size >= offset+bytes.size-1) && this.bytes contentEquals other.sliceArray(IntRange(offset, offset+bytes.size-1))) return true
         return false
     }
     override fun hashCode(): Int = bytes.contentHashCode()
@@ -252,8 +252,8 @@ actual fun MpMediaView(mediaImage: ImageBitmap?, mediaData: ByteArray?, mediaUri
     val name = mediaUri ?: ""
     val url = Url(name)
     val lcasename = name.lowercase()
-    var fileExt: String? = if (lcasename.contains(".")) ("." + lcasename.split(".").last()) else null
-    var mediaExt: String? = if (mediaData != null) mediaType(mediaData) else null
+    val fileExt: String? = if (lcasename.contains(".")) ("." + lcasename.split(".").last()) else null
+    val mediaExt: String? = if (mediaData != null) mediaType(mediaData) else null
 
     val ext = mediaExt ?: fileExt ?: return false
 
