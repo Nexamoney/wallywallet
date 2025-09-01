@@ -25,9 +25,9 @@ class CreateAssetOfferViewModel(apc: AssetPerAccount): ViewModel() {
     val asset: MutableStateFlow<AssetInfo> = MutableStateFlow(apc.assetInfo)
     val name: MutableStateFlow<String> = MutableStateFlow((if ((asset.value.nft != null) && (asset.value.nft?.title?.isNotEmpty() == true)) asset.value.nft?.title else asset.value.nameObservable.value ?: apc.groupInfo.groupId.toStringNoPrefix()) ?: "")
     val uniqueAsset :MutableStateFlow<Boolean> = MutableStateFlow(apc.groupInfo.isSubgroup() && apc.groupInfo.tokenAmount == 1L)
-    val amt: MutableStateFlow<String> = MutableStateFlow<String>(tokenAmountString(apc.groupInfo.tokenAmount, apc.assetInfo.tokenInfo?.genesisInfo?.decimal_places))
+    val tokenBalance: MutableStateFlow<String> = MutableStateFlow<String>(tokenAmountString(apc.groupInfo.tokenAmount, apc.assetInfo.tokenInfo?.genesisInfo?.decimal_places))
     val nexaPrice: MutableStateFlow<String> = MutableStateFlow("")
-    val assetQty: MutableStateFlow<String> = MutableStateFlow("1")
+    val assetsForSale: MutableStateFlow<String> = MutableStateFlow("1")
 
     init {
         asset.value = apc.assetInfo
@@ -36,8 +36,8 @@ class CreateAssetOfferViewModel(apc: AssetPerAccount): ViewModel() {
     fun reset()
     {
         nexaPrice.value = ""
-        assetQty.value = "1"
-        amt.value = ""
+        assetsForSale.value = "1"
+        tokenBalance.value = ""
         name.value = ""
     }
 
@@ -100,7 +100,7 @@ class CreateAssetOfferViewModel(apc: AssetPerAccount): ViewModel() {
             return
         }
         val priceInSatoshis = price * 100
-        val assetQty = assetQty.value.toLongOrNull()
+        val assetQty = assetsForSale.value.toLongOrNull()
         if (assetQty == null || assetQty <= 0L)
         {
             displayWarning(i18n(S.setTheAssetAmount))
@@ -138,7 +138,7 @@ fun CreateAssetOfferScreen(asset: AssetPerAccount, viewModel: CreateAssetOfferVi
             viewModel.reset()
         viewModel.asset.value = asset.assetInfo
         viewModel.uniqueAsset.value = asset.groupInfo.isSubgroup() && asset.groupInfo.tokenAmount == 1L
-        viewModel.amt.value = tokenAmountString(asset.groupInfo.tokenAmount, asset.assetInfo.tokenInfo?.genesisInfo?.decimal_places)
+        viewModel.tokenBalance.value = tokenAmountString(asset.groupInfo.tokenAmount, asset.assetInfo.tokenInfo?.genesisInfo?.decimal_places)
         viewModel.name.value = (if ((nft != null) && (nft.title.isNotEmpty() == true)) nft.title else assetInfo.nameObservable.value ?: group)
     }
 
@@ -177,16 +177,16 @@ fun CreateAssetOffer(viewModel: CreateAssetOfferViewModel)
 
         if (!uniqueAsset)
         {
-            Text(i18n(S.AssetAmountName) % mapOf("amount" to viewModel.amt.collectAsState().value, "assetName" to viewModel.name.collectAsState().value))
+            Text(i18n(S.AssetAmountName) % mapOf("amount" to viewModel.tokenBalance.collectAsState().value, "assetName" to viewModel.name.collectAsState().value))
             WallyNumericInputFieldAsset(
-              amountString = viewModel.assetQty.collectAsState().value,
+              amountString = viewModel.assetsForSale.collectAsState().value,
               label = i18n(S.amountPlain),
               placeholder = i18n(S.enterAmount) % mapOf("assetName" to (asset.name ?: "")),
               decimals = asset.tokenInfo?.genesisInfo?.decimal_places ?: 0,
               isReadOnly = false,
               hasIosDoneButton = true,
               onValueChange = {
-                  viewModel.assetQty.value = it
+                  viewModel.assetsForSale.value = it
               }
             )
         }
