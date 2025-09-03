@@ -62,6 +62,7 @@ fun AssetListItem(asset: AssetPerAccount, tx: RecentTransactionUIData)
       colors = ListItemDefaults.colors(
         containerColor = wallyPurpleExtraLight
       ),
+      // Show receive or send
       leadingContent = {
           Row {
               Icon(
@@ -73,6 +74,7 @@ fun AssetListItem(asset: AssetPerAccount, tx: RecentTransactionUIData)
               )
           }
       },
+      // Show the asset information
       headlineContent = {
           Row(
             modifier = Modifier.fillMaxWidth(),
@@ -109,16 +111,31 @@ fun AssetListItem(asset: AssetPerAccount, tx: RecentTransactionUIData)
               }
           }
       },
+      // Show the asset image and quantity
         trailingContent = {
-            Box (
+            Column (
                 modifier = Modifier
                     .wrapContentSize()
+                    // If the user click on the asset image, go to the page that shows that asset in detail.
                     .clip(RoundedCornerShape(16.dp)).clickable {
-                        nav.go(ScreenId.Assets)
-                    }
+                        nav.go(ScreenId.Assets, assetInfo.groupId.toByteArray())
+                    },
+              horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                var iconSize = 60.dp
+                if (asset.groupInfo.tokenAmount != 1L)
+                {
+                    // Show asset quantity transferred
+                    Text(
+                      text = asset.tokenDecimalFromFinestUnit(asset.groupInfo.tokenAmount).toPlainString(),
+                      fontWeight = FontWeight.Bold,
+                      fontSize = 18.sp,
+                      color = wallyPurple,
+                    )
+                    iconSize = 42.dp  // This assumes the user hasn't scaled.  But if the user is scaling the fonts its probably better for the user if we use more vertical space for each item
+                }
                 MpMediaView(assetInfo.iconImage, assetInfo.iconBytes, assetInfo.iconUri?.toString(), hideMusicView = true) { mi, draw ->
-                    val m = Modifier.background(Color.Transparent).size(60.dp)
+                    val m = Modifier.background(Color.Transparent).size(iconSize)
                     draw(m)
                 }
             }
@@ -133,6 +150,7 @@ fun RecentTransactionListItem(tx: RecentTransactionUIData)
       colors = ListItemDefaults.colors(
         containerColor = wallyPurpleExtraLight
       ),
+      // Show whether the Nexa was sent or received
       leadingContent = {
           Row {
               Icon(
@@ -144,6 +162,7 @@ fun RecentTransactionListItem(tx: RecentTransactionUIData)
               )
           }
       },
+      // Show Nexa transfer details like amount and date
       headlineContent = {
           Row(
             modifier = Modifier.fillMaxWidth(),
@@ -158,6 +177,7 @@ fun RecentTransactionListItem(tx: RecentTransactionUIData)
                   ) {
                       ResImageView("icons/nexa_icon.png", Modifier.size(16.dp), "Blockchain icon")
                       Spacer(Modifier.width(8.dp))
+                      // Nexa transferred
                       Text(
                         text = tx.amount,
                         fontWeight = FontWeight.Bold,
@@ -166,6 +186,7 @@ fun RecentTransactionListItem(tx: RecentTransactionUIData)
                       )
                   }
                   Spacer(modifier = Modifier.height(4.dp))
+                  // Date of transfer
                   Text(
                     text = tx.date,
                     fontSize = 12.sp,

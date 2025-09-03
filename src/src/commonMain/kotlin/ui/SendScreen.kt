@@ -717,9 +717,9 @@ fun SendScreenContent(
                 }
                 if (sendingTheseAssets.isNotEmpty())
                 {
-                    Spacer(Modifier.height(16.dp))
+                    Spacer(Modifier.height(12.dp))
                     AssetsList(sendingTheseAssets, true, viewModel)
-                    Spacer(Modifier.height(160.dp))
+                    Spacer(Modifier.height(200.dp))  // Space this so editing the amount of an asset is not underneath the soft keyboard
                 }
             }
         }
@@ -1037,17 +1037,23 @@ fun AssetListItemEditable(assetPerAccount: AssetPerAccount, editable: Boolean = 
         else // Otherwise show the amount (and let it be edited)
         {
             val amount = assetPerAccount.editableAmount ?: BigDecimal.ZERO
-            if (amount > BigDecimal.ONE)
-                Text(i18n(S.AmountWithValue) % mapOf("amt" to amount.toString()))
-            else if (amount == BigDecimal.ONE || amount == BigDecimal.ZERO)
-                Text(i18n(S.AmountWithValue) % mapOf("amt" to "1"))
 
-            if (expandable && editable)
+            // If we are editing the amount, we can't keep showing the amount here, or the number here and in the edit box are inconsistent (or redundant).
+            // We also should not show the edit box when confirming because the field is not editable at that point.  That confuses the user.
+            if (!(expandable && editable) || isConfirming)
+            {
+                if (amount > BigDecimal.ONE)
+                    Text(i18n(S.AmountWithValue) % mapOf("amt" to amount.toPlainString()))
+                else if (amount == BigDecimal.ONE || amount == BigDecimal.ZERO)
+                    Text(i18n(S.AmountWithValue) % mapOf("amt" to "1"))
+            }
+            else
+            {
                 AnimatedVisibility(visible = expanded) {
                     WallyNumericInputFieldAsset(
                       amountString = quantity,
                       label = i18n(S.amountPlain),
-                      placeholder = i18n(S.enterAmount),
+                      placeholder = i18n(S.enterAmount) % mapOf("assetName" to name),
                       decimals = assetPerAccount.assetInfo.tokenInfo?.genesisInfo?.decimal_places ?: 0,
                       isReadOnly = isConfirming,
                       hasIosDoneButton = !isConfirming,
@@ -1060,6 +1066,7 @@ fun AssetListItemEditable(assetPerAccount: AssetPerAccount, editable: Boolean = 
                       }
                     )
                 }
+            }
         }
     }
 }
@@ -1124,6 +1131,10 @@ fun DoneButtonOptional(mod: Modifier = Modifier, onClick: () -> Unit = {})
     }
 }
 
+
+// Predeclare regex if possible because regex compilation is actually nontrivial
+private val WholeNumbersRegex = Regex("^\\d*\$")
+
 @Composable
 fun WallyNumericInputFieldAsset(
   amountString: String,
@@ -1140,23 +1151,28 @@ fun WallyNumericInputFieldAsset(
     val isIos = !platform().hasGallery
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    // Validate input and allow max 2 decimal places
-    fun validateInput(input: String): Boolean {
+    // Validate input and allow max decimals decimal places
+    fun validateInput(input: String): String?
+    {
         val regex = if (decimals != 0)
         // Allow empty input or input that matches the regex for numbers with max 2 decimal places
-            Regex("^\\d*(\\.\\d{0,$decimals})?\$")
+            Regex("^\\d*(\\.\\d{0,$decimals})?")
         else
         // Allow only whole numbers (no decimals)
-            Regex("^\\d*\$")
-        return input.matches(regex)
+            WholeNumbersRegex
+        val match = regex.find(input)
+        if (match == null) return null
+        return match.value
     }
 
     Row {
         OutlinedTextField(
           value = amountString,
           onValueChange = { newValue ->
-              if (validateInput(newValue)) {
-                  onValueChange(newValue)
+              val s = validateInput(newValue)
+              if (s != null)
+              {
+                  onValueChange(s)
               }
           },
           keyboardOptions = KeyboardOptions(

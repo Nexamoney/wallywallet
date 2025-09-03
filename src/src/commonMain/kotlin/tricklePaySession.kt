@@ -995,8 +995,8 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
 
         if (d.assetInfo == TdppAction.DENY) return TdppAction.DENY
 
-        val scriptTemplateHex = uri.getQueryParameter("af")
-        if (scriptTemplateHex == null)
+        val scriptTemplateHexList = uri.getQueryParameters("af")
+        if (scriptTemplateHexList.isEmpty())
         {
             throw TdppException(S.BadWebLink, "missing 'af' parameter")
         }
@@ -1004,16 +1004,18 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         val chalbyStr = uri.getQueryParameter("chalby")
         val chalby = chalbyStr?.fromHex()
 
-        val stemplate = SatoshiScript(chainSelector!!, SatoshiScript.Type.SATOSCRIPT, scriptTemplateHex.fromHex())
-        LogIt.info(sourceLoc() + ": Asset filter: " + stemplate.toHex() + " ASM: " + stemplate.toAsm())
-
-
         val acc = getRelevantAccount()
         val wal = acc.wallet
         val challengerId = host?.toByteArray()
 
         val matches = mutableListOf<TricklePayAssetInfo>()
-        wal.forEachUtxo { spendable ->
+
+        for (scriptTemplateHex in scriptTemplateHexList)
+        {
+            val stemplate = SatoshiScript(chainSelector!!, SatoshiScript.Type.SATOSCRIPT, scriptTemplateHex.fromHex())
+            LogIt.info(sourceLoc() + ": Asset filter: " + stemplate.toHex() + " ASM: " + stemplate.toAsm())
+
+            wal.forEachUtxo { spendable ->
                 val constraint = spendable.priorOutScript
                 if (constraint.matches(stemplate, true) != null)
                 {
@@ -1038,7 +1040,8 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                     //val tryAgain = constraint.matches(stemplate, true)
                     //LogIt.info(tryAgain.toString())
                 }
-            false
+                false
+            }
         }
 
         assetInfoList = TricklePayAssetList(matches)
