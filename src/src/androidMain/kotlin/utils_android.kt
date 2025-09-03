@@ -335,3 +335,9 @@ actual fun openUrl(url: String) {
         appContext.startActivity(intent)
     }
 }
+
+// Not adding Android yet because it requires Google Play services
+// See reference implementation/library here: https://github.com/jQrgen/kmp-app-review
+actual fun getReviewManager(): InAppReviewDelegate? = null
+
+actual fun requestInAppReview() {}
