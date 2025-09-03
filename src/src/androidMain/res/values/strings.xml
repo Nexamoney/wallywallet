@@ -790,7 +790,7 @@ Thank you and enjoy your new wallet!</string>
     <string name="confirmSend">Confirm send</string>
 
     <string name="syncing">Syncing...</string>
-    <string name="enterAmount">Enter $assetName amount</string>
+    <string name="enterAmount">Enter %assetName amount</string>
     <string name="fee">Fee</string>
 
     <string name="connectionWarning">Warning: No blockchain/network connection is available. If you send now, the recipient will not immediately see this transfer. The send will be issued once connectivity is restored.</string>
@@ -798,6 +798,7 @@ Thank you and enjoy your new wallet!</string>
     <string name="Sell">Sell</string>
 
     <string name="CreateAnOffer">Create an Offer</string>
+    <string name="offerCreated">Offer created</string>
 
     <string name="Price">Price</string>
     <string name="NexaPrice">Enter Nexa price</string>

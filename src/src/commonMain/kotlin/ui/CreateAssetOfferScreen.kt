@@ -21,7 +21,7 @@ import org.nexa.libnexakotlin.*
 private val LogIt = GetLog("BU.wally.createAssetOffer")
 
 
-class CreateAssetOfferViewModel(apc: AssetPerAccount): ViewModel() {
+class CreateAssetOfferViewModel(val apc: AssetPerAccount): ViewModel() {
     val asset: MutableStateFlow<AssetInfo> = MutableStateFlow(apc.assetInfo)
     val name: MutableStateFlow<String> = MutableStateFlow((if ((asset.value.nft != null) && (asset.value.nft?.title?.isNotEmpty() == true)) asset.value.nft?.title else asset.value.nameObservable.value ?: apc.groupInfo.groupId.toStringNoPrefix()) ?: "")
     val uniqueAsset :MutableStateFlow<Boolean> = MutableStateFlow(apc.groupInfo.isSubgroup() && apc.groupInfo.tokenAmount == 1L)
@@ -57,7 +57,7 @@ class CreateAssetOfferViewModel(apc: AssetPerAccount): ViewModel() {
         tx.add(txOutputFor(myAddress, grpAmt, gid))
         // Here I'm saying "complete this transaction by funding (adding inputs for) any tokens that are being sent", and just above I added an output to send some tokens.
         // So this call is going to populate the transaction with inputs that pull in the tokens needed, AND may add an token change payment to myself if it had to pull in too many.
-        txCompleter(tx, MIN_CONFIRMS, TxCompletionFlags.FUND_GROUPS, changeAddress = myAddress)
+        txCompleter(tx, MIN_CONFIRMS, TxCompletionFlags.PARTIAL or TxCompletionFlags.FUND_GROUPS, changeAddress = myAddress)
         assert(tx.inputs.size > 0)
         // ok get rid of that output.  We CANNOT clear because txCompleter may have added an output of token change.
         tx.outputs.removeAt(0)
@@ -89,9 +89,8 @@ class CreateAssetOfferViewModel(apc: AssetPerAccount): ViewModel() {
 
     fun createOffer()
     {
-        // val tx = txFor(ChainSelector.NEXA)
-        // val inputs = txInputFor()
-        val groupId = asset.value.groupId
+        val a = asset.value  // Get this once so it cannot be changed during this creation (even though nothing is doing that, its safer)
+        val groupId = a.groupId
 
         val price = nexaPrice.value.toLongOrNull()
         if (price == null || price <= 0L)
