@@ -71,6 +71,11 @@ lint:
   script:
     - ./gradlew lint -x :src:lintDebug # Skips android linter with 356 errors, 500 warnings.
 
+defaultGradle:
+  stage: lint
+  script:
+    - ./gradlew --info
+
 appJar:
   stage: assemble
   script:
@@ -106,6 +111,7 @@ build:
       - src/build/reports/tests/testDebugUnitTest/index.html
       - src/build/reports/tests/testDebugUnitTest/**/**.html
       - src/build/reports/lint-results-debug.html
+      - build/reports/problems/problems-report.html
 
 compileIos:
   stage: assemble
