@@ -183,8 +183,7 @@ Good luck!
     <string name="NoNodes">No blockchain access</string>
     <!-- The user chose not to proceed with some operation -->
     <string name="cancelled">cancelled</string>
-    <!-- The QR code you scanned is no longer valid -->
-    <string name="refreshQR">refresh QR code</string>
+    <string name="refreshQR">Server connection lost</string>
     <!-- Issued if initialization is not yet complete, but user tries to access the services -->
     <string name="pleaseWait">please wait</string>
     <!-- Uses in the sense of attempting an operation, such as connecting to a node  -->
