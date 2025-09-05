@@ -27,7 +27,7 @@ import platform.StoreKit.SKStoreReviewController
 import platform.UIKit.*
 import wpw.src.generated.resources.Res
 import kotlin.math.pow
-import java.time.Instant
+import org.nexa.libnexakotlin.millinow
 
 private val LogIt = GetLog("BU.wally.utils_ios")
 
@@ -393,9 +393,9 @@ class AppStoreInAppReviewManager(private val params: AppStoreInAppReviewInitPara
 actual fun getReviewManager(): InAppReviewDelegate? = AppStoreInAppReviewManager(AppStoreInAppReviewInitParams("id6469619075"))
 
 // Requests in-app review and waits one month to ask again if no review is given.
-actual fun requestInAppReview() {
-    // TODO: Replace this with the new time function?
-    val now = Instant.now().epochSecond
+actual fun requestInAppReview()
+{
+    val now = millinow()/1000
     val lastReviewRequest = wallyApp?.preferenceDB?.getString(LAST_REVIEW_TIMESTAMP, "0")?.toLong() ?: now
     val oneWeekInSeconds = 30 * 24 * 60 * 60
 

@@ -107,27 +107,9 @@ class AssetPerAccount(
   var editableAmount: BigDecimal? = null
 )
 {
-    fun tokenDecimalToFinestUnit(amt: BigDecimal): Long
-    {
-        val decimalPlaces = assetInfo.tokenInfo?.genesisInfo?.decimal_places ?: 0
-        return (amt * BigDecimal.fromInt(10, ).pow(decimalPlaces)).toLong()
-    }
-
-    fun tokenDecimalFromString(s: String): BigDecimal
-    {
-        val dp = assetInfo.tokenInfo?.genesisInfo?.decimal_places ?: 0
-        val dm = tokenDecimalMode(dp)
-        val bd = BigDecimal.fromString(s, dm)
-        return bd
-    }
-
-    fun tokenDecimalFromFinestUnit(finestAmount: Long): BigDecimal
-    {
-        val decimalPlaces = assetInfo.tokenInfo?.genesisInfo?.decimal_places ?: 0
-        var tmp = BigDecimal.fromLong(finestAmount,tokenDecimalMode(decimalPlaces))
-        tmp = tmp/(BigDecimal.fromInt(10).pow(decimalPlaces ?: 0))
-        return tmp
-    }
+    fun tokenDecimalToFinestUnit(amt: BigDecimal): Long = assetInfo.tokenDecimalToFinestUnit(amt)
+    fun tokenDecimalFromString(s: String): BigDecimal = assetInfo.tokenDecimalFromString(s)
+    fun tokenDecimalFromFinestUnit(finestAmount: Long) = assetInfo.tokenDecimalFromFinestUnit(finestAmount)
 }
 
 val assetCheckTrigger = Gate("assetCheckTrigger")
@@ -629,6 +611,33 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
                 }
             }
         }
+    }
+
+    /** Given a BigDecimal amount, convert this to an integral quantity of this asset in its finest unit.
+     * Basically, apply the "decimal_places" genesis info field to the passed BigDecimal */
+    fun tokenDecimalToFinestUnit(amt: BigDecimal): Long
+    {
+        val decimalPlaces = tokenInfo?.genesisInfo?.decimal_places ?: 0
+        return (amt * BigDecimal.fromInt(10, ).pow(decimalPlaces)).toLong()
+    }
+
+    /** Given a string, convert it into a BigDecimal that respects the decimal_places field in the genesis info */
+    fun tokenDecimalFromString(s: String): BigDecimal
+    {
+        val dp = tokenInfo?.genesisInfo?.decimal_places ?: 0
+        val dm = tokenDecimalMode(dp)
+        val bd = BigDecimal.fromString(s, dm)
+        return bd
+    }
+
+    /** Given a quantity in finest units, use the genesis info big_decimal field to convert this to a displayable quantity
+     */
+    fun tokenDecimalFromFinestUnit(finestAmount: Long): BigDecimal
+    {
+        val decimalPlaces = tokenInfo?.genesisInfo?.decimal_places ?: 0
+        var tmp = BigDecimal.fromLong(finestAmount,tokenDecimalMode(decimalPlaces))
+        tmp = tmp/(BigDecimal.fromInt(10).pow(decimalPlaces ?: 0))
+        return tmp
     }
 
 }

@@ -89,7 +89,12 @@ fun AssetOfferScreen(offer: AssetOffer, viewModel: AssetOfferViewModel = viewMod
         i18n(S.scanToBuyOne) % mapOf("name" to name)
     // Display the amount if the offer is for a fungible token/asset
     else
-        i18n(S.scanToBuySeveral) % mapOf("amount" to offer.assetQty.toString(), "name" to name)
+        i18n(S.scanToBuySeveral) % mapOf("amount" to  asset.tokenDecimalFromFinestUnit(offer.assetQty).toPlainString(), "name" to name)
+
+    // If the user leaves without the offer being taken, release the inputs back into the pool of usable UTXOs
+    nav.onDepart {
+        wallyApp!!.focusedAccount.value!!.wallet.abortTransaction(offer.transaction)
+    }
 
     val mod = if (devMode)
     {
