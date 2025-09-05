@@ -21,7 +21,7 @@ import org.nexa.libnexakotlin.*
 private val LogIt = GetLog("BU.wally.createAssetOffer")
 
 
-class CreateAssetOfferViewModel(val apc: AssetPerAccount): ViewModel() {
+class CreateAssetOfferViewModel(apc: AssetPerAccount): ViewModel() {
     val asset: MutableStateFlow<AssetInfo> = MutableStateFlow(apc.assetInfo)
     val name: MutableStateFlow<String> = MutableStateFlow((if ((asset.value.nft != null) && (asset.value.nft?.title?.isNotEmpty() == true)) asset.value.nft?.title else asset.value.nameObservable.value ?: apc.groupInfo.groupId.toStringNoPrefix()) ?: "")
     val uniqueAsset :MutableStateFlow<Boolean> = MutableStateFlow(apc.groupInfo.isSubgroup() && apc.groupInfo.tokenAmount == 1L)
@@ -99,8 +99,15 @@ class CreateAssetOfferViewModel(val apc: AssetPerAccount): ViewModel() {
             return
         }
         val priceInSatoshis = price * 100
-        val assetQty = assetsForSale.value.toLongOrNull()
-        if (assetQty == null || assetQty <= 0L)
+        val assetQty = try
+        {
+            a.tokenDecimalToFinestUnit(a.tokenDecimalFromString(assetsForSale.value))
+        } catch(_: ArithmeticException)
+        {   // The validation in the dialog box ought to make it impossible to enter in an illegal number, but just in case catch a parsing problem and print a warning
+            displayWarning(i18n(S.setTheAssetAmount))
+            return
+        }
+        if (assetQty <= 0L)  // It makes no sense to offer 0 or a negative amount of something.
         {
             displayWarning(i18n(S.setTheAssetAmount))
             return

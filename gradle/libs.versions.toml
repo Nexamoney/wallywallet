@@ -8,7 +8,7 @@ atomicfu = "0.29.0"
 barcodeScanning = "17.3.0"
 bigNumVersion = "0.3.10" # https://github.com/ionspin/kotlin-multiplatform-bignum
 
-bu_libnexakotlin = "0.5.9" # https://gitlab.com/nexa/libnexakotlin
+bu_libnexakotlin = "0.5.11" # https://gitlab.com/nexa/libnexakotlin
 bu_mpthreads = "0.5.1" # https://gitlab.com/nexa/mpthreads
 bu_nexaRpc = "1.6.2" # https://gitlab.com/nexa/nexarpckotlin
 
@@ -19,14 +19,14 @@ jsvg = "2.0.0"
 junitKtx = "1.3.0"
 kotlinxDatetime = "0.7.1"
 ksoup = "0.2.5"
-lifecycleViewmodelCompose = "2.9.1"
+lifecycleViewmodelCompose = "2.9.3"
 lottieVersion = "6.6.7"
 ktorVersion = "3.2.3" # https://github.com/ktorio/ktor
 material = "1.12.0"
 materialIconsExtended = "1.7.8"
 media3Exoplayer = "1.8.0"
 nativeDriver = "2.1.0"
-kotlin = "2.2.20-RC" # https://github.com/JetBrains/kotlin/releases
+kotlin = "2.2.20-RC2" # https://github.com/JetBrains/kotlin/releases
 compose = "1.8.2" # https://github.com/JetBrains/compose-multiplatform/releases
 composeAndroid = "1.9.0" # The Android-only version of compose. This version occasionally deviates from the multiplatform version of compose.
 android-gradle-plugin = "8.12.0" # https://developer.android.com/build/releases/gradle-plugin
