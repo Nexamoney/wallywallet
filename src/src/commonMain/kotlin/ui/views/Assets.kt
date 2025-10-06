@@ -3,9 +3,12 @@ package info.bitcoinunlimited.www.wally.ui.views
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -22,6 +25,8 @@ import kotlinx.coroutines.launch
 open class AssetViewModel: ViewModel()
 {
     val assets = MutableStateFlow(listOf<AssetInfo>())
+    val currentPosition = MutableStateFlow(0)
+
     var assetsJob: Job? = null
     var accountJob: Job? = null
 
@@ -94,13 +99,22 @@ fun AssetCarousel(viewModel: AssetViewModel = androidx.lifecycle.viewmodel.compo
 {
     val assets = viewModel.assets.collectAsState().value
     val assetList = assets.toList().sortedBy { it.nft?.title ?: it.name ?: it.ticker ?: it.groupId.toString() }
+    val listState = rememberSaveable(saver = LazyListState.Saver) {
+        LazyListState(firstVisibleItemIndex = viewModel.currentPosition.value)
+    }
+
+    // Sync ViewModel with scroll position
+    LaunchedEffect(listState.firstVisibleItemIndex) {
+        viewModel.currentPosition.value = listState.firstVisibleItemIndex
+    }
 
     LazyRow(
       modifier = Modifier.fillMaxWidth().padding(start = 0.dp),
-      horizontalArrangement = Arrangement.spacedBy(6.dp)
+      horizontalArrangement = Arrangement.spacedBy(6.dp),
+      state = listState
     ) {
 
-        assetList.forEachIndexed { idx,assetInfo ->
+        assetList.forEachIndexed { idx, assetInfo ->
             item {
                 AssetCarouselItem(assetInfo, leadSpacing = if (idx == 0) 6.dp else 0.dp)
             }
