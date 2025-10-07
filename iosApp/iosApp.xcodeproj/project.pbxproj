@@ -264,6 +264,7 @@
 		0BB85D222DDD139E00671EEB /* WallyDropdownMenu.kt */ = {isa = PBXFileReference; lastKnownFileType = text; path = WallyDropdownMenu.kt; sourceTree = "<group>"; };
 		0BF0351A2C62CCD500E06677 /* assets.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = assets.kt; sourceTree = "<group>"; };
 		0BF0351C2C62CCF500E06677 /* assets_ios.kt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = assets_ios.kt; sourceTree = "<group>"; };
+		0BF0A93C2E95018000BAD96D /* iosApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = file; path = iosApp.xctestplan; sourceTree = "<group>"; };
 		2152FB032600AC8F00CF470E /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
 		7555FF7B242A565900829871 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -501,6 +502,7 @@
 		7555FF72242A565900829871 = {
 			isa = PBXGroup;
 			children = (
+				0BF0A93C2E95018000BAD96D /* iosApp.xctestplan */,
 				0B551BDB2AFE90C900BA0052 /* Kotlin Debug */,
 				8E1ECA6D2AAA001D00759B4F /* strings_ca.bin */,
 				8E1ECA722AAA001F00759B4F /* strings_de.bin */,
