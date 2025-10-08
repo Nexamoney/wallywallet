@@ -23,10 +23,10 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 Run all the tests on emulator
 
-### ios beta
+### ios testflight_internal
 
 ```sh
-[bundle exec] fastlane ios beta
+[bundle exec] fastlane ios testflight_internal
 ```
 
 Push a new beta build to TestFlight internal testing
