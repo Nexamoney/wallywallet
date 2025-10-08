@@ -578,7 +578,7 @@ android {
         managedDevices.devices {
             maybeCreate<ManagedVirtualDevice>("pixel5").apply {
                 device = "Pixel 5"
-                apiLevel = 34
+                apiLevel = libs.versions.androidSdk.get().toInt()
                 systemImageSource = "aosp"
             }
         }
