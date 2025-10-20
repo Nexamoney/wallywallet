@@ -7,6 +7,7 @@ import info.bitcoinunlimited.www.wally.ui.IdentityEditScreen
 import info.bitcoinunlimited.www.wally.ui.IdentityScreen
 import info.bitcoinunlimited.www.wally.ui.IdentitySession
 import info.bitcoinunlimited.www.wally.ui.theme.WallyPageBase
+import info.bitcoinunlimited.www.wally.ui.views.AccountPill
 
 
 @Composable
@@ -14,8 +15,9 @@ import info.bitcoinunlimited.www.wally.ui.theme.WallyPageBase
 fun IdentityScreenPreview()
 {
     val fakes = setUpPreview(accounts = 5)
+    val pill = AccountPill(fakes.accounts.toList())
     Box(modifier = WallyPageBase) {
-        IdentityScreen(fakes.accounts.first(), IdentitySession(null, null, {a,b, c ->}), fakes.nav)
+        IdentityScreen(fakes.accounts.first(),  pill, IdentitySession(null,  null, {a,b, c -> true}), fakes.nav)
     }
 }
 

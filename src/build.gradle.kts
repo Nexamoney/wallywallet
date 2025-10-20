@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter
 
 // Wally Wallet version
 // On version bump: Run ./gradlew generateVersionFile and commit the updates iosApp/iosApp/info.plist file
-val versionNumber = "3.9.01"
+val versionNumber = "3.9.02"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 
 val secSinceEpoch = Instant.now().epochSecond
@@ -110,7 +110,7 @@ kotlin {
         }
         tasks.withType<KotlinCompile>() {
             compilerOptions {
-                jvmTarget.set(JvmTarget.JVM_17)
+                jvmTarget.set(JvmTarget.JVM_21)
             }
         }
         compilations.getByName("main") {
@@ -125,7 +125,7 @@ kotlin {
         androidTarget {
             tasks.withType<KotlinCompile>() {
                 compilerOptions {
-                    jvmTarget.set(JvmTarget.JVM_17)
+                    jvmTarget.set(JvmTarget.JVM_21)
                 }
             }
 
@@ -133,6 +133,12 @@ kotlin {
             instrumentedTestVariant {
                 sourceSetTree.set(KotlinSourceSetTree.test)
             }
+            /*
+            dependencies {
+                androidTestImplementation("androidx.compose.ui:ui-test-junit4-android:1.9.0")
+                debugImplementation("androidx.compose.ui:ui-test-manifest:1.9.0")
+            }
+             */
         }
     }
 
@@ -297,7 +303,6 @@ kotlin {
                 implementation(kotlin("test"))
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
-                //implementation(kotlin("LibNexaTests"))
                 implementation(libs.kotlinx.coroutines.test)
                 implementation(libs.nexa.rpc)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
@@ -425,8 +430,10 @@ kotlin {
 
                     // Animation
                     implementation(libs.lottie.compose)
-
                     implementation(libs.androidx.material.icons.extended)
+
+                    // This is only for pulling in the android photo picker
+                    implementation(libs.play.services.base)
                 }
             }
         }
@@ -601,8 +608,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     /*
     kotlinOptions {
@@ -834,7 +841,7 @@ kotlin {
             }
         }
     }
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 // Restrict test coverage reporting using the Kover library to Android and JVM targets

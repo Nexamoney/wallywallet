@@ -1,7 +1,7 @@
 package info.bitcoinunlimited.www.wally
 
 /* This gives a Map a list interface, sorted by the passed comparator */
-class ListifyMap<K, E>(val origmap: Map<K, E>, var filterPredicate: (Map.Entry<K, E>) -> Boolean, var comparator: Comparator<K>): List<E>
+class ListifyMap<K, E>(origmap: Map<K, E>, filterPredicate: (Map.Entry<K, E>) -> Boolean, var comparator: Comparator<K>): List<E>
 {
     protected var map = origmap.filter(filterPredicate)
     protected var order: List<K> = map.keys.sortedWith(comparator)
@@ -14,6 +14,25 @@ class ListifyMap<K, E>(val origmap: Map<K, E>, var filterPredicate: (Map.Entry<K
     }
 
     override fun isEmpty(): Boolean = map.isEmpty()
+
+    fun reprocess(comp: Comparator<K>, filterPredicate: (Map.Entry<K, E>) -> Boolean)
+    {
+        comparator = comp
+        map = map.filter(filterPredicate)
+        changed()
+    }
+
+    fun refilter(filterPredicate: (Map.Entry<K, E>) -> Boolean)
+    {
+        map = map.filter(filterPredicate)
+        changed()
+    }
+
+    fun reorder(comp: Comparator<K>)
+    {
+        comparator = comp
+        changed()
+    }
 
     fun changed()
     {
@@ -53,17 +72,35 @@ class ListifyMap<K, E>(val origmap: Map<K, E>, var filterPredicate: (Map.Entry<K
 
     override fun subList(fromIndex: Int, toIndex: Int): List<E>
     {
-        TODO("Not yet implemented")
+        if ((fromIndex<0)||(toIndex>order.size)) throw IndexOutOfBoundsException()
+        if (fromIndex>toIndex) throw IllegalArgumentException()
+        return List(toIndex-fromIndex, { map[order[it]]!!})
     }
 
     override fun lastIndexOf(element: E): Int
     {
-        TODO("Not yet implemented")
+        for (idx in order.size-1 downTo 0)
+        {
+            if (map[order[idx]] == element)
+            {
+                return idx
+            }
+        }
+        return -1
     }
 
     override fun indexOf(element: E): Int
     {
-        TODO("Not yet implemented")
+        var ret = 0
+        for (i in order)
+        {
+            if (map[i] == element)
+            {
+                return ret
+            }
+            ret++
+        }
+        return -1
     }
 
     override fun containsAll(elements: Collection<E>): Boolean

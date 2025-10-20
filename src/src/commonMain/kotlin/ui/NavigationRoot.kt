@@ -1231,7 +1231,7 @@ fun NavigationRoot(
                                 ScreenId.TricklePay -> withAccount { act -> TricklePayScreen(act, null, nav) }
                                 ScreenId.Identity -> withAccount { act ->
                                     val idsess = nav.curData.value as? IdentitySession
-                                    IdentityScreen(act, idsess, nav)
+                                    IdentityScreen(act, accountPillViewModel, idsess, nav)
                                 }
 
                                 ScreenId.IdentityEdit -> withAccount { act ->
@@ -1246,7 +1246,7 @@ fun NavigationRoot(
                                 ScreenId.SendToPerm -> withTp { act, ctp -> SendToPermScreen(act, ctp, nav) }
                                 ScreenId.IdentityOp -> withAccount { act ->
                                     val idsess = nav.curData.value as? IdentitySession
-                                    if (idsess != null) IdentityPermScreen(act, idsess, nav)
+                                    if (idsess != null) IdentityPermScreen(idsess, nav)
                                     else nav.back()
                                 }
                                 ScreenId.CreateAssetOffer -> {

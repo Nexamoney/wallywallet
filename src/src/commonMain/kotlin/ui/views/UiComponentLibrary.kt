@@ -8,9 +8,11 @@ import androidx.compose.foundation.interaction.HoverInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Cancel
@@ -529,6 +531,26 @@ fun CenteredSectionText(text: String, modifier: Modifier = Modifier)
 fun CenteredSectionText(text: Int, modifier: Modifier = Modifier) = CenteredSectionText(i18n(text), modifier)
 
 
+/* Styling for the text of titles that appear within a page */
+@Composable
+fun CenteredFittedTitleText(text: String, modifier: Modifier = Modifier)
+{
+    val focusManager = LocalFocusManager.current
+    val st = WallyTitleTextStyle()
+    Box(Modifier.fillMaxWidth())
+    {
+        BasicText(text = text, modifier = Modifier.padding(start = 8.dp, end = 8.dp).align(Alignment.Center).clickable {
+              focusManager.clearFocus()
+          }.then(modifier),
+          style = st,
+          autoSize = TextAutoSize.StepBased(st.fontSize/3, st.fontSize)
+        )
+    }
+}
+
+@Composable
+fun CenteredFittedTitleText(text: Int, modifier: Modifier = Modifier) = CenteredFittedTitleText(i18n(text), modifier)
+
 /** Standard Wally data entry field. */
 @Composable
 fun WallyDataEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, keyboardOptions: KeyboardOptions?=null, bkgCol: Color? = null, onValueChange: ((String) -> Unit)? = null)
@@ -796,6 +818,14 @@ fun WallySectionTextStyle(): TextStyle {
       textAlign = TextAlign.Center,
       fontWeight = FontWeight.Bold,
       fontSize = fontSize
+    )
+}
+
+@Composable
+fun WallyTitleTextStyle(): TextStyle {
+    return MaterialTheme.typography.headlineLarge.copy(
+      color = Color.Black,
+      textAlign = TextAlign.Center
     )
 }
 
@@ -1076,7 +1106,7 @@ fun IconTextButton(
         Modifier
 
     Column(
-      modifier = modifier.wrapContentWidth().wrapContentHeight().padding(
+      modifier = modifier.wrapContentWidth().wrapContentHeight().clickable { onClick() }.padding(
         top = 8.dp,
         bottom = 8.dp,
         start = 2.dp,
@@ -1085,24 +1115,16 @@ fun IconTextButton(
       horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
-          modifier = iconModifier.wrapContentWidth().wrapContentHeight().clickable {
-              onClick()
-          },
+          modifier = iconModifier.wrapContentWidth().wrapContentHeight(),
           imageVector = icon,
           contentDescription = description,
           tint = color,
         )
         Box(
-          modifier = Modifier.wrapContentWidth().wrapContentHeight().clickable {
-              onClick()
-          },
+          modifier = Modifier.wrapContentWidth().wrapContentHeight(),
           contentAlignment = Alignment.Center
         ) {
-            Text(
-              modifier = Modifier.clickable {
-                  onClick()
-              },
-              style = MaterialTheme.typography.labelSmall.copy(
+            Text(style = MaterialTheme.typography.labelSmall.copy(
                 color = color
               ),
               text = description,
@@ -1221,26 +1243,30 @@ fun ConnectionWarning()
     }
 }
 
+/** Standard wally accept/deny button row */
 @Composable
-fun ButtonRowAcceptDeny(accept: () -> Unit, deny: () -> Unit)
+fun ButtonRowAcceptDeny(accept: () -> Unit, deny: () -> Unit, modifier: Modifier = Modifier, acceptText:Int=S.accept, denyText:Int=S.deny, acceptEnabled:Boolean = true)
 {
     Row(
-      modifier = Modifier.fillMaxWidth().padding(0.dp),
+      modifier = modifier.fillMaxWidth().padding(0.dp),
       horizontalArrangement = Arrangement.SpaceAround,
       verticalAlignment = Alignment.CenterVertically
     ) {
-        IconTextButton(
-          icon = Icons.Outlined.Send,
-          modifier = Modifier.weight(1f),
-          description = i18n(S.accept),
-          color = wallyPurple,
-        ) {
-            accept()
+        if (acceptEnabled)
+        {
+            IconTextButton(
+              icon = Icons.Outlined.Send,
+              modifier = Modifier.weight(1f),
+              description = i18n(acceptText),
+              color = wallyPurple,
+            ) {
+                accept()
+            }
         }
         IconTextButton(
           icon = Icons.Outlined.Cancel,
           modifier = Modifier.weight(1f),
-          description = i18n(S.deny),
+          description = i18n(denyText),
           color = wallyPurple,
         ) {
             deny()

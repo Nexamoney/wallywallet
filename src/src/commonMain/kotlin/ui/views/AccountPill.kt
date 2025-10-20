@@ -1,6 +1,14 @@
 package info.bitcoinunlimited.www.wally.ui.views
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.exponentialDecay
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -9,7 +17,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -17,9 +31,14 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.util.VelocityTracker
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
@@ -31,16 +50,23 @@ import info.bitcoinunlimited.www.wally.ui.SyncViewModelImpl
 import info.bitcoinunlimited.www.wally.ui.nav
 import info.bitcoinunlimited.www.wally.ui.theme.wallyPurple
 import info.bitcoinunlimited.www.wally.ui.theme.wallyTileHeader
+import info.bitcoinunlimited.www.wally.ui.views.AccountPillViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.FiatFormat
+import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.millinow
+import kotlin.math.absoluteValue
+import kotlin.math.roundToInt
+import kotlin.math.sign
 
+private val LogIt = GetLog("wally.actpill")
 /*
     Root class for BalanceViewModel used for testing
  */
@@ -182,10 +208,18 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
     // Set which account's balance we are tracking
     abstract fun setAccount(act: Account?)
 
+    // The account choices to show in the pill.  If null, allow swiping through all visible accounts
+    var choices:List<Account>? = null
+        set(v)
+        {
+            field = v
+            if ((v!=null)&&(account.value == null)&&(v.isNotEmpty())) this.setAccount(v.first())
+        }
+
     @Composable
-    fun AccountPillHeader()
+    fun AccountPillHeader(act: Account?)
     {
-        val act = account.collectAsState().value
+        val bal = if (act == account.collectAsState().value) balance else BalanceViewModelImpl(act)
         val currencyCode = act?.uiData()?.currencyCode ?: ""
         // If no account is available, do not show the pill
         if (act == null) return
@@ -203,7 +237,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                  text = balance.cBalanceString(),
+                  text = bal.cBalanceString(),
                   style = ts,
                   textAlign = TextAlign.Center,
                   modifier = mod.testTag("AccountPillBalance"),
@@ -215,7 +249,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
         Row(
           modifier = Modifier.wrapContentHeight()
         ) {
-            val fiatBalance = balance.cFiatBalance()
+            val fiatBalance = bal.cFiatBalance()
             if (fiatBalance.isNotEmpty())
             {
                 Text(
@@ -269,22 +303,17 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
     }
 
     @Composable
-    fun draw(buttonsEnabled: Boolean = true)
+    protected fun renderPill(act: Account?, animatedOffset:Float, buttonsEnabled: Boolean = true)
     {
-        val roundedCorner = 16.dp
-        val act = account.collectAsState().value
         val curSync = act?.wallet?.chainstate?.syncedDate ?: 0
         val offerFastForward = (millinow() / 1000 - curSync) > OFFER_FAST_FORWARD_GAP
-        val uiData = act?.uiData()  // TODO this data needs to be persistent?
+        val uiData = act?.uiData()
         val isFastForwarding = uiData?.fastForwarding ?: false
 
-
-        Box(
-          modifier = Modifier.fillMaxWidth(),
-          contentAlignment = Alignment.Center
-        ) {
+        val roundedCorner = 16.dp
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
             Column(
-              modifier = Modifier
+              modifier = Modifier.offset { IntOffset(animatedOffset.roundToInt(), 0) }
                 .shadow(
                   elevation = 4.dp,
                   shape = RoundedCornerShape(roundedCorner),
@@ -297,7 +326,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                 .background(
                   Brush.linearGradient(
                     colors = listOf(
-                     wallyPurple,
+                      wallyPurple,
                       Color.White.copy(alpha = 0.2f)
                     ),
                     start = Offset(0f, 0f),
@@ -311,7 +340,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
               horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(Modifier.height(8.dp))
-                AccountPillHeader()
+                AccountPillHeader(act)
                 if (buttonsEnabled)
                 {
                     Spacer(Modifier.height(4.dp))
@@ -387,6 +416,96 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
             }
         }
     }
+
+    fun nextAct(dir: Float, cur: Account?, actLst: List<Account>?): Account?
+    {
+        actLst?.let {
+            if (actLst.isNotEmpty())
+            {
+                val myIdx = actLst.indexOf(cur)
+                if (myIdx != -1)
+                {
+                    return actLst[(myIdx + (if (dir > 0) 1 else if (dir<0) -1 else 0)).mod(actLst.size)]
+                }
+            }
+        }
+        return account.value
+    }
+
+    @Composable
+    fun draw(buttonsEnabled: Boolean = true)
+    {
+        val ANI_DUR = 300
+        val act = account.collectAsState().value
+        var boxSize by remember { mutableStateOf(IntSize.Zero) }
+        val scope = rememberCoroutineScope()
+
+        val tw = tween<Float>(ANI_DUR.toInt(), easing = LinearOutSlowInEasing)
+        val animatedOffset = remember { Animatable(0f) }
+
+        var dupSide by remember { mutableStateOf(0f)}
+
+        val actLst = choices ?: wallyApp?.orderedAccounts(true)?.toList()
+
+        Box(modifier = Modifier.fillMaxWidth().onSizeChanged { boxSize = it }.pointerInput(Unit) {
+            var dragAmount = 0f
+            val velocityTracker = VelocityTracker()
+            detectHorizontalDragGestures(
+              onDragStart = { dragAmount = 0f; scope.launch { animatedOffset.stop()} },
+              onDragEnd = {
+                  var changed = false
+                  LogIt.info("velocity ${velocityTracker.calculateVelocity()}")
+                  if ((dragAmount.absoluteValue >= boxSize.width / 5)||(velocityTracker.calculateVelocity().x.absoluteValue>1000))  // dragged far enough or quickly enough
+                  {
+                      wallyApp?.let {
+                          if (account.value == null)  // how would this happen if the pill is showing, but anyway set to first or last depending on swipe dir.
+                          {
+                              if (actLst?.isNotEmpty() == true)
+                              {
+                                  setAccount(if (dragAmount > 0) actLst.first() else actLst.last())
+                                  changed = true
+                              }
+                          }
+                          else
+                          {
+                              changed = true
+                          }
+                      }
+                  }
+                  if (!changed) // let it relax back
+                  {
+                      scope.launch {
+                            animatedOffset.animateTo(0f)
+                      }
+                  }
+                  else  // switching
+                  {
+                      val velocity = velocityTracker.calculateVelocity().x
+                      scope.launch {
+                          // Animate the box entirely off the screen, pulling the other one into the center
+                          animatedOffset.animateTo(boxSize.width.toFloat() * dragAmount.sign, tw, velocity)
+                          setAccount(nextAct(dupSide, account.value, actLst))
+                          // Now snap the original box right on top of the other one, resetting the position
+                          animatedOffset.snapTo(0f)
+                          dupSide = 0f
+                      }
+                  }
+              },
+              onHorizontalDrag = { change, delta ->
+                  change.consume() // mark gesture as handled
+                  dragAmount += delta
+                  if (dragAmount < 0) dupSide = 1f else dupSide = -1f
+                  velocityTracker.addPosition(change.uptimeMillis, change.position)
+                  scope.launch {
+                      animatedOffset.snapTo(dragAmount) // drag directly
+                  }
+              }
+            )
+        }) {
+            renderPill(act, animatedOffset.value, buttonsEnabled)
+            if (dupSide != 0f) renderPill(nextAct(dupSide, account.collectAsState().value, actLst), animatedOffset.value + (dupSide * boxSize.width), buttonsEnabled)
+        }
+    }
 }
 
 class AccountPillViewModelFake(account: MutableStateFlow<Account?>, override val balance: BalanceViewModel = BalanceViewModelImpl(account), override val sync: SyncViewModel = SyncViewModelImpl()): AccountPillViewModel(account)
@@ -398,11 +517,20 @@ class AccountPill(account: MutableStateFlow<Account?>): AccountPillViewModel(acc
 {
     constructor(act: Account?) : this(MutableStateFlow(act))
 
+    constructor(actChoices: List<Account>):this(MutableStateFlow(actChoices.firstOrNull()))
+    {
+        choices = actChoices
+    }
+
     override val balance = BalanceViewModelImpl(account.value)
     override val sync = SyncViewModelImpl()
 
     override fun setAccount(act: Account?)
     {
+        if (choices?.contains(act) == false)
+        {
+            LogIt.info("setting pill to an out-of-bounds account")
+        }
         account.value = act
     }
 
