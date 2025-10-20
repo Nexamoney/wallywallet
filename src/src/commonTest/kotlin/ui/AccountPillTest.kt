@@ -48,7 +48,7 @@ class AccountPillTest:WallyUiTestBase()
                         CompositionLocalProvider(
                           LocalViewModelStoreOwner provides viewModelStoreOwner
                         ) {
-                            ap.AccountPillHeader()
+                            ap.AccountPillHeader(account)
                         }
                     }
                 }

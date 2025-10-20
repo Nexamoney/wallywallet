@@ -601,19 +601,23 @@ open class CommonApp(val runningTests: Boolean)
         }
     }
 
-    // We wouldn't notify if this app produced the Intent from active user input (like QR scan)
-    // but if it came from a long poll, then notify.
-    // Notifying and startActivityForResult produces a double call to that intent
-    // the callback takes what is loosely the response URL, the response POST data, and a true/false value that if provided,
-    // sums up whether the paste was generally "accepted" or "rejected"
-    fun handlePaste(urlStrParam: String, then: ((String,String, Boolean?)->Unit)?= null): Boolean
+    /**  Handle an app-wide paste, scanned QR code, or any other way of getting a command into the wallet
+     * @param urlStrParam the pasted info
+     * @param autoHandle if true, do whatever you are supposed to do
+     * @param then After analysis (and execution if autoHandle) call this function.  The parameters tell you what the next step ought to be (or was if autohandled)
+
+      * We wouldn't notify if this app produced the Intent from active user input (like QR scan) but if it came from a long poll, then notify.
+      * Notifying and startActivityForResult produces a double call to that intent
+      * the callback takes what is loosely the response URL, the response POST data, and a true/false value that if provided,
+      * sums up whether the paste was generally "accepted" or "rejected"
+    */
+    fun handlePaste(urlStrParam: String, autoHandle: Boolean = true, then: ((String,String, Boolean?)->Unit)?= null): Boolean
     {
         var urlStr = urlStrParam
         try
         {
             var uri = Uri.parse(urlStr)
             var scheme = uri.scheme?.lowercase()
-            // TODO val notify = amIbackground()
             val app = wallyApp
             if (app == null) return false // should never occur
 
@@ -648,12 +652,12 @@ open class CommonApp(val runningTests: Boolean)
             }
             else uriToChain[scheme]
             LogIt.info("QR code refers to $whichChain ${chainToName[whichChain]}")
-
+            val attribs = uri.queryMap()
             if (whichChain != null)  // handle a blockchain address (by preparing the send to)
             {
-                val attribs = uri.queryMap()
-
                 val stramt = attribs["amount"]
+                val strlabel = attribs["label"]
+                val strmessage = attribs["message"]
                 var amt: BigDecimal? = null
 
                 if (stramt != null)
@@ -678,6 +682,7 @@ open class CommonApp(val runningTests: Boolean)
                     // providing no amount is fine
                 }
 
+                val note = (if (strlabel != null) strlabel.decodeURLPart() + ": " else "") + (strmessage?.decodeURLPart() ?: "")
                 // When deep linking from native camera that is currently only supported on iOS, and handling the
                 // String content from the QR code navigating directly to the desired screen is enough.
                 // I don't think we need an external GUI drive to do this now that nav is a global variable
@@ -686,17 +691,55 @@ open class CommonApp(val runningTests: Boolean)
                   data = SendScreenNavParams(
                     toAddress = chainToURI[whichChain] + ":" + uri.body(),
                     amount = amt,
-                    note = attribs["label"]
+                    note = note
                   )
                 )
 
             }
             else if (scheme == IDENTITY_URI_SCHEME)
             {
-                HandleIdentity(uri, then)
+                if (then != null) HandleIdentity(uri, autoHandle, { nextreq, body, ok ->
+                    if (ok==true)
+                    {
+                        val op = attribs["op"]
+                        if (op == "login")
+                        {
+                            app.handleLogin(nextreq)
+                        }
+                        else if ((op == "reg") || (op == "info"))
+                        {
+                            app.handlePostLogin(nextreq, body)
+                        }
+                        else if (op == "sign")
+                        {
+                            val reply = attribs["reply"]
+                            if (reply == null || reply == "true")
+                            {
+                                try
+                                {
+                                    val result = Url(nextreq).readBytes(HTTP_REQ_TIMEOUT_MS, 1000)
+                                    if (result.size < 100) displayNotice(result.decodeUtf8())
+                                }
+                                catch (e: CannotLoadException)
+                                {
+                                    displayError(S.connectionException)
+                                }
+                                catch (e: Exception)
+                                {
+                                    displayUnexpectedException(e)
+                                }
+                            }
+                        }
+                    }
+                    // After doing it, pass it on
+                    then.invoke(nextreq, body, ok)
+                    true
+                } )
+                else HandleIdentity(uri, autoHandle, null)
             }
             else if (scheme == TDPP_URI_SCHEME)
             {
+                // TODO autoHandle
                 HandleTdpp(uri, then)
             }
             else
@@ -787,23 +830,31 @@ open class CommonApp(val runningTests: Boolean)
         }
     }
 
-    fun handlePostLogin(loginReqParam: String, jsonBody: String)
+    fun handlePostLogin(loginReqParam: String, jsonBody: String): Boolean
     {
         val url = Url(loginReqParam)
         try
         {
-            val result = url.readPostBytes(jsonBody)
-            if (result.size < 100) displayNotice(result.decodeUtf8())  // sanity check result then display it
+            LogIt.info("POSTing login ${url.toString()}")
+            val result = url.readPostBytes(jsonBody, timeoutInMs = 3000)
+            if (result.size < 100)
+            {
+                LogIt.info("POST returned ${result.decodeUtf8()}")
+                displayNotice(result.decodeUtf8())
+            }  // sanity check result then display it
         }
         catch(e: CannotLoadException)
         {
             displayError(S.connectionException)
+            return false
         }
         catch(e: Exception)  // java.net.ConnectException (connectin refused probably)
         {
             logThreadException(e, "attempting to POST to $url with contents\n$jsonBody")
             displayError(S.connectionException)
+            return false
         }
+        return true
     }
 
 

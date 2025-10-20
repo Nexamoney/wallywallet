@@ -390,7 +390,7 @@ fun AccountFirstLastSendIterati(stat: Wallet.WalletStatistics)
 @Composable
 fun TxStatistics(viewModel: AccountStatisticsViewModel, onAddressesButtonClicked: () -> Unit, onTxHistoryButtonClicked: () -> Unit)
 {
-    val stat = viewModel.accountStats.value?.stat
+    val stat = viewModel.accountStats.collectAsState().value?.stat
 
     if (stat != null)
         Column {

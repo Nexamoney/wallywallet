@@ -3,6 +3,7 @@ package ui
 import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.*
+import info.bitcoinunlimited.www.wally.ui.views.AccountPill
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.runBlocking
@@ -62,7 +63,7 @@ class AccountPermissionScreensTest:WallyUiTestBase()
         }
 
         setContent {
-            IdentityPermScreen(account, IdentitySession(null), nav)
+            IdentityPermScreen(IdentitySession(null), nav)
         }
         wallyApp!!.deleteAccount(account)
     }

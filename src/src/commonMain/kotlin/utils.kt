@@ -492,6 +492,17 @@ fun io.ktor.http.Url.resolve(relativeUrl: String): io.ktor.http.Url
     return urb.build()
 }
 
+suspend fun waitFor(maxTime: Int, predicate:()->Boolean)
+{
+    val start = millinow()
+    if (predicate()) return
+    while(millinow() < start + maxTime)
+    {
+        delay(20)
+        if (predicate()) return
+    }
+}
+
 /*
 fun Uri.accessWithError(): Pair<String,Int>
 {

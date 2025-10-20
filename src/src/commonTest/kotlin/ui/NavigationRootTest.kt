@@ -92,7 +92,7 @@ open class WallyUiTestBase(openAllAccounts: Boolean = true)
             {
                 sched = TestCoroutineScheduler()
                 testDispatcher = StandardTestDispatcher(sched)
-                println("Installing test dispatcher")
+                // println("Installing test dispatcher")
                 Dispatchers.setMain(testDispatcher)
                 assert(wallyApp!=null)
             }
@@ -105,7 +105,7 @@ open class WallyUiTestBase(openAllAccounts: Boolean = true)
     {
         if (platform().target == KotlinTarget.JVM)
         {
-            println("settle scheduler")
+            // println("settle scheduler")
             sched.advanceTimeBy(1000)
             sched.runCurrent()
             val poolWaitStart = millinow()
@@ -119,7 +119,7 @@ open class WallyUiTestBase(openAllAccounts: Boolean = true)
             installedTestDispatcher--
             if (installedTestDispatcher == 0)
             {
-                println("Removing test dispatcher")
+                // println("Removing test dispatcher")
                 Dispatchers.resetMain()
                 if (jvmResetWallyApp) wallyApp = null
             }
@@ -147,7 +147,7 @@ fun ComposeUiTest.settle(scope: TestScope? = null)
     else
     {
         // The above does waitForIdle with a timeout
-        LogIt.info("waitForIdle")
+        // LogIt.info("waitForIdle")
         waitForIdle()
         //catch (e: TimeoutCancellationException)
         //{
