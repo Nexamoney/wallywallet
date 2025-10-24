@@ -1176,6 +1176,8 @@ fun NavigationRoot(
             WallyTheme {
                 Box(modifier = Modifier.fillMaxSize().background(Color.White).padding(innerPadding)) {
                     Column(modifier = Modifier.fillMaxSize()) {
+                        // I don't understand why the compose-level top bar has started overlapping with the content. I'm going to make a work-around until I find the core reason...
+                    Spacer(modifier = Modifier.height(60.dp))
 
                         if (isShowingRecoveryWarning)
                             RecoveryPhraseWarning(Modifier.clickable { isShowingRecoveryWarning = false })
