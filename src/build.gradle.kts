@@ -582,7 +582,7 @@ android {
 
     @Suppress("UnstableApiUsage")
     testOptions {
-        managedDevices.devices {
+        managedDevices.allDevices {
             maybeCreate<ManagedVirtualDevice>("pixel5").apply {
                 device = "Pixel 5"
                 apiLevel = libs.versions.androidSdk.get().toInt()
