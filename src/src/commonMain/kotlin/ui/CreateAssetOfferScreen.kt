@@ -13,10 +13,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import info.bitcoinunlimited.www.wally.*
+import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.ui.views.WallyNumericInputFieldBalance
+import info.bitcoinunlimited.www.wally.ui.views.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
+import org.wallywallet.tokadex.postTokadexOffer
 
 private val LogIt = GetLog("BU.wally.createAssetOffer")
 
@@ -87,8 +90,11 @@ class CreateAssetOfferViewModel(apc: AssetPerAccount): ViewModel() {
         return OfferTx(tx, tdpp, myAddress)
     }
 
-    fun createOffer()
+    fun createOffer(capdChecked: Boolean)
     {
+        // TODO: Post to CAPD if capdChecked is true and show "Posted to CAPD" notice
+        // Use the capd tests in libnexakotlin:blockchainObjTests.kt:testCapd
+
         val a = asset.value  // Get this once so it cannot be changed during this creation (even though nothing is doing that, its safer)
         val groupId = a.groupId
 
@@ -114,13 +120,20 @@ class CreateAssetOfferViewModel(apc: AssetPerAccount): ViewModel() {
         }
         val account = wallyApp!!.focusedAccount.value!!.wallet
 
+        var offerTx: iTransaction? = null
         try {
             val offer = account.createOfferTx(groupId, assetQty, priceInSatoshis)
             val offerUri = offer.uri
-            val offerTx = offer.tx
+            offerTx = offer.tx
             val offerAddress = offer.address
 
             if (nexaPrice.value.isEmpty()) return
+            if (capdChecked)
+            {
+                laterJob {  // must run async due to android disallowing network access on the main thread.
+                    account.postTokadexOffer(offer.tx, groupId)
+                }
+            }
             offerUri.let {
                 val offer = AssetOffer(it, price, asset.value, offerAddress, offerTx, assetQty = assetQty, uniqueAsset = uniqueAsset.value)
                 displayNotice(S.offerCreated, persistAcrossScreens = 2)
@@ -130,10 +143,12 @@ class CreateAssetOfferViewModel(apc: AssetPerAccount): ViewModel() {
         catch (e: WalletNotEnoughTokenBalanceException)
         {
             displayWarning(e.shortMsg ?: "")
+            offerTx?.let { account.abortTransaction(it) }  // If something happened to prevent this tx, give the resources back
         }
         catch (e: Exception)
         {
             displayError(e.message ?: "Something went wrong when creating the offer")
+            offerTx?.let { account.abortTransaction(it) }  // If something happened to prevent this tx, give the resources back
         }
     }
 }
@@ -163,6 +178,7 @@ fun CreateAssetOffer(viewModel: CreateAssetOfferViewModel)
     val asset = viewModel.asset.collectAsState().value
     val uniqueAsset = viewModel.uniqueAsset.collectAsState().value
     val amountFocusRequester = remember { FocusRequester() }
+    var publishOnline by remember { mutableStateOf(false) }
 
     Column(
       modifier = Modifier
@@ -216,6 +232,20 @@ fun CreateAssetOffer(viewModel: CreateAssetOfferViewModel)
             viewModel.nexaPrice.value = it
         }
 
+
+        if (experimentalUI.collectAsState().value)  // We do not want this to show by default until tokadex is available.
+        {
+            // Allow the offer to be posted to CAPD for anyone to pick up
+            Row(
+              modifier = Modifier.fillMaxWidth(),
+              horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                WallySwitchRow(publishOnline, S.publishOnline) {
+                    publishOnline = it
+                }
+            }
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(
@@ -224,11 +254,10 @@ fun CreateAssetOffer(viewModel: CreateAssetOfferViewModel)
         ) {
             Button(
               onClick = {
-                  viewModel.createOffer()
+                  viewModel.createOffer(publishOnline)
               },
               colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-
                 Text(i18n(S.confirm))
             }
             OutlinedButton(
