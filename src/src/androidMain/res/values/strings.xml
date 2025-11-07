@@ -800,7 +800,6 @@ Thank you and enjoy your new wallet!</string>
     <string name="Sell">Sell</string>
 
     <string name="CreateAnOffer">Create an Offer</string>
-    <string name="offerCreated">Offer created</string>
 
     <string name="Price">Price</string>
     <string name="NexaPrice">Enter Nexa price</string>
@@ -812,4 +811,7 @@ Thank you and enjoy your new wallet!</string>
     <string name="purchaseComplete">Purchase Complete</string>
     <string name="setTheNexaPrice">Set the Nexa price</string>
     <string name="setTheAssetAmount">Set the asset amount</string>
+
+    <string name="publishOnline">Publish offer online</string>
+    <string name="offerCreated">Offer created!</string>
 </resources>

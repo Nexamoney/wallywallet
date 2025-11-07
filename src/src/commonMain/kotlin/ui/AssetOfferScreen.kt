@@ -132,11 +132,12 @@ fun AssetOfferScreen(offer: AssetOffer, viewModel: AssetOfferViewModel = viewMod
         )
         if (devMode)
         {
-            Text("Group ID", fontWeight = FontWeight.Bold)
-            Text(asset.groupId.toString())
-            val mod = Modifier.clickable { setTextClipboard(offer.uri) }
-            Text("Offer URI", fontWeight = FontWeight.Bold, modifier = mod)
-            Text(offer.uri, modifier = mod)
+            val mod = Modifier.clickable { setTextClipboard(asset.groupId.toString())}
+            Text("Group ID", fontWeight = FontWeight.Bold, modifier = mod)
+            Text(asset.groupId.toString(), modifier = mod )
+            val mod1 = Modifier.clickable { setTextClipboard(offer.uri) }
+            Text("Offer URI", fontWeight = FontWeight.Bold, modifier = mod1)
+            Text(offer.uri, modifier = mod1)
             val mod2 = Modifier.clickable { setTextClipboard(offer.transaction.id.toString()) }
             Text("Transaction ID", modifier = mod2)
             Text(offer.transaction.id.toString(), modifier = mod2)
