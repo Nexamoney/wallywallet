@@ -668,6 +668,7 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
 
 // This function should build a title bar (with a back button) if the platform doesn't already have one.  Otherwise it should
 // set up the platform's title bar
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable fun TopBar(errorText: String, warningText: String, noticeText: String, lastClicked: MutableState<String>)
 {
     val currentScreen = nav.currentScreen.collectAsState().value
@@ -720,6 +721,9 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
             }
         }
     }
+    else
+        // Position the content to below the native title bar...
+        Spacer(Modifier.height(TopAppBarDefaults.TopAppBarExpandedHeight))
 }
 
 @Composable fun RecoveryPhraseWarning(clickable: Modifier, account:Account?=null)
@@ -1177,7 +1181,7 @@ fun NavigationRoot(
                 Box(modifier = Modifier.fillMaxSize().background(Color.White).padding(innerPadding)) {
                     Column(modifier = Modifier.fillMaxSize()) {
                         // I don't understand why the compose-level top bar has started overlapping with the content. I'm going to make a work-around until I find the core reason...
-                    Spacer(modifier = Modifier.height(60.dp))
+                    // Spacer(modifier = Modifier.height(60.dp))
 
                         if (isShowingRecoveryWarning)
                             RecoveryPhraseWarning(Modifier.clickable { isShowingRecoveryWarning = false })
