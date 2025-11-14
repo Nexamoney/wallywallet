@@ -625,18 +625,27 @@ android {
 
 if (MAC_TARGETS)
 {
+    tasks.register<Exec>("xcrun_simctl") {
+        val device = project.findProperty("iosDevice")?.toString() ?: "iPhone 14 Pro Max"
+        val binary = kotlin.iosX64().binaries.getTest("DEBUG").outputFile
+        commandLine("xcrun", "simctl", "spawn", device, binary.absolutePath)
+}
+
     task("iosTest") {
         val device = project.findProperty("iosDevice")?.toString() ?: "iPhone 14 Pro Max"
         dependsOn(kotlin.iosX64().binaries.getTest("DEBUG").linkTaskName)
         group = JavaBasePlugin.VERIFICATION_GROUP
         description = "Runs tests for target 'ios' on an iOS simulator"
 
+        finalizedBy("xcrun_simctl")
+        /*
         doLast {
             val binary = kotlin.iosX64().binaries.getTest("DEBUG").outputFile
-            exec {
+            project.execOperations.exec {
                 commandLine = listOf("xcrun", "simctl", "spawn", device, binary.absolutePath)
             }
         }
+         */
     }
 }
 

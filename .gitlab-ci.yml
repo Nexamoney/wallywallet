@@ -43,7 +43,8 @@ taskTree:
   tags:
     - m1-baremetal
   script:
-    - ./gradlew build taskTree # Print taskTree for ./gradlew build
+    - ./gradlew :src:assembleDebug :src:assembleRelease
+    - ./gradlew build taskTree
 
 kDoctor:
   stage: docs

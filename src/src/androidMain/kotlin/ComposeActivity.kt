@@ -19,6 +19,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
@@ -252,9 +253,9 @@ class ComposeActivity: CommonActivity()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
-        super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        // WindowCompat.setDecorFitsSystemWindows(window, false)
+        super.onCreate(savedInstanceState)
         window.statusBarColor = colorTitleBackground.toArgb()
         window.navigationBarColor = colorTitleBackground.toArgb()
         val decorView: View = getWindow().getDecorView()
@@ -279,12 +280,32 @@ class ComposeActivity: CommonActivity()
         (decorView.findViewById(android.R.id.content) as View).setOnApplyWindowInsetsListener { v, insets ->
             if (android.os.Build.VERSION.SDK_INT >= 30)
             {
-                //TODO: insets.getInsets(WindowInsetsCompat.Type.ime())
                 val system = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                LogIt.info("Insets: systembars top=${system.top}, bottom=${system.bottom}")
+                val status = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+                LogIt.info("Insets: statusbars top=${status.top}, bottom=${status.bottom}")
+                val capt = insets.getInsets(WindowInsetsCompat.Type.captionBar())
+                LogIt.info("Insets: captionbars top=${capt.top}, bottom=${capt.bottom}")
                 // We sanity check the system insets to 30 dp just in case something crazy is going on
                 androidPlatformCharacteristics.bottomSystemBarOverlap = min(60.dp, pxToDp(system.bottom))
             }
             insets
+        }
+
+        // Monitor the content view and the action bar (top bar) view to see if the action bar overlaps the content.
+        // If so, set a global mutable state flow that is used to pad the content so it always appears below the action bar.
+        val actionBar = findViewById<View>(actionBarId)
+        val content = findViewById<View>(android.R.id.content)
+        content.viewTreeObserver.addOnGlobalLayoutListener {
+            // The content is behind the action bar, so pad it
+            if (content.top < actionBar.bottom)
+            {
+                behindTitleBarPadding.value = TopAppBarDefaults.TopAppBarExpandedHeight
+            }
+            else
+            {
+                behindTitleBarPadding.value = 0.dp
+            }
         }
 
         // If the UI is opened, register background sync work.  But we don't want to reregister the background work whenever the background work
