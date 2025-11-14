@@ -45,6 +45,7 @@ val showIdentityPref = MutableStateFlow(false)
 val showTricklePayPref = MutableStateFlow(false)
 val showAssetsPref = MutableStateFlow(false)
 val experimentalUI = MutableStateFlow(false)
+var behindTitleBarPadding = MutableStateFlow(0.dp)
 
 var permanentMenuItems: Set<NavChoice> = if (platform().target == KotlinTarget.iOS)
     setOf(
@@ -722,8 +723,10 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
         }
     }
     else
+    {
         // Position the content to below the native title bar...
-        Spacer(Modifier.height(TopAppBarDefaults.TopAppBarExpandedHeight))
+        Spacer(Modifier.height(behindTitleBarPadding.collectAsState().value))
+    }
 }
 
 @Composable fun RecoveryPhraseWarning(clickable: Modifier, account:Account?=null)
@@ -1067,7 +1070,9 @@ fun NavigationRoot(
     Scaffold(
           modifier =
           // Make both the title and the bottom system menu the same color, to bracket the main part of the app
-          rootModifier.background(colorTitleBackground).padding(systemPadding.asPaddingValues()).pointerInput(Unit) {
+          rootModifier.background(colorTitleBackground)
+            .padding(systemPadding.asPaddingValues())
+            .pointerInput(Unit) {
               detectTapGestures(onTap = {
                   scope.launch {
                       if (expanded.value)
@@ -1180,9 +1185,6 @@ fun NavigationRoot(
             WallyTheme {
                 Box(modifier = Modifier.fillMaxSize().background(Color.White).padding(innerPadding)) {
                     Column(modifier = Modifier.fillMaxSize()) {
-                        // I don't understand why the compose-level top bar has started overlapping with the content. I'm going to make a work-around until I find the core reason...
-                    // Spacer(modifier = Modifier.height(60.dp))
-
                         if (isShowingRecoveryWarning)
                             RecoveryPhraseWarning(Modifier.clickable { isShowingRecoveryWarning = false })
                         UnlockTile()
@@ -1247,9 +1249,9 @@ fun NavigationRoot(
                                 ScreenId.AddressHistory -> withAccount { AddressHistoryScreen(it, nav) }
                                 ScreenId.TxHistory -> withAccount { TxHistoryScreen(it, nav) }
                                 ScreenId.TpSettings -> withTp { act, ctp -> TricklePayScreen(act, ctp, nav) }
-                                ScreenId.SpecialTxPerm -> withTp { act, ctp -> SpecialTxPermScreen(act, ctp) }
+                                ScreenId.SpecialTxPerm -> withTp { act, ctp -> SpecialTxPermScreen(ctp) }
                                 ScreenId.AssetInfoPerm -> withTp { act, ctp -> AssetInfoPermScreen(act, ctp, nav) }
-                                ScreenId.SendToPerm -> withTp { act, ctp -> SendToPermScreen(act, ctp, nav) }
+                                ScreenId.SendToPerm -> withTp { act, ctp -> SendToPermScreen( ctp, nav) }
                                 ScreenId.IdentityOp -> withAccount { act ->
                                     val idsess = nav.curData.value as? IdentitySession
                                     if (idsess != null) IdentityPermScreen(idsess, nav)

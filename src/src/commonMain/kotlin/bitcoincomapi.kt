@@ -21,8 +21,6 @@ import kotlin.time.TimeSource.Monotonic
 
 private val LogIt = GetLog("BU.wally.bitcoincom")
 
-val POLL_INTERVAL = 30000
-
 @Serializable
 data class BchUsdBitcoinCom(val price: Int, val stamp: Long)
 

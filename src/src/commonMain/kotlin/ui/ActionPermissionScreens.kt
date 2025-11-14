@@ -39,6 +39,7 @@ import info.bitcoinunlimited.www.wally.ui.theme.wallyPurple2
 import info.bitcoinunlimited.www.wally.ui.views.*
 import io.ktor.http.*
 import io.ktor.utils.io.errors.*
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.datetime.Month
 import okio.FileNotFoundException
 import kotlin.plus
@@ -150,7 +151,7 @@ fun IconLabelValueRow(icon: ImageVector, label: String, value: String)
 }
 
 @Composable
-fun SpecialTxPermScreen(acc: Account, sess: TricklePaySession)
+fun SpecialTxPermScreen(sess: TricklePaySession)
 {
     // Change the title if the request is for a partial transaction
     val titleRes = if (sess.tflags and TDPP_FLAG_PARTIAL != 0) S.IncompleteTpTransactionFrom else S.SpecialTpTransactionFrom
@@ -158,6 +159,32 @@ fun SpecialTxPermScreen(acc: Account, sess: TricklePaySession)
         if (it == null) ""
         else it
     }
+    val acc = sess.pill.account.collectAsState().value ?: sess.candidateAccounts?.first()
+    if (acc==null)
+    {
+        displayError(i18n(S.UnknownDomainRegisterFirst))
+        nav.back()
+        return
+    }
+
+    // Every time the account change, we need to recalculate what it will take to solve this TX
+    LaunchedEffect(Unit) {
+        sess.pill.account.collectLatest {
+            sess.originalTx?.let {
+                // If the account changes to something different, redo the analysis
+                val pa = sess.proposalAnalysis
+                if (sess.getRelevantAccount() != pa?.account)
+                {
+                    // TODO copy the tx in a nice API
+                    val tx = txFor(it.chainSelector, BCHserialized(SerializationType.NETWORK, it.toByteArray()))
+                    sess.abortProposal()
+                    sess.proposedTx = tx
+                    sess.proposalAnalysis = sess.analyzeCompleteAndSignTx(tx, sess.inputSatoshis, sess.tflags)
+                }
+            }
+        }
+    }
+
     val fromAccount = acc.nameAndChain
     val currencyCode = acc.currencyCode
     val fromEntity = sess.host
@@ -357,15 +384,16 @@ fun SpecialTxPermScreen(acc: Account, sess: TricklePaySession)
     {
         //info.bitcoinunlimited.www.wally.LogIt.info("deny trickle pay special transaction")
         // give back any inputs we grabbed to fulfill this tx
-        sess.proposedTx?.let { acc.wallet.abortTransaction(it) }
-        sess.proposedTx = null
+        sess.abortProposal()
+        //sess.proposedTx?.let { acc.wallet.abortTransaction(it) }
+        //sess.proposedTx = null
         nav.back()
         displayNotice(S.cancelled)
     }
 
-    Box(
-      modifier = Modifier.fillMaxSize()
-    ) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        Spacer(Modifier.height(16.dp))
+        sess.pill.draw(false)
         Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
             Column(
               modifier = Modifier.fillMaxWidth(),
@@ -561,9 +589,10 @@ fun SpecialTxPermScreen(acc: Account, sess: TricklePaySession)
             }
         }
 
+        Spacer(Modifier.weight(1f))
         // Bottom button row
         ButtonRowAcceptDeny({acceptProposal()}, { rejectProposal() },
-          Modifier.align(Alignment.BottomCenter).fillMaxWidth().background(Color.White), acceptEnabled = GuiCustomTxError == "")
+          Modifier.align(Alignment.CenterHorizontally).fillMaxWidth().background(Color.White), acceptEnabled = GuiCustomTxError == "")
         /*
         Row(
           modifier = Modifier.align(Alignment.BottomCenter)
@@ -874,7 +903,7 @@ fun IdentityPermScreen(sess: IdentitySession, nav: ScreenNav)
         }
     }
 
-    Column(Modifier.fillMaxWidth().fillMaxHeight()) {
+    Column(Modifier.fillMaxSize()) {
         Spacer(Modifier.height(16.dp))
         sess.pill.draw(false)
         Spacer(Modifier.heightIn(5.dp, 100.dp).weight(0.2f))
@@ -1176,13 +1205,29 @@ fun onProvideIdentity(sess: IdentitySession, account: Account? = null): Boolean
 
 
 @Composable
-fun SendToPermScreen(acc: Account, sess: TricklePaySession , nav: ScreenNav)
+fun SendToPermScreen(sess: TricklePaySession , nav: ScreenNav)
 {
     var breakIt = false // TODO allow a debug mode that produces bad tx
 
     val u: Uri = sess.proposalUrl ?: return
 
     val sa: List<Pair<PayAddress, Long>> = sess.proposedDestinations ?: return
+
+    val acc = sess.pill.account.collectAsState().value ?: sess.candidateAccounts?.first()
+    if (acc==null)
+    {
+        displayError(i18n(S.UnknownDomainRegisterFirst))
+        nav.back()
+        return
+    }
+    // Every time the account change, we need to recalculate what is needed to send
+    /* nothing to recalculate right now
+    LaunchedEffect(Unit) {
+        sess.pill.account.collectLatest {
+
+        }
+    }
+    */
 
     val tpc = sess.topic.let {
         if (it == null) ""
@@ -1199,6 +1244,9 @@ fun SendToPermScreen(acc: Account, sess: TricklePaySession , nav: ScreenNav)
     val domainAndTopic = u.authority + tpc
 
     Column(Modifier.padding(8.dp, 2.dp).testTag("ActionPermissionScreensColumn")) {
+        Spacer(Modifier.height(16.dp))
+        sess.pill.draw(false)
+        Spacer(Modifier.height(8.dp))
         CenteredSectionText(S.TpSendToTitle)
         Text(domainAndTopic)
         CenteredSectionText(S.TpInAccount)
@@ -1213,34 +1261,34 @@ fun SendToPermScreen(acc: Account, sess: TricklePaySession , nav: ScreenNav)
         WallyDivider()
         Spacer(Modifier.height(5.dp))
 
-        Row(modifier = Modifier.fillMaxWidth().padding(0.dp), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
-            WallyBoringLargeTextButton(S.accept)
+        Spacer(Modifier.width(1.dp).weight(1f))  // push buttons to the bottom
+
+        ButtonRowAcceptDeny({
+            try
             {
-                try
-                {
-                    sess.acceptSendToRequest()
-                    displaySuccess(S.TpSendRequestAccepted)
-                }
-                catch(e:WalletNotEnoughBalanceException)
-                {
-                    displayError(S.insufficentBalance)
-                }
-                catch(e:WalletNotEnoughTokenBalanceException)
-                {
-                    displayError(S.insufficentTokenBalance)
-                }
-                catch(e:WalletException)
-                {
-                    displayUnexpectedException(e)
-                }
-                nav.back()
+                sess.acceptSendToRequest()
+                displaySuccess(S.TpSendRequestAccepted)
             }
-            WallyBoringLargeTextButton(S.deny)
+            catch(e:WalletNotEnoughBalanceException)
             {
-                displayNotice(S.TpSendRequestDenied)
-                nav.back()
+                displayError(S.insufficentBalance)
             }
-        }
+            catch(e:WalletNotEnoughTokenBalanceException)
+            {
+                displayError(S.insufficentTokenBalance)
+            }
+            catch(e:WalletException)
+            {
+                displayUnexpectedException(e)
+            }
+            nav.back()
+        }, {
+            nav.back()
+            displayNotice(S.TpSendRequestDenied)
+        },
+          acceptText = S.accept, denyText = S.deny,
+          modifier = Modifier.align(Alignment.CenterHorizontally).fillMaxWidth().background(Color.White)
+        )
     }
 }
 

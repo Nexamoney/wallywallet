@@ -23,7 +23,7 @@ class AccountPermissionScreensTest:WallyUiTestBase()
         val tp = TricklePaySession(wallyApp!!.tpDomains)
 
         setContent {
-            SendToPermScreen(account, tp, ScreenNav())
+            SendToPermScreen( tp, ScreenNav())
         }
         wallyApp!!.deleteAccount(account)
     }

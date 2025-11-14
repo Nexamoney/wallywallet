@@ -82,6 +82,12 @@ object WallyJvmApp
 }
 
 
+fun main(args: Array<String>)
+{
+    WallyJvmApp.main(args)
+}
+
+
 fun guiNewPanel()
 {
     backgroundOnly = false

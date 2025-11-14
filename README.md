@@ -198,6 +198,12 @@ To successfully run the units tests, you must have a local "regtest" Nexa full n
 ./gradlew :src:jvmTest
 ```
 
+#### CI targets
+```
+./gradlew build assembleDebug assembleRelease taskTree
+./gradlew clean build --refresh-dependencies
+```
+
 #### Code coverage reporting
 
 Generate a code coverage .html report for jvm and Android with Kover (https://github.com/Kotlin/kotlinx-kover):

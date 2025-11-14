@@ -13,6 +13,7 @@ import org.nexa.libnexakotlin.simpleapi.NexaScript
 
 import com.eygraber.uri.*
 import info.bitcoinunlimited.www.wally.ui.*
+import info.bitcoinunlimited.www.wally.ui.views.AccountPill
 import io.ktor.http.Url
 import io.ktor.utils.io.errors.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -441,6 +442,8 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
     val askReasons = mutableListOf<String>()
 
     var tflags: Int = 0  // tx flags
+    var inputSatoshis: Long = 0  // satoshis being supplied by inputs in this tx
+    var originalTx: iTransaction? = null  // The original (unsigned) transaction coming from the TDPP request
     var proposedTx: iTransaction? = null
     var proposalAnalysis: TxAnalysisResults? = null
     var assetInfoList:TricklePayAssetList? = null
@@ -451,6 +454,16 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
 
     var domain: TdppDomain? = null
     var proposedDomainChanges: TdppDomain? = null
+
+    val pill = AccountPill(null)
+
+    /** All the possible accounts that can be used for this identity session */
+    var candidateAccounts: ListifyMap<String, Account>? = null
+        set(v)
+        {
+            field = v
+            pill.choices = v?.toList()
+        }
 
     val isSecureRequest:Boolean
         get()
@@ -499,6 +512,18 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
             return if (c != null) "cookie=$c" else ""
         }
 
+    /** You need to clean up tx resources in this proposal if you are not going to accept it */
+    fun abortProposal()
+    {
+        proposedTx?.let { tx->
+            proposalAnalysis?.let { pa ->
+                pa.account.wallet.abortTransaction(tx)
+                proposalAnalysis = null
+            }
+            proposedTx = null
+        }
+    }
+
     fun parseCommonFields(uri: Uri, autoCreateDomain: Boolean = true)
     {
         proposalUrl = uri
@@ -536,47 +561,28 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         }
 
         sigOk = VerifyTdppSignature(uri, domain?.addr)
+
+        populateRelevantAccounts()
     }
 
     fun getRelevantAccount(preferredAccount: String? = null): Account
     {
-        if (preferredAccount != null && preferredAccount != "")  // Prefer the account associated with this domain
-        {
-            val act = wallyApp!!.accounts[preferredAccount]
-            if (act != null)
-            {
-                if (chainSelector == null || act.chain.chainSelector == chainSelector) return act
-            }
-        }
+        return pill.account.value ?: throw WalletInvalidException()
+    }
 
-        // Get a handle on the relevant wallets
-        var act = wallyApp!!.focusedAccount.value
-        if (act != null)
-        {
-            if (chainSelector == null || act.chain.chainSelector == chainSelector) return act
-        }
-
-        try
-        {
-            act = wallyApp!!.primaryAccount
-            if (chainSelector == null || act.chain.chainSelector == chainSelector) return act
-        }
-        catch(e:PrimaryWalletInvalidException)
-        {
-            // pass thru
-        }
-
-        val walChoices = wallyApp!!.accountsFor(chainSelector ?: ChainSelector.NEXA)
+    fun populateRelevantAccounts(preferredAccount: String? = null)
+    {
+        val cs = chainSelector
+        // this api finds all accounts of the passed chainselector, and puts the selected one first
+        val walChoices = if (cs == null) wallyApp!!.orderedAccounts() else wallyApp!!.accountsFor(cs)
         if (walChoices.size == 0)
         {
             throw WalletInvalidException()
         }
-
+        pill.choices = walChoices
         // TODO associate an account with a trickle pay
-        // For now, grab the first sorted
-        val walSorted = walChoices.toList().sortedBy { it.name }
-        act = walSorted[0]
-        return act
+        // For now, grab the first sorted since that's the selected one
+        pill.account.value = walChoices[0]
     }
 
 
@@ -839,7 +845,10 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                     }
                     else if (data.contains("invalid"))
                     {
-                        displayWarning(i18n(S.staleTransaction),i18n(S.staleTransactionDetails))
+                        LogIt.info("TDPP TX completion submission to the originator gave the following warning:\n$data")
+                        // Submitting the completed partial tx back to the originator is a courtesy... it ought to be accepted on chain anyway if its not stale
+                        // so don't show anything if the originator complains.
+                        // displayWarning(i18n(S.staleTransaction),i18n(S.staleTransactionDetails))
                     }
                     else if (data.contains("error"))
                         displayWarning(i18n(S.reject))
@@ -902,13 +911,15 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         tflags = uri.getQueryParameter("flags")?.toInt() ?: 0
 
         // If we are funding then inputSatoshis must be provided
-        val inputSatoshis = uri.getQueryParameter("inamt")?.toLongOrNull()  // ?: return displayError(R.string.BadLink)
-        if ((inputSatoshis == null) && ((tflags and TDPP_FLAG_NOFUND) == 0))
+        val tmp = uri.getQueryParameter("inamt")?.toLongOrNull()  // ?: return displayError(R.string.BadLink)
+        if ((tmp == null) && ((tflags and TDPP_FLAG_NOFUND) == 0))
         {
             throw TdppException(S.BadWebLink, "missing inamt parameter")
         }
+        inputSatoshis = tmp ?: 0
 
         val tx = txFor(chainSelector!!, BCHserialized(txHex.fromHex(), SerializationType.NETWORK))
+        originalTx = txFor(chainSelector!!, BCHserialized(txHex.fromHex(), SerializationType.NETWORK))  // TODO tx.clone()
         LogIt.info(sourceLoc() + ": Tx to autopay: " + tx.toHex())
 
         // Analyze and sign transaction
@@ -1113,7 +1124,6 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
      * no need to ask and the request was accepted or denied.*/
     fun attemptAutopay(iuri: Uri): TdppAction
     {
-        //val iuri: Uri = Uri.parse(req)
         try
         {
             parseCommonFields(iuri, false)
@@ -1122,7 +1132,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         {
             return TdppAction.DENY
         }
-        var result = handleSendToAutopay(iuri)
+        val result = handleSendToAutopay(iuri)
         if (result == TdppAction.ACCEPT)
             acceptSendToRequest()
         return result
@@ -1141,7 +1151,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         {
             return TdppAction.DENY
         }
-        var result = handleTxAutopay(iuri)
+        val result = handleTxAutopay(iuri)
         if (result == TdppAction.ACCEPT)
             acceptSpecialTx()
         return result
@@ -1161,9 +1171,9 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         var sendingTokenTypes: Long = 0
         var imSpendingTokenTypes: Long = 0
         var iFunded: Long = 0
-        var receivingTokenInfo = mutableMapOf<GroupId, Long>()
-        var sendingTokenInfo = mutableMapOf<GroupId, Long>()
-        var myInputTokenInfo = mutableMapOf<GroupId, Long>()
+        val receivingTokenInfo = mutableMapOf<GroupId, Long>()
+        val sendingTokenInfo = mutableMapOf<GroupId, Long>()
+        val myInputTokenInfo = mutableMapOf<GroupId, Long>()
 
         var cflags = TxCompletionFlags.FUND_NATIVE or TxCompletionFlags.SIGN or TxCompletionFlags.BIND_OUTPUT_PARAMETERS
 
@@ -1246,7 +1256,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         }
 
         // Net ignores anything others are doing
-        var myNetTokenInfo = mutableMapOf<GroupId, Long>()
+        val myNetTokenInfo = mutableMapOf<GroupId, Long>()
 
         // Start with all that I received
         for ((k,v) in receivingTokenInfo.iterator())

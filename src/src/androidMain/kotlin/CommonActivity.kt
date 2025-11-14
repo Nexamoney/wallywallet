@@ -153,7 +153,6 @@ open class CommonActivity : AppCompatActivity()
     {
         setTheme(R.style.WallyActionBarStyle)
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         displayMetrics = resources.displayMetrics
 
         origTitle = title.toString()

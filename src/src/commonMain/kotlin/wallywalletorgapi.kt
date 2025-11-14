@@ -14,20 +14,22 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.descriptors.*
 
 import kotlin.time.*
-import kotlin.time.TimeSource.Monotonic
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import org.nexa.threads.Gate
 
 private val LogIt = GetLog("BU.wally.orgapi")
 
 val WALLY_WALLET_ORG_HOST = "www.wallywallet.org"
-//val WALLY_WALLET_ORG_HOST = "192.168.1.5:7996"
 
+val POLL_INTERVAL = 60000
+val POLL_RETRY_INTERVAL = 10000
 
 val DAILY_POLL_INTERVAL = 60*5  // every 5 minutes
+val TWO_BD = CurrencyDecimal(2)
+
+private val jsonParser: Json = Json { isLenient = true; ignoreUnknownKeys = true }  // nonstrict mode ignores extra fields
 
 object BigDecimalSerializer: JsonTransformingSerializer<BigDecimal>(tSerializer = object:KSerializer<BigDecimal> {
     override fun deserialize(decoder: Decoder): BigDecimal = decoder.decodeString().toBigDecimal()
@@ -54,8 +56,12 @@ data class WallyWalletOrgApiDailyPrice(val price: Array<@Serializable(with = Big
 
 
 val nexaPricePollSync = org.nexa.threads.Mutex()
+
+/** polledAt is the last successful poll.  lastTried is the last polling attempt */
+class PricePoll(val polledAt: Long, val price: BigDecimal?, val triedAt: Long)
+
 @OptIn(ExperimentalTime::class)
-val lastNexaPricePoll = mutableMapOf<String, Pair<Long, BigDecimal>>()
+val lastNexaPricePoll = mutableMapOf<String, PricePoll>()
 
 @OptIn(ExperimentalTime::class)
 val lastNexaHistoryPoll = mutableMapOf<String, Pair<Long, Array<BigDecimal>>>()
@@ -77,12 +83,15 @@ fun NexDaily(fiat: String): Array<BigDecimal>?
         }
         catch (e: Exception)
         {
-            LogIt.info("Error retrieving price: " + e.message)
+            LogIt.info("NexDaily: Error retrieving price: " + e.message)
             return@launch
         }
+        finally
+        {
+            client.close()
+        }
         LogIt.info(sourceLoc() + " " + data)
-        val parser: Json = Json { isLenient = true; ignoreUnknownKeys = true }  // nonstrict mode ignores extra fields
-        val obj = parser.decodeFromString(WallyWalletOrgApiDailyPrice.serializer(), data)
+        val obj = jsonParser.decodeFromString(WallyWalletOrgApiDailyPrice.serializer(), data)
         lastNexaHistoryPoll[fiat] = Pair(millinow(), obj.price)
     }
 
@@ -95,9 +104,16 @@ fun NexDaily(fiat: String): Array<BigDecimal>?
 fun UpdateNexaXchgRates(fiat: String)
 {
     if (fiat != "USD") return
+    val now = millinow()
+    // Grab the last
     val prior = nexaPricePollSync.lock { lastNexaPricePoll[fiat] }
-    if ((prior == null) || (millinow() - prior.first > POLL_INTERVAL))
+
+    if ((prior == null) || ((now - prior.polledAt > POLL_INTERVAL)&&(now - prior.triedAt > POLL_RETRY_INTERVAL)))
     {
+        // Update the last poll attempt time so we don't retry too soon
+        nexaPricePollSync.lock {
+            lastNexaPricePoll[fiat] = prior?.let { PricePoll(it.polledAt, it.price, now ) } ?: PricePoll(0, null, millinow())
+        }
         later {
             val data = try
             {
@@ -118,11 +134,11 @@ fun UpdateNexaXchgRates(fiat: String)
 
             try
             {
-                val parser = Json { isLenient = true; ignoreUnknownKeys = true }
-                val obj = parser.decodeFromString(WallyWalletOrgApiCurPrice.serializer(), data)
-                val v = (obj.Bid + obj.Ask) / CurrencyDecimal(2)
+                val obj = jsonParser.decodeFromString(WallyWalletOrgApiCurPrice.serializer(), data)
+                val v = (obj.Bid + obj.Ask) / TWO_BD
+                val p = PricePoll(now, v, now)
                 nexaPricePollSync.lock {
-                    lastNexaPricePoll[fiat] = Pair(millinow(), v)
+                    lastNexaPricePoll[fiat] = p
                 }
                 // Update all interested accounts with this exchange rate
                 wallyApp?.accounts?.values?.forEach { act ->

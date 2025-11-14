@@ -931,8 +931,10 @@ open class CommonApp(val runningTests: Boolean)
         return ret.toTypedArray()
     }
 
+    /** Returns a list of visible accounts on the blockchain specified by native currency name */
     fun accountsFor(currencyType: String) = accountsFor(currencyCodeToChain[currencyType]!!)
 
+    /** Returns a list of visible accounts on the provided blockchain */
     fun accountsFor(chain: ChainSelector): MutableList<Account>
     {
         val ret = mutableListOf<Account>()
