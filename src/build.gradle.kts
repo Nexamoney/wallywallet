@@ -629,7 +629,7 @@ if (MAC_TARGETS)
         val device = project.findProperty("iosDevice")?.toString() ?: "iPhone 14 Pro Max"
         val binary = kotlin.iosX64().binaries.getTest("DEBUG").outputFile
         commandLine("xcrun", "simctl", "spawn", device, binary.absolutePath)
-}
+    }
 
     task("iosTest") {
         val device = project.findProperty("iosDevice")?.toString() ?: "iPhone 14 Pro Max"
@@ -902,4 +902,12 @@ tasks.withType<Test> {
         showStandardStreams = true
     }
     outputs.upToDateWhen { false }  // Always rerun test tasks
+}
+
+// This was added because ./gradlew build taskTree was failing with:
+// - In plugin 'com.android.internal.version-check' type 'com.android.build.gradle.internal.tasks.ListingFileRedirectTask' property 'listingFile' specifies file '/Users/jq/dev/wally/src/build/outputs/apk/debug/output-metadata.json' which doesn't exist.
+// Now the ListingFileRedirectTask only runs the ListingFileRedirectTask if the .apk output file exists:
+tasks.withType<com.android.build.gradle.internal.tasks.ListingFileRedirectTask>().configureEach {
+    // Only run if output file exists
+    onlyIf { listingFile.get().asFile.exists() }
 }
