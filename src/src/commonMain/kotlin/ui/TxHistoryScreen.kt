@@ -370,16 +370,18 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
                                     LogIt.info("send tx to wallywallet.org")
                                     val versionNumber = (i18n(S.version) % mapOf("ver" to Version.VERSION_NUMBER + "-" + Version.GIT_COMMIT_HASH, "date" to Version.BUILD_DATE)).encodeURLParameter()
                                     val url = Url("http://wallywallet.org/debug/submit/tx?txhex=${txh.tx.toHex()}&info=wallywallet$versionNumber")
-                                    try
-                                    {
-                                        val result = url.readText()
-                                        LogIt.info("send tx to wallywallet.org: $result")
-                                        displayNotice(S.sending)
-                                    }
-                                    catch(e:Exception)
-                                    {
-                                        LogIt.error("cannot send tx to wallywallet.org: $e")
-                                        displayError(S.connectionException)
+                                    laterJob {
+                                        try
+                                        {
+                                            displayNotice(S.sending)
+                                            val result = url.readText()
+                                            LogIt.info("send tx to wallywallet.org: $result")
+                                        }
+                                        catch (e: Exception)
+                                        {
+                                            LogIt.error("cannot send tx to wallywallet.org: $e")
+                                            displayError(S.connectionException)
+                                        }
                                     } }, modifier = Modifier.size(30.dp).padding(0.dp, 0.dp, 10.dp, 0.dp)) {
                                     ResImageView("icons/bug.xml", modifier = Modifier.size(30.dp))
                                 }
