@@ -35,6 +35,7 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
+import org.nexa.threads.Mutex
 import org.nexa.threads.iThread
 import org.nexa.threads.millisleep
 
@@ -283,6 +284,7 @@ open class ScreenNav()
     val curData: MutableStateFlow<Any?> = MutableStateFlow(null)
     val currentScreen: MutableStateFlow<ScreenId> = MutableStateFlow(ScreenId.Splash)
     val currentSubState: MutableStateFlow<ByteArray?> = MutableStateFlow(null)
+    val lock = Mutex()
     protected var currentScreenDepart: ((dir: Direction) -> Unit)? = null
     val path = ArrayDeque<ScreenState>(10)
 
@@ -298,20 +300,21 @@ open class ScreenNav()
     }
 
     /** Add a screen onto the stack */
-    fun push(screen: ScreenId) = path.add(ScreenState(screen,null))
-
+    fun push(screen: ScreenId) = lock.lock { path.add(ScreenState(screen,null)) }
 
     /** push the current screen onto the stack, and set the passed screen to be the current one */
     fun go(screen: ScreenId, screenSubState: ByteArray?=null, data: Any? = null): ScreenNav
     {
         clearAlerts()
         currentScreenDepart?.invoke(Direction.DEEPER)
-        path.add(ScreenState(currentScreen.value,currentScreenDepart, currentSubState.value, curData.value ))
-        currentScreen.value = screen
-        currentSubState.value = screenSubState
-        curData.value = data
-        currentScreenDepart = null
-        NativeTitle(title())
+        lock.lock {
+            path.add(ScreenState(currentScreen.value, currentScreenDepart, currentSubState.value, curData.value))
+            currentScreen.value = screen
+            currentSubState.value = screenSubState
+            curData.value = data
+            currentScreenDepart = null
+            NativeTitle(title())
+        }
         screen.notify?.let {
             val notifId = notify(i18n(it), "", false)
             currentScreenDepart = { denotify(notifId) }
@@ -322,12 +325,14 @@ open class ScreenNav()
     /** move without pushing the current screen (but depart will be called if it exists) */
     fun switch(screen: ScreenId, screenSubState: ByteArray?=null, data: Any? = null): ScreenNav
     {
-        currentScreenDepart?.invoke(Direction.LEAVING)
-        currentScreen.value = screen
-        currentSubState.value = screenSubState
-        curData.value = data
-        currentScreenDepart = null
-        NativeTitle(title())
+        lock.lock {
+            currentScreenDepart?.invoke(Direction.LEAVING)
+            currentScreen.value = screen
+            currentSubState.value = screenSubState
+            curData.value = data
+            currentScreenDepart = null
+            NativeTitle(title())
+        }
         return this
     }
 
@@ -336,11 +341,13 @@ open class ScreenNav()
     /** return the destination screenId if you can go back from here, otherwise ScreenId.None */
     fun hasBack(): ScreenId
     {
-        var priorId: ScreenId = ScreenId.None
-        val prior = path.lastOrNull()
-        // If I can't go back, go up
-        priorId = prior?.id ?: currentScreen.value.up()
-        return priorId
+        return lock.lock {
+            var priorId: ScreenId = ScreenId.None
+            val prior = path.lastOrNull()
+            // If I can't go back, go up
+            priorId = prior?.id ?: currentScreen.value.up()
+            priorId
+        }
     }
 
     /** pop the current screen from the stack and go there */
@@ -351,16 +358,18 @@ open class ScreenNav()
         currentScreenDepart = null
         // See if there is anything in the back stack.
         var priorId: ScreenId? = null
-        val prior = path.removeLastOrNull()
-        // If I can't go back, go up
-        if (prior == null) priorId = currentScreen.value.up()
-        if (prior != null)
-        {
-            priorId = prior.id
-            currentScreenDepart = prior.departFn
-            currentSubState.value = prior.screenSubState
+        lock.lock {
+            val prior = path.removeLastOrNull()
+            // If I can't go back, go up
+            if (prior == null) priorId = currentScreen.value.up()
+            if (prior != null)
+            {
+                priorId = prior.id
+                currentScreenDepart = prior.departFn
+                currentSubState.value = prior.screenSubState
+            }
+            else currentSubState.value = null
         }
-        else currentSubState.value = null
         if (priorId != null)
         {
             // If the screen is none, that means to keep going back but this will execute any currentScreenDepart
@@ -928,7 +937,7 @@ fun NavigationRoot(
     @Composable
     fun withTp(then: @Composable (acc: Account, ctp: TricklePaySession) -> Unit)
     {
-        val ctp = nav.curData.value as? TricklePaySession
+        val ctp = nav.curData.collectAsState().value as? TricklePaySession
         if (ctp == null)
         {
             displayErrorAndGoBack(S.TpNoSession)  // TODO make this no TP session
@@ -951,7 +960,7 @@ fun NavigationRoot(
     @Composable
     fun withSendNavParams(then: @Composable (sendScreenNavParams: SendScreenNavParams) -> Unit)
     {
-        val ctp = nav.curData.value as? SendScreenNavParams
+        val ctp = nav.curData.collectAsState().value as? SendScreenNavParams
         then(ctp ?: SendScreenNavParams())
     }
 
@@ -1238,7 +1247,7 @@ fun NavigationRoot(
                                 ScreenId.Shopping -> ShoppingScreen()
                                 ScreenId.TricklePay -> withAccount { act -> TricklePayScreen(act, null, nav) }
                                 ScreenId.Identity -> withAccount { act ->
-                                    val idsess = nav.curData.value as? IdentitySession
+                                    val idsess = nav.curData.collectAsState().value as? IdentitySession
                                     IdentityScreen(act, accountPillViewModel, idsess, nav)
                                 }
 
@@ -1253,12 +1262,12 @@ fun NavigationRoot(
                                 ScreenId.AssetInfoPerm -> withTp { act, ctp -> AssetInfoPermScreen(act, ctp, nav) }
                                 ScreenId.SendToPerm -> withTp { act, ctp -> SendToPermScreen( ctp, nav) }
                                 ScreenId.IdentityOp -> withAccount { act ->
-                                    val idsess = nav.curData.value as? IdentitySession
+                                    val idsess = nav.curData.collectAsState().value as? IdentitySession
                                     if (idsess != null) IdentityPermScreen(idsess, nav)
                                     else nav.back()
                                 }
                                 ScreenId.CreateAssetOffer -> {
-                                    val assetPerAccount = nav.curData.value as? AssetPerAccount
+                                    val assetPerAccount = nav.curData.collectAsState().value as? AssetPerAccount
                                     if (assetPerAccount == null)
                                     {
                                         nav.back()
@@ -1269,7 +1278,7 @@ fun NavigationRoot(
                                     }
                                 }
                                 ScreenId.AssetOffer -> {
-                                    val offer = nav.curData.value as? AssetOffer
+                                    val offer = nav.curData.collectAsState().value as? AssetOffer
                                     if (offer == null)
                                     {
                                         nav.back()
