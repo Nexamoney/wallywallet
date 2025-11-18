@@ -1192,7 +1192,13 @@ fun NavigationRoot(
           },
         ) {
             WallyTheme {
-                Box(modifier = Modifier.fillMaxSize().background(Color.White).padding(innerPadding)) {
+                Box(
+                  modifier = Modifier.fillMaxSize().background(Color.White).padding(innerPadding),
+                  contentAlignment = Alignment.Center
+                ) {
+
+                    SendSuccessAnimation()
+
                     Column(modifier = Modifier.fillMaxSize()) {
                         if (isShowingRecoveryWarning)
                             RecoveryPhraseWarning(Modifier.clickable { isShowingRecoveryWarning = false })

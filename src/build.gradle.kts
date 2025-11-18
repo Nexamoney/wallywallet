@@ -296,6 +296,11 @@ kotlin {
 
                 // Parse HTML from a string
                 implementation(libs.ksoup)
+
+                // Lottie animation library wrapper library
+                implementation("io.github.alexzhirkevich:compottie:2.0.2")
+                implementation("io.github.alexzhirkevich:compottie-dot:2.0.2")
+                implementation("io.github.alexzhirkevich:compottie-network:2.0.2")
             }
         }
         val commonTest by getting {
