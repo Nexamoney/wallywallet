@@ -9,6 +9,8 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import info.bitcoinunlimited.www.wally.Account
 import info.bitcoinunlimited.www.wally.ui.ReceiveScreenContent
 import info.bitcoinunlimited.www.wally.ui.setSelectedAccount
+import info.bitcoinunlimited.www.wally.ui.views.AccountPill
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -42,7 +44,9 @@ class ReceiveScreenTest:WallyUiTestBase(false)
         LogIt.info("TEST receiveScreenContentTest")
         //val account = wallyApp!!.newAccount("receiveScreenContentTest", 0U, "", cs)!!
         val account = Account("rcvScrnContent", chainSelector = cs)
+        val actFlow = MutableStateFlow<Account?>(account)
         val address = Pay2PubKeyTemplateDestination(ChainSelector.NEXAREGTEST, UnsecuredSecret(ByteArray(32, { 1.toByte()})), 1234)
+        val pill = AccountPill(actFlow)
         LogIt.info("SETUP receiveScreenContentTest complete")
         runComposeUiTest {
             //val clipboardText = mutableStateOf<String?>(null)
@@ -53,7 +57,7 @@ class ReceiveScreenTest:WallyUiTestBase(false)
                   LocalViewModelStoreOwner provides viewModelStoreOwner
                 ) {
                     val clip = LocalClipboardManager.current
-                    ReceiveScreenContent(account, address)
+                    ReceiveScreenContent(pill, account, address)
                     /*  TODO this code gets the clipboard of the host, not the android device
                     LaunchedEffect(clipboardText) {
                         while(true)

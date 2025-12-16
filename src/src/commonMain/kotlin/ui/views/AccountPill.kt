@@ -531,6 +531,7 @@ class AccountPill(account: MutableStateFlow<Account?>): AccountPillViewModel(acc
         {
             LogIt.info("setting pill to an out-of-bounds account")
         }
+        // LogIt.info("AccountPill setAccount: $account set to ${act?.name}")
         account.value = act
     }
 

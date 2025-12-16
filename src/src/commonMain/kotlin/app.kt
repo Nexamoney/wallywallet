@@ -432,13 +432,10 @@ open class CommonApp(val runningTests: Boolean)
     fun orderedAccounts(visibleOnly: Boolean = true): ListifyMap<String, Account>
     {
         return accountLock.synchronized {
-            // LogIt.info("got lock")
             ListifyMap(accounts, { if (visibleOnly) it.value.visible else true }, object : Comparator<String>
             {
                 override fun compare(p0: String, p1: String): Int
                 {
-                    if (wallyApp?.nullablePrimaryAccount?.name == p0) return Int.MIN_VALUE
-                    if (wallyApp?.nullablePrimaryAccount?.name == p1) return Int.MAX_VALUE
                     return p0.compareTo(p1)
                 }
             })

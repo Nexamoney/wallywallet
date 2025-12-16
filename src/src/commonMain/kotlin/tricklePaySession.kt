@@ -574,7 +574,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
     {
         val cs = chainSelector
         // this api finds all accounts of the passed chainselector, and puts the selected one first
-        val walChoices = if (cs == null) wallyApp!!.orderedAccounts() else wallyApp!!.accountsFor(cs)
+        val walChoices = if (cs == null) wallyApp!!.orderedAccounts(true) else wallyApp!!.accountsFor(cs)
         if (walChoices.size == 0)
         {
             throw WalletInvalidException()
@@ -582,7 +582,8 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         pill.choices = walChoices
         // TODO associate an account with a trickle pay
         // For now, grab the first sorted since that's the selected one
-        pill.account.value = walChoices[0]
+        val tmp = wallyApp!!.preferredVisibleAccountOrNull()
+        pill.account.value = if (walChoices.contains(tmp)) tmp else walChoices[0]
     }
 
 

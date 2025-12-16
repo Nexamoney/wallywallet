@@ -1233,7 +1233,7 @@ fun NavigationRoot(
                                 ScreenId.Send -> withAccount { act -> withSendNavParams { SendScreen(act, it) } }
                                 ScreenId.Receive ->
                                 {
-                                    ReceiveScreen()
+                                    ReceiveScreen(accountPillViewModel)
                                 }
 
                                 ScreenId.SplitBill -> SplitBillScreen()

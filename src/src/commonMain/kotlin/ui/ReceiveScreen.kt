@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -24,20 +25,23 @@ import info.bitcoinunlimited.www.wally.setTextClipboard
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.wallyPurple
 import info.bitcoinunlimited.www.wally.ui.views.AccountPill
+import info.bitcoinunlimited.www.wally.ui.views.AccountPillViewModel
 import info.bitcoinunlimited.www.wally.ui.views.IconTextButton
 import info.bitcoinunlimited.www.wally.ui.views.CenteredText
+import info.bitcoinunlimited.www.wally.ui.views.QrScannerDialog
 import info.bitcoinunlimited.www.wally.ui.views.Syncing
 import info.bitcoinunlimited.www.wally.wallyApp
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
+import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.PayDestination
 import org.nexa.libnexakotlin.chainToURI
 import org.nexa.libnexakotlin.rem
-
+private val LogIt = GetLog("wally.receive")
 typealias AccountName = String
 
 
 @Composable
-fun ReceiveScreen()
+fun ReceiveScreen(pill: AccountPillViewModel)
 {
     val focusedAccount = wallyApp!!.focusedAccount.collectAsState().value
     // Select the first available account if none are available
@@ -62,10 +66,11 @@ fun ReceiveScreen()
 
     val dest = focusedAccount.currentReceiveObservable.collectAsState().value
     val payAddress = dest?.address
+    var isScanningQr by remember { mutableStateOf(false) }
 
     Column (modifier = Modifier.fillMaxSize()) {
         if (payAddress != null)
-            ReceiveScreenContent(focusedAccount, dest, Modifier.weight(1f))
+            ReceiveScreenContent(pill, focusedAccount, dest, Modifier.weight(1f))
         else
             Row {
                 Syncing(Color.Black)
@@ -80,15 +85,34 @@ fun ReceiveScreen()
                     setTextClipboard(payAddress.toString())
                     displayNotice(i18n(S.copiedToClipboard))
                 }
+                // We want to allow QR code scanning in this screen because its common for web apps to offer a QR code to request an address from the wallet
+                IconTextButton(icon = Icons.Outlined.QrCodeScanner, modifier = Modifier.weight(1f), description = i18n(S.scanQr), color = wallyPurple) {
+                    clearAlerts()
+                    isScanningQr = true
+                }
                 IconTextButton(icon = Icons.AutoMirrored.Outlined.ArrowBack, modifier = Modifier.weight(1f).testTag("BackButton"), description = i18n(S.Back), color = wallyPurple, ) {
                     nav.back()
                 }
             }
     }
+    if (isScanningQr && platform().hasQrScanner)
+        {
+            QrScannerDialog(
+              onDismiss = {
+                  clearAlerts()
+                  isScanningQr = false
+              },
+              onScan = {
+                  if (it.isNotEmpty() && isScanningQr)
+                      isScanningQr = false
+                      wallyApp?.handlePaste(it)
+                  }
+            )
+        }
 }
 
 @Composable
-fun ReceiveScreenContent(account: Account, address: PayDestination, modifier: Modifier = Modifier)
+fun ReceiveScreenContent(pill: AccountPillViewModel, account: Account, address: PayDestination, modifier: Modifier = Modifier)
 {
     if (address.address == null) return  // This PayDestination does not have an address
     val addrStr = address.address.toString()
@@ -96,7 +120,7 @@ fun ReceiveScreenContent(account: Account, address: PayDestination, modifier: Mo
     Surface(modifier = modifier.fillMaxWidth(), color = Color.White) {
         Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
             Spacer(modifier = Modifier.weight(0.04f))
-            AccountPill(account).draw(buttonsEnabled = false)
+            pill.draw(buttonsEnabled = false)
             Spacer(modifier = Modifier.weight(0.1f))
             Image(
               painter = qrcodePainter,
