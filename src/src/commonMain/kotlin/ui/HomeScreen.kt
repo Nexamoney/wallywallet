@@ -74,13 +74,7 @@ fun HomeScreen(
       pageCount = { 2 }
     )
     var isScanningQr by remember { mutableStateOf(false) }
-    var accountUIData = accountUiDataViewModel.accountUIData.collectAsState().value
-    val accounts = accountGuiSlots.collectAsState().value
 
-    accounts.fastForEach {
-        if (accountUIData[it.name] == null) accountUiDataViewModel.setAccountUiDataForAccount(it)
-    }
-    accountUIData = accountUiDataViewModel.accountUIData.collectAsState().value
 
     val tabRowItems = listOf(
         TabRowItem(
@@ -130,7 +124,7 @@ fun HomeScreen(
                                 accountUiDataViewModel.setup()
                             }
 
-                            AccountListView(nav, accountUIData, accounts)
+                            AccountListView(nav, accountUiDataViewModel)
                         }
                     1 ->
                         Column(

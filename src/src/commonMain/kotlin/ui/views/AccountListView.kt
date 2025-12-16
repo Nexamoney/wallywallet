@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
@@ -27,6 +28,7 @@ import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import org.nexa.libnexakotlin.SearchDerivationPathActivity
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
@@ -186,6 +188,7 @@ fun Account.uiData(): AccountUIData
 open class AccountUiDataViewModel: ViewModel()
 {
     val accountUIData: MutableStateFlow<Map<String, AccountUIData>> = MutableStateFlow(mapOf())
+    var accountListPos by mutableIntStateOf(0)  // track and restore current position in the account list
 
     open fun setup()
     {
@@ -287,18 +290,28 @@ class AccountUiDataViewModelFake: AccountUiDataViewModel()
     }
 }
 
-@Composable fun AccountListView(
-    nav: ScreenNav,
-    accountUIData: Map<String, AccountUIData>,
-    accounts: ListifyMap<String, Account>
-)
+@Composable fun AccountListView(nav: ScreenNav, accountUiDataViewModel: AccountUiDataViewModel)
 {
+
+    val accounts = accountGuiSlots.collectAsState().value
+    var accountUIData = accountUiDataViewModel.accountUIData.collectAsState().value
+    accounts.fastForEach {
+        if (accountUIData[it.name] == null) accountUiDataViewModel.setAccountUiDataForAccount(it)
+    }
+    accountUIData = accountUiDataViewModel.accountUIData.collectAsState().value
+    val scrollState = rememberScrollState(accountUiDataViewModel.accountListPos)
+    DisposableEffect(scrollState) {
+        onDispose {
+            accountUiDataViewModel.accountListPos = scrollState.value
+        }
+    }
+
     val selAct = wallyApp!!.focusedAccount.collectAsState().value
 
     Column (
       modifier = Modifier.wrapContentHeight()
           .fillMaxWidth()
-          .verticalScroll(rememberScrollState())
+          .verticalScroll(scrollState)
         ,
       horizontalAlignment = Alignment.CenterHorizontally
     ) {
