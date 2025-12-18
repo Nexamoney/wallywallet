@@ -544,7 +544,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
             }
             WallyHalfDivider()
             // Full sync
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(5.dp))
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 // I'm cheating a bit here and using the contents of the recoverySearchText to pick what icon to show
                 if (recoverySearchText == i18n(S.NewAccountSearchingForTransactions))
@@ -554,7 +554,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
                         }
                 }
                 else if (recoverySearchText == "")
-                    Spacer(modifier = Modifier.size(50.dp))
+                    Spacer(modifier = Modifier.size(10.dp))
                 else if (newAcState.earliestActivity != null)
                     ResImageView("icons/check.xml", modifier = Modifier.size(50.dp))
                 else if (recoverySearchText.length < 200)
