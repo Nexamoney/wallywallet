@@ -425,10 +425,19 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                 val myIdx = actLst.indexOf(cur)
                 if (myIdx != -1)
                 {
-                    return actLst[(myIdx + (if (dir > 0) 1 else if (dir<0) -1 else 0)).mod(actLst.size)]
+                    val newIdx = (myIdx + (if (dir > 0) 1 else if (dir<0) -1 else 0)).mod(actLst.size)
+                    // LogIt.info("nextAct() index: $newIdx act: ${actLst[newIdx].name}")
+                    return actLst[newIdx]
+                }
+                else
+                {
+                    // LogIt.info("nextAct() current account does not exist in the list")
+                    return actLst[0]
                 }
             }
+            // LogIt.info("nextAct() list is empty")
         }
+        // LogIt.info("nextAct() list is null")
         return account.value
     }
 
@@ -445,7 +454,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
 
         var dupSide by remember { mutableStateOf(0f)}
 
-        val actLst = choices ?: wallyApp?.orderedAccounts(true)?.toList()
+        var actLst = choices ?: wallyApp?.orderedAccounts(true)?.toList()
 
         Box(modifier = Modifier.fillMaxWidth().onSizeChanged { boxSize = it }.pointerInput(Unit) {
             var dragAmount = 0f
@@ -462,7 +471,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                           {
                               if (actLst?.isNotEmpty() == true)
                               {
-                                  setAccount(if (dragAmount > 0) actLst.first() else actLst.last())
+                                  //setAccount(if (dragAmount > 0) actLst.first() else actLst.last())
                                   changed = true
                               }
                           }
@@ -484,7 +493,11 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                       scope.launch {
                           // Animate the box entirely off the screen, pulling the other one into the center
                           animatedOffset.animateTo(boxSize.width.toFloat() * dragAmount.sign, tw, velocity)
-                          setAccount(nextAct(dupSide, account.value, actLst))
+                          // reload the current list of accounts whenever I finish a drag
+                          actLst = choices ?: wallyApp?.orderedAccounts(true)?.toList()
+                          // go to the next account
+                          val nextAccount = nextAct(dupSide, account.value, actLst)
+                          setAccount(nextAccount)
                           // Now snap the original box right on top of the other one, resetting the position
                           animatedOffset.snapTo(0f)
                           dupSide = 0f
@@ -502,7 +515,9 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
               }
             )
         }) {
+            // Renders the main pill
             renderPill(act, animatedOffset.value, buttonsEnabled)
+            // Renders the pill next to the main one during a drag
             if (dupSide != 0f) renderPill(nextAct(dupSide, account.collectAsState().value, actLst), animatedOffset.value + (dupSide * boxSize.width), buttonsEnabled)
         }
     }
