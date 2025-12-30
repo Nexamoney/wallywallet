@@ -297,6 +297,8 @@ kotlin {
                 // Parse HTML from a string
                 implementation(libs.ksoup)
 
+                implementation(compose.components.resources)
+
                 // Lottie animation library wrapper library
                 implementation("io.github.alexzhirkevich:compottie:2.0.2")
                 implementation("io.github.alexzhirkevich:compottie-dot:2.0.2")
@@ -439,6 +441,9 @@ kotlin {
 
                     // This is only for pulling in the android photo picker
                     implementation(libs.play.services.base)
+
+                    // Play audio from resources file: https://medium.com/@brucemax/play-sounds-in-kotlin-multiplatform-using-multiplatform-resources-1b23716116d5
+                    implementation("androidx.media3:media3-exoplayer:1.8.0")
                 }
             }
         }

@@ -894,6 +894,7 @@ open class CommonApp(val runningTests: Boolean)
         showTricklePayPref.value = preferenceDB.getBoolean(SHOW_TRICKLEPAY_PREF, false)
         showAssetsPref.value = preferenceDB.getBoolean(SHOW_ASSETS_PREF, false)
         experimentalUI.value = preferenceDB.getBoolean(EXPERIMENTAL_UX_MODE_PREF, false)
+        soundEnabled.value = preferenceDB.getBoolean(SOUND_ENABLED_PREF, true)
 
         openAccountsTriggerGui()
         tpDomains.load()

@@ -259,8 +259,10 @@ fun SettingsScreen(preferenceDB: SharedPreferences = wallyApp!!.preferenceDB)
                 preferenceDB.edit().putBoolean(EXPERIMENTAL_UX_MODE_PREF, it).commit()
                 experimentalUI.value = it
             }
-
-
+            WallySwitchRow(soundEnabled.collectAsState().value, S.enableSound) {
+                preferenceDB.edit().putBoolean(SOUND_ENABLED_PREF, it).commit()
+                soundEnabled.value = it
+            }
 
             Spacer(Modifier.height(16.dp))
             CenteredSectionText(i18n(S.BlockchainSettings))

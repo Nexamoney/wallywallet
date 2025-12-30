@@ -46,6 +46,8 @@ val showIdentityPref = MutableStateFlow(false)
 val showTricklePayPref = MutableStateFlow(false)
 val showAssetsPref = MutableStateFlow(false)
 val experimentalUI = MutableStateFlow(false)
+
+val soundEnabled = MutableStateFlow(true)
 var behindTitleBarPadding = MutableStateFlow(0.dp)
 
 var permanentMenuItems: Set<NavChoice> = if (platform().target == KotlinTarget.iOS)
