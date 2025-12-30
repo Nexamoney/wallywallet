@@ -1,5 +1,6 @@
 package info.bitcoinunlimited.www.wally.ui
 
+import AudioPlayer
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.*
@@ -31,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eygraber.uri.Uri
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
@@ -41,8 +43,10 @@ import info.bitcoinunlimited.www.wally.ui.theme.WallyTheme
 import info.bitcoinunlimited.www.wally.ui.theme.wallyPurple
 import info.bitcoinunlimited.www.wally.ui.theme.wallyTranslucentPurple
 import info.bitcoinunlimited.www.wally.ui.views.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.SendScreen")
@@ -80,6 +84,8 @@ abstract class SendScreenViewModel(val account:MutableStateFlow<Account?>): View
 
     var balanceViewModel: BalanceViewModel = BalanceViewModelImpl(account)
     var syncViewModel: SyncViewModel = SyncViewModelImpl()
+
+    val audioPlayer: AudioPlayer = AudioPlayer()
 
     abstract fun setAccount(account: Account)
     abstract fun checkUriAndSetUi(urlStr: String)
@@ -573,6 +579,9 @@ class SendScreenViewModelImpl(act: Account): SendScreenViewModel(act)
                         uiState.value = SendScreenUi() // We are done with a send so reset state machine
                         requestInAppReview()
                         sendSuccessAnimationIsPlaying.value = true
+                        viewModelScope.launch(Dispatchers.Main) {
+                            audioPlayer.playSound(0)
+                        }
                     }
                     catch (e: Exception)  // We don't want to crash, we want to tell the user what went wrong
                     {
