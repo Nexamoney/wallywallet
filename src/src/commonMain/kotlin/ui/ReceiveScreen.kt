@@ -1,5 +1,6 @@
 package info.bitcoinunlimited.www.wally.ui
 
+import AudioPlayerViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.displayNotice
 import info.bitcoinunlimited.www.wally.i18n
@@ -41,7 +43,10 @@ typealias AccountName = String
 
 
 @Composable
-fun ReceiveScreen(pill: AccountPillViewModel)
+fun ReceiveScreen(
+  pill: AccountPillViewModel,
+  audioPlayerViewModel: AudioPlayerViewModel = viewModel { AudioPlayerViewModel() }
+)
 {
     val focusedAccount = wallyApp!!.focusedAccount.collectAsState().value
     // Select the first available account if none are available
@@ -105,8 +110,9 @@ fun ReceiveScreen(pill: AccountPillViewModel)
               onScan = {
                   if (it.isNotEmpty() && isScanningQr)
                       isScanningQr = false
-                      wallyApp?.handlePaste(it)
-                  }
+                  wallyApp?.handlePaste(it)
+                  audioPlayerViewModel.playScanQrSound()
+              }
             )
         }
 }

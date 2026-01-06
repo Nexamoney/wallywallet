@@ -1,5 +1,7 @@
 package info.bitcoinunlimited.www.wally.ui
 
+import AudioPlayer
+import AudioPlayerViewModel
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -35,6 +37,8 @@ class SyncViewModelFake: SyncViewModel()
 
 class SyncViewModelImpl : SyncViewModel()
 {
+    val audioPlayer: AudioPlayer = AudioPlayer()
+
     /*
         Checks every second if all accounts are synced
      */
@@ -65,6 +69,7 @@ fun HomeScreen(
   pill: AccountPillViewModel,
   assetViewModel: AssetViewModel = viewModel { AssetViewModel() },
   accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() },
+  audioPlayerViewModel: AudioPlayerViewModel = viewModel { AudioPlayerViewModel() }
 )
 {
     val assets = assetViewModel.assets.collectAsState().value
@@ -158,9 +163,12 @@ fun HomeScreen(
               },
               onScan = {
                   if (it.isNotEmpty() && isScanningQr)
+                  {
                       isScanningQr = false
                       wallyApp?.handlePaste(it)
+                      audioPlayerViewModel.playScanQrSound()
                   }
+              }
             )
         }
     }

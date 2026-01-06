@@ -1,6 +1,7 @@
 package info.bitcoinunlimited.www.wally.ui
 
 import AudioPlayer
+import AudioPlayerViewModel
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.*
@@ -630,7 +631,8 @@ data class SendScreenNavParams(
 fun SendScreenContent(
   pillViewModel: AccountPillViewModel,
   viewModel: SendScreenViewModel,
-  params: SendScreenNavParams
+  params: SendScreenNavParams,
+  audioPlayerViewModel: AudioPlayerViewModel = viewModel { AudioPlayerViewModel() }
 )
 {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -764,6 +766,7 @@ fun SendScreenContent(
               if (it.isNotEmpty() && isScanningQr)
                   isScanningQr = false
               viewModel.checkUriAndSetUi(it)
+              audioPlayerViewModel.playScanQrSound()
           }
         )
     }
