@@ -894,7 +894,7 @@ fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter
                 displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + fromText + addrText + summaryText)
             }
             val r = sdpa.search(WALLET_FULL_RECOVERY_DERIVATION_PATH_MAX_GAP) { tderivation(addressDerivationCoin, 0, false, it) }
-            sdpa.finalize()
+            sdpa.close()
             r
         }
         catch (e: EarlyExitException)
@@ -921,7 +921,7 @@ fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter
                   displayFastForwardInfo(i18n(S.NewAccountSearchingForAllTransactions) + fromText + addrText + summaryText)
             }
             val r = sdpa.search(WALLET_FULL_RECOVERY_NONSTD_DERIVATION_PATH_MAX_GAP) { pderivation(addressDerivationCoin, 0, false, it) }
-            sdpa.finalize()
+            sdpa.close()
             r
         }
         catch (e: EarlyExitException)

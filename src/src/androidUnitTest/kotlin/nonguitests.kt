@@ -369,7 +369,8 @@ class NonGuiTests
             tmp.second == nowBlock}, { "electrum server never synced"})
         val (ectip, _) = ec.getTip()
         val addressDerivationCoin = Bip44AddressDerivationByChain(cs)
-        val srchResults = SearchDerivationPathActivity(cs, {ec }, true) {}.search(100) {
+        val srch = SearchDerivationPathActivity(cs, {ec }, true) {}
+        val srchResults = srch.search(100) {
             val secret = libnexa.deriveHd44ChildKey(account.wallet.secret.getSecret(), AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
             Pay2PubKeyTemplateDestination(cs, UnsecuredSecret(secret), it.toLong())
         }
@@ -408,6 +409,7 @@ class NonGuiTests
 
         waitFor(TIMEOUT, { account.wallet.balance == 0L}, { "send all did not work: $tx"})
         check(a1.wallet.balance == 0L)
+        srch.close()
         LogIt.info("recovery test completed")
     }
 

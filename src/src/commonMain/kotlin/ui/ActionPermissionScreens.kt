@@ -172,14 +172,14 @@ fun SpecialTxPermScreen(sess: TricklePaySession)
         sess.pill.account.collectLatest {
             sess.originalTx?.let {
                 // If the account changes to something different, redo the analysis
-                val pa = sess.proposalAnalysis
+                val pa = sess.proposalAnalysis.value
                 if (sess.getRelevantAccount() != pa?.account)
                 {
                     // TODO copy the tx in a nice API
                     val tx = txFor(it.chainSelector, BCHserialized(SerializationType.NETWORK, it.toByteArray()))
                     sess.abortProposal()
                     sess.proposedTx = tx
-                    sess.proposalAnalysis = sess.analyzeCompleteAndSignTx(tx, sess.inputSatoshis, sess.tflags)
+                    sess.proposalAnalysis.value = sess.analyzeCompleteAndSignTx(tx, sess.inputSatoshis, sess.tflags)
                 }
             }
         }
@@ -202,7 +202,7 @@ fun SpecialTxPermScreen(sess: TricklePaySession)
     // auto-complete if already accepted and sess.accepted = true (needed to unlock the account)
 
     val pTx = sess.proposedTx
-    val panalysis = sess.proposalAnalysis
+    val panalysis = sess.proposalAnalysis.collectAsState().value
     if ((pTx == null) || (panalysis == null))  // context lost probable bug
     {
         displayUnexpectedException(TdppException(S.unavailable, "protocol context lost accepting special transaction"))
@@ -212,6 +212,7 @@ fun SpecialTxPermScreen(sess: TricklePaySession)
 
     LogIt.info("Proposal URI: ${sess.proposalUrl}")
     LogIt.info("Proposed Special Tx: ${pTx.toHex()}")
+    LogIt.info("Proposed analysis: ${panalysis}")
     // pTx.debugDump()
 
     var GuiCustomTxFee = ""
@@ -226,7 +227,7 @@ fun SpecialTxPermScreen(sess: TricklePaySession)
     var provingTokenTypes = 0L
 
 
-    panalysis?.myNetTokenInfo?.let {
+    panalysis.myNetTokenInfo.let {
         for ((_, v) in panalysis.myNetTokenInfo)
         {
             if (v > 0) receivingTokenTypes++
@@ -235,7 +236,7 @@ fun SpecialTxPermScreen(sess: TricklePaySession)
         }
     }
 
-    panalysis?.let {
+    panalysis.let {
         // what's being paid to me - what I'm contributing.  So if I pay out then its a negative number
         netSats = panalysis.receivingSats - panalysis.myInputSatoshis
 
@@ -328,6 +329,7 @@ fun SpecialTxPermScreen(sess: TricklePaySession)
         }
     }
 
+    // helper function to accept a proposal
     fun acceptProposal()
     {
         // Turn the menu on since user has accepted an operation of this type
@@ -380,6 +382,7 @@ fun SpecialTxPermScreen(sess: TricklePaySession)
         }
     }
 
+    // helper function to reject
     fun rejectProposal()
     {
         //info.bitcoinunlimited.www.wally.LogIt.info("deny trickle pay special transaction")

@@ -229,6 +229,8 @@ Good luck!
     <string name="more">More</string>
     <string name="darkMode">Dark mode</string>
 
+    <string name="ConsolidationNeeded">First consolidate account</string>
+
     <!-- a PIN is a numeric password that gives you access to your account -->
     <string name="SetChangePin">Set or Change Unlocking PIN</string>
     <string name="CurrentPin">Current PIN</string>

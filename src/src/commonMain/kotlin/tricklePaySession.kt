@@ -445,7 +445,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
     var inputSatoshis: Long = 0  // satoshis being supplied by inputs in this tx
     var originalTx: iTransaction? = null  // The original (unsigned) transaction coming from the TDPP request
     var proposedTx: iTransaction? = null
-    var proposalAnalysis: TxAnalysisResults? = null
+    var proposalAnalysis: MutableStateFlow<TxAnalysisResults?> = MutableStateFlow(null)
     var assetInfoList:TricklePayAssetList? = null
 
     var totalNexaSpent: Long = 0  // How much does this proposal spend in nexa satoshis
@@ -516,9 +516,9 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
     fun abortProposal()
     {
         proposedTx?.let { tx->
-            proposalAnalysis?.let { pa ->
+            proposalAnalysis.value?.let { pa ->
                 pa.account.wallet.abortTransaction(tx)
-                proposalAnalysis = null
+                proposalAnalysis.value = null
             }
             proposedTx = null
         }
@@ -811,6 +811,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                         logThreadException(e)
                     }
 
+                specialTxSuccessAnimationIsPlaying.value = true
                 // And hand it back to the requester...
                 // grab temps because activity could go away
                 val rp = replyProtocol
@@ -819,42 +820,45 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                 val txHex = pTx.toHex()
                 //LogIt.info("Sending special tx response: ${pTx.toHex()}")
                 //pTx.debugDump()
-                laterJob {
-                    val req = Url(rp + "://" + hp + "/tx?tx=$txHex&$cp")
-                    LogIt.info("Sending special tx response: ${req}")
-                    val data = try
-                    {
-                        req.readText(HTTP_REQ_TIMEOUT_MS)
+                if (hp.isNotBlank())
+                {
+                    laterJob {
+                        val req = Url(rp + "://" + hp + "/tx?tx=$txHex&$cp")
+                        LogIt.info("Sending special tx response: ${req}")
+                        val data = try
+                        {
+                            req.readText(HTTP_REQ_TIMEOUT_MS)
+                        }
+                        catch (e: IOException)
+                        {
+                            LogIt.info("Error submitting transaction: " + e.message)
+                            displayError(S.WebsiteUnavailable)
+                            return@laterJob
+                        }
+                        catch (e: Exception)
+                        {
+                            LogIt.info("Error submitting transaction: " + e.message)
+                            displayError(S.WebsiteUnavailable)
+                            return@laterJob
+                        }
+                        LogIt.info(sourceLoc() + " TP response to the response: " + data)
+                        // if the other side did not like the transaction it will return invalid
+                        if (data == "unknown session")
+                        {
+                            displayWarning(i18n(S.TpNoSession), i18n(S.TpNoSession))
+                        }
+                        else if (data.contains("invalid"))
+                        {
+                            LogIt.info("TDPP TX completion submission to the originator gave the following warning:\n$data")
+                            // Submitting the completed partial tx back to the originator is a courtesy... it ought to be accepted on chain anyway if its not stale
+                            // so don't show anything if the originator complains.
+                            // displayWarning(i18n(S.staleTransaction),i18n(S.staleTransactionDetails))
+                        }
+                        else if (data.contains("error"))
+                            displayWarning(i18n(S.reject))
+                        else
+                            displayNotice(S.TpTxAccepted)
                     }
-                    catch (e: IOException)
-                    {
-                        LogIt.info("Error submitting transaction: " + e.message)
-                        displayError(S.WebsiteUnavailable)
-                        return@laterJob
-                    }
-                    catch (e: Exception)
-                    {
-                        LogIt.info("Error submitting transaction: " + e.message)
-                        displayError(S.WebsiteUnavailable)
-                        return@laterJob
-                    }
-                    LogIt.info(sourceLoc() + " TP response to the response: " + data)
-                    // if the other side did not like the transaction it will return invalid
-                    if (data == "unknown session")
-                    {
-                        displayWarning(i18n(S.TpNoSession),i18n(S.TpNoSession))
-                    }
-                    else if (data.contains("invalid"))
-                    {
-                        LogIt.info("TDPP TX completion submission to the originator gave the following warning:\n$data")
-                        // Submitting the completed partial tx back to the originator is a courtesy... it ought to be accepted on chain anyway if its not stale
-                        // so don't show anything if the originator complains.
-                        // displayWarning(i18n(S.staleTransaction),i18n(S.staleTransactionDetails))
-                    }
-                    else if (data.contains("error"))
-                        displayWarning(i18n(S.reject))
-                    else
-                       displayNotice(S.TpTxAccepted)
                 }
             }
         }
@@ -866,7 +870,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         if (domain == null) return TdppAction.DENY
         askReasons.clear()
 
-        val pa = proposalAnalysis
+        val pa = proposalAnalysis.value
         if (pa != null)
         {
             // If I'm sending tokens, always ask -- this is too complicated to do automatically right now
@@ -901,10 +905,15 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         proposedTx = null
         proposedDestinations = null
 
-        val txHex = uri.getQueryParameter("tx")
-        if (txHex == null)
-        {
-            throw TdppException(S.BadWebLink, "missing tx parameter")
+        val txBin = run {
+            val txHex = uri.getQueryParameter("tx")
+            if (txHex == null)
+            {
+                val txB64u = uri.getQueryParameter("tx64")
+                if (txB64u == null) throw TdppException(S.BadWebLink, "missing tx parameter")
+                txB64u.fromBase64Url()
+            }
+            else txHex.fromHex()
         }
 
         parseCommonFields(uri)
@@ -919,15 +928,16 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         }
         inputSatoshis = tmp ?: 0
 
-        val tx = txFor(chainSelector!!, BCHserialized(txHex.fromHex(), SerializationType.NETWORK))
-        originalTx = txFor(chainSelector!!, BCHserialized(txHex.fromHex(), SerializationType.NETWORK))  // TODO tx.clone()
+        val tx = txFor(chainSelector!!, BCHserialized(txBin, SerializationType.NETWORK))
+        //originalTx = tx.clone()
+        originalTx = txFor(chainSelector!!, BCHserialized(txBin, SerializationType.NETWORK))  // TODO tx.clone()
         LogIt.info(sourceLoc() + ": Tx to autopay: " + tx.toHex())
 
         // Analyze and sign transaction
         val analysis = analyzeCompleteAndSignTx(tx, inputSatoshis, tflags)
         LogIt.info(sourceLoc() + ": Completed tx: " + tx.toHex())
         proposedTx = tx  // save the final tx to be issued later if user agrees and no problems
-        proposalAnalysis = analysis
+        proposalAnalysis.value = analysis
         totalNexaSpent = analysis.myInputSatoshis - analysis.receivingSats
         var action = determineAction(domain)
         if (action == TdppAction.ACCEPT) action = TdppAction.ASK

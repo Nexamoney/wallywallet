@@ -334,7 +334,7 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
 
     fun finalize()
     {
-        dataLock.finalize()
+        dataLock.close()
     }
 
     /** Get the file associated with this NFT (if this is an NFT), or null

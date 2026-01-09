@@ -5,8 +5,13 @@
 
 
 # Wally Personal Wallet
+![badge-Android](https://img.shields.io/badge/Platform-Android-green)
+![badge-iOS](https://img.shields.io/badge/Platform-iOS-green)
+![badge-JVM](https://img.shields.io/badge/Platform-JVM-green)
+![badge-macOS](https://img.shields.io/badge/Platform-macOS-green)
+![badge-web](https://img.shields.io/badge/Platform-web-red)
 
-This is a non-custodial SPV & Electrum protocol wallet for Nexa and Bitcoin Cash.
+This is a non-custodial SPV & Electrum protocol wallet for Nexa.
 
 <a href='https://play.google.com/store/apps/details?id=info.bitcoinunlimited.www.wally&hl=en&gl=US&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' style="width: 250px;" width="250" /></a>
 
@@ -150,7 +155,7 @@ Read more in the [official Apple documentation](https://developer.apple.com/docu
 
 https://plugins.jetbrains.com/plugin/14936-kotlin-multiplatform-mobile
 
-#### Nexa and Bitcoin Cash Kotlin Library
+#### Nexa Kotlin Library
 
 This software uses the `libnexakotlin` library produced by Bitcoin Unlimited.
 
