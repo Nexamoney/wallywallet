@@ -48,11 +48,11 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
 import okio.BufferedSource
+import kotlin.io.encoding.Base64
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 private val LogIt = GetLog("BU.wally.utils")
-
 enum class ScaleMode
 {
     DISTORT,
@@ -69,6 +69,8 @@ expect fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
 
 /** Provides a stack trace, without the provided lines */
 expect fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: MutableSet<String>?=null): String
+
+val MAX_QR_LENGTH_BYTE_MODE = 2953
 
 /** Generates a notification, returns a handle to remove the notification.
  * DO NOT call this to tell the user some information like $ has been received.

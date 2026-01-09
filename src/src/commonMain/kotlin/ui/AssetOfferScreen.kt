@@ -21,6 +21,7 @@ import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.WallyModalOutline
 import info.bitcoinunlimited.www.wally.ui.views.MpMediaView
+import io.github.alexzhirkevich.qrose.options.QrErrorCorrectionLevel
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.ChainSelector
@@ -75,16 +76,23 @@ class AssetOfferViewModel(initOffer: AssetOffer) : ViewModel()
 }
 
 @Composable
-fun AssetOfferScreen(offer: AssetOffer, viewModel: AssetOfferViewModel = viewModel { AssetOfferViewModel(offer) })
+fun AssetOfferScreen(nav: ScreenNav, offer: AssetOffer, viewModel: AssetOfferViewModel = viewModel { AssetOfferViewModel(offer) })
 {
     val asset = offer.asset
     val nft = asset.nft
-    val qrcodePainter = rememberQrCodePainter(offer.uri)
+    if (offer.uri.length > 2953)
+    {
+        LogIt.info("Asset Offer is too long: ${offer.uri.length}\n${offer.uri}")
+        nav.back()
+        displayError(S.ConsolidationNeeded)
+        return
+    }
+    val qrcodePainter = rememberQrCodePainter(offer.uri, errorCorrectionLevel = QrErrorCorrectionLevel.Low)
     val assetName = asset.nameObservable.collectAsState()
     val preferenceDB = getSharedPreferences(TEST_PREF + i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
     val devMode = preferenceDB.getBoolean(DEV_MODE_PREF, false)
     val name = (if ((nft != null) && (nft.title.length > 0)) nft.title else assetName.value) ?: ""
-    // If the offer is a unique non-fungle token/asset then the amount should not be displayed
+    // If the offer is a unique non-fungible token/asset then the amount should not be displayed
     val buyText = if (offer.assetQty == 1L && offer.uniqueAsset)
         i18n(S.scanToBuyOne) % mapOf("name" to name)
     // Display the amount if the offer is for a fungible token/asset

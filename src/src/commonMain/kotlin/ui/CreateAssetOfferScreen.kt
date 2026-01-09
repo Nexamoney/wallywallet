@@ -23,6 +23,13 @@ import org.wallywallet.tokadex.postTokadexOffer
 
 private val LogIt = GetLog("BU.wally.createAssetOffer")
 
+private val BASE64URL_TX_ENCODING = false // true
+
+fun iTransaction.toBase64Url():String
+{
+    return this.toByteArray().toBase64Url()
+}
+
 
 class CreateAssetOfferViewModel(apc: AssetPerAccount): ViewModel() {
     val asset: MutableStateFlow<AssetInfo> = MutableStateFlow(apc.assetInfo)
@@ -52,42 +59,60 @@ class CreateAssetOfferViewModel(apc: AssetPerAccount): ViewModel() {
 
     fun CommonWallet.createOfferTx(gid: GroupId, grpAmt: Long, nativeAmt: Long, MIN_CONFIRMS:Int = 0): OfferTx
     {
-        // Create a transaction for whatever chain this wallet is running on
-        val tx = txFor(chainSelector)
         // This is the address the buyer pays to.
         val myAddress = getNewAddress()
-        // Add an output for this amount of tokens, just to get txCompleter to fund it.  I will delete this output so that the taker can supply it
-        tx.add(txOutputFor(myAddress, grpAmt, gid))
-        // Here I'm saying "complete this transaction by funding (adding inputs for) any tokens that are being sent", and just above I added an output to send some tokens.
-        // So this call is going to populate the transaction with inputs that pull in the tokens needed, AND may add an token change payment to myself if it had to pull in too many.
-        txCompleter(tx, MIN_CONFIRMS, TxCompletionFlags.PARTIAL or TxCompletionFlags.FUND_GROUPS, changeAddress = myAddress)
-        assert(tx.inputs.size > 0)
-        // ok get rid of that output.  We CANNOT clear because txCompleter may have added an output of token change.
-        tx.outputs.removeAt(0)
-        // Now add the output we really want, which is a payment in native coin
-        tx.add(txOutputFor(nativeAmt, myAddress))
-
-        // Sign this transaction "partially"
-        txCompleter(tx, MIN_CONFIRMS, TxCompletionFlags.PARTIAL or TxCompletionFlags.SIGN or TxCompletionFlags.BIND_OUTPUT_PARAMETERS, changeAddress = myAddress)
-        // Now add an output to tell the "taker" how to grab the what was offered.
-        // This ought to be optional; a wallet can analyze the transaction's inputs to see what's being offered.  But doing that requires doing a UTXO look up to find out what
-        // assets the inputs are offering.  This is how we just tell the "taker" what's being offered.  Note that if we are lying, the tx will be bad so the "taker" is not trusting
-        // us.
-        tx.add(txOutputFor(chainSelector, dust(chainSelector), SatoshiScript.grouped(chainSelector, gid, grpAmt).add(OP.TMPL_SCRIPT)))
-
-        // For legacy (BCH) compatibility reasons, the TDPP protocol requires a parameter "inamt" that says how much coin is being input to the transaction.  In Nexa, we could
-        // just read that out of the inputs.
-        var inAmt = 0L
-        for (i in tx.inputs)
+        var tries = 0
+        while(true)
         {
-            inAmt += i.spendable.amount
+            tries++
+            // Create a transaction for whatever chain this wallet is running on
+            val tx = txFor(chainSelector)
+            // Add an output for this amount of tokens, just to get txCompleter to fund it.  I will delete this output so that the taker can supply it
+            tx.add(txOutputFor(myAddress, grpAmt, gid))
+            // Here I'm saying "complete this transaction by funding (adding inputs for) any tokens that are being sent", and just above I added an output to send some tokens.
+            // So this call is going to populate the transaction with inputs that pull in the tokens needed, AND may add an token change payment to myself if it had to pull in too many.
+            txCompleter(tx, MIN_CONFIRMS, TxCompletionFlags.PARTIAL or TxCompletionFlags.FUND_GROUPS, changeAddress = myAddress)
+            assert(tx.inputs.size > 0)
+            // ok get rid of that output.  We CANNOT clear because txCompleter may have added an output of token change.
+            tx.outputs.removeAt(0)
+            // Now add the output we really want, which is a payment in native coin
+            tx.add(txOutputFor(nativeAmt, myAddress))
+
+            // Sign this transaction "partially"
+            txCompleter(tx, MIN_CONFIRMS, TxCompletionFlags.PARTIAL or TxCompletionFlags.SIGN or TxCompletionFlags.BIND_OUTPUT_PARAMETERS, changeAddress = myAddress)
+            // Now add an output to tell the "taker" how to grab the what was offered.
+            // This ought to be optional; a wallet can analyze the transaction's inputs to see what's being offered.  But doing that requires doing a UTXO look up to find out what
+            // assets the inputs are offering.  This is how we just tell the "taker" what's being offered.  Note that if we are lying, the tx will be bad so the "taker" is not trusting
+            // us.
+            tx.add(txOutputFor(chainSelector, dust(chainSelector), SatoshiScript.grouped(chainSelector, gid, grpAmt).add(OP.TMPL_SCRIPT)))
+
+            // For legacy (BCH) compatibility reasons, the TDPP protocol requires a parameter "inamt" that says how much coin is being input to the transaction.  In Nexa, we could
+            // just read that out of the inputs.
+            var inAmt = 0L
+            for (i in tx.inputs)
+            {
+                inAmt += i.spendable.amount
+            }
+
+            val tdppFlags = 0L  // No fancy "taker" flags are needed
+            // use the applink style of URL
+            val tdpp = if (BASE64URL_TX_ENCODING) "tdpp:///tx?chain=${chainToURI[tx.chainSelector]}&inamt=$inAmt&flags=$tdppFlags&tx64=${tx.toBase64Url()}"
+            else "tdpp:///tx?chain=${chainToURI[tx.chainSelector]}&inamt=$inAmt&flags=$tdppFlags&tx=${tx.toHex()}"
+
+            // This transaction was too big.  Try to make a smaller one
+            if (tdpp.length > MAX_QR_LENGTH_BYTE_MODE)
+            {
+                if (tx.inputs.size > 2) // NFT and change is 2 inputs.  So if this TX had more let's try to consolidate
+                {
+                    abortTransaction(tx)
+                    val txc = createConsolidationTx(tries.toLong() * 1000000)
+                    send(txc.first)
+                    continue
+                }
+                if (tries > 3) throw WalletDustException("Cannot create a transaction small enough to fit in a QR code.")
+            }
+            return OfferTx(tx, tdpp, myAddress)
         }
-
-        val tdppFlags = 0L  // No fancy "taker" flags are needed
-        // use the applink style of URL
-        val tdpp = "tdpp:///tx?chain=${chainToURI[tx.chainSelector]}&inamt=$inAmt&flags=$tdppFlags&tx=${tx.toHex()}"
-
-        return OfferTx(tx, tdpp, myAddress)
     }
 
     fun createOffer(capdChecked: Boolean)

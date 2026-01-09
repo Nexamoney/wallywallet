@@ -17,6 +17,41 @@ import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import kotlinx.coroutines.flow.MutableStateFlow
 
 val sendSuccessAnimationIsPlaying = MutableStateFlow(false)
+val specialTxSuccessAnimationIsPlaying = MutableStateFlow(false)
+
+@Composable
+fun SpecialTxSuccessAnimation()
+{
+    val isPlaying by specialTxSuccessAnimationIsPlaying.collectAsState()
+
+    val composition by rememberLottieComposition {
+        LottieCompositionSpec.JsonString(successAnimation)  // TODO: different success animation for a special transaction completion
+    }
+    val progress by animateLottieCompositionAsState(
+      composition = composition,
+      iterations = 1,
+      reverseOnRepeat = false,
+      isPlaying = isPlaying
+    )
+
+    // Auto-reset when finished
+    LaunchedEffect(progress) {
+        if (progress == 1f && specialTxSuccessAnimationIsPlaying.value) {
+            specialTxSuccessAnimationIsPlaying.value = false
+        }
+    }
+
+    //Display the animation
+    if (isPlaying)
+        Image(
+          modifier = Modifier.zIndex(101f),
+          painter = rememberLottiePainter(
+            composition = composition,
+            progress = { progress },
+          ),
+          contentDescription = "animation"
+        )
+}
 
 @Composable
 fun SendSuccessAnimation()

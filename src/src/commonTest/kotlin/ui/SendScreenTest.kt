@@ -12,6 +12,9 @@ import androidx.compose.ui.test.*
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.*
+import info.bitcoinunlimited.www.wally.ui.views.AccountPillViewModelFake
+import info.bitcoinunlimited.www.wally.ui.views.BalanceViewModelImpl
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.GroupId
@@ -39,12 +42,14 @@ class SendScreenTest:WallyUiTestBase()
 
             setSelectedAccount(account) // Set selected account to populate the UI
             val sendScreenViewModel = SendScreenViewModelFake(account)
-
+            val actFlow = MutableStateFlow<Account?>(account)
+            val balanceViewModel = BalanceViewModelImpl(account)
+            val mockPill = AccountPillViewModelFake(actFlow, balanceViewModel, SyncViewModelFake())
             setContent {
                 CompositionLocalProvider(
                   LocalViewModelStoreOwner provides viewModelStoreOwner
                 ) {
-                    SendScreenContent(sendScreenViewModel, SendScreenNavParams())
+                    SendScreenContent(mockPill, sendScreenViewModel, SendScreenNavParams())
                 }
             }
             settle()

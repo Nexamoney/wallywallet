@@ -629,6 +629,7 @@ data class SendScreenNavParams(
 
 @Composable
 fun SendScreenContent(
+  pillViewModel: AccountPillViewModel,
   viewModel: SendScreenViewModel,
   params: SendScreenNavParams
 )
@@ -666,7 +667,7 @@ fun SendScreenContent(
           }
         ) {
             Spacer(Modifier.height(16.dp))
-            AccountPill(viewModel.account).draw(buttonsEnabled = false)
+            pillViewModel.draw(buttonsEnabled = false)
             Column(
               modifier = Modifier.wrapContentHeight()
                 .fillMaxWidth()
@@ -887,8 +888,9 @@ fun SendBottomButtons(mod: Modifier, viewModel: SendScreenViewModel)
 }
 
 @Composable
-fun SendScreen(account: Account, navParams: SendScreenNavParams, viewModel: SendScreenViewModel = viewModel { SendScreenViewModelImpl(account) })
+fun SendScreen(pillViewModel: AccountPillViewModel, navParams: SendScreenNavParams, viewModel: SendScreenViewModel = viewModel { SendScreenViewModelImpl(pillViewModel.account.value ?: wallyApp!!.preferredVisibleAccount()) })
 {
+    val account = pillViewModel.account.collectAsState().value ?: wallyApp!!.preferredVisibleAccount()
     /*
        Update UI when sending with a new account or the account has changed.
      */
@@ -922,7 +924,7 @@ fun SendScreen(account: Account, navParams: SendScreenNavParams, viewModel: Send
         Surface(
           modifier = Modifier.fillMaxSize().background(Color.White)
         ) {
-            SendScreenContent(viewModel, params = navParams)
+            SendScreenContent(pillViewModel, viewModel, params = navParams)
         }
     }
 }

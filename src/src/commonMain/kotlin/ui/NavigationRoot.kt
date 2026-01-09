@@ -1198,8 +1198,8 @@ fun NavigationRoot(
                   modifier = Modifier.fillMaxSize().background(Color.White).padding(innerPadding),
                   contentAlignment = Alignment.Center
                 ) {
-
                     SendSuccessAnimation()
+                    SpecialTxSuccessAnimation()
 
                     Column(modifier = Modifier.fillMaxSize()) {
                         if (isShowingRecoveryWarning)
@@ -1232,7 +1232,7 @@ fun NavigationRoot(
                                     HomeScreen(isShowingRecoveryWarning, accountPillViewModel, assetViewModel, accountUiDataViewModel)
                                 }
 
-                                ScreenId.Send -> withAccount { act -> withSendNavParams { SendScreen(act, it) } }
+                                ScreenId.Send -> withAccount { act -> withSendNavParams { SendScreen(accountPillViewModel,it) } }
                                 ScreenId.Receive ->
                                 {
                                     ReceiveScreen(accountPillViewModel)
@@ -1293,7 +1293,7 @@ fun NavigationRoot(
                                     }
                                     else
                                     {
-                                        AssetOfferScreen(offer)
+                                        AssetOfferScreen(nav, offer)
                                     }
                                 }
 
