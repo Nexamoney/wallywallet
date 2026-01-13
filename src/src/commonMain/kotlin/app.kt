@@ -7,7 +7,6 @@ import com.eygraber.uri.Uri
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.ui.*
 import io.ktor.client.*
-import io.ktor.client.network.sockets.*
 import io.ktor.client.network.sockets.SocketTimeoutException
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -610,6 +609,7 @@ open class CommonApp(val runningTests: Boolean)
     */
     fun handlePaste(urlStrParam: String, autoHandle: Boolean = true, then: ((String,String, Boolean?)->Unit)?= null): Boolean
     {
+        LogIt.info(sourceLoc() + ": QR/Paste is $urlStrParam")
         var urlStr = urlStrParam
         try
         {
@@ -648,7 +648,7 @@ open class CommonApp(val runningTests: Boolean)
                 }
             }
             else uriToChain[scheme]
-            LogIt.info("QR code refers to $whichChain ${chainToName[whichChain]}")
+            LogIt.info(sourceLoc() + ": QR code refers to $whichChain ${chainToName[whichChain]}")
             val attribs = uri.queryMap()
             if (whichChain != null)  // handle a blockchain address (by preparing the send to)
             {
@@ -1372,61 +1372,59 @@ open class CommonApp(val runningTests: Boolean)
     }
 
     /** If you need to do a POST operation within the App context (because you are ending the activity) call these functions */
-    fun post(url: String, contents: (HttpRequestBuilder) -> Unit)
+    fun postThen(urlStr: String, contents: (HttpRequestBuilder) -> Unit, next: (()->Unit)?)
     {
         later {
-            LogIt.info(sourceLoc() + ": POST response to server: $url")
-            val client = HttpClient()
-            {
+            val client = PlatformHttpClient {
                 install(ContentNegotiation) {
                     json()
                 }
                 install(HttpTimeout) { requestTimeoutMillis = HTTP_REQ_TIMEOUT_MS.toLong() }
             }
 
-            try
+            var tries = 0
+            var url = urlStr
+            while (tries < 10)
             {
-                val response: HttpResponse = client.post(url, contents)
-                val respText = response.bodyAsText()
-                displayNotice(respText)
-            }
-            catch (e: IOException)
-            {
-                displayError(S.connectionException)
-            }
-            catch (e: Exception)
-            {
-                displayError(S.connectionException)
-            }
-            client.close()
-        }
-    }
-
-    fun postThen(url: String, contents: (HttpRequestBuilder) -> Unit, next: ()->Unit)
-    {
-        later {
-            LogIt.info(sourceLoc() + ": POST response to server: $url")
-            val client = HttpClient()
-            {
-                install(ContentNegotiation) {
-                    json()
+                tries += 1
+                LogIt.info(sourceLoc() + ": POST response to server: $url, try #$tries")
+                try
+                {
+                    val resp: HttpResponse = client.post(url, contents)
+                    val status = resp.status.value
+                    if ((status >= 300) and (status < 400))  // Handle URL forwarding (often switching from http to https)
+                    {
+                        val newLoc = resp.headers.get(HttpHeaders.Location)
+                        if (newLoc != null) url = newLoc
+                        else throw CannotLoadException(urlStr.toString())
+                        continue
+                    }
+                    else if ((status == 429) || (status == 503))  // Too Many Requests -- just delay some and retry
+                    {
+                        delay(5000)
+                        continue
+                    }
+                    val respText = resp.bodyAsText()
+                    displayNotice(respText)
+                    next?.invoke()
+                    break
                 }
-                install(HttpTimeout) { requestTimeoutMillis = 5000 }
-            }
-
-            try
-            {
-                val response: HttpResponse = client.post(url, contents)
-                val respText = response.bodyAsText()
-                displayNotice(respText)
-                next()
-            }
-            catch (e: SocketTimeoutException)
-            {
-                displayError(S.connectionException)
+                catch (e: IOException)
+                {
+                    displayError(S.connectionException)
+                    delay(500)
+                }
+                catch (e: Exception)
+                {
+                    displayError(S.connectionException)
+                    delay(500)
+                }
             }
             client.close()
         }
     }
+
+    fun post(url: String, contents: (HttpRequestBuilder) -> Unit) = postThen(url, contents, null)
+
 }
 

@@ -534,6 +534,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         topic = uri.getQueryParameter("topic")
         cookie = uri.getQueryParameter("cookie")
         reason = uri.getQueryParameter("reason")
+        rproto = uri.getQueryParameter("rproto")  // Load up the specific reply protocol, if there is one
 
         val addr = uri.getQueryParameter("addr")
 

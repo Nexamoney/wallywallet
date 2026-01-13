@@ -177,6 +177,9 @@ actual fun GetHttpClient(timeoutInMs: Number): HttpClient = HttpClient(Android) 
     install(HttpTimeout) { requestTimeoutMillis = timeoutInMs.toLong() } // Long timeout because we don't expect a response right away; its a long poll
 }
 
+actual fun PlatformHttpClient(block: HttpClientConfig<*>.() -> Unit): HttpClient = HttpClient(Android, block)
+
+
 /** Get the clipboard.  Platforms that have a clipboard history should return that history, with the primary clip in index 0 */
 actual fun getTextClipboard(): List<String>
 {

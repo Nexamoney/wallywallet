@@ -133,6 +133,8 @@ actual fun GetHttpClient(timeoutInMs: Number): HttpClient = HttpClient(io.ktor.c
     install(HttpTimeout) { requestTimeoutMillis = timeoutInMs.toLong() }
 }
 
+actual fun PlatformHttpClient(block: HttpClientConfig<*>.() -> Unit): HttpClient = HttpClient(io.ktor.client.engine.cio.CIO, block)
+
 /** Get the clipboard.  Platforms that have a clipboard history should return that history, with the primary clip in index 0 */
 actual fun getTextClipboard(): List<String>
 {

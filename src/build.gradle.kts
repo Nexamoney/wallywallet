@@ -453,6 +453,7 @@ kotlin {
 
             val iosMain by getting {
                 dependencies {
+                    implementation(libs.ktor.client.darwin)
                 }
             }
 

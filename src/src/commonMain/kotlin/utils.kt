@@ -64,6 +64,8 @@ expect fun makeImageBitmap(imageBytes: ByteArray, width: Int, height: Int, scale
 /** Gets the ktor http client for this platform */
 expect fun GetHttpClient(timeoutInMs: Number):HttpClient
 
+expect fun PlatformHttpClient(block: HttpClientConfig<*>.() -> Unit = {}): HttpClient
+
 /** Get a image from the file system (probably a QR code) and get a wally command string from it */
 expect fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
 
@@ -419,7 +421,7 @@ fun dbgAssertNotGuiThread()
  */
 fun com.eygraber.uri.Uri.loadTextAndStatus(timeoutInMs: Number): Pair<String,Int>
 {
-    val client = HttpClient() {
+    val client = PlatformHttpClient {
         install(HttpTimeout) {
             requestTimeoutMillis = timeoutInMs.toLong()
             // connectTimeoutMillis  // time to connect
@@ -435,11 +437,15 @@ fun com.eygraber.uri.Uri.loadTextAndStatus(timeoutInMs: Number): Pair<String,Int
             tries++
             val resp = client.get(access)
             val status = resp.status.value
-            if ((status == 301) or (status == 302))  // Handle URL forwarding (often switching from http to https)
+            if ((status >= 300) and (status < 400))  // Handle URL forwarding (often switching from http to https)
             {
-                val newLoc = resp.request.headers.get("Location")
+                val newLoc = resp.headers.get(HttpHeaders.Location)
                 if (newLoc != null) access = newLoc
                 else throw CannotLoadException(access)
+            }
+            else if ((status == 429) || (status == 503))  // Too Many Requests -- just delay some and retry
+            {
+                delay(5000)
             }
             else return@runBlocking Pair(resp.bodyAsText(), status)
         }
@@ -451,13 +457,7 @@ fun com.eygraber.uri.Uri.loadTextAndStatus(timeoutInMs: Number): Pair<String,Int
 /** This helper function reads the contents of the URL.  This duplicates the API of other URL classes */
 fun io.ktor.http.Url.readPostBytes(jsonBody: String, timeoutInMs: Number = 10000, maxReadSize: Number = 250000000): ByteArray
 {
-    val client = HttpClient() {
-        install(HttpTimeout) {
-            requestTimeoutMillis = timeoutInMs.toLong()
-            // connectTimeoutMillis  // time to connect
-            // socketTimeoutMillis   // time between 2 data packets
-        }
-    }
+    val client = GetHttpClient(timeoutInMs.toLong())
 
     var url:io.ktor.http.Url = this
     return runBlocking {
@@ -470,11 +470,15 @@ fun io.ktor.http.Url.readPostBytes(jsonBody: String, timeoutInMs: Number = 10000
                 setBody(jsonBody)
             }
             val status = resp.status.value
-            if ((status == 301) or (status == 302))  // Handle URL forwarding (often switching from http to https)
+            if ((status >= 300) and (status < 400))  // Handle URL forwarding (often switching from http to https)
             {
-                val newLoc = resp.request.headers.get("Location")
+                val newLoc = resp.headers.get(HttpHeaders.Location)
                 if (newLoc != null) url = io.ktor.http.Url(newLoc)
                 else throw CannotLoadException(url.toString())
+            }
+            else if ((status == 429) || (status == 503))  // Too Many Requests -- just delay some and retry
+            {
+                delay(5000)
             }
             else return@runBlocking resp.bodyAsChannel().toByteArray(maxReadSize.toInt())
         }
