@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.ktor.client.*
-import io.ktor.client.engine.cio.*
+import io.ktor.client.engine.darwin.Darwin
 import io.ktor.client.plugins.*
 import kotlinx.cinterop.*
 import kotlinx.coroutines.flow.Flow
@@ -142,10 +142,12 @@ actual fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: Mutable
     return st //.toTypedArray()
 }
 
-actual fun GetHttpClient(timeoutInMs: Number): HttpClient = HttpClient(CIO)
+actual fun GetHttpClient(timeoutInMs: Number): HttpClient = HttpClient(Darwin)
 {
     install(HttpTimeout) { requestTimeoutMillis = timeoutInMs.toLong() }
 }
+
+actual fun PlatformHttpClient(block: HttpClientConfig<*>.() -> Unit): HttpClient = HttpClient(Darwin, block)
 
 /** Get the clipboard.  Platforms that have a clipboard history should return that history, with the primary clip in index 0 */
 actual fun getTextClipboard(): List<String>
