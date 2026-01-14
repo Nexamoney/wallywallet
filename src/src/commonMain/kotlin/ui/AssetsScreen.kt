@@ -31,6 +31,7 @@ import info.bitcoinunlimited.www.wally.ui.views.*
 import io.ktor.http.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
+import org.nexa.libnexakotlin.ChainSelector
 
 
 private val LogIt = GetLog("wally.assets")
@@ -102,7 +103,7 @@ fun AssetListItemView(assetPerAccount: AssetPerAccount, verbosity: Int = 1, allo
 
 
 @Composable
-fun AssetView(asset: AssetInfo, parentMod: Modifier = Modifier)
+fun AssetView(asset: AssetInfo, quantity: Long, parentMod: Modifier = Modifier)
 {
     var showing by remember { mutableStateOf(S.NftPublicMedia) }  // Reuse the i18n int to indicate what subscreen is being shown
     val nftState = asset.nftObservable.collectAsState()
@@ -166,11 +167,17 @@ fun AssetView(asset: AssetInfo, parentMod: Modifier = Modifier)
             Row {
                 nft.series?.let { series ->
                     Text(
-                      text = "$series by",
+                      text = series,
                       style = MaterialTheme.typography.titleSmall,
                       fontWeight = FontWeight.Bold
                     )
                 }
+                VSpacer(0.01f, 2.dp, 0.dp)
+                Text(
+                  text = i18n(S.ByAuthor),
+                  style = MaterialTheme.typography.titleSmall,
+                  fontWeight = FontWeight.Bold
+                )
                 VSpacer(0.01f, 2.dp, 0.dp)
                 nft.author.let { author ->
                     Text(
@@ -182,11 +189,23 @@ fun AssetView(asset: AssetInfo, parentMod: Modifier = Modifier)
         VSpacer(0.10f, 8.dp, 0.dp)
         if (provider.isNotEmpty())
             Text(
-              text = "Provider: $provider",
+              text = i18n(S.Provider) % mapOf("provider" to provider),
               style = MaterialTheme.typography.labelLarge,
               fontStyle = FontStyle.Italic
             )
         VSpacer(0.50f, 24.dp, 0.dp)
+        if (quantity > 1)
+        {
+            val amt = tokenAmountString(quantity, a.tokenInfo?.genesisInfo?.decimal_places)
+            Text(
+              modifier = Modifier.fillMaxWidth(),
+              text = i18n(S.QuantityWithValue) % mapOf("qty" to amt),
+              style = MaterialTheme.typography.titleSmall,
+              fontWeight = FontWeight.Bold,
+              textAlign = TextAlign.Center
+            )
+        }
+        VSpacer(0.10f, 8.dp, 0.dp)
         if (options.value.isNotEmpty())
             HorizontalRadioButtonGroup(options.value.toList()) { option ->
                 showing = option
@@ -204,158 +223,158 @@ fun AssetView(asset: AssetInfo, parentMod: Modifier = Modifier)
             // TODO should we show some little caution sign or something? (we are not showing the provider so that helps)
         }
         val surfShape = RoundedCornerShape(20.dp)
-            when(showing)
+        when (showing)
+        {
+            S.NftCardFront ->
             {
-                S.NftCardFront ->
-                {
-                    val url = a.iconUri
-                    val iconStr = url.toString()
-                    val mediaBytes = a.iconBytes
-                    if (mediaBytes == null && (url?.protocol == URLProtocol.HTTP || url?.protocol == URLProtocol.HTTPS)) throw UnimplementedException("load from URL")
+                val url = a.iconUri
+                val iconStr = url.toString()
+                val mediaBytes = a.iconBytes
+                if (mediaBytes == null && (url?.protocol == URLProtocol.HTTP || url?.protocol == URLProtocol.HTTPS)) throw UnimplementedException("load from URL")
 
-                    MpMediaView(null, mediaBytes, iconStr, autoplay = true) { mi, draw ->
-                        // Fill the media available space's x or y with the media, but draw a nice box around that space.
-                        // Its is amazing that this is so hard.
-                        // My approach is to determine the aspect ratio (x/y)of the image, and the aspect ratio of the available space.
-                        // If the image AR is > the space AR, then the image is relatively wider than the space so we should fill max width, and
-                        // set the height as appropriate.  Otherwise do the equivalent but fill max height
+                MpMediaView(null, mediaBytes, iconStr, autoplay = true) { mi, draw ->
+                    // Fill the media available space's x or y with the media, but draw a nice box around that space.
+                    // Its is amazing that this is so hard.
+                    // My approach is to determine the aspect ratio (x/y)of the image, and the aspect ratio of the available space.
+                    // If the image AR is > the space AR, then the image is relatively wider than the space so we should fill max width, and
+                    // set the height as appropriate.  Otherwise do the equivalent but fill max height
 
-                        val ar = mi.width.toFloat()/mi.height.toFloat()
-                        BoxWithConstraints(Modifier.fillMaxWidth().wrapContentHeight()) {
-                            // maxWidth and maxHeight provide the screen size
-                            // min W and H appears to provide not 0dp which makes sense but is trivial, but the minimum size of the Box with the modifiers
-                            // applied, in this case fillMaxSize(), so the size of the view
-                            val spaceAr = this.minWidth/this.minHeight
+                    val ar = mi.width.toFloat() / mi.height.toFloat()
+                    BoxWithConstraints(Modifier.fillMaxWidth().wrapContentHeight()) {
+                        // maxWidth and maxHeight provide the screen size
+                        // min W and H appears to provide not 0dp which makes sense but is trivial, but the minimum size of the Box with the modifiers
+                        // applied, in this case fillMaxSize(), so the size of the view
+                        val spaceAr = this.minWidth / this.minHeight
 
-                            val mod = if (ar >= spaceAr)  // media is wider than the space I have to show it in
-                                Modifier.fillMaxWidth().aspectRatio(ar)
-                            else
-                                Modifier.fillMaxHeight().aspectRatio(ar)  // media is taller than the space I have to show it in
-
-                            Surface(shape = surfShape, modifier = mod.align(Alignment.Center).border(WallyModalOutline, surfShape))
-                            {
-                                draw(null)
-                            }
-                        }
-                    }
-                }
-                S.Content ->
-                {
-                    val mediaBytes = a.publicMediaBytes
-                    LogIt.info("public media bytes: ${a.publicMediaBytes?.size} cache: ${a.publicMediaCache} uri: ${a.publicMediaUri} ")
-                    val publicUrl = a.publicMediaCache ?: if (a.publicMediaUri != null) a.publicMediaUri.toString() else ""
-
-                    //if (mediaBytes == null && (url?.protocol == URLProtocol.HTTP || url?.protocol == URLProtocol.HTTPS)) throw UnimplementedException("load from URL")
-
-                    MpMediaView(null, mediaBytes, publicUrl, autoplay = true) { mi, draw ->
-                        // Fill the media available space's x or y with the media, but draw a nice box around that space.
-                        // Its is amazing that this is so hard.
-                        // My approach is to determine the aspect ratio (x/y)of the image, and the aspect ratio of the available space.
-                        // If the image AR is > the space AR, then the image is relatively wider than the space so we should fill max width, and
-                        // set the height as appropriate.  Otherwise do the equivalent but fill max height
-
-                        val ar = mi.width.toFloat()/mi.height.toFloat()
-                        BoxWithConstraints(Modifier.fillMaxWidth().wrapContentHeight()) {
-                            // maxWidth and maxHeight provide the screen size
-                            // min W and H appears to provide not 0dp which makes sense but is trivial, but the minimum size of the Box with the modifiers
-                            // applied, in this case fillMaxSize(), so the size of the view
-                            val spaceAr = this.minWidth/this.minHeight
-
-                            val mod = if (ar >= spaceAr)  // media is wider than the space I have to show it in
-                                Modifier.fillMaxWidth().aspectRatio(ar)
-                            else
-                                Modifier.fillMaxHeight().aspectRatio(ar)  // media is taller than the space I have to show it in
-
-                            Surface(shape = surfShape, modifier = mod.align(Alignment.Center).border(WallyModalOutline, surfShape))
-                            {
-                                draw(null)
-                            }
-                        }
-                    }
-                }
-
-                S.Private ->
-                {
-                    val mediaBytes = a.ownerMediaBytes
-                    val ownerUrl = a.ownerMediaCache ?: if (a.ownerMediaUri!=null) a.ownerMediaUri.toString() else ""
-                    Text(i18n(S.NftPrivateDescription))
-
-                    //if (mediaBytes == null && (url?.protocol == URLProtocol.HTTP || url?.protocol == URLProtocol.HTTPS)) throw UnimplementedException("load from URL")
-
-                    MpMediaView(null, mediaBytes, ownerUrl, autoplay = true) { mi, draw ->
-                        val ar = mi.width.toFloat()/mi.height.toFloat()
-                        BoxWithConstraints(Modifier.fillMaxWidth().wrapContentHeight()) {
-                            val spaceAr = this.minWidth/this.minHeight
-                            val mod = if (ar >= spaceAr)  // media is wider than the space I have to show it in
-                                Modifier.fillMaxWidth().aspectRatio(ar)
-                            else
-                                Modifier.fillMaxHeight().aspectRatio(ar)  // media is taller than the space I have to show it in
-
-                            Surface(shape = surfShape, modifier = mod.align(Alignment.Center).border(WallyModalOutline, surfShape))
-                            {
-                                draw(null)
-                            }
-                        }
-                    }
-                }
-
-                S.NftCardBack ->
-                {
-                    val url = asset.iconBackUri
-                    val mediaBytes = asset.iconBackBytes
-                    if (mediaBytes == null && (url?.protocol == URLProtocol.HTTP || url?.protocol == URLProtocol.HTTPS)) throw UnimplementedException("load from URL")
-
-                    MpMediaView(null, mediaBytes, url.toString(), autoplay = true) { mi, draw ->
-                        val ar = mi.width.toFloat()/mi.height.toFloat()
-                        BoxWithConstraints(Modifier.fillMaxWidth().wrapContentHeight()) {
-                            val spaceAr = this.minWidth/this.minHeight
-                            val mod = if (ar >= spaceAr)  // media is wider than the space I have to show it in
-                                Modifier.fillMaxWidth().aspectRatio(ar)
-                            else
-                                Modifier.fillMaxHeight().aspectRatio(ar)  // media is taller than the space I have to show it in
-
-                            Surface(shape = surfShape, modifier = mod.align(Alignment.Center).border(WallyModalOutline, surfShape))
-                            {
-                                draw(null)
-                            }
-                        }
-                    }
-                }
-
-                S.NftInfo ->
-                {
-                    VSpacer(0.30f, 32.dp, 2.dp)
-                    Column(modifier = Modifier.fillMaxWidth(0.95f).wrapContentHeight().verticalScroll(rememberScrollState())) {
-                        val tmp = nft?.info
-                        LogIt.info("NFT INFO: $tmp")
-                        if (tmp != null)
-                        {
-                            impreciseDisplayHtml(tmp, textAlign = TextAlign.Justify)
-                        }
+                        val mod = if (ar >= spaceAr)  // media is wider than the space I have to show it in
+                            Modifier.fillMaxWidth().aspectRatio(ar)
                         else
-                        {
-                            Text(i18n(S.NftNoInfoProvided), Modifier.fillMaxWidth(0.95f), textAlign = TextAlign.Center)
-                        }
-                    }
-                }
+                            Modifier.fillMaxHeight().aspectRatio(ar)  // media is taller than the space I have to show it in
 
-                S.NftLegal ->
-                {
-                    VSpacer(0.30f, 32.dp, 2.dp)
-                    Column(modifier = Modifier.fillMaxWidth(0.95f).wrapContentHeight().verticalScroll(rememberScrollState())) {
-                        val tmp = nft?.license
-                        LogIt.info("NFT LICENSE: $tmp")
-                        if (tmp != null)
+                        Surface(shape = surfShape, modifier = mod.align(Alignment.Center).border(WallyModalOutline, surfShape))
                         {
-                            impreciseDisplayHtml(tmp, textAlign = TextAlign.Justify)
-                        }
-                        else
-                        {
-                            Text(i18n(S.NftNoInfoProvided), Modifier.fillMaxWidth(0.95f), textAlign = TextAlign.Center)
+                            draw(null)
                         }
                     }
                 }
             }
+            S.Content ->
+            {
+                val mediaBytes = a.publicMediaBytes
+                LogIt.info("public media bytes: ${a.publicMediaBytes?.size} cache: ${a.publicMediaCache} uri: ${a.publicMediaUri} ")
+                val publicUrl = a.publicMediaCache ?: if (a.publicMediaUri != null) a.publicMediaUri.toString() else ""
+
+                //if (mediaBytes == null && (url?.protocol == URLProtocol.HTTP || url?.protocol == URLProtocol.HTTPS)) throw UnimplementedException("load from URL")
+
+                MpMediaView(null, mediaBytes, publicUrl, autoplay = true) { mi, draw ->
+                    // Fill the media available space's x or y with the media, but draw a nice box around that space.
+                    // Its is amazing that this is so hard.
+                    // My approach is to determine the aspect ratio (x/y)of the image, and the aspect ratio of the available space.
+                    // If the image AR is > the space AR, then the image is relatively wider than the space so we should fill max width, and
+                    // set the height as appropriate.  Otherwise do the equivalent but fill max height
+
+                    val ar = mi.width.toFloat() / mi.height.toFloat()
+                    BoxWithConstraints(Modifier.fillMaxWidth().wrapContentHeight()) {
+                        // maxWidth and maxHeight provide the screen size
+                        // min W and H appears to provide not 0dp which makes sense but is trivial, but the minimum size of the Box with the modifiers
+                        // applied, in this case fillMaxSize(), so the size of the view
+                        val spaceAr = this.minWidth / this.minHeight
+
+                        val mod = if (ar >= spaceAr)  // media is wider than the space I have to show it in
+                            Modifier.fillMaxWidth().aspectRatio(ar)
+                        else
+                            Modifier.fillMaxHeight().aspectRatio(ar)  // media is taller than the space I have to show it in
+
+                        Surface(shape = surfShape, modifier = mod.align(Alignment.Center).border(WallyModalOutline, surfShape))
+                        {
+                            draw(null)
+                        }
+                    }
+                }
+            }
+
+            S.Private ->
+            {
+                val mediaBytes = a.ownerMediaBytes
+                val ownerUrl = a.ownerMediaCache ?: if (a.ownerMediaUri != null) a.ownerMediaUri.toString() else ""
+                Text(i18n(S.NftPrivateDescription))
+
+                //if (mediaBytes == null && (url?.protocol == URLProtocol.HTTP || url?.protocol == URLProtocol.HTTPS)) throw UnimplementedException("load from URL")
+
+                MpMediaView(null, mediaBytes, ownerUrl, autoplay = true) { mi, draw ->
+                    val ar = mi.width.toFloat() / mi.height.toFloat()
+                    BoxWithConstraints(Modifier.fillMaxWidth().wrapContentHeight()) {
+                        val spaceAr = this.minWidth / this.minHeight
+                        val mod = if (ar >= spaceAr)  // media is wider than the space I have to show it in
+                            Modifier.fillMaxWidth().aspectRatio(ar)
+                        else
+                            Modifier.fillMaxHeight().aspectRatio(ar)  // media is taller than the space I have to show it in
+
+                        Surface(shape = surfShape, modifier = mod.align(Alignment.Center).border(WallyModalOutline, surfShape))
+                        {
+                            draw(null)
+                        }
+                    }
+                }
+            }
+
+            S.NftCardBack ->
+            {
+                val url = asset.iconBackUri
+                val mediaBytes = asset.iconBackBytes
+                if (mediaBytes == null && (url?.protocol == URLProtocol.HTTP || url?.protocol == URLProtocol.HTTPS)) throw UnimplementedException("load from URL")
+
+                MpMediaView(null, mediaBytes, url.toString(), autoplay = true) { mi, draw ->
+                    val ar = mi.width.toFloat() / mi.height.toFloat()
+                    BoxWithConstraints(Modifier.fillMaxWidth().wrapContentHeight()) {
+                        val spaceAr = this.minWidth / this.minHeight
+                        val mod = if (ar >= spaceAr)  // media is wider than the space I have to show it in
+                            Modifier.fillMaxWidth().aspectRatio(ar)
+                        else
+                            Modifier.fillMaxHeight().aspectRatio(ar)  // media is taller than the space I have to show it in
+
+                        Surface(shape = surfShape, modifier = mod.align(Alignment.Center).border(WallyModalOutline, surfShape))
+                        {
+                            draw(null)
+                        }
+                    }
+                }
+            }
+
+            S.NftInfo ->
+            {
+                VSpacer(0.30f, 32.dp, 2.dp)
+                Column(modifier = Modifier.fillMaxWidth(0.95f).wrapContentHeight().verticalScroll(rememberScrollState())) {
+                    val tmp = nft?.info
+                    // LogIt.info("NFT INFO: $tmp")
+                    if (tmp != null)
+                    {
+                        impreciseDisplayHtml(tmp, textAlign = TextAlign.Justify)
+                    }
+                    else
+                    {
+                        Text(i18n(S.NftNoInfoProvided), Modifier.fillMaxWidth(0.95f), textAlign = TextAlign.Center)
+                    }
+                }
+            }
+
+            S.NftLegal ->
+            {
+                VSpacer(0.30f, 32.dp, 2.dp)
+                Column(modifier = Modifier.fillMaxWidth(0.95f).wrapContentHeight().verticalScroll(rememberScrollState())) {
+                    val tmp = nft?.license
+                    // LogIt.info("NFT LICENSE: $tmp")
+                    if (tmp != null)
+                    {
+                        impreciseDisplayHtml(tmp, textAlign = TextAlign.Justify)
+                    }
+                    else
+                    {
+                        Text(i18n(S.NftNoInfoProvided), Modifier.fillMaxWidth(0.95f), textAlign = TextAlign.Center)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -457,8 +476,7 @@ fun AssetScreen(account: Account, onAssetDetail: () -> Unit)
         Column (
           modifier = Modifier.fillMaxSize()
         ) {
-            AssetView(a.assetInfo, Modifier.weight(1f))
-
+            AssetView(a.assetInfo, a.groupInfo.tokenAmount, Modifier.weight(1f))
             Row(
               modifier = Modifier.fillMaxWidth()
                 .background(Color.White)

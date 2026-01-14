@@ -2,34 +2,43 @@
 
 package info.bitcoinunlimited.www.wally.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.FocusInteraction
-import androidx.compose.foundation.interaction.HoverInteraction
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.fleeksoft.ksoup.ported.binarySearchBy
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.WallyHalfDivider
-import info.bitcoinunlimited.www.wally.ui.theme.colorDefault
 import info.bitcoinunlimited.www.wally.ui.theme.colorError
 import info.bitcoinunlimited.www.wally.ui.theme.colorValid
+import info.bitcoinunlimited.www.wally.ui.theme.wallyPlaceholder
 import info.bitcoinunlimited.www.wally.ui.views.*
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.channels.Channel
@@ -40,7 +49,7 @@ import org.nexa.threads.*
 
 const val MAX_NAME_LEN_UI2 = 16
 
-private val LogIt = org.nexa.libnexakotlin.GetLog("BU.wally.NewAccountScreen")
+private val LogIt = GetLog("BU.wally.NewAccountScreen")
 
 val supportedBlockchains =
   mapOf(
@@ -71,7 +80,7 @@ data class NewAccountState(
   val errorMessage: String = "",
   val accountName: String = "",
   val validAccountName: Boolean = accountName.length.let { it > 0 && it <= MAX_NAME_LEN },
-  val recoveryPhrase: String = "",
+  val recoveryPhrase: TextFieldValue = TextFieldValue(""),
   val validOrNoRecoveryPhrase: Boolean = true,
   val pin: String = "",
   val validOrNoPin: Boolean = true,
@@ -151,7 +160,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
     {
         millisleep(200U)
         val flags: ULong = if (acState.hideUntilPinEnter) ACCOUNT_FLAG_HIDE_UNTIL_PIN else ACCOUNT_FLAG_NONE
-        val words = processSecretWords(acState.recoveryPhrase)
+        val words = processSecretWords(acState.recoveryPhrase.text)
         try
         {
             wallyApp!!.recoverAccount(acState.accountName, flags, acState.pin, words.joinToString(" "), chainSelector, acState.discoveredAccountHistory, acState.discoveredAddresses, acState.discoveredTip!!, acState.discoveredAddressIndex)
@@ -201,9 +210,12 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
     nav.onDepart {
         // close out any search thread that are running
         aborter.value.obj = true
-        // forget the secret for security reasons & almost everything else for consistency
-        newAccountState.value = newAccountState.value.copy(errorMessage = "", recoveryPhrase = "", validOrNoRecoveryPhrase = true, pin = "", validOrNoPin = true, earliestActivityHeight = -1, earliestActivity = null,
-          discoveredAccountHistory = listOf(), discoveredAccountBalance = 0, discoveredAddressCount = -1, discoveredAddressIndex = 0, discoveredTip = null)
+        if (it != ScreenNav.Direction.DEEPER)
+        {
+            // forget the secret for security reasons & almost everything else for consistency
+            newAccountState.value = newAccountState.value.copy(errorMessage = "", recoveryPhrase = TextFieldValue(""), validOrNoRecoveryPhrase = true, pin = "", validOrNoPin = true, earliestActivityHeight = -1, earliestActivity = null,
+              discoveredAccountHistory = listOf(), discoveredAccountBalance = 0, discoveredAddressCount = -1, discoveredAddressIndex = 0, discoveredTip = null)
+        }
         // forget any info text
         recoverySearchText = ""
         fastForwardText = ""
@@ -217,7 +229,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
     fun FinalDataCheck(): Boolean
     {
         var inputValid = false
-        val words = processSecretWords(newAcState.recoveryPhrase)
+        val words = processSecretWords(newAcState.recoveryPhrase.text)
         val incorrectWords = bip39InvalidWords(words)
 
         // Clear any old error
@@ -296,7 +308,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
 
         if (inputValid)
         {
-            val words = processSecretWords(acState.recoveryPhrase)
+            val words = processSecretWords(acState.recoveryPhrase.text)
             if (words.size == 12) // account recovery
             {
                 if ((createClicks == 0) && (acState.earliestActivity == null))
@@ -364,12 +376,13 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
         }
     }
 
-    fun HandleRecoveryPhrase(userInput: String, force: Boolean = false)
+    fun HandleRecoveryPhrase(userField: TextFieldValue, force: Boolean = false)
     {
+        val userInput = userField.text
         val words = processSecretWords(userInput)
         val valid = isValidOrEmptyRecoveryPhrase(words)
-        val priorPhrase = newAcState.recoveryPhrase
-        newAccountState.value = newAccountState.value.copy(recoveryPhrase = userInput, validOrNoRecoveryPhrase = valid)
+        val priorPhrase = newAcState.recoveryPhrase.text
+        newAccountState.value = newAccountState.value.copy(recoveryPhrase = userField, validOrNoRecoveryPhrase = valid)
         if (force || words != processSecretWords(priorPhrase))  // If the recovery phrase is equivalent nothing to do, otherwise set the new one
         {
             recoverySearchText = ""  // phrase changed so need to search again
@@ -467,7 +480,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
   blockchains: Map<String, ChainSelector>,
   onChainSelected: (Pair<String, ChainSelector>) -> Unit,
   onNewAccountName: (String) -> Unit,
-  onNewRecoveryPhrase: (String) -> Unit,
+  onNewRecoveryPhrase: (TextFieldValue) -> Unit,
   onPinChange: (String) -> String,
   onHideUntilPinEnterChanged: (Boolean) -> Unit,
   onClickCreateAccount: () -> Unit,
@@ -611,24 +624,10 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
     }
 }
 
-@Composable fun RecoveryPhraseInput(recoveryPhrase: String, validOrNoRecoveryPhrase: Boolean, onValueChange: (String) -> Unit)
+@Composable fun RecoveryPhraseInput(recoveryPhrase: TextFieldValue, validOrNoRecoveryPhrase: Boolean, onValueChange: (TextFieldValue) -> Unit)
 {
     val focusManager = LocalFocusManager.current
-    val ia = remember { MutableInteractionSource() }
-
-    LaunchedEffect(ia) {
-        ia.interactions.collect {
-            when(it) {
-                // Hover for mouse platforms, Focus for touch platforms
-                is HoverInteraction.Enter, is FocusInteraction.Focus -> {
-                    UxInTextEntry(true)
-                }
-                is HoverInteraction.Exit, is FocusInteraction.Unfocus -> {
-                    UxInTextEntry(false)
-                }
-            }
-        }
-    }
+    val focusRequester = remember { FocusRequester() }
 
     val scale = if (platform().spaceConstrained) FontScale(0.75) else FontScale(1.0)
     Column {
@@ -639,20 +638,74 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
           verticalAlignment = Alignment.CenterVertically
         ) {
             CheckOrX(validOrNoRecoveryPhrase, "recoveryPhrase_")
-            TextField(
-              value = recoveryPhrase,
-              onValueChange = onValueChange,
-              interactionSource = ia,
-              colors = TextFieldDefaults.colors(unfocusedContainerColor = Color.Transparent, focusedContainerColor = Color.Transparent, disabledContainerColor = Color.Transparent),
-              placeholder = { Text(i18n(S.LeaveEmptyNewWallet)) },
-              minLines = 1,
-              maxLines = 4,
-              modifier = Modifier.fillMaxWidth().testTag("RecoveryPhraseInput"),
+            WallyDataEntry(value = recoveryPhrase, onValueChange = { onValueChange(it) },
+              bkgCol = Color.White,
+              modifier = Modifier.fillMaxWidth().testTag("RecoveryPhraseInput").focusRequester(focusRequester),
               textStyle = TextStyle(fontSize = scale),
-              keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
+              keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+              placeholder = { Text(i18n(S.LeaveEmptyNewWallet), color = wallyPlaceholder) },
             )
         }
+
+        // Give options for the next words
+        val nextWordPrefix = recoveryPhrase.text.split(" ").last()
+        val possibilities = if (nextWordPrefix.isNotBlank())
+        {
+            val possibilities = bip39PrefixWords(nextWordPrefix)
+            LogIt.info("prefix: $nextWordPrefix options: ${possibilities.joinToString(",")}")
+            possibilities
+        }
+        else arrayOf()
+        val cpad = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+        val mod = Modifier.wrapContentHeight(align = Alignment.Top).defaultMinSize(minWidth = 1.dp, minHeight = 1.dp) // not really 1.dp, just picking the min so the button sizes are not overridden
+        val fontStyle = MaterialTheme.typography.bodySmall
+        val borderStroke = BorderStroke(width = 1.5.dp,
+          color = if (true) OutlinedTextFieldDefaults.colors().focusedLabelColor else OutlinedTextFieldDefaults.colors().unfocusedLabelColor)
+        AnimatedVisibility(
+            visible = possibilities.isNotEmpty(),
+            enter = expandVertically(animationSpec = tween(200)) + fadeIn(),
+            exit = shrinkVertically(animationSpec = tween(150)) + fadeOut()) {
+            LazyRow(Modifier.fillMaxWidth()) {
+                items(possibilities.toList()) {
+                    OutlinedButton(modifier = mod.padding(4.dp, 0.dp), content = { Text(it, style = fontStyle) }, contentPadding = cpad, border = borderStroke, onClick =
+                      {
+                          val ph = recoveryPhrase.text.dropLast(nextWordPrefix.length) + it + " "
+                          val tmp = TextFieldValue(ph, TextRange(ph.length))
+                          onValueChange(tmp)
+                      })
+                }
+            }
+        }
     }
+}
+
+fun firstWithPrefix(words: Array<String>, prefix: String): Int
+{
+    // Do a binary search through this array looking for the right prefix
+    var lo = 0
+    var hi = words.size
+    while (lo < hi)
+    {
+        val mid = (lo + hi) ushr 1
+        if (words[mid] < prefix) lo = mid + 1
+        else hi = mid
+    }
+    return if (lo < words.size && words[lo].startsWith(prefix)) lo else -1
+}
+
+fun prefixRange(words: Array<String>, prefix: String): IntRange
+{
+    val start = firstWithPrefix(words, prefix)
+    if (start == -1) return IntRange.EMPTY
+    var i = start
+    while (i < words.size && words[i].startsWith(prefix)) i++
+    return start until i
+}
+
+fun bip39PrefixWords(prefix:String): Array<String>
+{
+    val r = prefixRange(englishWordList, prefix)
+    return englishWordList.copyOfRange(r.first, r.last+1)
 }
 
 @Composable fun pinInput(pin: String, validOrNoPin: Boolean, onPinChange : (String) -> String)

@@ -278,13 +278,16 @@ Good luck!
     <!-- Tip (gratuity) is how much more money you want to pay above the value of the bill -->
     <string name="Tip">Tip:</string>
     <string name="Amount">Amount:</string>
-    <string name="AmountWithValue">Amount: %amt</string>
+    <!-- Amount is for an uncountable thing; we use it for the native currency -->
+    <string name="AmountWithValue" formatted="false">Amount: %amt</string>
+    <!-- Quantity is for countable thing; we use it for assets -->
+    <string name="QuantityWithValue" formatted="false">Quantity: %qty</string>
     <!-- Home Page -->
 
     <!-- As the wallet is syncing, it shows you a balance.  But if the wallet is not caught up to NOW it shows this so you know that the balance that is being shown is not up to date.
     IF YOU SEE %something (in this case date), THEN DO NOT translate the "something".  It will be replaced with the actual value by the program (in this case the date).
     -->
-    <string name="balanceOnTheDate">as of %date</string>
+    <string name="balanceOnTheDate" formatted="false">as of %date</string>
     <string name="fastSync">Fast sync</string>
 
     <!-- A QR is the 2-dimensional black and white boxes of pixels that wallets scan to read info -->
@@ -307,6 +310,7 @@ Good luck!
     <!-- As in "Send to" -->
     <string name="toColon">To:</string>
     <string name="To">To</string>
+    <string name="ByAuthor">By</string>
     <string name="assetsColon">Assets:</string>
     <string name="assets">Assets</string>
     <string name="NoAssets">No assets available in account %act</string>
@@ -409,6 +413,8 @@ Good luck!
     <string name="primaryAccountRequired" formatted="false">A %primCurrency account is needed to use this feature</string>
     <string name="primaryAccountRequiredDetails" formatted="false">Some features are linked to certain cryptocurrencies.  You must create or unlock an account on that cryptocurrency before using the feature.</string>
     <string name="UnknownDomainRegisterFirst">Unknown service, register first</string>
+
+    <string name="Provider" formatted="false">Provider: %provider</string>
 
     <string name="QrCode">QR code</string>
     <!-- An intent (aka link) specified an action that I do not know about -->

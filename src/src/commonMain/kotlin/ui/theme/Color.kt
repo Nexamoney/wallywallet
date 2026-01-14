@@ -7,8 +7,9 @@ val wallyTranslucentPurple = Color(0xCF735092)
 val wallyPurple2 = Color(0xFF5F3C7E)
 val wallyPurpleLight = Color(0xFFDDDAF3)
 val wallyPurpleExtraLight = Color(0xFFF9F8FF)
-val wallyBeige = Color(0xFFFFFCF0D9)
+val wallyBeige = Color(0xFFFCF0D9)
 val wallyBeige2 = Color(0xFFF9F3E6)
+val wallyPlaceholder = Color(0xFF8B8BA3)
 
 val wallyAttention = Color(0xFF7053c2)
 
