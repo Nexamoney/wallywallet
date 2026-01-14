@@ -223,9 +223,7 @@ fun CreateAssetOffer(viewModel: CreateAssetOfferViewModel)
         WallyDivider()
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        AssetView(asset, Modifier.weight(1f))
-
+        AssetView(asset, 0,Modifier.weight(1f))  // We use 0 here to indicate that the quantity should not be shown
         Spacer(modifier = Modifier.height(16.dp))
 
         if (!uniqueAsset)

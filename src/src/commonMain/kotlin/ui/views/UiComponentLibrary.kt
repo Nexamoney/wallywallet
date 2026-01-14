@@ -63,6 +63,7 @@ import org.nexa.libnexakotlin.CurrencyDecimal
 import org.nexa.libnexakotlin.exceptionHandler
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.layout.SubcomposeLayout
+import org.nexa.libnexakotlin.validBip39Checksum
 
 
 @Composable fun WallySwitch(isChecked: MutableState<Boolean>, modifier: Modifier = Modifier, onCheckedChange: (Boolean) -> Unit)
@@ -628,7 +629,14 @@ fun WallyDataEntry(value: String, modifier: Modifier = Modifier, textStyle: Text
 
 /** Standard Wally data entry field. */
 @Composable
-fun WallyDataEntry(value: MutableState<TextFieldValue>, modifier: Modifier = Modifier, textStyle: TextStyle? = null, keyboardOptions: KeyboardOptions?=null, bkgCol: Color? = null, onValueChange: ((TextFieldValue) -> Unit)? = null)
+fun WallyDataEntry(value: MutableState<TextFieldValue>, modifier: Modifier = Modifier, textStyle: TextStyle? = null, keyboardOptions: KeyboardOptions?=null, bkgCol: Color? = null, placeholder: (@Composable ()->Unit)? = null, onValueChange: ((TextFieldValue) -> Unit)? = null)
+{
+    WallyDataEntry(value.value, modifier, textStyle, keyboardOptions, bkgCol, placeholder, onValueChange)
+}
+
+/** Standard Wally data entry field. */
+@Composable
+fun WallyDataEntry(value: TextFieldValue, modifier: Modifier = Modifier, textStyle: TextStyle? = null, keyboardOptions: KeyboardOptions?=null, bkgCol: Color? = null, placeholder: (@Composable ()->Unit)? = null, onValueChange: ((TextFieldValue) -> Unit)? = null)
 {
     val adjustedFontSize = FontScale(1.25)
     val ts2 = LocalTextStyle.current.copy(fontSize = adjustedFontSize)
@@ -674,37 +682,43 @@ fun WallyDataEntry(value: MutableState<TextFieldValue>, modifier: Modifier = Mod
         }
     }
 
-    BasicTextField(
-      value.value,
-      onValueChange ?: { },
-      textStyle = ts,
-      interactionSource = ia,
-      modifier = modifier,
-      keyboardOptions = keyboardOptions ?: KeyboardOptions.Default,
-      decorationBox = { tf ->
-          Box(Modifier.hoverable(ia, true)
-            .background(bkgCol ?: bkgColor.value)
-            .drawBehind {
-                val strokeWidthPx = 1.dp.toPx()
-                val verticalOffset = size.height - 2.sp.toPx()
-                drawLine(
-                  color = Color.Black,
-                  strokeWidth = strokeWidthPx,
-                  start = Offset(0f, verticalOffset),
-                  end = Offset(size.width, verticalOffset))
-            })
-          {
-              Box(Modifier.padding(0.dp,0.dp, 0.dp, 2.dp)) {
-                  tf()
+    Box {
+        BasicTextField(
+          value,
+          onValueChange ?: { },
+          textStyle = ts,
+          interactionSource = ia,
+          modifier = modifier,
+          keyboardOptions = keyboardOptions ?: KeyboardOptions.Default,
+          decorationBox = { tf ->
+              Box(Modifier.hoverable(ia, true)
+                .background(bkgCol ?: bkgColor.value)
+                .drawBehind {
+                    val strokeWidthPx = 1.dp.toPx()
+                    val verticalOffset = size.height - 2.sp.toPx()
+                    drawLine(
+                      color = Color.Black,
+                      strokeWidth = strokeWidthPx,
+                      start = Offset(0f, verticalOffset),
+                      end = Offset(size.width, verticalOffset))
+                })
+              {
+                  Box(Modifier.padding(0.dp, 0.dp, 0.dp, 2.dp)) {
+                      tf()
+                  }
               }
           }
-      }
-    )
+        )
+        if (value.text.isBlank())
+        {
+            placeholder?.invoke()
+        }
+    }
 }
 
 /** Standard Wally text entry field.*/
 @Composable
-fun WallyDecimalEntry(value: MutableState<String>, modifier: Modifier = Modifier, textStyle: TextStyle? = null, bkgCol: Color? = null, onValueChange: ((String) -> String) = { it })
+fun WallyDecimalEntry(value: MutableState<String>, modifier: Modifier = Modifier, textStyle: TextStyle? = null, bkgCol: Color? = null, placeholder: (@Composable ()->Unit)? = null, onValueChange: ((String) -> String) = { it })
 {
     val tfv = remember { mutableStateOf(TextFieldValue(value.value)) }
     val focusManager = LocalFocusManager.current
@@ -716,7 +730,7 @@ fun WallyDecimalEntry(value: MutableState<String>, modifier: Modifier = Modifier
         }
         else false// Do not accept this key
     },
-      textStyle, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Done), bkgCol,
+      textStyle, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Done), bkgCol, placeholder,
       {
           if (it.text.onlyDecimal())  // Only allow characters to be entered that are part of decimal numbers
           {
@@ -752,7 +766,7 @@ fun WallyRoundedTextButton(text: String, enabled: Boolean=true,  interactionSour
 
 /** Standard Wally text entry field.*/
 @Composable
-fun WallyDigitEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, bkgCol: Color? = null, onValueChange: ((String) -> String) = { it })
+fun WallyDigitEntry(value: String, modifier: Modifier = Modifier, textStyle: TextStyle? = null, bkgCol: Color? = null, placeholder: (@Composable ()->Unit)? = null, onValueChange: ((String) -> String) = { it })
 {
     val tfv = remember { mutableStateOf(TextFieldValue(value)) }
     val focusManager = LocalFocusManager.current
@@ -764,7 +778,7 @@ fun WallyDigitEntry(value: String, modifier: Modifier = Modifier, textStyle: Tex
         }
         else false// Do not accept this key
     },
-      textStyle, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done), bkgCol,
+      textStyle, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done), bkgCol, placeholder,
       {
           if (it.text.onlyDigits())  // Only allow characters to be entered that digits
           {
