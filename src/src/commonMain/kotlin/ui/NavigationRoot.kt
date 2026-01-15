@@ -1200,6 +1200,7 @@ fun NavigationRoot(
                 ) {
                     SendSuccessAnimation()
                     SpecialTxSuccessAnimation()
+                    ReceivedNexaAnimation()
 
                     Column(modifier = Modifier.fillMaxSize()) {
                         if (isShowingRecoveryWarning)

@@ -2,6 +2,7 @@ package info.bitcoinunlimited.www.wally
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
+import info.bitcoinunlimited.www.wally.ui.receivedNexaIsPlaying
 import kotlin.concurrent.Volatile
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -276,6 +277,7 @@ class Account(
         walletDb?.set("accountPin_" + name, ep)
     }
 
+    // A transaction came in
     val cb1: ((Wallet,List<TransactionHistory>?) -> Unit) =
       { w, txes ->
           if (txes!=null) for (txh in txes)
@@ -833,11 +835,17 @@ class Account(
     {
         try
         {
+            val priorBalance = balance
             // Update our cache of the balances
-            balance = fromFinestUnit(wallet.balance)
+            val newBalance = fromFinestUnit(wallet.balance)
+            balance = newBalance
             unconfirmedBalance.value = fromFinestUnit(wallet.unconfirmedBalanceDwim)
             confirmedBalance.value = fromFinestUnit(wallet.balanceConfirmed)
             onUpdatedReceiveInfo()
+            if ((priorBalance != null)&&(priorBalance < newBalance))
+            {
+                receivedNexaIsPlaying.value = true
+            }
         }
         catch (e: WalletDisconnectedException)
         {
