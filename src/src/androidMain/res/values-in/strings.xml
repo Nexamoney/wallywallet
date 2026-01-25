@@ -317,7 +317,7 @@ Good luck!
     <string name="primaryAccountRequiredDetails" formatted="false">Beberapa fitur ditautkan ke mata uang kripto tertentu. Anda harus membuat atau membuka kunci akun pada mata uang kripto tersebut sebelum menggunakan fitur.</string>
     <string name="UnknownDomainRegisterFirst">Domain tidak dikenal, daftar dulu</string>
 
-    <string name="commonIdentityQRCode">Kode QR</string>
+    <string name="QrCode">Kode QR</string>
     <!-- An intent (aka link) specified an action that I do not know about -->
     <string name="unknownOperation" formatted="false">operasi %op tidak diketahui</string>
     <!-- This wallet already has a registration for this site, so registration is not needed (informational notice) -->
@@ -587,7 +587,6 @@ Good luck!
      <string name="NftLegal">Lisensi</string>
      <string name="NftSeries" formatted="false">Seri: %series</string>
      <string name="NftAuthor" formatted="false">Pengarang: %author</string>
-     <string name="NftNoInfoProvidedHTML"><![CDATA[<body><h1><center>...Tidak Ada Informasi yang Diberikan...</h1></center></body>]]></string>
      <string name="IssuedToConnection">Diluncurkan di situs yang terhubung</string>
     <!-- this message tells users that some assets will be part of a proposed transaction -->
     <string name="AndSomeAssets">dan beberapa aset</string>

@@ -293,7 +293,7 @@ Good luck!
 <string name="primaryAccountRequired" formatted="false">इस सुविधा का उपयोग करने के लिए एक %primCurrency खाता आवश्यक है।</string>
 <string name="primaryAccountRequiredDetails" formatted="false">कुछ विशेषताएं कुछ क्रिप्टोकरेंसी से जुड़ी हुई हैं। आपको उस क्रिप्टोकरेंसी पर खाता बनाना या अनलॉक करना होगा उस विशेषता का उपयोग करने से पहले।</string>
 <string name="UnknownDomainRegisterFirst">अज्ञात डोमेन, पहले रजिस्टर करें</string>
-<string name="commonIdentityQRCode">क्यूआर कोड</string>
+<string name="QrCode">क्यूआर कोड</string>
 <!-- An intent (aka link) specified an action that I do not know about -->
 <string name="unknownOperation" formatted="false">ऑपरेशन %op अज्ञात</string>
 <!-- This wallet already has a registration for this site, so registration is not needed (informational notice) -->

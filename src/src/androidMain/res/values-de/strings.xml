@@ -206,7 +206,7 @@
 	<string name="primaryAccountRequired" formatted="false">Ein %primCurrency Account ist nötig, um dieses Feature zu nutzen</string>
 	<string name="primaryAccountRequiredDetails" formatted="false">Manche Features sind an bestimmte Kryptowährungen gebunden. Sie müssen einen Account mit dieser Währung anlegen oder freischalten, um das Feature nutzen zu können.</string>
 	<string name="UnknownDomainRegisterFirst">Unbekannte Domain, registrieren Sie sich zuerst</string>
-	<string name="commonIdentityQRCode">QR Code</string>
+	<string name="QrCode">QR Code</string>
 	<string name="unknownOperation" formatted="false">Vorgang %op unbekannt</string>
 	<string name="alreadyRegistered">bereits registriert</string>
 	<string name="provideLoginQuestion">Auf diese Seite einloggen?</string>

@@ -328,7 +328,7 @@ Good luck!
     <string name="primaryAccountRequiredDetails" formatted="false">몇 가지 기능은 특정 가상화폐와 연결되어 있습니다. 귀하는 이 기능을 사용하기 전에 해당 가상화폐의 계정을 만들거나 풀어야 합니다.</string>
     <string name="UnknownDomainRegisterFirst">알 수 없는 도메인, 등록을 먼저 하세요</string>
 
-    <string name="commonIdentityQRCode">QR코드</string>
+    <string name="QrCode">QR코드</string>
     <!-- An intent (aka link) specified an action that I do not know about -->
     <string name="unknownOperation" formatted="false">알 수 없는 %op</string>
     <!-- This wallet already has a registration for this site, so registration is not needed (informational notice) -->
@@ -607,7 +607,6 @@ Good luck!
     <string name="NftLegal">라이센스</string>
     <string name="NftSeries" formatted="false">시리즈: %series</string>
     <string name="NftAuthor" formatted="false">작가: %author</string>
-    <string name="NftNoInfoProvidedHTML"><![CDATA[<body><h1><center>...정보가 제공되지 않음...</h1></center></body>]]></string>
     <string name="IssuedToConnection">연결된 사이트에서 런칭됨</string>
     <!-- this message tells users that some assets will be part of a proposed transaction -->
     <string name="AndSomeAssets">그리고 어떤 자산</string>

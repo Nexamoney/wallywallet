@@ -318,7 +318,7 @@ Good luck!
     <string name="primaryAccountRequiredDetails" formatted="false">Osad funktsioonid töötavad ainult vastavate krüptovaluutadega. Te peate vastava krüpto konto avama.</string>
     <string name="UnknownDomainRegisterFirst">Tundmatu domeen, palun ennem registreerida.</string>
 
-    <string name="commonIdentityQRCode">QR kood</string>
+    <string name="QrCode">QR kood</string>
     <!-- An intent (aka link) specified an action that I don't know about -->
     <string name="unknownOperation" formatted="false">operatsioon %op on tundmatu</string>
     <!-- This wallet already has a registration for this site, so registration is not needed (informational notice) -->

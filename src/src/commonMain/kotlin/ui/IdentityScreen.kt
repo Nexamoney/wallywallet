@@ -212,7 +212,7 @@ fun IdentityScreen(act: Account, mainPill: AccountPillViewModel, sess: IdentityS
                 if (socialmedia != null && socialmedia != "") uri = uri + "&sm=" + URLEncoder.encode(socialmedia, "utf-8")
                 LogIt.info("encoded URI: " + uri)
 
-                val sz = min(ui.commonIdentityQRCode.getWidth().toLong(), ui.commonIdentityQRCode.getHeight().toLong())
+                val sz = min(ui.QrCode.getWidth().toLong(), ui.QrCode.getHeight().toLong())
                 val qr = textToQREncode(uri, sz.toInt())
                  */
 

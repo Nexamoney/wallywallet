@@ -222,7 +222,7 @@
 <string name="primaryAccountRequired" formatted="false">Za uporabo te funkcije je potreben račun %primCurrency</string>
 <string name="primaryAccountRequiredDetails" formatted="false">Nekatere funkcije so povezane z določenimi kriptovalutami. Pred uporabo te funkcije morate ustvariti ali odkleniti račun za to kriptovaluto.</string>
 <string name="UnknownDomainRegisterFirst">Neznana domena, najprej se registrirajte</string>
-<string name="commonIdentityQRCode">QR koda</string>
+<string name="QrCode">QR koda</string>
 <!--  An intent (aka link) specified an action that I don't know about  --><string name="unknownOperation" formatted="false">operacija %op neznana</string>
 <!--  This wallet already has a registration for this site, so registration is not needed (informational notice)  --><string name="alreadyRegistered">že registriran</string>
 <string name="provideLoginQuestion">Se želite prijaviti na to spletno mesto?</string>
