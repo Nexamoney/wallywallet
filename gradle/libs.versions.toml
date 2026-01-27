@@ -3,7 +3,7 @@ androidSdk = "36"
 androidMinSdk = "29"
 
 androidsvgAar = "1.4"
-androidxActivityComposeVersion = "1.12.2"
+androidxActivity = "1.13.0-alpha01" # https://developer.android.com/jetpack/androidx/releases/activity
 atomicfu = "0.29.0"  # https://github.com/Kotlin/kotlinx-atomicfu/releases
 barcodeScanning = "17.3.0"
 bigNumVersion = "0.3.10" # https://github.com/ionspin/kotlin-multiplatform-bignum
@@ -48,8 +48,8 @@ zxingAndroidEmbedded = "4.3.0"
 
 [libraries]
 androidsvg-aar = { module = "com.caverock:androidsvg-aar", version.ref = "androidsvgAar" }
-androidx-activity = { module = "androidx.activity:activity", version.ref = "androidxActivityComposeVersion" }
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivityComposeVersion" }
+androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidxActivity" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
 androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCamera2" }
 androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraCamera2" }
 androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraCamera2" }
