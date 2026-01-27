@@ -314,7 +314,7 @@ Good luck!
     <string name="primaryAccountRequired" formatted="false">%primCurrency hesabı bu özelliği kullanmak için gereklidir</string>
     <string name="primaryAccountRequiredDetails" formatted="false">Bazı özellikler belirli kripto para birimlerine bağlıdır. Özelliği kullanmadan önce o kripto para biriminde hesap oluşturmanız veya kilidini açmanız gerekiyor.</string>
     <string name="UnknownDomainRegisterFirst">Bilinmeyen alan adı, önce kayıt olun</string>
-    <string name="commonIdentityQRCode">QR kodu</string>
+    <string name="QrCode">QR kodu</string>
 
     <string name="unknownOperation" formatted="false">%op işlemi bilinmiyor</string>
     <!-- Bu cüzdan zaten bu site için kayıtlı olduğundan, kayıt gerekli değil (bilgilendirme uyarısı) -->

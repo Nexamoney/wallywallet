@@ -318,7 +318,7 @@ Good luck!
     <string name="primaryAccountRequiredDetails" formatted="false">Algunes funcions estan vinculades a determinades criptomonedes. Heu de crear o desbloquejar un compte en aquesta criptomoneda abans d\'utilitzar la funció.</string>
     <string name="UnknownDomainRegisterFirst">Domini desconegut, registreu-vos primer</string>
 
-    <string name="commonIdentityQRCode">codi QR</string>
+    <string name="QrCode">codi QR</string>
     <!-- An intent (aka link) specified an action that I don't know about -->
     <string name="unknownOperation" formatted="false">operació %op desconeguda</string>
     <!-- This wallet already has a registration for this site, so registration is not needed (informational notice) -->

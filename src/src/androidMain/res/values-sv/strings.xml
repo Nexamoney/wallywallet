@@ -295,7 +295,7 @@ Ta bort kontot "%accountName" (på %blockchain)?</string>
   <string name="primaryAccountRequired" formatted="false">Ett %primCurrency konto krävs för att använda den här funktionen</string>
   <string name="primaryAccountRequiredDetails" formatted="false">Vissa funktioner är kopplade till vissa kryptovalutor.  Du måste skapa eller låsa upp ett konto på den kryptovalutan innan du använder funktionen.</string>
   <string name="UnknownDomainRegisterFirst">Okänd domän, registrera dig först</string>
-  <string name="commonIdentityQRCode">QR-kod</string>
+  <string name="QrCode">QR-kod</string>
   <!-- An intent (aka link) specified an action that I don't know about -->
   <string name="unknownOperation" formatted="false">operation %op okänd</string>
   <!-- This wallet already has a registration for this site, so registration is not needed (informational notice) -->

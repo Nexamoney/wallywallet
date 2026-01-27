@@ -316,7 +316,7 @@ Good luck!
     <string name="primaryAccountRequiredDetails" formatted="false">Alcune funzioni sono disponibili solo per certe valute virtuali. Per accedervi bisogna creare o sbloccare un account relativo a queste monete virtuali.</string>
     <string name="UnknownDomainRegisterFirst">Dominio sconosciuto, necessaria registrazione</string>
 
-    <string name="commonIdentityQRCode">QR code</string>
+    <string name="QrCode">QR code</string>
     <!-- An intent (aka link) specified an action that I don't know about -->
     <string name="unknownOperation" formatted="false">%op operazione sconosciuta</string>
     <!-- This wallet already has a registration for this site, so registration is not needed (informational notice) -->

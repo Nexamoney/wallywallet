@@ -293,7 +293,7 @@ Good luck!
     <string name="primaryAccountRequired" formatted="false">Se necesita una cuenta en %primCurrency para usar esta función.</string>
     <string name="primaryAccountRequiredDetails" formatted="false">Algunas características están vinculadas a ciertas criptomonedas. Debes crear o desbloquear una cuenta en esa criptomoneda antes de usar la característica.</string>
     <string name="UnknownDomainRegisterFirst">Dominio desconocido, regístrese primero</string>
-    <string name="commonIdentityQRCode">QR code</string>
+    <string name="QrCode">QR code</string>
     <!-- An intent (aka link) specified an action that I do not know about -->
     <string name="unknownOperation" formatted="false">operación %op desconocida</string>
     <!-- This wallet already has a registration for this site, so registration is not needed (informational notice) -->
