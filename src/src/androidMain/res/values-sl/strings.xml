@@ -367,8 +367,6 @@
 <string name="title_activity_domain_identity_settings">Nastavitev identitete domene</string>
 <string name="title_activity_tx_history" formatted="false">Zgodovina računa: %account</string>
 <string name="title_activity_account_details" formatted="false">Podrobnosti računa: %account</string>
-<!--  Not part of the UI  -->
-<string name="preferenceFileName">bitcoinunlimited.wally.prefs</string>
 <!--  Domain Identity Settings  -->
 <string name="useUniqueIdentity">Uporabi unikatno identiteto</string>
 <!--  Preference Titles  -->

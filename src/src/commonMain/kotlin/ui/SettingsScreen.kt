@@ -8,7 +8,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,28 +19,16 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
-import info.bitcoinunlimited.www.wally.ui.theme.WallyHalfDivider
-import info.bitcoinunlimited.www.wally.ui.theme.wallyPurple
 import info.bitcoinunlimited.www.wally.ui.views.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.SettingsScreen")
-
-const val LOCAL_CURRENCY_PREF = "localCurrency"
-const val ACCESS_PRICE_DATA_PREF = "accessPriceData"
-const val BACKGROUND_SYNC_PREF = "backgroundSync"
-const val DARK_MODE_PREF = "darkModeMenu"
-const val DEV_MODE_PREF = "devinfo"
-const val EXPERIMENTAL_UX_MODE_PREF = "expUX"
-const val CONFIRM_ABOVE_PREF = "confirmAbove"
-const val CONFIGURED_NODE = "NodeAddress"
 
 data class GeneralSettingsSwitch(
   val prefKey: String,
@@ -233,7 +220,7 @@ fun SettingsScreen(preferenceDB: SharedPreferences = wallyApp!!.preferenceDB)
 
             WallyDivider()
             ShowScreenNavSwitch(SHOW_IDENTITY_PREF, NavChoice(ScreenId.Identity, S.title_activity_identity, Icons.Default.Person), S.enableIdentityMenu, showIdentityPref)
-            ShowScreenNavSwitch(SHOW_TRICKLEPAY_PREF, NavChoice(ScreenId.TricklePay, S.title_activity_trickle_pay, Icons.Default.WaterDrop), S.enableTricklePayMenu, showTricklePayPref)
+            ShowScreenNavSwitch(SHOW_TRICKLE_PAY_PREF, NavChoice(ScreenId.TricklePay, S.title_activity_trickle_pay, Icons.Default.WaterDrop), S.enableTricklePayMenu, showTricklePayPref)
             // Only let them choose to not show assets if they don't have any assets
             if (showAssetsPref.value == false || wallyApp?.hasAssets() == false)
                 ShowScreenNavSwitch(SHOW_ASSETS_PREF, NavChoice(ScreenId.Assets, S.title_activity_assets, Icons.Default.Image), S.enableAssetsMenu, showAssetsPref)

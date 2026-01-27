@@ -342,7 +342,6 @@ versuchen Sie es nochmal.
 	<string name="title_activity_domain_identity_settings">Domain Identitätseinstellungen</string>
 	<string name="title_activity_tx_history" formatted="false">Account Aktivitäten: %account</string>
 	<string name="title_activity_account_details" formatted="false">Account Details: %account</string>
-	<string name="preferenceFileName">bitcoinunlimited.wally.prefs</string>
 	<string name="useUniqueIdentity">Eine einzigartige Identität verwenden</string>
 	<string name="title_activity_identity_settings">Identitätseinstellungen</string>
 	<string name="title_activity_welcome">Willkommen</string>

@@ -2,9 +2,7 @@ package info.bitcoinunlimited.www.wally
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.uikit.ComposeUIViewControllerDelegate
 import androidx.compose.ui.window.ComposeUIViewController
-import info.bitcoinunlimited.www.wally.ui.BACKGROUND_SYNC_PREF
 import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.UiRoot
 import info.bitcoinunlimited.www.wally.ui.nav
@@ -14,7 +12,6 @@ import org.nexa.libnexakotlin.initializeLibNexa
 import org.nexa.libnexakotlin.handleThreadException
 import org.nexa.libnexakotlin.laterJob
 import org.nexa.threads.millisleep
-import platform.UIKit.UIColor
 import platform.UIKit.UIViewController
 
 private val LogIt = GetLog("BU.wally.iosMain.MainViewController")
@@ -59,7 +56,7 @@ fun MainViewController(): UIViewController
 @Throws(Throwable::class, Exception::class, NullPointerException::class, RuntimeException::class)
 fun iosBackgroundSync(completion: () -> Unit)
 {
-    val preferenceDB: SharedPreferences = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
+    val preferenceDB: SharedPreferences = getSharedPreferences(PREFERENCE_FILE_NAME, PREF_MODE_PRIVATE)
     val allowBackgroundSync = preferenceDB.getBoolean(BACKGROUND_SYNC_PREF, true)
     if (allowBackgroundSync)
         backgroundSync(completion)

@@ -89,7 +89,7 @@ fun AssetOfferScreen(nav: ScreenNav, offer: AssetOffer, viewModel: AssetOfferVie
     }
     val qrcodePainter = rememberQrCodePainter(offer.uri, errorCorrectionLevel = QrErrorCorrectionLevel.Low)
     val assetName = asset.nameObservable.collectAsState()
-    val preferenceDB = getSharedPreferences(TEST_PREF + i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
+    val preferenceDB = getSharedPreferences(TEST_PREF + PREFERENCE_FILE_NAME, PREF_MODE_PRIVATE)
     val devMode = preferenceDB.getBoolean(DEV_MODE_PREF, false)
     val name = (if ((nft != null) && (nft.title.length > 0)) nft.title else assetName.value) ?: ""
     // If the offer is a unique non-fungible token/asset then the amount should not be displayed

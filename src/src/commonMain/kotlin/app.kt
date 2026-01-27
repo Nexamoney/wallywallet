@@ -6,8 +6,6 @@ import androidx.compose.runtime.collectAsState
 import com.eygraber.uri.Uri
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.ui.*
-import io.ktor.client.*
-import io.ktor.client.network.sockets.SocketTimeoutException
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
@@ -28,11 +26,6 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.concurrent.Volatile
 
 private val LogIt = GetLog("BU.wally.app")
-const val SELECTED_ACCOUNT_NAME_PREF = "selectedAccountName"
-
-// set to something to have a difference set of preference (for testing).  It is important to ALWAYS set something when testing
-// or the list of active wallets may be overwritten.
-var TEST_PREF = ""
 
 val i18nLbc = mapOf(
   RinsufficentBalance to S.insufficentBalance,
@@ -869,7 +862,7 @@ open class CommonApp(val runningTests: Boolean)
 
     fun onCreate()
     {
-        preferenceDB = getSharedPreferences(TEST_PREF + i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
+        preferenceDB = getSharedPreferences(TEST_PREF + PREFERENCE_FILE_NAME, PREF_MODE_PRIVATE)
         notInUIscope = coMiscScope
 
         LogIt.info(sourceLoc(10) + " Wally Wallet App Started")
@@ -891,7 +884,7 @@ open class CommonApp(val runningTests: Boolean)
         allowAccessPriceData = preferenceDB.getBoolean(ACCESS_PRICE_DATA_PREF, true)
         localCurrency = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"
         showIdentityPref.value = preferenceDB.getBoolean(SHOW_IDENTITY_PREF, false)
-        showTricklePayPref.value = preferenceDB.getBoolean(SHOW_TRICKLEPAY_PREF, false)
+        showTricklePayPref.value = preferenceDB.getBoolean(SHOW_TRICKLE_PAY_PREF, false)
         showAssetsPref.value = preferenceDB.getBoolean(SHOW_ASSETS_PREF, false)
         experimentalUI.value = preferenceDB.getBoolean(EXPERIMENTAL_UX_MODE_PREF, false)
         soundEnabled.value = preferenceDB.getBoolean(SOUND_ENABLED_PREF, true)

@@ -425,7 +425,7 @@ class SendScreenViewModelImpl(act: Account): SendScreenViewModel(act)
             }
         }
 
-        val preferenceDB = getSharedPreferences(TEST_PREF + i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
+        val preferenceDB = getSharedPreferences(TEST_PREF + PREFERENCE_FILE_NAME, PREF_MODE_PRIVATE)
         val confirmAmtString = preferenceDB.getString(info.bitcoinunlimited.www.wally.CONFIRM_ABOVE_PREF, "0") ?: "0"
         val confirmAmt = try
         {

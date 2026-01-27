@@ -470,9 +470,6 @@ Good luck!
     <string name="title_activity_tx_history" formatted="false">Hesap Geçmişi: %account</string>
     <string name="title_activity_account_details" formatted="false">Hesap Detayları: %account</string>
 
-    <!-- Not part of the UI -->
-    <string name="preferenceFileName">bitcoinunlimited.wally.prefs</string>
-
     <string name="useUniqueIdentity">Benzersiz bir kimlik kullan</string>
 
     <string name="title_activity_identity_settings">Kimlik Ayarları</string>
