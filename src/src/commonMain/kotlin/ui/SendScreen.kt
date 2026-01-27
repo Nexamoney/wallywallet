@@ -83,7 +83,6 @@ abstract class SendScreenViewModel(val account:MutableStateFlow<Account?>): View
     val hasP2pConnection: MutableStateFlow<Boolean> = MutableStateFlow(true)
 
     var balanceViewModel: BalanceViewModel = BalanceViewModelImpl(account)
-    var syncViewModel: SyncViewModel = SyncViewModelImpl()
 
     val audioPlayer: AudioPlayer = AudioPlayer()
 
@@ -644,13 +643,14 @@ fun SendScreenContent(
     val sendingTheseAssets = assetsToSendState.value
     val toAddress = uiState.value.toAddress
     val note = uiState.value.note
-    val amount = uiState.value.amount
     val isConfirming = uiState.value.isConfirming
 
+    /*
     LaunchedEffect(params.toAddress) {
         if (params.toAddress.isEmpty() && uiState.value.toAddress.isEmpty())
             focusRequester.requestFocus()
     }
+     */
 
     Box (
       modifier = Modifier.fillMaxSize(),

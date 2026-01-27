@@ -57,7 +57,8 @@ class SendScreenTest:WallyUiTestBase()
             // Input a mock address into to the text input field and assert that it is displayed
             val toAddress = "nexa:nqtsq5g55t9699mcue00frjqql5275r3et45c3dqtxzfz8ru"
             onNodeWithTag("sendToAddress").assertIsDisplayed()
-            onNodeWithTag("sendToAddress").assertIsFocused()
+            onNodeWithTag("sendToAddress").assertIsNotFocused()
+            onNodeWithTag("sendToAddress").requestFocus()
             onNodeWithTag("sendToAddress").performTextInput(toAddress)
             settle()
             onNodeWithTag("sendToAddress").assertTextContains(toAddress)
