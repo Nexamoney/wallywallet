@@ -454,8 +454,6 @@ Om så är fallet, klicka på skapa-knappen igen och ett tomt konto kommer att s
   <string name="title_activity_domain_identity_settings">Domänidentitetsinställningar</string>
   <string name="title_activity_tx_history" formatted="false">Kontohistorik: %account</string>
   <string name="title_activity_account_details" formatted="false">Kontouppgifter: %account</string>
-  <!-- Not part of the UI -->
-  <string name="preferenceFileName">bitcoinunlimited.wally.prefs</string>
   <!-- Domain Identity Settings -->
   <string name="useUniqueIdentity">Använd en unik identitet</string>
 

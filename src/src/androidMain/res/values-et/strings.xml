@@ -476,9 +476,6 @@ Good luck!
     <string name="title_activity_tx_history" formatted="false">Konto ajalugu: %account</string>
     <string name="title_activity_account_details" formatted="false">Konto detailid: %account</string>
 
-    <!-- Not part of the UI -->
-    <string name="preferenceFileName">bitcoinunlimited.wally.prefs</string>
-
     <!-- Domain Identity Settings -->
     <string name="useUniqueIdentity">Kasuta unikaalset identiteeti</string>
 

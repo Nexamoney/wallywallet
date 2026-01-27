@@ -499,7 +499,7 @@ fun enableNavMenuItem(item: ScreenId, enable:Boolean=true)
         if (item == ScreenId.TricklePay && showTricklePayPref.value != enable)
         {
             changed = true
-            e.putBoolean(SHOW_TRICKLEPAY_PREF, enable)
+            e.putBoolean(SHOW_TRICKLE_PAY_PREF, enable)
             showTricklePayPref.value = enable
         }
         if (item == ScreenId.Assets && showAssetsPref.value != enable)

@@ -36,7 +36,7 @@ class RecoverTests:WallyUiTestBase()
             println("This test sandbox cannot resolve external domains, so this test cannot be run")
             return
         }
-        val preferenceDB = getSharedPreferences(i18n(S.preferenceFileName), PREF_MODE_PRIVATE)
+        val preferenceDB = getSharedPreferences(PREFERENCE_FILE_NAME, PREF_MODE_PRIVATE)
         preferenceDB.edit().putBoolean(DEV_MODE_PREF, true).commit()
         devMode = true  // MUST be on because we are creating a testnet account
         // Create a normal account

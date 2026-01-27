@@ -481,9 +481,6 @@ Good luck!
     <string name="title_activity_tx_history" formatted="false">Historial del compte: %account</string>
     <string name="title_activity_account_details" formatted="false">Detalls del compte: %account</string>
 
-    <!-- Not part of the UI -->
-    <string name="preferenceFileName">bitcoinunlimited.wally.prefs</string>
-
     <!-- Domain Identity Settings -->
     <string name="useUniqueIdentity">Utilitzeu una identitat única</string>
 

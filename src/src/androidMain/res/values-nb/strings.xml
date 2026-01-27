@@ -144,8 +144,6 @@
     <string name="title_activity_identity">Identitet</string>
     <string name="title_activity_identity_op">Identitet</string>
 
-    <!-- Not part of the UI -->
-    <string name="preferenceFileName">bitcoinunlimited.wally.prefs</string>
     <string name="title_activity_domain_identity_settings">Domain Identity Settings</string>
 
     <!-- Domain Identity Settings -->
