@@ -32,7 +32,6 @@ composeAndroid = "1.10.1" # The Android-only version of compose. This version oc
 composeJunitAndroid = "1.10.1"
 mat3 = "1.9.0"
 android-gradle-plugin = "8.13.2" # Tied to IDE version so do not just bump forward. https://developer.android.com/build/releases/gradle-plugin
-dokka = "2.1.0"
 kover = "0.9.4"
 okio = "3.16.4"
 playServicesBase = "18.10.0"
@@ -115,7 +114,6 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
 android-library = { id = "com.android.library", version.ref = "android-gradle-plugin" }
-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 task-tree = { id = "com.dorongold.task-tree", version.ref = "task-tree" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose"}
