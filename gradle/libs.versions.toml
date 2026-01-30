@@ -53,14 +53,10 @@ androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.r
 androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraCamera2" }
 androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraCamera2" }
 androidx-core-ktx = { module = "androidx.test:core-ktx", version.ref = "coreKtx" }
-androidx-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "composeAndroid" }
 androidx-junit-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "junitKtx" }
-androidx-material = { module = "androidx.compose.material:material", version.ref = "composeAndroid" }
-androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3Exoplayer" }
 androidx-media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3Exoplayer" }
 androidx-tracing = { module = "androidx.tracing:tracing", version.ref = "tracing" }
-androidx-ui = { module = "androidx.compose.ui:ui", version.ref = "composeAndroid" }
 androidx-ui-test-junit4-android = { module = "androidx.compose.ui:ui-test-junit4-android", version.ref = "composeJunitAndroid" }
 androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "composeAndroid" }
 androidx-wear = { module = "androidx.wear:wear", version.ref = "wear" }
