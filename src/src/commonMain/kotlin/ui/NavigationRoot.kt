@@ -484,10 +484,10 @@ fun buildMenuItems()
 }
 
 
-/** Change showing or hiding a menu item */
+/** Asynchronously change showing or hiding a menu item */
 fun enableNavMenuItem(item: ScreenId, enable:Boolean=true)
 {
-    later {
+    laterJob {  // So that we can call this within a UI thread
         var changed = false
         val e = wallyApp!!.preferenceDB.edit()
         if (item == ScreenId.Identity && showIdentityPref.value != enable)
@@ -506,7 +506,7 @@ fun enableNavMenuItem(item: ScreenId, enable:Boolean=true)
         {
             changed = true
             e.putBoolean(SHOW_ASSETS_PREF, enable)
-            showAssetsPref.emit(enable)
+            showAssetsPref.value = enable
         }
         if (changed)
         {
@@ -546,11 +546,14 @@ fun updateNavMenuContents()
 fun uxPeriodicAnalysis(): iThread
 {
     return org.nexa.threads.Thread("periodicAnalysis") {
+        millisleep(2000U)  // We do not need to do this right away at startup.  Save the CPU for other things
+        var count=0L
         while (true)
         {
             updateNavMenuContents()
-            UpdateNexaXchgRates(localCurrency)
-            millisleep(5000U)
+            if ((count and 3) == 0L) UpdateNexaXchgRates(localCurrency)  // update the exchange rate every minute
+            millisleep(15000U)
+            count++
         }
     }
 }

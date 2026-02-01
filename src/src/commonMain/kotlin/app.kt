@@ -1232,8 +1232,7 @@ open class CommonApp(val runningTests: Boolean)
         else  // OK, recreate the wallets saved on this phone
         {
             val db = kvpDb!!
-
-            LogIt.info(sourceLoc() + " Loading account names")
+            // LogIt.info(sourceLoc() + " Loading account names")
             val accountNames = try
             {
                 // throw Exception("TESTING")  // TODO DBG force old account conversion for testing
