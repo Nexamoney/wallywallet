@@ -79,7 +79,7 @@ class Account(
 )
 {
     init {
-        LogIt.info(sourceLoc() + ": Creating Account Object")
+        LogIt.info(sourceLoc() + ": Creating Account $name")
     }
     val access = Mutex("actMut")
     val handler = CoroutineExceptionHandler {
@@ -130,7 +130,7 @@ class Account(
         {
             // support older wallets by allowing empty account flags
         }
-        LogIt.info(sourceLoc() + " " + ": Loading wallet " + name)
+        LogIt.info(sourceLoc() + ": Loading wallet " + name)
         val t = try {
             Bip44Wallet(walletDb!!, name)
         }  // Load a saved wallet
@@ -522,7 +522,7 @@ class Account(
                     ret = true
                 }
             }
-            ret// stop looking as soon as we find one
+            ret // stop looking as soon as we find one
         }
         return ret
     }

@@ -8,7 +8,7 @@ atomicfu = "0.29.0"  # https://github.com/Kotlin/kotlinx-atomicfu/releases
 barcodeScanning = "17.3.0"
 bigNumVersion = "0.3.10" # https://github.com/ionspin/kotlin-multiplatform-bignum
 
-bu_libnexakotlin = "0.5.25" # https://gitlab.com/nexa/libnexakotlin
+bu_libnexakotlin = "0.5.26" # https://gitlab.com/nexa/libnexakotlin
 bu_mpthreads = "0.5.6" # https://gitlab.com/nexa/mpthreads
 bu_nexaRpc = "1.6.3" # https://gitlab.com/nexa/nexarpckotlin
 

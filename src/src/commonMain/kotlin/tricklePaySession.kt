@@ -319,7 +319,7 @@ class TricklePayDomains()
                     } catch (e: DataMissingException)
                     {
                         domainsLoaded = true
-                        LogIt.info("benign: no TDPP domains registered yet")
+                        LogIt.info(sourceLoc() + "Note that no TDPP domains are registered (this is expected if the user has not registered with any services)")
                     } catch (e: Exception)
                     {
                         domainsLoaded = true  // well we tried anyway
