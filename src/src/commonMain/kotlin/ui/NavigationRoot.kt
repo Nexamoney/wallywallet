@@ -38,6 +38,7 @@ import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
 import org.nexa.threads.iThread
 import org.nexa.threads.millisleep
+import kotlin.collections.get
 
 private val LogIt = GetLog("wally.NavRoot")
 
@@ -70,7 +71,7 @@ val allMenuItems = if (platform().target == KotlinTarget.iOS)
         NavChoice(ScreenId.Home, S.title_home, Icons.Default.Home),
         NavChoice(ScreenId.Assets, S.title_activity_assets, Icons.Default.Image),
         NavChoice(ScreenId.Identity, S.title_activity_identity, Icons.Default.Person),
-        NavChoice(ScreenId.TricklePay, S.title_activity_trickle_pay, Icons.Default.WaterDrop),
+        NavChoice(ScreenId.TricklePayRegistrations, S.Services, Icons.Default.Cloud),
         NavChoice(ScreenId.Settings, S.title_activity_settings, Icons.Default.Settings),
     )
 else
@@ -79,7 +80,7 @@ else
         NavChoice(ScreenId.Assets, S.title_activity_assets, Icons.Default.Image),
       NavChoice(ScreenId.Shopping, S.title_activity_shopping, Icons.Default.ShoppingCart),
       NavChoice(ScreenId.Identity, S.title_activity_identity, Icons.Default.Person),
-        NavChoice(ScreenId.TricklePay, S.title_activity_trickle_pay, Icons.Default.WaterDrop),
+        NavChoice(ScreenId.TricklePayRegistrations, S.Services, Icons.Default.Cloud),
         NavChoice(ScreenId.Settings, S.title_activity_settings, Icons.Default.Settings),
     )
 
@@ -167,7 +168,7 @@ enum class ScreenId
     Identity,
     IdentityOp,
     IdentityEdit,
-    TricklePay,
+    TricklePayRegistrations,
     Settings,
     SplitBill,
     NewAccount,
@@ -210,7 +211,7 @@ enum class ScreenId
             SpecialTxPerm -> Home
             AssetInfoPerm -> Home
             SendToPerm -> Home
-            TpSettings -> TricklePay
+            TpSettings -> TricklePayRegistrations
             IdentityEdit -> Identity
             Splash -> Home
             else -> Home
@@ -250,7 +251,7 @@ enum class ScreenId
             IdentityEdit -> i18n(S.title_activity_identity)
             Identity -> i18n(S.title_activity_identity)
             IdentityOp -> i18n(S.title_activity_identity_op)
-            TricklePay -> i18n(S.title_activity_trickle_pay)
+            TricklePayRegistrations -> i18n(S.Services)
             Assets -> i18n(S.assets)
             Shopping -> i18n(S.title_activity_shopping)
             Settings -> i18n(S.title_activity_settings)
@@ -469,15 +470,15 @@ fun buildMenuItems()
 {
     val items = permanentMenuItems.toMutableSet()
     val identity = NavChoice(ScreenId.Identity, S.title_activity_identity, Icons.Default.Person)
-    val tricklePay = NavChoice(ScreenId.TricklePay, S.title_activity_trickle_pay, Icons.Default.WaterDrop)
+    val tricklePayRegistrations = NavChoice(ScreenId.TricklePayRegistrations, S.title_activity_trickle_pay, Icons.Default.WaterDrop)
     val assets = NavChoice(ScreenId.Assets, S.title_activity_assets, Icons.Default.Image)
 
     if(showIdentityPref.value && items.size < BOTTOM_NAV_ITEMS) items.add(identity)
-    if(showTricklePayPref.value && items.size < BOTTOM_NAV_ITEMS) items.add(tricklePay)
+    if(showTricklePayPref.value && items.size < BOTTOM_NAV_ITEMS) items.add(tricklePayRegistrations)
     if(showAssetsPref.value && items.size < BOTTOM_NAV_ITEMS) items.add(assets)
     val moreitems = allMenuItems.minus(items).toMutableSet()
     if (!showIdentityPref.value) moreitems.remove(NavChoice(ScreenId.Identity, S.title_activity_identity, Icons.Default.Person))
-    if (!showTricklePayPref.value) moreitems.remove(NavChoice(ScreenId.TricklePay, S.title_activity_trickle_pay, Icons.Default.WaterDrop))
+    if (!showTricklePayPref.value) moreitems.remove(NavChoice(ScreenId.TricklePayRegistrations, S.title_activity_trickle_pay, Icons.Default.WaterDrop))
 
     menuItems.value = items
     moreMenuItems.value = moreitems.toSet()
@@ -496,7 +497,7 @@ fun enableNavMenuItem(item: ScreenId, enable:Boolean=true)
             e.putBoolean(SHOW_IDENTITY_PREF, enable)
             showIdentityPref.value = enable
         }
-        if (item == ScreenId.TricklePay && showTricklePayPref.value != enable)
+        if (item == ScreenId.TricklePayRegistrations && showTricklePayPref.value != enable)
         {
             changed = true
             e.putBoolean(SHOW_TRICKLE_PAY_PREF, enable)
@@ -1257,7 +1258,7 @@ fun NavigationRoot(
                                     }
                                 } }
                                 ScreenId.Shopping -> ShoppingScreen()
-                                ScreenId.TricklePay -> withAccount { act -> TricklePayScreen(act, null, nav) }
+                                ScreenId.TricklePayRegistrations -> TricklePayRegistrationsScreen()
                                 ScreenId.Identity -> withAccount { act ->
                                     val idsess = nav.curData.collectAsState().value as? IdentitySession
                                     IdentityScreen(act, accountPillViewModel, idsess, nav)
@@ -1269,7 +1270,41 @@ fun NavigationRoot(
 
                                 ScreenId.AddressHistory -> withAccount { AddressHistoryScreen(it, nav) }
                                 ScreenId.TxHistory -> withAccount { TxHistoryScreen(it, nav) }
-                                ScreenId.TpSettings -> withTp { act, ctp -> TricklePayScreen(act, ctp, nav) }
+                                ScreenId.TpSettings ->  {
+                                    // TODO: Move the following butiness login code to ViewModel or Repository
+                                    // the following code does not belong in a @Composable...
+                                    val fromSession = nav.curData.collectAsState().value as? TricklePaySession
+                                    if (fromSession == null)
+                                    {
+                                        displayErrorAndGoBack(S.TpNoSession)  // TODO make this no TP session
+                                    }
+                                    else
+                                    {
+                                        val toDomain = fromSession.proposedDomainChanges ?: if (fromSession.editDomain == true) fromSession.domain else null
+                                        if (toDomain == null)
+                                        {
+                                            displayErrorAndGoBack(S.TpNoSession) // TODO: No Tp domain
+                                        }
+                                        else
+                                        {
+                                            val account: Account? = wallyApp!!.accounts[toDomain.accountName] ?: wallyApp!!.accounts[fromSession.domain?.accountName] ?: run {
+                                                if (toDomain.uoa == "") wallyApp!!.primaryAccount
+                                                else
+                                                {
+                                                    val acts = wallyApp!!.accountsFor(toDomain.uoa)
+                                                    if (acts.size > 0) acts[0]
+                                                    else
+                                                    {
+                                                        displayErrorAndGoBack(S.NoAccounts)
+                                                        null
+                                                    }
+                                                }
+                                            }
+                                            if (account != null)
+                                                EditTricklePayScreen(fromSession, toDomain, account)
+                                        }
+                                    }
+                                }
                                 ScreenId.SpecialTxPerm -> withTp { act, ctp -> SpecialTxPermScreen(ctp) }
                                 ScreenId.AssetInfoPerm -> withTp { act, ctp -> AssetInfoPermScreen(act, ctp, nav) }
                                 ScreenId.SendToPerm -> withTp { act, ctp -> SendToPermScreen( ctp, nav) }

@@ -9,10 +9,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.AttachMoney
-import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.RequestQuote
-import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,19 +26,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eygraber.uri.Uri
 import org.nexa.libnexakotlin.*
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.ui.theme.colorPrimaryDark
-import info.bitcoinunlimited.www.wally.ui.theme.wallyPurple
 import info.bitcoinunlimited.www.wally.ui.theme.wallyPurple2
 import info.bitcoinunlimited.www.wally.ui.views.*
 import io.ktor.http.*
 import io.ktor.utils.io.errors.*
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.datetime.Month
 import okio.FileNotFoundException
 import kotlin.plus
 
@@ -333,7 +328,7 @@ fun SpecialTxPermScreen(sess: TricklePaySession)
     fun acceptProposal()
     {
         // Turn the menu on since user has accepted an operation of this type
-        enableNavMenuItem(ScreenId.TricklePay)
+        enableNavMenuItem(ScreenId.TricklePayRegistrations)
         try
         {
             LogIt.info(sourceLoc() +": accept trickle pay special transaction")
@@ -679,7 +674,7 @@ fun AssetInfoPermScreen(acc: Account, sess: TricklePaySession , nav: ScreenNav)
         ButtonRowAcceptDeny(
           accept = {
               // Turn the menu on since user has accepted an operation of this type
-              enableNavMenuItem(ScreenId.TricklePay)
+              enableNavMenuItem(ScreenId.TricklePayRegistrations)
 
               try
               {
