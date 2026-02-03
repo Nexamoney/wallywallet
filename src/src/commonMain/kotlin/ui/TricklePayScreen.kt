@@ -4,6 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
+import androidx.compose.material.icons.filled.ArrowRight
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemColors
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,7 +21,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.ui.theme.WallyRowBbkg1
 import info.bitcoinunlimited.www.wally.ui.theme.WallyRowBbkg2
 import info.bitcoinunlimited.www.wally.ui.theme.colorWarning
@@ -159,24 +166,11 @@ fun TricklePayDomainView(from: TdppDomain?, to: TdppDomain, modifier: Modifier =
 }
 
 @Composable
-fun TricklePayScreen(act: Account, startSess: TricklePaySession?, nav: ScreenNav)
+fun TricklePayRegistrationsScreen()
 {
-    var sess by remember { mutableStateOf(startSess) }
     val domains = wallyApp!!.tpDomains.domains.collectAsState().value
 
-    nav.onDepart {
-        val s = sess
-        if (s != null)
-        {
-            if (s.editDomain)  // save any changes to this domain whenever you leave, if user is just editing it
-            {
-                wallyApp!!.tpDomains.save()
-            }
-        }
-    }
-
     Column(Modifier.fillMaxSize()) {
-        CenteredSectionText(S.TpRegistrations)
         if (domains.size == 0)
         {
             Text(i18n(S.TpNoRegistrations), Modifier.background(WallyRowBbkg1).fillMaxWidth())
@@ -184,83 +178,85 @@ fun TricklePayScreen(act: Account, startSess: TricklePaySession?, nav: ScreenNav
         LazyColumn(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(0.1f)) {
             domains.entries.forEachIndexed { index, entry ->
                 item(key = entry.key) {
-                    val domain = entry.value
-                    Box(Modifier.padding(4.dp, 2.dp).fillMaxWidth().background(if (index % 1 == 0) WallyRowBbkg1 else WallyRowBbkg2).clickable {
-                        val editDomain = TricklePaySession(wallyApp!!.tpDomains)
-                        editDomain.domain = domain
-                        editDomain.editDomain = true
-                        sess = editDomain
-                    }) {
-                        Text(entry.key)
-                    }
+                    val tdppDomain = entry.value
+                    val domain = entry.key
+                    val purpose = entry.value.topic
+                    ListItem(
+                      modifier = Modifier.background(Color.White).clickable {
+                          val editDomain = TricklePaySession(wallyApp!!.tpDomains)
+                          editDomain.domain = tdppDomain
+                          editDomain.editDomain = true
+                          nav.go(ScreenId.TpSettings, data = editDomain)
+                      },
+                      headlineContent = { Text(domain) },
+                      supportingContent = { Text(purpose) },
+                      trailingContent = {
+                          Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowRight,
+                            contentDescription = "Arrow",
+                          )
+                      },
+                      colors = ListItemDefaults.colors (
+                          containerColor = Color.White
+                      )
+                    )
                 }
             }
         }
-
-        WallyDivider()
-        val s = sess
-        if (s != null)
+        if (devMode)
         {
-            val pdc = s.proposedDomainChanges ?: if (s.editDomain == true) s.domain else null
-            // Show proposed registration changes to this TDPP domain
-            if (pdc != null)
-            {
-                val account = wallyApp!!.accounts[pdc.accountName] ?: wallyApp!!.accounts[s.domain?.accountName] ?: run {
-                    if (pdc.uoa == "") wallyApp!!.primaryAccount
-                    else
-                    {
-                        val acts = wallyApp!!.accountsFor(pdc.uoa)
-                        if (acts.size > 0) acts[0]
-                        else
-                        {
-                            displayError(S.NoAccounts); return
-                        }
-                    }
-                }
-
-                TricklePayDomainView(s.domain, pdc, modifier = Modifier.weight(1f).padding(8.dp, 0.dp), account)
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
-                    if (!s.newDomain)
-                    {
-                        WallyBoringLargeTextButton(S.done, onClick = {
-                            wallyApp!!.tpDomains.insert(pdc)
-                            wallyApp!!.tpDomains.save()
-                            sess = null
-                            s.whenDone?.invoke(s.proposalUrl.toString(), "ok", true)
-                        })
-                        WallyBoringLargeTextButton(S.remove, onClick = {
-                            s.domain?.let { wallyApp!!.tpDomains.remove(it) }
-                            sess = null
-                            s.whenDone?.invoke(s.proposalUrl.toString(), "", false)
-                        })
-                    }
-                    else
-                    {
-                        WallyBoringLargeTextButton(S.accept, onClick = {
-                            wallyApp!!.tpDomains.insert(pdc)
-                            wallyApp!!.tpDomains.save()
-                            displaySuccess(S.TpRegAccepted)
-                            s.whenDone?.invoke(s.proposalUrl.toString(), "ok", true)
-                            nav.back()
-                        })
-                        WallyBoringLargeTextButton(S.reject, onClick = {
-                            displayNotice(S.TpRegDenied)
-                            s.whenDone?.invoke(s.proposalUrl.toString(), "", false)
-                            nav.back()
-                        })
-                    }
-                }
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
+                WallyBoringLargeTextButton(S.removeAll, onClick = {
+                    wallyApp!!.tpDomains.clear()
+                })
             }
-            else  // Otherwise just show the registrations buttons
+        }
+    }
+}
+
+@Composable
+fun EditTricklePayScreen(fromSession: TricklePaySession, toDomain: TdppDomain, account: Account)
+{
+    var fromSess by remember { mutableStateOf(fromSession) }
+
+    nav.onDepart {
+        if (fromSess.editDomain)  // save any changes to this domain whenever you leave, if user is just editing it
+        {
+            wallyApp!!.tpDomains.save()
+        }
+    }
+
+    Column(Modifier.fillMaxSize()) {
+        TricklePayDomainView(fromSess.domain, toDomain, modifier = Modifier.weight(1f).padding(8.dp, 0.dp), account)
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
+            if (!fromSess.newDomain)
             {
-                if (devMode)
-                {
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
-                        WallyBoringLargeTextButton(S.removeAll, onClick = {
-                            wallyApp!!.tpDomains.clear()
-                        })
-                    }
-                }
+                WallyBoringLargeTextButton(S.done, onClick = {
+                    wallyApp!!.tpDomains.insert(toDomain)
+                    wallyApp!!.tpDomains.save()
+                    fromSess.whenDone?.invoke(fromSess.proposalUrl.toString(), "ok", true)
+                    nav.back()
+                })
+                WallyBoringLargeTextButton(S.remove, onClick = {
+                    fromSess.domain?.let { wallyApp!!.tpDomains.remove(it) }
+                    fromSess.whenDone?.invoke(fromSess.proposalUrl.toString(), "", false)
+                    nav.back()
+                })
+            }
+            else
+            {
+                WallyBoringLargeTextButton(S.accept, onClick = {
+                    wallyApp!!.tpDomains.insert(toDomain)
+                    wallyApp!!.tpDomains.save()
+                    displaySuccess(S.TpRegAccepted)
+                    fromSess.whenDone?.invoke(fromSess.proposalUrl.toString(), "ok", true)
+                    nav.back()
+                })
+                WallyBoringLargeTextButton(S.reject, onClick = {
+                    displayNotice(S.TpRegDenied)
+                    fromSess.whenDone?.invoke(fromSess.proposalUrl.toString(), "", false)
+                    nav.back()
+                })
             }
         }
     }

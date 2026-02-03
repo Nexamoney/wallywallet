@@ -570,7 +570,6 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
     {
         return pill.account.value ?: throw WalletInvalidException()
     }
-
     fun populateRelevantAccounts(preferredAccount: String? = null)
     {
         val cs = chainSelector
