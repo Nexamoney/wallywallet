@@ -1343,10 +1343,7 @@ open class CommonApp(val runningTests: Boolean)
                     c.onChange()  // update all wallet UI fields since just starting up
                 }
                 // Going to block here until the GUI asks for this field
-                if (recoveryWarning != null) {
-                    isShowingRecoveryWarning.value = true
-                    wallyApp?.focusedAccount?.value = recoveryWarning
-                }
+                if (recoveryWarning != null) later { externalDriver.send(GuiDriver(show = setOf(ShowIt.WARN_BACKUP_RECOVERY_KEY), account = recoveryWarning)) }
                 UpdateNexaXchgRates(localCurrency)
 
                 val readyCopy = accountLock.lock {

@@ -1328,8 +1328,9 @@ fun HandleTdpp(iuri: Uri, then: ((String, String, Boolean?)->Unit)?= null): Bool
                 return false
             }
 
-            clearAlerts()
-            nav.go(ScreenId.TpSettings, data = tp)
+            launch {
+                externalDriver.send(GuiDriver(ScreenId.TpSettings, tpSession = tp))
+            }
             return true
         }
         if (path == "/sendto")
