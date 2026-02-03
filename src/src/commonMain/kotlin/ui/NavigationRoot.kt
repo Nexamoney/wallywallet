@@ -24,8 +24,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.eygraber.uri.Uri
-import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import kotlinx.coroutines.*
@@ -134,27 +132,6 @@ fun NextEvent(): Long
     curEventNum++
     return curEventNum
 }
-
-data class GuiDriver(val gotoPage: ScreenId? = null,
-  val show: Set<ShowIt>? = null,
-  val noshow: Set<ShowIt>? = null,
-  val sendAddress: String?=null,
-  val amount: BigDecimal?=null,
-  val note: String? = null,
-  val chainSelector: ChainSelector?=null,
-  val account: Account? = null,
-  val regenAccountGui: Boolean? = null,
-  val withClipboard: ((String?) -> Unit)? = null,
-  val tpSession: TricklePaySession? = null,
-  val afterUnlock: (()->Unit)? = null,
-  val uri: Uri? = null,
-
-  // This is used when the event itself is a recomposable trigger.  Generally this is true, so NextEvent automatically increments.
-  // But if you choose this number to be the same as a prior object, the screen will not recompose unless some other state changed.
-  val eventNum: Long = NextEvent()
-)
-
-val externalDriver = Channel<GuiDriver>(10)
 
 enum class ScreenId
 {
@@ -453,7 +430,9 @@ fun triggerUnlockDialog(show: Boolean = true, then: ((String)->Unit)? = {})
 
 fun triggerClipboardAction(doit: (String?) -> Unit)
 {
-    later { delay(TRIGGER_BUG_DELAY); externalDriver.send(GuiDriver(withClipboard = doit))}
+    // Is the `if (path == "/share")` TDPP request a request to share your clipboard?
+    // TODO: It should display some kind of accept/reject and then we can get the clipboard contents from that @Composable
+    // Automatically sharing the keyboard is a bad idea
 }
 
 // implement a share button (whose behavior may change based on what screen we are on)
@@ -776,17 +755,14 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
                 Spacer(Modifier.height(4.dp))
                 WallyButtonRow {
                     OutlinedButton({
-                        externalDriver.trySend(
-                            GuiDriver(
-                                ScreenId.AccountDetails, noshow = setOf(
-                                    ShowIt.WARN_BACKUP_RECOVERY_KEY
-                                ), account = account)
-                        )
+                        isShowingRecoveryWarning.value = false
+                        nav.go(ScreenId.AccountDetails)
+                        wallyApp?.focusedAccount?.value = account
                     }) {
                         Text(i18n(S.GoThere))
                     }
                     OutlinedButton({
-                        externalDriver.trySend(GuiDriver(noshow = setOf(ShowIt.WARN_BACKUP_RECOVERY_KEY)))
+                        isShowingRecoveryWarning.value = false
                     }) {
                         Text(i18n(S.dismiss))
                     }
@@ -794,29 +770,9 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
                 Spacer(Modifier.height(8.dp))
             }
         }
-        /*
-        Column {
-            Text(i18n(S.WriteDownRecoveryPhraseWarning), Modifier.fillMaxWidth().wrapContentHeight(), colorPrimaryDark, maxLines = 10, textAlign = TextAlign.Center,
-              fontSize = FontScale(1.25))
-
-            Spacer(Modifier.height(4.dp))
-
-            WallyButtonRow {
-                Button({
-                    externalDriver.trySend(GuiDriver(ScreenId.AccountDetails, noshow = setOf(ShowIt.WARN_BACKUP_RECOVERY_KEY), account = account))
-                }) {
-                    Text(i18n(S.GoThere))
-                }
-                Button({
-                    externalDriver.trySend(GuiDriver(noshow = setOf(ShowIt.WARN_BACKUP_RECOVERY_KEY)))
-                }) {
-                    Text(i18n(S.dismiss))
-                }
-            }
-
-        }
-         */
 }
+
+val isShowingRecoveryWarning = MutableStateFlow(false)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -872,12 +828,10 @@ fun NavigationRoot(
 
     val softKeyboardShowing = isSoftKeyboardShowing.collectAsState().value
     val scrollState = rememberScrollState()
-    val driver = remember { mutableStateOf<GuiDriver?>(null) }
     var errorText by remember { mutableStateOf("") }
     var warningText by remember { mutableStateOf("") }
     var noticeText by remember { mutableStateOf("") }
     var alertPersistAcrossScreens by remember { mutableStateOf(0) }
-    var isShowingRecoveryWarning by remember { mutableStateOf(false) }
 
     val selectedAccountState = wallyApp!!.focusedAccount.collectAsState()
     val selectedAccount = selectedAccountState.value
@@ -968,47 +922,6 @@ fun NavigationRoot(
     {
         val ctp = nav.curData.collectAsState().value as? SendScreenNavParams
         then(ctp ?: SendScreenNavParams())
-    }
-
-    // Allow an external (non-compose) source to "drive" the GUI to a particular state.
-    // This implements functionality like scanning/pasting/receiving via a connection a payment request.
-    LaunchedEffect(true)
-    {
-        for (c in externalDriver)
-        {
-            LogIt.info(sourceLoc() + ": external screen driver received")
-            driver.value = c
-            //if (c.uri != null) currentUri = c.uri
-            // If the driver specifies an account, we want to switch to it
-            c.account?.let {
-                wallyApp?.focusedAccount?.value = it
-            }
-            c.gotoPage?.let {it ->
-                clearAlerts()  // If the user explicitly moved to a different screen, they must be aware of the alert
-                nav.go(it, data = c.tpSession)
-            }
-            c.show?.forEach {
-                if (it == ShowIt.WARN_BACKUP_RECOVERY_KEY)
-                {
-                    isShowingRecoveryWarning = true
-                }
-            }
-            c.noshow?.forEach {
-                if (it == ShowIt.WARN_BACKUP_RECOVERY_KEY)
-                {
-                    isShowingRecoveryWarning = false
-                }
-            }
-            if (c.regenAccountGui == true)
-            {
-                assignAccountsGuiSlots()
-            }
-            if (c.withClipboard != null)
-            {
-                val s = clipmgr.getText()
-                c.withClipboard.invoke(s?.text)
-            }
-        }
     }
 
     LaunchedEffect(true)
@@ -1207,8 +1120,8 @@ fun NavigationRoot(
                     ReceivedNexaAnimation()
 
                     Column(modifier = Modifier.fillMaxSize()) {
-                        if (isShowingRecoveryWarning)
-                            RecoveryPhraseWarning(Modifier.clickable { isShowingRecoveryWarning = false })
+                        if (isShowingRecoveryWarning.collectAsState().value)
+                            RecoveryPhraseWarning(Modifier.clickable { isShowingRecoveryWarning.value = false })
                         UnlockTile()
 
                         // This will take up the most space but leave enough for the navigation menu
@@ -1229,12 +1142,12 @@ fun NavigationRoot(
                             }
                             when (curScreen)
                             {
-                                ScreenId.None -> HomeScreen(isShowingRecoveryWarning, accountPillViewModel, assetViewModel, accountUiDataViewModel)
+                                ScreenId.None -> HomeScreen(isShowingRecoveryWarning.collectAsState().value, accountPillViewModel, assetViewModel, accountUiDataViewModel)
                                 ScreenId.Splash -> run {} // splash screen is done at the top for max speed and to be outside of the theme
                                 ScreenId.MoreMenu -> run {}
                                 ScreenId.Home ->
                                 {
-                                    HomeScreen(isShowingRecoveryWarning, accountPillViewModel, assetViewModel, accountUiDataViewModel)
+                                    HomeScreen(isShowingRecoveryWarning.collectAsState().value, accountPillViewModel, assetViewModel, accountUiDataViewModel)
                                 }
 
                                 ScreenId.Send -> withAccount { act -> withSendNavParams { SendScreen(accountPillViewModel,it) } }
@@ -1336,7 +1249,7 @@ fun NavigationRoot(
                                     }
                                 }
 
-                                ScreenId.Alerts -> HomeScreen(isShowingRecoveryWarning, accountPillViewModel, assetViewModel, accountUiDataViewModel)
+                                ScreenId.Alerts -> HomeScreen(isShowingRecoveryWarning.collectAsState().value, accountPillViewModel, assetViewModel, accountUiDataViewModel)
                             }
                         }
                     }
