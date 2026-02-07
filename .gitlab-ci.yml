@@ -3,6 +3,7 @@ image: andrewstone/nexaadk:latest
 
 # These "stages" are actually separately initiated VMs, so better used for different configurations, etc
 stages:
+  - mirroring
   - docs
   - lint
   - test
@@ -332,6 +333,42 @@ testflight:
     - bundle install
     - bundle update
     - bundle exec fastlane ios testflight_internal --verbose
+
+# CI lab that run on a scheduled pipeline on a daily base
+mirror-to-github:
+  image: alpine:latest
+  stage: mirroring
+  before_script:
+    - apk add --no-cache openssh-client
+    - apk add --no-cache git-lfs
+    - mkdir -p ~/.ssh
+    # NB the variable in CI settings has to be define as NOT protected variable
+    # otherwise the value would not be exported on task that runs on branch which
+    # are not protected. w/o setting this property to off is impossible to test if
+    # the CI still works after future changes
+    - echo "$SSH_GITHUB_MIRROR_PRIVATE_KEY" | base64 -d | awk '1; END {print ""}' > ~/.ssh/id_github_mirror
+    - chmod 600 ~/.ssh/id_github_mirror
+    - ssh-keyscan -H github.com >> ~/.ssh/known_hosts   # or use GIT_SSH_COMMAND later
+    - echo "Host github*" >> ~/.ssh/config
+    - echo "  HostName github.com" >> ~/.ssh/config
+    - echo "  User Nexamoney" >> ~/.ssh/config
+    - echo "  IdentitiesOnly yes" >> ~/.ssh/config
+    - echo "  IdentityFile ~/.ssh/id_github_mirror" >> ~/.ssh/config
+  script:
+    # Even thou the current path store a cloned version of the wallywallet main repo
+    # we need to clone the repo again cause by default gitlab use `--limit` flag to
+    # trim the history to the last X commits, but we need the entire history of the repo
+    # cause `git-lsf` will search for *.blend in all commits and will rewrite those.
+    - git clone https://gitlab.com/wallywallet/wallet
+    - cd wallet
+    - git lfs install
+    - git lfs track "media/*.blend"
+    - git lfs migrate import --include="media/*.blend" --everything --yes
+    - git remote add github-mirror "git@github.com:Nexamoney/wallywallet.git"
+    - git fetch github-mirror
+    - git push --force -u github-mirror main
+  rules:
+    - if: ($CI_PIPELINE_SOURCE == "schedule" && $MIRROR == "True")
 
 #testflight_public:
 #  environment:
