@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Note
+import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -828,7 +830,7 @@ fun ConfirmSend(viewModel: SendScreenViewModel)
                 {
                     Spacer(modifier = Modifier.height(16.dp))
                     IconLabelValueRow(
-                      icon = Icons.Outlined.Note,
+                      icon = Icons.AutoMirrored.Outlined.Note,
                       label = i18n(S.note),
                       value = note
                     )
@@ -853,7 +855,7 @@ fun SendBottomButtons(mod: Modifier, viewModel: SendScreenViewModel)
     ) {
         if (isConfirming)
             IconTextButton(
-              icon = Icons.Outlined.Send,
+              icon = Icons.AutoMirrored.Outlined.Send,
               modifier = Modifier.weight(1f),
               description = i18n(S.confirmSend),
               color = wallyPurple,

@@ -9,6 +9,7 @@ import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -386,7 +387,7 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
                                     ResImageView("icons/bug.xml", modifier = Modifier.size(30.dp))
                                 }
                                 WallyBoringButton({ openUrl(uri) }, modifier = Modifier.padding(0.dp, 0.dp, 10.dp, 0.dp)) {
-                                    Icon(Icons.Default.ExitToApp, tint = colorConfirm, contentDescription = "view transaction")
+                                    Icon(Icons.AutoMirrored.Filled.ExitToApp, tint = colorConfirm, contentDescription = "view transaction")
                                 }
                             }
                             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
