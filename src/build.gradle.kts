@@ -250,6 +250,8 @@ kotlin {
                 //@OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
                 api(compose.materialIconsExtended)
+
+                implementation(libs.ui.tooling.preview)
                 // multiplatform replacements
 
                 // for bigintegers
@@ -381,7 +383,6 @@ kotlin {
                     implementation(libs.androidx.tracing)
                     implementation(libs.androidx.ui)
                     implementation(libs.androidx.ui.tooling)
-                    implementation(libs.androidx.ui.tooling.preview)
                     implementation(libs.androidx.foundation)
                     implementation(libs.androidx.material)
                     implementation(libs.kotlinx.serialization.cbor)
