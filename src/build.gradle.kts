@@ -380,7 +380,6 @@ kotlin {
                     implementation(kotlin("stdlib"))
                     implementation(libs.androidx.activity.compose)
                     implementation(libs.androidx.tracing)
-                    implementation(libs.androidx.ui.tooling.preview)
                     implementation(libs.kotlinx.serialization.cbor)
                     implementation(libs.kotlinx.serialization.json.jvm)
 
