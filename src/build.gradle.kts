@@ -23,7 +23,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.compose)  // Compose compiler
     alias(libs.plugins.compose)
-    alias(libs.plugins.dokka) apply false
     alias(libs.plugins.kover)
     idea
 }
