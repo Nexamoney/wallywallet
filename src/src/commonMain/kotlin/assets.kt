@@ -834,11 +834,14 @@ class AssetManager(): AssetManagerStorage
         catch(e: ElectrumNotFound)
         {
             LogIt.warning(sourceLoc() + ": Token genesis not found. parent: ${groupId.parentGroup().toHex()} token: ${groupId.toHex()}")
+            displayError("Token genesis not found.")
+
             throw e
         }
         catch(e: Exception)  // Normalize exceptions
         {
             handleThreadException(e, "getting token info (assetmanager.getTokenDesc) for ${groupId}")
+            displayError("Rostrum request timeout error getting token info (assetmanager.getTokenDesc) for ${groupId}")
             throw ElectrumRequestTimeout()
         }
     }
