@@ -64,7 +64,6 @@ androidx-tracing = { module = "androidx.tracing:tracing", version.ref = "tracing
 androidx-ui = { module = "androidx.compose.ui:ui", version.ref = "composeAndroid" }
 androidx-ui-test-junit4-android = { module = "androidx.compose.ui:ui-test-junit4-android", version.ref = "composeJunitAndroid" }
 androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "composeAndroid" }
-androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "composeAndroid" }
 androidx-wear = { module = "androidx.wear:wear", version.ref = "wear" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workVersion" }
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
@@ -108,6 +107,7 @@ skiko = { module = "org.jetbrains.skiko:skiko", version.ref = "skiko" }
 ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "composeAndroid" }
 uri-kmp = { module = "com.eygraber:uri-kmp", version.ref = "uriKmpVersion" }
 zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxingAndroidEmbedded" }
+ui-tooling-preview = { module =  "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose"  }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
