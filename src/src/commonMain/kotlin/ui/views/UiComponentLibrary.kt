@@ -14,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.Send
@@ -1269,7 +1270,7 @@ fun ButtonRowAcceptDeny(accept: () -> Unit, deny: () -> Unit, modifier: Modifier
         if (acceptEnabled)
         {
             IconTextButton(
-              icon = Icons.Outlined.Send,
+              icon = Icons.AutoMirrored.Outlined.Send,
               modifier = Modifier.weight(1f),
               description = i18n(acceptText),
               color = wallyPurple,

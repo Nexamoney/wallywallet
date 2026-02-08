@@ -12,6 +12,7 @@ import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.CallSplit
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -377,7 +378,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                           modifier = verticalDividerModifier
                         )
                         IconTextButton(
-                          icon = Icons.Outlined.CallSplit,
+                          icon = Icons.AutoMirrored.Outlined.CallSplit,
                           modifier = Modifier.weight(1f).testTag("SplitBillButton"),
                           description = i18n(S.title_split_bill),
                           rotateIcon = true
