@@ -10,13 +10,12 @@ import kotlinx.serialization.json.Json
 import kotlin.random.Random
 import org.nexa.libnexakotlin.*
 import org.nexa.libnexakotlin.simpleapi.NexaScript
-
 import com.eygraber.uri.*
 import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.views.AccountPill
 import io.ktor.http.Url
-import io.ktor.utils.io.errors.*
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.io.IOException
 import kotlinx.serialization.Serializable
 import org.nexa.threads.Mutex
 import org.nexa.threads.millisleep

@@ -34,8 +34,8 @@ import info.bitcoinunlimited.www.wally.ui.theme.colorPrimaryDark
 import info.bitcoinunlimited.www.wally.ui.theme.wallyPurple2
 import info.bitcoinunlimited.www.wally.ui.views.*
 import io.ktor.http.*
-import io.ktor.utils.io.errors.*
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.io.IOException
 import okio.FileNotFoundException
 import kotlin.plus
 
