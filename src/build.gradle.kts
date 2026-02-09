@@ -380,10 +380,6 @@ kotlin {
                     implementation(kotlin("stdlib"))
                     implementation(libs.androidx.activity.compose)
                     implementation(libs.androidx.tracing)
-                    implementation(libs.androidx.ui)
-                    implementation(libs.androidx.ui.tooling)
-                    implementation(libs.androidx.foundation)
-                    implementation(libs.androidx.material)
                     implementation(libs.kotlinx.serialization.cbor)
                     implementation(libs.kotlinx.serialization.json.jvm)
 
@@ -431,7 +427,6 @@ kotlin {
 
                     // Animation
                     implementation(libs.lottie.compose)
-                    implementation(libs.androidx.material.icons.extended)
 
                     // This is only for pulling in the android photo picker
                     implementation(libs.play.services.base)

@@ -23,8 +23,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,7 +54,7 @@ actual fun QrScannerView(modifier: Modifier, onQrCodeScanned: (String) -> Unit)
           text = i18n(S.scanPaymentQRcode),
           modifier = Modifier.background(Color.Black.copy(alpha = 0.3f))
             .align(Alignment.BottomCenter).padding(4.dp),
-          style = MaterialTheme.typography.caption.copy(color = Color.White)
+          style = MaterialTheme.typography.labelMedium.copy(color = Color.White)
         )
     }
 }
