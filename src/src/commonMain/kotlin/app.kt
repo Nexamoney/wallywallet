@@ -426,9 +426,9 @@ open class CommonApp(val runningTests: Boolean)
         return accountLock.synchronized {
             ListifyMap(accounts, { if (visibleOnly) it.value.visible else true }, object : Comparator<String>
             {
-                override fun compare(p0: String, p1: String): Int
+                override fun compare(a: String, b: String): Int
                 {
-                    return p0.compareTo(p1)
+                    return a.compareTo(b)
                 }
             })
         }

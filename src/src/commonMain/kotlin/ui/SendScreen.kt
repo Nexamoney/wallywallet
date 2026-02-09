@@ -166,10 +166,10 @@ class SendScreenViewModelFake(act: Account): SendScreenViewModel(act)
     {
         setAccount(act)
     }
-    override fun setAccount(act: Account)
+    override fun setAccount(account: Account)
     {
-        account.value = act
-        setChain(act.chain.chainSelector)
+        this@SendScreenViewModelFake.account.value = account
+        setChain(account.chain.chainSelector)
     }
     override fun checkUriAndSetUi(urlStr: String) {}
     override fun multiplySendQty(multiplier: Int) {}
@@ -187,14 +187,14 @@ class SendScreenViewModelImpl(act: Account): SendScreenViewModel(act)
         setAccount(act)
     }
 
-    override fun setAccount(act: Account)
+    override fun setAccount(account: Account)
     {
         // Always set this, regardless of whether it was already set
         // because state may have changed (like other assets chosen)
-        account.value = act
-        populateAssetsList(act.assetTransferList, act.assets)
-        balanceViewModel.setAccount(act)
-        setChain(act.chain.chainSelector)
+        this@SendScreenViewModelImpl.account.value = account
+        populateAssetsList(account.assetTransferList, account.assets)
+        balanceViewModel.setAccount(account)
+        setChain(account.chain.chainSelector)
     }
 
     override fun checkUriAndSetUi(urlStr: String)

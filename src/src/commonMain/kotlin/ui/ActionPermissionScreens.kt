@@ -1348,12 +1348,12 @@ fun HandleIdentity(uri: Uri, autoHandle: Boolean, then: ((String, String,Boolean
         val tryActs = wa.orderedAccounts(true)
         tryActs.reprocess(object : Comparator<String>
         {
-            override fun compare(p0: String, p1: String): Int
+            override fun compare(a: String, b: String): Int
             {
                 // prefer the focused account
-                if (wa.focusedAccount.value?.name == p0) return Int.MIN_VALUE
-                if (wa.focusedAccount.value?.name == p1) return Int.MAX_VALUE
-                return p0.compareTo(p1)
+                if (wa.focusedAccount.value?.name == a) return Int.MIN_VALUE
+                if (wa.focusedAccount.value?.name == b) return Int.MAX_VALUE
+                return a.compareTo(b)
             }
         }) { e ->  // filter in accounts that have logged in
             val idd = e.value.wallet.lookupIdentityDomain(h)
@@ -1402,10 +1402,10 @@ fun HandleIdentity(uri: Uri, autoHandle: Boolean, then: ((String, String,Boolean
         val ascActs = wa.orderedAccounts(true)
         ascActs.reprocess(object : Comparator<String>
         {
-            override fun compare(p0: String, p1: String): Int
+            override fun compare(a: String, b: String): Int
             {
                 // order by name
-                return p0.compareTo(p1)
+                return a.compareTo(b)
             }
         }) { e ->
             val idd = e.value.wallet.lookupIdentityDomain(h)
@@ -1441,18 +1441,18 @@ fun HandleIdentity(uri: Uri, autoHandle: Boolean, then: ((String, String,Boolean
         val tryActs = wa.orderedAccounts(true)
         tryActs.reprocess(object : Comparator<String>
         {
-            override fun compare(p0: String, p1: String): Int
+            override fun compare(a: String, b: String): Int
             {
-                val domainP0 = wa.accounts[p0]?.wallet?.lookupIdentityDomain(h)
-                val domainP1 = wa.accounts[p1]?.wallet?.lookupIdentityDomain(h)
+                val domainP0 = wa.accounts[a]?.wallet?.lookupIdentityDomain(h)
+                val domainP1 = wa.accounts[b]?.wallet?.lookupIdentityDomain(h)
                 // first, prefer the accounts that have an existing registration with this service
                 if ((domainP0 != null)&&(domainP1 == null)) return Int.MIN_VALUE
                 if ((domainP1 != null)&&(domainP0 == null)) return Int.MAX_VALUE
                 // next prefer the focused account
-                if (wa.focusedAccount.value?.name == p0) return Int.MIN_VALUE
-                if (wa.focusedAccount.value?.name == p1) return Int.MAX_VALUE
+                if (wa.focusedAccount.value?.name == a) return Int.MIN_VALUE
+                if (wa.focusedAccount.value?.name == b) return Int.MAX_VALUE
                 // otherwise, order by name
-                return p0.compareTo(p1)
+                return a.compareTo(b)
             }
         }) { e ->  true }  // Any account could be used for registration
 
