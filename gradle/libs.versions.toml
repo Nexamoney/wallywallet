@@ -113,7 +113,6 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
-android-library = { id = "com.android.library", version.ref = "android-gradle-plugin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 task-tree = { id = "com.dorongold.task-tree", version.ref = "task-tree" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose"}
