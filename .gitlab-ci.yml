@@ -20,6 +20,12 @@ workflow:
     - if: $CI_COMMIT_REF_PROTECTED == "true"
       when: always
 
+.skip-on-schedule: &skip-on-schedule
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: never
+    - when: on_success
+
 before_script:
   - GIT_COMMIT_HASH=$(git rev-parse --short HEAD)
   - export GIT_COMMIT_HASH
@@ -31,6 +37,7 @@ variables:
   VERSION_CODE_RENDER: $(($VERSION_CODE_RAW))
 
 tasks:
+  <<: *skip-on-schedule
   stage: docs
   tags:
     - m1-baremetal
@@ -38,6 +45,7 @@ tasks:
     - ./gradlew tasks
 
 taskTree:
+  <<: *skip-on-schedule
   stage: docs
   variables:
     ANDROID_HOME: "/opt/homebrew/share/android-commandlinetools"
@@ -48,6 +56,7 @@ taskTree:
     - ./gradlew build taskTree
 
 kDoctor:
+  <<: *skip-on-schedule
   stage: docs
   tags:
     - m1-baremetal
@@ -56,6 +65,7 @@ kDoctor:
     - kdoctor
 
 lintVitalRelease:
+  <<: *skip-on-schedule
   stage: lint
   tags:
     - m1-baremetal
@@ -65,6 +75,7 @@ lintVitalRelease:
     - ./gradlew :src:lintVitalRelease
 
 lint:
+  <<: *skip-on-schedule
   stage: lint
   tags:
     - m1-baremetal
@@ -74,11 +85,13 @@ lint:
     - ./gradlew lint -x :src:lintDebug # Skips android linter with 356 errors, 500 warnings.
 
 defaultGradle:
+  <<: *skip-on-schedule
   stage: lint
   script:
     - ./gradlew --info
 
 appJar:
+  <<: *skip-on-schedule
   stage: assemble
   script:
     - ./gradlew appJar
@@ -87,6 +100,7 @@ appJar:
       - src/build/libs/wpw.jar
 
 build:
+  <<: *skip-on-schedule
   stage: build
   tags:
     - m1-baremetal
@@ -116,6 +130,7 @@ build:
       - build/reports/problems/problems-report.html
 
 compileIos:
+  <<: *skip-on-schedule
   stage: assemble
   tags:
     - m1-baremetal
@@ -128,6 +143,7 @@ compileIos:
     - ./gradlew :src:iosX64MetadataElements
 
 jvmJar:
+  <<: *skip-on-schedule
   stage: assemble
   tags:
     - m1-baremetal
@@ -135,6 +151,7 @@ jvmJar:
     - ./gradlew :src:jvmJar
 
 jvmJar-intelmac:
+  <<: *skip-on-schedule
   stage: assemble
   tags:
     - intelmac-baremetal
@@ -142,6 +159,7 @@ jvmJar-intelmac:
     - ./gradlew :src:jvmJar
 
 iosArm64Test:
+  <<: *skip-on-schedule
   stage: test
   tags:
     - m1-baremetal
@@ -155,6 +173,7 @@ iosArm64Test:
       - src/build/reports/tests/iosSimulatorArm64Test/**/**.html
 
 iosX64Test:
+  <<: *skip-on-schedule
   stage: test
   tags:
     - m1-baremetal
@@ -162,6 +181,7 @@ iosX64Test:
     - ./gradlew :src:iosX64Test
 
 iosEmulatorUiTest:
+  <<: *skip-on-schedule
   stage: test
   resource_group: iphone_mac_emulator
   tags:
@@ -183,6 +203,7 @@ iosEmulatorUiTest:
       - iosApp/fastlane/test_output/report.junit
 
 iosDeviceUiTest:
+  <<: *skip-on-schedule
   stage: test
   resource_group: iphone_mac_emulator
   tags:
@@ -197,6 +218,7 @@ iosDeviceUiTest:
     expire_in: 4 week
 
 jvmTest-ubuntu-docker:
+  <<: *skip-on-schedule
   stage: test
   script:
     # https://github.com/BitcoinUnlimited/gitlab-ci-android/pull/3
@@ -211,6 +233,7 @@ jvmTest-ubuntu-docker:
       junit: src/build/test-results/jvmTest/TEST-*.xml
 
 jvmTest-m1: #
+  <<: *skip-on-schedule
   stage: test
   tags:
     - m1-baremetal
@@ -221,6 +244,7 @@ jvmTest-m1: #
       junit: src/build/test-results/jvmTest/TEST-*.xml
 
 jvmTestCoverageXml:
+  <<: *skip-on-schedule
   stage: test
   tags:
     - intelmac-baremetal
@@ -239,6 +263,7 @@ jvmTestCoverageXml:
       - src/build/reports/tests/jvmTest/**/**
 
 jvmTestCoverageLog: #
+  <<: *skip-on-schedule
   stage: test
   tags:
     - intelmac-baremetal
@@ -247,6 +272,7 @@ jvmTestCoverageLog: #
   coverage: '/application line coverage: (\d+\.\d+)%/' # Regex to extract coverage percentage
 
 jvmTest-intelmac:
+  <<: *skip-on-schedule
   stage: test
   tags:
     - intelmac-baremetal
@@ -260,6 +286,7 @@ jvmTest-intelmac:
 
 # Runs Compose UI tests for Android on a Pixel 5 emulator
 androidPixel5Test:
+  <<: *skip-on-schedule
   stage: test
   tags:
     - m1-baremetal # default docker image is not working
@@ -275,6 +302,7 @@ androidPixel5Test:
 # Deploys an apk to:
 # https://gitlab.com/wallywallet/wallet/-/jobs/artifacts/main/wally.apk?job=deployAndroidApk
 deployAndroidApk:
+  <<: *skip-on-schedule
   needs:
     - androidPixel5Test
   script:
@@ -287,6 +315,7 @@ deployAndroidApk:
     - if: '$CI_COMMIT_TAG =~ /^release[0-9]+\.[0-9]+\.[0-9]+$/'
 
 testflight:
+  <<: *skip-on-schedule
   rules:
         - if: $CI_COMMIT_REF_PROTECTED == "true"
   stage: deploy_internally
@@ -316,6 +345,9 @@ testflight:
 
 # CI lab that run on a scheduled pipeline on a daily base
 mirror-to-github:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $MIRROR == "True"'
+      when: always
   image: alpine:latest
   stage: mirroring
   before_script:
@@ -347,8 +379,6 @@ mirror-to-github:
     - git remote add github-mirror "git@github.com:Nexamoney/wallywallet.git"
     - git fetch github-mirror
     - git push --force -u github-mirror main
-  rules:
-    - if: ($CI_PIPELINE_SOURCE == "schedule" && $MIRROR == "True")
 
 #testflight_public:
 #  environment:
