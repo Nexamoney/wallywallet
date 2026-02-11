@@ -17,7 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Cancel
-import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -58,13 +57,10 @@ import info.bitcoinunlimited.www.wally.ui.theme.*
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
-import org.nexa.libnexakotlin.CURRENCY_1
 import org.nexa.libnexakotlin.ChainSelector
-import org.nexa.libnexakotlin.CurrencyDecimal
 import org.nexa.libnexakotlin.exceptionHandler
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.layout.SubcomposeLayout
-import org.nexa.libnexakotlin.validBip39Checksum
 
 
 @Composable fun WallySwitch(isChecked: MutableState<Boolean>, modifier: Modifier = Modifier, onCheckedChange: (Boolean) -> Unit)
@@ -1400,9 +1396,10 @@ fun WallyNumericInputFieldBalance(
   singleLine: Boolean = true,
   decimals: Boolean = true,
   action: ImeAction = ImeAction.Done,
-  isReadOnly: Boolean = true,
+  isReadOnly: Boolean = false,
   hasIosDoneButton: Boolean = true,
   hasButtonRow: Boolean = true,
+  isEnabled: Boolean = true,
   focusRequester: FocusRequester = remember { FocusRequester() },
   onValueChange: (String) -> Unit
 )
@@ -1433,6 +1430,7 @@ fun WallyNumericInputFieldBalance(
                   }
               },
               modifier = mod.weight(1f).focusRequester(focusRequester).onFocusChanged { isActive.value = it.isFocused },
+              enabled = isEnabled,
               keyboardOptions = KeyboardOptions(
                 imeAction = action,
                 keyboardType = KeyboardType.Number
@@ -1448,7 +1446,7 @@ fun WallyNumericInputFieldBalance(
                   }
               },
               singleLine = singleLine,
-              readOnly = isReadOnly
+              readOnly = isReadOnly,
             )
 
             if (!hasButtonRow)
@@ -1485,7 +1483,7 @@ fun WallyNumericInputFieldBalance(
                         }
                         catch(e: ArithmeticException)
                         {
-                             onValueChange("1000")
+                            onValueChange("1000")
                         }
                     }
 
@@ -1997,5 +1995,129 @@ fun LongInputField(descriptionRes: Int, labelRes: Int, amount: Long, onChange: (
           },
           onDismissRequest = onDismiss,
         )
+    }
+}
+
+@Composable
+fun WallyCardHeadlineContent(
+  headline: String,
+  content: String,
+  cardModifier: Modifier = Modifier
+) {
+    Card(
+      modifier = cardModifier.fillMaxWidth()
+        .padding(vertical = 6.dp),
+      shape = MaterialTheme.shapes.medium,
+      colors = CardDefaults.cardColors(
+        containerColor = Color.White,
+      ),
+      elevation = CardDefaults.cardElevation(
+        defaultElevation = 4.dp
+      )
+    ) {
+        Column(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+        ) {
+            Text(
+              text = headline,
+              style = MaterialTheme.typography.titleMedium,
+              modifier = Modifier.padding(bottom = 4.dp)
+            )
+
+            Text(
+              text = content,
+              style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
+}
+
+@Composable
+fun WallyCardContent(
+  headline: String,
+  cardModifier: Modifier = Modifier
+) {
+    Card(
+      modifier = cardModifier.fillMaxWidth()
+        .padding(vertical = 6.dp, horizontal = 12.dp),
+      shape = MaterialTheme.shapes.medium,
+      colors = CardDefaults.cardColors(
+        containerColor = Color.White,
+      ),
+      elevation = CardDefaults.cardElevation(
+        defaultElevation = 4.dp
+      )
+    ) {
+        Column(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+        ) {
+            Text(
+              text = headline,
+              style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+    }
+}
+
+// Wally options card that only accepts Enums as T
+@Composable
+fun <T> WallyOptionsCard(
+  headline: String,
+  options: List<T>,
+  selectedOption: T,
+  onOptionChanged: (T) -> Unit,
+  optionToText: (T) -> String
+) where T : Enum<*> {
+    Card(
+      modifier = Modifier.fillMaxWidth()
+        .padding(vertical = 6.dp),
+      shape = MaterialTheme.shapes.medium,
+      colors = CardDefaults.cardColors(
+        containerColor = Color.White,
+      ),
+      elevation = CardDefaults.cardElevation(
+        defaultElevation = 4.dp
+      )
+    ) {
+        Column(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp, vertical = 12.dp)
+        ) {
+            Text(
+              modifier = Modifier.padding(bottom = 4.dp).padding(horizontal = 16.dp),
+              text = headline,
+              style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+              modifier = Modifier.padding(horizontal = 16.dp),
+              text = i18n(S.TpAssetInfoRequest),
+              style = MaterialTheme.typography.bodyMedium
+            )
+
+            options.forEachIndexed { index, option ->
+                Row(
+                  modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp)
+                    .clickable{ onOptionChanged(option) },
+                  verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                      selected = options[index] == selectedOption,
+                      onClick = { onOptionChanged(option) }
+                    )
+                    Text(
+                      modifier = Modifier.clickable{ onOptionChanged(option) },
+                      text = optionToText(option),
+                      style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+        }
     }
 }
