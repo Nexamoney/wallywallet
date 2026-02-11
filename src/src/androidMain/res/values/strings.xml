@@ -823,5 +823,13 @@ Thank you and enjoy your new wallet!</string>
 
     <string name="publishOnline">Publish offer online</string>
     <string name="offerCreated">Offer created!</string>
+    <string name="ConfigureService">Configure Service</string>
+    <string name="AcceptOrRejectService">Accept or reject Service</string>
+    <string name="Domain">Domain</string>
     <string name="Services">Services</string>
+    <string name="Purpose">Purpose</string>
+    <string name="AutoPay">Autopay</string>
+    <string name="ManualApproval">Manual approval</string>
+    <string name="EnableServices">Enable services screen</string>
+    <string name="NoServicesRegistered">No services registered.</string>
 </resources>

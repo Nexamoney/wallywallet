@@ -1307,6 +1307,7 @@ fun HandleTdpp(iuri: Uri, then: ((String, String, Boolean?)->Unit)?= null): Bool
         val address = iuri.getQueryParameter("addr")
         if (path == "/reg")  // Handle registration
         {
+            tp.newDomain = true
             tp.proposedDomainChanges?.addr?.let {paddr ->
                 tp.domain?.addr?.let {
                     if (it != paddr)  // If we have all this info, they better be the same
@@ -1327,9 +1328,9 @@ fun HandleTdpp(iuri: Uri, then: ((String, String, Boolean?)->Unit)?= null): Bool
                 return false
             }
 
-            launch {
-                externalDriver.send(GuiDriver(ScreenId.TpSettings, tpSession = tp))
-            }
+            clearAlerts()  // If the user explicitly moved to a different screen, they must be aware of the alert
+            nav.go(ScreenId.TricklePayRegistrations, data = tp)
+            nav.go(ScreenId.TricklePayRegistrations, screenSubState = "true".toByteArray(), data = tp)
             return true
         }
         if (path == "/sendto")

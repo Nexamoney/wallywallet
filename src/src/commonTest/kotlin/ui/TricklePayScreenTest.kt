@@ -36,7 +36,7 @@ class TricklePayScreenTest: WallyUiTestBase()
             )
 
             setContent {
-                TricklePayDomainView(null, td, Modifier, account)
+                TricklePayDomainView(td, Modifier, account)
             }
             check(waitForCatching { onNodeWithTag("TricklePayDomainViewDomainName").isDisplayed() })
         }
