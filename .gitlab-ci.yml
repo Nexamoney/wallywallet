@@ -20,11 +20,22 @@ workflow:
     - if: $CI_COMMIT_REF_PROTECTED == "true"
       when: always
 
+# rules snippet template to use if you want that a task is skipped
+# on the scheduled pipeline used for mirroring to github.com
+# NB even if you include this snippet in a specif task, local (to the
+# task) subsequent rules definition will overwrite the snippet.
+# e.g. task like build or testflight need ad hoc modification to
+# their rules section rather than including the following snippet
+# in the task definition
 .skip-on-schedule: &skip-on-schedule
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $MIRROR == "True"'
       when: never
     - when: on_success
+
+.skip-on-schedule-fragment: &skip-on-schedule-fragment
+    if: '$CI_PIPELINE_SOURCE == "schedule" && $MIRROR == "True"'
+    when: never
 
 before_script:
   - GIT_COMMIT_HASH=$(git rev-parse --short HEAD)
@@ -100,11 +111,12 @@ appJar:
       - src/build/libs/wpw.jar
 
 build:
-  <<: *skip-on-schedule
   stage: build
   tags:
     - m1-baremetal
   rules: # this job is very slow (90 min ++). Therefore we restrict this job to run only on MR approval and always on the main branch or triggered manually.
+    # Never run on scheduled pipeline used to mirror to github
+    - *skip-on-schedule-fragment
     # Run the job on the main branch
     - if: '$CI_COMMIT_BRANCH == "main"'
       when: on_success # Will only run if all previous jobs in the pipeline complete successfully.
@@ -315,9 +327,10 @@ deployAndroidApk:
     - if: '$CI_COMMIT_TAG =~ /^release[0-9]+\.[0-9]+\.[0-9]+$/'
 
 testflight:
-  <<: *skip-on-schedule
   rules:
-        - if: $CI_COMMIT_REF_PROTECTED == "true"
+    # Never run on scheduled pipeline used to mirror to github
+    - *skip-on-schedule-fragment
+    - if: $CI_COMMIT_REF_PROTECTED == "true"
   stage: deploy_internally
   resource_group: testflight-deployment
   tags:
