@@ -307,11 +307,11 @@ fun AutopayCard(
             )
 
             Text(
-              text = "If Autopay manual approval is disabled, all payments ask for user authorisation and the limits below are ignored",
+              text = i18n(S.AutoPayInstructions),
               style = MaterialTheme.typography.bodyMedium
             )
 
-            WallySwitchRow(autoPayEnabled, S.ManualApproval) {
+            WallySwitchRow(autoPayEnabled, S.LimitedAutoApproval) {
                 onAutoPayToggled(it)
             }
 
@@ -325,7 +325,7 @@ fun AutopayCard(
               hasButtonRow = false,
             ) { onMaxPerRequestChanged(it) }
             Text(
-              text = "Max per request",
+              text = i18n(S.AutoPayMaxPerRequest),
               style = MaterialTheme.typography.labelMedium,
               color = if (!autoPayEnabled) Color.Gray else Color.Unspecified
             )
@@ -341,7 +341,7 @@ fun AutopayCard(
               hasButtonRow = false,
             ) { onMaxPerDayChanged(it) }
             Text(
-              text = "Max per day",
+              text = i18n(S.AutoPayMaxPerDay),
               style = MaterialTheme.typography.labelMedium,
               color = if (!autoPayEnabled) Color.Gray else Color.Unspecified
             )
@@ -357,7 +357,7 @@ fun AutopayCard(
               hasButtonRow = false,
             ) { onMaxPerWeekChanged(it) }
             Text(
-              text = "Max per week",
+              text =  i18n(S.AutoPayMaxPerWeek),
               style = MaterialTheme.typography.labelMedium,
               color = if (!autoPayEnabled) Color.Gray else Color.Unspecified
             )
@@ -373,7 +373,7 @@ fun AutopayCard(
               hasButtonRow = false,
             ) { onMaxPerMonthChanged(it) }
             Text(
-              text = "Max per month",
+              text =  i18n(S.AutoPayMaxPerMonth),
               style = MaterialTheme.typography.labelMedium,
               color = if (!autoPayEnabled) Color.Gray else Color.Unspecified
             )

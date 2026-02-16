@@ -828,8 +828,15 @@ Thank you and enjoy your new wallet!</string>
     <string name="Domain">Domain</string>
     <string name="Services">Services</string>
     <string name="Purpose">Purpose</string>
-    <string name="AutoPay">Autopay</string>
-    <string name="ManualApproval">Manual approval</string>
+    <string name="AutoPay">Automatic Payment</string>
+    <string name="AutoPayInstructions">If the following checkbox is disabled, all payment requests from this service ask you for authorisation and the limits below are ignored.</string>
+    <string name="LimitedAutoApproval">Allow Limited Automatic Approval</string>
+    <string name="AutoPayMaxPerRequest">Maximum per request</string>
+    <string name="AutoPayMaxPerDay">Maximum per day</string>
+    <string name="AutoPayMaxPerWeek">Maximum per week</string>
+    <string name="AutoPayMaxPerMonth">Maximum per month</string>
+
+
     <string name="EnableServices">Enable services screen</string>
     <string name="NoServicesRegistered">No services registered.</string>
 </resources>
