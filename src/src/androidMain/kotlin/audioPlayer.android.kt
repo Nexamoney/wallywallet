@@ -1,11 +1,9 @@
 import android.content.Context
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
-import info.bitcoinunlimited.www.wally.applicationState
 import info.bitcoinunlimited.www.wally.ui.soundEnabled
 import info.bitcoinunlimited.www.wally.wallyAndroidApp
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.nexa.libnexakotlin.appContext
 import wpw.src.generated.resources.Res
 
 @ExperimentalResourceApi
