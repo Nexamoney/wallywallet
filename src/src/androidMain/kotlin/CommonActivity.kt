@@ -1,23 +1,18 @@
 // Copyright (c) 2019 Andrew Stone Consulting (qq9wwnuw4eukyh5g34ckg5vk4aaxnvr04vkspyv850)
 // Distributed under the MIT software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php.
 package info.bitcoinunlimited.www.wally
+
 import org.nexa.libnexakotlin.*
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
 import android.view.*
-import android.view.inputmethod.InputMethodManager
-import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
@@ -25,6 +20,7 @@ import androidx.core.view.ViewCompat.setWindowInsetsAnimationCallback
 import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
 import info.bitcoinunlimited.www.wally.ui.ScreenId
+import info.bitcoinunlimited.www.wally.ui.isSoftKeyboardShowing
 import info.bitcoinunlimited.www.wally.ui.nav
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.launchIn
@@ -84,7 +80,6 @@ open class KeyboardToggleListener(private val activity: Activity, private val on
         root = (activity.findViewById(android.R.id.content) as View).getRootView()
         root.getWindowVisibleDisplayFrame(rect)
         val curHeight = (rect.bottom - rect.top)
-        val heightChange = curHeight - lastHeight
         val screenHeight = (activity.findViewById(android.R.id.content) as View).getRootView().height
         if (screenHeight > maxHeight) maxHeight = screenHeight
         val maxDiff = maxHeight - curHeight
@@ -101,18 +96,6 @@ open class KeyboardToggleListener(private val activity: Activity, private val on
             currentlyShown = false
             onKeyboardToggleAction.invoke(false)
         }
-
-        /*  The delta from the current alg is not reliable
-        if (heightChange >= 150)
-        {
-            onKeyboardToggleAction.invoke(false)
-        }
-        if (heightChange <= -150)
-        {
-            onKeyboardToggleAction.invoke(true)
-        }
-        lastHeight = curHeight
-         */
     }
 
     fun remove()
@@ -161,18 +144,11 @@ open class CommonActivity : AppCompatActivity()
         origTitleBackground = ColorDrawable(ContextCompat.getColor(applicationContext, R.color.titleBackground))
 
         origTitleBackground?.let { titlebar.background = it }  // Set the title background color here, so we don't need to match the background defined in some resource file
-        titlebar.setOnClickListener {
-            onTitleBarTouched()
-        }
     }
 
-    open fun splash(shown: Boolean)
+    fun onSoftKeyboard(shown: Boolean)
     {
-
-    }
-
-    open fun onSoftKeyboard(shown: Boolean)
-    {
+        isSoftKeyboardShowing.value = shown
     }
 
     override fun setTitle(title: CharSequence?)
@@ -182,9 +158,6 @@ open class CommonActivity : AppCompatActivity()
             origTitle = title.toString()
             if (currentNumShowing == 0) super.setTitle(title)
         }
-    }
-    open fun onTitleBarTouched()
-    {
     }
 
     var softKeyboardShown = false  // assume that it starts not shown (see AndroidManifest.xml android:windowSoftInputMode)
@@ -259,10 +232,6 @@ open class CommonActivity : AppCompatActivity()
         super.onDestroy()
     }
 
-    fun displayPendingTopbarMessages()
-    {
-    }
-
     override fun onNewIntent(intent: Intent)
     {
         super.onNewIntent(intent)
@@ -302,15 +271,6 @@ open class CommonActivity : AppCompatActivity()
         isRunning = false
         lastPauseMillis = millinow()
     }
-
-    /*
-    // see https://stackoverflow.com/questions/13135545/android-activity-is-using-old-intent-if-launching-app-from-recent-task
-    fun launchedFromRecent(): Boolean
-    {
-        val flags: Int = intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY
-        return flags == Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY
-    }
-     */
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
@@ -556,30 +516,6 @@ open class CommonActivity : AppCompatActivity()
         }
     }
 
-    /** Do whatever you pass within the user interface context, synchronously */
-    fun <RET> doUI(fn: suspend () -> RET): RET
-    {
-        return runBlocking(Dispatchers.Main) {
-            fn()
-        }
-
-    }
-
-    /** Do whatever you pass but not within the user interface context, asynchronously */
-    fun later(fn: suspend () -> Unit): Unit
-    {
-        coMiscScope.launch(exceptionHandler) {
-            try
-            {
-                fn()
-            } catch (e: Exception) // Uncaught exceptions will end the app
-            {
-                LogIt.info(sourceLoc(2) + ": General exception handler (should be caught earlier!)")
-                handleThreadException(e)
-            }
-        }
-    }
-
     /** Do whatever you pass within the user interface context, asynchronously */
     fun laterUI(fn: suspend () -> Unit): Unit
     {
@@ -602,69 +538,5 @@ open class CommonActivity : AppCompatActivity()
     {
         val root = (findViewById(android.R.id.content) as View).getRootView()
         return isKeyboardShown(root)
-    }
-
-    fun showKeyboard()
-    {
-        if (!isKeyboardShown())
-        {
-            var view = currentFocus
-            // If no view currently has focus, create a new one, just so we can grab a window token from it
-            if (view == null)
-            {
-                view = View(this)
-            }
-            val imm: InputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.showSoftInput(view,0)
-        }
-    }
-
-    fun hideKeyboard()
-    {
-        val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        //Find the currently focused view, so we can grab the correct window token from it.
-        var view = currentFocus
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null)
-        {
-            view = View(this)
-        }
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
-    }
-
-    fun copyTextToClipboard(v: TextView, label: String = "")
-    {
-        val addr = v.text
-        try
-        {
-            var clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-            clipboard.clearPrimaryClip()
-
-            if (addr != null)
-            {
-                val clip = ClipData.newPlainText(label, addr)
-                clipboard.setPrimaryClip(clip)
-                //clipboard.setText(addr)
-
-                // visual bling that indicates text copied
-                v.text = i18n(R.string.copiedToClipboard)
-                // Set it back to the address after awhile
-                laterUI {
-                    delay(3000)
-                    v.text = addr
-                }
-            }
-            else throw UnavailableException(R.string.receiveAddressUnavailable)
-        } catch (e: Exception)
-        {
-            displayException(e)
-        }
-    }
-
-
-    /** If the derived activity supports a soft keyboard layout, then it will override this function to show them */
-    open fun setVisibleSoftKeys(which: SoftKeys)
-    {
-
     }
 }

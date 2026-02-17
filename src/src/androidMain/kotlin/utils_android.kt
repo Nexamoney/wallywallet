@@ -36,17 +36,6 @@ import java.io.File
 import java.io.InputStream
 import java.util.zip.Inflater
 
-/*
-actual fun scaleTo(imageBytes: ByteArray, width: Int, height: Int, outFormat: EncodedImageFormat): ByteArray?
-{
-    val bmp = BitmapFactory.decodeByteArray(imageBytes,0, imageBytes.size)
-    val bitmap = Bitmap.createScaledBitmap(bmp, width, height, true)
-    val canvas = android.graphics.Canvas(bitmap)
-    canvas.
-
-}
- */
-
 var notificationId = -1
 actual fun notify(title: String?, content: String, onlyIfBackground: Boolean): Int
 {
@@ -97,24 +86,6 @@ actual fun makeImageBitmap(imageBytes: ByteArray, width: Int, height: Int, scale
     val sbmp = Bitmap.createScaledBitmap(imIn, newWidth, newHeight, true)
     return sbmp.asImageBitmap()
 }
-/* logic to handle scaling if we have to provide the scale factor
-    var scale:Float = 1.0
-    if (scaleMode != ScaleMode.DISTORT)
-    {
-        var sx = width.toFloat()/imIn.width.toFloat()
-        var sy = height.toFloat()/imIn.height.toFloat()
-        var minIsX = (abs(1.0-sx) < abs(1.0-sy))
-        scale = if (scaleMode == ScaleMode.INSIDE)
-        {
-            // choose the minimum scale of the 2
-            if (minIsX) sx else sy
-        }
-        else
-        {
-            if (minIsX) sy else sx
-        }
-    }
- */
 
 actual fun convertOldAccounts(): Boolean
 {

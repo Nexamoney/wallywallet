@@ -6,33 +6,24 @@
 package info.bitcoinunlimited.www.wally
 
 import android.app.*
-import android.app.PendingIntent.CanceledException
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
 import android.os.*
-import android.service.notification.StatusBarNotification
-import android.widget.Toast
 import androidx.annotation.RawRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
 import androidx.work.PeriodicWorkRequest.Companion.MIN_PERIODIC_INTERVAL_MILLIS
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.asCoroutineDispatcher
 import org.nexa.libnexakotlin.*
-import java.util.concurrent.Executors
-import kotlin.coroutines.CoroutineContext
 import info.bitcoinunlimited.www.wally.ui.views.loadingAnimation
 import org.nexa.threads.Mutex
-import org.nexa.threads.setThreadName
 import java.lang.Exception
 
 const val DEBUG_VM = true
-var brokenMode: Boolean = false
 
 // Includes both screen off AND app minimized
 // This has to be long enough to not be tiresome if you are browsing some other app to interact with wally
@@ -95,15 +86,6 @@ actual fun platformNotification(message:String, title: String?, onclickUrl:Strin
     }
 
     // TODO actually use platform level notifications
-}
-
-fun loadTextResource(resFile: String):String?
-{
-    val androidContext = (appContext() as android.content.Context)
-    var id = androidContext.resources.getIdentifier(resFile, "raw", androidContext.packageName)
-    val strs = androidContext.resources.openRawResource(id).readBytes()
-    if (strs.size == 0) return null
-    else return strs.decodeUtf8()
 }
 
 fun loadTextResource(@RawRes resId: Int):String?
@@ -251,10 +233,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
     // Current notification ID
     var notifId = 0
 
-    protected val coMiscCtxt: CoroutineContext = Executors.newFixedThreadPool(6).asCoroutineDispatcher()
-    protected val coMiscScope: CoroutineScope = kotlinx.coroutines.CoroutineScope(coMiscCtxt)
-
-
     // Track notifications
     val notifs: MutableList<Triple<Int, PendingIntent, Intent>> = mutableListOf()
 
@@ -355,52 +333,12 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         super.onLowMemory()
     }
 
-    /** send a casual popup message that's not a notification */
-    fun toast(Rstring: Int) = toast(i18n(Rstring))
-    fun toast(s: String)
-    {
-        looper.handler.post {
-            val t = Toast.makeText(this, s, Toast.LENGTH_SHORT)
-            val y = displayMetrics.heightPixels
-            t.setGravity(android.view.Gravity.TOP, 0, y / 15)
-            t.show()
-        }
-    }
-
     /** Returns true is this app is visible on the screen
      * (not background, not locked screen)
      * */
     fun visible(): Boolean
     {
         return (activityCount > 0)
-    }
-
-    class LooperThread : Thread()
-    {
-        lateinit var handler: Handler
-        override fun run()
-        {
-            setThreadName("WallyAppEventLoop")
-            Looper.prepare()
-            handler = object : Handler(Looper.myLooper()!!)
-            {
-            }
-            Looper.loop()
-        }
-
-        init{
-            start()
-        }
-    }
-
-    val looper = LooperThread()
-
-
-    /** Remove a notification that was installed using the notify() function */
-    fun denotify(intent: Intent)
-    {
-        val nid = intent.getIntExtra("wallyNotificationId", -1)
-        if (nid != -1) denotify(nid)
     }
 
     /* Remove a notification */
@@ -413,64 +351,6 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         }
     }
 
-    fun activeNotifications(): Array<StatusBarNotification>
-    {
-        val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        val n = nm.activeNotifications
-        n.sortBy({ it.postTime })
-        n.filter { it.packageName == this.packageName }
-        return n
-    }
-
-    /** Either automatically trigger an intent to be handled, or return the intent the activity should handle, or return null if no intents pending */
-    fun getNotificationIntent(): Intent?
-    {
-        //val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        //val notifs = nm.activeNotifications
-        val sysnotifs = activeNotifications()
-        var idx = 0
-        while(idx < sysnotifs.size)
-        {
-            val sbn = sysnotifs[idx]
-            val id = sbn.id
-            val n = sbn.notification
-            LogIt.info(sourceLoc() + "onResume handle notification intent:" + n.contentIntent.toString())
-            try
-            {
-                n.contentIntent.send()
-                return null
-            }
-            catch(e:CanceledException)
-            {
-                idx++
-            }
-            finally
-            {
-                denotify(id)
-            }
-        }
-
-        // If the user turned notifications off for this app, there won't be any but we still need to process incoming requests
-        if (notifs.isNotEmpty())
-        {
-            val n = notifs[0]
-            notifs.removeAt(0)
-            return(n.third)
-        }
-
-        return null
-    }
-
-    /** Create a notification of a pending intent */
-    fun notify(intent: Intent, content: String, activity: AppCompatActivity, actionRequired: Boolean = true, overwrite: Int = -1): Int
-    {
-        return notify(intent, i18n(S.app_long_name), content, activity, actionRequired, overwrite)
-    }
-
-    fun notifyPopup(intent: Intent, title: String, content: String, activity: AppCompatActivity, actionRequired: Boolean = true, overwrite: Int = -1): Int
-    {
-        return notify(intent, title, content, activity, actionRequired, overwrite, NotificationCompat.PRIORITY_HIGH)
-    }
     /** Create a notification of a pending intent */
     fun notify(intent: Intent, title: String, content: String, activity: AppCompatActivity, actionRequired: Boolean = true, overwrite: Int = -1, priority: Int = NotificationCompat.PRIORITY_DEFAULT): Int
     {

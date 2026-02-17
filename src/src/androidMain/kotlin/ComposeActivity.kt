@@ -1,6 +1,5 @@
 package info.bitcoinunlimited.www.wally
 
-import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -8,9 +7,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import kotlinx.coroutines.delay
 import android.content.pm.PackageManager
-import android.graphics.drawable.ColorDrawable
-import android.net.Uri
-import android.os.Build
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
@@ -26,7 +22,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -36,11 +31,9 @@ import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.theme.BaseBkg
 import info.bitcoinunlimited.www.wally.ui.theme.colorTitleBackground
 import org.nexa.libnexakotlin.GetLog
-import org.nexa.libnexakotlin.laterJob
 import org.nexa.libnexakotlin.logThreadException
 import org.nexa.libnexakotlin.rem
 import org.nexa.libnexakotlin.runningTheTests
-import org.nexa.threads.millisleep
 import java.io.File
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.toJavaDuration
@@ -67,46 +60,6 @@ class ComposeActivity: CommonActivity()
     var doOnMediaReadPerms: (() -> Unit)? = null
     /** Do this once we get file read permissions */
     var doOnFileReadPerms: (() -> Unit)? = null
-
-    override fun splash(shown: Boolean)
-    {
-        if (shown)
-        {
-
-        }
-        else
-        {
-            val v = findViewById<View>(android.R.id.content).getRootView()
-            v.setBackgroundResource(0)
-            v.background = ColorDrawable(ContextCompat.getColor(applicationContext, R.color.titleBackground))
-        }
-    }
-
-    // call this with a function to execute whenever that function needs file read permissions
-    fun onReadMediaPermissionGrantedLegacy(doit: () -> Unit): Boolean
-    {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // Do nothing, this is not legacy
-            return false
-        }
-        else // otherwise we have to ask for access to any external storage files to access the gallery
-        {
-            if (ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
-                doit()
-            else
-            {
-                doOnMediaReadPerms = doit
-                requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), READ_MEDIA_IMAGES_RESULT)
-                return true
-            }
-        }
-        return false
-    }
-
-    override fun onSoftKeyboard(shown: Boolean)
-    {
-        isSoftKeyboardShowing.value = shown
-    }
 
     fun ImageQrCode(imageParsed: (String?) -> Unit)
     {
@@ -500,22 +453,6 @@ class ComposeActivity: CommonActivity()
                 LogIt.info("No image selected")
             }
         }
-    }
-
-    // If the title bar is touched, show all the errors and warnings the app has generated
-    // unless we are already in that screen.
-    override fun onTitleBarTouched()
-    {
-        /*
-        if (nav.currentScreen.value == ScreenId.Logs)
-        {
-            nav.back()
-        }
-        else
-        {
-            nav.go(ScreenId.Logs)
-        }
-         */
     }
 
     override fun onDestroy()
