@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModel
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.gatherAssets
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.nexa.assets.AssetPerAccount
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("wally.TxHistory")

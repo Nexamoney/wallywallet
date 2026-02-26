@@ -49,6 +49,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import org.nexa.assets.AssetPerAccount
 import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("BU.wally.SendScreen")
@@ -950,7 +951,8 @@ fun AssetsList(assetList: List<AssetPerAccount>, editable: Boolean = true, viewM
 }
 
 @Composable
-fun AssetListItemEditable(assetPerAccount: AssetPerAccount, editable: Boolean = true, isConfirming: Boolean = false) {
+fun AssetListItemEditable(assetPerAccount: AssetPerAccount, editable: Boolean = true, isConfirming: Boolean = false)
+{
     val asset = assetPerAccount.assetInfo
     val tokenAmount = assetPerAccount.groupInfo.tokenAmount
     val expandable: Boolean = if(tokenAmount == 1L) false else true
@@ -993,7 +995,7 @@ fun AssetListItemEditable(assetPerAccount: AssetPerAccount, editable: Boolean = 
           modifier = Modifier.fillMaxWidth(),
           verticalAlignment = Alignment.CenterVertically
         ) {
-            MpMediaView(asset.iconImage, asset.iconBytes, asset.iconUri?.toString(), hideMusicView = true) { mi, draw ->
+            MpMediaView(asset.iconImage, asset.iconBytes.collectAsState().value, asset.iconUri?.toString(), hideMusicView = true) { mi, draw ->
                 val m = clickableModifier.background(Color.Transparent).size(75.dp).padding(8.dp)
                 draw(m)
             }

@@ -15,6 +15,9 @@ import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.views.AccountPillViewModelFake
 import info.bitcoinunlimited.www.wally.ui.views.BalanceViewModelImpl
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.nexa.assets.AssetInfo
+import org.nexa.assets.AssetPerAccount
+import org.nexa.assets.NexaNFTv2
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.GroupId
@@ -138,7 +141,7 @@ class SendScreenTest:WallyUiTestBase()
         val assetInfo = AssetInfo(groupId)
         val title = "title"
         val series = "series"
-        assetInfo.nft = NexaNFTv2("niftyVer", title, series, "author", listOf(), "appUri","info")
+        assetInfo.nft = NexaNFTv2("niftyVer", title, series, "author", listOf(), "appUri", "info")
         val assetAmount = 600L
         val groupInfo = GroupInfo(groupId, assetAmount)
         val assetPerAccount = AssetPerAccount(groupInfo, assetInfo, null)

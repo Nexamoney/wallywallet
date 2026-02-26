@@ -104,19 +104,6 @@ actual fun platformRam():Long?
     return mem
 }
 
-
-actual fun inflateRfc1951(compressedBytes: ByteArray, expectedfinalSize: Long): ByteArray
-{
-    val inf = Inflater(true)  // true means do not wrap in the gzip header
-
-    inf.setInput(compressedBytes)
-    val ba = ByteArray(expectedfinalSize.toInt())
-    val sz = inf.inflate(ba)
-    if (sz != expectedfinalSize.toInt()) throw Exception("inflate wrong size")
-    inf.end()
-    return ba
-}
-
 actual fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: MutableSet<String>?): String
 {
     skipFirst.add("stackTraceWithout")

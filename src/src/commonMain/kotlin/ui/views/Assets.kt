@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import info.bitcoinunlimited.www.wally.Account
-import info.bitcoinunlimited.www.wally.AssetInfo
+import org.nexa.assets.AssetInfo
 import info.bitcoinunlimited.www.wally.wallyApp
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow

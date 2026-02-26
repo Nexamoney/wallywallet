@@ -34,12 +34,14 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
 import kotlinx.datetime.toLocalDateTime
+import org.nexa.assets.triggerAssetCheck
 import org.nexa.libnexakotlin.*
 import org.nexa.libnexakotlin.AccountSearchResults
 import org.nexa.libnexakotlin.EarlyExitException
 import org.nexa.threads.Thread
 import org.nexa.threads.iThread
 import org.nexa.threads.millisleep
+import org.nexa.threads.millinow
 import kotlin.math.roundToLong
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant

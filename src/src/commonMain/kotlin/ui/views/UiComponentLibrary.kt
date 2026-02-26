@@ -61,6 +61,7 @@ import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.exceptionHandler
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.layout.SubcomposeLayout
+import org.nexa.assets.AssetInfo
 
 
 @Composable fun WallySwitch(isChecked: MutableState<Boolean>, modifier: Modifier = Modifier, onCheckedChange: (Boolean) -> Unit)
@@ -220,15 +221,18 @@ fun CenteredText(text: String, textStyle: TextStyle, modifier: Modifier = Modifi
 }
 
 
-@Composable fun CenteredFittedText(text: Int, startingFontScale: Double=1.0, fontWeight: FontWeight = FontWeight.Normal, color: Color? = null, modifier: Modifier = Modifier) =
+@Composable fun CenteredFittedText(text: Int, startingFontScale: Double=1.0, fontWeight: FontWeight = FontWeight.Normal, color: Color = Color.Unspecified, modifier: Modifier = Modifier) =
   CenteredFittedText(i18n(text), startingFontScale, fontWeight, color, modifier)
 
-@Composable fun CenteredFittedText(text: String, startingFontScale: Double=1.0, fontWeight: FontWeight = FontWeight.Normal, color: Color? = null, modifier: Modifier = Modifier)
+@Composable fun CenteredFittedText(text: String, startingFontScale: Double=1.0, fontWeight: FontWeight = FontWeight.Normal, color: Color = Color.Unspecified, modifier: Modifier = Modifier)
 {
-    // see https://stackoverflow.com/questions/63971569/androidautosizetexttype-in-jetpack-compose
-    val tmp = WallyTextStyle(startingFontScale, fontWeight)
+    val ts = WallyTextStyle(startingFontScale, fontWeight, col = color)
+    BasicText(text, modifier = modifier.padding(0.dp).fillMaxWidth(), style = ts, maxLines = 1,
+      autoSize = TextAutoSize.StepBased(2.sp, ts.fontSize, 0.50.sp))
+    /*
     var textStyle by remember { mutableStateOf(tmp) }
     var drawIt by remember { mutableStateOf(false) }
+    // see https://stackoverflow.com/questions/63971569/androidautosizetexttype-in-jetpack-compose
     Text(text = text, style = textStyle, color = color ?: Color.Unspecified, modifier = Modifier.padding(0.dp).fillMaxWidth().drawWithContent { if (drawIt) drawContent() }. then(modifier), textAlign = TextAlign.Center, maxLines = 1, softWrap = false,
       onTextLayout = {
           textLayoutResult ->
@@ -236,12 +240,16 @@ fun CenteredText(text: String, textStyle: TextStyle, modifier: Modifier = Modifi
               textStyle = textStyle.copy(fontSize = textStyle.fontSize * 0.95)
           else drawIt = true
       })
+
+     */
 }
 
 @Composable fun CenteredFittedWithinSpaceText(text: String, startingFontScale: Double=1.0, fontWeight: FontWeight = FontWeight.Normal, fontColor: Color = Color.Unspecified, modifier: Modifier = Modifier)
 {
     // see https://stackoverflow.com/questions/63971569/androidautosizetexttype-in-jetpack-compose
-    val tmp = WallyTextStyle(startingFontScale, fontWeight, col = fontColor)
+    val ts = WallyTextStyle(startingFontScale, fontWeight, col = fontColor).copy(textAlign = TextAlign.Center)
+    BasicText(text, modifier = modifier.padding(0.dp).fillMaxWidth(), style = ts, maxLines = 1, autoSize = TextAutoSize.StepBased(2.sp, ts.fontSize, 0.50.sp))
+    /*
     var textStyle by remember { mutableStateOf(tmp) }
     var drawIt by remember { mutableStateOf(false) }
     Text(text = text, style = textStyle, modifier = modifier.padding(0.dp).drawWithContent { if (drawIt) drawContent() }. then(modifier), textAlign = TextAlign.Center, maxLines = 1, softWrap = false,
@@ -251,12 +259,17 @@ fun CenteredText(text: String, textStyle: TextStyle, modifier: Modifier = Modifi
               textStyle = textStyle.copy(fontSize = textStyle.fontSize * 0.95)
           else drawIt = true
       })
+
+     */
 }
 
 @Composable fun FittedText(text: String, textStyle: TextStyle?=null, color: Color? = null, fontWeight: FontWeight = FontWeight.Normal, modifier: Modifier = Modifier)
 {
     // see https://stackoverflow.com/questions/63971569/androidautosizetexttype-in-jetpack-compose
-    val tmp = textStyle ?: WallyTextStyle(1.0, fontWeight)
+    val ts = textStyle ?: WallyTextStyle(1.0, fontWeight)
+    BasicText(text, modifier = modifier.padding(0.dp).fillMaxWidth(), style = ts, maxLines = 1, autoSize = TextAutoSize.StepBased(2.sp, ts.fontSize, 0.50.sp))
+
+    /*
     var rtextStyle by remember { mutableStateOf(tmp) }
     var drawIt by remember { mutableStateOf(false) }
     Text(text = text, style = rtextStyle, color = color ?: Color.Unspecified, modifier = Modifier.padding(0.dp).fillMaxWidth().drawWithContent { if (drawIt) drawContent() }. then(modifier), textAlign = TextAlign.Start, maxLines = 1, softWrap = false,
@@ -266,6 +279,8 @@ fun CenteredText(text: String, textStyle: TextStyle, modifier: Modifier = Modifi
               rtextStyle = rtextStyle.copy(fontSize = rtextStyle.fontSize * 0.95)
           else drawIt = true
       })
+
+     */
 }
 
 /** This fits multiple pieces of text into a single line

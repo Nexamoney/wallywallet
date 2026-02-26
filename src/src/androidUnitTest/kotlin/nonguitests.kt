@@ -7,6 +7,7 @@ import okio.Path.Companion.toPath
 import org.junit.Assert
 import org.nexa.nexarpc.NexaRpcFactory
 import org.nexa.libnexakotlin.*
+import org.nexa.assets.*
 import org.nexa.nexarpc.NexaRpc
 import org.nexa.threads.millisleep
 import java.util.concurrent.TimeoutException

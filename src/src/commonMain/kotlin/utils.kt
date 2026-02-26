@@ -48,6 +48,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
 import okio.BufferedSource
+import org.nexa.threads.millinow
 import kotlin.io.encoding.Base64
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -203,9 +204,6 @@ expect fun applicationState(): ApplicationState
  * and may play a sound, so this must be used sparingly.
  */
 expect fun platformNotification(message:String, title: String? = null, onclickUrl:String? = null, severity: AlertLevel = AlertLevel.NOTICE)
-
-expect fun assetManagerStorage(): AssetManagerStorage
-
 
 class ImageContainer
 {

@@ -1,15 +1,28 @@
-package info.bitcoinunlimited.www.wally
+package org.nexa.assets
 
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.GroupId
+import org.nexa.libnexakotlin.sourceLoc
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 private val LogIt = GetLog("wally.assetsJvm")
 
-object JvmAssetManagerStorage:AssetManagerStorage
+
+actual fun inflateRfc1951(compressedBytes: ByteArray, expectedfinalSize: Long): ByteArray
+{
+    val inf = okio.Inflater(true)  // true means do not wrap in the gzip header
+
+    inf.setInput(compressedBytes)
+    val ba = ByteArray(expectedfinalSize.toInt())
+    val sz = inf.inflate(ba)
+    if (sz != expectedfinalSize.toInt()) throw Exception("inflate wrong size")
+    inf.end()
+    return ba
+}
+object JvmAssetManagerStorage: AssetManagerStorage
 {
     override fun storeAssetFile(filename: String, data: ByteArray): String
     {
@@ -63,7 +76,7 @@ object JvmAssetManagerStorage:AssetManagerStorage
         FileOutputStream(file).use {
             it.write(data)
         }
-        LogIt.info("Wrote ${file.absolutePath} ($file)")
+        LogIt.info("${sourceLoc()}: Wrote ${file.absolutePath} ($file)")
         return file.absolutePath
     }
     override fun loadCardFile(filename: String): Pair<String, ByteArray>

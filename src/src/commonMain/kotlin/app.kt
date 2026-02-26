@@ -20,6 +20,8 @@ import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.io.files.FileNotFoundException
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import org.nexa.assets.AssetLoaderThread
+import org.nexa.assets.AssetManager
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.*
 import kotlin.coroutines.CoroutineContext
@@ -526,8 +528,6 @@ open class CommonApp(val runningTests: Boolean)
         }
     }
 
-
-
     fun defaultPrimaryAccount(): Account
     {
         val selectedAccountName = preferenceDB.getString(SELECTED_ACCOUNT_NAME_PREF, null)
@@ -892,7 +892,11 @@ open class CommonApp(val runningTests: Boolean)
         openAccountsTriggerGui()
         tpDomains.load()
 
-        assetLoaderThread = AssetLoaderThread()
+        assetLoaderThread = AssetLoaderThread({ nullablePrimaryAccount != null}) {
+            accountLock.lock {
+                accounts.values.toList()
+            }
+        }
         periodicAnalysisThread = uxPeriodicAnalysis()
     }
 

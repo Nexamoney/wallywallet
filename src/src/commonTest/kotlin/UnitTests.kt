@@ -2,6 +2,7 @@
 
 import info.bitcoinunlimited.www.wally.*
 import okio.*
+import org.nexa.assets.*
 import org.nexa.libnexakotlin.*
 import kotlin.math.log
 import kotlin.test.*

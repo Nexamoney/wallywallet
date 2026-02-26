@@ -19,8 +19,9 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
 import androidx.work.PeriodicWorkRequest.Companion.MIN_PERIODIC_INTERVAL_MILLIS
 import org.nexa.libnexakotlin.*
-import info.bitcoinunlimited.www.wally.ui.views.loadingAnimation
+import org.nexa.threads.millinow
 import org.nexa.threads.Mutex
+import info.bitcoinunlimited.www.wally.ui.views.loadingAnimation
 import java.lang.Exception
 
 const val DEBUG_VM = true
@@ -290,6 +291,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         }
 
         super.onCreate()
+        registerActivityLifecycleCallbacks(this)
 
         // Add the Wally Wallet server to our list of Electrum/Rostrum connection points
         nexaElectrum.add(0, IpPort("rostrum.wallywallet.org", DEFAULT_NEXA_TCP_ELECTRUM_PORT))
@@ -385,15 +387,22 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?)
     {
+        LogIt.info("${sourceLoc()}: CBActivity ${activity.title} created at ${millinow()}")
     }
 
     override fun onActivityStarted(activity: Activity)
     {
+        LogIt.info("${sourceLoc()}: CBActivity ${activity.title} started at ${millinow()}")
         activityCount++
     }
 
     override fun onActivityResumed(activity: Activity)
     {
+        LogIt.info("${sourceLoc()}: CBActivity ${activity.title} resumed at ${millinow()}")
+        for (b in blockchains.values)
+        {
+            b.net.setPenaltyMoratorium()
+        }
     }
     override fun onActivityPostResumed(activity: Activity)
     {
@@ -401,10 +410,12 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
 
     override fun onActivityPaused(activity: Activity)
     {
+        LogIt.info("${sourceLoc()}: CBActivity ${activity.title} paused at ${millinow()}")
     }
 
     override fun onActivityStopped(activity: Activity)
     {
+        LogIt.info("${sourceLoc()}: CBActivity ${activity.title} stopped at ${millinow()}")
         activityCount--
     }
 

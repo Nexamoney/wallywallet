@@ -18,6 +18,9 @@ import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.ui.views.WallyNumericInputFieldBalance
 import info.bitcoinunlimited.www.wally.ui.views.*
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.nexa.assets.AssetInfo
+import org.nexa.assets.AssetPerAccount
+import org.nexa.assets.tokenAmountString
 import org.nexa.libnexakotlin.*
 import org.wallywallet.tokadex.postTokadexOffer
 

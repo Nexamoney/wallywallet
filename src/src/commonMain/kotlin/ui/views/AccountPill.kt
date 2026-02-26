@@ -62,7 +62,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.FiatFormat
 import org.nexa.libnexakotlin.GetLog
-import org.nexa.libnexakotlin.millinow
+import org.nexa.threads.millinow
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.math.sign

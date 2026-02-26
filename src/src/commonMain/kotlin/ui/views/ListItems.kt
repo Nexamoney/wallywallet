@@ -25,6 +25,8 @@ import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.nav
 import info.bitcoinunlimited.www.wally.ui.theme.wallyPurple
 import info.bitcoinunlimited.www.wally.ui.theme.wallyPurpleExtraLight
+import org.nexa.assets.AssetInfo
+import org.nexa.assets.AssetPerAccount
 import org.nexa.libnexakotlin.*
 
 
@@ -134,7 +136,7 @@ fun AssetListItem(asset: AssetPerAccount, tx: RecentTransactionUIData)
                     )
                     iconSize = 42.dp  // This assumes the user hasn't scaled.  But if the user is scaling the fonts its probably better for the user if we use more vertical space for each item
                 }
-                MpMediaView(assetInfo.iconImage, assetInfo.iconBytes, assetInfo.iconUri?.toString(), hideMusicView = true) { mi, draw ->
+                MpMediaView(assetInfo.iconImageState.collectAsState().value, assetInfo.iconBytes.collectAsState().value, assetInfo.iconUri?.toString(), hideMusicView = true) { mi, draw ->
                     val m = Modifier.background(Color.Transparent).size(iconSize)
                     draw(m)
                 }
@@ -231,6 +233,7 @@ fun AssetCarouselItemNameOverlay(name: String, maxWidth: Dp, modifier: Modifier 
 fun AssetCarouselItem(asset: AssetInfo, hasNameOverLay: Boolean = false, leadSpacing: Dp = 0.dp)
 {
     val iconImage = asset.iconImageState.collectAsState().value
+    val iconBytes = asset.iconBytes.collectAsState().value
     val nft = asset.nft
     val maxSize = 60.dp
 
@@ -241,7 +244,7 @@ fun AssetCarouselItem(asset: AssetInfo, hasNameOverLay: Boolean = false, leadSpa
             nav.go(ScreenId.Assets, asset.groupId.toByteArray())
         },
     ) {
-        MpMediaView(iconImage, asset.iconBytes, asset.iconUri?.toString(), hideMusicView = true) { mi, draw ->
+        MpMediaView(iconImage, iconBytes, asset.iconUri?.toString(), hideMusicView = true) { mi, draw ->
             val m = Modifier.background(Color.Transparent).size(maxSize).clickable {
                 nav.go(ScreenId.Assets, asset.groupId.toByteArray())
             }
