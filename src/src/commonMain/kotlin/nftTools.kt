@@ -1,5 +1,5 @@
 // This should become a library
-package info.bitcoinunlimited.www.wally
+package org.nexa.assets
 
 // Zip parsing: java implementation
 //import java.util.zip.ZipEntry
@@ -29,6 +29,8 @@ import kotlinx.serialization.json.JsonElement
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
+import org.nexa.assets.EfficientFile
+import org.nexa.assets.zipForeach
 //import kotlin.io.path.absolutePathString
 //import kotlin.io.path.deleteIfExists
 import org.nexa.libnexakotlin.*

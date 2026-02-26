@@ -34,6 +34,7 @@ import info.bitcoinunlimited.www.wally.ui.views.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.nexa.assets.AssetPerAccount
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
 import org.nexa.threads.iThread

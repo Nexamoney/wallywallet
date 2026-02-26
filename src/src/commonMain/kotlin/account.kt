@@ -9,9 +9,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.Transient
+import org.nexa.assets.AssetPerAccount
+import org.nexa.assets.triggerAssetCheck
+import org.nexa.assets.triggerAssetCheckOnBlock
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
 import org.nexa.threads.ThreadJob
+import org.nexa.threads.millinow
 import org.nexa.threads.millisleep
 import kotlin.random.Random
 
@@ -142,6 +146,10 @@ class Account(
         LogIt.info(sourceLoc() + " " + ": Loaded wallet " + name)
         val stats = t.statistics()
         LogIt.info(sourceLoc() + " " + name + ": Used Addresses: " + stats.numUsedAddrs + " Unused Addresses: " + stats.numUnusedAddrs + " Num UTXOs: " + stats.numUnspentTxos + " Num wallet events: " + t.numTx())
+        laterJob {  // Wait for the network to come up, then check to see if my utxos are valid
+            while(t.blockchain.net.size == 0) millisleep(1000U)
+            t.checkUtxos()
+        }
         t
     }
     else  // New account
@@ -331,8 +339,14 @@ class Account(
     {
         // Set all the underlying change callbacks to trigger the account update
         if (wCb==null) wCb = wallet.setOnWalletChange(cb1)
-        if (blkCb == null) blkCb = wallet.blockchain.onChange.add({ onChange() })
-        if (netCb == null) netCb = wallet.blockchain.net.changeCallback.add({ it -> onChange() })
+        if (blkCb == null) blkCb = wallet.blockchain.onChange.add({
+            onChange()
+            it.nearTip?.height?.let { triggerAssetCheckOnBlock(it) }  // When a new block comes in, we should retry any assets we are waiting for because blockchain sources may not provide the data
+        })
+        if (netCb == null) netCb = wallet.blockchain.net.changeCallback.add({ it ->
+            if (it.first == CnxnMgr.Event.CONNECTED) triggerAssetCheck()
+            onChange()
+        })
     }
 
     /**
@@ -389,7 +403,7 @@ class Account(
                     }
                 }
             }
-            if (excl) throw ElectrumNoNodesException()
+            if (excl) throw ElectrumNoNodesException(chain.chainSelector)
         }
         genericElectrumNodeReqCount++
         return ElectrumServerOn(cs)
@@ -575,29 +589,26 @@ class Account(
 
         // LogIt.info(sourceLoc() + name + ": Construct assets")
         val ast = mutableMapOf<GroupId, GroupInfo>()
-        wallet.forEachTxo { sp ->
-            if (sp.isUnspent)
+        wallet.forEachUtxo { sp ->
+            // TODO: this is a workaround for a bug where the script chain is incorrect
+            if (sp.priorOutScript.chainSelector != sp.chainSelector)
             {
-                // TODO: this is a workaround for a bug where the script chain is incorrect
-                if (sp.priorOutScript.chainSelector != sp.chainSelector)
-                {
-                    // LogIt.warning("BUG fixup: Script chain is ${sp.priorOutScript.chainSelector} but chain is ${sp.chainSelector}")
-                    sp.priorOutScript = SatoshiScript(sp.chainSelector, sp.priorOutScript.type, sp.priorOutScript.flatten())
-                }
+                // LogIt.warning("BUG fixup: Script chain is ${sp.priorOutScript.chainSelector} but chain is ${sp.chainSelector}")
+                sp.priorOutScript = SatoshiScript(sp.chainSelector, sp.priorOutScript.type, sp.priorOutScript.flatten())
+            }
 
-                val grp = sp.groupInfo()
-                if (grp != null)
+            val grp = sp.groupInfo()
+            if (grp != null)
+            {
+                // LogIt.info(sourceLoc() + name + ": unspent asset ${grp.groupId.toHex()}")
+                if (!grp.isAuthority())  // TODO not dealing with authority txos in Wally mobile
                 {
-                    // LogIt.info(sourceLoc() + name + ": unspent asset ${grp.groupId.toHex()}")
-                    if (!grp.isAuthority())  // TODO not dealing with authority txos in Wally mobile
+                    val gi: GroupInfo? = ast[grp.groupId]
+                    if (gi != null)
                     {
-                        val gi: GroupInfo? = ast[grp.groupId]
-                        if (gi != null)
-                        {
-                            gi.tokenAmount += grp.tokenAmount
-                        }
-                        else ast[grp.groupId] = grp
+                        gi.tokenAmount += grp.tokenAmount
                     }
+                    else ast[grp.groupId] = grp
                 }
             }
             false

@@ -3,6 +3,7 @@
 package info.bitcoinunlimited.www.wally
 
 import org.nexa.libnexakotlin.*
+import org.nexa.threads.millinow
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent

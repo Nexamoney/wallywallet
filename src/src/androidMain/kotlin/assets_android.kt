@@ -1,20 +1,34 @@
-package info.bitcoinunlimited.www.wally
+package org.nexa.assets
 
 import android.content.Context
+import info.bitcoinunlimited.www.wally.wallyAndroidApp
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import okio.buffer
 import okio.source
 import org.nexa.libnexakotlin.GroupId
+import org.nexa.libnexakotlin.androidContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+
+actual fun inflateRfc1951(compressedBytes: ByteArray, expectedfinalSize: Long): ByteArray
+{
+    val inf = okio.Inflater(true)  // true means do not wrap in the gzip header
+
+    inf.setInput(compressedBytes)
+    val ba = ByteArray(expectedfinalSize.toInt())
+    val sz = inf.inflate(ba)
+    if (sz != expectedfinalSize.toInt()) throw Exception("inflate wrong size")
+    inf.end()
+    return ba
+}
 
 object AndroidAssetManagerStorage:AssetManagerStorage
 {
     override fun storeAssetFile(filename: String, data: ByteArray): String
     {
-        val context = wallyAndroidApp
+        val context = androidContext
 
         val dir = context!!.getDir("asset", Context.MODE_PRIVATE)
         val file = File(dir, filename)
@@ -26,7 +40,7 @@ object AndroidAssetManagerStorage:AssetManagerStorage
     override fun loadAssetFile(filename: String): Pair<String, EfficientFile>
     {
         if (DBG_NO_ASSET_CACHE) throw Exception()
-        val context = wallyAndroidApp
+        val context = androidContext
         val dir = context!!.getDir("asset", Context.MODE_PRIVATE)
         val file = File(dir, filename)
         val name = file.absolutePath
@@ -37,7 +51,7 @@ object AndroidAssetManagerStorage:AssetManagerStorage
     /** delete a particular asset file */
     override fun deleteAssetFile(filename: String)
     {
-        val context = wallyAndroidApp
+        val context = androidContext
         val dir = context!!.getDir("asset", Context.MODE_PRIVATE)
         val file = File(dir, filename)
         file.delete()
@@ -46,7 +60,7 @@ object AndroidAssetManagerStorage:AssetManagerStorage
     /** delete all asset files */
     override fun deleteAssetFiles()
     {
-        val context = wallyAndroidApp
+        val context = androidContext
         val dir = context!!.getDir("asset", Context.MODE_PRIVATE)
         val files = dir.listFiles()
         for (f in files)
@@ -55,7 +69,7 @@ object AndroidAssetManagerStorage:AssetManagerStorage
 
     override fun storeCardFile(filename: String, data: ByteArray): String
     {
-        val context = wallyAndroidApp
+        val context = androidContext
 
         context!!.openFileOutput(filename, Context.MODE_PRIVATE).use {
             it.write(data)
@@ -77,7 +91,7 @@ object AndroidAssetManagerStorage:AssetManagerStorage
 
     override fun cacheNftMedia(groupId: GroupId, media: Pair<String?, ByteArray?>): Pair<String?, ByteArray?>
     {
-        val cacheDir = wallyAndroidApp!!.cacheDir
+        val cacheDir = androidContext!!.cacheDir
         var uriStr = media.first
         var b = media.second
         if (b != null)

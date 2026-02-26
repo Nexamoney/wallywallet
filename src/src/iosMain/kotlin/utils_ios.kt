@@ -27,7 +27,7 @@ import platform.StoreKit.SKStoreReviewController
 import platform.UIKit.*
 import wpw.src.generated.resources.Res
 import kotlin.math.pow
-import org.nexa.libnexakotlin.millinow
+import org.nexa.threads.millinow
 
 private val LogIt = GetLog("BU.wally.utils_ios")
 
@@ -122,14 +122,6 @@ fun NSData.toByteArray(): ByteArray
     return ba
 }
 
-
-@OptIn(ExperimentalForeignApi::class)
-actual fun inflateRfc1951(compressedBytes: ByteArray, expectedfinalSize: Long): ByteArray
-{
-    val nsd = compressedBytes.toNSData()
-    val dec = nsd.decompressedDataUsingAlgorithm(NSDataCompressionAlgorithmZlib, null)
-    return dec?.toByteArray() ?: byteArrayOf()
-}
 
 actual fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: MutableSet<String>?): String
 {

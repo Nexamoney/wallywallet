@@ -1,10 +1,21 @@
-package info.bitcoinunlimited.www.wally
+package org.nexa.assets
 
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.savedstate.serialization.serializers.MutableStateFlowSerializer
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
-import io.ktor.http.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
+import info.bitcoinunlimited.www.wally.Account
+import info.bitcoinunlimited.www.wally.S
+import info.bitcoinunlimited.www.wally.ScaleMode
+import info.bitcoinunlimited.www.wally.displayWarning
+import info.bitcoinunlimited.www.wally.i18n
+import info.bitcoinunlimited.www.wally.kvpDb
+import info.bitcoinunlimited.www.wally.makeImageBitmap
+import info.bitcoinunlimited.www.wally.resolve
+import io.ktor.http.Url
+import io.ktor.http.isAbsolutePath
+import io.ktor.http.isRelativePath
+import io.ktor.http.protocolWithAuthority
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.newFixedThreadPoolContext
@@ -15,10 +26,12 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import okio.FileNotFoundException
+import org.nexa.assets.*
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.*
 import kotlin.coroutines.CoroutineContext
 
+expect fun assetManagerStorage(): AssetManagerStorage
 
 const val ASSET_ICON_SIZE = 100
 const val MAX_UNCACHED_FILE_SIZE = 20000
@@ -112,22 +125,36 @@ class AssetPerAccount(
     fun tokenDecimalFromFinestUnit(finestAmount: Long) = assetInfo.tokenDecimalFromFinestUnit(finestAmount)
 }
 
+// The asset check will wait 60 seconds if there is no activity between asset checks.
+// If there is activity, such as block arrival, triggerAssetCheck() is called.
+// In that case, the LeakyBucket allows there to be 2 quick asset checks in a row, but then paces them out to every 5 seconds at a minimum.
 val assetCheckTrigger = Gate("assetCheckTrigger")
-// will take 30 (trigger every 30 seconds on average, max 3 times in a row)
-var assetCheckPacer = LeakyBucket(90*1000, 1000, 0)
+var assetCheckPacer = LeakyBucket(10*1000, 1000, 0)
+var currentAssetCheckTriggerCount = atomic(0L)
+var lastAssetChangeBlock = atomic(0L)
+fun triggerAssetCheckOnBlock(height: Long)
+{
+    if (height > lastAssetChangeBlock.value)
+    {
+        lastAssetChangeBlock.value = height
+        triggerAssetCheck()
+    }
+}
 fun triggerAssetCheck()
 {
-    assetCheckPacer.level = 90*1000  // force recheck regardless of leaky bucket
+    currentAssetCheckTriggerCount+=1
     assetCheckTrigger.wake()
 }
 
-fun AssetLoaderThread(): iThread
+fun AssetLoaderThread(ready:()->Boolean, getAccounts:()->List<Account> ): iThread
 {
     return org.nexa.threads.Thread("assetLoader")
     {
+        var lastAssetCheckTrigger = currentAssetCheckTriggerCount.value
+
         // Constructing the asset list can use a lot of disk which interferes with startup
         // This will wait until all the accounts are loaded
-        while (wallyApp!!.nullablePrimaryAccount == null) millisleep(5000UL)
+        while (!ready()) millisleep(5000UL)
         val ecCnxns = mutableMapOf<ChainSelector, ElectrumClient?>()
 
         fun getEc(chain:Blockchain): ElectrumClient
@@ -149,9 +176,7 @@ fun AssetLoaderThread(): iThread
             try
             {
                 // Take a copy
-                val accounts = wallyApp!!.accountLock.lock {
-                    wallyApp!!.accounts.values.toList()
-                }
+                val accounts = getAccounts()
 
                 // Refresh all assets
                 for (a in accounts)
@@ -171,9 +196,22 @@ fun AssetLoaderThread(): iThread
             {
                 handleThreadException(e)
             }
-            LogIt.info(sourceLoc() + ": asset check complete")
-            // We don't want to recheck assets more often than every 30 sec, regardless of blockchain activity
-            assetCheckTrigger.delayuntil(ASSET_ACCESS_TIMEOUT_MS, { assetCheckPacer.trytake(30*1000, { true}) == true })
+            LogIt.info(sourceLoc() + ": asset check complete pacer level: ${assetCheckPacer.level}, ${assetCheckPacer.done}")
+            val now = org.nexa.threads.millinow()
+
+
+            assetCheckPacer.take(5*1000)  // As an average minimum, wait for 5 seconds between asset checks
+            // If a trigger happened while the pacer was waiting, fall right through
+            val result = assetCheckTrigger.timedwaitfor(ASSET_ACCESS_TIMEOUT_MS, { currentAssetCheckTriggerCount.value > lastAssetCheckTrigger }) {
+                lastAssetCheckTrigger = currentAssetCheckTriggerCount.value
+            }
+            if (result == null)  // Timeout wakeup
+            {
+                // Do not block, but take what we
+                //assetCheckPacer.trytake(min(assetCheckPacer.level, 5000)) {}
+                LogIt.info(sourceLoc() + ": asset delay timeout")
+            }
+            LogIt.info(sourceLoc() + ": asset check wakeup pacer level: ${assetCheckPacer.level} time delta: ${org.nexa.threads.millinow() - now}")
         }
     }
 }
@@ -212,7 +250,7 @@ object Hash256Serializer: KSerializer<Hash256>
     }
 }
 
-object UrlSerializer: KSerializer<Url>
+object UrlSerializer: KSerializer<io.ktor.http.Url>
 {
     override val descriptor: SerialDescriptor
         get() = PrimitiveSerialDescriptor("Url", PrimitiveKind.STRING)
@@ -227,6 +265,22 @@ object UrlSerializer: KSerializer<Url>
     }
 }
 
+/*
+class MsfSerializer<T>(private val valueSer: KSerializer<T>): KSerializer<MutableStateFlow<T>>
+{
+    override val descriptor: SerialDescriptor
+        get() = PrimitiveSerialDescriptor("msf", PrimitiveKind.STRING)
+
+    override fun deserialize(decoder: Decoder): MutableStateFlow<T>
+    {
+        return MutableStateFlow(valueSer.deserialize(decoder))
+    }
+    override fun serialize(encoder: Encoder, value: MutableStateFlow<T>)
+    {
+        valueSer.serialize(encoder, value.value)
+    }
+}
+ */
 
 @Serializable
 class AssetInfo(val groupId: GroupId) // :BCHserializable
@@ -242,6 +296,7 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
             field = value
         }
     @Transient private val _nameState: MutableStateFlow<String?> = MutableStateFlow(name)
+    // The nameObservable is a "do what I mean" field.  Its the NFT title if this is an NFT, otherwise its the asset name
     @Transient val nameObservable = _nameState.asStateFlow()
     var ticker:String? = null
     var genesisHeight:Long = -1
@@ -249,7 +304,7 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
     @Serializable(with = Hash256Serializer::class) var docHash: Hash256? = null
     var docUrl: String? = null
     var tokenInfo: TokenDesc? = null
-    var iconBytes: ByteArray? = null
+    @Serializable(with = MutableStateFlowSerializer::class) var iconBytes: MutableStateFlow<ByteArray?> = MutableStateFlow(null)
     @Transient var iconImageState: MutableStateFlow<ImageBitmap?> = MutableStateFlow(null)
     @Transient var iconImage: ImageBitmap? = null
         set(value)
@@ -280,6 +335,12 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
     var ownerMediaUri: Url? = null        // canonical location (needed to find the file extension to get its type at a minimum)
     @Transient
     var ownerMediaBytes: ByteArray? = null
+
+    // If the load state is not complete, do not retry loading until after this time.
+    // This can be used to space out retries based on prior failures.  For example, if the .json file fails to parse, that is much less likely to be solved via a retry
+    // as compared to a http get timeout
+    @Transient private var nextLoadAttempt: Long = 0L
+    @Transient private var nextLoadAttemptBlock: Long = Long.MAX_VALUE
 
     var loadState: AssetLoadState = AssetLoadState.UNLOADED
         set(value) {
@@ -357,14 +418,14 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
                 if (data != null)
                 {
                     val bytes = data.readByteArray()
-                    iconBytes = if (bytes.size < MAX_UNCACHED_FILE_SIZE) bytes else null
+                    iconBytes.value = if (bytes.size < MAX_UNCACHED_FILE_SIZE) bytes else null
                     iconImage = makeImageBitmap(bytes, ASSET_ICON_SIZE,ASSET_ICON_SIZE, ScaleMode.INSIDE)
                     val tmp = am.storeCardFile(grpId.toStringNoPrefix() + "_" + fname, bytes)
                     iconUri = Url("file://" + tmp)
                 }
                 else
                 {
-                    iconBytes = null
+                    iconBytes.value = null
                     iconUri = Url("file://" + fname)
                 }
             }
@@ -493,19 +554,54 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
 
     fun load(chain: Blockchain, am: AssetManager, getEc: () -> ElectrumClient)  // Attempt to find all asset info from a variety of data sources
     {
+        val now = org.nexa.threads.millinow()
+        if (synchronized(dataLock) {
+            if (nextLoadAttemptBlock <= (chain.nearTip?.height ?: 0))  // Trigger load attempt on block arrival
+            {
+                nextLoadAttemptBlock = Long.MAX_VALUE
+                false
+            }
+            else if (nextLoadAttempt > now) true  // Do not retry yet
+            else
+            {
+                nextLoadAttempt = now + 4000 // By default refuse to allow multiple load attempts right away (stop multithreading from turning into a bunch of individual loads)
+                false
+            }
+        }) return
         if (loadState == AssetLoadState.COMPLETED) return
         LogIt.info(sourceLoc() + chain.name + ": Loading Asset: Get Token Desc ${groupId}")
-        val td:TokenDesc = am.getTokenDesc(chain, groupId, getEc)
-        LogIt.info(sourceLoc() + chain.name + ": Get Token Desc complete: ${groupId} td: ${td}")
+        val td:TokenDesc = try {
+            am.getTokenDesc(chain, groupId, getEc)
+        } catch (e:TokenDataException)
+        {
+            // Retry in 5 minutes if JSON is broken (it'll probably never work) else 1 min for bad serialization
+            // WHY does it make ANY SENSE to throw internal exceptions!!!! ...json.internal.JsonDecodingException: Unexpected JSON token
+            if (e.originalException.message?.contains("Unexpected JSON") == true) nextLoadAttempt = org.nexa.threads.millinow() + (5*60*1000)
+            else nextLoadAttempt = now + (1*60*1000)
+            // But keep going with the genesis info
+            TokenDesc(e.tgi.ticker ?: "", e.tgi.name, genesisInfo = e.tgi)
+        } catch (e: ElectrumNotFound)
+        {
+            // Its probably unconfirmed, wait a max of the next block or 2 min
+            nextLoadAttemptBlock = (chain.nearTip?.height ?: (Long.MAX_VALUE-1)) + 1
+            nextLoadAttempt = now + (2*60*1000)
+            throw e
+        }
+        catch(e:Exception)
+        {
+            nextLoadAttempt = now + (2*60*1000)
+            throw e
+        }
+        //LogIt.info(sourceLoc() + chain.name + ": Get Token Desc complete: ${groupId} td: ${td}")
         synchronized(dataLock)
         {
             val tg = td.genesisInfo
             if (tg == null) return@synchronized
-            LogIt.info(sourceLoc() + chain.name + ": Loading Asset: Process genesis info ${groupId.toStringNoPrefix()} ${tg.name}")
+            //LogIt.info(sourceLoc() + chain.name + ": Loading Asset: Process genesis info ${groupId.toStringNoPrefix()} ${tg.name}")
 
             name = tg.name ?: td.name
             ticker = tg.ticker ?: td.ticker
-            genesisHeight = tg.height ?: -1
+            genesisHeight = tg.height
             genesisTxidem = if (tg.txidem.length > 0) Hash256(tg.txidem) else null
 
             val du = tg.document_url
@@ -513,12 +609,12 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
 
             if (du != null)
             {
-                LogIt.info(sourceLoc() +": Getting NFT file for ${groupId}")
+                //LogIt.info(sourceLoc() +": Getting NFT file for ${groupId}")
                 // Ok find the NFT description
                 val nftZipData = am.getNftFile(td, groupId)
                 if (nftZipData != null)
                 {
-                    LogIt.info(sourceLoc() +": Got NFT file for ${groupId}")
+                    //LogIt.info(sourceLoc() +": Got NFT file for ${groupId}")
                     try
                     {
                         tokenInfo = td
@@ -538,7 +634,7 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
                         }
                         extractNftData(am, groupId, nftZipData.second)
                         if (iconBackUri == null) getTddIcon().let { iconBackUri = it.first; iconBackBytes = it.second }
-                        LogIt.info("NFT download complete for ${groupId}")
+                        LogIt.info("${sourceLoc()}: ${groupId} NFT download complete")
                         loadState = AssetLoadState.COMPLETED
                     }
                     finally
@@ -548,10 +644,11 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
                 }
                 else  // Not an NFT, so fill in the data from the TDD
                 {
-                    LogIt.info(sourceLoc() + ": $name == ${td.name}, $ticker == ${td.ticker} ")
+                    // Let this inconsistency through... if the signature matches, that's the real test
                     if (ticker != td.ticker)
                     {
-                        throw IncorrectTokenDescriptionDoc("ticker does not match asset genesis transaction")
+                        LogIt.info(sourceLoc() + ": $name == ${td.name}, $ticker == ${td.ticker} ")
+                        //throw IncorrectTokenDescriptionDoc("ticker $ticker does not match asset genesis transaction ${td.ticker}")
                     }
 
                     if (td.pubkey != null)  // the document signature passed
@@ -562,13 +659,13 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
                     // Guess one location for the market
                     td.marketUri = Url(du).resolve("/token/" + groupId.toHex()).toString()
                     tokenInfo = td  // ok save all the info
-                    val iconUrl = td?.icon
+                    val iconUrl = td.icon
                     if (iconUrl != null)
                     {
                         getTddIcon().let {
                             iconUri = it.first
-                            iconBytes = it.second
-                            iconBytes?.let { b -> iconImage = makeImageBitmap(b, ASSET_ICON_SIZE,ASSET_ICON_SIZE, ScaleMode.INSIDE) }
+                            iconBytes.value = it.second
+                            iconBytes.value?.let { b -> iconImage = makeImageBitmap(b, ASSET_ICON_SIZE,ASSET_ICON_SIZE, ScaleMode.INSIDE) }
                         }
                         loadState = AssetLoadState.COMPLETED
                     }
@@ -600,6 +697,7 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
                         }
                         catch (e: Exception)
                         {
+                            nextLoadAttempt = now + (2*60*1000)
                             // Something went wrong (probably out of memory).
                             logThreadException(e, "Exception opening NFT")
                         }
@@ -691,9 +789,7 @@ fun ElectrumClientFactory(blockchain: Blockchain): ()->ElectrumClient
             if (tmp != null && tmp.open) ec
             else
             {
-                ec = blockchain.net.getElectrum()
-                if (ec == null) millisleep(1000U)
-                ec
+                blockchain.net.getElectrum()
             }
         }
     }
@@ -708,10 +804,15 @@ class AssetManager(): AssetManagerStorage
     {
         if (s == null)
         {
-            return("http://" + NIFTY_ART_IP[groupId.blockchain] + "/_public/" + groupId.toStringNoPrefix())
+            return ("http://" + NIFTY_ART_IP[groupId.blockchain] + "/_public/" + groupId.toStringNoPrefix())
+        }
+        else
+        {
+            val url = Url(s)
+            return(url.protocolWithAuthority + "/raw/" + groupId.toStringNoPrefix())
         }
         // TODO many more ways to get it
-        return null
+
     }
 
 
@@ -721,20 +822,19 @@ class AssetManager(): AssetManagerStorage
      */
     fun track(groupId: GroupId, getEc: (() -> ElectrumClient)? = null): AssetInfo
     {
-
         var ret = access.lock { assets[groupId] }
-        if (ret != null)
+        if (ret?.loadState == AssetLoadState.COMPLETED)
         {
             // LogIt.info(sourceLoc() + ": Asset manager: already tracking ${groupId.toString()}")
             return ret
         }
-        LogIt.info(sourceLoc() + ": Asset manager: track ${groupId.toString()}")
-        try
+        if (ret==null) try  // Our cached version will always be the latest, but if we don't have it at all, load from disk
         {
             val ai = loadAssetInfo(groupId)
             // LogIt.info(sourceLoc() + ":   Asset manager: loaded ${ai.name} icon(${ai.iconBytes?.size ?: -1} bytes): ${ai.iconUri.toString()} group: ${groupId}")
             access.lock { assets[groupId] = ai }
-            return ai
+            if (ai.loadState == AssetLoadState.COMPLETED)
+                return ai
         }
         catch (e: Throwable)  // out of memory?
         {
@@ -745,21 +845,23 @@ class AssetManager(): AssetManagerStorage
             // logThreadException(e, "Ignored exception loading asset info for ${groupId}")
         }
 
+        // LogIt.info(sourceLoc() + ": Asset manager: track ${groupId.toString()}")
         val blockchain = connectBlockchain(groupId.blockchain)
         val gec = getEc ?: ElectrumClientFactory(blockchain)
 
-        ret = AssetInfo(groupId)
-        access.lock { assets[groupId] = ret }
+        // Init it with what we have or a new object
+        ret = access.lock { assets.getOrPut(groupId) { AssetInfo(groupId) } }
         if (getEc != null)
         {
-            LogIt.info("Immediate asset load for ${groupId}")
+            // LogIt.info("Immediate asset load for ${groupId}")
             ret.load(blockchain, this, gec)
             if (ret.loadState == AssetLoadState.COMPLETED)
                 storeAssetInfo(ret)
         }
-        else laterJob {
+        // By using laterOneJob with a name based on the groupId, I ensure that only one load job is enqueued for each particular token type
+        else laterOneJob("load ${groupId.toHex()}") {
             millisleep(1000U)
-            LogIt.info("Deferred asset load for ${groupId} happening now")
+            // LogIt.info("Deferred asset load for ${groupId} happening now")
             try
             {
                 ret.load(blockchain, this, gec)
@@ -834,14 +936,19 @@ class AssetManager(): AssetManagerStorage
         catch(e: ElectrumNotFound)
         {
             LogIt.warning(sourceLoc() + ": Token genesis not found. parent: ${groupId.parentGroup().toHex()} token: ${groupId.toHex()}")
-            displayError("Token genesis not found.")
-
+            //displayError("Token genesis not found.")
+            displayWarning(i18n(S.TokenMissing))
             throw e
         }
-        catch(e: Exception)  // Normalize exceptions
+        catch(e: TokenDataException)
+        {
+            throw e
+        }
+        catch(e: Exception)  // Normalize a bunch of internal exceptions
         {
             handleThreadException(e, "getting token info (assetmanager.getTokenDesc) for ${groupId}")
-            displayError("Rostrum request timeout error getting token info (assetmanager.getTokenDesc) for ${groupId}")
+            // We cannot show this all the time, we are more or less tolerant to rostrum issues (although tokens may not load as quickly)
+            // displayWarning(i18n(S.NetworkUnstable))
             throw ElectrumRequestTimeout()
         }
     }
@@ -857,11 +964,11 @@ class AssetManager(): AssetManagerStorage
         }
         catch(e: Exception) // file not found
         {
-            LogIt.info(sourceLoc() +": NFT ${groupId.toHex()} not in cache")
+            LogIt.info(sourceLoc() +": ${groupId} NFT not in cache")
         }
 
         var url = td?.nftUrl ?: nftUrl(td?.genesisInfo?.document_url, groupId)
-        LogIt.info(sourceLoc() + "${groupId} NFT URL: " + url)
+        LogIt.info(sourceLoc() + ": ${groupId} NFT URL: " + url)
 
         var zipBytes:ByteArray? = null
         if (url != null)
@@ -896,7 +1003,7 @@ class AssetManager(): AssetManagerStorage
 
         if (zipBytes != null && zipBytes.size > 0)
         {
-            LogIt.info("NFT file loaded for ${groupId}")
+            LogIt.info("${sourceLoc()}: ${groupId} NFT file loaded.")
 
             val hash = libnexa.hash256(zipBytes)
             if (groupId.subgroupData() contentEquals hash)
@@ -942,7 +1049,7 @@ class AssetManager(): AssetManagerStorage
         }
         catch(e:Exception)
         {
-            LogIt.info("Cannot store asset info: ${assetInfo.name}")
+            LogIt.info("Cannot store asset info: ${assetInfo.name} exception: $e")
         }
     }
 
@@ -959,7 +1066,7 @@ class AssetManager(): AssetManagerStorage
         ef.second.close()
         if (ret.iconUri != null)
         {
-            val bytes = if (ret.iconBytes != null) ret.iconBytes else
+            val bytes = if (ret.iconBytes.value != null) ret.iconBytes.value else
             {
                 ret.iconUri?.toString()?.let {
                     try
@@ -983,12 +1090,12 @@ class AssetManager(): AssetManagerStorage
     {
         val assetKeys = access.lock { assets.keys.toList() }
         for (k in assetKeys)
-           if (k!=null) kvpDb?.delete(k.data)
+           kvpDb?.delete(k.data)
         access.lock {
             for (v in assets.values)  // clean this data structure in case someone is holding a copy of it
             {
                 v.iconUri = null
-                v.iconBytes = null
+                v.iconBytes.value = null
                 v.tokenInfo = null
                 v.publicMediaUri = null
                 v.publicMediaBytes = null

@@ -3,6 +3,9 @@ package ui
 import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.AssetListItemView
+import org.nexa.assets.AssetInfo
+import org.nexa.assets.AssetPerAccount
+import org.nexa.assets.NexaNFTv2
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.GroupId
 import org.nexa.libnexakotlin.GroupInfo
@@ -18,7 +21,7 @@ class AssetsScreenTests:WallyUiTestBase()
         val assetInfo = AssetInfo(groupId)
         val title = "title"
         val series = "series"
-        assetInfo.nft = NexaNFTv2("niftyVer", title, series, "author", listOf(), "appUri","info")
+        assetInfo.nft = NexaNFTv2("niftyVer", title, series, "author", listOf(), "appUri", "info")
         val assetAmount = 2L
         val groupInfo = GroupInfo(groupId, assetAmount)
         val assetPerAccount = AssetPerAccount(groupInfo, assetInfo, null)

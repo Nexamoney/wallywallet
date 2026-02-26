@@ -31,6 +31,8 @@ import io.ktor.http.encodeURLParameter
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.*
+import org.nexa.assets.AssetPerAccount
+import org.nexa.assets.tokenAmountString
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
 import org.nexa.threads.millisleep
@@ -459,9 +461,10 @@ fun AssetListItemViewOld(assetPerAccount: AssetPerAccount, verbosity: Int = 1, a
     Column(modifier = modifier) {
         if ((devMode)&&(verbosity>0)) SelectionContainer(Modifier.fillMaxWidth()) { CenteredFittedText(asset.groupId.toStringNoPrefix()) }
         Row {
+            val iconBytes = asset.iconBytes.collectAsState().value
             val hasImage = if (asset.iconImage != null) "yes" else "null"
-            LogIt.info("Asset ${asset.name} icon Image ${hasImage} icon bytes: ${asset.iconBytes?.size} icon url: ${asset.iconUri}")
-            MpMediaView(asset.iconImage, asset.iconBytes, asset.iconUri?.toString(), hideMusicView = true) { mi, draw ->
+            // LogIt.info("Asset ${asset.name} icon Image ${hasImage} icon bytes: ${asset.iconBytes?.size} icon url: ${asset.iconUri}")
+            MpMediaView(asset.iconImage, iconBytes, asset.iconUri?.toString(), hideMusicView = true) { mi, draw ->
                 val m = (if (verbosity > 0) Modifier.background(Color.Transparent).size(64.dp, 64.dp)
                 else  Modifier.background(Color.Transparent).size(26.dp, 26.dp)).align(Alignment.CenterVertically)
                 draw(m)

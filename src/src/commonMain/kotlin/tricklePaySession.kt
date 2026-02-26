@@ -363,7 +363,7 @@ fun makeChallengeTx(sp: Spendable, challengerId: ByteArray, chalby: ByteArray): 
     }
     val cs = sp.chainSelector
     val tx = txFor(cs)
-    tx.add(txInputFor(sp))
+    tx.add(txInputFor(sp), SPENDABLE_UNRESERVED)  // We are just proving we CAN spend, so we do NOT want to reserve this UTXO
     tx.add(txOutputFor(cs, 0, SatoshiScript(cs, SatoshiScript.Type.SATOSCRIPT, OP.RETURN, OP.push(challengerId), OP.push(moddedChal))))
     (tx as NexaTransaction).version = OWNERSHIP_CHALLENGE_VERSION_MASK
     signTransaction(tx)

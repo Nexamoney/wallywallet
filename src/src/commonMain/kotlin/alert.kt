@@ -2,7 +2,7 @@ package info.bitcoinunlimited.www.wally
 import kotlinx.coroutines.channels.Channel
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.launch
-import org.nexa.libnexakotlin.millinow
+import org.nexa.threads.millinow
 
 private val LogIt = GetLog("wally.alert")
 // Alerts are something that you want to show to the user

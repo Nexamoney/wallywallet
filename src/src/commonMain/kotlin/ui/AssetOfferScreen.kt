@@ -24,6 +24,7 @@ import info.bitcoinunlimited.www.wally.ui.views.MpMediaView
 import io.github.alexzhirkevich.qrose.options.QrErrorCorrectionLevel
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.nexa.assets.AssetInfo
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.PayAddress
@@ -163,7 +164,7 @@ fun AssetOfferScreen(nav: ScreenNav, offer: AssetOffer, viewModel: AssetOfferVie
 
         Spacer(Modifier.height(16.dp))
 
-        MpMediaView(null, asset.iconBytes, asset.iconUri.toString(), hideMusicView = true) { mi, draw ->
+        MpMediaView(null, asset.iconBytes.collectAsState().value, asset.iconUri.toString(), hideMusicView = true) { mi, draw ->
             // Fill the media available space's x or y with the media, but draw a nice box around that space.
             // Its is amazing that this is so hard.
             // My approach is to determine the aspect ratio (x/y)of the image, and the aspect ratio of the available space.

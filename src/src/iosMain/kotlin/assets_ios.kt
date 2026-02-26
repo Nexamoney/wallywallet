@@ -1,4 +1,4 @@
-package info.bitcoinunlimited.www.wally
+package org.nexa.assets
 
 import okio.BufferedSink
 import okio.FileSystem
@@ -6,12 +6,49 @@ import okio.Path
 import okio.Path.Companion.toPath
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.GroupId
+import org.nexa.assets.*
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSSearchPathForDirectoriesInDomains
 import platform.Foundation.NSURL.Companion.URLWithString
 import platform.Foundation.NSUserDomainMask
 import platform.darwin.YESEXPR
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.usePinned
+import platform.Foundation.NSData
+import platform.Foundation.NSDataCompressionAlgorithmZlib
+import platform.Foundation.create
+import platform.Foundation.decompressedDataUsingAlgorithm
+import platform.Foundation.getBytes
+import kotlin.time.ExperimentalTime
 private val LogIt = GetLog("wally.assets_ios")
+
+@OptIn(ExperimentalForeignApi::class)
+fun ByteArray.toNSData(): NSData
+{
+    return usePinned { pinned ->
+        NSData.create(bytes = pinned.addressOf(0), length = size.toULong())
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+fun NSData.toByteArray(): ByteArray
+{
+    val len = length.toInt()
+    val ba = ByteArray(len)
+    ba.usePinned {
+        this.getBytes(it.addressOf(0))
+    }
+    return ba
+}
+
+@OptIn(ExperimentalForeignApi::class)
+actual fun inflateRfc1951(compressedBytes: ByteArray, expectedfinalSize: Long): ByteArray
+{
+    val nsd = compressedBytes.toNSData()
+    val dec = nsd.decompressedDataUsingAlgorithm(NSDataCompressionAlgorithmZlib, null)
+    return dec?.toByteArray() ?: byteArrayOf()
+}
 
 // Does not work
 /*

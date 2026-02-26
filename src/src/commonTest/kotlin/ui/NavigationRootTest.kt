@@ -23,6 +23,7 @@ import org.nexa.threads.millisleep
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import org.nexa.threads.millinow
 private val LogIt = GetLog("BU.wally.navRootTest")
 
 // Changing this value to several seconds (3000) makes the tests proceed at a human visible pace
