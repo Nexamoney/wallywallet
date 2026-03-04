@@ -51,6 +51,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.nexa.assets.AssetPerAccount
 import org.nexa.libnexakotlin.*
+import org.nexa.threads.millisleep
 
 private val LogIt = GetLog("BU.wally.SendScreen")
 
@@ -512,7 +513,7 @@ class SendScreenViewModelImpl(act: Account): SendScreenViewModel(act)
         tlater("actuallySend") {
             val cs = act.wallet.chainSelector
             var tx: iTransaction = txFor(cs)
-            if ((qty == BigDecimal.ZERO)&&sendList.isEmpty())  // Sending nothing
+            if ((qty == BigDecimal.ZERO) && sendList.isEmpty())  // Sending nothing
             {
                 displayError(i18n(S.badAmount))
             }
@@ -575,14 +576,20 @@ class SendScreenViewModelImpl(act: Account): SendScreenViewModel(act)
                         }
                         LogIt.info("Sending TX: ${tx.toHex()}")
                         clearAlerts()
-                        displayNotice(S.sendSuccess, "$atomAmt -> $sendAddress: ${tx.idem}")
-                        clear()
                         nav.go(ScreenId.Home)
+                        clear()
                         uiState.value = SendScreenUi() // We are done with a send so reset state machine
-                        requestInAppReview()
-                        sendSuccessAnimationIsPlaying.value = true
-                        viewModelScope.launch(Dispatchers.Main) {
-                            audioPlayer.playSound(0)
+                        // Delay and then check that the tx really is in our wallet (it might be rejected by full nodes)
+                        millisleep(2000U)
+                        val txh = act.wallet.getTx(tx.idem)
+                        if (txh != null)
+                        {
+                            displayNotice(S.sendSuccess, "$atomAmt -> $sendAddress: ${tx.idem}")
+                            requestInAppReview()
+                            sendSuccessAnimationIsPlaying.value = true
+                            viewModelScope.launch(Dispatchers.Main) {
+                                audioPlayer.playSound(0)
+                            }
                         }
                     }
                     catch (e: Exception)  // We don't want to crash, we want to tell the user what went wrong

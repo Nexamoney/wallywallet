@@ -105,6 +105,7 @@ class AccountPillTest:WallyUiTestBase()
                 onNodeWithTag("AccountPillFiatBalance").assertTextEquals(fiatBalance2).assertIsDisplayed()
                 onNodeWithTag("AccountPillFiatCurrencyCode").assertIsDisplayed()
                 settle()
+                ap.sync.finish()
             }
             catch (e: Exception)
             {

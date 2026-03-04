@@ -3,6 +3,7 @@ package info.bitcoinunlimited.www.wally
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import info.bitcoinunlimited.www.wally.ui.receivedNexaIsPlaying
+import info.bitcoinunlimited.www.wally.ui.triggerAccountsChanged
 import kotlin.concurrent.Volatile
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -300,6 +301,22 @@ class Account(
                           millisleep(1000U)
                           displayWarning(i18n(S.staleTransaction),i18n(S.staleTransactionDetails))
                       }
+                  }
+              }
+              if (true)
+              {
+                  /* If the change is not a rejected transaction, then see if we should play the receive animation */
+                  val rejr: String? = txh.rejectedReason
+                  if (rejr == null)
+                  {
+                      if (txh.incomingAmt - txh.outgoingAmt > 0)
+                      {
+                          receivedNexaIsPlaying.value = true
+                      }
+                  }
+                  else
+                  {
+                      displayWarning(rejr)
                   }
               }
           }
@@ -846,17 +863,12 @@ class Account(
     {
         try
         {
-            val priorBalance = balance
             // Update our cache of the balances
             val newBalance = fromFinestUnit(wallet.balance)
             balance = newBalance
             unconfirmedBalance.value = fromFinestUnit(wallet.unconfirmedBalanceDwim)
             confirmedBalance.value = fromFinestUnit(wallet.balanceConfirmed)
             onUpdatedReceiveInfo()
-            if ((priorBalance != null)&&(priorBalance < newBalance))
-            {
-                receivedNexaIsPlaying.value = true
-            }
         }
         catch (e: WalletDisconnectedException)
         {
@@ -867,7 +879,15 @@ class Account(
     /** This is called by the underlying layers whenever something in the wallet has changed */
     fun onChange(force: Boolean = false)
     {
-        onChanged(this, force)  // calls changeAsyncProcessing
+        onetlater("accountChanged_${name}") {
+            changeAsyncProcessing()
+            triggerAccountsChanged(this)
+        }
+        onetlater("accountAssetMap_${name}") {
+            constructAssetMap()
+            triggerAccountsChanged(this)
+        }
+        //onChanged(this, force)  // calls changeAsyncProcessing
     }
 
 
@@ -937,7 +957,7 @@ class Account(
     }
 }
 
-expect fun onChanged(account: Account, force: Boolean = false)
+// expect fun onChanged(account: Account, force: Boolean = false)
 
 fun containsAccountWithName(accounts: List<Account>, name: String): Boolean
 {

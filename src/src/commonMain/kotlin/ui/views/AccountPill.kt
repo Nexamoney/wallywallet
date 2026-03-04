@@ -47,6 +47,7 @@ import androidx.lifecycle.viewModelScope
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.SyncViewModel
+import info.bitcoinunlimited.www.wally.ui.SyncViewModelAccount
 import info.bitcoinunlimited.www.wally.ui.SyncViewModelImpl
 import info.bitcoinunlimited.www.wally.ui.nav
 import info.bitcoinunlimited.www.wally.ui.theme.wallyPurple
@@ -205,6 +206,7 @@ class BalanceViewModelImpl(val account : MutableStateFlow<Account?>): BalanceVie
 abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val dispatcher: CoroutineDispatcher = Dispatchers.Main): ViewModel()
 {
     abstract val balance: BalanceViewModel
+    abstract val otherBalance: BalanceViewModel  // balance of the other (being dragged) account pill
     abstract val sync: SyncViewModel
     // Set which account's balance we are tracking
     abstract fun setAccount(act: Account?)
@@ -220,10 +222,10 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
     @Composable
     fun AccountPillHeader(act: Account?)
     {
-        val bal = if (act == account.collectAsState().value) balance else BalanceViewModelImpl(act)
-        val currencyCode = act?.uiData()?.currencyCode ?: ""
+        val bal = if (act == account.collectAsState().value) balance else otherBalance
+        val currencyCode = act?.uiData()?.currencyCode ?: " "
         // If no account is available, do not show the pill
-        if (act == null) return
+        //if (act == null) return
 
         Row(
           modifier = Modifier.wrapContentHeight()
@@ -238,7 +240,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                  text = bal.cBalanceString(),
+                  text = bal?.cBalanceString() ?: " ",
                   style = ts,
                   textAlign = TextAlign.Center,
                   modifier = mod.testTag("AccountPillBalance"),
@@ -250,7 +252,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
         Row(
           modifier = Modifier.wrapContentHeight()
         ) {
-            val fiatBalance = bal.cFiatBalance()
+            val fiatBalance = bal?.cFiatBalance() ?: " "
             if (fiatBalance.isNotEmpty())
             {
                 Text(
@@ -282,7 +284,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                 Spacer(Modifier.width(12.dp))
             }
             Text(
-              text = act.name,
+              text = act?.name ?: " ",
               style = MaterialTheme.typography.labelLarge.copy(
                 color = Color.White,
                 fontWeight = FontWeight.Bold
@@ -454,6 +456,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
         val animatedOffset = remember { Animatable(0f) }
 
         var dupSide by remember { mutableStateOf(0f)}
+        var midSnap by remember { mutableStateOf(false) }
 
         var actLst = choices ?: wallyApp?.orderedAccounts(true)?.toList()
 
@@ -472,7 +475,6 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                           {
                               if (actLst?.isNotEmpty() == true)
                               {
-                                  //setAccount(if (dragAmount > 0) actLst.first() else actLst.last())
                                   changed = true
                               }
                           }
@@ -498,10 +500,13 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                           actLst = choices ?: wallyApp?.orderedAccounts(true)?.toList()
                           // go to the next account
                           val nextAccount = nextAct(dupSide, account.value, actLst)
+                          midSnap = true  // Tell the render to use the same account for both pills since we are transitioning them
                           setAccount(nextAccount)
+                          delay(100)
                           // Now snap the original box right on top of the other one, resetting the position
                           animatedOffset.snapTo(0f)
                           dupSide = 0f
+                          midSnap = false
                       }
                   }
               },
@@ -519,13 +524,20 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
             // Renders the main pill
             renderPill(act, animatedOffset.value, buttonsEnabled)
             // Renders the pill next to the main one during a drag
-            if (dupSide != 0f) renderPill(nextAct(dupSide, account.collectAsState().value, actLst), animatedOffset.value + (dupSide * boxSize.width), buttonsEnabled)
+            if (dupSide != 0f)
+            {
+                val curAct = account.collectAsState().value
+                val a = if (midSnap) curAct else nextAct(dupSide, curAct, actLst)
+                if (a!=null) otherBalance.setAccount(a)
+                renderPill(a, animatedOffset.value + (dupSide * boxSize.width), buttonsEnabled)
+            }
         }
     }
 }
 
 class AccountPillViewModelFake(account: MutableStateFlow<Account?>, override val balance: BalanceViewModel = BalanceViewModelImpl(account), override val sync: SyncViewModel = SyncViewModelImpl()): AccountPillViewModel(account)
 {
+    override val otherBalance: BalanceViewModel = balance
     override fun setAccount(act: Account?) {}
 }
 
@@ -539,7 +551,8 @@ class AccountPill(account: MutableStateFlow<Account?>): AccountPillViewModel(acc
     }
 
     override val balance = BalanceViewModelImpl(account.value)
-    override val sync = SyncViewModelImpl()
+    override val otherBalance = BalanceViewModelImpl(account.value)
+    override val sync = SyncViewModelAccount { account.value }
 
     override fun setAccount(act: Account?)
     {
@@ -547,8 +560,9 @@ class AccountPill(account: MutableStateFlow<Account?>): AccountPillViewModel(acc
         {
             LogIt.info("setting pill to an out-of-bounds account")
         }
-        // LogIt.info("AccountPill setAccount: $account set to ${act?.name}")
+        if (act!=null) balance.setAccount(act)
         account.value = act
+        sync.trigger()
     }
 
     var job: Job? = viewModelScope.launch(dispatcher) {

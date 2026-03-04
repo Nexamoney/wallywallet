@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter
 
 // Wally Wallet version
 // On version bump: Run ./gradlew generateVersionFile and commit the updates iosApp/iosApp/info.plist file
-val versionNumber = "3.10.00"
+val versionNumber = "3.20.02"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 
 val secSinceEpoch = Instant.now().epochSecond
@@ -295,9 +295,9 @@ kotlin {
                 implementation(compose.components.resources)
 
                 // Lottie animation library wrapper library
-                implementation("io.github.alexzhirkevich:compottie:2.0.2")
-                implementation("io.github.alexzhirkevich:compottie-dot:2.0.2")
-                implementation("io.github.alexzhirkevich:compottie-network:2.0.2")
+                implementation(libs.compottie)
+                implementation(libs.compottie.dot)
+                implementation(libs.compottie.network)
             }
         }
         val commonTest by getting {
@@ -432,7 +432,7 @@ kotlin {
                     implementation(libs.play.services.base)
 
                     // Play audio from resources file: https://medium.com/@brucemax/play-sounds-in-kotlin-multiplatform-using-multiplatform-resources-1b23716116d5
-                    implementation("androidx.media3:media3-exoplayer:1.8.0")
+                    implementation(libs.androidx.media3.exoplayer)
                 }
             }
         }

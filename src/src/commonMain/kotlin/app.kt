@@ -61,7 +61,7 @@ var kvpDb: KvpDatabase? = null
 fun tlater(name: String?=null, job: ()->Unit)
 {
     val jp = wallyApp?.threadJobPool
-    if (jp != null)
+    if (jp != null) // if its null we are exiting
     {
         // LogIt.info("Launching ${job} named ${jp?.wakey?.name} running threads: ${jp.allThreads.size} available: ${jp.availableThreads} jobs: ${jp.jobs.size}. Into: into ${jp} ")
         jp.later(name, job)
@@ -71,7 +71,7 @@ fun tlater(name: String?=null, job: ()->Unit)
 fun onetlater(name: String, job: ()->Unit)
 {
     val jp = wallyApp?.threadJobPool
-    if (jp != null)
+    if (jp != null)  // if its null we are exiting
     {
         // LogIt.info("Launching singleton ${job} named ${jp.wakey?.name} running threads: ${jp.allThreads.size} available: ${jp.availableThreads} jobs: ${jp.jobs.size}. Into: into ${jp} ")
         wallyApp?.threadJobPool?.oneLater(name, job)
@@ -603,7 +603,7 @@ open class CommonApp(val runningTests: Boolean)
     fun handlePaste(urlStrParam: String, autoHandle: Boolean = true, then: ((String,String, Boolean?)->Unit)?= null): Boolean
     {
         LogIt.info(sourceLoc() + ": QR/Paste is $urlStrParam")
-        var urlStr = urlStrParam
+        var urlStr = urlStrParam.trim()
         try
         {
             var uri = Uri.parse(urlStr)
@@ -617,7 +617,19 @@ open class CommonApp(val runningTests: Boolean)
             {
                 val uriq = if (uri.encodedQuery != null) "?" + uri.encodedQuery else ""
                 val p = (uri.encodedPath?.drop(1) ?: "") + uriq
-                val actualUri = p.replaceFirst("/","://")
+                var actualUri = ""
+                // For blockchain URI schemes there is no domain so nexa/address -> nexa:address, not nexa://address
+                for (c in uriToChain)
+                {
+                    val prefix = p.take(c.key.length).lowercase()
+                    if (prefix == c.key)
+                    {
+                        actualUri = p.replaceFirst("/", ":")
+                        break
+                    }
+                }
+                if (actualUri == "")
+                    actualUri = p.replaceFirst("/","://")
                 urlStr = actualUri
                 uri = Uri.parse(actualUri)
                 scheme = uri.scheme?.lowercase()
@@ -672,7 +684,12 @@ open class CommonApp(val runningTests: Boolean)
                     // providing no amount is fine
                 }
 
-                val note = (if (strlabel != null) strlabel.decodeURLPart() + ": " else "") + (strmessage?.decodeURLPart() ?: "")
+                val note = run {
+                    val label = strlabel?.decodeURLPart()
+                    val message = strmessage?.decodeURLPart()
+                    if (label != null && message != null) label + ":" + message
+                    else label ?: message
+                }
                 // When deep linking from native camera that is currently only supported on iOS, and handling the
                 // String content from the QR code navigating directly to the desired screen is enough.
                 // I don't think we need an external GUI drive to do this now that nav is a global variable
@@ -1020,7 +1037,10 @@ open class CommonApp(val runningTests: Boolean)
         dbgAssertNotGuiThread()
         openKvpDbIfNeeded()
         // I only want to write the PIN once when the account is first created
-        val epin = if (pin.length > 0) EncodePIN(name, pin) else null
+        val epin = if (pin.length > 0)
+        {
+            EncodePIN(name, pin)
+        } else null
 
         // When creating a new account, I want to make sure that the blockchain is opened so that I can use data from it
         // to fast forward the account to the current time
@@ -1157,7 +1177,8 @@ open class CommonApp(val runningTests: Boolean)
         dbgAssertNotGuiThread()
         openKvpDbIfNeeded()
         // I only want to write the PIN once when the account is first created
-        val epin = try
+
+        val epin = if (pin.trim().length>0) try
         {
             EncodePIN(name, pin.trim())
         }
@@ -1166,6 +1187,7 @@ open class CommonApp(val runningTests: Boolean)
         {
             null
         }
+        else null
 
         var veryEarly = earliestActivity
         if (nonstandardActivity != null)

@@ -18,8 +18,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.views.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.selects.onTimeout
+import kotlinx.coroutines.selects.select
 import org.nexa.libnexakotlin.*
+import org.nexa.threads.Gate
+import org.nexa.threads.Mutex
+import org.nexa.threads.millinow
+import org.nexa.threads.millisleep
 
 private val LogIt = GetLog("wally.HomeScreen")
 
@@ -29,6 +36,9 @@ var sendToAddress: MutableStateFlow<String> = MutableStateFlow("")
 abstract class SyncViewModel: ViewModel()
 {
     val isSynced = MutableStateFlow(false)
+
+    /* Trigger an update of the isSynced state (may be a no-op if this does not make sense for the object being synced) */
+    open fun trigger() {}
 }
 
 class SyncViewModelFake: SyncViewModel()
@@ -47,6 +57,41 @@ class SyncViewModelImpl : SyncViewModel()
                 delay(1000)
             }
         }
+    }
+}
+
+class SyncViewModelAccount(val getAccount:()->Account?) : SyncViewModel()
+{
+    val check = Channel<Unit>(Channel.CONFLATED)
+    private var job: Job = viewModelScope.launch {
+            while (isActive)
+            {
+                // Are you looping forever rapidly in unit tests?  You must call finish() to end this!
+
+                yield()
+                isSynced.value = getAccount()?.wallet?.synced() ?: false
+                //LogIt.info("sync timer ${millinow()}")
+                select<Unit> {
+                    this.onTimeout(1000L) {
+                        // LogIt.info("timed out")
+                        // Note may return instantly in a test context
+                    }
+                    check.onReceive {
+                        //LogIt.info("channel receive")
+                    }
+                }
+            }
+        }
+
+    fun finish()
+    {
+        job.cancel()
+        trigger()
+    }
+
+    override fun trigger()
+    {
+        check.trySend(Unit)
     }
 }
 

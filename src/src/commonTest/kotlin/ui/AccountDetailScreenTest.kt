@@ -9,6 +9,8 @@ import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.AccountDetailScreen
 import info.bitcoinunlimited.www.wally.ui.AccountStatisticsViewModelFake
 import info.bitcoinunlimited.www.wally.ui.setSelectedAccount
+import info.bitcoinunlimited.www.wally.ui.views.AccountPillViewModelFake
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.ChainSelector
 import kotlin.test.Test
 
@@ -22,24 +24,16 @@ class AccountDetailScreenTest:WallyUiTestBase()
         val account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
 
         runComposeUiTest {
-            val viewModelStoreOwner = object : ViewModelStoreOwner
-            {
-                override val viewModelStore: ViewModelStore = ViewModelStore()
-            }
-
             /*
                 Set selected account to populate the UI
             */
             setSelectedAccount(account)
 
+            val ap = AccountPillViewModelFake(MutableStateFlow(account))
             val accountStatsViewModel = AccountStatisticsViewModelFake(account)
 
             setContent {
-                CompositionLocalProvider(
-                  LocalViewModelStoreOwner provides viewModelStoreOwner
-                ) {
-                    AccountDetailScreen(accountStatsViewModel)
-                }
+                AccountDetailScreen(accountStatsViewModel, ap)
             }
             settle()
 

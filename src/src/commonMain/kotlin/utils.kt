@@ -507,6 +507,12 @@ suspend fun waitFor(maxTime: Int, predicate:()->Boolean)
     }
 }
 
+fun String.trimToNull(): String?
+{
+    val ret = trim()
+    return if (ret.isEmpty()) null else ret
+}
+
 /*
 fun Uri.accessWithError(): Pair<String,Int>
 {

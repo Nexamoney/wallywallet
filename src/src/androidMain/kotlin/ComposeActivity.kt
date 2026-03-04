@@ -146,6 +146,7 @@ class ComposeActivity: CommonActivity()
                 }
                 return
             }
+            /*
             READ_MEDIA_IMAGES_RESULT ->
             {
                 // If request is cancelled, the result arrays are empty.
@@ -162,6 +163,8 @@ class ComposeActivity: CommonActivity()
                 }
                 return
             }
+
+             */
             // Add other 'when' lines to check for other permissions this app might request.
             else ->
             {

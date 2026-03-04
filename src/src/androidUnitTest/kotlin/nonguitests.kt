@@ -297,19 +297,18 @@ class NonGuiTests
 
         LogIt.info("Test starting block is: ${blkStart}")
 
-        // clean up old runs
-        deleteWalletFile("testwalletrecovery", wallyAccountDbFileName("testwalletrecovery"), cs)
-        deleteWalletFile("a1", wallyAccountDbFileName("a1"), cs)
-        deleteWalletFile("a2", wallyAccountDbFileName("a2"), cs)
-        deleteWalletFile("a3", wallyAccountDbFileName("a3"), cs)
-
         REG_TEST_ONLY = true
         if (wallyApp == null)
         {
             wallyApp = CommonApp(true)
             wallyApp!!.onCreate()
-            wallyApp!!.openAllAccounts()
         }
+
+        // clean up old runs (must happen after the app is created so dbPrefix is test to test mode)
+        deleteWalletFile("testwalletrecovery", wallyAccountDbFileName("testwalletrecovery"), cs)
+        deleteWalletFile("a1", wallyAccountDbFileName("a1"), cs)
+        deleteWalletFile("a2", wallyAccountDbFileName("a2"), cs)
+        deleteWalletFile("a3", wallyAccountDbFileName("a3"), cs)
 
         val account = wallyApp!!.newAccount("testwalletrecovery", 0U, "", cs)!!
         account.start()
@@ -319,7 +318,7 @@ class NonGuiTests
             "sync unsuccessful, at: ${account.wallet.chainstate!!.syncedHeight}"
         } )
 
-        // New account stats should be empty (if not, its getting data from the deleted account
+        // New account stats should be empty (if not, its getting data from the deleted account)
         val aEmpty = account.wallet.statistics()
         LogIt.info("Empty stats: $aEmpty")
         check(aEmpty.totalTxos==0)
@@ -412,6 +411,10 @@ class NonGuiTests
         check(a1.wallet.balance == 0L)
         srch.close()
         LogIt.info("recovery test completed")
+        a3.delete()
+        a2.delete()
+        a1.delete()
+        account.delete()
     }
 
 

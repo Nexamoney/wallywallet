@@ -17,6 +17,7 @@ actual fun EncodePIN(actName: String, pin: String, size: Int): ByteArray
     return seed.encoded.slice(IntRange(0, size - 1)).toByteArray()
 }
 
+/*
 actual fun onChanged(account: Account, force: Boolean)
 {
     onetlater("accountChanged_${account.name}") {
@@ -28,3 +29,5 @@ actual fun onChanged(account: Account, force: Boolean)
         triggerAccountsChanged(account)
     }
 }
+
+ */

@@ -168,11 +168,9 @@ class NavigationRootTest: WallyUiTestBase()
     @Test fun unlockTest()
     {
         runComposeUiTest {
-            val viewModelStoreOwner = object : ViewModelStoreOwner { override val viewModelStore: ViewModelStore = ViewModelStore() }
+            val ap = AccountPill(wallyApp!!.focusedAccount)
             setContent {
-                CompositionLocalProvider(LocalViewModelStoreOwner provides viewModelStoreOwner) {
-                    NavigationRoot(Modifier, WindowInsets(0,0,0,0))
-                }
+                NavigationRoot(Modifier, WindowInsets(0,0,0,0), ap)
             }
             settle()
             nav.switch(ScreenId.Home)
@@ -184,6 +182,7 @@ class NavigationRootTest: WallyUiTestBase()
             onNodeWithTag("EnterPIN").performTextInput("1111")
             settle()
             onNodeWithTag("EnterPIN").multiplatformImeAction()
+            ap.sync.finish()
         }
     }
     @Test fun navRootTest()
@@ -193,7 +192,6 @@ class NavigationRootTest: WallyUiTestBase()
             {
                 override val viewModelStore: ViewModelStore = ViewModelStore()
             }
-
 
             val assetViewModel = AssetViewModelFake()
             val accountUiDataViewModel = AccountUiDataViewModelFake()
@@ -212,6 +210,7 @@ class NavigationRootTest: WallyUiTestBase()
                 onNodeWithTag("RootScaffold").assertIsNotDisplayed()
 
             settle()
+            apvm.sync.finish()
         }
     }
 }

@@ -83,6 +83,7 @@ class ReceiveScreenTest:WallyUiTestBase(false)
             println("Finished")
             settle()
             // waitFor<Boolean> { clipboardText.value == address.address.toString() }
+            pill.sync.finish()
         }
         account.delete()
     }

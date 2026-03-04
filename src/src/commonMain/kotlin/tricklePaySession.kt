@@ -13,10 +13,13 @@ import org.nexa.libnexakotlin.simpleapi.NexaScript
 import com.eygraber.uri.*
 import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.views.AccountPill
+import info.bitcoinunlimited.www.wally.ui.views.AssetViewModel
 import io.ktor.http.Url
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.io.IOException
 import kotlinx.serialization.Serializable
+import org.nexa.assets.AssetInfo
+import org.nexa.assets.AssetPerAccount
 import org.nexa.threads.Mutex
 import org.nexa.threads.millisleep
 
@@ -51,6 +54,7 @@ data class TxAnalysisResults(
   val sendingTokenInfo: Map<GroupId, Long>,  // This wallet is sending these tokens to another wallet
   val receivingTokenInfo: Map<GroupId, Long>,  // This wallet is receiving these tokens
   val myNetTokenInfo: Map<GroupId, Long>,  // If < 0 this wallet is spending these tokens.  If > 0 this wallet is receiving tokens.  If == 0 (verses undefined) the wallet presented (sent to itself) the token type
+  val assetViewModel: AssetViewModel,
   val completionException: Exception?
 )
 
@@ -1233,6 +1237,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                 if (iSuppliedTokens != null)
                 {
                     imSpendingTokenTypes++
+                    wallyApp?.assetManager?.track(iSuppliedTokens.groupId)
                     if (!iSuppliedTokens.isAuthority())
                         myInputTokenInfo[iSuppliedTokens.groupId] = (myInputTokenInfo[iSuppliedTokens.groupId] ?: 0) + iSuppliedTokens.tokenAmount
                 }
@@ -1251,6 +1256,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                 if ((groupInfo != null) && (!groupInfo.isAuthority()))
                 {
                     receivingTokenTypes++
+                    wallyApp?.assetManager?.track(groupInfo.groupId)
                     receivingTokenInfo[groupInfo.groupId] = (receivingTokenInfo[groupInfo.groupId] ?: 0) + groupInfo.tokenAmount
                 }
             }
@@ -1259,6 +1265,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                 sendingSats += out.amount
                 if ((groupInfo != null) && (!groupInfo.isAuthority()))
                 {
+                    wallyApp?.assetManager?.track(groupInfo.groupId)
                     sendingTokenTypes++
                     sendingTokenInfo[groupInfo.groupId] = (receivingTokenInfo[groupInfo.groupId] ?: 0) + groupInfo.tokenAmount
                 }
@@ -1280,7 +1287,19 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
             myNetTokenInfo[k] = (myNetTokenInfo.get(k) ?: 0L) - v
         }
 
-        return TxAnalysisResults(act, receivingSats, sendingSats, receivingTokenTypes, sendingTokenTypes, imSpendingTokenTypes, inputSatoshis, iFunded, myInputTokenInfo, sendingTokenInfo, receivingTokenInfo, myNetTokenInfo, completionException)
+        val avm = AssetViewModel(false)
+        val alst = mutableListOf<AssetInfo>()
+        for ((gid, amt) in myNetTokenInfo)
+        {
+            val ai = wallyApp?.assetManager?.assets[gid]  // This will always resolve because we call track above
+            if (ai != null) alst.add(ai)
+        }
+        avm.amounts.value = myNetTokenInfo
+        avm.assets.value = alst
+        LogIt.info("trickle pay assets ${alst.size} myNetTokenInfo: ${myNetTokenInfo.size}\n$alst, ")
+
+        return TxAnalysisResults(act, receivingSats, sendingSats, receivingTokenTypes, sendingTokenTypes, imSpendingTokenTypes, inputSatoshis, iFunded,
+          myInputTokenInfo, sendingTokenInfo, receivingTokenInfo, myNetTokenInfo, avm, completionException)
     }
 }
 
