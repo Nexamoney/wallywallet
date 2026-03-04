@@ -28,5 +28,6 @@ class UnlockViewTest:WallyUiTestBase()
         onNodeWithTag("EnterPIN").assert(hasText(input))
         if (platform().hasDoneButton)
             onNodeWithTag("UnlockTileAccept").assertIsDisplayed()
+        println("unlockViewTest complete")
     }
 }

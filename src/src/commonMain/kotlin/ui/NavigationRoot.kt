@@ -1245,7 +1245,10 @@ fun NavigationRoot(
                                 }
 
                                 ScreenId.Settings -> SettingsScreen()
-                                ScreenId.AccountDetails -> withUnlockedAccount { AccountDetailScreen(it) }
+                                ScreenId.AccountDetails -> withUnlockedAccount {
+                                    val asvm = AccountStatisticsViewModel(it)
+                                    AccountDetailScreen(asvm, accountPillViewModel)
+                                }
                                 ScreenId.Assets -> withAccount { AssetScreen(it) {
                                     scope.launch {
                                     expanded.value = false

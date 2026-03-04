@@ -18,6 +18,7 @@ actual fun EncodePIN(actName: String, pin: String, size: Int): ByteArray
 }
 
 /** Call whenever the state of this account has changed so needs to be redrawn.  Or on first draw (with force = true) */
+/*
 actual fun onChanged(account: Account, force: Boolean)
 {
     onetlater("accountChanged_${account.name}") {
@@ -29,4 +30,4 @@ actual fun onChanged(account: Account, force: Boolean)
         triggerAccountsChanged(account)
     }
 }
-
+*/

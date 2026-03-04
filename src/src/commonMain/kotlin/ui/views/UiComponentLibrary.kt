@@ -1068,8 +1068,8 @@ fun Syncing(syncColor: Color = Color.White, syncViewModel: SyncViewModel = viewM
 {
     val isSynced = syncViewModel.isSynced.collectAsState().value
     val infiniteTransition = rememberInfiniteTransition()
-    val syncingText = "Syncing" // TODO: Move to string resource
-    val syncedText = "Synced" // TODO: Move to string resource
+    val syncingText = i18n(S.unsynced)
+    val syncedText = i18n(S.synced)
 
     val animation by infiniteTransition.animateFloat(
       initialValue = 360f,

@@ -218,12 +218,14 @@ class AccountStatisticsViewModelFake(act: Account) : AccountStatisticsViewModel(
     }
 }
 
+/*
 @Composable fun AccountDetailScreen(account: Account)
 {
     AccountDetailScreen(AccountStatisticsViewModel(account))
 }
+ */
 
-@Composable fun AccountDetailScreen(accountStatsViewModel: AccountStatisticsViewModel)
+@Composable fun AccountDetailScreen(accountStatsViewModel: AccountStatisticsViewModel, ap: AccountPillViewModel)
 {
     val account = accountStatsViewModel.account
     val act = account.collectAsState().value
@@ -231,7 +233,7 @@ class AccountStatisticsViewModelFake(act: Account) : AccountStatisticsViewModel(
     else  // we have an account
     {
         val scrollState = rememberScrollState()
-        val ap = AccountPill(account)
+        ap.setAccount(act) // Whenever the account changes, push that to the pill
 
         Column(modifier = Modifier.verticalScroll(scrollState)) {
             Spacer(Modifier.height(16.dp))

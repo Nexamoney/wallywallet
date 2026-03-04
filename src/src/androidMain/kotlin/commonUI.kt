@@ -41,7 +41,7 @@ const val SUP = "UNUSED_PARAMETER"
 
 val IMAGE_RESULT = 27723
 val READ_FILES_PERMISSION_RESULT = 27724
-val READ_MEDIA_IMAGES_RESULT = 27725
+// val READ_MEDIA_IMAGES_RESULT = 27725
 
 // Assign this in your App.onCreate
 var displayMetrics = DisplayMetrics()

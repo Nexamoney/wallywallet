@@ -8,63 +8,70 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.runBlocking
 import org.nexa.libnexakotlin.ChainSelector
+import org.nexa.libnexakotlin.GetLog
+import org.nexa.libnexakotlin.deleteWalletFile
 import kotlin.test.Test
+
+private val LogIt = GetLog("BU.wally.perm")
 
 @OptIn(ExperimentalTestApi::class, ExperimentalUnsignedTypes::class)
 class AccountPermissionScreensTest:WallyUiTestBase()
 {
-    @Test
-    fun sendToPermScreenTest() = runComposeUiTest {
-        val cs = ChainSelector.NEXA
-        lateinit var account: Account
-        runBlocking(Dispatchers.IO) {
-            account = wallyApp!!.newAccount("sendto", 0U, "", cs)!!
-        }
-        val tp = TricklePaySession(wallyApp!!.tpDomains)
+    val cs = ChainSelector.NEXAREGTEST
 
-        setContent {
-            SendToPermScreen( tp, ScreenNav())
+    @Test
+    fun sendToPermScreenTest()
+    {
+        val account = wallyApp!!.newAccount("sendto", 0U, "", cs)!!
+        runComposeUiTest {
+            val tp = TricklePaySession(wallyApp!!.tpDomains)
+            setContent {
+                SendToPermScreen( tp, ScreenNav())
+            }
+            tp.pill.sync.finish()
         }
         wallyApp!!.deleteAccount(account)
     }
 
     @Test
-    fun assetInfoPermScreenTest() = runComposeUiTest {
-        val cs = ChainSelector.NEXA
-        lateinit var account: Account
-        runBlocking(Dispatchers.IO) {
-            account = wallyApp!!.newAccount("sendto", 0U, "", cs)!!
+    fun assetInfoPermScreenTest()
+    {
+        val account = wallyApp!!.newAccount("assetInfo", 0U, "", cs)!!
+        runComposeUiTest {
+            val tp = TricklePaySession(wallyApp!!.tpDomains)
+            setContent {
+                AssetInfoPermScreen(account, tp, ScreenNav())
+            }
+            /**
+             * Assert text is displayed and click "deny"
+             */
+            onNodeWithText(i18n(S.TpAssetRequestFrom)).assertIsDisplayed()
+            onNodeWithText(i18n(S.TpHandledByAccount)).assertIsDisplayed()
+            onNodeWithText(i18n(S.TpAssetInfoNotXfer)).assertIsDisplayed()
+            onNodeWithText(i18n(S.accept)).assertIsDisplayed()
+            onNodeWithText(i18n(S.deny)).assertIsDisplayed()
+            onNodeWithText(i18n(S.deny)).performClick()
+            tp.pill.sync.finish()
         }
-        val tp = TricklePaySession(wallyApp!!.tpDomains)
-
-        setContent {
-            AssetInfoPermScreen(account, tp, ScreenNav())
-        }
-
-        /**
-         * Assert text is displayed and click "deny"
-         */
-        onNodeWithText(i18n(S.TpAssetRequestFrom)).assertIsDisplayed()
-        onNodeWithText(i18n(S.TpHandledByAccount)).assertIsDisplayed()
-        onNodeWithText(i18n(S.TpAssetInfoNotXfer)).assertIsDisplayed()
-        onNodeWithText(i18n(S.accept)).assertIsDisplayed()
-        onNodeWithText(i18n(S.deny)).assertIsDisplayed()
-        onNodeWithText(i18n(S.deny)).performClick()
         wallyApp!!.deleteAccount(account)
     }
 
     @Test
-    fun identityPermScreenUriNullTest() = runComposeUiTest {
-        val cs = ChainSelector.NEXA
-        val nav = ScreenNav()
-        lateinit var account: Account
-        runBlocking(Dispatchers.IO) {
-            account = wallyApp!!.newAccount("sendto", 0U, "", cs)!!
+    fun identityPermScreenUriNullTest()
+    {
+        val account = Account("identityPerm", chainSelector = cs)
+        runComposeUiTest {
+            setSelectedAccount(account)
+            val nav = ScreenNav()
+            val sess = IdentitySession(null)
+            setContent {
+                IdentityPermScreen(sess, nav)
+            }
+            LogIt.info("Identity perm screen up")
+            settle()
+            LogIt.info("Identity perm test done")
+            sess.pill.sync.finish()
         }
-
-        setContent {
-            IdentityPermScreen(IdentitySession(null), nav)
-        }
-        wallyApp!!.deleteAccount(account)
+        account.delete()
     }
 }

@@ -224,7 +224,7 @@ fun SpecialTxPermScreen(sess: TricklePaySession)
 
 
     panalysis.myNetTokenInfo.let {
-        for ((_, v) in panalysis.myNetTokenInfo)
+        for ((_, v) in it)
         {
             if (v > 0) receivingTokenTypes++
             else if (v < 0) spendingTokenTypes++
@@ -553,7 +553,12 @@ fun SpecialTxPermScreen(sess: TricklePaySession)
                                       labelRes = S.assets,
                                       value = "$receivingTokenTypes"
                                     )
+                                    // Indent the asset list under the Assets header
+                                    Box(modifier = Modifier.fillMaxWidth().padding(2.dp,0.dp,0.dp,0.dp)) {
+                                        AssetTinyTable(panalysis.assetViewModel) { ai, vm -> (vm.amounts.value[ai.groupId] ?: 1) > 0 }
+                                    }
                                 }
+
                             }
                         }
                     }

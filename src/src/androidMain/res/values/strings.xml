@@ -143,9 +143,9 @@ Good luck!
     <!-- If the user deletes something - like a connection to an external service, this is the confirmation string that the info was removed.  It needs to be short. -->
     <string name="removed">removed</string>
     <!-- wallet is up to date with the blockchain -->
-    <string name="synced">ready</string>
+    <string name="synced">Synced</string>
     <!-- wallet is still connecting to the blockchain -->
-    <string name="unsynced">synchronizing</string>
+    <string name="unsynced">Syncing</string>
     <string name="connected">connected</string>
     <string name="connectionEstablished">connection established</string>
     <string name="connectionClosed">connection closed</string>

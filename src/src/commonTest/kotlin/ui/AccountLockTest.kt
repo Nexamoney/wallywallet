@@ -12,6 +12,7 @@ import info.bitcoinunlimited.www.wally.*
 import org.nexa.libnexakotlin.ChainSelector
 import androidx.compose.ui.text.AnnotatedString
 import info.bitcoinunlimited.www.wally.ui.*
+import info.bitcoinunlimited.www.wally.ui.views.AccountPill
 import info.bitcoinunlimited.www.wally.ui.views.AccountUiDataViewModel
 import info.bitcoinunlimited.www.wally.ui.views.AssetViewModel
 import info.bitcoinunlimited.www.wally.ui.views.BalanceViewModel
@@ -43,26 +44,22 @@ class AccountLockTest:WallyUiTestBase()
         val wInsets = WindowInsets(0,0,0,0)
 
         runComposeUiTest {
-            val viewModelStoreOwner = object : ViewModelStoreOwner {
-                override val viewModelStore: ViewModelStore = ViewModelStore()
-            }
 
             // Initialize ViewModels
             val assetViewModel = AssetViewModel()
             val balanceViewModel: BalanceViewModel = BalanceViewModelImpl(account)
             val accountUiDataViewModel = AccountUiDataViewModel()
+            val pill = AccountPill(wallyApp!!.focusedAccount)
             /*
                 Set content to NavigationRoot (the root composable that handles navigation)
              */
             setContent {
-                CompositionLocalProvider(
-                    LocalViewModelStoreOwner provides viewModelStoreOwner
-                ) {
                     NavigationRoot(Modifier, wInsets,
+                      pill,
                         assetViewModel = assetViewModel,
                         accountUiDataViewModel = accountUiDataViewModel
                     )
-                }
+
             }
             // Select the account
             setSelectedAccount(account)
@@ -134,8 +131,12 @@ class AccountLockTest:WallyUiTestBase()
             waitForCatching { onNodeWithTag("AccountPillAccountName").isDisplayed() }
             LogIt.info("Purple tile name shown")
             settle()
+            LogIt.info("testLockAccount Complete")
+            pill.sync.finish()
+            LogIt.info("sync check finished")
             }
         wallyApp!!.deleteAccount(account)
+        LogIt.info("testLockAccount account closed")
         }
 
     }

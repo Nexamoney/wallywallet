@@ -229,6 +229,7 @@ open class AccountUiDataViewModel: ViewModel()
         }
     }
 
+    /*
     // This should probably be moved to a viewModel with only one account
     open fun fastForwardSelectedAccount()
     {
@@ -251,6 +252,7 @@ open class AccountUiDataViewModel: ViewModel()
             }
         }
     }
+    */
 }
 
 // This should probably be moved to a viewModel with only one account
@@ -286,10 +288,13 @@ class AccountUiDataViewModelFake: AccountUiDataViewModel()
 
     }
 
+    /*
     override fun fastForwardSelectedAccount()
     {
 
     }
+
+     */
 }
 
 @Composable fun AccountListView(nav: ScreenNav, accountUiDataViewModel: AccountUiDataViewModel)
@@ -574,7 +579,8 @@ fun derivationPathSearch(progress: DerivationPathSearchProgress, wallet: Bip44Wa
     return Thread("ff_${wallet.name}")
     {
         var ec: ElectrumClient? = null
-        fun getEc():ElectrumClient {
+        fun getEc():ElectrumClient
+        {
             return retry(10) {
                 val tmp = ec
                 if (tmp != null && tmp.open) ec

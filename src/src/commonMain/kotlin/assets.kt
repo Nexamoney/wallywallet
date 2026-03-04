@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUnsignedTypes::class)
+
 package org.nexa.assets
 
 import androidx.compose.ui.graphics.ImageBitmap
@@ -98,6 +100,10 @@ val NIFTY_ART_WEB = mapOf(
   // Enable manually for niftyart development: ChainSelector.NEXAREGTEST to "192.168.1.5:8988"
   ChainSelector.NEXATESTNET to "https://testnet.niftyart.cash"
 )
+val NEXA_SPACE_WEB = mapOf(
+  ChainSelector.NEXA to "https://nexa.space",
+  ChainSelector.NEXATESTNET to "https://nexa.space"
+)
 
 fun String.runCommand(): String?
 {
@@ -181,14 +187,18 @@ fun AssetLoaderThread(ready:()->Boolean, getAccounts:()->List<Account> ): iThrea
                 // Refresh all assets
                 for (a in accounts)
                 {
-                    LogIt.info(sourceLoc() + ":   asset check for ${a.name}")
-                    try
+                    val walSyncedAt = a.wallet.chainstate?.syncedHeight ?: 0
+                    if (a.chain.curHeight < walSyncedAt+4)  // Do not check for assets while syncing the wallet to the blockchain
                     {
-                        a.constructAssetMap({ getEc(a.chain) })
-                    }
-                    catch(e: ElectrumRequestTimeout)
-                    {
-                        // ec.close()
+                        LogIt.info(sourceLoc() + ":   asset check for ${a.name}")
+                        try
+                        {
+                            a.constructAssetMap({ getEc(a.chain) })
+                        }
+                        catch (e: ElectrumRequestTimeout)
+                        {
+                            // ec.close()
+                        }
                     }
                 }
             }
@@ -197,7 +207,7 @@ fun AssetLoaderThread(ready:()->Boolean, getAccounts:()->List<Account> ): iThrea
                 handleThreadException(e)
             }
             LogIt.info(sourceLoc() + ": asset check complete pacer level: ${assetCheckPacer.level}, ${assetCheckPacer.done}")
-            val now = org.nexa.threads.millinow()
+            val now = millinow()
 
 
             assetCheckPacer.take(5*1000)  // As an average minimum, wait for 5 seconds between asset checks
@@ -211,7 +221,7 @@ fun AssetLoaderThread(ready:()->Boolean, getAccounts:()->List<Account> ): iThrea
                 //assetCheckPacer.trytake(min(assetCheckPacer.level, 5000)) {}
                 LogIt.info(sourceLoc() + ": asset delay timeout")
             }
-            LogIt.info(sourceLoc() + ": asset check wakeup pacer level: ${assetCheckPacer.level} time delta: ${org.nexa.threads.millinow() - now}")
+            LogIt.info(sourceLoc() + ": asset check wakeup pacer level: ${assetCheckPacer.level} time delta: ${millinow() - now}")
         }
     }
 }
@@ -800,19 +810,22 @@ class AssetManager(): AssetManagerStorage
     protected var access = Mutex("assetLock")
     var assets = mutableMapOf<GroupId, AssetInfo>()
 
-    fun nftUrl(s: String?, groupId: GroupId):String?
+    fun nftUrl(s: String?, groupId: GroupId):List<String>
     {
-        if (s == null)
+        if (s == null) // Look in well known locations
         {
-            return ("http://" + NIFTY_ART_IP[groupId.blockchain] + "/_public/" + groupId.toStringNoPrefix())
+            return listOf("${NIFTY_ART_WEB[groupId.blockchain]}/raw/${groupId.toStringNoPrefix()}",
+              "${NEXA_SPACE_WEB[groupId.blockchain]}/raw/${groupId.toStringNoPrefix()}",
+              )
         }
         else
         {
             val url = Url(s)
-            return(url.protocolWithAuthority + "/raw/" + groupId.toStringNoPrefix())
+            // Look in canonical locations defined by this url (token genesis) URL first, then look in well known locations
+            return listOf(url.protocolWithAuthority + "/raw/" + groupId.toStringNoPrefix(), url.protocolWithAuthority + "/public/" + groupId.toStringNoPrefix(),
+              "${NIFTY_ART_WEB[groupId.blockchain]}/raw/${groupId.toStringNoPrefix()}",
+              "${NEXA_SPACE_WEB[groupId.blockchain]}/raw/${groupId.toStringNoPrefix()}")
         }
-        // TODO many more ways to get it
-
     }
 
 
@@ -967,68 +980,55 @@ class AssetManager(): AssetManagerStorage
             LogIt.info(sourceLoc() +": ${groupId} NFT not in cache")
         }
 
-        var url = td?.nftUrl ?: nftUrl(td?.genesisInfo?.document_url, groupId)
-        LogIt.info(sourceLoc() + ": ${groupId} NFT URL: " + url)
+        val possibleLocations = mutableListOf<String?>(td?.nftUrl)
+        possibleLocations.addAll(nftUrl(td?.genesisInfo?.document_url, groupId))
 
-        var zipBytes:ByteArray? = null
-        if (url != null)
+        for (url in possibleLocations)
         {
+            var zipBytes: ByteArray? = null
+            if (url == null) continue
+
             try
             {
                 LogIt.info(sourceLoc() + ": ${groupId} trying NFT URL: " + url)
                 zipBytes = Url(url).readBytes(context = tokenCoCtxt)
                 LogIt.info(sourceLoc() + ": ${groupId} received ${zipBytes.size} for NFT URL: " + url)
             }
-            catch(e:Exception)
+            catch (e: Exception)
             {
-                logThreadException(e, "(from token doc location) NFT not loaded ")
+                // logThreadException(e, "(from token doc location) NFT not loaded ")
             }
-        }
 
-        // Try well known locations
-        if (zipBytes == null || zipBytes.size == 0)
-        {
-            try
+            if (zipBytes != null && zipBytes.size > 0)
             {
-                url = "${NIFTY_ART_WEB[groupId.blockchain]}/_public/${groupId.toStringNoPrefix()}"
-                LogIt.info(sourceLoc() + "${groupId} trying Niftyart NFT URL: " + url)
-                zipBytes = Url(url).readBytes(context = tokenCoCtxt)
-                LogIt.info(sourceLoc() + "${groupId} received ${zipBytes.size} for Niftyart NFT URL: " + url)
-            }
-            catch(e: Exception)
-            {
-                logThreadException(e, "(trying niftyart) NFT not loaded ")
-            }
-        }
+                LogIt.info("${sourceLoc()}: ${groupId} NFT file loaded from $url.")
 
-        if (zipBytes != null && zipBytes.size > 0)
-        {
-            LogIt.info("${sourceLoc()}: ${groupId} NFT file loaded.")
-
-            val hash = libnexa.hash256(zipBytes)
-            if (groupId.subgroupData() contentEquals hash)
-            {
-                // LogIt.info(sourceLoc() + "nft zip file matches hash for ${groupId.toStringNoPrefix()}")
-            }
-            else
-            {
-                // check another typical but nonstandard hash
-                val hash = libnexa.sha256(zipBytes)
+                val hash = libnexa.hash256(zipBytes)
                 if (groupId.subgroupData() contentEquals hash)
                 {
-                    LogIt.info(sourceLoc() + ": nft zip file matches sha256 hash for ${groupId}")
+                    // LogIt.info(sourceLoc() + "nft zip file matches hash for ${groupId.toStringNoPrefix()}")
                 }
-                else return null
+                else
+                {
+                    // check another typical but nonstandard hash
+                    val hash = libnexa.sha256(zipBytes)
+                    if (groupId.subgroupData() contentEquals hash)
+                    {
+                        LogIt.info(sourceLoc() + ": nft zip file matches sha256 hash for ${groupId}")
+                    }
+                    else continue
+                }
+                val ef = EfficientFile(zipBytes)
+                val nftData = nftData(ef)  // Sanity check the file
+                if (nftData == null)
+                {
+                    LogIt.error(sourceLoc() + ": but is NOT an NFT file for token ${groupId}")
+                    // If the hash matches, but the zip file is bad, we will never get a good one from another source, so give up
+                    return null
+                }
+                storeAssetFile(groupId.toHex() + ".zip", zipBytes)
+                return Pair(url, ef)
             }
-            val ef = EfficientFile(zipBytes)
-            val nftData = nftData(ef)  // Sanity check the file
-            if (nftData == null)
-            {
-                LogIt.error(sourceLoc() + ": but is NOT an NFT file for token ${groupId}")
-                return null
-            }
-            storeAssetFile(groupId.toHex() + ".zip", zipBytes)
-            return Pair(url!!, ef)
         }
 
         return null
@@ -1129,3 +1129,4 @@ class AssetManager(): AssetManagerStorage
     override fun cacheNftMedia(groupId: GroupId, media: Pair<String?, ByteArray?>): Pair<String?, ByteArray?>
         = assetManagerStorage().cacheNftMedia(groupId, media)
 }
+
