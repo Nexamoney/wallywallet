@@ -12,6 +12,7 @@ import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.views.loadingAnimation
 import info.bitcoinunlimited.www.wally.ui.UiRoot
 import info.bitcoinunlimited.www.wally.ui.nav
+import info.bitcoinunlimited.www.wally.ui.views.UnlockViewModel
 import java.io.File
 
 private val LogIt = GetLog("BU.wally.IdentityActivity")
@@ -98,13 +99,14 @@ fun guiNewPanel()
 
         if (isOpen)
         {
+            val unlock = UnlockViewModel(wallyApp!!.focusedAccount)
             val w = Window(
               onCloseRequest = { isOpen = false },
               title = nav.title(),
               state = rememberWindowState(width = (5 * 160).dp, height = (7 * 160).dp)
             )
             {
-                UiRoot(Modifier,  WindowInsets(0,0,0,0))
+                UiRoot(Modifier,  WindowInsets(0,0,0,0), unlock)
             }
         }
     }

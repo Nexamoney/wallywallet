@@ -223,7 +223,7 @@ fun SettingsScreen(preferenceDB: SharedPreferences = wallyApp!!.preferenceDB)
             ShowScreenNavSwitch(SHOW_IDENTITY_PREF, NavChoice(ScreenId.Identity, S.title_activity_identity, Icons.Default.Person), S.enableIdentityMenu, showIdentityPref)
             ShowScreenNavSwitch(SHOW_TRICKLE_PAY_PREF, NavChoice(ScreenId.TricklePayRegistrations, S.Services, Icons.Default.Cloud), S.EnableServices, showTricklePayPref)
             // Only let them choose to not show assets if they don't have any assets
-            if (showAssetsPref.value == false || wallyApp?.hasAssets() == false)
+            if (showAssetsPref.collectAsState().value == false || wallyApp?.hasAssets() == false)
                 ShowScreenNavSwitch(SHOW_ASSETS_PREF, NavChoice(ScreenId.Assets, S.title_activity_assets, Icons.Default.Image), S.enableAssetsMenu, showAssetsPref)
             generalSettingsSwitches.forEach { GeneralSettingsSwitchView(it) }
 

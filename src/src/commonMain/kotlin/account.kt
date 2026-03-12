@@ -15,8 +15,6 @@ import org.nexa.assets.triggerAssetCheck
 import org.nexa.assets.triggerAssetCheckOnBlock
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
-import org.nexa.threads.ThreadJob
-import org.nexa.threads.millinow
 import org.nexa.threads.millisleep
 import kotlin.random.Random
 
@@ -103,6 +101,8 @@ class Account(
             field = value
         }
     val currentReceiveObservable: MutableStateFlow<PayDestination?> = MutableStateFlow(null)
+
+    val syncedDate = MutableStateFlow<Long>(0L)
 
     /** Current exchange rate between this currency (in this account's default unit -- NOT the finest unit or blockchain unit) and your selected fiat currency.
      * -1 means that the exchange rate cannot be determined */
@@ -303,8 +303,10 @@ class Account(
                       }
                   }
               }
-              if (true)
+              // Only show received animation on unconfirmed or recent confirmed block, not for syncing blocks
+              if ((txh.confirmedHeight == -1L) || (txh.confirmedHeight >= w.blockchain.curHeight-1))
               {
+                  LogIt.info("Incoming Tx ${txh.confirmedHeight}")
                   /* If the change is not a rejected transaction, then see if we should play the receive animation */
                   val rejr: String? = txh.rejectedReason
                   if (rejr == null)
@@ -863,6 +865,7 @@ class Account(
     {
         try
         {
+            syncedDate.value = wallet.chainstate?.syncedDate ?: 0 // if no connected blockchain, its not synced.
             // Update our cache of the balances
             val newBalance = fromFinestUnit(wallet.balance)
             balance = newBalance

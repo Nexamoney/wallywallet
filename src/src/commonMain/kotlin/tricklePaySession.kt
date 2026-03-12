@@ -29,6 +29,8 @@ val TDPP_DEFAULT_PROTOCOL = "http"
 
 const val TDPP_FLAG_FUND_GROUPS = 16
 
+@Serializable data class TricklePaySendToReply(val resultCode:Int, val txid:String, val txidem: String, val tx: String, val error: String)
+
 // Must be top level for the serializer to handle it
 //@Keep
 @Serializable
@@ -589,6 +591,13 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         pill.account.value = if (walChoices.contains(tmp)) tmp else walChoices[0]
     }
 
+    fun rejectSendToRequest()
+    {
+        val urlStr = "$replyProtocol://$hostAndPort/sendto?$cookieParam&resultcode=300"
+        val postData = TricklePaySendToReply(300, "", "", "", "")
+        val postStr = Json.encodeToString(TricklePaySendToReply.serializer(), postData)
+        respondWithError(urlStr, postStr)
+    }
 
     /* Issue the sendto style transaction */
     fun acceptSendToRequest()
@@ -607,15 +616,33 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         {
             txh.relatedTo["tdpp_${d.addr}"] = (proposalUrl?.toString() ?: "").encodeUtf8()
         }
-        @Serializable data class TricklePaySendToReply(val resultCode:Int, val txid:String, val txidem: String, val tx: String, val error: String)
         val postData = TricklePaySendToReply(200, tx.id.toHex(), tx.idem.toHex(), tx.toHex(), "")
         val js = Json
 
         val postStr = js.encodeToString(TricklePaySendToReply.serializer(), postData)
-        val urlStr = replyProtocol + "://" + hostAndPort + "/sendto?" + cookieParam
+        val urlStr = "$replyProtocol://$hostAndPort/sendto?$cookieParam"
         respondWith(urlStr, postStr)
     }
 
+    fun respondWithError(url: String, postResp: String)
+    {
+        val wd = whenDone
+        if (wd != null) wd.invoke(url, postResp, true)
+        else
+        {
+            wallyApp?.later {
+                val client = HttpClient()
+                try
+                {
+                    client.post(url) { setBody(postResp) }
+                }
+                catch (_: Exception)
+                {
+                }
+                client.close()
+            }
+        }
+    }
     fun respondWith(url: String, postResp: String)
     {
         val wd = whenDone
@@ -626,9 +653,6 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                 LogIt.info("responding to server")
                 val client = HttpClient()
                 {
-                    install(ContentNegotiation) {
-                        json()
-                    }
                     install(HttpTimeout) { requestTimeoutMillis = 5000 }
                 }
 
@@ -649,10 +673,16 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         }
     }
 
+    fun rejectAddressRequest()
+    {
+        val url = "$replyProtocol://$hostAndPort/address?$cookieParam&resultcode=300"
+        respondWithError(url, "")
+    }
+
     fun acceptAddressRequest(): String
     {
         LogIt.info("accepted address request")
-        val url = replyProtocol + "://" + hostAndPort + "/address?" + cookieParam
+        val url = "$replyProtocol://$hostAndPort/address?$cookieParam&resultcode=200"
 
         val d = domain
         if (d == null) throw TdppException(S.BadWebLink, "bad domain")
@@ -685,10 +715,23 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         return "Sent to: " + url
     }
 
+    fun rejectAssetRequest()
+    {
+        try
+        {
+            val url = replyProtocol + "://$hostAndPort/assets?$cookieParam&resultcode=300"
+            respondWithError(url, "")
+        }
+        catch(_: Exception) // This is a best effort response
+        {
+
+        }
+    }
+
     fun acceptAssetRequest():String
     {
         LogIt.info("accepted asset request")
-        val assets = assetInfoList ?: return "no assets"
+        val assets = assetInfoList ?: TricklePayAssetList(listOf())
 
         val url = replyProtocol + "://" + hostAndPort + "/assets?" + cookieParam
 
@@ -732,6 +775,24 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         return "Sent to: " + url
     }
 
+    fun rejectSpecialTx()
+    {
+        val rp = replyProtocol
+        val hp = hostAndPort
+        val cp = cookieParam
+        abortProposal()
+        laterJob {
+            val req = Url(rp + "://" + hp + "/tx?$cp&resultcode=300")  // 300 is user reject: https://spec.nexa.org/dpp/#pay-transaction-response
+            LogIt.info("Sending special tx reject response: ${req}")
+            try
+            {
+                req.readText(HTTP_REQ_TIMEOUT_MS)
+            }
+            catch (_: Exception)  // Best-effort reject notification but if it doesn't work out no big deal
+            {
+            }
+        }
+    }
 
     /** If breakIt is true, a bad transaction is generated (for testing) */
     fun acceptSpecialTx(breakIt:Boolean = false)
@@ -1018,7 +1079,11 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         val d = domain
         if (d == null) throw TdppException(S.BadWebLink, "bad domain")
 
-        if (d.assetInfo == TdppAction.DENY) return TdppAction.DENY
+        if (d.assetInfo == TdppAction.DENY)
+        {
+            // TODO
+            return TdppAction.DENY
+        }
 
         val scriptTemplateHexList = uri.getQueryParameters("af")
         if (scriptTemplateHexList.isEmpty())
@@ -1078,7 +1143,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
     {
         parseCommonFields(uri)
 
-        /*  TODO -- right now always accepted
+        /*  TODO -- right now always accepted because it comes from a QR code
         if (domain.infoRequest == TdppAction.DENY)
         {
             displayFragment(R.id.GuiTricklePayMain)
@@ -1434,7 +1499,11 @@ fun HandleTdpp(iuri: Uri, then: ((String, String, Boolean?)->Unit)?= null): Bool
                     return true
                 }
 
-                TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
+                TdppAction.DENY ->
+                {
+                    tp.rejectAddressRequest()
+                    return true // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
+                }
             }
         }
         else if (path == "/assets")
@@ -1458,7 +1527,11 @@ fun HandleTdpp(iuri: Uri, then: ((String, String, Boolean?)->Unit)?= null): Bool
                     return true
                 }
 
-                TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
+                TdppAction.DENY ->
+                {
+                    tp.rejectAssetRequest()
+                    return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
+                }
             }
         }
         else if (path == "/tx")
@@ -1476,7 +1549,11 @@ fun HandleTdpp(iuri: Uri, then: ((String, String, Boolean?)->Unit)?= null): Bool
                     tp.acceptSpecialTx()
                 }
                 // special tx auto-deny
-                TdppAction.DENY -> return true  // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
+                TdppAction.DENY ->
+                {
+                    tp.rejectSpecialTx()
+                    return true // true because "autoHandle" returns whether the intent was "handled" automatically -- denial is handling it
+                }
             }
         }
 

@@ -649,13 +649,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
 
         // Give options for the next words
         val nextWordPrefix = recoveryPhrase.text.split(" ").last()
-        val possibilities = if (nextWordPrefix.isNotBlank())
-        {
-            val possibilities = bip39PrefixWords(nextWordPrefix)
-            LogIt.info("prefix: $nextWordPrefix options: ${possibilities.joinToString(",")}")
-            possibilities
-        }
-        else arrayOf()
+        val possibilities = if (nextWordPrefix.isNotBlank()) bip39PrefixWords(nextWordPrefix) else arrayOf()
         val cpad = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
         val mod = Modifier.wrapContentHeight(align = Alignment.Top).defaultMinSize(minWidth = 1.dp, minHeight = 1.dp) // not really 1.dp, just picking the min so the button sizes are not overridden
         val fontStyle = MaterialTheme.typography.bodySmall
@@ -724,9 +718,8 @@ fun bip39PrefixWords(prefix:String): Array<String>
     }
 }
 
-
 /** Searches for activity, returning a pair of epoch time, height that corresponds to the first time the wallet was used */
-fun searchFirstActivityUi2(getEc: () -> ElectrumClient, chainSelector: ChainSelector, count: Int, secretDerivation: (Int) -> ByteArray, activityFound: ((Long, Int) -> Boolean)? = null): Pair<Long, Int>?
+fun searchFirstActivity(getEc: () -> ElectrumClient, chainSelector: ChainSelector, count: Int, secretDerivation: (Int) -> ByteArray, activityFound: ((Long, Int) -> Boolean)? = null): Pair<Long, Int>?
 {
     var index = 0
     var ret: Pair<Long, Int>? = null
@@ -780,15 +773,7 @@ fun peekFirstActivity(secretWords: String, chainSelector: ChainSelector, aborter
 {
     val net = connectBlockchain(chainSelector).net
 
-    var ec = retry(10) {
-        val ec = net?.getElectrum()
-        if (ec == null)
-        {
-            displayRecoveryInfo(i18n(S.ElectrumNetworkUnavailable))
-            millisleep(1000U)
-        }
-        ec
-    }
+    var ec = retry(10) { net.getElectrum() }
 
     try
     {
@@ -801,10 +786,10 @@ fun peekFirstActivity(secretWords: String, chainSelector: ChainSelector, aborter
 
         LogIt.info("Searching in ${addressDerivationCoin}")
         var earliestActivityP =
-          searchFirstActivityUi2( {
-              if (ec.open) return@searchFirstActivityUi2 ec
+          searchFirstActivity( {
+              if (ec.open) return@searchFirstActivity ec
               ec = net.getElectrum()
-              return@searchFirstActivityUi2(ec)
+              return@searchFirstActivity(ec)
           }, chainSelector, WALLET_RECOVERY_DERIVATION_PATH_FIRST_USE_DEPTH, {
               libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
           }, { time, height ->
@@ -1051,55 +1036,6 @@ fun searchAllActivity(secretWords: String, chainSelector: ChainSelector, aborter
     LogIt.info("Account search is complete")
 }
 
-/** Searches for activity, returning a pair of epoch time, height that corresponds to the first time the wallet was used */
-fun searchFirstActivity(getEc: () -> ElectrumClient, chainSelector: ChainSelector, count: Int, secretDerivation: (Int) -> ByteArray, activityFound: ((Long, Int) -> Boolean)? = null): Pair<Long, Int>?
-{
-    var index = 0
-    var ret: Pair<Long, Int>? = null
-    while (index < count)
-    {
-        val newSecret = secretDerivation(index)
-        val us = UnsecuredSecret(newSecret)
-
-        val dests = mutableListOf<SatoshiScript>(Pay2PubKeyHashDestination(chainSelector, us, index.toLong()).lockingScript())  // Note, if multiple destination types are allowed, the wallet load/save routines must be updated
-        //LogIt.info(sourceLoc() + " " + name + ": New Destination " + tmp.toString() + ": " + dest.address.toString())
-        if (chainSelector.hasTemplates)
-            dests.add(Pay2PubKeyTemplateDestination(chainSelector, us, index.toLong()).lockingScript())
-
-        for (dest in dests)
-        {
-            try
-            {
-                val use = getEc().getFirstUse(dest, 10000)
-                if (use.block_hash != null)
-                {
-                    val bh = use.block_height
-                    if (bh != null)
-                    {
-                        LogIt.info(sourceLoc() +": Found first use activity at index $index in ${dest.address.toString()}")
-                        val headerBin = getEc().getHeader(bh)
-                        val blkHeader = blockHeaderFor(chainSelector, BCHserialized(headerBin, SerializationType.HASH))
-                        if (ret == null || blkHeader.time < ret.first)
-                        {
-                            activityFound?.invoke(blkHeader.time, bh)
-                            ret = Pair(blkHeader.time, bh)
-                        }
-                    }
-                }
-                else
-                {
-                    LogIt.info(sourceLoc() +": didn't find first use activity at index $index in ${dest.address.toString()}")
-                }
-            }
-            catch (e: ElectrumNotFound)
-            {
-                LogIt.info(sourceLoc() + ": didn't find first use activity at index $index in ${dest.address.toString()}")
-            }
-        }
-        index++
-    }
-    return ret
-}
 
 fun bracketActivity(ec: ElectrumClient, chainSelector: ChainSelector, giveUpGap: Int, secretDerivation: (Int) -> ByteArray): HDActivityBracket?
 {

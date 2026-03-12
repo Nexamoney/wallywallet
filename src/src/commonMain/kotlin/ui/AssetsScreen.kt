@@ -179,13 +179,13 @@ fun AssetView(asset: AssetInfo, quantity: Long, parentMod: Modifier = Modifier)
                           fontWeight = FontWeight.Bold
                         )
                     }
-                    VSpacer(0.01f, 2.dp, 0.dp)
+                    HSpacer(0.01f, 2.dp, 0.dp)
                     Text(
-                      text = i18n(S.ByAuthor),
+                      text = " " + i18n(S.ByAuthor) + " ",
                       style = MaterialTheme.typography.titleSmall,
                       fontWeight = FontWeight.Bold
                     )
-                    VSpacer(0.01f, 2.dp, 0.dp)
+                    HSpacer(0.01f, 2.dp, 0.dp)
                     nft.author.let { author ->
                         Text(
                           text = author,

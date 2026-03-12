@@ -17,6 +17,7 @@ import info.bitcoinunlimited.www.wally.ui.views.AccountUiDataViewModel
 import info.bitcoinunlimited.www.wally.ui.views.AssetViewModel
 import info.bitcoinunlimited.www.wally.ui.views.BalanceViewModel
 import info.bitcoinunlimited.www.wally.ui.views.BalanceViewModelImpl
+import info.bitcoinunlimited.www.wally.ui.views.UnlockViewModel
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.sourceLoc
 
@@ -50,6 +51,7 @@ class AccountLockTest:WallyUiTestBase()
             val balanceViewModel: BalanceViewModel = BalanceViewModelImpl(account)
             val accountUiDataViewModel = AccountUiDataViewModel()
             val pill = AccountPill(wallyApp!!.focusedAccount)
+            val unlock = UnlockViewModel(wallyApp!!.focusedAccount)
             /*
                 Set content to NavigationRoot (the root composable that handles navigation)
              */
@@ -57,7 +59,8 @@ class AccountLockTest:WallyUiTestBase()
                     NavigationRoot(Modifier, wInsets,
                       pill,
                         assetViewModel = assetViewModel,
-                        accountUiDataViewModel = accountUiDataViewModel
+                        accountUiDataViewModel = accountUiDataViewModel,
+                        unlock
                     )
 
             }
@@ -116,7 +119,7 @@ class AccountLockTest:WallyUiTestBase()
 
 
             settle()
-            triggerUnlockDialog(true, { println("Unlock attempted")})
+            unlock.triggerUnlockDialog(true, { println("Unlock attempted")})
             settle()
 
             waitForCatching { onAllNodesWithTag("EnterPIN").onFirst().isDisplayed() }
@@ -132,7 +135,6 @@ class AccountLockTest:WallyUiTestBase()
             LogIt.info("Purple tile name shown")
             settle()
             LogIt.info("testLockAccount Complete")
-            pill.sync.finish()
             LogIt.info("sync check finished")
             }
         wallyApp!!.deleteAccount(account)

@@ -30,6 +30,7 @@ import androidx.work.*
 import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.theme.BaseBkg
 import info.bitcoinunlimited.www.wally.ui.theme.colorTitleBackground
+import info.bitcoinunlimited.www.wally.ui.views.UnlockViewModel
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.logThreadException
 import org.nexa.libnexakotlin.rem
@@ -60,6 +61,8 @@ class ComposeActivity: CommonActivity()
     var doOnMediaReadPerms: (() -> Unit)? = null
     /** Do this once we get file read permissions */
     var doOnFileReadPerms: (() -> Unit)? = null
+
+    var unlockViewModel: UnlockViewModel? = null
 
     fun ImageQrCode(imageParsed: (String?) -> Unit)
     {
@@ -194,7 +197,7 @@ class ComposeActivity: CommonActivity()
         }
         val unlockItem = menu.findItem(R.id.unlock)
         unlockItem.setOnMenuItemClickListener {
-            triggerUnlockDialog()
+            unlockViewModel?.triggerUnlockDialog()
             true
         }
 
@@ -217,6 +220,7 @@ class ComposeActivity: CommonActivity()
         val decorView: View = getWindow().getDecorView()
         decorView.setBackgroundColor(BaseBkg.value.toInt())
         backgroundOnly = false
+        unlockViewModel = UnlockViewModel(wallyApp!!.focusedAccount)
 
         onBackPressedDispatcher.addCallback(object: OnBackPressedCallback(true) {
             override fun handleOnBackPressed()
@@ -416,7 +420,7 @@ class ComposeActivity: CommonActivity()
             val navBottom = if (android.os.Build.VERSION.SDK_INT < 35) 0 else navInsets.bottom
             val systemPadding = WindowInsets(0.dp, pxToDp(actionb ?: 0), 0.dp, pxToDp(navBottom)) // pxToDp(sysInsets.bottom))
 
-            UiRoot(Modifier, systemPadding)
+            UiRoot(Modifier, systemPadding, unlockViewModel!!)
 
             LaunchedEffect(Unit) {
                 invalidateOptionsMenu()

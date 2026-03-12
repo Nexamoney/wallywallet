@@ -23,6 +23,10 @@ The TestFlight BETA is used for testing new features and bugfixes and usually ha
 
 <a href="https://apps.apple.com/us/app/wally-nexa-wallet/id6469619075?itsct=apps_box_badge&amp;itscg=30200" style="display: inline-block; overflow: hidden; border-radius: 13px; width: 250px; height: 83px;"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1715212800" alt="Download on the App Store" style="border-radius: 13px; width: 250px; height: 83px;"></a>
 
+## Wally Design Philosophy
+
+[Read about Wally Wallet's User Interface Design here](designPhilosophy.md)
+
 ## Cloning
 
 Use `git clone https://gitlab.com/wallywallet/android.git` or `git clone git@gitlab.com:wallywallet/android.git` to clone this repository.

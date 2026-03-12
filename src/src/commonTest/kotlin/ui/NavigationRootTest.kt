@@ -11,11 +11,11 @@ import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.NavigationRoot
 import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.nav
-import info.bitcoinunlimited.www.wally.ui.triggerUnlockDialog
 import info.bitcoinunlimited.www.wally.ui.views.AccountPill
 import info.bitcoinunlimited.www.wally.ui.views.AccountUiDataViewModelFake
 import info.bitcoinunlimited.www.wally.ui.views.AssetViewModelFake
 import info.bitcoinunlimited.www.wally.ui.views.NativeSplash
+import info.bitcoinunlimited.www.wally.ui.views.UnlockViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.*
 import org.nexa.libnexakotlin.*
@@ -169,20 +169,20 @@ class NavigationRootTest: WallyUiTestBase()
     {
         runComposeUiTest {
             val ap = AccountPill(wallyApp!!.focusedAccount)
+            val unlock = UnlockViewModel(wallyApp!!.focusedAccount)
             setContent {
-                NavigationRoot(Modifier, WindowInsets(0,0,0,0), ap)
+                NavigationRoot(Modifier, WindowInsets(0,0,0,0), ap, unlock = unlock)
             }
             settle()
             nav.switch(ScreenId.Home)
             settle()
             waitForCatching { onNodeWithTag("AccountPillAccountName").isDisplayed() }
-            triggerUnlockDialog(true, { println("Unlock attempted")})
+            unlock.triggerUnlockDialog(true, { println("Unlock attempted")})
             settle()
             waitForCatching { onNodeWithTag("EnterPIN").isDisplayed() }
             onNodeWithTag("EnterPIN").performTextInput("1111")
             settle()
             onNodeWithTag("EnterPIN").multiplatformImeAction()
-            ap.sync.finish()
         }
     }
     @Test fun navRootTest()
@@ -196,11 +196,12 @@ class NavigationRootTest: WallyUiTestBase()
             val assetViewModel = AssetViewModelFake()
             val accountUiDataViewModel = AccountUiDataViewModelFake()
             val apvm = AccountPill(wallyApp!!.focusedAccount)
+            val unlock = UnlockViewModel(wallyApp!!.focusedAccount)
             setContent {
                 CompositionLocalProvider(
                   LocalViewModelStoreOwner provides viewModelStoreOwner
                 ) {
-                    NavigationRoot(Modifier, WindowInsets(0,0,0,0), apvm, assetViewModel, accountUiDataViewModel)
+                    NavigationRoot(Modifier, WindowInsets(0,0,0,0), apvm, assetViewModel, accountUiDataViewModel, unlock)
                 }
             }
 
@@ -208,9 +209,7 @@ class NavigationRootTest: WallyUiTestBase()
             // This is not visible because the splash screen is showing on some targets
             if (nativeSplash)
                 onNodeWithTag("RootScaffold").assertIsNotDisplayed()
-
             settle()
-            apvm.sync.finish()
         }
     }
 }

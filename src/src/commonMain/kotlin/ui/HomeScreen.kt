@@ -37,25 +37,31 @@ var sendToAddress: MutableStateFlow<String> = MutableStateFlow("")
 
 abstract class SyncViewModel: ViewModel()
 {
-    val isSynced = MutableStateFlow(false)
-
-    /* Trigger an update of the isSynced state (may be a no-op if this does not make sense for the object being synced) */
-    open fun trigger() {}
+    abstract val isSynced : StateFlow<Boolean>
 }
 
 class SyncViewModelFake: SyncViewModel()
+{
+    val syncValue = MutableStateFlow(false)
+    override val isSynced: StateFlow<Boolean> =
+      syncValue.map { it }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(0), false)
+}
 
 class SyncViewModelImpl : SyncViewModel()
 {
-    val audioPlayer: AudioPlayer = AudioPlayer()
+    val syncValue = MutableStateFlow(false)
+
+    override val isSynced: StateFlow<Boolean> =
+      syncValue.map { it }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(0), false)
 
     /*
         Checks every second if all accounts are synced
      */
     init {
         viewModelScope.launch {
-            while (true) {
-                isSynced.value = withContext(Dispatchers.IO) {
+            while (true)
+            {
+                syncValue.value = withContext(Dispatchers.IO) {
                     wallyApp?.isSynced() ?: false
                 }
                 delay(1000)
@@ -64,43 +70,28 @@ class SyncViewModelImpl : SyncViewModel()
     }
 }
 
-class SyncViewModelAccount(val getAccount:()->Account?) : SyncViewModel()
+private val FalseFlow = MutableStateFlow<Boolean>(false)
+class SyncViewModelAccount(val account: MutableStateFlow<Account?>) : SyncViewModel()
 {
-    val check = Channel<Unit>(Channel.CONFLATED)
-    private var job: Job = viewModelScope.launch {
-            while (isActive)
-            {
-                // Are you looping forever rapidly in unit tests?  You must call finish() to end this!
-
-                yield()
-                isSynced.value = getAccount()?.wallet?.synced() ?: false
-                //LogIt.info("sync timer ${millinow()}")
-                select<Unit> {
-                    this.onTimeout(1000L) {
-                        // LogIt.info("timed out")
-                        // Note may return instantly in a test context
-                    }
-                    check.onReceive {
-                        //LogIt.info("channel receive")
-                    }
-                }
-            }
-        }
-
-    fun finish()
-    {
-        job.cancel()
-        trigger()
-    }
-
-    override fun trigger()
-    {
-        check.trySend(Unit)
-    }
+    // Flatmap takes a MutableStateFlow of MutableStateFlows and lets you apply a transform and get the final flow.
+    // (that takes the first, resolved the second, then xforms the second), resulting in a StateFlow of your transformed second MSF.
+    override val isSynced: StateFlow<Boolean> = account.flatMapLatest { act ->
+          if (act == null) FalseFlow  // no account
+          else {
+              if (act.wallet.blockchain.net.size==0) FalseFlow  // no net connection
+              else
+              {
+                  act.syncedDate.map {
+                      val now = millinow() / 1000
+                      it + 5 * 60 > now  // Within 5 minutes
+                  }
+              }
+          }
+      }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(0), false)
 }
 
 
-// Data class for å representere elementene i TabRow
+// Data class for a TabRow
 data class TabRowItem(
   val icon: ImageVector,
   val description: String
@@ -112,10 +103,10 @@ val txHistViewModel = TxHistoryViewModel()
 fun HomeScreen(
   isShowingRecoveryWarning: Boolean = false,
   pill: AccountPillViewModel,
-  assetViewModel: AssetViewModel = viewModel { AssetViewModel() },
+  assetViewModel: AssetViewModel,
   accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() },
-  audioPlayerViewModel: AudioPlayerViewModel = viewModel { AudioPlayerViewModel() }
-)
+  audioPlayerViewModel: AudioPlayerViewModel = viewModel { AudioPlayerViewModel() },
+  unlock: UnlockViewModel)
 {
     val assets = assetViewModel.assets.collectAsState().value
     val coroutineScope = rememberCoroutineScope()
@@ -174,7 +165,7 @@ fun HomeScreen(
                                 accountUiDataViewModel.setup()
                             }
 
-                            AccountListView(nav, accountUiDataViewModel)
+                            AccountListView(nav, accountUiDataViewModel, unlock = unlock)
                         }
                     1 ->
                         Column(

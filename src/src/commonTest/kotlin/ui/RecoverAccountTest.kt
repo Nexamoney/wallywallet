@@ -14,6 +14,7 @@ import info.bitcoinunlimited.www.wally.ui.views.AccountUiDataViewModel
 import info.bitcoinunlimited.www.wally.ui.views.AssetViewModel
 import info.bitcoinunlimited.www.wally.ui.views.BalanceViewModel
 import info.bitcoinunlimited.www.wally.ui.views.BalanceViewModelImpl
+import info.bitcoinunlimited.www.wally.ui.views.UnlockViewModel
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.resolveDomain
 //import androidx.compose.ui.test.performImeAction
@@ -52,6 +53,7 @@ class RecoverTests:WallyUiTestBase()
             // Initialize ViewModels
             val assetViewModel = AssetViewModel()
             val accountUiDataViewModel = AccountUiDataViewModel()
+            val unlock = UnlockViewModel(wallyApp!!.focusedAccount)
             /*
                 Set content to NavigationRoot (the root composable that handles navigation)
              */
@@ -61,7 +63,8 @@ class RecoverTests:WallyUiTestBase()
                 ) {
                     NavigationRoot(Modifier, WindowInsets(0,0,0,0),
                       assetViewModel = assetViewModel,
-                      accountUiDataViewModel = accountUiDataViewModel
+                      accountUiDataViewModel = accountUiDataViewModel,
+                      unlock = unlock
                     )
                 }
             }

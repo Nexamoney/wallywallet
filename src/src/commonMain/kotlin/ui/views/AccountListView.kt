@@ -297,7 +297,7 @@ class AccountUiDataViewModelFake: AccountUiDataViewModel()
      */
 }
 
-@Composable fun AccountListView(nav: ScreenNav, accountUiDataViewModel: AccountUiDataViewModel)
+@Composable fun AccountListView(nav: ScreenNav, accountUiDataViewModel: AccountUiDataViewModel, unlock: UnlockViewModel)
 {
 
     val accounts = accountGuiSlots.collectAsState().value
@@ -325,7 +325,7 @@ class AccountUiDataViewModelFake: AccountUiDataViewModel()
         accounts.forEachIndexed { idx, it ->
             val backgroundColor = if (selAct == it) wallyPurpleLight else wallyPurpleExtraLight
             accountUIData[it.name]?.let {  uiData ->
-                AccountItemView(uiData, idx, selAct == it, devMode, backgroundColor, hasFastForwardButton = false,
+                AccountItemView(uiData, idx, selAct == it, devMode, backgroundColor, hasFastForwardButton = false, unlock,
                     onClickAccount = {
                         setSelectedAccount(it)
                     }
@@ -359,6 +359,7 @@ fun AccountListItem(
   hasFastForwardButton: Boolean = true,
   isSelected: Boolean,
   backgroundColor: Color,
+  unlock: UnlockViewModel,
   onClickAccount: () -> Unit
 ) {
     val curSync = uidata.account.wallet.chainstate?.syncedDate ?: 0
@@ -487,7 +488,7 @@ fun AccountListItem(
                           IconButton(
                             onClick = {
                                 onClickAccount()
-                                triggerUnlockDialog()
+                                unlock.triggerUnlockDialog()
                             },modifier = Modifier.testTag("LockIcon(${uidata.account.name})")
                           ) {
                               Icon(
@@ -526,6 +527,7 @@ fun AccountItemView(
     devMode: Boolean,
     backgroundColor: Color,
     hasFastForwardButton: Boolean,
+    unlock: UnlockViewModel,
     onClickAccount: () -> Unit
 ) {
         Row(
@@ -536,7 +538,7 @@ fun AccountItemView(
 
             Column(modifier = Modifier.weight(2f).fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(backgroundColor),
               verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
-                AccountListItem(uidata, hasFastForwardButton, isSelected, backgroundColor, onClickAccount)
+                AccountListItem(uidata, hasFastForwardButton, isSelected, backgroundColor, unlock, onClickAccount)
 
                 if (!uidata.fastForwarding)
                 {

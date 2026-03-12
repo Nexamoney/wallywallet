@@ -1,5 +1,6 @@
 package info.bitcoinunlimited.www.wally.ui
 
+import AudioPlayerViewModel
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -52,7 +54,7 @@ val experimentalUI = MutableStateFlow(false)
 val soundEnabled = MutableStateFlow(true)
 var behindTitleBarPadding = MutableStateFlow(0.dp)
 
-var permanentMenuItems: Set<NavChoice> = if (platform().target == KotlinTarget.iOS)
+var permanentMenuItems: Set<NavChoice> = if ((platform().target == KotlinTarget.iOS)||(platform().target == KotlinTarget.Android))
     setOf(
       NavChoice(ScreenId.Home, S.title_home, Icons.Default.Home),
       NavChoice(ScreenId.Assets, S.title_activity_assets, Icons.Default.Image),
@@ -62,12 +64,12 @@ else
     setOf(
       NavChoice(ScreenId.Home, S.title_home, Icons.Default.Home),
       NavChoice(ScreenId.Assets, S.title_activity_assets, Icons.Default.Image),
-      NavChoice(ScreenId.Shopping, S.title_activity_shopping, Icons.Default.ShoppingCart),
+      NavChoice(ScreenId.Links, S.title_activity_shopping, Icons.AutoMirrored.Filled.ExitToApp),
       NavChoice(ScreenId.MoreMenu, S.more, Icons.Default.MoreVert),
     )
 
 
-val allMenuItems = if (platform().target == KotlinTarget.iOS)
+val allMenuItems = if ((platform().target == KotlinTarget.iOS)||(platform().target == KotlinTarget.Android))
     setOf(
         NavChoice(ScreenId.Home, S.title_home, Icons.Default.Home),
         NavChoice(ScreenId.Assets, S.title_activity_assets, Icons.Default.Image),
@@ -79,8 +81,8 @@ else
     setOf(
         NavChoice(ScreenId.Home, S.title_home, Icons.Default.Home),
         NavChoice(ScreenId.Assets, S.title_activity_assets, Icons.Default.Image),
-      NavChoice(ScreenId.Shopping, S.title_activity_shopping, Icons.Default.ShoppingCart),
-      NavChoice(ScreenId.Identity, S.title_activity_identity, Icons.Default.Person),
+        NavChoice(ScreenId.Links, S.title_activity_shopping, Icons.AutoMirrored.Filled.ExitToApp),
+        NavChoice(ScreenId.Identity, S.title_activity_identity, Icons.Default.Person),
         NavChoice(ScreenId.TricklePayRegistrations, S.Services, Icons.Default.Cloud),
         NavChoice(ScreenId.Settings, S.title_activity_settings, Icons.Default.Settings),
     )
@@ -163,7 +165,7 @@ enum class ScreenId
     Splash,
     Home,
     Assets,
-    Shopping,
+    Links,
     Send,
     Receive,
     Identity,
@@ -251,7 +253,7 @@ enum class ScreenId
             IdentityOp -> i18n(S.title_activity_identity_op)
             TricklePayRegistrations -> i18n(S.Services)
             Assets -> i18n(S.assets)
-            Shopping -> i18n(S.title_activity_shopping)
+            Links -> i18n(S.title_activity_shopping)
             Settings -> i18n(S.title_activity_settings)
             SplitBill -> i18n(S.title_split_bill)
             NewAccount -> i18n(S.title_activity_new_account)
@@ -408,44 +410,7 @@ fun triggerAssignAccountsGuiSlots()
     assignAccountsGuiSlots()
 }
 
-fun MutableStateFlow<Int>.interpolate(timeMs: Int, start: Int?=0, end: Int)
-{
-    val FRAME_TIME = 20  // how
-    val numSteps = timeMs/FRAME_TIME
-    val st = start ?: value
-    val delta = end-st
-    val incr = delta.toFloat()/(numSteps+1)
-    var cur:Float = st.toFloat()
-    tlater {
-        for (i in 0 until numSteps)
-        {
-            cur = cur + incr
-            this.value = cur.toInt()
-            millisleep(FRAME_TIME.toULong())
-        }
-        this.value = end.toInt()
-    }
-}
 
-fun triggerUnlockDialog(show: Boolean = true, then: ((String)->Unit)? = {})
-{
-    if (show)
-    {
-        /*
-        later {
-            delay(TRIGGER_BUG_DELAY); externalDriver.send(GuiDriver(show = setOf(ShowIt.ENTER_PIN), afterUnlock = then))
-        }
-         */
-        clearAlerts()
-        unlockThen = then
-        unlockTileSize.interpolate(300, null, 300)
-    }
-    else
-    {
-        //later { delay(TRIGGER_BUG_DELAY); externalDriver.send(GuiDriver(noshow = setOf(ShowIt.ENTER_PIN))) }
-        unlockTileSize.interpolate(300, null, 0)
-    }
-}
 
 fun triggerClipboardAction(doit: (String?) -> Unit)
 {
@@ -473,8 +438,8 @@ fun buildMenuItems()
     if(showTricklePayPref.value && items.size < BOTTOM_NAV_ITEMS) items.add(tricklePayRegistrations)
     if(showAssetsPref.value && items.size < BOTTOM_NAV_ITEMS) items.add(assets)
     val moreitems = allMenuItems.minus(items).toMutableSet()
-    if (!showIdentityPref.value) moreitems.remove(NavChoice(ScreenId.Identity, S.Services, Icons.Default.Cloud))
-    if (!showTricklePayPref.value) moreitems.remove(NavChoice(ScreenId.TricklePayRegistrations, S.Services, Icons.Default.Cloud))
+    if (!showIdentityPref.value) moreitems.remove(identity)
+    if (!showTricklePayPref.value) moreitems.remove(tricklePayRegistrations)
 
     menuItems.value = items
     moreMenuItems.value = moreitems.toSet()
@@ -577,6 +542,7 @@ fun noSelectedAccount()
         if (it.focusedAccount.value != null)
         {
             it.preferenceDB.edit().putString(SELECTED_ACCOUNT_NAME_PREF, "").commit()
+
             it.focusedAccount.value = null
         }
     }
@@ -587,9 +553,9 @@ fun noSelectedAccount()
     hasNewUIShared toggled when the user select "new user interface" in settings.
  */
 @Composable
-fun UiRoot(rootModifier: Modifier, systemPadding: WindowInsets)
+fun UiRoot(rootModifier: Modifier, systemPadding: WindowInsets, unlock: UnlockViewModel)
 {
-    NavigationRoot(rootModifier, systemPadding)
+    NavigationRoot(rootModifier, systemPadding, unlock = unlock)
 }
 
 data class NavChoice(val location: ScreenId, val textId: Int, val icon: ImageVector)
@@ -681,7 +647,7 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
 // This function should build a title bar (with a back button) if the platform doesn't already have one.  Otherwise it should
 // set up the platform's title bar
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable fun TopBar(errorText: String, warningText: String, noticeText: String, lastClicked: MutableState<String>)
+@Composable fun TopBar(errorText: String, warningText: String, noticeText: String, lastClicked: MutableState<String>, unlock: UnlockViewModel)
 {
     val currentScreen = nav.currentScreen.collectAsState().value
 
@@ -716,7 +682,7 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
             {
                 val iconButtonSize = 32.dp
                 TitleText(nav.title(), Modifier.weight(1f).fillMaxSize().padding(0.dp, 15.dp, 0.dp, 0.dp))
-                IconButton(onClick = { triggerUnlockDialog(true) }, modifier = Modifier.size(iconButtonSize).testTag("GlobalLockIcon")){
+                IconButton(onClick = { unlock.triggerUnlockDialog(true) }, modifier = Modifier.size(iconButtonSize).testTag("GlobalLockIcon")){
                     Icon(Icons.Default.Key, tint = Color.White, contentDescription = "Unlock all accounts (including hidden accounts) with this pin")
                 }
                 if (platform().hasShare && nav.currentScreen.collectAsState().value.hasShare)
@@ -822,8 +788,10 @@ fun NavigationRoot(
   accountPillViewModel: AccountPillViewModel = viewModel { AccountPill(wallyApp!!.focusedAccount) },
   assetViewModel: AssetViewModel = viewModel { AssetViewModel() },
   accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() },
+  unlock: UnlockViewModel
 )
 {
+    val audio = viewModel { AudioPlayerViewModel() }
     val curScreen = nav.currentScreen.collectAsState().value
     val subScreen = nav.currentSubState.collectAsState().value
 
@@ -833,7 +801,7 @@ fun NavigationRoot(
 
     var showBottomBar by remember { mutableStateOf(true) }
 
-    if (curScreen == ScreenId.Home || (curScreen == ScreenId.Assets && subScreen == null) || curScreen == ScreenId.Shopping || curScreen == ScreenId.Settings
+    if (curScreen == ScreenId.Home || (curScreen == ScreenId.Assets && subScreen == null) || curScreen == ScreenId.Links || curScreen == ScreenId.Settings
       || curScreen == ScreenId.SplitBill || curScreen == ScreenId.NewAccount || curScreen == ScreenId.AccountDetails || curScreen == ScreenId.AddressHistory
       || curScreen == ScreenId.TxHistory || curScreen == ScreenId.MoreMenu || curScreen == ScreenId.AssetInfoPerm || curScreen == ScreenId.SendToPerm
       )
@@ -924,11 +892,11 @@ fun NavigationRoot(
             }
             else
             {
-                triggerUnlockDialog {
+                unlock.triggerUnlockDialog {
                     // If the unlock failed, then we need to go back because the user did not gain permission to see this screen
                     if (pa.locked) nav.back()
                     // Regardless, dismiss the unlock dialog
-                    triggerUnlockDialog(false)
+                    unlock.triggerUnlockDialog(false)
                 }
             }
         }
@@ -1096,7 +1064,7 @@ fun NavigationRoot(
           }.testTag("RootScaffold"),
           contentColor = Color.Black,
           topBar = {
-              TopBar(errorText, warningText, noticeText, lastClicked)
+              TopBar(errorText, warningText, noticeText, lastClicked, unlock)
           },
           bottomBar = {
               if (showBottomBar)
@@ -1204,7 +1172,7 @@ fun NavigationRoot(
                     Column(modifier = Modifier.fillMaxSize()) {
                         if (isShowingRecoveryWarning)
                             RecoveryPhraseWarning(Modifier.clickable { isShowingRecoveryWarning = false })
-                        UnlockTile()
+                        UnlockTile(unlock)
 
                         // This will take up the most space but leave enough for the navigation menu
                         val mod = if (curScreen.isEntirelyScrollable)
@@ -1224,15 +1192,17 @@ fun NavigationRoot(
                             }
                             when (curScreen)
                             {
-                                ScreenId.None -> HomeScreen(isShowingRecoveryWarning, accountPillViewModel, assetViewModel, accountUiDataViewModel)
+                                ScreenId.None -> HomeScreen(isShowingRecoveryWarning, accountPillViewModel, assetViewModel, accountUiDataViewModel, audio, unlock)
                                 ScreenId.Splash -> run {} // splash screen is done at the top for max speed and to be outside of the theme
                                 ScreenId.MoreMenu -> run {}
                                 ScreenId.Home ->
                                 {
-                                    HomeScreen(isShowingRecoveryWarning, accountPillViewModel, assetViewModel, accountUiDataViewModel)
+                                    HomeScreen(isShowingRecoveryWarning, accountPillViewModel, assetViewModel, accountUiDataViewModel, audio, unlock)
                                 }
 
-                                ScreenId.Send -> withAccount { act -> withSendNavParams { SendScreen(accountPillViewModel,it) } }
+                                ScreenId.Send -> withAccount { act -> withSendNavParams {
+                                    SendScreen(accountPillViewModel,it,  viewModel { SendScreenViewModelImpl(accountPillViewModel.account.value ?: wallyApp!!.preferredVisibleAccount(), unlock) }, unlock)
+                                } }
                                 ScreenId.Receive ->
                                 {
                                     ReceiveScreen(accountPillViewModel)
@@ -1255,7 +1225,7 @@ fun NavigationRoot(
                                     scaffoldSheetState.bottomSheetState.hide()
                                     }
                                 } }
-                                ScreenId.Shopping -> ShoppingScreen()
+                                ScreenId.Links -> LinksScreen()
                                 ScreenId.TricklePayRegistrations -> {
                                     val subScreen = nav.currentSubState.collectAsState().value != null
 
@@ -1312,7 +1282,7 @@ fun NavigationRoot(
 
                                 ScreenId.AddressHistory -> withAccount { AddressHistoryScreen(it, nav) }
                                 ScreenId.TxHistory -> withAccount { TxHistoryScreen(it, nav) }
-                                ScreenId.SpecialTxPerm -> withTp { act, ctp -> SpecialTxPermScreen(ctp) }
+                                ScreenId.SpecialTxPerm -> withTp { act, ctp -> SpecialTxPermScreen(ctp, unlock) }
                                 ScreenId.AssetInfoPerm -> withTp { act, ctp -> AssetInfoPermScreen(act, ctp, nav) }
                                 ScreenId.SendToPerm -> withTp { act, ctp -> SendToPermScreen( ctp, nav) }
                                 ScreenId.IdentityOp -> withAccount { act ->
@@ -1343,7 +1313,7 @@ fun NavigationRoot(
                                     }
                                 }
 
-                                ScreenId.Alerts -> HomeScreen(isShowingRecoveryWarning, accountPillViewModel, assetViewModel, accountUiDataViewModel)
+                                ScreenId.Alerts -> HomeScreen(isShowingRecoveryWarning, accountPillViewModel, assetViewModel, accountUiDataViewModel, audio, unlock)
                             }
                         }
                     }

@@ -147,7 +147,7 @@ fun IconLabelValueRow(icon: ImageVector, label: String, value: String)
 }
 
 @Composable
-fun SpecialTxPermScreen(sess: TricklePaySession)
+fun SpecialTxPermScreen(sess: TricklePaySession, unlock: UnlockViewModel)
 {
     // Change the title if the request is for a partial transaction
     val titleRes = if (sess.tflags and TDPP_FLAG_PARTIAL != 0) S.IncompleteTpTransactionFrom else S.SpecialTpTransactionFrom
@@ -185,10 +185,6 @@ fun SpecialTxPermScreen(sess: TricklePaySession)
     val currencyCode = acc.currencyCode
     val fromEntity = sess.host
     var breakIt = false // TODO allow a debug mode that produces bad tx
-
-    // TODO: Handle locked accounts
-    val accountUnlockTrigger = remember { mutableStateOf(0) }
-    val oldAccountUnlockTrigger = remember { mutableStateOf(0) }
 
     var isSendingSomething by remember { mutableStateOf(false) }
     var isReceiving by remember { mutableStateOf(false) }
@@ -260,34 +256,6 @@ fun SpecialTxPermScreen(sess: TricklePaySession)
     // if I'm receiving some sats (positive net sats) or receiving some token types I'm receiving something
     isReceiving = netSats > 0L || receivingTokenTypes > 0
 
-    // unlock was attempted, if successful, accept, otherwise error
-    if ((sess.accepted)&&(accountUnlockTrigger.value != oldAccountUnlockTrigger.value))
-    {
-        oldAccountUnlockTrigger.value = accountUnlockTrigger.value
-        if (panalysis.account.locked)
-        {
-            displayError(S.InvalidPIN)
-            sess.accepted = false
-        }
-        else
-        {
-            try
-            {
-                sess.acceptSpecialTx(breakIt)
-            }
-            catch (e: LibNexaExceptionI)
-            {
-                displayUnexpectedException(e)
-            }
-            catch(e: Exception)
-            {
-                handleThreadException(e)
-                displayError(S.unknownError, e.toString())
-            }
-            nav.back()
-        }
-    }
-
     var fee = 0L
     var tokenSummary = ""
     if (panalysis != null)
@@ -337,19 +305,16 @@ fun SpecialTxPermScreen(sess: TricklePaySession)
             // Step 1, unlock if needed, otherwise accept & done
             if ((pTx != null) && (panalysis != null))
             {
-                if (sess.accepted == false)
-                {
-                    sess.accepted = true
+                sess.accepted = true
 
-                    if (panalysis.account.locked)
-                    {
-                        triggerUnlockDialog(true) { accountUnlockTrigger.value += 1 }
-                    }
-                    else
-                    {
-                        sess.acceptSpecialTx(breakIt)
-                        nav.back()
-                    }
+                if (panalysis.account.locked)
+                {
+                    unlock.triggerUnlockDialog(true) { }
+                }
+                else
+                {
+                    sess.acceptSpecialTx(breakIt)
+                    nav.back()
                 }
             }
             else
@@ -383,7 +348,7 @@ fun SpecialTxPermScreen(sess: TricklePaySession)
     {
         //info.bitcoinunlimited.www.wally.LogIt.info("deny trickle pay special transaction")
         // give back any inputs we grabbed to fulfill this tx
-        sess.abortProposal()
+        sess.rejectSpecialTx()
         //sess.proposedTx?.let { acc.wallet.abortTransaction(it) }
         //sess.proposedTx = null
         nav.back()
@@ -438,7 +403,7 @@ fun SpecialTxPermScreen(sess: TricklePaySession)
                  */
                 if (isSendingSomething)
                     Column (
-                      modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(32.dp,16.dp,32.dp,16.dp)
+                      modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(16.dp,16.dp,16.dp,16.dp)
                     ) {
                         Text(
                           text = i18n(S.sending),
@@ -477,11 +442,17 @@ fun SpecialTxPermScreen(sess: TricklePaySession)
                                     )
                                 VSpacer(0.01f, 16.dp)
                                 if (spendingTokenTypes > 0L)
+                                {
                                     IconLabelValueRow(
                                       icon = Icons.Outlined.Image,
                                       labelRes = S.spendingTokens,
                                       value = spendingTokenTypes.toString()
                                     )
+                                    // Indent the asset list under the Assets header
+                                    Box(modifier = Modifier.fillMaxWidth().padding(2.dp,0.dp,0.dp,0.dp)) {
+                                        AssetTinyTable(panalysis.assetViewModel) { ai, vm -> (vm.amounts.value[ai.groupId] ?: 1) < 0 }
+                                    }
+                                }
                                 if (fee > 0L)
                                 {
                                     VSpacer(0.01f, 16.dp)
@@ -502,7 +473,7 @@ fun SpecialTxPermScreen(sess: TricklePaySession)
                     Column(
                       modifier = Modifier.fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(32.dp,4.dp,32.dp,4.dp)
+                        .padding(16.dp,4.dp,16.dp,4.dp)
                     ) {
                         Text(
                           text = i18n(S.receiving),
@@ -597,32 +568,6 @@ fun SpecialTxPermScreen(sess: TricklePaySession)
         // Bottom button row
         ButtonRowAcceptDeny({acceptProposal()}, { rejectProposal() },
           Modifier.align(Alignment.CenterHorizontally).fillMaxWidth().background(Color.White), acceptEnabled = GuiCustomTxError == "")
-        /*
-        Row(
-          modifier = Modifier.align(Alignment.BottomCenter)
-            .fillMaxWidth()
-            .background(Color.White)
-            .padding(2.dp),
-          horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            if (GuiCustomTxError == "")
-                IconTextButton(
-                  icon = Icons.Outlined.Send,
-                  modifier = Modifier.weight(1f),
-                  description = i18n(S.accept),
-                  color = wallyPurple,
-                ) {
-                    acceptProposal()
-                }
-            IconTextButton(
-              icon = Icons.Outlined.Cancel,
-              modifier = Modifier.weight(1f),
-              description = i18n(DeleteButtonText),
-              color = wallyPurple,
-            ) {
-                rejectProposal()
-            }
-        } */
     }
 }
 
@@ -699,6 +644,7 @@ fun AssetInfoPermScreen(acc: Account, sess: TricklePaySession , nav: ScreenNav)
               nav.back()
           },
           deny = {
+              sess.rejectAssetRequest()
               nav.back()
               displayNotice(S.TpAssetRequestDenied)
           }
@@ -1224,14 +1170,6 @@ fun SendToPermScreen(sess: TricklePaySession , nav: ScreenNav)
         nav.back()
         return
     }
-    // Every time the account change, we need to recalculate what is needed to send
-    /* nothing to recalculate right now
-    LaunchedEffect(Unit) {
-        sess.pill.account.collectLatest {
-
-        }
-    }
-    */
 
     val tpc = sess.topic.let {
         if (it == null) ""
@@ -1287,6 +1225,7 @@ fun SendToPermScreen(sess: TricklePaySession , nav: ScreenNav)
             }
             nav.back()
         }, {
+            sess.rejectSendToRequest()
             nav.back()
             displayNotice(S.TpSendRequestDenied)
         },
@@ -1295,8 +1234,6 @@ fun SendToPermScreen(sess: TricklePaySession , nav: ScreenNav)
         )
     }
 }
-
-
 
 fun getSecretAndAddress(wallet: Wallet, host: String?, path: String?): Pair<Secret, PayAddress>
 {

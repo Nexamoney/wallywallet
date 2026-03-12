@@ -17,7 +17,7 @@ private val LogIt = GetLog("BU.wally.perm")
 @OptIn(ExperimentalTestApi::class, ExperimentalUnsignedTypes::class)
 class AccountPermissionScreensTest:WallyUiTestBase()
 {
-    val cs = ChainSelector.NEXAREGTEST
+    val cs = ChainSelector.NEXA
 
     @Test
     fun sendToPermScreenTest()
@@ -28,7 +28,6 @@ class AccountPermissionScreensTest:WallyUiTestBase()
             setContent {
                 SendToPermScreen( tp, ScreenNav())
             }
-            tp.pill.sync.finish()
         }
         wallyApp!!.deleteAccount(account)
     }
@@ -37,6 +36,9 @@ class AccountPermissionScreensTest:WallyUiTestBase()
     fun assetInfoPermScreenTest()
     {
         val account = wallyApp!!.newAccount("assetInfo", 0U, "", cs)!!
+        waitFor(5000, { "Cannot connect to ${cs.name} network!  Run a local full node."}) {
+            account.chain.net.p2pCnxns.size > 0
+        }
         runComposeUiTest {
             val tp = TricklePaySession(wallyApp!!.tpDomains)
             setContent {
@@ -51,7 +53,6 @@ class AccountPermissionScreensTest:WallyUiTestBase()
             onNodeWithText(i18n(S.accept)).assertIsDisplayed()
             onNodeWithText(i18n(S.deny)).assertIsDisplayed()
             onNodeWithText(i18n(S.deny)).performClick()
-            tp.pill.sync.finish()
         }
         wallyApp!!.deleteAccount(account)
     }
@@ -70,7 +71,6 @@ class AccountPermissionScreensTest:WallyUiTestBase()
             LogIt.info("Identity perm screen up")
             settle()
             LogIt.info("Identity perm test done")
-            sess.pill.sync.finish()
         }
         account.delete()
     }

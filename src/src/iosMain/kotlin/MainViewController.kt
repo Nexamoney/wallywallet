@@ -6,6 +6,7 @@ import androidx.compose.ui.window.ComposeUIViewController
 import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.UiRoot
 import info.bitcoinunlimited.www.wally.ui.nav
+import info.bitcoinunlimited.www.wally.ui.views.UnlockViewModel
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.Bip44Wallet
 import org.nexa.libnexakotlin.initializeLibNexa
@@ -36,6 +37,7 @@ fun OnAppStartup()
 fun MainViewController(): UIViewController
 {
     backgroundOnly = false  // This function is called to instantiate the UI, so we must not be in background mode
+    val unlock = UnlockViewModel(wallyApp!!.focusedAccount)
 
     val view = ComposeUIViewController({},
       {
@@ -43,7 +45,8 @@ fun MainViewController(): UIViewController
         UiRoot(
           // Add padding to allow .ignoresSafeArea in iOSApp.swift
           Modifier.fillMaxSize().padding(WindowInsets.systemBars.asPaddingValues()),
-          WindowInsets(0,0,0,0)
+          WindowInsets(0,0,0,0),
+          unlock
         )
     })
     // Wrong selector

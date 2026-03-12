@@ -181,7 +181,7 @@ class SendScreenViewModelFake(act: Account): SendScreenViewModel(act)
     override fun actuallySend(toAddress: PayAddress?, amount: BigDecimal?) {}
 }
 
-class SendScreenViewModelImpl(act: Account): SendScreenViewModel(act)
+class SendScreenViewModelImpl(act: Account, val unlock: UnlockViewModel): SendScreenViewModel(act)
 {
     var balanceJob: Job? = null
 
@@ -301,7 +301,11 @@ class SendScreenViewModelImpl(act: Account): SendScreenViewModel(act)
 
         if (acc.locked)
         {
-            displayError(S.accountLocked, "")
+
+            unlock.triggerUnlockDialog(true) {
+                onSendButtonClicked()
+            }
+            displayWarning(i18n(S.accountLocked), "")
             return
         }
 
@@ -641,6 +645,7 @@ data class SendScreenNavParams(
 fun SendScreenContent(
   pillViewModel: AccountPillViewModel,
   viewModel: SendScreenViewModel,
+  unlock: UnlockViewModel,
   params: SendScreenNavParams,
   audioPlayerViewModel: AudioPlayerViewModel = viewModel { AudioPlayerViewModel() }
 )
@@ -762,7 +767,7 @@ fun SendScreenContent(
                 )
                 Spacer(Modifier.height(80.dp))
             }
-        SendBottomButtons(Modifier.align(Alignment.BottomCenter), viewModel)
+        SendBottomButtons(Modifier.align(Alignment.BottomCenter), viewModel, unlockViewModel = unlock)
     }
 
     if (isScanningQr && platform().hasQrScanner)
@@ -852,7 +857,7 @@ fun ConfirmSend(viewModel: SendScreenViewModel)
 }
 
 @Composable
-fun SendBottomButtons(mod: Modifier, viewModel: SendScreenViewModel)
+fun SendBottomButtons(mod: Modifier, viewModel: SendScreenViewModel, unlockViewModel: UnlockViewModel)
 {
     val uiState = viewModel.uiState.collectAsState()
     val isConfirming = uiState.value.isConfirming
@@ -892,6 +897,7 @@ fun SendBottomButtons(mod: Modifier, viewModel: SendScreenViewModel)
                 viewModel.uiState.value = viewModel.uiState.value.copy(isConfirming = false)
             else
             {
+                unlockViewModel.triggerUnlockDialog(false)
                 viewModel.clear()  // If you cancel the gui clears (if you want to preserve the values use the back button)
                 nav.back()
                 viewModel.resetUi()
@@ -901,7 +907,7 @@ fun SendBottomButtons(mod: Modifier, viewModel: SendScreenViewModel)
 }
 
 @Composable
-fun SendScreen(pillViewModel: AccountPillViewModel, navParams: SendScreenNavParams, viewModel: SendScreenViewModel = viewModel { SendScreenViewModelImpl(pillViewModel.account.value ?: wallyApp!!.preferredVisibleAccount()) })
+fun SendScreen(pillViewModel: AccountPillViewModel, navParams: SendScreenNavParams, viewModel: SendScreenViewModel, unlockViewModel: UnlockViewModel)
 {
     val account = pillViewModel.account.collectAsState().value ?: wallyApp!!.preferredVisibleAccount()
     /*
@@ -937,7 +943,7 @@ fun SendScreen(pillViewModel: AccountPillViewModel, navParams: SendScreenNavPara
         Surface(
           modifier = Modifier.fillMaxSize().background(Color.White)
         ) {
-            SendScreenContent(pillViewModel, viewModel, params = navParams)
+            SendScreenContent(pillViewModel, viewModel, unlockViewModel, params = navParams)
         }
     }
 }
@@ -1236,73 +1242,6 @@ fun WallyNumericInputFieldAsset(
             ) {
                 Text(text = i18n(S.done))
             }
-        }
-    }
-}
-
-@Composable
-fun ThumbButton(icon: ImageVector, textRes: Int, mod: Modifier = Modifier, color: Color = Color.White)
-{
-    Column(
-      modifier = mod.wrapContentHeight().wrapContentWidth(),
-      horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(Modifier.height(8.dp))
-        Icon(icon, contentDescription = i18n(textRes), tint = color)
-        Spacer(Modifier.height(4.dp))
-        Text(i18n(textRes), textAlign = TextAlign.Center, style = MaterialTheme.typography.labelSmall, color = color)
-        Spacer(Modifier.height(8.dp))
-    }
-}
-
-@Composable
-fun ThumbButtonFAB(pasteIcon: ImageVector = Icons.Outlined.ContentPaste, onResult: (String) -> Unit, onScanQr: () -> Unit, clipmgr: ClipboardManager = LocalClipboardManager.current)
-{
-    Row(
-      modifier = Modifier.wrapContentHeight().fillMaxWidth(),
-      horizontalArrangement = Arrangement.Center
-    ) {
-        Row(
-          modifier = Modifier.wrapContentHeight()
-            .wrapContentWidth()
-            .shadow(elevation = 8.dp, shape = RoundedCornerShape(32.dp))
-            .background(wallyTranslucentPurple, shape = RoundedCornerShape(32.dp)),
-          horizontalArrangement = Arrangement.Center
-        ) {
-            Spacer(Modifier.width(32.dp))
-            if (platform().hasGallery)
-                ThumbButton(
-                  icon = Icons.Outlined.DocumentScanner,
-                  textRes = S.imageQr,
-                  mod = Modifier.clickable {
-                    ImageQrCode { qrContent ->
-                        qrContent?.let {
-                            clearAlerts()
-                            onResult(it)
-                        }
-                    }
-                  }.padding(end = 12.dp))
-            if (platform().hasQrScanner)
-                ThumbButton(
-                  icon = Icons.Outlined.QrCodeScanner,
-                  textRes = S.scanQr,
-                  mod = Modifier.clickable {
-                    clearAlerts()
-                    onScanQr()
-                  }.padding(end = 16.dp))
-            if (!platform().usesMouse)
-                ThumbButton(
-                  icon = pasteIcon,
-                  textRes = S.paste,
-                  mod = Modifier.clickable {
-                      clearAlerts()
-                      val clipText = clipmgr.getText()?.text
-                      if (clipText != null && clipText != "")
-                          onResult(clipText)
-                      else
-                          displayNotice(S.pasteIsEmpty)
-                  }.padding(end = 32.dp)
-                )
         }
     }
 }

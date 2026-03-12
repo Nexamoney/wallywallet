@@ -4,7 +4,7 @@ import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.platform
-import info.bitcoinunlimited.www.wally.ui.ShoppingScreen
+import info.bitcoinunlimited.www.wally.ui.LinksScreen
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
@@ -13,7 +13,7 @@ class ShoppingScreenTest
     @Test
     fun shoppingScreenTest() = runComposeUiTest {
         setContent {
-            ShoppingScreen()
+            LinksScreen()
         }
 
         onNodeWithText(i18n(S.ShoppingWarning)).isDisplayed()

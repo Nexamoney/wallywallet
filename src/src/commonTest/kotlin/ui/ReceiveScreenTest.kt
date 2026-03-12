@@ -82,8 +82,6 @@ class ReceiveScreenTest:WallyUiTestBase(false)
             onNodeWithTag(tag).performClick()
             println("Finished")
             settle()
-            // waitFor<Boolean> { clipboardText.value == address.address.toString() }
-            pill.sync.finish()
         }
         account.delete()
     }

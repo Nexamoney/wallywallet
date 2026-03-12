@@ -552,7 +552,7 @@ class AccountPill(account: MutableStateFlow<Account?>): AccountPillViewModel(acc
 
     override val balance = BalanceViewModelImpl(account.value)
     override val otherBalance = BalanceViewModelImpl(account.value)
-    override val sync = SyncViewModelAccount { account.value }
+    override val sync = SyncViewModelAccount(account)
 
     override fun setAccount(act: Account?)
     {
@@ -562,7 +562,6 @@ class AccountPill(account: MutableStateFlow<Account?>): AccountPillViewModel(acc
         }
         if (act!=null) balance.setAccount(act)
         account.value = act
-        sync.trigger()
     }
 
     var job: Job? = viewModelScope.launch(dispatcher) {
