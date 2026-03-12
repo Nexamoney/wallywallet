@@ -27,6 +27,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.DoneButtonOptional
 import info.bitcoinunlimited.www.wally.ui.assignAccountsGuiSlots
@@ -34,7 +35,6 @@ import info.bitcoinunlimited.www.wally.ui.theme.wallyAttention
 import info.bitcoinunlimited.www.wally.ui.theme.wallyTile
 import info.bitcoinunlimited.www.wally.ui.theme.wallyTileHeader
 import info.bitcoinunlimited.www.wally.ui.triggerAccountsChanged
-import info.bitcoinunlimited.www.wally.ui.triggerUnlockDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -42,32 +42,66 @@ import org.nexa.libnexakotlin.GetLog
 
 private val LogIt = GetLog("BU.wally.unlockview")
 
-val unlockTileSize = MutableStateFlow<Int>(0)
-var unlockThen:((String)->Unit)? = null
-
-fun attemptUnlock(pin: String)
+class UnlockViewModel(val account:MutableStateFlow<Account?>): ViewModel()
 {
-    val actsUnlocked = wallyApp!!.unlockAccounts(pin)
-    if (actsUnlocked == 0)  // nothing got unlocked
-        displayError(S.InvalidPIN, persistAcrossScreens = 0)
-    else
+    val unlockTileSize = MutableStateFlow<Int>(0)
+    var unlockThen: (() -> Unit)? = null
+
+    val pin = MutableStateFlow<String>("")
+
+    fun triggerUnlockDialog(show: Boolean = true, then: (() -> Unit)? = {})
     {
-        LogIt.info("Unlocked ${actsUnlocked} accounts")
-        clearAlerts()
-        triggerAccountsChanged()
-        assignAccountsGuiSlots()  // In case accounts should be showed
-    }  // We don't know what accounts got unlocked so just redraw them all in this non-performance change
-    triggerUnlockDialog(false)
-    unlockThen?.invoke(pin)
-    unlockThen = null
+        if (show)
+        {
+            clearAlerts()
+            unlockThen = then
+            unlockTileSize.interpolate(300, null, 300)
+        }
+        else
+        {
+            unlockTileSize.interpolate(300, null, 0)
+        }
+    }
+
+    /** Try to unlock a particular account with what is in the dialog, if it is shown, but do not dismiss it if it does not work. */
+    fun tryUnlock(account: Account? = null): Int
+    {
+        if (unlockTileSize.value > 0)
+        {
+            if (account != null)
+            {
+                return account.submitAccountPin(pin.value)
+            }
+            else
+                return wallyApp!!.unlockAccounts(pin.value)
+        }
+        return 0
+    }
+
+    internal fun attemptUnlock(pin: String, dismissOnFailure: Boolean = true)
+    {
+        val actsUnlocked = wallyApp!!.unlockAccounts(pin)
+        if (actsUnlocked == 0)  // nothing got unlocked
+            displayError(S.InvalidPIN, persistAcrossScreens = 0)
+        else
+        {
+            LogIt.info("Unlocked ${actsUnlocked} accounts")
+            clearAlerts()
+            triggerAccountsChanged()
+            assignAccountsGuiSlots()  // In case accounts should be showed
+        }  // We don't know what accounts got unlocked so just redraw them all in this non-performance change
+        if (dismissOnFailure) triggerUnlockDialog(false)
+        unlockThen?.invoke()
+        unlockThen = null
+    }
 }
 
 @Composable
-fun UnlockTile(enterPin: String = i18n(S.EnterPIN))
+fun UnlockTile(vm: UnlockViewModel, enterPin: String = i18n(S.EnterPIN))
 {
-    val pin = remember { mutableStateOf("") }
+    //val pin = remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
-    val curSz = unlockTileSize.collectAsState().value
+    val curSz = vm.unlockTileSize.collectAsState().value
 
     if (curSz != 0)
     {
@@ -77,12 +111,12 @@ fun UnlockTile(enterPin: String = i18n(S.EnterPIN))
                 Spacer(modifier = Modifier.widthIn(2.dp, 8.dp).weight(0.05f))
                 OutlinedButton(
                   onClick = {
-                      if (pin.value.length > 0)
+                      if (vm.pin.value.length > 0)
                       {
-                          attemptUnlock(pin.value)
-                          pin.value = ""
+                          vm.attemptUnlock(vm.pin.value)
+                          vm.pin.value = ""
                       }
-                      else triggerUnlockDialog(false)
+                      else vm.triggerUnlockDialog(false)
                   },
                   modifier = Modifier.testTag("UnlockTileAccept"),
                   colors = ButtonDefaults.outlinedButtonColors().copy(containerColor = Color(0x40FFFFFF), contentColor = Color.White),
@@ -97,7 +131,7 @@ fun UnlockTile(enterPin: String = i18n(S.EnterPIN))
                 ) {
                     Text(style = wallyTileHeader(), text = enterPin)
                     TextField(
-                      pin.value,
+                      vm.pin.collectAsState().value,
                       colors = TextFieldDefaults.colors(
                         focusedTextColor = Color.White,
                         cursorColor = Color.White,
@@ -106,19 +140,19 @@ fun UnlockTile(enterPin: String = i18n(S.EnterPIN))
                         focusedIndicatorColor = Color.White,
                         unfocusedIndicatorColor = Color.White
                       ),
-                      onValueChange = { pin.value = it },
+                      onValueChange = { vm.pin.value = it },
                       textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
                       modifier = Modifier.testTag("EnterPIN")
                         .focusRequester(focusRequester)
                         .onKeyEvent {
                             if ((it.key == Key.Enter) || (it.key == Key.NumPadEnter))
                             {
-                                if (pin.value.length > 0)
+                                if (vm.pin.value.length > 0)
                                 {
-                                    attemptUnlock(pin.value)
-                                    pin.value = ""
+                                    vm.attemptUnlock(vm.pin.value)
+                                    vm.pin.value = ""
                                 }
-                                else triggerUnlockDialog(false)
+                                else vm.triggerUnlockDialog(false)
                                 false
                             }
                             else false// Do not accept this key
@@ -127,12 +161,12 @@ fun UnlockTile(enterPin: String = i18n(S.EnterPIN))
                       keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number),
                       keyboardActions = KeyboardActions(
                         onDone = {
-                            if (pin.value.length > 0)
+                            if (vm.pin.value.length > 0)
                             {
-                                attemptUnlock(pin.value)
-                                pin.value = ""
+                                vm.attemptUnlock(vm.pin.value)
+                                vm.pin.value = ""
                             }
-                            else triggerUnlockDialog(false)
+                            else vm.triggerUnlockDialog(false)
                         }
                       ),
                     )
@@ -140,9 +174,9 @@ fun UnlockTile(enterPin: String = i18n(S.EnterPIN))
                 Spacer(modifier = Modifier.widthIn(2.dp, 8.dp).weight(0.02f))
                 OutlinedButton(
                   onClick = {
-                      pin.value = ""
-                      triggerUnlockDialog(false)
-                      },
+                      vm.pin.value = ""
+                      vm.triggerUnlockDialog(false)
+                  },
                   colors = ButtonDefaults.outlinedButtonColors().copy(containerColor = Color(0x40FFFFFF), contentColor = Color.White),
                   modifier = Modifier.testTag("UnlockTileCancel"),
                   border = BorderStroke(1.dp, Color.White),
@@ -156,9 +190,11 @@ fun UnlockTile(enterPin: String = i18n(S.EnterPIN))
     }
 }
 
+
 /**
  * Displays a confirm/dismiss dialog to users with optional confirm/dismiss button text and description
  */
+/*
 @Composable
 fun UnlockView(enterPin: String = i18n(S.EnterPIN))
 {
@@ -217,3 +253,5 @@ fun UnlockView(enterPin: String = i18n(S.EnterPIN))
       },
       )
 }
+
+ */

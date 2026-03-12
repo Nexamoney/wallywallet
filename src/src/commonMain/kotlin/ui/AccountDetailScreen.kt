@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUnsignedTypes::class)
+
 package info.bitcoinunlimited.www.wally.ui
 
 import androidx.compose.foundation.clickable
@@ -41,14 +43,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.millisleep
-
-internal val rediscoverPrehistoryHeight = MutableStateFlow(0L)
-internal val rediscoverPrehistoryTime = MutableStateFlow(0L)
-internal var aborter = Objectify<Boolean>(false)
-
-// We need to promote some blocking-access data to globals so we can launch threads to load them
-var curAddressText = MutableStateFlow<String>("")
-var accountDetailAccount:Account? = null
 
 enum class AccountAction
 {
@@ -120,8 +114,8 @@ fun rediscoverPeekActivity(secretWords: String, chainSelector: ChainSelector, ab
 {
     val net = connectBlockchain(chainSelector).net
     var ec = retry(10) {
-        val ec = net?.getElectrum()
-        if (ec == null) millisleep(1000U)
+        val ec = net.getElectrum()
+        //if (ec == null) millisleep(1000U)
         ec
     }
 
@@ -132,12 +126,12 @@ fun rediscoverPeekActivity(secretWords: String, chainSelector: ChainSelector, ab
         val secret = generateBip39Seed(secretWords, passphrase)
         val addressDerivationCoin = Bip44AddressDerivationByChain(chainSelector)
 
-        var earliestActivityP =
+        val earliestActivityP =
           searchFirstActivity({
               if (ec.open) return@searchFirstActivity ec
               ec = net.getElectrum()
               return@searchFirstActivity (ec)
-          }, chainSelector, 10, {
+          }, chainSelector, WALLET_RECOVERY_DERIVATION_PATH_FIRST_USE_DEPTH, {
               libnexa.deriveHd44ChildKey(secret, AddressDerivationKey.BIP44, addressDerivationCoin, 0, false, it).first
           }, { time, height ->
               true
@@ -146,7 +140,7 @@ fun rediscoverPeekActivity(secretWords: String, chainSelector: ChainSelector, ab
     }
     finally
     {
-        net?.returnElectrum(ec)
+        net.returnElectrum(ec)
     }
 }
 
@@ -157,6 +151,11 @@ open class AccountStatisticsViewModel(val account:MutableStateFlow<Account?>) : 
     val accountStats = MutableStateFlow<AccountStatistics?>(null)
     val curAddressText = MutableStateFlow<String>("")
     private var accountJob: Job? = null
+
+    val rediscoverPrehistoryHeight = MutableStateFlow(0L)
+    val rediscoverPrehistoryTime = MutableStateFlow(0L)
+    var aborter = Objectify<Boolean>(false)
+
 
     init {
         account.value?.let {
@@ -194,7 +193,7 @@ open class AccountStatisticsViewModel(val account:MutableStateFlow<Account?>) : 
     protected fun fetchCurAddressText(account: Account)  // : Account)
     {
         curAddressText.value = ""  // Account changed so clear this pending a reload
-        laterJob {
+        tlater {
             val curDest = account.wallet.getCurrentDestination()
             curAddressText.value = i18n(S.CurrentAddress) % mapOf(
                   "num" to curDest.index.toString(),
@@ -207,6 +206,34 @@ open class AccountStatisticsViewModel(val account:MutableStateFlow<Account?>) : 
     {
         super.onCleared()
         accountJob?.cancel()
+    }
+
+    fun rediscoverWalletTx()
+    {
+        val acc = account.value
+        if (acc == null) return
+        // Launch a thread to find when the wallet was first used whenever this button is clicked
+        val wal = acc.wallet
+        val state = wal.chainstate
+        if (state != null)
+        {
+            rediscoverPrehistoryTime.value = state.prehistoryDate
+            rediscoverPrehistoryHeight.value = state.prehistoryHeight
+            laterJob {
+                aborter.obj = true  // abort any old searches
+                aborter = Objectify<Boolean>(false)
+                val ret = rediscoverPeekActivity(wal.secretWords.getSecret().decodeUtf8(), wal.chainSelector, aborter)
+                if (ret != null)
+                {
+                    val (time, height) = ret
+
+                    state.prehistoryDate = time - (30 * 60)
+                    rediscoverPrehistoryTime.value = state.prehistoryDate
+                    state.prehistoryHeight = height.toLong() - 1
+                    rediscoverPrehistoryHeight.value = state.prehistoryHeight
+                }
+            }
+        }
     }
 }
 
@@ -240,7 +267,7 @@ class AccountStatisticsViewModelFake(act: Account) : AccountStatisticsViewModel(
             ap.draw(buttonsEnabled = true)
             Spacer(Modifier.height(2.dp))
             Spacer(modifier = Modifier.height(4.dp))
-            AccountActionButtons(act, txHistoryButtonClicked = { nav.go(ScreenId.TxHistory) }, accountDeleted = {
+            AccountActionButtons(accountStatsViewModel, act, txHistoryButtonClicked = { nav.go(ScreenId.TxHistory) }, accountDeleted = {
                 nav.back()
                 triggerAssignAccountsGuiSlots()
             })
@@ -415,8 +442,9 @@ fun TxStatistics(viewModel: AccountStatisticsViewModel, onAddressesButtonClicked
         }
 }
 
+
 @Composable
-fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accountDeleted: () -> Unit)
+fun AccountActionButtons(viewModel: AccountStatisticsViewModel, acc: Account, txHistoryButtonClicked: () -> Unit, accountDeleted: () -> Unit)
 {
     val accountAction: MutableState<AccountAction?> = remember { mutableStateOf(null) }
     var checked by remember { mutableStateOf(acc.flags and ACCOUNT_FLAG_REUSE_ADDRESSES == 0UL) }
@@ -440,70 +468,43 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                     acc.flags = acc.flags or ACCOUNT_FLAG_REUSE_ADDRESSES
                 else
                     acc.flags = acc.flags and ACCOUNT_FLAG_REUSE_ADDRESSES.inv()
-                laterJob {  // Can't be in UI thread
+                tlater {  // Can't be in UI thread
                     acc.saveAccountFlags()
                 }
             }
 
-            fun rediscoverWalletTx(aa: AccountAction)
-            {
-                // Launch a thread to find when the wallet was first used whenever this button is clicked
-                val wal = acc.wallet
-                val state = wal.chainstate
-                if (state != null)
-                {
-                    rediscoverPrehistoryTime.value = state.prehistoryDate
-                    rediscoverPrehistoryHeight.value = state.prehistoryHeight
-                    laterJob {
-                        aborter.obj = true  // abort any old searches
-                        aborter = Objectify<Boolean>(false)
-                        val ret = rediscoverPeekActivity(wal.secretWords.getSecret().decodeUtf8(), wal.chainSelector, aborter)
-                        if (ret != null)
-                        {
-                            val (time, height) = ret
-
-                            state.prehistoryDate = time - (30 * 60)
-                            rediscoverPrehistoryTime.value = state.prehistoryDate
-                            state.prehistoryHeight = height.toLong() - 1
-                            rediscoverPrehistoryHeight.value = state.prehistoryHeight
-                        }
-                    }
-                }
-
-                accountAction.value = aa
-            }
 
             val mod = Modifier.fillMaxWidth(0.90f)
             OutlinedButton(content = { Text(i18n(S.txHistoryButton)) }, onClick = txHistoryButtonClicked, modifier = mod)
             OutlinedButton(content = { Text(i18n(S.SetChangePin)) }, onClick = {
-                accountAction.value =
-                  AccountAction.PinChange
+                accountAction.value = AccountAction.PinChange
             }, modifier = mod.testTag("SetChangePinButton"))
             if (wallyApp?.nullablePrimaryAccount != acc)    // it not primary
                 OutlinedButton(content = { Text(i18n(S.setAsPrimaryAccountButton)) }, onClick = {
-                    accountAction.value =
-                      AccountAction.PrimaryAccount
+                    accountAction.value = AccountAction.PrimaryAccount
                 }, modifier = mod)
             OutlinedButton(content = { Text(i18n(S.assessUnconfirmed)) }, onClick = {
-                accountAction.value =
-                  AccountAction.Reassess
+                accountAction.value = AccountAction.Reassess
             }, modifier = mod)
-            OutlinedButton(content = { Text(i18n(S.searchWalletTx)) }, onClick = { rediscoverWalletTx(AccountAction.Search) }, modifier = mod)
+            OutlinedButton(content = { Text(i18n(S.searchWalletTx)) }, onClick = {
+                accountAction.value = AccountAction.Search
+                viewModel.rediscoverWalletTx()
+                                                                                 }, modifier = mod)
             OutlinedButton(content = { Text(i18n(S.ViewRecoveryPhrase)) }, onClick = {
-                accountAction.value =
-                  AccountAction.RecoveryPhrase
+                accountAction.value = AccountAction.RecoveryPhrase
             }, modifier = mod)
             OutlinedButton(content = { Text(i18n(S.deleteWalletAccount)) }, onClick = {
-                accountAction.value =
-                  AccountAction.Delete
+                accountAction.value = AccountAction.Delete
             }, modifier = mod)
 
             if (devMode)
             {
-                OutlinedButton(content = { Text(i18n(S.rediscoverWalletTx)) }, onClick = { rediscoverWalletTx(AccountAction.Rediscover) }, modifier = mod)
+                OutlinedButton(content = { Text(i18n(S.rediscoverWalletTx)) }, onClick = {
+                    accountAction.value = AccountAction.Rediscover
+                    viewModel.rediscoverWalletTx()
+                    }, modifier = mod)
                 OutlinedButton(content = { Text(i18n(S.rediscoverBlockchain)) }, onClick = {
-                    accountAction.value =
-                      AccountAction.RediscoverBlockchain
+                    accountAction.value = AccountAction.RediscoverBlockchain
                 }, modifier = mod)
                 /*  Messes up the account prehistory to see if rediscover properly corrects it
             WallyBoringTextButton("DEV: randomize prehistory") {
@@ -605,7 +606,7 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                                 {
                                     val act = c.value
                                     if (act.wallet.blockchain == bc)
-                                        act.wallet.rediscover(true, true)
+                                        act.wallet.rediscover(false, true)
                                 }
                             }
                             displayNotice(S.rediscoverNotice)
@@ -626,7 +627,7 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                 ) {
                     if (it)
                     {
-                        laterJob {
+                        tlater {
                             wallyApp!!.deleteAccount(acc)
                             displayNotice(S.accountDeleteNotice)
                             accountDeleted()
@@ -646,10 +647,10 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                       {
                         if (state != null)
                         {
-                            val dateString = epochToDate(rediscoverPrehistoryTime.collectAsState().value)
+                            val dateString = epochToDate(viewModel.rediscoverPrehistoryTime.collectAsState().value)
                             Spacer(Modifier.height(8.dp))
                             Text(i18n(S.FirstUse) % mapOf("date" to dateString))
-                            Text(i18n(S.Block) % mapOf("block" to rediscoverPrehistoryHeight.collectAsState().value.toString()))
+                            Text(i18n(S.Block) % mapOf("block" to viewModel.rediscoverPrehistoryHeight.collectAsState().value.toString()))
                             Spacer(Modifier.height(8.dp))
                         }
                         Text(
@@ -682,10 +683,10 @@ fun AccountActionButtons(acc: Account, txHistoryButtonClicked: () -> Unit, accou
                       {
                         if (state != null)
                         {
-                            val dateString = epochToDate(rediscoverPrehistoryTime.collectAsState().value)
+                            val dateString = epochToDate(viewModel.rediscoverPrehistoryTime.collectAsState().value)
                             Spacer(Modifier.height(8.dp))
                             Text(i18n(S.FirstUse) % mapOf("date" to dateString))
-                            Text(i18n(S.Block) % mapOf("block" to rediscoverPrehistoryHeight.collectAsState().value.toString()))
+                            Text(i18n(S.Block) % mapOf("block" to viewModel.rediscoverPrehistoryHeight.collectAsState().value.toString()))
                             Spacer(Modifier.height(8.dp))
                         }
                         Text(

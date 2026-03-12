@@ -31,7 +31,6 @@ class IdentityScreenTest:  WallyUiTestBase(false)
              */
             waitForCatching {  onNodeWithText(i18n(S.commonIdentityForAccount) % mapOf("act" to account.name)).isDisplayed() }
             onNodeWithText(i18n(S.IdentityRegistrations)).assertIsDisplayed()
-            ap.sync.finish()
         }
         wallyApp!!.deleteAccount(account)
     }

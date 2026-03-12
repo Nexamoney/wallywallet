@@ -177,25 +177,31 @@ fun IdentityScreen(act: Account, mainPill: AccountPillViewModel, sess: IdentityS
     val d = domain
 
     Column(Modifier.fillMaxSize()) {
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(32.dp))
         (sess?.pill ?: mainPill).draw(false)
-        Spacer(Modifier.height(5.dp))
+        Spacer(Modifier.height(16.dp))
         if (d==null)  // show my info
         {
-            Row {
-                Text(text = i18n(S.commonIdentityForAccount) % mapOf("act" to account.name),
-                  modifier = Modifier.padding(0.dp).weight(1f),
-                  style = WallySectionTextStyle(),
-                  textAlign = TextAlign.Center
-                )
-            }
-            // Show a share identity link on the front screen
             val dest = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
             val destStr = dest.address.toString()
-            SelectionContainer(Modifier.fillMaxWidth(0.98f)) {
-                CenteredFittedText(destStr)
-            }
             val mydata = wallet.identityInfo[dest.address]
+            Column(Modifier.clickable {
+                setTextClipboard(destStr)
+                displayNotice(i18n(S.copiedToClipboard))
+            }) {
+                Row {
+                    Text(text = i18n(S.commonIdentityForAccount) % mapOf("act" to account.name),
+                      modifier = Modifier.padding(0.dp).weight(1f),
+                      style = WallySectionTextStyle(),
+                      textAlign = TextAlign.Center
+                    )
+                }
+                // Show a share identity link on the front screen
+                SelectionContainer(Modifier.fillMaxWidth(0.98f)) {
+                    CenteredFittedText(destStr)
+                }
+                Spacer(Modifier.height(8.dp))
+            }
             Row {
                  IconButton(
                    onClick = { nav.go(ScreenId.IdentityEdit) }

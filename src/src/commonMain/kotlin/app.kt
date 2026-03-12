@@ -74,7 +74,7 @@ fun onetlater(name: String, job: ()->Unit)
     if (jp != null)  // if its null we are exiting
     {
         // LogIt.info("Launching singleton ${job} named ${jp.wakey?.name} running threads: ${jp.allThreads.size} available: ${jp.availableThreads} jobs: ${jp.jobs.size}. Into: into ${jp} ")
-        wallyApp?.threadJobPool?.oneLater(name, job)
+        jp.oneLater(name, job)
     }
 }
 

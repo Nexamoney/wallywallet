@@ -102,7 +102,7 @@ fun ClickableLink(url: String) {
 }
 
 @Composable
-fun ShoppingScreen()
+fun LinksScreen()
 {
     Column(
       modifier = Modifier.fillMaxWidth().fillMaxHeight(1f),

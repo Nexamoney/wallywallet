@@ -5,7 +5,8 @@ import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.i18n
 import info.bitcoinunlimited.www.wally.platform
 import info.bitcoinunlimited.www.wally.ui.views.UnlockTile
-import info.bitcoinunlimited.www.wally.ui.views.unlockTileSize
+import info.bitcoinunlimited.www.wally.ui.views.UnlockViewModel
+import info.bitcoinunlimited.www.wally.wallyApp
 import ui.WallyUiTestBase
 import ui.waitForCatching
 import kotlin.test.Test
@@ -17,10 +18,11 @@ class UnlockViewTest:WallyUiTestBase()
     fun unlockViewTest() = runComposeUiTest {
         val content = i18n(S.EnterPIN)
         val input = "1235"
+        val unlock = UnlockViewModel(wallyApp!!.focusedAccount)
         setContent {
-            UnlockTile()
+            UnlockTile(unlock)
         }
-        unlockTileSize.value = 300
+        unlock.unlockTileSize.value = 300
 
         waitForCatching { onNodeWithText(content).isDisplayed() }
         onNodeWithTag("EnterPIN").assertExists()

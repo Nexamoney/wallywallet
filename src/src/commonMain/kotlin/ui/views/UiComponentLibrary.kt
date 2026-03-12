@@ -61,7 +61,9 @@ import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.exceptionHandler
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.layout.SubcomposeLayout
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.assets.AssetInfo
+import org.nexa.threads.millisleep
 
 
 @Composable fun WallySwitch(isChecked: MutableState<Boolean>, modifier: Modifier = Modifier, onCheckedChange: (Boolean) -> Unit)
@@ -2134,5 +2136,24 @@ fun <T> WallyOptionsCard(
                 }
             }
         }
+    }
+}
+
+fun MutableStateFlow<Int>.interpolate(timeMs: Int, start: Int?=0, end: Int)
+{
+    val FRAME_TIME = 20  // how
+    val numSteps = timeMs/FRAME_TIME
+    val st = start ?: value
+    val delta = end-st
+    val incr = delta.toFloat()/(numSteps+1)
+    var cur:Float = st.toFloat()
+    tlater {
+        for (i in 0 until numSteps)
+        {
+            cur = cur + incr
+            this.value = cur.toInt()
+            millisleep(FRAME_TIME.toULong())
+        }
+        this.value = end.toInt()
     }
 }

@@ -30,7 +30,7 @@ class ThumbButtonFABTest:WallyUiTestBase()
             ThumbButton(
                 icon = Icons.Outlined.DocumentScanner,
                 textRes = res,
-                mod = Modifier.clickable {
+                modifier = Modifier.clickable {
                     isClicked = true
                 }
             )

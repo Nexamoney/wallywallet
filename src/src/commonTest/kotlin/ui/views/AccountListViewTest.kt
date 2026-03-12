@@ -6,6 +6,7 @@ import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.views.AccountItemView
 import info.bitcoinunlimited.www.wally.ui.views.AccountUIData
+import info.bitcoinunlimited.www.wally.ui.views.UnlockViewModel
 import org.nexa.libnexakotlin.ChainSelector
 import ui.settle
 import ui.setupTestEnv
@@ -26,6 +27,7 @@ class AccountListViewTest
     {
         val cs = ChainSelector.NEXA
         val account = wallyApp!!.newAccount("itemvie", 0U, "", cs)!!
+        val unlock = UnlockViewModel(wallyApp!!.focusedAccount)
         runComposeUiTest {
             val iSelectedMock = mutableStateOf(false)
 
@@ -41,6 +43,7 @@ class AccountListViewTest
                   devMode = false,
                   backgroundColor = Color.Transparent,
                   hasFastForwardButton = false,
+                  unlock,
                   onClickAccount = {
                       iSelectedMock.value = !iSelectedMock.value
                   }

@@ -24,7 +24,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,6 +60,8 @@ import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.GroupId
 import org.nexa.libnexakotlin.rem
 import org.nexa.threads.Mutex
+import kotlin.coroutines.cancellation.CancellationException
+import kotlin.math.abs
 
 open class AssetViewModel(val observeFocusedAccount:Boolean=true): ViewModel()
 {
@@ -80,10 +86,18 @@ open class AssetViewModel(val observeFocusedAccount:Boolean=true): ViewModel()
     {
         accountJob?.cancel()
         accountJob = viewModelScope.launch {
-            wallyApp?.focusedAccount?.onEach {
-                if (it != null) observeAssets(it)
-                else assets.value = listOf()
-            }?.launchIn(this)
+            try
+            {
+                wallyApp?.focusedAccount?.onEach {
+                    if (it != null) observeAssets(it)
+                    else assets.value = listOf()
+                }?.launchIn(this)
+            } catch (e: CancellationException) // If this watch was cancelled (account is deleted, for example) don't show these assets
+            {
+                assets.value = listOf()
+                throw e
+            }
+
         }
     }
 
@@ -137,7 +151,7 @@ class AssetViewModelFake: AssetViewModel()
 }
 
 @Composable
-fun AssetTinyTable(viewModel: AssetViewModel, filter: (AssetInfo, AssetViewModel)->Boolean = { a,b -> true })
+fun AssetTinyTable(viewModel: AssetViewModel, absAmount:Boolean=true, filter: (AssetInfo, AssetViewModel)->Boolean = { a,b -> true })
 {
     val assets = viewModel.assets.collectAsState().value
     val amounts = viewModel.amounts.collectAsState().value
@@ -162,11 +176,12 @@ fun AssetTinyTable(viewModel: AssetViewModel, filter: (AssetInfo, AssetViewModel
             val name = if(nft != null && nft.title.isNotEmpty()) nft.title
                         else assetNameState.value ?: asset.ticker
             Row(
-              modifier = Modifier.fillMaxWidth(),
+              modifier = Modifier.fillMaxWidth().wrapContentHeight(),
               verticalAlignment = Alignment.CenterVertically
             ) {
 
-                val amountI = amounts[asset.groupId] ?: 0L
+                var amountI = amounts[asset.groupId] ?: 0L
+                if (absAmount) amountI = abs(amountI)
                 val amount = asset.tokenDecimalFromFinestUnit(amountI)
 
                 if (true)  // for now, always show the amount amountI > 1)
@@ -175,7 +190,7 @@ fun AssetTinyTable(viewModel: AssetViewModel, filter: (AssetInfo, AssetViewModel
                     Spacer(Modifier.width(10.dp))
                 }
                 MpMediaView(asset.iconImageState.collectAsState().value, asset.iconBytes.collectAsState().value, asset.iconUri?.toString(), hideMusicView = true) { mi, draw ->
-                    val m = clickableModifier.background(Color.Transparent).size(64.dp).padding(2.dp)
+                    val m = clickableModifier.background(Color.Transparent).size(48.dp).padding(2.dp)
                     draw(m)
                 }
 
@@ -210,19 +225,25 @@ fun AssetTinyTable(viewModel: AssetViewModel, filter: (AssetInfo, AssetViewModel
                               autoSize = TextAutoSize.StepBased(8.sp, 16.sp)
                             )
                             series?.let {
-                                 BasicText(text = it, modifier = clickableModifier, color = { wallyPurple }, maxLines = 1,
-                                 autoSize = TextAutoSize.StepBased(8.sp, 14.sp))
+                                BasicText(text = it, modifier = clickableModifier, color = { wallyPurple }, maxLines = 1,
+                                  autoSize = TextAutoSize.StepBased(6.sp, 14.sp))
                             }
                         }
                         creator?.let {
-                            val ts = WallyTextStyle().copy(fontStyle = FontStyle.Italic,  lineHeight = 0.9.em, color = Color.Black, fontSize = 14.sp, textAlign = TextAlign.End)
+                            val ts = WallyTextStyle().copy(fontStyle = FontStyle.Italic, lineHeight = 0.9.em, color = Color.Black, fontSize = 14.sp, textAlign = TextAlign.End)
+                            var allowWrap by remember { mutableStateOf(false) }
                             BasicText(text = it,
                               modifier = clickableModifier.padding(start = 8.dp).weight(2f),
                               style = ts,
-                              maxLines = 2,
-                              autoSize = TextAutoSize.StepBased(6.sp, 14.sp)
+                              softWrap = allowWrap,
+                              maxLines = if (allowWrap) 2 else 1,
+                              autoSize = TextAutoSize.StepBased(6.sp, 14.sp),
+                              onTextLayout = { result ->
+                                  if (!allowWrap && result.didOverflowWidth && (result.layoutInput.style.fontSize <= 6.sp)) allowWrap = true
+                              }
                             )
                         }
+
                     }
                 }
             }

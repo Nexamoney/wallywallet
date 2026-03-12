@@ -113,12 +113,13 @@ class HomeScreenTest: WallyUiTestBase()
         val balanceViewModel = BalanceViewModelImpl(account)
         val accountUiDataViewModel = AccountUiDataViewModel()
         val apvm = AccountPill(wallyApp!!.focusedAccount)
+        val unlock = UnlockViewModel(wallyApp!!.focusedAccount)
 
         setContent {
             CompositionLocalProvider(
               LocalViewModelStoreOwner provides viewModelStoreOwner
             ) {
-                HomeScreen(false, apvm, assetViewModel, accountUiDataViewModel)
+                HomeScreen(false, apvm, assetViewModel, accountUiDataViewModel, unlock = unlock)
             }
         }
         settle()
@@ -145,7 +146,6 @@ class HomeScreenTest: WallyUiTestBase()
         }
         // TODO: Click tabrowitem and verify
         wallyApp!!.deleteAccount(account)
-        apvm.sync.finish()
     }
 
     @Test
@@ -187,6 +187,7 @@ class HomeScreenTest: WallyUiTestBase()
             val assetViewModel = AssetViewModel()
             val accountUiDataViewModel = AccountUiDataViewModel()
             val apvm = AccountPill(wallyApp!!.focusedAccount)
+            val unlock = UnlockViewModel(wallyApp!!.focusedAccount)
 
             setContent {
                 CompositionLocalProvider(
@@ -196,7 +197,8 @@ class HomeScreenTest: WallyUiTestBase()
                       isShowingRecoveryWarning = false,
                       apvm,
                       assetViewModel = assetViewModel,
-                      accountUiDataViewModel = accountUiDataViewModel
+                      accountUiDataViewModel = accountUiDataViewModel,
+                      unlock = unlock
                     )
                 }
             }
@@ -218,7 +220,6 @@ class HomeScreenTest: WallyUiTestBase()
             onNodeWithTag("AccountPillAccountName").assertTextEquals("nexaTest2")
             onNodeWithTag("AccountPillBalance").assertTextEquals(expectedBalance2)
             settle()
-            apvm.sync.finish()
         }
         wallyApp!!.deleteAccount(account2)
         wallyApp!!.deleteAccount(account1)
@@ -241,6 +242,7 @@ class HomeScreenTest: WallyUiTestBase()
             val assetViewModel = AssetViewModel()
             val accountUiDataViewModel = AccountUiDataViewModel()
             val apvm = AccountPill(wallyApp!!.focusedAccount)
+            val unlock = UnlockViewModel(wallyApp!!.focusedAccount)
 
             /*
                 Set content to NavigationRoot (the root composable that handles navigation)
@@ -252,7 +254,8 @@ class HomeScreenTest: WallyUiTestBase()
                     NavigationRoot(Modifier, wInsets,
                       apvm,
                       assetViewModel = assetViewModel,
-                      accountUiDataViewModel = accountUiDataViewModel
+                      accountUiDataViewModel = accountUiDataViewModel,
+                      unlock = unlock
                     )
                 }
             }
@@ -302,7 +305,6 @@ class HomeScreenTest: WallyUiTestBase()
                 // Navigate back to the Home Screen
                 onNodeWithTag("BackButton").performClick()
                 settle()
-                apvm.sync.finish()
             }
         }
         wallyApp!!.deleteAccount(normalAccount)

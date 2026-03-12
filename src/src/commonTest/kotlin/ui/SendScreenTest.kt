@@ -14,6 +14,7 @@ import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.views.AccountPillViewModelFake
 import info.bitcoinunlimited.www.wally.ui.views.BalanceViewModelImpl
+import info.bitcoinunlimited.www.wally.ui.views.UnlockViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.assets.AssetInfo
 import org.nexa.assets.AssetPerAccount
@@ -48,11 +49,12 @@ class SendScreenTest:WallyUiTestBase()
             val actFlow = MutableStateFlow<Account?>(account)
             val balanceViewModel = BalanceViewModelImpl(account)
             val mockPill = AccountPillViewModelFake(actFlow, balanceViewModel, SyncViewModelFake())
+            val unlock = UnlockViewModel(actFlow)
             setContent {
                 CompositionLocalProvider(
                   LocalViewModelStoreOwner provides viewModelStoreOwner
                 ) {
-                    SendScreenContent(mockPill, sendScreenViewModel, SendScreenNavParams())
+                    SendScreenContent(mockPill, sendScreenViewModel, unlock,SendScreenNavParams())
                 }
             }
             settle()
@@ -102,11 +104,13 @@ class SendScreenTest:WallyUiTestBase()
     {
         LogIt.info("TEST sendBottomButtonsTest")
         val account = wallyApp!!.newAccount("sendBottomButtonsTest", 0U, "", cs)!!
+        val actFlow = MutableStateFlow<Account?>(account)
+        val viewModel = SendScreenViewModelFake(account)
+        val unlock = UnlockViewModel(actFlow)
         runComposeUiTest {
-            val viewModel = SendScreenViewModelFake(account)
 
             setContent {
-                SendBottomButtons(Modifier, viewModel)
+                SendBottomButtons(Modifier, viewModel, unlock)
             }
             LogIt.info("Settle 1")
             settle()

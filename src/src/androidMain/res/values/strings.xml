@@ -589,9 +589,8 @@ Good luck!
     <string name="title_split_bill">Split a bill</string>
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_exchange">Exchange</string>
-    <string name="title_activity_shopping">Shopping</string>
+    <string name="title_activity_shopping">Links</string>
     <string name="ecosystem">Ecosystem</string>
-    <string name="title_activity_shopping_settings">Custom Shopping Buttons</string>
     <string name="title_activity_trickle_pay">Trickle Pay</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Test</string>
@@ -621,7 +620,6 @@ Good luck!
     <!-- PIN Entry -->
     <string name="EnterPIN">Enter PIN</string>
     <string name="EnterPINorBlankToRemove">New PIN (blank removes)</string>
-    <string name="title_activity_shoppng">ShoppingActivity</string>
 
     <!-- Shopping -->
     <string name="ButtonTextHere">Set button text</string>

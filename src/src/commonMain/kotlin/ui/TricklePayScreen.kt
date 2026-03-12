@@ -153,51 +153,82 @@ fun TricklePayDomainView(toSession: TdppDomain, modifier: Modifier = Modifier, a
 @Composable
 fun TricklePayRegistrationsScreen()
 {
+    var isScanningQr by remember { mutableStateOf(false) }
     val domains = wallyApp!!.tpDomains.domains.collectAsState().value
 
-    Column(Modifier.fillMaxSize()) {
-        if (domains.size == 0)
-        {
-            WallyCardContent(i18n(S.NoServicesRegistered))
-        }
-        LazyColumn(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(0.1f)) {
-            domains.entries.forEachIndexed { index, entry ->
-                item(key = entry.key) {
-                    val tdppDomain = entry.value
-                    val domain = entry.key
-                    val purpose = entry.value.topic
-                    ListItem(
-                      modifier = Modifier.background(Color.White).clickable {
-                          val editDomain = TricklePaySession(wallyApp!!.tpDomains)
-                          editDomain.domain = tdppDomain
-                          editDomain.editDomain = true
-                          nav.go(ScreenId.TricklePayRegistrations, screenSubState = "true".toByteArray(), data = editDomain)
-                      },
-                      headlineContent = { Text(domain) },
-                      supportingContent = { Text(purpose) },
-                      trailingContent = {
-                          Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowRight,
-                            contentDescription = "Arrow",
+    Box(
+      modifier = Modifier.fillMaxSize(),
+    ) {
+        Column(Modifier.fillMaxSize()) {
+            if (domains.size == 0)
+            {
+                WallyCardContent(i18n(S.NoServicesRegistered))
+            }
+            LazyColumn(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(0.1f)) {
+                domains.entries.forEachIndexed { index, entry ->
+                    item(key = entry.key) {
+                        val tdppDomain = entry.value
+                        val domain = entry.key
+                        val purpose = entry.value.topic
+                        ListItem(
+                          modifier = Modifier.background(Color.White).clickable {
+                              val editDomain = TricklePaySession(wallyApp!!.tpDomains)
+                              editDomain.domain = tdppDomain
+                              editDomain.editDomain = true
+                              nav.go(ScreenId.TricklePayRegistrations, screenSubState = "true".toByteArray(), data = editDomain)
+                          },
+                          headlineContent = { Text(domain) },
+                          supportingContent = { Text(purpose) },
+                          trailingContent = {
+                              Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowRight,
+                                contentDescription = "Arrow",
+                              )
+                          },
+                          colors = ListItemDefaults.colors(
+                            containerColor = Color.White
                           )
-                      },
-                      colors = ListItemDefaults.colors (
-                          containerColor = Color.White
-                      )
-                    )
+                        )
+                    }
+                }
+            }
+            if (devMode)
+            {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
+                    WallyBoringLargeTextButton(S.removeAll, onClick = {
+                        wallyApp!!.tpDomains.clear()
+                    })
                 }
             }
         }
-        if (devMode)
-        {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
-                WallyBoringLargeTextButton(S.removeAll, onClick = {
-                    wallyApp!!.tpDomains.clear()
-                })
-            }
+
+        Column(modifier = Modifier.align(Alignment.BottomCenter)
+          .wrapContentHeight()
+          .fillMaxWidth()
+        ) {
+            ThumbButtonFAB(
+              onScanQr = { isScanningQr = true },
+              onResult = { wallyApp?.handlePaste(it) })
+            Spacer(Modifier.height(24.dp))
         }
     }
+
+    if (isScanningQr && platform().hasQrScanner)
+    {
+        QrScannerDialog(
+          onDismiss = {
+              clearAlerts()
+              isScanningQr = false
+          },
+          onScan = {
+              if (it.isNotEmpty() && isScanningQr)
+                  isScanningQr = false
+              wallyApp?.handlePaste(it)
+          }
+        )
+    }
 }
+
 
 @Composable
 fun ConfigureTricklePayScreen(fromSession: TricklePaySession, toDomain: TdppDomain, account: Account)

@@ -293,6 +293,15 @@ fun makeShareableHistory(acc : Account):String
     return sb.toString()
 }
 
+
+@Composable
+internal fun allNull(txes: Array<MutableStateFlow<TransactionHistory?>>):Boolean
+{
+    for (tx in txes)
+        if (tx.collectAsState().value != null) return false
+    return true
+}
+
 /**
  * Transaction history for an account
  */
@@ -331,9 +340,12 @@ fun TxHistoryScreen(acc: Account, nav: ScreenNav)
     val txes = txHistoryInfo.collectAsState().value
     if (txes == null)
     {
-        CenteredSectionText(S.Processing)
+        CenteredSectionText(S.Processing, Modifier.padding(16.dp, 24.dp, 16.dp))
     }
-    else
+    else if (txes.isEmpty() || allNull(txes))
+    {
+        CenteredText(i18n(S.NoAccountActivity), Modifier.padding(16.dp, 24.dp, 16.dp))
+    } else
     {
         LazyColumn {
             txes.forEachIndexed { idx, it ->
