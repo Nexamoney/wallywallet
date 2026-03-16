@@ -23,7 +23,8 @@ platform :ios do
   lane :test_emulator do
     scan(
       scheme: "iosApp",
-      devices: ["iPhone 15"],
+      # devices: ["iPhone 15"],
+      destination: "platform=iOS Simulator,name=iPhone 15,OS=26.3.1",
       clean: true # Cleans the project before building it
     )
   end
