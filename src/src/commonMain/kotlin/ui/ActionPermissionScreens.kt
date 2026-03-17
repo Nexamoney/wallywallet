@@ -30,11 +30,13 @@ import com.eygraber.uri.Uri
 import org.nexa.libnexakotlin.*
 import org.nexa.assets.*
 import info.bitcoinunlimited.www.wally.*
+import info.bitcoinunlimited.www.wally.S.withholdingMandatoryInfo
 import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.ui.theme.colorPrimaryDark
 import info.bitcoinunlimited.www.wally.ui.theme.wallyPurple2
 import info.bitcoinunlimited.www.wally.ui.views.*
 import io.ktor.http.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.io.IOException
 import okio.FileNotFoundException
@@ -42,18 +44,79 @@ import kotlin.plus
 
 private val LogIt = GetLog("wally.actperm")
 
-class IdentitySession(val uri: Uri?, var idData: IdentityDomain?=null, val whenDone: ((String, String, Boolean?)->Boolean)?= null)
+fun identityRegistrationNecessary(op: String?): Boolean
 {
+    if (op == null) return false
+    // registration is not needed for registration itself or signing things
+    return !((op == "reg")|| (op=="sign"))
+}
+
+class IdentitySession(val uri: Uri?, val whenDone: ((String, String, Boolean?)->Boolean)?= null)
+{
+    var newDomain = false
     var autoHandle = true  // Automatically do the network response
     val cookie:String?
     val op:String?
+    var idData: MutableStateFlow<IdentityDomain?> = MutableStateFlow(null)
+    var origIdData: MutableStateFlow<IdentityDomain?> = MutableStateFlow(null)
 
     init {
         cookie = uri?.getQueryParameter("cookie")
-        op = uri?.getQueryParameter("op")
+        op = uri?.getQueryParameter("op")?.lowercase()
     }
 
-    val pill = AccountPill(null)
+    val pill = AccountPill(wallyApp!!.focusedAccount)
+    val unlock = UnlockViewModel(wallyApp!!.focusedAccount)
+
+    init {
+        val h = uri?.host
+        // Populate the account pill's current account with one that has this registration, preferring the current one.
+        // And if registration is required, then limit the account pill's choices
+        if (h!=null)
+        {
+            val app = wallyApp!!
+            val possibleAccount = mutableListOf<Account>()
+            val acts = app.visibleAccountNames()
+            for (a in acts)
+            {
+                val act = app.accounts[a]
+                if (act != null)
+                {
+                    var tmp = act.wallet.lookupIdentityDomain(h)
+                    if (tmp != null) possibleAccount.add(act)
+                }
+            }
+            // If the current account is not in the list, we need to not use it
+            if (possibleAccount.size > 0 && !possibleAccount.contains(pill.account.value))
+            {
+                pill.account.value = possibleAccount.first()
+            }
+            // If registration is not necessary, we do not want to constrain the account choices.
+            // But we still wanted to change the account pill to the registered account (if it exists) which is why we still want the above code
+            if (identityRegistrationNecessary(op)) pill.choices = possibleAccount
+        }
+
+        // Now that we've picked an account that is already registered (if we have one), load up that (or the selected) account's identity info for this domain
+        idData.value = h?.let {
+            var tmp = pill.account.value?.wallet?.lookupIdentityDomain(h)
+            origIdData.value = tmp?.clone()
+            if (op == "reg")
+            {
+                if (tmp == null)  // If the operation is register, I can make one
+                {
+                    tmp = IdentityDomain(uri, IdentityDomain.COMMON_IDENTITY)
+                    newDomain = true
+                }
+                else // Modifications are only allowed in a re-register
+                {
+                    val permsMap = uri.queryMap().mapValues { if (it.value == "m" || it.value == "r") true else false }
+                    tmp.setPerms(permsMap)
+                    tmp.setReqs(uri.queryMap())
+                }
+            }
+            tmp
+        }
+    }
 
     /** All the possible accounts that can be used for this identity session */
     var candidateAccounts: ListifyMap<String, Account>? = null
@@ -653,12 +716,17 @@ fun AssetInfoPermScreen(acc: Account, sess: TricklePaySession , nav: ScreenNav)
 }
 
 
-fun AcceptIdentityPermHandler(op:String, act: Account, sess: IdentitySession, msg: ByteArray?, destToSignWith: PayDestination?, nav: ScreenNav)
+fun AcceptIdentityPermHandler(op:String, sess: IdentitySession, msg: ByteArray?, destToSignWith: PayDestination?, nav: ScreenNav)
 {
     // Shortcut definitions
     val uri = sess.uri!!  // Only called if already checked
     val queries = uri.queryMap()
     val h = uri.host
+    val act = sess.pill.account.value ?: run {
+        displayNotice(S.NoAccounts)
+        nav.back()
+        return
+    }
 
     // If the user accepts this identity operation
     // Turn the identity menu since user has done an identity operation
@@ -774,8 +842,50 @@ fun AcceptIdentityPermHandler(op:String, act: Account, sess: IdentitySession, ms
     }
     else
     {
-        onProvideIdentity(sess, act)
-        nav.back()
+        val success = onProvideIdentity(sess)
+        if (success == true)
+        {
+            handleSuccessfulIdentity(sess)
+            if (sess.newDomain) displaySuccess(S.TpRegAccepted)
+            // else displaySuccess(S.TpRegAccepted)
+        }
+        if (success != null) nav.back()
+    }
+}
+
+fun handleSuccessfulIdentity(sess: IdentitySession)
+{
+    val wallet = sess.pill.account.value?.wallet
+    if (wallet != null)
+    {
+        val saveDomain = sess.idData
+        saveDomain.value?.let {
+            if (it.changed || sess.newDomain)
+            {
+                wallet.upsertIdentityDomain(it)
+                wallet.save(true)
+                it.changed = false
+            }
+        }
+    }
+    // Only allow autoconnect wallet on login or reg operations (not sign or info)
+    if ((sess.op == "login") or (sess.op == "reg"))
+    {
+        val u = sess.uri
+        if (u != null)
+        {
+            if (u.getQueryParameter("connect") != null)
+            {
+                val host = u.host
+                if (host != null)
+                {
+                    wallyApp?.accessHandler?.let {
+                        if (it.activeTo(host) == null)  // only start long polling if its not already started
+                            it.startLongPolling(sess.walletConnectProtocol, host, sess.cookie)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -820,24 +930,23 @@ fun IdentityPermScreen(sess: IdentitySession, nav: ScreenNav)
 
     val h = uri.host
 
-    if (op != "sign")  // sign does not need a registered identity domain so skip all this checking for this op
+    if (op != "sign")  // sign does not need a host
     {
-        var idData: IdentityDomain? = null
         if (h == null)
         {
             displayError(S.badLink, "Identity request did not provide a host")
             return
         }
-        idData = act.wallet.lookupIdentityDomain(h) // + path)
-
-        if (idData == null)  // We don't know about this domain, so register and give it info in one shot
-        {
-            nav.back()
-            nav.go(ScreenId.Identity)  // This should never be called because the account won't be one of the choices if the domain does not exist
-            return
-        }
-        sess.idData = idData
     }
+
+    // If we need registration, but this is a new domain, then we are in the wrong page
+    if (identityRegistrationNecessary(op) && sess.newDomain)
+    {
+        nav.back()
+        nav.go(ScreenId.Identity)  // This should never be called because the account won't be one of the choices if the domain does not exist
+        return
+    }
+
 
     val topText = when (op)
     {
@@ -854,6 +963,8 @@ fun IdentityPermScreen(sess: IdentitySession, nav: ScreenNav)
     }
 
     Column(Modifier.fillMaxSize()) {
+        Spacer(Modifier.height(16.dp))
+        UnlockTile(sess.unlock)
         Spacer(Modifier.height(16.dp))
         sess.pill.draw(false)
         Spacer(Modifier.heightIn(5.dp, 100.dp).weight(0.2f))
@@ -875,12 +986,12 @@ fun IdentityPermScreen(sess: IdentitySession, nav: ScreenNav)
         if (op == "sign")
         {
 
-            var signAddr = queries["addr"]?.let { PayAddress(it) } ?: null
-            var signText = queries["sign"]?.urlDecode()
+            val signAddr = queries["addr"]?.let { PayAddress(it) }
+            val signText = queries["sign"]?.urlDecode()
             val signHex = queries["signhex"]
             if (signAddr != null)
             {
-                var dest = act?.wallet?.walletDestination(signAddr)
+                val dest = act.wallet.walletDestination(signAddr)
                 destToSignWith = dest
             }
             destToSignWith?.let {
@@ -931,7 +1042,11 @@ fun IdentityPermScreen(sess: IdentitySession, nav: ScreenNav)
         Spacer(Modifier.weight(1f))  // Push the accept/deny buttons to the bottom
 
         ButtonRowAcceptDeny({
-            AcceptIdentityPermHandler(op, act, sess, msgToSign, destToSignWith, nav)
+            if (sess.pill.account.value?.locked == true)
+            {
+                sess.unlock.triggerUnlockDialog(true) { }
+            }
+            else AcceptIdentityPermHandler(op, sess, msgToSign, destToSignWith, nav)
         }, {
             nav.back()
             displayNotice(S.cancelled)
@@ -945,7 +1060,7 @@ fun IdentityPermScreen(sess: IdentitySession, nav: ScreenNav)
 }
 
 
-fun onProvideIdentity(sess: IdentitySession, account: Account? = null): Boolean
+fun onProvideIdentity(sess: IdentitySession): Boolean?
 {
     val app = wallyApp!!
     if (true)
@@ -977,7 +1092,7 @@ fun onProvideIdentity(sess: IdentitySession, account: Account? = null): Boolean
 
                 val portStr = if ((port > 0) && (port != 80) && (port != 443)) ":" + port.toString() else ""
 
-                val act = account ?: try
+                val act = sess.pill.account.value ?: try
                 {
                     app.primaryAccount
                 }
@@ -993,7 +1108,7 @@ fun onProvideIdentity(sess: IdentitySession, account: Account? = null): Boolean
                 }
 
                 val wallet = act.wallet
-                val idData = sess.idData
+                val idData = sess.idData.value
                 val seed = if (idData != null)
                 {
                     if (idData.useIdentity == IdentityDomain.COMMON_IDENTITY)
@@ -1056,15 +1171,50 @@ fun onProvideIdentity(sess: IdentitySession, account: Account? = null): Boolean
                     val sigStr = Codec.encode64(sig)
                     LogIt.info("Signature is: " + sigStr + "  hex: " + sig.toHex())
 
-                    val identityInfo = wallet.lookupIdentityInfo(address)
-
-                    val loginReq = protocol + "://" + tmpHost + portStr + path + "?cookie=" + cookie.toString().urlEncode()
-
                     val params = mutableMapOf<String, String>()
                     params["op"] = op
                     params["addr"] = address.toString().jsonString()
                     params["sig"] = sigStr.jsonString()
                     params["cookie"] = cookie.toString().jsonString()
+
+                    val identityInfo = wallet.lookupIdentityInfo(address)
+
+                    // Supply additional requested data
+                    if (idData != null)
+                    {
+                        val perms = mutableMapOf<String, Boolean>()
+                        idData.getPerms(perms)
+                        for (i in nexidParams)
+                        {
+                            if (attribs.containsKey(i))
+                            {
+                                val req = attribs[i]
+
+                                if (perms[i] == true)
+                                {
+                                    val info = identityInfo?.getString(i, null)
+                                    if (info == null || info == "")  // missing some info that is needed
+                                    {
+                                        nav.go(ScreenId.IdentityEdit)
+                                        return null
+                                    }
+                                    else
+                                    {
+                                        params[i] = info
+                                    }
+                                }
+                                else
+                                {
+                                    if (req == "m")  // mandatory, so this login won't work
+                                    {
+                                        displayError(i18n(withholdingMandatoryInfo))
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    val loginReq = protocol + "://" + tmpHost + portStr + path + "?cookie=" + cookie.toString().urlEncode()
 
                     val jsonBody = StringBuilder("{")
                     var firstTime = true
@@ -1081,7 +1231,10 @@ fun onProvideIdentity(sess: IdentitySession, account: Account? = null): Boolean
                     jsonBody.append('}')
 
                     var ret = false
-                    if ((sess.autoHandle)||(sess.whenDone == null)) app.handlePostLogin(loginReq, jsonBody.toString())
+                    if ((sess.autoHandle)||(sess.whenDone == null))
+                    {
+                        ret = app.handlePostLogin(loginReq, jsonBody.toString())
+                    }
                     sess.whenDone?.let { ret = it.invoke(loginReq, jsonBody.toString(), true) }
                     return ret
                 }
@@ -1267,7 +1420,7 @@ fun getSecretAndAddress(wallet: Wallet, host: String?, path: String?): Pair<Secr
 
 fun HandleIdentity(uri: Uri, autoHandle: Boolean, then: ((String, String,Boolean?)->Boolean)?= null): Boolean
 {
-    val sess = IdentitySession(uri, null, then)
+    val sess = IdentitySession(uri,  then)
     sess.autoHandle = autoHandle
     LogIt.info(sourceLoc() +": Handle identity operation")
     val h = uri.host
