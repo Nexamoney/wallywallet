@@ -26,7 +26,7 @@ import org.nexa.threads.*
 /**
  * Address information to display in view
  */
-data class AddressInfo(val address: PayAddress, val givenOut: Boolean, val amountHeld: Long, val totalReceived: Long, val firstRecv: Long, val lastRecv: Long, val assetTypesReceived:Long)
+data class AddressInfo(val address: PayAddress, val givenOut: Boolean, val amountHeld: Long, val totalReceived: Long, val firstRecv: Long, val lastRecv: Long, val assetTypesReceived:Long, val index: Long)
 
 val addressInfoComparator = object:  Comparator<AddressInfo>
 {
@@ -53,6 +53,9 @@ val addressInfoComparator = object:  Comparator<AddressInfo>
             if (b.assetTypesReceived > a.assetTypesReceived) return 1
             return a.address.toString().compareTo(b.address.toString())
         }
+        // Order of address creation
+        if (a.index < Long.MAX_VALUE || b.index < Long.MAX_VALUE)
+            return a.index.compareTo(b.index)
         // Finally in lexographical order of address
         return a.address.toString().compareTo(b.address.toString())
     }
@@ -70,6 +73,7 @@ fun calcAddressHistoryInfo(acc : Account)
             val used = acc.wallet.isAddressGivenOut(a)
             val holding = acc.wallet.getBalanceIn(a)
             val totalReceived = acc.wallet.getBalanceIn(a, false)
+            val dest = acc.wallet.walletDestination(a)
             val os = a.lockingScript()
 
             var first = Long.MAX_VALUE
@@ -102,7 +106,7 @@ fun calcAddressHistoryInfo(acc : Account)
                 false
             }
 
-            addresses.add(AddressInfo(a, used, holding, totalReceived, first, last, assetTypes))
+            addresses.add(AddressInfo(a, used, holding, totalReceived, first, last, assetTypes, dest?.index ?: Long.MAX_VALUE))
         }
 
         addresses.sortWith(addressInfoComparator)

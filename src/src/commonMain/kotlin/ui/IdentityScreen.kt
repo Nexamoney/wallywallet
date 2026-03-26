@@ -22,12 +22,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -39,8 +36,6 @@ import info.bitcoinunlimited.www.wally.ui.theme.BaseBkg
 import info.bitcoinunlimited.www.wally.ui.theme.SelectedBkg
 import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.ui.theme.WallyHalfDivider
-import info.bitcoinunlimited.www.wally.ui.theme.WallyRowBbkg1
-import info.bitcoinunlimited.www.wally.ui.theme.WallyRowBbkg2
 import info.bitcoinunlimited.www.wally.ui.theme.wallyPurpleExtraLight
 import info.bitcoinunlimited.www.wally.ui.theme.wallyPurpleLight
 import info.bitcoinunlimited.www.wally.ui.views.*
@@ -51,11 +46,20 @@ import org.nexa.libnexakotlin.*
 
 private val LogIt = GetLog("wally.identity")
 
+fun IdentityDomain(uri: Uri, useIdentity:Long = IdentityDomain.COMMON_IDENTITY): IdentityDomain
+{
+    val domain = IdentityDomain(uri.host ?: "", useIdentity)
+    val permsMap = uri.queryMap().mapValues { if (it.value == "m" || it.value == "r") true else false }
+    domain.setPerms(permsMap)
+    domain.setReqs(uri.queryMap())
+    return domain
+}
+
 @Composable
-private fun switch(mode: Char, curval: Boolean, desc: Int, onAction: (Boolean) -> Unit)
+private fun Switch(mode: Char, curval: Boolean, desc: Int, onAction: (Boolean) -> Unit)
 {
     var cv = curval
-    var text = if (mode == 'm')
+    val text = if (mode == 'm')
     {
         // Any mandatory item is forced on; user can only reject the registration
         if (cv == false)
@@ -97,90 +101,69 @@ fun IdentityDomainView(from: IdentityDomain?, to: IdentityDomain, newDomain: Boo
         WallyHalfDivider()
 
 
-        switch(to.hdlR, hdlP, S.provideAlias) { hdlP = it ; to.hdlP = it }
-        switch(to.emailR, emailP, S.provideEmail) { emailP = it; to.emailP = it }
-        switch(to.smR, smP, S.provideSocialMedia) { smP = it; to.smP = it }
-        switch(to.avaR, avaP, S.provideAvatar) { avaP = it; to.avaP = it }
+        Switch(to.hdlR, hdlP, S.provideAlias) { hdlP = it ; to.hdlP = it }
+        Switch(to.emailR, emailP, S.provideEmail) { emailP = it; to.emailP = it }
+        Switch(to.smR, smP, S.provideSocialMedia) { smP = it; to.smP = it }
+        Switch(to.avaR, avaP, S.provideAvatar) { avaP = it; to.avaP = it }
         WallyHalfDivider()
-        switch(to.realnameR, realnameP, S.provideRealName) { realnameP = it; to.realnameP = it }
-        switch(to.dobR, dobP, S.provideBirthday) { dobP = it; to.dobP = it }
-        switch(to.phoneR, phoneP, S.providePhone) { phoneP = it; to.phoneP = it }
-        switch(to.postalR, postalP, S.providePostalAddress) { postalP = it; to.postalP = it }
-        switch(to.billingR, billingP, S.provideBillingAddress) { billingP = it; to.billingP = it }
+        Switch(to.realnameR, realnameP, S.provideRealName) { realnameP = it; to.realnameP = it }
+        Switch(to.dobR, dobP, S.provideBirthday) { dobP = it; to.dobP = it }
+        Switch(to.phoneR, phoneP, S.providePhone) { phoneP = it; to.phoneP = it }
+        Switch(to.postalR, postalP, S.providePostalAddress) { postalP = it; to.postalP = it }
+        Switch(to.billingR, billingP, S.provideBillingAddress) { billingP = it; to.billingP = it }
         WallyHalfDivider()
-        switch(to.attestR, attestP, S.provideAttestations) { attestP = it; to.attestP = it }
+        Switch(to.attestR, attestP, S.provideAttestations) { attestP = it; to.attestP = it }
     }
 }
 
 
 // The identity screen can either be navigated to (in which case sess is null) or be part of an identity request.
 @Composable
-fun IdentityScreen(act: Account, mainPill: AccountPillViewModel, sess: IdentitySession?, nav: ScreenNav)
+fun IdentityScreen(sess: IdentitySession, nav: ScreenNav)
 {
-    var newDomain = false
-
-    var uri by remember { mutableStateOf<Uri?>(sess?.uri) }
-    var domain by remember { mutableStateOf<IdentityDomain?>(null) }
     var origDomain by remember { mutableStateOf<IdentityDomain?>(null) }
-    var account by remember { mutableStateOf<Account>(sess?.pill?.account?.value ?: act) }
-    var identities = remember { mutableStateListOf(*(account.wallet.allIdentityDomains().toTypedArray())) }
-    LaunchedEffect(Unit) {  // Tie the account local to changes in the account pill
-        (sess?.pill?.account ?: mainPill.account).collect {
-            account = it ?: act
-        }
-    }
+    val account = sess.pill.account.collectAsState().value
+    val identities = remember { mutableStateListOf(*(account?.wallet?.allIdentityDomains()?.toTypedArray() ?: arrayOf())) }
+
+    val u = sess.uri
+    val host = u?.host
+
     LaunchedEffect(account) {  // Tie identities to the account
         identities.removeAll({true})
-        identities.addAll(account.wallet.allIdentityDomains())
-    }
-
-    val u = uri
-    val host = u?.host
-    if (host != null)
-    {
-        origDomain = account.wallet.lookupIdentityDomain(host)
-        origDomain?.let { sess?.idData = it }
-        val operation = u.getQueryParameter("op")
-        if (operation == null)
+        if (account != null)
         {
-            displayError(S.unknownOperation)
-            nav.back()
-            return
-        }
+            identities.addAll(account.wallet.allIdentityDomains())
 
-        val commonIdDest = account.wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
-        val commonIdAddress = commonIdDest.address ?: throw PrimaryWalletInvalidException()
-        val identityInfo: IdentityInfo = account.wallet.lookupIdentityInfo(commonIdAddress) ?: run {
-            val ii = IdentityInfo()
-            ii.identity = commonIdAddress
-            account.wallet.upsertIdentityInfo(ii)
-            ii
-        }
-
-        if (operation.lowercase() == "reg")
-        {
-            domain = origDomain?.clone()
-            if (domain == null)
+            if (host != null)
             {
-                domain = IdentityDomain(host, IdentityDomain.COMMON_IDENTITY)
-                domain!!.setPerms(u.queryMap().mapValues { if (it.value == "m" || it.value == "r") true else false })
-                newDomain = true
+                origDomain = account.wallet.lookupIdentityDomain(host)
+                origDomain?.let { sess?.idData?.value = it }
+
+                val commonIdDest = account.wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
+                val commonIdAddress = commonIdDest.address ?: throw PrimaryWalletInvalidException()
+                val identityInfo: IdentityInfo = account.wallet.lookupIdentityInfo(commonIdAddress) ?: run {
+                    val ii = IdentityInfo()
+                    ii.identity = commonIdAddress
+                    account.wallet.upsertIdentityInfo(ii)
+                    ii
+                }
             }
-            domain!!.setReqs(u.queryMap().toMutableMap())
-            sess?.idData = domain
         }
     }
 
-    val wallet = account.wallet
-    LogIt.info("identity domain count:" + identities.size.toString() + " " + wallet.allIdentityDomains().map { it.domain }.toString())
 
-    val d = domain
+    val wallet = account?.wallet
+    LogIt.info("identity domain count:" + identities.size.toString() + " " + wallet?.allIdentityDomains()?.map { it.domain }.toString())
+
+    val d = sess.idData.collectAsState().value
 
     Column(Modifier.fillMaxSize()) {
-        Spacer(Modifier.height(32.dp))
-        (sess?.pill ?: mainPill).draw(false)
         Spacer(Modifier.height(16.dp))
-        if (d==null)  // show my info
+        sess?.unlock?.let { UnlockTile(it) }
+        Spacer(Modifier.height(16.dp))
+        sess.pill.draw(false)
+        Spacer(Modifier.height(16.dp))
+        if ((sess.uri==null)&&(wallet != null))  // show my info
         {
             val dest = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
             val destStr = dest.address.toString()
@@ -235,7 +218,7 @@ fun IdentityScreen(act: Account, mainPill: AccountPillViewModel, sess: IdentityS
              }
         }
 
-        if (sess == null)  // If this is not an action permission request, then show the current registrations by this account
+        if (sess.uri == null)  // If this is not an action permission request, then show the current registrations by this account
         {
             CenteredSectionText(S.IdentityRegistrations)
             if (identities.size == 0)
@@ -251,14 +234,19 @@ fun IdentityScreen(act: Account, mainPill: AccountPillViewModel, sess: IdentityS
                             Box(Modifier.padding(5.dp, 3.dp).fillMaxWidth().clip(RoundedCornerShape(12.dp))
                               .background(if (d == entry) wallyPurpleLight else wallyPurpleExtraLight)
                               .padding(8.dp, 8.dp).clickable {
-                                val d1 = domain?.clone()
+                                  // User wants to examine and modify a particular domain
+                                  sess.idData.value = sess.pill.account.value?.wallet?.lookupIdentityDomain(entry.domain)
+
+                                  /*
+                                val d1 = sess.idData.value?.clone()
                                 if (d1 != null)
                                 {
-                                    wallet.upsertIdentityDomain(d1)
-                                    wallet.save(true)
+                                    account?.wallet?.upsertIdentityDomain(d1)
+                                    account?.wallet?.save(true)
                                 }
                                 if (domain != entry) domain = entry
                                 else domain = null
+                                   */
                             }) {
                                 Text(entry.domain)
                             }
@@ -271,8 +259,8 @@ fun IdentityScreen(act: Account, mainPill: AccountPillViewModel, sess: IdentityS
         WallyDivider()
         if (d != null)
         {
-            IdentityDomainView(origDomain, d, newDomain, modifier = Modifier.padding(8.dp, 8.dp))
-            if (sess != null)  // If this is not an action permission request, then show the current registrations by this account
+            IdentityDomainView(origDomain, d, sess.newDomain, modifier = Modifier.padding(8.dp, 8.dp))
+            if ((sess.uri != null)&&(account!=null))  // If this is not an action permission request, then show the current registrations by this account
             {
                 Column(modifier = Modifier.weight(0.5f).padding(12.dp,8.dp)) {
                     val aa = sess.associatedAccounts
@@ -296,7 +284,7 @@ fun IdentityScreen(act: Account, mainPill: AccountPillViewModel, sess: IdentityS
             }
             // fillMaxHeight() pushes the buttons to the bottom because of the alignment
             Row(modifier = Modifier.fillMaxWidth().fillMaxHeight(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
-                if (uri == null)  // This is not a request to login; its just the user doing edits
+                if (u == null)  // This is not a request to login; its just the user doing edits
                 {
                     Button(
                       onClick = {
@@ -304,25 +292,26 @@ fun IdentityScreen(act: Account, mainPill: AccountPillViewModel, sess: IdentityS
                           enableNavMenuItem(ScreenId.Identity)
 
                           val saveDomain = d.clone()
-                          wallet.upsertIdentityDomain(saveDomain)
-                          wallet.save(true)
-                          uri = null
-                          domain = null
+                          wallet?.upsertIdentityDomain(saveDomain)
+                          wallet?.save(true)
+                          sess.idData.value = null
                       }
                     ) {
                         Text(i18n(S.Back))
                     }
                     OutlinedButton(
                       onClick = {
-                          LogIt.info("Wallet ${account.wallet.name} removing domain ${d.domain}")
-                          LogIt.info(account.wallet.identityDomain.keys.joinToString(", "))
-                          account.wallet.removeIdentityDomain(d.domain)
-                          laterJob { account.wallet.save(true) }
-                          identities.removeAll { it.domain == d.domain }
-                          LogIt.info(account.wallet.identityDomain.keys.joinToString(", "))
-                          displayNotice(S.removed)
-                          uri = null
-                          domain = null
+                          if (wallet != null)
+                          {
+                              LogIt.info("Wallet ${wallet.name} removing domain ${d.domain}")
+                              LogIt.info(wallet.identityDomain.keys.joinToString(", "))
+                              wallet.removeIdentityDomain(d.domain)
+                              laterJob { wallet.save(true) }
+                              identities.removeAll { it.domain == d.domain }
+                              LogIt.info(wallet.identityDomain.keys.joinToString(", "))
+                              displayNotice(S.removed)
+                              sess.idData.value = null
+                          }
                       },
                       modifier = Modifier.testTag("RemoveIdentityButton")
                     ) {
@@ -335,73 +324,32 @@ fun IdentityScreen(act: Account, mainPill: AccountPillViewModel, sess: IdentityS
                     ButtonRowAcceptDeny({
                         // Turn the menu on since user has accepted an operation of this type
                         enableNavMenuItem(ScreenId.Identity)
+                        val act = sess?.pill?.account?.value ?: run {
+                            displayNotice(S.NoAccounts)
+                            nav.back()
+                            return@ButtonRowAcceptDeny
+                        }
+                        if (act.locked)
+                        {
+                            sess.unlock.triggerUnlockDialog(true) {}
+                            return@ButtonRowAcceptDeny
+                        }
                         val saveDomain = d.clone()
-                        sess?.idData = d
+                        sess.idData.value = saveDomain
                         displaySuccess(S.Processing)
                         laterJob {
-                            val success = if (sess?.uri != null) onProvideIdentity(sess, account) else true
-                            if (success)
+                            val success = if (sess.uri != null) onProvideIdentity(sess) else true
+                            if (success == true)
                             {
-                                wallet.upsertIdentityDomain(saveDomain)
-                                wallet.save(true)
-                                displaySuccess(S.TpRegAccepted)
-                                // Only allow autoconnect wallet on login or reg operations (not sign or info)
-                                if ((sess?.op == "login") or (sess?.op == "reg"))
-                                {
-                                    val u = sess?.uri
-                                    if (u != null)
-                                    {
-                                        if (u.getQueryParameter("connect") != null)
-                                        {
-                                            val host = u.host
-                                            if (host != null)
-                                            {
-                                                wallyApp?.accessHandler?.let {
-                                                    if (it.activeTo(host) == null)  // only start long polling if its not already started
-                                                      it.startLongPolling(sess.walletConnectProtocol, host, sess.cookie)
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                                handleSuccessfulIdentity(sess)
                             }
-                            nav.back()
+                            if (success != null) nav.back()
                         }
                     }, {
                         displayNotice(S.TpRegDenied)
-                          nav.back()
+                        nav.back()
                     },
                       Modifier.fillMaxWidth().background(Color.White))
-                    /*
-                    Button(
-                      onClick = {
-                          // Turn the menu on since user has accepted an operation of this type
-                          enableNavMenuItem(ScreenId.TricklePay)
-                          val saveDomain = d.clone()
-                          sess?.idData = d
-                          laterJob {
-                              val success = if (sess?.uri != null) onProvideIdentity(sess, account) else true
-                              if (success)
-                              {
-                                  wallet.upsertIdentityDomain(saveDomain)
-                                  wallet.save(true)
-                                  displaySuccess(S.TpRegAccepted)
-                              }
-                              nav.back()
-                          }
-                      }
-                    ) {
-                        Text(i18n(S.accept))
-                    }
-                    OutlinedButton(
-                      onClick = {
-                          displayNotice(S.TpRegDenied)
-                          nav.back()
-                      }
-                    ) {
-                        Text(i18n(S.reject))
-                      }
-                     */
                 }
             }
         }
@@ -412,12 +360,15 @@ fun IdentityScreen(act: Account, mainPill: AccountPillViewModel, sess: IdentityS
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
                     Button(
                       onClick = {
-                          wallet.allIdentityDomains().forEach {
-                              wallet.removeIdentityDomain(it.domain)
+                          if (wallet!=null)
+                          {
+                              wallet.allIdentityDomains().forEach {
+                                  wallet.removeIdentityDomain(it.domain)
+                              }
+                              identities.removeAll({ true })
+                              identities.addAll(account.wallet.allIdentityDomains())
+                              laterJob { wallet.save(true) }
                           }
-                          identities.removeAll({true})
-                          identities.addAll(account.wallet.allIdentityDomains())
-                          laterJob { wallet.save(true) }
                       }
                     ) {
                         Text(i18n(S.removeAll))
@@ -559,9 +510,6 @@ fun IdentityEditScreen(account: Account, nav: ScreenNav)
         CenteredSectionText(S.IdentityAssociatedWith)
         Spacer(Modifier.height(8.dp))
 
-        //CenteredFittedText(S.UsernameOrAliasText, 1.3)
-        //WallyTextEntry(hdl, Modifier.fillMaxWidth(WIDTH_FRAC).align(Alignment.CenterHorizontally), bkgCol=bkgCol) { identityInfo.hdl = it; hdl = it }
-
         TitledBox(S.UsernameOrAliasText, boxMod) {
             ThinDataEntry(hdl, entryMod, bkgCol = bkgCol) { identityInfo.hdl = it; hdl = it }
         }
@@ -588,16 +536,18 @@ fun IdentityEditScreen(account: Account, nav: ScreenNav)
         Spacer(Modifier.height(1.dp).weight(1.0f))
         CenteredText(i18n(S.IdentityInfoNote), Modifier.padding(8.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+            Button(
+              onClick = {
+                  LogIt.info("Identity edit finished")
+                  nav.back() }
+            ) {
+                Text(i18n(S.done))
+            }
             OutlinedButton(onClick = {
                 account.wallet.identityInfo.clear()
                 account.wallet.identityInfoChanged = true
             }) {
                 Text(i18n(S.clear))
-            }
-            Button(
-              onClick = { nav.back() }
-            ) {
-                Text(i18n(S.done))
             }
         }
     }

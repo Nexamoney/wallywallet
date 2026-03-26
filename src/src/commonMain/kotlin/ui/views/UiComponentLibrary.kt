@@ -60,6 +60,7 @@ import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.exceptionHandler
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.SubcomposeLayout
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.assets.AssetInfo
@@ -1134,11 +1135,11 @@ fun IconTextButton(
         Modifier
 
     Column(
-      modifier = modifier.wrapContentWidth().wrapContentHeight().clickable { onClick() }.padding(
+      modifier = modifier.wrapContentWidth().wrapContentHeight().clip(RoundedCornerShape(12.dp)).clickable { onClick() }.padding(
         top = 8.dp,
         bottom = 8.dp,
-        start = 2.dp,
-        end = 2.dp
+        start = 4.dp,
+        end = 4.dp
       ),
       horizontalAlignment = Alignment.CenterHorizontally
     ) {

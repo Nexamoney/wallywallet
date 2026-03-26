@@ -564,7 +564,7 @@ fun AccountItemView(
                     val devModeTextStyle = MaterialTheme.typography.bodySmall.copy(fontSize = MaterialTheme.typography.bodySmall.fontSize.times(0.90),
                       lineHeight = MaterialTheme.typography.bodySmall.fontSize.times(0.91))
                     Row(modifier = Modifier.fillMaxWidth().padding(4.dp,2.dp,4.dp, 2.dp), horizontalArrangement = Arrangement.Start) {
-                        Text(text = uidata.devinfo, maxLines = 5, minLines = 3, style = devModeTextStyle, textAlign = TextAlign.Center)
+                        Text(text = uidata.devinfo, modifier = Modifier.fillMaxWidth(), maxLines = 5, minLines = 3, style = devModeTextStyle, textAlign = TextAlign.Center)
                     }
                 }
             }

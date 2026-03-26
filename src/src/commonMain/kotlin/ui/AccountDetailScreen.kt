@@ -663,11 +663,11 @@ fun AccountActionButtons(viewModel: AccountStatisticsViewModel, acc: Account, tx
                         if (it)
                         {
                             tlater("rediscover") {
+                                displayNotice(S.rediscoverNotice)
                                 // Choosing to not forget the addresses is kind of cheating, but there is an issue that is hard to resolve with very busy wallets
                                 // where a chunk of addresses is consumed in a single block, preventing the bloom filter to be updated to the new addresses
                                 // for that block.  This can cause transactions to be missed.  By keeping addresses around, repeated rediscovers find all the transactions.
                                 acc.wallet.rediscover(false, false, true)
-                                displayNotice(S.rediscoverNotice)
                             }
                         }
                         accountAction.value = null

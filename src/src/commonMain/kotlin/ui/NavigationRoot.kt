@@ -368,11 +368,19 @@ open class ScreenNav()
                 priorId = prior.id
                 currentScreenDepart = prior.departFn
                 currentSubState.value = prior.screenSubState
+                curData.value = prior.data
+
             }
-            else currentSubState.value = null
+            else
+            {
+                currentSubState.value = null
+                curData.value = null
+            }
         }
         if (priorId != null)
         {
+            curData.value = null
+            currentSubState.value = null
             // If the screen is none, that means to keep going back but this will execute any currentScreenDepart
             // associated with the None screen which is how we install a "finish activity" in Android
             if (priorId == ScreenId.None)
@@ -866,7 +874,7 @@ fun NavigationRoot(
     @Composable
     fun withAccount(then: @Composable (acc: Account) -> Unit)
     {
-        val pa = selectedAccount ?: wallyApp!!.focusedAccount.value ?: wallyApp?.nullablePrimaryAccount
+        val pa = selectedAccount ?: wallyApp!!.focusedAccount.collectAsState().value ?: wallyApp?.nullablePrimaryAccount
         if (pa == null)
         {
             displayErrorAndGoBack(S.NoAccounts)
@@ -1216,7 +1224,7 @@ fun NavigationRoot(
 
                                 ScreenId.Settings -> SettingsScreen()
                                 ScreenId.AccountDetails -> withUnlockedAccount {
-                                    val asvm = AccountStatisticsViewModel(it)
+                                    val asvm = viewModel { AccountStatisticsViewModel(it) }
                                     AccountDetailScreen(asvm, accountPillViewModel)
                                 }
                                 ScreenId.Assets -> withAccount { AssetScreen(it) {
@@ -1272,8 +1280,8 @@ fun NavigationRoot(
                                     }
                                 }
                                 ScreenId.Identity -> withAccount { act ->
-                                    val idsess = nav.curData.collectAsState().value as? IdentitySession
-                                    IdentityScreen(act, accountPillViewModel, idsess, nav)
+                                    val idsess = nav.curData.collectAsState().value as? IdentitySession ?: IdentitySession(null)
+                                    IdentityScreen(idsess, nav)
                                 }
 
                                 ScreenId.IdentityEdit -> withAccount { act ->
@@ -1285,9 +1293,14 @@ fun NavigationRoot(
                                 ScreenId.SpecialTxPerm -> withTp { act, ctp -> SpecialTxPermScreen(ctp, unlock) }
                                 ScreenId.AssetInfoPerm -> withTp { act, ctp -> AssetInfoPermScreen(act, ctp, nav) }
                                 ScreenId.SendToPerm -> withTp { act, ctp -> SendToPermScreen( ctp, nav) }
-                                ScreenId.IdentityOp -> withAccount { act ->
+                                ScreenId.IdentityOp ->
+                                {
                                     val idsess = nav.curData.collectAsState().value as? IdentitySession
-                                    if (idsess != null) IdentityPermScreen(idsess, nav)
+                                    if (idsess != null)
+                                    {
+                                        if (idsess.newDomain) IdentityScreen(idsess, nav)
+                                        else IdentityPermScreen(idsess, nav)
+                                    }
                                     else nav.back()
                                 }
                                 ScreenId.CreateAssetOffer -> {

@@ -586,8 +586,20 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
         {
             // Retry in 5 minutes if JSON is broken (it'll probably never work) else 1 min for bad serialization
             // WHY does it make ANY SENSE to throw internal exceptions!!!! ...json.internal.JsonDecodingException: Unexpected JSON token
-            if (e.originalException.message?.contains("Unexpected JSON") == true) nextLoadAttempt = org.nexa.threads.millinow() + (5*60*1000)
-            else nextLoadAttempt = now + (1*60*1000)
+            if (e.originalException.message?.contains("Unexpected JSON") == true) nextLoadAttempt = now + (5*60*1000)
+            else
+            {
+                if (e.originalException is CannotLoadException)
+                {
+                    // If I can't load it, but I have internet access then delay for a much longer time
+                    if (iHaveInternet()==true) nextLoadAttempt = now + (5*60*1000)
+                    else if ((iHaveInternet()==null) && (chain.net.size>0) ) // I don't know
+                    {
+                        nextLoadAttempt = now + (5*60*1000)
+                    }
+                }
+                else nextLoadAttempt = now + (1*60*1000)
+            }
             // But keep going with the genesis info
             TokenDesc(e.tgi.ticker ?: "", e.tgi.name, genesisInfo = e.tgi)
         } catch (e: ElectrumNotFound)

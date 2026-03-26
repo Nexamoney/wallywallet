@@ -4,6 +4,7 @@ import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.IdentityEditScreen
 import info.bitcoinunlimited.www.wally.ui.IdentityScreen
+import info.bitcoinunlimited.www.wally.ui.IdentitySession
 import info.bitcoinunlimited.www.wally.ui.ScreenNav
 import info.bitcoinunlimited.www.wally.ui.views.AccountPill
 import org.nexa.libnexakotlin.ChainSelector
@@ -19,10 +20,10 @@ class IdentityScreenTest:  WallyUiTestBase(false)
     {
         val cs = ChainSelector.NEXA
         val account: Account = wallyApp!!.newAccount("idtst", 0U, "", cs)!!
-        val ap = AccountPill(account)
+        val idSession = IdentitySession(null)
         runComposeUiTest {
             setContent {
-                IdentityScreen(account, ap, null, ScreenNav())
+                IdentityScreen(idSession, ScreenNav())
             }
             settle()
 
