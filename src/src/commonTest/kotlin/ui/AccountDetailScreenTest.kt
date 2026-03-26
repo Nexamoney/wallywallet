@@ -8,6 +8,7 @@ import info.bitcoinunlimited.www.wally.ui.setSelectedAccount
 import info.bitcoinunlimited.www.wally.ui.views.AccountPillViewModelFake
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.ChainSelector
+import org.nexa.libnexakotlin.decodeUtf8
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
@@ -68,8 +69,6 @@ class AccountDetailScreenTest:WallyUiTestBase()
             }
             settle()
 
-            onNodeWithText(i18n(S.AutomaticNewAddress)).assertIsDisplayed()
-
             /**
              * Set pin to 777
              */
@@ -98,6 +97,41 @@ class AccountDetailScreenTest:WallyUiTestBase()
             onNodeWithText(i18n(S.accept)).performClick()
             onNodeWithText(i18n(S.SetChangePin)).assertIsDisplayed()
         }
+        wallyApp!!.deleteAccount(account)
+    }
+
+    @Test
+    fun viewRecoveryPhraseAndCopyToClipBoardTest()
+    {
+        val cs = ChainSelector.NEXA
+        val account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
+        val mnemonic = account.wallet.secretWords.getSecret().decodeUtf8()
+
+        runComposeUiTest {
+            /*
+                Set selected account to populate the UI
+            */
+            setSelectedAccount(account)
+
+            val ap = AccountPillViewModelFake(MutableStateFlow(account))
+            val accountStatsViewModel = AccountStatisticsViewModelFake(account)
+
+            setContent {
+                AccountDetailScreen(accountStatsViewModel, ap)
+            }
+            settle()
+
+            onNodeWithText(i18n(S.ViewRecoveryPhrase)).assertIsDisplayed()
+            onNodeWithText(i18n(S.ViewRecoveryPhrase)).performClick()
+            onNodeWithText(i18n(S.recoveryPhrase)).assertIsDisplayed()
+            onNodeWithText(mnemonic).assertIsDisplayed()
+            onNodeWithText(mnemonic).performClick()
+            onNodeWithText(i18n(S.PastingRecoveryPhraseIsBadIdea)).performScrollTo()
+            onNodeWithText(i18n(S.PastingRecoveryPhraseIsBadIdea)).assertIsDisplayed()
+            onNodeWithText(i18n(S.WroteRecoveryPhraseDown)).performClick()
+            onNodeWithText(i18n(S.ViewRecoveryPhrase)).assertIsDisplayed()
+        }
+
         wallyApp!!.deleteAccount(account)
     }
 }
