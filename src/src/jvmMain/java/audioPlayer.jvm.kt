@@ -1,5 +1,5 @@
 actual class AudioPlayer {
-    actual fun playSound(id: Int) {
+    actual suspend fun playSound(id: Int) {
         // TODO: Implement
     }
 

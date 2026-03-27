@@ -27,7 +27,7 @@ import kotlin.test.assertEquals
 class SettingsScreenTest: WallyUiTestBase()
 {
     @Test
-    fun sendScreenContentTest() = runComposeUiTest {
+    fun settingsScreenTest() = runComposeUiTest {
         val preferenceDB: SharedPreferences = FakeSharedPreferences()
 
         setContent {
