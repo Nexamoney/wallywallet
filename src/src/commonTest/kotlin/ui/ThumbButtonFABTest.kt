@@ -106,7 +106,8 @@ class ThumbButtonFABTest:WallyUiTestBase()
             ThumbButtonFAB(
                 onResult = { qrResult = it },
                 onScanQr = { qrScanCalled = true },
-                clipmgr = clipboardManager
+                clipmgr = clipboardManager,
+                onPickImage = { }
             )
         }
         settle()

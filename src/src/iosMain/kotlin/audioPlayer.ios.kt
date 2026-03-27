@@ -13,7 +13,7 @@ actual class AudioPlayer {
     }
 
     @OptIn(ExperimentalForeignApi::class)
-    actual fun playSound(id: Int) {
+    actual suspend fun playSound(id: Int) {
         if (soundEnabled.value)
         {
             val avAudioPlayer = AVAudioPlayer(mediaItems[id]!!, error = null)

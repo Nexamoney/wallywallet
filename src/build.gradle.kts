@@ -495,8 +495,6 @@ kotlin {
                     implementation(libs.kotlinx.coroutines.android)
                     implementation(libs.androidx.core.ktx)
                     implementation(libs.androidx.junit.ktx)
-                    implementation(libs.androidx.ui.test.junit4.android)
-                    implementation(libs.ui.test.manifest)
                     // debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
                 }
             }
@@ -620,8 +618,13 @@ android {
         abortOnError = false // Prevents Lint from failing the build
         warningsAsErrors = false // Ensures warnings don't fail the build
     }
+
 }
 
+dependencies {
+    debugImplementation(libs.ui.test.manifest)
+    androidTestImplementation(libs.androidx.ui.test.junit4.android)
+}
 
 if (MAC_TARGETS)
 {

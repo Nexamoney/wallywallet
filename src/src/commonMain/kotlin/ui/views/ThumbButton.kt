@@ -36,7 +36,13 @@ fun ThumbButton(icon: ImageVector, textRes: Int, modifier: Modifier = Modifier, 
 }
 
 @Composable
-fun ThumbButtonFAB(pasteIcon: ImageVector = Icons.Outlined.ContentPaste, onResult: (String) -> Unit, onScanQr: () -> Unit, clipmgr: ClipboardManager = LocalClipboardManager.current)
+fun ThumbButtonFAB(
+  pasteIcon: ImageVector = Icons.Outlined.ContentPaste,
+  onResult: (String) -> Unit,
+  onScanQr: () -> Unit,
+  onPickImage: (() -> Unit)? = null, // Optional for testing purposes
+  clipmgr: ClipboardManager = LocalClipboardManager.current
+)
 {
     Row(
       modifier = Modifier.wrapContentHeight().fillMaxWidth(),
@@ -60,12 +66,15 @@ fun ThumbButtonFAB(pasteIcon: ImageVector = Icons.Outlined.ContentPaste, onResul
                       icon = Icons.Outlined.DocumentScanner,
                       textRes = S.imageQr,
                       modifier = butMod.clickable {
-                          ImageQrCode { qrContent ->
-                              qrContent?.let {
-                                  clearAlerts()
-                                  onResult(it)
+                          if (onPickImage != null)
+                              onPickImage()
+                          else
+                              ImageQrCode { qrContent ->
+                                  qrContent?.let {
+                                      clearAlerts()
+                                      onResult(it)
+                                  }
                               }
-                          }
                       }.padding(start = 4.dp, end = 4.dp))
                 }
             if (platform().hasQrScanner)
