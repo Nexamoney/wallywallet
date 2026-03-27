@@ -35,6 +35,7 @@ import info.bitcoinunlimited.www.wally.ui.theme.WallyTheme
 import info.bitcoinunlimited.www.wally.ui.views.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.assets.AssetPerAccount
 import org.nexa.libnexakotlin.*
@@ -306,6 +307,7 @@ open class ScreenNav()
     /** push the current screen onto the stack, and set the passed screen to be the current one */
     fun go(screen: ScreenId, screenSubState: ByteArray?=null, data: Any? = null): ScreenNav
     {
+        moreMenuChannel.trySend(MoreMenu.Hide())
         clearAlerts()
         currentScreenDepart?.invoke(Direction.DEEPER)
         lock.lock {
@@ -354,6 +356,7 @@ open class ScreenNav()
     /** pop the current screen from the stack and go there */
     fun back(): ScreenId?
     {
+        moreMenuChannel.trySend(MoreMenu.Hide())
         clearScreenAlerts()
         currentScreenDepart?.invoke(Direction.LEAVING)
         currentScreenDepart = null
@@ -780,6 +783,12 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
          */
 }
 
+sealed class MoreMenu {
+    class Show: MoreMenu()
+    class Hide: MoreMenu()
+}
+private val moreMenuChannel = Channel<MoreMenu>(Channel.UNLIMITED)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavigationRoot(
@@ -1038,6 +1047,22 @@ fun NavigationRoot(
     val lastClicked = remember { mutableStateOf(ScreenId.Home.toString()) }
     val moreMenuItemsState = moreMenuItems.collectAsState()
     val moreMenuItems = moreMenuItemsState.value
+
+    LaunchedEffect(Unit) {
+        moreMenuChannel.consumeEach { state ->
+            when (state)
+            {
+                is MoreMenu.Show -> {
+                    expanded.value = true
+                    scaffoldSheetState.bottomSheetState.show()
+                }
+                is MoreMenu.Hide -> {
+                    expanded.value = false
+                    scaffoldSheetState.bottomSheetState.hide()
+                }
+            }
+        }
+    }
 
     // TODO insets are not working on Compose for android
     //val navBars = WindowInsets.navigationBars
