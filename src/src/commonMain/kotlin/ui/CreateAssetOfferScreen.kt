@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import info.bitcoinunlimited.www.wally.*
-import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.ui.views.WallyNumericInputFieldBalance
 import info.bitcoinunlimited.www.wally.ui.views.*
@@ -33,8 +32,8 @@ fun iTransaction.toBase64Url():String
     return this.toByteArray().toBase64Url()
 }
 
-
-class CreateAssetOfferViewModel(apc: AssetPerAccount): ViewModel() {
+abstract class CreateAssetOfferViewModel(apc: AssetPerAccount): ViewModel()
+{
     val asset: MutableStateFlow<AssetInfo> = MutableStateFlow(apc.assetInfo)
     val name: MutableStateFlow<String> = MutableStateFlow((if ((asset.value.nft != null) && (asset.value.nft?.title?.isNotEmpty() == true)) asset.value.nft?.title else asset.value.nameObservable.value ?: apc.groupInfo.groupId.toStringNoPrefix()) ?: "")
     val uniqueAsset :MutableStateFlow<Boolean> = MutableStateFlow(apc.groupInfo.isSubgroup() && apc.groupInfo.tokenAmount == 1L)
@@ -53,6 +52,11 @@ class CreateAssetOfferViewModel(apc: AssetPerAccount): ViewModel() {
         tokenBalance.value = ""
         name.value = ""
     }
+
+    abstract fun createOffer(capdChecked: Boolean)
+}
+
+class CreateAssetOfferViewModelImpl(apc: AssetPerAccount): CreateAssetOfferViewModel(apc) {
 
     data class OfferTx(
       val tx: iTransaction,
@@ -118,7 +122,7 @@ class CreateAssetOfferViewModel(apc: AssetPerAccount): ViewModel() {
         }
     }
 
-    fun createOffer(capdChecked: Boolean)
+    override fun createOffer(capdChecked: Boolean)
     {
         // TODO: Post to CAPD if capdChecked is true and show "Posted to CAPD" notice
         // Use the capd tests in libnexakotlin:blockchainObjTests.kt:testCapd
@@ -181,8 +185,16 @@ class CreateAssetOfferViewModel(apc: AssetPerAccount): ViewModel() {
     }
 }
 
+class CreateAssetOfferViewModelFake(apc: AssetPerAccount): CreateAssetOfferViewModel(apc)
+{
+    override fun createOffer(capdChecked: Boolean)
+    {
+
+    }
+}
+
 @Composable
-fun CreateAssetOfferScreen(asset: AssetPerAccount, viewModel: CreateAssetOfferViewModel = viewModel { CreateAssetOfferViewModel(asset) })
+fun CreateAssetOfferScreen(asset: AssetPerAccount, viewModel: CreateAssetOfferViewModel = viewModel { CreateAssetOfferViewModelImpl(asset) })
 {
     val assetInfo = asset.assetInfo
     val nft = assetInfo.nft

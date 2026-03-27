@@ -16,15 +16,10 @@ class AssetsScreenTests:WallyUiTestBase()
 {
     @Test
     fun assetListItemViewTest() = runComposeUiTest {
-        val groupIdData = ByteArray(520, { it.toByte() })
-        val groupId = GroupId(ChainSelector.NEXA, groupIdData)
-        val assetInfo = AssetInfo(groupId)
-        val title = "title"
-        val series = "series"
-        assetInfo.nft = NexaNFTv2("niftyVer", title, series, "author", listOf(), "appUri", "info")
-        val assetAmount = 2L
-        val groupInfo = GroupInfo(groupId, assetAmount)
-        val assetPerAccount = AssetPerAccount(groupInfo, assetInfo, null)
+        val assetPerAccount = assetPerAccountFaker()
+        val assetAmount = assetPerAccount.groupInfo.tokenAmount
+        val title = assetPerAccount.assetInfo.nft?.title ?: throw Exception("missing title")
+        val series = assetPerAccount.assetInfo.nft?.series ?: throw Exception("missing series")
         setContent {
             AssetListItemView(assetPerAccount)
         }
