@@ -18,8 +18,13 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.*
+import org.nexa.assets.AssetInfo
+import org.nexa.assets.AssetPerAccount
+import org.nexa.assets.NexaNFTv2
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.GetLog
+import org.nexa.libnexakotlin.GroupId
+import org.nexa.libnexakotlin.GroupInfo
 import org.nexa.threads.millisleep
 import kotlin.test.Test
 
@@ -97,4 +102,34 @@ class UtilsTest:WallyUiTestBase()
             settle()
         }
     }
+}
+
+fun assetPerAccountFaker(): AssetPerAccount
+{
+    val groupIdData = ByteArray(520, { it.toByte() })
+    val groupId = GroupId(ChainSelector.NEXA, groupIdData)
+    val assetInfo = AssetInfo(groupId)
+    assetInfo.name = "mockAssetName"
+    assetInfo.docUrl = "mock.pages.dev"
+    val title = "title"
+    val series = "series"
+    assetInfo.nft = NexaNFTv2("niftyVer", title, series, "author", listOf(), "appUri", "info")
+    val assetAmount = 200L
+    val groupInfo = GroupInfo(groupId, assetAmount)
+    return AssetPerAccount(groupInfo, assetInfo, null)
+}
+
+fun uniqueAssetPerAccountFaker(): AssetPerAccount
+{
+    val groupIdData = ByteArray(520, { it.toByte() })
+    val groupId = GroupId(ChainSelector.NEXA, groupIdData)
+    val assetInfo = AssetInfo(groupId)
+    assetInfo.name = "mockAssetName"
+    assetInfo.docUrl = "mock.pages.dev"
+    val title = "title"
+    val series = "series"
+    assetInfo.nft = NexaNFTv2("niftyVer", title, series, "author", listOf(), "appUri", "info")
+    val assetAmount = 1L
+    val groupInfo = GroupInfo(groupId, assetAmount)
+    return AssetPerAccount(groupInfo, assetInfo, null)
 }
