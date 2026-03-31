@@ -343,6 +343,12 @@ kotlin {
             }
         }
 
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("test-junit"))
+            }
+        }
+
 
         if (MAC_TARGETS || MSWIN_TARGETS || LINUX_NATIVE_TARGETS)
         {
@@ -496,6 +502,12 @@ kotlin {
                     implementation(libs.androidx.core.ktx)
                     implementation(libs.androidx.junit.ktx)
                     // debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
+                }
+            }
+
+            val androidUnitTest by getting {
+                dependencies {
+                    implementation(kotlin("test-junit"))
                 }
             }
         }
