@@ -19,8 +19,9 @@ class IdentityScreenTest:  WallyUiTestBase(false)
     fun identityScreenTest()
     {
         val cs = ChainSelector.NEXA
-        val account: Account = wallyApp!!.newAccount("idtst", 0U, "", cs)!!
+        val account: Account = wallyApp!!.newAccount("idtst1", 0U, "", cs)!!
         val idSession = IdentitySession(null)
+        idSession.pill.account.value = account
         runComposeUiTest {
             setContent {
                 IdentityScreen(idSession, ScreenNav())
@@ -30,7 +31,7 @@ class IdentityScreenTest:  WallyUiTestBase(false)
             /**
              * Check that titles are displayed, click edit button and verify that some titles in edit view are displayed
              */
-            waitForCatching {  onNodeWithText(i18n(S.commonIdentityForAccount) % mapOf("act" to account.name)).isDisplayed() }
+            onNodeWithText(i18n(S.commonIdentityForAccount) % mapOf("act" to account.name)).isDisplayed()
             onNodeWithText(i18n(S.IdentityRegistrations)).assertIsDisplayed()
         }
         wallyApp!!.deleteAccount(account)
@@ -40,7 +41,7 @@ class IdentityScreenTest:  WallyUiTestBase(false)
     fun identityEditScreenTest()
     {
         val cs = ChainSelector.NEXA
-        val account: Account = wallyApp!!.newAccount("idtst", 0U, "", cs)!!
+        val account: Account = wallyApp!!.newAccount("idtst2", 0U, "", cs)!!
         runComposeUiTest {
             setContent {
                 IdentityEditScreen(account, ScreenNav())
