@@ -24,6 +24,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)  // Compose compiler
     alias(libs.plugins.compose)
     alias(libs.plugins.kover)
+    alias(libs.plugins.mokkery)
     idea
 }
 

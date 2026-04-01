@@ -17,7 +17,9 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.compose.ui.test.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import dev.mokkery.mock
 import info.bitcoinunlimited.www.wally.*
+import info.bitcoinunlimited.www.wally.ui.AssetOffer
 import org.nexa.assets.AssetInfo
 import org.nexa.assets.AssetPerAccount
 import org.nexa.assets.NexaNFTv2
@@ -25,6 +27,7 @@ import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.GetLog
 import org.nexa.libnexakotlin.GroupId
 import org.nexa.libnexakotlin.GroupInfo
+import org.nexa.libnexakotlin.PayAddress
 import org.nexa.threads.millisleep
 import kotlin.test.Test
 
@@ -132,4 +135,19 @@ fun uniqueAssetPerAccountFaker(): AssetPerAccount
     val assetAmount = 1L
     val groupInfo = GroupInfo(groupId, assetAmount)
     return AssetPerAccount(groupInfo, assetInfo, null)
+}
+
+fun assetOfferFaker(): AssetOffer
+{
+    val assetInfo = assetPerAccountFaker().assetInfo
+    val address = PayAddress("nexa:nqtsq5g53fjq76u7y5kfuw8xqj3s7almzsqsjgypt2gs8ne2")
+    return AssetOffer(
+      "some.uri.string.here",
+      69000000L,
+      assetInfo,
+      address,
+      mock(),
+      42L,
+      false
+    )
 }
