@@ -902,7 +902,7 @@ open class CommonApp(val runningTests: Boolean)
         localCurrency = preferenceDB.getString(LOCAL_CURRENCY_PREF, "USD") ?: "USD"
         showIdentityPref.value = preferenceDB.getBoolean(SHOW_IDENTITY_PREF, false)
         showTricklePayPref.value = preferenceDB.getBoolean(SHOW_TRICKLE_PAY_PREF, false)
-        showAssetsPref.value = preferenceDB.getBoolean(SHOW_ASSETS_PREF, false)
+        showAssetsPref.value = preferenceDB.getBoolean(SHOW_ASSETS_PREF, true)
         experimentalUI.value = preferenceDB.getBoolean(EXPERIMENTAL_UX_MODE_PREF, false)
         soundEnabled.value = preferenceDB.getBoolean(SOUND_ENABLED_PREF, true)
 
