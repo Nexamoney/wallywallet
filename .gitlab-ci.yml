@@ -116,7 +116,7 @@ build:
     - m1-baremetal
   rules: # this job is very slow (90 min ++). Therefore we restrict this job to run only on MR approval and always on the main branch or triggered manually.
     # Never run on scheduled pipeline used to mirror to github
-    - *skip-on-schedule-fragment
+    # - *skip-on-schedule-fragment
     # Run the job on the main branch
     - if: '$CI_COMMIT_BRANCH == "main"'
       when: on_success # Will only run if all previous jobs in the pipeline complete successfully.
