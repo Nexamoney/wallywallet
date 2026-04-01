@@ -46,15 +46,21 @@ data class AssetOffer(
   val priceFormatted: String = formatAmount(price.toBigDecimal(), ChainSelector.NEXA)
 )
 
-class AssetOfferViewModel(initOffer: AssetOffer) : ViewModel()
+abstract class AssetOfferViewModel (initOffer: AssetOffer): ViewModel()
 {
     val offer = MutableStateFlow(initOffer)
 
+    abstract fun observePartialTransaction()
+    abstract fun purchaseComplete()
+}
+
+class AssetOfferViewModelImpl(initOffer: AssetOffer) : AssetOfferViewModel(initOffer)
+{
     init {
         observePartialTransaction()
     }
 
-    fun observePartialTransaction()
+    override fun observePartialTransaction()
     {
         wallyApp!!.focusedAccount.value!!.wallet.setOnWalletChange { wallet, txhistory ->
             val txHistory: TransactionHistory? = txhistory?.first()
@@ -64,7 +70,7 @@ class AssetOfferViewModel(initOffer: AssetOffer) : ViewModel()
         }
     }
 
-    fun purchaseComplete()
+    override fun purchaseComplete()
     {
         displayNotice(S.purchaseComplete, persistAcrossScreens = 2)
         nav.go(ScreenId.Home)
@@ -76,8 +82,21 @@ class AssetOfferViewModel(initOffer: AssetOffer) : ViewModel()
     }
 }
 
+class AssetOfferViewModelFake(initOffer: AssetOffer) : AssetOfferViewModel(initOffer)
+{
+    override fun observePartialTransaction()
+    {
+
+    }
+
+    override fun purchaseComplete()
+    {
+
+    }
+}
+
 @Composable
-fun AssetOfferScreen(nav: ScreenNav, offer: AssetOffer, viewModel: AssetOfferViewModel = viewModel { AssetOfferViewModel(offer) })
+fun AssetOfferScreen(nav: ScreenNav, offer: AssetOffer, viewModel: AssetOfferViewModel = viewModel { AssetOfferViewModelImpl(offer) })
 {
     val asset = offer.asset
     val nft = asset.nft

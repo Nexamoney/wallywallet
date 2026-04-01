@@ -45,6 +45,7 @@ uriKmpVersion = "0.0.21" # https://github.com/eygraber/uri-kmp
 wear = "1.4.0"
 workVersion = "2.11.1" # https://developer.android.com/jetpack/androidx/releases/work
 zxingAndroidEmbedded = "4.3.0"
+mokkery = "3.3.0" # https://github.com/lupuuss/Mokkery
 
 [libraries]
 androidsvg-aar = { module = "com.caverock:androidsvg-aar", version.ref = "androidsvgAar" }
@@ -116,3 +117,4 @@ android-application = { id = "com.android.application", version.ref = "android-g
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 task-tree = { id = "com.dorongold.task-tree", version.ref = "task-tree" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose"}
+mokkery = { id = "dev.mokkery", version.ref = "mokkery" }
