@@ -758,7 +758,7 @@ fun AccountDetailChangePinView(acc: Account, displayError: (String) -> Unit, dis
     if (acc.lockable)
     {
 
-        AccountDetailPinInput(i18n(S.CurrentPin), i18n(S.EnterPIN), currentPin, currentPinOk) {
+        AccountDetailPinInput(i18n(S.CurrentPin), i18n(S.EnterPIN), currentPin, currentPinOk,Modifier.testTag("CurrentPinCheckIcon")) {
             if (it.onlyDigits())
             {
                 currentPin = it
@@ -770,7 +770,12 @@ fun AccountDetailChangePinView(acc: Account, displayError: (String) -> Unit, dis
                 currentPinOk = acc.submitAccountPin(it) != 0 // submitAccountPin returns 0 on wrong pin
             }
         }
-        AccountDetailPinInput(i18n(S.NewPin), i18n(S.EnterPINorBlankToRemove), newPin, newPinOk) {
+        AccountDetailPinInput(
+          i18n(S.NewPin),
+          i18n(S.EnterPINorBlankToRemove),
+          newPin,
+          newPinOk
+        ) {
             if (it.onlyDigits())
             {
                 newPin = it
@@ -780,7 +785,12 @@ fun AccountDetailChangePinView(acc: Account, displayError: (String) -> Unit, dis
     }
     else  // No current PIN
     {
-        AccountDetailPinInput(i18n(S.NewPin), i18n(S.EnterPINorBlankToRemove), newPin, newPinOk) {
+        AccountDetailPinInput(
+          i18n(S.NewPin),
+          i18n(S.EnterPINorBlankToRemove),
+          newPin,
+          newPinOk,
+        ) {
             if (it.onlyDigits())
             {
                 newPin = it
@@ -851,7 +861,7 @@ fun AccountDetailChangePinView(acc: Account, displayError: (String) -> Unit, dis
 }
 
 @Composable
-fun AccountDetailPinInput(description: String, placeholder: String, currentPin: String, currentPinOk: Boolean, onPinChanged: (String) -> Unit)
+fun AccountDetailPinInput(description: String, placeholder: String, currentPin: String, currentPinOk: Boolean, checkModifier: Modifier = Modifier, onPinChanged: (String) -> Unit)
 {
     val focusManager = LocalFocusManager.current
     Column {
@@ -864,7 +874,7 @@ fun AccountDetailPinInput(description: String, placeholder: String, currentPin: 
             if (currentPinOk)
                 ResImageView(
                   "icons/check.xml",
-                  modifier = Modifier
+                  modifier = checkModifier
                     .size(24.dp),
                   i18n(S.confirm)
                 )
