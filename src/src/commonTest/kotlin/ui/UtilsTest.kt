@@ -151,3 +151,45 @@ fun assetOfferFaker(): AssetOffer
       false
     )
 }
+
+class FakeSharedPreferences : SharedPreferences {
+    private val data = mutableMapOf<String, Any>()
+
+    override fun getString(key: String, defaultValue: String?): String? = data[key] as? String ?: defaultValue
+    override fun getInt(key: String, defaultValue: Int): Int
+    {
+        TODO("Not yet implemented")
+    }
+
+    override fun edit(): PreferencesEdit = FakeEditor(data)
+    override fun getBoolean(key: String, defaultValue: Boolean): Boolean
+    {
+        return data[key] as Boolean? ?: defaultValue
+    }
+
+    // Other methods should be implemented similarly
+}
+
+class FakeEditor(private val data: MutableMap<String, Any>) :  PreferencesEdit {
+    override fun putString(key: String, value: String): PreferencesEdit
+    {
+        value.let { data[key] = it }
+        return this
+    }
+
+    override fun putBoolean(key: String, value: Boolean): PreferencesEdit
+    {
+        value.let { data[key] = it }
+        return this
+    }
+
+    override fun putInt(key: String, value: Int): PreferencesEdit
+    {
+        TODO("Not yet implemented")
+    }
+
+    override fun commit()
+    {
+
+    }
+}

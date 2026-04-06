@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.S
 import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.ui.views.*
@@ -337,10 +338,10 @@ fun ConfirmAbove(preferenceDB: SharedPreferences)
                   val newStr = it.ifEmpty {
                       "0"
                   }
-                  val newDec = CurrencyDecimal(newStr)
+                  val newDec = BigDecimal.fromString(newStr, NexaMathMode)
                   with(preferenceDB.edit())
                   {
-                      putString(CONFIRM_ABOVE_PREF, CurrencySerializeFormat.format(newDec))
+                      putString(CONFIRM_ABOVE_PREF, NexaInputFormat.format(newDec))
                       commit()
                   }
               }
@@ -355,7 +356,7 @@ fun ConfirmAbove(preferenceDB: SharedPreferences)
           //colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent,
           //  unfocusedContainerColor = Color.Transparent
           ,
-          modifier = Modifier.weight(1f).padding(4.dp,0.dp,0.dp,0.dp)
+          modifier = Modifier.weight(1f).padding(4.dp,0.dp,0.dp,0.dp).testTag("ConfirmAboveEntry")
         )
         Text(chainToCurrencyCode[ChainSelector.NEXA]!!)
     }

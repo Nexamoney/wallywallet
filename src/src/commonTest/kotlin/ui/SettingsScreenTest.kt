@@ -50,14 +50,14 @@ class SettingsScreenTest: WallyUiTestBase()
 
     @Test
     fun confirmAboveTest() = runComposeUiTest {
-        /*
-        val preferenceDB: SharedPreferences = getSharedPreferences(TEST_PREF + PREFERENCE_FILE_NAME, PREF_MODE_PRIVATE)
+
+        val preferenceDB: SharedPreferences = FakeSharedPreferences()
         setContent {
             ConfirmAbove(preferenceDB)
         }
         settle()
 
-        val textInput = "123123"
+        val textInput = "123123.00"
 
         onNodeWithText(i18n(S.WhenAskSure)).assertIsDisplayed()
         onNodeWithText(chainToCurrencyCode[ChainSelector.NEXA]!!).assertIsDisplayed()
@@ -69,9 +69,9 @@ class SettingsScreenTest: WallyUiTestBase()
         settle()
         onNodeWithTag("ConfirmAboveEntry").assertTextContains(textInput)
         val confirmAbove = preferenceDB.getString(CONFIRM_ABOVE_PREF, "0") ?: "0"
+
         assertEquals(textInput, confirmAbove)
         settle()
-         */
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -85,47 +85,5 @@ class SettingsScreenTest: WallyUiTestBase()
         onNodeWithTag(i18n(S.localCurrency)).assertExists()
         onNodeWithTag(i18n(S.localCurrency)).assertTextEquals(i18n(S.localCurrency))
         settle()
-    }
-}
-
-class FakeSharedPreferences : SharedPreferences {
-    private val data = mutableMapOf<String, Any>()
-
-    override fun getString(key: String, defaultValue: String?): String? = data[key] as? String ?: defaultValue
-    override fun getInt(key: String, defaultValue: Int): Int
-    {
-        TODO("Not yet implemented")
-    }
-
-    override fun edit(): PreferencesEdit = FakeEditor(data)
-    override fun getBoolean(key: String, defaultValue: Boolean): Boolean
-    {
-        return data[key] as Boolean? ?: defaultValue
-    }
-
-    // Other methods should be implemented similarly
-}
-
-class FakeEditor(private val data: MutableMap<String, Any>) :  PreferencesEdit {
-    override fun putString(key: String, value: String): PreferencesEdit
-    {
-        value.let { data[key] = it }
-        return this
-    }
-
-    override fun putBoolean(key: String, value: Boolean): PreferencesEdit
-    {
-        value.let { data[key] = it }
-        return this
-    }
-
-    override fun putInt(key: String, value: Int): PreferencesEdit
-    {
-        TODO("Not yet implemented")
-    }
-
-    override fun commit()
-    {
-
     }
 }
