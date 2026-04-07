@@ -256,6 +256,8 @@ class AccountStatisticsViewModelFake(act: Account) : AccountStatisticsViewModel(
 {
     val account = accountStatsViewModel.account
     val act = account.collectAsState().value
+    val action = nav.curData.collectAsState().value as AccountAction?
+
     if (act == null) nav.back()  // no account to show the details of
     else  // we have an account
     {
@@ -267,10 +269,16 @@ class AccountStatisticsViewModelFake(act: Account) : AccountStatisticsViewModel(
             ap.draw(buttonsEnabled = true)
             Spacer(Modifier.height(2.dp))
             Spacer(modifier = Modifier.height(4.dp))
-            AccountActionButtons(accountStatsViewModel, act, txHistoryButtonClicked = { nav.go(ScreenId.TxHistory) }, accountDeleted = {
-                nav.back()
-                triggerAssignAccountsGuiSlots()
-            })
+            AccountActionButtons(
+              viewModel = accountStatsViewModel,
+              acc = act,
+              txHistoryButtonClicked = { nav.go(ScreenId.TxHistory) },
+              accountDeleted = {
+                  nav.back()
+                  triggerAssignAccountsGuiSlots()
+              },
+              accAction = action
+            )
             Spacer(modifier = Modifier.height(4.dp))
             WallyDivider()
             TxStatistics(accountStatsViewModel, { nav.go(ScreenId.AddressHistory) }, { nav.go(ScreenId.TxHistory) })
@@ -444,9 +452,13 @@ fun TxStatistics(viewModel: AccountStatisticsViewModel, onAddressesButtonClicked
 
 
 @Composable
-fun AccountActionButtons(viewModel: AccountStatisticsViewModel, acc: Account, txHistoryButtonClicked: () -> Unit, accountDeleted: () -> Unit)
+fun AccountActionButtons(viewModel: AccountStatisticsViewModel, acc: Account, txHistoryButtonClicked: () -> Unit, accountDeleted: () -> Unit, accAction: AccountAction?)
 {
-    val accountAction: MutableState<AccountAction?> = remember { mutableStateOf(null) }
+    val accountAction: MutableState<AccountAction?> = remember { mutableStateOf(accAction) }
+    LaunchedEffect(accAction)
+    {
+        accountAction.value = accAction
+    }
     var checked by remember { mutableStateOf(acc.flags and ACCOUNT_FLAG_REUSE_ADDRESSES == 0UL) }
 
     fun displayNoticePrimaryAccount(name: String)
