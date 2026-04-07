@@ -749,17 +749,15 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
                 Spacer(Modifier.height(4.dp))
                 WallyButtonRow {
                     OutlinedButton({
-                        externalDriver.trySend(
-                            GuiDriver(
-                                ScreenId.AccountDetails, noshow = setOf(
-                                    ShowIt.WARN_BACKUP_RECOVERY_KEY
-                                ), account = account)
-                        )
+                        if (nav.currentScreen.value == ScreenId.AccountDetails)
+                            nav.back()
+                        nav.go(screen = ScreenId.AccountDetails, data = AccountAction.RecoveryPhrase)
+                        isShowingRecoveryWarning.value = false
                     }) {
                         Text(i18n(S.GoThere))
                     }
                     OutlinedButton({
-                        externalDriver.trySend(GuiDriver(noshow = setOf(ShowIt.WARN_BACKUP_RECOVERY_KEY)))
+                        isShowingRecoveryWarning.value = false
                     }) {
                         Text(i18n(S.dismiss))
                     }
@@ -790,6 +788,8 @@ fun BottomNavMenu(scope: CoroutineScope, bottomSheetController: BottomSheetScaff
         }
          */
 }
+
+val isShowingRecoveryWarning = MutableStateFlow(false)
 
 sealed class MoreMenu {
     class Show: MoreMenu()
@@ -857,7 +857,6 @@ fun NavigationRoot(
     var warningText by remember { mutableStateOf("") }
     var noticeText by remember { mutableStateOf("") }
     var alertPersistAcrossScreens by remember { mutableStateOf(0) }
-    var isShowingRecoveryWarning by remember { mutableStateOf(false) }
 
     val selectedAccountState = wallyApp!!.focusedAccount.collectAsState()
     val selectedAccount = selectedAccountState.value
@@ -966,18 +965,6 @@ fun NavigationRoot(
             c.gotoPage?.let {it ->
                 clearAlerts()  // If the user explicitly moved to a different screen, they must be aware of the alert
                 nav.go(it, data = c.tpSession)
-            }
-            c.show?.forEach {
-                if (it == ShowIt.WARN_BACKUP_RECOVERY_KEY)
-                {
-                    isShowingRecoveryWarning = true
-                }
-            }
-            c.noshow?.forEach {
-                if (it == ShowIt.WARN_BACKUP_RECOVERY_KEY)
-                {
-                    isShowingRecoveryWarning = false
-                }
             }
             if (c.regenAccountGui == true)
             {
@@ -1203,8 +1190,8 @@ fun NavigationRoot(
                     ReceivedNexaAnimation()
 
                     Column(modifier = Modifier.fillMaxSize()) {
-                        if (isShowingRecoveryWarning)
-                            RecoveryPhraseWarning(Modifier.clickable { isShowingRecoveryWarning = false })
+                        if (isShowingRecoveryWarning.collectAsState().value)
+                            RecoveryPhraseWarning(Modifier.clickable { isShowingRecoveryWarning.value = false })
                         UnlockTile(unlock)
 
                         // This will take up the most space but leave enough for the navigation menu
@@ -1225,12 +1212,12 @@ fun NavigationRoot(
                             }
                             when (curScreen)
                             {
-                                ScreenId.None -> HomeScreen(isShowingRecoveryWarning, accountPillViewModel, assetViewModel, accountUiDataViewModel, audio, unlock)
+                                ScreenId.None -> HomeScreen(isShowingRecoveryWarning.collectAsState().value, accountPillViewModel, assetViewModel, accountUiDataViewModel, audio, unlock)
                                 ScreenId.Splash -> run {} // splash screen is done at the top for max speed and to be outside of the theme
                                 ScreenId.MoreMenu -> run {}
                                 ScreenId.Home ->
                                 {
-                                    HomeScreen(isShowingRecoveryWarning, accountPillViewModel, assetViewModel, accountUiDataViewModel, audio, unlock)
+                                    HomeScreen(isShowingRecoveryWarning.collectAsState().value, accountPillViewModel, assetViewModel, accountUiDataViewModel, audio, unlock)
                                 }
 
                                 ScreenId.Send -> withAccount { act -> withSendNavParams {
@@ -1351,7 +1338,7 @@ fun NavigationRoot(
                                     }
                                 }
 
-                                ScreenId.Alerts -> HomeScreen(isShowingRecoveryWarning, accountPillViewModel, assetViewModel, accountUiDataViewModel, audio, unlock)
+                                ScreenId.Alerts -> HomeScreen(isShowingRecoveryWarning.collectAsState().value, accountPillViewModel, assetViewModel, accountUiDataViewModel, audio, unlock)
                             }
                         }
                     }
