@@ -28,6 +28,13 @@ plugins {
     idea
 }
 
+mokkery {
+    // Allow mocking abstract classes (e.g. libnexakotlin's CnxnMgr) that have final
+    // members. The mokkery proxy ignores those final members at the type-checker
+    // level; the test path doesn't actually call them.
+    ignoreFinalMembers = true
+}
+
 kover {
     useJacoco() // Jacoco ogging format for XML
     reports {

@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import info.bitcoinunlimited.www.wally.Account
+import info.bitcoinunlimited.www.wally.AccountImpl
 import info.bitcoinunlimited.www.wally.ui.ReceiveScreenContent
 import info.bitcoinunlimited.www.wally.ui.setSelectedAccount
 import info.bitcoinunlimited.www.wally.ui.views.AccountPill
@@ -43,7 +44,7 @@ class ReceiveScreenTest:WallyUiTestBase(false)
     {
         LogIt.info("TEST receiveScreenContentTest")
         //val account = wallyApp!!.newAccount("receiveScreenContentTest", 0U, "", cs)!!
-        val account = Account("rcvScrnContent", chainSelector = cs)
+        val account = AccountImpl("rcvScrnContent", chainSelector = cs)
         val actFlow = MutableStateFlow<Account?>(account)
         val address = Pay2PubKeyTemplateDestination(ChainSelector.NEXAREGTEST, UnsecuredSecret(ByteArray(32, { 1.toByte()})), 1234)
         val pill = AccountPill(actFlow)

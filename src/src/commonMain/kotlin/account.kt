@@ -15,6 +15,7 @@ import org.nexa.assets.triggerAssetCheck
 import org.nexa.assets.triggerAssetCheckOnBlock
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
+import org.nexa.threads.iMutex
 import org.nexa.threads.millisleep
 import kotlin.random.Random
 
@@ -68,65 +69,180 @@ fun WallyGetCnxnMgr(chain: ChainSelector, name: String? = null, start:Boolean = 
     return ret
 }
 
-class Account(
-  val name: String, //* The name of this account
-  var flags: ULong = ACCOUNT_FLAG_NONE,
+/**
+ * Account interface — exposes the public surface of an account so that tests can
+ * substitute a [dev.mokkery.mock] in places where a real [AccountImpl] would be too
+ * heavy to instantiate (the impl's primary constructor opens the wallet DB and spins
+ * up wallet/blockchain state).
+ *
+ * Production code should keep using `Account` everywhere as a type; only direct
+ * constructor calls need to use `AccountImpl(...)`.
+ */
+interface Account
+{
+    // ----- Identity / config -----
+    val name: String
+    var flags: ULong
+    val prefDB: SharedPreferences
+
+    // ----- Concurrency -----
+    val access: iMutex
+    val handler: CoroutineExceptionHandler
+
+    // ----- Persistence / lifecycle state -----
+    var walletDb: WalletDatabase?
+    var started: Boolean
+    var pinEntered: Boolean
+    var encodedPin: ByteArray?
+
+    // ----- Receive address -----
+    var currentReceive: PayDestination?
+    val currentReceiveObservable: MutableStateFlow<PayDestination?>
+
+    // ----- Sync / fiat -----
+    val syncedDate: MutableStateFlow<Long>
+    var fiatPerCoin: BigDecimal
+    val fiatPerCoinObservable: StateFlow<BigDecimal>
+
+    // ----- Display formats -----
+    val cryptoFormat: DecimalFormat
+    val cryptoInputFormat: DecimalFormat
+    val nameAndChain: String
+
+    // ----- Wallet / chain -----
+    val wallet: Bip44Wallet
+    var balance: BigDecimal?
+    val balanceState: StateFlow<BigDecimal?>
+    var unconfirmedBalance: MutableStateFlow<BigDecimal?>
+    var confirmedBalance: MutableStateFlow<BigDecimal?>
+    var cnxnMgr: CnxnMgr
+    var chain: Blockchain
+    val currencyCode: String
+
+    // ----- Assets -----
+    var assets: Map<GroupId, AssetPerAccount>
+    val assetsObservable: StateFlow<Map<GroupId, AssetPerAccount>>
+    val assetTransferList: MutableList<GroupId>
+
+    // ----- Fastforward -----
+    var fastforward: Objectify<Boolean>?
+    var fastforwardStatus: String?
+    val fastForwardStatusState: StateFlow<String?>
+
+    // ----- Wallet change callbacks -----
+    val cb1: (Wallet, List<TransactionHistory>?) -> Unit
+    var wCb: Int?
+    var blkCb: Int?
+    var netCb: Int?
+
+    // ----- Visibility / lock state -----
+    val visible: Boolean
+    val lockable: Boolean
+    val locked: Boolean
+
+    // ----- Misc state -----
+    var genericElectrumNodeReqCount: Int
+
+    // ----- Lifecycle / async -----
+    fun asyncInit(startHeight: Long?, startDate: Long?)
+    fun saveAccountPin(epin: ByteArray?)
+    fun start()
+    fun removeChangeHandlers()
+    fun installChangeHandlers()
+    fun onResume()
+    fun loadEncodedPin(): ByteArray?
+    fun submitAccountPin(pin: String): Int
+    fun setBlockchainAccessModeFromPrefs()
+
+    // ----- Assets -----
+    fun hasAssets(): Boolean
+    fun addAssetToTransferList(a: GroupId, amt: BigDecimal): Boolean
+    fun clearAssetTransferList(): Int
+    fun constructAssetMap(getEc: (() -> ElectrumClient)? = null)
+    fun assetList(): MutableList<AssetPerAccount>
+
+    // ----- Address / receive -----
+    fun loadAccountAddress()
+    fun saveAccountAddress()
+
+    // ----- URLs / formatting / unit conversion -----
+    fun transactionInfoWebUrl(txHex: String?): String?
+    fun addressInfoWebUrl(address: String?): String?
+    fun toFinestUnit(amount: BigDecimal): Long
+    fun fromFinestUnit(amount: Long): BigDecimal
+    fun toPrimaryUnit(qty: BigDecimal): BigDecimal
+    fun fromPrimaryUnit(qty: BigDecimal): BigDecimal
+    fun format(qty: BigDecimal): String
+
+    // ----- Persistence helpers -----
+    fun loadAccountFlags()
+    fun saveAccountFlags()
+
+    // ----- Mutators -----
+    fun delete()
+    fun changeAsyncProcessing()
+    fun onChange(force: Boolean = false)
+}
+
+class AccountImpl(
+  override val name: String,
+  override var flags: ULong = ACCOUNT_FLAG_NONE,
   chainSelector: ChainSelector? = null,
   secretWords: String? = null,
   startDate: Long? = null, //* Where to start looking for transactions
   startHeight: Long? = null, //* block height of first activity
   autoInit: Boolean = true, /** Automatically begin the asynchronous initialization phase */
   retrieveOnlyActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, HDActivityBracket>>? = null,  //* jam in other derivation paths to grab coins from (but use addresses of) (if new account)
-  val prefDB: SharedPreferences = getSharedPreferences(TEST_PREF + PREFERENCE_FILE_NAME, PREF_MODE_PRIVATE),
+  override val prefDB: SharedPreferences = getSharedPreferences(TEST_PREF + PREFERENCE_FILE_NAME, PREF_MODE_PRIVATE),
   db: WalletDatabase? = null
-)
+) : Account
 {
     init {
         LogIt.info(sourceLoc() + ": Creating Account $name")
     }
-    val access = Mutex("actMut")
-    val handler = CoroutineExceptionHandler {
+    override val access = Mutex("actMut")
+    override val handler = CoroutineExceptionHandler {
         _, exception -> LogIt.error("Caught in Account CoroutineExceptionHandler: $exception")
     }
-    var walletDb: WalletDatabase? = db ?: openWalletDB(wallyAccountDbFileName(name), chainSelector)
+    override var walletDb: WalletDatabase? = db ?: openWalletDB(wallyAccountDbFileName(name), chainSelector)
     @Volatile
-    var started = false  // Have the cnxnmgr and blockchain services been started or are we in initialization?
+    override var started = false  // Have the cnxnmgr and blockchain services been started or are we in initialization?
     //? Was the PIN entered properly since the last 15 second sleep?
-    var pinEntered = false
-    var encodedPin: ByteArray? = loadEncodedPin()
+    override var pinEntered = false
+    override var encodedPin: ByteArray? = loadEncodedPin()
 
-    var currentReceive: PayDestination? = null //? This receive address appears on the main screen for quickly receiving coins
+    override var currentReceive: PayDestination? = null //? This receive address appears on the main screen for quickly receiving coins
         set(value) {
             currentReceiveObservable.value = value
             field = value
         }
-    val currentReceiveObservable: MutableStateFlow<PayDestination?> = MutableStateFlow(null)
+    override val currentReceiveObservable: MutableStateFlow<PayDestination?> = MutableStateFlow(null)
 
-    val syncedDate = MutableStateFlow<Long>(0L)
+    override val syncedDate = MutableStateFlow<Long>(0L)
 
     /** Current exchange rate between this currency (in this account's default unit -- NOT the finest unit or blockchain unit) and your selected fiat currency.
      * -1 means that the exchange rate cannot be determined */
-    var fiatPerCoin: BigDecimal = CurrencyDecimal(-1)
+    override var fiatPerCoin: BigDecimal = CurrencyDecimal(-1)
         set(value) {
             _fiatPerCoinState.value = value
             field = value // 'field' refers to the property itself
         }
     private val _fiatPerCoinState = MutableStateFlow(fiatPerCoin)
-    val fiatPerCoinObservable: StateFlow<BigDecimal> = _fiatPerCoinState
+    override val fiatPerCoinObservable: StateFlow<BigDecimal> = _fiatPerCoinState
 
     //? specify how quantities should be formatted for display
-    val cryptoFormat = NexaFormat
-    val cryptoInputFormat = DecimalFormat("##########.##")  // I can't handle commas in field entry
+    override val cryptoFormat = NexaFormat
+    override val cryptoInputFormat = DecimalFormat("##########.##")  // I can't handle commas in field entry
 
     /** This is a common account display descriptor it returns "<account name> on <blockchain>", e.g. "myaccount on nexa" */
-    val nameAndChain: String
+    override val nameAndChain: String
         get() { return name + " " + i18n(S.onBlockchain) + " " + chainToURI[chain.chainSelector] }
 
     init {
         LogIt.info(sourceLoc() + ": Wallet")
     }
 
-    val wallet: Bip44Wallet = if (chainSelector == null)  // Load existing account
+    override val wallet: Bip44Wallet = if (chainSelector == null)  // Load existing account
     {
         try
         {
@@ -164,27 +280,27 @@ class Account(
     }
 
     //? Current balance (cached from accessing the wallet), in the display units
-    var balance: BigDecimal? = null
+    override var balance: BigDecimal? = null
         set(value)
         {
             _balanceState.value = value
             field = value
         }
     private val _balanceState = MutableStateFlow<BigDecimal?>(balance)
-    val balanceState = _balanceState.asStateFlow()
+    override val balanceState = _balanceState.asStateFlow()
 
-    var unconfirmedBalance = MutableStateFlow<BigDecimal?>(null)
-    var confirmedBalance = MutableStateFlow<BigDecimal?>(null)
+    override var unconfirmedBalance = MutableStateFlow<BigDecimal?>(null)
+    override var confirmedBalance = MutableStateFlow<BigDecimal?>(null)
 
-    var cnxnMgr: CnxnMgr = WallyGetCnxnMgr(wallet.chainSelector, name, false)
-    var chain: Blockchain = GetBlockchain(wallet.chainSelector, cnxnMgr, chainToURI[wallet.chainSelector], false) // do not start right away so we can configure exclusive/preferred no
+    override var cnxnMgr: CnxnMgr = WallyGetCnxnMgr(wallet.chainSelector, name, false)
+    override var chain: Blockchain = GetBlockchain(wallet.chainSelector, cnxnMgr, chainToURI[wallet.chainSelector], false) // do not start right away so we can configure exclusive/preferred no
 
     /** A string denoting this wallet's currency units.  That is, the units that this wallet should use in display, in its BigDecimal amount representations, and is converted to and from in fromFinestUnit() and toFinestUnit() respectively */
-    val currencyCode: String = chainToDisplayCurrencyCode[wallet.chainSelector]!!
+    override val currencyCode: String = chainToDisplayCurrencyCode[wallet.chainSelector]!!
 
     init { LogIt.info(sourceLoc() + ": Assets") }
 
-    var assets = mapOf<GroupId, AssetPerAccount>()
+    override var assets = mapOf<GroupId, AssetPerAccount>()
         set(value) {
             _assetsState.value = value
             field = value
@@ -192,18 +308,18 @@ class Account(
 
     init { LogIt.info(sourceLoc() + ": Flows") }
     @Transient private val _assetsState = MutableStateFlow<Map<GroupId, AssetPerAccount>>(mapOf<GroupId, AssetPerAccount>())
-    @Transient val assetsObservable = _assetsState.asStateFlow()
-    val assetTransferList = mutableListOf<GroupId>()
+    @Transient override val assetsObservable = _assetsState.asStateFlow()
+    override val assetTransferList = mutableListOf<GroupId>()
 
     // How to abort a fastforward (and its happening if non-null)
-    var fastforward:Objectify<Boolean>? = null
-    var fastforwardStatus:String? = null
+    override var fastforward:Objectify<Boolean>? = null
+    override var fastforwardStatus:String? = null
         set(value) {
             _fastForwardStatusState.value = value
             field = value
         }
     private val _fastForwardStatusState = MutableStateFlow<String?>(null)
-    val fastForwardStatusState = _fastForwardStatusState.asStateFlow()
+    override val fastForwardStatusState = _fastForwardStatusState.asStateFlow()
 
     init
     {
@@ -233,7 +349,7 @@ class Account(
         LogIt.info(sourceLoc() + ": Connect completed.  Account setup complete")
     }
 
-    fun asyncInit(startHeight: Long?, startDate: Long?)
+    override fun asyncInit(startHeight: Long?, startDate: Long?)
     {
         LogIt.info(sourceLoc() + name + ": wallet connect blockchain ${chain.name}")
         loadAccountAddress()
@@ -280,14 +396,14 @@ class Account(
 
     /** Save the PIN of an account to the database
      * @param epin must be the ENCODED (not plaintext) pin */
-    fun saveAccountPin(epin: ByteArray?)
+    override fun saveAccountPin(epin: ByteArray?)
     {
         val ep = epin ?: byteArrayOf()
         walletDb?.set("accountPin_" + name, ep)
     }
 
     // A transaction came in
-    val cb1: ((Wallet,List<TransactionHistory>?) -> Unit) =
+    override val cb1: ((Wallet,List<TransactionHistory>?) -> Unit) =
       { w, txes ->
           if (txes!=null) for (txh in txes)
           {
@@ -324,12 +440,12 @@ class Account(
           }
           onChange()
       }
-    @Volatile var wCb: Int? = null
-    @Volatile var blkCb: Int? = null
-    @Volatile var netCb: Int? = null
+    @Volatile override var wCb: Int? = null
+    @Volatile override var blkCb: Int? = null
+    @Volatile override var netCb: Int? = null
 
     @Suppress("UNUSED_PARAMETER")
-    fun start()
+    override fun start()
     {
         if (!started)
         {
@@ -344,7 +460,7 @@ class Account(
     /** Stop underlying changes from updating the state of this account
      * This function is primarily used during test to prevent real events from overriding faked data.
      */
-    fun removeChangeHandlers()
+    override fun removeChangeHandlers()
     {
         wCb?.let { wallet.removeOnWalletChange(it); wCb = null }
         blkCb?.let { wallet.blockchain.onChange.remove(it); blkCb = null }
@@ -354,7 +470,7 @@ class Account(
     /** Install handlers for underlying changes to update the state in this account.
      * These handlers are installed automatically upon account creation so you should not need to call this function.
      */
-    fun installChangeHandlers()
+    override fun installChangeHandlers()
     {
         // Set all the underlying change callbacks to trigger the account update
         if (wCb==null) wCb = wallet.setOnWalletChange(cb1)
@@ -372,7 +488,7 @@ class Account(
      * This can be called either when the app as been paused, or early during app initialization
      * so we need to check to see if the is an actual resume-after-pause, or an initial startup
      */
-    fun onResume()
+    override fun onResume()
     {
         if (started)
         {
@@ -387,7 +503,7 @@ class Account(
         }
     }
 
-    var genericElectrumNodeReqCount = 0 // So when we increment first thing, we end up at 0
+    override var genericElectrumNodeReqCount = 0 // So when we increment first thing, we end up at 0
     private fun getElectrumServerOn(cs: ChainSelector):IpPort
     {
         val name = chainToURI[cs]
@@ -429,7 +545,7 @@ class Account(
     }
 
     /** Get the locking PIN from storage */
-    fun loadEncodedPin(): ByteArray?
+    override fun loadEncodedPin(): ByteArray?
     {
         val db = walletDb
         if (db != null)
@@ -450,7 +566,7 @@ class Account(
     }
 
     /** Check the PIN of an account, return 1 if account unlocked else 0 & update unlocked status */
-    fun submitAccountPin(pin: String): Int
+    override fun submitAccountPin(pin: String): Int
     {
         if (encodedPin == null) return 0
         val epin = try
@@ -482,7 +598,7 @@ class Account(
     }
 
     /** Set access to the underlying blockchain (exclusive, preferred, or neither) based on the chosen preferences */
-    fun setBlockchainAccessModeFromPrefs()
+    override fun setBlockchainAccessModeFromPrefs()
     {
         val cs = chain.chainSelector
         val chainName = chainToURI[cs]
@@ -518,7 +634,7 @@ class Account(
     }
 
     /** Is this account currently visible to the user */
-    val visible: Boolean
+    override val visible: Boolean
         get()
         {
             if ((encodedPin != null) && ((flags and ACCOUNT_FLAG_HIDE_UNTIL_PIN) > 0UL) && !pinEntered) return false
@@ -526,14 +642,14 @@ class Account(
         }
 
     /** Can this account be locked */
-    val lockable: Boolean
+    override val lockable: Boolean
         get()
         {
             return (encodedPin != null)   // If there is no PIN, can't be locked
         }
 
     /** Is this account currently locked */
-    val locked: Boolean
+    override val locked: Boolean
         get()
         {
             if (encodedPin == null) return false  // Is never locked if there is no PIN
@@ -541,7 +657,7 @@ class Account(
         }
 
     /** Returns true if this account has unspent assets (grouped UTXOs) in it */
-    fun hasAssets(): Boolean
+    override fun hasAssets(): Boolean
     {
         var ret = false
 
@@ -562,7 +678,7 @@ class Account(
 
         /** Adds this asset to the list of assets to be transferred in the next send
          * Send the quantity *in finest units* */
-    fun addAssetToTransferList(a: GroupId, amt: BigDecimal): Boolean
+    override fun addAssetToTransferList(a: GroupId, amt: BigDecimal): Boolean
     {
         return access.lock {
             val asset = assets.get(a)
@@ -584,7 +700,7 @@ class Account(
     }
 
     /** Clear all assets held by this account from the transfer list */
-    fun clearAssetTransferList():Int
+    override fun clearAssetTransferList():Int
     {
         return access.lock {
             val ret = assetTransferList.size
@@ -601,7 +717,7 @@ class Account(
     /** Constructs a map of assets held by this account.
      * @param getEc if null, the asset map will be constructed rapidly without gathering asset information from the internet, otherwise the returned electrumClient will be used to gather asset info
      */
-    fun constructAssetMap(getEc: (() -> ElectrumClient)? = null)
+    override fun constructAssetMap(getEc: (() -> ElectrumClient)?)
     {
         val am = wallyApp?.assetManager
         if (am == null) return
@@ -672,14 +788,14 @@ class Account(
     }
 
     /** Return a list of assets held by this account */
-    fun assetList():MutableList<AssetPerAccount>
+    override fun assetList():MutableList<AssetPerAccount>
     {
         return access.lock {
             assets.values.toMutableList()
         }
     }
 
-    fun loadAccountAddress()
+    override fun loadAccountAddress()
     {
         val wdb = walletDb
         if (wdb != null)
@@ -703,7 +819,7 @@ class Account(
     }
 
     /** Return a web URL that will provide more information about this transaction */
-    fun transactionInfoWebUrl(txHex: String?): String?
+    override fun transactionInfoWebUrl(txHex: String?): String?
     {
         if (txHex == null) return null
         if (wallet.chainSelector == ChainSelector.BCH)
@@ -716,7 +832,7 @@ class Account(
     }
 
     /** Return a web URL that will provide more information about this address */
-    fun addressInfoWebUrl(address: String?): String?
+    override fun addressInfoWebUrl(address: String?): String?
     {
         if (address == null) return null
         if (wallet.chainSelector == ChainSelector.BCH)
@@ -729,7 +845,7 @@ class Account(
     }
 
     /** Convert the default display units to the finest granularity of this currency.  For example, mBCH to Satoshis */
-    fun toFinestUnit(amount: BigDecimal): Long
+    override fun toFinestUnit(amount: BigDecimal): Long
     {
         val ret:Long = when (chain.chainSelector)
         {
@@ -742,7 +858,7 @@ class Account(
     }
 
     //? Convert the finest granularity of this currency to the default display unit.  For example, Satoshis to mBCH
-    fun fromFinestUnit(amount: Long): BigDecimal
+    override fun fromFinestUnit(amount: Long): BigDecimal
     {
         val factor = when (chain.chainSelector)
         {
@@ -754,7 +870,7 @@ class Account(
     }
 
     /** Convert a value in the wallet's display currency code unit into its primary unit. The "primary unit" is the generally accepted currency unit, AKA "BCH" or "BTC". */
-    fun toPrimaryUnit(qty: BigDecimal): BigDecimal
+    override fun toPrimaryUnit(qty: BigDecimal): BigDecimal
     {
         val factor = when (chain.chainSelector)
         {
@@ -765,7 +881,7 @@ class Account(
     }
 
     /** Convert a value in the wallet's display currency code unit into its primary unit. The "primary unit" is the generally accepted currency unit, AKA "BCH" or "BTC". */
-    fun fromPrimaryUnit(qty: BigDecimal): BigDecimal
+    override fun fromPrimaryUnit(qty: BigDecimal): BigDecimal
     {
         val factor = when (chain.chainSelector)
         {
@@ -776,7 +892,7 @@ class Account(
     }
 
     //? Convert the passed quantity to a string in the decimal format suitable for this currency
-    fun format(qty: BigDecimal): String
+    override fun format(qty: BigDecimal): String
     {
         // TODO replace with NexaFormat when a new version of lnk is released
         val nexaFormat = DecimalFormat("##,###,###,###,##0.00")
@@ -788,7 +904,7 @@ class Account(
         }
     }
 
-    fun loadAccountFlags()
+    override fun loadAccountFlags()
     {
         val wdb = walletDb
         if (wdb != null)
@@ -799,7 +915,7 @@ class Account(
         }
     }
 
-    fun saveAccountFlags()
+    override fun saveAccountFlags()
     {
         walletDb?.set("accountFlags_" + name, BCHserialized.uint32(flags.toLong()).toByteArray())
     }
@@ -832,7 +948,7 @@ class Account(
 
     /** Completely delete this wallet, rendering any money you may have in it inaccessible unless the wallet is restored from backup words
      */
-    fun delete()
+    override fun delete()
     {
         removeChangeHandlers()
         currentReceive = null
@@ -861,7 +977,7 @@ class Account(
         }
     }
 
-    fun changeAsyncProcessing()
+    override fun changeAsyncProcessing()
     {
         try
         {
@@ -880,7 +996,7 @@ class Account(
     }
 
     /** This is called by the underlying layers whenever something in the wallet has changed */
-    fun onChange(force: Boolean = false)
+    override fun onChange(force: Boolean)
     {
         onetlater("accountChanged_${name}") {
             changeAsyncProcessing()
@@ -946,7 +1062,7 @@ class Account(
         }
     }
 
-    fun saveAccountAddress()
+    override fun saveAccountAddress()
     {
         val wdb = walletDb
         if (wdb != null)

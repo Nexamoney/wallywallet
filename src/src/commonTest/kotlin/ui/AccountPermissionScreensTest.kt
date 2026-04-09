@@ -60,7 +60,7 @@ class AccountPermissionScreensTest:WallyUiTestBase()
     @Test
     fun identityPermScreenUriNullTest()
     {
-        val account = Account("identityPerm", chainSelector = cs)
+        val account = AccountImpl("identityPerm", chainSelector = cs)
         runComposeUiTest {
             setSelectedAccount(account)
             val nav = ScreenNav()
