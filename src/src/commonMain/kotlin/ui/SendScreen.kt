@@ -163,7 +163,7 @@ abstract class SendScreenViewModel(val account:MutableStateFlow<Account?>): View
     }
 }
 
-class SendScreenViewModelFake(act: Account): SendScreenViewModel(act)
+open class SendScreenViewModelFake(act: Account): SendScreenViewModel(act)
 {
     init
     {
@@ -177,7 +177,23 @@ class SendScreenViewModelFake(act: Account): SendScreenViewModel(act)
     override fun checkUriAndSetUi(urlStr: String) {}
     override fun multiplySendQty(multiplier: Int) {}
     override fun populateAssetsList(assetTransferList: MutableList<GroupId>, assets: Map<GroupId, AssetPerAccount>) {}
-    override fun onSendButtonClicked() {}
+    /**
+     * Test-only stand-in for [SendScreenViewModelImpl.onSendButtonClicked] that
+     * skips the wallet/balance/network validation but still sets the uiState
+     * into the confirming state when the user has filled in a destination address
+     * and a non-zero amount, so tests can drive the Send → Confirm UI path.
+     */
+    override fun onSendButtonClicked()
+    {
+        val state = uiState.value
+        if (state.toAddress.isNotBlank() && state.amountFinal > BigDecimal.ZERO)
+        {
+            uiState.value = state.copy(
+              isConfirming = true,
+              toAddressFinal = try { PayAddress(state.toAddress.trim()) } catch (_: Exception) { null }
+            )
+        }
+    }
     override fun actuallySend(toAddress: PayAddress?, amount: BigDecimal?) {}
 }
 
@@ -872,7 +888,7 @@ fun SendBottomButtons(mod: Modifier, viewModel: SendScreenViewModel, unlockViewM
         if (isConfirming)
             IconTextButton(
               icon = Icons.AutoMirrored.Outlined.Send,
-              modifier = Modifier.weight(1f),
+              modifier = Modifier.weight(1f).testTag("SendBottomButtonConfirm"),
               description = i18n(S.confirmSend),
               color = wallyPurple,
             ) {
@@ -881,7 +897,7 @@ fun SendBottomButtons(mod: Modifier, viewModel: SendScreenViewModel, unlockViewM
         else
             IconTextButton(
               icon = Icons.Outlined.Send,
-              modifier = Modifier.weight(1f),
+              modifier = Modifier.weight(1f).testTag("SendBottomButtonSend"),
               description = i18n(S.Send),
               color = wallyPurple,
             ) {

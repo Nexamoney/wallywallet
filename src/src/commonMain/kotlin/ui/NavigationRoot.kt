@@ -805,7 +805,13 @@ fun NavigationRoot(
   accountPillViewModel: AccountPillViewModel = viewModel { AccountPill(wallyApp!!.focusedAccount) },
   assetViewModel: AssetViewModel = viewModel { AssetViewModel() },
   accountUiDataViewModel: AccountUiDataViewModel = viewModel { AccountUiDataViewModel() },
-  unlock: UnlockViewModel
+  unlock: UnlockViewModel,
+  /**
+   * Tests use this to inject a fake [SendScreenViewModelFake])
+   * so the Send/Confirm UI flow can be exercised
+   * without going through the real wallet.
+   */
+  sendScreenViewModel: SendScreenViewModel? = null,
 )
 {
     val audio = viewModel { AudioPlayerViewModel() }
@@ -1221,7 +1227,8 @@ fun NavigationRoot(
                                 }
 
                                 ScreenId.Send -> withAccount { act -> withSendNavParams {
-                                    SendScreen(accountPillViewModel,it,  viewModel { SendScreenViewModelImpl(accountPillViewModel.account.value ?: wallyApp!!.preferredVisibleAccount(), unlock) }, unlock)
+                                    val ssvm = sendScreenViewModel ?: viewModel { SendScreenViewModelImpl(act, unlock) }
+                                    SendScreen(accountPillViewModel, it, ssvm, unlock)
                                 } }
                                 ScreenId.Receive ->
                                 {

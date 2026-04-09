@@ -1055,7 +1055,7 @@ open class CommonApp(val runningTests: Boolean)
         val ac = try
         {
             val prehistoryDate = (epochMilliSeconds() / 1000L) - PREHISTORY_SAFEFTY_FACTOR // Set prehistory to 2 hours ago to account for block timestamp variations
-            Account(name, flags, chainSelector, startDate = prehistoryDate, startHeight = bc.curHeight)
+            AccountImpl(name, flags, chainSelector, startDate = prehistoryDate, startHeight = bc.curHeight)
         }
         catch (e: IllegalStateException)
         {
@@ -1131,7 +1131,7 @@ open class CommonApp(val runningTests: Boolean)
             if (txh.date < earliestDate) earliestDate = txh.date
         }
 
-        val ac = Account(name, flags, chainSelector, secretWords, earliestDate, earliestHeight, autoInit = false)
+        val ac = AccountImpl(name, flags, chainSelector, secretWords, earliestDate, earliestHeight, autoInit = false)
         accountLock.lock {  // We can show it early, although it might have the wrong data momentarily
                 accounts[name] = ac
             }
@@ -1201,7 +1201,7 @@ open class CommonApp(val runningTests: Boolean)
 
         // If I'm doing a recovery, the prehistory needs to be 1 block before the activity
         val eh = if (earliestHeight != null && earliestHeight > 0) earliestHeight - 1 else earliestHeight
-        val ac = Account(name, flags, chainSelector, secretWords, veryEarly, eh, retrieveOnlyActivity = nonstandardActivity)
+        val ac = AccountImpl(name, flags, chainSelector, secretWords, veryEarly, eh, retrieveOnlyActivity = nonstandardActivity)
         ac.encodedPin = epin
         ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
         ac.start()
@@ -1290,7 +1290,7 @@ open class CommonApp(val runningTests: Boolean)
                         val hasName = accountLock.lock { accounts.containsKey(name) }
                         if (!hasName)  // only create account if its not previously created
                         {
-                            val ac = Account(name, prefDB = preferenceDB)
+                            val ac = AccountImpl(name, prefDB = preferenceDB)
                             accounts[ac.name] = ac
                         }
                         LogIt.info(sourceLoc() + " " + name + ": Loaded account")
