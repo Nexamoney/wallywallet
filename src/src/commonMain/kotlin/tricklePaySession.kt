@@ -1332,7 +1332,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                 {
                     wallyApp?.assetManager?.track(groupInfo.groupId)
                     sendingTokenTypes++
-                    sendingTokenInfo[groupInfo.groupId] = (receivingTokenInfo[groupInfo.groupId] ?: 0) + groupInfo.tokenAmount
+                    sendingTokenInfo[groupInfo.groupId] = (sendingTokenInfo[groupInfo.groupId] ?: 0) + groupInfo.tokenAmount
                 }
             }
         }
