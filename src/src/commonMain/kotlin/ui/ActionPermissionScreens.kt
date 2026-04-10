@@ -421,7 +421,7 @@ fun SpecialTxPermScreen(sess: TricklePaySession, unlock: UnlockViewModel)
     Column(modifier = Modifier.fillMaxSize()) {
         Spacer(Modifier.height(16.dp))
         sess.pill.draw(false)
-        Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) {
+        Column(Modifier.fillMaxWidth().weight(1f).verticalScroll(rememberScrollState())) {
             Column(
               modifier = Modifier.fillMaxWidth(),
               horizontalAlignment = Alignment.CenterHorizontally
@@ -627,10 +627,9 @@ fun SpecialTxPermScreen(sess: TricklePaySession, unlock: UnlockViewModel)
             }
         }
 
-        Spacer(Modifier.weight(1f))
         // Bottom button row
         ButtonRowAcceptDeny({acceptProposal()}, { rejectProposal() },
-          Modifier.align(Alignment.CenterHorizontally).fillMaxWidth().background(Color.White), acceptEnabled = GuiCustomTxError == "")
+          Modifier.align(Alignment.CenterHorizontally).fillMaxWidth().wrapContentHeight().background(Color.White), acceptEnabled = GuiCustomTxError == "")
     }
 }
 
