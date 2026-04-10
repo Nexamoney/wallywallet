@@ -7,11 +7,22 @@ import dev.mokkery.mock
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.views.AssetViewModel
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.runComposeUiTest
+import info.bitcoinunlimited.www.wally.S
+import info.bitcoinunlimited.www.wally.i18n
+import info.bitcoinunlimited.www.wally.ui.SpecialTxPermScreen
 import info.bitcoinunlimited.www.wally.ui.views.UnlockViewModel
+import info.bitcoinunlimited.www.wally.wallyApp
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.assets.AssetInfo
 import org.nexa.libnexakotlin.*
 import kotlin.random.Random
+import org.nexa.libnexakotlin.ChainSelector
+import org.nexa.libnexakotlin.sourceLoc
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
@@ -115,6 +126,34 @@ class ActionPermissionScreensTest : WallyUiTestBase()
             // Verify accept and deny buttons are displayed
             onNodeWithText(i18n(S.accept)).assertIsDisplayed()
             onNodeWithText(i18n(S.deny)).assertIsDisplayed()
+        }
+        wallyApp!!.deleteAccount(account)
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun acceptAndDenyDisplayedWith40Assets() {
+        val account = try
+        {
+            wallyApp!!.newAccount("nexaTest1", 0U, "", cs)!!
+        }
+        catch (e: Exception)
+        {
+            println(sourceLoc() + ": ERROR creating nexaTest1: $e")
+            throw e
+        }
+        val unlockViewModel = UnlockViewModel(MutableStateFlow(account))
+        val tricklePaySession = tricklePaySessionFaker(account)
+
+
+        runComposeUiTest {
+            setContent {
+                SpecialTxPermScreen(tricklePaySession, unlockViewModel)
+            }
+            settle()
+
+            onNodeWithText(i18n(S.deny)).assertIsDisplayed()
+            onNodeWithText(i18n(S.accept)).assertIsDisplayed()
         }
         wallyApp!!.deleteAccount(account)
     }

@@ -27,8 +27,8 @@ import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.AssetOffer
-import info.bitcoinunlimited.www.wally.ui.setSelectedAccount
 import kotlinx.coroutines.flow.MutableStateFlow
+import info.bitcoinunlimited.www.wally.ui.views.AssetViewModel
 import org.nexa.assets.AssetInfo
 import org.nexa.assets.AssetPerAccount
 import org.nexa.assets.NexaNFTv2
@@ -48,6 +48,8 @@ import org.nexa.libnexakotlin.PayDestination
 import org.nexa.libnexakotlin.UnsecuredSecret
 import org.nexa.libnexakotlin.WalletDatabase
 import org.nexa.threads.iMutex
+import org.nexa.libnexakotlin.iTransaction
+import org.nexa.libnexakotlin.txFor
 import org.nexa.threads.millisleep
 import kotlin.test.Test
 
@@ -411,4 +413,63 @@ fun mockAccount(initialBalance: BigDecimal = BigDecimal.ZERO): Account
         every { genericElectrumNodeReqCount } returns 0
     }
     return mockAccount
+}
+
+fun assetInfoListFaker(amount: Int = 1): List<AssetInfo>
+{
+    val assets = mutableListOf<AssetInfo>()
+    for (i in 1..amount)
+    {
+        val groupIdData = ByteArray(420+i, { it.toByte() })
+        val groupId = GroupId(ChainSelector.NEXA, groupIdData)
+        val assetInfo = AssetInfo(groupId)
+        assetInfo.name = "mockAssetName + $i"
+        assets.add(assetInfo)
+    }
+    return assets.toList()
+}
+
+fun groupIdMapFaker(amount: Int = 1): Map<GroupId, Long>
+{
+    val map = mutableMapOf<GroupId, Long>()
+    for (i in 1..amount)
+    {
+        val groupIdData = ByteArray(420+i, { it.toByte() })
+        val groupId = GroupId(ChainSelector.NEXA, groupIdData)
+        map[groupId] = i.toLong()
+    }
+    return map.toMap()
+}
+
+fun tricklePaySessionFaker(account: Account): TricklePaySession
+{
+    val domains = TricklePayDomains()
+    val session = TricklePaySession(domains)
+    session.pill.account.value = account
+    val txMock: iTransaction = txFor(ChainSelector.NEXA)
+    session.proposedTx = txMock
+
+    val assetViewModel = AssetViewModel()
+    val assets = assetInfoListFaker(40)
+    assetViewModel.assets.value = assets
+
+    val analysis = TxAnalysisResults(
+      account,
+      42,
+      42,
+      42,
+      42,
+      42,
+      42,
+      42,
+      groupIdMapFaker(4),
+      groupIdMapFaker(4),
+      groupIdMapFaker(4),
+      groupIdMapFaker(4),
+      assetViewModel,
+      null
+    )
+    session.proposalAnalysis.value = analysis
+
+    return session
 }
