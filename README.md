@@ -226,7 +226,7 @@ koverXmlReportJvm runs jvmTest as a child job
 ./gradlew :src:koverXmlReportJvm
 ```
 
-The coverage report is written to `src/build/reports/kover/reportJvm.xmll`
+The coverage report is written to `src/build/reports/kover/reportJvm.xml`
 
 #### Trigger iOS background processing task from Xcode
 Physical device is required. Background processing is not supported in emulator
