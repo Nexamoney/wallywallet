@@ -2,10 +2,20 @@
 
 package info.bitcoinunlimited.www.wally.ui
 
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
@@ -16,19 +26,38 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorProducer
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalFontFamilyResolver
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.TextMeasurer
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.fastJoinToString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import info.bitcoinunlimited.www.wally.*
@@ -37,12 +66,16 @@ import kotlinx.coroutines.Dispatchers
 import info.bitcoinunlimited.www.wally.ui.theme.WallyDivider
 import info.bitcoinunlimited.www.wally.ui.views.*
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.jetbrains.skia.Bitmap
 import org.nexa.libnexakotlin.*
+import org.nexa.threads.millinow
 import org.nexa.threads.millisleep
+import kotlin.random.Random
 
 enum class AccountAction
 {
@@ -934,46 +967,144 @@ fun AccountDetailPinInput(description: String, placeholder: String, currentPin: 
     }
 }
 
+@OptIn(ExperimentalTextApi::class)
+fun renderTextToBitmap(text: String, fontSize: TextUnit, width: Int, height: Int, fonts:  FontFamily.Resolver, brush: Brush): ImageBitmap
+{
+      val imageBitmap = ImageBitmap(width, height)
+      val canvas = Canvas(imageBitmap)
+
+      val density = Density(1f)
+      val textMeasurer = TextMeasurer(
+        defaultFontFamilyResolver = fonts,
+        defaultDensity = density,
+        defaultLayoutDirection = LayoutDirection.Ltr)
+
+      CanvasDrawScope().draw(
+          density = density,
+          layoutDirection = LayoutDirection.Ltr,
+          canvas = canvas,
+          size = Size(width.toFloat(), height.toFloat()),
+      ) {
+          drawText(
+              textMeasurer = textMeasurer,
+              text = text,
+              style = TextStyle(brush = brush, fontSize = fontSize),
+              topLeft = Offset(0f, 0f),
+          )
+      }
+      return imageBitmap
+  }
+
+@Composable fun ShowRecoveryPhrase(phraseBitmap: ImageBitmap, actualPhrase: String)
+{
+    val secretStyle = remember { TextStyle.Default.copy(fontFamily = FontFamily.Monospace, fontSize = 18.sp) }
+    var onOff by remember { mutableStateOf(true) }
+    val flickerSecretPhrase = experimentalUI.collectAsState().value
+
+    if (flickerSecretPhrase)  // Turn off the flickering phrase security feature by default
+    {
+        LaunchedEffect(Unit) {
+            var i = 0
+            while (true)
+            {
+                for (j in 0 until 8)
+                {
+                    i = 0
+                    while (i < 6)
+                    {
+                        withFrameNanos {
+                            if (i == 0) onOff = true
+                            else onOff = false
+                            i++
+                        }
+                    }
+                }
+                // Every so often, turn off for a random amount, to make it hard to anticipate when to take a photo
+                delay(Random.nextLong(500, 2500))
+            }
+        }
+
+        //BasicText(if (onOff) actualPhrase else "", style = secretStyle, minLines = 3, color = phraseColor)
+        Canvas(Modifier) {
+            if (onOff)
+            {
+                drawImage(phraseBitmap)
+            }
+        }
+    }
+    else
+    {
+        BasicText(if (onOff) actualPhrase else "", style = secretStyle, minLines = 3)
+    }
+
+}
+
+
 @Composable
 fun RecoveryPhraseView(account: Account, done: () -> Unit)
 {
-    Column(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        GeneralWarningCard(
-          Icons.Default.Warning
-        ) {
-            Text(
-              i18n(S.recoveryPhrase),
-              style = MaterialTheme.typography.bodySmall
-            )
-        }
-        var copied by remember { mutableStateOf(false) }
 
-        val clickable = Modifier.clickable {
-            setTextClipboard(account.wallet.secretWords.getSecret().decodeUtf8())
-            copied = true
+    val flickerSecretPhrase = experimentalUI.collectAsState().value
+    val phraseCardColors = if (flickerSecretPhrase) CardDefaults.cardColors().copy(containerColor = Color.Black, Color.White)  // maximize visual persistence with strong contrast
+       else CardDefaults.cardColors()
+
+    // Format the phrase as 3 lines of 4 words because its easier to copy it in chunks like this
+    var actualPhrase by remember(account) {
+        val ss = account.wallet.secretWords.getSecret().decodeUtf8()
+        val ssformatted = ss.split(" ").chunked(4).fastJoinToString("\n") { it.fastJoinToString(" ") }
+        mutableStateOf(ssformatted)
+    }
+    val ffResolver = LocalFontFamilyResolver.current
+    val phraseBitmap = remember(actualPhrase) {
+        val brush = Brush.linearGradient(listOf(Color.White, Color.White))
+        renderTextToBitmap(actualPhrase, 52.sp, 800, 300, ffResolver, brush)
+    }
+
+    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+        var copied by remember(account) { mutableStateOf(false) }
+        // If the user tries to copy/paste, highlight the do not copy/paste warning.
+        var warningColor by remember(account) { mutableStateOf(Color.Black) }
+        GeneralWarningCard(Icons.Default.Warning) {
+            if (copied)
+            {
+                Text(i18n(S.PastingRecoveryPhraseIsBadIdea), color = Color.Red, modifier = Modifier.padding(8.dp))
+            }
+            else
+            {
+                Text(i18n(S.recoveryWarning),
+                  style = MaterialTheme.typography.bodyMedium,
+                  textAlign = TextAlign.Center,
+                  color = warningColor,
+                  minLines = 3,
+                  maxLines = 5)
+                Text(i18n(S.recoveryPhrase), style = MaterialTheme.typography.bodySmall)
+            }
         }
-        SelectionContainer {
-            Card(
-              modifier = clickable.fillMaxWidth()
-                .padding(vertical = 16.dp),
-              elevation = CardDefaults.cardElevation(4.dp)
-            ) {
-                Column(
-                  modifier = clickable
-                    .padding(16.dp)
-                ) {
-                    Text(
-                      text = account.wallet.secretWords.getSecret().decodeUtf8(),
-                      fontFamily = FontFamily.Monospace,
-                      fontSize = 18.sp,
-                      modifier = clickable.padding(vertical = 2.dp)
-                    )
+
+        val clickable = Modifier.clickable(
+          // Disable on click ripple effect when copying (dev mode) is disabled.
+          remember { MutableInteractionSource() },
+          indication = if (devMode) LocalIndication.current else null,
+        ) {
+            if (devMode || (!account.chain.chainSelector.isMainNet)) // Only allow copy to clipboard in developer mode or non-mainnet
+            {
+                setTextClipboard(account.wallet.secretWords.getSecret().decodeUtf8())
+                copied = true
+            }
+            warningColor = Color.Red  // If the user tries to copy/paste
+        }
+
+        SecureWhileVisible {
+            Card(modifier = clickable.fillMaxWidth().padding(12.dp, 4.dp, 12.dp, 4.dp),
+              colors = phraseCardColors,
+              elevation = CardDefaults.cardElevation(4.dp)) {
+                Box(modifier = Modifier.fillMaxWidth().height(100.dp).padding(12.dp, 8.dp, 0.dp, 8.dp)) {
+                    ShowRecoveryPhrase(phraseBitmap, actualPhrase)
                 }
             }
         }
+        if (flickerSecretPhrase) Text(i18n(S.flickerReason), style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
+
         Row(
           modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.SpaceEvenly,
@@ -996,10 +1127,6 @@ fun RecoveryPhraseView(account: Account, done: () -> Unit)
                   done()
               }
             )
-        }
-        if (copied)
-        {
-            Text(i18n(S.PastingRecoveryPhraseIsBadIdea), color = Color.Red, modifier = Modifier.padding(8.dp))
         }
     }
 }

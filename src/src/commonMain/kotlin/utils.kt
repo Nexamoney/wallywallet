@@ -601,6 +601,10 @@ expect fun isUiThread(): Boolean
 /** Access a file from the resource area */
 // expect fun readResourceFile(filename: String): InputStream
 
+/** Prevent screenshots and casting, may not be available on particular platforms.
+ * If not available content() MUST still be executed. */
+@Composable expect fun SecureWhileVisible(content: @Composable () -> Unit)
+
 @Composable expect fun isImeVisible(): Boolean
 
 @Composable expect fun getImeHeight(): Dp

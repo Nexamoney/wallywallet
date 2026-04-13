@@ -1,10 +1,23 @@
+@file:OptIn(ExperimentalForeignApi::class)
+
 package info.bitcoinunlimited.www.wally
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.UIKitView
+import androidx.compose.ui.window.ComposeUIViewController
 import io.ktor.client.*
 import io.ktor.client.engine.darwin.Darwin
 import io.ktor.client.plugins.*
@@ -98,13 +111,116 @@ actual fun applicationState(): ApplicationState
     return ApplicationState(cvt)
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable actual fun SecureWhileVisible(content: @Composable () -> Unit)
+{
+    val composeController = remember {
+        ComposeUIViewController(configure = {
+            opaque = false
+        }) {
+            content()
+        }.also {
+            it.view.backgroundColor = UIColor.whiteColor
+        }
+    }
+
+    UIKitView(factory = {
+          val view = SecureContainerView(composeController)
+          view.backgroundColor = UIColor.whiteColor
+          view
+      },
+      // TODO: this should be set to the content's size but we need that to be reported
+      modifier = Modifier.fillMaxWidth().height(120.dp),
+      update = { view -> view.setComposeController(composeController) })
+
+    DisposableEffect(composeController) {
+        onDispose {
+            composeController.willMoveToParentViewController(null)
+            composeController.view.removeFromSuperview()
+            composeController.removeFromParentViewController()
+        }
+    }
+}
+
+private class SecureContainerView(composeController: UIViewController):
+  UIView(frame = platform.CoreGraphics.CGRectZero.readValue())
+{
+    private val secureTextField = UITextField(frame = platform.CoreGraphics.CGRectZero.readValue())
+    private var currentComposeController: UIViewController? = null
+    private var secureCanvas: UIView? = null
+
+    init {
+        secureTextField.secureTextEntry = true
+        secureTextField.userInteractionEnabled = false
+        secureTextField.backgroundColor = null
+        secureTextField.borderStyle = UITextBorderStyle.UITextBorderStyleNone
+        secureTextField.translatesAutoresizingMaskIntoConstraints = false
+
+        addSubview(secureTextField)
+
+        NSLayoutConstraint.activateConstraints(
+          listOf(
+            secureTextField.topAnchor.constraintEqualToAnchor(topAnchor),
+            secureTextField.bottomAnchor.constraintEqualToAnchor(bottomAnchor),
+            secureTextField.leadingAnchor.constraintEqualToAnchor(leadingAnchor),
+            secureTextField.trailingAnchor.constraintEqualToAnchor(trailingAnchor),
+          )
+        )
+
+        // The internal secure-rendered container is not public API.
+        // In practice, most implementations use the first subview.
+        for (v in secureTextField.subviews())
+        {
+            val tmp = v as? UIView
+            if (tmp != null) { secureCanvas = tmp; break }
+        }
+
+        secureCanvas?.let { canvas ->
+            canvas.translatesAutoresizingMaskIntoConstraints = false
+            canvas.userInteractionEnabled = false
+
+            NSLayoutConstraint.activateConstraints(
+              listOf(
+                canvas.topAnchor.constraintEqualToAnchor(topAnchor),
+                canvas.bottomAnchor.constraintEqualToAnchor(bottomAnchor),
+                canvas.leadingAnchor.constraintEqualToAnchor(leadingAnchor),
+                canvas.trailingAnchor.constraintEqualToAnchor(trailingAnchor),
+              )
+            )
+        }
+        setComposeController(composeController)
+    }
+
+    fun setComposeController(composeController: UIViewController)
+    {
+        if (currentComposeController === composeController) return
+        currentComposeController?.view?.removeFromSuperview()
+        currentComposeController?.removeFromParentViewController()
+        currentComposeController = composeController
+
+        val target = secureCanvas ?: this
+        val composeView = composeController.view
+        composeView.translatesAutoresizingMaskIntoConstraints = false
+        target.addSubview(composeView)
+
+        NSLayoutConstraint.activateConstraints(
+          listOf(
+            composeView.topAnchor.constraintEqualToAnchor(target.topAnchor),
+            composeView.bottomAnchor.constraintEqualToAnchor(target.bottomAnchor),
+            composeView.leadingAnchor.constraintEqualToAnchor(target.leadingAnchor),
+            composeView.trailingAnchor.constraintEqualToAnchor(target.trailingAnchor),
+          )
+        )
+    }
+}
+
 actual fun platformRam():Long?
 {
     val mem = NSProcessInfo.processInfo.physicalMemory
     return mem.toLong()
 }
 
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 fun ByteArray.toNSData(): NSData
 {
     return usePinned { pinned ->
@@ -280,15 +396,19 @@ actual fun isImeVisible(): Boolean
     return 0.dp
 }
 
-actual fun openUrl(url: String) {
+actual fun openUrl(url: String)
+{
     val nsUrl = NSURL(string = url)
-    if (nsUrl != null) {
+    if (true)
+    {
         UIApplication.sharedApplication.openURL(nsUrl, options = emptyMap<Any?, Any>()) { success ->
-            if (!success) {
+            if (!success)
+            {
                 println("Failed to open URL: $url")
             }
         }
-    } else {
+    } else
+    {
         println("Invalid URL: $url")
     }
 }
@@ -308,7 +428,8 @@ internal fun UIImage.toSkiaImage(): Image?
     val length = CFDataGetLength(data)
     val alphaInfo = CGImageGetAlphaInfo(imageRef)
 
-    val alphaType = when (alphaInfo) {
+    val alphaType = when (alphaInfo)
+    {
         CGImageAlphaInfo.kCGImageAlphaPremultipliedFirst, CGImageAlphaInfo.kCGImageAlphaPremultipliedLast -> ColorAlphaType.PREMUL
         CGImageAlphaInfo.kCGImageAlphaFirst, CGImageAlphaInfo.kCGImageAlphaLast -> ColorAlphaType.UNPREMUL
         CGImageAlphaInfo.kCGImageAlphaNone, CGImageAlphaInfo.kCGImageAlphaNoneSkipFirst, CGImageAlphaInfo.kCGImageAlphaNoneSkipLast -> ColorAlphaType.OPAQUE

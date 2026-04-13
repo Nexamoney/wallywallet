@@ -1243,7 +1243,7 @@ fun NavigationRoot(
 
                                 ScreenId.Settings -> SettingsScreen()
                                 ScreenId.AccountDetails -> withUnlockedAccount {
-                                    val asvm = AccountStatisticsViewModel(it)
+                                    val asvm = viewModel { AccountStatisticsViewModel(accountPillViewModel.account) }
                                     AccountDetailScreen(asvm, accountPillViewModel)
                                 }
                                 ScreenId.Assets -> withAccount { AssetScreen(it) {

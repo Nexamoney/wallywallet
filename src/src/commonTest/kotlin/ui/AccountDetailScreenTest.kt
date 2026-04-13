@@ -1,6 +1,7 @@
 package ui
 
 import androidx.compose.ui.test.*
+import androidx.compose.ui.util.fastJoinToString
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.AccountDetailScreen
 import info.bitcoinunlimited.www.wally.ui.AccountStatisticsViewModelFake
@@ -103,35 +104,45 @@ class AccountDetailScreenTest:WallyUiTestBase()
     @Test
     fun viewRecoveryPhraseAndCopyToClipBoardTest()
     {
-        val cs = ChainSelector.NEXA
-        val account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
-        val mnemonic = account.wallet.secretWords.getSecret().decodeUtf8()
+        listOf(ChainSelector.NEXATESTNET, ChainSelector.NEXA).forEach { cs ->
+            val account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
+            val mnemonic = account.wallet.secretWords.getSecret().decodeUtf8()
+            val mnemonicFormatted = mnemonic.split(" ").chunked(4).fastJoinToString("\n") { it.fastJoinToString(" ") }
 
-        runComposeUiTest {
-            /*
-                Set selected account to populate the UI
-            */
-            setSelectedAccount(account)
+            runComposeUiTest {
+                // Set selected account to populate the UI
+                setSelectedAccount(account)
 
-            val ap = AccountPillViewModelFake(MutableStateFlow(account))
-            val accountStatsViewModel = AccountStatisticsViewModelFake(account)
+                val ap = AccountPillViewModelFake(MutableStateFlow(account))
+                val accountStatsViewModel = AccountStatisticsViewModelFake(account)
 
-            setContent {
-                AccountDetailScreen(accountStatsViewModel, ap)
+                setContent {
+                    AccountDetailScreen(accountStatsViewModel, ap)
+                }
+                settle()
+
+                onNodeWithText(i18n(S.ViewRecoveryPhrase)).assertIsDisplayed()
+                onNodeWithText(i18n(S.ViewRecoveryPhrase)).performClick()
+                onNodeWithText(i18n(S.recoveryPhrase)).assertIsDisplayed()
+                onNodeWithText(mnemonicFormatted).assertIsDisplayed()
+                onNodeWithText(mnemonicFormatted).performClick()
+                if (devMode || (cs != ChainSelector.NEXA))
+                {
+                    onNodeWithText(i18n(S.PastingRecoveryPhraseIsBadIdea)).performScrollTo()
+                    onNodeWithText(i18n(S.PastingRecoveryPhraseIsBadIdea)).assertIsDisplayed()
+                }
+                else
+                {
+                    // The code actually changes the color of this text when the recovery phrase is clicked.
+                    // However testing that is onerous, so let us be content with verifying that it is displayed.
+                    onNodeWithText(i18n(S.recoveryWarning)).performScrollTo()
+                    onNodeWithText(i18n(S.recoveryWarning)).assertIsDisplayed()
+                }
+                onNodeWithText(i18n(S.WroteRecoveryPhraseDown)).performClick()
+                onNodeWithText(i18n(S.ViewRecoveryPhrase)).assertIsDisplayed()
             }
-            settle()
 
-            onNodeWithText(i18n(S.ViewRecoveryPhrase)).assertIsDisplayed()
-            onNodeWithText(i18n(S.ViewRecoveryPhrase)).performClick()
-            onNodeWithText(i18n(S.recoveryPhrase)).assertIsDisplayed()
-            onNodeWithText(mnemonic).assertIsDisplayed()
-            onNodeWithText(mnemonic).performClick()
-            onNodeWithText(i18n(S.PastingRecoveryPhraseIsBadIdea)).performScrollTo()
-            onNodeWithText(i18n(S.PastingRecoveryPhraseIsBadIdea)).assertIsDisplayed()
-            onNodeWithText(i18n(S.WroteRecoveryPhraseDown)).performClick()
-            onNodeWithText(i18n(S.ViewRecoveryPhrase)).assertIsDisplayed()
+            wallyApp!!.deleteAccount(account)
         }
-
-        wallyApp!!.deleteAccount(account)
     }
 }

@@ -1,5 +1,8 @@
+@file:OptIn(BetaInteropApi::class)
+
 package org.nexa.assets
 
+import kotlinx.cinterop.BetaInteropApi
 import okio.BufferedSink
 import okio.FileSystem
 import okio.Path
