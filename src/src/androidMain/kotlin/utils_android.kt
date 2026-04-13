@@ -1,19 +1,23 @@
 package info.bitcoinunlimited.www.wally
 
+import android.app.Activity
 import android.app.ActivityManager
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE
+import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -280,7 +284,28 @@ actual fun getResourceFile(name: String): BufferedSource
         (imeHeight / density).dp
 }
 
-actual fun openUrl(url: String) {
+@Composable actual fun SecureWhileVisible(content: @Composable () -> Unit)
+{
+    val view = LocalView.current
+
+    DisposableEffect(Unit) {
+        val activity = generateSequence(view.context) { context ->
+            (context as? ContextWrapper)?.baseContext
+        }.filterIsInstance<Activity>()
+          .firstOrNull()
+
+        val window = activity?.window
+        window?.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+
+        onDispose {
+            window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
+        }
+    }
+    content()
+}
+
+actual fun openUrl(url: String)
+{
     val appContext:Context? = wallyAndroidApp as? Context //  currentActivity?.applicationContext
     if (appContext!=null)
     {

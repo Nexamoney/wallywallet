@@ -285,6 +285,11 @@ actual fun platformNotification(message:String, title: String?, onclickUrl:Strin
 
 @Composable actual fun getImeHeight(): Dp = 0.dp
 
+@Composable actual fun SecureWhileVisible(content: @Composable () -> Unit)
+{
+    content()
+}
+
 actual fun openUrl(url: String) {
     try {
         if (Desktop.isDesktopSupported()) {
