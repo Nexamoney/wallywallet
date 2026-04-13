@@ -144,6 +144,18 @@ fun assetPerAccountFaker(): AssetPerAccount
     return AssetPerAccount(groupInfo, assetInfo, null)
 }
 
+fun assetPerAccountFaker(name: String, title: String, series: String, author: String, amount: Long = 200L, seed: Int = 0, license: String? = null, info: String = "info"): AssetPerAccount
+{
+    val groupIdData = ByteArray(520) { ((it + seed) % 256).toByte() }
+    val groupId = GroupId(ChainSelector.NEXA, groupIdData)
+    val assetInfo = AssetInfo(groupId)
+    assetInfo.name = name
+    assetInfo.docUrl = "mock.pages.dev"
+    assetInfo.nft = NexaNFTv2("niftyVer", title, series, author, listOf(), "appUri", info, license = license)
+    val groupInfo = GroupInfo(groupId, amount)
+    return AssetPerAccount(groupInfo, assetInfo, null)
+}
+
 fun uniqueAssetPerAccountFaker(): AssetPerAccount
 {
     val groupIdData = ByteArray(520, { it.toByte() })
@@ -253,7 +265,7 @@ class InMemoryPrefs : SharedPreferences
 *     ordinary value object — not an account) so the receive screen has a non-null
 *     address to render and copy to the clipboard.
  */
-fun mockAccount(initialBalance: BigDecimal = BigDecimal.ZERO): Account
+fun mockAccount(initialBalance: BigDecimal = BigDecimal.ZERO, initialAssets: Map<GroupId, AssetPerAccount> = emptyMap()): Account
 {
     // Real PayDestination — just a value object, not linked to an account. Provides a non-null address
     val ownDest: PayDestination = Pay2PubKeyTemplateDestination(
@@ -316,7 +328,7 @@ fun mockAccount(initialBalance: BigDecimal = BigDecimal.ZERO): Account
         val syncedDateFlow = MutableStateFlow(0L)
         val fastForwardStatusFlow = MutableStateFlow<String?>(null)
         val fiatPerCoinFlow = MutableStateFlow(BigDecimal.ZERO)
-        val assetsFlow = MutableStateFlow<Map<GroupId, AssetPerAccount>>(emptyMap())
+        val assetsFlow = MutableStateFlow(initialAssets)
 
         val nexaFormat = DecimalFormat("##,###,###,###,##0.00")
 
@@ -354,11 +366,11 @@ fun mockAccount(initialBalance: BigDecimal = BigDecimal.ZERO): Account
         every { fastForwardStatusState } returns fastForwardStatusFlow
 
         // Assets
-        every { assets } returns emptyMap()
+        every { assets } calls { assetsFlow.value }
         every { assetsObservable } returns assetsFlow
         every { assetTransferList } returns mutableListOf()
-        every { hasAssets() } returns false
-        every { assetList() } returns mutableListOf()
+        every { hasAssets() } calls { assetsFlow.value.isNotEmpty() }
+        every { assetList() } calls { assetsFlow.value.values.toMutableList() }
         every { clearAssetTransferList() } returns 0
         every { addAssetToTransferList(any(), any()) } returns false
 
