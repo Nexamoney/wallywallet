@@ -24,11 +24,15 @@ import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
 import dev.mokkery.every
 import dev.mokkery.matcher.any
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.CallMade
+import androidx.compose.material.icons.automirrored.outlined.CallReceived
 import dev.mokkery.mock
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.AssetOffer
 import kotlinx.coroutines.flow.MutableStateFlow
 import info.bitcoinunlimited.www.wally.ui.views.AssetViewModel
+import info.bitcoinunlimited.www.wally.ui.views.RecentTransactionUIData
 import org.nexa.assets.AssetInfo
 import org.nexa.assets.AssetPerAccount
 import org.nexa.assets.NexaNFTv2
@@ -49,6 +53,8 @@ import org.nexa.libnexakotlin.UnsecuredSecret
 import org.nexa.libnexakotlin.WalletDatabase
 import org.nexa.threads.iMutex
 import org.nexa.libnexakotlin.iTransaction
+import org.nexa.libnexakotlin.txFor
+import org.nexa.libnexakotlin.TransactionHistory
 import org.nexa.libnexakotlin.txFor
 import org.nexa.threads.millisleep
 import kotlin.test.Test
@@ -127,6 +133,39 @@ class UtilsTest:WallyUiTestBase()
             settle()
         }
     }
+}
+
+fun createAssetInfo(name: String, docUrl: String?, nft: NexaNFTv2? = null): AssetInfo
+{
+    val groupIdData = ByteArray(520) { it.toByte() }
+    val groupId = GroupId(ChainSelector.NEXA, groupIdData)
+    val assetInfo = AssetInfo(groupId)
+    assetInfo.name = name
+    assetInfo.docUrl = docUrl
+    assetInfo.nft = nft
+    return assetInfo
+}
+
+fun createAssetPerAccount(assetInfo: AssetInfo, tokenAmount: Long): AssetPerAccount
+{
+    val groupInfo = GroupInfo(assetInfo.groupId, tokenAmount)
+    return AssetPerAccount(groupInfo, assetInfo)
+}
+
+fun createRecentTransactionUIData(type: String = "Received", amount: String = "100.00", date: String = ""): RecentTransactionUIData
+{
+    val tx = txFor(ChainSelector.NEXA)
+    val txHistory = TransactionHistory(ChainSelector.NEXA, tx)
+    return RecentTransactionUIData(
+        transaction = txHistory,
+        type = type,
+        icon = if (type == "Received") Icons.AutoMirrored.Outlined.CallReceived else Icons.AutoMirrored.Outlined.CallMade,
+        contentDescription = "$type transaction",
+        amount = amount,
+        currency = "NEXA",
+        dateEpochMiliseconds = 0L,
+        date = date,
+    )
 }
 
 fun assetPerAccountFaker(): AssetPerAccount
