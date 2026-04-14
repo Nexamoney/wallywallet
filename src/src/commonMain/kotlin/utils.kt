@@ -605,6 +605,10 @@ expect fun isUiThread(): Boolean
  * If not available content() MUST still be executed. */
 @Composable expect fun SecureWhileVisible(content: @Composable () -> Unit)
 
+// iOS UIKitView requires UIKit interop in SecureWhileVisible which is not available in the test runner.
+// Tests set secureViewEnabled = false to skip the UIKit secure container.
+var secureViewEnabled = true
+
 @Composable expect fun isImeVisible(): Boolean
 
 @Composable expect fun getImeHeight(): Dp
