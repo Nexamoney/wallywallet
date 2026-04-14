@@ -114,6 +114,13 @@ actual fun applicationState(): ApplicationState
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable actual fun SecureWhileVisible(content: @Composable () -> Unit)
 {
+    // iOS UIKitView requires UIKit interop which is not available in the test runner.
+    // Tests set secureViewEnabled = false to skip the UIKit secure container.
+    if (!secureViewEnabled) {
+        content()
+        return
+    }
+
     val composeController = remember {
         ComposeUIViewController(configure = {
             opaque = false

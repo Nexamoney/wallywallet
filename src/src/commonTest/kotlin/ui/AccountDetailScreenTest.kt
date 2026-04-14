@@ -104,6 +104,8 @@ class AccountDetailScreenTest:WallyUiTestBase()
     @Test
     fun viewRecoveryPhraseAndCopyToClipBoardTest()
     {
+        secureViewEnabled = false
+
         listOf(ChainSelector.NEXATESTNET, ChainSelector.NEXA).forEach { cs ->
             val account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
             val mnemonic = account.wallet.secretWords.getSecret().decodeUtf8()
