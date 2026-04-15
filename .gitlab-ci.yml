@@ -243,6 +243,9 @@ jvmTest-ubuntu-docker:
   artifacts:
     reports:
       junit: src/build/test-results/jvmTest/TEST-*.xml
+    when: always
+    paths:
+      - build/reports/problems/problems-report.html
 
 jvmTest-m1: #
   <<: *skip-on-schedule
