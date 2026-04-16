@@ -304,11 +304,11 @@ class InMemoryPrefs : SharedPreferences
 *     ordinary value object — not an account) so the receive screen has a non-null
 *     address to render and copy to the clipboard.
  */
-fun mockAccount(initialBalance: BigDecimal = BigDecimal.ZERO, initialAssets: Map<GroupId, AssetPerAccount> = emptyMap()): Account
+fun mockAccount(initialBalance: BigDecimal = BigDecimal.ZERO, initialAssets: Map<GroupId, AssetPerAccount> = emptyMap(), chainSelector: ChainSelector = ChainSelector.NEXA): Account
 {
     // Real PayDestination — just a value object, not linked to an account. Provides a non-null address
     val ownDest: PayDestination = Pay2PubKeyTemplateDestination(
-      ChainSelector.NEXA,
+      chainSelector,
       UnsecuredSecret(ByteArray(32) { 1.toByte() }),
       1234,
     )
@@ -343,7 +343,7 @@ fun mockAccount(initialBalance: BigDecimal = BigDecimal.ZERO, initialAssets: Map
     // AccountImpl is involved — these are bare libnexakotlin instances built
     // the same way the libnexakotlin factory functions would build them.
     val dummyChain = Blockchain(
-      ChainSelector.NEXA,
+      chainSelector,
       "test",
       cnxnMgr,
       Hash256(),
@@ -354,7 +354,7 @@ fun mockAccount(initialBalance: BigDecimal = BigDecimal.ZERO, initialAssets: Map
       "",
       false,
     )
-    val dummyWallet = Bip44Wallet("mockSelfSendWallet", ChainSelector.NEXA, walletDb)
+    val dummyWallet = Bip44Wallet("mockSelfSendWallet", chainSelector, walletDb)
     // Wire the wallet to the blockchain — same as AccountImpl's init does.
     dummyWallet.usesChain(dummyChain)
 

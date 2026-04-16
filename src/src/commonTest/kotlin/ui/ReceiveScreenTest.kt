@@ -44,7 +44,7 @@ class ReceiveScreenTest:WallyUiTestBase(false)
     {
         LogIt.info("TEST receiveScreenContentTest")
         //val account = wallyApp!!.newAccount("receiveScreenContentTest", 0U, "", cs)!!
-        val account = AccountImpl("rcvScrnContent", chainSelector = cs)
+        val account = mockAccount(chainSelector = cs)
         val actFlow = MutableStateFlow<Account?>(account)
         val address = Pay2PubKeyTemplateDestination(ChainSelector.NEXAREGTEST, UnsecuredSecret(ByteArray(32, { 1.toByte()})), 1234)
         val pill = AccountPill(actFlow)
