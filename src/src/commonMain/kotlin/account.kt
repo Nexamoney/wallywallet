@@ -143,6 +143,10 @@ interface Account
     // ----- Misc state -----
     var genericElectrumNodeReqCount: Int
 
+    // ----- wallet / chain -----
+
+    fun getRecoveryPhrase(): String
+
     // ----- Lifecycle / async -----
     fun asyncInit(startHeight: Long?, startDate: Long?)
     fun saveAccountPin(epin: ByteArray?)
@@ -542,6 +546,12 @@ class AccountImpl(
         }
         genericElectrumNodeReqCount++
         return ElectrumServerOn(cs)
+    }
+
+    /** Get the 12 word mnemonic key secret as a string */
+    override fun getRecoveryPhrase(): String
+    {
+        return wallet.secretWords.getSecret().decodeUtf8()
     }
 
     /** Get the locking PIN from storage */

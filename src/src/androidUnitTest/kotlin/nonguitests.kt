@@ -354,7 +354,7 @@ class NonGuiTests
 
         // Ok, now let's recover this account into new accounts and compare
         println("Recovering from ${blkStart-1}")
-        val a1 = wallyApp!!.recoverAccount("a1", 0U, "", account.wallet.secretWords.getSecret().decodeUtf8(), cs, null, blkStart-1, null)
+        val a1 = wallyApp!!.recoverAccount("a1", 0U, "", account.getRecoveryPhrase(), cs, null, blkStart-1, null)
         waitFor(TIMEOUT, { a1.wallet.synced() }, { "a1 sync unsuccessful" })
         val a1Stat = a1.wallet.statistics()
         LogIt.info("calculated balance: $amtInWallet")
@@ -386,9 +386,9 @@ class NonGuiTests
         check(srchResults.txh.size == NUM_REPEATS*3 + 1)
         check(srchResults.addrCount > NUM_REPEATS*2 + 1)
 
-        val a2 = wallyApp!!.recoverAccount("a2", 0U, "", account.wallet.secretWords.getSecret().decodeUtf8(), cs, srchResults.txh.values.toList(), srchResults.addresses, ectip, srchResults.addrCount.toInt())
+        val a2 = wallyApp!!.recoverAccount("a2", 0U, "", account.getRecoveryPhrase(), cs, srchResults.txh.values.toList(), srchResults.addresses, ectip, srchResults.addrCount.toInt())
 
-        val a3 = wallyApp!!.recoverAccount("a3", 0U, "", account.wallet.secretWords.getSecret().decodeUtf8(), cs, srchResults.txh.values.toList(), srchResults.addresses, ectip, srchResults.addrCount.toInt())
+        val a3 = wallyApp!!.recoverAccount("a3", 0U, "", account.getRecoveryPhrase(), cs, srchResults.txh.values.toList(), srchResults.addresses, ectip, srchResults.addrCount.toInt())
         fastForwardAccount(a3)
 
         waitFor(TIMEOUT, { a2.wallet.synced(nowBlock) }, { "a2 sync unsuccessful" })

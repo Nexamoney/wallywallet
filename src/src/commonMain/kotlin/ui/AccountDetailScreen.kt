@@ -2,13 +2,7 @@
 
 package info.bitcoinunlimited.www.wally.ui
 
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.keyframes
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -17,7 +11,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -26,19 +19,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorProducer
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalFontFamilyResolver
 import androidx.compose.ui.platform.testTag
@@ -47,7 +37,6 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -71,10 +60,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.jetbrains.skia.Bitmap
 import org.nexa.libnexakotlin.*
-import org.nexa.threads.millinow
-import org.nexa.threads.millisleep
 import kotlin.random.Random
 
 enum class AccountAction
@@ -255,7 +241,7 @@ open class AccountStatisticsViewModel(val account:MutableStateFlow<Account?>) : 
             laterJob {
                 aborter.obj = true  // abort any old searches
                 aborter = Objectify<Boolean>(false)
-                val ret = rediscoverPeekActivity(wal.secretWords.getSecret().decodeUtf8(), wal.chainSelector, aborter)
+                val ret = rediscoverPeekActivity(acc.getRecoveryPhrase(), wal.chainSelector, aborter)
                 if (ret != null)
                 {
                     val (time, height) = ret
@@ -1050,7 +1036,7 @@ fun RecoveryPhraseView(account: Account, done: () -> Unit)
 
     // Format the phrase as 3 lines of 4 words because its easier to copy it in chunks like this
     var actualPhrase by remember(account) {
-        val ss = account.wallet.secretWords.getSecret().decodeUtf8()
+        val ss = account.getRecoveryPhrase()
         val ssformatted = ss.split(" ").chunked(4).fastJoinToString("\n") { it.fastJoinToString(" ") }
         mutableStateOf(ssformatted)
     }
@@ -1088,7 +1074,7 @@ fun RecoveryPhraseView(account: Account, done: () -> Unit)
         ) {
             if (devMode || (!account.chain.chainSelector.isMainNet)) // Only allow copy to clipboard in developer mode or non-mainnet
             {
-                setTextClipboard(account.wallet.secretWords.getSecret().decodeUtf8())
+                setTextClipboard(account.getRecoveryPhrase())
                 copied = true
             }
             warningColor = Color.Red  // If the user tries to copy/paste
