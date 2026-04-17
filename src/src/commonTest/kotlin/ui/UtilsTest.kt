@@ -55,7 +55,6 @@ import org.nexa.threads.iMutex
 import org.nexa.libnexakotlin.iTransaction
 import org.nexa.libnexakotlin.txFor
 import org.nexa.libnexakotlin.TransactionHistory
-import org.nexa.libnexakotlin.txFor
 import org.nexa.threads.millisleep
 import kotlin.test.Test
 
@@ -304,7 +303,11 @@ class InMemoryPrefs : SharedPreferences
 *     ordinary value object — not an account) so the receive screen has a non-null
 *     address to render and copy to the clipboard.
  */
-fun mockAccount(initialBalance: BigDecimal = BigDecimal.ZERO, initialAssets: Map<GroupId, AssetPerAccount> = emptyMap(), chainSelector: ChainSelector = ChainSelector.NEXA): Account
+fun mockAccount(
+  initialBalance: BigDecimal = BigDecimal.ZERO,
+  initialAssets: Map<GroupId, AssetPerAccount> = emptyMap(),
+  chainSelector: ChainSelector = ChainSelector.NEXA
+): Account
 {
     // Real PayDestination — just a value object, not linked to an account. Provides a non-null address
     val ownDest: PayDestination = Pay2PubKeyTemplateDestination(
@@ -397,7 +400,9 @@ fun mockAccount(initialBalance: BigDecimal = BigDecimal.ZERO, initialAssets: Map
         every { locked } returns false
         every { pinEntered } returns true
         every { encodedPin } returns null
-        every { flags } returns 0UL
+        var flagsBacking: ULong = 0UL
+        every { flags } calls { flagsBacking }
+        every { flags = any() } calls { (v: ULong) -> flagsBacking = v }
 
         // Fastforward
         every { fastforward } returns null
@@ -426,6 +431,7 @@ fun mockAccount(initialBalance: BigDecimal = BigDecimal.ZERO, initialAssets: Map
         every { handler } returns kotlinx.coroutines.CoroutineExceptionHandler { _, _ -> }
         every { this@mock.walletDb } returns walletDb
         every { started } returns true
+        every { getRecoveryPhrase() } returns "river blanket fossil thunder maple clinic drift pebble lantern surplus chimney voyage"
 
         // Unit conversions — production formulas inlined here, no real account needed.
         every { toFinestUnit(any()) } calls { (qty: BigDecimal) -> (qty * BigDecimal.fromInt(100)).longValue() }
