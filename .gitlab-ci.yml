@@ -138,6 +138,7 @@ build:
     paths:
       - src/build/reports/tests/testDebugUnitTest/index.html
       - src/build/reports/tests/testDebugUnitTest/**/**.html
+      - src/build/reports/tests/iosSimulatorArm64Test/index.html
       - src/build/reports/lint-results-debug.html
       - build/reports/problems/problems-report.html
 
