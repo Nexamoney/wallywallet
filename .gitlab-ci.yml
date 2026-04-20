@@ -283,6 +283,9 @@ jvmTestCoverageLog: #
   script:
     - ./gradlew :src:koverLogJvm # koverLogJvm runs jvmTest as a child job
   coverage: '/application line coverage: (\d+\.\d+)%/' # Regex to extract coverage percentage
+  artifacts:
+    paths:
+      - build/reports/problems/problems-report.html
 
 jvmTest-intelmac:
   <<: *skip-on-schedule
