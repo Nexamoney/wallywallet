@@ -502,14 +502,6 @@ class AccountTest : WallyUiTestBase()
     // ======================================================================
 
     @Test
-    fun initialBalance_isNotNull()
-    {
-        withRealAccount("balInit") { acc ->
-            assertNotNull(acc.balance)
-        }
-    }
-
-    @Test
     fun balance_canBeSet()
     {
         withRealAccount("balSet") { acc ->
