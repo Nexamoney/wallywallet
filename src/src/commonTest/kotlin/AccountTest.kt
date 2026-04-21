@@ -5,12 +5,15 @@ import info.bitcoinunlimited.www.wally.ACCOUNT_FLAG_NONE
 import info.bitcoinunlimited.www.wally.ACCOUNT_FLAG_REUSE_ADDRESSES
 import info.bitcoinunlimited.www.wally.Account
 import info.bitcoinunlimited.www.wally.EncodePIN
+import info.bitcoinunlimited.www.wally.KotlinTarget
 import info.bitcoinunlimited.www.wally.containsAccountWithName
 import info.bitcoinunlimited.www.wally.dbPrefix
+import info.bitcoinunlimited.www.wally.platform
 import info.bitcoinunlimited.www.wally.wallyAccountDbFileName
 import info.bitcoinunlimited.www.wally.wallyApp
 import org.nexa.libnexakotlin.ChainSelector
 import ui.WallyUiTestBase
+import ui.mockAccount
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -546,7 +549,10 @@ class AccountTest : WallyUiTestBase()
     @Test
     fun lifecycleMethods_doNotThrow()
     {
-        withRealAccount("lifecycle") { acc ->
+        // Use mock account for iOS target because it was failing tests by not being able to connect to a node in an infinite loop.
+        if (platform().target == KotlinTarget.iOS)
+        {
+            val acc = mockAccount()
             acc.start()
             acc.onResume()
             acc.changeAsyncProcessing()
@@ -556,6 +562,20 @@ class AccountTest : WallyUiTestBase()
             acc.loadAccountAddress()
             acc.saveAccountFlags()
             acc.loadAccountFlags()
+        }
+        else
+        {
+            withRealAccount("lifecycle") { acc ->
+                acc.start()
+                acc.onResume()
+                acc.changeAsyncProcessing()
+                acc.installChangeHandlers()
+                acc.removeChangeHandlers()
+                acc.saveAccountAddress()
+                acc.loadAccountAddress()
+                acc.saveAccountFlags()
+                acc.loadAccountFlags()
+            }
         }
     }
 }
