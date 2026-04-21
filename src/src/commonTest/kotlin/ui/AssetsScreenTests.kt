@@ -4,6 +4,7 @@ import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.AssetListItemView
 import info.bitcoinunlimited.www.wally.ui.AssetScreen
+import info.bitcoinunlimited.www.wally.ui.AssetView
 import info.bitcoinunlimited.www.wally.ui.setSelectedAccount
 import org.nexa.assets.AssetInfo
 import org.nexa.assets.AssetPerAccount
@@ -12,6 +13,7 @@ import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.GroupId
 import org.nexa.libnexakotlin.GroupInfo
 import kotlin.test.Test
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTestApi::class)
 class AssetsScreenTests:WallyUiTestBase()
@@ -30,6 +32,72 @@ class AssetsScreenTests:WallyUiTestBase()
         onNodeWithText(title).assertIsDisplayed()
         onNodeWithText(series).assertIsDisplayed()
         onNodeWithText(assetAmount.toString()).assertIsDisplayed()
+    }
+
+    @Test
+    fun assetViewDisplaysNameAndNftDetails() = runComposeUiTest {
+        val asset = createAssetInfo("TestToken", "https://test.dev")
+        asset.nft = NexaNFTv2("v1", "Sunset Photo", "Nature Series", "Alice", listOf(), "appUri", "info")
+        setContent {
+            AssetView(asset, 1L)
+        }
+        settle()
+        onNodeWithText("TestToken").assertIsDisplayed()
+        onNodeWithText("Nature Series").assertIsDisplayed()
+        onNodeWithText("Alice").assertIsDisplayed()
+    }
+
+    @Test
+    fun assetViewHidesQuantityWhenOne() = runComposeUiTest {
+        val asset = createAssetInfo("UniqueNFT", "https://test.dev")
+        asset.nft = NexaNFTv2("v1", "One of One", "Singles", "Carol", listOf(), "appUri", "info")
+        setContent {
+            AssetView(asset, 1L)
+        }
+        settle()
+        onNodeWithText("UniqueNFT").assertIsDisplayed()
+        // quantity text uses S.QuantityWithValue which contains "Quantity"
+        onAllNodesWithText(i18n(S.QuantityWithValue).substringBefore("%"), substring = true)
+            .fetchSemanticsNodes().let { assertTrue(it.isEmpty()) }
+    }
+
+    @Test
+    fun assetViewShowsUntitledWhenNameBlank() = runComposeUiTest {
+        val groupIdData = ByteArray(520) { it.toByte() }
+        val groupId = GroupId(ChainSelector.NEXA, groupIdData)
+        val asset = AssetInfo(groupId)
+        asset.name = ""
+        setContent {
+            AssetView(asset, 1L)
+        }
+        settle()
+        onNodeWithText(i18n(S.Untitled)).assertIsDisplayed()
+    }
+
+    @Test
+    fun assetViewShowsLoadingWhenNameNull() = runComposeUiTest {
+        val groupIdData = ByteArray(520) { it.toByte() }
+        val groupId = GroupId(ChainSelector.NEXA, groupIdData)
+        val asset = AssetInfo(groupId)
+        // name defaults to null
+        setContent {
+            AssetView(asset, 1L)
+        }
+        settle()
+        onNodeWithText(i18n(S.loading)).assertIsDisplayed()
+    }
+
+    @Test
+    fun assetViewWithoutNftHidesAuthorAndSeries() = runComposeUiTest {
+        val asset = createAssetInfo("PlainToken", "https://test.dev")
+        asset.nft = null
+        setContent {
+            AssetView(asset, 10L)
+        }
+        settle()
+        onNodeWithText("PlainToken").assertIsDisplayed()
+        // ByAuthor text should not appear without NFT data
+        onNodeWithText(i18n(S.ByAuthor), substring = true).assertDoesNotExist()
     }
 
     @Test
