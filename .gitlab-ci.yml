@@ -1,4 +1,4 @@
-# https://github.com/BitcoinUnlimited/gitlab-ci-android
+# https://gitlab.com/bitcoinunlimited/buildAndTestVMs
 image: andrewstone/nexaadk:latest
 
 # These "stages" are actually separately initiated VMs, so better used for different configurations, etc
@@ -233,12 +233,6 @@ jvmTest-ubuntu-docker:
   <<: *skip-on-schedule
   stage: test
   script:
-    # https://github.com/BitcoinUnlimited/gitlab-ci-android/pull/3
-    # TODO:
-    #   1. Merge this^ MR and deploy andrewstone/nexaadk:latest with boost installed
-    #   2. Delete the apt-get update and install script from this job.
-    - apt-get update
-    - apt-get install -y build-essential libboost-all-dev
     - ./gradlew :src:cleanJvmTest :src:jvmTest
   artifacts:
     reports:
