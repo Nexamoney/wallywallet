@@ -8,7 +8,13 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.NewAccountScreen
+import info.bitcoinunlimited.www.wally.ui.ProposeAccountName
+import info.bitcoinunlimited.www.wally.ui.chainToName
 import info.bitcoinunlimited.www.wally.ui.newAccountState
+import org.nexa.libnexakotlin.ChainSelector
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.libnexakotlin.GetLog
 import kotlin.test.Test
@@ -271,5 +277,21 @@ class NewAccountScreenTest: WallyUiTestBase(false)
     @Test
     fun recoverAccountFromMnemonic() = runComposeUiTest {
         // TODO: figure out a way to assert previous tests before implementing this one...
+    }
+
+    @Test
+    fun proposeAccountNameAvoidsDuplicate()
+    {
+        val cs = ChainSelector.NEXA
+        // Get the first available name
+        val first = ProposeAccountName(cs)
+        assertNotNull(first)
+        // Create an account with that name
+        val account = wallyApp!!.newAccount(first, 0U, "", cs)!!
+        // Next proposal must be different since the name is now taken
+        val second = ProposeAccountName(cs)
+        assertNotNull(second)
+        assertNotEquals(first, second)
+        wallyApp!!.deleteAccount(account)
     }
 }
