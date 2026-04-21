@@ -10,6 +10,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import info.bitcoinunlimited.www.wally.*
@@ -155,7 +156,7 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
     }
     else
     {
-        LazyColumn {
+        LazyColumn(modifier = Modifier.testTag("AddressHistoryList")) {
             addresses.forEachIndexed { idx, it ->
                 // This section display code assumes that the address list is sorted as above
                 if ((idx == 0) && (it.amountHeld > 0))
