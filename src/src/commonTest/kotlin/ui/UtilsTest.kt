@@ -56,6 +56,7 @@ import org.nexa.libnexakotlin.iTransaction
 import org.nexa.libnexakotlin.txFor
 import org.nexa.libnexakotlin.TransactionHistory
 import org.nexa.threads.millisleep
+import kotlin.random.Random
 import kotlin.test.Test
 
 private val LogIt = GetLog("wally.test")
@@ -341,13 +342,15 @@ fun mockAccount(
         every { txo } returns mock(MockMode.autofill)
     }
 
+    val randomNumber = Random.nextInt(1, 1333333337).toString()
+
     // Real Blockchain and Bip44Wallet constructed via their public Kotlin
     // constructors with the mocked dependencies above. No real wally
     // AccountImpl is involved — these are bare libnexakotlin instances built
     // the same way the libnexakotlin factory functions would build them.
     val dummyChain = Blockchain(
       chainSelector,
-      "test",
+      "test_$randomNumber",
       cnxnMgr,
       Hash256(),
       Hash256(),
@@ -357,7 +360,7 @@ fun mockAccount(
       "",
       false,
     )
-    val dummyWallet = Bip44Wallet("mockSelfSendWallet", chainSelector, walletDb)
+    val dummyWallet = Bip44Wallet("mockSelfSendWallet_$randomNumber", chainSelector, walletDb)
     // Wire the wallet to the blockchain — same as AccountImpl's init does.
     dummyWallet.usesChain(dummyChain)
 
