@@ -2,15 +2,13 @@ package ui.views
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material.icons.filled.Send
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,12 +19,10 @@ import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.onAllNodesWithText
-import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
-import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasTestTag
@@ -113,7 +109,6 @@ import org.nexa.libnexakotlin.ChainSelector
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTestApi::class)
@@ -740,7 +735,7 @@ class UiComponentLibraryTest
         val description = "Send action"
         setContent {
             IconTextButton(
-              icon = Icons.Default.Send,
+              icon = Icons.AutoMirrored.Filled.Send,
               description = description,
             ) {
                 clicked = true
@@ -1472,7 +1467,7 @@ class UiComponentLibraryTest
         var clicked = false
         setContent {
             WallyBoringIconButton(
-              icon = Icons.Default.Send,
+              icon = Icons.AutoMirrored.Filled.Send,
               description = "Send icon",
               onClick = { clicked = true }
             )
@@ -1486,7 +1481,7 @@ class UiComponentLibraryTest
     fun wallyBoringIconButtonImageVectorDisabledRendersIcon() = runComposeUiTest {
         setContent {
             WallyBoringIconButton(
-              icon = Icons.Default.Send,
+              icon = Icons.AutoMirrored.Filled.Send,
               description = "Send icon",
               enabled = false,
               onClick = {}

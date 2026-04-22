@@ -573,6 +573,7 @@ fun AccountItemView(
 
 data class DerivationPathSearchProgress(var aborter: Objectify<Boolean>,var progress: String?, var progressInt: Int, var results: AccountSearchResults? = null)
 
+@OptIn(ExperimentalUnsignedTypes::class)
 fun derivationPathSearch(progress: DerivationPathSearchProgress, wallet: Bip44Wallet, coin: Long, account: Long, change: Boolean, idxMaxGap: Int, start: Long = 0, event: (()->Unit)? = null): iThread
 {
     val cnxn = wallet.blockchain.net
