@@ -345,7 +345,7 @@ fun SpecialTxPermScreen(sess: TricklePaySession, unlock: UnlockViewModel)
         {
             //ui.GuiCustomTxErrorHeading.visibility = View.VISIBLE
             // ui.GuiTpSpecialTxAccept.visibility = View.GONE
-            GuiCustomTxError = error ?: ""
+            GuiCustomTxError = error
             DeleteButtonText = S.cancel
         }
         else
