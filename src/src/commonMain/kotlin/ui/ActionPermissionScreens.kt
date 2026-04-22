@@ -715,6 +715,7 @@ fun AssetInfoPermScreen(acc: Account, sess: TricklePaySession , nav: ScreenNav)
 }
 
 
+@OptIn(ExperimentalUnsignedTypes::class)
 fun AcceptIdentityPermHandler(op:String, sess: IdentitySession, msg: ByteArray?, destToSignWith: PayDestination?, nav: ScreenNav)
 {
     // Shortcut definitions
@@ -1059,6 +1060,7 @@ fun IdentityPermScreen(sess: IdentitySession, nav: ScreenNav)
 }
 
 
+@OptIn(ExperimentalUnsignedTypes::class)
 fun onProvideIdentity(sess: IdentitySession): Boolean?
 {
     val app = wallyApp!!

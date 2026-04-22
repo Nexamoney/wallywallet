@@ -49,6 +49,7 @@ var maxPoolWait = 500
 // Reset WallyApp for every test under JVM?
 var jvmResetWallyApp = false
 
+@OptIn(ExperimentalUnsignedTypes::class)
 internal fun setupTestEnv(openAllAccounts:Boolean = true)
 {
     LogIt.info(sourceLoc() + ": Setting up TEST environment")

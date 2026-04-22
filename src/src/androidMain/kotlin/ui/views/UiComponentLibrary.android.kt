@@ -87,6 +87,7 @@ class FileIdentifier(protected val bytes: ByteArray, protected val offset: Int)
 }
 private fun maj(offset:Int, vararg bytes: UByte) = FileIdentifier(bytes.asByteArray(), offset)
 
+@kotlin.OptIn(ExperimentalUnsignedTypes::class)
 val fileMagicNums:Map<FileIdentifier, String> = mapOf<FileIdentifier, String>(
   maj(0,0x42U,0x4dU) to ".bmp",
   maj(0, 0x47U,0x49U,0x46U,0x38U) to ".gif",
