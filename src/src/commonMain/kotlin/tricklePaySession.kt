@@ -1004,7 +1004,6 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         proposalAnalysis.value = analysis
         totalNexaSpent = analysis.myInputSatoshis - analysis.receivingSats
         var action = determineAction(domain)
-        if (action == TdppAction.ACCEPT) action = TdppAction.ASK
         return action
     }
 
