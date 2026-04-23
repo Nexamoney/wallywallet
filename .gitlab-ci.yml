@@ -141,6 +141,7 @@ build:
       - src/build/reports/tests/iosSimulatorArm64Test/index.html
       - src/build/reports/tests/iosSimulatorArm64Test/**/**.html
       - src/build/reports/lint-results-debug.html
+      - src/build/reports/tests/allTests/index.html
       - build/reports/problems/problems-report.html
 
 compileIos:
