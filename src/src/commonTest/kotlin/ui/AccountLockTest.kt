@@ -26,7 +26,7 @@ import kotlin.test.Test
 private val LogIt = GetLog("BU.wally.test")
 
 @OptIn(ExperimentalTestApi::class)
-class AccountLockTest:WallyUiTestBase()
+class AccountLockTest:WallyUiTestBase(false)
 {
     @Test
     fun testLockAccount()
