@@ -134,7 +134,7 @@ class HomeScreenTest: WallyUiTestBase()
         val expectedCurrencyCode = account.uiData().currencyCode
         onNodeWithTag("AccountPillCurrencyCode").assertTextEquals(expectedCurrencyCode)
 
-        // Verify the balance in the account pill
+        waitUntil(timeoutMillis = 5_000L) { account.balanceState.value != null }
         val expectedBalance = account.format(account.balanceState.value!!)
         onNodeWithTag("AccountPillBalance").assertTextEquals(expectedBalance)
 
