@@ -138,6 +138,12 @@ open class WallyUiTestBase(openAllAccounts: Boolean = true)
                 if (jvmResetWallyApp) wallyApp = null
             }
         }
+
+        // LeakCanary memory leak detector
+        // Every Android pixel5Check and connectedDebugAndroidTest run triggers a heap analysis after each passing test
+        // via WallyUiTestBase.testDone() and fails the test on any retained watched instance. JVM and iOS runs stay no-ops.
+        // Expected cost: ~5–10s per test on the emulator.
+        LeakAssertions.assertNoLeaks(this::class.simpleName ?: "test")
     }
 }
 

@@ -509,7 +509,6 @@ kotlin {
                     implementation(libs.kotlinx.coroutines.android)
                     implementation(libs.androidx.core.ktx)
                     implementation(libs.androidx.junit.ktx)
-                    // debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
                 }
             }
 
@@ -644,6 +643,11 @@ android {
 dependencies {
     debugImplementation(libs.ui.test.manifest)
     androidTestImplementation(libs.androidx.ui.test.junit4.android)
+
+    // LeakCanary: auto-watchers active in the debug APK (connectedAndroidTest / pixel5Check).
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
+    // LeakCanary: LeakAssertions / DetectLeaksAfterTestSuccess for instrumented tests.
+    androidTestImplementation("com.squareup.leakcanary:leakcanary-android-instrumentation:2.14")
 }
 
 if (MAC_TARGETS)
