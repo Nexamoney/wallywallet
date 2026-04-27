@@ -235,6 +235,8 @@ iosDeviceUiTest:
 jvmTest-ubuntu-docker:
   <<: *skip-on-schedule
   stage: test
+  tags:
+    - berlin
   script:
     - ./gradlew :src:cleanJvmTest :src:jvmTest
   artifacts:
