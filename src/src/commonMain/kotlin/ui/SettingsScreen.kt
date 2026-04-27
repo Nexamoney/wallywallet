@@ -65,7 +65,7 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
                   text = selectedFiatCurrency.value ?: "",
                   modifier = Modifier.clickable(onClick = { expanded = true })
                 )
-                IconButton(onClick = {expanded = true}) {
+                IconButton(onClick = {expanded = true}, modifier = Modifier.testTag("FiatCurrencyDropdown")) {
                     Icon(Icons.Default.ArrowDropDown, contentDescription = "Fiat currency dropdown")
                 }
             }
@@ -75,6 +75,7 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
             ) {
                 fiatCurrencies.forEachIndexed { _, s ->
                     DropdownMenuItem(
+                      modifier = Modifier.testTag("FiatCurrency_$s"),
                       onClick = {
                           preferenceDB.edit().putString(info.bitcoinunlimited.www.wally.LOCAL_CURRENCY_PREF, s).commit()
                           selectedFiatCurrency.value = s
@@ -88,7 +89,7 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
     }
 }
 
-@Composable fun ShowScreenNavSwitch(preference: String, navChoice: NavChoice, textRes: Int, globalPref: MutableStateFlow<Boolean>)
+@Composable fun ShowScreenNavSwitch(preference: String, navChoice: NavChoice, textRes: Int, globalPref: MutableStateFlow<Boolean>, testTag: String? = null)
 {
     val itemsState = menuItems.collectAsState().value
     val moreMenuItemsState = moreMenuItems.collectAsState().value
@@ -102,6 +103,7 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
           text = i18n(textRes)
         )
         Switch(
+          modifier = if (testTag != null) Modifier.testTag(testTag) else Modifier,
           checked = globalPref.collectAsState().value,
           onCheckedChange = {
               globalPref.value = it
@@ -221,11 +223,11 @@ fun SettingsScreen(preferenceDB: SharedPreferences = wallyApp!!.preferenceDB)
             CenteredSectionText(i18n(S.GeneralSettings))
 
             WallyDivider()
-            ShowScreenNavSwitch(SHOW_IDENTITY_PREF, NavChoice(ScreenId.Identity, S.title_activity_identity, Icons.Default.Person), S.enableIdentityMenu, showIdentityPref)
-            ShowScreenNavSwitch(SHOW_TRICKLE_PAY_PREF, NavChoice(ScreenId.TricklePayRegistrations, S.Services, Icons.Default.Cloud), S.EnableServices, showTricklePayPref)
+            ShowScreenNavSwitch(SHOW_IDENTITY_PREF, NavChoice(ScreenId.Identity, S.title_activity_identity, Icons.Default.Person), S.enableIdentityMenu, showIdentityPref, "IdentitySwitch")
+            ShowScreenNavSwitch(SHOW_TRICKLE_PAY_PREF, NavChoice(ScreenId.TricklePayRegistrations, S.Services, Icons.Default.Cloud), S.EnableServices, showTricklePayPref, "ServicesSwitch")
             // Only let them choose to not show assets if they don't have any assets
             if (showAssetsPref.collectAsState().value == false || wallyApp?.hasAssets() == false)
-                ShowScreenNavSwitch(SHOW_ASSETS_PREF, NavChoice(ScreenId.Assets, S.title_activity_assets, Icons.Default.Image), S.enableAssetsMenu, showAssetsPref)
+                ShowScreenNavSwitch(SHOW_ASSETS_PREF, NavChoice(ScreenId.Assets, S.title_activity_assets, Icons.Default.Image), S.enableAssetsMenu, showAssetsPref, "AssetsSwitch")
             generalSettingsSwitches.forEach { GeneralSettingsSwitchView(it) }
 
             if (false) // Dark mode is not implemented so don't show the button
@@ -236,7 +238,7 @@ fun SettingsScreen(preferenceDB: SharedPreferences = wallyApp!!.preferenceDB)
                     darkModeView = it
                     darkMode = it
                 }
-            WallySwitchRow(devModeView, S.enableDeveloperView) {
+            WallySwitchRow(devModeView, S.enableDeveloperView, "DevModeSwitch") {
                 LogIt.info("devmode $it")
                 CoroutineScope(Dispatchers.IO).launch {
                     preferenceDB.edit().putBoolean(DEV_MODE_PREF, it).commit()
@@ -244,11 +246,11 @@ fun SettingsScreen(preferenceDB: SharedPreferences = wallyApp!!.preferenceDB)
                 devModeView = it
                 devMode = it
             }
-            WallySwitchRow(experimentalUI.collectAsState().value, S.enableExperimentalUx) {
+            WallySwitchRow(experimentalUI.collectAsState().value, S.enableExperimentalUx, "ExperimentalUxSwitch") {
                 preferenceDB.edit().putBoolean(EXPERIMENTAL_UX_MODE_PREF, it).commit()
                 experimentalUI.value = it
             }
-            WallySwitchRow(soundEnabled.collectAsState().value, S.enableSound) {
+            WallySwitchRow(soundEnabled.collectAsState().value, S.enableSound, "SoundSwitch") {
                 preferenceDB.edit().putBoolean(SOUND_ENABLED_PREF, it).commit()
                 soundEnabled.value = it
             }
