@@ -209,7 +209,8 @@ class HomeScreenTest: WallyUiTestBase()
             val expectedBalance1 = account1.format(account1.balanceState.value!!)
             onNode(hasTestTag("AccountCarouselBalance_nexaTest1"), useUnmergedTree = true).assertTextEquals(expectedBalance1)
             onNode(hasTestTag("CarouselAccountName") and hasText("nexaTest2"), useUnmergedTree = true).assertTextEquals("nexaTest2")
-            val expectedBalance2 = account2.format(account1.balanceState.value!!)
+            waitUntil(timeoutMillis = 5_000L) { account2.balanceState.value != null }
+            val expectedBalance2 = account2.format(account2.balanceState.value!!)
             onNode(hasTestTag("AccountCarouselBalance_nexaTest2"), useUnmergedTree = true).assertTextEquals(expectedBalance2)
 
             // Click on the second account in the carousel
