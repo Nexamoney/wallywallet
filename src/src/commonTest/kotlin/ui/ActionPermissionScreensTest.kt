@@ -148,7 +148,7 @@ class ActionPermissionScreensTest : WallyUiTestBase()
     fun assetInfoPermScreenTest()
     {
         val account = wallyApp!!.newAccount("assetInfo", 0U, "", cs)!!
-        waitFor(5000, { "Cannot connect to ${cs.name} network!  Run a local full node."}) {
+        waitFor(15000, { "Cannot connect to ${cs.name} network!  Run a local full node."}) {
             account.chain.net.p2pCnxns.size > 0
         }
         runComposeUiTest {
