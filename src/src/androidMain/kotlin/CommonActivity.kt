@@ -227,6 +227,10 @@ open class CommonActivity : AppCompatActivity()
 
     override fun onDestroy()
     {
+        // Clear the top-level currentActivity reference so the destroyed Activity becomes
+        // eligible for garbage collection. The identity check avoids clobbering a replacement
+        // Activity whose onStart() may have already registered itself before this runs.
+        if (currentActivity === this) currentActivity = null
         coMiscCtxt.cancel()
         coGuiScope.cancel()
         coMiscScope.cancel()
