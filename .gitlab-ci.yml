@@ -309,10 +309,14 @@ androidPixel5Test:
   script:
     - ./gradlew pixel5Check
   artifacts:
+    reports:
+      junit: src/build/outputs/androidTest-results/managedDevice/debug/pixel5/TEST-*.xml
     when: always
     paths:
       - src/build/reports/androidTests/managedDevice/debug/pixel5/index.html
       - src/build/reports/androidTests/managedDevice/debug/pixel5/**/**
+      - src/build/outputs/androidTest-results/managedDevice/debug/pixel5/**/**
+      - src/build/intermediates/managed_device_android_test_additional_output/pixel5/debug/**/**
 
 # Deploys an apk to:
 # https://gitlab.com/wallywallet/wallet/-/jobs/artifacts/main/wally.apk?job=deployAndroidApk
