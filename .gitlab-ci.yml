@@ -135,6 +135,12 @@ build:
     - ./gradlew build -x :src:testDebugUnitTest -x :src:testReleaseUnitTest
   artifacts:
     when: always
+    reports:
+      junit:
+        - src/build/test-results/jvmTest/TEST-*.xml
+        - src/build/test-results/iosSimulatorArm64Test/TEST-*.xml
+        - src/build/test-results/iosX64Test/TEST-*.xml
+        - src/build/test-results/iosArm64Test/TEST-*.xml
     paths:
       - src/build/reports/tests/testDebugUnitTest/index.html
       - src/build/reports/tests/testDebugUnitTest/**/**.html
