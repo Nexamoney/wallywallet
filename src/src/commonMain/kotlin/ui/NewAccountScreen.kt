@@ -160,7 +160,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
     {
         millisleep(200U)
         val flags: ULong = if (acState.hideUntilPinEnter) ACCOUNT_FLAG_HIDE_UNTIL_PIN else ACCOUNT_FLAG_NONE
-        val words = processSecretWords(acState.recoveryPhrase.text)
+        val words = bip39ListifyRecoverySecret(acState.recoveryPhrase.text)
         try
         {
             wallyApp!!.recoverAccount(acState.accountName, flags, acState.pin, words.joinToString(" "), chainSelector, acState.discoveredAccountHistory, acState.discoveredAddresses, acState.discoveredTip!!, acState.discoveredAddressIndex)
@@ -229,7 +229,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
     fun FinalDataCheck(): Boolean
     {
         var inputValid = false
-        val words = processSecretWords(newAcState.recoveryPhrase.text)
+        val words = bip39ListifyRecoverySecret(newAcState.recoveryPhrase.text)
         val incorrectWords = bip39InvalidWords(words)
 
         // Clear any old error
@@ -308,7 +308,7 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
 
         if (inputValid)
         {
-            val words = processSecretWords(acState.recoveryPhrase.text)
+            val words = bip39ListifyRecoverySecret(acState.recoveryPhrase.text)
             if (words.size == 12) // account recovery
             {
                 if ((createClicks == 0) && (acState.earliestActivity == null))
@@ -379,11 +379,11 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
     fun HandleRecoveryPhrase(userField: TextFieldValue, force: Boolean = false)
     {
         val userInput = userField.text
-        val words = processSecretWords(userInput)
+        val words = bip39ListifyRecoverySecret(userInput)
         val valid = isValidOrEmptyRecoveryPhrase(words)
         val priorPhrase = newAcState.recoveryPhrase.text
         newAccountState.value = newAccountState.value.copy(recoveryPhrase = userField, validOrNoRecoveryPhrase = valid)
-        if (force || words != processSecretWords(priorPhrase))  // If the recovery phrase is equivalent nothing to do, otherwise set the new one
+        if (force || words != bip39ListifyRecoverySecret(priorPhrase))  // If the recovery phrase is equivalent nothing to do, otherwise set the new one
         {
             recoverySearchText = ""  // phrase changed so need to search again
             // If the recovery phrase changes materially, we need to rediscover the wallet
