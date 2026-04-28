@@ -21,6 +21,7 @@ import info.bitcoinunlimited.www.wally.ui.views.FittedText
 import info.bitcoinunlimited.www.wally.ui.views.WallyBoringButton
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.datetime.*
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.*
@@ -123,20 +124,19 @@ fun calcAddressHistoryInfo(acc : Account)
 @Composable
 fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
 {
-    val timeZone = TimeZone.currentSystemDefault()
+    val addrHistoryAcc = addressHistoryAccount.collectAsState().value
+    val addresses = addressHistoryInfo.collectAsState().value
 
-    // You cannot use a function call to trigger some action in compose since stuff can be randomly recomposed or cached and NOT recomposed
-    // We also can't regenerate the address history list inline with recomposition because its too slow.
-    // We don't need this view to be "live" WRT new transaction coming in.
-    // So we choose to asynchronously calculate it whenever its null or when the passed account changes.
-    // (and we erase it to null whenever we leave this screen)
-    if (addressHistoryAccount.value != acc)
-    {
-        addressHistoryInfo.value = null
+    LaunchedEffect(acc) {
+        if (addrHistoryAcc != acc)
+        {
+            addressHistoryInfo.value = null
+        }
+        if ((addresses == null) || (addrHistoryAcc != acc)) laterJob {
+            calcAddressHistoryInfo(acc)
+        }
     }
-    if ((addressHistoryInfo.value == null) || (addressHistoryAccount.value != acc)) laterJob {
-          calcAddressHistoryInfo(acc)
-      }
+
     nav.onDepart {
         addressHistoryInfo.value = null
     }
@@ -149,7 +149,6 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
 
     var inUsedSection = false
     var inUnusedSection = false
-    val addresses = addressHistoryInfo.collectAsState().value
     if (addresses == null)
     {
         CenteredSectionText(S.Processing)
