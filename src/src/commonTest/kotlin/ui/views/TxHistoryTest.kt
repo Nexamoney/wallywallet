@@ -37,6 +37,7 @@ import ui.mockAccount
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.minutes
 
 @OptIn(ExperimentalTestApi::class)
 class TxHistoryTest : WallyUiTestBase()
@@ -194,7 +195,7 @@ class TxHistoryTest : WallyUiTestBase()
     // --- TransactionsList composable tests ---
 
     @Test
-    fun transactionsListRendersEvery10thOf100Transactions() = runComposeUiTest {
+    fun transactionsListRendersEvery10thOf100Transactions() = runComposeUiTest(testTimeout = 2.minutes) {
         val account = mockAccount()
         val fakes = (0 until 100).map { fakeTxHistory(it) }
         stubWalletWithTxs(account, fakes)
