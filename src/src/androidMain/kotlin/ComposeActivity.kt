@@ -48,8 +48,6 @@ actual fun ImageQrCode(imageParsed: (String?)->Unit): Boolean
     return true
 }
 
-private lateinit var pickMediaLauncher: ActivityResultLauncher<PickVisualMediaRequest>
-
 var lastHandledIntent = ""
 
 class ComposeActivity: CommonActivity()
@@ -63,6 +61,8 @@ class ComposeActivity: CommonActivity()
     var doOnFileReadPerms: (() -> Unit)? = null
 
     var unlockViewModel: UnlockViewModel? = null
+
+    private lateinit var pickMediaLauncher: ActivityResultLauncher<PickVisualMediaRequest>
 
     fun ImageQrCode(imageParsed: (String?) -> Unit)
     {
