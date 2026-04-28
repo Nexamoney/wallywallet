@@ -33,6 +33,7 @@ import org.nexa.libnexakotlin.DecimalFormat
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.minutes
 
 @OptIn(ExperimentalTestApi::class)
 class SendNexaToSelfTest : WallyUiTestBase()
@@ -48,11 +49,12 @@ class SendNexaToSelfTest : WallyUiTestBase()
         val finalBalance = initialBalance - simulatedFee
 
         val mockAccount = mockAccount(initialBalance)
+        assignAccountsGuiSlots()
 
         // ReceiveScreen / SendScreen. read `wallyApp.focusedAccount` directly,
         setSelectedAccount(mockAccount)
 
-        runComposeUiTest {
+        runComposeUiTest(testTimeout = 3.minutes) {
             val mockAccountFlow = wallyApp!!.focusedAccount
             val viewModelStoreOwner = object : ViewModelStoreOwner
             {
@@ -86,8 +88,8 @@ class SendNexaToSelfTest : WallyUiTestBase()
             settle()
             nav.switch(ScreenId.Home)
             settle()
-            assignAccountsGuiSlots()
-            waitForCatching { onNodeWithTag("AccountPillBalance").isDisplayed() }
+
+            onNodeWithTag("AccountPillBalance").isDisplayed()
 
             // ----- Step 1: Open app, save the current amount in the account pill -----
             val balanceBefore = mockAccount.balanceState.value!!
@@ -97,12 +99,11 @@ class SendNexaToSelfTest : WallyUiTestBase()
             // ----- Step 2: Navigate to receive -----
             onNodeWithTag("ReceiveButton").performClick()
             settle()
-            waitForCatching(6000, { "Receive screen address never appeared" }) {
-                runCatching {
-                    onNodeWithTag("receiveScreen:receiveAddress").assertIsDisplayed()
-                    true
-                }.getOrDefault(false)
-            }
+            runCatching {
+                onNodeWithTag("receiveScreen:receiveAddress").assertIsDisplayed()
+                true
+            }.getOrDefault(false)
+
             val currentReceive = mockAccount.currentReceive
             assertNotNull(currentReceive)
             onNodeWithTag("receiveScreen:receiveAddress").assertTextEquals(currentReceive.address.toString())
@@ -114,12 +115,12 @@ class SendNexaToSelfTest : WallyUiTestBase()
             // ----- Step 4: Navigate back to the home screen -----
             onNodeWithTag("BackButton").performClick()
             settle()
-            waitForCatching { onNodeWithTag("AccountPillBalance").isDisplayed() }
+            onNodeWithTag("AccountPillBalance").isDisplayed()
 
             // ----- Step 5: Navigate to send screen -----
             onNodeWithTag("SendButton").performClick()
             settle()
-            waitForCatching { onNodeWithTag("sendToAddress").isDisplayed() }
+            onNodeWithTag("sendToAddress").isDisplayed()
 
             // ----- Step 6: Paste the address into the receive address field -----
             onNodeWithTag("sendToAddress").requestFocus()
@@ -150,7 +151,7 @@ class SendNexaToSelfTest : WallyUiTestBase()
             //                than the amount from step 1.
             nav.switch(ScreenId.Home)
             settle()
-            waitForCatching { onNodeWithTag("AccountPillBalance").isDisplayed() }
+            onNodeWithTag("AccountPillBalance").isDisplayed()
 
             val balanceAfter = mockAccount.balanceState.value!!
             assertTrue(
