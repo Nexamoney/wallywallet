@@ -32,8 +32,7 @@ class SplitBillScreenTest
     @Test
     fun amountInputTest()
     {
-        val cs = ChainSelector.NEXA
-        val account: Account = wallyApp!!.newAccount("mock", 0U, "", cs)!!
+        val account: Account = mockAccount()
         runComposeUiTest {
             setContent {
                 SplitBillScreen(account)
@@ -52,6 +51,5 @@ class SplitBillScreenTest
             settle()
             onNodeWithText("42").assertIsDisplayed()
         }
-        account.delete()
     }
 }
