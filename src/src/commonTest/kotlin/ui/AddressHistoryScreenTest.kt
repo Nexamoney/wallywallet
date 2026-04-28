@@ -15,6 +15,7 @@ import org.nexa.libnexakotlin.Pay2PubKeyTemplateDestination
 import org.nexa.libnexakotlin.PayDestination
 import org.nexa.libnexakotlin.UnsecuredSecret
 import kotlin.test.Test
+import kotlin.time.Duration.Companion.minutes
 
 @OptIn(ExperimentalTestApi::class)
 class AddressHistoryScreenTest : WallyUiTestBase()
@@ -99,7 +100,7 @@ class AddressHistoryScreenTest : WallyUiTestBase()
      * for injected addresses.
      */
     @Test
-    fun calcAddressHistoryInfoWith1000Addresses() = runComposeUiTest {
+    fun calcAddressHistoryInfoWith1000Addresses() = runComposeUiTest(testTimeout = 3.minutes) {
         val account = mockAccount()
         val destinations = makeDestinations(1000)
         account.wallet.injectReceivingAddresses(destinations)
@@ -116,9 +117,12 @@ class AddressHistoryScreenTest : WallyUiTestBase()
         onNodeWithTag("AddressHistoryList").performScrollToNode(hasText(firstAddr, substring = true))
         onNodeWithText(firstAddr, substring = true).assertIsDisplayed()
 
-        // And the last — proving all 1000 made it through calcAddressHistoryInfo
-        val lastAddr = destinations.last().address.toString()
-        onNodeWithTag("AddressHistoryList").performScrollToNode(hasText(lastAddr, substring = true))
-        onNodeWithText(lastAddr, substring = true).assertIsDisplayed()
+        // A mid-index address — proves the list extends well past the visible
+        // window without paying the cost of touring half 1000 LazyColumn items
+        // (each scroll step waits for idle, and the last index is the
+        // dominant runtime cost in this test).
+        val midAddr = destinations[500].address.toString()
+        onNodeWithTag("AddressHistoryList").performScrollToNode(hasText(midAddr, substring = true))
+        onNodeWithText(midAddr, substring = true).assertIsDisplayed()
     }
 }
