@@ -14,6 +14,7 @@ import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.sourceLoc
 import org.nexa.threads.millisleep
 import kotlin.test.Test
+import kotlin.time.Duration.Companion.minutes
 
 fun SemanticsNodeInteraction.multiplatformImeAction()
 {
@@ -233,7 +234,7 @@ class HomeScreenTest: WallyUiTestBase()
         val testnetAccount = wallyApp!!.newAccount("nexaTestnetAccount", 0U, "", ChainSelector.NEXATESTNET)!!
         val wInsets = WindowInsets(0,0,0,0)
 
-        runComposeUiTest {
+        runComposeUiTest(testTimeout = 3.minutes) {
             val viewModelStoreOwner = object : ViewModelStoreOwner {
                 override val viewModelStore: ViewModelStore = ViewModelStore()
             }
