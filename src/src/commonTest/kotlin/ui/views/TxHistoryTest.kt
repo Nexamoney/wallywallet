@@ -34,6 +34,7 @@ import ui.WallyUiTestBase
 import ui.createAssetInfo
 import ui.createAssetPerAccount
 import ui.mockAccount
+import ui.settle
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -194,6 +195,15 @@ class TxHistoryTest : WallyUiTestBase()
         val viewModel = TxHistoryViewModel()
         viewModel.getAllTransactions(account1)
         assertTrue(waitForTxHistorySize(viewModel, 10))
+        // Wait for both loading=false AND size==10. A stale tlater{} from the
+        // init block (or a prior test leaking focusedAccount) can flip
+        // loading=false after our call set it back to true, so polling on
+        // loading alone can return before account1's load actually populates.
+        val deadline1 = millinow() + 15_000L
+        while (millinow() < deadline1 && (viewModel.loading.value || viewModel.txHistory.value.size != 10))
+        {
+            millisleep(50U)
+        }
         assertEquals(10, viewModel.txHistory.value.size)
 
         // Switch account — viewModel must clear the prior history immediately
@@ -202,7 +212,11 @@ class TxHistoryTest : WallyUiTestBase()
         // so we expect the list to already be empty here (even if the new
         // load hasn't finished).
         // After the new load completes, list should still be empty (account2 empty)
-        assertTrue(waitForNotLoading(viewModel))
+        val deadline2 = millinow() + 15_000L
+        while (millinow() < deadline2 && (viewModel.loading.value || viewModel.txHistory.value.size != 0))
+        {
+            millisleep(50U)
+        }
         assertEquals(0, viewModel.txHistory.value.size)
     }
 
