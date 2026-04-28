@@ -69,6 +69,27 @@ fun WallyGetCnxnMgr(chain: ChainSelector, name: String? = null, start:Boolean = 
     return ret
 }
 
+/** Given a string, this cleans up extra spaces and returns a list of the actual words */
+fun processSecretWords(secretWords: String): List<String>
+{
+    val txt: String = secretWords.trim().lowercase()
+    val wordSplit = txt.split(' ','\n','\t')
+    val junkDropped = wordSplit.filter { it.length > 0 }
+    return junkDropped
+}
+
+fun isValidOrEmptyRecoveryPhrase(words: List<String>): Boolean
+{
+    if(words.isEmpty()) return true
+    if (words.size != 12)
+    {
+        return false
+    }
+    val incorrectWords = bip39InvalidWords(words)
+    if (!incorrectWords.isEmpty()) return false
+    return validBip39Checksum(words.toTypedArray())
+}
+
 /**
  * Account interface — exposes the public surface of an account so that tests can
  * substitute a [dev.mokkery.mock] in places where a real [AccountImpl] would be too
