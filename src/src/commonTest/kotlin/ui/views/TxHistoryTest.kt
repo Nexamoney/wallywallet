@@ -91,6 +91,27 @@ class TxHistoryTest : WallyUiTestBase()
         return !viewModel.loading.value
     }
 
+    // The viewModel's init block eagerly calls getAllTransactions() against
+    // wallyApp.focusedAccount. When a test then calls getAllTransactions()
+    // again with its own mock account, the `loading` flag is shared between
+    // both loads — so waiting on loading=false can return after the init
+    // load completes but before the test's load has populated txHistory.
+    // Waiting on the expected txHistory size avoids that race.
+    private fun waitForTxHistorySize(
+      viewModel: TxHistoryViewModel,
+      expected: Int,
+      timeoutMs: Long = 15_000L
+    ): Boolean
+    {
+        val deadline = millinow() + timeoutMs
+        while (millinow() < deadline &&
+          (viewModel.loading.value || viewModel.txHistory.value.size != expected))
+        {
+            millisleep(50U)
+        }
+        return viewModel.txHistory.value.size == expected
+    }
+
     // --- TxHistoryViewModel.getAllTransactions tests ---
 
     @Test
@@ -103,14 +124,7 @@ class TxHistoryTest : WallyUiTestBase()
         val viewModel = TxHistoryViewModel()
         viewModel.getAllTransactions(account)
 
-        // Wait for both loading=false AND size=100. On iOS the tlater
-        // coroutine runs slower; waiting on loading alone can return
-        // prematurely if a concurrent call sets loading=false mid-build.
-        val deadline = millinow() + 15_000L
-        while (millinow() < deadline && (viewModel.loading.value || viewModel.txHistory.value.size != 100))
-        {
-            millisleep(50U)
-        }
+        assertTrue(waitForTxHistorySize(viewModel, 100))
         assertEquals(100, viewModel.txHistory.value.size)
     }
 
@@ -123,7 +137,7 @@ class TxHistoryTest : WallyUiTestBase()
 
         val viewModel = TxHistoryViewModel()
         viewModel.getAllTransactions(account)
-        assertTrue(waitForNotLoading(viewModel))
+        assertTrue(waitForTxHistorySize(viewModel, 20))
 
         val result = viewModel.txHistory.value
         // Newest first — date must be monotonically non-increasing
@@ -145,7 +159,7 @@ class TxHistoryTest : WallyUiTestBase()
 
         val viewModel = TxHistoryViewModel()
         viewModel.getAllTransactions(account)
-        assertTrue(waitForNotLoading(viewModel))
+        assertTrue(waitForTxHistorySize(viewModel, 6))
 
         val result = viewModel.txHistory.value
         assertEquals(6, result.size)
@@ -178,7 +192,7 @@ class TxHistoryTest : WallyUiTestBase()
 
         val viewModel = TxHistoryViewModel()
         viewModel.getAllTransactions(account1)
-        assertTrue(waitForNotLoading(viewModel))
+        assertTrue(waitForTxHistorySize(viewModel, 10))
         assertEquals(10, viewModel.txHistory.value.size)
 
         // Switch account — viewModel must clear the prior history immediately
