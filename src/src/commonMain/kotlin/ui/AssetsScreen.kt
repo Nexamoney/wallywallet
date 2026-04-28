@@ -3,7 +3,6 @@ package info.bitcoinunlimited.www.wally.ui
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -29,7 +28,6 @@ import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import info.bitcoinunlimited.www.wally.ui.views.*
 import io.ktor.http.*
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.assets.AssetInfo
 import org.nexa.assets.AssetPerAccount
 import org.nexa.assets.tokenAmountString
@@ -387,7 +385,7 @@ fun AssetView(asset: AssetInfo, quantity: Long, parentMod: Modifier = Modifier)
     }
 }
 
-private val assetListState: MutableMap<String, MutableStateFlow<LazyListState?> > = mutableMapOf() //MutableStateFlow(null)
+private val assetListScrollPositions: MutableMap<String, Pair<Int, Int>> = mutableMapOf()
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -408,12 +406,6 @@ fun AssetScreen(account: Account, onAssetDetail: () -> Unit)
     val assetsState = account.assetsObservable.collectAsState()
     val assets = assetsState.value
     val assetList = assets.values.toList().sortedBy { it.assetInfo.nft?.title ?: it.assetInfo.name ?: it.assetInfo.ticker ?: it.groupInfo.groupId.toString() }
-
-    val asl = assetListState[account.name]
-    if (asl == null)
-    {
-            assetListState[account.name] = MutableStateFlow(rememberLazyListState())
-    }
 
     if (subScreen.value == null)
     {
@@ -452,8 +444,14 @@ fun AssetScreen(account: Account, onAssetDetail: () -> Unit)
             }
             else
             {
-                val scope = rememberCoroutineScope()
-                val tmp = assetListState[account.name]?.collectAsState(scope.coroutineContext)?.value ?: rememberLazyListState()
+                val (savedIndex, savedOffset) = assetListScrollPositions[account.name] ?: (0 to 0)
+                val tmp = rememberLazyListState(savedIndex, savedOffset)
+                DisposableEffect(account.name) {
+                    onDispose {
+                        assetListScrollPositions[account.name] =
+                          tmp.firstVisibleItemIndex to tmp.firstVisibleItemScrollOffset
+                    }
+                }
                 //LogIt.info("recomposing asset column")
                 LazyColumn(state=tmp, horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(0.2f)) {
                     var index = 0
