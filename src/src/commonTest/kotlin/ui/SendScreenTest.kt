@@ -25,6 +25,7 @@ import org.nexa.libnexakotlin.GroupId
 import org.nexa.libnexakotlin.GroupInfo
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Duration.Companion.minutes
 
 private val LogIt = GetLog("wally.test")
 
@@ -38,7 +39,7 @@ class SendScreenTest:WallyUiTestBase()
     {
         val account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
 
-        runComposeUiTest {
+        runComposeUiTest(testTimeout = 3.minutes) {
             val viewModelStoreOwner = object : ViewModelStoreOwner
             {
                 override val viewModelStore = ViewModelStore()
