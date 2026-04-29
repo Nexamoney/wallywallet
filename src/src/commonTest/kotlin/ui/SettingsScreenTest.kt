@@ -36,6 +36,8 @@ class SettingsScreenTest: WallyUiTestBase()
 {
     @Test
     fun blockchainSelectorsDisplayedTest() = runComposeUiTest {
+        // devMode is a process-wide global; reset it so test order doesn't matter.
+        devMode = false
         val preferenceDB: SharedPreferences = FakeSharedPreferences()
 
         setContent {
@@ -54,6 +56,10 @@ class SettingsScreenTest: WallyUiTestBase()
         // Failing: Reason: Expected exactly '1' node but could not find any node that satisfies: (Text + EditableText contains 'Reload Assets' (ignoreCase: false))
         // onNodeWithText("Reload Assets").assertIsDisplayed()
         settle()
+
+        // Leave the global the way we found it so we don't leak `devMode = true`
+        // into tests that assume it starts off (e.g. settingsScreen_devModeSwitch_togglesOn).
+        devMode = false
     }
 
     @Test
@@ -116,6 +122,9 @@ class SettingsScreenTest: WallyUiTestBase()
 
     @Test
     fun settingsScreen_devModeSwitch_togglesOn() = runComposeUiTest {
+        // devMode is a process-wide global. Force it off here so this test is
+        // deterministic regardless of whether a prior test left it true.
+        devMode = false
         val prefs = FakeSharedPreferences()
         setContent { SettingsScreen(prefs) }
         settle()
@@ -222,6 +231,8 @@ class SettingsScreenTest: WallyUiTestBase()
 
     @Test
     fun settingsScreen_devModeToggle_showsTNexaAndRNexaRows() = runComposeUiTest {
+        // devMode is a process-wide global; reset it so test order doesn't matter.
+        devMode = false
         val prefs = FakeSharedPreferences()
         setContent { SettingsScreen(prefs) }
         settle()
@@ -249,6 +260,8 @@ class SettingsScreenTest: WallyUiTestBase()
 
     @Test
     fun settingsScreen_devModeToggle_showsDevButtons() = runComposeUiTest {
+        // devMode is a process-wide global; reset it so test order doesn't matter.
+        devMode = false
         val prefs = FakeSharedPreferences()
         setContent { SettingsScreen(prefs) }
         settle()
