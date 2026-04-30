@@ -209,22 +209,27 @@ class CreateAssetOfferScreenTest: WallyUiTestBase()
         // not an Exception and is not caught). In neither case should the
         // "offer created" success alert fire.
         val account = wallyApp!!.newAccount("createOffer-nofund", 0U, "", ChainSelector.NEXA)!!
-        setSelectedAccount(account)
+        try
+        {
+            setSelectedAccount(account)
 
-        val vm = CreateAssetOfferViewModelImpl(assetPerAccountFaker())
-        vm.nexaPrice.value = "100"
-        vm.assetsForSale.value = "1"
+            val vm = CreateAssetOfferViewModelImpl(assetPerAccountFaker())
+            vm.nexaPrice.value = "100"
+            vm.assetsForSale.value = "1"
 
-        val before = snapshotAlerts()
-        runCatching { vm.createOffer(capdChecked = false) }
-        val added = addedAlerts(before)
+            val before = snapshotAlerts()
+            runCatching { vm.createOffer(capdChecked = false) }
+            val added = addedAlerts(before)
 
-        assertTrue(
-          added.none { it.msg == i18n(S.offerCreated) },
-          "offer-created notice must not fire on an unfunded wallet; got ${added.map { it.level to it.msg }}"
-        )
-
-        wallyApp!!.deleteAccount(account)
+            assertTrue(
+              added.none { it.msg == i18n(S.offerCreated) },
+              "offer-created notice must not fire on an unfunded wallet; got ${added.map { it.level to it.msg }}"
+            )
+        }
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+        }
     }
 
     // ---------- CreateAssetOfferViewModelImpl.CommonWallet.createOfferTx ----------
@@ -237,19 +242,24 @@ class CreateAssetOfferScreenTest: WallyUiTestBase()
         // account has no UTXOs, so txCompleter's FUND_GROUPS step throws a
         // WalletException (concretely, WalletNotEnoughTokenBalanceException).
         val account = wallyApp!!.newAccount("createOfferTx-nofund", 0U, "", ChainSelector.NEXA)!!
-        val apc = assetPerAccountFaker()
-        val vm = CreateAssetOfferViewModelImpl(apc)
+        try
+        {
+            val apc = assetPerAccountFaker()
+            val vm = CreateAssetOfferViewModelImpl(apc)
 
-        assertFails {
-            with(vm) {
-                account.wallet.createOfferTx(
-                  gid = apc.groupInfo.groupId,
-                  grpAmt = 1L,
-                  nativeAmt = 100L,
-                )
+            assertFails {
+                with(vm) {
+                    account.wallet.createOfferTx(
+                      gid = apc.groupInfo.groupId,
+                      grpAmt = 1L,
+                      nativeAmt = 100L,
+                    )
+                }
             }
         }
-
-        wallyApp!!.deleteAccount(account)
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+        }
     }
 }

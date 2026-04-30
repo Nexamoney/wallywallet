@@ -38,6 +38,8 @@ class SendScreenTest:WallyUiTestBase()
     fun sendScreenContentTest()
     {
         val account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
+        try
+        {
 
         runComposeUiTest(testTimeout = 3.minutes) {
             val viewModelStoreOwner = object : ViewModelStoreOwner
@@ -97,7 +99,11 @@ class SendScreenTest:WallyUiTestBase()
             // println(uiState)
             settle()
         }
-        wallyApp!!.deleteAccount(account)
+        }
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+        }
     }
 
     @Test
@@ -105,6 +111,8 @@ class SendScreenTest:WallyUiTestBase()
     {
         LogIt.info("TEST sendBottomButtonsTest")
         val account = wallyApp!!.newAccount("sendBottomButtonsTest", 0U, "", cs)!!
+        try
+        {
         val actFlow = MutableStateFlow<Account?>(account)
         val viewModel = SendScreenViewModelFake(account)
         val unlock = UnlockViewModel(actFlow)
@@ -134,8 +142,12 @@ class SendScreenTest:WallyUiTestBase()
             LogIt.info("settle 2")
             settle()
         }
-        wallyApp!!.deleteAccount(account)
-        LogIt.info("TEST sendBottomButtonsTest COMPLETED")
+        }
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+            LogIt.info("TEST sendBottomButtonsTest COMPLETED")
+        }
     }
 
     @Test
@@ -203,27 +215,33 @@ class SendScreenTest:WallyUiTestBase()
     fun confirmSendTest()
     {
         val account = wallyApp!!.newAccount("testAcc", 0U, "", cs)!!
-        runComposeUiTest {
-            setSelectedAccount(account)
-            val viewModel = SendScreenViewModelFake(account)
+        try
+        {
+            runComposeUiTest {
+                setSelectedAccount(account)
+                val viewModel = SendScreenViewModelFake(account)
 
-            setContent {
-                ConfirmSend(viewModel)
+                setContent {
+                    ConfirmSend(viewModel)
+                }
+                settle()
+
+                onNodeWithText(i18n(S.confirmSend)).assertIsDisplayed()
+
+                // TODO: Verify that uiState values such as toAddress is displayed:
+                // val toAddress = viewModel.uiState.value.toAddress
+                // onNodeWithText(toAddress).assertIsDisplayed()
+
+                // TODO: mock assetsToSend and verify that it is displayed
+                val assetsToSend = viewModel.assetsToSend.value.size
+                if (assetsToSend > 0)
+                    onNodeWithText(assetsToSend.toString()).assertExists()
+                settle()
             }
-            settle()
-
-            onNodeWithText(i18n(S.confirmSend)).assertIsDisplayed()
-
-            // TODO: Verify that uiState values such as toAddress is displayed:
-            // val toAddress = viewModel.uiState.value.toAddress
-            // onNodeWithText(toAddress).assertIsDisplayed()
-
-            // TODO: mock assetsToSend and verify that it is displayed
-            val assetsToSend = viewModel.assetsToSend.value.size
-            if (assetsToSend > 0)
-                onNodeWithText(assetsToSend.toString()).assertExists()
-            settle()
         }
-        wallyApp!!.deleteAccount(account)
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+        }
     }
 }

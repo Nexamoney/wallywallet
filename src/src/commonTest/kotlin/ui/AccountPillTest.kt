@@ -28,6 +28,8 @@ class AccountPillTest:WallyUiTestBase()
         val cs = ChainSelector.NEXA
         wallyApp!!.openAllAccounts()
         val account = wallyApp!!.newAccount("actPill", 0U, "", cs)!!
+        try
+        {
 
         runComposeUiTest {
             try
@@ -113,6 +115,10 @@ class AccountPillTest:WallyUiTestBase()
                 throw e
             }
         }
-        wallyApp!!.deleteAccount(account)
+        }
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+        }
     }
 }

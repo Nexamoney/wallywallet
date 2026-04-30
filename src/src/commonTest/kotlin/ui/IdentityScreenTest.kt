@@ -273,51 +273,63 @@ class IdentityScreenTest : WallyUiTestBase(false)
     fun identityScreenNoRegistrationsShowsEmptyStateAndCommonIdentity()
     {
         val account: Account = wallyApp!!.newAccount("idtst-empty", 0U, "", ChainSelector.NEXA)!!
-        val idSession = IdentitySession(null)
-        idSession.pill.account.value = account
-        runComposeUiTest {
-            setContent {
-                IdentityScreen(idSession, ScreenNav())
-            }
-            settle()
+        try
+        {
+            val idSession = IdentitySession(null)
+            idSession.pill.account.value = account
+            runComposeUiTest {
+                setContent {
+                    IdentityScreen(idSession, ScreenNav())
+                }
+                settle()
 
-            onNodeWithText(
-              i18n(S.commonIdentityForAccount) % mapOf("act" to account.name)
-            ).assertIsDisplayed()
-            onNodeWithText(i18n(S.IdentityRegistrations)).assertIsDisplayed()
-            onNodeWithText(i18n(S.NoIdentitiesRegistered)).assertIsDisplayed()
+                onNodeWithText(
+                  i18n(S.commonIdentityForAccount) % mapOf("act" to account.name)
+                ).assertIsDisplayed()
+                onNodeWithText(i18n(S.IdentityRegistrations)).assertIsDisplayed()
+                onNodeWithText(i18n(S.NoIdentitiesRegistered)).assertIsDisplayed()
+            }
         }
-        wallyApp!!.deleteAccount(account)
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+        }
     }
 
     @Test
     fun identityScreenShowsRegisteredDomainAndOpensOnClick()
     {
         val account: Account = wallyApp!!.newAccount("idtst-list", 0U, "", ChainSelector.NEXA)!!
-        val hostname = "testdomain.example"
-        account.wallet.upsertIdentityDomain(
-          LibIdentityDomain(hostname, LibIdentityDomain.COMMON_IDENTITY).apply { emailR = 'r' }
-        )
+        try
+        {
+            val hostname = "testdomain.example"
+            account.wallet.upsertIdentityDomain(
+              LibIdentityDomain(hostname, LibIdentityDomain.COMMON_IDENTITY).apply { emailR = 'r' }
+            )
 
-        val idSession = IdentitySession(null)
-        idSession.pill.account.value = account
+            val idSession = IdentitySession(null)
+            idSession.pill.account.value = account
 
-        runComposeUiTest {
-            setContent {
-                IdentityScreen(idSession, ScreenNav())
+            runComposeUiTest {
+                setContent {
+                    IdentityScreen(idSession, ScreenNav())
+                }
+                settle()
+
+                onNodeWithText(i18n(S.NoIdentitiesRegistered)).assertDoesNotExist()
+                onNodeWithText(hostname).assertIsDisplayed()
+
+                // Clicking the registration populates idData, which unfolds IdentityDomainView below.
+                onNodeWithText(hostname).performClick()
+                settle()
+                onNodeWithText(i18n(S.IdentityAssociatedWith)).assertIsDisplayed()
+                onNodeWithTag("RemoveIdentityButton").assertIsDisplayed()
             }
-            settle()
-
-            onNodeWithText(i18n(S.NoIdentitiesRegistered)).assertDoesNotExist()
-            onNodeWithText(hostname).assertIsDisplayed()
-
-            // Clicking the registration populates idData, which unfolds IdentityDomainView below.
-            onNodeWithText(hostname).performClick()
-            settle()
-            onNodeWithText(i18n(S.IdentityAssociatedWith)).assertIsDisplayed()
-            onNodeWithTag("RemoveIdentityButton").assertIsDisplayed()
         }
-        wallyApp!!.deleteAccount(account)
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+        }
     }
 
     // ---------- fun IdentityEditScreen ----------
@@ -326,127 +338,150 @@ class IdentityScreenTest : WallyUiTestBase(false)
     fun identityEditScreenShowsAllLabeledFieldsAndButtons()
     {
         val account: Account = wallyApp!!.newAccount("idtst-edit", 0U, "", ChainSelector.NEXA)!!
-        runComposeUiTest {
-            setContent {
-                IdentityEditScreen(account, ScreenNav())
-            }
-            settle()
+        try
+        {
+            runComposeUiTest {
+                setContent {
+                    IdentityEditScreen(account, ScreenNav())
+                }
+                settle()
 
-            onNodeWithText(i18n(S.IdentityAssociatedWith)).assertIsDisplayed()
-            onNodeWithText(i18n(S.UsernameOrAliasText)).assertIsDisplayed()
-            onNodeWithText(i18n(S.EmailText)).assertIsDisplayed()
-            onNodeWithText(i18n(S.NameText)).assertIsDisplayed()
-            onNodeWithText(i18n(S.PostalAddressText)).assertIsDisplayed()
-            onNodeWithText(i18n(S.BillingAddressText)).assertIsDisplayed()
-            onNodeWithText(i18n(S.SocialMediaText)).assertIsDisplayed()
-            onNodeWithText(i18n(S.done)).assertIsDisplayed()
-            onNodeWithText(i18n(S.clear)).assertIsDisplayed()
+                onNodeWithText(i18n(S.IdentityAssociatedWith)).assertIsDisplayed()
+                onNodeWithText(i18n(S.UsernameOrAliasText)).assertIsDisplayed()
+                onNodeWithText(i18n(S.EmailText)).assertIsDisplayed()
+                onNodeWithText(i18n(S.NameText)).assertIsDisplayed()
+                onNodeWithText(i18n(S.PostalAddressText)).assertIsDisplayed()
+                onNodeWithText(i18n(S.BillingAddressText)).assertIsDisplayed()
+                onNodeWithText(i18n(S.SocialMediaText)).assertIsDisplayed()
+                onNodeWithText(i18n(S.done)).assertIsDisplayed()
+                onNodeWithText(i18n(S.clear)).assertIsDisplayed()
+            }
         }
-        wallyApp!!.deleteAccount(account)
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+        }
     }
 
     @Test
     fun identityEditScreenTypingWritesAllFieldsToIdentityInfo()
     {
         val account: Account = wallyApp!!.newAccount("idtst-typing", 0U, "", ChainSelector.NEXA)!!
-        runComposeUiTest {
-            setContent {
-                IdentityEditScreen(account, ScreenNav())
+        try
+        {
+            runComposeUiTest {
+                setContent {
+                    IdentityEditScreen(account, ScreenNav())
+                }
+                settle()
+
+                // ThinDataEntry has no testTag; the screen renders exactly six empty
+                // text fields, matched here in declaration order: hdl, email, realname,
+                // postal, billing, sm.
+                val fields = onAllNodes(hasSetTextAction())
+                fields[0].performTextInput("alice")
+                fields[1].performTextInput("alice@example.com")
+                fields[2].performTextInput("Alice Smith")
+                fields[3].performTextInput("1 Post Rd")
+                fields[4].performTextInput("1 Billing Rd")
+                fields[5].performTextInput("@alice")
+                settle()
+
+                fields[0].assertTextEquals("alice")
+                fields[1].assertTextEquals("alice@example.com")
+                fields[2].assertTextEquals("Alice Smith")
+                fields[3].assertTextEquals("1 Post Rd")
+                fields[4].assertTextEquals("1 Billing Rd")
+                fields[5].assertTextEquals("@alice")
+
+                val addr = account.wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED).address!!
+                val info = account.wallet.lookupIdentityInfo(addr)!!
+                assertEquals("alice", info.hdl)
+                assertEquals("alice@example.com", info.email)
+                assertEquals("Alice Smith", info.realname)
+                assertEquals("1 Post Rd", info.postal)
+                assertEquals("1 Billing Rd", info.billing)
+                assertEquals("@alice", info.sm)
             }
-            settle()
-
-            // ThinDataEntry has no testTag; the screen renders exactly six empty
-            // text fields, matched here in declaration order: hdl, email, realname,
-            // postal, billing, sm.
-            val fields = onAllNodes(hasSetTextAction())
-            fields[0].performTextInput("alice")
-            fields[1].performTextInput("alice@example.com")
-            fields[2].performTextInput("Alice Smith")
-            fields[3].performTextInput("1 Post Rd")
-            fields[4].performTextInput("1 Billing Rd")
-            fields[5].performTextInput("@alice")
-            settle()
-
-            fields[0].assertTextEquals("alice")
-            fields[1].assertTextEquals("alice@example.com")
-            fields[2].assertTextEquals("Alice Smith")
-            fields[3].assertTextEquals("1 Post Rd")
-            fields[4].assertTextEquals("1 Billing Rd")
-            fields[5].assertTextEquals("@alice")
-
-            val addr = account.wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED).address!!
-            val info = account.wallet.lookupIdentityInfo(addr)!!
-            assertEquals("alice", info.hdl)
-            assertEquals("alice@example.com", info.email)
-            assertEquals("Alice Smith", info.realname)
-            assertEquals("1 Post Rd", info.postal)
-            assertEquals("1 Billing Rd", info.billing)
-            assertEquals("@alice", info.sm)
         }
-        wallyApp!!.deleteAccount(account)
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+        }
     }
 
     @Test
     fun identityEditScreenClearButtonEmptiesIdentityInfoMap()
     {
         val account: Account = wallyApp!!.newAccount("idtst-clear", 0U, "", ChainSelector.NEXA)!!
-        runComposeUiTest {
-            setContent {
-                IdentityEditScreen(account, ScreenNav())
+        try
+        {
+            runComposeUiTest {
+                setContent {
+                    IdentityEditScreen(account, ScreenNav())
+                }
+                settle()
+
+                val fields = onAllNodes(hasSetTextAction())
+                fields[0].performTextInput("will-be-cleared")
+                settle()
+
+                val addr = account.wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED).address!!
+                assertEquals("will-be-cleared", account.wallet.lookupIdentityInfo(addr)?.hdl)
+                assertFalse(account.wallet.identityInfo.isEmpty())
+                account.wallet.identityInfoChanged = false
+
+                onNodeWithText(i18n(S.clear)).performClick()
+                settle()
+
+                assertTrue(account.wallet.identityInfo.isEmpty())
+                assertTrue(account.wallet.identityInfoChanged)
             }
-            settle()
-
-            val fields = onAllNodes(hasSetTextAction())
-            fields[0].performTextInput("will-be-cleared")
-            settle()
-
-            val addr = account.wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED).address!!
-            assertEquals("will-be-cleared", account.wallet.lookupIdentityInfo(addr)?.hdl)
-            assertFalse(account.wallet.identityInfo.isEmpty())
-            account.wallet.identityInfoChanged = false
-
-            onNodeWithText(i18n(S.clear)).performClick()
-            settle()
-
-            assertTrue(account.wallet.identityInfo.isEmpty())
-            assertTrue(account.wallet.identityInfoChanged)
         }
-        wallyApp!!.deleteAccount(account)
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+        }
     }
 
     @Test
     fun identityEditScreenDoneButtonCallsNavBack()
     {
         val account: Account = wallyApp!!.newAccount("idtst-done", 0U, "", ChainSelector.NEXA)!!
-        // Seed the nav stack so back() has somewhere to pop to.
-        val nav = ScreenNav()
-        nav.go(ScreenId.IdentityEdit)
-        assertEquals(ScreenId.IdentityEdit, nav.currentScreen.value)
+        try
+        {
+            // Seed the nav stack so back() has somewhere to pop to.
+            val nav = ScreenNav()
+            nav.go(ScreenId.IdentityEdit)
+            assertEquals(ScreenId.IdentityEdit, nav.currentScreen.value)
 
-        runComposeUiTest {
-            setContent {
-                IdentityEditScreen(account, nav)
+            runComposeUiTest {
+                setContent {
+                    IdentityEditScreen(account, nav)
+                }
+                settle()
+
+                // Type something so we can also prove the screen's onDepart ran (it
+                // upserts the current identity info into the wallet on back()).
+                val fields = onAllNodes(hasSetTextAction())
+                fields[0].performTextInput("alice-depart")
+                settle()
+
+                onNodeWithText(i18n(S.done)).performClick()
+                settle()
             }
-            settle()
 
-            // Type something so we can also prove the screen's onDepart ran (it
-            // upserts the current identity info into the wallet on back()).
-            val fields = onAllNodes(hasSetTextAction())
-            fields[0].performTextInput("alice-depart")
-            settle()
+            // back() popped the prior Splash screen off the stack.
+            assertEquals(ScreenId.Splash, nav.currentScreen.value)
 
-            onNodeWithText(i18n(S.done)).performClick()
-            settle()
+            // back() also invoked the onDepart callback installed by IdentityEditScreen,
+            // which upserts the identityInfo into the wallet.
+            val addr = account.wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED).address!!
+            assertEquals("alice-depart", account.wallet.lookupIdentityInfo(addr)?.hdl)
         }
-
-        // back() popped the prior Splash screen off the stack.
-        assertEquals(ScreenId.Splash, nav.currentScreen.value)
-
-        // back() also invoked the onDepart callback installed by IdentityEditScreen,
-        // which upserts the identityInfo into the wallet.
-        val addr = account.wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED).address!!
-        assertEquals("alice-depart", account.wallet.lookupIdentityInfo(addr)?.hdl)
-
-        wallyApp!!.deleteAccount(account)
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+        }
     }
 }

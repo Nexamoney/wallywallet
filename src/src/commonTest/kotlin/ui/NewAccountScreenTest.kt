@@ -164,6 +164,8 @@ class NewAccountScreenTest: WallyUiTestBase(false)
             it.delete()
             wallyApp!!.accounts.remove("newAct")
         }
+        try
+        {
         runComposeUiTest {
             val viewModelStoreOwner = object : ViewModelStoreOwner
             {
@@ -193,7 +195,11 @@ class NewAccountScreenTest: WallyUiTestBase(false)
             waitForCatching(5000) { newAccountState.value.accountName == "" }
             settle()
         }
-        wallyApp!!.accounts["newAct"]?.let { wallyApp!!.deleteAccount(it) }
+        }
+        finally
+        {
+            wallyApp!!.accounts["newAct"]?.let { wallyApp!!.deleteAccount(it) }
+        }
     }
 
     /** Test specifying a short PIN */
@@ -288,10 +294,16 @@ class NewAccountScreenTest: WallyUiTestBase(false)
         assertNotNull(first)
         // Create an account with that name
         val account = wallyApp!!.newAccount(first, 0U, "", cs)!!
-        // Next proposal must be different since the name is now taken
-        val second = ProposeAccountName(cs)
-        assertNotNull(second)
-        assertNotEquals(first, second)
-        wallyApp!!.deleteAccount(account)
+        try
+        {
+            // Next proposal must be different since the name is now taken
+            val second = ProposeAccountName(cs)
+            assertNotNull(second)
+            assertNotEquals(first, second)
+        }
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+        }
     }
 }

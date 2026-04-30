@@ -21,9 +21,15 @@ class TxHistoryScreenTest: WallyUiTestBase()
         runBlocking(Dispatchers.IO) {
             account = wallyApp!!.newAccount("txhis", 0U, "", cs)!!
         }
-        setContent {
-            TxHistoryScreen(account, ScreenNav())
+        try
+        {
+            setContent {
+                TxHistoryScreen(account, ScreenNav())
+            }
         }
-        wallyApp!!.deleteAccount(account)
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+        }
     }
 }

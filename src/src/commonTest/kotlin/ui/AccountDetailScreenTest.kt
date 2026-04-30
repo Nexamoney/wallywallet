@@ -19,6 +19,8 @@ class AccountDetailScreenTest:WallyUiTestBase()
     {
         val cs = ChainSelector.NEXA
         val account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
+        try
+        {
 
         runComposeUiTest {
             /*
@@ -46,7 +48,11 @@ class AccountDetailScreenTest:WallyUiTestBase()
             onNodeWithText(i18n(S.cancel)).performClick()
             settle()
         }
-        wallyApp!!.deleteAccount(account)
+        }
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+        }
     }
 
     @Test
@@ -54,6 +60,8 @@ class AccountDetailScreenTest:WallyUiTestBase()
     {
         val cs = ChainSelector.NEXA
         val account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
+        try
+        {
 
         runComposeUiTest {
             /*
@@ -97,7 +105,11 @@ class AccountDetailScreenTest:WallyUiTestBase()
             onNodeWithText(i18n(S.accept)).performClick()
             onNodeWithText(i18n(S.SetChangePin)).assertIsDisplayed()
         }
-        wallyApp!!.deleteAccount(account)
+        }
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+        }
     }
 
     @Test
@@ -107,6 +119,8 @@ class AccountDetailScreenTest:WallyUiTestBase()
 
         listOf(ChainSelector.NEXATESTNET, ChainSelector.NEXA).forEach { cs ->
             val account = mockAccount(chainSelector = cs)
+            try
+            {
             val mnemonic = account.getRecoveryPhrase()
             val mnemonicFormatted = mnemonic.split(" ").chunked(4).fastJoinToString("\n") { it.fastJoinToString(" ") }
 
@@ -143,7 +157,11 @@ class AccountDetailScreenTest:WallyUiTestBase()
                 onNodeWithText(i18n(S.ViewRecoveryPhrase)).assertIsDisplayed()
             }
 
-            wallyApp!!.deleteAccount(account)
+            }
+            finally
+            {
+                wallyApp!!.deleteAccount(account)
+            }
         }
     }
 
@@ -159,6 +177,8 @@ class AccountDetailScreenTest:WallyUiTestBase()
 
         listOf(ChainSelector.NEXATESTNET, ChainSelector.NEXA).forEach { cs ->
             val account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
+            try
+            {
             val mnemonic = account.getRecoveryPhrase()
             val mnemonicFormatted = mnemonic.split(" ").chunked(4).fastJoinToString("\n") { it.fastJoinToString(" ") }
 
@@ -195,7 +215,11 @@ class AccountDetailScreenTest:WallyUiTestBase()
                 onNodeWithText(i18n(S.ViewRecoveryPhrase)).assertIsDisplayed()
             }
 
-            wallyApp!!.deleteAccount(account)
+            }
+            finally
+            {
+                wallyApp!!.deleteAccount(account)
+            }
         }
     }
 }

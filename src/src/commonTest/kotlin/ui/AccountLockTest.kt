@@ -41,6 +41,8 @@ class AccountLockTest:WallyUiTestBase(false)
         // Create a normal account
         val actName = "lockAct"
         val account = wallyApp!!.newAccount(actName, 0U, "", ChainSelector.NEXA)!!
+        try
+        {
 
         val wInsets = WindowInsets(0,0,0,0)
 
@@ -137,8 +139,12 @@ class AccountLockTest:WallyUiTestBase(false)
             LogIt.info("testLockAccount Complete")
             LogIt.info("sync check finished")
             }
-        wallyApp!!.deleteAccount(account)
-        LogIt.info("testLockAccount account closed")
+        }
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+            LogIt.info("testLockAccount account closed")
+        }
         }
 
     }

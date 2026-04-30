@@ -30,13 +30,16 @@ class AccountTest : WallyUiTestBase()
     )
     {
         val acc = wallyApp!!.newAccount(name, 0U, "", cs)!!
-        block(acc)
-        // Remove from wallyApp first so queued init jobs don't race against
-        // the wallet teardown done by deleteAccount().
-        wallyApp!!.accountLock.lock { wallyApp!!.accounts.remove(acc.name) }
-        wallyApp!!.saveActiveAccountList()
-        wallyApp!!.deleteAccount(acc)
-        acc.delete()
+        try
+        {
+            block(acc)
+        }
+        finally
+        {
+            wallyApp!!.accountLock.lock { wallyApp!!.accounts.remove(acc.name) }
+            wallyApp!!.saveActiveAccountList()
+            wallyApp!!.deleteAccount(acc)
+        }
     }
 
     // ======================================================================
