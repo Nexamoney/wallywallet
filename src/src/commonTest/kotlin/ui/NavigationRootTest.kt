@@ -33,6 +33,8 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import org.nexa.threads.millinow
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -230,5 +232,114 @@ class NavigationRootTest: WallyUiTestBase()
                 onNodeWithTag("RootScaffold").assertIsNotDisplayed()
             settle()
         }
+    }
+
+    @Test
+    fun deleteSecondAccountFromAccountDetail()
+    {
+        // Start from a clean slate so that "account number two" is unambiguous.
+        val existing = wallyApp!!.accounts.values.toList()
+        for (a in existing)
+        {
+            LogIt.info(sourceLoc() + ": Pre-clean: deleting account ${a.name}")
+            wallyApp!!.deleteAccount(a)
+        }
+
+        // Names are crafted so alphabetical ordering (used by orderedAccounts) matches
+        // creation order, making "account number two" deterministic across platforms.
+        val mainnet1 = wallyApp!!.newAccount("delAct1main", 0U, "", ChainSelector.NEXA)!!
+        val mainnet2 = wallyApp!!.newAccount("delAct2main", 0U, "", ChainSelector.NEXA)!!
+        val testnet1 = wallyApp!!.newAccount("delAct3test", 0U, "", ChainSelector.NEXATESTNET)!!
+        val testnet2 = wallyApp!!.newAccount("delAct4test", 0U, "", ChainSelector.NEXATESTNET)!!
+
+        // orderedAccounts returns a ListifyMap which implements List<Account> directly.
+        val ordered = wallyApp!!.orderedAccounts(false)
+        assertEquals(4, ordered.size)
+        val accountTwo = ordered[1]
+        assertEquals(mainnet2.name, accountTwo.name)
+
+        val wInsets = WindowInsets(0, 0, 0, 0)
+
+        runComposeUiTest {
+            val viewModelStoreOwner = object : ViewModelStoreOwner
+            {
+                override val viewModelStore: ViewModelStore = ViewModelStore()
+            }
+            val assetViewModel = AssetViewModel()
+            val accountUiDataViewModel = AccountUiDataViewModel()
+            val pill = AccountPill(wallyApp!!.focusedAccount)
+            val unlock = UnlockViewModel(wallyApp!!.focusedAccount)
+
+            setContent {
+                CompositionLocalProvider(
+                  LocalViewModelStoreOwner provides viewModelStoreOwner
+                ) {
+                    NavigationRoot(Modifier, wInsets, pill, assetViewModel, accountUiDataViewModel, unlock)
+                }
+            }
+            assignAccountsGuiSlots()
+            nav.switch(ScreenId.Home)
+            settle()
+
+            // Click the second account in the list to focus it.
+            waitForCatching {
+                onNode(hasTestTag("CarouselAccountName") and hasText(accountTwo.name), useUnmergedTree = true).isDisplayed()
+            }
+            onNode(hasTestTag("CarouselAccountName") and hasText(accountTwo.name), useUnmergedTree = true).performClick()
+            settle()
+
+            waitForCatching { onNodeWithTag("AccountPillAccountName").isDisplayed() }
+            onNodeWithTag("AccountPillAccountName").assertTextEquals(accountTwo.name)
+
+            // Tap the gear icon to navigate to AccountDetails.
+            waitForCatching { onNodeWithTag("AccountDetailsButton").isDisplayed() }
+            onNodeWithTag("AccountDetailsButton").performClick()
+            settle()
+
+            // Trigger the delete-account confirmation card.
+            waitForCatching { onNodeWithText(i18n(S.deleteWalletAccount)).isDisplayed() }
+            onNodeWithText(i18n(S.deleteWalletAccount)).performScrollTo()
+            onNodeWithText(i18n(S.deleteWalletAccount)).performClick()
+            settle()
+
+            // Confirm the deletion.
+            waitForCatching { onNodeWithText(i18n(S.accept)).isDisplayed() }
+            onNodeWithText(i18n(S.accept)).performClick()
+            settle()
+
+            // Deletion is dispatched via tlater{}, so wait until wallyApp reflects the change.
+            val deletedName = accountTwo.name
+            waitForCatching<Boolean>(10000, { "Account $deletedName was not removed from wallyApp.accounts" }) {
+                !wallyApp!!.accounts.containsKey(deletedName)
+            }
+
+            // After accept, AccountDetailScreen calls nav.back(), so we should be back on Home.
+            // Verify in the UI that the deleted account's carousel row is gone, and the other
+            // three accounts are still rendered.
+            assignAccountsGuiSlots()
+            settle()
+            waitForCatching<Boolean>(10000, { "Carousel still shows deleted account $deletedName" }) {
+                onAllNodes(hasTestTag("CarouselAccountName") and hasText(deletedName), useUnmergedTree = true)
+                  .fetchSemanticsNodes().isEmpty()
+            }
+            onNode(hasTestTag("CarouselAccountName") and hasText(deletedName), useUnmergedTree = true).assertDoesNotExist()
+            onNode(hasTestTag("CarouselAccountName") and hasText(mainnet1.name), useUnmergedTree = true).assertIsDisplayed()
+            onNode(hasTestTag("CarouselAccountName") and hasText(testnet1.name), useUnmergedTree = true).assertIsDisplayed()
+            onNode(hasTestTag("CarouselAccountName") and hasText(testnet2.name), useUnmergedTree = true).assertIsDisplayed()
+        }
+
+        // The 2nd account is gone, the others remain.
+        assertFalse(wallyApp!!.accounts.containsKey(mainnet2.name))
+        assertTrue(wallyApp!!.accounts.containsKey(mainnet1.name))
+        assertTrue(wallyApp!!.accounts.containsKey(testnet1.name))
+        assertTrue(wallyApp!!.accounts.containsKey(testnet2.name))
+        assertEquals(3, wallyApp!!.orderedAccounts(false).size)
+        // accountTwo should not be present in the ordered list either.
+        assertFalse(wallyApp!!.orderedAccounts(false).any { it.name == mainnet2.name })
+
+        // Cleanup the remaining accounts so we leave a clean state for other tests.
+        wallyApp!!.deleteAccount(mainnet1)
+        wallyApp!!.deleteAccount(testnet1)
+        wallyApp!!.deleteAccount(testnet2)
     }
 }
