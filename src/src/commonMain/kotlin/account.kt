@@ -52,21 +52,19 @@ data class HDActivityBracket(val startTime: Long, val startBlockHeight: Int, val
 
 expect fun EncodePIN(actName: String, pin: String, size: Int = 64): ByteArray
 
-fun WallyGetCnxnMgr(chain: ChainSelector, name: String? = null, start:Boolean = true): CnxnMgr
+fun CfgCnxnMgr(cm:CnxnMgr)
 {
-    val ret = GetCnxnMgr(chain, name, start)
-    if (chain == ChainSelector.NEXA)
+    if (cm.chainSelector == ChainSelector.NEXA)
     {
         laterJob {
-            ret.add("nexa.wallywallet.org", NexaPort, Random.nextInt(90,101), true)
-            ret.add("p2p.wallywallet.org", NexaPort, Random.nextInt(90,101), true)
-            ret.add("usa.wallywallet.org", NexaPort, Random.nextInt(90,101), true)
-            ret.add("india.wallywallet.org", NexaPort, Random.nextInt(90,101), true)
-            ret.add("eu.wallywallet.org", NexaPort, Random.nextInt(90,101), true)
-            ret.add("w.nexa.org", NexaPort, Random.nextInt(90,101), true)
+            cm.add("nexa.wallywallet.org", NexaPort, Random.nextInt(90,101), true)
+            cm.add("p2p.wallywallet.org", NexaPort, Random.nextInt(90,101), true)
+            cm.add("usa.wallywallet.org", NexaPort, Random.nextInt(90,101), true)
+            cm.add("india.wallywallet.org", NexaPort, Random.nextInt(90,101), true)
+            cm.add("eu.wallywallet.org", NexaPort, Random.nextInt(90,101), true)
+            cm.add("w.nexa.org", NexaPort, Random.nextInt(90,101), true)
         }
     }
-    return ret
 }
 
 /** Given a string, this cleans up extra spaces and returns a list of the actual words */
@@ -136,7 +134,7 @@ interface Account
     val balanceState: StateFlow<BigDecimal?>
     var unconfirmedBalance: MutableStateFlow<BigDecimal?>
     var confirmedBalance: MutableStateFlow<BigDecimal?>
-    var cnxnMgr: CnxnMgr
+    val cnxnMgr: CnxnMgr
     var chain: Blockchain
     val currencyCode: String
 
@@ -317,8 +315,16 @@ class AccountImpl(
     override var unconfirmedBalance = MutableStateFlow<BigDecimal?>(null)
     override var confirmedBalance = MutableStateFlow<BigDecimal?>(null)
 
-    override var cnxnMgr: CnxnMgr = WallyGetCnxnMgr(wallet.chainSelector, name, false)
-    override var chain: Blockchain = GetBlockchain(wallet.chainSelector, cnxnMgr, chainToURI[wallet.chainSelector], false) // do not start right away so we can configure exclusive/preferred no
+    // do not start right away so we can configure exclusive/preferred no
+    override var chain: Blockchain = connectBlockchain(wallet.chainSelector) {
+          CfgCnxnMgr(net)
+    }
+
+    override val cnxnMgr: CnxnMgr
+        get()
+        {
+            return chain.net
+        }
 
     /** A string denoting this wallet's currency units.  That is, the units that this wallet should use in display, in its BigDecimal amount representations, and is converted to and from in fromFinestUnit() and toFinestUnit() respectively */
     override val currencyCode: String = chainToDisplayCurrencyCode[wallet.chainSelector]!!

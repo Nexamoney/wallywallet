@@ -144,6 +144,7 @@ class ReceiveScreenTest:WallyUiTestBase(false)
             override var secret: Secret? = null
             override fun serializeDerived(format: SerializationType): BCHserialized =
               BCHserialized(format)
+            override fun clean() {}
         }
         val account = mockAccount(chainSelector = cs)
         setSelectedAccount(account)
