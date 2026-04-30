@@ -129,9 +129,9 @@ YOUR_PROJECT_PATH/build/libs/wpw-app.jar
 ```
 
 ### Test
-
-
-
+```
+./gradlew connectedAndroidTest
+```
 #### Trigger iOS background processing task from Xcode
 A physical device is required. Background processing is not supported in emulator.
 
