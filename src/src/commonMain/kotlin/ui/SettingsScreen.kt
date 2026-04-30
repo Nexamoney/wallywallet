@@ -144,7 +144,7 @@ fun LocalCurrency(preferenceDB: SharedPreferences)
     val preferenceDB: SharedPreferences = wallyApp!!.preferenceDB
     val isChecked = remember { mutableStateOf(preferenceDB.getBoolean(generalSettingsSwitch.prefKey, true)) }
 
-    WallySwitchRow(isChecked.value, generalSettingsSwitch.textRes) {
+    WallyWideSwitchRow(isChecked.value, generalSettingsSwitch.textRes) {
         isChecked.value = it
         preferenceDB.edit().putBoolean(generalSettingsSwitch.prefKey, it).commit()
     }
@@ -231,14 +231,14 @@ fun SettingsScreen(preferenceDB: SharedPreferences = wallyApp!!.preferenceDB)
             generalSettingsSwitches.forEach { GeneralSettingsSwitchView(it) }
 
             if (false) // Dark mode is not implemented so don't show the button
-                WallySwitchRow(darkModeView, S.enableDarkMode) {
+                WallyWideSwitchRow(darkModeView, S.enableDarkMode) {
                     CoroutineScope(Dispatchers.IO).launch {
                         preferenceDB.edit().putBoolean(DARK_MODE_PREF, it).commit()
                     }
                     darkModeView = it
                     darkMode = it
                 }
-            WallySwitchRow(devModeView, S.enableDeveloperView, "DevModeSwitch") {
+            WallyWideSwitchRow(devModeView, S.enableDeveloperView, "DevModeSwitch") {
                 LogIt.info("devmode $it")
                 CoroutineScope(Dispatchers.IO).launch {
                     preferenceDB.edit().putBoolean(DEV_MODE_PREF, it).commit()
@@ -246,11 +246,11 @@ fun SettingsScreen(preferenceDB: SharedPreferences = wallyApp!!.preferenceDB)
                 devModeView = it
                 devMode = it
             }
-            WallySwitchRow(experimentalUI.collectAsState().value, S.enableExperimentalUx, "ExperimentalUxSwitch") {
+            WallyWideSwitchRow(experimentalUI.collectAsState().value, S.enableExperimentalUx, "ExperimentalUxSwitch") {
                 preferenceDB.edit().putBoolean(EXPERIMENTAL_UX_MODE_PREF, it).commit()
                 experimentalUI.value = it
             }
-            WallySwitchRow(soundEnabled.collectAsState().value, S.enableSound, "SoundSwitch") {
+            WallyWideSwitchRow(soundEnabled.collectAsState().value, S.enableSound, "SoundSwitch") {
                 preferenceDB.edit().putBoolean(SOUND_ENABLED_PREF, it).commit()
                 soundEnabled.value = it
             }

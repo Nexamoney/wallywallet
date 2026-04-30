@@ -178,6 +178,18 @@ import org.nexa.threads.millisleep
     }
 }
 
+@Composable fun WallyWideSwitchRow(isChecked: Boolean, textRes: Int, testTag: String? = null, onCheckedChange: (Boolean) -> Unit)
+{
+    Row(
+      Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(i18n(textRes))
+        WallySwitch(isChecked, testTag, onCheckedChange)
+    }
+}
+
 @Deprecated("Use theme to set font scale or set directly into the Text composable")
 @Composable fun FontScale(amt: Double): TextUnit
 {
