@@ -27,6 +27,8 @@ class AccountListViewTest
     {
         val cs = ChainSelector.NEXA
         val account = wallyApp!!.newAccount("itemvie", 0U, "", cs)!!
+        try
+        {
         val unlock = UnlockViewModel(wallyApp!!.focusedAccount)
         runComposeUiTest {
             val iSelectedMock = mutableStateOf(false)
@@ -55,6 +57,10 @@ class AccountListViewTest
             settle()
             assertTrue(iSelectedMock.value)
         }
-        wallyApp!!.deleteAccount(account)
+        }
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+        }
     }
 }

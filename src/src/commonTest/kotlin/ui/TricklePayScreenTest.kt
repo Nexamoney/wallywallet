@@ -99,12 +99,18 @@ class TricklePayScreenTest: WallyUiTestBase()
     {
         val cs = ChainSelector.NEXA
         val account = wallyApp!!.newAccount("testaccountitemview", 0U, "", cs)!!
-        runComposeUiTest {
-            val td = makeDomain(domain = "domain", topic = "topic", maxper = 2, maxday = 3, maxweek = 4)
-            setContent { TricklePayDomainView(td, Modifier, account) }
-            check(waitForCatching { onNodeWithTag("TricklePayDomainViewDomainName").isDisplayed() })
+        try
+        {
+            runComposeUiTest {
+                val td = makeDomain(domain = "domain", topic = "topic", maxper = 2, maxday = 3, maxweek = 4)
+                setContent { TricklePayDomainView(td, Modifier, account) }
+                check(waitForCatching { onNodeWithTag("TricklePayDomainViewDomainName").isDisplayed() })
+            }
         }
-        wallyApp!!.deleteAccount(account)
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+        }
     }
 
     // ======================================================================

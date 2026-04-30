@@ -105,6 +105,8 @@ class HomeScreenTest: WallyUiTestBase()
 
         val cs = ChainSelector.NEXA
         val account = wallyApp!!.newAccount("nexaTest", 0U, "", cs)!!
+        try
+        {
 
         // Set selected account to populate the UI
         setSelectedAccount(account)
@@ -146,7 +148,11 @@ class HomeScreenTest: WallyUiTestBase()
             onNodeWithTag("AccountPillFiatBalance").assertTextEquals(expectedFiatBalance)
         }
         // TODO: Click tabrowitem and verify
-        wallyApp!!.deleteAccount(account)
+        }
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+        }
     }
 
     @Test
@@ -172,9 +178,12 @@ class HomeScreenTest: WallyUiTestBase()
         catch (e: Exception)
         {
             println(sourceLoc() + ": ERROR creating nexaTest2: $e")
+            wallyApp!!.deleteAccount(account1)
             throw e
         }
 
+        try
+        {
         runComposeUiTest {
             val viewModelStoreOwner = object : ViewModelStoreOwner {
                 override val viewModelStore: ViewModelStore = ViewModelStore()
@@ -223,8 +232,12 @@ class HomeScreenTest: WallyUiTestBase()
             onNodeWithTag("AccountPillBalance").assertTextEquals(expectedBalance2)
             settle()
         }
-        wallyApp!!.deleteAccount(account2)
-        wallyApp!!.deleteAccount(account1)
+        }
+        finally
+        {
+            wallyApp!!.deleteAccount(account2)
+            wallyApp!!.deleteAccount(account1)
+        }
     }
     @Test
     fun testNavigationToReceiveScreenWithTwoAccounts()
@@ -232,7 +245,17 @@ class HomeScreenTest: WallyUiTestBase()
         // Create a normal account
         val normalAccount = wallyApp!!.newAccount("nexaAccount", 0U, "", ChainSelector.NEXA)!!
         // Create a testnet account
-        val testnetAccount = wallyApp!!.newAccount("nexaTestnetAccount", 0U, "", ChainSelector.NEXATESTNET)!!
+        val testnetAccount = try
+        {
+            wallyApp!!.newAccount("nexaTestnetAccount", 0U, "", ChainSelector.NEXATESTNET)!!
+        }
+        catch (e: Exception)
+        {
+            wallyApp!!.deleteAccount(normalAccount)
+            throw e
+        }
+        try
+        {
         val wInsets = WindowInsets(0,0,0,0)
 
         runComposeUiTest(testTimeout = 3.minutes) {
@@ -309,7 +332,11 @@ class HomeScreenTest: WallyUiTestBase()
                 settle()
             }
         }
-        wallyApp!!.deleteAccount(normalAccount)
-        wallyApp!!.deleteAccount(testnetAccount)
+        }
+        finally
+        {
+            wallyApp!!.deleteAccount(normalAccount)
+            wallyApp!!.deleteAccount(testnetAccount)
+        }
     }
 }

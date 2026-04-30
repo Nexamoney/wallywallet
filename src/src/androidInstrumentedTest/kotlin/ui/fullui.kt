@@ -45,22 +45,26 @@ class AAccountPillTest: WallyUiTestBase()
         val cs = ChainSelector.NEXATESTNET
         wallyApp!!.openAllAccounts()
         val account = wallyApp!!.newAccount("fulltest", 0U, "", cs)!!
+        try
+        {
+            val processName = Application.getProcessName()
+            println("My android process is $processName")
 
-        val processName = Application.getProcessName()
-        println("My android process is $processName")
+            setSelectedAccount(account)
+            val accountName = account.name
+            val currencyCode = account.currencyCode
 
-        setSelectedAccount(account)
-        val accountName = account.name
-        val currencyCode = account.currencyCode
+            println("Your phone needs to be actually unlocked so the app actually shows on the screen for this test to work.")
+            composeRule.waitForIdle()
+            runBlocking { waitFor(30000) { activityState() == Lifecycle.State.RESUMED } }
 
-        println("Your phone needs to be actually unlocked so the app actually shows on the screen for this test to work.")
-        composeRule.waitForIdle()
-        runBlocking { waitFor(30000) { activityState() == Lifecycle.State.RESUMED } }
-
-        composeRule.waitUntilAtLeastOneExists(hasText(accountName), 10_000)
-        composeRule.onNodeWithText(accountName).assertIsDisplayed()
-        composeRule.onNodeWithText(currencyCode).assertIsDisplayed()
-
-        wallyApp!!.deleteAccount(account)
+            composeRule.waitUntilAtLeastOneExists(hasText(accountName), 10_000)
+            composeRule.onNodeWithText(accountName).assertIsDisplayed()
+            composeRule.onNodeWithText(currencyCode).assertIsDisplayed()
+        }
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+        }
     }
 }

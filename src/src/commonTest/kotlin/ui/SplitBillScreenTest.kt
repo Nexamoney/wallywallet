@@ -18,14 +18,20 @@ class SplitBillScreenTest
     {
         val cs = ChainSelector.NEXA
         val account: Account = wallyApp!!.newAccount("mock", 0U, "", cs)!!
-        runComposeUiTest {
-            setContent {
-                SplitBillScreen(account)
+        try
+        {
+            runComposeUiTest {
+                setContent {
+                    SplitBillScreen(account)
+                }
+                settle()
+                onNodeWithText(i18n(S.SplitBillDescription)).assertIsDisplayed()
             }
-            settle()
-            onNodeWithText(i18n(S.SplitBillDescription)).assertIsDisplayed()
         }
-        account.delete()
+        finally
+        {
+            wallyApp!!.deleteAccount(account)
+        }
     }
 
     @OptIn(ExperimentalTestApi::class)
