@@ -63,8 +63,8 @@ val addressInfoComparator = object:  Comparator<AddressInfo>
     }
 }
 
-private val addressHistoryInfo = MutableStateFlow<List<AddressInfo>?>(null)
-private val addressHistoryAccount = MutableStateFlow<Account?>(null)
+internal val addressHistoryInfo = MutableStateFlow<List<AddressInfo>?>(null)
+internal val addressHistoryAccount = MutableStateFlow<Account?>(null)
 private val addressHistoryMutex = Mutex("addressHistory")
 fun calcAddressHistoryInfo(acc : Account)
 {

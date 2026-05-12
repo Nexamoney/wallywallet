@@ -41,6 +41,18 @@ class TricklePaySessionTest
         wallyApp = null
     }
 
+    private fun clearPersistedTdppDomains()
+    {
+        try
+        {
+            openKvpDB("wallyData")?.delete("tdppDomains".encodeToByteArray())
+        }
+        catch (_: Throwable)
+        {
+            // Key wasn't present, or the DB is fine to leave alone.
+        }
+    }
+
     // --- TdppAction.of tests ---
 
     @Test
@@ -773,6 +785,9 @@ class TricklePaySessionTest
     @Test
     fun parseCommonFieldsLoadsExistingDomain()
     {
+        // Wipe any persisted TDPP domain state so parseCommonFields()'s
+        // unconditional load() can't overwrite the in-memory domain inserted below.
+        clearPersistedTdppDomains()
         val domains = TricklePayDomains()
         domains.domainsLoaded = true
         val existing = makeDomain(domain = "existing.com", topic = "t1")
@@ -990,6 +1005,9 @@ class TricklePaySessionTest
     @Test
     fun handleAssetInfoRequestDenyReturnsDeny()
     {
+        // Wipe any persisted TDPP domain state so parseCommonFields()'s
+        // unconditional load() can't clobber the in-memory domain inserted below.
+        clearPersistedTdppDomains()
         val domains = TricklePayDomains()
         domains.domainsLoaded = true
         val d = makeDomain(domain = "example.com")
@@ -1016,6 +1034,9 @@ class TricklePaySessionTest
     @Test
     fun handleAssetInfoRequestAcceptProcessesAssets()
     {
+        // Wipe any persisted TDPP domain state so parseCommonFields()'s
+        // unconditional load() can't overwrite the in-memory domain inserted below.
+        clearPersistedTdppDomains()
         val domains = TricklePayDomains()
         domains.domainsLoaded = true
         val d = makeDomain(domain = "example.com")
@@ -1193,6 +1214,11 @@ class TricklePaySessionTest
     /** Helper: create a TricklePaySession with a pre-registered secure domain */
     private fun makeSecureSession(): Pair<TricklePaySession, TricklePayDomains>
     {
+        // Wipe any persisted TDPP domain state so parseCommonFields()'s
+        // unconditional load() can't overwrite the in-memory domain inserted
+        // below. Required on Pixel 5 instrumentation, where laterJob save()s
+        // from prior tests actually run and leave data in the wallyData DB.
+        clearPersistedTdppDomains()
         val domains = TricklePayDomains()
         domains.domainsLoaded = true
         val d = makeDomain(domain = "example.com", maxper = 99999, automaticEnabled = true)
