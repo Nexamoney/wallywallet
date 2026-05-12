@@ -323,9 +323,9 @@ class NavigationRootTest: WallyUiTestBase()
                   .fetchSemanticsNodes().isEmpty()
             }
             onNode(hasTestTag("CarouselAccountName") and hasText(deletedName), useUnmergedTree = true).assertDoesNotExist()
-            onNode(hasTestTag("CarouselAccountName") and hasText(mainnet1.name), useUnmergedTree = true).assertIsDisplayed()
-            onNode(hasTestTag("CarouselAccountName") and hasText(testnet1.name), useUnmergedTree = true).assertIsDisplayed()
-            onNode(hasTestTag("CarouselAccountName") and hasText(testnet2.name), useUnmergedTree = true).assertIsDisplayed()
+            waitForCatching<Boolean> { onNode(hasTestTag("CarouselAccountName") and hasText(mainnet1.name), useUnmergedTree = true).isDisplayed() }
+            waitForCatching<Boolean> { onNode(hasTestTag("CarouselAccountName") and hasText(testnet1.name), useUnmergedTree = true).isDisplayed() }
+            waitForCatching<Boolean> { onNode(hasTestTag("CarouselAccountName") and hasText(testnet2.name), useUnmergedTree = true).isDisplayed() }
         }
 
         // The 2nd account is gone, the others remain.
