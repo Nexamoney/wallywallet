@@ -447,6 +447,8 @@ kotlin {
 
                     // Play audio from resources file: https://medium.com/@brucemax/play-sounds-in-kotlin-multiplatform-using-multiplatform-resources-1b23716116d5
                     implementation(libs.androidx.media3.exoplayer)
+
+                    implementation(libs.androidx.core.splashscreen)
                 }
             }
         }

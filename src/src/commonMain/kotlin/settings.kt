@@ -24,3 +24,7 @@ const val PREFERENCE_FILE_NAME = "bitcoinunlimited.wally.prefs"
 // set to something to have a difference set of preference (for testing).  It is important to ALWAYS set something when testing
 // or the list of active wallets may be overwritten.
 var TEST_PREF = ""
+const val CAMOUFLAGE_MEDITATION = "meditationTimerCamouflage"
+const val CAMOUFLAGE_SUDOKU = "sudokuCamouflage"
+const val CAMOUFLAGE_MEDITATION_INTERVAL = "camouflageMeditationInterval"
+const val CAMOUFLAGE_MEDITATION_VIBRATION = "camouflageMeditationVibration"

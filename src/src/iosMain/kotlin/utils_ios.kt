@@ -529,3 +529,8 @@ actual fun requestInAppReview()
         wallyApp?.run { preferenceDB.edit().putString(LAST_REVIEW_TIMESTAMP, now.toString()).commit() }
     }
 }
+
+actual fun toggleMeditationCamouflage(enable: Boolean)
+{
+    // Changing the app name and icon programmatically is not supported for iOS
+}

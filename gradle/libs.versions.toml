@@ -1,6 +1,6 @@
 [versions]
 androidSdk = "36"
-androidMinSdk = "29"
+androidMinSdk = "29" # Android 10 (Q). Don't increase this because it will break support for older Android versions.
 
 androidsvgAar = "1.4"
 androidxActivity = "1.13.0" # https://developer.android.com/jetpack/androidx/releases/activity
@@ -15,6 +15,7 @@ bu_nexaRpc = "1.6.4" # https://gitlab.com/nexa/nexarpckotlin
 cameraCamera2 = "1.6.0" # https://developer.android.com/jetpack/androidx/releases/camera
 compottie = "2.1.0"
 coreKtx = "1.7.0" # https://mvnrepository.com/artifact/androidx.test/core
+coreSplashscreen = "1.2.0"
 coroutinesVersion = "1.10.2" # https://github.com/Kotlin/kotlinx.coroutines
 jsvg = "2.0.0"
 junitKtx = "1.3.0"
@@ -55,6 +56,7 @@ androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.r
 androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraCamera2" }
 androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraCamera2" }
 androidx-core-ktx = { module = "androidx.test:core-ktx", version.ref = "coreKtx" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-junit-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "junitKtx" }
 androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3Exoplayer" }
 androidx-media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3Exoplayer" }

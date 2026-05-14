@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -17,11 +18,16 @@ import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat.setWindowInsetsAnimationCallback
 import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
+import info.bitcoinunlimited.www.wally.ui.Camouflage
 import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.isSoftKeyboardShowing
+import info.bitcoinunlimited.www.wally.ui.camouflage
+import info.bitcoinunlimited.www.wally.ui.camouflageTemp
 import info.bitcoinunlimited.www.wally.ui.nav
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.launchIn
@@ -135,6 +141,24 @@ open class CommonActivity : AppCompatActivity()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
+        // Only available on Android 12 (API 31) and above
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+        {
+            // Sets the theme for the next splash screen after re-starting the app.
+            camouflage.onEach {
+                when(it)
+                {
+                    Camouflage.Meditation -> { splashScreen.setSplashScreenTheme(R.style.Theme_Wally_Splash_Meditation) }
+                    Camouflage.Sudoku -> { splashScreen.setSplashScreenTheme(R.style.Theme_Wally_Splash) }
+                    Camouflage.Disabled -> { splashScreen.setSplashScreenTheme(R.style.Theme_Wally_Splash) }
+                }
+            }.launchIn(lifecycleScope)
+        }
+
+
+        // Required for Android 10-11 splash screen
+        // https://developer.android.com/develop/ui/views/launch/splash-screen/migrate
+        installSplashScreen()
         setTheme(R.style.WallyActionBarStyle)
         super.onCreate(savedInstanceState)
         displayMetrics = resources.displayMetrics
@@ -217,7 +241,35 @@ open class CommonActivity : AppCompatActivity()
             }.launchIn(this.coGuiScope)
         }
 
-        useNewUiNavBar()
+        if (camouflage.value == Camouflage.Disabled)
+        {
+            useNewUiNavBar()
+            supportActionBar?.show()
+        }
+        else
+            supportActionBar?.hide()
+
+        camouflage.onEach {
+            when (it){
+                Camouflage.Disabled -> {
+                    useNewUiNavBar()
+                    supportActionBar?.show()
+                }
+                Camouflage.Meditation -> supportActionBar?.hide()
+                Camouflage.Sudoku -> supportActionBar?.hide()
+            }
+        }.launchIn(lifecycleScope)
+
+        camouflageTemp.onEach {
+            when (it){
+                Camouflage.Disabled -> {
+                    useNewUiNavBar()
+                    supportActionBar?.show()
+                }
+                Camouflage.Meditation -> supportActionBar?.hide()
+                Camouflage.Sudoku -> supportActionBar?.hide()
+            }
+        }.launchIn(lifecycleScope)
 
         // Cancel the new UI job when Android app comes back into the foreground and onResume runs again
         newUiJob?.cancel()

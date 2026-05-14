@@ -4,10 +4,12 @@ import android.app.Activity
 import android.app.ActivityManager
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE
 import android.content.ContextWrapper
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -41,6 +43,8 @@ import java.io.InputStream
 import java.util.zip.Inflater
 
 var notificationId = -1
+private val LogIt = GetLog("BU.wally.utils_android")
+
 actual fun notify(title: String?, content: String, onlyIfBackground: Boolean): Int
 {
     val t = title ?: i18n(S.app_long_name)
@@ -320,3 +324,36 @@ actual fun openUrl(url: String)
 actual fun getReviewManager(): InAppReviewDelegate? = null
 
 actual fun requestInAppReview() {}
+
+private const val DEFAULT_ALIAS = ".ComposeActivityDefault"
+private const val MEDITATION_ALIAS = ".ComposeActivityMeditationCamouflage"
+
+actual fun toggleMeditationCamouflage(enable: Boolean) {
+    val context = appContext() as android.content.Context
+    val pm = context.packageManager
+    val packageName = context.packageName
+
+    val defaultComp = ComponentName(packageName, "$packageName$DEFAULT_ALIAS")
+    val meditationComp = ComponentName(packageName, "$packageName$MEDITATION_ALIAS")
+
+    try {
+        val targetComp = if (enable) meditationComp else defaultComp
+        val otherComp = if (enable) defaultComp else meditationComp
+
+        pm.setComponentEnabledSetting(targetComp, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
+
+        pm.setComponentEnabledSetting(otherComp, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
+
+        // App restart is required when changing icon
+        val launchIntent = context.packageManager.getLaunchIntentForPackage(packageName)
+        launchIntent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        context.startActivity(launchIntent)
+
+        // If in Activity context, finish current
+        (context as? Activity)?.finish()
+    } catch (e: Exception) {
+        LogIt.error("IconSwitch: Switch failed")
+        LogIt.error(e.toString())
+        // Optional UI feedback
+    }
+}

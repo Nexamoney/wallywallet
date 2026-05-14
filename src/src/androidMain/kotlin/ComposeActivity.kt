@@ -7,10 +7,10 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import kotlinx.coroutines.delay
 import android.content.pm.PackageManager
+import android.os.Build
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,6 +26,7 @@ import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.work.*
 import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.theme.BaseBkg
@@ -38,6 +39,10 @@ import org.nexa.libnexakotlin.runningTheTests
 import java.io.File
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.toJavaDuration
+import androidx.core.graphics.toColorInt
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 private val LogIt = GetLog("BU.wally.ComposeActivity")
 
@@ -208,15 +213,48 @@ class ComposeActivity: CommonActivity()
     {
         super.onResume()
         WindowCompat.setDecorFitsSystemWindows(window, true)
+        // Sets the top/bottom icons to dark for meditation camouflage with white system bars
+        val meditationCamouflage = camouflage.value == Camouflage.Meditation && camouflageTemp.value == Camouflage.Meditation
+        if (meditationCamouflage)
+        {
+            WindowInsetsControllerCompat(window, window.decorView).apply {
+                isAppearanceLightStatusBars = true
+                isAppearanceLightNavigationBars = true
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
-        enableEdgeToEdge()
+        // enableEdgeToEdge() // This has to be disabled after updating to the new splash screen because it was creating a white bar above the top action bar in Android 12+
         // WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
-        window.statusBarColor = colorTitleBackground.toArgb()
-        window.navigationBarColor = colorTitleBackground.toArgb()
+        // Android 12+ overrides these colors from the system theme, so only set for older versions
+        val meditationCamouflage = camouflage.value == Camouflage.Meditation && camouflageTemp.value == Camouflage.Meditation
+        if (meditationCamouflage)
+        {
+            window.statusBarColor = "#fef7ff".toColorInt()
+            window.navigationBarColor = "#fef7ff".toColorInt()
+        }
+        else
+        {
+            window.statusBarColor = colorTitleBackground.toArgb()
+            window.navigationBarColor = colorTitleBackground.toArgb()
+        }
+
+        camouflageTemp.onEach {
+            if (it == Camouflage.Meditation)
+            {
+                window.statusBarColor = "#fef7ff".toColorInt()
+                window.navigationBarColor = "#fef7ff".toColorInt()
+            }
+            else
+            {
+                window.statusBarColor = colorTitleBackground.toArgb()
+                window.navigationBarColor = colorTitleBackground.toArgb()
+            }
+        }.launchIn(lifecycleScope)
+
         val decorView: View = getWindow().getDecorView()
         decorView.setBackgroundColor(BaseBkg.value.toInt())
         backgroundOnly = false

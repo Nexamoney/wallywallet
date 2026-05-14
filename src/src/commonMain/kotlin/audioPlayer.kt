@@ -15,8 +15,9 @@ expect class AudioPlayer() {
 val soundResList = listOf(
   "files/send_success.wav",
   "files/qr_scanned.wav",
-  // "files/bell.mp3",
-  // "files/beep7.mp3"
+  "files/meditation_gong_start.wav",
+  "files/meditation_gong_underway.wav",
+  "files/meditation_simple_gong_finished.wav",
 )
 
 class AudioPlayerViewModel: ViewModel() {

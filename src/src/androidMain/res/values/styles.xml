@@ -6,15 +6,26 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowSplashScreenBackground">@color/titleBackground</item>
-        <!-- TODO make the splash screen appear right away item name="android:background">@drawable/splash</item -->
         <item name="android:background">@color/titleBackground</item>
         <item name="actionBarPopupTheme">@style/ActionBarOverflowMenu</item>
-        <!-- item name="actionBarSize">32dp</item -->
         <item name="actionBarStyle">@style/WallyActionBarStyle</item>
         <item name="windowActionBar">true</item>
         <item name="windowNoTitle">false</item>
         <item name="android:statusBarColor">@color/titleBackground</item>
+    </style>
+
+    <!-- Dedicated Splash Theme for pre-Android 12 -->
+    <style name="Theme.Wally.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/titleBackground</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
+        <item name="windowSplashScreenIconBackgroundColor">@android:color/transparent</item>
+        <item name="postSplashScreenTheme">@style/AppTheme</item>
+    </style>
+
+    <style name="Theme.Wally.Splash.Meditation" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/titleBackground</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_meditation_round</item>
+        <item name="postSplashScreenTheme">@style/AppTheme</item>
     </style>
 
 

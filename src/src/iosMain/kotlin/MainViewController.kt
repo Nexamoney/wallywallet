@@ -41,7 +41,6 @@ fun MainViewController(): UIViewController
 
     val view = ComposeUIViewController({},
       {
-        nav.reset(ScreenId.Splash)
         UiRoot(
           // Add padding to allow .ignoresSafeArea in iOSApp.swift
           Modifier.fillMaxSize().padding(WindowInsets.systemBars.asPaddingValues()),
