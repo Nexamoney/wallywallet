@@ -257,6 +257,7 @@ actual fun NativeSplash(start: Boolean): Boolean
     return false
 }
 
+
 actual fun NativeTitle(title: String)
 {
 }

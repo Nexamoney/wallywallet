@@ -255,6 +255,53 @@ fun SettingsScreen(preferenceDB: SharedPreferences = wallyApp!!.preferenceDB)
                 soundEnabled.value = it
             }
 
+            if (experimentalUI.value)
+            {
+                Spacer(Modifier.height(16.dp))
+                CenteredSectionText(i18n(S.Camouflage))
+                WallyDivider()
+                Text(i18n(S.CamouflageAsMeditationTimer))
+                if (platform().target == KotlinTarget.Android)
+                    Text(i18n(S.CamouflageDescriptionAndroid))
+                else
+                    Text(i18n(S.CamouflageDescriptionOther))
+
+                val meditationCamouflage = camouflage.collectAsState().value == Camouflage.Meditation
+                val meditationCamouflageTextRes = if (platform().target == KotlinTarget.Android)
+                    S.CamouflageAsMeditateAppAndroid
+                else
+                    S.CamouflageAsMeditationTimer
+
+                WallySwitchRow(meditationCamouflage, meditationCamouflageTextRes) {
+                    preferenceDB.edit().putBoolean(CAMOUFLAGE_SUDOKU, false).commit()
+                    preferenceDB.edit().putBoolean(CAMOUFLAGE_MEDITATION, it).commit()
+                    if (it)
+                    {
+                        camouflage.value = Camouflage.Meditation
+                        camouflageTemp.value = Camouflage.Meditation
+                    }
+                    else
+                    {
+                        camouflage.value = Camouflage.Disabled
+                        camouflageTemp.value = Camouflage.Disabled
+                    }
+                    toggleMeditationCamouflage(it)
+                }
+
+                /*
+                TODO: Use this or a switch row to enable Sudoku camouflage
+                Button(
+                  onClick = {
+                      preferenceDB.edit().putBoolean(CAMOUFLAGE_MEDITATION, false)
+                      preferenceDB.edit().putBoolean(CAMOUFLAGE_SUDOKU, true).commit()
+                      camouflage.value = Camouflage.Sudoku
+                  }
+                ) {
+                    Text("Sudoku")
+                }
+                 */
+            }
+
             Spacer(Modifier.height(16.dp))
             CenteredSectionText(i18n(S.BlockchainSettings))
             WallyDivider()

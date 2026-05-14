@@ -842,4 +842,22 @@ Thank you and enjoy your new wallet!</string>
 
     <string name="EnableServices">Enable services screen</string>
     <string name="NoServicesRegistered">No services registered.</string>
+
+    <!-- Meditation camouflage -->
+    <string name="app_name_meditation" translatable="false">Meditate</string>
+    <string name="Start">Start</string>
+    <string name="Meditation">Meditation</string>
+    <string name="Meditate">Meditate</string>
+    <string name="Sound">Sound</string>
+    <string name="OneMinuteIntervalSound">1 min interval sound</string>
+    <string name="MeditationVersion">Version: 1.0.3 (build 156)</string>
+    <string name="Meditating">Meditating...</string>
+    <string name="MediationComplete">Meditation complete!</string>
+    <string name="Okay">Okay</string>
+    <string name="Minutes">Minutes</string>
+    <string name="Camouflage">Camouflage</string>
+    <string name="CamouflageAsMeditationTimer">Camouflage the app as a meditation timer.</string>
+    <string name="CamouflageDescriptionAndroid">Enabling the camouflage closes the app and camouflages it as an app named Meditate. To disable the Meditate app camouflage open the app menu and click the version number five times.</string>
+    <string name="CamouflageDescriptionOther">To disable the Meditate app camouflage open the app menu and click the version number five times.</string>
+    <string name="CamouflageAsMeditateAppAndroid">Camouflage as Meditate app</string>
 </resources>

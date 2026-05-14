@@ -285,6 +285,7 @@ Uninstall/reinstall your app:
 ```bash
 ./adb uninstall info.bitcoinunlimited.www.wally
 ```
+(This is required to re-run the app when camouflage is enabled)
 
 ```bash
 adb install path/to/your.apk

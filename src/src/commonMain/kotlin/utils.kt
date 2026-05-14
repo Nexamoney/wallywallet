@@ -1,7 +1,6 @@
 package info.bitcoinunlimited.www.wally
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,18 +17,13 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalConsumer
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.fleeksoft.ksoup.Ksoup
 import com.fleeksoft.ksoup.nodes.Document
-import com.fleeksoft.ksoup.nodes.Element
 import com.fleeksoft.ksoup.nodes.Node
-import com.fleeksoft.ksoup.parser.Parser
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import kotlinx.coroutines.*
 import org.nexa.libnexakotlin.*
@@ -42,14 +36,12 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.util.cio.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
 import okio.BufferedSource
 import org.nexa.threads.millinow
-import kotlin.io.encoding.Base64
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -711,3 +703,6 @@ fun formatAmount(qty: BigDecimal, chain: ChainSelector = ChainSelector.NEXA): St
         ChainSelector.BCH, ChainSelector.BCHREGTEST, ChainSelector.BCHTESTNET -> uBchFormat.format(qty)
     }
 }
+
+// [Android only] Enable or disable the meditation camouflage app name and icon instead of the normal Wally icon and app name
+expect fun toggleMeditationCamouflage(enable: Boolean)

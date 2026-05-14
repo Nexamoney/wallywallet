@@ -306,3 +306,8 @@ actual fun openUrl(url: String) {
 actual fun getReviewManager(): InAppReviewDelegate? = null
 
 actual fun requestInAppReview() {}
+
+actual fun toggleMeditationCamouflage(enable: Boolean)
+{
+    // TODO: Implement
+}

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Dedicated Splash Theme for API 31+ -->
+    <style name="Theme.Wally.Splash" parent="Theme.SplashScreen">
+        <item name="android:windowSplashScreenBackground">@color/titleBackground</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/icon2024a</item>
+        <item name="postSplashScreenTheme">@style/AppTheme</item>
+    </style>
+
+    <style name="Theme.Wally.Splash.Meditation" parent="Theme.SplashScreen">
+        <item name="android:windowSplashScreenBackground">@color/titleBackground</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_meditation_round</item>
+        <item name="postSplashScreenTheme">@style/AppTheme</item>
+    </style>
+</resources>

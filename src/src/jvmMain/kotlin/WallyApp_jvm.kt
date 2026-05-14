@@ -95,7 +95,6 @@ fun guiNewPanel()
     application(true)
     {
         var isOpen by remember { mutableStateOf(true) }
-        nav.reset(ScreenId.Splash)
 
         if (isOpen)
         {

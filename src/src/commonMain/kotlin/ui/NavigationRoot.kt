@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
@@ -40,9 +41,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.assets.AssetPerAccount
 import org.nexa.libnexakotlin.*
 import org.nexa.threads.Mutex
+import org.nexa.threads.Thread
 import org.nexa.threads.iThread
 import org.nexa.threads.millisleep
 import kotlin.collections.get
+import ui.camouflage.MeditationScreen
+import ui.SudokuScreen
+import androidx.compose.runtime.collectAsState
 
 private val LogIt = GetLog("wally.NavRoot")
 
@@ -53,6 +58,23 @@ val showAssetsPref = MutableStateFlow(false)
 val experimentalUI = MutableStateFlow(false)
 
 val soundEnabled = MutableStateFlow(true)
+
+enum class Camouflage
+{
+    Disabled,
+    Meditation,
+    Sudoku
+}
+
+private val sharedPref = getSharedPreferences(TEST_PREF + PREFERENCE_FILE_NAME, PREF_MODE_PRIVATE)
+val camouflage = MutableStateFlow(
+  if (sharedPref.getBoolean(CAMOUFLAGE_MEDITATION, false)) Camouflage.Meditation
+  else if (sharedPref.getBoolean(CAMOUFLAGE_SUDOKU, false)) Camouflage.Sudoku
+  else Camouflage.Disabled
+)
+// control variable to navigate the app without disabling the camouflage mode
+val camouflageTemp = MutableStateFlow(camouflage.value)
+
 var behindTitleBarPadding = MutableStateFlow(0.dp)
 
 var permanentMenuItems: Set<NavChoice> = if ((platform().target == KotlinTarget.iOS)||(platform().target == KotlinTarget.Android))
@@ -566,7 +588,26 @@ fun noSelectedAccount()
 @Composable
 fun UiRoot(rootModifier: Modifier, systemPadding: WindowInsets, unlock: UnlockViewModel)
 {
-    NavigationRoot(rootModifier, systemPadding, unlock = unlock)
+    val preferenceDB: SharedPreferences = wallyApp!!.preferenceDB
+    LaunchedEffect(true) {
+        val meditationTimer = preferenceDB.getBoolean(CAMOUFLAGE_MEDITATION, false)
+        if (meditationTimer)
+        {
+            camouflage.value = Camouflage.Meditation
+        }
+        else
+            camouflage.value = Camouflage.Disabled
+    }
+
+    val meditationCamouflageUI = camouflageTemp.collectAsState().value == Camouflage.Meditation && camouflage.collectAsState().value == Camouflage.Meditation
+    if (meditationCamouflageUI)
+    {
+        MeditationScreen()
+    }
+    else
+    {
+        NavigationRoot(rootModifier, systemPadding, unlock = unlock)
+    }
 }
 
 data class NavChoice(val location: ScreenId, val textId: Int, val icon: ImageVector)
@@ -838,19 +879,20 @@ fun NavigationRoot(
     LaunchedEffect(Unit) {
         buildMenuItems()
     }
+
+    /**
+     * Show an extra Compose-level splash screen in addition to the native splash screen.
+     * This is because low-spec Android devices load the accounts slowly, and we don't want
+     * a scenario where the app opens without the accounts being displayed.
+     */
     if (curScreen == ScreenId.Splash)
     {
-        val nativeSplash = NativeSplash(true)
-        if (!nativeSplash)
-        {
-            Box(Modifier.fillMaxSize().background(Color(0xFF725092))) {
-                ResImageView("icons/wallyicon2024_800x800.png", modifier = Modifier.background(Color(0xFF725092)).align(Alignment.Center).fillMaxSize(0.5f), "")
-            }
+        Box(Modifier.fillMaxSize().background(Color(0xFF725092))) {
+            ResImageView("icons/wallyicon2024_800x800.png", modifier = Modifier.background(Color(0xFF725092)).align(Alignment.Center).fillMaxSize(0.5f), "")
         }
 
         LaunchedEffect(true) {
             delay(2000)
-            if (nativeSplash) NativeSplash(false)
             nav.switch(ScreenId.Home)
         }
         return
