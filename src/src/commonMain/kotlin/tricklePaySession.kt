@@ -1113,7 +1113,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                     // For now, also check that this output is an asset, not nexa.  Later we may want to allow provable nexa amounts...
                     val tmpl = constraint.parseTemplate(spendable.amount)
                     val gi = tmpl?.groupInfo
-                    if (gi != null)
+                    if (gi != null && !gi.isAuthority())
                     {
                         matches.add(
                           TricklePayAssetInfo(
