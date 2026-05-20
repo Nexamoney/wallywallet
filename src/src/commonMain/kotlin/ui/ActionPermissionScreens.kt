@@ -214,6 +214,8 @@ fun SpecialTxPermScreen(sess: TricklePaySession, unlock: UnlockViewModel)
 {
     // Change the title if the request is for a partial transaction
     val titleRes = if (sess.tflags and TDPP_FLAG_PARTIAL != 0) S.IncompleteTpTransactionFrom else S.SpecialTpTransactionFrom
+    val hideAssetDetails = sess.tflags and TDPP_FLAG_HIDE_ASSET_DETAILS != 0
+
     val topic = sess.topic.let {
         if (it == null) ""
         else it
@@ -587,9 +589,13 @@ fun SpecialTxPermScreen(sess: TricklePaySession, unlock: UnlockViewModel)
                                       labelRes = S.assets,
                                       value = "$receivingTokenTypes"
                                     )
-                                    // Indent the asset list under the Assets header
-                                    Box(modifier = Modifier.fillMaxWidth().padding(2.dp,0.dp,0.dp,0.dp)) {
-                                        AssetTinyTable(panalysis.assetViewModel) { ai, vm -> (vm.amounts.value[ai.groupId] ?: 1) > 0 }
+
+                                    if (!hideAssetDetails)
+                                    {
+                                        // Indent the asset list under the Assets header
+                                        Box(modifier = Modifier.fillMaxWidth().padding(2.dp,0.dp,0.dp,0.dp)) {
+                                            AssetTinyTable(panalysis.assetViewModel) { ai, vm -> (vm.amounts.value[ai.groupId] ?: 1) > 0 }
+                                        }
                                     }
                                 }
 
