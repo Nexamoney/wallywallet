@@ -55,6 +55,9 @@ import org.nexa.threads.iMutex
 import org.nexa.libnexakotlin.iTransaction
 import org.nexa.libnexakotlin.txFor
 import org.nexa.libnexakotlin.TransactionHistory
+import org.nexa.libnexakotlin.decodeUtf8
+import org.nexa.libnexakotlin.encodeUtf8
+import org.nexa.libnexakotlin.generateBip39Seed
 import org.nexa.threads.millisleep
 import kotlin.random.Random
 import kotlin.test.Test
@@ -361,6 +364,9 @@ fun mockAccount(
       false,
     )
     val dummyWallet = Bip44Wallet("mockSelfSendWallet_$randomNumber", chainSelector, walletDb)
+    // Set the secret because the Bip44Wallet throws an exception if an attempt is made to save it without a secret
+    dummyWallet.secretWords = UnsecuredSecret("obvious obvious obvious obvious obvious obvious obvious obvious obvious obvious obvious obvious".encodeUtf8())
+    dummyWallet.secret = UnsecuredSecret(generateBip39Seed(dummyWallet.secretWords.getSecret().decodeUtf8(), dummyWallet.seedPassCode))
     // Wire the wallet to the blockchain — same as AccountImpl's init does.
     dummyWallet.usesChain(dummyChain)
 

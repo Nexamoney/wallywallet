@@ -100,11 +100,10 @@ class NonGuiTestsCommon
     @Test
     fun testCodec()
     {
-        LogIt.error("testCodec testCodec start")
+        // LogIt.info("testCodec testCodec start")
         val data = byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, -1, 127, -127)
         val str = Codec.encode64(data)
-        LogIt.info(str)
-        LogIt.error("testCodec + $str")
+        // LogIt.info("testCodec + $str")
         val data2 = Codec.decode64(str)
         check(data contentEquals data2)
     }

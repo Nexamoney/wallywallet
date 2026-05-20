@@ -1272,7 +1272,7 @@ fun onProvideIdentity(sess: IdentitySession): Boolean?
                             setTextClipboard(s)
                             displayNotice(S.sigInClipboard)
 
-                            var sigReq = protocol + "://" + tmpHost + portStr + path + "?op=sign&addr=" + address.toString() + "&sig=" + sigStr.urlEncode() + if (cookie == null) "" else "&cookie=" + cookie.urlEncode()
+                            val sigReq = protocol + "://" + tmpHost + portStr + path + "?op=sign&addr=" + address.toString() + "&sig=" + sigStr.urlEncode() + if (cookie == null) "" else "&cookie=" + cookie.urlEncode()
                             val cb = sess.whenDone
                             if ((sess.autoHandle)||(cb == null))
                             {
@@ -1341,7 +1341,7 @@ fun SendToPermScreen(sess: TricklePaySession , nav: ScreenNav)
         total += it.second
 
     val ars = sess.askReasons
-    val askReasons = if (ars != null && ars.size > 0) ars.joinToString("\n") else ""
+    val askReasons = if (ars.isNotEmpty()) ars.joinToString("\n") else ""
 
     val domainAndTopic = u.authority + tpc
 

@@ -13,6 +13,7 @@ import info.bitcoinunlimited.www.wally.ui.ScreenNav
 import info.bitcoinunlimited.www.wally.ui.addressHistoryAccount
 import info.bitcoinunlimited.www.wally.ui.addressHistoryInfo
 import info.bitcoinunlimited.www.wally.ui.calcAddressHistoryInfo
+import kotlinx.serialization.SerializationException
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.Pay2PubKeyTemplateDestination
 import org.nexa.libnexakotlin.PayDestination
@@ -90,6 +91,7 @@ class AddressHistoryScreenTest : WallyUiTestBase()
                 onNodeWithText(addrText, substring = true).assertIsDisplayed()
             }
         }
+        account.wallet.close()
     }
 
     /**
@@ -114,6 +116,7 @@ class AddressHistoryScreenTest : WallyUiTestBase()
         // No address items rendered — prefix "nexa:" would appear in any
         // rendered PayAddress text
         onNodeWithText("nexa:", substring = true).assertDoesNotExist()
+        account.wallet.close()
     }
 
     /**
@@ -149,5 +152,6 @@ class AddressHistoryScreenTest : WallyUiTestBase()
             onNodeWithText(midAddr, substring = true).assertIsDisplayed()
             true
         }
+        account.wallet.close()
     }
 }

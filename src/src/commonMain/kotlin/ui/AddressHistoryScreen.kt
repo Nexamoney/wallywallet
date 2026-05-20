@@ -280,14 +280,11 @@ fun AddressHistoryScreen(acc: Account, nav: ScreenNav)
                                             }
                                         }
                                         Column {
-                                            val uri = it.address.blockchain.explorer("/address/${it.address.toString()}")
-                                            if (uri != null)
-                                            {
-                                                //Spacer(Modifier.height(1.dp).weight(1f))
-                                                WallyBoringButton({ openUrl(uri) }, modifier = Modifier.padding(0.dp, 0.dp, 10.dp, 0.dp)
-                                                ) {
-                                                    Icon(Icons.AutoMirrored.Filled.ExitToApp, tint = colorConfirm, contentDescription = "view address activity")
-                                                }
+                                            val uri = it.address.blockchain.explorer("/address/${it.address}")
+                                            //Spacer(Modifier.height(1.dp).weight(1f))
+                                            WallyBoringButton({ openUrl(uri) }, modifier = Modifier.padding(0.dp, 0.dp, 10.dp, 0.dp)
+                                            ) {
+                                                Icon(Icons.AutoMirrored.Filled.ExitToApp, tint = colorConfirm, contentDescription = "view address activity")
                                             }
                                         }
                                     }
