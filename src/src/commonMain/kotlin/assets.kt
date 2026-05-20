@@ -691,6 +691,12 @@ class AssetInfo(val groupId: GroupId) // :BCHserializable
                         }
                         loadState = AssetLoadState.COMPLETED
                     }
+                    else
+                    {
+                        // NFT zip expected (document_url is set) but all fetch attempts failed.
+                        // Back off to avoid hammering servers every 4 seconds indefinitely.
+                        nextLoadAttempt = now + (5*60*1000)
+                    }
                     am.storeTokenDesc(groupId, td)
                 }
             }
