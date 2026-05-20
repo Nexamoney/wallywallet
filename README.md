@@ -199,12 +199,29 @@ Running `connectedAndroidTest` requires that an android device is connected to y
 
 ```bash
 ./gradlew pixel5DebugAndroidTest
+./gradlew pixel5Check --full-stacktrace
 ```
+
+```bash
+./gradlew pixel5DebugAndroidTest --console=plain
+```
+Run a specific test on android emulator:
+``` bash
+./gradlew pixel5DebugAndroidTest --console=plain  -Pandroid.testInstrumentationRunnerArguments.class=ui.NavigationRootTest
+````
 
 #### Running automated (unit) tests
 To successfully run the units tests, you must have a local "regtest" Nexa full node running.
 ```
 ./gradlew :src:jvmTest
+```
+Run on an android phone:
+```
+./gradlew :src:connectedDebugAndroidTest
+```
+Run a single test:
+```agsl
+./gradlew jvmTest --tests ui.AddressHistoryScreenTest.addressHistoryScreenWith100Addresses
 ```
 
 #### CI targets
@@ -285,7 +302,12 @@ Uninstall/reinstall your app:
 ```bash
 ./adb uninstall info.bitcoinunlimited.www.wally
 ```
-(This is required to re-run the app when camouflage is enabled)
+
+If you get the following error when launching in Android Studio:
+```
+Activity class {info.bitcoinunlimited.www.wally/info.bitcoinunlimited.www.wally.ComposeActivityDefault} does not exist
+```
+Run the existing Wally app manually, go into settings and disable camouflage mode.  If you cannot run the existing Wally manually, you will have to uninstall.
 
 ```bash
 adb install path/to/your.apk

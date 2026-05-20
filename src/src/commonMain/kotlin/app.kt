@@ -359,6 +359,8 @@ open class CommonApp(val runningTests: Boolean)
 {
     // Set to true if this is the first time this app has ever been run
     var firstRun = false
+    @Volatile
+    var accountsClosed = true
 
     val accessHandler = AccessHandler(this)
 
@@ -406,7 +408,7 @@ open class CommonApp(val runningTests: Boolean)
     init
     {
         threadJobPool.excessiveThreadHandler = {
-            LogIt.info(sourceLoc() + ": Out of Wally Job threads Num threads: ${it.allThreads.size}  Jobs: ${it.jobCount}")
+            LogIt.info(sourceLoc() + ": Out of Wally Job threads Num threads: ${it.allThreads.size}  Available: ${it.availableThreads.value}  Jobs: ${it.jobs.size}  Total jobs run: ${it.totalJobsRun}")
             true
         }
         threadJobPool.start()
@@ -1017,6 +1019,7 @@ open class CommonApp(val runningTests: Boolean)
     /** Save the account list to the database */
     fun saveActiveAccountList()
     {
+        if (accountsClosed) return // do not save this if I've already closed some accounts
         openKvpDbIfNeeded()
 
         val s: String = accountLock.lock { accounts.keys.joinToString(",") }
@@ -1232,6 +1235,17 @@ open class CommonApp(val runningTests: Boolean)
         }
     }
 
+    fun closeAllAccounts()
+    {
+        accountsClosed = true  // prevent any saving of the accounts list
+        val acts = accounts.values.toList()
+        accounts.clear()
+        for (a in acts)
+        {
+            a.wallet.close()
+        }
+    }
+
     fun openAllAccounts()
     {
         openKvpDbIfNeeded()
@@ -1310,6 +1324,7 @@ open class CommonApp(val runningTests: Boolean)
                     }
                 }
             }
+            accountsClosed = false
         }
     }
 

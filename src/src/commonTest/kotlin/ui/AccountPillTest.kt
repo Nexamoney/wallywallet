@@ -119,6 +119,7 @@ class AccountPillTest:WallyUiTestBase()
         finally
         {
             wallyApp!!.deleteAccount(account)
+            wallyApp!!.closeAllAccounts()
         }
     }
 }

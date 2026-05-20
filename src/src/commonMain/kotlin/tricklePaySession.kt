@@ -759,7 +759,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
                 {
                     val response: HttpResponse = client.post(url) {
                         val tmp = js.encodeToString(TricklePayAssetList.serializer(), assets)
-                        LogIt.info("JSON response ${tmp.length} : " + tmp.toString())
+                        LogIt.info("JSON response ${tmp.length} : ${tmp}")
                         setBody(tmp)
                     }
                     val respText = response.bodyAsText()
@@ -802,7 +802,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         val pTx = proposedTx
         val panalysis = proposalAnalysis
 
-        if ((pTx != null)&&(panalysis != null))
+        if ((pTx != null)&&(panalysis.value != null))
         {
             if (breakIt)
             {
@@ -1037,7 +1037,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
             val amt = amtS.toLong()
             if (amt <= 0) throw BadAmountException(S.Amount)
             val addrPa = PayAddress(addrS)
-            addrAmt.add(Pair(addrPa, amt.toLong()))
+            addrAmt.add(Pair(addrPa, amt))
             if (chainSelector == null) chainSelector = addrPa.blockchain
             else if (addrPa.blockchain != chainSelector)  // You can only send on one blockchain at once
             {
@@ -1163,9 +1163,9 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
             val addr = getRelevantAccount().currentReceive?.address?.toString()
             if (addr != null)
             {
-                whenDone?.invoke(url, addr.toString(), true) ?: run {
+                whenDone?.invoke(url, addr, true) ?: run {
                     wallyApp?.post(url, {
-                        it.setBody(addr.toString())
+                        it.setBody(addr)
                     })
                 }
 
@@ -1291,7 +1291,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
 
         for (inp in tx.inputs)
         {
-            val address = inp.spendable.addr
+            val address = inp.spendable.address
             if ((address != null) && (wal.isWalletAddress(address)))  // Is this coming from this wallet?
             {
                 assert(inp.spendable.amount != -1L)  // Its -1 if I don't know the amount (in which case it ought to NOT be one of my inputs so should never happen)

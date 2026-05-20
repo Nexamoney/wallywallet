@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter
 
 // Wally Wallet version
 // On version bump: Run ./gradlew generateVersionFile and commit the updates iosApp/iosApp/info.plist file
-val versionNumber = "3.20.08"
+val versionNumber = "3.20.10"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 
 val secSinceEpoch = Instant.now().epochSecond
@@ -159,6 +159,7 @@ kotlin {
 
          */
 
+        /*
         val iosX64def = iosX64 {
             compilations.getByName("main") {
                 //compilerOptions.options.freeCompilerArgs.add("-verbose")
@@ -169,7 +170,7 @@ kotlin {
                     }
                 }
             }
-        }
+        }*/
         val iosArm64def = iosArm64 {
             compilations.getByName("main") {
                 compileTaskProvider {
@@ -199,7 +200,7 @@ kotlin {
         }
         println("iOS SDK version is: $iosSdkVersion")
 
-        listOf(iosX64def, iosArm64def, iosSimArm64def).forEach {
+        listOf(iosArm64def, iosSimArm64def).forEach {
             it.binaries.framework {
                 baseName = "src" // Needs to be "src" so we can import the same module name in swift
                 //linkerOpts("-platform_version ios 15.0 $iosSdkVersion")
@@ -456,11 +457,12 @@ kotlin {
 
         if (MAC_TARGETS)
         {
+            /*
             val iosX64Main by getting {
                 //dependsOn(sourceSets.named("commonNative").get())
                 dependencies {
                 }
-            }
+            }*/
 
             val iosMain by getting {
                 dependencies {
@@ -656,13 +658,13 @@ if (MAC_TARGETS)
 {
     tasks.register<Exec>("xcrun_simctl") {
         val device = project.findProperty("iosDevice")?.toString() ?: "iPhone 14 Pro Max"
-        val binary = kotlin.iosX64().binaries.getTest("DEBUG").outputFile
+        val binary = kotlin.iosArm64().binaries.getTest("DEBUG").outputFile
         commandLine("xcrun", "simctl", "spawn", device, binary.absolutePath)
     }
 
     task("iosTest") {
         val device = project.findProperty("iosDevice")?.toString() ?: "iPhone 14 Pro Max"
-        dependsOn(kotlin.iosX64().binaries.getTest("DEBUG").linkTaskName)
+        dependsOn(kotlin.iosArm64().binaries.getTest("DEBUG").linkTaskName)
         group = JavaBasePlugin.VERIFICATION_GROUP
         description = "Runs tests for target 'ios' on an iOS simulator"
 
@@ -880,6 +882,11 @@ kotlin {
         }
     }
     jvmToolchain(21)
+    compilerOptions {
+        freeCompilerArgs.add(
+            "-Xannotation-default-target=param-property"
+        )
+    }
 }
 
 // Restrict test coverage reporting using the Kover library to Android and JVM targets

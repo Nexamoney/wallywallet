@@ -12,6 +12,7 @@ import info.bitcoinunlimited.www.wally.platform
 import info.bitcoinunlimited.www.wally.wallyAccountDbFileName
 import info.bitcoinunlimited.www.wally.wallyApp
 import org.nexa.libnexakotlin.ChainSelector
+import org.nexa.libnexakotlin.GetLog
 import ui.WallyUiTestBase
 import ui.mockAccount
 import kotlin.test.Test
@@ -20,6 +21,8 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+
+private val LogIt = GetLog("BU.wally.AccountTest")
 
 class AccountTest : WallyUiTestBase()
 {
@@ -36,8 +39,8 @@ class AccountTest : WallyUiTestBase()
         }
         finally
         {
-            wallyApp!!.accountLock.lock { wallyApp!!.accounts.remove(acc.name) }
-            wallyApp!!.saveActiveAccountList()
+            //wallyApp!!.accountLock.lock { wallyApp!!.accounts.remove(acc.name) }
+            //wallyApp!!.saveActiveAccountList()
             wallyApp!!.deleteAccount(acc)
         }
     }
@@ -312,13 +315,17 @@ class AccountTest : WallyUiTestBase()
     @Test
     fun accountWithPin_notEntered_isLocked()
     {
+        LogIt.info("TEST accountWithPin_notEntered_isLocked")
         withRealAccount("lockd") { acc ->
+            LogIt.info("TEST accountWithPin_notEntered_isLocked inside withRealAccount")
             val epin = EncodePIN(acc.name, "5678")
             acc.saveAccountPin(epin)
             acc.encodedPin = epin
             acc.pinEntered = false
             assertTrue(acc.locked)
+            LogIt.info("TEST accountWithPin_notEntered_isLocked test finished")
         }
+        LogIt.info("TEST accountWithPin_notEntered_isLocked function finished")
     }
 
     @Test
