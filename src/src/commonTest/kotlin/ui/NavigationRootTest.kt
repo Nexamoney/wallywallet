@@ -194,15 +194,14 @@ class NavigationRootTest: WallyUiTestBase()
             setContent {
                 NavigationRoot(Modifier, WindowInsets(0,0,0,0), ap, unlock = unlock)
             }
-            settle()
-            nav.switch(ScreenId.Home)
-            settle()
-            waitForCatching { onNodeWithTag("AccountPillAccountName").isDisplayed() }
-            unlock.triggerUnlockDialog(true, { println("Unlock attempted")})
-            settle()
-            waitForCatching { onNodeWithTag("EnterPIN").isDisplayed() }
+            // On Android, Compose state writes have to be dispatched to the UI
+            // thread — `runOnIdle` does that, avoiding "Detected multithreaded
+            // access to SnapshotStateObserver" from the test worker.
+            runOnIdle { nav.switch(ScreenId.Home) }
+            onNodeWithTag("AccountPillAccountName").isDisplayed()
+            runOnIdle { unlock.triggerUnlockDialog(true) { println("Unlock attempted") } }
+            onNodeWithTag("EnterPIN").isDisplayed()
             onNodeWithTag("EnterPIN").performTextInput("1111")
-            settle()
             onNodeWithTag("EnterPIN").multiplatformImeAction()
         }
     }
