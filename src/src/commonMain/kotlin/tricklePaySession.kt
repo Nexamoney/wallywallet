@@ -15,6 +15,7 @@ import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.views.AccountPill
 import info.bitcoinunlimited.www.wally.ui.views.AssetViewModel
 import io.ktor.http.Url
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.io.IOException
 import kotlinx.serialization.Serializable
@@ -794,8 +795,13 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         }
     }
 
-    /** If breakIt is true, a bad transaction is generated (for testing) */
-    fun acceptSpecialTx(breakIt:Boolean = false)
+    /**
+     * Accept the proposed TDPP transaction.
+     *
+     * @param breakIt If true, mangle the signed tx for testing (drops a random input or blanks a
+     *     random input's signature). Forces noPost — the mangled tx is not broadcast on chain.
+     */
+    fun acceptSpecialTx(breakIt: Boolean = false)
     {
         LogIt.info(sourceLoc() + ": accept trickle pay special transaction")
         accepted = true
@@ -806,7 +812,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         {
             if (breakIt)
             {
-                val choice = (0..1).random()
+                val choice = (0..2).random()
                 when (choice)
                 {
                     // remove an input
@@ -835,95 +841,31 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
             // tx reason: i18n(R.string.title_activity_trickle_pay) + " " + domainAndTopic + ". " + reason)
 
             wallyApp?.let { app ->
-                // Post this transaction if the TDPP protocol suggests that I do so (its complete)
-                // (And I'm not deliberately creating a bad transaction)
-                if (((tflags and TDPP_FLAG_NOPOST) == 0)&&(!breakIt)) try
-                    {
-                        var completed = pTx.inputs.isNotEmpty()  // It can't be completed if there are no inputs at all
-                        for (inp in pTx.inputs)
-                        {
-                            if (inp.script.size == 0)
-                            {
-                                LogIt.warning(sourceLoc() +": TDPP special transaction: Counterparty indicated that I could post the completed transaction, but they still need to sign")
-                                completed = false
-                            }
-                        }
-                        if (completed)
-                        {
-                            val wallet = getRelevantAccount(domain?.accountName).wallet
-                            wallet.send(pTx)
-                            // Now asynchronously wait for the wallet to process the tx, and then annotate it
-                            laterJob {
-                                var retries = 0
-                                while(retries<20)
-                                {
-                                    val txRecord = wallet.getTx(pTx.idem)
-                                    if (txRecord != null)
-                                    {
-                                        // TODO I could put some interesting info here
-                                        txRecord.relatedTo["TDPP"] = byteArrayOf(1)
-                                        break
-                                    }
-                                    millisleep(300U)
-                                    retries++
-                                }
-                            }
-                        }
-                    }
-                    catch(e:Exception)  // Its possible that the tx is partial but the caller didn't set the bit, so if the tx is rejected ignore
-                    {
-                        logThreadException(e)
-                    }
-
-                specialTxSuccessAnimationIsPlaying.value = true
-                // And hand it back to the requester...
-                // grab temps because activity could go away
-                val rp = replyProtocol
-                val hp = hostAndPort
-                val cp = cookieParam
-                val txHex = pTx.toHex()
-                //LogIt.info("Sending special tx response: ${pTx.toHex()}")
-                //pTx.debugDump()
-                if (hp.isNotBlank())
+                val noPost = (tflags and TDPP_FLAG_NOPOST) != 0 || breakIt
+                // TDPP_FLAG_PARTIAL means the originator intends to complete this tx later (e.g.,
+                // a marketplace storing a firm offer until a buyer matches). Even if every input we
+                // can see is signed, the tx is not yet broadcastable as-is.
+                val isPartial = (tflags and TDPP_FLAG_PARTIAL) != 0
+                var completed = !isPartial && pTx.inputs.isNotEmpty()
+                for (inp in pTx.inputs)
                 {
-                    laterJob {
-                        val req = Url(rp + "://" + hp + "/tx?tx=$txHex&$cp")
-                        LogIt.info("Sending special tx response: ${req}")
-                        val data = try
-                        {
-                            req.readText(HTTP_REQ_TIMEOUT_MS)
-                        }
-                        catch (e: IOException)
-                        {
-                            LogIt.info("Error submitting transaction: " + e.message)
-                            displayError(S.WebsiteUnavailable)
-                            return@laterJob
-                        }
-                        catch (e: Exception)
-                        {
-                            LogIt.info("Error submitting transaction: " + e.message)
-                            displayError(S.WebsiteUnavailable)
-                            return@laterJob
-                        }
-                        LogIt.info(sourceLoc() + " TP response to the response: " + data)
-                        // if the other side did not like the transaction it will return invalid
-                        if (data == "unknown session")
-                        {
-                            displayWarning(i18n(S.TpNoSession), i18n(S.TpNoSession))
-                        }
-                        else if (data.contains("invalid"))
-                        {
-                            LogIt.info("TDPP TX completion submission to the originator gave the following warning:\n$data")
-                            // Submitting the completed partial tx back to the originator is a courtesy... it ought to be accepted on chain anyway if its not stale
-                            // so don't show anything if the originator complains.
-                            // displayWarning(i18n(S.staleTransaction),i18n(S.staleTransactionDetails))
-                        }
-                        else if (data.contains("error"))
-                            displayWarning(i18n(S.reject))
-                        else
-                            displayNotice(S.TpTxAccepted)
+                    if (inp.script.size == 0)
+                    {
+                        LogIt.warning(sourceLoc() + ": TDPP special transaction: Transaction incomplete, counterparty still needs to sign")
+                        completed = false
                     }
                 }
+                val wallet = getRelevantAccount(domain?.accountName).wallet
+
+                submitTdppCompletion(
+                  pTx = pTx,
+                  wallet = wallet,
+                  completed = completed,
+                  noPost = noPost,
+                  replyProtocol = replyProtocol,
+                  hostAndPort = hostAndPort,
+                  cookieParam = cookieParam,
+                )
             }
         }
     }
@@ -1559,3 +1501,235 @@ fun HandleTdpp(iuri: Uri, then: ((String, String, Boolean?)->Unit)?= null): Bool
     }
     return false
 }
+
+
+// ---------- TDPP submit-and-confirm helper ----------
+
+private const val TDPP_NETWORK_TIMEOUT_MS: ULong = 60_000UL
+
+private val tdppPendingLock = Mutex()
+private val tdppPendingIdems = mutableSetOf<Hash256>()
+
+fun isTdppPending(idem: Hash256): Boolean = tdppPendingLock.lock { tdppPendingIdems.contains(idem) }
+private fun registerTdppPending(idem: Hash256)
+{
+    tdppPendingLock.lock { tdppPendingIdems.add(idem) }
+}
+
+private fun deregisterTdppPending(idem: Hash256)
+{
+    tdppPendingLock.lock { tdppPendingIdems.remove(idem) }
+}
+
+/**
+ * Submit a TDPP-completed tx and resolve to a user-facing outcome.
+ * Owns all user-facing feedback for this tx (success animation, error/warning/notice displays).
+ *
+ *  - completed = true  → the tx is fully signed. Success is shown once, as soon as the wallet
+ *                        observes the tx land in the mempool (confirmedHeight == -1). The wallet
+ *                        observer then stays registered (keeping the idem in tdppPendingIdems so
+ *                        account.kt stays quiet) until the tx is mined, at which point it releases
+ *                        the guard without re-animating. Originator response is advisory on success
+ *                        and authoritative on error. 60s timeout fallback if the tx is never seen.
+ *  - completed = false → the tx is a partial (firm offer / multi-party proposal). Nobody can
+ *                        broadcast it as-is, and the buyer's eventual completion will have a
+ *                        different idem so the wallet observer can never match. Originator
+ *                        response is the only signal — no observer, no timeout.
+ */
+fun submitTdppCompletion(
+  pTx: iTransaction,
+  wallet: Wallet,
+  completed: Boolean,
+  noPost: Boolean,
+  replyProtocol: String,
+  hostAndPort: String,
+  cookieParam: String,
+)
+{
+    val idem = pTx.idem
+    val resolved = atomic(false)
+    val handleRef = atomic(-1)
+
+    registerTdppPending(idem)
+
+    fun cleanup()
+    {
+        deregisterTdppPending(idem)
+        val h = handleRef.value
+        if (h >= 0) wallet.removeOnWalletChange(h)
+    }
+
+    LogIt.info(sourceLoc() + " TDPP submit: idem=${idem.toHex()} completed=$completed noPost=$noPost hostAndPort=$hostAndPort")
+
+    //Setup callback handlers and timeout
+    if (completed)
+    {
+        // walletChanged is invoked with a non-null list at only a couple of sites in libnexakotlin;
+        // the majority of invocations pass null. Look the tx up by idem on every callback so we don't
+        // miss a state change that's signaled by a null-payload notification.
+        handleRef.value = wallet.setOnWalletChange { _, _ ->
+            val txh = wallet.getTx(idem) ?: return@setOnWalletChange
+            val height = txh.confirmedHeight   // -1 = mempool, >0 = mined, Long.MIN_VALUE = rejected
+
+
+            //REJECTED
+            if (height == Long.MIN_VALUE)
+            {
+                // Network refused or evicted the tx.
+                if (resolved.compareAndSet(false, true))
+                {
+                    // Same UI-settle race as the eviction handler at account.kt:446-450.
+                    laterJob {
+                        millisleep(1000U)
+                        displayWarning(i18n(S.staleTransaction), i18n(S.staleTransactionDetails))
+                    }
+                }
+                cleanup()
+                return@setOnWalletChange
+            }
+
+            // ACCEPTED (mempool)
+            // The accepted tx is in our wallet (mempool). Show acceptance success exactly once;
+            // `resolved` gates against the repeated walletChange callbacks fired by unrelated
+            // transactions -- getTx returns our tx every time, but we act only on the first.
+            if (resolved.compareAndSet(false, true))
+            {
+                LogIt.info(sourceLoc() + " TDPP accepted: idem=${idem.toHex()} height=$height")
+                txh.relatedTo["TDPP"] = byteArrayOf(1)
+                laterJob {
+                    specialTxSuccessAnimationIsPlaying.value = true
+                    // nav.back() runs clearScreenAlerts() right after acceptSpecialTx returns
+                    // (ActionPermissionScreens.kt:379-382). If the wallet observer fires before that
+                    // happens, the alert gets cleared. Delay so clearScreenAlerts runs first.
+                    millisleep(1000U)
+                    displaySuccess(S.TpTxAccepted)
+                }
+            }
+
+            // Keep account.kt's cb1 suppressed (idem stays in tdppPendingIdems) for the ENTIRE
+            // window in which cb1 could fire its receive animation -- which is while
+            // confirmedHeight >= curHeight-1 (the tx is at the tip or one block below; see
+            // account.kt:446). Releasing only once the tx is buried deeper than that makes the
+            // suppression independent of callback ordering, of relatedTo persistence, and of
+            // interestingTx re-processing the tx on the next block (wallet.kt:6215): while the tx is
+            // still in that window cb1 skips it on the idem regardless of who runs first.
+            if (height > 1 && wallet.blockchain.curHeight - height > 1) cleanup()
+        }
+
+        laterJob("tdppTimeout") {
+            millisleep(TDPP_NETWORK_TIMEOUT_MS)
+            if (resolved.compareAndSet(false, true))
+            {
+                LogIt.warning(sourceLoc() + " TDPP network timeout: idem=${idem.toHex()} not observed on network within ${TDPP_NETWORK_TIMEOUT_MS}ms")
+                cleanup()
+                displayWarning(i18n(S.TpNetworkTimeout))
+            }
+        }
+    }
+    // For !completed (partial tx): no observer, no timeout — the originator response below is the
+    // only signal. The eventual broadcast (after a buyer completes the offer) will have a different
+    // idem than pTx.idem so an observer here would never match anyway.
+
+    // Only broadcast a fully-signed tx. Matches the original code's `if (completed) wallet.send(...)`
+    // structure — partial txs can't be broadcast as-is.
+    if (completed && !noPost)
+    {
+        try
+        {
+            wallet.send(pTx)
+        }
+        catch (e: Exception)
+        {
+            logThreadException(e)
+            if (resolved.compareAndSet(false, true))
+            {
+                cleanup()
+                // This branch runs synchronously inside acceptSpecialTx, before nav.back().
+                // Defer the alert past the impending clearScreenAlerts to avoid losing it.
+                laterJob {
+                    millisleep(1000U)
+                    displayUnexpectedException(e)
+                }
+            }
+            return
+        }
+    }
+
+    if (hostAndPort.isNotBlank())
+    {
+        val txHex = pTx.toHex()
+        laterJob("tdppOriginatorPost") {
+            val req = Url(replyProtocol + "://" + hostAndPort + "/tx?tx=" + txHex + "&" + cookieParam)
+            LogIt.info("Sending special tx response: $req")
+            val data: String = try
+            {
+                req.readText(HTTP_REQ_TIMEOUT_MS)
+            }
+            catch (e: Exception)
+            {
+                LogIt.info("Error submitting transaction: " + e.message)
+                if (resolved.compareAndSet(false, true))
+                {
+                    cleanup()
+                    millisleep(1000U)
+                    displayError(S.WebsiteUnavailable)
+                }
+                return@laterJob
+            }
+            LogIt.info(sourceLoc() + " TP originator response: $data")
+
+            // Match the originator's response against known error/success patterns. Substring
+            // matching mirrors the original logic — keeps the success-by-default behaviour for
+            // bodies we don't recognise. "rejected" is added to cover descriptive error strings
+            // like "Tx rejected by peer" that don't include the literal "invalid" / "error" tokens.
+            val lower = data.lowercase()
+            when
+            {
+                data == "unknown session" ->
+                    if (resolved.compareAndSet(false, true))
+                    {
+                        LogIt.info(sourceLoc() + " TDPP originator response classified as unknown-session")
+                        cleanup()
+                        millisleep(1000U)
+                        displayWarning(i18n(S.TpNoSession), i18n(S.TpNoSession))
+                    }
+
+                lower.contains("invalid") || lower.contains("error") || lower.contains("rejected") ->
+                {
+                    if (resolved.compareAndSet(false, true))
+                    {
+                        LogIt.info(sourceLoc() + " TDPP originator response classified as reject: $data")
+                        cleanup()
+                        millisleep(1000U)
+                        displayWarning(i18n(S.badTransaction), data)
+                    }
+                }
+
+                else ->
+                {
+                    if (!completed)
+                    {
+                        // Partial tx — the originator stored the offer, but no transaction has
+                        // actually happened (and may never). Acknowledge the listing with a
+                        // green banner but NO success animation (which would imply a completed
+                        // on-chain tx).
+                        if (resolved.compareAndSet(false, true))
+                        {
+                            LogIt.info(sourceLoc() + " TDPP partial-tx submission accepted by originator")
+                            cleanup()
+                            millisleep(1000U)
+                            displaySuccess(S.TpPartialSubmitted)
+                        }
+                    }
+                    else
+                    {
+                        // Completed tx — originator's positive response is advisory; wait for the
+                        // wallet observer or timeout to resolve.
+                        LogIt.info(sourceLoc() + " TDPP originator accepted submission; awaiting network confirmation for idem=${idem.toHex()}: $data")
+                    }
+                }
+            }
+        }
+    }
+}
+

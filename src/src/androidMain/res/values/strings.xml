@@ -683,6 +683,8 @@ Good luck!
     <string name="TpRequestAutoAccept">Accepted request (automatic)</string>
     <string name="TpTxDenied">Denied transaction</string>
     <string name="TpTxAccepted">Accepted transaction</string>
+    <string name="TpNetworkTimeout">Transaction timeout</string>
+    <string name="TpPartialSubmitted">Offer submitted</string>
     <string name="TpAssetRequestDenied">Asset info withheld</string>
     <string name="TpAssetRequestAccepted">Sending asset info</string>
     <string name="Actions">Actions</string>
