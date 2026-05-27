@@ -438,18 +438,10 @@ class AccountImpl(
       { w, txes ->
           if (txes!=null) for (txh in txes)
           {
-              if (txh.confirmedHeight == Long.MIN_VALUE)  // This TX is being rejected out of our wallet
-              {
-                  val isTdpp = txh.relatedTo["TDPP"]
-                  if (isTdpp != null)  // OK so I oked this, but its actually a bad tx in a way I couldn't verify so its going away
-                  {
-                      laterJob {
-                          // This error coming back from the full node races with the UI, so give plenty of time for the UI to settle
-                          millisleep(1000U)
-                          displayWarning(i18n(S.staleTransaction),i18n(S.staleTransactionDetails))
-                      }
-                  }
-              }
+              // A TDPP helper owns user-facing feedback for txs it submitted; skip the default
+              // notifications for those idems but keep internal state updates via onChange() below.
+              if (isTdppPending(txh.tx.idem) || txh.relatedTo["TDPP"] != null) continue
+
               // Only show received animation on unconfirmed or recent confirmed block, not for syncing blocks
               if ((txh.confirmedHeight == -1L) || (txh.confirmedHeight >= w.blockchain.curHeight-1))
               {
