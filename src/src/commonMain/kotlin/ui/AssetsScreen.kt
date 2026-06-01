@@ -405,7 +405,10 @@ fun AssetScreen(account: Account, onAssetDetail: () -> Unit)
     // var assetFocusIndex by remember { mutableStateOf<Int>(0) }
     val assetsState = account.assetsObservable.collectAsState()
     val assets = assetsState.value
-    val assetList = assets.values.toList().sortedBy { it.assetInfo.nft?.title ?: it.assetInfo.name ?: it.assetInfo.ticker ?: it.groupInfo.groupId.toString() }
+    // Sort only when the map reference actually changes, not on every recomposition.
+    val assetList = remember(assets) {
+        assets.values.toList().sortedBy { it.assetInfo.nft?.title ?: it.assetInfo.name ?: it.assetInfo.ticker ?: it.groupInfo.groupId.toString() }
+    }
 
     if (subScreen.value == null)
     {

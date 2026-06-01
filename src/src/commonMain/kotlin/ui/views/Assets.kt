@@ -155,7 +155,10 @@ fun AssetTinyTable(viewModel: AssetViewModel, absAmount:Boolean=true, filter: (A
 {
     val assets = viewModel.assets.collectAsState().value
     val amounts = viewModel.amounts.collectAsState().value
-    val assetList = assets.toList().sortedBy { it.nft?.title ?: it.name ?: it.ticker ?: it.groupId.toString() }
+    // Sort only when the list reference actually changes, not on every recomposition.
+    val assetList = remember(assets) {
+        assets.toList().sortedBy { it.nft?.title ?: it.name ?: it.ticker ?: it.groupId.toString() }
+    }
     val clickableModifier = Modifier  // Not clickable
     Column {
         for (asset in assetList)
@@ -255,7 +258,9 @@ fun AssetTinyTable(viewModel: AssetViewModel, absAmount:Boolean=true, filter: (A
 fun AssetCarousel(viewModel: AssetViewModel = androidx.lifecycle.viewmodel.compose.viewModel { AssetViewModel() })
 {
     val assets = viewModel.assets.collectAsState().value
-    val assetList = assets.toList().sortedBy { it.nft?.title ?: it.name ?: it.ticker ?: it.groupId.toString() }
+    val assetList = remember(assets) {
+        assets.toList().sortedBy { it.nft?.title ?: it.name ?: it.ticker ?: it.groupId.toString() }
+    }
     val listState = rememberSaveable(saver = LazyListState.Saver) {
         LazyListState(firstVisibleItemIndex = viewModel.currentPosition.value)
     }
