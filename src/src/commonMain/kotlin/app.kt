@@ -1039,6 +1039,18 @@ open class CommonApp(val runningTests: Boolean)
     {
         dbgAssertNotGuiThread()
         openKvpDbIfNeeded()
+        // Reject names that would corrupt the comma-delimited account lists or the wallet filename.
+        if (!isValidAccountName(name))
+        {
+            LogIt.warning(sourceLoc() + " refusing invalid account name '$name'")
+            return null
+        }
+        // We should not be here, the UI should have prevented this name.
+        if (isPendingDeletion(name))
+        {
+            LogIt.warning(sourceLoc() + " cannot create '$name': deletion still in progress")
+            return null
+        }
         // I only want to write the PIN once when the account is first created
         val epin = if (pin.length > 0)
         {
@@ -1083,16 +1095,95 @@ open class CommonApp(val runningTests: Boolean)
     }
 
 
-    /** Remove an account from this app (note its still available for restoration via recovery key) */
+    // Two-phase deletion: Phase A (sync) persists the name in "pendingDeletions", drops it from
+    // the accounts map, and rewrites "activeAccountNames". Phase B (laterJob) runs the slow wallet
+    // teardown + file delete and is idempotent so startup can resume it after a crash.
+
+    // Dedicated lock for pendingDeletions read-modify-write
+    private val pendingDeletionsLock = org.nexa.threads.Mutex()
+
+    fun isPendingDeletion(name: String): Boolean = pendingDeletionsLock.lock {
+        readPending().contains(name)
+    }
+
+    private fun pendingDeletions(): Set<String> = pendingDeletionsLock.lock { readPending() }
+
+    private fun addPendingDeletion(name: String) = pendingDeletionsLock.lock {
+        val s = readPending().toMutableSet().also { it.add(name) }
+        writePending(s)
+    }
+
+    private fun removePendingDeletion(name: String): Boolean = pendingDeletionsLock.lock {
+        val s = readPending().toMutableSet()
+        val changed = s.remove(name)
+        if (changed) writePending(s)
+        changed
+    }
+
+    // Caller must hold pendingDeletionsLock.
+    private fun readPending(): Set<String>
+    {
+        openKvpDbIfNeeded()
+        val db = kvpDb ?: return emptySet()
+        val raw = db.getOrNull("pendingDeletions") ?: return emptySet()
+        val s = raw.decodeUtf8()
+        if (s.isEmpty()) return emptySet()
+        return s.split(",").filter { it.isNotEmpty() }.toSet()
+    }
+
+    // Caller must hold pendingDeletionsLock.
+    private fun writePending(s: Set<String>)
+    {
+        val db = kvpDb ?: return
+        db.set("pendingDeletions", s.joinToString(",").toByteArray())
+    }
+
+    /** Remove an account. Returns once it's gone from the UI; slow teardown finishes asynchronously
+     *  (and resumes on next startup if the app is closed before it completes). */
     fun deleteAccount(act: Account)
     {
+        val name = act.name
+        // Persist intent before touching in-memory state so a crash here is recoverable.
+        addPendingDeletion(name)
         accountLock.lock {
-            accounts.remove(act.name)  // remove this coin from any global access before we delete it
-            // clean up the a reference to this account, if its the primary
+            accounts.remove(name)
             if (nullablePrimaryAccount == act) nullablePrimaryAccount = null
         }
         saveActiveAccountList()
-        act.delete()
+        // laterOneJob name-dedupes against a rapid double-tap.
+        laterOneJob("deleteAccount-$name") { finalizeAccountDeletion(name, act) }
+    }
+
+    /** Phase B. [act] is non-null when called from deleteAccount, null on startup resume (no live
+     *  wallet that session). Idempotent: act.delete() and deleteWalletFile both tolerate
+     *  already-gone state, and the pending entry is cleared in `finally`. */
+    private fun finalizeAccountDeletion(name: String, act: Account? = null)
+    {
+        // Skip the file-level backstop when act.delete() already succeeded -- wallet.delete()
+        // does the file delete itself, and calling deleteWalletFile on an already-gone file logs
+        // a misleading "Wallet database file not deleted" error.
+        var needBackstop = act == null
+        try
+        {
+            if (act != null)
+            {
+                try { act.delete() }
+                catch (e: Exception)
+                {
+                    LogIt.warning("AccountImpl.delete() failed for $name: $e")
+                    needBackstop = true
+                }
+            }
+            if (needBackstop)
+            {
+                try { deleteWalletFile(wallyAccountDbFileName(name)) }
+                catch (e: Exception) { LogIt.warning("deleteWalletFile failed for $name: $e") }
+            }
+        }
+        finally
+        {
+            removePendingDeletion(name)
+        }
     }
 
     /** Create an account given a recovery key and the account's earliest activity.
@@ -1113,6 +1204,11 @@ open class CommonApp(val runningTests: Boolean)
         val flags = flags_p or ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY
         dbgAssertNotGuiThread()
         openKvpDbIfNeeded()
+        // Don't race a still-running Phase B file teardown on the same name.
+        if (isPendingDeletion(name))
+            throw IllegalStateException("Account '$name' is still being deleted")
+        if (!isValidAccountName(name))
+            throw IllegalArgumentException("Invalid account name '$name'")
         // I only want to write the PIN once when the account is first created
 
         val p = pin.trim()
@@ -1179,6 +1275,11 @@ open class CommonApp(val runningTests: Boolean)
         val flags = flags_p or ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY
         dbgAssertNotGuiThread()
         openKvpDbIfNeeded()
+        // Don't race a still-running Phase B file teardown on the same name.
+        if (isPendingDeletion(name))
+            throw IllegalStateException("Account '$name' is still being deleted")
+        if (!isValidAccountName(name))
+            throw IllegalArgumentException("Invalid account name '$name'")
         // I only want to write the PIN once when the account is first created
 
         val epin = if (pin.trim().length>0) try
@@ -1291,8 +1392,10 @@ open class CommonApp(val runningTests: Boolean)
             }
 
             val accountNameStr = accountNames.decodeUtf8()
-            LogIt.info(sourceLoc() + " Loading active accounts: $accountNameStr")
-            val accountNameList = accountNameStr.split(",")
+            // pendingDeletions wins over activeAccountNames (handles a crash mid-Phase-A).
+            val pendingDeletes = pendingDeletions()
+            LogIt.info(sourceLoc() + " Loading active accounts: $accountNameStr (pending deletes: $pendingDeletes)")
+            val accountNameList = accountNameStr.split(",").filter { it !in pendingDeletes }
             for (name in accountNameList)
             {
                 if (name.length > 0)  // Note in kotlin "".split(",") results in a list of one element containing ""
@@ -1325,6 +1428,13 @@ open class CommonApp(val runningTests: Boolean)
                 }
             }
             accountsClosed = false
+
+            // Resume any deletions interrupted by the previous session's exit.
+            for (name in pendingDeletes)
+            {
+                LogIt.info(sourceLoc() + " resuming deletion of $name from previous session")
+                laterJob("resumeDelete-$name") { finalizeAccountDeletion(name, act = null) }
+            }
         }
     }
 

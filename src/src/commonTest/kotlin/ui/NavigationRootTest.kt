@@ -51,6 +51,27 @@ var maxPoolWait = 500
 // Reset WallyApp for every test under JVM?
 var jvmResetWallyApp = false
 
+/**
+ * Account deletion is two-phase and asynchronous: deleteAccount() returns immediately after the
+ * synchronous Phase A, while Phase B (wallet teardown + file delete) runs on libNexaJobPool. Tests
+ * that reuse a deleted account name, or that tear wallyApp down, must wait for Phase B to finish --
+ * otherwise the leaked job races the next test's DB (manifesting as SQLITE_READONLY_DBMOVED /
+ * "no such table" / a re-create returning null). This polls the same persisted "pendingDeletions"
+ * list that finalizeAccountDeletion clears in its finally, so it is the real completion signal
+ * rather than an assumption that delete is synchronous.
+ */
+fun awaitDeletionsComplete(timeoutMs: Long = 10_000)
+{
+    val start = millinow()
+    while (millinow() - start < timeoutMs)
+    {
+        val pending = kvpDb?.getOrNull("pendingDeletions")?.decodeUtf8().orEmpty()
+        if (pending.split(",").none { it.isNotEmpty() }) return
+        millisleep(20U)
+    }
+    LogIt.warning("awaitDeletionsComplete timed out; pending deletions did not clear")
+}
+
 @OptIn(ExperimentalUnsignedTypes::class)
 internal fun setupTestEnv(openAllAccounts:Boolean = true)
 {
@@ -72,6 +93,11 @@ internal fun setupTestEnv(openAllAccounts:Boolean = true)
     {
         LogIt.info(sourceLoc() + ": opening all accounts")
         wallyApp!!.openAllAccounts()
+        // CI reuses the workspace, so a previous session can leave a half-finished deletion in the
+        // persisted pendingDeletions. openAllAccounts kicks off the resume of that deletion on a
+        // background job; wait for it to actually finish (delete the old wallet + clear the flag)
+        // before any test runs, otherwise that resume races a test recreating the same account name.
+        awaitDeletionsComplete()
         LogIt.info(sourceLoc() + ": holding blockchain refs")
     }
     // HACK: In these tests, wallets are created and deleted rapidly.  This can cause the blockchains to be started up and shutdown
@@ -119,6 +145,12 @@ open class WallyUiTestBase(openAllAccounts: Boolean = true)
     @AfterTest
     fun testDone()
     {
+        // Account deletion is async (Phase B on libNexaJobPool). Several tests reuse the same
+        // account name across methods, so wait for any in-flight deletion to finish before the next
+        // test recreates that name -- otherwise newAccount() sees it still pending and returns null.
+        // (The JVM-only pool drain below doesn't cover iOS, and never waited on a *running* job.)
+        awaitDeletionsComplete()
+
         if (platform().target == KotlinTarget.JVM)
         {
             // println("settle scheduler")

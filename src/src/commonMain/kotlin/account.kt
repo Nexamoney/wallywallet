@@ -1116,3 +1116,16 @@ fun containsAccountWithName(accounts: List<Account>, name: String): Boolean
     }
     return false
 }
+
+// Characters that corrupt how an account name is stored or used elsewhere:
+//   ','                         delimits the persisted activeAccountNames / pendingDeletions lists
+//   '/' '\' ':' and 0x00-0x1F   break the wallet DB filename (dbPrefix + name + "_wallet")
+// Unicode letters and spaces are intentionally allowed (international names); only these
+// hazards are rejected, so this is a denylist rather than an ASCII allowlist.
+private val ACCOUNT_NAME_FORBIDDEN = Regex("[\\u0000-\\u001F\\u007F,/\\\\:]")
+
+/** True if [name] is safe to use as an account name: non-blank and free of characters that would
+ *  corrupt the comma-delimited account lists or the wallet database filename. Enforced at account
+ *  creation (newAccount / recoverAccount) and in the new-account UI validation. */
+fun isValidAccountName(name: String): Boolean =
+    name.isNotBlank() && !ACCOUNT_NAME_FORBIDDEN.containsMatchIn(name)
