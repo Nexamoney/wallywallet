@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.Transient
+import org.nexa.assets.AssetInfo
 import org.nexa.assets.AssetPerAccount
 import org.nexa.assets.triggerAssetCheck
 import org.nexa.assets.triggerAssetCheckOnBlock
@@ -29,6 +30,12 @@ const val ACCOUNT_FLAG_HAS_VIEWED_RECOVERY_KEY = 2UL
 const val ACCOUNT_FLAG_REUSE_ADDRESSES = 4UL
 
 const val RETRIEVE_ONLY_ADDITIONAL_ADDRESSES = 10
+
+/** constructAssetMap publishes a StateFlow snapshot every this many newly added assets so the UI
+ *  updates progressively on wallets with many NFTs without paying per-asset re-sort and list-
+ *  rebuild cost on every change. Updates to existing entries and removals don't count toward the
+ *  batch -- they ride along on the next batched or final emit. */
+const val ASSET_EMIT_BATCH = 50
 
 /** Do not warn about not having backed up the recovery key until balance exceeds this amount (satoshis) */
 const val MAX_NO_RECOVERY_WARN_BALANCE = 1000000 * 10
@@ -422,7 +429,11 @@ class AccountImpl(
         }
 
         setBlockchainAccessModeFromPrefs()
-        constructAssetMap()
+        // Build the asset map on its own job so asyncInit returns promptly: with many NFTs the
+        // walk reads .ai files per asset and (when an ElectrumClient is available) fetches each
+        // one over the network. laterOneJob's name keying collapses any duplicate scheduling
+        // from the AssetLoaderThread.
+        laterOneJob("constructAssets-$name") { constructAssetMap() }
     }
 
     /** Save the PIN of an account to the database
@@ -778,41 +789,53 @@ class AccountImpl(
             false
         }
 
-        // Rather than clearing the entire asset dictionary and adding the existing ones,
-        // we'll add the existing ones and then remove any that no longer exist.
-        // This will ensure that the asset page doesn't suddenly go blank if this process happens right when
-        // the user is looking at it.
-
-        // Check if this asset is new, and if so start grabbing the data for all assets (asynchronously)
-        // otherwise update the existing entry for amount changes
+        // Update the asset map in place rather than clearing and rebuilding: this keeps any
+        // per-asset UI state (e.g. send quantity) on entries that survive, and means the asset
+        // page never blinks blank if the user is viewing it while we run.
+        //
+        // Build a local working copy outside access.lock so am.track() (disk read, plus a
+        // synchronous electrum fetch when getEc != null) doesn't block other readers. Publish
+        // a snapshot every ASSET_EMIT_BATCH new entries so a wallet with many NFTs renders
+        // the first ones while the rest are still loading. Token-amount changes mutate in
+        // place; removals plus any additions since the last batch flush in one final emit.
+        val tmp = access.lock { assets.toMutableMap() }
+        var dirtySinceEmit = false
+        var addedSinceEmit = 0
 
         for (asset in ast.values)
         {
-            // If we don't have it at all, add it to our dictionary
-            val assetInfo = am.track(asset.groupId, getEc)
-            access.lock {
-                val cur = assets[asset.groupId]
-                // Insert it into our account if missing -- but do not reinsert if not missing so we don't accidentally remove other state (send quantity)
-                // just update the quantity
-                if (cur != null) cur.groupInfo.tokenAmount = asset.tokenAmount
-                else {
-                    val tmp = assets.toMutableMap()
-                    tmp[asset.groupId] = AssetPerAccount(asset, assetInfo)
-                    assets = tmp
-                }
+            val cur = tmp[asset.groupId]
+            if (cur != null)
+            {
+                cur.groupInfo.tokenAmount = asset.tokenAmount  // in-place: preserve other per-asset state
+                continue
+            }
+            val assetInfo = am.track(asset.groupId, getEc)  // disk read, plus electrum fetch when getEc != null
+            tmp[asset.groupId] = AssetPerAccount(asset, assetInfo)
+            dirtySinceEmit = true
+            addedSinceEmit++
+            if (addedSinceEmit >= ASSET_EMIT_BATCH)
+            {
+                access.lock { assets = tmp.toMap() }  // snapshot copy: we keep mutating tmp after this batch
+                dirtySinceEmit = false
+                addedSinceEmit = 0
             }
         }
+
+        // Drop assets no longer present in the wallet, then publish one final snapshot covering
+        // removals plus any additions since the last batch. Direct tmp assignment (not toMap)
+        // is safe -- tmp is not mutated after this.
         access.lock {
-            // Now remove any assets that are no longer in the wallet
-            val curKeys = assets.keys.toList()
-            for (assetKey in curKeys)
+            val iter = tmp.keys.iterator()
+            while (iter.hasNext())
             {
-                if (!(assetKey in ast)){
-                    val tmp = assets.toMutableMap()
-                    tmp.remove(assetKey)
-                    assets = tmp
+                if (iter.next() !in ast)
+                {
+                    iter.remove()
+                    dirtySinceEmit = true
                 }
             }
+            if (dirtySinceEmit) assets = tmp
         }
     }
 
