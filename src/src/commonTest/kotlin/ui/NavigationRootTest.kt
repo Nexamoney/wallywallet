@@ -198,11 +198,16 @@ class NavigationRootTest: WallyUiTestBase()
             // thread — `runOnIdle` does that, avoiding "Detected multithreaded
             // access to SnapshotStateObserver" from the test worker.
             runOnIdle { nav.switch(ScreenId.Home) }
-            onNodeWithTag("AccountPillAccountName").isDisplayed()
+            waitForCatching { onNodeWithTag("AccountPillAccountName").isDisplayed() }
             runOnIdle { unlock.triggerUnlockDialog(true) { println("Unlock attempted") } }
-            onNodeWithTag("EnterPIN").isDisplayed()
-            onNodeWithTag("EnterPIN").performTextInput("1111")
-            onNodeWithTag("EnterPIN").multiplatformImeAction()
+            // The unlock dialog composes asynchronously, so wait for the PIN
+            // field before interacting. Its testTag is merged into a parent's
+            // semantics, so on Skiko/iOS it only appears in the unmerged tree —
+            // find it there (otherwise: "Expected exactly '1' node … the
+            // unmerged tree contains '1' node that matches").
+            waitForCatching { onNodeWithTag("EnterPIN", useUnmergedTree = true).isDisplayed() }
+            onNodeWithTag("EnterPIN", useUnmergedTree = true).performTextInput("1111")
+            onNodeWithTag("EnterPIN", useUnmergedTree = true).multiplatformImeAction()
         }
     }
     @Test fun navRootTest()
