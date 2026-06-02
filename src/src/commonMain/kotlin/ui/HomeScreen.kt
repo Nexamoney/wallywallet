@@ -78,7 +78,7 @@ class SyncViewModelAccount(val account: MutableStateFlow<Account?>) : SyncViewMo
     override val isSynced: StateFlow<Boolean> = account.flatMapLatest { act ->
           if (act == null) FalseFlow  // no account
           else {
-              if ((act.wallet.chainstate?.chain?.net?.size ?: 0) > 0) FalseFlow  // no net connection
+              if ((act.wallet.chainstate?.chain?.net?.size ?: 0) == 0) FalseFlow  // no net connection
               else
               {
                   act.syncedDate.map {
