@@ -272,8 +272,11 @@ jvmTestCoverageLog: #
     - ./gradlew :src:koverLogJvm # koverLogJvm runs jvmTest as a child job
   coverage: '/application line coverage: (\d+\.\d+)%/' # Regex to extract coverage percentage
   artifacts:
+    reports:
+      junit: src/build/test-results/jvmTest/TEST-*.xml
     paths:
       - build/reports/problems/problems-report.html
+      - src/build/reports/tests/jvmTest/**/**
 
 # Runs Compose UI tests for Android on a Pixel 5 emulator
 androidPixel5Test:
