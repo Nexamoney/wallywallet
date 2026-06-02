@@ -658,12 +658,11 @@ fun AccountActionButtons(viewModel: AccountStatisticsViewModel, acc: Account, tx
                 ) {
                     if (it)
                     {
-                        tlater {
-                            wallyApp!!.deleteAccount(acc)
-                            displayNotice(S.accountDeleteNotice)
-                            accountDeleted()
-                            noSelectedAccount()  // If we are in the account details, this account is selected.  We need to unselect it.
-                        }
+                        // deleteAccount returns once the account is gone from the UI; slow teardown is async.
+                        wallyApp!!.deleteAccount(acc)
+                        displayNotice(S.accountDeleteNotice)
+                        accountDeleted()
+                        noSelectedAccount()  // If we are in the account details, this account is selected.  We need to unselect it.
                     }
                     accountAction.value = null
                 }

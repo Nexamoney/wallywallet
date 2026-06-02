@@ -219,6 +219,9 @@ class AccountDetailScreenTest:WallyUiTestBase()
             finally
             {
                 wallyApp!!.deleteAccount(account)
+                // Deletion is async; the next loop iteration recreates the same name, so wait for
+                // Phase B to release the wallet files before reusing it.
+                awaitDeletionsComplete()
             }
         }
     }

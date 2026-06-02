@@ -8,11 +8,15 @@ import info.bitcoinunlimited.www.wally.EncodePIN
 import info.bitcoinunlimited.www.wally.KotlinTarget
 import info.bitcoinunlimited.www.wally.containsAccountWithName
 import info.bitcoinunlimited.www.wally.dbPrefix
+import info.bitcoinunlimited.www.wally.isValidAccountName
+import info.bitcoinunlimited.www.wally.kvpDb
 import info.bitcoinunlimited.www.wally.platform
 import info.bitcoinunlimited.www.wally.wallyAccountDbFileName
 import info.bitcoinunlimited.www.wally.wallyApp
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.GetLog
+import org.nexa.libnexakotlin.decodeUtf8
+import org.nexa.libnexakotlin.toByteArray
 import ui.WallyUiTestBase
 import ui.mockAccount
 import kotlin.test.Test
@@ -592,5 +596,93 @@ class AccountTest : WallyUiTestBase()
                 acc.loadAccountFlags()
             }
         }
+    }
+
+    // ======================================================================
+    // Deferred (two-phase) account deletion
+    // ======================================================================
+
+    @Test
+    fun deleteAccount_removesFromMapSynchronously()
+    {
+        if (platform().target == KotlinTarget.iOS) return  // mock-only path
+
+        val acc = wallyApp!!.newAccount("syncDel", 0U, "", ChainSelector.NEXA)!!
+        assertTrue(wallyApp!!.accounts.containsKey("syncDel"))
+        wallyApp!!.deleteAccount(acc)
+        assertFalse(wallyApp!!.accounts.containsKey("syncDel"))
+    }
+
+    @Test
+    fun deleteAccount_marksPending()
+    {
+        if (platform().target == KotlinTarget.iOS) return
+
+        val acc = wallyApp!!.newAccount("markPend", 0U, "", ChainSelector.NEXA)!!
+        assertFalse(wallyApp!!.isPendingDeletion("markPend"))
+        wallyApp!!.deleteAccount(acc)
+        assertFalse(wallyApp!!.accounts.containsKey("markPend"))
+    }
+
+    @Test
+    fun newAccount_refusesPendingDeletionName()
+    {
+        if (platform().target == KotlinTarget.iOS) return
+
+        val name = "pendingDup"
+        // Seed a pending entry directly to avoid racing Phase B.
+        val db = kvpDb!!
+        val existing = (db.getOrNull("pendingDeletions") ?: byteArrayOf()).decodeUtf8()
+        val merged = if (existing.isEmpty()) name else "$existing,$name"
+        db.set("pendingDeletions", merged.toByteArray())
+        try
+        {
+            assertTrue(wallyApp!!.isPendingDeletion(name))
+            assertNull(wallyApp!!.newAccount(name, 0U, "", ChainSelector.NEXA))
+        }
+        finally
+        {
+            db.set("pendingDeletions", existing.toByteArray())
+        }
+    }
+
+    @Test
+    fun isPendingDeletion_falseForUnknownName()
+    {
+        assertFalse(wallyApp!!.isPendingDeletion("nameThatNeverExisted"))
+    }
+
+    // ======================================================================
+    // Account name validation (chars that corrupt the comma lists / DB filename)
+    // ======================================================================
+
+    @Test
+    fun isValidAccountName_acceptsSafeAndUnicode()
+    {
+        assertTrue(isValidAccountName("Savings"))
+        assertTrue(isValidAccountName("My Savings"))   // internal spaces are fine
+        assertTrue(isValidAccountName("Café Ünïcøde"))  // i18n: unicode letters allowed
+    }
+
+    @Test
+    fun isValidAccountName_rejectsHazardousChars()
+    {
+        assertFalse(isValidAccountName(""))            // empty
+        assertFalse(isValidAccountName("   "))         // blank
+        assertFalse(isValidAccountName("a,b"))         // comma: activeAccountNames/pendingDeletions delimiter
+        assertFalse(isValidAccountName("a/b"))         // path separator in the wallet DB filename
+        assertFalse(isValidAccountName("a\\b"))        // backslash
+        assertFalse(isValidAccountName("a:b"))         // colon (filesystem-reserved)
+        assertFalse(isValidAccountName("a\u0000b"))    // NUL / control char
+    }
+
+    @Test
+    fun newAccount_refusesNameWithHazardousChars()
+    {
+        if (platform().target == KotlinTarget.iOS) return  // mock-only path
+        assertNull(wallyApp!!.newAccount("a,b", 0U, "", ChainSelector.NEXA))
+        assertNull(wallyApp!!.newAccount("a/b", 0U, "", ChainSelector.NEXA))
+        assertFalse(wallyApp!!.accounts.containsKey("a,b"))
+        assertFalse(wallyApp!!.accounts.containsKey("a/b"))
     }
 }

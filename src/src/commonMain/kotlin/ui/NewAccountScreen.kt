@@ -237,11 +237,13 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
           errorMessage = ""
         )
 
-        if (newAcState.accountName.isEmpty() || newAcState.accountName.length > 16)
+        if (newAcState.accountName.isEmpty() || newAcState.accountName.length > 16 || !isValidAccountName(newAcState.accountName))
         {
             newAccountState.value = newAccountState.value.copy(errorMessage = (newAcState.errorMessage + i18n(S.invalidAccountName)))
         }
-        else if (containsAccountWithName(accounts.value, newAcState.accountName)) {
+        else if (containsAccountWithName(accounts.value, newAcState.accountName)
+                 || wallyApp!!.isPendingDeletion(newAcState.accountName)) {
+            // Block live duplicates and names whose previous wallet is still mid-delete.
             newAccountState.value = newAccountState.value.copy(errorMessage = (newAcState.errorMessage + i18n(S.invalidAccountName)))
         }
         else if (words.size > 12)
@@ -446,7 +448,10 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
           }
                         },
       onNewAccountName = {
-          val actNameValid = (it.length > 0 && it.length <= MAX_NAME_LEN_UI2) && (!containsAccountWithName(accounts.value, it))
+          val actNameValid = (it.length > 0 && it.length <= MAX_NAME_LEN_UI2)
+                             && isValidAccountName(it)
+                             && !containsAccountWithName(accounts.value, it)
+                             && !wallyApp!!.isPendingDeletion(it)
           newAccountState.value = newAccountState.value.copy(
             accountName = it,
             validAccountName = actNameValid,
