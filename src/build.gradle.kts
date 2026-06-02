@@ -589,6 +589,11 @@ android {
         versionCode = androidVersionCode
         versionName = versionNumber
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // LeakCanary heap analysis after each instrumented test is slow (~5-10s/test on the
+        // emulator), so it is opt-in. The androidInstrumentedTest LeakAssertions actual only runs
+        // the analysis when this argument is "true". CI's androidPixel5TestLeakDetection job sets
+        // LEAK_DETECTION=true; the plain androidPixel5Test job leaves it off for a fast run.
+        testInstrumentationRunnerArguments["leakDetection"] = System.getenv("LEAK_DETECTION") ?: "false"
     }
     buildFeatures {
         compose = true

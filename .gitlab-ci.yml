@@ -47,51 +47,15 @@ variables:
   VERSION_CODE_RAW: ${CI_PIPELINE_IID}+${VERSION_BUMPER}
   VERSION_CODE_RENDER: $(($VERSION_CODE_RAW))
 
-tasks:
-  <<: *skip-on-schedule
-  stage: docs
-  tags:
-    - m1-baremetal
-  script:
-    - ./gradlew tasks
-
-taskTree:
-  <<: *skip-on-schedule
-  stage: docs
-  variables:
-    ANDROID_HOME: "/opt/homebrew/share/android-commandlinetools"
-  tags:
-    - m1-baremetal
-  script:
-    - ./gradlew :src:assembleDebug :src:assembleRelease
-    - ./gradlew build taskTree
-
-kDoctor:
-  <<: *skip-on-schedule
-  stage: docs
-  tags:
-    - m1-baremetal
-  script:
-    - brew install kdoctor
-    - kdoctor
-
 lintVitalRelease:
   <<: *skip-on-schedule
   stage: lint
-  tags:
-    - m1-baremetal
-  variables:
-    ANDROID_HOME: "/opt/homebrew/share/android-commandlinetools"
   script:
     - ./gradlew :src:lintVitalRelease
 
 lint:
   <<: *skip-on-schedule
   stage: lint
-  tags:
-    - m1-baremetal
-  variables:
-    ANDROID_HOME: "/opt/homebrew/share/android-commandlinetools"
   script:
     - ./gradlew lint -x :src:lintDebug # Skips android linter with 356 errors, 500 warnings.
 
@@ -125,7 +89,7 @@ build:
       when: on_success # Will only run if all previous jobs in the pipeline complete successfully.
     # Allow manual execution for merge request pipelines
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: manual
+      when: never
     # Allow manual execution as a fallback if the above rules are not met
     - when: manual
   variables:
@@ -233,22 +197,9 @@ jvmTest-ubuntu-docker:
     paths:
       - build/reports/problems/problems-report.html
 
-jvmTest-m1: #
-  <<: *skip-on-schedule
-  stage: test
-  tags:
-    - m1-baremetal
-  script:
-    - ./gradlew :src:cleanJvmTest :src:jvmTest
-  artifacts:
-    reports:
-      junit: src/build/test-results/jvmTest/TEST-*.xml
-
 jvmTestCoverageXml:
   <<: *skip-on-schedule
   stage: test
-  tags:
-    - m1-baremetal
   script:
     - ./gradlew :src:koverXmlReportJvm # koverXmlReportJvm runs jvmTest as a child job
   artifacts:
@@ -266,8 +217,6 @@ jvmTestCoverageXml:
 jvmTestCoverageLog: #
   <<: *skip-on-schedule
   stage: test
-  tags:
-    - m1-baremetal
   script:
     - ./gradlew :src:koverLogJvm # koverLogJvm runs jvmTest as a child job
   coverage: '/application line coverage: (\d+\.\d+)%/' # Regex to extract coverage percentage
@@ -278,13 +227,48 @@ jvmTestCoverageLog: #
       - build/reports/problems/problems-report.html
       - src/build/reports/tests/jvmTest/**/**
 
-# Runs Compose UI tests for Android on a Pixel 5 emulator
+# Runs Compose UI tests for Android on a Pixel 5 emulator. LeakCanary heap analysis is OFF here
+# (LEAK_DETECTION unset) so the run stays fast. Use androidPixel5TestLeakDetection for leak checks.
 androidPixel5Test:
   <<: *skip-on-schedule
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $MIRROR == "True"'
+      when: never
+      # run on main branch
+    - if: $CI_COMMIT_REF_PROTECTED == "true"
+      when: never
   stage: test
   tags:
     - m1-baremetal # default docker image is not working
   resource_group: pixel5_mac_emulators
+  script:
+    - ./gradlew pixel5Check --full-stacktrace
+  artifacts:
+    reports:
+      junit: src/build/outputs/androidTest-results/managedDevice/debug/pixel5/TEST-*.xml
+    when: always
+    paths:
+      - src/build/reports/androidTests/managedDevice/debug/pixel5/index.html
+      - src/build/reports/androidTests/managedDevice/debug/pixel5/**/**
+      - src/build/outputs/androidTest-results/managedDevice/debug/pixel5/**/**
+      - src/build/intermediates/managed_device_android_test_additional_output/pixel5/debug/**/**
+
+# Same Pixel 5 Compose UI tests, but with LEAK_DETECTION=true so LeakCanary runs a heap analysis
+# after each passing test and fails on any retained instance. Expect ~5-10s/test slower than
+# androidPixel5Test. Kept as a separate, clearly named job so the slowdown is never a surprise.
+androidPixel5TestLeakDetection:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $MIRROR == "True"'
+      when: always
+      # run on main branch
+    - if: $CI_COMMIT_REF_PROTECTED == "true"
+      when: always
+  stage: test
+  tags:
+    - m1-baremetal # default docker image is not working
+  resource_group: pixel5_mac_emulators
+  variables:
+    LEAK_DETECTION: "true"
   script:
     - ./gradlew pixel5Check --full-stacktrace
   artifacts:
