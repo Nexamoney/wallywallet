@@ -179,9 +179,15 @@ iosDeviceUiTest:
     - gem install xcpretty
     - ./rundevicetests.sh $DEVICE_UDID
   artifacts:
+    when: always
+    # The .xcresult bundle can contain console logs, screenshots and absolute
+    # runner paths, so restrict downloads to developer-role users and up.
+    access: developer
     reports:
       junit: iosApp/iphone-ui-test-report.xml
-    expire_in: 4 week
+    paths:
+      - iosApp/build/Test.xcresult
+    expire_in: 1 week
 
 jvmTest-ubuntu-docker:
   <<: *skip-on-schedule
