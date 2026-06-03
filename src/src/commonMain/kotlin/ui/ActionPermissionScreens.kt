@@ -1036,7 +1036,7 @@ fun IdentityPermScreen(sess: IdentitySession, nav: ScreenNav)
         Spacer(Modifier.weight(1f))  // Push the accept/deny buttons to the bottom
 
         // show the current registrations by this account
-        Column(modifier = Modifier.weight(0.5f).padding(12.dp,8.dp)) {
+        Column(modifier = Modifier.padding(12.dp,8.dp)) {
             val aa = sess.associatedAccounts
             if (aa != null && aa.isNotEmpty())
             {
@@ -1177,6 +1177,19 @@ fun onProvideIdentity(sess: IdentitySession): Boolean?
                     if (sig == null || sig.size == 0) throw IdentityException("Wallet failed to provide a signable identity", "bad wallet", ErrorSeverity.Severe)
                     val sigStr = Codec.encode64(sig)
                     LogIt.info("Signature is: " + sigStr + "  hex: " + sig.toHex())
+
+                    // "reg" = create-and/or-login (upsert): bind this (host, topic) to the
+                    // consenting account so future non-identity TDPP requests route here. 
+                    // "info" can be sent without any trust relationship, so it must NEVER create a registration.
+                    if (op == "reg")
+                    {
+                        val tdppDomain = app.tpDomains.loadCreateDomain(tmpHost, attribs["topic"] ?: "")
+                        if (tdppDomain.accountName.isEmpty())
+                        {
+                            tdppDomain.accountName = act.name
+                            app.tpDomains.save()
+                        }
+                    }
 
                     val params = mutableMapOf<String, String>()
                     params["op"] = op

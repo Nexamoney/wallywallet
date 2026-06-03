@@ -979,7 +979,7 @@ fun NavigationRoot(
         {
             val pa = try
             {
-                ctp.getRelevantAccount(selectedAccount?.name)
+                ctp.getRelevantAccount()
             }
             catch (e: WalletInvalidException)
             {

@@ -461,7 +461,9 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
     var domain: TdppDomain? = null
     var proposedDomainChanges: TdppDomain? = null
 
-    val pill = AccountPill(null)
+    // Share the global focused-account flow (same pattern as IdentitySession) so that updates
+    // from populateRelevantAccounts propagate to the wallet UI, not just this session's screens.
+    val pill = AccountPill(wallyApp!!.focusedAccount)
 
     /** All the possible accounts that can be used for this identity session */
     var candidateAccounts: ListifyMap<String, Account>? = null
@@ -574,7 +576,8 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
 
     fun getRelevantAccount(preferredAccount: String? = null): Account
     {
-        return pill.account.value ?: throw WalletInvalidException()
+        val preferred = if (!preferredAccount.isNullOrEmpty()) wallyApp?.accounts?.get(preferredAccount) else null
+        return preferred ?: pill.account.value ?: throw WalletInvalidException()
     }
     fun populateRelevantAccounts(preferredAccount: String? = null)
     {
@@ -586,9 +589,12 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
             throw WalletInvalidException()
         }
         pill.choices = walChoices
-        // TODO associate an account with a trickle pay
-        // For now, grab the first sorted since that's the selected one
-        val tmp = wallyApp!!.preferredVisibleAccountOrNull()
+        // If this domain is bound to an account from a prior identity registration, prefer it so the
+        // pill (and everything that reads from it) reflects the account that will actually serve the
+        // request. Fall back to the focused account when no binding exists.
+        val boundName = domain?.accountName
+        val bound = if (boundName.isNullOrEmpty()) null else wallyApp!!.accounts[boundName]
+        val tmp = bound ?: wallyApp!!.preferredVisibleAccountOrNull()
         pill.account.value = if (walChoices.contains(tmp)) tmp else walChoices[0]
     }
 
@@ -1035,7 +1041,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         val chalbyStr = uri.getQueryParameter("chalby")
         val chalby = chalbyStr?.fromHex()
 
-        val acc = getRelevantAccount()
+        val acc = getRelevantAccount(d.accountName)
         val wal = acc.wallet
         val challengerId = host?.toByteArray()
 
