@@ -11,10 +11,14 @@
 //
 //  NOTE: iOS 16+ shows a blocking system consent dialog ("X would like to paste
 //  from Y") whenever a process reads UIPasteboard *string content* written by a
-//  different process. So the test runner never reads pasteboard text (it only
-//  uses `hasStrings`, which needs no consent), and the paste path is exercised
-//  entirely inside the app (the app copies its own address, then pastes it),
-//  which is same-process and prompts no dialog.
+//  different process. Worse, on physical devices (seen on iOS 26) even the
+//  consent-free detection `UIPasteboard.general.hasStrings` is an unreliable
+//  cross-process signal — it stays false in the runner despite the app having
+//  written the address. So the test runner never inspects the system pasteboard
+//  at all: A1 asserts the in-app "copied" confirmation, and A2 exercises the
+//  paste path entirely inside the app (it copies its own address, then pastes
+//  it). A2 is same-process, prompts no dialog, and is what actually proves the
+//  bytes landed on the pasteboard.
 //
 
 import XCTest
@@ -45,14 +49,17 @@ final class ClipboardUITests: XCTestCase {
         return address
     }
 
-    /// A1 — Copy the receive address to the system pasteboard.
+    /// A1 — Tapping "Copy address" runs the copy handler.
+    ///
+    /// We deliberately do not read the system pasteboard from the runner: it is
+    /// a separate process, and on iOS 16+/physical devices even the consent-free
+    /// `UIPasteboard.general.hasStrings` is an unreliable cross-process signal
+    /// (see the file header). The in-app "copied" confirmation proves the handler
+    /// ran; that the bytes actually reach the pasteboard is covered in-process by
+    /// `testPasteAddressIntoSend`.
     func testCopyReceiveAddressToClipboard() throws {
         XCTAssertTrue(app.launchAndWaitForHome(), "App did not reach Home screen")
         _ = gotoReceiveAndReadAddress()
-
-        // Clear the system pasteboard first (writing needs no consent).
-        UIPasteboard.general.items = []
-        XCTAssertFalse(UIPasteboard.general.hasStrings, "Pasteboard not cleared")
 
         // Tap "Copy address" (label is duplicated: "Copy address, Copy address").
         app.actionButton(labelContains: "Copy address").tap()
@@ -63,11 +70,6 @@ final class ClipboardUITests: XCTestCase {
             NSPredicate(format: "label CONTAINS[c] %@", "copied")).firstMatch
         XCTAssertTrue(notice.waitForExistence(timeout: 8),
                       "No 'copied to clipboard' confirmation appeared")
-
-        // The system pasteboard now holds a string. `hasStrings` needs no
-        // paste-consent, so it does not block the runner.
-        XCTAssertTrue(waitUntil(5) { UIPasteboard.general.hasStrings },
-                      "System pasteboard has no string after Copy address")
     }
 
     /// A2 — Copy the address in-app, then paste it into the Send screen.
