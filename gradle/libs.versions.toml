@@ -4,16 +4,16 @@ androidMinSdk = "29" # Android 10 (Q). Don't increase this because it will break
 
 androidsvgAar = "1.4"
 androidxActivity = "1.13.0" # https://developer.android.com/jetpack/androidx/releases/activity
-atomicfu = "0.32.1"  # https://github.com/Kotlin/kotlinx-atomicfu/releases
+atomicfu = "0.33.0"  # https://github.com/Kotlin/kotlinx-atomicfu/releases
 barcodeScanning = "17.3.0"
 bigNumVersion = "0.3.10" # https://github.com/ionspin/kotlin-multiplatform-bignum
 
-bu_libnexakotlin = "0.5.58" # https://gitlab.com/nexa/libnexakotlin
+bu_libnexakotlin = "0.5.65" # https://gitlab.com/nexa/libnexakotlin
 bu_mpthreads = "0.5.12" # https://gitlab.com/nexa/mpthreads
 bu_nexaRpc = "1.6.7" # https://gitlab.com/nexa/nexarpckotlin
 
 cameraCamera2 = "1.6.1" # https://developer.android.com/jetpack/androidx/releases/camera
-compottie = "2.1.0"
+compottie = "2.2.1"
 coreKtx = "1.7.0" # https://mvnrepository.com/artifact/androidx.test/core
 coreSplashscreen = "1.2.0"
 coroutinesVersion = "1.11.0" # https://github.com/Kotlin/kotlinx.coroutines
@@ -29,9 +29,9 @@ materialIconsExtended = "1.7.8"
 media3Exoplayer = "1.10.1"
 nativeDriver = "2.3.2"
 kotlin = "2.3.21" # https://github.com/JetBrains/kotlin/releases
-compose = "1.11.0" # https://github.com/JetBrains/compose-multiplatform/releases
-composeAndroid = "1.11.1" # The Android-only version of compose. This version occasionally deviates from the multiplatform version of compose.
-composeJunitAndroid = "1.11.1"
+compose = "1.11.1" # https://github.com/JetBrains/compose-multiplatform/releases
+composeAndroid = "1.11.2" # The Android-only version of compose. This version occasionally deviates from the multiplatform version of compose.
+composeJunitAndroid = "1.11.2"
 mat3 = "1.9.0"
 android-gradle-plugin = "8.13.2" # Tied to IDE version so do not just bump forward. https://developer.android.com/build/releases/gradle-plugin
 kover = "0.9.8"
@@ -40,7 +40,10 @@ playServicesBase = "18.10.0"
 qrose = "1.1.2"
 serializationVersion = "1.11.0" # https://github.com/Kotlin/kotlinx.serialization
 task-tree = "4.0.1"
-skiko = "0.144.6" # https://github.com/JetBrains/skiko/releases  (needs to be aligned with compose skiko dependency for JVM to work)
+# https://github.com/JetBrains/skiko/releases  (needs to be aligned with compose skiko dependency for JVM to work)
+# use ./gradlew src:checkJvmMainComposeLibrariesCompatibility
+# and ./gradlew src:checkIosSimulatorArm64TestComposeLibrariesCompatibility
+skiko = "0.144.6"
 tracing = "1.3.0"
 uriKmpVersion = "0.0.21" # https://github.com/eygraber/uri-kmp
 wear = "1.4.0"
