@@ -257,12 +257,17 @@ actual fun stackTraceWithout(skipFirst: MutableSet<String>, ignoreFiles: Mutable
     return st //.toTypedArray()
 }
 
-actual fun GetHttpClient(timeoutInMs: Number): HttpClient = HttpClient(Darwin)
+// One shared engine for all clients. A fresh Darwin engine per request builds an NSURLSession whose
+// async teardown over-releases nw_connection objects, corrupting the native heap. HttpClient(engine,..)
+// does not own the engine, so a client's close() never tears the engine (NSURLSession) down.
+private val sharedDarwinEngine by lazy { Darwin.create {} }
+
+actual fun GetHttpClient(timeoutInMs: Number): HttpClient = HttpClient(sharedDarwinEngine)
 {
     install(HttpTimeout) { requestTimeoutMillis = timeoutInMs.toLong() }
 }
 
-actual fun PlatformHttpClient(block: HttpClientConfig<*>.() -> Unit): HttpClient = HttpClient(Darwin, block)
+actual fun PlatformHttpClient(block: HttpClientConfig<*>.() -> Unit): HttpClient = HttpClient(sharedDarwinEngine, block)
 
 /** Get the clipboard.  Platforms that have a clipboard history should return that history, with the primary clip in index 0 */
 actual fun getTextClipboard(): List<String>

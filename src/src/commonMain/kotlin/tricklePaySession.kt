@@ -638,7 +638,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         else
         {
             wallyApp?.later {
-                val client = HttpClient()
+                val client = PlatformHttpClient()
                 try
                 {
                     client.post(url) { setBody(postResp) }
@@ -658,7 +658,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         {
             wallyApp?.later {
                 LogIt.info("responding to server")
-                val client = HttpClient()
+                val client = PlatformHttpClient()
                 {
                     install(HttpTimeout) { requestTimeoutMillis = 5000 }
                 }
@@ -753,7 +753,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         {
             wallyApp?.later {
                 LogIt.info("responding to server")
-                val client = HttpClient()
+                val client = PlatformHttpClient()
                 {
                     install(ContentNegotiation) {
                         json()

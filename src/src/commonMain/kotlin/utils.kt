@@ -529,7 +529,7 @@ fun Uri.accessWithError(): Pair<String,Int>
 
 suspend fun com.eygraber.uri.Uri.coaccess(): String
 {
-    val client = HttpClient()
+    val client = PlatformHttpClient()
     return client.get(this.toString()).bodyAsText()
 }
 
