@@ -27,11 +27,12 @@ import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import org.nexa.libnexakotlin.SearchDerivationPathActivity
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.TimeZone
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.format
 import kotlinx.datetime.toLocalDateTime
 import org.nexa.assets.triggerAssetCheck
@@ -154,7 +155,7 @@ fun Account.uiData(): AccountUIData
         else
         {
             val instant = Instant.fromEpochSeconds(chainstate.syncedDate)
-            val localTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+            val localTime = instant.toLocalDateTime(systemTimeZone)
 
             val td = localTime.format(DATE_TIME_FORMAT)
             i18n(S.balanceOnTheDate) % mapOf("date" to td)
@@ -194,7 +195,7 @@ open class AccountUiDataViewModel: ViewModel()
 
     open fun setup()
     {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             for(c in accountChangedNotification)
             {
                 if (c == "*all changed*")  // this is too long to be a valid account name
@@ -301,11 +302,15 @@ class AccountUiDataViewModelFake: AccountUiDataViewModel()
 {
 
     val accounts = accountGuiSlots.collectAsState().value
-    var accountUIData = accountUiDataViewModel.accountUIData.collectAsState().value
-    accounts.fastForEach {
-        if (accountUIData[it.name] == null) accountUiDataViewModel.setAccountUiDataForAccount(it)
+    val accountUIData = accountUiDataViewModel.accountUIData.collectAsState().value
+    // uiData() can block on wallet/network locks, so compute it off the UI thread
+    LaunchedEffect(accounts) {
+        withContext(Dispatchers.Default) {
+            accounts.fastForEach {
+                if (accountUiDataViewModel.accountUIData.value[it.name] == null) accountUiDataViewModel.setAccountUiDataForAccount(it)
+            }
+        }
     }
-    accountUIData = accountUiDataViewModel.accountUIData.collectAsState().value
     val scrollState = rememberScrollState(accountUiDataViewModel.accountListPos)
     DisposableEffect(scrollState) {
         onDispose {

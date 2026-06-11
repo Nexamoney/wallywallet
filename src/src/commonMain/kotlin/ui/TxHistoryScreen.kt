@@ -93,7 +93,7 @@ fun TransactionHistory.toCSV(): String
     }
 
     val instant = Instant.fromEpochMilliseconds(date)
-    val localTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+    val localTime = instant.toLocalDateTime(systemTimeZone)
     val fdate = localTime.format(DATE_TIME_FORMAT)
     val ret = StringBuilder()
     // date

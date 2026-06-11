@@ -223,7 +223,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
     fun AccountPillHeader(act: Account?)
     {
         val bal = if (act == account.collectAsState().value) balance else otherBalance
-        val currencyCode = act?.uiData()?.currencyCode ?: " "
+        val currencyCode = act?.currencyCode ?: " "
         // If no account is available, do not show the pill
         //if (act == null) return
         RecomposeCounter("Ptile ")
@@ -310,8 +310,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
     {
         val curSync = act?.wallet?.chainstate?.syncedDate ?: 0
         val offerFastForward = (millinow() / 1000 - curSync) > OFFER_FAST_FORWARD_GAP
-        val uiData = act?.uiData()
-        val isFastForwarding = uiData?.fastForwarding ?: false
+        val isFastForwarding = act?.fastforward != null
 
         val roundedCorner = 16.dp
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
