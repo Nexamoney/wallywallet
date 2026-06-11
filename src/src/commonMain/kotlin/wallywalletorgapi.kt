@@ -56,6 +56,7 @@ data class WallyWalletOrgApiDailyPrice(val price: Array<@Serializable(with = Big
 
 
 val nexaPricePollSync = org.nexa.threads.Mutex()
+val nexaHistoryPollSync = org.nexa.threads.Mutex()
 
 /** polledAt is the last successful poll.  lastTried is the last polling attempt */
 class PricePoll(val polledAt: Long, val price: BigDecimal?, val triedAt: Long)
@@ -72,7 +73,7 @@ fun NexDaily(fiat: String): Array<BigDecimal>?
     if (!allowAccessPriceData) return null
     //return arrayOf("0.00001380","0.00001385","0.00001400","0.00001450","0.00001500","0.00001600","0.00001550","0.00001450" ).map { BigDecimal(it)}.toTypedArray()
 
-    val prior = lastNexaHistoryPoll[fiat]
+    val prior = nexaHistoryPollSync.lock { lastNexaHistoryPoll[fiat] }
 
     // Time to refresh this data
     if ((prior == null) || (millinow() - prior.first < DAILY_POLL_INTERVAL)) launch {
@@ -92,7 +93,9 @@ fun NexDaily(fiat: String): Array<BigDecimal>?
         }
         LogIt.info(sourceLoc() + " " + data)
         val obj = jsonParser.decodeFromString(WallyWalletOrgApiDailyPrice.serializer(), data)
-        lastNexaHistoryPoll[fiat] = Pair(millinow(), obj.price)
+        nexaHistoryPollSync.lock {
+            lastNexaHistoryPoll[fiat] = Pair(millinow(), obj.price)
+        }
     }
 
     if (prior == null) return null
