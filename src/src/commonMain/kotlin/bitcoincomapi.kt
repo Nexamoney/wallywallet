@@ -33,12 +33,13 @@ data class HistBitcoinCom(val lookup: HistItemBitcoinCom)
 
 @OptIn(ExperimentalTime::class)
 val lastPoll = mutableMapOf<String, Pair<TimeMark, BigDecimal>>()
+private val lastPollLock = org.nexa.threads.Mutex()
 
 @OptIn(ExperimentalTime::class)
 fun UbchInFiat(fiat: String, setter: (BigDecimal) -> Unit)
 {
     if (!allowAccessPriceData) return
-    val prior = lastPoll[fiat]
+    val prior = lastPollLock.lock { lastPoll[fiat] }
     if (prior != null)
     {
         if (prior.first.elapsedNow().inWholeMilliseconds < POLL_INTERVAL)
@@ -68,7 +69,7 @@ fun UbchInFiat(fiat: String, setter: (BigDecimal) -> Unit)
         LogIt.info(sourceLoc() + " " + obj.toString())
         // TODO verify recent timestamp
         val v = CurrencyDecimal(obj.price.toLong()) / CurrencyDecimal(100000000) // bitcoin.com price is in cents per BCH.  We want "dollars" per uBCH (millionths of a BCH)
-        lastPoll[fiat] = Pair(Monotonic.markNow(), v)
+        lastPollLock.lock { lastPoll[fiat] = Pair(Monotonic.markNow(), v) }
         setter(v)
     }
 
