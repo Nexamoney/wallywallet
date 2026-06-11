@@ -246,6 +246,15 @@ fun SettingsScreen(preferenceDB: SharedPreferences = wallyApp!!.preferenceDB)
                 devModeView = it
                 devMode = it
             }
+            if (devModeView)
+            {
+                WallyWideSwitchRow(showRecompositions.collectAsState().value, S.enableRecompositionCounts, "ShowRecompositionsSwitch") {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        preferenceDB.edit().putBoolean(RECOMPOSITIONS_MODE_PREF, it).commit()
+                    }
+                    showRecompositions.value = it
+                }
+            }
             WallyWideSwitchRow(experimentalUI.collectAsState().value, S.enableExperimentalUx, "ExperimentalUxSwitch") {
                 preferenceDB.edit().putBoolean(EXPERIMENTAL_UX_MODE_PREF, it).commit()
                 experimentalUI.value = it
@@ -255,7 +264,7 @@ fun SettingsScreen(preferenceDB: SharedPreferences = wallyApp!!.preferenceDB)
                 soundEnabled.value = it
             }
 
-            if (experimentalUI.value)
+            if (experimentalUI.collectAsState().value)
             {
                 Spacer(Modifier.height(16.dp))
                 CenteredSectionText(i18n(S.Camouflage))

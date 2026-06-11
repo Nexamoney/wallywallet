@@ -226,7 +226,7 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
         val currencyCode = act?.uiData()?.currencyCode ?: " "
         // If no account is available, do not show the pill
         //if (act == null) return
-
+        RecomposeCounter("Ptile ")
         Row(
           modifier = Modifier.wrapContentHeight()
         ) {

@@ -211,6 +211,7 @@ Good luck!
     <!-- Settings -->
     <string name="version" formatted="false">Version: %ver (%date)</string>
     <string name="enableDeveloperView">Advanced/developer mode</string>
+    <string name="enableRecompositionCounts">Count screen redraws</string>
     <string name="enableExperimentalUx">Experimental Interface</string>
     <string name="enableDarkMode">Dark Mode</string>
     <string name="enableSound">Enable sound</string>

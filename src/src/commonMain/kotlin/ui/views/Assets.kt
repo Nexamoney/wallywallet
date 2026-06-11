@@ -269,7 +269,7 @@ fun AssetCarousel(viewModel: AssetViewModel = androidx.lifecycle.viewmodel.compo
     LaunchedEffect(listState.firstVisibleItemIndex) {
         viewModel.currentPosition.value = listState.firstVisibleItemIndex
     }
-
+    RecomposeCounter("C ")
     LazyRow(
       modifier = Modifier.fillMaxWidth().padding(start = 0.dp),
       horizontalArrangement = Arrangement.spacedBy(6.dp),
