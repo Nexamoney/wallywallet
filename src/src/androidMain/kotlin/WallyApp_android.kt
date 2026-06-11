@@ -22,6 +22,7 @@ import org.nexa.libnexakotlin.*
 import org.nexa.threads.millinow
 import org.nexa.threads.Mutex
 import info.bitcoinunlimited.www.wally.ui.views.loadingAnimation
+import kotlinx.atomicfu.update
 import java.lang.Exception
 
 const val DEBUG_VM = true
@@ -294,7 +295,7 @@ class WallyApp : Application.ActivityLifecycleCallbacks, Application()
         registerActivityLifecycleCallbacks(this)
 
         // Add the Wally Wallet server to our list of Electrum/Rostrum connection points
-        nexaElectrum.add(0, IpPort("rostrum.wallywallet.org", DEFAULT_NEXA_TCP_ELECTRUM_PORT))
+        nexaElectrum.update { listOf(IpPort("rostrum.wallywallet.org", DEFAULT_NEXA_TCP_ELECTRUM_PORT)) + it }
 
         createNotificationChannel()
         registerReceiver(screenState, IntentFilter(Intent.ACTION_SCREEN_ON))
