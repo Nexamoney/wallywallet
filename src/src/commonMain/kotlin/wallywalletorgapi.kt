@@ -77,7 +77,7 @@ fun NexDaily(fiat: String): Array<BigDecimal>?
 
     // Time to refresh this data
     if ((prior == null) || (millinow() - prior.first < DAILY_POLL_INTERVAL)) launch {
-        val client = HttpClient()
+        val client = PlatformHttpClient()
         val data = try
         {
             client.get("http://$WALLY_WALLET_ORG_HOST/_api/v0/day/nex/usdt").bodyAsText()

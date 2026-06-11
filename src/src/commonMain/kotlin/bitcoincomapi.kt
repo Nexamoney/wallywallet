@@ -49,7 +49,7 @@ fun UbchInFiat(fiat: String, setter: (BigDecimal) -> Unit)
         }
     }
 
-    val client = HttpClient()
+    val client = PlatformHttpClient()
 
     // TODO periodic update
     launch {
@@ -83,7 +83,7 @@ fun historicalUbchInFiat(fiat: String, timeStamp: Long): BigDecimal
 
     // see https://index.bitcoin.com/
     val spec = "https://index-api.bitcoin.com/api/v0/cash/lookup?time=" + timeStamp.toString()
-    val client = HttpClient()
+    val client = PlatformHttpClient()
     val data = runBlocking {
         try
         {
