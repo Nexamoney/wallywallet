@@ -140,7 +140,7 @@ abstract class SendScreenViewModel(val account:MutableStateFlow<Account?>): View
     }
 
     abstract fun multiplySendQty(multiplier: Int)
-    abstract fun populateAssetsList(assetTransferList: MutableList<GroupId>, assets: Map<GroupId, AssetPerAccount>)
+    abstract fun populateAssetsList(assetTransferList: List<GroupId>, assets: Map<GroupId, AssetPerAccount>)
     abstract fun onSendButtonClicked()
     abstract fun actuallySend(toAddress: PayAddress? = null, amount: BigDecimal? = null)
 
@@ -176,7 +176,7 @@ open class SendScreenViewModelFake(act: Account): SendScreenViewModel(act)
     }
     override fun checkUriAndSetUi(urlStr: String) {}
     override fun multiplySendQty(multiplier: Int) {}
-    override fun populateAssetsList(assetTransferList: MutableList<GroupId>, assets: Map<GroupId, AssetPerAccount>) {}
+    override fun populateAssetsList(assetTransferList: List<GroupId>, assets: Map<GroupId, AssetPerAccount>) {}
     /**
      * Test-only stand-in for [SendScreenViewModelImpl.onSendButtonClicked] that
      * skips the wallet/balance/network validation but still sets the uiState
@@ -211,7 +211,7 @@ class SendScreenViewModelImpl(act: Account, val unlock: UnlockViewModel): SendSc
         // Always set this, regardless of whether it was already set
         // because state may have changed (like other assets chosen)
         this@SendScreenViewModelImpl.account.value = account
-        populateAssetsList(account.assetTransferList, account.assets)
+        populateAssetsList(account.access.lock { account.assetTransferList.toList() }, account.assets)
         balanceViewModel.setAccount(account)
         setChain(account.chain.chainSelector)
     }
@@ -287,7 +287,7 @@ class SendScreenViewModelImpl(act: Account, val unlock: UnlockViewModel): SendSc
         )
     }
 
-    override fun populateAssetsList(assetTransferList: MutableList<GroupId>, assets: Map<GroupId, AssetPerAccount>)
+    override fun populateAssetsList(assetTransferList: List<GroupId>, assets: Map<GroupId, AssetPerAccount>)
     {
         val assetsToSendTmp: MutableList<AssetPerAccount> = mutableListOf()
 
@@ -309,7 +309,7 @@ class SendScreenViewModelImpl(act: Account, val unlock: UnlockViewModel): SendSc
             displayError(S.NoAccounts, "")
             return
         }
-        val sendingTheseAssets = acc.assetTransferList
+        val sendingTheseAssets = acc.access.lock { acc.assetTransferList.toList() }
         val fpc = acc.fiatPerCoinObservable.value
         val amount = uiState.value.amount
         val toAddress = uiState.value.toAddress
@@ -528,7 +528,7 @@ class SendScreenViewModelImpl(act: Account, val unlock: UnlockViewModel): SendSc
 
         // Launch to avoid network on main thread exception
         // Grab copies of all the data we need
-        val sendList = account.assetTransferList
+        val sendList = account.access.lock { account.assetTransferList.toList() }
         val act = account
         val assets = act.assets.toMap()
         tlater("actuallySend") {
