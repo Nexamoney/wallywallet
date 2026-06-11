@@ -179,7 +179,7 @@ fun SettingsScreen(preferenceDB: SharedPreferences = wallyApp!!.preferenceDB)
             val prefd = preferenceDB.getBoolean(name + "." + PREFER_NODE_SWITCH, false)
 
             // for every account on this blockchain, install the exclusive node or send a null saying not exclusive anymore
-            for (account in wallyApp!!.accounts.values)
+            for (account in wallyApp!!.accountLock.lock { wallyApp!!.accounts.values.toList() })
             {
                 if (account.chain.chainSelector == chain.key)
                 {
@@ -474,8 +474,10 @@ fun BlockchainSource(chain: ChainSelector, preferenceDB: SharedPreferences, swit
 fun onWipeAccounts()
 {
     laterJob {
-        wallyApp?.accounts?.forEach {
-            it.value.delete()
+        wallyApp?.let { app ->
+            app.accountLock.lock { app.accounts.values.toList() }.forEach {
+                it.delete()
+            }
         }
     }
 }
@@ -492,10 +494,10 @@ fun onWipeHeaders()
 fun onLogDebugData()
 {
     later {
-        val coins: MutableMap<String, Account> = wallyApp!!.accounts
+        val coins: List<Account> = wallyApp!!.accountLock.lock { wallyApp!!.accounts.values.toList() }
         LogIt.info("LOG DEBUG BUTTON")
         for (c in coins)
-            c.value.wallet.debugDump()
+            c.wallet.debugDump()
         displayNotice("Log written")
     }
 }

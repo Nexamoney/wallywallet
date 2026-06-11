@@ -115,17 +115,17 @@ fun backgroundSync(completion: () -> Unit)
                                   // Otherwise the system may think accounts are synced simply because it doesn't have any up to date info.
 
     // wait for all accounts to report being synced
-    if (wallyApp!!.accounts.size > 0)
+    if (wallyApp!!.accountLock.lock { wallyApp!!.accounts.size } > 0)
     {
         var unsynced = 0
         do
         {
             unsynced = 0
-            for (a in wallyApp!!.accounts)
+            for (a in wallyApp!!.accountLock.lock { wallyApp!!.accounts.values.toList() })
             {
                 // We only want to do this if we are in background mode, otherwise the foreground code handles it
                 if (backgroundOnly == false) return
-                val wal = a.value.wallet
+                val wal = a.wallet
                 if (!wal.synced())
                 {
                     LogIt.info("${wal.name}: background syncing at ${wal.chainstate?.syncedHeight} of ${wal.blockchain.curHeight}")
@@ -137,9 +137,9 @@ fun backgroundSync(completion: () -> Unit)
             millisleep(30000U)
         } while(unsynced != 0 && !backgroundStop)
     }
-    for (a in wallyApp!!.accounts)
+    for (a in wallyApp!!.accountLock.lock { wallyApp!!.accounts.values.toList() })
     {
-        a.value.wallet.save(true)
+        a.wallet.save(true)
     }
     LogIt.info("Background sync completed")
     // Once done, call completion()
@@ -1339,8 +1339,11 @@ open class CommonApp(val runningTests: Boolean)
     fun closeAllAccounts()
     {
         accountsClosed = true  // prevent any saving of the accounts list
-        val acts = accounts.values.toList()
-        accounts.clear()
+        val acts = accountLock.lock {
+            val snapshot = accounts.values.toList()
+            accounts.clear()
+            snapshot
+        }
         for (a in acts)
         {
             a.wallet.close()
@@ -1408,7 +1411,7 @@ open class CommonApp(val runningTests: Boolean)
                         if (!hasName)  // only create account if its not previously created
                         {
                             val ac = AccountImpl(name, prefDB = preferenceDB)
-                            accounts[ac.name] = ac
+                            accountLock.lock { accounts[ac.name] = ac }
                         }
                         LogIt.info(sourceLoc() + " " + name + ": Loaded account")
                     }

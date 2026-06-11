@@ -141,10 +141,12 @@ fun UpdateNexaXchgRates(fiat: String)
                     lastNexaPricePoll[fiat] = p
                 }
                 // Update all interested accounts with this exchange rate
-                wallyApp?.accounts?.values?.forEach { act ->
-                    if (act.chain.chainSelector == ChainSelector.NEXA)
-                    {
-                        act.fiatPerCoin = CurrencyDecimal(v)
+                wallyApp?.let { app ->
+                    app.accountLock.lock { app.accounts.values.toList() }.forEach { act ->
+                        if (act.chain.chainSelector == ChainSelector.NEXA)
+                        {
+                            act.fiatPerCoin = CurrencyDecimal(v)
+                        }
                     }
                 }
             }

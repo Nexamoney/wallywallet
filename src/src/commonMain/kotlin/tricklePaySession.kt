@@ -576,7 +576,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
 
     fun getRelevantAccount(preferredAccount: String? = null): Account
     {
-        val preferred = if (!preferredAccount.isNullOrEmpty()) wallyApp?.accounts?.get(preferredAccount) else null
+        val preferred = if (!preferredAccount.isNullOrEmpty()) wallyApp?.accountLock?.lock { wallyApp?.accounts?.get(preferredAccount) } else null
         return preferred ?: pill.account.value ?: throw WalletInvalidException()
     }
     fun populateRelevantAccounts(preferredAccount: String? = null)
@@ -593,7 +593,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         // pill (and everything that reads from it) reflects the account that will actually serve the
         // request. Fall back to the focused account when no binding exists.
         val boundName = domain?.accountName
-        val bound = if (boundName.isNullOrEmpty()) null else wallyApp!!.accounts[boundName]
+        val bound = if (boundName.isNullOrEmpty()) null else wallyApp!!.accountLock.lock { wallyApp!!.accounts[boundName] }
         val tmp = bound ?: wallyApp!!.preferredVisibleAccountOrNull()
         pill.account.value = if (walChoices.contains(tmp)) tmp else walChoices[0]
     }
