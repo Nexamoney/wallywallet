@@ -561,7 +561,9 @@ fun setSelectedAccount(account: Account)
     if (wallyApp!!.focusedAccount.value != account)
     {
         wallyApp!!.focusedAccount.value = account
-        wallyApp!!.preferenceDB.edit().putString(SELECTED_ACCOUNT_NAME_PREF, account.name).commit()
+        onetlater("selectedAccountPref") {
+            wallyApp!!.preferenceDB.edit().putString(SELECTED_ACCOUNT_NAME_PREF, wallyApp!!.focusedAccount.value?.name ?: account.name).commit()
+        }
     }
 }
 

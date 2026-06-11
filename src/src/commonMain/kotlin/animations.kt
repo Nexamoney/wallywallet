@@ -13,6 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,6 +44,9 @@ val receivedNexaIsPlaying = MutableStateFlow(false)
 fun SpecialTxSuccessAnimation()
 {
     val isPlaying by specialTxSuccessAnimationIsPlaying.collectAsState()
+
+    // Don't compose/parse the Lottie until it's triggered (avoids parsing it on every app open)
+    if (!isPlaying) return
 
     val composition by rememberLottieComposition {
         LottieCompositionSpec.JsonString(successAnimation)  // TODO: different success animation for a special transaction completion
@@ -77,6 +83,9 @@ fun SendSuccessAnimation()
 {
     val isPlaying by sendSuccessAnimationIsPlaying.collectAsState()
 
+    // Don't compose/parse the Lottie until it's triggered (avoids parsing it on every app open)
+    if (!isPlaying) return
+
     val composition by rememberLottieComposition {
         LottieCompositionSpec.JsonString(successAnimation)
     }
@@ -111,6 +120,12 @@ fun SendSuccessAnimation()
 fun ReceivedNexaAnimation()
 {
     val isPlaying by receivedNexaIsPlaying.collectAsState()
+
+    // Don't load/parse the Lottie until it's first triggered (avoids parsing it on every app open).
+    // 'loaded' latches true so the composition stays cached and the AnimatedVisibility exit still runs.
+    var loaded by remember { mutableStateOf(false) }
+    LaunchedEffect(isPlaying) { if (isPlaying) loaded = true }
+    if (!loaded) return
 
     val composition by rememberLottieComposition {
         LottieCompositionSpec.JsonString(receiveAnimation)

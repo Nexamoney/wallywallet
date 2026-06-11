@@ -113,6 +113,9 @@ val NumberDecimalCharacter:String
         }
     }
 
+// currentSystemDefault() re-parses a tzfile on every call on Kotlin/Native; resolve it once.
+val systemTimeZone: TimeZone by lazy { TimeZone.currentSystemDefault() }
+
 val DATE_TIME_FORMAT = kotlinx.datetime.LocalDateTime.Format {
     year()
     char('-')
@@ -631,7 +634,7 @@ fun formatLocalDateTime(ldt: LocalDateTime,splitter:String=" "): String
 fun formatLocalEpochMilliseconds(epochMs:Long, splitter:String=" "): String
 {
     val instant = Instant.fromEpochMilliseconds(epochMs)
-    val ldt = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+    val ldt = instant.toLocalDateTime(systemTimeZone)
     val year = ldt.year.toString()
     val month = ldt.month.toString().padStart(2, '0')
     val day = ldt.day.toString().padStart(2, '0')

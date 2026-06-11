@@ -2,6 +2,7 @@
 @file:OptIn(ExperimentalUnsignedTypes::class, ExperimentalTime::class)
 
 package org.nexa.assets
+import info.bitcoinunlimited.www.wally.systemTimeZone
 import okio.*
 import kotlin.time.Clock
 import kotlinx.datetime.*
@@ -422,7 +423,7 @@ data class ZipFileHeader(
         fun from(name: String, data: ByteArray, extra: ByteArray?=null): ZipFileHeader
         {
             val dt = Clock.System.now()
-            val ldt = dt.toLocalDateTime(TimeZone.currentSystemDefault())
+            val ldt = dt.toLocalDateTime(systemTimeZone)
             val time = (ldt.hour shl 11) or (ldt.minute shl 5) or (ldt.second/2)
             val date = ((ldt.year-1980) shl 9) or (ldt.month.number shl 5) or ldt.day
             val fnlen = name.encodeUtf8().size
