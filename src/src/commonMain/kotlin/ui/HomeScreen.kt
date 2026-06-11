@@ -131,6 +131,7 @@ fun HomeScreen(
     Box (
       modifier = Modifier.fillMaxSize(),
     ) {
+        RecomposeCounter("Home ")
         Column {
             if (!isShowingRecoveryWarning)
                 Spacer(Modifier.height(16.dp))

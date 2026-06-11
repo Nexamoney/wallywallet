@@ -7,6 +7,7 @@ import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.HoverInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
@@ -60,12 +61,59 @@ import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.exceptionHandler
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.zIndex
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.assets.AssetInfo
 import org.nexa.threads.millisleep
+import org.nexa.libnexakotlin.*
 
+private val LogIt = GetLog("wally.uicomp")
+
+class Boxed<T>(var value: T)
+
+@Composable
+fun Overlay(modifier: Modifier = Modifier, content: @Composable () -> Unit)
+{
+    Layout(
+        modifier = modifier,
+        content = content
+    ) { measurables, constraints ->
+
+        val placeables = measurables.map {
+            it.measure(Constraints())
+        }
+
+        layout(0, 0) {
+            placeables.forEach {
+                it.placeRelative(0, 0)
+            }
+        }
+    }
+}
+
+val showRecompositions = MutableStateFlow(false)
+
+@Composable
+@NonRestartableComposable
+fun RecomposeCounter(pfx:String="f", modifier: Modifier = Modifier.clip(RoundedCornerShape(25)).border(1.dp,Color.Blue, shape= RoundedCornerShape(25)).background(Color(1f,1f,0.2f,0.75f)).padding(horizontal = 3.dp))
+{
+    if (showRecompositions.collectAsState().value)
+    {
+        val count = remember { Boxed(0) }
+        SideEffect {
+            count.value++
+            LogIt.info("Recomposed $pfx${count.value}")
+        }
+        Overlay(Modifier.zIndex(100000f)) {
+            Text("$pfx${count.value}", fontSize = 10.sp, modifier = modifier)
+        }
+    }
+}
 
 @Composable fun WallySwitch(isChecked: MutableState<Boolean>, modifier: Modifier = Modifier, onCheckedChange: (Boolean) -> Unit)
 {
@@ -1082,49 +1130,61 @@ fun BlockchainIcon(label: String, value: String, chain: ChainSelector?)
 fun Syncing(syncColor: Color = Color.White, syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() })
 {
     val isSynced = syncViewModel.isSynced.collectAsState().value
-    val infiniteTransition = rememberInfiniteTransition()
-    val syncingText = i18n(S.unsynced)
-    val syncedText = i18n(S.synced)
-
-    val animation by infiniteTransition.animateFloat(
-      initialValue = 360f,
-      targetValue = 0f,
-      animationSpec = infiniteRepeatable(
-        animation = tween(1000, easing = LinearEasing), // 1 second for full rotation
-        repeatMode = RepeatMode.Restart
-      )
-    )
-
+    RecomposeCounter("s")
     Row {
         if (isSynced)
+        {
+            val syncedText = i18n(S.synced)
             Text(text = syncedText, style = MaterialTheme.typography.labelLarge.copy(
               color = syncColor,
               fontWeight = FontWeight.Bold,
               textAlign = TextAlign.Center
             ))
+        }
         else
+        {
+            val syncingText = i18n(S.unsynced)
             Text(text = syncingText, style = MaterialTheme.typography.labelLarge.copy(
               color = syncColor,
               fontWeight = FontWeight.Bold,
               textAlign = TextAlign.Center
             ))
+        }
         Spacer(modifier = Modifier.width(4.dp))
         if (isSynced)
+        {
+            val syncedText = i18n(S.synced)
             Icon(
               imageVector = Icons.Default.Check,
               contentDescription = syncedText,
               tint = syncColor,
               modifier = Modifier.size(18.dp)
             )
+        }
         else
+        {
+            val syncingText = i18n(S.unsynced)
+            val infiniteTransition = rememberInfiniteTransition()
+            val animation by infiniteTransition.animateFloat(
+              initialValue = 0f,
+              targetValue = 360f,
+              animationSpec = infiniteRepeatable(
+                animation = tween(1000, easing = LinearEasing), // 1 second for full rotation
+                repeatMode = RepeatMode.Restart
+              )
+            )
             Icon(
               imageVector = Icons.Default.Sync,
               contentDescription = syncingText,
               tint = syncColor,
               modifier = Modifier
                 .size(18.dp)
-                .rotate(animation)
+                .graphicsLayer {
+                    scaleX = -1f
+                    rotationZ = animation
+                }
             )
+        }
     }
 }
 

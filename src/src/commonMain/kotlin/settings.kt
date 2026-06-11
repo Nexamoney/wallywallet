@@ -5,6 +5,7 @@ package info.bitcoinunlimited.www.wally
 const val LOCAL_CURRENCY_PREF = "localCurrency"
 const val PRIMARY_ACT_PREF = "primaryAccount"
 const val DEV_MODE_PREF = "devinfo"
+const val RECOMPOSITIONS_MODE_PREF = "showRecompositions"
 const val SHOW_IDENTITY_PREF = "showIdentityMenu"
 const val SHOW_TRICKLE_PAY_PREF = "showTricklePayMenu"
 const val SHOW_ASSETS_PREF = "showAssetsMenu"

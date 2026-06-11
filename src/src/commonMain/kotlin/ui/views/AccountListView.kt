@@ -535,7 +535,7 @@ fun AccountItemView(
           horizontalArrangement = Arrangement.SpaceBetween,
           verticalAlignment = Alignment.CenterVertically
         ) {
-
+            RecomposeCounter(uidata.account.name + " ")
             Column(modifier = Modifier.weight(2f).fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(backgroundColor),
               verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
                 AccountListItem(uidata, hasFastForwardButton, isSelected, backgroundColor, unlock, onClickAccount)

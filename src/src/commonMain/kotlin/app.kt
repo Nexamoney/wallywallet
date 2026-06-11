@@ -6,6 +6,7 @@ import androidx.compose.runtime.collectAsState
 import com.eygraber.uri.Uri
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.ui.*
+import info.bitcoinunlimited.www.wally.ui.views.showRecompositions
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
@@ -907,6 +908,7 @@ open class CommonApp(val runningTests: Boolean)
         showAssetsPref.value = preferenceDB.getBoolean(SHOW_ASSETS_PREF, true)
         experimentalUI.value = preferenceDB.getBoolean(EXPERIMENTAL_UX_MODE_PREF, false)
         soundEnabled.value = preferenceDB.getBoolean(SOUND_ENABLED_PREF, true)
+        showRecompositions.value = preferenceDB.getBoolean(RECOMPOSITIONS_MODE_PREF, false)
 
         openAccountsTriggerGui()
         tpDomains.load()
