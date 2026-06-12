@@ -167,7 +167,7 @@ fun IdentityScreen(sess: IdentitySession, nav: ScreenNav)
         {
             val dest = wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED)
             val destStr = dest.address.toString()
-            val mydata = wallet.identityInfo[dest.address]
+            val mydata = dest.address?.let { wallet.lookupIdentityInfo(it) }
             Column(Modifier.clickable {
                 setTextClipboard(destStr)
                 displayNotice(i18n(S.copiedToClipboard))
@@ -304,11 +304,11 @@ fun IdentityScreen(sess: IdentitySession, nav: ScreenNav)
                           if (wallet != null)
                           {
                               LogIt.info("Wallet ${wallet.name} removing domain ${d.domain}")
-                              LogIt.info(wallet.identityDomain.keys.joinToString(", "))
+                              LogIt.info(wallet.allIdentityDomains().joinToString(", ") { it.domain })
                               wallet.removeIdentityDomain(d.domain)
                               laterJob { wallet.save(true) }
                               identities.removeAll { it.domain == d.domain }
-                              LogIt.info(wallet.identityDomain.keys.joinToString(", "))
+                              LogIt.info(wallet.allIdentityDomains().joinToString(", ") { it.domain })
                               displayNotice(S.removed)
                               sess.idData.value = null
                           }
@@ -544,8 +544,7 @@ fun IdentityEditScreen(account: Account, nav: ScreenNav)
                 Text(i18n(S.done))
             }
             OutlinedButton(onClick = {
-                account.wallet.identityInfo.clear()
-                account.wallet.identityInfoChanged = true
+                account.wallet.clearIdentityInfo()
             }) {
                 Text(i18n(S.clear))
             }

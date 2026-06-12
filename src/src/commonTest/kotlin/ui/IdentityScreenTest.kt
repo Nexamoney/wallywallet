@@ -428,13 +428,13 @@ class IdentityScreenTest : WallyUiTestBase(false)
 
                 val addr = account.wallet.destinationFor(Bip44Wallet.COMMON_IDENTITY_SEED).address!!
                 assertEquals("will-be-cleared", account.wallet.lookupIdentityInfo(addr)?.hdl)
-                assertFalse(account.wallet.identityInfo.isEmpty())
+                assertFalse(account.wallet.allIdentityInfo().isEmpty())
                 account.wallet.identityInfoChanged = false
 
                 onNodeWithText(i18n(S.clear)).performClick()
                 settle()
 
-                assertTrue(account.wallet.identityInfo.isEmpty())
+                assertTrue(account.wallet.allIdentityInfo().isEmpty())
                 assertTrue(account.wallet.identityInfoChanged)
             }
         }
