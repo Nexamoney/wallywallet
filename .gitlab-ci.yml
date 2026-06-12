@@ -140,12 +140,49 @@ iosArm64Test:
     - m1-baremetal
   resource_group: iphone_mac_emulators
   script:
+    # Wipe any stale crash-reports/ from a previous run on this reused workspace,
+    # and drop a timestamp marker so after_script only collects THIS run's crashes.
+    - rm -rf "$CI_PROJECT_DIR/crash-reports" && touch "$CI_PROJECT_DIR/.job-start"
     - ./gradlew :src:cleanIosSimulatorArm64Test :src:iosSimulatorArm64Test
+  after_script:
+    # The Kotlin/Native iosSimulatorArm64 test binary ("test.kexe") crashes are
+    # reported by macOS as .ips files, NOT in the build dir. GitLab only archives
+    # files under $CI_PROJECT_DIR, so copy this run's reports into the workspace.
+    # The .job-start marker scopes collection to THIS run (the shared runner keeps
+    # every job's crashes).
+    - |
+      # A test.kexe crash always fails the job, so only collect on failure — skip
+      # the (slow) poll entirely on success. CI_JOB_STATUS is set before after_script.
+      if [ "$CI_JOB_STATUS" != "failed" ]; then
+        echo "Job status '$CI_JOB_STATUS' (not failed); skipping crash-report collection."
+        exit 0
+      fi
+      mkdir -p "$CI_PROJECT_DIR/crash-reports"
+      HOST_DIR="$HOME/Library/Logs/DiagnosticReports"
+      # Fall back to the account's real home (per directory services) if $HOME is
+      # unset/wrong in the job environment, so we don't silently collect nothing.
+      [ -d "$HOST_DIR" ] || HOST_DIR="$(eval echo ~"$(id -un)")/Library/Logs/DiagnosticReports"
+      # A simctl-spawned simulator test can write its report under the per-device
+      # path instead of the host path, so search both.
+      SIM_GLOB="$HOME/Library/Developer/CoreSimulator/Devices/*/data/Library/Logs/DiagnosticReports"
+      match() {
+        find $HOST_DIR $SIM_GLOB -type f -newer "$CI_PROJECT_DIR/.job-start" \
+          \( -name 'test.kexe-*.ips' -o -name 'test.kexe-*.crash' \) 2>/dev/null
+      }
+      echo "Collecting test.kexe crash reports from: $HOST_DIR (+ simulator devices)"
+      # macOS ReportCrash flushes the .ips ASYNCHRONOUSLY, up to ~1 min after the
+      # process dies (it symbolicates first). Poll up to 2 min instead of racing it;
+      # the loop exits as soon as the report appears, so it rarely waits the full time.
+      for i in $(seq 1 60); do [ -n "$(match)" ] && break; sleep 2; done
+      echo "Host dir contents:"; ls -la "$HOST_DIR" 2>/dev/null || true
+      match | while IFS= read -r f; do cp -a "$f" "$CI_PROJECT_DIR/crash-reports/"; done
+      echo "Collected:"; ls -la "$CI_PROJECT_DIR/crash-reports" || true
   artifacts:
     when: always
     paths:
       - src/build/reports/tests/iosSimulatorArm64Test/index.html
       - src/build/reports/tests/iosSimulatorArm64Test/**/**.html
+      - crash-reports/
 
 iosEmulatorUiTest:
   <<: *skip-on-schedule
