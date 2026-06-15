@@ -28,6 +28,7 @@ import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasTestTag
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -106,6 +107,7 @@ import info.bitcoinunlimited.www.wally.ui.theme.defaultFontSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.em
 import org.nexa.libnexakotlin.ChainSelector
+import ui.waitForCatching
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -983,8 +985,29 @@ class UiComponentLibraryTest
         setContent {
             Syncing(syncViewModel = vm)
         }
-        onNodeWithText(i18n(S.unsynced)).assertIsDisplayed()
-        onNodeWithContentDescription(i18n(S.unsynced)).assertIsDisplayed()
+        waitForCatching(10000) {
+            onNodeWithText(i18n(S.unsynced), useUnmergedTree = true).assertIsDisplayed()
+        }
+        onNodeWithText(i18n(S.synced), useUnmergedTree = true).assertDoesNotExist()
+        onNodeWithTag("syncSpinner", useUnmergedTree = true).assertIsDisplayed()
+        onNodeWithTag("syncedCheckmark", useUnmergedTree = true).assertDoesNotExist()
+        // Verify transition
+        vm.syncValue.value = true
+        waitForIdle()
+        waitForCatching(10000) {
+            onNodeWithText(i18n(S.synced), useUnmergedTree = true).assertIsDisplayed()
+        }
+        onNodeWithText(i18n(S.unsynced), useUnmergedTree = true).assertDoesNotExist()
+        onNodeWithTag("syncedCheckmark", useUnmergedTree = true).assertIsDisplayed()
+        onNodeWithTag("syncSpinner", useUnmergedTree = true).assertDoesNotExist()
+        vm.syncValue.value = false
+        waitForIdle()
+        waitForCatching(10000) {
+            onNodeWithText(i18n(S.unsynced), useUnmergedTree = true).assertIsDisplayed()
+        }
+        onNodeWithText(i18n(S.synced), useUnmergedTree = true).assertDoesNotExist()
+        onNodeWithTag("syncSpinner", useUnmergedTree = true).assertIsDisplayed()
+        onNodeWithTag("syncedCheckmark", useUnmergedTree = true).assertDoesNotExist()
     }
 
     @Test
@@ -995,7 +1018,7 @@ class UiComponentLibraryTest
             Syncing(syncViewModel = vm)
         }
         onNodeWithText(i18n(S.synced)).assertIsDisplayed()
-        onNodeWithContentDescription(i18n(S.synced)).assertIsDisplayed()
+        onNodeWithTag("syncedCheckmark").assertIsDisplayed()
     }
 
     // --- WallyDataEntry tests ---
