@@ -75,27 +75,7 @@ struct iOSApp: App {
 
 	var body: some Scene {
 		WindowGroup {
-			let composeView = ComposeContentView()
-			    .ignoresSafeArea(.all, edges: .all) // Extend to all edges of the screen
-                .onOpenURL(perform: { url in
-                    print("App was opened via URL: \(url)")
-                    do {
-                        try MainViewControllerKt.onQrCodeScannedWithDefaultCameraApp(qr: url.absoluteString)
-                    } catch {
-                        print("error occurred in onOpenURL(): \(error)")
-                    }
-                })
-                .onContinueUserActivity(NSUserActivityTypeBrowsingWeb, perform: { act in
-                        if let urlString = act.webpageURL?.absoluteString {
-                        print("App was opened via Universal Link: \(urlString)")
-                        do {
-                            try MainViewControllerKt.onQrCodeScannedWithDefaultCameraApp(qr: urlString)
-                        } catch {
-                            print("error occurred in onContinueUserActivity(): \(error)")
-                        }
-                    }
-                })
-            composeView.ignoresSafeArea(.keyboard, edges: .all)
+			RootView()
 		}
         .onChange(of: scenePhase, perform: { newValue in
             switch newValue {
@@ -306,5 +286,70 @@ struct iOSApp: App {
         print("[backgroundTask]", Self.backgroundProcessingIdentifier, "invoked")
 
         lastBackgroundProcessingExecution = Date().timeIntervalSince1970
+    }
+}
+
+// The launch scene-update watchdog (0x8BADF00D) kills the app if the first scene commit
+// takes >10s. Compose's first commit initializes the Skia/CoreText FontMgr on the main
+// thread; on a cold start under the many-account launch thread storm that init blocks on
+// the global objc side-table lock long enough to trip the watchdog (#652). So the first
+// thing shown is a cheap *native* SwiftUI splash (no Compose, no font init); we build the Skia
+// FontMgr off the main thread (prewarmFontMgr), then mount Compose on a later frame, where its
+// font init reuses the already-built FontMgr and is no longer the launch-critical commit.
+private struct RootView: View {
+    @State private var showCompose = false
+
+    var body: some View {
+        ZStack {
+            if showCompose {
+                ComposeContentView()
+                    .ignoresSafeArea(.all, edges: .all)
+                    .ignoresSafeArea(.keyboard, edges: .all)
+            } else {
+                SplashView()
+            }
+        }
+        .onOpenURL(perform: { url in
+            print("App was opened via URL: \(url)")
+            do {
+                try MainViewControllerKt.onQrCodeScannedWithDefaultCameraApp(qr: url.absoluteString)
+            } catch {
+                print("error occurred in onOpenURL(): \(error)")
+            }
+        })
+        .onContinueUserActivity(NSUserActivityTypeBrowsingWeb, perform: { act in
+            if let urlString = act.webpageURL?.absoluteString {
+                print("App was opened via Universal Link: \(urlString)")
+                do {
+                    try MainViewControllerKt.onQrCodeScannedWithDefaultCameraApp(qr: urlString)
+                } catch {
+                    print("error occurred in onContinueUserActivity(): \(error)")
+                }
+            }
+        })
+        .task {
+            await Task.detached(priority: .userInitiated) {
+                MainViewControllerKt.prewarmFontMgr()
+            }.value
+            showCompose = true
+        }
+    }
+}
+
+private struct SplashView: View {
+    var body: some View {
+        GeometryReader { geo in
+            ZStack {
+                Color(red: 0x72 / 255.0, green: 0x50 / 255.0, blue: 0x92 / 255.0)
+                // Mirror the Compose splash: a 0.5w x 0.5h centered box, image fit inside,
+                // centered on the *full* screen (the Compose splash ignores system-bar insets).
+                Image("Splash")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: geo.size.width * 0.5, height: geo.size.height * 0.5)
+            }
+            .frame(width: geo.size.width, height: geo.size.height)
+        }
+        .ignoresSafeArea()
     }
 }
