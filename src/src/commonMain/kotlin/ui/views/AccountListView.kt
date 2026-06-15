@@ -668,7 +668,7 @@ fun startAccountFastForward(account: Account, displayFastForwardInfo: (String?) 
             var lastDate = it.lastDate
             var lastHash = it.lastHash
             val ch: AccountSearchResults? = change.results
-            var txh = it.txh
+            val txh = it.txh
 
             if (ch!=null)
             {
@@ -682,6 +682,7 @@ fun startAccountFastForward(account: Account, displayFastForwardInfo: (String?) 
             }
             wallet.generateAddressesUntil(it.lastAddressIndex)
             wallet.fastForward(lastHeight, lastDate, lastHash, txh.values.toList())
+            account.syncedDate.value = lastDate
             wallet.save(true)
         }
         triggerAssetCheck()

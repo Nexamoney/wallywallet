@@ -172,7 +172,10 @@ data class PlatformCharacteristics(
   /** True if the shopping screen is enabled for this platform, disabled for iOS because of app store rejections **/
   val hasLinkToNiftyArt: Boolean,
   /** Done button for input fields **/
-  val hasDoneButton: Boolean
+  val hasDoneButton: Boolean,
+  /** Efficient repaint  -- does a small change efficiently repaint the screen or does it need to rerender the whole thing?
+   * If false (e.g. IOS), small animations like spinners will be rendered at lower frame rates.  */
+  val efficientRepaint: Boolean,
 )
 
 /** Return details about this platform */

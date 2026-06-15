@@ -333,7 +333,8 @@ val iosPlatformCharacteristics = PlatformCharacteristics(
   supportsBackgroundSync = true,
   bottomSystemBarOverlap = 0.dp,
   hasLinkToNiftyArt = false,
-  hasDoneButton = true
+  hasDoneButton = true,
+  efficientRepaint = false
   )
 actual fun platform(): PlatformCharacteristics = iosPlatformCharacteristics
 

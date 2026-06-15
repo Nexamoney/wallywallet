@@ -24,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -64,9 +63,18 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Canvas
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
+import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.zIndex
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.nexa.assets.AssetInfo
 import org.nexa.threads.millisleep
@@ -107,7 +115,7 @@ fun RecomposeCounter(pfx:String="f", modifier: Modifier = Modifier.clip(RoundedC
         val count = remember { Boxed(0) }
         SideEffect {
             count.value++
-            LogIt.info("Recomposed $pfx${count.value}")
+            // LogIt.info("Recomposed $pfx${count.value}")
         }
         Overlay(Modifier.zIndex(100000f)) {
             Text("$pfx${count.value}", fontSize = 10.sp, modifier = modifier)
@@ -1126,6 +1134,34 @@ fun BlockchainIcon(label: String, value: String, chain: ChainSelector?)
         }
 }
 
+/** Draws an ImageVector rasterized once into a cached bitmap of exactly the displayed size,
+ *  rotated by degrees().  The angle is read in the draw phase, so changing it causes no
+ *  recomposition and no layout — just a redraw of one cached bitmap. */
+@Composable
+fun RotatingIcon(imageVector: ImageVector, tint: Color, size: Dp,  modifier:Modifier = Modifier, initialScaleX: Float = 1f, initialScaleY: Float = 1f, degrees: () -> Float)
+{
+    val painter = rememberVectorPainter(imageVector)
+    val sizePx = with(LocalDensity.current) { size.roundToPx() }
+    val cache = remember(painter, sizePx, tint) { Boxed<ImageBitmap?>(null) }
+
+    Canvas(modifier = modifier.size(size)) {
+        // Rasterize the vector on first draw, at exactly the size and tint we display.
+        // (Done here rather than in remember{} because the painter's vector content
+        // isn't composed until after composition applies.)
+        val bmp = cache.value ?: ImageBitmap(sizePx, sizePx).also { b ->
+            CanvasDrawScope().draw(this, layoutDirection, Canvas(b), Size(sizePx.toFloat(), sizePx.toFloat())) {
+                scale(scaleX = initialScaleX, scaleY = initialScaleY) {
+                    with(painter) { draw(this@draw.size, colorFilter = ColorFilter.tint(tint)) }
+                }
+            }
+            cache.value = b
+        }
+        rotate(degrees()) {       // DrawScope.rotate, pivots around center
+            drawImage(bmp)
+        }
+    }
+}
+
 @Composable
 fun Syncing(syncColor: Color = Color.White, syncViewModel: SyncViewModel = viewModel { SyncViewModelImpl() })
 {
@@ -1158,32 +1194,38 @@ fun Syncing(syncColor: Color = Color.White, syncViewModel: SyncViewModel = viewM
               imageVector = Icons.Default.Check,
               contentDescription = syncedText,
               tint = syncColor,
-              modifier = Modifier.size(18.dp)
+              modifier = Modifier.size(18.dp).testTag("syncedCheckmark")
             )
         }
         else
         {
-            val syncingText = i18n(S.unsynced)
-            val infiniteTransition = rememberInfiniteTransition()
-            val animation by infiniteTransition.animateFloat(
-              initialValue = 0f,
-              targetValue = 360f,
-              animationSpec = infiniteRepeatable(
-                animation = tween(1000, easing = LinearEasing), // 1 second for full rotation
-                repeatMode = RepeatMode.Restart
-              )
-            )
-            Icon(
-              imageVector = Icons.Default.Sync,
-              contentDescription = syncingText,
-              tint = syncColor,
-              modifier = Modifier
-                .size(18.dp)
-                .graphicsLayer {
-                    scaleX = -1f
-                    rotationZ = animation
+            if (platform().efficientRepaint)
+            {
+                val infiniteTransition = rememberInfiniteTransition()
+                val animation by infiniteTransition.animateFloat(
+                  initialValue = 0f,
+                  targetValue = 360f,
+                  animationSpec = infiniteRepeatable(
+                    animation = tween(1000, easing = LinearEasing), // 1 second for full rotation
+                    repeatMode = RepeatMode.Restart
+                  )
+                )
+                RotatingIcon(imageVector = Icons.Default.Sync, tint = syncColor, 18.dp, Modifier.testTag("syncSpinner"), initialScaleX = -1f) { animation }
+            }
+            else
+            {
+                var animation by remember { mutableStateOf(0f) }
+                LaunchedEffect(Unit)
+                {
+                    while (true)
+                    {
+                        delay(1000/7)
+                        animation = (animation + 360/7) % 360
+                    }
                 }
-            )
+                RotatingIcon(
+                  imageVector = Icons.Default.Sync, tint = syncColor, 18.dp, Modifier.testTag("syncSpinner"), initialScaleX = -1f) { animation }
+            }
         }
     }
 }

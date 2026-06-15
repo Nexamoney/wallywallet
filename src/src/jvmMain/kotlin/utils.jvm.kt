@@ -228,7 +228,8 @@ val jvmPlatformCharacteristics = PlatformCharacteristics(
   supportsBackgroundSync = false,
   bottomSystemBarOverlap = 0.dp,
   hasLinkToNiftyArt = true,
-  hasDoneButton = false
+  hasDoneButton = false,
+  efficientRepaint = true
 )
 
 actual fun displayAlert(alert: Alert)
