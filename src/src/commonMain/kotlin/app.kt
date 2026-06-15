@@ -169,6 +169,8 @@ fun cancelBackgroundSync()
 
 
 const val LONG_POLL_MAX_DISCONNECTED_AGE_MS = 1000 * 60 * 30  // 30 minutes in milliseconds
+
+const val ACCOUNT_STARTUP_STAGGER_MS = 75UL  // delay between starting each account at launch (#652)
 class AccessHandler(val app: CommonApp)
 {
     var done: Boolean = false
@@ -1491,12 +1493,20 @@ open class CommonApp(val runningTests: Boolean)
 
                 triggerAssignAccountsGuiSlots()
 
-                val alist = accountLock.lock { accounts.values }
-                for (c in alist)
-                {
-                    c.setBlockchainAccessModeFromPrefs()
-                    c.start()
-                    c.onChange()  // update all wallet UI fields since just starting up
+                // Stagger account startup so we don't spawn every wallet's threads at once (#652).
+                val alist = accountLock.lock { accounts.values.toList() }
+                val firstUp = focusedAccount.value ?: nullablePrimaryAccount
+                val startupOrder = if (firstUp != null) listOf(firstUp) + alist.filter { it !== firstUp } else alist
+                laterJob("account-warmup") {
+                    var staggered = false
+                    for (c in startupOrder)
+                    {
+                        if (staggered) millisleep(ACCOUNT_STARTUP_STAGGER_MS)
+                        staggered = true
+                        c.setBlockchainAccessModeFromPrefs()
+                        c.start()
+                        c.onChange()  // update all wallet UI fields since just starting up
+                    }
                 }
                 // Going to block here until the GUI asks for this field
                 if (recoveryWarning != null)
