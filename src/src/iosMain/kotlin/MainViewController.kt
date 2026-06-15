@@ -13,6 +13,7 @@ import org.nexa.libnexakotlin.initializeLibNexa
 import org.nexa.libnexakotlin.handleThreadException
 import org.nexa.libnexakotlin.laterJob
 import org.nexa.threads.millisleep
+import org.jetbrains.skia.FontMgr
 import platform.UIKit.UIViewController
 
 private val LogIt = GetLog("BU.wally.iosMain.MainViewController")
@@ -32,6 +33,23 @@ fun OnAppStartup()
     wallyApp!!.onCreate()
     LogIt.info("Wally APP startup")
 
+}
+
+// Build the Skia FontMgr.default global (its constructor enumerates CoreText fonts) off the main
+// thread, so Compose's first scene commit reuses it instead of initializing it on the UI thread and
+// tripping the launch watchdog (#652). skiko is a commonMain dep, so this is the same FontMgr that
+// Compose's FontCache reads.
+fun prewarmFontMgr()
+{
+    try
+    {
+        val n = FontMgr.default.familiesCount
+        LogIt.info("prewarmFontMgr: $n font families")
+    }
+    catch (e: Throwable)
+    {
+        LogIt.info("prewarmFontMgr failed: ${e.message}")
+    }
 }
 
 fun MainViewController(): UIViewController
