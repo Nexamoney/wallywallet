@@ -30,6 +30,8 @@ import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import kotlinx.coroutines.flow.MutableStateFlow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.TileMode
+import io.github.alexzhirkevich.compottie.rememberLottieAnimatable
+import kotlin.coroutines.cancellation.CancellationException
 
 /** Trigger the Send Success animation by setting this to true.  It will set itself to false when the animation is finished.  This effectively debounces multiple sets. */
 val sendSuccessAnimationIsPlaying = MutableStateFlow(false)
@@ -44,36 +46,33 @@ val receivedNexaIsPlaying = MutableStateFlow(false)
 fun SpecialTxSuccessAnimation()
 {
     val isPlaying by specialTxSuccessAnimationIsPlaying.collectAsState()
-
     // Don't compose/parse the Lottie until it's triggered (avoids parsing it on every app open)
     if (!isPlaying) return
 
     val composition by rememberLottieComposition {
         LottieCompositionSpec.JsonString(successAnimation)  // TODO: different success animation for a special transaction completion
     }
-    val progress by animateLottieCompositionAsState(
-      composition = composition,
-      iterations = 1,
-      reverseOnRepeat = false,
-      isPlaying = isPlaying
-    )
 
-    // Auto-reset when finished
-    LaunchedEffect(progress) {
-        if (progress == 1f && specialTxSuccessAnimationIsPlaying.value) {
-            specialTxSuccessAnimationIsPlaying.value = false
+    val anim = rememberLottieAnimatable()
+    LaunchedEffect(composition) {
+        try
+        {
+            anim.animate(composition = composition, iterations = 1, reverseOnRepeat = false) {
+                specialTxSuccessAnimationIsPlaying.value = false
+            }
+        }
+        catch (e: CancellationException)
+        {
+            specialTxSuccessAnimationIsPlaying.value = false // cancelled / removed / key changed
+            throw e
         }
     }
 
     //Display the animation
-    if (isPlaying)
-        Image(
+    Image(
           modifier = Modifier.zIndex(102f),
-          painter = rememberLottiePainter(
-            composition = composition,
-            progress = { progress },
-          ),
-          contentDescription = "animation"
+          painter = rememberLottiePainter(composition = composition, progress = { anim.progress }, ),
+          contentDescription = "Successful Special Transaction"
         )
 }
 
@@ -82,36 +81,35 @@ fun SpecialTxSuccessAnimation()
 fun SendSuccessAnimation()
 {
     val isPlaying by sendSuccessAnimationIsPlaying.collectAsState()
-
     // Don't compose/parse the Lottie until it's triggered (avoids parsing it on every app open)
     if (!isPlaying) return
 
     val composition by rememberLottieComposition {
         LottieCompositionSpec.JsonString(successAnimation)
     }
-    val progress by animateLottieCompositionAsState(
-      composition = composition,
-      iterations = 1,
-      reverseOnRepeat = false,
-      isPlaying = isPlaying
-    )
-
-    // Auto-reset when finished
-    LaunchedEffect(progress) {
-        if (progress == 1f && sendSuccessAnimationIsPlaying.value) {
-            sendSuccessAnimationIsPlaying.value = false
+    val anim = rememberLottieAnimatable()
+    LaunchedEffect(composition) {
+        try
+        {
+            anim.animate(composition = composition, iterations = 1, reverseOnRepeat = false) {
+                sendSuccessAnimationIsPlaying.value = false
+            }
+        }
+        catch (e: CancellationException)
+        {
+            sendSuccessAnimationIsPlaying.value = false // cancelled / removed / key changed
+            throw e
         }
     }
 
     //Display the animation
-    if (isPlaying)
-        Image(
+    Image(
           modifier = Modifier.zIndex(101f),
           painter = rememberLottiePainter(
             composition = composition,
-            progress = { progress },
+            progress = { anim.progress },
           ),
-          contentDescription = "Lottie animation"
+          contentDescription = "Send success"
         )
 }
 
@@ -120,35 +118,26 @@ fun SendSuccessAnimation()
 fun ReceivedNexaAnimation()
 {
     val isPlaying by receivedNexaIsPlaying.collectAsState()
-
-    // Don't load/parse the Lottie until it's first triggered (avoids parsing it on every app open).
-    // 'loaded' latches true so the composition stays cached and the AnimatedVisibility exit still runs.
-    var loaded by remember { mutableStateOf(false) }
-    LaunchedEffect(isPlaying) { if (isPlaying) loaded = true }
-    if (!loaded) return
+    if (!isPlaying) return
 
     val composition by rememberLottieComposition {
         LottieCompositionSpec.JsonString(receiveAnimation)
     }
-    val progress by animateLottieCompositionAsState(
-      composition = composition,
-      iterations = 1,
-      reverseOnRepeat = false,
-      isPlaying = isPlaying,
-      cancellationBehavior = LottieCancellationBehavior.OnIterationFinish
-    )
-
-    // Stop when finished
-    LaunchedEffect(progress) {
-        if (progress == 1f && receivedNexaIsPlaying.value)
+    val anim = rememberLottieAnimatable()
+    LaunchedEffect(composition) {
+        try
         {
-            receivedNexaIsPlaying.value = false
+            anim.animate(composition = composition, iterations = 1) {
+                receivedNexaIsPlaying.value = false
+            }
+        }
+        catch (e: CancellationException)
+        {
+            receivedNexaIsPlaying.value = false // cancelled / removed / key changed
+            throw e
         }
     }
 
-    // val focusBrush = Brush.radialGradient(Pair(0f, Color(0xFFFFC200)), Pair(0.4f, Color(0xA0FFC200)), Pair(1.0f, Color.Transparent), tileMode = TileMode.Clamp)
-    //val focusBrush = Brush.radialGradient(Pair(0f, Color(0xFFFFA200)), Pair(0.4f, Color(0xA0FFB200)), Pair(1.0f, Color.Transparent), tileMode = TileMode.Clamp)
-    //val focusBrush = Brush.radialGradient(Pair(0f, Color(0x90ea9504)), Pair(0.7f, Color(0x70ea9504)), Pair(1.0f, Color.Transparent), tileMode = TileMode.Clamp)
     val focusBrush = Brush.radialGradient(Pair(0f, Color(0xFF523E83)), Pair(0.7f, Color(0x70523E83)), Pair(1.0f, Color.Transparent), tileMode = TileMode.Clamp)
 
     AnimatedVisibility(isPlaying, modifier = Modifier.zIndex(100f).fillMaxSize(), enter = fadeIn(animationSpec = tween(durationMillis = 250)), exit = fadeOut(animationSpec = tween(durationMillis = 500)))
@@ -156,7 +145,7 @@ fun ReceivedNexaAnimation()
         Box(modifier = Modifier.zIndex(100f).fillMaxSize().background(focusBrush), contentAlignment = Alignment.Center) {
             Image(
               modifier = Modifier.fillMaxSize(0.85f).zIndex(100f).offset(-20.dp,-20.dp),
-              painter = rememberLottiePainter(composition = composition, progress = { progress }),
+              painter = rememberLottiePainter(composition = composition, progress = { anim.progress }),
               contentScale = ContentScale.Fit,
               contentDescription = "Received Nexa"
             )
