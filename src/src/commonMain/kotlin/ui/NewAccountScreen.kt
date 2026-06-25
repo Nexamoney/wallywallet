@@ -129,13 +129,13 @@ fun updateRecoveryInfo(earliestActivity:Long?, earliestActivityHeight:Int?, s:St
     later { newAccountDriver.send(NewAccountDriver(s, earliestActivity=earliestActivity, earliestActivityHeight=earliestActivityHeight)) }
 }
 
-fun launchRecoverAccountThread(acState: NewAccountState, flags: ULong, secret: String, chainSelector: ChainSelector)
+fun launchRecoverAccountThread(acState: NewAccountState, flags: ULong, secret: String, chainSelector: ChainSelector, suppressAutoFastForward: Boolean)
 {
     Thread("recoverAccount")
     {
         try
         {
-            wallyApp!!.recoverAccount(acState.accountName, flags, acState.pin, secret, chainSelector, acState.earliestActivity, acState.earliestActivityHeight.toLong(), null)
+            wallyApp!!.recoverAccount(acState.accountName, flags, acState.pin, secret, chainSelector, acState.earliestActivity, acState.earliestActivityHeight.toLong(), null, suppressAutoFastForward)
             triggerAssignAccountsGuiSlots()
         }
         catch (e: Error)
@@ -323,7 +323,9 @@ fun CreateAccountRecoveryThread(acState: NewAccountState, chainSelector: ChainSe
                 {
                     CleanState()  // Clean it after taking a copy but right away
                     creatingAccountLoading = true
-                    launchRecoverAccountThread(acState, flags, words.joinToString(" "), chainSelector)
+                    // The careful (slow) sync is an explicit opt-out of auto fast-forward, but only when activity was
+                    // actually found.  The no-history confirmation path (earliestActivity == null) is a normal account.
+                    launchRecoverAccountThread(acState, flags, words.joinToString(" "), chainSelector, suppressAutoFastForward = acState.earliestActivity != null)
                     nav.back()
                 }
             }

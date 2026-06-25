@@ -6,6 +6,7 @@ import androidx.compose.runtime.collectAsState
 import com.eygraber.uri.Uri
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import info.bitcoinunlimited.www.wally.ui.*
+import info.bitcoinunlimited.www.wally.ui.views.fastForwardAccount
 import info.bitcoinunlimited.www.wally.ui.views.showRecompositions
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -17,6 +18,10 @@ import io.ktor.utils.io.errors.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.io.files.FileNotFoundException
 import kotlinx.serialization.Serializable
@@ -921,6 +926,42 @@ open class CommonApp(val runningTests: Boolean)
             }
         }
         periodicAnalysisThread = uxPeriodicAnalysis()
+
+        later { autoFastForwardFocusedAccount() }
+    }
+
+    /** Watches the focused account and automatically starts a Fast Sync (fast-forward) the first time it becomes
+     *  eligible, so the user doesn't have to trigger it manually while the chain slowly catches up.  This fires on
+     *  exactly the condition that lights up the manual Fast Sync button (see [fastForwardAvailable]). */
+    suspend fun autoFastForwardFocusedAccount()
+    {
+        focusedAccount
+          .flatMapLatest { acct -> acct?.syncedDate?.map { acct } ?: flowOf(null) }
+          .collect { acct ->
+              if (acct == null) return@collect
+              when
+              {
+                  // The user chose the careful (slow) sync at recovery: stay out of the way until they manually fast
+                  // sync.  Once that slow sync has caught up, drop the suppression so the account rejoins automatic
+                  // fast-sync (and the manual Fast Sync button disappears).
+                  acct.autoFastForwardSuppressed ->
+                  {
+                      if (acct.fastforward == null && !acct.fastForwardAvailable()) acct.autoFastForwardSuppressed = false
+                  }
+                  acct.fastForwardAvailable() ->
+                  {
+                      if (!acct.autoFastForwardAttempted)
+                      {
+                          acct.autoFastForwardAttempted = true
+                          LogIt.info(sourceLoc() + ": auto fast-forwarding ${acct.name}")
+                          fastForwardAccount(acct)
+                      }
+                  }
+                  // Not behind and nothing running -> caught up.  Re-arm so a future gap can auto-trigger again.
+                  acct.fastforward == null -> acct.autoFastForwardAttempted = false
+                  // else: a fast-forward is in progress -> leave the latch set.
+              }
+          }
     }
 
     /** Iterate through all the accounts, looping */
@@ -1272,7 +1313,8 @@ open class CommonApp(val runningTests: Boolean)
       chainSelector: ChainSelector,
       earliestActivity: Long?,
       earliestHeight: Long?,
-      nonstandardActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, HDActivityBracket>>?
+      nonstandardActivity: MutableList<Pair<Bip44Wallet.HdDerivationPath, HDActivityBracket>>?,
+      suppressAutoFastForward: Boolean = false
     ): Account
     {
         // If the account is being restored from a recovery key, then the user must have it saved somewhere already
@@ -1312,6 +1354,8 @@ open class CommonApp(val runningTests: Boolean)
         val ac = AccountImpl(name, flags, chainSelector, secretWords, veryEarly, eh, retrieveOnlyActivity = nonstandardActivity)
         ac.encodedPin = epin
         ac.pinEntered = true // for convenience, new accounts begin as if the pin has been entered
+        // Set before start() so the auto-fast-forward collector can never fire in the gap before the flag is set.
+        ac.autoFastForwardSuppressed = suppressAutoFastForward
         ac.start()
         ac.onChange()
         ac.saveAccountPin(epin)
