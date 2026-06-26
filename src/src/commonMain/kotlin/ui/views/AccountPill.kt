@@ -313,7 +313,10 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
         // there we surface the manual Fast Sync button so they can opt back in.
         val curSync = act?.wallet?.chainstate?.syncedDate ?: 0
         val offerFastForward = (millinow() / 1000 - curSync) > OFFER_FAST_FORWARD_GAP
-        val isFastForwarding = act?.fastforward != null
+        // act.fastforward is a plain var (not Compose-observable), so observe fastForwardStatusState instead -- it is
+        // non-null for the duration of a fast-forward -- otherwise the buttons won't recompose/hide while one runs.
+        val ffStatusFlow = remember(act) { act?.fastForwardStatusState ?: MutableStateFlow<String?>(null) }
+        val isFastForwarding = ffStatusFlow.collectAsState().value != null
 
         val roundedCorner = 16.dp
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -389,20 +392,13 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                         ) {
                             nav.go(ScreenId.SplitBill)
                         }
-                        VerticalDivider(
-                          color = Color.White,
-                          modifier = verticalDividerModifier
-                        )
-                        IconTextButton(
-                          icon = Icons.Outlined.ManageAccounts,
-                          modifier = Modifier.weight(1f).testTag("AccountButton"),
-                          description = i18n(S.account)
-                        ) {
-                            nav.go(ScreenId.AccountDetails)
-                        }
-                        // Only shown for accounts the user opted out of auto fast-sync (careful slow sync at recovery).
-                        // Pressing it clears the suppression: this account returns to automatic fast-sync from now on.
-                        if (offerFastForward && !isFastForwarding && act?.autoFastForwardSuppressed == true)
+                        // Refresh checks for transactions the (leaky) slow sync may have missed, and sits to the left of
+                        // Account (second from the right).  The exception is a suppressed account (user chose careful slow
+                        // sync at recovery) that is behind: there we show Fast Forward instead as the explicit opt-out.
+                        // While a fast-forward is in flight we show neither, so the user can't re-press and interrupt it.
+                        val showFastForward = act?.autoFastForwardSuppressed == true && offerFastForward && !isFastForwarding
+                        val showRefresh = !isFastForwarding && !showFastForward
+                        if (showFastForward)
                         {
                             VerticalDivider(
                               color = Color.White,
@@ -414,10 +410,43 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                               description = i18n(S.fastSync)
                             ) {
                                 act?.let {
+                                    displayNotice(S.fastSync)   // confirm the manual press (auto fast-forward stays silent)
                                     it.autoFastForwardSuppressed = false
                                     fastForwardAccount(it)
                                 }
                             }
+                        }
+                        else if (showRefresh)
+                        {
+                            VerticalDivider(
+                              color = Color.White,
+                              modifier = verticalDividerModifier
+                            )
+                            IconTextButton(
+                              icon = Icons.Outlined.Refresh,
+                              modifier = Modifier.weight(1f),
+                              description = i18n(S.refresh)
+                            ) {
+                                act?.let {
+                                    displayNotice(S.searchNotice)     // confirm the manual press
+                                    // Go straight to the fast-forward: the Electrum search finds missing txs directly, and it sets
+                                    // the fast-forward status synchronously so the icon hides immediately.  We deliberately skip the
+                                    // rediscover rewind that the menu "Search for Missing Transactions" does -- it is slow (seconds on
+                                    // older devices) and gets preempted by the fast-forward anyway.
+                                    fastForwardAccount(it)
+                                }
+                            }
+                        }
+                        VerticalDivider(
+                          color = Color.White,
+                          modifier = verticalDividerModifier
+                        )
+                        IconTextButton(
+                          icon = Icons.Outlined.ManageAccounts,
+                          modifier = Modifier.weight(1f).testTag("AccountButton"),
+                          description = i18n(S.account)
+                        ) {
+                            nav.go(ScreenId.AccountDetails)
                         }
                     }
                 }

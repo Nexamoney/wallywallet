@@ -293,6 +293,8 @@ Good luck!
     -->
     <string name="balanceOnTheDate" formatted="false">as of %date</string>
     <string name="fastSync">Fast sync</string>
+    <!-- Short label for the pill button that checks the blockchain for transactions the wallet may be missing -->
+    <string name="refresh">Refresh</string>
 
     <!-- A QR is the 2-dimensional black and white boxes of pixels that wallets scan to read info -->
     <string name="goodQR">QR readable</string>
