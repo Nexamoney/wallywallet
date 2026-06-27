@@ -308,6 +308,9 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
     @Composable
     protected fun renderPill(act: Account?, animatedOffset:Float, buttonsEnabled: Boolean = true)
     {
+        // Fast Sync now runs automatically (see CommonApp.autoFastForwardFocusedAccount), so no manual button is shown.
+        // The exception is an account where the user chose the careful (slow) sync at recovery (autoFastForwardSuppressed):
+        // there we surface the manual Fast Sync button so they can opt back in.
         val curSync = act?.wallet?.chainstate?.syncedDate ?: 0
         val offerFastForward = (millinow() / 1000 - curSync) > OFFER_FAST_FORWARD_GAP
         val isFastForwarding = act?.fastforward != null
@@ -397,7 +400,9 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                         ) {
                             nav.go(ScreenId.AccountDetails)
                         }
-                        if (offerFastForward && !isFastForwarding)
+                        // Only shown for accounts the user opted out of auto fast-sync (careful slow sync at recovery).
+                        // Pressing it clears the suppression: this account returns to automatic fast-sync from now on.
+                        if (offerFastForward && !isFastForwarding && act?.autoFastForwardSuppressed == true)
                         {
                             VerticalDivider(
                               color = Color.White,
@@ -408,7 +413,10 @@ abstract class AccountPillViewModel(val account: MutableStateFlow<Account?>, val
                               modifier = Modifier.weight(1f),
                               description = i18n(S.fastSync)
                             ) {
-                                act?.let { fastForwardAccount(it) }
+                                act?.let {
+                                    it.autoFastForwardSuppressed = false
+                                    fastForwardAccount(it)
+                                }
                             }
                         }
                     }

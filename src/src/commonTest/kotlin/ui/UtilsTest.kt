@@ -417,6 +417,8 @@ fun mockAccount(
         every { fastforward } returns null
         every { fastforwardStatus } returns null
         every { fastForwardStatusState } returns fastForwardStatusFlow
+        every { autoFastForwardAttempted } returns false
+        every { autoFastForwardSuppressed } returns false
 
         // Assets
         every { assets } calls { assetsFlow.value }

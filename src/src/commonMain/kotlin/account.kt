@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.Transient
+import org.nexa.threads.millinow
 import org.nexa.assets.AssetInfo
 import org.nexa.assets.AssetPerAccount
 import org.nexa.assets.triggerAssetCheck
@@ -154,6 +155,11 @@ interface Account
     var fastforward: Objectify<Boolean>?
     var fastforwardStatus: String?
     val fastForwardStatusState: StateFlow<String?>
+    // Set once we have auto-triggered a fast-forward for this account, so we don't keep re-triggering it.
+    var autoFastForwardAttempted: Boolean
+    // True when the user explicitly chose the careful (slow) sync at recovery: suppress auto fast-forward for this
+    // account until they manually press Fast Sync.  Not persisted -- it is a recovery-time-only choice.
+    var autoFastForwardSuppressed: Boolean
 
     // ----- Wallet change callbacks -----
     val cb1: (Wallet, List<TransactionHistory>?) -> Unit
@@ -212,6 +218,14 @@ interface Account
     fun delete()
     fun changeAsyncProcessing()
     fun onChange(force: Boolean = false)
+}
+
+/** True when this account's last sync is old enough that a fast-forward (Fast Sync) would help, and one isn't already running.
+ *  This is the same condition that gates the manual Fast Sync button in the UI. */
+fun Account.fastForwardAvailable(): Boolean
+{
+    val curSync = wallet.chainstate?.syncedDate ?: 0
+    return fastforward == null && (millinow() / 1000 - curSync) > OFFER_FAST_FORWARD_GAP
 }
 
 class AccountImpl(
@@ -358,6 +372,8 @@ class AccountImpl(
         }
     private val _fastForwardStatusState = MutableStateFlow<String?>(null)
     override val fastForwardStatusState = _fastForwardStatusState.asStateFlow()
+    override var autoFastForwardAttempted = false
+    override var autoFastForwardSuppressed = false
 
     init
     {
