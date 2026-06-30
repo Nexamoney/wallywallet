@@ -18,7 +18,7 @@ class AccountDetailScreenTest:WallyUiTestBase()
     fun viewPinTest()
     {
         val cs = ChainSelector.NEXA
-        val account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
+        val account = wallyApp!!.newAccount("viewPinTest", 0U, "", cs)!!
         try
         {
 
@@ -59,7 +59,7 @@ class AccountDetailScreenTest:WallyUiTestBase()
     fun setAndChangePinTest()
     {
         val cs = ChainSelector.NEXA
-        val account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
+        val account = wallyApp!!.newAccount("setAndChangePinTest", 0U, "", cs)!!
         try
         {
 
@@ -176,7 +176,7 @@ class AccountDetailScreenTest:WallyUiTestBase()
         secureViewEnabled = false
 
         listOf(ChainSelector.NEXATESTNET, ChainSelector.NEXA).forEach { cs ->
-            val account = wallyApp!!.newAccount("sendScreenContentTest", 0U, "", cs)!!
+            val account = wallyApp!!.newAccount("viewRecoveryPhraseAndCopyToClipBoardTest", 0U, "", cs)!!
             try
             {
             val mnemonic = account.getRecoveryPhrase()
