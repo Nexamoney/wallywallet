@@ -8,12 +8,12 @@ atomicfu = "0.33.0"  # https://github.com/Kotlin/kotlinx-atomicfu/releases
 barcodeScanning = "17.3.0"
 bigNumVersion = "0.3.10" # https://github.com/ionspin/kotlin-multiplatform-bignum
 
-bu_libnexakotlin = "0.5.68" # https://gitlab.com/nexa/libnexakotlin
+bu_libnexakotlin = "0.5.69" # https://gitlab.com/nexa/libnexakotlin
 bu_mpthreads = "0.5.13" # https://gitlab.com/nexa/mpthreads
 bu_nexaRpc = "1.6.7" # https://gitlab.com/nexa/nexarpckotlin
 
 cameraCamera2 = "1.6.1" # https://developer.android.com/jetpack/androidx/releases/camera
-compottie = "2.2.2"
+compottie = "2.2.3"
 coreKtx = "1.7.0" # https://mvnrepository.com/artifact/androidx.test/core
 coreSplashscreen = "1.2.0"
 coroutinesVersion = "1.11.0" # https://github.com/Kotlin/kotlinx.coroutines
@@ -30,8 +30,8 @@ media3Exoplayer = "1.10.1"
 nativeDriver = "2.3.2"
 kotlin = "2.4.0" # https://github.com/JetBrains/kotlin/releases
 compose = "1.11.1" # https://github.com/JetBrains/compose-multiplatform/releases
-composeAndroid = "1.11.2" # The Android-only version of compose. This version occasionally deviates from the multiplatform version of compose.
-composeJunitAndroid = "1.11.2"
+composeAndroid = "1.11.3" # The Android-only version of compose. This version occasionally deviates from the multiplatform version of compose.
+composeJunitAndroid = "1.11.3"
 mat3 = "1.9.0"
 android-gradle-plugin = "8.13.2" # Tied to IDE version so do not just bump forward. https://developer.android.com/build/releases/gradle-plugin
 kover = "0.9.8"

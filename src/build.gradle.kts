@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter
 
 // Wally Wallet version
 // On version bump: Run ./gradlew generateVersionFile and commit the updates iosApp/iosApp/info.plist file
-val versionNumber = "3.30.02"
+val versionNumber = "3.30.04"
 val androidVersionCode = versionNumber.replace(".", "").toInt()
 
 val secSinceEpoch = Instant.now().epochSecond
@@ -627,6 +627,7 @@ android {
         }
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("debug")
             buildConfigField("String", "BUILD_TIME", "\"${secSinceEpoch}\"")
