@@ -441,7 +441,7 @@ class AccountImpl(
                 if (tmp == pref.size) ElectrumServerOn(ch)
                 else IpPort(pref.random().split(':').first(), DefaultElectrumTCP[ch] ?: DEFAULT_NEXA_TCP_ELECTRUM_PORT)
             }
-            this.getElectrumServerOn(ch)
+            else this.getElectrumServerOn(ch)
         }
 
         setBlockchainAccessModeFromPrefs()
