@@ -581,6 +581,7 @@ android {
     namespace = "info.bitcoinunlimited.www.wally"
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
+    sourceSets["main"].res.srcDir(layout.buildDirectory.dir("generated/i18n/androidMain/res").get().asFile)
     compileSdk = libs.versions.androidSdk.get().toInt()
     defaultConfig {
         applicationId = "info.bitcoinunlimited.www.wally"
@@ -717,6 +718,7 @@ tasks.register("generateVersionFile") {
 
 tasks.named("preBuild").configure {
     dependsOn("generateVersionFile")
+    dependsOn("generateI18nFiles")
 }
 
 // Task to update the iOS version based on versionNumber
@@ -766,6 +768,146 @@ tasks.register("clean", Delete::class) {
 }
 */
 
+
+/**
+ *  i18n
+ *  Source of truth: ../i18n/res/values/strings.xml  (English, defines all keys)
+ *  Translations:   ../i18n/res/values-<lang>/strings.xml
+ *
+ *  On every build this task:
+ *    1. Reads the XML files and sorts keys alphabetically
+ *    2. Writes one strings_<lang>.bin per locale (null-terminated UTF-8 strings,
+ *       indexed by position, must stay in sync with strings.kt)
+ *    3. Writes strings.kt (the S object) so app code references S.someKey
+ *       as a stable Int that resolves to the right position in the .bin
+ *
+ *  Add a locale: add its code to i18nLangs + create values-<lang>/strings.xml
+ *  Add a string:  add it to values/strings.xml (+ translations), then rebuild
+ *
+ */
+
+val i18nLangs   = listOf("ca", "de", "es", "et", "hi", "in", "it", "nb", "no", "round", "sl", "sv", "tr", "ko")
+val i18nPackage = "info.bitcoinunlimited.www.wally"
+val i18nXmlDir  = file("../i18n/res")
+val i18nRawDir  = layout.buildDirectory.dir("generated/i18n/androidMain/res/raw")
+val i18nResDir  = layout.buildDirectory.dir("generated/i18n/commonMain/resources")
+val i18nKtDir   = layout.buildDirectory.dir("generated/i18n/commonMain/kotlin")
+
+fun readStringsXml(f: File): Map<String, String> {
+    val doc = javax.xml.parsers.DocumentBuilderFactory.newInstance()
+        .newDocumentBuilder().parse(f)
+    val nodes = doc.getElementsByTagName("resources").item(0).childNodes
+    return buildMap {
+        for (i in 0 until nodes.length) {
+            val n = nodes.item(i)
+            if (n.nodeName == "string") {
+                val name = n.attributes.getNamedItem("name").textContent
+                val v = n.textContent
+                    .replace("\\n", "\n").replace("\\'", "'")
+                    .replace("\\\"", "\"").replace("\\r", "\r")
+                put(name, v)
+            }
+        }
+    }
+}
+
+/** Writes one locale pack; returns how many keys had to fall back to English. */
+fun writeBin(outDir: File, langCode: String, keys: List<String>, xlat: Map<String, String>, fallback: Map<String, String>): Int {
+    var missing = 0
+    outDir.resolve("strings_$langCode.bin").outputStream().use { out ->
+        for (key in keys) {
+            val v = xlat[key]
+                ?: fallback[key].also { missing++ }
+                ?: error("[i18n] '$key' is missing from values/strings.xml")
+            out.write(v.toByteArray())
+            out.write(0)
+        }
+    }
+    return missing
+}
+
+val generateI18nFiles = tasks.register("generateI18nFiles") {
+    group = "i18n"
+    description = "Compiles XML locale files --> .bin packs + strings.kt"
+
+    // Capture everything the action needs up front: touching the Project at execution
+    // time is what makes a task configuration-cache incompatible.
+    val xmlDir = i18nXmlDir
+    val langs  = i18nLangs
+    val pkg    = i18nPackage
+    val rawOut = i18nRawDir.get().asFile
+    val resOut = i18nResDir.get().asFile
+    val ktOut  = i18nKtDir.get().asFile
+
+    // Only the locale XML is an input; ../i18n/res also holds drawables and mipmaps
+    // that have nothing to do with string generation.
+    inputs.files(fileTree(xmlDir) { include("values/strings.xml", "values-*/strings.xml") })
+        .withPropertyName("localeXml")
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+    inputs.property("langs", langs)
+    outputs.dir(rawOut)
+    outputs.dir(resOut)
+    outputs.dir(ktOut)
+
+    doLast {
+        rawOut.mkdirs()
+        resOut.mkdirs()
+        ktOut.mkdirs()
+
+        val base = readStringsXml(xmlDir.resolve("values/strings.xml"))
+        val keys = base.keys.sorted()
+
+        writeBin(rawOut, "en", keys, base, base)
+        writeBin(resOut, "en", keys, base, base)
+
+        val untranslated = linkedMapOf<String, Int>()
+        for (lang in langs) {
+            val xlat = readStringsXml(xmlDir.resolve("values-$lang/strings.xml"))
+            writeBin(rawOut, lang, keys, xlat, base)
+            val missing = writeBin(resOut, lang, keys, xlat, base)
+            if (missing > 0) untranslated[lang] = missing
+        }
+
+        val kt = buildString {
+            appendLine("package $pkg")
+            appendLine("object S {")
+            keys.forEachIndexed { idx, key -> appendLine("    val $key: Int = $idx") }
+            append("}")
+        }
+        ktOut.resolve("strings.kt").writeText(kt)
+        println("[i18n] Generated ${keys.size} keys → strings.kt  |  locales: en, ${langs.joinToString()}")
+        if (untranslated.isNotEmpty()) {
+            println("[i18n] Falling back to English for untranslated keys: " +
+                untranslated.entries.joinToString { "${it.key}=${it.value}" })
+        }
+    }
+}
+
+kotlin.sourceSets.getByName("commonMain").let { cm ->
+    cm.kotlin.srcDir(i18nKtDir)
+    cm.resources.srcDir(i18nResDir)
+}
+
+/*
+ * Adding the generated dirs as srcDirs does NOT give Gradle a producer for them -- the
+ * Compose resource pipeline sits between the source set and *ProcessResources, so the
+ * dependency cannot be inferred from the source set alone. Without these, the resource
+ * and metadata tasks consume the generated directory with no ordering guarantee, which
+ * fails Gradle's validation on JVM/iOS and can package empty locale data.
+ */
+tasks.matching { t ->
+    // Every Kotlin compile task -- including compileCommonMainKotlinMetadata, which a
+    // "compileKotlin*" prefix match misses.
+    (t.name.startsWith("compile") && t.name.contains("Kotlin")) ||
+    // Every task that consumes the resources. Matching on name rather than type is
+    // deliberate: the consumers span unrelated types (ProcessResources for JVM/Android,
+    // SyncComposeResourcesForIosTask for the Xcode build, plus the Compose assemble and
+    // aggregate steps), and enumerating types means rediscovering each omission as a
+    // build failure on a different target.
+    t.name.contains("Resources")
+}.configureEach {
+    dependsOn(generateI18nFiles)
+}
 
 println("JAR Tasks:")
 for (t in project.tasks.withType<Jar>())
