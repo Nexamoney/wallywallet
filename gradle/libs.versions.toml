@@ -1,5 +1,9 @@
 [versions]
-androidSdk = "36"
+# Wally Wallet version. On version bump: run ./gradlew generateVersionFile and commit the updated iosApp/iosApp/Info.plist file
+wallyApp = "3.30.04"
+
+androidSdk = "37" # compileSdk; libnexakotlin >= 0.6.0 AARs declare minCompileSdk=37
+androidTargetSdk = "36" # targetSdk and managed-device image; bump separately from compileSdk
 androidMinSdk = "29" # Android 10 (Q). Don't increase this because it will break support for older Android versions.
 
 androidsvgAar = "1.4"
@@ -8,7 +12,7 @@ atomicfu = "0.33.0"  # https://github.com/Kotlin/kotlinx-atomicfu/releases
 barcodeScanning = "17.3.0"
 bigNumVersion = "0.3.10" # https://github.com/ionspin/kotlin-multiplatform-bignum
 
-bu_libnexakotlin = "0.5.69" # https://gitlab.com/nexa/libnexakotlin
+bu_libnexakotlin = "0.6.0" # https://gitlab.com/nexa/libnexakotlin
 bu_mpthreads = "0.5.13" # https://gitlab.com/nexa/mpthreads
 bu_nexaRpc = "1.6.7" # https://gitlab.com/nexa/nexarpckotlin
 
@@ -33,7 +37,7 @@ compose = "1.11.1" # https://github.com/JetBrains/compose-multiplatform/releases
 composeAndroid = "1.11.3" # The Android-only version of compose. This version occasionally deviates from the multiplatform version of compose.
 composeJunitAndroid = "1.11.3"
 mat3 = "1.9.0"
-android-gradle-plugin = "8.13.2" # Tied to IDE version so do not just bump forward. https://developer.android.com/build/releases/gradle-plugin
+android-gradle-plugin = "9.3.1" # Tied to IDE version so do not just bump forward. https://developer.android.com/build/releases/gradle-plugin
 kover = "0.9.8"
 okio = "3.17.0"
 playServicesBase = "18.10.0"
@@ -50,6 +54,9 @@ wear = "1.4.0"
 workVersion = "2.11.2" # https://developer.android.com/jetpack/androidx/releases/work
 zxingAndroidEmbedded = "4.3.0"
 mokkery = "3.4.1" # https://github.com/lupuuss/Mokkery
+junitPlatformLauncher = "1.13.4"
+junitPlatformEngine = "1.13.4"
+journeysJunitEngine = "0.3.0"
 
 [libraries]
 androidsvg-aar = { module = "com.caverock:androidsvg-aar", version.ref = "androidsvgAar" }
@@ -113,12 +120,16 @@ ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.re
 uri-kmp = { module = "com.eygraber:uri-kmp", version.ref = "uriKmpVersion" }
 zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxingAndroidEmbedded" }
 ui-tooling-preview = { module =  "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose"  }
+junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher", version.ref = "junitPlatformLauncher" }
+junit-platform-engine = { group = "org.junit.platform", name = "junit-platform-engine", version.ref = "junitPlatformEngine" }
+journeys-junit-engine = { group = "com.android.tools.journeys", name = "journeys-junit-engine", version.ref = "journeysJunitEngine" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
+android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "android-gradle-plugin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 task-tree = { id = "com.dorongold.task-tree", version.ref = "task-tree" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose"}

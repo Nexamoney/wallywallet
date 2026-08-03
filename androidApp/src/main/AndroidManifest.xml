@@ -1,23 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="info.bitcoinunlimited.www.wally">
-
-    <uses-feature
-        android:name="android.hardware.camera"
-        android:required="false" />
-
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.hardware.camera" />
-    <uses-permission android:name="android.hardware.camera.autofocus" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
+<!-- Application shell manifest. All classes and resources referenced here live in the
+     :shared library, so component names must be fully qualified: the runtime icon-camouflage
+     toggle builds component names from the applicationId, which differs from this
+     module's namespace. Permissions and features are declared in :shared's manifest. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
         android:requestLegacyExternalStorage="true"
-        android:name=".WallyApp"
+        android:name="info.bitcoinunlimited.www.wally.WallyApp"
         android:largeHeap="true"
         android:allowBackup="false"
         android:hardwareAccelerated="true"
@@ -50,7 +40,7 @@
 
 
         <activity
-            android:name=".ComposeActivity"
+            android:name="info.bitcoinunlimited.www.wally.ComposeActivity"
             android:exported="true"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
@@ -174,8 +164,8 @@
 
         <!-- Default Wally icon and app name -->
         <activity-alias
-            android:name=".ComposeActivityDefault"
-            android:targetActivity=".ComposeActivity"
+            android:name="info.bitcoinunlimited.www.wally.ComposeActivityDefault"
+            android:targetActivity="info.bitcoinunlimited.www.wally.ComposeActivity"
             android:icon="@mipmap/icon2024a"
             android:roundIcon="@mipmap/icon2024a_round"
             android:label="@string/app_name"
@@ -189,8 +179,8 @@
 
         <!-- Meditate app camouflage alternative icon and name -->
         <activity-alias
-            android:name=".ComposeActivityMeditationCamouflage"
-            android:targetActivity=".ComposeActivity"
+            android:name="info.bitcoinunlimited.www.wally.ComposeActivityMeditationCamouflage"
+            android:targetActivity="info.bitcoinunlimited.www.wally.ComposeActivity"
             android:icon="@mipmap/ic_launcher_meditation"
             android:roundIcon="@mipmap/ic_launcher_meditation_round"
             android:label="@string/app_name_meditation"

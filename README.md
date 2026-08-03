@@ -140,14 +140,14 @@ cd i18n
 To execute just run
 
 ```bash
-java -jar ./src/build/libs/wpw.jar
+java -jar ./desktopApp/build/libs/wpw.jar
 ```
 
 In Android Studio, create a "JAR Application" in edit run configurations.  Just put the application (fat) jar file into the "Path To Jar" field.
 Then go down to "Before Launch" and add a gradle task with this project "wpw" and task name "appJar".  The Jar file is located at:
 
 ```bash
-YOUR_PROJECT_PATH/build/libs/wpw-app.jar
+YOUR_PROJECT_PATH/desktopApp/build/libs/wpw.jar
 ```
 
 ## Building
@@ -216,7 +216,7 @@ https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html
 ```
 
 ```bash
-./gradlew :src:iosSimulatorArm64Test
+./gradlew :shared:iosSimulatorArm64Test
 ```
 
 ##### Android UI automated tests
@@ -225,32 +225,32 @@ https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html
 Running `connectedAndroidTest` requires that an android device is connected to your computer:
 
 ```bash
-./gradlew :src:connectedAndroidTest
+./gradlew :shared:connectedAndroidTest
 ```
 
-`pixel5DebugAndroidTest` uses a pixel5 emulator to run the tests:
+`pixel5AndroidDeviceTest` uses a pixel5 emulator to run the tests:
 
 ```bash
-./gradlew pixel5DebugAndroidTest
+./gradlew pixel5AndroidDeviceTest
 ./gradlew pixel5Check --full-stacktrace
 ```
 
 ```bash
-./gradlew pixel5DebugAndroidTest --console=plain
+./gradlew pixel5AndroidDeviceTest --console=plain
 ```
 Run a specific test on android emulator:
 ``` bash
-./gradlew pixel5DebugAndroidTest --console=plain  -Pandroid.testInstrumentationRunnerArguments.class=ui.NavigationRootTest
+./gradlew pixel5AndroidDeviceTest --console=plain  -Pandroid.testInstrumentationRunnerArguments.class=ui.NavigationRootTest
 ````
 
 #### Running automated (unit) tests
 To successfully run the units tests, you must have a local "regtest" Nexa full node running.
 ```
-./gradlew :src:jvmTest
+./gradlew :shared:jvmTest
 ```
 Run on an android phone:
 ```
-./gradlew :src:connectedDebugAndroidTest
+./gradlew :shared:connectedAndroidDeviceTest
 ```
 Run a single test:
 ```agsl
@@ -273,10 +273,10 @@ Generate a code coverage .html report for jvm and Android with Kover (https://gi
 ##### JVM
 koverXmlReportJvm runs jvmTest as a child job
 ```
-./gradlew :src:koverXmlReportJvm
+./gradlew :shared:koverXmlReportJvm
 ```
 
-The coverage report is written to `src/build/reports/kover/reportJvm.xml`
+The coverage report is written to `shared/build/reports/kover/reportJvm.xml`
 
 #### Trigger iOS background processing task from Xcode
 Physical device is required. Background processing is not supported in emulator

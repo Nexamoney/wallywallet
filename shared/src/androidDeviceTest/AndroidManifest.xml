@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The device tests self-instrument (library module): the test APK is also the app under
+     test, so the application class and the activity launched by the UI tests must be
+     declared here. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+        android:name="info.bitcoinunlimited.www.wally.WallyApp"
+        android:largeHeap="true"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name="info.bitcoinunlimited.www.wally.ComposeActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.Wally.Splash" />
+    </application>
+</manifest>

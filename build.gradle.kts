@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.kotlin.multiplatform.library) apply false
     alias(libs.plugins.kotlin.multiplatform) apply false  // https://kotlinlang.org/docs/multiplatform-dsl-reference.html#top-level-blocks
     alias(libs.plugins.task.tree)
     alias(libs.plugins.compose) apply false

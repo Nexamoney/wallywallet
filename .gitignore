@@ -7,10 +7,10 @@ local.properties
 i18n/*.bin
 i18n/*.jar
 dwally.log*
-src/dwally.log*
-src/*.db
+shared/dwally.log*
+shared/*.db
 *.db
-src/release/
+shared/release/
 /iosApp/iosApp.app.dSYM.zip
 /iosApp/fastlane/report.xml
 /iosApp/iosApp.xcodeproj/xcuserdata/
@@ -25,4 +25,4 @@ src/release/
 /iosApp/iosApp.xcodeproj/project.xcworkspace/contents.xcworkspacedata
 /wallyCache
 .gitlab-ci.yml.swp
-/src/src/commonMain/kotlin/Version.kt
+/shared/src/commonMain/kotlin/Version.kt
