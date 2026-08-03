@@ -51,13 +51,13 @@ lintVitalRelease:
   <<: *skip-on-schedule
   stage: lint
   script:
-    - ./gradlew :src:lintVitalRelease
+    - ./gradlew :androidApp:lintVitalRelease
 
 lint:
   <<: *skip-on-schedule
   stage: lint
   script:
-    - ./gradlew lint -x :src:lintDebug # Skips android linter with 356 errors, 500 warnings.
+    - ./gradlew lint # :shared has no per-variant lint tasks under the KMP android library plugin; this lints the androidApp shell
 
 defaultGradle:
   <<: *skip-on-schedule
@@ -72,7 +72,7 @@ appJar:
     - ./gradlew appJar
   artifacts:
     paths:
-      - src/build/libs/wpw.jar
+      - desktopApp/build/libs/wpw.jar
 
 build:
   stage: build
@@ -95,23 +95,23 @@ build:
   variables:
     ANDROID_HOME: "/opt/homebrew/share/android-commandlinetools"
   script:
-    # Exclude the task :src:testDebugUnitTest and :src:testReleaseUnitTest because (I think) they do not support multiplatform projects
-    - ./gradlew build -x :src:testDebugUnitTest -x :src:testReleaseUnitTest
+    # Exclude the android host (unit) tests; they are covered by jvmTest and the device tests
+    - ./gradlew build -x :shared:testAndroidHostTest
   artifacts:
     when: always
     reports:
       junit:
-        - src/build/test-results/jvmTest/TEST-*.xml
-        - src/build/test-results/iosSimulatorArm64Test/TEST-*.xml
-        - src/build/test-results/iosArm64Test/TEST-*.xml
+        - shared/build/test-results/jvmTest/TEST-*.xml
+        - shared/build/test-results/iosSimulatorArm64Test/TEST-*.xml
+        - shared/build/test-results/iosArm64Test/TEST-*.xml
     paths:
-      - src/build/reports/tests/testDebugUnitTest/index.html
-      - src/build/reports/tests/testDebugUnitTest/**/**.html
-      - src/build/reports/tests/iosSimulatorArm64Test/index.html
-      - src/build/reports/tests/iosSimulatorArm64Test/**/**.html
-      - src/build/reports/lint-results-debug.html
-      - src/build/reports/tests/allTests/index.html
-      - src/build/reports/tests/allTests/**/**.html
+      - shared/build/reports/tests/testAndroidHostTest/index.html
+      - shared/build/reports/tests/testAndroidHostTest/**/**.html
+      - shared/build/reports/tests/iosSimulatorArm64Test/index.html
+      - shared/build/reports/tests/iosSimulatorArm64Test/**/**.html
+      - androidApp/build/reports/lint-results-debug.html
+      - shared/build/reports/tests/allTests/index.html
+      - shared/build/reports/tests/allTests/**/**.html
       - build/reports/problems/problems-report.html
 
 compileIos:
@@ -120,10 +120,10 @@ compileIos:
   tags:
     - m1-baremetal
   script:
-    - ./gradlew :src:compileKotlinIosArm64
-    - ./gradlew :src:compileKotlinIosSimulatorArm64
-    - ./gradlew :src:iosArm64MetadataElements
-    - ./gradlew :src:iosSimulatorArm64MetadataElements
+    - ./gradlew :shared:compileKotlinIosArm64
+    - ./gradlew :shared:compileKotlinIosSimulatorArm64
+    - ./gradlew :shared:iosArm64MetadataElements
+    - ./gradlew :shared:iosSimulatorArm64MetadataElements
 
 jvmJar:
   <<: *skip-on-schedule
@@ -131,7 +131,7 @@ jvmJar:
   tags:
     - m1-baremetal
   script:
-    - ./gradlew :src:jvmJar
+    - ./gradlew :shared:jvmJar
 
 iosArm64Test:
   <<: *skip-on-schedule
@@ -143,7 +143,7 @@ iosArm64Test:
     # Wipe any stale crash-reports/ from a previous run on this reused workspace,
     # and drop a timestamp marker so after_script only collects THIS run's crashes.
     - rm -rf "$CI_PROJECT_DIR/crash-reports" && touch "$CI_PROJECT_DIR/.job-start"
-    - ./gradlew :src:cleanIosSimulatorArm64Test :src:iosSimulatorArm64Test
+    - ./gradlew :shared:cleanIosSimulatorArm64Test :shared:iosSimulatorArm64Test
   after_script:
     # The Kotlin/Native iosSimulatorArm64 test binary ("test.kexe") crashes are
     # reported by macOS as .ips files, NOT in the build dir. GitLab only archives
@@ -180,8 +180,8 @@ iosArm64Test:
   artifacts:
     when: always
     paths:
-      - src/build/reports/tests/iosSimulatorArm64Test/index.html
-      - src/build/reports/tests/iosSimulatorArm64Test/**/**.html
+      - shared/build/reports/tests/iosSimulatorArm64Test/index.html
+      - shared/build/reports/tests/iosSimulatorArm64Test/**/**.html
       - crash-reports/
 
 iosEmulatorUiTest:
@@ -233,10 +233,10 @@ jvmTest-ubuntu-docker:
   tags:
     - berlin
   script:
-    - ./gradlew :src:cleanJvmTest :src:jvmTest
+    - ./gradlew :shared:cleanJvmTest :shared:jvmTest
   artifacts:
     reports:
-      junit: src/build/test-results/jvmTest/TEST-*.xml
+      junit: shared/build/test-results/jvmTest/TEST-*.xml
     when: always
     paths:
       - build/reports/problems/problems-report.html
@@ -245,31 +245,31 @@ jvmTestCoverageXml:
   <<: *skip-on-schedule
   stage: test
   script:
-    - ./gradlew :src:koverXmlReportJvm # koverXmlReportJvm runs jvmTest as a child job
+    - ./gradlew :shared:koverXmlReportJvm # koverXmlReportJvm runs jvmTest as a child job
   artifacts:
     reports:
       coverage_report:
         coverage_format: jacoco
-        path: src/build/reports/kover/reportJvm.xml
-      junit: src/build/test-results/jvmTest/TEST-*.xml
-      # cobertura: src/build/reports/kover/reportJvm.xml
+        path: shared/build/reports/kover/reportJvm.xml
+      junit: shared/build/test-results/jvmTest/TEST-*.xml
+      # cobertura: shared/build/reports/kover/reportJvm.xml
       # Maybe this? https://docs.gitlab.com/ee/ci/testing/test_coverage_visualization/jacoco.html
     paths:
-      - src/build/reports/kover/reportJvm.xml
-      - src/build/reports/tests/jvmTest/**/**
+      - shared/build/reports/kover/reportJvm.xml
+      - shared/build/reports/tests/jvmTest/**/**
 
 jvmTestCoverageLog: #
   <<: *skip-on-schedule
   stage: test
   script:
-    - ./gradlew :src:koverLogJvm # koverLogJvm runs jvmTest as a child job
+    - ./gradlew :shared:koverLogJvm # koverLogJvm runs jvmTest as a child job
   coverage: '/application line coverage: (\d+\.\d+)%/' # Regex to extract coverage percentage
   artifacts:
     reports:
-      junit: src/build/test-results/jvmTest/TEST-*.xml
+      junit: shared/build/test-results/jvmTest/TEST-*.xml
     paths:
       - build/reports/problems/problems-report.html
-      - src/build/reports/tests/jvmTest/**/**
+      - shared/build/reports/tests/jvmTest/**/**
 
 # Runs Compose UI tests for Android on a Pixel 5 emulator. LeakCanary heap analysis is OFF here
 # (LEAK_DETECTION unset) so the run stays fast. Use androidPixel5TestLeakDetection for leak checks.
@@ -289,13 +289,12 @@ androidPixel5Test:
     - ./gradlew pixel5Check --full-stacktrace
   artifacts:
     reports:
-      junit: src/build/outputs/androidTest-results/managedDevice/debug/pixel5/TEST-*.xml
+      junit: shared/build/outputs/androidTest-results/managedDevice/**/TEST-*.xml
     when: always
     paths:
-      - src/build/reports/androidTests/managedDevice/debug/pixel5/index.html
-      - src/build/reports/androidTests/managedDevice/debug/pixel5/**/**
-      - src/build/outputs/androidTest-results/managedDevice/debug/pixel5/**/**
-      - src/build/intermediates/managed_device_android_test_additional_output/pixel5/debug/**/**
+      - shared/build/reports/androidTests/managedDevice/**/**
+      - shared/build/outputs/androidTest-results/managedDevice/**/**
+      - shared/build/intermediates/managed_device_android_test_additional_output/**/**
 
 # Same Pixel 5 Compose UI tests, but with LEAK_DETECTION=true so LeakCanary runs a heap analysis
 # after each passing test and fails on any retained instance. Expect ~5-10s/test slower than
@@ -317,13 +316,12 @@ androidPixel5TestLeakDetection:
     - ./gradlew pixel5Check --full-stacktrace
   artifacts:
     reports:
-      junit: src/build/outputs/androidTest-results/managedDevice/debug/pixel5/TEST-*.xml
+      junit: shared/build/outputs/androidTest-results/managedDevice/**/TEST-*.xml
     when: always
     paths:
-      - src/build/reports/androidTests/managedDevice/debug/pixel5/index.html
-      - src/build/reports/androidTests/managedDevice/debug/pixel5/**/**
-      - src/build/outputs/androidTest-results/managedDevice/debug/pixel5/**/**
-      - src/build/intermediates/managed_device_android_test_additional_output/pixel5/debug/**/**
+      - shared/build/reports/androidTests/managedDevice/**/**
+      - shared/build/outputs/androidTest-results/managedDevice/**/**
+      - shared/build/intermediates/managed_device_android_test_additional_output/**/**
 
 # Deploys an apk to:
 # https://gitlab.com/wallywallet/wallet/-/jobs/artifacts/main/wally.apk?job=deployAndroidApk
@@ -332,8 +330,8 @@ deployAndroidApk:
   needs:
     - androidPixel5Test
   script:
-    - ./gradlew assembleRelease
-    - cp src/build/outputs/apk/release/src-release.apk wally.apk
+    - ./gradlew :androidApp:assembleRelease
+    - cp androidApp/build/outputs/apk/release/wally-release.apk wally.apk
   artifacts:
     paths:
       - wally.apk

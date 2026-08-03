@@ -1,25 +1,18 @@
-import com.android.build.api.dsl.ManagedVirtualDevice
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Properties
 import java.io.FileInputStream
-import java.time.Instant
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-// Wally Wallet version
-// On version bump: Run ./gradlew generateVersionFile and commit the updates iosApp/iosApp/info.plist file
-val versionNumber = "3.30.04"
-val androidVersionCode = versionNumber.replace(".", "").toInt()
-
-val secSinceEpoch = Instant.now().epochSecond
+// Wally Wallet version: see wallyApp in gradle/libs.versions.toml
+val versionNumber = libs.versions.wallyApp.get()
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.compose)  // Compose compiler
     alias(libs.plugins.compose)
@@ -33,6 +26,12 @@ mokkery {
     // members. The mokkery proxy ignores those final members at the type-checker
     // level; the test path doesn't actually call them.
     ignoreFinalMembers = true
+}
+
+// Keep the historical generated-resources package from when this module was named "src";
+// renaming it would break every wpw.src.generated.resources import in commonMain
+compose.resources {
+    packageOfResClass = "wpw.src.generated.resources"
 }
 
 kover {
@@ -111,10 +110,6 @@ kotlin {
 
     jvm {
         //withJava()
-        mainRun {
-            this.mainClass = "info.bitcoinunlimited.www.wally.WallyJvmApp"
-
-        }
         tasks.withType<KotlinCompile>() {
             compilerOptions {
                 jvmTarget.set(JvmTarget.JVM_21)
@@ -129,16 +124,43 @@ kotlin {
 
     if (ANDROID_TARGETS)
     {
-        androidTarget {
-            tasks.withType<KotlinCompile>() {
-                compilerOptions {
-                    jvmTarget.set(JvmTarget.JVM_21)
+        android {
+            namespace = "info.bitcoinunlimited.www.wally"
+            compileSdk = libs.versions.androidSdk.get().toInt()
+            minSdk = libs.versions.androidMinSdk.get().toInt()
+
+            androidResources.enable = true
+
+            compilerOptions {
+                jvmTarget.set(JvmTarget.JVM_21)
+            }
+
+            // Join the common "test" source set tree so both android test compilations compile
+            // commonTest (UI tests + LeakAssertions expect), like the old sourceSetTree setting
+            withHostTestBuilder {
+                sourceSetTreeName = "test"
+            }
+            withDeviceTestBuilder {
+                sourceSetTreeName = "test"
+            }.configure {
+                instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+                // LeakCanary heap analysis after each instrumented test is slow (~5-10s/test on the
+                // emulator), so it is opt-in. The androidDeviceTest LeakAssertions actual only runs
+                // the analysis when this argument is "true". CI's androidPixel5TestLeakDetection job sets
+                // LEAK_DETECTION=true; the plain androidPixel5Test job leaves it off for a fast run.
+                instrumentationRunnerArguments["leakDetection"] = System.getenv("LEAK_DETECTION") ?: "false"
+                managedDevices {
+                    localDevices.create("pixel5") {
+                        device = "Pixel 5"
+                        apiLevel = libs.versions.androidTargetSdk.get().toInt()
+                        systemImageSource = "aosp"
+                    }
                 }
             }
 
-            @OptIn(ExperimentalKotlinGradlePluginApi::class)
-            instrumentedTestVariant {
-                sourceSetTree.set(KotlinSourceSetTree.test)
+            lint {
+                abortOnError = false // Prevents Lint from failing the build
+                warningsAsErrors = false // Ensures warnings don't fail the build
             }
         }
     }
@@ -388,6 +410,7 @@ kotlin {
         {
             val androidMain by getting {
                 //dependsOn(sourceSets.named("commonJvm").get())
+                resources.srcDir("src/commonMain/resources")
 
                 dependencies {
                     //implementation(project(":shared"))
@@ -505,7 +528,7 @@ kotlin {
 
         if (ANDROID_TARGETS)
         {
-            val androidInstrumentedTest by getting {
+            val androidDeviceTest by getting {
                 dependencies {
                     implementation(kotlin("test-junit"))
                     implementation(libs.nexa.rpc)
@@ -513,10 +536,16 @@ kotlin {
                     implementation(libs.kotlinx.coroutines.android)
                     implementation(libs.androidx.core.ktx)
                     implementation(libs.androidx.junit.ktx)
+                    implementation(libs.androidx.ui.test.junit4.android)
+                    // Host activity for runComposeUiTest in the self-instrumenting test APK
+                    implementation(libs.ui.test.manifest)
+                    // LeakCanary: LeakAssertions / DetectLeaksAfterTestSuccess for instrumented tests.
+                    implementation("com.squareup.leakcanary:leakcanary-android:2.14")
+                    implementation("com.squareup.leakcanary:leakcanary-android-instrumentation:2.14")
                 }
             }
 
-            val androidUnitTest by getting {
+            val androidHostTest by getting {
                 dependencies {
                     implementation(kotlin("test-junit"))
                 }
@@ -577,89 +606,6 @@ val nowDateTime: String by lazy {
 
 version = "$versionNumber-$gitCommitHash"
 
-android {
-    namespace = "info.bitcoinunlimited.www.wally"
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
-    sourceSets["main"].res.srcDir(layout.buildDirectory.dir("generated/i18n/androidMain/res").get().asFile)
-    compileSdk = libs.versions.androidSdk.get().toInt()
-    defaultConfig {
-        applicationId = "info.bitcoinunlimited.www.wally"
-        minSdk = libs.versions.androidMinSdk.get().toInt()
-        targetSdk = libs.versions.androidSdk.get().toInt()
-        versionCode = androidVersionCode
-        versionName = versionNumber
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        // LeakCanary heap analysis after each instrumented test is slow (~5-10s/test on the
-        // emulator), so it is opt-in. The androidInstrumentedTest LeakAssertions actual only runs
-        // the analysis when this argument is "true". CI's androidPixel5TestLeakDetection job sets
-        // LEAK_DETECTION=true; the plain androidPixel5Test job leaves it off for a fast run.
-        testInstrumentationRunnerArguments["leakDetection"] = System.getenv("LEAK_DETECTION") ?: "false"
-    }
-    buildFeatures {
-        compose = true
-        viewBinding = true
-        buildConfig = true
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
-
-    @Suppress("UnstableApiUsage")
-    testOptions {
-        managedDevices.allDevices {
-            maybeCreate<ManagedVirtualDevice>("pixel5").apply {
-                device = "Pixel 5"
-                apiLevel = libs.versions.androidSdk.get().toInt()
-                systemImageSource = "aosp"
-            }
-        }
-    }
-
-    buildTypes {
-        debug {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.getByName("debug")
-            buildConfigField("String", "BUILD_TIME", "\"${secSinceEpoch}\"")
-            ndk.debugSymbolLevel = "FULL"
-        }
-        release {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.getByName("debug")
-            buildConfigField("String", "BUILD_TIME", "\"${secSinceEpoch}\"")
-            ndk.debugSymbolLevel = "FULL"
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-    /*
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.majorVersion
-    }
-     */
-    lint {
-        abortOnError = false // Prevents Lint from failing the build
-        warningsAsErrors = false // Ensures warnings don't fail the build
-    }
-
-}
-
-dependencies {
-    debugImplementation(libs.ui.test.manifest)
-    androidTestImplementation(libs.androidx.ui.test.junit4.android)
-
-    // LeakCanary: auto-watchers active in the debug APK (connectedAndroidTest / pixel5Check).
-    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
-    // LeakCanary: LeakAssertions / DetectLeaksAfterTestSuccess for instrumented tests.
-    androidTestImplementation("com.squareup.leakcanary:leakcanary-android-instrumentation:2.14")
-}
 
 if (MAC_TARGETS)
 {
@@ -716,7 +662,9 @@ tasks.register("generateVersionFile") {
         dependsOn("updateCFBundleShortVersionString")
 }
 
-tasks.named("preBuild").configure {
+// The KMP android library plugin has no preBuild, so hook the android compilation directly
+// (mirrors the old preBuild dependsOn generateVersionFile)
+tasks.matching { it.name == "compileAndroidMain" }.configureEach {
     dependsOn("generateVersionFile")
     dependsOn("generateI18nFiles")
 }
@@ -888,6 +836,16 @@ kotlin.sourceSets.getByName("commonMain").let { cm ->
     cm.resources.srcDir(i18nResDir)
 }
 
+// The KMP android library plugin has no sourceSets["main"].res srcDir DSL, so the
+// generated res dir joins the android variant through the components API instead.
+androidComponents {
+    onVariants { variant ->
+        variant.sources.res?.addStaticSourceDirectory(
+            i18nRawDir.get().asFile.parentFile.apply { mkdirs() }.path
+        )
+    }
+}
+
 /*
  * Adding the generated dirs as srcDirs does NOT give Gradle a producer for them -- the
  * Compose resource pipeline sits between the source set and *ProcessResources, so the
@@ -927,38 +885,7 @@ for (s in kotlin.targets)
 }
 
 
-/* Put all the dependent files into a single big jar */
-tasks.register<Jar>("appJar") {
-    //archiveClassifier.set("app")
-    //archiveBaseName.set("wpw")
-    archiveFileName.set("wpw.jar")
-    manifest {
-        attributes["Main-Class"] = "info.bitcoinunlimited.www.wally.WallyJvmApp"
-    }
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-    for (c in kotlin.targets.named("jvm").get().compilations)
-    {
-        //println("  ${c.output}")
-        // if (c.compileDependencyFiles != null) from(c.compileDependencyFiles)
-        val tmp = c.runtimeDependencyFiles
-        if (tmp != null)
-        {
-            //for (f in tmp.files)
-            //    println("    $f")
-            // If its a jar blow the jar up and add the class files in that jar
-            from(tmp.filter { it.name.endsWith("jar") }.map { zipTree(it)})
-        }
-        from(c.output)
-    }
-    from(kotlin.sourceSets.named("commonMain").get().resources)
-}
-
 tasks {
-    register<Exec>("runJvmApp") {
-        commandLine("java", "-classpath", "build/libs/wpw.jar", "info.bitcoinunlimited.www.wally.WallyJvmApp")
-    }
-
     /* TODO attempt to clean up file attributes before signing */
     /*
     named("embedAndSignAppleFrameworkForXcode") {
@@ -1088,10 +1015,3 @@ tasks.withType<Test> {
     outputs.upToDateWhen { false }  // Always rerun test tasks
 }
 
-// This was added because ./gradlew build taskTree was failing with:
-// - In plugin 'com.android.internal.version-check' type 'com.android.build.gradle.internal.tasks.ListingFileRedirectTask' property 'listingFile' specifies file '/Users/jq/dev/wally/src/build/outputs/apk/debug/output-metadata.json' which doesn't exist.
-// Now the ListingFileRedirectTask only runs the ListingFileRedirectTask if the .apk output file exists:
-tasks.withType<com.android.build.gradle.internal.tasks.ListingFileRedirectTask>().configureEach {
-    // Only run if output file exists
-    onlyIf { listingFile.get().asFile.exists() }
-}

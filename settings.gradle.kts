@@ -27,5 +27,6 @@ dependencyResolutionManagement {
 
 
 rootProject.name = "wpw"  // Wally Personal Wallet
-include(":src")
-//include(":androidApp")
+include(":shared")
+include(":androidApp")
+include(":desktopApp")

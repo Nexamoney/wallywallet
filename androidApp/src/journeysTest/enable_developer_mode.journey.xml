@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<journey name="Enable developer mode">
+    <description xml:space="preserve">Open the app, navigate to settings and enable developer mode then verify that the additional settings for developer mode are displayed.</description>
+    <actions xml:space="preserve">
+        <action>Tap "More" in the bottom navigation bar.</action>
+        <action>Tap "Settings" in the menu that opens.</action>
+        <action>Scroll down to the "General Settings" section.</action>
+        <action>Click on the "Advanced/developer mode" switch.</action>
+        <action>Verify that a "Count screen redraws" switch is now displayed below the "Advanced/developer mode" switch.</action>
+        <action>Scroll down to the "Blockchain Settings" section.</action>
+        <action>Verify that blockchain source rows for the test networks are displayed in addition to NEXA.</action>
+        <action>Verify that the developer buttons "Log Info", "Reload Assets" and "Close P2P" are displayed.</action>
+    </actions>
+</journey>
