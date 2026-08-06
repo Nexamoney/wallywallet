@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Wally</string>
     <string-array name="CurrencyTypes">
-        <item>mBCH</item>
+        <item>NEX</item>
         <item>USD</item>
     </string-array>
     <string-array name="FiatCurrencyTypes">
@@ -15,9 +15,7 @@
         <item>USD</item>
         <item>XAU</item>
     </string-array>
-
     <string name="uBCH">uBCH</string>
-
     <string-array name="OneToTen">
         <item>1</item>
         <item>2</item>
@@ -41,103 +39,377 @@
         <item>30%</item>
         <item>50%</item>
     </string-array>
-
-    <!-- General -->
     <string name="yes">ja</string>
     <string name="no">nei</string>
+    <string name="at">ved</string>
+    <string name="of">av</string>
+    <string name="choose">velg</string>
+    <string name="accept">godta</string>
+    <string name="reject">avvis</string>
+    <string name="remove">fjern</string>
+    <string name="confirm">bekreft</string>
+    <string name="cancel">avbryt</string>
+    <string name="Back">Tilbake</string>
+    <string name="removeAll">fjern alle</string>
+    <string name="done">ferdig</string>
+    <string name="dismiss">Lukk</string>
+    <string name="deny">avslå</string>
+    <string name="ask">spør</string>
+    <string name="badSignature">ugyldig signatur</string>
+    <string name="unknownCurrency">ukjent valuta</string>
+    <string name="unknownCryptoCurrency">ukjent kryptovaluta eller blockchain</string>
+    <string name="Processing">behandler...</string>
+    <string name="receiving">mottar</string>
+    <string name="sending">sender</string>
+    <string name="noAdditionalDetails">ingen flere detaljer</string>
+    <string name="unspecified">uspesifisert</string>
+    <string name="removed">fjernet</string>
+    <string name="synced">Synkronisert</string>
+    <string name="unsynced">Synkroniserer</string>
+    <string name="connected">tilkoblet</string>
+    <string name="connectionEstablished">tilkobling opprettet</string>
+    <string name="connectionClosed">tilkobling lukket</string>
+    <string name="connectionException">kan ikke koble til nettstedet</string>
+    <string name="balance">nåværende balanse</string>
+    <string name="totalReceived">Totalt mottatt</string>
+    <string name="inProgress">pågår</string>
+    <string name="staleTransaction">Foreldet transaksjon</string>
+    <string name="staleTransactionDetails">Denne transaksjonen ble avvist av en fullnode. Den er sannsynligvis foreldet (allerede brukt av noen andre), men det er også mulig at transaksjonen aldri var gyldig, eller at den er i orden og nodene vi spurte er uærlige. Lommeboken vil ignorere denne transaksjonen med mindre den blir bekreftet.</string>
+    <string name="NoPermission">Ingen tillatelse</string>
+    <string name="NoPermissionDetails" formatted="false">Du må aktivere tillatelsen %perm for å bruke denne funksjonen. Det kan du gjøre i Android-innstillinger -> Apper -> Wally -> Tillatelser</string>
+    <string name="WebLoadingPage"><![CDATA[<body><h1><center>...laster...</h1></center></body>]]></string>
+    <string name="loading">laster</string>
+    <string name="Untitled">Uten tittel</string>
+    <string name="nothing">ingenting</string>
+    <string name="breakIt">ødelegg</string>
     <string name="or">eller</string>
-
-    <!-- Settings -->
+    <string name="onBlockchain">på</string>
+    <string name="NotImplemented">Kommer snart</string>
+    <string name="NoNodes">Ingen blockchain-tilgang</string>
+    <string name="cancelled">avbrutt</string>
+    <string name="refreshQR">Mistet forbindelsen til serveren</string>
+    <string name="pleaseWait">vennligst vent</string>
+    <string name="trying">prøver</string>
+    <string name="clear">tøm</string>
+    <string name="thousand">* tusen</string>
+    <string name="million">* million</string>
+    <string name="required">påkrevd</string>
+    <string name="account">Konto</string>
+    <string name="addAccountPlus">+ Legg til konto</string>
+    <string name="receivingTokens">Mottar tokener</string>
+    <string name="spendingTokens">Bruker tokener</string>
+    <string name="version" formatted="false">Versjon: %ver (%date)</string>
+    <string name="enableDeveloperView">Avansert/utviklermodus</string>
+    <string name="enableRecompositionCounts">Tell skjermoppdateringer</string>
+    <string name="enableExperimentalUx">Eksperimentelt grensesnitt</string>
+    <string name="enableDarkMode">Nattmodus</string>
+    <string name="enableSound">Aktiver lyd</string>
+    <string name="enableIdentityMenu">Aktiver identitetsskjerm</string>
+    <string name="enableTricklePayMenu">Aktiver Trickle Pay-skjerm</string>
+    <string name="enableAssetsMenu">Aktiver eiendelsskjerm</string>
+    <string name="only">kun</string>
+    <string name="prefer">foretrekk</string>
     <string name="rediscoverWalletTx">gjennoppdag</string>
+    <string name="searchWalletTx">Søk etter manglende transaksjoner</string>
+    <string name="rediscoverBlockchain">Gjenoppdag blockchain-headers</string>
     <string name="logDebugData">Logg debug-data</string>
+    <string name="clearIdentityDomains">Tøm identitetsdomener</string>
     <string name="rediscoverTooltip">Slett blockchain-tilstanden og søk på ny etter transaksjoner som tilhører lommeboken</string>
     <string name="wordSeed">Fraser for å sikkerhetskopiere lommebok</string>
     <string name="deleteWalletAccount">Slett konto</string>
+    <string name="more">Mer</string>
     <string name="darkMode">Nattmodus</string>
-
-    <!-- Split bill -->
+    <string name="ConsolidationNeeded">Konsolider kontoen først</string>
+    <string name="SetChangePin">Angi eller endre opplåsings-PIN</string>
+    <string name="CurrentPin">Nåværende PIN</string>
+    <string name="NewPin">Ny PIN</string>
+    <string name="PinChanged">PIN endret</string>
+    <string name="PinRemoved">PIN fjernet</string>
+    <string name="PinInvalid">Ugyldig PIN</string>
+    <string name="PinTooShort">ny PIN er for kort</string>
+    <string name="WriteDownRecoveryPhraseWarningUi2">Advarsel: du har ikke skrevet ned de hemmelige gjenopprettingsfrasene for enkelte kontoer! For å sikre at midler ikke går tapt hvis denne enheten mistes eller ødelegges, skriv ned de hemmelige gjenopprettingsnøklene på papir eller i et annet ikke-elektronisk format.</string>
+    <string name="WroteRecoveryPhraseDown">Jeg har skrevet den ned</string>
+    <string name="RecoveryPhraseKeepRemindingMe">Fortsett å minne meg på det</string>
+    <string name="ViewRecoveryPhrase">Vis kontoens hemmelige gjenopprettingsfrase</string>
+    <string name="localCurrency">Lokal valuta</string>
+    <string name="assessUnconfirmed">Vurder ubekreftede transaksjoner</string>
+    <string name="rediscoverNotice">Gjenoppdaging av konto startet</string>
+    <string name="searchNotice">Kontosøk startet</string>
+    <string name="unconfAssessmentNotice">Vurdering av ubekreftede startet</string>
+    <string name="accountDeleteNotice">Konto slettet</string>
+    <string name="rediscoverConfirmation">Gjenoppdaging av en konto vil nullstille lommeboken og søke i blockchainen etter betalinger, som om kontoen nettopp ble opprettet. Denne prosessen kan ta lang tid. Det kan imidlertid dukke opp en "fast forward"-knapp som gir deg muligheten til å be en database om lommebokaktiviteten din. Hvis datoen ovenfor er feil, vent noen sekunder til den blir oppdatert.</string>
+    <string name="searchConfirmation">Denne funksjonen søker i blockchainen etter manglende betalinger. Denne prosessen kan ta lang tid. Det kan imidlertid dukke opp en "fast forward"-knapp som gir deg muligheten til å be en database om lommebokaktiviteten din.</string>
+    <string name="rediscoverBlockchainConfirmation">Gjenoppdaging av en blockchain vil slette alle blockchain-headerdata fra denne lommeboken og laste dem ned på nytt fra fullnoder. Denne prosessen kan ta lang tid. Bruk kun hvis du er sikker på at det er et problem med blockchain-headerne.</string>
+    <string name="deleteConfirmation" formatted="false">Sletting av en konto vil gjøre alle balanser, identiteter og historikk utilgjengelige med mindre kontoen gjenopprettes via kontoens hemmelige gjenopprettingsfrase! Gjør dette kun hvis du er HELT SIKKER!\n\nSlette kontoen "%accountName" (på %blockchain)?</string>
+    <string name="reassessConfirmation">Denne operasjonen sjekker blockchainen for nylige transaksjoner du har sendt. Basert på om de finnes eller ikke, vil den enten bekrefte eller slette dem. Hvis transaksjoner slettes, vil pengene se ut til å forsvinne. Du må "gjenoppdage" for å få tilbake den brukte balansen. Ikke bruk denne hvis du nylig har sendt en transaksjon, siden den transaksjonen kan ligge latent i nettverket og vente på bekreftelse.</string>
+    <string name="recoveryPhrase">Denne frasen på 12 ord brukes til å gjenopprette lommeboken din. Den som har denne frasen, kan bruke pengene dine. Skriv den ned med penn på papir (eller riss den inn i stål) og oppbevar den trygt!</string>
+    <string name="recoveryWarning">STOPP! IKKE LAGRE DIGITALT!\nIKKE kopier til utklippstavlen, ta bilde, fotokopi eller skjermbilde.</string>
+    <string name="flickerReason">Flimringen er et sikkerhetstiltak</string>
+    <string name="PastingRecoveryPhraseIsBadIdea">Kopiert til utklippstavle. Men å kopiere og lime inn denne gjenopprettingsfrasen i en app er en DÅRLIG IDÉ! E-post, de fleste apper, sikkerhetskopitjenester osv. er ikke sikre nok til å oppbevare en frase som bokstavelig talt er penger.</string>
+    <string name="primaryAccountConfirmation">Primærkontoen din er kontoen som brukes for identiteten din og til automatiske betalinger. Den er også den første kontoen som vises flere steder i denne appen. Den må være på Nexa-blockchainen.</string>
+    <string name="primaryAccountSuccess">Primærkonto: %name</string>
+    <string name="AccountActions">Kontohandlinger</string>
+    <string name="GeneralSettings">Generelle innstillinger</string>
+    <string name="BlockchainSettings">Blockchain-kilder</string>
+    <string name="AccessPriceData">Tilgang til prisdata</string>
+    <string name="oldUi">Gammelt brukergrensesnitt</string>
+    <string name="SplitBillDescription">Du betaler regningen (i fiat), så betaler vennene dine sin andel til deg via QR-koden nedenfor. Ta med deg selv i antallet det skal deles på, med mindre vennene dine spanderer!</string>
+    <string name="BillAmount">Regningsbeløp</string>
+    <string name="TipAmount">Tipsbeløp</string>
+    <string name="TipPercentage">Tipsprosent</string>
     <string name="Total">Totalt</string>
+    <string name="OR">ELLER</string>
+    <string name="QRCodeFor">QR-kode for:</string>
     <string name="Ways">Deler</string>
     <string name="Tip">Tips</string>
     <string name="Amount">Beløp</string>
-    <!-- Home Page -->
+    <string name="AmountWithValue" formatted="false">Beløp: %amt</string>
+    <string name="QuantityWithValue" formatted="false">Mengde: %qty</string>
+    <string name="balanceOnTheDate" formatted="false">per %date</string>
+    <string name="fastSync">Rask synkronisering</string>
+    <string name="refresh">Oppdater</string>
+    <string name="goodQR">QR lesbar</string>
+    <string name="badQR">QR uleselig</string>
+    <string name="badImageQR">dårlig QR-bilde. mer...</string>
+    <string name="badImageQRhelp">Prøv å ta bildet fra lengre unna hvis du tok et nærbilde av QR-koden. Den hvite kanten er en del av QR-koden, og du kan få forstyrrende moirémønstre når du fotograferer en skjerm på nært hold.</string>
+    <string name="GoThere">Gå dit</string>
+    <string name="unlock">lås opp</string>
+    <string name="share">del</string>
     <string name="Send">Send</string>
+    <string name="OpenSend">Send</string>
+    <string name="SendCancel">Avbryt</string>
+    <string name="ignoredInsecureRequest">Usikker forespørsel ignorert</string>
+    <string name="fromAccountColon">Send fra konto:</string>
+    <string name="chooseAccountError">velg en konto</string>
+    <string name="toColon">Til:</string>
+    <string name="To">Til</string>
+    <string name="ByAuthor">Av</string>
+    <string name="assetsColon">Eiendeler:</string>
+    <string name="assets">Eiendeler</string>
+    <string name="NoAssets">Ingen eiendeler tilgjengelig i konto %act</string>
+    <string name="NoAssetsAccount">Ingen eiendeler tilgjengelig i kontoen din for øyeblikket.</string>
+    <string name="fromColon">Fra:</string>
+    <string name="ReceiveIntoAccount">Motta til konto</string>
     <string name="Receive">Motta</string>
+    <string name="YourAddress">Din adresse på %blockchain</string>
+    <string name="CopyAddress">Kopier adresse</string>
     <string name="AccountListHeader">Balanse</string>
     <string name="Address">Addresse</string>
+    <string name="clipboard">utklippstavle</string>
     <string name="settings">instillinger</string>
     <string name="help">hjelp</string>
     <string name="invalidQuantity">ugyldig beløp</string>
+    <string name="needNonexistentAuthority">trenger token-autoritet</string>
+    <string name="invalidQuantityTooManyDecimalDigits">for mange desimaler</string>
+    <string name="roundedUpClickSendAgain">rundet opp, trykk send igjen for å godta</string>
+    <string name="emptyQuantityField"></string>
     <string name="purchase">kjøp</string>
     <string name="scanPaymentQRcode">Skann betalingsaddresse fra QR-kode</string>
+    <string name="ScanQRCodeButton">Skann en QR-kode</string>
+    <string name="PasteDestinationAddressButton">Lim inn</string>
+    <string name="NewAccountButton">Opprett ny konto</string>
+    <string name="NewAccountSearchingForTransactions">...søker etter første transaksjon...</string>
+    <string name="NewAccountSearchingForAllTransactions">...søker etter alle transaksjoner...</string>
+    <string name="NewAccountSearchFailure">transaksjonssøk mislyktes</string>
+    <string name="receiveAddressQRCode">QR-kode for mottak</string>
+    <string name="paymentProposal">i henhold til mottatt betalingsforslag</string>
     <string name="pasteIsEmpty">ingenting i utklippstavle</string>
     <string name="pasteIgnored">"lim inn" ble ignorert</string>
     <string name="pasteUnintelligible">forsto ikke innhold i utklippstavle</string>
     <string name="chainIncompatibleWithAddress">addressen er ikke kompatibel</string>
-
+    <string name="chainIncompatibleWithAddressDetails" formatted="false">Kontoens valuta er %walletCrypto, adressen er %addressCrypto. Bruk nedtrekksmenyen til å endre avsenderkontoen til en som passer adressens blockchain.</string>
+    <string name="incoming" formatted="false">inkluderer %delta %unit ventende</string>
     <string name="approximatelyT" formatted="false">omtrent %qty %fiat</string>
+    <string name="fastForward" formatted="false">Spol fremover</string>
+    <string name="fastforwardStatus" formatted="false">fremspolingsanalyse: %info</string>
+    <string name="fastforwardStart" formatted="false">startet</string>
+    <string name="exchangeRate" formatted="false">(vekslingskurs: 1 %fiat er verdt %amt %crypto)</string>
     <string name="moreThanAvailable">"(mer en det er tilgjengelig)"</string>
     <string name="moreThanConfirmedAvailable">"(mer en hva som er bekreftet)"</string>
     <string name="actuallySendingT" formatted="false">sender faktisk %qty %crypto</string>
     <string name="copiedToClipboard">...kopiert til utklippstavle...</string>
+    <string name="copyId">Kopier ID</string>
+    <string name="openInBrowser">Åpne i nettleser</string>
+    <string name="cannotCopyToClipboard">Kan ikke kopiere til utklippstavle</string>
+    <string name="tooLargeForClipboard">For mye data for utklippstavlen</string>
     <string name="scanFailed">fikk ikke til å skanne</string>
+    <string name="scanSuccess">skanning vellykket</string>
     <string name="sendSuccess">sending fullført</string>
-
+    <string name="sendQuantityHint">beløp å sende</string>
+    <string name="sendRequestNotification">Sending forespurt</string>
+    <string name="sendToAddressHint">mottakeradresse</string>
+    <string name="sendAll">alt</string>
+    <string name="editSendNoteHint">personlige notater om denne overføringen</string>
+    <string name="subSatoshiQuantities">For mange desimaler -- denne valutaen kan ikke deles opp så fint</string>
     <string name="retrievingExchangeRate">henter fortsatt vekslingskurs</string>
-
-    <!-- Identity -->
-
+    <string name="unavailableExchangeRate">vekslingskurs utilgjengelig</string>
+    <string name="SigningWithAccount" formatted="false">Signerer med konto: %act</string>
+    <string name="commonIdentityForAccount" formatted="false">Felles identitet for konto: %act</string>
+    <string name="identityRequestNotification">identitet forespurt</string>
+    <string name="IdentityDataMissing">Manglende identitetsinfo</string>
     <string name="newDomainRequestingIdentity">Nytt domene forespør identitet</string>
+    <string name="domainRequestingAdditionalIdentityInfo">Ytterligere informasjon forespurt</string>
     <string name="useUniqueIdentityToolTip">Slå på for å beholde annen identitet her enn den benyttet på andre sider.</string>
-    <string name="provideRealName">oppgi ditt ekte navn?</string>
-    <string name="provideRealNameToolTip">Om du velger denne instillingen så vil ditt ekte navn (slik konfigurert i instillinger) bli gitt til dette nettstedet, om det ber om det</string>
+    <string name="provideAlias">Oppgi ditt brukernavn/kallenavn/alias?</string>
+    <string name="provideAliasToolTip">Velger du dette alternativet, deles aliaset ditt (slik det er satt opp i innstillinger, IKKE ditt virkelige navn) med dette nettstedet, om det ber om det</string>
+    <string name="provideSocialMedia">Oppgi informasjon om sosiale medier?</string>
+    <string name="provideSocialMediaToolTip">Velger du dette alternativet, deles informasjonen din om sosiale medier (slik den er satt opp i innstillinger) med dette nettstedet, om det ber om det</string>
     <string name="providePostalAddress">oppgi din addresse?</string>
     <string name="providePostalAddressToolTip">Om du velger denne instillingen så vil din addresse (slik konfigurert i instillinger) bli gitt til dette nettstedet, om det ber om det</string>
-
+    <string name="provideBillingAddress">Oppgi fakturaadressen din?</string>
+    <string name="provideBillingAddressToolTip">Velger du dette alternativet, deles fakturaadressen din (slik den er satt opp i innstillinger) med dette nettstedet, om det ber om det</string>
+    <string name="provideEmail">Oppgi e-postadressen din?</string>
+    <string name="provideAvatar">Oppgi avatarbildet ditt?</string>
+    <string name="provideRealName">oppgi ditt ekte navn?</string>
+    <string name="provideRealNameToolTip">Om du velger denne instillingen så vil ditt ekte navn (slik konfigurert i instillinger) bli gitt til dette nettstedet, om det ber om det</string>
+    <string name="provideBirthday">Oppgi fødselsdagen din?</string>
+    <string name="providePhone">Oppgi telefonnummeret ditt?</string>
+    <string name="provideAttestations">Oppgi attesteringer?</string>
+    <string name="provideAttestationsToolTip">Attesteringer er tredjeparts signaturer som bekrefter opplysningene du oppgir</string>
+    <string name="primaryAccountRequired" formatted="false">Du trenger en konto på %primCurrency for å bruke denne funksjonen</string>
+    <string name="primaryAccountRequiredDetails" formatted="false">Noen funksjoner er knyttet til bestemte kryptovalutaer. Du må opprette eller låse opp en konto på den kryptovalutaen før du bruker funksjonen.</string>
+    <string name="UnknownDomainRegisterFirst">Ukjent tjeneste, registrer deg først</string>
+    <string name="Provider" formatted="false">Tilbyder: %provider</string>
+    <string name="QrCode">QR-kode</string>
+    <string name="unknownOperation" formatted="false">operasjon %op ukjent</string>
+    <string name="alreadyRegistered">allerede registrert</string>
+    <string name="existingRegistration" formatted="false">Den valgte kontoen \'%act\' HAR registrert seg hos denne tjenesten.</string>
+    <string name="nonexistentRegistration" formatted="false">Den valgte kontoen \'%act\' HAR IKKE registrert seg hos denne tjenesten ennå.</string>
     <string name="provideLoginQuestion">Logge inn på denne siden?</string>
-
+    <string name="provideInfoQuestion">Identitetsinformasjon forespurt av</string>
+    <string name="signDataQuestion">Signatur forespurt fra</string>
+    <string name="nothingToSign">Ingen melding oppgitt</string>
+    <string name="binaryToSign">Signere disse binærdataene?</string>
+    <string name="textToSign">Signere denne meldingen?</string>
+    <string name="sigInClipboard">Signatur kopiert til utklippstavle</string>
+    <string name="SocialMediaText">Sosiale medier</string>
+    <string name="SocialMediaSummary">Skriv inn som liste med tjeneste:handle, f.eks. twitter:janeDoe, keybase:janieD</string>
+    <string name="UsernameOrAliasText">Brukernavn/handle/alias</string>
+    <string name="NameText">Fullt navn</string>
+    <string name="PostalAddressText">Postadresse</string>
+    <string name="BillingAddressText">Fakturaadresse</string>
+    <string name="PostalCodeText">Postnummer</string>
     <string name="EmailText">E-post addresse</string>
     <string name="TwitterText">Twitter</string>
     <string name="TelegramText">Telegram</string>
     <string name="IdentityAssociatedWith">Info om tilknyttede identiteter</string>
-
+    <string name="ServiceAssociatedWith">Denne tjenesten er allerede knyttet til:</string>
+    <string name="IdentityInfoNote">Det er valgfritt å oppgi denne informasjonen, og den deles bare med tjenester du velger.  Formålet er at vanlige skjemafelt kan fylles ut ved ganske enkelt å skanne en QR-kode på nettsteder med identitetsstøtte.</string>
+    <string name="areYouSure">Er du sikker?</string>
+    <string name="WhenAskSure">Bekreft ovenfor:</string>
+    <string name="SendConfirmSummary" formatted="false">Bekreft sending av %amt %currency %inFiat%assets til adresse %dest</string>
     <string name="firstName">fornavn</string>
     <string name="lastName">etternavn</string>
-
-    <!-- Error strings -->
+    <string name="withholdingMandatoryInfo">nettstedet krever informasjon du nekter å oppgi</string>
+    <string name="badLink">ugyldig lenke</string>
+    <string name="BadWebLink">Ugyldig nettlenke</string>
+    <string name="connectionAborted">nettstedet avbrøt innloggingen</string>
+    <string name="HintAdjustCostBasis">kostpris eller gevinst</string>
+    <string name="CostBasis">kostpris</string>
+    <string name="CapitalLoss">kapitaltap</string>
+    <string name="CapitalGain">kapitalgevinst</string>
+    <string name="OverrideSalesPrice">oppgi pris ved salg</string>
+    <string name="AccountHistory">Transaksjoner</string>
+    <string name="NoAccountActivity">Ingen kontoaktivitet</string>
+    <string name="AccountAddresses">Adresser</string>
+    <string name="ActiveAddresses">Aktive adresser</string>
+    <string name="UsedAddresses">Brukte adresser</string>
+    <string name="UnusedAddresses">Ubrukte adresser</string>
+    <string name="txHistoryButton">Vis eller eksporter kontoaktivitet</string>
+    <string name="setAsPrimaryAccountButton">Gjør denne til primærkontoen din</string>
+    <string name="AccountStatistics">Kontostatistikk</string>
+    <string name="AccountBlockchainSync" formatted="false">For øyeblikket %sync på blockchain %chain.</string>
+    <string name="AccountBlockchainDetails" formatted="false">Per %actBlockDate, blokk %actBlock av %chainBlockCount.</string>
+    <string name="AccountEarliestActivity" formatted="false">Første bruk: blokk %actPrehistoryBlock den %actPrehistoryDate.</string>
+    <string name="AccountBlockchainConnectionDetails" formatted="false">Koblet til %num noder: %names</string>
+    <string name="AccountNumAddresses" formatted="false">%num adresser</string>
+    <string name="CurrentAddress" formatted="false">På adresse %num: %addr</string>
+    <string name="FirstLastReceive" formatted="false">Første innskudd i blokk %first, siste i blokk %last.</string>
+    <string name="FirstLastSend" formatted="false">Første uttak i blokk %first, siste i blokk %last.</string>
+    <string name="FirstWithdraw">Første uttak</string>
+    <string name="FirstDeposit">Første innskudd</string>
+    <string name="never">aldri</string>
+    <string name="FirstUse" formatted="false">Første bruk: %date</string>
+    <string name="LastUse" formatted="false">Siste bruk: %date</string>
+    <string name="Block" formatted="false">Blokk: %block</string>
+    <string name="AccountNumTx" formatted="false">%num transaksjoner</string>
+    <string name="AccountNumUtxos" formatted="false">%num hovedbokoppføringer</string>
+    <string name="title_activity_assets">Eiendeler</string>
+    <string name="title_activity_scan">Skann</string>
+    <string name="title_activity_new_account">Ny konto</string>
+    <string name="AccountName">Kontonavn</string>
+    <string name="AccountNameHint">1-8 bokstaver</string>
+    <string name="Blockchain">Blockchain</string>
+    <string name="AccountRecoveryPhrase">Gjenopprettingsfrase</string>
+    <string name="LeaveEmptyNewWallet">La stå tomt for å opprette en ny konto</string>
+    <string name="PinSuggestions"><font size="15">Dette hemmelige tallet trengs for å få tilgang til kontoen</font></string>
+    <string name="createNewAccount">Opprett ny konto</string>
+    <string name="createSyncAccount">Gjenopprett konto med grundig (og langvarig) synkronisering</string>
+    <string name="createDiscoveredAccount">Gjenopprett konto umiddelbart</string>
+    <string name="invalidRecoveryPhrase">ugyldig gjenopprettingsfrase</string>
+    <string name="invalidAccountName">ugyldig navn</string>
+    <string name="PassPhrase">Passfrase (valgfritt)</string>
+    <string name="Bip44ActivityNotice">Fant kontoaktivitet</string>
+    <string name="NoBip44ActivityNotice">Advarsel, ingen transaksjoner funnet!</string>
+    <string name="Bip44BtcActivityNotice">Fant ikke-standard eller pre-fork lommebokaktivitet</string>
+    <string name="NoBip44BtcActivityNotice">Ingen pre-fork-transaksjoner funnet</string>
+    <string name="FirstUseDateHeightInfo" formatted="false">starter ved %date (blokk %height)</string>
+    <string name="NotEnoughRecoveryWords">Flere gjenopprettingsord trengs</string>
+    <string name="TooManyRecoveryWords">For mange gjenopprettingsord</string>
+    <string name="IncorrectRecoveryWords" formatted="false">Ugyldige ord: %words</string>
+    <string name="ElectrumNetworkUnavailable">Electrum-nettverket er utilgjengelig.  Gjenoppretting av lommebok vil gå sakte, og vil ikke oppdage transaksjoner før 1. jan 2020</string>
+    <string name="PinHidesAccount">Skjule kontoen til PIN er oppgitt?</string>
+    <string name="HiddenAccountExplainer">Skjul kontoen til en PIN er oppgitt</string>
+    <string name="HiddenAccount">Skjult konto</string>
+    <string name="AutomaticNewAddress">Adressepersonvern</string>
+    <string name="AutomaticNewAddressToolTip">En ny adresse vises automatisk hver gang den gjeldende blir brukt.</string>
+    <string name="CreatePIN">PIN (valgfritt)</string>
+    <string name="PinSpendingUnprotected">Sending uten PIN er aktivert (ingen PIN oppgitt)</string>
+    <string name="PinSpendingProtected">Sending krever PIN</string>
+    <string name="InvalidPIN">Ugyldig PIN</string>
+    <string name="creatingNoHistoryAccountWarning">Du oppretter en konto med en bestemt gjenopprettingsfrase, men ingen aktivitet ble funnet på blockchain.\nEr dette riktig?\nI så fall kan du klikke på opprett-knappen igjen, så opprettes en tom konto.  Men hvis denne kontoen skal ha aktivitet, dobbeltsjekk valgt blockchain og gjenopprettingsfrase.  Hvis det ikke er problemet, er enten blockchain-nettverket utilgjengelig for øyeblikket (prøv igjen senere), eller kontoen ble opprettet med en ikke-standard lommebokapp.  Ikke opprett denne kontoen nå.</string>
+    <string name="accountLocked">konto låst</string>
     <string name="unknownError">feil</string>
     <string name="insufficentBalance">for lav balanse</string>
+    <string name="insufficentTokenBalance">for lav token-balanse</string>
     <string name="excessiveFee">for høy avgift</string>
+    <string name="sendDustError">beløp under minimum</string>
+    <string name="sendingDustWarning">beløpet er under nettverkets minimum</string>
     <string name="feeExceedsFlatMax">avgiften er større en konfigurert maks tillat fast avgift</string>
     <string name="notSupported">ikke støttet</string>
+    <string name="expired">betaling utløpt</string>
     <string name="PaymentDataMissing">mangler data</string>
     <string name="headersNotForthcoming">mottar ikke headers</string>
     <string name="cantConvert">konvertering midlertidig utilgjengelig</string>
-
+    <string name="walletDisconnectedFromBlockchain">lommebok frakoblet</string>
     <string name="badTransaction">ugyldig transaksjon</string>
     <string name="badAddress">ugyldig addresse</string>
+    <string name="unknownAddress">ukjent adresse</string>
     <string name="badAmount">ugyldig beløp</string>
+    <string name="NoAccounts">Ingen tilgjengelige kontoer</string>
     <string name="badCryptoCode">ikke krypto</string>
+    <string name="badCryptoCodeDetails" formatted="false">Ukjent eller utilgjengelig valuta: %currency</string>
     <string name="badCurrencyUnit">ikke valuta</string>
+    <string name="incompatibleAccount">feil valuta</string>
+    <string name="incompatibleAccountDetails" formatted="false">Du valgte å betale fra en konto som inneholder %cryptoAct, men %cryptoPay trengs</string>
     <string name="detailsOfBadAmountFromIntent">Programmet som åpnet lommeboken oppga et feilformatert tall for beøpet som skal sendes. Du må oppgi beløp selv.</string>
     <string name="blankAddress">tom addresse</string>
     <string name="unavailable">utilgjengelig</string>
     <string name="blockNotForthcoming">blokk er utilgjengelig</string>
     <string name="receiveAddressUnavailable">Kalkulerer en ny addresse. Vennligst vent...</string>
-
-    <!-- Error long strings -->
-    <string name="sendMoreThanBalance">Du forsøker å sende et større beløp en det du har tilgjengelig akkurat nå. Hvis du
-        mener dette ikke er tilfellet, må du huske at transaksjoner har en liten avgift, eller at beløpet kan vøre låst i en
-        for lang lenke med ubekreftede transaksjoner. Det er begrensning på hvor lang lenken med ubekreftede transaksjoner
-        kan være på. Vent på at din ubekreftede balanse bekreftes og prøv igjen.
-    </string>
-
+    <string name="accountLimitReached">maks antall kontoer</string>
+    <string name="accountUnavailableDetails">Enten finnes det ingen eksisterende konto for denne blockchain, eller så er kontoen ikke låst opp.</string>
+    <string name="accountUnavailable">Ingen opplåst kompatibel konto</string>
+    <string name="sendMoreThanBalance">Du forsøker å sende et større beløp enn det du har tilgjengelig akkurat nå. Hvis du mener dette ikke er tilfellet, må du huske at transaksjoner har en liten avgift, eller at beløpet kan være låst i en for lang lenke med ubekreftede transaksjoner. Det er en begrensning på hvor lang lenken med ubekreftede transaksjoner kan være. Vent på at din ubekreftede balanse bekreftes og prøv igjen.</string>
+    <string name="sendMoreTokensThanBalance">Du forsøker å sende flere tokener enn du har tilgjengelig akkurat nå.</string>
+    <string name="deductedFeeLargerThanSendAmount">Fratrukket avgift er større enn beløpet som sendes</string>
     <string name="badWalletImplementation">Feil i implementering av lommebok. Rapporter denne feilen!</string>
-
-    <!-- TITLES -->
+    <string name="CannotCompleteTransaction">Feil: Kan ikke fullføre</string>
     <string name="title_split_bill">Del en regning</string>
     <string name="title_activity_settings">Instillinger</string>
     <string name="title_activity_exchange">Veksle</string>
+    <string name="title_activity_shopping">Lenker</string>
+    <string name="ecosystem">Økosystem</string>
     <string name="title_activity_trickle_pay">Trickle Pay</string>
     <string name="title_home">Hjem</string>
     <string name="title_dashboard">Dashbord</string>
@@ -145,34 +417,213 @@
     <string name="title_activity_invoices">Fakturaer</string>
     <string name="title_activity_identity">Identitet</string>
     <string name="title_activity_identity_op">Identitet</string>
-
     <string name="title_activity_domain_identity_settings">Domain Identity Settings</string>
-
-    <!-- Domain Identity Settings -->
+    <string name="title_activity_tx_history" formatted="false">Tx-historikk: %account</string>
+    <string name="title_activity_address_history" formatted="false">Adressehistorikk: %account</string>
+    <string name="title_activity_account_details" formatted="false">Konto: %account</string>
+    <string name="title_test">Test</string>
     <string name="useUniqueIdentity">Bruk en unik identitet</string>
-
-    <!-- Sync Preferences -->
+    <string name="title_activity_identity_settings">Identitetsinnstillinger</string>
+    <string name="IdentityRegistrations">Registrerte tjenester</string>
+    <string name="NoIdentitiesRegistered">Ingen identiteter registrert</string>
+    <string name="title_activity_welcome">Velkommen</string>
+    <string name="next">Neste</string>
+    <string name="previous">Forrige</string>
+    <string name="EnterPIN">Skriv inn PIN</string>
+    <string name="EnterPINorBlankToRemove">Ny PIN (tom fjerner)</string>
+    <string name="ButtonTextHere">Angi knappetekst</string>
+    <string name="ButtonLinkHere">Skriv inn nettlenke</string>
+    <string name="ShoppingWarning">ADVARSEL: Elementene på denne siden er lenker til tredjeparts tjenester og nettsteder, plassert her for din bekvemmelighet.  Disse nettstedene/tjenestene er ikke kontrollert av Wally Wallet.\n\nBruk på egen risiko!</string>
+    <string name="NFTs">Ikke-fungible tokener (NFT-er)</string>
+    <string name="ExplainNFTs">NiftyArt.cash: Lag og handle med unike bilder og digitale representasjoner av unike gjenstander</string>
+    <string name="NftUrl">http://niftyart.cash</string>
+    <string name="NftImproperConstruction">Advarsel: Falsk eller feilaktig konstruert!</string>
+    <string name="TokenSourceWebsite">Tokenkilde:</string>
+    <string name="TokenBadSig">Informasjonen til dette tokenet er ikke riktig signert.  Dette tokenet kan være falskt eller en forfalskning.  Det kan også bety at tokenskaperen rett og slett ikke har signert tokenet riktig.</string>
+    <string name="OpenWebsite" formatted="false">Åpne %siteName</string>
+    <string name="WebsiteUnavailable" formatted="false">Nettsted utilgjengelig</string>
+    <string name="ExplainBitmart">bitmart.com: Veksle NEXA mot andre kryptovalutaer</string>
+    <string name="ExplainMexc">mexc.com: Veksle NEXA mot andre kryptovalutaer</string>
+    <string name="ExplainBiconomy">biconomy.com: Veksle NEXA mot andre kryptovalutaer</string>
+    <string name="CexButton">veksle</string>
+    <string name="SharedNotification" formatted="false">delte %what</string>
+    <string name="AuthAutopayTitle">Godkjent betaling</string>
+    <string name="AuthAutopayDeniedTitle">Godkjent betaling avvist</string>
+    <string name="AuthAutopay" formatted="false">%amt til %domain</string>
+    <string name="TpToBeDone">Dine Trickle Pay-tilkoblinger vises her</string>
+    <string name="TpHistoryTbd">Din Trickle Pay-historikk vises her</string>
+    <string name="AcceptTpRegistration">Godta registrering fra:</string>
+    <string name="EditTpRegistration">Innstillinger for enhet:</string>
+    <string name="AcceptTpRegistrationTopic">Formål:</string>
+    <string name="TpMaxSpendHint">angi maks autoforbruk</string>
+    <string name="TpAssetInfoRequest">Forespørsler om eiendelsinformasjon</string>
+    <string name="TpAssociatedAccount" formatted="false">Tilknyttet: %act</string>
+    <string name="TpAssociatedAddress" formatted="false">%addr</string>
+    <string name="SpecialTxNotif">Forespørsel om transaksjonsgodkjenning</string>
+    <string name="AssetNotif">Forespørsel om eiendelsinformasjon</string>
+    <string name="PaymentRequest">Betalingsforespørsel</string>
+    <string name="IdentityNotif">Identitets-/innloggingsforespørsel</string>
+    <string name="TpMaxHeading">Autobetalingsgrenser</string>
+    <string name="TpMaxPer">Maks per forespørsel</string>
+    <string name="TpMaxPerDay">Maks per dag</string>
+    <string name="TpMaxPerWeek">Maks per uke</string>
+    <string name="TpMaxPerMonth">Maks per måned</string>
+    <string name="TpEnableAutopay">Aktiver autobetaling (hvis ikke huket av, krever alle betalinger brukergodkjenning og grensene nedenfor ignoreres)</string>
+    <string name="asciiArrow"><![CDATA[=>]]></string>
+    <string name="TpNoRegistrations">Ingen Trickle Pay-registreringer</string>
+    <string name="TpNoSession">Ingen Trickle Pay-forespørsel</string>
+    <string name="TpRegistrations">Registreringer</string>
+    <string name="TpRegDenied">Registrering avvist</string>
+    <string name="TpRegAccepted">Registrering godtatt</string>
+    <string name="TpRegUnchanged">Registrering uendret</string>
+    <string name="TpRequestAutoDeny">Forespørsel avvist (automatisk)</string>
+    <string name="TpRequestAutoAccept">Forespørsel godtatt (automatisk)</string>
+    <string name="TpTxDenied">Transaksjon avvist</string>
+    <string name="TpTxAccepted">Transaksjon godtatt</string>
+    <string name="TpNetworkTimeout">Tidsavbrudd for transaksjon</string>
+    <string name="TpPartialSubmitted">Tilbud sendt inn</string>
+    <string name="TpAssetRequestDenied">Eiendelsinfo holdt tilbake</string>
+    <string name="TpAssetRequestAccepted">Sender eiendelsinfo</string>
+    <string name="Actions">Handlinger</string>
+    <string name="SpecialTpTransactionFrom">Spesialtransaksjon fra</string>
+    <string name="IncompleteTpTransactionFrom">Bindende tilbudsforslag fra</string>
+    <string name="TpEntails">Innebærer</string>
+    <string name="TpInAccount">Bruker konto</string>
+    <string name="TpAssetRequestFrom">Forespørsel om eiendelsinformasjon fra</string>
+    <string name="TpHandledByAccount">kan håndteres av kontoen din</string>
+    <string name="TpAssetMatches" formatted="false">Informasjon om %num eiendeler du eier vil bli gitt til denne tjenesten.</string>
+    <string name="TpAssetInfoNotXfer">Å godta denne forespørselen gir bare tjenesten informasjon om ditt eierskap.  Det godkjenner ingen overføringer.</string>
+    <string name="ForAFeeOf" formatted="false">inkludert en avgift på %fee %units</string>
+    <string name="TpExchangingTokens" formatted="false">og veksler tokener (sender %tokSnd, mottar %tokRcv).</string>
+    <string name="TpShowingTokens" formatted="false">%tokReveal tokentyper avsløres (sendt til deg selv, noe som beviser at du eier dem).</string>
+    <string name="TpSendingTokens" formatted="false">og sender %tokSnd typer tokener.</string>
+    <string name="TpReceivingTokens" formatted="false">og mottar %tokRcv typer tokener.</string>
+    <string name="TpHasNoPurpose">Denne forespørselen har ingen effekt på denne kontoen.</string>
+    <string name="TpSendToTitle">Betaling forespurt av</string>
+    <string name="TpSpends">Bruker</string>
+    <string name="TpSendRequestDenied">Betaling avvist</string>
+    <string name="TpSendAutoReject">Betaling automatisk avvist</string>
+    <string name="TpSendRequestAccepted">Betaling godtatt</string>
+    <string name="TpWhyNotAuto">Signerer ikke automatisk fordi</string>
+    <string name="TpAutomaticDisabled">Automatiske betalinger deaktivert</string>
+    <string name="TpExceededMaxPer">Overskrider maksgrense per forespørsel</string>
+    <string name="TpExceededMaxDaily">Overskrider maksgrense per dag</string>
+    <string name="TpExceededMaxWeekly">Overskrider maksgrense per uke</string>
+    <string name="TpExceededMaxMonthly">Overskrider maksgrense per måned</string>
+    <string name="title_activity_alert_history">Nylige meldinger</string>
+    <string name="IssueReportInstructions">Gi denne informasjonen til utviklerne:</string>
+    <string name="AssetApplication">Start</string>
+    <string name="AssetMarketplace">Handle</string>
+    <string name="AssetAddedToTransferList">Lagt til i \'Send\' i hovedfanen</string>
+    <string name="NftCardFront">Forside</string>
+    <string name="NftCardBack">Bakside</string>
+    <string name="NftPublicMedia">Innhold</string>
+    <string name="NftOwnerMedia">Eierens innhold</string>
+    <string name="Content">Innhold</string>
+    <string name="Private">Privat</string>
+    <string name="NftPrivateDescription">Dette innholdet tilhører eieren av eiendelen</string>
+    <string name="NftInfo">Info</string>
+    <string name="NftLegal">Lisens</string>
+    <string name="NftSeries" formatted="false">Serie: %series</string>
+    <string name="NftAuthor" formatted="false">Skaper: %author</string>
+    <string name="NftNoInfoProvided">...Ingen informasjon oppgitt...</string>
+    <string name="IssuedToConnection">Åpnet på tilkoblet nettsted</string>
+    <string name="demonstratingOwnership">Beviser eierskap</string>
+    <string name="AndSomeAssets">" og noen eiendeler"</string>
+    <string name="AssetTypes" formatted="false">%assetTypes eiendelstyper</string>
+    <string name="ExplainRestaurant">Nettbaserte bestillingstjenester for restauranter (levering eller henting) kan godta kryptovaluta selv om det fysiske stedet ikke gjør det.</string>
+    <string name="RestaurantButton">Menufy restaurantbestilling</string>
+    <string name="RestaurantUrl">https://www.menufy.com</string>
+    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
+    <string name="ExplainStoreMap">Finn steder i nærheten som godtar kryptovaluta.</string>
+    <string name="StoreMapButton">butikkart</string>
+    <string name="StoreMapUrl">https://map.bitcoin.com</string>
+    <string name="StoreMapAppPackage"></string>
+    <string name="ExplainTxBit">txbit.io: Veksle NEXA til andre kryptovalutaer</string>
+    <string name="welcome1Label">Velkommen</string>
+    <string name="welcome1">Velkommen til Wally, en kryptovaluta-lommebok!\n\nPå de neste skjermene setter du opp din første Nexa blockchain-konto (NEX) og konfigurerer andre tjenester som passordhåndtering.\n\nEller du kan trykke på tilbakepilen for å hoppe over dette veiledede oppsettet.</string>
+    <string name="welcome2_title">NEXA-kontoinnstillinger</string>
+    <string name="welcome2">På neste side setter du opp din første Nexa-konto.\n\nDenne kontoen inneholder Nexa-pengene dine og identitetene dine. Identiteter er en ny funksjon i Wally-lommeboken som lar deg logge inn automatisk på støttede nettsteder.\n\nDu kan velge å beskytte kontoene dine med en personlig identifikasjonskode (PIN), men vi anbefaler at nye brukere ikke bruker PIN (og holder en lav balanse) på sin første konto. For å beskytte brukeren er kontoer beskyttet med PIN ikke synlige før riktig PIN er tastet inn (det vises ikke om feil PIN er tastet inn).\n\nHvis du vil gjenopprette en eksisterende NEXA-konto, oppgir du gjenopprettingsfrasen. Hvis denne linjen står tom, opprettes en ny konto.</string>
+    <string name="welcome3_title" formatted="false">Gjenopprettingsfrase for Nexa-konto</string>
+    <string name="welcome3">Velkommen 3! (Denne velkomstteksten kan forbedres)</string>
+    <string name="welcome4_title">Identitet</string>
+    <string name="welcome4">Nå blir du tatt til skjermen for identitetsinformasjon. Denne informasjonen brukes når du bruker Wally som identitets- og innloggingsbehandler (for å logge inn automatisk på ulike nettsteder eller oppgi informasjon ved kjøp). Wally er ekstremt opptatt av personvern! Denne informasjonen deles ikke med noe nettsted uten din uttrykkelige tillatelse, og INGEN informasjon fra denne lommeboken sendes noen gang til utviklerne av denne appen. Du kan også velge å la alle feltene stå tomme. Når du er ferdig, trykker du på tilbakepilen (øverst til venstre).</string>
+    <string name="welcomeComplete">Dette fullfører oppsettet. Hvis du hoppet over noen av trinnene i denne velkomsten, er alle feltene tilgjengelige i selve appen. Takk, og kos deg med din nye lommebok!</string>
+    <string name="ExplainGiftCards">Ved å kjøpe gavekort får du tilgang til hundrevis av butikker som ikke godtar kryptovaluta direkte.</string>
+    <string name="GiftCardButton">eGifter-gavekort</string>
+    <string name="GiftCardUrl">https://www.egifter.com</string>
+    <string name="GiftCardAppPackage">com.groupgifting.android</string>
+    <string name="Pinförslag"><font size="15">Dette hemmelige tallet trengs for å få tilgang til kontoen</font></string>
     <string name="sync_title">Synkroniser e-post jevne mellomrom</string>
     <string name="attachment_title">Last ned innkommende vedlegg</string>
     <string name="attachment_summary_on">Last ned e-postvedlegg automatisk</string>
     <string name="attachment_summary_off">Bare last ned vedlegg ved forespørsel</string>
-    <string name="localCurrency">Lokal valuta</string>
-
-    <!-- Primary Account -->
-    <string name="primaryAccountSuccess">Primærkonto: %name</string>
-
+    <string name="signature_title">Din signatur</string>
+    <string name="reply_title">Standard handling ved besvarelse</string>
+    <string name="discoveredAccountDetails" formatted="false">Oppdaget en balanse på %bal %units\ni %addr adresser og %tx transaksjoner</string>
+    <string name="discoveredWarning">Hvis dette ser riktig ut, kan du opprette kontoen med en gang</string>
     <string name="backgroundSync">Bakgrunnssynkronisering</string>
-
     <string name="scanQr">Skann QR</string>
+    <string name="imageQr">Bilde-QR</string>
     <string name="paste">Lim inn</string>
     <string name="recentTransactions">Nylige Transaksjoner</string>
-
+    <string name="sendingFrom">Sender fra</string>
+    <string name="enterAddress">Skriv inn adresse...</string>
+    <string name="noteOptional">Notat (valgfritt)</string>
+    <string name="clearNote">Tøm notat</string>
+    <string name="clearAddress">Tøm adresse</string>
+    <string name="clearAmount">Tøm beløp</string>
+    <string name="available">Tilgjengelig</string>
+    <string name="amountPlain">Beløp</string>
+    <string name="enterNEXAmount">Skriv inn NEX-beløp...</string>
+    <string name="note">Notat</string>
+    <string name="confirmSend">Bekreft sending</string>
     <string name="syncing">Synkroniserer...</string>
-
-    <string name="enterAmount">Angi Beløp</string>
+    <string name="enterAmount" formatted="false">Skriv inn %assetName-beløp</string>
     <string name="fee">Avgift</string>
-
-    <string name="ExplainBiconomy">biconomy.com: Handle NEXA for andre kryptovalutaer</string>
-
+    <string name="connectionWarning">Advarsel: Ingen blockchain-/nettverkstilkobling er tilgjengelig. Hvis du sender nå, vil ikke mottakeren se denne overføringen umiddelbart. Sendingen blir utført når tilkoblingen er gjenopprettet.</string>
+    <string name="NetworkUnstable">Ustabilt nettverk</string>
+    <string name="TokenMissing">"Token ikke på kjeden "</string>
     <string name="Sell">Selg</string>
+    <string name="CreateAnOffer">Opprett et tilbud</string>
+    <string name="Price">Pris</string>
+    <string name="NexaPrice">Skriv inn Nexa-pris</string>
+    <string name="AssetAmountName" formatted="false">Du har %amount %assetName</string>
+    <string name="scanToBuyOne">Skann for å kjøpe %name</string>
+    <string name="scanToBuySeveral">Skann for å kjøpe %amount %name</string>
+    <string name="nexaOfferAmount" formatted="false">For %amount NEXA</string>
+    <string name="purchaseComplete">Kjøp fullført</string>
+    <string name="setTheNexaPrice">Angi Nexa-prisen</string>
+    <string name="setTheAssetAmount">Angi antall av eiendelen</string>
+    <string name="publishOnline">Publiser tilbudet på nettet</string>
+    <string name="offerCreated">Tilbud opprettet!</string>
+    <string name="ConfigureService">Konfigurer tjeneste</string>
+    <string name="AcceptOrRejectService">Godta eller avvis tjeneste</string>
+    <string name="Domain">Domene</string>
+    <string name="Services">Tjenester</string>
+    <string name="Purpose">Formål</string>
+    <string name="AutoPay">Automatisk betaling</string>
+    <string name="AutoPayInstructions">Hvis følgende avkrysningsboks er deaktivert, ber alle betalingsforespørsler fra denne tjenesten om din godkjenning, og grensene nedenfor ignoreres.</string>
+    <string name="LimitedAutoApproval">Tillat begrenset automatisk godkjenning</string>
+    <string name="AutoPayMaxPerRequest">Maks per forespørsel</string>
+    <string name="AutoPayMaxPerDay">Maks per dag</string>
+    <string name="AutoPayMaxPerWeek">Maks per uke</string>
+    <string name="AutoPayMaxPerMonth">Maks per måned</string>
+    <string name="EnableServices">Aktiver tjenesteskjermen</string>
+    <string name="NoServicesRegistered">Ingen tjenester registrert.</string>
+    <string name="Start">Start</string>
+    <string name="Meditation">Meditasjon</string>
+    <string name="Meditate">Mediter</string>
+    <string name="Sound">Lyd</string>
+    <string name="OneMinuteIntervalSound">Lyd hvert 1. minutt</string>
+    <string name="MeditationVersion">Versjon: 1.0.3 (build 156)</string>
+    <string name="Meditating">Mediterer...</string>
+    <string name="MediationComplete">Meditasjon fullført!</string>
+    <string name="Okay">OK</string>
+    <string name="Minutes">Minutter</string>
+    <string name="Camouflage">Kamuflasje</string>
+    <string name="CamouflageAsMeditationTimer">Kamufler appen som en meditasjonstimer.</string>
+    <string name="CamouflageDescriptionAndroid">Når du aktiverer kamuflasjen, lukkes appen og kamufleres som en app kalt Meditate. For å deaktivere Meditate-kamuflasjen åpner du app-menyen og trykker fem ganger på versjonsnummeret.</string>
+    <string name="CamouflageDescriptionOther">For å deaktivere Meditate-kamuflasjen åpner du app-menyen og trykker fem ganger på versjonsnummeret.</string>
+    <string name="CamouflageAsMeditateAppAndroid">Kamufler som Meditate-appen</string>
 </resources>
