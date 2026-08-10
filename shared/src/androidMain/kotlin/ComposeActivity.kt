@@ -265,6 +265,10 @@ class ComposeActivity: CommonActivity()
             {
                 try
                 {
+                    if (nav.currentScreen.value == ScreenId.SpecialTxPerm)
+                    {
+                        (nav.curData.value as? TricklePaySession)?.rejectSpecialTx()
+                    }
                     if (nav.back() == null) finish()
                     else setTitle(nav.title())
                 }
