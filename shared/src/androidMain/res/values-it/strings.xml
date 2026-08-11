@@ -1,36 +1,5 @@
-<!-- Hi and thanks for translating!
-If you see anything that is surrounded with symbols just like this text, that is, within !- and - (but with 2 dashes, I cannot write it here), then do not translate.
-These are comments to help you understand what to do or the context the next word is used in.
-
-Entries that need to be translated will look something like this:
-<string name="yes">yep</string>
-
-Do not translate the word in quotes (in this case "yes").  This is a name that we use to look up your translation.
-But DO translate the word or sentence between the greater than and less than signs.  In this case "yep".
-
-For example, if you were doing a French you might do this replacement:
-<string name="yes">oui</string>
-
-Try to not make your translation a lot longer than the english, or it might not all fit in the space the app has on screen!
-
-
-If, in the part you are supposed to translate, you see a percent sign and a word, like this: %foo, then do not translate it.  For example:
-
-<string name="delQ">Delete account "%accountName" (on %blockchain)</string>
-
-What is happening here is that the app will replace %accountName with the actual name of the relevant account and %blockchain with the actual name of the blockchain.
-So it will look like this in the app:
-  Delete account "myNexaAct" (on Nexa)
-
-You can change the order of the replaced words just by moving where the %word is in your translation.  For example, I could change this to:
-
-<string name="delQ">Delete from %blockchain, account "%accountName"</string>
-
-Good luck!
--->
-
 <resources>
-    <string name="app_name">Wally</string>
+    <string name="app_name" translatable="false">Wally</string>
     <string-array name="CurrencyTypes">
         <item>NEX</item>
         <item>USD</item>
@@ -46,9 +15,7 @@ Good luck!
         <item>USD</item>
         <item>XAU</item>
     </string-array>
-
-    <string name="uBCH">uBCH</string>
-
+    <string name="uBCH" translatable="false">uBCH</string>
     <string-array name="OneToTen">
         <item>1</item>
         <item>2</item>
@@ -72,233 +39,220 @@ Good luck!
         <item>30%</item>
         <item>50%</item>
     </string-array>
-
-    <!-- General -->
-    <string name="yes">si</string>
+    <string name="yes">sì</string>
     <string name="no">no</string>
-    <!-- used to specify what position in the blockchain -->
-    <string name="at">at</string>
-    <!-- used to specify that total blockchain size "at block 6 of 100"  -->
+    <string name="at">a</string>
     <string name="of">di</string>
-    <!-- used to ask the user to pick an account -->
     <string name="choose">scegli</string>
-    <!-- accept a proposed transaction, configuration change, or a request from an external service -->
     <string name="accept">accetta</string>
-    <!-- reject a proposed transaction or configuration change -->
     <string name="reject">rifiuta</string>
-    <!-- remove some remembered services, like web sites you have logged into or paid -->
-    <string name="remove">elemina</string>
-    <!-- you have asked the app to do something, but the app is double checking.  This means yes do it -->
+    <string name="remove">rimuovi</string>
     <string name="confirm">conferma</string>
-    <!-- you have asked the app to do something, but the app is double checking.  This means no user changed their mind -->
     <string name="cancel">annulla</string>
-
-    <string name="removeAll">elimina tutto</string>
-    <!-- done is like "yes" but more means "go to the next thing" rather than explicit acceptance of something.  The implication is that whatever is showing on the screen will be used.
-         Its modern UX philosophy of "why do we have to explicitly "save" everything on settings screens?  If you make a change, that change ought to be made, no additional button clicks needed."
-    -->
+    <string name="Back">Indietro</string>
+    <string name="removeAll">rimuovi tutto</string>
     <string name="done">fatto</string>
-    <!-- an external service is making a request (to see the assets you own, to get you to sign a transaction, or to prove your identity).  You refuse -->
-    <string name="deny">rifiuta</string>
-    <!-- Should the program ask the user before authorizing this, verses automatically accepting or automatically denying -->
-    <string name="ask">richiedi</string>
-    <!-- Some service sent you a request, but the service did not properly sign the request (which proves that they are who they claim to be) -->
+    <string name="dismiss">Ignora</string>
+    <string name="deny">nega</string>
+    <string name="ask">chiedi</string>
     <string name="badSignature">firma errata</string>
-
-    <string name="unknownCurrency">moneta sconosciuta</string>
-    <string name="unknownCryptoCurrency">crypto moneta o blockchain sconosciuta</string>
-    <!-- wallet is currently working on doing whatever your button click asked it to do -->
+    <string name="unknownCurrency">valuta sconosciuta</string>
+    <string name="unknownCryptoCurrency">criptovaluta o blockchain sconosciuta</string>
     <string name="Processing">in elaborazione...</string>
     <string name="receiving">in ricezione</string>
-    <string name="sending">in trasmissione</string>
+    <string name="sending">in invio</string>
     <string name="noAdditionalDetails">nessun dettaglio aggiuntivo</string>
-    <!-- User didn't enter any value into this field but that's ok -->
-    <string name="unspecified">non speicificato</string>
-    <!-- If the user deletes something - like a connection to an external service, this is the confirmation string that the info was removed.  It needs to be short. -->
+    <string name="unspecified">non specificato</string>
     <string name="removed">rimosso</string>
-    <!-- wallet is up to date with the blockchain -->
-    <string name="synced">pronto</string>
-    <!-- wallet is still connecting to the blockchain -->
-    <string name="unsynced">in attesa di sincronizzazione</string>
+    <string name="synced">sincronizzato</string>
+    <string name="unsynced">in sincronizzazione</string>
     <string name="connected">connesso</string>
+    <string name="connectionEstablished">connessione stabilita</string>
+    <string name="connectionClosed">connessione chiusa</string>
+    <string name="connectionException">impossibile connettersi al sito</string>
     <string name="balance">saldo attuale</string>
     <string name="totalReceived">totale ricevuto</string>
-
-    <!-- this is an indication that we are still waiting for some web page to load. please leave the HTML and just translate ...loading... -->
+    <string name="inProgress">in corso</string>
+    <string name="staleTransaction">Transazione obsoleta</string>
+    <string name="staleTransactionDetails">Questa transazione è stata rifiutata da un nodo completo. Probabilmente è obsoleta (già usata da qualcun altro), ma è anche possibile che non sia mai stata valida, oppure che sia valida e che i nodi interpellati siano disonesti. Il portafoglio ignorerà questa transazione a meno che non venga confermata.</string>
+    <string name="NoPermission">Nessuna autorizzazione</string>
+    <string name="NoPermissionDetails" formatted="false">Devi abilitare l\'autorizzazione %perm per usare questa funzione. Puoi farlo in Impostazioni Android -> App -> Wally -> Autorizzazioni</string>
     <string name="WebLoadingPage"><![CDATA[<body><h1><center>...in caricamento...</h1></center></body>]]></string>
-
-    <!-- Implication is "no charge" or "no cost" for a transaction -->
-    <string name="nothing">gratis</string>
-
-    <!-- Do not actually put anything in this one!  Its needed when we want a blank line -->
-    <string name="empty"></string>
-
+    <string name="loading">in caricamento</string>
+    <string name="Untitled">Senza titolo</string>
+    <string name="nothing">niente</string>
+    <string name="breakIt">rompi</string>
     <string name="or">o</string>
-
     <string name="onBlockchain">su</string>
-
     <string name="NotImplemented">Presto disponibile</string>
-
-    <string name="NoNodes">Impossibile accedere alla blockchain</string>
-    <!-- The user chose not to proceed with some operation -->
-    <string name="cancelled">Terminata</string>
-    <!-- Issued if initialization isn't yet complete, but user tries to access the services -->
+    <string name="NoNodes">Blockchain non raggiungibile</string>
+    <string name="cancelled">annullato</string>
+    <string name="refreshQR">Connessione al server persa</string>
     <string name="pleaseWait">attendere prego</string>
-    <!-- Uses in the sense of attempting an operation, such as connecting to a node  -->
-    <string name="trying">in esecuzione</string>
-
-    <!-- meaning remove all the text in an edit box -->
-    <string name="clear">Ripulisci</string>
-
-    <string name="thousand">migliaio</string>
-
-    <string name="million">milione</string>
-
-    <!-- Settings -->
-    <string name="version" formatted="false">Versione Wally Wallet: %ver</string>
-    <string name="enableDeveloperView"> Modalità avanzata</string>
+    <string name="trying">in connessione</string>
+    <string name="clear">cancella</string>
+    <string name="thousand">* mille</string>
+    <string name="million">* milione</string>
+    <string name="required">obbligatorio</string>
+    <string name="account">Account</string>
+    <string name="addAccountPlus">+ Nuovo account</string>
+    <string name="receivingTokens">Token in entrata</string>
+    <string name="spendingTokens">Token in uscita</string>
+    <string name="version" formatted="false">Versione: %ver (%date)</string>
+    <string name="enableDeveloperView">Modalità avanzata</string>
+    <string name="enableRecompositionCounts">Conta ridisegni schermo</string>
+    <string name="enableExperimentalUx">Interfaccia sperimentale</string>
+    <string name="enableDarkMode">Modalità scura</string>
+    <string name="enableSound">Abilita suoni</string>
     <string name="enableIdentityMenu">Abilita schermata identità</string>
-    <string name="enableTricklePayMenu">Abilita schermata trickle pay</string>
-    <string name="enableAssetsMenu">Abilita schermata assets</string>
+    <string name="enableTricklePayMenu">Abilita schermata Trickle Pay</string>
+    <string name="enableAssetsMenu">Abilita schermata asset</string>
     <string name="only">solo</string>
     <string name="prefer">preferito</string>
-    <string name="rediscoverWalletTx">Ricerca tutte le transazioni</string>
-    <string name="rediscoverBlockchain">Ricerca tutte le headers della blockchain</string>
+    <string name="rediscoverWalletTx">Riscopri tutte le transazioni</string>
+    <string name="searchWalletTx">Cerca le transazioni mancanti</string>
+    <string name="rediscoverBlockchain">Riscopri header blockchain</string>
     <string name="logDebugData">Registra i dati di debug</string>
-    <string name="clearIdentityDomains">Rimuovi gli Identity Domains</string>
-    <string name="rediscoverTooltip">Cancella lo stato della blockchain e cerca di nuovo tutte le transazioni inerenti al wallet</string>
-    <string name="wordSeed">Frase segreta per recuperare il tuo Account</string>
-    <string name="deleteWalletAccount">Elimina Account</string>
-
-    <!-- a PIN is a numeric password that gives you access to your account -->
+    <string name="clearIdentityDomains">Cancella domini identità</string>
+    <string name="rediscoverTooltip">Cancella lo stato della blockchain e cerca di nuovo tutte le transazioni inerenti al portafoglio</string>
+    <string name="wordSeed">Frase segreta di recupero</string>
+    <string name="deleteWalletAccount">Elimina account</string>
+    <string name="more">Altro</string>
+    <string name="darkMode">Modalità scura</string>
+    <string name="ConsolidationNeeded">Prima consolida l\'account</string>
     <string name="SetChangePin">Crea o sostituisci il PIN di sblocco</string>
     <string name="CurrentPin">PIN corrente</string>
     <string name="NewPin">Nuovo PIN</string>
     <string name="PinChanged">PIN cambiato</string>
     <string name="PinRemoved">PIN rimosso</string>
-    <string name="PinInvalid">PIN invalido</string>
-    <string name="PinTooShort">Il nuovo PIN è troppo</string>
-    <string name="ViewRecoveryPhrase">Mostra la frase segreta per il recupero dell\'account</string>
-    <string name="localCurrency">Moneta corrente</string>
-    <string name="assessUnconfirmed">Verifica transazione non confermate</string>
-    <string name="rediscoverNotice">Inizio riscoperta Account</string>
-    <string name="unconfAssessmentNotice">Fase di verifica transazioni non cofermate partita</string>
-    <string name="accountDeleteNotice">Account cancellato</string>
-    <string name="rediscoverConfirmation">La fase di riscoperta di un account cercherà nella blockchain mancati pagamenti a partire dalla data di creazione del wallet. Questo potrebbe richiedere molto tempo, usalo solo se sei sicuro di aver un pagamento mancante</string>
-    <string name="rediscoverBlockchainConfirmation">La fase di riscoperta di una blockchain cancellerà tutti le header scaricate fino ad ora e le scaricare di nuovo. Questa operazione potra essere molto lunga, usala solo se sei sicuro che i dati della blockchain sono compromessi</string>
-    <string name="deleteConfirmation" formatted="false">Cancellare un account significa perdere tutti i dati ad esso collegati (saldi, lista movimenti e identità), tali dati potranno essere recuperati solo tramite la frase segreta di ripristino! Fallo solo sei sei ASSOLUTAMENTE SICURO!\n\nRimuovi l\'account "%accountName" (su %blockchain)?</string>
-    <string name="reassessConfirmation">Questa funzione cercherà nella blockchain le più recenti transazioni eseguite. A secondo che siano trovate o meno, verranno confermate o cancellate. Se le transizioni verrano cancellate, i soldi sembreranno essere scomparsi. Avrai bisogno di "ripristinare" per accedere di nuovo a quei saldi. Non usare se si appena fatto una transazione, in quanto tale transazione potrebbe non ancora essere confermata.</string>
-    <string name="recoveryPhrase">Questa frase composta di 12 parole potrà essere usata in caso di rottura o smarrimento del tuo telefono.</string>
-    <string name="primaryAccountConfirmation">Il tuo account principale è quello che è usato per la tua identità e per fare pagamenti automatici. È anche l\'account primario di altre parti dell\'applicazione. Deve essere un Account denominato in Nexa.</string>
+    <string name="PinInvalid">PIN non valido</string>
+    <string name="PinTooShort">Il nuovo PIN è troppo corto</string>
+    <string name="WriteDownRecoveryPhraseWarningUi2">Attenzione: non hai annotato la frase segreta di recupero di alcuni account! Per non perdere i fondi se questo dispositivo viene perso o si rompe, scrivi le frasi segrete di recupero su carta o su un altro supporto non elettronico.</string>
+    <string name="WroteRecoveryPhraseDown">Ho preso nota</string>
+    <string name="RecoveryPhraseKeepRemindingMe">Continua a ricordarmelo</string>
+    <string name="ViewRecoveryPhrase">Mostra la frase segreta di recupero</string>
+    <string name="localCurrency">Valuta locale</string>
+    <string name="assessUnconfirmed">Verifica transazioni non confermate</string>
+    <string name="rediscoverNotice">Inizio riscoperta account</string>
+    <string name="searchNotice">Inizio ricerca account</string>
+    <string name="unconfAssessmentNotice">Inizio verifica transazioni non confermate</string>
+    <string name="accountDeleteNotice">Account eliminato</string>
+    <string name="rediscoverConfirmation">Riscoprire un account azzererà il portafoglio e cercherà i pagamenti sulla blockchain, come se l\'account fosse appena creato. L\'operazione può richiedere molto tempo. Potrebbe però comparire un pulsante «Avanti veloce» che ti permette di chiedere a un database l\'attività del tuo portafoglio. Se la data qui sopra non è corretta, attendi qualche secondo che venga aggiornata.</string>
+    <string name="searchConfirmation">Questa funzione cerca sulla blockchain i pagamenti mancanti. L\'operazione può richiedere molto tempo. Potrebbe però comparire un pulsante «Avanti veloce» che ti permette di chiedere a un database l\'attività del tuo portafoglio.</string>
+    <string name="rediscoverBlockchainConfirmation">Riscoprire una blockchain eliminerà da questo portafoglio tutti gli header della blockchain e li scaricherà di nuovo dai nodi completi. L\'operazione può richiedere molto tempo. Usala solo se sei sicuro che ci sia un problema con gli header della blockchain.</string>
+    <string name="deleteConfirmation" formatted="false">Eliminare un account renderà inaccessibili saldi, identità e cronologia, a meno che l\'account non venga recuperato con la frase segreta di recupero! Fallo solo se sei ASSOLUTAMENTE SICURO!\n\nEliminare l\'account "%accountName" (su %blockchain)?</string>
+    <string name="reassessConfirmation">Questa operazione controllerà sulla blockchain le transazioni recenti che hai inviato. In base alla loro presenza o assenza, verranno confermate o cancellate. Se le transazioni vengono cancellate, il denaro sembrerà scomparso. Dovrai effettuare una «riscoperta» per recuperare il saldo speso. Non usarla se hai appena inviato una transazione, perché potrebbe essere ancora in rete in attesa di conferma.</string>
+    <string name="recoveryPhrase">Questa frase di 12 parole serve a recuperare il tuo portafoglio. Chiunque la possieda può spendere il tuo denaro. Scrivila a penna su carta (o incidila nell\'acciaio) e conservala in un luogo sicuro!</string>
+    <string name="recoveryWarning">STOP! NON CONSERVARLA IN FORMATO DIGITALE!\nNon copiarla negli appunti, non fotografarla, non fotocopiarla e non fare screenshot.</string>
+    <string name="flickerReason">Lo sfarfallio è una misura di sicurezza</string>
+    <string name="PastingRecoveryPhraseIsBadIdea">Copiato negli appunti. Copiare e incollare questa frase di recupero in un\'app è però una PESSIMA IDEA! Email, backup e la maggior parte delle app non sono sicuri quanto serve per custodire una frase che è letteralmente denaro.</string>
+    <string name="primaryAccountConfirmation">Il tuo account principale è quello usato per la tua identità e per i pagamenti automatici. È anche il primo account mostrato in varie parti dell\'app. Deve essere sulla blockchain Nexa.</string>
+    <string name="primaryAccountSuccess">Account principale: %name</string>
     <string name="AccountActions">Azioni sull\'account</string>
-    <string name="GeneralSettings">Configurazioni generali</string>
-    <string name="BlockchainSettings">Sorgenti per la blockchain</string>
-    <string name="AccessPriceData">Accedi a dati sui prezzi</string>
-    <!-- not used right now string name="AccessPriceDataHint">This option allows the wallet to display the value of your cryptocurrency.  However, this data may not be accurate.  And the access uses more data and divulges your IP address to the service providing the data.</string -->
-
-    <!-- Split bill -->
-    <string name="SplitBillDescription">Tu paghi il conto (in moneta fiat), i tuoi amici pagheranno la loro parte usando il QR code qui sotto</string>
-    <string name="Total">Conto:</string>
-    <!-- Ways refers to how many equal portions a bill is being split into -->
+    <string name="GeneralSettings">Impostazioni generali</string>
+    <string name="BlockchainSettings">Sorgenti blockchain</string>
+    <string name="AccessPriceData">Accedi ai dati sui prezzi</string>
+    <string name="oldUi">Vecchia interfaccia</string>
+    <string name="SplitBillDescription">Tu paghi il conto (in valuta fiat), poi i tuoi amici ti pagano la loro parte con il QR code qui sotto. Includi anche te stesso nel numero di ripartizioni, a meno che non offrano i tuoi amici!</string>
+    <string name="BillAmount">Importo conto</string>
+    <string name="TipAmount">Importo mancia</string>
+    <string name="TipPercentage">Percentuale mancia</string>
+    <string name="Total">Totale da dividere</string>
+    <string name="OR">OPPURE</string>
+    <string name="QRCodeFor">QR code per:</string>
     <string name="Ways">Ripartizioni:</string>
-    <!-- Tip (gratuity) is how much more money you want to pay above the value of the bill -->
     <string name="Tip">Mancia:</string>
-
-    <string name="Amount">Totale:</string>
-    <!-- Home Page -->
-
-    <!-- As the wallet is syncing, it shows you a balance.  But if the wallet is not caught up to NOW it shows this so you know that the balance that is being shown is not up to date.
-    IF YOU SEE %something (in this case date), THEN DO NOT translate the "something".  It will be replaced with the actual value by the program (in this case the date).
-    -->
-    <string name="balanceOnTheDate">al %date</string>
-
-    <!-- A QR is the 2-dimensional black and white boxes of pixels that wallets scan to read info -->
+    <string name="Amount">Importo:</string>
+    <string name="AmountWithValue" formatted="false">Importo: %amt</string>
+    <string name="QuantityWithValue" formatted="false">Quantità: %qty</string>
+    <string name="balanceOnTheDate" formatted="false">al %date</string>
+    <string name="fastSync">Sinc. rapida</string>
+    <string name="refresh">Aggiorna</string>
     <string name="goodQR">QR leggibile</string>
     <string name="badQR">QR illeggibile</string>
-    <string name="badImageQR">immagine QRi malformata. Dettagli...</string>
+    <string name="badImageQR">immagine QR malformata. Dettagli...</string>
     <string name="badImageQRhelp">Prova ad allontanare il telefono dall\'immagine del QR code. Il margine bianco è parte del QR code, e puoi avere delle immagini sfocate se fotografi da troppo vicino.</string>
-    <!-- as in unlock an account -->
+    <string name="GoThere">Vai</string>
     <string name="unlock">sblocca</string>
     <string name="share">condividi</string>
     <string name="Send">Invia</string>
     <string name="OpenSend">Invia</string>
     <string name="SendCancel">Annulla</string>
-    <string name="ignoredInsecureRequest">Richieste Insicure Ignoratet</string>
-    <!-- As in "Send from" what account -->
-    <string name="fromAccountColon">Spedito dall\'account account:</string>
-    <!-- if user forgot to pick an account -->
+    <string name="ignoredInsecureRequest">Richiesta insicura ignorata</string>
+    <string name="fromAccountColon">Invia dall\'account:</string>
     <string name="chooseAccountError">Scegli un account</string>
-    <!-- As in "Send to" -->
     <string name="toColon">A:</string>
-    <!-- As in what entity is requesting information -->
+    <string name="To">A</string>
+    <string name="ByAuthor">Di</string>
+    <string name="assetsColon">Asset:</string>
+    <string name="assets">Asset</string>
+    <string name="NoAssets">Nessun asset disponibile nell\'account %act</string>
+    <string name="NoAssetsAccount">Nessun asset attualmente disponibile nel tuo account.</string>
     <string name="fromColon">Da:</string>
-    <string name="ReceiveIntoAccount">Ricevuto nell\'account</string>
+    <string name="ReceiveIntoAccount">Ricevi nell\'account</string>
     <string name="Receive">Ricevi</string>
+    <string name="YourAddress">Il tuo indirizzo %blockchain</string>
+    <string name="CopyAddress">Copia indirizzo</string>
     <string name="AccountListHeader">Account</string>
-    <!-- This is referring to a cryptocurrency address, not a physical address -->
     <string name="Address">Indirizzo</string>
-    <string name="clipboard">clipboard</string>
-    <string name="settings">Configurazioni</string>
+    <string name="clipboard">appunti</string>
+    <string name="settings">Impostazioni</string>
     <string name="help">Aiuto</string>
-    <string name="invalidQuantity">Quantità invalida</string>
+    <string name="invalidQuantity">quantità non valida</string>
+    <string name="needNonexistentAuthority">autorità token necessaria</string>
     <string name="invalidQuantityTooManyDecimalDigits">troppe cifre decimali</string>
-    <string name="roundedUpClickSendAgain">arrotondato per eccesso, premi invia di nuovo per accettare</string>
-    <!-- Write this below the send quantity field when it is empty - you probably want to write nothing at all -->
+    <string name="roundedUpClickSendAgain">arrotondato, premi di nuovo Invia per accettare</string>
     <string name="emptyQuantityField"></string>
     <string name="purchase">acquisto</string>
     <string name="scanPaymentQRcode">Scansiona il QR code per il pagamento</string>
-    <string name="ScanQRCodeButton">Scan a QR code</string>
+    <string name="ScanQRCodeButton">Scansiona un QR code</string>
     <string name="PasteDestinationAddressButton">Incolla</string>
-    <string name="NewAccountButton">Configurazione del nuovo Account</string>
-    <string name="NewAccountSearchingForTransactions">...alla ricerca delle transazioni...</string>
+    <string name="NewAccountButton">Configura nuovo account</string>
+    <string name="NewAccountSearchingForTransactions">...ricerca della prima transazione...</string>
+    <string name="NewAccountSearchingForAllTransactions">...ricerca di tutte le transazioni...</string>
     <string name="NewAccountSearchFailure">ricerca transazione fallita</string>
-    <string name="receiveAddressQRCode">QR code dell\'indirizzo destinatario</string>
+    <string name="receiveAddressQRCode">QR code di ricezione</string>
     <string name="paymentProposal">come da proposta di pagamento ricevuta</string>
-    <!-- You clicked the paste button (in a copy/paste operation), but nothing was copied -->
     <string name="pasteIsEmpty">niente da incollare</string>
-    <!-- Informational: The contents of the copy/paste buffer didn't make any sense to me, but you didn't explicitly tell me to paste so maybe that's ok.
-     The app did not use this paste information.  This error happens when the app checks for implicit pastes.  For example, when wally wallet
-     starts up it guesses that it might have been started to make a payment so checks the paste buffer for a destination address.
-     -->
-    <string name="pasteIgnored">valore incollato invalido</string>
-    <!-- Error: The information in the copy/paste buffer didn't make any sense to me (not a crypto address, for example), and you explicitly asked me to paste.
-     The app refuses to fill the field with this information because it doesn't make sense to do so. -->
-    <string name="pasteUnintelligible">valore da incollare non valido</string>
+    <string name="pasteIgnored">valore incollato ignorato</string>
+    <string name="pasteUnintelligible">valore incollato non riconosciuto</string>
     <string name="chainIncompatibleWithAddress">indirizzo incompatibile con questo account</string>
-    <string name="chainIncompatibleWithAddressDetails" formatted="false">La valuta dell\'account è %walletCrypto, l\'indirizzo è %addressCrypto. Usa il menù per cambiare l\'account da cui attingere ai fondi in maniera che sia compatibile con l\'indirizzo di destinazione</string>
-    <string name="incoming" formatted="false">includendo %delta %unit da confermare</string>
+    <string name="chainIncompatibleWithAddressDetails" formatted="false">La valuta dell\'account è %walletCrypto, l\'indirizzo è %addressCrypto. Usa il menu a tendina per scegliere un account di invio compatibile con la blockchain dell\'indirizzo.</string>
+    <string name="incoming" formatted="false">di cui %delta %unit in attesa</string>
     <string name="approximatelyT" formatted="false">circa %qty %fiat</string>
-    <string name="exchangeRate" formatted="false">(exchange rate: 1 %fiat vale %amt %crypto)</string>
-    <!-- user is attempting to send more cryptocurrency than the wallet contains.  The payment can't happen -->
-    <string name="moreThanAvailable">"(fondi non sufficienti)"</string>
-    <!-- This is a warning or informational message.  It says that the user is sending recently received coins, which is perfectly OK but slightly increases the chance of payment failure -->
-    <string name="moreThanConfirmedAvailable">"(fondi confermati non sufficienti)"</string>
-    <string name="actuallySendingT" formatted="false">stiamo mandando %qty %crypto</string>
-    <string name="copiedToClipboard">...copiato negli appunti...</string>
+    <string name="fastForward" formatted="false">Avanti veloce</string>
+    <string name="fastforwardStatus" formatted="false">analisi avanti veloce: %info</string>
+    <string name="fastforwardStart" formatted="false">avviata</string>
+    <string name="exchangeRate" formatted="false">(tasso di cambio: 1 %fiat vale %amt %crypto)</string>
+    <string name="moreThanAvailable">(fondi insufficienti)</string>
+    <string name="moreThanConfirmedAvailable">(fondi confermati insufficienti)</string>
+    <string name="actuallySendingT" formatted="false">invio effettivo: %qty %crypto</string>
+    <string name="copiedToClipboard">copiato negli\nappunti</string>
+    <string name="copyId">Copia ID</string>
+    <string name="openInBrowser">Apri nel browser</string>
+    <string name="cannotCopyToClipboard">Impossibile copiare negli appunti</string>
+    <string name="tooLargeForClipboard">Troppi dati per gli appunti</string>
     <string name="scanFailed">scansione fallita</string>
-    <string name="scanSuccess">scansione terminata</string>
+    <string name="scanSuccess">scansione riuscita</string>
     <string name="sendSuccess">invio completato</string>
-    <string name="sendQuantityHint">quantità inviata</string>
+    <string name="sendQuantityHint">quantità da inviare</string>
     <string name="sendRequestNotification">Richiesta di invio fondi</string>
-    <string name="sendToAddressHint">Indirizzo di destinazione</string>
+    <string name="sendToAddressHint">indirizzo di destinazione</string>
     <string name="sendAll">max</string>
-    <string name="editSendNoteHint">annotazione relativa a questo trasferimento</string>
+    <string name="editSendNoteHint">note personali su questo trasferimento</string>
     <string name="subSatoshiQuantities">Troppe cifre decimali -- questa valuta non supporta questo livello di precisione</string>
-
-    <string name="retrievingExchangeRate">sto ancora tentando di ottenere il tasso di cambio</string>
+    <string name="retrievingExchangeRate">recupero tasso di cambio in corso</string>
     <string name="unavailableExchangeRate">tasso di cambio non disponibile</string>
-
-    <!-- Identity -->
+    <string name="SigningWithAccount" formatted="false">Firma con l\'account: %act</string>
+    <string name="commonIdentityForAccount" formatted="false">Identità comune per l\'account: %act</string>
     <string name="identityRequestNotification">identità richiesta</string>
-    <string name="IdentityDataMissing">Mancate informazioni di identità</string>
-    <!-- Some web site or company that you've never contacted before is requesting that you set up an account and authenticate a log-in.  This is an informational message
-     that happens whenever the user first sets up a relationship between the web site/company and their wallet -->
-    <string name="newDomainRequestingIdentity">Richiesta di una nuova identità da un nuovo dominio</string>
-    <string name="domainRequestingAdditionalIdentityInfo">Informazione Aggiuntive Richieste</string>
-    <string name="useUniqueIdentityToolTip">Attiva per mantenere questa identità separata da quella di altri domini.</string>
+    <string name="IdentityDataMissing">Info identità mancanti</string>
+    <string name="newDomainRequestingIdentity">Nuovo servizio richiede la registrazione</string>
+    <string name="domainRequestingAdditionalIdentityInfo">Informazioni aggiuntive richieste</string>
+    <string name="useUniqueIdentityToolTip">Attiva per mantenere questa identità separata da quella di altri siti.</string>
     <string name="provideAlias">Vuoi fornire il tuo nome utente/alias?</string>
     <string name="provideAliasToolTip">Selezionando questa opzione il tuo alias (NON il tuo vero nome) verrà fornito a questo sito se ne farà richiesta</string>
-    <string name="provideSocialMedia">Vuoi fornire informazione relative ai tuoi socila media?</string>
+    <string name="provideSocialMedia">Vuoi fornire le informazioni sui tuoi social media?</string>
     <string name="provideSocialMediaToolTip">Selezionando questa opzione le informazioni sui tuoi social media verranno condivise con questo sito se ne farà richiesta</string>
     <string name="providePostalAddress">Vuoi fornire il tuo indirizzo postale?</string>
     <string name="providePostalAddressToolTip">Selezionando questa opzione il tuo indirizzo postale verrà fornito a questo sito se ne farà richiesta</string>
@@ -311,220 +265,192 @@ Good luck!
     <string name="provideBirthday">Vuoi fornire la tua data di nascita?</string>
     <string name="providePhone">Vuoi fornire il tuo numero di telefono?</string>
     <string name="provideAttestations">Vuoi fornire delle certificazioni?</string>
-    <string name="provideAttestationsToolTip">Le certificazioni sono dei documenti di terze parti che confermano la validità dei dati forniti</string>
-    <string name="primaryAccountRequired" formatted="false">Un account in %primCurrency e necessario per usare questa funzione</string>
-    <string name="primaryAccountRequiredDetails" formatted="false">Alcune funzioni sono disponibili solo per certe valute virtuali. Per accedervi bisogna creare o sbloccare un account relativo a queste monete virtuali.</string>
-    <string name="UnknownDomainRegisterFirst">Dominio sconosciuto, necessaria registrazione</string>
-
+    <string name="provideAttestationsToolTip">Le certificazioni sono firme di terze parti che confermano i dati forniti</string>
+    <string name="primaryAccountRequired" formatted="false">È necessario un account in %primCurrency per usare questa funzione</string>
+    <string name="primaryAccountRequiredDetails" formatted="false">Alcune funzioni sono legate a determinate criptovalute. Devi creare o sbloccare un account su quella criptovaluta prima di usare la funzione.</string>
+    <string name="UnknownDomainRegisterFirst">Servizio sconosciuto, registrati prima</string>
+    <string name="Provider" formatted="false">Fornitore: %provider</string>
     <string name="QrCode">QR code</string>
-    <!-- An intent (aka link) specified an action that I don't know about -->
-    <string name="unknownOperation" formatted="false">%op operazione sconosciuta</string>
-    <!-- This wallet already has a registration for this site, so registration is not needed (informational notice) -->
+    <string name="unknownOperation" formatted="false">operazione %op sconosciuta</string>
     <string name="alreadyRegistered">Già registrato</string>
-
+    <string name="existingRegistration" formatted="false">L\'account selezionato \'%act\' È registrato presso questo servizio.</string>
+    <string name="nonexistentRegistration" formatted="false">L\'account selezionato \'%act\' NON è ancora registrato presso questo servizio.</string>
     <string name="provideLoginQuestion">Vuoi autenticarti al sito?</string>
     <string name="provideInfoQuestion">Informazioni di identità richieste da</string>
-    <string name="signDataQuestion">Forma richiesta da</string>
+    <string name="signDataQuestion">Firma richiesta da</string>
     <string name="nothingToSign">Messaggio mancante</string>
-    <string name="binaryToSign">Firma questi dati in formato binario?</string>
+    <string name="binaryToSign">Firma questi dati binari?</string>
     <string name="textToSign">Firma questo messaggio?</string>
     <string name="sigInClipboard">Firma copiata negli appunti</string>
-
     <string name="SocialMediaText">Social Media</string>
     <string name="SocialMediaSummary">Inserisci una lista di servizi:nome utente, Es. twitter:janeDoe, keybase:janieD</string>
     <string name="UsernameOrAliasText">Nome utente/alias</string>
-    <string name="NameText">Nome e Cognome</string>
+    <string name="NameText">Nome e cognome</string>
     <string name="PostalAddressText">Indirizzo postale</string>
-    <string name="BillingAddressText">Indirizzo di fatturazionex </string>
+    <string name="BillingAddressText">Indirizzo di fatturazione</string>
     <string name="PostalCodeText">CAP</string>
-    <string name="EmailText">Indirizzo Email</string>
+    <string name="EmailText">Indirizzo email</string>
     <string name="TwitterText">Twitter</string>
     <string name="TelegramText">Telegram</string>
-    <string name="IdentityAssociatedWith">Informazioni Associate all\'Identità</string>
-
+    <string name="IdentityAssociatedWith">Info identità associate</string>
+    <string name="ServiceAssociatedWith">Questo servizio è già associato a:</string>
+    <string name="IdentityInfoNote">Inserire queste informazioni è facoltativo: verranno fornite solo ai servizi che scegli tu. Servono a compilare i campi comuni dei moduli semplicemente scansionando un QR code sui siti che supportano l\'identità.</string>
     <string name="areYouSure">Sei sicuro?</string>
-    <string name="WhenAskSure">Conferma il trasferimento qui sopra (in NEX)</string>
-    <string name="SendConfirmSummary">Conferma l\'invio di  %amt %currency %inFiat all\'indirizzo %dest</string>
+    <string name="WhenAskSure">Conferma qui sopra:</string>
+    <string name="SendConfirmSummary" formatted="false">Conferma l\'invio di %amt %currency %inFiat%assets all\'indirizzo %dest</string>
     <string name="firstName">Nome</string>
     <string name="lastName">Cognome</string>
-
-    <string name="connectionEstablished">connessione stabilita</string>
-    <string name="connectionException">impossibile connettersi al sito</string>
     <string name="withholdingMandatoryInfo">il sito richiede informazioni che hai rifiutato di fornire</string>
     <string name="badLink">link errato</string>
+    <string name="BadWebLink">Link web non valido</string>
     <string name="connectionAborted">il sito ha interrotto l\'autenticazione</string>
-    <!-- Transaction history activity -->
-    <string name="HintAdjustCostBasis">basis or cap gain</string>
-    <string name="CostBasis">costo di base</string>
-    <string name="CapitalLoss">perdita di capitale</string>
-    <string name="CapitalGain">reddito di capitale</string>
+    <string name="HintAdjustCostBasis">costo base o plusvalenza</string>
+    <string name="CostBasis">costo base</string>
+    <string name="CapitalLoss">minusvalenza</string>
+    <string name="CapitalGain">plusvalenza</string>
     <string name="OverrideSalesPrice">inserire prezzo di vendita</string>
     <string name="AccountHistory">Transazioni</string>
+    <string name="NoAccountActivity">Nessuna attività dell\'account</string>
     <string name="AccountAddresses">Indirizzi</string>
-
-    <!-- Account details activity -->
-    <string name="txHistoryButton">Vedi o esporta i movimenti dell\'Account</string>
-    <string name="setAsPrimaryAccountButton">Designa come Primario questo Account </string>
+    <string name="ActiveAddresses">Indirizzi attivi</string>
+    <string name="UsedAddresses">Indirizzi usati</string>
+    <string name="UnusedAddresses">Indirizzi non usati</string>
+    <string name="txHistoryButton">Vedi o esporta l\'attività dell\'account</string>
+    <string name="setAsPrimaryAccountButton">Imposta come account principale</string>
     <string name="AccountStatistics">Statistiche dell\'account</string>
-    <string name="AccountBlockchainSync">Attualmente %sync sulla blockchain %chain.</string>
-    <string name="AccountBlockchainDetails">Al %actBlockDate, blocco %actBlock di %chainBlockCount.</string>
-    <string name="AccountBlockchainConnectionDetails">Connesso a %num nodi: %names</string>
-    <string name="AccountNumAddresses">%num indirizzi</string>
-    <string name="FirstLastReceive">Primo versamento al blocco %first, versamento piu recente al blocco  %last.</string>
-    <string name="FirstLastSend">Primo prelievo nel blocco %first, più recente nel blocco %last.</string>
-    <string name="AccountNumTx">%num transazioni</string>
-    <string name="AccountNumUtxos">%num voci di registro</string>
-    <!-- Assets activity -->
+    <string name="AccountBlockchainSync" formatted="false">Attualmente %sync sulla blockchain %chain.</string>
+    <string name="AccountBlockchainDetails" formatted="false">Al %actBlockDate, blocco %actBlock di %chainBlockCount.</string>
+    <string name="AccountEarliestActivity" formatted="false">Primo utilizzo: blocco %actPrehistoryBlock il %actPrehistoryDate.</string>
+    <string name="AccountBlockchainConnectionDetails" formatted="false">Connesso a %num nodi: %names</string>
+    <string name="AccountNumAddresses" formatted="false">%num indirizzi</string>
+    <string name="CurrentAddress" formatted="false">All\'indirizzo %num: %addr</string>
+    <string name="FirstLastReceive" formatted="false">Primo versamento al blocco %first, più recente al blocco %last.</string>
+    <string name="FirstLastSend" formatted="false">Primo prelievo nel blocco %first, più recente nel blocco %last.</string>
+    <string name="FirstWithdraw">Primo prelievo</string>
+    <string name="FirstDeposit">Primo versamento</string>
+    <string name="never">mai</string>
+    <string name="FirstUse" formatted="false">Primo utilizzo: %date</string>
+    <string name="LastUse" formatted="false">Ultimo utilizzo: %date</string>
+    <string name="Block" formatted="false">Blocco: %block</string>
+    <string name="AccountNumTx" formatted="false">%num transazioni</string>
+    <string name="AccountNumUtxos" formatted="false">%num voci di registro</string>
     <string name="title_activity_assets">Asset</string>
-    <string name="title_activity_invoices">Fatture</string>
-    <!-- Assets activity -->
     <string name="title_activity_scan">Scansiona</string>
-
-    <!-- New Account activity -->
-    <string name="title_activity_new_account">Nuovo Account</string>
-    <string name="AccountName">Nome Account</string>
+    <string name="title_activity_new_account">Nuovo account</string>
+    <string name="AccountName">Nome account</string>
     <string name="AccountNameHint">1-8 lettere</string>
     <string name="Blockchain">Blockchain</string>
-    <string name="AccountRecoveryPhrase">Frase di Recupero</string>
+    <string name="AccountRecoveryPhrase">Frase di recupero</string>
     <string name="LeaveEmptyNewWallet">Lascia vuoto per creare un nuovo account</string>
     <string name="PinSuggestions"><font size="15">Questo numero segreto è necessario per accedere all\'account</font></string>
-    <string name="createNewAccount">Crea Account</string>
+    <string name="createNewAccount">Crea nuovo account</string>
+    <string name="createSyncAccount">Recupera account con sinc. accurata (e lunga)</string>
+    <string name="createDiscoveredAccount">Recupera account subito</string>
     <string name="invalidRecoveryPhrase">frase di recupero errata</string>
     <string name="invalidAccountName">nome non valido</string>
     <string name="PassPhrase">Passphrase (opzionale)</string>
-    <string name="Bip44ActivityNotice">Attività account trovata</string>
+    <string name="Bip44ActivityNotice">Trovata attività account</string>
     <string name="NoBip44ActivityNotice">Attenzione, nessuna transazione trovata!</string>
-    <string name="Bip44BtcActivityNotice">Trovata attività wallet non standard o pre-fork</string>
+    <string name="Bip44BtcActivityNotice">Trovata attività non standard o pre-fork</string>
     <string name="NoBip44BtcActivityNotice">Nessuna transazione pre-fork trovata</string>
     <string name="FirstUseDateHeightInfo" formatted="false">a partire da %date (blocco %height)</string>
-    <string name="NotEnoughRecoveryWords">Sono necessarie più parole di recupero</string>
+    <string name="NotEnoughRecoveryWords">Servono più parole di recupero</string>
     <string name="TooManyRecoveryWords">Troppe parole di recupero</string>
     <string name="IncorrectRecoveryWords" formatted="false">Parole non valide: %words</string>
     <string name="ElectrumNetworkUnavailable">Rete Electrum non disponibile. Il recupero del portafoglio sarà lento e non rileverà transazioni precedenti al 1 gennaio 2020</string>
-    <string name="PinHidesAccount">Nascondi account finché il PIN non viene inserito?</string>
+    <string name="PinHidesAccount">Nascondi finché non inserisci il PIN?</string>
+    <string name="HiddenAccountExplainer">Nascondi l\'account finché il PIN non viene inserito</string>
+    <string name="HiddenAccount">Account nascosto</string>
+    <string name="AutomaticNewAddress">Privacy indirizzo</string>
+    <string name="AutomaticNewAddressToolTip">Mostra automaticamente un nuovo indirizzo ogni volta che quello attuale viene usato.</string>
     <string name="CreatePIN">PIN (opzionale)</string>
     <string name="PinSpendingUnprotected">La spesa senza PIN è abilitata (nessun PIN inserito)</string>
     <string name="PinSpendingProtected">La spesa richiede un PIN</string>
     <string name="InvalidPIN">PIN non valido</string>
     <string name="creatingNoHistoryAccountWarning">Stai creando un account con una frase di recupero specifica, ma non è stata trovata alcuna attività sulla blockchain.\nÈ corretto?\nSe sì, fai clic nuovamente sul pulsante Crea e verrà creato un account vuoto. Ma se questo account dovrebbe avere attività, controlla nuovamente la blockchain e la frase di recupero selezionata. Se questo non è il problema, o la rete blockchain non è attualmente accessibile (riprova più tardi), o è stato creato con un\'app di portafoglio non standard. Non creare questo account ora.</string>
-    <!-- Error strings -->
     <string name="accountLocked">account bloccato</string>
     <string name="unknownError">errore</string>
     <string name="insufficentBalance">saldo insufficiente</string>
+    <string name="insufficentTokenBalance">saldo token insufficiente</string>
     <string name="excessiveFee">commissione eccessiva</string>
     <string name="sendDustError">importo inferiore al minimo</string>
-    <string name="sendingDustWarning">l\'importo è al di sotto del minimo della rete</string>
-    <string name="feeExceedsFlatMax">la commissione supera il massimo consentito configurato per le commissioni fisse</string>
+    <string name="sendingDustWarning">importo sotto il minimo della rete</string>
+    <string name="feeExceedsFlatMax">la commissione supera il massimo fisso configurato</string>
     <string name="notSupported">non supportato</string>
-    <!-- A temporal offer is not longer available.  For example, a payment via the BIP70 payment protocol is no longer available -->
     <string name="expired">pagamento scaduto</string>
     <string name="PaymentDataMissing">dati di pagamento mancanti</string>
-    <string name="headersNotForthcoming">intestazioni non fornite</string>
+    <string name="headersNotForthcoming">header non forniti</string>
     <string name="cantConvert">conversione temporaneamente non disponibile</string>
-
     <string name="walletDisconnectedFromBlockchain">portafoglio disconnesso</string>
-
     <string name="badTransaction">transazione errata</string>
     <string name="badAddress">indirizzo non valido</string>
+    <string name="unknownAddress">indirizzo sconosciuto</string>
     <string name="badAmount">importo non valido</string>
-    <!-- No accounts have been created yet -->
     <string name="NoAccounts">Nessun account accessibile</string>
-    <!-- The crypto currency code (e.g NEX, BTC, BCH, etc) is not understood or handled by this wallet.  This message will be very hard to actually see because the UI
-    protects against entering unknown crypto codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
-     -->
     <string name="badCryptoCode">non esiste un account sbloccato per questa valuta o blockchain</string>
     <string name="badCryptoCodeDetails" formatted="false">Valuta sconosciuta o non disponibile: %currency</string>
-    <!-- The fiat currency code (e.g USD, EUR, JPY etc) is not understood or handled by this wallet.  This message will be very hard to actually see because the UI
-      protects against entering unknown fiat codes in other ways (by using spinners for example).  However if somehow an unknown code is entered, this is the error displayed.
-    -->
     <string name="badCurrencyUnit">non valuta</string>
-    <!-- The account contains the wrong currency for this use -->
     <string name="incompatibleAccount">valuta non corretta</string>
     <string name="incompatibleAccountDetails" formatted="false">Hai selezionato di pagare da un account contenente %cryptoAct, ma è necessario %cryptoPay</string>
-    <string name="detailsOfBadAmountFromIntent">Il programma chiamante ha fornito un numero mal formattato quando ha fornito la
-        quantità da inviare. Dovrai inserire la quantità tu stesso
+    <string name="detailsOfBadAmountFromIntent">Il programma chiamante ha indicato un numero non valido come
+        quantità da inviare. Dovrai inserire tu la quantità
     </string>
     <string name="blankAddress">indirizzo vuoto</string>
     <string name="unavailable">non disponibile</string>
     <string name="blockNotForthcoming">blocco non disponibile</string>
-    <string name="receiveAddressUnavailable">Sta venendo calcolato un nuovo indirizzo di ricezione. Per favore
-        attendi...
+    <string name="receiveAddressUnavailable">È in corso il calcolo di un nuovo indirizzo di ricezione. Attendere...
     </string>
-
-    <!-- The maximum number of accounts that this wallet can show has been reached -->
-    <string name="accountLimitReached">max accounts</string>
-    <string name="accountUnavailableDetails">Either no existing account matches this blockchain, or the account has not been unlocked.</string>
-    <string name="accountUnavailable">No unlocked compatible account</string>
-
-
-    <string name="sendMoreThanBalance">Stai tentando di inviare più monete di quelle disponibili al momento. Se pensi
-        di non spendere più del tuo saldo, potresti aver dimenticato che le transazioni hanno una piccola
-        commissione aggiuntiva, oppure, se vedi tutto il tuo saldo come non confermato, potresti aver effettuato troppe transazioni di
-        fila. C\'è un limite a quanto puoi "anticipare" la blockchain. Lascia che il tuo saldo non confermato venga confermato e
-        riprova.
-    </string>
+    <string name="accountLimitReached">max account</string>
+    <string name="accountUnavailableDetails">Nessun account esistente corrisponde a questa blockchain, oppure l\'account non è stato sbloccato.</string>
+    <string name="accountUnavailable">Nessun account compatibile sbloccato</string>
+    <string name="sendMoreThanBalance">Stai tentando di inviare più monete di quelle disponibili al momento.\n\nSe pensi di non spendere più del tuo saldo, potresti aver dimenticato che le transazioni hanno una piccola commissione aggiuntiva, oppure, se vedi tutto il tuo saldo come non confermato, potresti aver effettuato troppe transazioni di fila.\n\nC\'è un limite a quanto puoi «anticipare» la blockchain. Lascia che il tuo saldo non confermato venga confermato e riprova.</string>
+    <string name="sendMoreTokensThanBalance">Stai tentando di inviare più token di quelli disponibili al momento.</string>
     <string name="deductedFeeLargerThanSendAmount">La commissione detratta è maggiore dell\'importo inviato</string>
-
     <string name="badWalletImplementation">Implementazione errata del portafoglio. Segnala questo bug!</string>
-
-    <!-- TITLES -->
+    <string name="CannotCompleteTransaction">Errore: impossibile completare</string>
     <string name="title_split_bill">Dividi un conto</string>
     <string name="title_activity_settings">Impostazioni</string>
     <string name="title_activity_exchange">Cambio</string>
-    <string name="title_activity_shopping">Shopping</string>
-    <string name="title_activity_shopping_settings">Pulsanti personalizzati per lo shopping</string>
-    <string name="title_activity_trickle_pay">Pagamento a Rate</string>
+    <string name="title_activity_shopping">Link</string>
+    <string name="ecosystem">Ecosistema</string>
+    <string name="title_activity_trickle_pay">Trickle Pay</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Cruscotto</string>
+    <string name="title_dashboard">Test</string>
     <string name="title_notifications">Notifiche</string>
-    <!-- string name="title_activity_invoices">Fatture</string> -->
+    <string name="title_activity_invoices">Fatture</string>
     <string name="title_activity_identity">Identità</string>
     <string name="title_activity_identity_op">Identità</string>
     <string name="title_activity_domain_identity_settings">Impostazioni identità di dominio</string>
-    <string name="title_activity_tx_history" formatted="false">Cronologia account: %account</string>
-    <string name="title_activity_account_details" formatted="false">Dettagli account: %account</string>
-
-    <!-- Domain Identity Settings -->
+    <string name="title_activity_tx_history" formatted="false">Cronologia tx: %account</string>
+    <string name="title_activity_address_history" formatted="false">Cronologia indirizzi: %account</string>
+    <string name="title_activity_account_details" formatted="false">Account: %account</string>
+    <string name="title_test">Test</string>
     <string name="useUniqueIdentity">Usa un\'identità unica</string>
-
     <string name="title_activity_identity_settings">Impostazioni identità</string>
+    <string name="IdentityRegistrations">Servizi registrati</string>
+    <string name="NoIdentitiesRegistered">Nessuna identità registrata</string>
     <string name="title_activity_welcome">Benvenuto</string>
-    <!-- Strings used for fragments for navigation -->
     <string name="next">Avanti</string>
     <string name="previous">Indietro</string>
-
-    <!-- PIN Entry -->
     <string name="EnterPIN">Inserisci PIN</string>
     <string name="EnterPINorBlankToRemove">Nuovo PIN (vuoto per rimuovere)</string>
-    <string name="title_activity_shoppng">ShoppngActivity</string>
-
-    <!-- Shopping -->
     <string name="ButtonTextHere">Imposta testo pulsante</string>
     <string name="ButtonLinkHere">Inserisci link web</string>
     <string name="ShoppingWarning">ATTENZIONE: Gli elementi in questa pagina sono collegamenti a servizi e siti web di terze parti, inseriti qui per tua comodità. Questi siti/servizi non sono stati verificati da Wally Wallet.\n\nUsa a tuo rischio!</string>
-
-    <!-- All items are specified here so the service itself can be localized if your country does work with the default service. Use empty strings to disable -->
-    <string name="BadWebLink">Link web non valido</string>
     <string name="NFTs">Token non fungibili (NFT)</string>
     <string name="ExplainNFTs">NiftyArt.cash: Crea e scambia immagini uniche e rappresentazioni digitali di oggetti unici</string>
     <string name="NftUrl">http://niftyart.cash</string>
-    <!--
-    <string name="GiftCardButton">Gyft gift cards</string>
-    <string name="GiftCardUrl">https://www.gyft.com</string>
-    <string name="GiftCardAppPackage">com.gyft.android</string>
-    -->
-
-
+    <string name="NftImproperConstruction">Attenzione: falso o costruito in modo errato!</string>
+    <string name="TokenSourceWebsite">Fonte del token:</string>
+    <string name="TokenBadSig">Le informazioni di questo token non sono state firmate correttamente. Questo token potrebbe essere falso o contraffatto. Potrebbe anche significare che il creatore del token semplicemente non lo ha firmato correttamente.</string>
     <string name="OpenWebsite" formatted="false">Accedi a %siteName</string>
     <string name="WebsiteUnavailable" formatted="false">Sito web non disponibile</string>
-    <string name="ExplainTxBit">txbit.io: Scambia NEXA con altre criptovalute</string>
+    <string name="ExplainBitmart">bitmart.com: Scambia NEXA con altre criptovalute</string>
     <string name="ExplainMexc">mexc.com: Scambia NEXA con altre criptovalute</string>
+    <string name="ExplainBiconomy">biconomy.com: Scambia NEXA con altre criptovalute</string>
     <string name="CexButton">exchange</string>
-
-    <!-- Trickle Pay -->
-    <string name="SharedNotification">condiviso %what</string>
+    <string name="SharedNotification" formatted="false">condiviso %what</string>
     <string name="AuthAutopayTitle">Pagamento autorizzato</string>
-    <string name="PaymentRequest">Pagamento richiesto</string>
     <string name="AuthAutopayDeniedTitle">Pagamento autorizzato negato</string>
     <string name="AuthAutopay" formatted="false">%amt a %domain</string>
     <string name="TpToBeDone">Le tue connessioni Trickle Pay verranno visualizzate qui</string>
@@ -532,20 +458,24 @@ Good luck!
     <string name="AcceptTpRegistration">Accetta registrazione da:</string>
     <string name="EditTpRegistration">Impostazioni per Entità:</string>
     <string name="AcceptTpRegistrationTopic">Scopo:</string>
-    <string name="TpMaxSpendHint">inserisci la spesa massima automatica</string>
-    <string name="TpAssetInfoRequest">richieste di informazioni sull\'asset</string>
-
+    <string name="TpMaxSpendHint">inserisci spesa max automatica</string>
+    <string name="TpAssetInfoRequest">Richieste info asset</string>
+    <string name="TpAssociatedAccount" formatted="false">Associato a: %act</string>
+    <string name="TpAssociatedAddress" formatted="false">%addr</string>
+    <string name="SpecialTxNotif">Richiesta autorizzazione transazione</string>
+    <string name="AssetNotif">Richiesta informazioni asset</string>
+    <string name="PaymentRequest">Richiesta di pagamento</string>
+    <string name="IdentityNotif">Richiesta identità/accesso</string>
     <string name="TpMaxHeading">Limiti di autopagamento</string>
-    <string name="TpMaxPer">Ogni richiesta</string>
-    <string name="TpMaxPerDay">Al giorno</string>
-    <string name="TpMaxPerWeek">A settimana</string>
-    <string name="TpMaxPerMonth">Al mese</string>
-
-    <string name="TpEnableAutopay">Abilita autopagamento (se non selezionato, tutti i pagamenti richiedono l\'autorizzazione dell\'utente)</string>
-
+    <string name="TpMaxPer">Max per richiesta</string>
+    <string name="TpMaxPerDay">Max al giorno</string>
+    <string name="TpMaxPerWeek">Max a settimana</string>
+    <string name="TpMaxPerMonth">Max al mese</string>
+    <string name="TpEnableAutopay">Abilita autopagamento (se non selezionato, tutti i pagamenti richiedono l\'autorizzazione dell\'utente e i limiti sottostanti vengono ignorati)</string>
     <string name="asciiArrow"><![CDATA[=>]]></string>
-
     <string name="TpNoRegistrations">Nessuna registrazione Trickle Pay</string>
+    <string name="TpNoSession">Nessuna richiesta Trickle Pay</string>
+    <string name="TpRegistrations">Registrazioni</string>
     <string name="TpRegDenied">Registrazione negata</string>
     <string name="TpRegAccepted">Registrazione accettata</string>
     <string name="TpRegUnchanged">Registrazione invariata</string>
@@ -553,35 +483,155 @@ Good luck!
     <string name="TpRequestAutoAccept">Richiesta accettata (automatica)</string>
     <string name="TpTxDenied">Transazione negata</string>
     <string name="TpTxAccepted">Transazione accettata</string>
-    <string name="TpAssetRequestDenied">Non invio asset</string>
-    <string name="TpAssetRequestAccepted">Invio asset</string>
-
+    <string name="TpNetworkTimeout">Timeout transazione</string>
+    <string name="TpPartialSubmitted">Offerta inviata</string>
+    <string name="TpAssetRequestDenied">Info asset non inviate</string>
+    <string name="TpAssetRequestAccepted">Invio info asset</string>
+    <string name="Actions">Azioni</string>
     <string name="SpecialTpTransactionFrom">Transazione speciale da</string>
     <string name="IncompleteTpTransactionFrom">Proposta d\'offerta ferma da</string>
     <string name="TpEntails">Comporta</string>
-    <string name="TpInAccount">Utilizzando l\'account</string>
+    <string name="TpInAccount">Account usato</string>
     <string name="TpAssetRequestFrom">Richiesta informazioni sull\'asset da</string>
     <string name="TpHandledByAccount">può essere gestito dal tuo account</string>
     <string name="TpAssetMatches" formatted="false">Le informazioni su %num asset di tua proprietà saranno fornite a questo servizio.</string>
     <string name="TpAssetInfoNotXfer">Accettare questa richiesta fornisce semplicemente al servizio informazioni sulla tua proprietà. Non autorizza alcun trasferimento.</string>
-    <string name="ForAFeeOf" formatted="false">incluso un costo di %fee %units</string>
+    <string name="ForAFeeOf" formatted="false">inclusa una commissione di %fee %units</string>
     <string name="TpExchangingTokens" formatted="false">e scambiando token (inviando %tokSnd, ricevendo %tokRcv).</string>
-    <string name="TpSendingTokens" formatted="false">e inviando %tokSnd token.</string>
-    <string name="TpReceivingTokens" formatted="false">e ricevendo %tokRcv token.</string>
-
+    <string name="TpShowingTokens" formatted="false">Vengono rivelati %tokReveal tipi di token (spesi a te stesso, a dimostrazione che ti appartengono).</string>
+    <string name="TpSendingTokens" formatted="false">e inviando %tokSnd tipi di token.</string>
+    <string name="TpReceivingTokens" formatted="false">e ricevendo %tokRcv tipi di token.</string>
+    <string name="TpHasNoPurpose">Questa richiesta non ha alcun effetto su questo account.</string>
     <string name="TpSendToTitle">Pagamento richiesto da</string>
     <string name="TpSpends">Spende</string>
     <string name="TpSendRequestDenied">Pagamento negato</string>
     <string name="TpSendAutoReject">Pagamento rifiutato automaticamente</string>
     <string name="TpSendRequestAccepted">Pagamento accettato</string>
-    <string name="TpWhyNotAuto">Non firmerà automaticamente perché</string>
+    <string name="TpWhyNotAuto">Non verrà firmato automaticamente perché</string>
+    <string name="TpAutomaticDisabled">Autopagamenti disattivati</string>
     <string name="TpExceededMaxPer">Supera il massimo per richiesta</string>
     <string name="TpExceededMaxDaily">Supera il massimo giornaliero</string>
     <string name="TpExceededMaxWeekly">Supera il massimo settimanale</string>
     <string name="TpExceededMaxMonthly">Supera il massimo mensile</string>
-
     <string name="title_activity_alert_history">Messaggi recenti</string>
-    <string name="WriteDownRecoveryPhraseWarning">Attenzione: non hai trascritto su carta le frasi segrete di ripristino per alcuni account! Per essere sicuro che i fondi non vengano perduti nel caso di smarrimento o rottura del telefono, scrivi la frase segreta di ripristino su un foglio o un altro supporto non elettronico. Le chiavi di ripristino sono accessibili nella pagina di configurazione di ciascun account.</string>
-    <string name="WroteRecoveryPhraseDown">Ho preso nota</string>
-    <string name="RecoveryPhraseKeepRemindingMe">Continua a ricordarmelo</string>
+    <string name="IssueReportInstructions">Fornisci queste informazioni agli sviluppatori:</string>
+    <string name="AssetApplication">Avvia</string>
+    <string name="AssetMarketplace">Scambia</string>
+    <string name="AssetAddedToTransferList">Aggiunto a «Invia» nella scheda principale</string>
+    <string name="NftCardFront">Fronte</string>
+    <string name="NftCardBack">Retro</string>
+    <string name="NftPublicMedia">Contenuti</string>
+    <string name="NftOwnerMedia">Proprietario</string>
+    <string name="Content">Contenuto</string>
+    <string name="Private">Privato</string>
+    <string name="NftPrivateDescription">Questo contenuto appartiene al proprietario dell\'asset</string>
+    <string name="NftInfo">Info</string>
+    <string name="NftLegal">Licenza</string>
+    <string name="NftSeries" formatted="false">Serie: %series</string>
+    <string name="NftAuthor" formatted="false">Autore: %author</string>
+    <string name="NftNoInfoProvided">...Nessuna informazione fornita...</string>
+    <string name="IssuedToConnection">Avviato nel sito connesso</string>
+    <string name ="demonstratingOwnership">Dimostrazione di proprietà</string>
+    <string name="AndSomeAssets"> e alcuni asset</string>
+    <string name="AssetTypes" formatted="false">%assetTypes tipi di asset</string>
+    <string name="ExplainRestaurant">I servizi di ordinazione online dei ristoranti (per consegna o ritiro) possono accettare criptovalute anche se il locale fisico non lo fa.</string>
+    <string name="RestaurantButton">Ordinazioni ristoranti Menufy</string>
+    <string name="RestaurantUrl">https://www.menufy.com</string>
+    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
+    <string name="ExplainStoreMap">Trova vicino a te i luoghi che accettano criptovalute.</string>
+    <string name="StoreMapButton">mappa negozi</string>
+    <string name="StoreMapUrl">https://map.bitcoin.com</string>
+    <string name="StoreMapAppPackage"></string>
+    <string name="ExplainTxBit">txbit.io: Scambia NEXA con altre criptovalute</string>
+    <string name="welcome1Label">Benvenuto</string>
+    <string name="welcome1">Benvenuto in Wally, un portafoglio per criptovalute!\n\nNelle schermate seguenti configurerai il tuo primo account sulla blockchain Nexa (NEX) e altri servizi, come la gestione delle password.\n\nOppure puoi premere la freccia indietro per saltare questa configurazione guidata.</string>
+    <string name="welcome2_title">Impostazioni account NEXA</string>
+    <string name="welcome2">Nella pagina successiva configurerai il tuo primo account Nexa.\n\nQuesto account contiene il tuo denaro Nexa e le tue identità. Le identità sono una nuova funzione di Wally Wallet che ti permette di autenticarti automaticamente sui siti supportati.\n\nPuoi proteggere i tuoi account con un PIN (Personal Identification Number), ma consigliamo ai nuovi utenti di non usare un PIN (e di tenere un saldo basso) per il primo account. Per la tua sicurezza, gli account protetti da PIN non sono visibili finché non viene inserito il PIN corretto (e non viene segnalato se il PIN inserito è errato).\n\nSe vuoi recuperare un account NEXA esistente, inserisci la frase di recupero. Se questa riga resta vuota, viene creato un nuovo account.</string>
+    <string name="welcome3_title" formatted="false">Frase di recupero dell\'account Nexa</string>
+    <string name="welcome3">Benvenuto 3 ! (Questo testo di benvenuto può essere migliorato)</string>
+    <string name="welcome4_title">Identità</string>
+    <string name="welcome4">Ora passerai alla schermata delle informazioni di identità. Queste informazioni vengono usate quando usi Wally come gestore di identità e accessi (per autenticarti automaticamente su vari siti web o per fornire dati al momento dell\'acquisto). Wally tiene moltissimo alla privacy!
+Queste informazioni non saranno condivise con nessun sito senza il tuo esplicito permesso e NESSUNA informazione di questo portafoglio viene mai inviata agli autori dell\'app. Puoi anche lasciare tutti i campi vuoti.
+Quando hai finito, premi la freccia indietro (in alto a sinistra).</string>
+    <string name="welcomeComplete">La configurazione è completata. Se hai saltato qualche passaggio di questa introduzione, tutti i campi restano disponibili nell\'app.
+Grazie e buon uso del tuo nuovo portafoglio!</string>
+    <string name="ExplainGiftCards">Acquistare gift card ti dà accesso a centinaia di negozi che non accettano direttamente criptovalute.</string>
+    <string name="GiftCardButton">Gift card eGifter</string>
+    <string name="GiftCardUrl">https://www.egifter.com</string>
+    <string name="GiftCardAppPackage">com.groupgifting.android</string>
+    <string name="Pinförslag">
+    <font size="15">Questo numero segreto è necessario per accedere all\'account</font>
+</string>
+    <string name="sync_title">Sincronizza le email a intervalli regolari</string>
+    <string name="attachment_title">Scarica gli allegati in arrivo</string>
+    <string name="attachment_summary_on">Scarica automaticamente gli allegati delle email</string>
+    <string name="attachment_summary_off">Scarica gli allegati solo su richiesta</string>
+    <string name="signature_title">La tua firma</string>
+    <string name="reply_title">Azione predefinita per la risposta</string>
+    <string name="discoveredAccountDetails" formatted="false">Trovato un saldo di %bal %units\nin %addr indirizzi e %tx transazioni</string>
+    <string name="discoveredWarning">Se ti sembra corretto, puoi creare subito questo account</string>
+    <string name="backgroundSync">Sinc. in background</string>
+    <string name="scanQr">Scansiona QR</string>
+    <string name="imageQr">QR da immagine</string>
+    <string name="paste">Incolla</string>
+    <string name="recentTransactions">Transazioni recenti</string>
+    <string name="sendingFrom">Invio da</string>
+    <string name="enterAddress">Inserisci indirizzo...</string>
+    <string name="noteOptional">Nota (opzionale)</string>
+    <string name="clearNote">Cancella nota</string>
+    <string name="clearAddress">Cancella indirizzo</string>
+    <string name="clearAmount">Cancella importo</string>
+    <string name="available">Disponibile</string>
+    <string name="amountPlain">Importo</string>
+    <string name="enterNEXAmount">Inserisci importo in NEX...</string>
+    <string name="note">Nota</string>
+    <string name="confirmSend">Conferma invio</string>
+    <string name="syncing">Sincronizzazione...</string>
+    <string name="enterAmount" formatted="false">Inserisci importo in %assetName</string>
+    <string name="fee">Commissione</string>
+    <string name="connectionWarning">Attenzione: nessuna connessione alla blockchain o alla rete. Se invii ora, il destinatario non vedrà subito questo trasferimento. L\'invio sarà effettuato non appena la connessione tornerà disponibile.</string>
+    <string name="NetworkUnstable">Rete instabile</string>
+    <string name="TokenMissing">Token non sulla blockchain </string>
+    <string name="Sell">Vendi</string>
+    <string name="CreateAnOffer">Crea un\'offerta</string>
+    <string name="Price">Prezzo</string>
+    <string name="NexaPrice">Inserisci prezzo in Nexa</string>
+    <string name="AssetAmountName" formatted="false">Hai %amount %assetName</string>
+    <string name="scanToBuyOne">Scansiona per acquistare %name</string>
+    <string name="scanToBuySeveral">Scansiona per acquistare %amount %name</string>
+    <string name="nexaOfferAmount" formatted="false">Per %amount NEXA</string>
+    <string name="purchaseComplete">Acquisto completato</string>
+    <string name="setTheNexaPrice">Imposta il prezzo in Nexa</string>
+    <string name="setTheAssetAmount">Imposta la quantità di asset</string>
+    <string name="publishOnline">Pubblica l\'offerta online</string>
+    <string name="offerCreated">Offerta creata!</string>
+    <string name="ConfigureService">Configura servizio</string>
+    <string name="AcceptOrRejectService">Accetta o rifiuta il servizio</string>
+    <string name="Domain">Dominio</string>
+    <string name="Services">Servizi</string>
+    <string name="Purpose">Scopo</string>
+    <string name="AutoPay">Autopagamento</string>
+    <string name="AutoPayInstructions">Se la casella qui sotto è disattivata, tutte le richieste di pagamento di questo servizio ti chiedono l\'autorizzazione e i limiti indicati sotto vengono ignorati.</string>
+    <string name="LimitedAutoApproval">Approvazione automatica limitata</string>
+    <string name="AutoPayMaxPerRequest">Massimo per richiesta</string>
+    <string name="AutoPayMaxPerDay">Massimo giornaliero</string>
+    <string name="AutoPayMaxPerWeek">Massimo settimanale</string>
+    <string name="AutoPayMaxPerMonth">Massimo mensile</string>
+    <string name="EnableServices">Abilita schermata servizi</string>
+    <string name="NoServicesRegistered">Nessun servizio registrato.</string>
+    <string name="Start">Avvia</string>
+    <string name="Meditation">Meditazione</string>
+    <string name="Meditate">Medita</string>
+    <string name="Sound">Suono</string>
+    <string name="OneMinuteIntervalSound">Suono ogni 1 min</string>
+    <string name="MeditationVersion">Versione: 1.0.3 (build 156)</string>
+    <string name="Meditating">Meditazione in corso...</string>
+    <string name="MediationComplete">Meditazione completata!</string>
+    <string name="Okay">OK</string>
+    <string name="Minutes">Minuti</string>
+    <string name="Camouflage">Camuffamento</string>
+    <string name="CamouflageAsMeditationTimer">Camuffa l\'app come timer per la meditazione.</string>
+    <string name="CamouflageDescriptionAndroid">Attivando il camuffamento l\'app si chiude e viene camuffata come un\'app chiamata Meditate. Per disattivare il camuffamento Meditate apri il menu dell\'app e tocca cinque volte il numero di versione.</string>
+    <string name="CamouflageDescriptionOther">Per disattivare il camuffamento Meditate apri il menu dell\'app e tocca cinque volte il numero di versione.</string>
+    <string name="CamouflageAsMeditateAppAndroid">Camuffa come app Meditate</string>
 </resources>
