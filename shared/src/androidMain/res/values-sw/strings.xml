@@ -1,0 +1,637 @@
+<resources>
+    <string name="app_name" translatable="false">Wally</string>
+    <string-array name="CurrencyTypes">
+        <item>NEX</item>
+        <item>USD</item>
+    </string-array>
+    <string-array name="FiatCurrencyTypes">
+        <item>BRL</item>
+        <item>CAD</item>
+        <item>CNY</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>JPY</item>
+        <item>RUB</item>
+        <item>USD</item>
+        <item>XAU</item>
+    </string-array>
+    <string name="uBCH" translatable="false">uBCH</string>
+    <string-array name="OneToTen">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="tipPercentage">
+        <item>--</item>
+        <item>0%</item>
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+        <item>50%</item>
+    </string-array>
+    <string name="yes">ndiyo</string>
+    <string name="no">hapana</string>
+    <string name="at">katika</string>
+    <string name="of">ya</string>
+    <string name="choose">chagua</string>
+    <string name="accept">kubali</string>
+    <string name="reject">kataa</string>
+    <string name="remove">ondoa</string>
+    <string name="confirm">thibitisha</string>
+    <string name="cancel">ghairi</string>
+    <string name="Back">Rudi</string>
+    <string name="removeAll">ondoa vyote</string>
+    <string name="done">maliza</string>
+    <string name="dismiss">Ondoa</string>
+    <string name="deny">kataza</string>
+    <string name="ask">uliza</string>
+    <string name="badSignature">saini si sahihi</string>
+    <string name="unknownCurrency">sarafu isiyojulikana</string>
+    <string name="unknownCryptoCurrency">sarafu ya kripto au blockchain isiyojulikana</string>
+    <string name="Processing">inachakata...</string>
+    <string name="receiving">inapokea</string>
+    <string name="sending">inatuma</string>
+    <string name="noAdditionalDetails">hakuna maelezo zaidi</string>
+    <string name="unspecified">haijabainishwa</string>
+    <string name="removed">imeondolewa</string>
+    <string name="synced">Imesawazishwa</string>
+    <string name="unsynced">Inasawazisha</string>
+    <string name="connected">imeunganishwa</string>
+    <string name="connectionEstablished">muunganisho umeanzishwa</string>
+    <string name="connectionClosed">muunganisho umefungwa</string>
+    <string name="connectionException">haiwezi kuunganishwa na tovuti</string>
+    <string name="balance">salio la sasa</string>
+    <string name="totalReceived">Jumla iliyopokelewa</string>
+    <string name="inProgress">inaendelea</string>
+    <string name="staleTransaction">Muamala uliopitwa na wakati</string>
+    <string name="staleTransactionDetails">Muamala huu ulikataliwa na nodi kamili. Huenda umepitwa na wakati (tayari ulitumiwa na mtu mwingine), lakini pia inawezekana kwamba muamala huu haukuwa halali kamwe, au kwamba uko sawa na nodi tulizouliza zinadanganya. Pochi itapuuza muamala huu isipokuwa uthibitishwe.</string>
+    <string name="NoPermission">Hakuna ruhusa</string>
+    <string name="NoPermissionDetails" formatted="false">Lazima uwashe ruhusa ya %perm ili kutumia kipengele hiki. Unaweza kufanya hivyo katika Mipangilio ya Android -> Programu -> Wally -> Ruhusa</string>
+    <string name="WebLoadingPage"><![CDATA[<body><h1><center>...inapakia...</h1></center></body>]]></string>
+    <string name="loading">inapakia</string>
+    <string name="Untitled">Bila jina</string>
+    <string name="nothing">hakuna</string>
+    <string name="breakIt">vunja</string>
+    <string name="or">au</string>
+    <string name="onBlockchain">kwenye</string>
+    <string name="NotImplemented">Hivi karibuni</string>
+    <string name="NoNodes">Hakuna ufikiaji wa blockchain</string>
+    <string name="cancelled">imeghairiwa</string>
+    <string name="refreshQR">Muunganisho wa seva umekatika</string>
+    <string name="pleaseWait">subiri kidogo</string>
+    <string name="trying">inajaribu</string>
+    <string name="clear">futa</string>
+    <string name="thousand">* elfu</string>
+    <string name="million">* milioni</string>
+    <string name="required">inahitajika</string>
+    <string name="account">Akaunti</string>
+    <string name="addAccountPlus">+ Ongeza akaunti</string>
+    <string name="receivingTokens">Kupokea tokeni</string>
+    <string name="spendingTokens">Kutumia tokeni</string>
+    <string name="version" formatted="false">Toleo: %ver (%date)</string>
+    <string name="enableDeveloperView">Hali ya kina/msanidi</string>
+    <string name="enableRecompositionCounts">Hesabu kuchora upya skrini</string>
+    <string name="enableExperimentalUx">Kiolesura cha majaribio</string>
+    <string name="enableDarkMode">Hali ya giza</string>
+    <string name="enableSound">Washa sauti</string>
+    <string name="enableIdentityMenu">Washa skrini ya utambulisho</string>
+    <string name="enableTricklePayMenu">Washa skrini ya Trickle Pay</string>
+    <string name="enableAssetsMenu">Washa skrini ya mali</string>
+    <string name="only">pekee</string>
+    <string name="prefer">pendelea</string>
+    <string name="rediscoverWalletTx">Gundua upya miamala yote</string>
+    <string name="searchWalletTx">Tafuta miamala iliyokosekana</string>
+    <string name="rediscoverBlockchain">Gundua upya vichwa vya blockchain</string>
+    <string name="logDebugData">Rekodi data ya utatuzi</string>
+    <string name="clearIdentityDomains">Futa vikoa vya utambulisho</string>
+    <string name="rediscoverTooltip">Futa hali ya blockchain na utafute upya miamala yote inayohusiana na pochi</string>
+    <string name="wordSeed">Maneno ya siri ya kurejesha akaunti</string>
+    <string name="deleteWalletAccount">Futa akaunti</string>
+    <string name="more">Zaidi</string>
+    <string name="darkMode">Hali ya giza</string>
+    <string name="ConsolidationNeeded">Kwanza jumuisha akaunti</string>
+    <string name="SetChangePin">Weka au badilisha PIN ya kufungua</string>
+    <string name="CurrentPin">PIN ya sasa</string>
+    <string name="NewPin">PIN mpya</string>
+    <string name="PinChanged">PIN imebadilishwa</string>
+    <string name="PinRemoved">PIN imeondolewa</string>
+    <string name="PinInvalid">PIN si sahihi</string>
+    <string name="PinTooShort">PIN mpya ni fupi mno</string>
+    <string name="WriteDownRecoveryPhraseWarningUi2">Onyo: hujaandika maneno ya siri ya kurejesha kwa baadhi ya akaunti! Ili pesa zisipotee endapo kifaa hiki kitapotea au kuharibika, andika maneno ya siri ya kurejesha kwenye karatasi au njia nyingine isiyo ya kielektroniki.</string>
+    <string name="WroteRecoveryPhraseDown">Nimeyaandika</string>
+    <string name="RecoveryPhraseKeepRemindingMe">Endelea kunikumbusha</string>
+    <string name="ViewRecoveryPhrase">Angalia maneno ya siri ya kurejesha akaunti</string>
+    <string name="localCurrency">Sarafu ya ndani</string>
+    <string name="assessUnconfirmed">Kagua miamala isiyothibitishwa</string>
+    <string name="rediscoverNotice">Ugunduzi upya wa akaunti umeanza</string>
+    <string name="searchNotice">Utafutaji wa akaunti umeanza</string>
+    <string name="unconfAssessmentNotice">Ukaguzi wa miamala isiyothibitishwa umeanza</string>
+    <string name="accountDeleteNotice">Akaunti imefutwa</string>
+    <string name="rediscoverConfirmation">Kugundua upya akaunti kutaweka pochi kuwa sifuri na kutafuta malipo kwenye blockchain, kana kwamba akaunti inaundwa upya. Mchakato huu unaweza kuchukua muda mrefu. Hata hivyo, kitufe cha "ruka mbele" kinaweza kutokea kikikupa nafasi ya kuomba hifadhidata shughuli za pochi yako. Ikiwa tarehe iliyo hapo juu si sahihi, subiri sekunde chache ili isasishwe.</string>
+    <string name="searchConfirmation">Kazi hii hutafuta malipo yaliyokosekana kwenye blockchain. Mchakato huu unaweza kuchukua muda mrefu. Hata hivyo, kitufe cha "ruka mbele" kinaweza kutokea kikikupa nafasi ya kuomba hifadhidata shughuli za pochi yako.</string>
+    <string name="rediscoverBlockchainConfirmation">Kugundua upya blockchain kutaondoa data yote ya vichwa vya blockchain kwenye pochi hii na kuipakua tena kutoka nodi kamili. Mchakato huu unaweza kuchukua muda mrefu. Tumia tu ikiwa una uhakika kuna tatizo la vichwa vya blockchain.</string>
+    <string name="deleteConfirmation" formatted="false">Kufuta akaunti kutafanya salio, utambulisho na historia yote isipatikane isipokuwa akaunti irejeshwe kwa maneno ya siri ya kurejesha akaunti! Fanya hivi tu ikiwa una UHAKIKA KABISA!\n\nFuta akaunti "%accountName" (kwenye %blockchain)?</string>
+    <string name="reassessConfirmation">Kitendo hiki kitaangalia blockchain kuona miamala uliyotuma hivi karibuni. Kutegemea kuwepo au kutokuwepo kwake, kitaithibitisha au kuifuta. Miamala ikifutwa, pesa zitaonekana kama zimepotea. Utahitaji kufanya "gundua upya" ili kurejesha salio lililotumika. Usitumie ikiwa umetuma muamala hivi karibuni, kwa kuwa muamala huo unaweza kuwa bado uko kwenye mtandao ukisubiri kuthibitishwa.</string>
+    <string name="recoveryPhrase">Maneno haya 12 hutumika kurejesha pochi yako. Yeyote mwenye maneno haya anaweza kutumia pesa zako. Yaandike kwa kalamu kwenye karatasi (au yachonge kwenye chuma) na uyahifadhi mahali salama!</string>
+    <string name="recoveryWarning">SIMAMA! USIHIFADHI KWA NJIA YA KIDIJITALI!\nUSINAKILI kwenye ubao wa kunakili, usipige picha, usinakili kwa mashine, wala usipige picha ya skrini.</string>
+    <string name="flickerReason">Kumeta huku ni hatua ya usalama</string>
+    <string name="PastingRecoveryPhraseIsBadIdea">Imenakiliwa. Hata hivyo, kunakili na kubandika maneno haya ya kurejesha kwenye programu yoyote ni WAZO BAYA! Barua pepe, programu nyingi, huduma za nakala rudufu na kadhalika si salama kwa kiwango kinachohitajika kuhifadhi maneno ambayo kihalisia ni pesa.</string>
+    <string name="primaryAccountConfirmation">Akaunti kuu ni akaunti inayotumika kwa utambulisho wako na kufanya malipo otomatiki. Pia ndiyo akaunti ya kwanza inayoonyeshwa sehemu mbalimbali katika programu hii. Lazima iwe kwenye blockchain ya Nexa.</string>
+    <string name="primaryAccountSuccess">Akaunti kuu: %name</string>
+    <string name="AccountActions">Vitendo vya akaunti</string>
+    <string name="GeneralSettings">Mipangilio ya jumla</string>
+    <string name="BlockchainSettings">Vyanzo vya blockchain</string>
+    <string name="AccessPriceData">Fikia data ya bei</string>
+    <string name="oldUi">Kiolesura cha zamani</string>
+    <string name="SplitBillDescription">Unalipa bili (kwa fedha za kawaida), kisha marafiki zako wanakulipa sehemu yao kwa msimbo wa QR hapa chini. Jijumuishe katika idadi ya wagawanaji, isipokuwa kama marafiki zako ndio wanalipa!</string>
+    <string name="BillAmount">Kiasi cha bili</string>
+    <string name="TipAmount">Kiasi cha bakshishi</string>
+    <string name="TipPercentage">Asilimia ya bakshishi</string>
+    <string name="Total">Jumla ya kugawanya</string>
+    <string name="OR">AU</string>
+    <string name="QRCodeFor">Msimbo wa QR wa:</string>
+    <string name="Ways">Mgawanyo:</string>
+    <string name="Tip">Bakshishi:</string>
+    <string name="Amount">Kiasi:</string>
+    <string name="AmountWithValue" formatted="false">Kiasi: %amt</string>
+    <string name="QuantityWithValue" formatted="false">Idadi: %qty</string>
+    <string name="balanceOnTheDate" formatted="false">kufikia %date</string>
+    <string name="fastSync">Sawazisha haraka</string>
+    <string name="refresh">Sasisha</string>
+    <string name="goodQR">QR inasomeka</string>
+    <string name="badQR">QR haisomeki</string>
+    <string name="badImageQR">picha ya QR mbovu. zaidi...</string>
+    <string name="badImageQRhelp">Jaribu kupiga picha ukiwa mbali zaidi ikiwa ulipiga karibu sana na msimbo wa QR. Ukingo mweupe ni sehemu ya msimbo wa QR, na unaweza kupata mistari ya moire inayochanganya ukipiga picha ya skrini kwa karibu.</string>
+    <string name="GoThere">Nenda huko</string>
+    <string name="unlock">fungua</string>
+    <string name="share">shiriki</string>
+    <string name="Send">Tuma</string>
+    <string name="OpenSend">Tuma</string>
+    <string name="SendCancel">Ghairi</string>
+    <string name="ignoredInsecureRequest">Ombi lisilo salama limepuuzwa</string>
+    <string name="fromAccountColon">Tuma kutoka akaunti:</string>
+    <string name="chooseAccountError">chagua akaunti</string>
+    <string name="toColon">Kwa:</string>
+    <string name="To">Kwa</string>
+    <string name="ByAuthor">Na</string>
+    <string name="assetsColon">Mali:</string>
+    <string name="assets">Mali</string>
+    <string name="NoAssets">Hakuna mali katika akaunti %act</string>
+    <string name="NoAssetsAccount">Kwa sasa hakuna mali katika akaunti yako.</string>
+    <string name="fromColon">Kutoka:</string>
+    <string name="ReceiveIntoAccount">Pokea kwenye akaunti</string>
+    <string name="Receive">Pokea</string>
+    <string name="YourAddress">Anwani yako ya %blockchain</string>
+    <string name="CopyAddress">Nakili anwani</string>
+    <string name="AccountListHeader">Akaunti</string>
+    <string name="Address">Anwani</string>
+    <string name="clipboard">ubao wa kunakili</string>
+    <string name="settings">Mipangilio</string>
+    <string name="help">Msaada</string>
+    <string name="invalidQuantity">kiasi si sahihi</string>
+    <string name="needNonexistentAuthority">inahitaji mamlaka ya tokeni</string>
+    <string name="invalidQuantityTooManyDecimalDigits">desimali nyingi mno</string>
+    <string name="roundedUpClickSendAgain">imepandishwa, bonyeza tuma tena kukubali</string>
+    <string name="emptyQuantityField"></string>
+    <string name="purchase">ununuzi</string>
+    <string name="scanPaymentQRcode">Changanua QR ya anwani ya malipo</string>
+    <string name="ScanQRCodeButton">Changanua QR</string>
+    <string name="PasteDestinationAddressButton">Bandika</string>
+    <string name="NewAccountButton">Sanidi akaunti mpya</string>
+    <string name="NewAccountSearchingForTransactions">...inatafuta muamala wa kwanza...</string>
+    <string name="NewAccountSearchingForAllTransactions">...inatafuta miamala yote...</string>
+    <string name="NewAccountSearchFailure">utafutaji wa miamala umeshindikana</string>
+    <string name="receiveAddressQRCode">QR ya kupokea</string>
+    <string name="paymentProposal">kulingana na pendekezo la malipo lililopokelewa</string>
+    <string name="pasteIsEmpty">hakuna cha kubandika</string>
+    <string name="pasteIgnored">kilichobandikwa kimepuuzwa</string>
+    <string name="pasteUnintelligible">kilichobandikwa hakieleweki</string>
+    <string name="chainIncompatibleWithAddress">anwani hailingani na akaunti</string>
+    <string name="chainIncompatibleWithAddressDetails" formatted="false">Sarafu ya akaunti ni %walletCrypto, anwani ni %addressCrypto.  Tumia kisanduku cha kuchagua kubadilisha akaunti ya kutuma iwe inayolingana na blockchain ya anwani.</string>
+    <string name="incoming" formatted="false">inajumuisha %delta %unit inayosubiri</string>
+    <string name="approximatelyT" formatted="false">takriban %qty %fiat</string>
+    <string name="fastForward" formatted="false">Ruka mbele</string>
+    <string name="fastforwardStatus" formatted="false">uchambuzi wa ruka mbele: %info</string>
+    <string name="fastforwardStart" formatted="false">imeanza</string>
+    <string name="exchangeRate" formatted="false">(kiwango cha ubadilishaji: 1 %fiat ni sawa na %amt %crypto)</string>
+    <string name="moreThanAvailable">(zaidi ya inayopatikana)</string>
+    <string name="moreThanConfirmedAvailable">(zaidi ya iliyothibitishwa)</string>
+    <string name="actuallySendingT" formatted="false">unatuma hasa %qty %crypto</string>
+    <string name="copiedToClipboard">imenakiliwa kwenye\nubao wa kunakili</string>
+    <string name="copyId">Nakili ID</string>
+    <string name="openInBrowser">Fungua katika kivinjari</string>
+    <string name="cannotCopyToClipboard">Imeshindwa kunakili</string>
+    <string name="tooLargeForClipboard">Data ni nyingi mno kunakili</string>
+    <string name="scanFailed">imeshindwa kuchanganua</string>
+    <string name="scanSuccess">imechanganuliwa</string>
+    <string name="sendSuccess">imetumwa</string>
+    <string name="sendQuantityHint">kiasi cha kutuma</string>
+    <string name="sendRequestNotification">Ombi la kutuma</string>
+    <string name="sendToAddressHint">anwani lengwa</string>
+    <string name="sendAll">yote</string>
+    <string name="editSendNoteHint">maelezo yako kuhusu muamala huu</string>
+    <string name="subSatoshiQuantities">Desimali nyingi mno -- sarafu hii haigawanyiki kiasi hicho</string>
+    <string name="retrievingExchangeRate">bado inapata kiwango cha ubadilishaji</string>
+    <string name="unavailableExchangeRate">kiwango cha ubadilishaji hakipatikani</string>
+    <string name="SigningWithAccount" formatted="false">Unasaini kwa akaunti: %act</string>
+    <string name="commonIdentityForAccount" formatted="false">Utambulisho wa kawaida wa akaunti: %act</string>
+    <string name="identityRequestNotification">utambulisho umeombwa</string>
+    <string name="IdentityDataMissing">Taarifa za utambulisho hazipo</string>
+    <string name="newDomainRequestingIdentity">Huduma mpya inaomba usajili</string>
+    <string name="domainRequestingAdditionalIdentityInfo">Taarifa za ziada zimeombwa</string>
+    <string name="useUniqueIdentityToolTip">Washa ili utambulisho wako hapa uwe tofauti na wa tovuti nyingine.</string>
+    <string name="provideAlias">Toa jina lako la mtumiaji/lakabu?</string>
+    <string name="provideAliasToolTip">Ukichagua hili, lakabu yako (kama ilivyowekwa katika mipangilio, SI jina lako halisi) itatolewa kwa tovuti hii ikiombwa</string>
+    <string name="provideSocialMedia">Toa taarifa zako za mitandao ya kijamii?</string>
+    <string name="provideSocialMediaToolTip">Ukichagua hili, taarifa zako za mitandao ya kijamii (kama zilivyowekwa katika mipangilio) zitatolewa kwa tovuti hii ikiombwa</string>
+    <string name="providePostalAddress">Toa anwani yako ya posta?</string>
+    <string name="providePostalAddressToolTip">Ukichagua hili, anwani yako (kama ilivyowekwa katika mipangilio) itatolewa kwa tovuti hii ikiombwa</string>
+    <string name="provideBillingAddress">Toa anwani yako ya bili?</string>
+    <string name="provideBillingAddressToolTip">Ukichagua hili, anwani yako ya bili (kama ilivyowekwa katika mipangilio) itatolewa kwa tovuti hii ikiombwa</string>
+    <string name="provideEmail">Toa anwani yako ya barua pepe?</string>
+    <string name="provideAvatar">Toa picha yako ya avatar?</string>
+    <string name="provideRealName">Toa jina lako halisi?</string>
+    <string name="provideRealNameToolTip">Ukichagua hili, jina lako halisi (kama lilivyowekwa katika mipangilio) litatolewa kwa tovuti hii</string>
+    <string name="provideBirthday">Toa tarehe yako ya kuzaliwa?</string>
+    <string name="providePhone">Toa nambari yako ya simu?</string>
+    <string name="provideAttestations">Toa uthibitisho?</string>
+    <string name="provideAttestationsToolTip">Uthibitisho ni saini za wahusika wengine zinazothibitisha taarifa unazotoa</string>
+    <string name="primaryAccountRequired" formatted="false">Akaunti ya %primCurrency inahitajika kutumia kipengele hiki</string>
+    <string name="primaryAccountRequiredDetails" formatted="false">Baadhi ya vipengele vimefungamana na sarafu fulani za kripto.  Lazima utengeneze au ufungue akaunti ya sarafu hiyo kabla ya kutumia kipengele hicho.</string>
+    <string name="UnknownDomainRegisterFirst">Huduma haijulikani, sajili kwanza</string>
+    <string name="Provider" formatted="false">Mtoa huduma: %provider</string>
+    <string name="QrCode">Msimbo wa QR</string>
+    <string name="unknownOperation" formatted="false">shughuli %op haijulikani</string>
+    <string name="alreadyRegistered">tayari imesajiliwa</string>
+    <string name="existingRegistration" formatted="false">Akaunti uliyochagua \'%act\' IMESAJILIWA kwenye huduma hii.</string>
+    <string name="nonexistentRegistration" formatted="false">Akaunti uliyochagua \'%act\' HAIJASAJILIWA kwenye huduma hii.</string>
+    <string name="provideLoginQuestion">Ingia kwenye tovuti hii?</string>
+    <string name="provideInfoQuestion">Taarifa za utambulisho zimeombwa na</string>
+    <string name="signDataQuestion">Saini imeombwa kutoka</string>
+    <string name="nothingToSign">Hakuna ujumbe uliotolewa</string>
+    <string name="binaryToSign">Saini data hii ya binari?</string>
+    <string name="textToSign">Saini ujumbe huu?</string>
+    <string name="sigInClipboard">Saini imenakiliwa</string>
+    <string name="SocialMediaText">Mitandao ya kijamii</string>
+    <string name="SocialMediaSummary">Weka kama orodha ya huduma:jina, Mfano twitter:janeDoe, keybase:janieD</string>
+    <string name="UsernameOrAliasText">Jina la mtumiaji/lakabu</string>
+    <string name="NameText">Jina kamili</string>
+    <string name="PostalAddressText">Anwani ya posta</string>
+    <string name="BillingAddressText">Anwani ya bili</string>
+    <string name="PostalCodeText">Msimbo wa posta</string>
+    <string name="EmailText">Anwani ya barua pepe</string>
+    <string name="TwitterText">Twitter</string>
+    <string name="TelegramText">Telegram</string>
+    <string name="IdentityAssociatedWith">Taarifa za utambulisho husika</string>
+    <string name="ServiceAssociatedWith">Huduma hii tayari inahusiana na:</string>
+    <string name="IdentityInfoNote">Kuweka taarifa hizi si lazima na zitatolewa tu kwa huduma unazochagua.  Madhumuni ni kuruhusu sehemu za kawaida za fomu kujazwa kwa kuchanganua tu msimbo wa QR kwenye tovuti zenye utambulisho.</string>
+    <string name="areYouSure">Una uhakika?</string>
+    <string name="WhenAskSure">Thibitisha hapo juu:</string>
+    <string name="SendConfirmSummary" formatted="false">Thibitisha kutuma %amt %currency %inFiat%assets kwa anwani %dest</string>
+    <string name="firstName">jina la kwanza</string>
+    <string name="lastName">jina la ukoo</string>
+    <string name="withholdingMandatoryInfo">tovuti inahitaji taarifa unazokataa kutoa</string>
+    <string name="badLink">kiungo si sahihi</string>
+    <string name="BadWebLink">Kiungo cha tovuti si sahihi</string>
+    <string name="connectionAborted">tovuti imesitisha kuingia</string>
+    <string name="HintAdjustCostBasis">gharama au faida</string>
+    <string name="CostBasis">gharama ya ununuzi</string>
+    <string name="CapitalLoss">hasara ya mtaji</string>
+    <string name="CapitalGain">faida ya mtaji</string>
+    <string name="OverrideSalesPrice">weka bei ya mauzo</string>
+    <string name="AccountHistory">Miamala</string>
+    <string name="NoAccountActivity">Hakuna shughuli za akaunti</string>
+    <string name="AccountAddresses">Anwani</string>
+    <string name="ActiveAddresses">Anwani hai</string>
+    <string name="UsedAddresses">Anwani zilizotumika</string>
+    <string name="UnusedAddresses">Anwani zisizotumika</string>
+    <string name="txHistoryButton">Angalia au hamisha shughuli za akaunti</string>
+    <string name="setAsPrimaryAccountButton">Fanya hii kuwa akaunti kuu</string>
+    <string name="AccountStatistics">Takwimu za akaunti</string>
+    <string name="AccountBlockchainSync" formatted="false">Kwa sasa %sync kwenye blockchain %chain.</string>
+    <string name="AccountBlockchainDetails" formatted="false">Tarehe %actBlockDate, bloku %actBlock kati ya %chainBlockCount.</string>
+    <string name="AccountEarliestActivity" formatted="false">Matumizi ya kwanza: bloku %actPrehistoryBlock tarehe %actPrehistoryDate.</string>
+    <string name="AccountBlockchainConnectionDetails" formatted="false">Imeunganishwa na nodi %num: %names</string>
+    <string name="AccountNumAddresses" formatted="false">anwani %num</string>
+    <string name="CurrentAddress" formatted="false">Katika anwani %num: %addr</string>
+    <string name="FirstLastReceive" formatted="false">Amana ya kwanza katika bloku %first, ya karibuni katika bloku %last.</string>
+    <string name="FirstLastSend" formatted="false">Utoaji wa kwanza katika bloku %first, wa karibuni katika bloku %last.</string>
+    <string name="FirstWithdraw">Utoaji wa kwanza</string>
+    <string name="FirstDeposit">Amana ya kwanza</string>
+    <string name="never">kamwe</string>
+    <string name="FirstUse" formatted="false">Matumizi ya kwanza: %date</string>
+    <string name="LastUse" formatted="false">Matumizi ya mwisho: %date</string>
+    <string name="Block" formatted="false">Bloku: %block</string>
+    <string name="AccountNumTx" formatted="false">miamala %num</string>
+    <string name="AccountNumUtxos" formatted="false">maingizo ya leja %num</string>
+    <string name="title_activity_assets">Mali</string>
+    <string name="title_activity_scan">Changanua</string>
+    <string name="title_activity_new_account">Akaunti mpya</string>
+    <string name="AccountName">Jina la akaunti</string>
+    <string name="AccountNameHint">herufi 1-8</string>
+    <string name="Blockchain">Blockchain</string>
+    <string name="AccountRecoveryPhrase">Maneno ya kurejesha</string>
+    <string name="LeaveEmptyNewWallet">Acha wazi ili kuunda akaunti mpya</string>
+    <string name="PinSuggestions"><font size="15">Nambari hii ya siri inahitajika ili kufikia akaunti</font></string>
+    <string name="createNewAccount">Unda akaunti mpya</string>
+    <string name="createSyncAccount">Rejesha akaunti kwa usawazishaji makini (na mrefu)</string>
+    <string name="createDiscoveredAccount">Rejesha akaunti mara moja</string>
+    <string name="invalidRecoveryPhrase">maneno ya kurejesha si sahihi</string>
+    <string name="invalidAccountName">jina si sahihi</string>
+    <string name="PassPhrase">Nenosiri (hiari)</string>
+    <string name="Bip44ActivityNotice">Shughuli za akaunti zimepatikana</string>
+    <string name="NoBip44ActivityNotice">Onyo, hakuna miamala iliyopatikana!</string>
+    <string name="Bip44BtcActivityNotice">Shughuli zisizo za kawaida au za kabla ya fork zimepatikana</string>
+    <string name="NoBip44BtcActivityNotice">Hakuna miamala ya kabla ya fork iliyopatikana</string>
+    <string name="FirstUseDateHeightInfo" formatted="false">kuanzia %date (bloku %height)</string>
+    <string name="NotEnoughRecoveryWords">Maneno ya kurejesha hayatoshi</string>
+    <string name="TooManyRecoveryWords">Maneno ya kurejesha ni mengi mno</string>
+    <string name="IncorrectRecoveryWords" formatted="false">Maneno si sahihi: %words</string>
+    <string name="ElectrumNetworkUnavailable">Mtandao wa Electrum haupatikani.  Kurejesha pochi kutakuwa polepole, na hakutagundua miamala ya kabla ya Januari 1, 2020</string>
+    <string name="PinHidesAccount">Ficha akaunti hadi PIN iwekwe?</string>
+    <string name="HiddenAccountExplainer">Ficha akaunti hadi PIN iwekwe</string>
+    <string name="HiddenAccount">Akaunti iliyofichwa</string>
+    <string name="AutomaticNewAddress">Faragha ya anwani</string>
+    <string name="AutomaticNewAddressToolTip">Anwani mpya huonyeshwa kiotomatiki kila anwani ya sasa inapotumika.</string>
+    <string name="CreatePIN">PIN (hiari)</string>
+    <string name="PinSpendingUnprotected">Kutumia pesa bila PIN kumewashwa (hakuna PIN iliyowekwa)</string>
+    <string name="PinSpendingProtected">Kutumia pesa kunahitaji PIN</string>
+    <string name="InvalidPIN">PIN si sahihi</string>
+    <string name="creatingNoHistoryAccountWarning">Unaunda akaunti kwa maneno mahususi ya kurejesha, lakini hakuna shughuli iliyopatikana kwenye blockchain.\nJe, hii ni sahihi?\nIkiwa ndivyo, endelea ubofye kitufe cha kuunda tena na akaunti tupu itaundwa.  Lakini kama akaunti hii inapaswa kuwa na shughuli, hakiki tena blockchain uliyochagua na maneno ya kurejesha.  Kama hilo si tatizo, ama mtandao wa blockchain haufikiki kwa sasa (jaribu tena baadaye), au akaunti iliundwa kwa programu ya pochi isiyo ya kawaida. Usiunde akaunti hii sasa.</string>
+    <string name="accountLocked">akaunti imefungwa</string>
+    <string name="unknownError">hitilafu</string>
+    <string name="insufficentBalance">salio halitoshi</string>
+    <string name="insufficentTokenBalance">salio la tokeni halitoshi</string>
+    <string name="excessiveFee">ada kubwa mno</string>
+    <string name="sendDustError">kiasi ni chini ya kima cha chini</string>
+    <string name="sendingDustWarning">kiasi ni chini ya kima cha chini cha mtandao</string>
+    <string name="feeExceedsFlatMax">ada inazidi ada isiyobadilika ya juu iliyowekwa</string>
+    <string name="notSupported">haitumiki</string>
+    <string name="expired">muda wa malipo umeisha</string>
+    <string name="PaymentDataMissing">malipo hayana data</string>
+    <string name="headersNotForthcoming">vichwa vya blockchain havitolewi</string>
+    <string name="cantConvert">ubadilishaji haupatikani kwa muda</string>
+    <string name="walletDisconnectedFromBlockchain">pochi haijaunganishwa</string>
+    <string name="badTransaction">muamala si sahihi</string>
+    <string name="badAddress">anwani si sahihi</string>
+    <string name="unknownAddress">anwani haijulikani</string>
+    <string name="badAmount">kiasi si sahihi</string>
+    <string name="NoAccounts">Hakuna akaunti zinazopatikana</string>
+    <string name="badCryptoCode">hakuna akaunti iliyofunguliwa kwa sarafu au blockchain hii</string>
+    <string name="badCryptoCodeDetails" formatted="false">Sarafu isiyojulikana au isiyopatikana: %currency</string>
+    <string name="badCurrencyUnit">si sarafu</string>
+    <string name="incompatibleAccount">sarafu si sahihi</string>
+    <string name="incompatibleAccountDetails" formatted="false">Umechagua kulipa kutoka akaunti yenye %cryptoAct lakini %cryptoPay inahitajika</string>
+    <string name="detailsOfBadAmountFromIntent">Programu iliyoita imetoa nambari yenye muundo mbaya wakati wa kutoa
+        kiasi cha kutuma. Itabidi uweke kiasi mwenyewe
+    </string>
+    <string name="blankAddress">anwani tupu</string>
+    <string name="unavailable">haipatikani</string>
+    <string name="blockNotForthcoming">bloku haipatikani</string>
+    <string name="receiveAddressUnavailable">Anwani mpya ya kupokea inaandaliwa. Tafadhali subiri...
+    </string>
+    <string name="accountLimitReached">kikomo cha akaunti</string>
+    <string name="accountUnavailableDetails">Ama hakuna akaunti inayolingana na blockchain hii, au akaunti haijafunguliwa.</string>
+    <string name="accountUnavailable">Hakuna akaunti inayooana iliyofunguliwa</string>
+    <string name="sendMoreThanBalance">Unajaribu kutuma sarafu zaidi kuliko ulizonazo kwa sasa.\n\nKama unadhani hutumii zaidi ya salio lako, huenda umesahau kwamba miamala ina ada ndogo ya ziada, au kama unaona salio lako lote halijathibitishwa, huenda umefanya miamala mingi mfululizo.\n\nKuna kikomo cha jinsi unavyoweza kuitangulia blockchain. Acha salio lako lisilothibitishwa lithibitishwe kisha ujaribu tena.</string>
+    <string name="sendMoreTokensThanBalance">Unajaribu kutuma tokeni zaidi kuliko ulizonazo kwa sasa.</string>
+    <string name="deductedFeeLargerThanSendAmount">Ada iliyokatwa ni kubwa kuliko kiasi kinachotumwa</string>
+    <string name="badWalletImplementation">Utekelezaji wa pochi si sahihi.  Ripoti hitilafu hii!</string>
+    <string name="CannotCompleteTransaction">Hitilafu: Haiwezi kukamilika</string>
+    <string name="title_split_bill">Gawa bili</string>
+    <string name="title_activity_settings">Mipangilio</string>
+    <string name="title_activity_exchange">Badilisha</string>
+    <string name="title_activity_shopping">Viungo</string>
+    <string name="ecosystem">Mfumo ikolojia</string>
+    <string name="title_activity_trickle_pay">Trickle Pay</string>
+    <string name="title_home">Nyumbani</string>
+    <string name="title_dashboard">Jaribio</string>
+    <string name="title_notifications">Arifa</string>
+    <string name="title_activity_invoices">Ankara</string>
+    <string name="title_activity_identity">Utambulisho</string>
+    <string name="title_activity_identity_op">Utambulisho</string>
+    <string name="title_activity_domain_identity_settings">Mipangilio ya utambulisho wa kikoa</string>
+    <string name="title_activity_tx_history" formatted="false">Historia ya miamala: %account</string>
+    <string name="title_activity_address_history" formatted="false">Historia ya anwani: %account</string>
+    <string name="title_activity_account_details" formatted="false">Akaunti: %account</string>
+    <string name="title_test">Jaribio</string>
+    <string name="useUniqueIdentity">Tumia utambulisho wa kipekee</string>
+    <string name="title_activity_identity_settings">Mipangilio ya utambulisho</string>
+    <string name="IdentityRegistrations">Huduma zilizosajiliwa</string>
+    <string name="NoIdentitiesRegistered">Hakuna utambulisho uliosajiliwa</string>
+    <string name="title_activity_welcome">Karibu</string>
+    <string name="next">Endelea</string>
+    <string name="previous">Rudi</string>
+    <string name="EnterPIN">Weka PIN</string>
+    <string name="EnterPINorBlankToRemove">PIN mpya (wazi huondoa)</string>
+    <string name="ButtonTextHere">Weka maandishi ya kitufe</string>
+    <string name="ButtonLinkHere">Weka kiungo cha tovuti</string>
+    <string name="ShoppingWarning">TAHADHARI: Vitu vilivyo kwenye ukurasa huu ni viungo vya huduma na tovuti za wahusika wengine, vimewekwa hapa kwa urahisi wako.  Tovuti/huduma hizi hazijakaguliwa na Wally Wallet.\n\nTumia kwa hatari yako mwenyewe!</string>
+    <string name="NFTs">Tokeni za kipekee (NFT)</string>
+    <string name="ExplainNFTs">NiftyArt.cash: Unda na uuze picha za kipekee na uwakilishi wa kidijitali wa vitu vya kipekee</string>
+    <string name="NftUrl">http://niftyart.cash</string>
+    <string name="NftImproperConstruction">Onyo: Bandia au haijaundwa ipasavyo!</string>
+    <string name="TokenSourceWebsite">Chanzo cha tokeni:</string>
+    <string name="TokenBadSig">Taarifa za tokeni hii hazikusainiwa ipasavyo.  Tokeni hii inaweza kuwa bandia au ya kuiga.  Inaweza pia kumaanisha kwamba muundaji wa tokeni hakuisaini tokeni ipasavyo.</string>
+    <string name="OpenWebsite" formatted="false">Fikia %siteName</string>
+    <string name="WebsiteUnavailable" formatted="false">Tovuti haipatikani</string>
+    <string name="ExplainBitmart">bitmart.com: Badilisha NEXA kwa sarafu nyingine za kripto</string>
+    <string name="ExplainMexc">mexc.com: Badilisha NEXA kwa sarafu nyingine za kripto</string>
+    <string name="ExplainBiconomy">biconomy.com: Badilisha NEXA kwa sarafu nyingine za kripto</string>
+    <string name="CexButton">badilisha</string>
+    <string name="SharedNotification" formatted="false">%what imeshirikiwa</string>
+    <string name="AuthAutopayTitle">Malipo yaliyoidhinishwa</string>
+    <string name="AuthAutopayDeniedTitle">Malipo yaliyoidhinishwa yamekataliwa</string>
+    <string name="AuthAutopay" formatted="false">%amt kwa %domain</string>
+    <string name="TpToBeDone">Miunganisho yako ya Trickle Pay itaonyeshwa hapa</string>
+    <string name="TpHistoryTbd">Historia yako ya Trickle Pay itaonyeshwa hapa</string>
+    <string name="AcceptTpRegistration">Kubali usajili kutoka:</string>
+    <string name="EditTpRegistration">Mipangilio ya taasisi:</string>
+    <string name="AcceptTpRegistrationTopic">Madhumuni:</string>
+    <string name="TpMaxSpendHint">kikomo cha matumizi otomatiki</string>
+    <string name="TpAssetInfoRequest">Maombi ya taarifa za mali</string>
+    <string name="TpAssociatedAccount" formatted="false">Imehusishwa na: %act</string>
+    <string name="TpAssociatedAddress" formatted="false">%addr</string>
+    <string name="SpecialTxNotif">Ombi la idhini ya muamala</string>
+    <string name="AssetNotif">Ombi la taarifa za mali</string>
+    <string name="PaymentRequest">Ombi la malipo</string>
+    <string name="IdentityNotif">Ombi la utambulisho/kuingia</string>
+    <string name="TpMaxHeading">Vikomo vya malipo</string>
+    <string name="TpMaxPer">Kikomo kwa ombi</string>
+    <string name="TpMaxPerDay">Kikomo kwa siku</string>
+    <string name="TpMaxPerWeek">Kikomo kwa wiki</string>
+    <string name="TpMaxPerMonth">Kikomo kwa mwezi</string>
+    <string name="TpEnableAutopay">Washa malipo otomatiki (kisanduku kisipoteuliwa, malipo yote yataomba idhini yako na vikomo vilivyo hapa chini vitapuuzwa)</string>
+    <string name="asciiArrow"><![CDATA[=>]]></string>
+    <string name="TpNoRegistrations">Hakuna usajili wa Trickle Pay</string>
+    <string name="TpNoSession">Hakuna ombi la Trickle Pay</string>
+    <string name="TpRegistrations">Usajili</string>
+    <string name="TpRegDenied">Usajili umekataliwa</string>
+    <string name="TpRegAccepted">Usajili umekubaliwa</string>
+    <string name="TpRegUnchanged">Usajili haujabadilika</string>
+    <string name="TpRequestAutoDeny">Ombi limekataliwa (otomatiki)</string>
+    <string name="TpRequestAutoAccept">Ombi limekubaliwa (otomatiki)</string>
+    <string name="TpTxDenied">Muamala umekataliwa</string>
+    <string name="TpTxAccepted">Muamala umekubaliwa</string>
+    <string name="TpNetworkTimeout">Muda wa muamala umeisha</string>
+    <string name="TpPartialSubmitted">Ofa imetumwa</string>
+    <string name="TpAssetRequestDenied">Taarifa za mali zimezuiwa</string>
+    <string name="TpAssetRequestAccepted">Inatuma taarifa za mali</string>
+    <string name="Actions">Vitendo</string>
+    <string name="SpecialTpTransactionFrom">Muamala maalum kutoka</string>
+    <string name="IncompleteTpTransactionFrom">Pendekezo la ofa thabiti kutoka</string>
+    <string name="TpEntails">Inahusisha</string>
+    <string name="TpInAccount">Akaunti inayotumika</string>
+    <string name="TpAssetRequestFrom">Ombi la taarifa za mali kutoka</string>
+    <string name="TpHandledByAccount">inaweza kushughulikiwa na akaunti yako</string>
+    <string name="TpAssetMatches" formatted="false">Taarifa kuhusu mali %num ulizonazo zitatolewa kwa huduma hii.</string>
+    <string name="TpAssetInfoNotXfer">Kukubali ombi hili kunaipa huduma taarifa za umiliki wako tu. Hakuidhinishi uhamisho wowote.</string>
+    <string name="ForAFeeOf" formatted="false">ikijumuisha ada ya %fee %units</string>
+    <string name="TpExchangingTokens" formatted="false">na kubadilishana tokeni (kutuma %tokSnd, kupokea %tokRcv).</string>
+    <string name="TpShowingTokens" formatted="false">Aina %tokReveal za tokeni zinaonyeshwa (zinatumwa kwako mwenyewe, kuthibitisha unazimiliki).</string>
+    <string name="TpSendingTokens" formatted="false">na kutuma aina %tokSnd za tokeni.</string>
+    <string name="TpReceivingTokens" formatted="false">na kupokea aina %tokRcv za tokeni.</string>
+    <string name="TpHasNoPurpose">Ombi hili halina athari kwenye akaunti hii.</string>
+    <string name="TpSendToTitle">Malipo yameombwa na</string>
+    <string name="TpSpends">Inatumia</string>
+    <string name="TpSendRequestDenied">Malipo yamekataliwa</string>
+    <string name="TpSendAutoReject">Malipo yamekataliwa otomatiki</string>
+    <string name="TpSendRequestAccepted">Malipo yamekubaliwa</string>
+    <string name="TpWhyNotAuto">Haitasaini otomatiki kwa sababu</string>
+    <string name="TpAutomaticDisabled">Malipo otomatiki yamezimwa</string>
+    <string name="TpExceededMaxPer">Inazidi kikomo kwa ombi</string>
+    <string name="TpExceededMaxDaily">Inazidi kikomo kwa siku</string>
+    <string name="TpExceededMaxWeekly">Inazidi kikomo kwa wiki</string>
+    <string name="TpExceededMaxMonthly">Inazidi kikomo kwa mwezi</string>
+    <string name="title_activity_alert_history">Ujumbe wa hivi karibuni</string>
+    <string name="IssueReportInstructions">Toa taarifa hii kwa wasanidi:</string>
+    <string name="AssetApplication">Anzisha</string>
+    <string name="AssetMarketplace">Biashara</string>
+    <string name="AssetAddedToTransferList">Imeongezwa kwenye \'Tuma\' katika kichupo kikuu</string>
+    <string name="NftCardFront">Mbele</string>
+    <string name="NftCardBack">Nyuma</string>
+    <string name="NftPublicMedia">Maudhui</string>
+    <string name="NftOwnerMedia">Maudhui ya mmiliki</string>
+    <string name="Content">Maudhui</string>
+    <string name="Private">Faragha</string>
+    <string name="NftPrivateDescription">Maudhui haya ni ya mmiliki wa mali</string>
+    <string name="NftInfo">Taarifa</string>
+    <string name="NftLegal">Leseni</string>
+    <string name="NftSeries" formatted="false">Mfululizo: %series</string>
+    <string name="NftAuthor" formatted="false">Muundaji: %author</string>
+    <string name="NftNoInfoProvided">...Hakuna taarifa iliyotolewa...</string>
+    <string name="IssuedToConnection">Imezinduliwa kwenye tovuti iliyounganishwa</string>
+    <string name ="demonstratingOwnership">Kuonyesha umiliki</string>
+    <string name="AndSomeAssets"> na baadhi ya mali</string>
+    <string name="AssetTypes" formatted="false">aina %assetTypes za mali</string>
+    <string name="ExplainRestaurant">Huduma za kuagiza chakula mtandaoni (kwa kuletewa au kuchukua) zinaweza kukubali sarafu ya kripto hata kama mgahawa wenyewe hauikubali.</string>
+    <string name="RestaurantButton">Kuagiza chakula Menufy</string>
+    <string name="RestaurantUrl">https://www.menufy.com</string>
+    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
+    <string name="ExplainStoreMap">Tafuta maeneo karibu nawe yanayokubali sarafu ya kripto.</string>
+    <string name="StoreMapButton">ramani ya maduka</string>
+    <string name="StoreMapUrl">https://map.bitcoin.com</string>
+    <string name="StoreMapAppPackage"></string>
+    <string name="ExplainTxBit">txbit.io: Badilisha NEXA kwa sarafu nyingine za kripto</string>
+    <string name="welcome1Label">Karibu</string>
+    <string name="welcome1">Karibu kwenye Wally, pochi ya sarafu ya kripto!\n\nKwenye skrini zinazofuata, utaanzisha akaunti yako ya kwanza ya blockchain ya Nexa (NEX) na kusanidi huduma nyingine kama usimamizi wa manenosiri.\n\nAu unaweza kubonyeza mshale wa kurudi nyuma ili kuruka usanidi huu.</string>
+    <string name="welcome2_title">Mipangilio ya akaunti ya NEXA</string>
+    <string name="welcome2">Kwenye ukurasa unaofuata, utaanzisha akaunti yako ya kwanza ya Nexa.\n\nAkaunti hii ina pesa zako za Nexa na utambulisho wako. Utambulisho ni kipengele kipya cha Wally Wallet, kinachokuwezesha kuingia kiotomatiki kwenye tovuti zinazoungwa mkono.\n\nUnaweza kuchagua kulinda akaunti zako kwa Nambari ya Utambulisho Binafsi (PIN), lakini tunashauri watumiaji wapya wasitumie PIN (na waweke salio dogo) kwa akaunti yao ya kwanza. Kwa ulinzi wa mtumiaji, akaunti zinazolindwa na PIN hazionekani hadi PIN sahihi iwekwe (haionyeshwi kama PIN isiyo sahihi imewekwa).\n\nUkitaka kurejesha akaunti ya NEXA iliyopo, weka maneno ya kurejesha. Ikiwa mstari huu utabaki tupu, akaunti mpya itaundwa.</string>
+    <string name="welcome3_title" formatted="false">Maneno ya kurejesha akaunti ya Nexa</string>
+    <string name="welcome3">Karibu 3 ! (Maandishi haya ya karibu yanaweza kuboreshwa)</string>
+    <string name="welcome4_title">Utambulisho</string>
+    <string name="welcome4">Kisha, utapelekwa kwenye skrini ya taarifa za utambulisho. Taarifa hizi hutumika unapotumia Wally kama msimamizi wa utambulisho na kuingia (kuingia kiotomatiki kwenye tovuti mbalimbali au kutoa taarifa wakati wa ununuzi). Wally inajali sana faragha!
+Taarifa hizi hazitashirikiwa na tovuti yoyote bila idhini yako ya wazi, na HAKUNA taarifa kutoka kwa pochi hii inayotumwa kwa watengenezaji wa programu hii. Unaweza pia kuacha sehemu zote wazi.
+Ukimaliza, bonyeza mshale wa kurudi nyuma (juu kushoto).</string>
+    <string name="welcomeComplete">Hii inakamilisha usanidi. Kama hukukamilisha hatua yoyote hapa, sehemu zote zinapatikana ndani ya programu yenyewe.
+Asante na furahia pochi yako mpya!</string>
+    <string name="ExplainGiftCards">Kununua kadi za zawadi kunakupa nafasi ya kufikia mamia ya maduka yasiyokubali sarafu ya kripto moja kwa moja.</string>
+    <string name="GiftCardButton">Kadi ya zawadi ya eGifter</string>
+    <string name="GiftCardUrl">https://www.egifter.com</string>
+    <string name="GiftCardAppPackage">com.groupgifting.android</string>
+    <string name="Pinförslag">
+    <font size="15">Nambari hii ya siri inahitajika ili kufikia akaunti</font>
+</string>
+    <string name="sync_title">Sawazisha barua pepe kwa vipindi maalum</string>
+    <string name="attachment_title">Pakua viambatisho vinavyoingia</string>
+    <string name="attachment_summary_on">Pakua viambatisho vya barua pepe otomatiki</string>
+    <string name="attachment_summary_off">Pakua viambatisho pale tu vinapoombwa</string>
+    <string name="signature_title">Saini yako</string>
+    <string name="reply_title">Kitendo chaguo-msingi unapojibu</string>
+    <string name="discoveredAccountDetails" formatted="false">Imegundua salio la %bal %units\nkatika anwani %addr na miamala %tx</string>
+    <string name="discoveredWarning">Kama hii inaonekana sahihi, unaweza kuunda akaunti hii sasa hivi</string>
+    <string name="backgroundSync">Sawazisha chinichini</string>
+    <string name="scanQr">Changanua QR</string>
+    <string name="imageQr">QR ya picha</string>
+    <string name="paste">Bandika</string>
+    <string name="recentTransactions">Miamala ya hivi karibuni</string>
+    <string name="sendingFrom">Inatumwa kutoka</string>
+    <string name="enterAddress">Weka anwani...</string>
+    <string name="noteOptional">Maelezo (hiari)</string>
+    <string name="clearNote">Futa maelezo</string>
+    <string name="clearAddress">Futa anwani</string>
+    <string name="clearAmount">Futa kiasi</string>
+    <string name="available">Inapatikana</string>
+    <string name="amountPlain">Kiasi</string>
+    <string name="enterNEXAmount">Weka kiasi cha NEX...</string>
+    <string name="note">Maelezo</string>
+    <string name="confirmSend">Thibitisha kutuma</string>
+    <string name="syncing">Inasawazisha...</string>
+    <string name="enterAmount" formatted="false">Weka kiasi cha %assetName</string>
+    <string name="fee">Ada</string>
+    <string name="connectionWarning">Onyo: Hakuna muunganisho wa blockchain/mtandao. Ukituma sasa, mpokeaji hataona uhamisho huu mara moja. Utatumwa mara muunganisho utakaporejea.</string>
+    <string name="NetworkUnstable">Mtandao si thabiti</string>
+    <string name="TokenMissing">Tokeni haipo kwenye blockchain </string>
+    <string name="Sell">Uza</string>
+    <string name="CreateAnOffer">Unda ofa</string>
+    <string name="Price">Bei</string>
+    <string name="NexaPrice">Weka bei ya Nexa</string>
+    <string name="AssetAmountName" formatted="false">Una %amount %assetName</string>
+    <string name="scanToBuyOne">Changanua ili kununua %name</string>
+    <string name="scanToBuySeveral">Changanua ili kununua %amount %name</string>
+    <string name="nexaOfferAmount" formatted="false">Kwa %amount NEXA</string>
+    <string name="purchaseComplete">Ununuzi umekamilika</string>
+    <string name="setTheNexaPrice">Weka bei ya Nexa</string>
+    <string name="setTheAssetAmount">Weka kiasi cha mali</string>
+    <string name="publishOnline">Chapisha ofa mtandaoni</string>
+    <string name="offerCreated">Ofa imeundwa!</string>
+    <string name="ConfigureService">Sanidi huduma</string>
+    <string name="AcceptOrRejectService">Kubali au kataa huduma</string>
+    <string name="Domain">Kikoa</string>
+    <string name="Services">Huduma</string>
+    <string name="Purpose">Madhumuni</string>
+    <string name="AutoPay">Malipo otomatiki</string>
+    <string name="AutoPayInstructions">Kisanduku kinachofuata kikizimwa, maombi yote ya malipo kutoka huduma hii yatakuomba idhini na vikomo vilivyo hapa chini havitazingatiwa.</string>
+    <string name="LimitedAutoApproval">Ruhusu idhini otomatiki yenye kikomo</string>
+    <string name="AutoPayMaxPerRequest">Kikomo kwa ombi</string>
+    <string name="AutoPayMaxPerDay">Kikomo kwa siku</string>
+    <string name="AutoPayMaxPerWeek">Kikomo kwa wiki</string>
+    <string name="AutoPayMaxPerMonth">Kikomo kwa mwezi</string>
+    <string name="EnableServices">Washa skrini ya huduma</string>
+    <string name="NoServicesRegistered">Hakuna huduma zilizosajiliwa.</string>
+    <string name="Start">Anza</string>
+    <string name="Meditation">Kutafakari</string>
+    <string name="Meditate">Tafakari</string>
+    <string name="Sound">Sauti</string>
+    <string name="OneMinuteIntervalSound">Sauti kila dakika 1</string>
+    <string name="MeditationVersion">Toleo: 1.0.3 (build 156)</string>
+    <string name="Meditating">Inatafakari...</string>
+    <string name="MediationComplete">Kutafakari kumekamilika!</string>
+    <string name="Okay">Sawa</string>
+    <string name="Minutes">Dakika</string>
+    <string name="Camouflage">Kificho</string>
+    <string name="CamouflageAsMeditationTimer">Ficha programu kama saa ya kutafakari.</string>
+    <string name="CamouflageDescriptionAndroid">Kuwasha kificho hufunga programu na kuificha kama programu iitwayo Meditate. Kuzima kificho cha programu ya Meditate, fungua menyu ya programu na ubonyeze nambari ya toleo mara tano.</string>
+    <string name="CamouflageDescriptionOther">Kuzima kificho cha programu ya Meditate, fungua menyu ya programu na ubonyeze nambari ya toleo mara tano.</string>
+    <string name="CamouflageAsMeditateAppAndroid">Ficha kama programu ya Meditate</string>
+</resources>
