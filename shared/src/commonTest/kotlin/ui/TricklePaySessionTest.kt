@@ -41,6 +41,7 @@ class TricklePaySessionTest
         // Each test deletes its account; deletion's Phase B is async. Wait for it before dropping
         // wallyApp so a leaked teardown job doesn't run against the next test's fresh app/DB.
         awaitDeletionsComplete()
+        deleteMockAccountDbs()
         wallyApp = null
     }
 

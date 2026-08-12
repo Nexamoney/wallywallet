@@ -1015,3 +1015,27 @@ tasks.withType<Test> {
     outputs.upToDateWhen { false }  // Always rerun test tasks
 }
 
+// Tests run with dbPrefix "test_" and drop their databases in the project directory. The tests
+// delete their own, but a crashed or killed run leaves debris that poisons the next run (stale WAL
+// against a recreated DB shows up as SQLITE disk I/O errors), so sweep before and after every run.
+fun testDbFiles() = fileTree(projectDir) {
+    include("test_*.db", "test_*.db-shm", "test_*.db-wal", "test_*.db-journal")
+}
+
+val cleanTestDbs by tasks.registering(Delete::class) {
+    description = "Delete leftover test_*.db files before a test run"
+    delete(testDbFiles())
+}
+
+val sweepTestDbs by tasks.registering(Delete::class) {
+    description = "Delete test_*.db files left behind by a test run"
+    delete(testDbFiles())
+}
+
+// AbstractTestTask rather than Test so the Kotlin/Native test tasks are covered too. finalizedBy
+// (not doLast) so the sweep still happens when the test task fails -- which is when it matters.
+tasks.withType<AbstractTestTask>().configureEach {
+    dependsOn(cleanTestDbs)
+    finalizedBy(sweepTestDbs)
+}
+

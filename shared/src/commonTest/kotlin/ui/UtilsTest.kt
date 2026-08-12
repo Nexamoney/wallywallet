@@ -56,6 +56,7 @@ import org.nexa.libnexakotlin.iTransaction
 import org.nexa.libnexakotlin.txFor
 import org.nexa.libnexakotlin.TransactionHistory
 import org.nexa.libnexakotlin.decodeUtf8
+import org.nexa.libnexakotlin.deleteDatabase
 import org.nexa.libnexakotlin.encodeUtf8
 import org.nexa.libnexakotlin.generateBip39Seed
 import org.nexa.threads.millisleep
@@ -289,6 +290,23 @@ class InMemoryPrefs : SharedPreferences
     override fun getInt(key: String, defaultValue: Int): Int = data[key] as? Int ?: defaultValue
 }
 
+/** Blockchain header DBs created by [mockAccount], awaiting [deleteMockAccountDbs]. */
+private val mockAccountChains = mutableListOf<Pair<String, Blockchain>>()
+
+/** Close and delete every header DB [mockAccount] created since the last call.  Test classes that
+ * use [mockAccount] should call this from @AfterTest, otherwise each mock account leaves a
+ * test_<random>.db behind in the working directory. */
+fun deleteMockAccountDbs()
+{
+    for ((name, chain) in mockAccountChains)
+    {
+        try { chain.db.close() }
+        catch (e: Exception) { LogIt.info("could not close mock account db $name: $e") }
+        deleteDatabase(name)
+    }
+    mockAccountChains.clear()
+}
+
 /**
 * The account is a dev.mokkery [mock] of the [Account] interface.
 *
@@ -363,6 +381,7 @@ fun mockAccount(
       "",
       false,
     )
+    mockAccountChains.add("test_$randomNumber" to dummyChain)
     val dummyWallet = Bip44Wallet("mockSelfSendWallet_$randomNumber", chainSelector, walletDb)
     // Set the secret because the Bip44Wallet throws an exception if an attempt is made to save it without a secret
     dummyWallet.secretWords = UnsecuredSecret("obvious obvious obvious obvious obvious obvious obvious obvious obvious obvious obvious obvious".encodeUtf8())

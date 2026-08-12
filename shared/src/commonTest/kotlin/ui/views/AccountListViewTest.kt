@@ -8,9 +8,11 @@ import info.bitcoinunlimited.www.wally.ui.views.AccountItemView
 import info.bitcoinunlimited.www.wally.ui.views.AccountUIData
 import info.bitcoinunlimited.www.wally.ui.views.UnlockViewModel
 import org.nexa.libnexakotlin.ChainSelector
+import ui.awaitDeletionsComplete
 import ui.settle
 import ui.setupTestEnv
 import ui.waitForCatching
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -19,6 +21,14 @@ class AccountListViewTest
     init
     {
         setupTestEnv()
+    }
+
+    // This class doesn't extend WallyUiTestBase, so nothing else waits out the async Phase B of the
+    // account deletion in the test's finally -- without this the wallet DB file survives the run.
+    @AfterTest
+    fun awaitAccountDeletion()
+    {
+        awaitDeletionsComplete()
     }
 
     @OptIn(ExperimentalTestApi::class)
