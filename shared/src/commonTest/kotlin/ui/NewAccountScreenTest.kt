@@ -12,6 +12,7 @@ import info.bitcoinunlimited.www.wally.ui.ProposeAccountName
 import info.bitcoinunlimited.www.wally.ui.chainToName
 import info.bitcoinunlimited.www.wally.ui.newAccountState
 import org.nexa.libnexakotlin.ChainSelector
+import org.nexa.libnexakotlin.deleteWalletFile
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
@@ -292,6 +293,9 @@ class NewAccountScreenTest: WallyUiTestBase(false)
         // Get the first available name
         val first = ProposeAccountName(cs)
         assertNotNull(first)
+        // A killed prior run can leave this name's wallet DB file on disk (no live account,
+        // stale WAL sidecars) that openWalletDB can never open again; remove any such debris.
+        deleteWalletFile(wallyAccountDbFileName(first))
         // Create an account with that name
         val account = wallyApp!!.newAccount(first, 0U, "", cs)!!
         try
