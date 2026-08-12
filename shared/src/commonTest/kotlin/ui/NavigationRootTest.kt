@@ -118,6 +118,10 @@ open class WallyUiTestBase(openAllAccounts: Boolean = true)
     var sched = TestCoroutineScheduler()
     var testDispatcher = StandardTestDispatcher(sched)
 
+    // Accounts that existed before the test ran; anything else is the test's own and is deleted
+    // in testDone() so a failed assert cannot leak a <name>_wallet.db into the working directory.
+    private var preexistingAccounts: Set<String> = emptySet()
+
     // You only need to do this once
     init {
         setupTestEnv(openAllAccounts)
@@ -126,6 +130,7 @@ open class WallyUiTestBase(openAllAccounts: Boolean = true)
     @BeforeTest
     fun testSetup()
     {
+        preexistingAccounts = wallyApp?.accounts?.keys?.toSet() ?: emptySet()
         // Solves the error: Module with the Main dispatcher had failed to initialize. For tests Dispatchers.setMain from kotlinx-coroutines-test module can be used
         // On Android this code ends up running UI drawing in multiple threads which is disallowed.
         if (platform().target == KotlinTarget.JVM)
@@ -162,6 +167,11 @@ open class WallyUiTestBase(openAllAccounts: Boolean = true)
 
         millisleep(afterTestDelay.toULong())
 
+        // After the pool drain and settle, so an account still being created on a background job
+        // (the new-account screen creates asynchronously) has landed in the map by now.
+        deleteAccountsCreatedByTest()
+        deleteMockAccountDbs()
+
         if (platform().target == KotlinTarget.JVM)
         {
             installedTestDispatcher--
@@ -178,6 +188,17 @@ open class WallyUiTestBase(openAllAccounts: Boolean = true)
         // via WallyUiTestBase.testDone() and fails the test on any retained watched instance. JVM and iOS runs stay no-ops.
         // Expected cost: ~5–10s per test on the emulator.
         LeakAssertions.assertNoLeaks(this::class.simpleName ?: "test")
+    }
+
+    /** Delete any account the test itself created, waiting for the async Phase B file delete. Tests
+     * that already delete their accounts are unaffected -- the account is gone from the map. */
+    private fun deleteAccountsCreatedByTest()
+    {
+        val app = wallyApp ?: return
+        val created = app.accounts.keys.toSet() - preexistingAccounts
+        if (created.isEmpty()) return
+        for (name in created) app.accounts[name]?.let { app.deleteAccount(it) }
+        awaitDeletionsComplete()
     }
 }
 

@@ -4,12 +4,20 @@ import androidx.compose.ui.test.*
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.SplitBillScreen
 import org.nexa.libnexakotlin.ChainSelector
+import kotlin.test.AfterTest
 import kotlin.test.Test
 
 class SplitBillScreenTest
 {
     init {
         setupTestEnv()
+    }
+
+    @AfterTest
+    fun cleanupMockAccountDbs()
+    {
+        awaitDeletionsComplete()
+        deleteMockAccountDbs()
     }
 
     @OptIn(ExperimentalTestApi::class)
