@@ -1,6 +1,7 @@
 pluginManagement {
     repositories {
         google()
+        maven { url = uri("https://gitlab.com/api/v4/projects/83996664/packages/maven") }
         gradlePluginPortal()
         mavenCentral()
         mavenLocal()
@@ -19,6 +20,10 @@ dependencyResolutionManagement {
         maven { url = uri("https://gitlab.com/api/v4/projects/48544966/packages/maven") }  // mpthreads
         maven { url = uri("https://gitlab.com/api/v4/projects/38119368/packages/maven") }  // libnexarpc
         maven { url = uri("https://gitlab.com/api/v4/projects/48545045/packages/maven") }  // Libnexakotlin
+        maven {
+            url = uri("https://gitlab.com/api/v4/projects/83996664/packages/maven") // nexaaiskills (skills corpus zip)
+            content { includeModule("org.nexa", "nexaaiskills-files") }
+        }
         maven { url = uri("https://jitpack.io") }
         mavenLocal()
     }
