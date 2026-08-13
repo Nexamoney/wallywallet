@@ -36,6 +36,7 @@
 		8E1ECA822AAA002000759B4F /* strings_ko.bin in Resources */ = {isa = PBXBuildFile; fileRef = 8E1ECA832AAA002000759B4F /* strings_ko.bin */; };
 		F897CE15FC440000F17E0000 /* strings_fr.bin in Resources */ = {isa = PBXBuildFile; fileRef = D8DC07F5A2220000F17E0000 /* strings_fr.bin */; };
 		A36D65BDC8100000F17E0000 /* strings_sw.bin in Resources */ = {isa = PBXBuildFile; fileRef = 14CA1E9D05660000F17E0000 /* strings_sw.bin */; };
+		5EBCBD0522F10000F17E0000 /* strings_ha.bin in Resources */ = {isa = PBXBuildFile; fileRef = E174BD91D7310000F17E0000 /* strings_ha.bin */; };
 		AEBF3D9ABEE659BD4CB3C0B5 /* ShareSheetUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95CC3ABB734F27152DEAEF20 /* ShareSheetUITests.swift */; };
 		B4EA0C7FB05C7B822B479C98 /* AppearanceLocalizationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A04C24443470ED83C1E10842 /* AppearanceLocalizationUITests.swift */; };
 		B8379143F078B0D54DC5F889 /* WallyUITestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25B1795C882B4E46C9C2554E /* WallyUITestHelpers.swift */; };
@@ -98,6 +99,7 @@
 		8E1ECA832AAA002000759B4F /* strings_ko.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_ko.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_ko.bin; sourceTree = "<group>"; };
 		D8DC07F5A2220000F17E0000 /* strings_fr.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_fr.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_fr.bin; sourceTree = "<group>"; };
 		14CA1E9D05660000F17E0000 /* strings_sw.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_sw.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_sw.bin; sourceTree = "<group>"; };
+		E174BD91D7310000F17E0000 /* strings_ha.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = strings_ha.bin; path = ../shared/build/generated/i18n/commonMain/resources/strings_ha.bin; sourceTree = "<group>"; };
 		95CC3ABB734F27152DEAEF20 /* ShareSheetUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareSheetUITests.swift; sourceTree = "<group>"; };
 		A04C24443470ED83C1E10842 /* AppearanceLocalizationUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppearanceLocalizationUITests.swift; sourceTree = "<group>"; };
 		A1139D0933A50E4D9B4B065A /* KeyboardPersistenceUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KeyboardPersistenceUITests.swift; sourceTree = "<group>"; };
@@ -165,6 +167,7 @@
 				8E1ECA832AAA002000759B4F /* strings_ko.bin */,
 				D8DC07F5A2220000F17E0000 /* strings_fr.bin */,
 				14CA1E9D05660000F17E0000 /* strings_sw.bin */,
+				E174BD91D7310000F17E0000 /* strings_ha.bin */,
 				8E1ECA6C2AAA001D00759B4F /* strings_nb.bin */,
 				8E1ECA712AAA001F00759B4F /* strings_no.bin */,
 				8E1ECA692AAA001C00759B4F /* strings_round.bin */,
@@ -308,6 +311,7 @@
 				8E1ECA822AAA002000759B4F /* strings_ko.bin in Resources */,
 				F897CE15FC440000F17E0000 /* strings_fr.bin in Resources */,
 				A36D65BDC8100000F17E0000 /* strings_sw.bin in Resources */,
+				5EBCBD0522F10000F17E0000 /* strings_ha.bin in Resources */,
 				8E1ECA7E2AAA002000759B4F /* strings_no.bin in Resources */,
 				8E1ECA7B2AAA002000759B4F /* strings_it.bin in Resources */,
 				8E1ECA792AAA002000759B4F /* strings_nb.bin in Resources */,
@@ -363,6 +367,7 @@
 				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_ko.bin",
 				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_fr.bin",
 				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_sw.bin",
+				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_ha.bin",
 				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_nb.bin",
 				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_no.bin",
 				"$(SRCROOT)/../shared/build/generated/i18n/commonMain/resources/strings_round.bin",
