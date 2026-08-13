@@ -1,0 +1,637 @@
+<resources>
+    <string name="app_name" translatable="false">Wally</string>
+    <string-array name="CurrencyTypes">
+        <item>NEX</item>
+        <item>USD</item>
+    </string-array>
+    <string-array name="FiatCurrencyTypes">
+        <item>BRL</item>
+        <item>CAD</item>
+        <item>CNY</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>JPY</item>
+        <item>RUB</item>
+        <item>USD</item>
+        <item>XAU</item>
+    </string-array>
+    <string name="uBCH" translatable="false">uBCH</string>
+    <string-array name="OneToTen">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="tipPercentage">
+        <item>--</item>
+        <item>0%</item>
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+        <item>50%</item>
+    </string-array>
+    <string name="yes">eh</string>
+    <string name="no">aʼa</string>
+    <string name="at">a</string>
+    <string name="of">na</string>
+    <string name="choose">zaɓa</string>
+    <string name="accept">amince</string>
+    <string name="reject">ƙi</string>
+    <string name="remove">cire</string>
+    <string name="confirm">tabbatar</string>
+    <string name="cancel">soke</string>
+    <string name="Back">Baya</string>
+    <string name="removeAll">cire duka</string>
+    <string name="done">gama</string>
+    <string name="dismiss">Rufe</string>
+    <string name="deny">hana</string>
+    <string name="ask">tambaya</string>
+    <string name="badSignature">sa hannu mara inganci</string>
+    <string name="unknownCurrency">kuɗin da ba a sani ba</string>
+    <string name="unknownCryptoCurrency">kuɗin crypto ko blockchain da ba a sani ba</string>
+    <string name="Processing">ana aiki...</string>
+    <string name="receiving">ana karɓa</string>
+    <string name="sending">ana aikawa</string>
+    <string name="noAdditionalDetails">babu ƙarin bayani</string>
+    <string name="unspecified">ba a bayyana ba</string>
+    <string name="removed">an cire</string>
+    <string name="synced">An daidaita</string>
+    <string name="unsynced">Ana daidaitawa</string>
+    <string name="connected">an haɗa</string>
+    <string name="connectionEstablished">an samu haɗi</string>
+    <string name="connectionClosed">an yanke haɗi</string>
+    <string name="connectionException">ba a iya haɗawa da shafi</string>
+    <string name="balance">sauran kuɗi yanzu</string>
+    <string name="totalReceived">Jimlar da aka karɓa</string>
+    <string name="inProgress">ana ci gaba</string>
+    <string name="staleTransaction">Maʼamalar da ta tsufa</string>
+    <string name="staleTransactionDetails">Cikakken node ya ƙi wannan maʼamala. Wataƙila ta tsufa ce (wani ya riga ya yi amfani da ita), amma kuma yana yiwuwa maʼamalar ba ta taɓa yin inganci ba, ko kuma tana da kyau sai dai nodes ɗin da muka tambaya ba masu gaskiya ba ne. Walat ɗin zai yi watsi da wannan maʼamala sai an tabbatar da ita.</string>
+    <string name="NoPermission">Babu izini</string>
+    <string name="NoPermissionDetails" formatted="false">Dole ku kunna izinin %perm domin amfani da wannan fasali. Kuna iya yin haka a Android Settings -> Apps -> Wally -> Permissions</string>
+    <string name="WebLoadingPage"><![CDATA[<body><h1><center>...ana lodawa...</h1></center></body>]]></string>
+    <string name="loading">ana lodawa</string>
+    <string name="Untitled">Mara suna</string>
+    <string name="nothing">babu komai</string>
+    <string name="breakIt">tsaga</string>
+    <string name="or">ko</string>
+    <string name="onBlockchain">a</string>
+    <string name="NotImplemented">Nan gaba</string>
+    <string name="NoNodes">Babu damar blockchain</string>
+    <string name="cancelled">an soke</string>
+    <string name="refreshQR">An yanke haɗin sabar</string>
+    <string name="pleaseWait">don Allah ku jira</string>
+    <string name="trying">ana ƙoƙari</string>
+    <string name="clear">share</string>
+    <string name="thousand">* dubu</string>
+    <string name="million">* miliyan</string>
+    <string name="required">wajibi</string>
+    <string name="account">Asusu</string>
+    <string name="addAccountPlus">+ Ƙara asusu</string>
+    <string name="receivingTokens">Karɓar token</string>
+    <string name="spendingTokens">Kashe token</string>
+    <string name="version" formatted="false">Siga: %ver (%date)</string>
+    <string name="enableDeveloperView">Yanayin ƙwararru</string>
+    <string name="enableRecompositionCounts">Ƙidaya sake zana allo</string>
+    <string name="enableExperimentalUx">Fuskar gwaji</string>
+    <string name="enableDarkMode">Yanayin duhu</string>
+    <string name="enableSound">Kunna sauti</string>
+    <string name="enableIdentityMenu">Kunna allon shaida</string>
+    <string name="enableTricklePayMenu">Kunna allon Trickle Pay</string>
+    <string name="enableAssetsMenu">Kunna allon kadarori</string>
+    <string name="only">kawai</string>
+    <string name="prefer">fifita</string>
+    <string name="rediscoverWalletTx">Sake neman duk maʼamaloli</string>
+    <string name="searchWalletTx">Nemi maʼamalolin da suka ɓace</string>
+    <string name="rediscoverBlockchain">Sake neman headers na blockchain</string>
+    <string name="logDebugData">Rubuta bayanan debug</string>
+    <string name="clearIdentityDomains">Share domains ɗin shaida</string>
+    <string name="rediscoverTooltip">Share bayanan blockchain sannan a sake neman duk maʼamalolin da suka shafi walat ɗin</string>
+    <string name="wordSeed">Kalmomin sirri na dawo da asusu</string>
+    <string name="deleteWalletAccount">Share asusu</string>
+    <string name="more">Ƙari</string>
+    <string name="darkMode">Yanayin duhu</string>
+    <string name="ConsolidationNeeded">Da farko ku haɗa asusu</string>
+    <string name="SetChangePin">Saita ko canza PIN ɗin buɗewa</string>
+    <string name="CurrentPin">PIN ɗin yanzu</string>
+    <string name="NewPin">Sabon PIN</string>
+    <string name="PinChanged">An canza PIN</string>
+    <string name="PinRemoved">An cire PIN</string>
+    <string name="PinInvalid">PIN mara inganci</string>
+    <string name="PinTooShort">sabon PIN ya yi gajarta</string>
+    <string name="WriteDownRecoveryPhraseWarningUi2">Gargaɗi: ba ku rubuta kalmomin sirri na wasu asusu ba! Domin kada kuɗi su ɓace idan wannan naʼura ta ɓata ko ta lalace, ku rubuta kalmomin sirri a takarda ko wani abu da ba na lantarki ba.</string>
+    <string name="WroteRecoveryPhraseDown">Na rubuta su</string>
+    <string name="RecoveryPhraseKeepRemindingMe">A ci gaba da tunatarwa</string>
+    <string name="ViewRecoveryPhrase">Duba kalmomin sirri na dawo da asusu</string>
+    <string name="localCurrency">Kuɗin ƙasa</string>
+    <string name="assessUnconfirmed">Bincika maʼamalolin da ba a tabbatar ba</string>
+    <string name="rediscoverNotice">An fara sake neman asusu</string>
+    <string name="searchNotice">An fara neman asusu</string>
+    <string name="unconfAssessmentNotice">An fara bincikar waɗanda ba a tabbatar ba</string>
+    <string name="accountDeleteNotice">An share asusu</string>
+    <string name="rediscoverConfirmation">Sake neman asusu zai mayar da walat ɗin sifili sannan ya bincika blockchain don biyan kuɗin da aka yi, kamar dai sabon asusu ake ƙirƙira. Wannan aiki na iya ɗaukar lokaci mai tsawo. Duk da haka, maɓallin “tsallake gaba” na iya bayyana wanda ke ba ku zaɓin tambayar wani database game da harkokin walat ɗinku. Idan kwanan watan da ke sama ba daidai ba ne, ku jira ɗan daƙiƙa kaɗan don a sabunta shi.</string>
+    <string name="searchConfirmation">Wannan aikin yana bincika blockchain don biyan kuɗin da suka ɓace. Wannan aiki na iya ɗaukar lokaci mai tsawo. Duk da haka, maɓallin “tsallake gaba” na iya bayyana wanda ke ba ku zaɓin tambayar wani database game da harkokin walat ɗinku.</string>
+    <string name="rediscoverBlockchainConfirmation">Sake neman blockchain zai share duk bayanan headers na blockchain daga wannan walat sannan ya sake sauke su daga cikakkun nodes. Wannan aiki na iya ɗaukar lokaci mai tsawo. Ku yi amfani da shi kawai idan kun tabbata akwai matsalar headers na blockchain.</string>
+    <string name="deleteConfirmation" formatted="false">Share asusu zai sa duk sauran kuɗi, shaidu, da tarihi su zama ba a samun su sai an dawo da asusun ta hanyar kalmomin sirri na dawo da asusu! Ku yi haka kawai idan kun TABBATA SOSAI!\n\nA share asusu “%accountName” (a %blockchain)?</string>
+    <string name="reassessConfirmation">Wannan aikin zai duba blockchain don maʼamalolin da kuka aika kwanan nan. Bisa ga samuwarsu ko rashinsu, zai tabbatar da su ko ya share su. Idan an share maʼamaloli, kuɗin za su yi kama da sun ɓace. Za ku buƙaci ku yi “sake nema” don dawo da sauran kuɗin da aka kashe. Kada ku yi amfani da shi idan kun yi maʼamala kwanan nan, domin maʼamalar na iya kasancewa a cikin sadarwa tana jiran tabbatarwa.</string>
+    <string name="recoveryPhrase">Ana amfani da waɗannan kalmomi 12 don dawo da walat ɗinku. Duk wanda ya mallaki waɗannan kalmomi zai iya kashe kuɗinku. Ku rubuta su da alƙalami a takarda (ko ku sassaƙa su a ƙarfe) sannan ku ajiye su a wuri mai tsaro!</string>
+    <string name="recoveryWarning">TSAYA! KADA KU AJIYE SU A DIJITAL!\nKADA ku kwafa zuwa allon kwafi, ku ɗauki hoto, ku kwafa a inji, ko ku ɗauki hoton allo.</string>
+    <string name="flickerReason">Kyaftawa matakin tsaro ne</string>
+    <string name="PastingRecoveryPhraseIsBadIdea">An kwafa zuwa allon kwafi. Amma dai, kwafawa da mannawa waɗannan kalmomin sirri a kowace manhaja BABBAN KUSKURE ne! Imel, yawancin manhajoji, sabis na kwafin ajiya, da sauransu ba su da tsaro na gaskiya yadda ya kamata don riƙe kalmomin da a zahiri kuɗi ne.</string>
+    <string name="primaryAccountConfirmation">Babban asusunku shi ne asusun da ake amfani da shi don shaidarku da kuma biyan atomatik. Shi ne kuma asusu na farko da ake nunawa a wurare daban-daban a wannan manhaja. Dole ne ya kasance a blockchain ɗin Nexa.</string>
+    <string name="primaryAccountSuccess">Babban asusu: %name</string>
+    <string name="AccountActions">Ayyukan asusu</string>
+    <string name="GeneralSettings">Saiti na gaba ɗaya</string>
+    <string name="BlockchainSettings">Tushen blockchain</string>
+    <string name="AccessPriceData">Samun bayanan farashi</string>
+    <string name="oldUi">Tsohuwar fuskar amfani</string>
+    <string name="SplitBillDescription">Ku biya kuɗin (da kuɗin ƙasa), sannan abokanku su biya ku rabonsu ta QR code ɗin da ke ƙasa. Ku haɗa kanku a cikin adadin rabon, sai dai idan abokanku ne za su biya!</string>
+    <string name="BillAmount">Adadin biya</string>
+    <string name="TipAmount">Adadin kyauta</string>
+    <string name="TipPercentage">Kaso na kyauta</string>
+    <string name="Total">Jimlar da za a raba</string>
+    <string name="OR">KO</string>
+    <string name="QRCodeFor">QR code na:</string>
+    <string name="Ways">Rabo:</string>
+    <string name="Tip">Kyauta:</string>
+    <string name="Amount">Adadi:</string>
+    <string name="AmountWithValue" formatted="false">Adadi: %amt</string>
+    <string name="QuantityWithValue" formatted="false">Yawa: %qty</string>
+    <string name="balanceOnTheDate" formatted="false">a ranar %date</string>
+    <string name="fastSync">Daidaita da sauri</string>
+    <string name="refresh">Sabunta</string>
+    <string name="goodQR">QR ya karantu</string>
+    <string name="badQR">QR bai karantu ba</string>
+    <string name="badImageQR">hoton QR mara kyau. ƙari...</string>
+    <string name="badImageQRhelp">Ku gwada ɗaukar hoto daga nesa idan kun ɗauki hoton QR code daga kusa. Farin gefen wani ɓangare ne na QR code, kuma kuna iya samun layukan da ke rikitarwa idan kuka ɗauki hoton allo daga kusa.</string>
+    <string name="GoThere">Je can</string>
+    <string name="unlock">buɗe</string>
+    <string name="share">raba</string>
+    <string name="Send">Aika</string>
+    <string name="OpenSend">Aika</string>
+    <string name="SendCancel">Soke</string>
+    <string name="ignoredInsecureRequest">An yi watsi da buƙata mara tsaro</string>
+    <string name="fromAccountColon">Aika daga asusu:</string>
+    <string name="chooseAccountError">zaɓi asusu</string>
+    <string name="toColon">Zuwa:</string>
+    <string name="To">Zuwa</string>
+    <string name="ByAuthor">Daga</string>
+    <string name="assetsColon">Kadarori:</string>
+    <string name="assets">Kadarori</string>
+    <string name="NoAssets">Babu kadarori a asusun %act</string>
+    <string name="NoAssetsAccount">Babu kadarori a asusunku a yanzu.</string>
+    <string name="fromColon">Daga:</string>
+    <string name="ReceiveIntoAccount">Karɓa cikin asusu</string>
+    <string name="Receive">Karɓa</string>
+    <string name="YourAddress">Adireshinku na %blockchain</string>
+    <string name="CopyAddress">Kwafa adireshi</string>
+    <string name="AccountListHeader">Asusuna</string>
+    <string name="Address">Adireshi</string>
+    <string name="clipboard">allon kwafi</string>
+    <string name="settings">Saiti</string>
+    <string name="help">Taimako</string>
+    <string name="invalidQuantity">yawa mara inganci</string>
+    <string name="needNonexistentAuthority">ana buƙatar izinin token</string>
+    <string name="invalidQuantityTooManyDecimalDigits">lambobi bayan ɗigo sun yi yawa</string>
+    <string name="roundedUpClickSendAgain">an ɗan ƙara adadi, sake danna Aika don amincewa</string>
+    <string name="emptyQuantityField"></string>
+    <string name="purchase">sayayya</string>
+    <string name="scanPaymentQRcode">Duba QR code na adireshin biya</string>
+    <string name="ScanQRCodeButton">Duba QR code</string>
+    <string name="PasteDestinationAddressButton">Manna</string>
+    <string name="NewAccountButton">Kafa sabon asusu</string>
+    <string name="NewAccountSearchingForTransactions">...ana neman maʼamala ta farko...</string>
+    <string name="NewAccountSearchingForAllTransactions">...ana neman dukkan maʼamaloli...</string>
+    <string name="NewAccountSearchFailure">neman maʼamala ya gaza</string>
+    <string name="receiveAddressQRCode">QR code na karɓa</string>
+    <string name="paymentProposal">bisa ga shawarar biya da aka karɓa</string>
+    <string name="pasteIsEmpty">babu abin manna</string>
+    <string name="pasteIgnored">an yi watsi da mannawa</string>
+    <string name="pasteUnintelligible">ba a gane abin manna ba</string>
+    <string name="chainIncompatibleWithAddress">adireshi bai dace da asusu ba</string>
+    <string name="chainIncompatibleWithAddressDetails" formatted="false">Kuɗin asusu %walletCrypto ne, adireshi kuwa %addressCrypto ne.  Ku yi amfani da akwatin zaɓi don zaɓar asusun aikawa da ya dace da blockchain ɗin adireshin.</string>
+    <string name="incoming" formatted="false">ya haɗa da %delta %unit da ake jira</string>
+    <string name="approximatelyT" formatted="false">kusan %qty %fiat</string>
+    <string name="fastForward" formatted="false">Tsallake gaba</string>
+    <string name="fastforwardStatus" formatted="false">nazarin tsallake gaba: %info</string>
+    <string name="fastforwardStart" formatted="false">an fara</string>
+    <string name="exchangeRate" formatted="false">(ƙimar canji: 1 %fiat yana daidai da %amt %crypto)</string>
+    <string name="moreThanAvailable">(ya fi abin da akwai)</string>
+    <string name="moreThanConfirmedAvailable">(ya fi wanda aka tabbatar)</string>
+    <string name="actuallySendingT" formatted="false">a zahiri ana aika %qty %crypto</string>
+    <string name="copiedToClipboard">an kwafa zuwa\nallon kwafi</string>
+    <string name="copyId">Kwafa ID</string>
+    <string name="openInBrowser">Buɗe a browser</string>
+    <string name="cannotCopyToClipboard">Ba za a iya kwafawa zuwa allon kwafi ba</string>
+    <string name="tooLargeForClipboard">Bayanai sun yi yawa ga allon kwafi</string>
+    <string name="scanFailed">duba ya gaza</string>
+    <string name="scanSuccess">duba ya yi nasara</string>
+    <string name="sendSuccess">an aika cikin nasara</string>
+    <string name="sendQuantityHint">adadin aikawa</string>
+    <string name="sendRequestNotification">An buƙaci aikawa</string>
+    <string name="sendToAddressHint">adireshin da za a aika</string>
+    <string name="sendAll">duka</string>
+    <string name="editSendNoteHint">tsokaci naku game da wannan turawa</string>
+    <string name="subSatoshiQuantities">Lambobi bayan ɗigo sun yi yawa -- wannan kuɗi ba ya rabuwa har haka</string>
+    <string name="retrievingExchangeRate">ana ɗaukar ƙimar canji</string>
+    <string name="unavailableExchangeRate">babu ƙimar canji</string>
+    <string name="SigningWithAccount" formatted="false">Sa hannu da asusu: %act</string>
+    <string name="commonIdentityForAccount" formatted="false">Shaida ta gama gari ga asusu: %act</string>
+    <string name="identityRequestNotification">an buƙaci shaida</string>
+    <string name="IdentityDataMissing">Babu bayanan shaida</string>
+    <string name="newDomainRequestingIdentity">Sabon sabis yana neman rajista</string>
+    <string name="domainRequestingAdditionalIdentityInfo">An buƙaci ƙarin bayani</string>
+    <string name="useUniqueIdentityToolTip">Ku kunna don shaidarku a nan ta bambanta da ta sauran shafuka.</string>
+    <string name="provideAlias">Ku bayar da sunan mai amfani/laƙabi?</string>
+    <string name="provideAliasToolTip">Zaɓar wannan zai bayar da laƙabinku (kamar yadda aka saita a saiti, BA sunanku na gaskiya ba) ga wannan shafi, idan an buƙata</string>
+    <string name="provideSocialMedia">Ku bayar da bayanan sada zumuntarku?</string>
+    <string name="provideSocialMediaToolTip">Zaɓar wannan zai bayar da bayanan sada zumuntarku (kamar yadda aka saita a saiti) ga wannan shafi, idan an buƙata</string>
+    <string name="providePostalAddress">Ku bayar da adireshin gidanku?</string>
+    <string name="providePostalAddressToolTip">Zaɓar wannan zai bayar da adireshinku (kamar yadda aka saita a saiti) ga wannan shafi, idan an buƙata</string>
+    <string name="provideBillingAddress">Ku bayar da adireshin biyanku?</string>
+    <string name="provideBillingAddressToolTip">Zaɓar wannan zai bayar da adireshin biyanku (kamar yadda aka saita a saiti) ga wannan shafi, idan an buƙata</string>
+    <string name="provideEmail">Ku bayar da adireshin imel ɗinku?</string>
+    <string name="provideAvatar">Ku bayar da hoton avatar ɗinku?</string>
+    <string name="provideRealName">Ku bayar da sunanku na gaskiya?</string>
+    <string name="provideRealNameToolTip">Zaɓar wannan zai bayar da sunanku na gaskiya (kamar yadda aka saita a saiti) ga wannan shafi</string>
+    <string name="provideBirthday">Ku bayar da ranar haihuwarku?</string>
+    <string name="providePhone">Ku bayar da lambar wayarku?</string>
+    <string name="provideAttestations">Ku bayar da tabbaci?</string>
+    <string name="provideAttestationsToolTip">Tabbaci sa hannun ɓangare na uku ne da ke tabbatar da bayanan da kuke bayarwa</string>
+    <string name="primaryAccountRequired" formatted="false">Ana buƙatar asusun %primCurrency don amfani da wannan fasali</string>
+    <string name="primaryAccountRequiredDetails" formatted="false">Wasu fasaloli suna da alaƙa da wasu kuɗaɗen crypto.  Dole ku ƙirƙiri ko ku buɗe asusu a kan wannan kuɗin crypto kafin amfani da fasalin.</string>
+    <string name="UnknownDomainRegisterFirst">Sabis da ba a sani ba, ku fara rajista</string>
+    <string name="Provider" formatted="false">Mai bayarwa: %provider</string>
+    <string name="QrCode">QR code</string>
+    <string name="unknownOperation" formatted="false">ba a san aikin %op ba</string>
+    <string name="alreadyRegistered">an riga an yi rajista</string>
+    <string name="existingRegistration" formatted="false">Asusun da aka zaɓa a yanzu “%act” YA yi rajista da wannan sabis.</string>
+    <string name="nonexistentRegistration" formatted="false">Asusun da aka zaɓa a yanzu “%act” BAI yi rajista da wannan sabis ba tukuna.</string>
+    <string name="provideLoginQuestion">Ku shiga wannan shafi?</string>
+    <string name="provideInfoQuestion">Wanda ya nemi bayanan shaida</string>
+    <string name="signDataQuestion">Wanda ya nemi sa hannu</string>
+    <string name="nothingToSign">Ba a bayar da saƙo ba</string>
+    <string name="binaryToSign">Ku sa hannu kan wannan bayanin binary?</string>
+    <string name="textToSign">Ku sa hannu kan wannan saƙo?</string>
+    <string name="sigInClipboard">An kwafa sa hannu zuwa allon kwafi</string>
+    <string name="SocialMediaText">Sada zumunta</string>
+    <string name="SocialMediaSummary">Ku shigar a matsayin jerin sabis:laƙabi, misali twitter:janeDoe, keybase:janieD</string>
+    <string name="UsernameOrAliasText">Sunan mai amfani/laƙabi</string>
+    <string name="NameText">Cikakken suna</string>
+    <string name="PostalAddressText">Adireshin gida</string>
+    <string name="BillingAddressText">Adireshin biya</string>
+    <string name="PostalCodeText">Lambar gidan waya</string>
+    <string name="EmailText">Adireshin imel</string>
+    <string name="TwitterText">Twitter</string>
+    <string name="TelegramText">Telegram</string>
+    <string name="IdentityAssociatedWith">Bayanan shaida masu alaƙa</string>
+    <string name="ServiceAssociatedWith">Wannan sabis yana da alaƙa da:</string>
+    <string name="IdentityInfoNote">Shigar da waɗannan bayanan na zaɓi ne, kuma za a bayar da su ga sabis ɗin da kuka zaɓa kaɗai.  Manufar ita ce a cika filayen da aka saba gani a fom ta hanyar duba QR code kawai a shafukan da ke goyon bayan shaida.</string>
+    <string name="areYouSure">Kun tabbata?</string>
+    <string name="WhenAskSure">Tabbatar da na sama:</string>
+    <string name="SendConfirmSummary" formatted="false">Ku tabbatar da aika %amt %currency %inFiat%assets zuwa adireshi %dest</string>
+    <string name="firstName">sunan farko</string>
+    <string name="lastName">sunan mahaifi</string>
+    <string name="withholdingMandatoryInfo">shafi na buƙatar bayanan da kuka ƙi bayarwa</string>
+    <string name="badLink">hanyar haɗi mara inganci</string>
+    <string name="BadWebLink">Hanyar haɗi mara inganci</string>
+    <string name="connectionAborted">shafi ya soke shiga</string>
+    <string name="HintAdjustCostBasis">farashin saye ko riba</string>
+    <string name="CostBasis">farashin saye</string>
+    <string name="CapitalLoss">asarar jari</string>
+    <string name="CapitalGain">ribar jari</string>
+    <string name="OverrideSalesPrice">shigar da farashin sayarwa</string>
+    <string name="AccountHistory">Maʼamaloli</string>
+    <string name="NoAccountActivity">Babu harkokin asusu</string>
+    <string name="AccountAddresses">Adireshoshi</string>
+    <string name="ActiveAddresses">Adireshoshi masu aiki</string>
+    <string name="UsedAddresses">Adireshoshin da aka yi amfani da su</string>
+    <string name="UnusedAddresses">Adireshoshin da ba a yi amfani da su ba</string>
+    <string name="txHistoryButton">Duba ko fitar da harkokin asusu</string>
+    <string name="setAsPrimaryAccountButton">Mayar da wannan babban asusunku</string>
+    <string name="AccountStatistics">Ƙididdigar asusu</string>
+    <string name="AccountBlockchainSync" formatted="false">A yanzu %sync a kan blockchain %chain.</string>
+    <string name="AccountBlockchainDetails" formatted="false">A %actBlockDate, block %actBlock daga cikin %chainBlockCount.</string>
+    <string name="AccountEarliestActivity" formatted="false">Amfani na farko: block %actPrehistoryBlock a %actPrehistoryDate.</string>
+    <string name="AccountBlockchainConnectionDetails" formatted="false">An haɗa da node %num: %names</string>
+    <string name="AccountNumAddresses" formatted="false">adireshoshi %num</string>
+    <string name="CurrentAddress" formatted="false">A adireshi %num: %addr</string>
+    <string name="FirstLastReceive" formatted="false">Ajiya ta farko a block %first, na ƙarshe a block %last.</string>
+    <string name="FirstLastSend" formatted="false">Cirewa ta farko a block %first, na ƙarshe a block %last.</string>
+    <string name="FirstWithdraw">Cirewa ta farko</string>
+    <string name="FirstDeposit">Ajiya ta farko</string>
+    <string name="never">babu</string>
+    <string name="FirstUse" formatted="false">Amfani na farko: %date</string>
+    <string name="LastUse" formatted="false">Amfani na ƙarshe: %date</string>
+    <string name="Block" formatted="false">Block: %block</string>
+    <string name="AccountNumTx" formatted="false">maʼamaloli %num</string>
+    <string name="AccountNumUtxos" formatted="false">shigarwar ledger %num</string>
+    <string name="title_activity_assets">Kadarori</string>
+    <string name="title_activity_scan">Duba QR</string>
+    <string name="title_activity_new_account">Sabon asusu</string>
+    <string name="AccountName">Sunan asusu</string>
+    <string name="AccountNameHint">haruffa 1-8</string>
+    <string name="Blockchain">Blockchain</string>
+    <string name="AccountRecoveryPhrase">Kalmomin sirri</string>
+    <string name="LeaveEmptyNewWallet">Ku bar fanko don ƙirƙirar sabon asusu</string>
+    <string name="PinSuggestions"><font size="15">Ana buƙatar wannan lambar sirri don shiga asusun</font></string>
+    <string name="createNewAccount">Ƙirƙiri sabon asusu</string>
+    <string name="createSyncAccount">Dawo da asusu da cikakken daidaitawa (mai tsawo)</string>
+    <string name="createDiscoveredAccount">Dawo da asusu nan take</string>
+    <string name="invalidRecoveryPhrase">kalmomin sirri marasa inganci</string>
+    <string name="invalidAccountName">suna mara inganci</string>
+    <string name="PassPhrase">Ƙarin kalmar sirri (na zaɓi)</string>
+    <string name="Bip44ActivityNotice">An sami harkokin asusu</string>
+    <string name="NoBip44ActivityNotice">Gargaɗi, ba a sami maʼamaloli ba!</string>
+    <string name="Bip44BtcActivityNotice">An sami harkokin walat mara ƙaʼida ko na kafin fork</string>
+    <string name="NoBip44BtcActivityNotice">Ba a sami maʼamalolin kafin fork ba</string>
+    <string name="FirstUseDateHeightInfo" formatted="false">daga %date (block %height)</string>
+    <string name="NotEnoughRecoveryWords">Ana buƙatar ƙarin kalmomin sirri</string>
+    <string name="TooManyRecoveryWords">Kalmomin sirri sun yi yawa</string>
+    <string name="IncorrectRecoveryWords" formatted="false">Kalmomi marasa inganci: %words</string>
+    <string name="ElectrumNetworkUnavailable">Sadarwar Electrum ba ta samuwa.  Dawo da walat zai yi jinkiri, kuma ba zai gano maʼamalolin kafin 1 ga Janairu, 2020 ba</string>
+    <string name="PinHidesAccount">A ɓoye asusu har sai an shigar da PIN?</string>
+    <string name="HiddenAccountExplainer">Ɓoye asusu har sai an shigar da PIN</string>
+    <string name="HiddenAccount">Asusu a ɓoye</string>
+    <string name="AutomaticNewAddress">Sirrin adireshi</string>
+    <string name="AutomaticNewAddressToolTip">Ana nuna sabon adireshi ta atomatik duk lokacin da aka yi amfani da na yanzu.</string>
+    <string name="CreatePIN">PIN (na zaɓi)</string>
+    <string name="PinSpendingUnprotected">An bar kashe kuɗi ba tare da PIN ba (ba a shigar da PIN ba)</string>
+    <string name="PinSpendingProtected">Kashe kuɗi na buƙatar PIN</string>
+    <string name="InvalidPIN">PIN mara inganci</string>
+    <string name="creatingNoHistoryAccountWarning">Kuna ƙirƙirar asusu da ƙayyadaddun kalmomin sirri, amma ba a sami wata harka a blockchain ba.\nShin haka yake?\nIdan haka ne, ku sake danna maɓallin ƙirƙira kuma za a ƙirƙiri asusu maras komai.  Amma idan ya kamata wannan asusu ya kasance da harkoki, ku sake duba blockchain ɗin da kuka zaɓa da kuma kalmomin sirri.  Idan ba wannan ce matsalar ba, ko dai sadarwar blockchain ba ta samuwa a yanzu (ku sake gwadawa daga baya), ko kuma an ƙirƙire shi da manhajar walat mara ƙaʼida.  Kada ku ƙirƙiri wannan asusu yanzu.</string>
+    <string name="accountLocked">asusu a kulle</string>
+    <string name="unknownError">kuskure</string>
+    <string name="insufficentBalance">sauran kuɗi bai isa ba</string>
+    <string name="insufficentTokenBalance">sauran token bai isa ba</string>
+    <string name="excessiveFee">caji ya yi yawa</string>
+    <string name="sendDustError">adadi bai kai mafi ƙaranci ba</string>
+    <string name="sendingDustWarning">adadi bai kai mafi ƙarancin sadarwa ba</string>
+    <string name="feeExceedsFlatMax">caji ya wuce iyakar cajin da aka saita</string>
+    <string name="notSupported">ba a tallafawa</string>
+    <string name="expired">biya ya ƙare</string>
+    <string name="PaymentDataMissing">biya ya rasa bayanai</string>
+    <string name="headersNotForthcoming">ba a samar da headers</string>
+    <string name="cantConvert">canji ba ya samuwa a yanzu</string>
+    <string name="walletDisconnectedFromBlockchain">an katse haɗin walat</string>
+    <string name="badTransaction">maʼamala mara inganci</string>
+    <string name="badAddress">adireshi mara inganci</string>
+    <string name="unknownAddress">adireshi da ba a sani ba</string>
+    <string name="badAmount">adadi mara inganci</string>
+    <string name="NoAccounts">Babu asusun da za a iya shiga</string>
+    <string name="badCryptoCode">babu asusun da aka buɗe don wannan kuɗi ko blockchain</string>
+    <string name="badCryptoCodeDetails" formatted="false">Kuɗin da ba a sani ba ko babu shi: %currency</string>
+    <string name="badCurrencyUnit">ba kuɗi ba</string>
+    <string name="incompatibleAccount">kuɗi mara daidai</string>
+    <string name="incompatibleAccountDetails" formatted="false">Kun zaɓi biya daga asusun da ke da %cryptoAct amma ana buƙatar %cryptoPay</string>
+    <string name="detailsOfBadAmountFromIntent">Shirin da ya kira ya bayar da lamba mara kyawun tsari lokacin bayar da
+        adadin da za a aika. Za ku buƙaci shigar da adadin da kanku
+    </string>
+    <string name="blankAddress">adireshi fanko</string>
+    <string name="unavailable">ba ya samuwa</string>
+    <string name="blockNotForthcoming">block ba ya samuwa</string>
+    <string name="receiveAddressUnavailable">Ana ƙididdige sabon adireshin karɓa. Ku jira...
+    </string>
+    <string name="accountLimitReached">iyakar asusuna</string>
+    <string name="accountUnavailableDetails">Ko dai babu asusun da ya dace da wannan blockchain, ko kuma ba a buɗe asusun ba.</string>
+    <string name="accountUnavailable">Babu asusun da aka buɗe da ya dace</string>
+    <string name="sendMoreThanBalance">Kuna ƙoƙarin aika kuɗi fiye da yadda kuke da shi a yanzu.\n\nIdan kuna tsammanin ba kwa kashe kuɗi fiye da sauran kuɗinku, wataƙila kun manta cewa maʼamaloli suna da ƙaramin ƙarin caji, ko kuma idan kuna ganin dukan sauran kuɗinku a matsayin waɗanda ba a tabbatar ba, wataƙila kun yi maʼamaloli da yawa a jere.\n\nAkwai iyaka ga yadda za ku iya gaba da blockchain. Ku bar sauran kuɗinku da ba a tabbatar ba su tabbata sannan ku sake gwadawa.</string>
+    <string name="sendMoreTokensThanBalance">Kuna ƙoƙarin aika token fiye da yadda kuke da shi a yanzu.</string>
+    <string name="deductedFeeLargerThanSendAmount">Cajin da aka cire ya fi adadin da ake aikawa</string>
+    <string name="badWalletImplementation">Aiwatar da walat mara daidai.  Ku bayar da rahoton wannan kuskure!</string>
+    <string name="CannotCompleteTransaction">Kuskure: Ba a iya kammalawa</string>
+    <string name="title_split_bill">Raba biya</string>
+    <string name="title_activity_settings">Saiti</string>
+    <string name="title_activity_exchange">Canji</string>
+    <string name="title_activity_shopping">Hanyoyi</string>
+    <string name="ecosystem">Muhalli</string>
+    <string name="title_activity_trickle_pay">Trickle Pay</string>
+    <string name="title_home">Gida</string>
+    <string name="title_dashboard">Gwaji</string>
+    <string name="title_notifications">Sanarwa</string>
+    <string name="title_activity_invoices">Daftari</string>
+    <string name="title_activity_identity">Shaida</string>
+    <string name="title_activity_identity_op">Shaida</string>
+    <string name="title_activity_domain_identity_settings">Saitin shaida na domain</string>
+    <string name="title_activity_tx_history" formatted="false">Tarihin maʼamaloli: %account</string>
+    <string name="title_activity_address_history" formatted="false">Tarihin adireshi: %account</string>
+    <string name="title_activity_account_details" formatted="false">Asusu: %account</string>
+    <string name="title_test">Gwaji</string>
+    <string name="useUniqueIdentity">Yi amfani da shaida ta musamman</string>
+    <string name="title_activity_identity_settings">Saitin shaida</string>
+    <string name="IdentityRegistrations">Sabis masu rajista</string>
+    <string name="NoIdentitiesRegistered">Ba a yi rajistar shaida ba</string>
+    <string name="title_activity_welcome">Barka da zuwa</string>
+    <string name="next">Na gaba</string>
+    <string name="previous">Na baya</string>
+    <string name="EnterPIN">Shigar da PIN</string>
+    <string name="EnterPINorBlankToRemove">Sabon PIN (fanko yana cirewa)</string>
+    <string name="ButtonTextHere">Saita rubutun maɓalli</string>
+    <string name="ButtonLinkHere">Shigar da hanyar haɗi</string>
+    <string name="ShoppingWarning">GARGAƊI: Abubuwan da ke wannan shafi hanyoyin haɗi ne zuwa sabis da shafuka na wasu, an sanya su nan don sauƙinku.  Wally Wallet bai tantance waɗannan shafuka/sabis ba.\n\nKu yi amfani da su a kan haɗarin kanku!</string>
+    <string name="NFTs">Token na musamman (NFTs)</string>
+    <string name="ExplainNFTs">NiftyArt.cash: Ƙirƙira da cinikin hotuna na musamman da wakilcin dijital na abubuwa na musamman</string>
+    <string name="NftUrl">http://niftyart.cash</string>
+    <string name="NftImproperConstruction">Gargaɗi: Na ƙarya ne ko an gina shi ba daidai ba!</string>
+    <string name="TokenSourceWebsite">Tushen token:</string>
+    <string name="TokenBadSig">Ba a sa hannu kan bayanan wannan token yadda ya kamata ba.  Wannan token na iya zama na ƙarya ko na yaudara.  Yana kuma iya nufin cewa mai ƙirƙirar token ɗin bai sa hannu yadda ya kamata ba.</string>
+    <string name="OpenWebsite" formatted="false">Shiga %siteName</string>
+    <string name="WebsiteUnavailable" formatted="false">Shafi ba ya samuwa</string>
+    <string name="ExplainBitmart">bitmart.com: Canza NEXA zuwa wasu kuɗaɗen crypto</string>
+    <string name="ExplainMexc">mexc.com: Canza NEXA zuwa wasu kuɗaɗen crypto</string>
+    <string name="ExplainBiconomy">biconomy.com: Canza NEXA zuwa wasu kuɗaɗen crypto</string>
+    <string name="CexButton">canji</string>
+    <string name="SharedNotification" formatted="false">an raba %what</string>
+    <string name="AuthAutopayTitle">Biyan da aka ba izini</string>
+    <string name="AuthAutopayDeniedTitle">An hana biyan da aka ba izini</string>
+    <string name="AuthAutopay" formatted="false">%amt zuwa %domain</string>
+    <string name="TpToBeDone">Za a nuna haɗin Trickle Pay ɗinku a nan</string>
+    <string name="TpHistoryTbd">Za a nuna tarihin Trickle Pay ɗinku a nan</string>
+    <string name="AcceptTpRegistration">Amince da rajista daga:</string>
+    <string name="EditTpRegistration">Saitin ƙungiya:</string>
+    <string name="AcceptTpRegistrationTopic">Manufa:</string>
+    <string name="TpMaxSpendHint">iyakar biyan atomatik</string>
+    <string name="TpAssetInfoRequest">Buƙatun bayanan kadara</string>
+    <string name="TpAssociatedAccount" formatted="false">Yana da alaƙa da: %act</string>
+    <string name="TpAssociatedAddress" formatted="false">%addr</string>
+    <string name="SpecialTxNotif">Buƙatar izinin maʼamala</string>
+    <string name="AssetNotif">Buƙatar bayanan kadara</string>
+    <string name="PaymentRequest">Buƙatar biya</string>
+    <string name="IdentityNotif">Buƙatar shaida/shiga</string>
+    <string name="TpMaxHeading">Iyakar biyan atomatik</string>
+    <string name="TpMaxPer">Iyaka kowace buƙata</string>
+    <string name="TpMaxPerDay">Iyaka kowace rana</string>
+    <string name="TpMaxPerWeek">Iyaka kowane mako</string>
+    <string name="TpMaxPerMonth">Iyaka kowane wata</string>
+    <string name="TpEnableAutopay">Kunna biyan atomatik (idan ba a zaɓa ba, duk biyan kuɗi zai nemi izinin mai amfani kuma za a yi watsi da iyakokin da ke ƙasa)</string>
+    <string name="asciiArrow"><![CDATA[=>]]></string>
+    <string name="TpNoRegistrations">Babu rajistar Trickle Pay</string>
+    <string name="TpNoSession">Babu buƙatar Trickle Pay</string>
+    <string name="TpRegistrations">Rajista</string>
+    <string name="TpRegDenied">An hana rajista</string>
+    <string name="TpRegAccepted">An amince da rajista</string>
+    <string name="TpRegUnchanged">Ba a canza rajista ba</string>
+    <string name="TpRequestAutoDeny">An hana buƙata (atomatik)</string>
+    <string name="TpRequestAutoAccept">An amince da buƙata (atomatik)</string>
+    <string name="TpTxDenied">An hana maʼamala</string>
+    <string name="TpTxAccepted">An amince da maʼamala</string>
+    <string name="TpNetworkTimeout">Lokacin maʼamala ya ƙare</string>
+    <string name="TpPartialSubmitted">An aika tayi</string>
+    <string name="TpAssetRequestDenied">An hana bayanan kadara</string>
+    <string name="TpAssetRequestAccepted">Ana aika bayanan kadara</string>
+    <string name="Actions">Ayyuka</string>
+    <string name="SpecialTpTransactionFrom">Maʼamala ta musamman daga</string>
+    <string name="IncompleteTpTransactionFrom">Tabbataccen tayi daga</string>
+    <string name="TpEntails">Ya ƙunshi</string>
+    <string name="TpInAccount">Amfani da asusu</string>
+    <string name="TpAssetRequestFrom">Buƙatar bayanan kadara daga</string>
+    <string name="TpHandledByAccount">asusunku na iya ɗaukarsa</string>
+    <string name="TpAssetMatches" formatted="false">Za a ba wannan sabis bayani game da kadarori %num da kuke da su.</string>
+    <string name="TpAssetInfoNotXfer">Amincewa da wannan buƙata kawai yana ba sabis ɗin bayanin mallakarku.  Ba ya ba da izinin kowace turawa.</string>
+    <string name="ForAFeeOf" formatted="false">haɗe da caji na %fee %units</string>
+    <string name="TpExchangingTokens" formatted="false">da canza token (ana aika %tokSnd, ana karɓa %tokRcv).</string>
+    <string name="TpShowingTokens" formatted="false">An bayyana nauʼikan token %tokReveal (an kashe zuwa ga kanku, don tabbatar da mallakarsu).</string>
+    <string name="TpSendingTokens" formatted="false">da aika nauʼikan token %tokSnd.</string>
+    <string name="TpReceivingTokens" formatted="false">da karɓar nauʼikan token %tokRcv.</string>
+    <string name="TpHasNoPurpose">Wannan buƙata ba ta shafi wannan asusu ba.</string>
+    <string name="TpSendToTitle">Mai buƙatar biya</string>
+    <string name="TpSpends">Kashewa</string>
+    <string name="TpSendRequestDenied">An hana biya</string>
+    <string name="TpSendAutoReject">An ƙi biya ta atomatik</string>
+    <string name="TpSendRequestAccepted">An amince da biya</string>
+    <string name="TpWhyNotAuto">Ba za a sa hannu ta atomatik ba saboda</string>
+    <string name="TpAutomaticDisabled">An kashe biyan atomatik</string>
+    <string name="TpExceededMaxPer">Ya wuce iyakar kowace buƙata</string>
+    <string name="TpExceededMaxDaily">Ya wuce iyakar kowace rana</string>
+    <string name="TpExceededMaxWeekly">Ya wuce iyakar kowane mako</string>
+    <string name="TpExceededMaxMonthly">Ya wuce iyakar kowane wata</string>
+    <string name="title_activity_alert_history">Sabbin saƙonni</string>
+    <string name="IssueReportInstructions">Ku ba masu haɓaka manhaja wannan bayani:</string>
+    <string name="AssetApplication">Buɗe</string>
+    <string name="AssetMarketplace">Ciniki</string>
+    <string name="AssetAddedToTransferList">An ƙara zuwa Aika a babban shafi</string>
+    <string name="NftCardFront">Gaba</string>
+    <string name="NftCardBack">Baya</string>
+    <string name="NftPublicMedia">Abubuwan ciki</string>
+    <string name="NftOwnerMedia">Abin mai shi</string>
+    <string name="Content">Abin ciki</string>
+    <string name="Private">Na sirri</string>
+    <string name="NftPrivateDescription">Wannan abin ciki na mai kadarar ne</string>
+    <string name="NftInfo">Bayani</string>
+    <string name="NftLegal">Lasisi</string>
+    <string name="NftSeries" formatted="false">Silsila: %series</string>
+    <string name="NftAuthor" formatted="false">Mai ƙirƙira: %author</string>
+    <string name="NftNoInfoProvided">...Ba a ba da bayani ba...</string>
+    <string name="IssuedToConnection">An buɗe a shafin da aka haɗa</string>
+    <string name ="demonstratingOwnership">Tabbatar da mallaka</string>
+    <string name="AndSomeAssets"> da wasu kadarori</string>
+    <string name="AssetTypes" formatted="false">nauʼikan kadara %assetTypes</string>
+    <string name="ExplainRestaurant">Sabis na yin oda a gidajen cin abinci ta yanar gizo (na kaiwa ko ɗauka) na iya karɓar kuɗin crypto ko da wurin kansa ba ya karɓa.</string>
+    <string name="RestaurantButton">Yin oda a Menufy</string>
+    <string name="RestaurantUrl">https://www.menufy.com</string>
+    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
+    <string name="ExplainStoreMap">Nemo wuraren da ke karɓar kuɗin crypto kusa da ku.</string>
+    <string name="StoreMapButton">taswirar shaguna</string>
+    <string name="StoreMapUrl">https://map.bitcoin.com</string>
+    <string name="StoreMapAppPackage"></string>
+    <string name="ExplainTxBit">txbit.io: Canza NEXA zuwa wasu kuɗaɗen crypto</string>
+    <string name="welcome1Label">Barka da zuwa</string>
+    <string name="welcome1">Barka da zuwa Wally, walat na kuɗin crypto!\n\nA shafuka masu zuwa, za ku kafa asusunku na farko na blockchain ɗin Nexa (NEX) sannan ku saita wasu sabis kamar sarrafa kalmomin shiga.\n\nKo kuma ku danna kibiyar baya don tsallake wannan jagorar saitin.</string>
+    <string name="welcome2_title">Saitin asusun NEXA</string>
+    <string name="welcome2">A shafi na gaba, za ku kafa asusunku na farko na Nexa.\n\nWannan asusu yana ɗauke da kuɗin Nexa naku da shaidunku. Shaida sabon fasali ne na Wally Wallet, wanda ke ba ku damar shiga shafukan da ke goyon bayanta ta atomatik.\n\nKuna iya zaɓar kare asusunku da lambar shaida ta sirri (PIN), amma muna shawartar sababbin masu amfani da kada su yi amfani da PIN (kuma su riƙe sauran kuɗi kaɗan) a asusunsu na farko. Domin kariyar mai amfani, asusun da PIN ke karewa ba sa bayyana sai an shigar da PIN ɗin da ya dace (ba a nuna ko an shigar da PIN mara inganci ba).\n\nIdan kuna son dawo da asusun NEXA da yake nan, ku shigar da kalmomin sirri. Idan wannan layi ya kasance babu komai, za a ƙirƙiri sabon asusu.</string>
+    <string name="welcome3_title" formatted="false">Kalmomin sirri na asusun Nexa</string>
+    <string name="welcome3">Barka da zuwa 3 ! (Za a iya inganta wannan rubutun gaisuwa)</string>
+    <string name="welcome4_title">Shaida</string>
+    <string name="welcome4">Na gaba, za a kai ku allon bayanan shaida.  Ana amfani da wannan bayani lokacin da kuke amfani da Wally a matsayin mai sarrafa shaida da shiga (don shiga shafuka daban-daban ta atomatik ko ba da bayani lokacin siyayya). Wally yana matuƙar mai da hankali kan sirri!
+Ba za a raba wannan bayani  da kowane shafi ba tare da izininku bayyananne ba, kuma BA a taɓa aika wani bayani daga wannan walat zuwa ga masu ƙirƙirar manhajar ba.  Kuna iya kuma zaɓar barin dukkan filayen babu komai.
+Idan kun gama, ku danna kibiyar baya (sama a hagu).</string>
+    <string name="welcomeComplete">Wannan ya kammala saitin.  Idan ba ku kammala wani mataki a cikin wannan gaisuwa ba, dukkan filayen suna nan a cikin manhajar kanta.
+Na gode, ku ji daɗin sabon walat ɗinku!</string>
+    <string name="ExplainGiftCards">Sayen katin kyauta yana ba ku damar shiga ɗaruruwan shaguna da ba sa karɓar kuɗin crypto kai tsaye.</string>
+    <string name="GiftCardButton">Katin kyauta na eGifter</string>
+    <string name="GiftCardUrl">https://www.egifter.com</string>
+    <string name="GiftCardAppPackage">com.groupgifting.android</string>
+    <string name="Pinförslag">
+    <font size="15">Ana buƙatar wannan lambar sirri don shiga asusun</font>
+</string>
+    <string name="sync_title">Daidaita imel akai-akai</string>
+    <string name="attachment_title">Sauke abubuwan haɗe masu shigowa</string>
+    <string name="attachment_summary_on">Sauke abubuwan haɗe na imel ta atomatik</string>
+    <string name="attachment_summary_off">Sauke abubuwan haɗe kawai idan an buƙata</string>
+    <string name="signature_title">Sa hannunku</string>
+    <string name="reply_title">Aikin asali lokacin amsawa</string>
+    <string name="discoveredAccountDetails" formatted="false">An gano sauran kuɗi %bal %units\na cikin adireshi %addr da maʼamaloli %tx</string>
+    <string name="discoveredWarning">Idan wannan ya yi daidai, kuna iya ƙirƙirar wannan asusu yanzu</string>
+    <string name="backgroundSync">Daidaitawa a bayan fage</string>
+    <string name="scanQr">Duba QR</string>
+    <string name="imageQr">QR daga hoto</string>
+    <string name="paste">Manna</string>
+    <string name="recentTransactions">Sabbin maʼamaloli</string>
+    <string name="sendingFrom">Ana aikawa daga</string>
+    <string name="enterAddress">Shigar da adireshi...</string>
+    <string name="noteOptional">Tsokaci (na zaɓi)</string>
+    <string name="clearNote">Share tsokaci</string>
+    <string name="clearAddress">Share adireshi</string>
+    <string name="clearAmount">Share adadi</string>
+    <string name="available">Akwai</string>
+    <string name="amountPlain">Adadi</string>
+    <string name="enterNEXAmount">Shigar da adadin NEX...</string>
+    <string name="note">Tsokaci</string>
+    <string name="confirmSend">Tabbatar da aikawa</string>
+    <string name="syncing">Ana daidaitawa...</string>
+    <string name="enterAmount" formatted="false">Shigar da adadin %assetName</string>
+    <string name="fee">Caji</string>
+    <string name="connectionWarning">Gargaɗi: Babu haɗin blockchain ko sadarwa. Idan kun aika yanzu, mai karɓa ba zai ga wannan turawa nan take ba. Za a aika da zarar an dawo da haɗin.</string>
+    <string name="NetworkUnstable">Sadarwa mai rauni</string>
+    <string name="TokenMissing">Token ba ya kan blockchain </string>
+    <string name="Sell">Sayar</string>
+    <string name="CreateAnOffer">Ƙirƙiri tayi</string>
+    <string name="Price">Farashi</string>
+    <string name="NexaPrice">Shigar da farashin Nexa</string>
+    <string name="AssetAmountName" formatted="false">Kuna da %amount %assetName</string>
+    <string name="scanToBuyOne">Duba QR don sayen %name</string>
+    <string name="scanToBuySeveral">Duba QR don sayen %amount %name</string>
+    <string name="nexaOfferAmount" formatted="false">Kan %amount NEXA</string>
+    <string name="purchaseComplete">An kammala sayayya</string>
+    <string name="setTheNexaPrice">Saita farashin Nexa</string>
+    <string name="setTheAssetAmount">Saita adadin kadara</string>
+    <string name="publishOnline">Buga tayi a yanar gizo</string>
+    <string name="offerCreated">An ƙirƙiri tayi!</string>
+    <string name="ConfigureService">Saita sabis</string>
+    <string name="AcceptOrRejectService">Amince ko ƙi sabis</string>
+    <string name="Domain">Domain</string>
+    <string name="Services">Sabis</string>
+    <string name="Purpose">Manufa</string>
+    <string name="AutoPay">Biyan atomatik</string>
+    <string name="AutoPayInstructions">Idan ba a kunna akwatin da ke ƙasa ba, duk buƙatun biya daga wannan sabis za su nemi izininku kuma ba za a kula da iyakokin da ke ƙasa ba.</string>
+    <string name="LimitedAutoApproval">Amincewa ta atomatik mai iyaka</string>
+    <string name="AutoPayMaxPerRequest">Iyaka kowace buƙata</string>
+    <string name="AutoPayMaxPerDay">Iyaka kowace rana</string>
+    <string name="AutoPayMaxPerWeek">Iyaka kowane mako</string>
+    <string name="AutoPayMaxPerMonth">Iyaka kowane wata</string>
+    <string name="EnableServices">Kunna allon sabis</string>
+    <string name="NoServicesRegistered">Babu sabis mai rajista.</string>
+    <string name="Start">Fara</string>
+    <string name="Meditation">Tunani</string>
+    <string name="Meditate">Yi tunani</string>
+    <string name="Sound">Sauti</string>
+    <string name="OneMinuteIntervalSound">Sauti kowane minti 1</string>
+    <string name="MeditationVersion">Siga: 1.0.3 (build 156)</string>
+    <string name="Meditating">Ana tunani...</string>
+    <string name="MediationComplete">An kammala tunani!</string>
+    <string name="Okay">To</string>
+    <string name="Minutes">Mintuna</string>
+    <string name="Camouflage">Ɓoyewa</string>
+    <string name="CamouflageAsMeditationTimer">Ɓoye manhaja a matsayin agogon tunani.</string>
+    <string name="CamouflageDescriptionAndroid">Kunna ɓoyewa yana rufe manhajar sannan ya ɓoye ta a matsayin manhaja mai suna Meditate. Don kashe ɓoyewar manhajar Meditate, ku buɗe menu ɗin manhaja sannan ku danna lambar sigar sau biyar.</string>
+    <string name="CamouflageDescriptionOther">Don kashe ɓoyewar manhajar Meditate, ku buɗe menu ɗin manhaja sannan ku danna lambar sigar sau biyar.</string>
+    <string name="CamouflageAsMeditateAppAndroid">Ɓoye a matsayin manhajar Meditate</string>
+</resources>
