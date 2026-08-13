@@ -32,31 +32,36 @@ The TestFlight BETA is used for testing new features and bugfixes and usually ha
 Use `git clone https://gitlab.com/wallywallet/android.git` or `git clone git@gitlab.com:wallywallet/android.git` to clone this repository.
 
 
-## Nexa AI skills for Claude
+## Loading/Updating Nexa AI skills for Claude
 
-The [`.claude/skills/`](.claude/skills/) directory contains 16 [Agent Skills](https://code.claude.com/docs/en/skills.md) for building Nexa applications in Kotlin: libnexakotlin, libnexaapp, NPL smart contracts, tokens/groups, the TDPP Wally wallet-connect protocol, electrum monitoring, node RPC, CAPD messaging, and more. [`.claude/skills/INDEX.md`](.claude/skills/INDEX.md) describes each skill and how they relate.
+```bash
+./gradlew syncNexaSkills
+```
+Will create (on first run) or update (on subsequent runs) the [`.claude/skills`](...) directory. You must bump to the
+desired skills version in the root [`build.gradle.kts`](...)
+
+```kotlin
+plugins {
+    id("org.nexa.aiskills") version "<VERSION>"
+}
+```
+
+The [`.claude/skills/`](.claude/skills/) directory contains 16 [Agent Skills](https://code.claude.com/docs/en/skills.md) for building Nexa applications in Kotlin:
+libnexakotlin, libnexaapp, NPL smart contracts, tokens/groups, the TDPP Wally wallet-connect protocol, electrum monitoring,
+node RPC, CAPD messaging, and more. [`.claude/skills/INDEX.md`](.claude/skills/INDEX.md) describes each skill and how they relate.
 
 The skills are maintained in the [nexaaiskills](https://gitlab.com/nexa/nexaaiskills) repository (its `skills/` directory) and vendored here.
 
 ### Using the skills in this repository
 
-[Claude Code](https://claude.com/claude-code) discovers project skills in `.claude/skills/` automatically. A skill loads on its own when a task matches its description, or can be invoked explicitly with `/<skill-name>`, e.g. `/nexa-transaction-construction`.
-
-### Adding the skills to another project
-
-Copy the contents of the source repository's `skills/` directory into the other project's `.claude/skills/` directory:
-
-```bash
-git clone git@gitlab.com:nexa/nexaaiskills.git
-mkdir -p your-project/.claude/skills
-cp -R nexaaiskills/skills/* your-project/.claude/skills/
-```
-
-To make the skills available in every project on your machine, copy them into your personal skills directory `~/.claude/skills/` instead.
+[Claude Code](https://claude.com/claude-code) discovers project skills in `.claude/skills/` automatically. A skill loads on its own when a task
+matches its description, or can be invoked explicitly with `/<skill-name>`, e.g. `/nexa-transaction-construction`.
 
 ### Priming an agent for Nexa development
 
-[`.claude/skills/primeAgentPrompt.md`](.claude/skills/primeAgentPrompt.md) teaches an agent how to work with the skills corpus: consult skills before writing Nexa-specific code, trust the corpus over training priors, and start each task from `INDEX.md`. Reference it from your project's `CLAUDE.md`:
+[`.claude/skills/primeAgentPrompt.md`](.claude/skills/primeAgentPrompt.md) teaches an agent how to work with the skills corpus: consult skills before
+writing Nexa-specific code, trust the corpus over training priors, and start each task from `INDEX.md`. Reference it
+from your project's `CLAUDE.md`:
 
 ```markdown
 Before any Nexa-specific work, read .claude/skills/primeAgentPrompt.md and follow it.

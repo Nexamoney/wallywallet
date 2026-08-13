@@ -2,6 +2,7 @@ local.properties
 .idea
 .kotlin
 .gradle
+.claude
 **build
 **.DS_Store
 i18n/*.bin
