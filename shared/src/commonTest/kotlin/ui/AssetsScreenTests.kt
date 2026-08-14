@@ -1,23 +1,48 @@
 package ui
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.AssetListItemView
 import info.bitcoinunlimited.www.wally.ui.AssetScreen
 import info.bitcoinunlimited.www.wally.ui.AssetView
+import info.bitcoinunlimited.www.wally.ui.NavigationRoot
+import info.bitcoinunlimited.www.wally.ui.ScreenId
+import info.bitcoinunlimited.www.wally.ui.nav
 import info.bitcoinunlimited.www.wally.ui.setSelectedAccount
+import info.bitcoinunlimited.www.wally.ui.views.AccountPill
+import info.bitcoinunlimited.www.wally.ui.views.AccountUiDataViewModel
+import info.bitcoinunlimited.www.wally.ui.views.AssetViewModel
+import info.bitcoinunlimited.www.wally.ui.views.UnlockViewModel
 import org.nexa.assets.AssetInfo
 import org.nexa.assets.AssetPerAccount
 import org.nexa.assets.NexaNFTv2
 import org.nexa.libnexakotlin.ChainSelector
 import org.nexa.libnexakotlin.GroupId
 import org.nexa.libnexakotlin.GroupInfo
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTestApi::class)
 class AssetsScreenTests:WallyUiTestBase()
 {
+    // devMode is a process-wide global and the settings screen persists it to a preference store
+    // that outlives the test run, so put both back the way we found them.
+    private val devModeWas = wallyApp!!.preferenceDB.getBoolean(DEV_MODE_PREF, false)
+
+    @AfterTest
+    fun resetDevMode()
+    {
+        devMode = devModeWas
+        wallyApp!!.preferenceDB.edit().putBoolean(DEV_MODE_PREF, devModeWas).commit()
+    }
+
     @Test
     fun assetListItemViewTest() = runComposeUiTest {
         val assetPerAccount = assetPerAccountFaker()
@@ -163,5 +188,73 @@ class AssetsScreenTests:WallyUiTestBase()
         settle()
         waitForCatching { onNodeWithText(mockLicense, substring = true).assertExists(); true }
         onNodeWithText(mockLicense, substring = true).assertIsDisplayed()
+    }
+
+    @Test
+    fun assetListShowsGroupIdsAfterEnablingDeveloperMode() = runComposeUiTest {
+        devMode = false
+
+        val specs = listOf(
+          "SolarCoin" to "Solar Panel #42",
+          "LunarToken" to "Moon Rock #7",
+          "OceanCert" to "Deep Reef #3",
+          "PixelArt" to "Sunset Vista",
+        )
+        val assets = specs.mapIndexed { i, (name, title) ->
+            val groupId = GroupId(ChainSelector.NEXA, ByteArray(32) { ((it + 16 * i) % 256).toByte() })
+            val assetInfo = AssetInfo(groupId)
+            assetInfo.name = name
+            assetInfo.nft = NexaNFTv2("niftyVer", title, "series", "author", listOf(), "appUri", "info")
+            AssetPerAccount(GroupInfo(groupId, 10L), assetInfo, null)
+        }
+        val groupIds = assets.map { it.groupInfo.groupId.toStringNoPrefix() }
+        val account = mockAccount(initialAssets = assets.associateBy { it.groupInfo.groupId })
+        setSelectedAccount(account)
+
+        val viewModelStoreOwner = object : ViewModelStoreOwner {
+            override val viewModelStore: ViewModelStore = ViewModelStore()
+        }
+        val assetViewModel = AssetViewModel()
+        val accountUiDataViewModel = AccountUiDataViewModel()
+        val pill = AccountPill(wallyApp!!.focusedAccount)
+        val unlock = UnlockViewModel(wallyApp!!.focusedAccount)
+
+        // nav is a global: switch before composing so the first composition is the asset list and
+        // not the splash screen, or whatever screen a previously run test left behind.
+        nav.switch(ScreenId.Assets)
+        setContent {
+            CompositionLocalProvider(
+              LocalViewModelStoreOwner provides viewModelStoreOwner
+            ) {
+                NavigationRoot(Modifier, WindowInsets(0, 0, 0, 0), pill, assetViewModel, accountUiDataViewModel, unlock)
+            }
+        }
+        settle()
+
+        // All four assets are listed, but their group ids are developer-only info
+        waitForCatching { onNodeWithText(specs.first().second).assertExists(); true }
+        for ((_, title) in specs) onNodeWithText(title).assertExists()
+        for (gid in groupIds) onNodeWithText(gid).assertDoesNotExist()
+
+        // Android draws the gear in its native title bar, which is outside of the compose tree
+        if (platform().hasNativeTitleBar) nav.go(ScreenId.Settings)
+        else onNodeWithContentDescription("Settings").performClick()
+        settle()
+
+        waitForCatching { onNodeWithTag("SettingsScreenScrollable").isDisplayed() }
+        onNodeWithTag("SettingsScreenScrollable").performScrollToNode(hasText(i18n(S.enableDeveloperView)))
+        onNodeWithTag("DevModeSwitch").performClick()
+        settle()
+        onNodeWithTag("DevModeSwitch").assertIsOn()
+        // The switch persists DEV_MODE_PREF from Dispatchers.IO. Wait for that write, otherwise it
+        // can land after resetDevMode() and leave developer mode on for the tests that follow.
+        waitForCatching { wallyApp!!.preferenceDB.getBoolean(DEV_MODE_PREF, false) }
+
+        // Back to the assets list through the bottom navigation bar
+        onNodeWithTag("AssetsButton").performClick()
+        settle()
+
+        waitForCatching { onNodeWithText(groupIds.first()).assertExists(); true }
+        for (gid in groupIds) onNodeWithText(gid).assertIsDisplayed()
     }
 }
