@@ -28,6 +28,7 @@ import info.bitcoinunlimited.www.wally.ui.*
 import info.bitcoinunlimited.www.wally.ui.theme.*
 import org.nexa.libnexakotlin.SearchDerivationPathActivity
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
@@ -198,7 +199,14 @@ open class AccountUiDataViewModel: ViewModel()
         viewModelScope.launch(Dispatchers.Default) {
             for(c in accountChangedNotification)
             {
-                if (c == "*all changed*")  // this is too long to be a valid account name
+                // Coalesce notification bursts (e.g. during chain sync) into one update per account
+                val changed = mutableSetOf(c)
+                while (true)
+                {
+                    val more = accountChangedNotification.tryReceive().getOrNull() ?: break
+                    changed.add(more)
+                }
+                if ("*all changed*" in changed)  // this is too long to be a valid account name
                 {
                     wallyApp?.orderedAccounts(true)?.forEach { account ->
                         setAccountUiDataForAccount(account)
@@ -206,16 +214,17 @@ open class AccountUiDataViewModel: ViewModel()
                 }
                 else
                 {
-                    val act = wallyApp?.accounts?.get(c)
-                    if (act != null)
-                    {
-                        accountUIData.update {
-                            val updatedMap = it.toMutableMap()
-                            updatedMap[c] = act.uiData()
-                            updatedMap.toMap()
+                    accountUIData.update {
+                        val updatedMap = it.toMutableMap()
+                        for (name in changed)
+                        {
+                            val act = wallyApp?.accounts?.get(name)
+                            if (act != null) updatedMap[name] = act.uiData()
                         }
+                        updatedMap.toMap()
                     }
                 }
+                delay(100)  // rate-limit so a sync storm accumulates in the channel instead of being processed item by item
             }
         }
     }
