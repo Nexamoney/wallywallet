@@ -5,7 +5,22 @@ import info.bitcoinunlimited.www.wally.*
 import info.bitcoinunlimited.www.wally.ui.ScreenId
 import info.bitcoinunlimited.www.wally.ui.SendScreenNavParams
 import info.bitcoinunlimited.www.wally.ui.nav
+import io.ktor.network.selector.SelectorManager
+import io.ktor.network.sockets.InetSocketAddress
+import io.ktor.network.sockets.ServerSocket
+import io.ktor.network.sockets.Socket
+import io.ktor.network.sockets.aSocket
+import io.ktor.network.sockets.openReadChannel
+import io.ktor.network.sockets.openWriteChannel
+import io.ktor.utils.io.readRemaining
+import io.ktor.utils.io.readUTF8Line
+import io.ktor.utils.io.writeStringUtf8
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import org.nexa.libnexakotlin.*
+import org.nexa.threads.millinow
 import org.nexa.threads.millisleep
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -294,6 +309,96 @@ class AppTest : WallyUiTestBase()
         // Just verifying no exception is thrown
     }
 
+    @Test
+    fun postThenSuccessDisplaysResponseAndCallsNext()
+    {
+        val app = wallyApp!!
+        val server = TestHttpServer()
+        server.start()
+        try
+        {
+            server.respond = { _, _ -> httpResponse("200 OK", "server said hi") }
+            var calls = 0
+            app.postThen("http://127.0.0.1:${server.port}/ok", {}) { calls++ }
+            assertTrue(waitUntil { calls == 1 })
+            millisleep(500U)
+            assertEquals(1, calls)
+            assertEquals(listOf("/ok"), server.requests)
+            // The response body is passed to displayNotice, which only reaches alerts when there is no native title bar
+            if (!platform().hasNativeTitleBar) assertTrue(alerts.any { it.msg == "server said hi" })
+        }
+        finally { server.stop() }
+    }
+
+    @Test
+    fun postThenFollowsRedirectLocation()
+    {
+        val app = wallyApp!!
+        val server = TestHttpServer()
+        server.start()
+        try
+        {
+            server.respond = { path, _ ->
+                if (path == "/start") httpResponse("302 Found", location = "http://127.0.0.1:${server.port}/moved")
+                else httpResponse("200 OK", "arrived")
+            }
+            var nextCalled = false
+            app.postThen("http://127.0.0.1:${server.port}/start", {}) { nextCalled = true }
+            assertTrue(waitUntil { nextCalled })
+            assertEquals(listOf("/start", "/moved"), server.requests)
+        }
+        finally { server.stop() }
+    }
+
+    @Test
+    fun postThenRedirectWithoutLocationGivesUpAfterTenTries()
+    {
+        val app = wallyApp!!
+        val server = TestHttpServer()
+        server.start()
+        try
+        {
+            // No Location header -- postThen throws CannotLoadException, which the retry loop swallows
+            server.respond = { _, _ -> httpResponse("302 Found") }
+            var nextCalled = false
+            app.postThen("http://127.0.0.1:${server.port}/nowhere", {}) { nextCalled = true }
+            assertTrue(waitUntil(20_000L) { server.requests.size >= 10 })
+            millisleep(2000U)
+            assertEquals(10, server.requests.size)
+            assertFalse(nextCalled)
+        }
+        finally { server.stop() }
+    }
+
+    @Test
+    fun postThenRetriesAfter429()
+    {
+        assertRetriesThenSucceeds("429 Too Many Requests")
+    }
+
+    @Test
+    fun postThenRetriesAfter503()
+    {
+        assertRetriesThenSucceeds("503 Service Unavailable")
+    }
+
+    /** The first POST is answered with [busyStatus], the second with 200; postThen should wait and retry. */
+    private fun assertRetriesThenSucceeds(busyStatus: String)
+    {
+        val app = wallyApp!!
+        val server = TestHttpServer()
+        server.start()
+        try
+        {
+            server.respond = { _, n -> if (n == 1) httpResponse(busyStatus) else httpResponse("200 OK", "ok") }
+            var nextCalled = false
+            app.postThen("http://127.0.0.1:${server.port}/busy", {}) { nextCalled = true }
+            assertTrue(waitUntil(20_000L) { nextCalled })
+            assertEquals(2, server.requests.size)
+        }
+        finally { server.stop() }
+    }
+
     // --- AccessHandler tests ---
 
     @Test
@@ -427,5 +532,76 @@ class AppTest : WallyUiTestBase()
         var completionCalled = false
         backgroundSync { completionCalled = true }
         assertTrue(completionCalled)
+    }
+}
+
+private fun waitUntil(timeoutMs: Long = 10_000L, predicate: () -> Boolean): Boolean
+{
+    val deadline = millinow() + timeoutMs
+    while (!predicate() && millinow() < deadline) millisleep(50U)
+    return predicate()
+}
+
+private fun httpResponse(status: String, body: String = "", location: String? = null): String
+{
+    val loc = if (location != null) "Location: $location\r\n" else ""
+    return "HTTP/1.1 $status\r\n${loc}Content-Type: text/plain\r\nContent-Length: ${body.length}\r\nConnection: close\r\n\r\n$body"
+}
+
+/** Localhost HTTP server on an ephemeral port that answers each request with whatever [respond] returns. */
+private class TestHttpServer
+{
+    /** Request targets received so far, in order. */
+    val requests = mutableListOf<String>()
+    var port = 0
+    /** Called with the request target and the 1-based request number; returns the raw response to write back. */
+    var respond: (String, Int) -> String = { _, _ -> httpResponse("200 OK") }
+
+    private val selector = SelectorManager(Dispatchers.Default)
+    private val scope = CoroutineScope(Dispatchers.Default)
+    private var socket: ServerSocket? = null
+
+    fun start()
+    {
+        scope.launch {
+            val bound = aSocket(selector).tcp().bind(InetSocketAddress("127.0.0.1", 0))
+            socket = bound
+            port = (bound.localAddress as InetSocketAddress).port
+            try
+            {
+                while (true) serve(bound.accept())
+            }
+            catch (e: Exception) {}  // stop() closed the socket out from under accept()
+        }
+        assertTrue(waitUntil(5000L) { port != 0 }, "test server did not bind")
+    }
+
+    fun stop()
+    {
+        scope.cancel()
+        socket?.close()
+        selector.close()
+    }
+
+    private suspend fun serve(conn: Socket)
+    {
+        try
+        {
+            val input = conn.openReadChannel()
+            val output = conn.openWriteChannel(autoFlush = true)
+            val requestLine = input.readUTF8Line() ?: return
+            var contentLength = 0L
+            while (true)
+            {
+                val header = input.readUTF8Line()
+                if (header.isNullOrEmpty()) break
+                if (header.startsWith("Content-Length:", true)) contentLength = header.substringAfter(':').trim().toLong()
+            }
+            if (contentLength > 0) input.readRemaining(contentLength)
+            requests.add(requestLine.split(" ").getOrElse(1) { "" })
+            output.writeStringUtf8(respond(requests.last(), requests.size))
+            output.flushAndClose()
+        }
+        finally { conn.close() }
     }
 }
