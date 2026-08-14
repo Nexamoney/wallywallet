@@ -506,35 +506,35 @@ fun AccountActionButtons(viewModel: AccountStatisticsViewModel, acc: Account, tx
 
 
             val mod = Modifier.fillMaxWidth(0.90f)
-            OutlinedButton(content = { Text(i18n(S.txHistoryButton)) }, onClick = txHistoryButtonClicked, modifier = mod)
-            OutlinedButton(content = { Text(i18n(S.SetChangePin)) }, onClick = {
+            OutlinedButton(content = { Text(i18n(S.txHistoryButton), textAlign = TextAlign.Center) }, onClick = txHistoryButtonClicked, modifier = mod)
+            OutlinedButton(content = { Text(i18n(S.SetChangePin), textAlign = TextAlign.Center) }, onClick = {
                 accountAction.value = AccountAction.PinChange
             }, modifier = mod.testTag("SetChangePinButton"))
             if (wallyApp?.nullablePrimaryAccount != acc)    // it not primary
-                OutlinedButton(content = { Text(i18n(S.setAsPrimaryAccountButton)) }, onClick = {
+                OutlinedButton(content = { Text(i18n(S.setAsPrimaryAccountButton), textAlign = TextAlign.Center) }, onClick = {
                     accountAction.value = AccountAction.PrimaryAccount
                 }, modifier = mod)
-            OutlinedButton(content = { Text(i18n(S.assessUnconfirmed)) }, onClick = {
+            OutlinedButton(content = { Text(i18n(S.assessUnconfirmed), textAlign = TextAlign.Center) }, onClick = {
                 accountAction.value = AccountAction.Reassess
             }, modifier = mod)
-            OutlinedButton(content = { Text(i18n(S.searchWalletTx)) }, onClick = {
+            OutlinedButton(content = { Text(i18n(S.searchWalletTx), textAlign = TextAlign.Center) }, onClick = {
                 accountAction.value = AccountAction.Search
                 viewModel.rediscoverWalletTx()
                                                                                  }, modifier = mod)
-            OutlinedButton(content = { Text(i18n(S.ViewRecoveryPhrase)) }, onClick = {
+            OutlinedButton(content = { Text(i18n(S.ViewRecoveryPhrase), textAlign = TextAlign.Center) }, onClick = {
                 accountAction.value = AccountAction.RecoveryPhrase
             }, modifier = mod)
-            OutlinedButton(content = { Text(i18n(S.deleteWalletAccount)) }, onClick = {
+            OutlinedButton(content = { Text(i18n(S.deleteWalletAccount), textAlign = TextAlign.Center) }, onClick = {
                 accountAction.value = AccountAction.Delete
             }, modifier = mod)
 
             if (devMode)
             {
-                OutlinedButton(content = { Text(i18n(S.rediscoverWalletTx)) }, onClick = {
+                OutlinedButton(content = { Text(i18n(S.rediscoverWalletTx), textAlign = TextAlign.Center) }, onClick = {
                     accountAction.value = AccountAction.Rediscover
                     viewModel.rediscoverWalletTx()
                     }, modifier = mod)
-                OutlinedButton(content = { Text(i18n(S.rediscoverBlockchain)) }, onClick = {
+                OutlinedButton(content = { Text(i18n(S.rediscoverBlockchain), textAlign = TextAlign.Center) }, onClick = {
                     accountAction.value = AccountAction.RediscoverBlockchain
                 }, modifier = mod)
                 /*  Messes up the account prehistory to see if rediscover properly corrects it
