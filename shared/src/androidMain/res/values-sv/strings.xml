@@ -502,6 +502,7 @@
     <string name="TpSendingTokens" formatted="false">och skickar %tokSnd tokentyper.</string>
     <string name="TpReceivingTokens" formatted="false">och tar emot %tokRcv tokentyper.</string>
     <string name="TpHasNoPurpose">Denna begäran påverkar inte detta konto.</string>
+    <string name="TpProposalMissingSignature">Den här transaktionen saknar en signatur som den begärande webbplatsen borde ha tillhandahållit, så den kan inte slutföras. Inget har spenderats från din plånbok.</string>
     <string name="TpSendToTitle">Betalning begärd av</string>
     <string name="TpSpends">Spenderar</string>
     <string name="TpSendRequestDenied">Betalning nekad</string>

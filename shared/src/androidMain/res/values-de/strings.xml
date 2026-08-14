@@ -499,6 +499,7 @@
     <string name="TpSendingTokens" formatted="false">und sendet %tokSnd Token-Typen.</string>
     <string name="TpReceivingTokens" formatted="false">und empfängt %tokRcv Token-Typen.</string>
     <string name="TpHasNoPurpose">Diese Anfrage hat keine Auswirkung auf diesen Account.</string>
+    <string name="TpProposalMissingSignature">Dieser Transaktion fehlt eine Signatur, die die anfragende Website hätte bereitstellen müssen, daher kann sie nicht abgeschlossen werden. Aus Ihrem Wallet wurde nichts ausgegeben.</string>
     <string name="TpSendToTitle">Zahlung angefordert von</string>
     <string name="TpSpends">Ausgaben</string>
     <string name="TpSendRequestDenied">Zahlung abgelehnt</string>

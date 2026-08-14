@@ -499,6 +499,7 @@
     <string name="TpSendingTokens" formatted="false">y enviando %tokSnd tipos de tokens.</string>
     <string name="TpReceivingTokens" formatted="false">y recibiendo %tokRcv tipos de tokens.</string>
     <string name="TpHasNoPurpose">Esta solicitud no afecta a esta cuenta.</string>
+    <string name="TpProposalMissingSignature">A esta transacción le falta una firma que el sitio solicitante debería haber proporcionado, por lo que no se puede completar. No se ha gastado nada de su billetera.</string>
     <string name="TpSendToTitle">Pago solicitado por</string>
     <string name="TpSpends">Gasta</string>
     <string name="TpSendRequestDenied">Pago denegado</string>

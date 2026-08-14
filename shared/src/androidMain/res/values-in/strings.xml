@@ -499,6 +499,7 @@
     <string name="TpSendingTokens" formatted="false">dan mengirim %tokSnd jenis token.</string>
     <string name="TpReceivingTokens" formatted="false">dan menerima %tokRcv jenis token.</string>
     <string name="TpHasNoPurpose">Permintaan ini tidak berpengaruh pada akun ini.</string>
+    <string name="TpProposalMissingSignature">Transaksi ini kekurangan tanda tangan yang seharusnya disediakan oleh situs peminta, sehingga tidak dapat diselesaikan. Tidak ada yang dibelanjakan dari dompet Anda.</string>
     <string name="TpSendToTitle">Pembayaran Diminta Oleh</string>
     <string name="TpSpends">Pengeluaran</string>
     <string name="TpSendRequestDenied">Pembayaran ditolak</string>

@@ -502,6 +502,7 @@
     <string name="TpSendingTokens" formatted="false">da aika nauʼikan token %tokSnd.</string>
     <string name="TpReceivingTokens" formatted="false">da karɓar nauʼikan token %tokRcv.</string>
     <string name="TpHasNoPurpose">Wannan buƙata ba ta shafi wannan asusu ba.</string>
+    <string name="TpProposalMissingSignature">Wannan maʼamala ba ta da sa hannun da ya kamata shafin da ya aika buƙatar ya bayar, saboda haka ba za a iya kammala ta ba. Ba a kashe komai daga walat ɗinku ba.</string>
     <string name="TpSendToTitle">Mai buƙatar biya</string>
     <string name="TpSpends">Kashewa</string>
     <string name="TpSendRequestDenied">An hana biya</string>

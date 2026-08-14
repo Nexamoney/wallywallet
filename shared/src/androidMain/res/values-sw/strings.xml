@@ -502,6 +502,7 @@
     <string name="TpSendingTokens" formatted="false">na kutuma aina %tokSnd za tokeni.</string>
     <string name="TpReceivingTokens" formatted="false">na kupokea aina %tokRcv za tokeni.</string>
     <string name="TpHasNoPurpose">Ombi hili halina athari kwenye akaunti hii.</string>
+    <string name="TpProposalMissingSignature">Muamala huu unakosa saini ambayo tovuti iliyotuma ombi ilipaswa kutoa, kwa hivyo hauwezi kukamilika. Hakuna kilichotumika kutoka kwenye pochi yako.</string>
     <string name="TpSendToTitle">Malipo yameombwa na</string>
     <string name="TpSpends">Inatumia</string>
     <string name="TpSendRequestDenied">Malipo yamekataliwa</string>

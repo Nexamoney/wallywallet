@@ -502,6 +502,7 @@
     <string name="TpSendingTokens" formatted="false">e inviando %tokSnd tipi di token.</string>
     <string name="TpReceivingTokens" formatted="false">e ricevendo %tokRcv tipi di token.</string>
     <string name="TpHasNoPurpose">Questa richiesta non ha alcun effetto su questo account.</string>
+    <string name="TpProposalMissingSignature">In questa transazione manca una firma che il sito richiedente avrebbe dovuto fornire, quindi non può essere completata. Non è stato speso nulla dal tuo portafoglio.</string>
     <string name="TpSendToTitle">Pagamento richiesto da</string>
     <string name="TpSpends">Spende</string>
     <string name="TpSendRequestDenied">Pagamento negato</string>

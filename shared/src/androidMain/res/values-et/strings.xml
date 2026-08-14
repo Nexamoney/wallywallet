@@ -499,6 +499,7 @@
     <string name="TpSendingTokens" formatted="false">ja %tokSnd tokenitüübi saatmine.</string>
     <string name="TpReceivingTokens" formatted="false">ja %tokRcv tokenitüübi vastuvõtmine.</string>
     <string name="TpHasNoPurpose">See päring ei mõjuta seda kontot.</string>
+    <string name="TpProposalMissingSignature">Sellel tehingul puudub allkiri, mille taotluse esitanud lehekülg oleks pidanud andma, seega ei saa tehingut lõpule viia. Teie rahakotist ei ole midagi kulutatud.</string>
     <string name="TpSendToTitle">Makse taotleja</string>
     <string name="TpSpends">Kulutab</string>
     <string name="TpSendRequestDenied">Makse keelatud</string>
