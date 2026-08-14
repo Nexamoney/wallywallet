@@ -9,6 +9,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.outlined.Cancel
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material.icons.outlined.RequestQuote
 import androidx.compose.material3.Icon
@@ -275,7 +277,6 @@ fun SpecialTxPermScreen(sess: TricklePaySession, unlock: UnlockViewModel)
     var GuiCustomTxFee = ""
     var GuiCustomTxTokenSummary = ""
     var GuiCustomTxError = ""
-    var DeleteButtonText = S.deny
     var netSats = 0L
 
     var receivingTokenTypes = 0L
@@ -341,14 +342,17 @@ fun SpecialTxPermScreen(sess: TricklePaySession, unlock: UnlockViewModel)
             error = i18n(S.TpHasNoPurpose)
         }
 
-        panalysis.completionException?.let { error = it.message ?: "" }
+        panalysis.completionException?.let {
+            // A raw exception (with tx hex appended after a newline) is not fit for the screen; log has the details
+            error = if (panalysis.foreignUnsignedInputs.isNotEmpty()) i18n(S.TpProposalMissingSignature)
+                    else (it.message ?: "").substringBefore('\n')
+        }
 
         if (error.isNotEmpty())  // If there's an exception, the only possibility is to abort
         {
             //ui.GuiCustomTxErrorHeading.visibility = View.VISIBLE
             // ui.GuiTpSpecialTxAccept.visibility = View.GONE
             GuiCustomTxError = error
-            DeleteButtonText = S.cancel
         }
         else
         {
@@ -624,18 +628,14 @@ fun SpecialTxPermScreen(sess: TricklePaySession, unlock: UnlockViewModel)
             Text(GuiCustomTxTokenSummary, modifier = tm, style = ts, textAlign = TextAlign.Center)
 
             Spacer(Modifier.defaultMinSize(1.dp,10.dp).weight(0.05f))
-
-            if (GuiCustomTxError != "")
-            {
-                CenteredSectionText(S.CannotCompleteTransaction)
-                Spacer(Modifier.height(8.dp))
-                Text(GuiCustomTxError, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, maxLines = 100, softWrap = true)
-            }
         }
 
-        // Bottom button row
+        // Bottom button row; a failed proposal can only be acknowledged, not accepted or denied
+        val isError = GuiCustomTxError != ""
         ButtonRowAcceptDeny({acceptProposal()}, { rejectProposal() },
-          Modifier.align(Alignment.CenterHorizontally).fillMaxWidth().wrapContentHeight().background(Color.White), acceptEnabled = GuiCustomTxError == "")
+          Modifier.align(Alignment.CenterHorizontally).fillMaxWidth().wrapContentHeight().background(Color.White), acceptEnabled = !isError,
+          denyText = if (isError) S.Okay else S.deny,
+          denyIcon = if (isError) Icons.Outlined.CheckCircle else Icons.Outlined.Cancel)
     }
 }
 

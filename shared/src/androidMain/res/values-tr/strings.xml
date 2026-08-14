@@ -501,6 +501,7 @@
     <string name="TpSendingTokens" formatted="false">ve %tokSnd tür token gönderiliyor.</string>
     <string name="TpReceivingTokens" formatted="false">ve %tokRcv tür token alınıyor.</string>
     <string name="TpHasNoPurpose">Bu isteğin bu hesap üzerinde hiçbir etkisi yok.</string>
+    <string name="TpProposalMissingSignature">Bu işlemde, isteği gönderen sitenin sağlamış olması gereken bir imza eksik olduğundan işlem tamamlanamıyor. Cüzdanınızdan hiçbir şey harcanmadı.</string>
     <string name="TpSendToTitle">Ödeme İsteği Gönderen</string>
     <string name="TpSpends">Harcama</string>
     <string name="TpSendRequestDenied">Ödeme reddedildi</string>

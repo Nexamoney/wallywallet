@@ -499,6 +499,7 @@
     <string name="TpSendingTokens" formatted="false">in pošiljanje %tokSnd vrst žetonov.</string>
     <string name="TpReceivingTokens" formatted="false">in prejemanje %tokRcv vrst žetonov.</string>
     <string name="TpHasNoPurpose">Ta zahteva nima učinka na ta račun.</string>
+    <string name="TpProposalMissingSignature">Tej transakciji manjka podpis, ki bi ga moralo zagotoviti spletno mesto, ki je poslalo zahtevo, zato je ni mogoče dokončati. Iz vaše denarnice ni bilo porabljeno nič.</string>
     <string name="TpSendToTitle">Plačilo zahtevano od</string>
     <string name="TpSpends">Poraba</string>
     <string name="TpSendRequestDenied">Plačilo zavrnjeno</string>

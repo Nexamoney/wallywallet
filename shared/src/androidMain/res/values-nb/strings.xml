@@ -499,6 +499,7 @@
     <string name="TpSendingTokens" formatted="false">og sender %tokSnd typer tokener.</string>
     <string name="TpReceivingTokens" formatted="false">og mottar %tokRcv typer tokener.</string>
     <string name="TpHasNoPurpose">Denne forespørselen har ingen effekt på denne kontoen.</string>
+    <string name="TpProposalMissingSignature">Denne transaksjonen mangler en signatur som nettstedet som sendte forespørselen skulle ha levert, så den kan ikke fullføres. Ingenting er brukt fra lommeboken din.</string>
     <string name="TpSendToTitle">Betaling forespurt av</string>
     <string name="TpSpends">Bruker</string>
     <string name="TpSendRequestDenied">Betaling avvist</string>

@@ -499,6 +499,7 @@
     <string name="TpSendingTokens" formatted="false">i enviament de %tokSnd tipus de tokens.</string>
     <string name="TpReceivingTokens" formatted="false">i recepció de %tokRcv tipus de tokens.</string>
     <string name="TpHasNoPurpose">Aquesta sol·licitud no té cap efecte en aquest compte.</string>
+    <string name="TpProposalMissingSignature">A aquesta transacció li falta una signatura que el lloc sol·licitant hauria d\'haver proporcionat, per la qual cosa no es pot completar. No s\'ha gastat res de la vostra cartera.</string>
     <string name="TpSendToTitle">Pagament sol·licitat per</string>
     <string name="TpSpends">Despeses</string>
     <string name="TpSendRequestDenied">Pagament denegat</string>

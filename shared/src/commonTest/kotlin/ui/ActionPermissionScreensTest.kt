@@ -132,6 +132,110 @@ class ActionPermissionScreensTest : WallyUiTestBase()
     }
 
     @Test
+    fun specialTxPermScreenUnsignedProposalShowsFriendlyError()
+    {
+        val account = mockAccount()
+
+        runComposeUiTest {
+            val tp = TricklePaySession(wallyApp!!.tpDomains)
+            tp.host = "niftyart.cash"
+            tp.topic = "sell-offer"
+
+            val mockTx = mock<iTransaction>()
+            every { mockTx.toHex() } returns "deadbeef"
+            every { mockTx.chainSelector } returns cs
+            tp.proposedTx = mockTx
+
+            // The raw txSanityCheck message carries the full tx hex after the newline
+            val rawMsg = "Wallet nexa tx is not fully signed.  Unsigned input indexes: [0]  Total inputs: 2  Outputs: 4  Fee: 597\n000200a52adeadbeef0123456789abcdef"
+
+            val analysis = TxAnalysisResults(
+                account = account,
+                receivingSats = 0L,
+                sendingSats = 250546L,
+                receivingTokenTypes = 0L,
+                sendingTokenTypes = 0L,
+                imSpendingTokenTypes = 0L,
+                otherInputSatoshis = 546L,
+                myInputSatoshis = 250000L,
+                myInputTokenInfo = emptyMap(),
+                sendingTokenInfo = emptyMap(),
+                receivingTokenInfo = emptyMap(),
+                myNetTokenInfo = emptyMap(),
+                assetViewModel = AssetViewModel(false),
+                completionException = WalletException(rawMsg),
+                foreignUnsignedInputs = listOf(0)
+            )
+            tp.proposalAnalysis.value = analysis
+            tp.pill.account.value = account
+
+            val unlock = UnlockViewModel(MutableStateFlow(account))
+
+            setContent {
+                SpecialTxPermScreen(tp, unlock)
+            }
+
+            // onNodeWithText also guards against the error rendering more than once
+            onNodeWithText(i18n(S.TpProposalMissingSignature)).assertIsDisplayed()
+            onNodeWithText(i18n(S.CannotCompleteTransaction)).assertIsDisplayed()
+
+            // The raw exception text (and the tx hex dump after its newline) must not reach the screen
+            require(onAllNodesWithText("Unsigned input indexes", substring = true).fetchSemanticsNodes().isEmpty()) { "Raw completion exception leaked to the screen" }
+            require(onAllNodesWithText("000200a52adeadbeef", substring = true).fetchSemanticsNodes().isEmpty()) { "Raw tx hex leaked to the screen" }
+
+            // An uncompletable proposal is acknowledged with Okay; accept and deny are not offered
+            onNodeWithText(i18n(S.Okay)).assertIsDisplayed()
+            require(onAllNodesWithText(i18n(S.accept)).fetchSemanticsNodes().isEmpty()) { "Accept button should not render for an uncompletable proposal" }
+            require(onAllNodesWithText(i18n(S.deny)).fetchSemanticsNodes().isEmpty()) { "Deny button should be replaced by Okay for an uncompletable proposal" }
+        }
+    }
+
+    @Test
+    fun specialTxPermScreenCompletionErrorDropsHexDump()
+    {
+        val account = mockAccount()
+
+        runComposeUiTest {
+            val tp = TricklePaySession(wallyApp!!.tpDomains)
+            tp.host = "testmerchant.example.com"
+            tp.topic = "buy-assets"
+
+            val mockTx = mock<iTransaction>()
+            every { mockTx.toHex() } returns "deadbeef"
+            every { mockTx.chainSelector } returns cs
+            tp.proposedTx = mockTx
+
+            val analysis = TxAnalysisResults(
+                account = account,
+                receivingSats = 0L,
+                sendingSats = 1000L,
+                receivingTokenTypes = 0L,
+                sendingTokenTypes = 0L,
+                imSpendingTokenTypes = 0L,
+                otherInputSatoshis = null,
+                myInputSatoshis = 1000L,
+                myInputTokenInfo = emptyMap(),
+                sendingTokenInfo = emptyMap(),
+                receivingTokenInfo = emptyMap(),
+                myNetTokenInfo = emptyMap(),
+                assetViewModel = AssetViewModel(false),
+                completionException = WalletException("Some failure reason\n00aabbccddeeff")
+            )
+            tp.proposalAnalysis.value = analysis
+            tp.pill.account.value = account
+
+            val unlock = UnlockViewModel(MutableStateFlow(account))
+
+            setContent {
+                SpecialTxPermScreen(tp, unlock)
+            }
+
+            onNodeWithText("Some failure reason").assertIsDisplayed()
+            require(onAllNodesWithText("00aabbccddeeff", substring = true).fetchSemanticsNodes().isEmpty()) { "Tx hex after the newline leaked to the screen" }
+        }
+    }
+
+    @Test
     fun sendToPermScreenTest()
     {
         val account = wallyApp!!.newAccount("sendto", 0U, "", cs)!!

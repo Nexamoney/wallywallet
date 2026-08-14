@@ -502,6 +502,7 @@
     <string name="TpSendingTokens" formatted="false">et envoi de %tokSnd types de jetons.</string>
     <string name="TpReceivingTokens" formatted="false">et réception de %tokRcv types de jetons.</string>
     <string name="TpHasNoPurpose">Cette demande n\'a aucun effet sur ce compte.</string>
+    <string name="TpProposalMissingSignature">Il manque à cette transaction une signature que le site demandeur aurait dû fournir, elle ne peut donc pas être finalisée. Rien n\'a été dépensé de votre portefeuille.</string>
     <string name="TpSendToTitle">Paiement demandé par</string>
     <string name="TpSpends">Dépense</string>
     <string name="TpSendRequestDenied">Paiement refusé</string>

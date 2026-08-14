@@ -706,6 +706,7 @@ Good luck!
     <string name="TpSendingTokens" formatted="false">and sending %tokSnd types of tokens.</string>
     <string name="TpReceivingTokens" formatted="false">and receiving %tokRcv types of tokens.</string>
     <string name="TpHasNoPurpose">This request has no effect on this account.</string>
+    <string name="TpProposalMissingSignature">This transaction is missing a signature that the requesting site should have provided, so it cannot be completed. Nothing has been spent from your wallet.</string>
 
     <string name="TpSendToTitle">Payment Requested By</string>
     <string name="TpSpends">Spends</string>

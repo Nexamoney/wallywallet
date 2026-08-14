@@ -499,6 +499,7 @@
     <string name="TpSendingTokens" formatted="false">और %tokSnd प्रकार के टोकन भेजना।</string>
     <string name="TpReceivingTokens" formatted="false">और %tokRcv प्रकार के टोकन प्राप्त करना।</string>
     <string name="TpHasNoPurpose">इस अनुरोध का इस खाते पर कोई असर नहीं है।</string>
+    <string name="TpProposalMissingSignature">इस लेन-देन में वह हस्ताक्षर नहीं है जो अनुरोध करने वाली साइट को प्रदान करना चाहिए था, इसलिए इसे पूरा नहीं किया जा सकता। आपके वॉलेट से कुछ भी खर्च नहीं हुआ है।</string>
     <string name="TpSendToTitle">भुगतान माँगने वाला</string>
     <string name="TpSpends">खर्च</string>
     <string name="TpSendRequestDenied">भुगतान अस्वीकृत</string>

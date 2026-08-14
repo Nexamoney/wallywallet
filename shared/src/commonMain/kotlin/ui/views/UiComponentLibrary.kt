@@ -1388,7 +1388,7 @@ fun ConnectionWarning()
 
 /** Standard wally accept/deny button row */
 @Composable
-fun ButtonRowAcceptDeny(accept: () -> Unit, deny: () -> Unit, modifier: Modifier = Modifier, acceptText:Int=S.accept, denyText:Int=S.deny, acceptEnabled:Boolean = true)
+fun ButtonRowAcceptDeny(accept: () -> Unit, deny: () -> Unit, modifier: Modifier = Modifier, acceptText:Int=S.accept, denyText:Int=S.deny, acceptEnabled:Boolean = true, denyIcon: ImageVector = Icons.Outlined.Cancel)
 {
     Row(
       modifier = modifier.fillMaxWidth().padding(0.dp),
@@ -1407,7 +1407,7 @@ fun ButtonRowAcceptDeny(accept: () -> Unit, deny: () -> Unit, modifier: Modifier
             }
         }
         IconTextButton(
-          icon = Icons.Outlined.Cancel,
+          icon = denyIcon,
           modifier = Modifier.weight(1f),
           description = i18n(denyText),
           color = wallyPurple,

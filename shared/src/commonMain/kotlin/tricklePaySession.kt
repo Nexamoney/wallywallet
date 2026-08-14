@@ -58,7 +58,8 @@ data class TxAnalysisResults(
   val receivingTokenInfo: Map<GroupId, Long>,  // This wallet is receiving these tokens
   val myNetTokenInfo: Map<GroupId, Long>,  // If < 0 this wallet is spending these tokens.  If > 0 this wallet is receiving tokens.  If == 0 (verses undefined) the wallet presented (sent to itself) the token type
   val assetViewModel: AssetViewModel,
-  val completionException: Exception?
+  val completionException: Exception?,
+  val foreignUnsignedInputs: List<Int> = listOf()  // inputs that are not ours and lack signatures (when completion failed)
 )
 
 
@@ -1235,6 +1236,10 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
             completionException = e
         }
 
+        var foreignUnsignedInputs = listOf<Int>()
+        if (completionException != null)
+            foreignUnsignedInputs = tx.inputs.withIndex().filter { it.value.script.size == 0 && wal.getTxo(it.value.spendable.outpoint!!) == null }.map { it.index }
+
         // LogIt.info("Completed tx: " + tx.toHex())
 
         for (inp in tx.inputs)
@@ -1311,7 +1316,7 @@ class TricklePaySession(val tpDomains: TricklePayDomains, val whenDone: ((String
         LogIt.info("trickle pay assets ${alst.size} myNetTokenInfo: ${myNetTokenInfo.size}\n$alst, ")
 
         return TxAnalysisResults(act, receivingSats, sendingSats, receivingTokenTypes, sendingTokenTypes, imSpendingTokenTypes, inputSatoshis, iFunded,
-          myInputTokenInfo, sendingTokenInfo, receivingTokenInfo, myNetTokenInfo, avm, completionException)
+          myInputTokenInfo, sendingTokenInfo, receivingTokenInfo, myNetTokenInfo, avm, completionException, foreignUnsignedInputs)
     }
 }
 
