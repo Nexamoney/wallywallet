@@ -65,6 +65,15 @@ defaultGradle:
   script:
     - ./gradlew --info
 
+i18n:
+  <<: *skip-on-schedule
+  stage: lint
+  script:
+    # Parses every i18n/res/values*/strings.xml and regenerates the S object and
+    # .bin packs; fails on malformed XML or duplicate/unknown keys and prints the
+    # per-locale untranslated fallback counts.
+    - ./gradlew :shared:generateI18nFiles
+
 appJar:
   <<: *skip-on-schedule
   stage: assemble
