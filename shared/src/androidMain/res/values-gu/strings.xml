@@ -1,0 +1,637 @@
+<resources>
+    <string name="app_name" translatable="false">Wally</string>
+    <string-array name="CurrencyTypes">
+        <item>NEX</item>
+        <item>USD</item>
+    </string-array>
+    <string-array name="FiatCurrencyTypes">
+        <item>BRL</item>
+        <item>CAD</item>
+        <item>CNY</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>JPY</item>
+        <item>RUB</item>
+        <item>USD</item>
+        <item>XAU</item>
+    </string-array>
+    <string name="uBCH" translatable="false">uBCH</string>
+    <string-array name="OneToTen">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="tipPercentage">
+        <item>--</item>
+        <item>0%</item>
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+        <item>50%</item>
+    </string-array>
+    <string name="yes">હા</string>
+    <string name="no">ના</string>
+    <string name="at">પર</string>
+    <string name="of">માંથી</string>
+    <string name="choose">પસંદ કરો</string>
+    <string name="accept">સ્વીકારો</string>
+    <string name="reject">નકારો</string>
+    <string name="remove">દૂર કરો</string>
+    <string name="confirm">પુષ્ટિ કરો</string>
+    <string name="cancel">રદ કરો</string>
+    <string name="Back">પાછળ</string>
+    <string name="removeAll">બધું દૂર કરો</string>
+    <string name="done">પૂર્ણ</string>
+    <string name="dismiss">બંધ કરો</string>
+    <string name="deny">ઇનકાર</string>
+    <string name="ask">પૂછો</string>
+    <string name="badSignature">ખોટી સહી</string>
+    <string name="unknownCurrency">અજાણ્યું ચલણ</string>
+    <string name="unknownCryptoCurrency">અજાણી ક્રિપ્ટોકરન્સી અથવા બ્લોકચેન</string>
+    <string name="Processing">પ્રોસેસ થાય છે...</string>
+    <string name="receiving">મળે છે</string>
+    <string name="sending">મોકલાય છે</string>
+    <string name="noAdditionalDetails">કોઈ વધારાની વિગત નથી</string>
+    <string name="unspecified">અનિર્દિષ્ટ</string>
+    <string name="removed">દૂર કર્યું</string>
+    <string name="synced">સિંક થયું</string>
+    <string name="unsynced">સિંક થાય છે</string>
+    <string name="connected">જોડાયેલ</string>
+    <string name="connectionEstablished">જોડાણ થયું</string>
+    <string name="connectionClosed">જોડાણ બંધ થયું</string>
+    <string name="connectionException">સાઇટ સાથે જોડાઈ શકાતું નથી</string>
+    <string name="balance">વર્તમાન બેલેન્સ</string>
+    <string name="totalReceived">કુલ મળેલ</string>
+    <string name="inProgress">ચાલુ છે</string>
+    <string name="staleTransaction">જૂનો થયેલો વ્યવહાર</string>
+    <string name="staleTransactionDetails">આ વ્યવહાર ફુલ નોડે નકાર્યો છે. તે કદાચ જૂનો થઈ ગયો છે (કોઈ બીજાએ પહેલેથી વાપરી લીધો છે), પરંતુ એવું પણ શક્ય છે કે વ્યવહાર ક્યારેય માન્ય જ ન હતો, અથવા તે બરાબર છે અને અમે જે નોડને પૂછ્યું તે અપ્રામાણિક છે. પુષ્ટિ ન થાય ત્યાં સુધી વૉલેટ આ વ્યવહારને અવગણશે.</string>
+    <string name="NoPermission">પરવાનગી નથી</string>
+    <string name="NoPermissionDetails" formatted="false">આ સુવિધા વાપરવા માટે તમારે %perm પરવાનગી ચાલુ કરવી પડશે. તે તમે Android સેટિંગ્સ -> ઍપ્સ -> Wally -> પરવાનગીઓમાં કરી શકો છો</string>
+    <string name="WebLoadingPage"><![CDATA[<body><h1><center>...લોડ થાય છે...</h1></center></body>]]></string>
+    <string name="loading">લોડ થાય છે</string>
+    <string name="Untitled">શીર્ષક વિના</string>
+    <string name="nothing">કંઈ નહીં</string>
+    <string name="breakIt">તોડો</string>
+    <string name="or">અથવા</string>
+    <string name="onBlockchain">પર</string>
+    <string name="NotImplemented">ટૂંક સમયમાં</string>
+    <string name="NoNodes">બ્લોકચેન ઍક્સેસ નથી</string>
+    <string name="cancelled">રદ થયું</string>
+    <string name="refreshQR">સર્વર જોડાણ તૂટ્યું</string>
+    <string name="pleaseWait">રાહ જુઓ</string>
+    <string name="trying">પ્રયાસ ચાલુ</string>
+    <string name="clear">સાફ કરો</string>
+    <string name="thousand">* હજાર</string>
+    <string name="million">* મિલિયન</string>
+    <string name="required">જરૂરી</string>
+    <string name="account">ખાતું</string>
+    <string name="addAccountPlus">+ ખાતું ઉમેરો</string>
+    <string name="receivingTokens">મળતાં ટોકન</string>
+    <string name="spendingTokens">ખર્ચાતાં ટોકન</string>
+    <string name="version" formatted="false">વર્ઝન: %ver (%date)</string>
+    <string name="enableDeveloperView">ઍડવાન્સ્ડ/ડેવલપર મોડ</string>
+    <string name="enableRecompositionCounts">સ્ક્રીન રીડ્રો ગણો</string>
+    <string name="enableExperimentalUx">પ્રાયોગિક ઇન્ટરફેસ</string>
+    <string name="enableDarkMode">ડાર્ક મોડ</string>
+    <string name="enableSound">અવાજ ચાલુ કરો</string>
+    <string name="enableIdentityMenu">ઓળખ સ્ક્રીન ચાલુ કરો</string>
+    <string name="enableTricklePayMenu">Trickle Pay સ્ક્રીન ચાલુ કરો</string>
+    <string name="enableAssetsMenu">એસેટ્સ સ્ક્રીન ચાલુ કરો</string>
+    <string name="only">ફક્ત</string>
+    <string name="prefer">પ્રાધાન્ય</string>
+    <string name="rediscoverWalletTx">બધા વ્યવહારો ફરી શોધો</string>
+    <string name="searchWalletTx">ગુમ થયેલા વ્યવહારો શોધો</string>
+    <string name="rediscoverBlockchain">બ્લોકચેન હેડર ફરી શોધો</string>
+    <string name="logDebugData">ડીબગ ડેટા લોગ કરો</string>
+    <string name="clearIdentityDomains">ઓળખ ડોમેન સાફ કરો</string>
+    <string name="rediscoverTooltip">બ્લોકચેન સ્થિતિ કાઢી નાખો અને વૉલેટ સાથે સંબંધિત બધા વ્યવહારો ફરી શોધો</string>
+    <string name="wordSeed">ખાતાનો ગુપ્ત રિકવરી ફ્રેઝ</string>
+    <string name="deleteWalletAccount">ખાતું કાઢી નાખો</string>
+    <string name="more">વધુ</string>
+    <string name="darkMode">ડાર્ક મોડ</string>
+    <string name="ConsolidationNeeded">પહેલાં ખાતું એકત્રિત કરો</string>
+    <string name="SetChangePin">અનલૉક પિન સેટ કરો કે બદલો</string>
+    <string name="CurrentPin">વર્તમાન પિન</string>
+    <string name="NewPin">નવો પિન</string>
+    <string name="PinChanged">પિન બદલાયો</string>
+    <string name="PinRemoved">પિન દૂર કર્યો</string>
+    <string name="PinInvalid">અમાન્ય પિન</string>
+    <string name="PinTooShort">નવો પિન ખૂબ ટૂંકો છે</string>
+    <string name="WriteDownRecoveryPhraseWarningUi2">ચેતવણી: તમે કેટલાક ખાતાંના ગુપ્ત રિકવરી ફ્રેઝ લખી રાખ્યા નથી! આ ઉપકરણ ખોવાય કે તૂટે તો નાણાં ન ગુમાવાય તે માટે ગુપ્ત રિકવરી ફ્રેઝ કાગળ પર કે અન્ય બિન-ઇલેક્ટ્રોનિક સ્વરૂપે લખી રાખો.</string>
+    <string name="WroteRecoveryPhraseDown">મેં લખી લીધું</string>
+    <string name="RecoveryPhraseKeepRemindingMe">યાદ કરાવતા રહો</string>
+    <string name="ViewRecoveryPhrase">ખાતાનો ગુપ્ત રિકવરી ફ્રેઝ જુઓ</string>
+    <string name="localCurrency">સ્થાનિક ચલણ</string>
+    <string name="assessUnconfirmed">અપુષ્ટ વ્યવહારો ચકાસો</string>
+    <string name="rediscoverNotice">ખાતાની ફરી શોધ શરૂ થઈ</string>
+    <string name="searchNotice">ખાતાની શોધ શરૂ થઈ</string>
+    <string name="unconfAssessmentNotice">અપુષ્ટ વ્યવહારોની ચકાસણી શરૂ થઈ</string>
+    <string name="accountDeleteNotice">ખાતું કાઢી નાખ્યું</string>
+    <string name="rediscoverConfirmation">ખાતું ફરી શોધવાથી વૉલેટ શૂન્ય થઈ જશે અને ખાતું નવેસરથી બનાવ્યું હોય તેમ બ્લોકચેન પર ચુકવણીઓ શોધાશે. આ પ્રક્રિયામાં લાંબો સમય લાગી શકે છે. જોકે, “ફાસ્ટ ફોરવર્ડ” બટન દેખાઈ શકે છે, જે તમને તમારા વૉલેટની પ્રવૃત્તિ ડેટાબેઝ પાસેથી માંગવાનો વિકલ્પ આપે છે. જો ઉપરની તારીખ ખોટી હોય, તો તે અપડેટ થાય તે માટે થોડી સેકંડ રાહ જુઓ.</string>
+    <string name="searchConfirmation">આ સુવિધા બ્લોકચેન પર ગુમ થયેલી ચુકવણીઓ શોધે છે. આ પ્રક્રિયામાં લાંબો સમય લાગી શકે છે. જોકે, “ફાસ્ટ ફોરવર્ડ” બટન દેખાઈ શકે છે, જે તમને તમારા વૉલેટની પ્રવૃત્તિ ડેટાબેઝ પાસેથી માંગવાનો વિકલ્પ આપે છે.</string>
+    <string name="rediscoverBlockchainConfirmation">બ્લોકચેન ફરી શોધવાથી આ વૉલેટમાંથી બધો બ્લોકચેન હેડર ડેટા કાઢી નાખવામાં આવશે અને ફુલ નોડ પરથી ફરી ડાઉનલોડ થશે. આ પ્રક્રિયામાં લાંબો સમય લાગી શકે છે. બ્લોકચેન હેડરમાં સમસ્યા છે તેની ખાતરી હોય તો જ વાપરો.</string>
+    <string name="deleteConfirmation" formatted="false">ખાતું કાઢી નાખવાથી બધા બેલેન્સ, ઓળખ અને ઇતિહાસ અનુપલબ્ધ થઈ જશે, સિવાય કે ખાતાના ગુપ્ત રિકવરી ફ્રેઝ વડે ખાતું રિકવર કરવામાં આવે! તમને સંપૂર્ણ ખાતરી હોય તો જ આ કરો!\n\n“%accountName” ખાતું (%blockchain પર) કાઢી નાખવું છે?</string>
+    <string name="reassessConfirmation">આ પ્રક્રિયા તમે તાજેતરમાં મોકલેલા વ્યવહારો માટે બ્લોકચેન તપાસશે. તે હાજર છે કે નહીં તેના આધારે તેમની પુષ્ટિ કરશે અથવા તેમને ભૂંસી નાખશે. વ્યવહારો ભૂંસાય તો પૈસા ગાયબ થયેલા લાગશે. ખર્ચેલું બેલેન્સ પાછું મેળવવા તમારે “ફરી શોધો” કરવું પડશે. તમે તાજેતરમાં કોઈ વ્યવહાર કર્યો હોય તો આ ન વાપરો, કારણ કે તે વ્યવહાર નેટવર્કમાં પુષ્ટિની રાહ જોતો હોઈ શકે છે.</string>
+    <string name="recoveryPhrase">આ 12 શબ્દોનો ફ્રેઝ તમારું વૉલેટ પાછું મેળવવા વપરાય છે. જેની પાસે આ ફ્રેઝ હશે તે તમારા પૈસા ખર્ચી શકે છે. તેને પેનથી કાગળ પર લખો (અથવા સ્ટીલમાં કોતરાવો) અને સુરક્ષિત જગ્યાએ સાચવો!</string>
+    <string name="recoveryWarning">થોભો! ડિજિટલ સ્વરૂપે સાચવશો નહીં!\nક્લિપબોર્ડ પર કૉપિ, ફોટો, ફોટોકૉપિ કે સ્ક્રીનશૉટ કરશો નહીં.</string>
+    <string name="flickerReason">ફ્લિકરિંગ એ સુરક્ષા માટેનું પગલું છે</string>
+    <string name="PastingRecoveryPhraseIsBadIdea">ક્લિપબોર્ડ પર કૉપિ થયું. જોકે, આ રિકવરી ફ્રેઝ કૉપિ કરીને કોઈ પણ ઍપમાં પેસ્ટ કરવો એ ખૂબ ખરાબ વિચાર છે! ઇમેઇલ, મોટા ભાગની ઍપ, બેકઅપ સેવાઓ વગેરે એટલી સુરક્ષિત નથી હોતી કે શાબ્દિક રીતે પૈસા સમાન આ ફ્રેઝ સાચવી શકે.</string>
+    <string name="primaryAccountConfirmation">તમારું મુખ્ય ખાતું એ ખાતું છે જે તમારી ઓળખ માટે અને આપોઆપ ચુકવણી કરવા માટે વપરાય છે. આ ઍપમાં ઘણી જગ્યાએ તે પહેલું ખાતું પણ દેખાય છે. તે Nexa બ્લોકચેન પર હોવું જરૂરી છે.</string>
+    <string name="primaryAccountSuccess">મુખ્ય ખાતું: %name</string>
+    <string name="AccountActions">ખાતાની ક્રિયાઓ</string>
+    <string name="GeneralSettings">સામાન્ય સેટિંગ્સ</string>
+    <string name="BlockchainSettings">બ્લોકચેન સ્રોત</string>
+    <string name="AccessPriceData">ભાવ ડેટા ઍક્સેસ</string>
+    <string name="oldUi">જૂનું યુઝર ઇન્ટરફેસ</string>
+    <string name="SplitBillDescription">તમે બિલ ચૂકવો (ફિયાટમાં), પછી તમારા મિત્રો નીચેના QR કોડ દ્વારા તમને તેમનો ભાગ ચૂકવે. જો તમારા મિત્રો ચૂકવવાના ન હોય, તો ભાગ પાડવાની સંખ્યામાં તમારી જાતને પણ ગણો!</string>
+    <string name="BillAmount">બિલની રકમ</string>
+    <string name="TipAmount">ટિપની રકમ</string>
+    <string name="TipPercentage">ટિપ ટકા</string>
+    <string name="Total">ભાગ પાડવાની કુલ રકમ</string>
+    <string name="OR">અથવા</string>
+    <string name="QRCodeFor">આના માટે QR કોડ:</string>
+    <string name="Ways">ભાગ:</string>
+    <string name="Tip">ટિપ:</string>
+    <string name="Amount">રકમ:</string>
+    <string name="AmountWithValue" formatted="false">રકમ: %amt</string>
+    <string name="QuantityWithValue" formatted="false">જથ્થો: %qty</string>
+    <string name="balanceOnTheDate" formatted="false">%date મુજબ</string>
+    <string name="fastSync">ઝડપી સિંક</string>
+    <string name="refresh">રિફ્રેશ</string>
+    <string name="goodQR">QR વંચાય છે</string>
+    <string name="badQR">QR વંચાતો નથી</string>
+    <string name="badImageQR">ખરાબ QR છબી. વધુ...</string>
+    <string name="badImageQRhelp">તમે QR કોડનો નજીકથી ફોટો લીધો હોય, તો થોડે દૂરથી ફોટો લેવાનો પ્રયાસ કરો. સફેદ કિનારી પણ QR કોડનો ભાગ છે, અને સ્ક્રીનનો નજીકથી ફોટો લેતાં ગૂંચવણભરી મોઇરે ભાત આવી શકે છે.</string>
+    <string name="GoThere">ત્યાં જાઓ</string>
+    <string name="unlock">અનલૉક</string>
+    <string name="share">શેર કરો</string>
+    <string name="Send">મોકલો</string>
+    <string name="OpenSend">મોકલો</string>
+    <string name="SendCancel">રદ કરો</string>
+    <string name="ignoredInsecureRequest">અસુરક્ષિત વિનંતી અવગણી</string>
+    <string name="fromAccountColon">આ ખાતામાંથી મોકલો:</string>
+    <string name="chooseAccountError">ખાતું પસંદ કરો</string>
+    <string name="toColon">કોને:</string>
+    <string name="To">કોને</string>
+    <string name="ByAuthor">દ્વારા</string>
+    <string name="assetsColon">એસેટ્સ:</string>
+    <string name="assets">એસેટ્સ</string>
+    <string name="NoAssets">ખાતા %act માં કોઈ એસેટ્સ ઉપલબ્ધ નથી</string>
+    <string name="NoAssetsAccount">તમારા ખાતામાં હાલમાં કોઈ એસેટ્સ ઉપલબ્ધ નથી.</string>
+    <string name="fromColon">તરફથી:</string>
+    <string name="ReceiveIntoAccount">ખાતામાં મેળવો</string>
+    <string name="Receive">મેળવો</string>
+    <string name="YourAddress">તમારું %blockchain સરનામું</string>
+    <string name="CopyAddress">સરનામું કૉપિ કરો</string>
+    <string name="AccountListHeader">ખાતાં</string>
+    <string name="Address">સરનામું</string>
+    <string name="clipboard">ક્લિપબોર્ડ</string>
+    <string name="settings">સેટિંગ્સ</string>
+    <string name="help">મદદ</string>
+    <string name="invalidQuantity">અમાન્ય જથ્થો</string>
+    <string name="needNonexistentAuthority">ટોકન અધિકાર જરૂરી</string>
+    <string name="invalidQuantityTooManyDecimalDigits">દશાંશ સ્થાનો બહુ વધારે</string>
+    <string name="roundedUpClickSendAgain">રકમ ઉપર પૂર્ણ કરી, સ્વીકારવા ફરી મોકલો દબાવો</string>
+    <string name="emptyQuantityField"></string>
+    <string name="purchase">ખરીદી</string>
+    <string name="scanPaymentQRcode">ચુકવણી સરનામાનો QR કોડ સ્કેન કરો</string>
+    <string name="ScanQRCodeButton">QR કોડ સ્કેન કરો</string>
+    <string name="PasteDestinationAddressButton">પેસ્ટ કરો</string>
+    <string name="NewAccountButton">નવા ખાતાનું સેટઅપ</string>
+    <string name="NewAccountSearchingForTransactions">...પહેલો વ્યવહાર શોધાય છે...</string>
+    <string name="NewAccountSearchingForAllTransactions">...બધા વ્યવહારો શોધાય છે...</string>
+    <string name="NewAccountSearchFailure">વ્યવહાર શોધ નિષ્ફળ</string>
+    <string name="receiveAddressQRCode">મેળવવાનો QR કોડ</string>
+    <string name="paymentProposal">મળેલા ચુકવણી પ્રસ્તાવ મુજબ</string>
+    <string name="pasteIsEmpty">પેસ્ટ ખાલી</string>
+    <string name="pasteIgnored">પેસ્ટ અવગણ્યું</string>
+    <string name="pasteUnintelligible">પેસ્ટ સમજાયું નહીં</string>
+    <string name="chainIncompatibleWithAddress">સરનામું ખાતા સાથે અસંગત</string>
+    <string name="chainIncompatibleWithAddressDetails" formatted="false">ખાતાનું ચલણ %walletCrypto છે, સરનામું %addressCrypto છે.  સરનામાના બ્લોકચેન સાથે મેળ ખાય તેવું ખાતું મોકલવા માટે પસંદ કરવા કૉમ્બો બૉક્સ વાપરો.</string>
+    <string name="incoming" formatted="false">%delta %unit પેન્ડિંગ સામેલ છે</string>
+    <string name="approximatelyT" formatted="false">આશરે %qty %fiat</string>
+    <string name="fastForward" formatted="false">ફાસ્ટ ફોરવર્ડ</string>
+    <string name="fastforwardStatus" formatted="false">ફાસ્ટ ફોરવર્ડ વિશ્લેષણ: %info</string>
+    <string name="fastforwardStart" formatted="false">શરૂ થયું</string>
+    <string name="exchangeRate" formatted="false">(વિનિમય દર: 1 %fiat ની કિંમત %amt %crypto)</string>
+    <string name="moreThanAvailable">(ઉપલબ્ધ કરતાં વધુ)</string>
+    <string name="moreThanConfirmedAvailable">(પુષ્ટ થયેલ કરતાં વધુ)</string>
+    <string name="actuallySendingT" formatted="false">ખરેખર %qty %crypto મોકલાય છે</string>
+    <string name="copiedToClipboard">ક્લિપબોર્ડ પર\nકૉપિ થયું</string>
+    <string name="copyId">ID કૉપિ</string>
+    <string name="openInBrowser">બ્રાઉઝરમાં ખોલો</string>
+    <string name="cannotCopyToClipboard">ક્લિપબોર્ડ પર કૉપિ થઈ શકતું નથી</string>
+    <string name="tooLargeForClipboard">ક્લિપબોર્ડ માટે બહુ વધારે ડેટા</string>
+    <string name="scanFailed">સ્કેન નિષ્ફળ</string>
+    <string name="scanSuccess">સ્કેન સફળ</string>
+    <string name="sendSuccess">મોકલવાનું સફળ</string>
+    <string name="sendQuantityHint">મોકલવાનો જથ્થો</string>
+    <string name="sendRequestNotification">મોકલવાની વિનંતી</string>
+    <string name="sendToAddressHint">ગંતવ્ય સરનામું</string>
+    <string name="sendAll">બધું</string>
+    <string name="editSendNoteHint">આ ટ્રાન્સફર વિશે અંગત નોંધ</string>
+    <string name="subSatoshiQuantities">દશાંશ સ્થાનો બહુ વધારે -- આ ચલણ એટલા સૂક્ષ્મ ભાગમાં વહેંચાતું નથી</string>
+    <string name="retrievingExchangeRate">વિનિમય દર હજી મેળવાય છે</string>
+    <string name="unavailableExchangeRate">વિનિમય દર ઉપલબ્ધ નથી</string>
+    <string name="SigningWithAccount" formatted="false">આ ખાતાથી સહી: %act</string>
+    <string name="commonIdentityForAccount" formatted="false">ખાતા માટે સામાન્ય ઓળખ: %act</string>
+    <string name="identityRequestNotification">ઓળખની વિનંતી</string>
+    <string name="IdentityDataMissing">ઓળખ માહિતી ખૂટે છે</string>
+    <string name="newDomainRequestingIdentity">નવી સેવા નોંધણી માગે છે</string>
+    <string name="domainRequestingAdditionalIdentityInfo">વધારાની માહિતીની વિનંતી</string>
+    <string name="useUniqueIdentityToolTip">અહીંની તમારી ઓળખ અન્ય સાઇટ્સથી અલગ રાખવા ચાલુ કરો.</string>
+    <string name="provideAlias">તમારું યુઝરનેમ/હેન્ડલ/ઉપનામ આપવું?</string>
+    <string name="provideAliasToolTip">આ વિકલ્પ પસંદ કરવાથી, વિનંતી થાય તો, આ વેબસાઇટને તમારું ઉપનામ (સેટિંગ્સમાં ગોઠવ્યા મુજબ, તમારું સાચું નામ નહીં) અપાશે</string>
+    <string name="provideSocialMedia">તમારી સોશિયલ મીડિયા માહિતી આપવી?</string>
+    <string name="provideSocialMediaToolTip">આ વિકલ્પ પસંદ કરવાથી, વિનંતી થાય તો, આ વેબસાઇટને તમારી સોશિયલ મીડિયા માહિતી (સેટિંગ્સમાં ગોઠવ્યા મુજબ) અપાશે</string>
+    <string name="providePostalAddress">તમારું ટપાલ સરનામું આપવું?</string>
+    <string name="providePostalAddressToolTip">આ વિકલ્પ પસંદ કરવાથી, વિનંતી થાય તો, આ વેબસાઇટને તમારું સરનામું (સેટિંગ્સમાં ગોઠવ્યા મુજબ) અપાશે</string>
+    <string name="provideBillingAddress">તમારું બિલિંગ સરનામું આપવું?</string>
+    <string name="provideBillingAddressToolTip">આ વિકલ્પ પસંદ કરવાથી, વિનંતી થાય તો, આ વેબસાઇટને તમારું બિલિંગ સરનામું (સેટિંગ્સમાં ગોઠવ્યા મુજબ) અપાશે</string>
+    <string name="provideEmail">તમારું ઇમેઇલ સરનામું આપવું?</string>
+    <string name="provideAvatar">તમારી અવતાર છબી આપવી?</string>
+    <string name="provideRealName">તમારું સાચું નામ આપવું?</string>
+    <string name="provideRealNameToolTip">આ વિકલ્પ પસંદ કરવાથી આ વેબસાઇટને તમારું સાચું નામ (સેટિંગ્સમાં ગોઠવ્યા મુજબ) અપાશે</string>
+    <string name="provideBirthday">તમારી જન્મતારીખ આપવી?</string>
+    <string name="providePhone">તમારો ફોન નંબર આપવો?</string>
+    <string name="provideAttestations">પ્રમાણપત્રો આપવાં?</string>
+    <string name="provideAttestationsToolTip">પ્રમાણપત્રો એ ત્રીજા પક્ષની સહીઓ છે જે તમે આપેલી માહિતીની પુષ્ટિ કરે છે</string>
+    <string name="primaryAccountRequired" formatted="false">આ સુવિધા વાપરવા %primCurrency ખાતું જરૂરી છે</string>
+    <string name="primaryAccountRequiredDetails" formatted="false">કેટલીક સુવિધાઓ ચોક્કસ ક્રિપ્ટોકરન્સી સાથે જોડાયેલી છે.  સુવિધા વાપરતાં પહેલાં તમારે તે ક્રિપ્ટોકરન્સી પર ખાતું બનાવવું અથવા અનલૉક કરવું પડશે.</string>
+    <string name="UnknownDomainRegisterFirst">અજાણી સેવા, પહેલાં નોંધણી કરો</string>
+    <string name="Provider" formatted="false">પ્રદાતા: %provider</string>
+    <string name="QrCode">QR કોડ</string>
+    <string name="unknownOperation" formatted="false">કામગીરી %op અજાણી</string>
+    <string name="alreadyRegistered">પહેલેથી નોંધાયેલ</string>
+    <string name="existingRegistration" formatted="false">હાલમાં પસંદ કરેલા ખાતા “%act” ની આ સેવા સાથે નોંધણી થયેલી છે.</string>
+    <string name="nonexistentRegistration" formatted="false">હાલમાં પસંદ કરેલા ખાતા “%act” ની આ સેવા સાથે હજી નોંધણી થયેલી નથી.</string>
+    <string name="provideLoginQuestion">આ સાઇટમાં લૉગ ઇન કરવું?</string>
+    <string name="provideInfoQuestion">ઓળખ માહિતીની વિનંતી કરનાર</string>
+    <string name="signDataQuestion">સહીની વિનંતી કરનાર</string>
+    <string name="nothingToSign">કોઈ સંદેશ આપ્યો નથી</string>
+    <string name="binaryToSign">આ બાઇનરી ડેટા પર સહી કરવી?</string>
+    <string name="textToSign">આ સંદેશ પર સહી કરવી?</string>
+    <string name="sigInClipboard">સહી ક્લિપબોર્ડ પર કૉપિ થઈ</string>
+    <string name="SocialMediaText">સોશિયલ મીડિયા</string>
+    <string name="SocialMediaSummary">સેવા:હેન્ડલ ની યાદી તરીકે દાખલ કરો, દા.ત. twitter:janeDoe, keybase:janieD</string>
+    <string name="UsernameOrAliasText">યુઝરનેમ/હેન્ડલ/ઉપનામ</string>
+    <string name="NameText">પૂરું નામ</string>
+    <string name="PostalAddressText">ટપાલ સરનામું</string>
+    <string name="BillingAddressText">બિલિંગ સરનામું</string>
+    <string name="PostalCodeText">પિન કોડ</string>
+    <string name="EmailText">ઇમેઇલ સરનામું</string>
+    <string name="TwitterText">Twitter</string>
+    <string name="TelegramText">Telegram</string>
+    <string name="IdentityAssociatedWith">સંકળાયેલ ઓળખ માહિતી</string>
+    <string name="ServiceAssociatedWith">આ સેવા પહેલેથી આની સાથે સંકળાયેલી છે:</string>
+    <string name="IdentityInfoNote">આ માહિતી દાખલ કરવી વૈકલ્પિક છે અને તે ફક્ત તમે પસંદ કરો તે સેવાઓને જ અપાશે.  હેતુ એ છે કે ઓળખ-સક્ષમ વેબસાઇટ્સ પર ફક્ત QR કોડ સ્કેન કરીને ફોર્મનાં સામાન્ય ખાનાં ભરી શકાય.</string>
+    <string name="areYouSure">શું તમે ચોક્કસ છો?</string>
+    <string name="WhenAskSure">ઉપરની પુષ્ટિ કરો:</string>
+    <string name="SendConfirmSummary" formatted="false">%dest સરનામે %amt %currency %inFiat%assets મોકલવાની પુષ્ટિ કરો</string>
+    <string name="firstName">પહેલું નામ</string>
+    <string name="lastName">અટક</string>
+    <string name="withholdingMandatoryInfo">સાઇટને એવી માહિતી જોઈએ છે જે તમે આપવાની ના પાડો છો</string>
+    <string name="badLink">ખરાબ લિંક</string>
+    <string name="BadWebLink">અમાન્ય વેબ લિંક</string>
+    <string name="connectionAborted">સાઇટે લૉગ ઇન રદ કર્યું</string>
+    <string name="HintAdjustCostBasis">મૂળ કિંમત કે મૂડી નફો</string>
+    <string name="CostBasis">મૂળ કિંમત</string>
+    <string name="CapitalLoss">મૂડી ખોટ</string>
+    <string name="CapitalGain">મૂડી નફો</string>
+    <string name="OverrideSalesPrice">વેચાણ સમયની કિંમત દાખલ કરો</string>
+    <string name="AccountHistory">વ્યવહારો</string>
+    <string name="NoAccountActivity">ખાતામાં કોઈ પ્રવૃત્તિ નથી</string>
+    <string name="AccountAddresses">સરનામાં</string>
+    <string name="ActiveAddresses">સક્રિય સરનામાં</string>
+    <string name="UsedAddresses">વપરાયેલાં સરનામાં</string>
+    <string name="UnusedAddresses">ન વપરાયેલાં સરનામાં</string>
+    <string name="txHistoryButton">ખાતાની પ્રવૃત્તિ જુઓ કે નિકાસ કરો</string>
+    <string name="setAsPrimaryAccountButton">આને તમારું મુખ્ય ખાતું બનાવો</string>
+    <string name="AccountStatistics">ખાતાના આંકડા</string>
+    <string name="AccountBlockchainSync" formatted="false">હાલમાં %chain બ્લોકચેન પર %sync.</string>
+    <string name="AccountBlockchainDetails" formatted="false">%actBlockDate ના રોજ, %chainBlockCount માંથી બ્લોક %actBlock.</string>
+    <string name="AccountEarliestActivity" formatted="false">પ્રથમ ઉપયોગ: %actPrehistoryDate ના રોજ બ્લોક %actPrehistoryBlock.</string>
+    <string name="AccountBlockchainConnectionDetails" formatted="false">%num નોડ સાથે જોડાયેલ: %names</string>
+    <string name="AccountNumAddresses" formatted="false">%num સરનામાં</string>
+    <string name="CurrentAddress" formatted="false">સરનામા %num પર: %addr</string>
+    <string name="FirstLastReceive" formatted="false">પ્રથમ જમા બ્લોક %first માં, સૌથી તાજેતરની બ્લોક %last માં.</string>
+    <string name="FirstLastSend" formatted="false">પ્રથમ ઉપાડ બ્લોક %first માં, સૌથી તાજેતરનો બ્લોક %last માં.</string>
+    <string name="FirstWithdraw">પ્રથમ ઉપાડ</string>
+    <string name="FirstDeposit">પ્રથમ જમા</string>
+    <string name="never">ક્યારેય નહીં</string>
+    <string name="FirstUse" formatted="false">પ્રથમ ઉપયોગ: %date</string>
+    <string name="LastUse" formatted="false">છેલ્લો ઉપયોગ: %date</string>
+    <string name="Block" formatted="false">બ્લોક: %block</string>
+    <string name="AccountNumTx" formatted="false">%num વ્યવહારો</string>
+    <string name="AccountNumUtxos" formatted="false">%num ખાતાવહી નોંધો</string>
+    <string name="title_activity_assets">એસેટ્સ</string>
+    <string name="title_activity_scan">સ્કેન</string>
+    <string name="title_activity_new_account">નવું ખાતું</string>
+    <string name="AccountName">ખાતાનું નામ</string>
+    <string name="AccountNameHint">1-8 અક્ષર</string>
+    <string name="Blockchain">બ્લોકચેન</string>
+    <string name="AccountRecoveryPhrase">રિકવરી ફ્રેઝ</string>
+    <string name="LeaveEmptyNewWallet">નવું ખાતું બનાવવા માટે ખાલી રાખો</string>
+    <string name="PinSuggestions"><font size="15">ખાતામાં પ્રવેશવા માટે આ ગુપ્ત નંબર જરૂરી છે</font></string>
+    <string name="createNewAccount">નવું ખાતું બનાવો</string>
+    <string name="createSyncAccount">કાળજીપૂર્વક (અને લાંબા) સિંક સાથે ખાતું રિકવર કરો</string>
+    <string name="createDiscoveredAccount">ખાતું તરત રિકવર કરો</string>
+    <string name="invalidRecoveryPhrase">ખોટો રિકવરી ફ્રેઝ</string>
+    <string name="invalidAccountName">અમાન્ય નામ</string>
+    <string name="PassPhrase">પાસફ્રેઝ (વૈકલ્પિક)</string>
+    <string name="Bip44ActivityNotice">ખાતાની પ્રવૃત્તિ મળી</string>
+    <string name="NoBip44ActivityNotice">ચેતવણી, કોઈ વ્યવહાર મળ્યા નથી!</string>
+    <string name="Bip44BtcActivityNotice">બિનપ્રમાણભૂત અથવા ફોર્ક પહેલાંની વૉલેટ પ્રવૃત્તિ મળી</string>
+    <string name="NoBip44BtcActivityNotice">ફોર્ક પહેલાંના કોઈ વ્યવહાર મળ્યા નથી</string>
+    <string name="FirstUseDateHeightInfo" formatted="false">%date થી શરૂ (બ્લોક %height)</string>
+    <string name="NotEnoughRecoveryWords">વધુ રિકવરી શબ્દો જરૂરી</string>
+    <string name="TooManyRecoveryWords">રિકવરી શબ્દો ઘણા વધારે</string>
+    <string name="IncorrectRecoveryWords" formatted="false">અમાન્ય શબ્દો: %words</string>
+    <string name="ElectrumNetworkUnavailable">Electrum નેટવર્ક ઉપલબ્ધ નથી.  વૉલેટ રિકવરી ધીમી રહેશે, અને 1 જાન્યુઆરી, 2020 પહેલાંના વ્યવહારો શોધાશે નહીં</string>
+    <string name="PinHidesAccount">પિન દાખલ ન થાય ત્યાં સુધી ખાતું છુપાવવું?</string>
+    <string name="HiddenAccountExplainer">પિન દાખલ ન થાય ત્યાં સુધી ખાતું છુપાવો</string>
+    <string name="HiddenAccount">છુપાયેલું ખાતું</string>
+    <string name="AutomaticNewAddress">સરનામાની ગોપનીયતા</string>
+    <string name="AutomaticNewAddressToolTip">વર્તમાન સરનામું વપરાય કે તરત આપોઆપ નવું સરનામું બતાવાય છે.</string>
+    <string name="CreatePIN">પિન (વૈકલ્પિક)</string>
+    <string name="PinSpendingUnprotected">પિન વગર ખર્ચ કરવાનું ચાલુ છે (પિન દાખલ કર્યો નથી)</string>
+    <string name="PinSpendingProtected">ખર્ચ કરવા માટે પિન જરૂરી છે</string>
+    <string name="InvalidPIN">અમાન્ય પિન</string>
+    <string name="creatingNoHistoryAccountWarning">તમે ચોક્કસ રિકવરી ફ્રેઝ સાથે ખાતું બનાવી રહ્યા છો, પરંતુ બ્લોકચેન પર કોઈ પ્રવૃત્તિ મળી નથી.\nશું આ બરાબર છે?\nજો હા, તો બનાવો બટન ફરીથી દબાવો અને ખાલી ખાતું બની જશે.  પરંતુ જો આ ખાતામાં પ્રવૃત્તિ હોવી જોઈએ, તો તમે પસંદ કરેલ બ્લોકચેન અને રિકવરી ફ્રેઝ ફરી તપાસો.  જો સમસ્યા એ ન હોય, તો કાં તો બ્લોકચેન નેટવર્ક અત્યારે પહોંચની બહાર છે (પછી ફરી પ્રયાસ કરો), અથવા તે બિનપ્રમાણભૂત વૉલેટ ઍપથી બનાવાયું હતું.  આ ખાતું અત્યારે બનાવશો નહીં.</string>
+    <string name="accountLocked">ખાતું લૉક થયેલું</string>
+    <string name="unknownError">ભૂલ</string>
+    <string name="insufficentBalance">અપૂરતું બેલેન્સ</string>
+    <string name="insufficentTokenBalance">અપૂરતું ટોકન બેલેન્સ</string>
+    <string name="excessiveFee">વધુ પડતી ફી</string>
+    <string name="sendDustError">રકમ ન્યૂનતમથી ઓછી</string>
+    <string name="sendingDustWarning">રકમ નેટવર્ક ન્યૂનતમથી ઓછી છે</string>
+    <string name="feeExceedsFlatMax">ફી સેટ કરેલી મહત્તમ ફ્લેટ ફી કરતાં વધુ છે</string>
+    <string name="notSupported">સમર્થિત નથી</string>
+    <string name="expired">ચુકવણીની મુદત પૂરી</string>
+    <string name="PaymentDataMissing">ચુકવણીમાં ડેટા ખૂટે છે</string>
+    <string name="headersNotForthcoming">હેડર મળી રહ્યા નથી</string>
+    <string name="cantConvert">રૂપાંતર હાલ ઉપલબ્ધ નથી</string>
+    <string name="walletDisconnectedFromBlockchain">વૉલેટ ડિસ્કનેક્ટ થયું</string>
+    <string name="badTransaction">ખોટો વ્યવહાર</string>
+    <string name="badAddress">અમાન્ય સરનામું</string>
+    <string name="unknownAddress">અજાણ્યું સરનામું</string>
+    <string name="badAmount">અમાન્ય રકમ</string>
+    <string name="NoAccounts">કોઈ સુલભ ખાતાં નથી</string>
+    <string name="badCryptoCode">આ ચલણ કે બ્લોકચેન માટે કોઈ અનલૉક કરેલું ખાતું નથી</string>
+    <string name="badCryptoCodeDetails" formatted="false">અજાણ્યું અથવા અનુપલબ્ધ ચલણ: %currency</string>
+    <string name="badCurrencyUnit">ચલણ નથી</string>
+    <string name="incompatibleAccount">ખોટું ચલણ</string>
+    <string name="incompatibleAccountDetails" formatted="false">તમે %cryptoAct ધરાવતા ખાતામાંથી ચૂકવવાનું પસંદ કર્યું, પરંતુ %cryptoPay જરૂરી છે</string>
+    <string name="detailsOfBadAmountFromIntent">કૉલિંગ પ્રોગ્રામે મોકલવાનો જથ્થો આપતી વખતે ખોટા ફોર્મેટમાં નંબર
+        આપ્યો છે. તમારે જથ્થો જાતે દાખલ કરવો પડશે
+    </string>
+    <string name="blankAddress">ખાલી સરનામું</string>
+    <string name="unavailable">ઉપલબ્ધ નથી</string>
+    <string name="blockNotForthcoming">બ્લોક ઉપલબ્ધ નથી</string>
+    <string name="receiveAddressUnavailable">નવું મેળવવાનું સરનામું ગણવામાં આવી રહ્યું છે. કૃપા કરીને રાહ જુઓ...
+    </string>
+    <string name="accountLimitReached">મહત્તમ ખાતાં</string>
+    <string name="accountUnavailableDetails">કાં તો આ બ્લોકચેન સાથે મેળ ખાતું કોઈ ખાતું નથી, અથવા ખાતું અનલૉક કરાયું નથી.</string>
+    <string name="accountUnavailable">કોઈ અનલૉક કરેલું સુસંગત ખાતું નથી</string>
+    <string name="sendMoreThanBalance">તમારી પાસે અત્યારે ઉપલબ્ધ છે તેના કરતાં વધુ સિક્કા મોકલવાનો પ્રયાસ કરી રહ્યા છો.\n\nજો તમને લાગતું હોય કે તમે તમારા બેલેન્સ કરતાં વધુ ખર્ચ કરી રહ્યા નથી, તો કદાચ તમે ભૂલી ગયા હશો કે વ્યવહારો પર થોડી વધારાની ફી લાગે છે, અથવા જો તમારું આખું બેલેન્સ અપુષ્ટ દેખાતું હોય તો તમે સળંગ ઘણા બધા વ્યવહારો કર્યા હશે.\n\nતમે બ્લોકચેનથી કેટલા “આગળ નીકળી” શકો તેની મર્યાદા છે. તમારું અપુષ્ટ બેલેન્સ પુષ્ટ થવા દો અને ફરી પ્રયાસ કરો.</string>
+    <string name="sendMoreTokensThanBalance">તમારી પાસે અત્યારે ઉપલબ્ધ છે તેના કરતાં વધુ ટોકન મોકલવાનો પ્રયાસ કરી રહ્યા છો.</string>
+    <string name="deductedFeeLargerThanSendAmount">કાપવામાં આવતી ફી મોકલવાની રકમ કરતાં વધુ છે</string>
+    <string name="badWalletImplementation">ખોટું વૉલેટ અમલીકરણ.  આ બગની જાણ કરો!</string>
+    <string name="CannotCompleteTransaction">ભૂલ: પૂર્ણ થઈ શકતું નથી</string>
+    <string name="title_split_bill">બિલ વહેંચો</string>
+    <string name="title_activity_settings">સેટિંગ્સ</string>
+    <string name="title_activity_exchange">એક્સચેન્જ</string>
+    <string name="title_activity_shopping">લિંક્સ</string>
+    <string name="ecosystem">ઇકોસિસ્ટમ</string>
+    <string name="title_activity_trickle_pay">Trickle Pay</string>
+    <string name="title_home">હોમ</string>
+    <string name="title_dashboard">ટેસ્ટ</string>
+    <string name="title_notifications">સૂચનાઓ</string>
+    <string name="title_activity_invoices">ઇન્વૉઇસ</string>
+    <string name="title_activity_identity">ઓળખ</string>
+    <string name="title_activity_identity_op">ઓળખ</string>
+    <string name="title_activity_domain_identity_settings">ડોમેન ઓળખ સેટિંગ્સ</string>
+    <string name="title_activity_tx_history" formatted="false">વ્યવહાર ઇતિહાસ: %account</string>
+    <string name="title_activity_address_history" formatted="false">સરનામાં ઇતિહાસ: %account</string>
+    <string name="title_activity_account_details" formatted="false">ખાતું: %account</string>
+    <string name="title_test">ટેસ્ટ</string>
+    <string name="useUniqueIdentity">અનન્ય ક્રિપ્ટોગ્રાફિક ઓળખ વાપરો</string>
+    <string name="title_activity_identity_settings">ઓળખ સેટિંગ્સ</string>
+    <string name="IdentityRegistrations">નોંધાયેલી સેવાઓ</string>
+    <string name="NoIdentitiesRegistered">કોઈ ઓળખ નોંધાયેલી નથી</string>
+    <string name="title_activity_welcome">સ્વાગત</string>
+    <string name="next">આગળ</string>
+    <string name="previous">પાછળ</string>
+    <string name="EnterPIN">પિન દાખલ કરો</string>
+    <string name="EnterPINorBlankToRemove">નવો પિન (ખાલી = દૂર)</string>
+    <string name="ButtonTextHere">બટન લખાણ સેટ કરો</string>
+    <string name="ButtonLinkHere">વેબ લિંક દાખલ કરો</string>
+    <string name="ShoppingWarning">સાવધાન: આ પાના પરની વસ્તુઓ ત્રીજા પક્ષની સેવાઓ અને વેબસાઇટ્સની લિંક છે, જે તમારી સુવિધા માટે અહીં મૂકી છે.  આ સાઇટ/સેવાઓની Wally Wallet દ્વારા ચકાસણી કરાઈ નથી.\n\nવાપરવાનું જોખમ તમારું!</string>
+    <string name="NFTs">નૉન-ફંજિબલ ટોકન (NFT)</string>
+    <string name="ExplainNFTs">NiftyArt.cash: અનન્ય છબીઓ અને અનન્ય વસ્તુઓનાં ડિજિટલ સ્વરૂપ બનાવો અને ટ્રેડ કરો</string>
+    <string name="NftUrl">http://niftyart.cash</string>
+    <string name="NftImproperConstruction">ચેતવણી: નકલી અથવા ખોટી રીતે બનાવેલું!</string>
+    <string name="TokenSourceWebsite">ટોકન સ્રોત:</string>
+    <string name="TokenBadSig">આ ટોકનની માહિતી યોગ્ય રીતે સહી કરેલી નથી.  આ ટોકન નકલી અથવા છેતરામણું હોઈ શકે છે.  એવું પણ બની શકે કે ટોકન સર્જકે ટોકન પર યોગ્ય રીતે સહી કરી નથી.</string>
+    <string name="OpenWebsite" formatted="false">%siteName ખોલો</string>
+    <string name="WebsiteUnavailable" formatted="false">વેબસાઇટ ઉપલબ્ધ નથી</string>
+    <string name="ExplainBitmart">bitmart.com: NEXA ને અન્ય ક્રિપ્ટોકરન્સી માટે ટ્રેડ કરો</string>
+    <string name="ExplainMexc">mexc.com: NEXA ને અન્ય ક્રિપ્ટોકરન્સી માટે ટ્રેડ કરો</string>
+    <string name="ExplainBiconomy">biconomy.com: NEXA ને અન્ય ક્રિપ્ટોકરન્સી માટે ટ્રેડ કરો</string>
+    <string name="CexButton">એક્સચેન્જ</string>
+    <string name="SharedNotification" formatted="false">%what શેર કર્યું</string>
+    <string name="AuthAutopayTitle">મંજૂર કરેલી ચુકવણી</string>
+    <string name="AuthAutopayDeniedTitle">મંજૂર કરેલી ચુકવણી નકારી</string>
+    <string name="AuthAutopay" formatted="false">%domain ને %amt</string>
+    <string name="TpToBeDone">તમારાં Trickle Pay જોડાણો અહીં દેખાશે</string>
+    <string name="TpHistoryTbd">તમારો Trickle Pay ઇતિહાસ અહીં દેખાશે</string>
+    <string name="AcceptTpRegistration">આના તરફથી નોંધણી સ્વીકારો:</string>
+    <string name="EditTpRegistration">આ સેવા માટે સેટિંગ્સ:</string>
+    <string name="AcceptTpRegistrationTopic">હેતુ:</string>
+    <string name="TpMaxSpendHint">મહત્તમ ઑટો-ખર્ચ દાખલ કરો</string>
+    <string name="TpAssetInfoRequest">એસેટ માહિતી વિનંતીઓ</string>
+    <string name="TpAssociatedAccount" formatted="false">આની સાથે સંકળાયેલ: %act</string>
+    <string name="TpAssociatedAddress" formatted="false">%addr</string>
+    <string name="SpecialTxNotif">વ્યવહાર મંજૂરી વિનંતી</string>
+    <string name="AssetNotif">એસેટ માહિતી વિનંતી</string>
+    <string name="PaymentRequest">ચુકવણી વિનંતી</string>
+    <string name="IdentityNotif">ઓળખ/લૉગિન વિનંતી</string>
+    <string name="TpMaxHeading">આપોઆપ ચુકવણી મર્યાદા</string>
+    <string name="TpMaxPer">વિનંતી દીઠ મહત્તમ</string>
+    <string name="TpMaxPerDay">દૈનિક મહત્તમ</string>
+    <string name="TpMaxPerWeek">સાપ્તાહિક મહત્તમ</string>
+    <string name="TpMaxPerMonth">માસિક મહત્તમ</string>
+    <string name="TpEnableAutopay">આપોઆપ ચુકવણી ચાલુ કરો (ચેક ન કરેલું હોય તો દરેક ચુકવણી માટે વપરાશકર્તાની મંજૂરી પુછાશે અને નીચેની મર્યાદાઓ અવગણાશે)</string>
+    <string name="asciiArrow"><![CDATA[=>]]></string>
+    <string name="TpNoRegistrations">કોઈ Trickle Pay નોંધણી નથી</string>
+    <string name="TpNoSession">કોઈ Trickle Pay વિનંતી નથી</string>
+    <string name="TpRegistrations">નોંધણીઓ</string>
+    <string name="TpRegDenied">નોંધણી નકારી</string>
+    <string name="TpRegAccepted">નોંધણી સ્વીકારી</string>
+    <string name="TpRegUnchanged">નોંધણી યથાવત</string>
+    <string name="TpRequestAutoDeny">વિનંતી નકારી (આપોઆપ)</string>
+    <string name="TpRequestAutoAccept">વિનંતી સ્વીકારી (આપોઆપ)</string>
+    <string name="TpTxDenied">વ્યવહાર નકાર્યો</string>
+    <string name="TpTxAccepted">વ્યવહાર સ્વીકાર્યો</string>
+    <string name="TpNetworkTimeout">વ્યવહાર ટાઇમઆઉટ</string>
+    <string name="TpPartialSubmitted">ઑફર સબમિટ કરી</string>
+    <string name="TpAssetRequestDenied">એસેટ માહિતી રોકી રાખી</string>
+    <string name="TpAssetRequestAccepted">એસેટ માહિતી મોકલાય છે</string>
+    <string name="Actions">ક્રિયાઓ</string>
+    <string name="SpecialTpTransactionFrom">ખાસ વ્યવહાર મોકલનાર</string>
+    <string name="IncompleteTpTransactionFrom">પાકી ઑફરનો પ્રસ્તાવ મોકલનાર</string>
+    <string name="TpEntails">સમાવે છે</string>
+    <string name="TpInAccount">વપરાતું ખાતું</string>
+    <string name="TpAssetRequestFrom">એસેટ માહિતીની વિનંતી કરનાર</string>
+    <string name="TpHandledByAccount">તમારું ખાતું આ સંભાળી શકે છે</string>
+    <string name="TpAssetMatches" formatted="false">તમારી માલિકીની %num એસેટ્સ વિશેની માહિતી આ સેવાને આપવામાં આવશે.</string>
+    <string name="TpAssetInfoNotXfer">આ વિનંતી સ્વીકારવાથી સેવાને ફક્ત તમારી માલિકી વિશે માહિતી મળે છે. તે કોઈ ટ્રાન્સફરને મંજૂરી આપતું નથી.</string>
+    <string name="ForAFeeOf" formatted="false">%fee %units ની ફી સહિત</string>
+    <string name="TpExchangingTokens" formatted="false">અને ટોકનની અદલાબદલી (%tokSnd મોકલાય છે, %tokRcv મળે છે).</string>
+    <string name="TpShowingTokens" formatted="false">%tokReveal ટોકન પ્રકારો જાહેર થાય છે (પોતાને જ ખર્ચીને, તમે તેના માલિક છો તે સાબિત કરીને).</string>
+    <string name="TpSendingTokens" formatted="false">અને %tokSnd પ્રકારના ટોકન મોકલાય છે.</string>
+    <string name="TpReceivingTokens" formatted="false">અને %tokRcv પ્રકારના ટોકન મળે છે.</string>
+    <string name="TpHasNoPurpose">આ વિનંતીની આ ખાતા પર કોઈ અસર નથી.</string>
+    <string name="TpSendToTitle">ચુકવણીની વિનંતી કરનાર</string>
+    <string name="TpSpends">ખર્ચે છે</string>
+    <string name="TpSendRequestDenied">ચુકવણી નકારી</string>
+    <string name="TpSendAutoReject">ચુકવણી આપોઆપ નકારી</string>
+    <string name="TpSendRequestAccepted">ચુકવણી સ્વીકારી</string>
+    <string name="TpWhyNotAuto">આપોઆપ સહી નહીં થાય કારણ કે</string>
+    <string name="TpAutomaticDisabled">આપોઆપ ચુકવણી બંધ છે</string>
+    <string name="TpExceededMaxPer">વિનંતી દીઠ મહત્તમ મર્યાદા વટાવે છે</string>
+    <string name="TpExceededMaxDaily">દૈનિક મહત્તમ મર્યાદા વટાવે છે</string>
+    <string name="TpExceededMaxWeekly">સાપ્તાહિક મહત્તમ મર્યાદા વટાવે છે</string>
+    <string name="TpExceededMaxMonthly">માસિક મહત્તમ મર્યાદા વટાવે છે</string>
+    <string name="title_activity_alert_history">તાજેતરના સંદેશા</string>
+    <string name="IssueReportInstructions">આ માહિતી ડેવલપર્સને આપો:</string>
+    <string name="AssetApplication">ચલાવો</string>
+    <string name="AssetMarketplace">ટ્રેડ</string>
+    <string name="AssetAddedToTransferList">મુખ્ય ટૅબમાં “મોકલો”માં ઉમેર્યું</string>
+    <string name="NftCardFront">આગળ</string>
+    <string name="NftCardBack">પાછળ</string>
+    <string name="NftPublicMedia">સામગ્રી</string>
+    <string name="NftOwnerMedia">માલિકની સામગ્રી</string>
+    <string name="Content">સામગ્રી</string>
+    <string name="Private">ખાનગી</string>
+    <string name="NftPrivateDescription">આ સામગ્રી એસેટના માલિકની છે</string>
+    <string name="NftInfo">માહિતી</string>
+    <string name="NftLegal">લાઇસન્સ</string>
+    <string name="NftSeries" formatted="false">શ્રેણી: %series</string>
+    <string name="NftAuthor" formatted="false">સર્જક: %author</string>
+    <string name="NftNoInfoProvided">...કોઈ માહિતી આપી નથી...</string>
+    <string name="IssuedToConnection">જોડાયેલી સાઇટમાં ખોલ્યું</string>
+    <string name ="demonstratingOwnership">માલિકી સાબિત કરવી</string>
+    <string name="AndSomeAssets"> અને કેટલીક એસેટ્સ</string>
+    <string name="AssetTypes" formatted="false">%assetTypes એસેટ પ્રકારો</string>
+    <string name="ExplainRestaurant">ઓનલાઇન રેસ્ટોરન્ટ ઓર્ડરિંગ સેવાઓ (ડિલિવરી કે પિકઅપ માટે) ક્રિપ્ટોકરન્સી સ્વીકારી શકે છે, ભલે રૂબરૂ સ્થળ ન સ્વીકારે.</string>
+    <string name="RestaurantButton">Menufy રેસ્ટોરન્ટ ઓર્ડરિંગ</string>
+    <string name="RestaurantUrl">https://www.menufy.com</string>
+    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
+    <string name="ExplainStoreMap">તમારી નજીકના ક્રિપ્ટોકરન્સી સ્વીકારતા સ્થળો શોધો.</string>
+    <string name="StoreMapButton">સ્ટોર નકશો</string>
+    <string name="StoreMapUrl">https://map.bitcoin.com</string>
+    <string name="StoreMapAppPackage"></string>
+    <string name="ExplainTxBit">txbit.io: NEXA ને અન્ય ક્રિપ્ટોકરન્સી માટે ટ્રેડ કરો</string>
+    <string name="welcome1Label">સ્વાગત</string>
+    <string name="welcome1">Wally માં સ્વાગત છે, એક ક્રિપ્ટોકરન્સી વૉલેટ!\n\nઆગળની સ્ક્રીન પર તમે તમારું પહેલું Nexa બ્લોકચેન ખાતું (NEX) સેટ કરશો અને પાસવર્ડ મેનેજમેન્ટ જેવી અન્ય સેવાઓ ગોઠવશો.\n\nઅથવા આ માર્ગદર્શિત સેટઅપ છોડવા માટે તમે પાછળનું તીર દબાવી શકો છો.</string>
+    <string name="welcome2_title">NEXA ખાતાનાં સેટિંગ્સ</string>
+    <string name="welcome2">આગળના પાના પર તમે તમારું પહેલું Nexa ખાતું સેટ કરશો.\n\nઆ ખાતામાં તમારા Nexa પૈસા અને તમારી ઓળખ હોય છે. ઓળખ એ Wally વૉલેટની નવી સુવિધા છે, જે તમને સપોર્ટેડ વેબસાઇટ પર આપોઆપ લૉગ ઇન કરવા દે છે.\n\nતમે તમારાં ખાતાંને પર્સનલ આઇડેન્ટિફિકેશન નંબર (પિન) વડે સુરક્ષિત કરી શકો છો, પરંતુ અમે નવા વપરાશકર્તાઓને તેમના પહેલા ખાતા માટે પિન ન વાપરવાની (અને ઓછું બેલેન્સ રાખવાની) સલાહ આપીએ છીએ. વપરાશકર્તાની સુરક્ષા માટે, પિનથી સુરક્ષિત ખાતાં સાચો પિન દાખલ ન થાય ત્યાં સુધી દેખાતાં નથી (ખોટો પિન દાખલ થયો હોય તો તે દર્શાવાતું નથી).\n\nજો તમે હાલનું NEXA ખાતું રિકવર કરવા માંગતા હો, તો રિકવરી ફ્રેઝ આપો. જો આ લીટી ખાલી રહેશે, તો નવું ખાતું બનશે.</string>
+    <string name="welcome3_title" formatted="false">Nexa ખાતાનો રિકવરી ફ્રેઝ</string>
+    <string name="welcome3">સ્વાગત 3 ! (આ સ્વાગત લખાણ સુધારી શકાય છે)</string>
+    <string name="welcome4_title">ઓળખ</string>
+    <string name="welcome4">હવે તમને ઓળખ માહિતી સ્ક્રીન પર લઈ જવાશે. જ્યારે તમે Wally ને ઓળખ અને લૉગિન મેનેજર તરીકે વાપરો (વિવિધ વેબસાઇટ પર આપોઆપ લૉગ ઇન કરવા કે ખરીદી વખતે માહિતી આપવા) ત્યારે આ માહિતી વપરાય છે. Wally ગોપનીયતા પર ખૂબ જ ધ્યાન આપે છે!
+તમારી સ્પષ્ટ પરવાનગી વિના આ માહિતી કોઈ વેબસાઇટ સાથે શેર કરવામાં આવશે નહીં, અને આ વૉલેટની કોઈ પણ માહિતી આ ઍપ બનાવનારાઓને ક્યારેય મોકલવામાં આવતી નથી. તમે બધાં ખાનાં ખાલી પણ રાખી શકો છો.
+પૂરું થાય ત્યારે પાછળનું તીર (ઉપર ડાબે) દબાવો.</string>
+    <string name="welcomeComplete">આટલાથી સેટઅપ પૂરું થાય છે. જો તમે આ સ્વાગતનાં કોઈ પગલાં પૂરાં ન કર્યાં હોય, તો બધાં ખાનાં ઍપમાં જ ઉપલબ્ધ છે.
+આભાર, અને તમારા નવા વૉલેટનો આનંદ માણો!</string>
+    <string name="ExplainGiftCards">ગિફ્ટ કાર્ડ ખરીદવાથી તમને એવા સેંકડો સ્ટોર્સ સુધી પહોંચ મળે છે જે સીધી ક્રિપ્ટોકરન્સી સ્વીકારતા નથી.</string>
+    <string name="GiftCardButton">eGifter ગિફ્ટ કાર્ડ</string>
+    <string name="GiftCardUrl">https://www.egifter.com</string>
+    <string name="GiftCardAppPackage">com.groupgifting.android</string>
+    <string name="Pinförslag">
+    <font size="15">ખાતામાં પ્રવેશવા માટે આ ગુપ્ત નંબર જરૂરી છે</font>
+</string>
+    <string name="sync_title">નિયમિત અંતરે ઇમેઇલ સિંક કરો</string>
+    <string name="attachment_title">આવતાં જોડાણો ડાઉનલોડ કરો</string>
+    <string name="attachment_summary_on">ઇમેઇલ જોડાણો આપોઆપ ડાઉનલોડ કરો</string>
+    <string name="attachment_summary_off">વિનંતી પર જ જોડાણો ડાઉનલોડ કરો</string>
+    <string name="signature_title">તમારી સહી</string>
+    <string name="reply_title">જવાબ આપતી વખતે મૂળભૂત ક્રિયા</string>
+    <string name="discoveredAccountDetails" formatted="false">%bal %units નું બેલેન્સ મળ્યું\n%addr સરનામાં અને %tx વ્યવહારોમાં</string>
+    <string name="discoveredWarning">જો આ સાચું લાગે, તો તમે આ ખાતું તરત બનાવી શકો છો</string>
+    <string name="backgroundSync">બૅકગ્રાઉન્ડ સિંક</string>
+    <string name="scanQr">QR સ્કેન</string>
+    <string name="imageQr">છબીમાંથી QR</string>
+    <string name="paste">પેસ્ટ કરો</string>
+    <string name="recentTransactions">તાજેતરના વ્યવહારો</string>
+    <string name="sendingFrom">મોકલનાર ખાતું</string>
+    <string name="enterAddress">સરનામું દાખલ કરો...</string>
+    <string name="noteOptional">નોંધ (વૈકલ્પિક)</string>
+    <string name="clearNote">નોંધ સાફ કરો</string>
+    <string name="clearAddress">સરનામું સાફ કરો</string>
+    <string name="clearAmount">રકમ સાફ કરો</string>
+    <string name="available">ઉપલબ્ધ</string>
+    <string name="amountPlain">રકમ</string>
+    <string name="enterNEXAmount">NEX રકમ દાખલ કરો...</string>
+    <string name="note">નોંધ</string>
+    <string name="confirmSend">મોકલવાની પુષ્ટિ</string>
+    <string name="syncing">સિંક થાય છે...</string>
+    <string name="enterAmount" formatted="false">%assetName રકમ દાખલ કરો</string>
+    <string name="fee">ફી</string>
+    <string name="connectionWarning">ચેતવણી: બ્લોકચેન/નેટવર્ક જોડાણ ઉપલબ્ધ નથી. જો તમે અત્યારે મોકલશો, તો મેળવનારને આ ટ્રાન્સફર તરત દેખાશે નહીં. જોડાણ પાછું આવતાં જ મોકલવામાં આવશે.</string>
+    <string name="NetworkUnstable">નેટવર્ક અસ્થિર</string>
+    <string name="TokenMissing">ટોકન ચેઇન પર નથી </string>
+    <string name="Sell">વેચો</string>
+    <string name="CreateAnOffer">ઑફર બનાવો</string>
+    <string name="Price">કિંમત</string>
+    <string name="NexaPrice">Nexa કિંમત દાખલ કરો</string>
+    <string name="AssetAmountName" formatted="false">તમારી પાસે %amount %assetName છે</string>
+    <string name="scanToBuyOne">%name ખરીદવા સ્કેન કરો</string>
+    <string name="scanToBuySeveral">%amount %name ખરીદવા સ્કેન કરો</string>
+    <string name="nexaOfferAmount" formatted="false">%amount NEXA માટે</string>
+    <string name="purchaseComplete">ખરીદી પૂર્ણ</string>
+    <string name="setTheNexaPrice">Nexa કિંમત સેટ કરો</string>
+    <string name="setTheAssetAmount">એસેટની રકમ સેટ કરો</string>
+    <string name="publishOnline">ઑફર ઓનલાઇન પ્રકાશિત કરો</string>
+    <string name="offerCreated">ઑફર બની ગઈ!</string>
+    <string name="ConfigureService">સેવા ગોઠવો</string>
+    <string name="AcceptOrRejectService">સેવા સ્વીકારો કે નકારો</string>
+    <string name="Domain">ડોમેન</string>
+    <string name="Services">સેવાઓ</string>
+    <string name="Purpose">હેતુ</string>
+    <string name="AutoPay">આપોઆપ ચુકવણી</string>
+    <string name="AutoPayInstructions">જો નીચેનું ચેકબોક્સ બંધ હોય, તો આ સેવાની બધી ચુકવણી વિનંતીઓ તમારી મંજૂરી માંગશે અને નીચેની મર્યાદાઓ અવગણાશે.</string>
+    <string name="LimitedAutoApproval">મર્યાદિત આપોઆપ મંજૂરી આપો</string>
+    <string name="AutoPayMaxPerRequest">વિનંતી દીઠ મહત્તમ</string>
+    <string name="AutoPayMaxPerDay">દૈનિક મહત્તમ</string>
+    <string name="AutoPayMaxPerWeek">સાપ્તાહિક મહત્તમ</string>
+    <string name="AutoPayMaxPerMonth">માસિક મહત્તમ</string>
+    <string name="EnableServices">સેવાઓ સ્ક્રીન ચાલુ કરો</string>
+    <string name="NoServicesRegistered">કોઈ સેવા નોંધાયેલ નથી.</string>
+    <string name="Start">શરૂ કરો</string>
+    <string name="Meditation">ધ્યાન</string>
+    <string name="Meditate">Meditate</string>
+    <string name="Sound">અવાજ</string>
+    <string name="OneMinuteIntervalSound">1 મિનિટના અંતરે અવાજ</string>
+    <string name="MeditationVersion">વર્ઝન: 1.0.3 (બિલ્ડ 156)</string>
+    <string name="Meditating">ધ્યાન ચાલુ છે...</string>
+    <string name="MediationComplete">ધ્યાન પૂર્ણ!</string>
+    <string name="Okay">ઠીક છે</string>
+    <string name="Minutes">મિનિટ</string>
+    <string name="Camouflage">છદ્મવેશ</string>
+    <string name="CamouflageAsMeditationTimer">ઍપને ધ્યાન ટાઇમર તરીકે છુપાવો.</string>
+    <string name="CamouflageDescriptionAndroid">છદ્મવેશ ચાલુ કરવાથી ઍપ બંધ થાય છે અને તે Meditate નામની ઍપ તરીકે છુપાઈ જાય છે. Meditate ઍપનો છદ્મવેશ બંધ કરવા માટે ઍપ મેનૂ ખોલો અને વર્ઝન નંબર પર પાંચ વાર ક્લિક કરો.</string>
+    <string name="CamouflageDescriptionOther">Meditate ઍપનો છદ્મવેશ બંધ કરવા માટે ઍપ મેનૂ ખોલો અને વર્ઝન નંબર પર પાંચ વાર ક્લિક કરો.</string>
+    <string name="CamouflageAsMeditateAppAndroid">Meditate ઍપ તરીકે છદ્મવેશ</string>
+</resources>

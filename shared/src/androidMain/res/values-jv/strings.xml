@@ -1,0 +1,637 @@
+<resources>
+    <string name="app_name" translatable="false">Wally</string>
+    <string-array name="CurrencyTypes">
+        <item>NEX</item>
+        <item>USD</item>
+    </string-array>
+    <string-array name="FiatCurrencyTypes">
+        <item>BRL</item>
+        <item>CAD</item>
+        <item>CNY</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>JPY</item>
+        <item>RUB</item>
+        <item>USD</item>
+        <item>XAU</item>
+    </string-array>
+    <string name="uBCH" translatable="false">uBCH</string>
+    <string-array name="OneToTen">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="tipPercentage">
+        <item>--</item>
+        <item>0%</item>
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+        <item>50%</item>
+    </string-array>
+    <string name="yes">ya</string>
+    <string name="no">ora</string>
+    <string name="at">ing</string>
+    <string name="of">saka</string>
+    <string name="choose">pilih</string>
+    <string name="accept">tampi</string>
+    <string name="reject">tolak</string>
+    <string name="remove">busak</string>
+    <string name="confirm">konfirmasi</string>
+    <string name="cancel">batal</string>
+    <string name="Back">Bali</string>
+    <string name="removeAll">busak kabeh</string>
+    <string name="done">rampung</string>
+    <string name="dismiss">Tutup</string>
+    <string name="deny">tolak</string>
+    <string name="ask">takon</string>
+    <string name="badSignature">tandha tangan salah</string>
+    <string name="unknownCurrency">arta ora dikenal</string>
+    <string name="unknownCryptoCurrency">kripto utawa blockchain ora dikenal</string>
+    <string name="Processing">diproses...</string>
+    <string name="receiving">nampi</string>
+    <string name="sending">ngirim</string>
+    <string name="noAdditionalDetails">ora ana katrangan liya</string>
+    <string name="unspecified">ora ditemtokake</string>
+    <string name="removed">wis dibusak</string>
+    <string name="synced">Sinkron</string>
+    <string name="unsynced">Nyinkronake</string>
+    <string name="connected">kesambung</string>
+    <string name="connectionEstablished">sambungan kasil</string>
+    <string name="connectionClosed">sambungan ditutup</string>
+    <string name="connectionException">ora bisa nyambung menyang situs</string>
+    <string name="balance">saldo saiki</string>
+    <string name="totalReceived">Gunggung sing ditampi</string>
+    <string name="inProgress">lagi mlaku</string>
+    <string name="staleTransaction">Transaksi Basi</string>
+    <string name="staleTransactionDetails">Transaksi iki ditolak dening full node. Bisa uga transaksi iki wis basi (wis dianggo wong liya), nanging bisa uga transaksi iki pancen ora tau sah, utawa malah wis bener nanging node sing ditakoni ora jujur. Dompet bakal nglirwakake transaksi iki kajaba yen wis dikonfirmasi.</string>
+    <string name="NoPermission">Ora Ana Idin</string>
+    <string name="NoPermissionDetails" formatted="false">Panjenengan kudu nguripake idin %perm supaya bisa nganggo fitur iki. Mangga disetel ing Setelan Android -> Aplikasi -> Wally -> Idin</string>
+    <string name="WebLoadingPage"><![CDATA[<body><h1><center>...ngemot...</h1></center></body>]]></string>
+    <string name="loading">ngemot</string>
+    <string name="Untitled">Tanpa Judhul</string>
+    <string name="nothing">ora ana</string>
+    <string name="breakIt">pedhot</string>
+    <string name="or">utawa</string>
+    <string name="onBlockchain">ing</string>
+    <string name="NotImplemented">Bakal Teka</string>
+    <string name="NoNodes">Ora bisa akses blockchain</string>
+    <string name="cancelled">dibatalake</string>
+    <string name="refreshQR">Sambungan server pedhot</string>
+    <string name="pleaseWait">mangga ngentosi</string>
+    <string name="trying">nyoba</string>
+    <string name="clear">kosongi</string>
+    <string name="thousand">* ewu</string>
+    <string name="million">* yuta</string>
+    <string name="required">wajib</string>
+    <string name="account">Akun</string>
+    <string name="addAccountPlus">+ Tambah Akun</string>
+    <string name="receivingTokens">Nampi token</string>
+    <string name="spendingTokens">Mbayar token</string>
+    <string name="version" formatted="false">Versi: %ver (%date)</string>
+    <string name="enableDeveloperView">Mode lanjut/pangembang</string>
+    <string name="enableRecompositionCounts">Cacah gambar ulang layar</string>
+    <string name="enableExperimentalUx">Antarmuka eksperimen</string>
+    <string name="enableDarkMode">Mode Peteng</string>
+    <string name="enableSound">Uripake swara</string>
+    <string name="enableIdentityMenu">Uripake layar identitas</string>
+    <string name="enableTricklePayMenu">Uripake layar Trickle Pay</string>
+    <string name="enableAssetsMenu">Uripake layar aset</string>
+    <string name="only">mung</string>
+    <string name="prefer">utamakake</string>
+    <string name="rediscoverWalletTx">Temokake Maneh Kabeh Transaksi</string>
+    <string name="searchWalletTx">Golek Transaksi sing Ilang</string>
+    <string name="rediscoverBlockchain">Temokake Maneh Header Blockchain</string>
+    <string name="logDebugData">Cathet Data Debug</string>
+    <string name="clearIdentityDomains">Busak Domain Identitas</string>
+    <string name="rediscoverTooltip">Busak status blockchain lan golek maneh kabeh transaksi sing gegayutan karo dompet</string>
+    <string name="wordSeed">Tembung Wadi Pamulihan Akun</string>
+    <string name="deleteWalletAccount">Busak Akun</string>
+    <string name="more">Liyane</string>
+    <string name="darkMode">Mode peteng</string>
+    <string name="ConsolidationNeeded">Konsolidasi akun dhisik</string>
+    <string name="SetChangePin">Setel utawa Ganti PIN Bukak Kunci</string>
+    <string name="CurrentPin">PIN Saiki</string>
+    <string name="NewPin">PIN Anyar</string>
+    <string name="PinChanged">PIN wis diganti</string>
+    <string name="PinRemoved">PIN wis dibusak</string>
+    <string name="PinInvalid">PIN ora sah</string>
+    <string name="PinTooShort">PIN anyar kecendhaken</string>
+    <string name="WriteDownRecoveryPhraseWarningUi2">Awas: panjenengan durung nyathet tembung wadi pamulihan kanggo sawetara akun! Supaya arta ora ilang yen piranti iki ilang utawa rusak, cathet tembung wadi pamulihan ing kertas utawa media liya sing dudu elektronik.</string>
+    <string name="WroteRecoveryPhraseDown">Wis dakcathet</string>
+    <string name="RecoveryPhraseKeepRemindingMe">Elingake terus</string>
+    <string name="ViewRecoveryPhrase">Deleng Tembung Wadi Pamulihan Akun</string>
+    <string name="localCurrency">Arta lokal</string>
+    <string name="assessUnconfirmed">Priksa Transaksi Durung Dikonfirmasi</string>
+    <string name="rediscoverNotice">Nemokake maneh akun wis diwiwiti</string>
+    <string name="searchNotice">Nggoleki akun wis diwiwiti</string>
+    <string name="unconfAssessmentNotice">Mriksa sing durung dikonfirmasi diwiwiti</string>
+    <string name="accountDeleteNotice">Akun wis dibusak</string>
+    <string name="rediscoverConfirmation">Nemokake maneh akun bakal ngenolake dompet lan nggoleki bayaran ing blockchain, kaya-kaya akun iki nembe digawe. Proses iki bisa suwe. Nanging, tombol "Maju cepet" bisa muncul sing menehi pilihan kanggo njaluk data aktivitas dompet panjenengan saka database. Yen tanggal ing ndhuwur ora bener, mangga ngentosi sawetara detik supaya dianyari.</string>
+    <string name="searchConfirmation">Fungsi iki nggoleki bayaran sing ilang ing blockchain. Proses iki bisa suwe. Nanging, tombol "Maju cepet" bisa muncul sing menehi pilihan kanggo njaluk data aktivitas dompet panjenengan saka database.</string>
+    <string name="rediscoverBlockchainConfirmation">Nemokake maneh blockchain bakal mbusak kabeh data header blockchain saka dompet iki lan ngundhuh maneh saka full node. Proses iki bisa suwe. Mung gunakake yen panjenengan yakin tenan ana masalah karo header blockchain.</string>
+    <string name="deleteConfirmation" formatted="false">Mbusak akun bakal ndadekake kabeh saldo, identitas, lan riwayat ora bisa diakses maneh kajaba akun dipulihake nganggo tembung wadi pamulihan akun! Mung tindakake yen panjenengan PANCEN YAKIN!\n\nBusak akun "%accountName" (ing %blockchain)?</string>
+    <string name="reassessConfirmation">Operasi iki bakal mriksa blockchain kanggo transaksi sing lagi wae dikirim panjenengan. Adhedhasar ana utawa orane, transaksi bakal dikonfirmasi utawa dibusak. Yen transaksi dibusak, arta bakal katon ilang. Panjenengan kudu nindakake "temokake maneh" supaya saldo sing wis dienggo bali. Aja dianggo yen panjenengan lagi wae ngirim transaksi, amarga transaksi kasebut bisa uga isih ana ing jaringan, ngentosi konfirmasi.</string>
+    <string name="recoveryPhrase">Rerangken 12 tembung iki dianggo mulihake dompet panjenengan. Sapa wae sing nduweni tembung iki bisa nggunakake kabeh arta panjenengan. Cathet nganggo pulpen ing kertas (utawa ukir ing waja) lan simpen kanthi aman!</string>
+    <string name="recoveryWarning">MANDHEG! AJA DISIMPEN KANTHI DIGITAL!\nAJA nyalin menyang papan klip, motret, fotokopi, utawa njupuk gambar layar.</string>
+    <string name="flickerReason">Kedhap-kedhip iki minangka pangamanan</string>
+    <string name="PastingRecoveryPhraseIsBadIdea">Wis disalin menyang papan klip. Nanging, nyalin lan nempelake tembung pamulihan iki menyang aplikasi apa wae iku ORA APIK BABAR PISAN! Email, umume aplikasi, layanan cadhangan, lsp. pancen ora aman kanggo nyimpen tembung sing sejatine iku arta.</string>
+    <string name="primaryAccountConfirmation">Akun utama panjenengan yaiku akun sing dianggo kanggo identitas lan kanggo bayaran otomatis. Akun iki uga sing kapisan ditampilake ing pirang-pirang panggonan ing aplikasi iki. Akun iki kudu ana ing blockchain Nexa.</string>
+    <string name="primaryAccountSuccess">Akun Utama: %name</string>
+    <string name="AccountActions">Tumindak Akun</string>
+    <string name="GeneralSettings">Setelan Umum</string>
+    <string name="BlockchainSettings">Sumber Blockchain</string>
+    <string name="AccessPriceData">Akses Data Rega</string>
+    <string name="oldUi">Antarmuka lawas</string>
+    <string name="SplitBillDescription">Panjenengan mbayar tagihan (nganggo arta fiat), banjur kanca-kanca mbayar bagiane liwat kode QR ing ngisor iki. Lebokake panjenengan dhewe ing cacahe bagean, kajaba yen kanca-kanca sing nraktir!</string>
+    <string name="BillAmount">Jumlah Tagihan</string>
+    <string name="TipAmount">Jumlah Tip</string>
+    <string name="TipPercentage">Persen Tip</string>
+    <string name="Total">Gunggung sing dibagi</string>
+    <string name="OR">UTAWA</string>
+    <string name="QRCodeFor">Kode QR kanggo:</string>
+    <string name="Ways">Bagean:</string>
+    <string name="Tip">Tip:</string>
+    <string name="Amount">Jumlah:</string>
+    <string name="AmountWithValue" formatted="false">Jumlah: %amt</string>
+    <string name="QuantityWithValue" formatted="false">Cacah: %qty</string>
+    <string name="balanceOnTheDate" formatted="false">ing %date</string>
+    <string name="fastSync">Sinkron cepet</string>
+    <string name="refresh">Anyari</string>
+    <string name="goodQR">QR kebaca</string>
+    <string name="badQR">QR ora kebaca</string>
+    <string name="badImageQR">gambar QR ora kebaca. liyane...</string>
+    <string name="badImageQRhelp">Coba motret saka luwih adoh yen mau motret kode QR kanthi cedhak banget. Pinggiran putih iku bagean saka kode QR, lan bisa muncul pola moire sing ngganggu yen motret layar saka cedhak.</string>
+    <string name="GoThere">Menyang kono</string>
+    <string name="unlock">bukak kunci</string>
+    <string name="share">bagi</string>
+    <string name="Send">Kirim</string>
+    <string name="OpenSend">Kirim</string>
+    <string name="SendCancel">Batal</string>
+    <string name="ignoredInsecureRequest">Panjaluk Ora Aman Dilirwakake</string>
+    <string name="fromAccountColon">Kirim saka akun:</string>
+    <string name="chooseAccountError">pilih akun</string>
+    <string name="toColon">Menyang:</string>
+    <string name="To">Menyang</string>
+    <string name="ByAuthor">Dening</string>
+    <string name="assetsColon">Aset:</string>
+    <string name="assets">Aset</string>
+    <string name="NoAssets">Ora ana aset ing akun %act</string>
+    <string name="NoAssetsAccount">Saiki ora ana aset ing akun panjenengan.</string>
+    <string name="fromColon">Saka:</string>
+    <string name="ReceiveIntoAccount">Tampi menyang akun</string>
+    <string name="Receive">Tampi</string>
+    <string name="YourAddress">Alamat %blockchain panjenengan</string>
+    <string name="CopyAddress">Salin alamat</string>
+    <string name="AccountListHeader">Akun</string>
+    <string name="Address">Alamat</string>
+    <string name="clipboard">papan klip</string>
+    <string name="settings">Setelan</string>
+    <string name="help">Pitulung</string>
+    <string name="invalidQuantity">jumlah ora bener</string>
+    <string name="needNonexistentAuthority">butuh wewenang token</string>
+    <string name="invalidQuantityTooManyDecimalDigits">kakehan angka desimal</string>
+    <string name="roundedUpClickSendAgain">dibunderake munggah, pencet Kirim maneh kanggo nampi</string>
+    <string name="emptyQuantityField"></string>
+    <string name="purchase">tuku</string>
+    <string name="scanPaymentQRcode">Pindai kode QR alamat bayaran</string>
+    <string name="ScanQRCodeButton">Pindai kode QR</string>
+    <string name="PasteDestinationAddressButton">Tempel</string>
+    <string name="NewAccountButton">Setel Akun Anyar</string>
+    <string name="NewAccountSearchingForTransactions">...nggoleki transaksi pisanan...</string>
+    <string name="NewAccountSearchingForAllTransactions">...nggoleki kabeh transaksi...</string>
+    <string name="NewAccountSearchFailure">golek transaksi gagal</string>
+    <string name="receiveAddressQRCode">kode QR tampi</string>
+    <string name="paymentProposal">manut usulan bayaran sing ditampa</string>
+    <string name="pasteIsEmpty">tempelan kosong</string>
+    <string name="pasteIgnored">tempelan dilirwakake</string>
+    <string name="pasteUnintelligible">tempelan ora dingerteni</string>
+    <string name="chainIncompatibleWithAddress">alamat ora cocog karo akun</string>
+    <string name="chainIncompatibleWithAddressDetails" formatted="false">Arta akun yaiku %walletCrypto, alamat %addressCrypto.  Mangga gunakake kothak pilihan kanggo ngganti akun asal kirim dadi akun sing cocog karo blockchain alamat kasebut.</string>
+    <string name="incoming" formatted="false">kalebu %delta %unit durung dikonfirmasi</string>
+    <string name="approximatelyT" formatted="false">kira-kira %qty %fiat</string>
+    <string name="fastForward" formatted="false">Maju cepet</string>
+    <string name="fastforwardStatus" formatted="false">analisis maju cepet: %info</string>
+    <string name="fastforwardStart" formatted="false">wis diwiwiti</string>
+    <string name="exchangeRate" formatted="false">(kurs: 1 %fiat regane %amt %crypto)</string>
+    <string name="moreThanAvailable">(luwih saka sing ana)</string>
+    <string name="moreThanConfirmedAvailable">(luwih saka sing dikonfirmasi)</string>
+    <string name="actuallySendingT" formatted="false">sing tenan dikirim %qty %crypto</string>
+    <string name="copiedToClipboard">disalin ing\npapan klip</string>
+    <string name="copyId">Salin ID</string>
+    <string name="openInBrowser">Bukak ing browser</string>
+    <string name="cannotCopyToClipboard">Ora bisa nyalin menyang papan klip</string>
+    <string name="tooLargeForClipboard">Data kakehan kanggo papan klip</string>
+    <string name="scanFailed">pindai gagal</string>
+    <string name="scanSuccess">pindai kasil</string>
+    <string name="sendSuccess">kirim kasil</string>
+    <string name="sendQuantityHint">jumlah kirim</string>
+    <string name="sendRequestNotification">Panjaluk kirim</string>
+    <string name="sendToAddressHint">alamat tujuan</string>
+    <string name="sendAll">kabeh</string>
+    <string name="editSendNoteHint">cathetan pribadi bab transfer iki</string>
+    <string name="subSatoshiQuantities">Kakehan angka desimal -- arta iki ora bisa dipecah nganti semono cilike</string>
+    <string name="retrievingExchangeRate">isih njupuk kurs</string>
+    <string name="unavailableExchangeRate">kurs ora kasedhiya</string>
+    <string name="SigningWithAccount" formatted="false">Tandha tangan nganggo akun: %act</string>
+    <string name="commonIdentityForAccount" formatted="false">Identitas umum kanggo akun: %act</string>
+    <string name="identityRequestNotification">identitas dijaluk</string>
+    <string name="IdentityDataMissing">Info identitas kurang</string>
+    <string name="newDomainRequestingIdentity">Layanan anyar njaluk pendhaptaran</string>
+    <string name="domainRequestingAdditionalIdentityInfo">Informasi tambahan dijaluk</string>
+    <string name="useUniqueIdentityToolTip">Uripake supaya identitas panjenengan ing kene kapisah saka situs liya.</string>
+    <string name="provideAlias">Wenehake jeneng pangguna/alias panjenengan?</string>
+    <string name="provideAliasToolTip">Yen pilihan iki dipilih, alias panjenengan (kaya sing disetel ing Setelan, DUDU jeneng asli) bakal diwenehake menyang situs web iki, yen dijaluk</string>
+    <string name="provideSocialMedia">Wenehake informasi media sosial panjenengan?</string>
+    <string name="provideSocialMediaToolTip">Yen pilihan iki dipilih, informasi media sosial panjenengan (kaya sing disetel ing Setelan) bakal diwenehake menyang situs web iki, yen dijaluk</string>
+    <string name="providePostalAddress">Wenehake alamat pos panjenengan?</string>
+    <string name="providePostalAddressToolTip">Yen pilihan iki dipilih, alamat panjenengan (kaya sing disetel ing Setelan) bakal diwenehake menyang situs web iki, yen dijaluk</string>
+    <string name="provideBillingAddress">Wenehake alamat tagihan panjenengan?</string>
+    <string name="provideBillingAddressToolTip">Yen pilihan iki dipilih, alamat tagihan panjenengan (kaya sing disetel ing Setelan) bakal diwenehake menyang situs web iki, yen dijaluk</string>
+    <string name="provideEmail">Wenehake alamat email panjenengan?</string>
+    <string name="provideAvatar">Wenehake gambar avatar panjenengan?</string>
+    <string name="provideRealName">Wenehake jeneng asli panjenengan?</string>
+    <string name="provideRealNameToolTip">Yen pilihan iki dipilih, jeneng asli panjenengan (kaya sing disetel ing Setelan) bakal diwenehake menyang situs web iki</string>
+    <string name="provideBirthday">Wenehake tanggal lair panjenengan?</string>
+    <string name="providePhone">Wenehake nomer telpon panjenengan?</string>
+    <string name="provideAttestations">Wenehake atestasi?</string>
+    <string name="provideAttestationsToolTip">Atestasi yaiku tandha tangan pihak katelu sing mbuktekake data sing panjenengan wenehake</string>
+    <string name="primaryAccountRequired" formatted="false">Akun %primCurrency dibutuhake kanggo nganggo fitur iki</string>
+    <string name="primaryAccountRequiredDetails" formatted="false">Sawetara fitur kaiket karo kripto tartamtu.  Panjenengan kudu gawe utawa bukak kunci akun ing kripto kasebut sadurunge nganggo fitur kasebut.</string>
+    <string name="UnknownDomainRegisterFirst">Layanan ora dikenal, ndhaptar dhisik</string>
+    <string name="Provider" formatted="false">Panyedhiya: %provider</string>
+    <string name="QrCode">kode QR</string>
+    <string name="unknownOperation" formatted="false">operasi %op ora dikenal</string>
+    <string name="alreadyRegistered">wis kadhaptar</string>
+    <string name="existingRegistration" formatted="false">Akun sing lagi dipilih \'%act\' WIS ndhaptar ing layanan iki.</string>
+    <string name="nonexistentRegistration" formatted="false">Akun sing lagi dipilih \'%act\' DURUNG ndhaptar ing layanan iki.</string>
+    <string name="provideLoginQuestion">Mlebu menyang situs iki?</string>
+    <string name="provideInfoQuestion">Informasi identitas dijaluk dening</string>
+    <string name="signDataQuestion">Tandha tangan dijaluk saka</string>
+    <string name="nothingToSign">Ora ana pesen</string>
+    <string name="binaryToSign">Tandhatangani data binar iki?</string>
+    <string name="textToSign">Tandhatangani pesen iki?</string>
+    <string name="sigInClipboard">Tandha tangan disalin menyang papan klip</string>
+    <string name="SocialMediaText">Media Sosial</string>
+    <string name="SocialMediaSummary">Tulis minangka dhaptar layanan:handle, contone twitter:janeDoe, keybase:janieD</string>
+    <string name="UsernameOrAliasText">Jeneng pangguna/alias</string>
+    <string name="NameText">Jeneng Lengkap</string>
+    <string name="PostalAddressText">Alamat Pos</string>
+    <string name="BillingAddressText">Alamat Tagihan</string>
+    <string name="PostalCodeText">Kode Pos</string>
+    <string name="EmailText">Alamat Email</string>
+    <string name="TwitterText">Twitter</string>
+    <string name="TelegramText">Telegram</string>
+    <string name="IdentityAssociatedWith">Info identitas sing kagandheng</string>
+    <string name="ServiceAssociatedWith">Layanan iki wis kagandheng karo:</string>
+    <string name="IdentityInfoNote">Ngisi informasi iki ora wajib lan mung bakal diwenehake marang layanan sing panjenengan pilih.  Tujuane supaya kolom umum ing formulir bisa diisi mung kanthi mindai kode QR ing situs web sing ndhukung identitas.</string>
+    <string name="areYouSure">Panjenengan yakin?</string>
+    <string name="WhenAskSure">Konfirmasi sing ndhuwur:</string>
+    <string name="SendConfirmSummary" formatted="false">Konfirmasi kirim %amt %currency %inFiat%assets menyang alamat %dest</string>
+    <string name="firstName">jeneng ngarep</string>
+    <string name="lastName">jeneng mburi</string>
+    <string name="withholdingMandatoryInfo">situs mbutuhake info sing panjenengan ora gelem wenehake</string>
+    <string name="badLink">pranala rusak</string>
+    <string name="BadWebLink">Pranala web ora sah</string>
+    <string name="connectionAborted">situs mbatalake mlebu</string>
+    <string name="HintAdjustCostBasis">basis utawa untung</string>
+    <string name="CostBasis">basis biaya</string>
+    <string name="CapitalLoss">rugi modal</string>
+    <string name="CapitalGain">untung modal</string>
+    <string name="OverrideSalesPrice">isi rega nalika didol</string>
+    <string name="AccountHistory">Transaksi</string>
+    <string name="NoAccountActivity">Ora ana aktivitas akun</string>
+    <string name="AccountAddresses">Alamat</string>
+    <string name="ActiveAddresses">Alamat Aktif</string>
+    <string name="UsedAddresses">Alamat Kepakai</string>
+    <string name="UnusedAddresses">Alamat Durung Kepakai</string>
+    <string name="txHistoryButton">Deleng utawa Ekspor Aktivitas Akun</string>
+    <string name="setAsPrimaryAccountButton">Dadekake Akun Utama</string>
+    <string name="AccountStatistics">Statistik Akun</string>
+    <string name="AccountBlockchainSync" formatted="false">Saiki %sync ing blockchain %chain.</string>
+    <string name="AccountBlockchainDetails" formatted="false">Ing %actBlockDate, blok %actBlock saka %chainBlockCount.</string>
+    <string name="AccountEarliestActivity" formatted="false">Kapisan dianggo: blok %actPrehistoryBlock ing %actPrehistoryDate.</string>
+    <string name="AccountBlockchainConnectionDetails" formatted="false">Kesambung menyang %num node: %names</string>
+    <string name="AccountNumAddresses" formatted="false">%num alamat</string>
+    <string name="CurrentAddress" formatted="false">Ing alamat %num: %addr</string>
+    <string name="FirstLastReceive" formatted="false">Setoran pisanan ing blok %first, paling anyar ing blok %last.</string>
+    <string name="FirstLastSend" formatted="false">Penarikan pisanan ing blok %first, paling anyar ing blok %last.</string>
+    <string name="FirstWithdraw">Penarikan pisanan</string>
+    <string name="FirstDeposit">Setoran pisanan</string>
+    <string name="never">ora tau</string>
+    <string name="FirstUse" formatted="false">Kapisan dianggo: %date</string>
+    <string name="LastUse" formatted="false">Pungkasan dianggo: %date</string>
+    <string name="Block" formatted="false">Blok: %block</string>
+    <string name="AccountNumTx" formatted="false">%num transaksi</string>
+    <string name="AccountNumUtxos" formatted="false">%num entri ledger</string>
+    <string name="title_activity_assets">Aset</string>
+    <string name="title_activity_scan">Pindai</string>
+    <string name="title_activity_new_account">Akun Anyar</string>
+    <string name="AccountName">Jeneng Akun</string>
+    <string name="AccountNameHint">1-8 aksara</string>
+    <string name="Blockchain">Blockchain</string>
+    <string name="AccountRecoveryPhrase">Tembung Pamulihan</string>
+    <string name="LeaveEmptyNewWallet">Kosongake kanggo gawe akun anyar</string>
+    <string name="PinSuggestions"><font size="15">Angka wadi iki dibutuhake kanggo mbukak akun</font></string>
+    <string name="createNewAccount">Gawe akun anyar</string>
+    <string name="createSyncAccount">Mulihake akun nganggo sinkron ati-ati (lan suwe)</string>
+    <string name="createDiscoveredAccount">Mulihake akun sanalika</string>
+    <string name="invalidRecoveryPhrase">tembung pamulihan salah</string>
+    <string name="invalidAccountName">jeneng ora sah</string>
+    <string name="PassPhrase">Tembung sandi (opsional)</string>
+    <string name="Bip44ActivityNotice">Nemu aktivitas akun</string>
+    <string name="NoBip44ActivityNotice">Awas, ora nemu transaksi!</string>
+    <string name="Bip44BtcActivityNotice">Nemu aktivitas dompet nonstandar utawa pra-fork</string>
+    <string name="NoBip44BtcActivityNotice">Ora nemu transaksi pra-fork</string>
+    <string name="FirstUseDateHeightInfo" formatted="false">wiwit %date (blok %height)</string>
+    <string name="NotEnoughRecoveryWords">Kurang tembung pamulihan</string>
+    <string name="TooManyRecoveryWords">Kakehan tembung pamulihan</string>
+    <string name="IncorrectRecoveryWords" formatted="false">Tembung ora sah: %words</string>
+    <string name="ElectrumNetworkUnavailable">Jaringan Electrum ora kasedhiya.  Mulihake dompet bakal alon, lan ora bakal nemu transaksi sadurunge 1 Januari 2020</string>
+    <string name="PinHidesAccount">Ndhelikake akun nganti PIN dilebokake?</string>
+    <string name="HiddenAccountExplainer">Ndhelikake akun nganti PIN dilebokake</string>
+    <string name="HiddenAccount">Akun ndhelik</string>
+    <string name="AutomaticNewAddress">Privasi Alamat</string>
+    <string name="AutomaticNewAddressToolTip">Alamat anyar otomatis ditampilake saben alamat saiki wis dienggo.</string>
+    <string name="CreatePIN">PIN (opsional)</string>
+    <string name="PinSpendingUnprotected">Mbayar tanpa PIN wis diuripake (PIN durung dilebokake)</string>
+    <string name="PinSpendingProtected">Mbayar kudu nganggo PIN</string>
+    <string name="InvalidPIN">PIN ora sah</string>
+    <string name="creatingNoHistoryAccountWarning">Panjenengan lagi gawe akun nganggo tembung pamulihan tartamtu, nanging ora ana aktivitas sing ketemu ing blockchain.\nApa iki bener?\nYen bener, mangga klik tombol gawe maneh lan akun kosong bakal digawe.  Nanging yen akun iki kudune ana aktivitase, priksa maneh blockchain lan tembung pamulihan sing panjenengan pilih.  Yen dudu iku masalahe, bisa uga jaringan blockchain lagi ora bisa diakses (mangga coba maneh mengko), utawa akun digawe nganggo aplikasi dompet nonstandar.  Aja gawe akun iki saiki.</string>
+    <string name="accountLocked">akun kekunci</string>
+    <string name="unknownError">eror</string>
+    <string name="insufficentBalance">saldo kurang</string>
+    <string name="insufficentTokenBalance">saldo token kurang</string>
+    <string name="excessiveFee">biaya kegedhen</string>
+    <string name="sendDustError">jumlah kurang saka minimum</string>
+    <string name="sendingDustWarning">jumlah kurang saka minimum jaringan</string>
+    <string name="feeExceedsFlatMax">biaya ngluwihi biaya flat maksimum sing disetel</string>
+    <string name="notSupported">ora didhukung</string>
+    <string name="expired">bayaran kadaluwarsa</string>
+    <string name="PaymentDataMissing">data bayaran kurang</string>
+    <string name="headersNotForthcoming">header ora diwenehake</string>
+    <string name="cantConvert">konversi sauntara ora kasedhiya</string>
+    <string name="walletDisconnectedFromBlockchain">dompet pedhot</string>
+    <string name="badTransaction">transaksi salah</string>
+    <string name="badAddress">alamat ora sah</string>
+    <string name="unknownAddress">alamat ora dikenal</string>
+    <string name="badAmount">jumlah ora sah</string>
+    <string name="NoAccounts">Ora ana akun sing bisa diakses</string>
+    <string name="badCryptoCode">ora ana akun kebukak kunci kanggo arta utawa blockchain iki</string>
+    <string name="badCryptoCodeDetails" formatted="false">Arta ora dikenal utawa ora kasedhiya: %currency</string>
+    <string name="badCurrencyUnit">dudu arta</string>
+    <string name="incompatibleAccount">arta ora cocog</string>
+    <string name="incompatibleAccountDetails" formatted="false">Panjenengan milih mbayar saka akun isi %cryptoAct nanging sing dibutuhake %cryptoPay</string>
+    <string name="detailsOfBadAmountFromIntent">Program sing nyeluk menehi angka kanthi format salah nalika menehi
+        jumlah sing arep dikirim. Panjenengan kudu ngetik jumlahe dhewe
+    </string>
+    <string name="blankAddress">alamat kosong</string>
+    <string name="unavailable">ora kasedhiya</string>
+    <string name="blockNotForthcoming">blok ora kasedhiya</string>
+    <string name="receiveAddressUnavailable">Alamat tampi anyar lagi diitung. Mangga ngentosi sedhela...
+    </string>
+    <string name="accountLimitReached">akun maksimum</string>
+    <string name="accountUnavailableDetails">Ora ana akun sing cocog karo blockchain iki, utawa akune durung dibukak kunci.</string>
+    <string name="accountUnavailable">Ora ana akun cocog sing kebukak kunci</string>
+    <string name="sendMoreThanBalance">Panjenengan nyoba ngirim koin luwih akeh tinimbang sing saiki kasedhiya.\n\nYen panjenengan rumangsa ora mbayar ngluwihi saldo, bisa uga kelalen yen saben transaksi ana biaya tambahan sethithik, utawa yen kabeh saldo katon durung dikonfirmasi, bisa uga panjenengan gawe transaksi kakehan runtut.\n\nAna watesane sepira adoh panjenengan bisa “ndhisiki” blockchain. Mangga ngentosi saldo sing durung dikonfirmasi nganti dikonfirmasi, banjur coba maneh.</string>
+    <string name="sendMoreTokensThanBalance">Panjenengan nyoba ngirim token luwih akeh tinimbang sing saiki kasedhiya.</string>
+    <string name="deductedFeeLargerThanSendAmount">Biaya sing dipotong luwih gedhe tinimbang jumlah sing dikirim</string>
+    <string name="badWalletImplementation">Implementasi dompet salah.  Mangga laporake bug iki!</string>
+    <string name="CannotCompleteTransaction">Eror: Ora Bisa Rampung</string>
+    <string name="title_split_bill">Mbagi tagihan</string>
+    <string name="title_activity_settings">Setelan</string>
+    <string name="title_activity_exchange">Bursa</string>
+    <string name="title_activity_shopping">Pranala</string>
+    <string name="ecosystem">Ekosistem</string>
+    <string name="title_activity_trickle_pay">Trickle Pay</string>
+    <string name="title_home">Ngarep</string>
+    <string name="title_dashboard">Tes</string>
+    <string name="title_notifications">Notifikasi</string>
+    <string name="title_activity_invoices">Tagihan</string>
+    <string name="title_activity_identity">Identitas</string>
+    <string name="title_activity_identity_op">Identitas</string>
+    <string name="title_activity_domain_identity_settings">Setelan Identitas Domain</string>
+    <string name="title_activity_tx_history" formatted="false">Riwayat Tx: %account</string>
+    <string name="title_activity_address_history" formatted="false">Riwayat Alamat: %account</string>
+    <string name="title_activity_account_details" formatted="false">Akun: %account</string>
+    <string name="title_test">Tes</string>
+    <string name="useUniqueIdentity">Nganggo identitas kriptografi unik</string>
+    <string name="title_activity_identity_settings">Setelan Identitas</string>
+    <string name="IdentityRegistrations">Layanan Kadhaptar</string>
+    <string name="NoIdentitiesRegistered">Ora Ana Identitas Kadhaptar</string>
+    <string name="title_activity_welcome">Sugeng Rawuh</string>
+    <string name="next">Sabanjure</string>
+    <string name="previous">Sadurunge</string>
+    <string name="EnterPIN">Lebokna PIN</string>
+    <string name="EnterPINorBlankToRemove">PIN anyar (kosong = mbusak)</string>
+    <string name="ButtonTextHere">Setel teks tombol</string>
+    <string name="ButtonLinkHere">Lebokna pranala web</string>
+    <string name="ShoppingWarning">AWAS: Item ing kaca iki minangka pranala menyang layanan lan situs web pihak katelu, dipasang ing kene supaya gampang.  Situs/layanan iki durung diteliti dening Wally Wallet.\n\nRisiko ditanggung panjenengan dhewe!</string>
+    <string name="NFTs">Token Nonfungible (NFT)</string>
+    <string name="ExplainNFTs">NiftyArt.cash: Gawe lan dagang gambar unik sarta wujud digital saka barang unik</string>
+    <string name="NftUrl">http://niftyart.cash</string>
+    <string name="NftImproperConstruction">Awas: Palsu utawa digawe ora bener!</string>
+    <string name="TokenSourceWebsite">Sumber token:</string>
+    <string name="TokenBadSig">Informasi token iki ora ditandhatangani kanthi bener.  Token iki bisa uga palsu utawa tiruan.  Bisa uga tegese sing gawe token pancen durung nandhatangani token kanthi bener.</string>
+    <string name="OpenWebsite" formatted="false">Akses %siteName</string>
+    <string name="WebsiteUnavailable" formatted="false">Situs web ora kasedhiya</string>
+    <string name="ExplainBitmart">bitmart.com: Dagang NEXA karo kripto liyane</string>
+    <string name="ExplainMexc">mexc.com: Dagang NEXA karo kripto liyane</string>
+    <string name="ExplainBiconomy">biconomy.com: Dagang NEXA karo kripto liyane</string>
+    <string name="CexButton">bursa</string>
+    <string name="SharedNotification" formatted="false">%what wis dibagi</string>
+    <string name="AuthAutopayTitle">Bayaran Diotorisasi</string>
+    <string name="AuthAutopayDeniedTitle">Bayaran Diotorisasi Ditolak</string>
+    <string name="AuthAutopay" formatted="false">%amt menyang %domain</string>
+    <string name="TpToBeDone">Sambungan Trickle Pay panjenengan bakal katon ing kene</string>
+    <string name="TpHistoryTbd">Riwayat Trickle Pay panjenengan bakal katon ing kene</string>
+    <string name="AcceptTpRegistration">Tampi Pendhaptaran Saka:</string>
+    <string name="EditTpRegistration">Setelan kanggo Entitas:</string>
+    <string name="AcceptTpRegistrationTopic">Tujuan:</string>
+    <string name="TpMaxSpendHint">isi maks bayar otomatis</string>
+    <string name="TpAssetInfoRequest">Panjaluk informasi aset</string>
+    <string name="TpAssociatedAccount" formatted="false">Gegandhengan Karo: %act</string>
+    <string name="TpAssociatedAddress" formatted="false">%addr</string>
+    <string name="SpecialTxNotif">Panjaluk Otorisasi Transaksi</string>
+    <string name="AssetNotif">Panjaluk Informasi Aset</string>
+    <string name="PaymentRequest">Panjaluk Bayaran</string>
+    <string name="IdentityNotif">Panjaluk Identitas/Mlebu</string>
+    <string name="TpMaxHeading">Wates bayaran otomatis</string>
+    <string name="TpMaxPer">Maks saben panjaluk</string>
+    <string name="TpMaxPerDay">Maks saben dina</string>
+    <string name="TpMaxPerWeek">Maks saben minggu</string>
+    <string name="TpMaxPerMonth">Maks saben sasi</string>
+    <string name="TpEnableAutopay">Uripake bayaran otomatis (yen ora dicenthang, kabeh bayaran njaluk otorisasi saka pangguna lan watesan ing ngisor iki dilirwakake)</string>
+    <string name="asciiArrow"><![CDATA[=>]]></string>
+    <string name="TpNoRegistrations">Ora ana pendhaptaran Trickle Pay</string>
+    <string name="TpNoSession">Ora ana panjaluk Trickle Pay</string>
+    <string name="TpRegistrations">Pendhaptaran</string>
+    <string name="TpRegDenied">Pendhaptaran ditolak</string>
+    <string name="TpRegAccepted">Pendhaptaran ditampi</string>
+    <string name="TpRegUnchanged">Pendhaptaran ora owah</string>
+    <string name="TpRequestAutoDeny">Panjaluk ditolak (otomatis)</string>
+    <string name="TpRequestAutoAccept">Panjaluk ditampi (otomatis)</string>
+    <string name="TpTxDenied">Transaksi ditolak</string>
+    <string name="TpTxAccepted">Transaksi ditampi</string>
+    <string name="TpNetworkTimeout">Transaksi kentekan wektu</string>
+    <string name="TpPartialSubmitted">Tawaran wis dikirim</string>
+    <string name="TpAssetRequestDenied">Info aset ditahan</string>
+    <string name="TpAssetRequestAccepted">Ngirim info aset</string>
+    <string name="Actions">Tumindak</string>
+    <string name="SpecialTpTransactionFrom">Transaksi Khusus Saka</string>
+    <string name="IncompleteTpTransactionFrom">Usul Tawaran Tetep Saka</string>
+    <string name="TpEntails">Ngemot</string>
+    <string name="TpInAccount">Nganggo Akun</string>
+    <string name="TpAssetRequestFrom">Panjaluk Informasi Aset Saka</string>
+    <string name="TpHandledByAccount">bisa ditangani akun panjenengan</string>
+    <string name="TpAssetMatches" formatted="false">Informasi bab %num aset duweke panjenengan bakal diwenehake marang layanan iki.</string>
+    <string name="TpAssetInfoNotXfer">Nampi panjaluk iki mung menehi informasi bab kepemilikan panjenengan marang layanan kasebut. Iki ora ngotorisasi transfer apa wae.</string>
+    <string name="ForAFeeOf" formatted="false">kalebu biaya %fee %units</string>
+    <string name="TpExchangingTokens" formatted="false">lan ijol token (ngirim %tokSnd, nampi %tokRcv).</string>
+    <string name="TpShowingTokens" formatted="false">%tokReveal jinis token dituduhake (dikirim menyang panjenengan dhewe, mbuktekake yen iku duweke panjenengan).</string>
+    <string name="TpSendingTokens" formatted="false">lan ngirim %tokSnd jinis token.</string>
+    <string name="TpReceivingTokens" formatted="false">lan nampi %tokRcv jinis token.</string>
+    <string name="TpHasNoPurpose">Panjaluk iki ora ana pengaruhe marang akun iki.</string>
+    <string name="TpSendToTitle">Panjaluk Bayaran Saka</string>
+    <string name="TpSpends">Mbayar</string>
+    <string name="TpSendRequestDenied">Bayaran ditolak</string>
+    <string name="TpSendAutoReject">Bayaran ditolak otomatis</string>
+    <string name="TpSendRequestAccepted">Bayaran ditampi</string>
+    <string name="TpWhyNotAuto">Ora Ditandhatangani Otomatis Amarga</string>
+    <string name="TpAutomaticDisabled">Bayaran otomatis dipateni</string>
+    <string name="TpExceededMaxPer">Ngluwihi wates saben panjaluk</string>
+    <string name="TpExceededMaxDaily">Ngluwihi wates saben dina</string>
+    <string name="TpExceededMaxWeekly">Ngluwihi wates saben minggu</string>
+    <string name="TpExceededMaxMonthly">Ngluwihi wates saben sasi</string>
+    <string name="title_activity_alert_history">Pesen Anyar</string>
+    <string name="IssueReportInstructions">Wenehake informasi iki marang pangembang:</string>
+    <string name="AssetApplication">Bukak</string>
+    <string name="AssetMarketplace">Dagang</string>
+    <string name="AssetAddedToTransferList">Wis mlebu \'Kirim\' ing tab utama</string>
+    <string name="NftCardFront">Ngarep</string>
+    <string name="NftCardBack">Mburi</string>
+    <string name="NftPublicMedia">Isi</string>
+    <string name="NftOwnerMedia">Isine Sing Duwe</string>
+    <string name="Content">Isi</string>
+    <string name="Private">Pribadi</string>
+    <string name="NftPrivateDescription">Isi iki duweke sing nduweni aset</string>
+    <string name="NftInfo">Info</string>
+    <string name="NftLegal">Lisensi</string>
+    <string name="NftSeries" formatted="false">Seri: %series</string>
+    <string name="NftAuthor" formatted="false">Pangripta: %author</string>
+    <string name="NftNoInfoProvided">...Ora Ana Informasi...</string>
+    <string name="IssuedToConnection">Diwiwiti ing situs kesambung</string>
+    <string name ="demonstratingOwnership">Mbuktekake Kepemilikan</string>
+    <string name="AndSomeAssets"> lan sawetara aset</string>
+    <string name="AssetTypes" formatted="false">%assetTypes jinis aset</string>
+    <string name="ExplainRestaurant">Layanan pesenan restoran online (dianter utawa dijupuk dhewe) bisa uga nampi kripto sanajan panggonan fisike ora nampi.</string>
+    <string name="RestaurantButton">Pesen restoran Menufy</string>
+    <string name="RestaurantUrl">https://www.menufy.com</string>
+    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
+    <string name="ExplainStoreMap">Golek panggonan cedhak panjenengan sing nampi kripto.</string>
+    <string name="StoreMapButton">peta toko</string>
+    <string name="StoreMapUrl">https://map.bitcoin.com</string>
+    <string name="StoreMapAppPackage"></string>
+    <string name="ExplainTxBit">txbit.io: Ijolake NEXA karo kripto liyane</string>
+    <string name="welcome1Label">Sugeng Rawuh</string>
+    <string name="welcome1">Sugeng rawuh ing Wally, dompet kripto!\n\nIng layar sabanjure, panjenengan bakal nyetel akun blockchain Nexa sing kapisan (NEX) lan ngatur layanan liyane kayata pangaturan sandhi.\n\nUtawa panjenengan bisa mencet panah bali kanggo ngliwati pandhuan setelan iki.</string>
+    <string name="welcome2_title">Setelan akun NEXA</string>
+    <string name="welcome2">Ing kaca sabanjure, panjenengan bakal nyetel akun Nexa sing kapisan.\n\nAkun iki ngemot arta Nexa lan identitas panjenengan. Identitas iku fitur anyar ing Wally Wallet, sing ngidini panjenengan mlebu kanthi otomatis menyang situs web sing didhukung.\n\nPanjenengan bisa milih nglindhungi akun nganggo PIN (Personal Identification Number), nanging kanggo pangguna anyar kita nyaranake supaya ora nganggo PIN (lan njaga saldo tetep sithik) ing akun kapisan. Kanggo nglindhungi pangguna, akun sing dilindhungi PIN ora katon nganti PIN sing bener dilebokake (ora ana tandha yen PIN sing dilebokake salah).\n\nYen panjenengan pengin mulihake akun NEXA sing wis ana, lebokna tembung pamulihan. Yen larik iki dikosongake, akun anyar bakal digawe.</string>
+    <string name="welcome3_title" formatted="false">Tembung pamulihan akun Nexa</string>
+    <string name="welcome3">Sugeng Rawuh 3 ! (Teks pambagya iki isih bisa didandani)</string>
+    <string name="welcome4_title">Identitas</string>
+    <string name="welcome4">Sabanjure, panjenengan bakal digawa menyang layar informasi identitas. Informasi iki digunakake nalika panjenengan nganggo Wally minangka manajer identitas lan login (kanggo mlebu otomatis menyang macem-macem situs web utawa menehi informasi nalika tuku). Wally banget nggatekake privasi!
+Informasi iki ora bakal dituduhake menyang situs web apa wae tanpa idin cetha saka panjenengan, lan ORA ANA informasi saka dompet iki sing dikirim marang pangripta aplikasi iki. Panjenengan uga bisa milih ngosongake kabeh kolom.
+Yen wis rampung, mencet panah bali (kiwa ndhuwur).</string>
+    <string name="welcomeComplete">Setelan wis rampung. Yen ana langkah ing pambuka iki sing durung rampung, kabeh kolom uga kasedhiya ing aplikasine dhewe.
+Matur nuwun lan sugeng nganggo dompet anyar panjenengan!</string>
+    <string name="ExplainGiftCards">Tuku kartu hadiah menehi akses menyang atusan toko sing ora nampi kripto kanthi langsung.</string>
+    <string name="GiftCardButton">Kartu hadiah eGifter</string>
+    <string name="GiftCardUrl">https://www.egifter.com</string>
+    <string name="GiftCardAppPackage">com.groupgifting.android</string>
+    <string name="Pinförslag">
+    <font size="15">Angka wadi iki dibutuhake kanggo mbukak akun</font>
+</string>
+    <string name="sync_title">Nyinkronake email kanthi rutin</string>
+    <string name="attachment_title">Ngundhuh lampiran sing mlebu</string>
+    <string name="attachment_summary_on">Ngundhuh lampiran email kanthi otomatis</string>
+    <string name="attachment_summary_off">Mung ngundhuh lampiran yen dijaluk</string>
+    <string name="signature_title">Tandha tangan</string>
+    <string name="reply_title">Tumindak baku nalika mbales</string>
+    <string name="discoveredAccountDetails" formatted="false">Ketemu saldo %bal %units\ning %addr alamat lan %tx transaksi</string>
+    <string name="discoveredWarning">Yen iki katon bener, panjenengan bisa langsung nggawe akun iki</string>
+    <string name="backgroundSync">Sinkron latar mburi</string>
+    <string name="scanQr">Pindai QR</string>
+    <string name="imageQr">Gambar QR</string>
+    <string name="paste">Tempel</string>
+    <string name="recentTransactions">Transaksi Anyar</string>
+    <string name="sendingFrom">Dikirim Saka</string>
+    <string name="enterAddress">Lebokna alamat...</string>
+    <string name="noteOptional">Cathetan (Opsional)</string>
+    <string name="clearNote">Kosongi Cathetan</string>
+    <string name="clearAddress">Kosongi Alamat</string>
+    <string name="clearAmount">Kosongi Jumlah</string>
+    <string name="available">Kasedhiya</string>
+    <string name="amountPlain">Jumlah</string>
+    <string name="enterNEXAmount">Lebokna jumlah NEX...</string>
+    <string name="note">Cathetan</string>
+    <string name="confirmSend">Konfirmasi kirim</string>
+    <string name="syncing">Nyinkronake...</string>
+    <string name="enterAmount" formatted="false">Lebokna jumlah %assetName</string>
+    <string name="fee">Biaya</string>
+    <string name="connectionWarning">Awas: Ora ana sambungan blockchain/jaringan. Yen panjenengan ngirim saiki, sing nampi ora bakal langsung weruh transfer iki. Kiriman bakal diwetokake yen sambungan wis pulih.</string>
+    <string name="NetworkUnstable">Jaringan ora stabil</string>
+    <string name="TokenMissing">Token ora ana ing blockchain </string>
+    <string name="Sell">Adol</string>
+    <string name="CreateAnOffer">Gawe Tawaran</string>
+    <string name="Price">Rega</string>
+    <string name="NexaPrice">Lebokna rega Nexa</string>
+    <string name="AssetAmountName" formatted="false">Panjenengan duwe %amount %assetName</string>
+    <string name="scanToBuyOne">Pindai kanggo tuku %name</string>
+    <string name="scanToBuySeveral">Pindai kanggo tuku %amount %name</string>
+    <string name="nexaOfferAmount" formatted="false">Kanggo %amount NEXA</string>
+    <string name="purchaseComplete">Tuku Rampung</string>
+    <string name="setTheNexaPrice">Setel rega Nexa</string>
+    <string name="setTheAssetAmount">Setel jumlah aset</string>
+    <string name="publishOnline">Sebarake tawaran online</string>
+    <string name="offerCreated">Tawaran wis digawe!</string>
+    <string name="ConfigureService">Setel Layanan</string>
+    <string name="AcceptOrRejectService">Tampi utawa tolak Layanan</string>
+    <string name="Domain">Domain</string>
+    <string name="Services">Layanan</string>
+    <string name="Purpose">Tujuan</string>
+    <string name="AutoPay">Bayaran Otomatis</string>
+    <string name="AutoPayInstructions">Yen kothak centhang ing ngisor iki dipateni, kabeh panjaluk bayaran saka layanan iki bakal njaluk otorisasi saka panjenengan lan watesan ing ngisor iki dilirwakake.</string>
+    <string name="LimitedAutoApproval">Ngidini pasarujukan otomatis winates</string>
+    <string name="AutoPayMaxPerRequest">Maksimum saben panjaluk</string>
+    <string name="AutoPayMaxPerDay">Maksimum saben dina</string>
+    <string name="AutoPayMaxPerWeek">Maksimum saben minggu</string>
+    <string name="AutoPayMaxPerMonth">Maksimum saben sasi</string>
+    <string name="EnableServices">Uripake layar layanan</string>
+    <string name="NoServicesRegistered">Ora ana layanan sing kadhaptar.</string>
+    <string name="Start">Wiwiti</string>
+    <string name="Meditation">Meditasi</string>
+    <string name="Meditate">Meditasi</string>
+    <string name="Sound">Swara</string>
+    <string name="OneMinuteIntervalSound">Swara saben 1 menit</string>
+    <string name="MeditationVersion">Versi: 1.0.3 (build 156)</string>
+    <string name="Meditating">Lagi meditasi...</string>
+    <string name="MediationComplete">Meditasi rampung!</string>
+    <string name="Okay">Oke</string>
+    <string name="Minutes">Menit</string>
+    <string name="Camouflage">Nyamar</string>
+    <string name="CamouflageAsMeditationTimer">Nyamarake aplikasi dadi timer meditasi.</string>
+    <string name="CamouflageDescriptionAndroid">Nguripake panyamaran bakal nutup aplikasi lan nyamarake dadi aplikasi kanthi jeneng Meditate. Kanggo mateni panyamaran aplikasi Meditate, bukak menu aplikasi banjur klik nomer versi kaping lima.</string>
+    <string name="CamouflageDescriptionOther">Kanggo mateni panyamaran aplikasi Meditate, bukak menu aplikasi banjur klik nomer versi kaping lima.</string>
+    <string name="CamouflageAsMeditateAppAndroid">Nyamar dadi aplikasi Meditate</string>
+</resources>

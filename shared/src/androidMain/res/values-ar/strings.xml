@@ -1,0 +1,634 @@
+<resources>
+    <string name="app_name" translatable="false">Wally</string>
+    <string-array name="CurrencyTypes">
+        <item>NEX</item>
+        <item>USD</item>
+    </string-array>
+    <string-array name="FiatCurrencyTypes">
+        <item>BRL</item>
+        <item>CAD</item>
+        <item>CNY</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>JPY</item>
+        <item>RUB</item>
+        <item>USD</item>
+        <item>XAU</item>
+    </string-array>
+    <string name="uBCH" translatable="false">uBCH</string>
+    <string-array name="OneToTen">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="tipPercentage">
+        <item>--</item>
+        <item>0%</item>
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+        <item>50%</item>
+    </string-array>
+    <string name="yes">نعم</string>
+    <string name="no">لا</string>
+    <string name="at">في</string>
+    <string name="of">من</string>
+    <string name="choose">اختر</string>
+    <string name="accept">قبول</string>
+    <string name="reject">رفض</string>
+    <string name="remove">إزالة</string>
+    <string name="confirm">تأكيد</string>
+    <string name="cancel">إلغاء</string>
+    <string name="Back">رجوع</string>
+    <string name="removeAll">إزالة الكل</string>
+    <string name="done">تم</string>
+    <string name="dismiss">تجاهل</string>
+    <string name="deny">رفض</string>
+    <string name="ask">اسأل</string>
+    <string name="badSignature">توقيع غير صالح</string>
+    <string name="unknownCurrency">عملة غير معروفة</string>
+    <string name="unknownCryptoCurrency">بلوكشين أو عملة رقمية غير معروفة</string>
+    <string name="Processing">جارٍ المعالجة...</string>
+    <string name="receiving">جارٍ الاستلام</string>
+    <string name="sending">جارٍ الإرسال</string>
+    <string name="noAdditionalDetails">لا توجد تفاصيل إضافية</string>
+    <string name="unspecified">غير محدد</string>
+    <string name="removed">تمت الإزالة</string>
+    <string name="synced">متزامن</string>
+    <string name="unsynced">قيد المزامنة</string>
+    <string name="connected">متصل</string>
+    <string name="connectionEstablished">تم إنشاء الاتصال</string>
+    <string name="connectionClosed">تم إغلاق الاتصال</string>
+    <string name="connectionException">تعذر الاتصال بالموقع</string>
+    <string name="balance">الرصيد الحالي</string>
+    <string name="totalReceived">إجمالي المستلم</string>
+    <string name="inProgress">قيد التنفيذ</string>
+    <string name="staleTransaction">معاملة قديمة</string>
+    <string name="staleTransactionDetails">رفضت عقدة كاملة هذه المعاملة. على الأرجح أنها قديمة (استخدمها شخص آخر بالفعل)، لكن من الممكن أيضا أن المعاملة لم تكن صحيحة أصلا، أو أنها سليمة وأن العقد التي سألناها غير صادقة. ستتجاهل المحفظة هذه المعاملة ما لم يتم تأكيدها.</string>
+    <string name="NoPermission">لا يوجد إذن</string>
+    <string name="NoPermissionDetails" formatted="false">يجب تفعيل إذن %perm لاستخدام هذه الميزة. يمكنك ذلك من إعدادات Android ثم التطبيقات ثم Wally ثم الأذونات</string>
+    <string name="WebLoadingPage"><![CDATA[<body><h1><center>...جارٍ التحميل...</h1></center></body>]]></string>
+    <string name="loading">جارٍ التحميل</string>
+    <string name="Untitled">بلا عنوان</string>
+    <string name="nothing">لا شيء</string>
+    <string name="breakIt">تجزئة</string>
+    <string name="or">أو</string>
+    <string name="onBlockchain">على</string>
+    <string name="NotImplemented">قريبا</string>
+    <string name="NoNodes">لا وصول إلى البلوكشين</string>
+    <string name="cancelled">تم الإلغاء</string>
+    <string name="refreshQR">انقطع الاتصال بالخادم</string>
+    <string name="pleaseWait">يرجى الانتظار</string>
+    <string name="trying">جارٍ المحاولة</string>
+    <string name="clear">محو</string>
+    <string name="thousand">* ألف</string>
+    <string name="million">* مليون</string>
+    <string name="required">مطلوب</string>
+    <string name="account">الحساب</string>
+    <string name="addAccountPlus">+ إضافة حساب</string>
+    <string name="receivingTokens">استلام التوكنات</string>
+    <string name="spendingTokens">إنفاق التوكنات</string>
+    <string name="version" formatted="false">الإصدار: %ver (%date)</string>
+    <string name="enableDeveloperView">وضع متقدم/مطور</string>
+    <string name="enableRecompositionCounts">عد إعادة رسم الشاشة</string>
+    <string name="enableExperimentalUx">واجهة تجريبية</string>
+    <string name="enableDarkMode">الوضع الداكن</string>
+    <string name="enableSound">تفعيل الصوت</string>
+    <string name="enableIdentityMenu">تفعيل شاشة الهوية</string>
+    <string name="enableTricklePayMenu">تفعيل شاشة Trickle Pay</string>
+    <string name="enableAssetsMenu">تفعيل شاشة الأصول</string>
+    <string name="only">فقط</string>
+    <string name="prefer">تفضيل</string>
+    <string name="rediscoverWalletTx">إعادة اكتشاف كل المعاملات</string>
+    <string name="searchWalletTx">البحث عن المعاملات المفقودة</string>
+    <string name="rediscoverBlockchain">إعادة اكتشاف ترويسات البلوكشين</string>
+    <string name="logDebugData">تسجيل بيانات التصحيح</string>
+    <string name="clearIdentityDomains">محو نطاقات الهوية</string>
+    <string name="rediscoverTooltip">حذف حالة البلوكشين والبحث من جديد عن كل المعاملات المتعلقة بالمحفظة</string>
+    <string name="wordSeed">عبارة استرداد الحساب السرية</string>
+    <string name="deleteWalletAccount">حذف الحساب</string>
+    <string name="more">المزيد</string>
+    <string name="darkMode">الوضع الداكن</string>
+    <string name="ConsolidationNeeded">ادمج الحساب أولا</string>
+    <string name="SetChangePin">تعيين أو تغيير الرقم السري</string>
+    <string name="CurrentPin">الرقم السري الحالي</string>
+    <string name="NewPin">رقم سري جديد</string>
+    <string name="PinChanged">تم تغيير الرقم السري</string>
+    <string name="PinRemoved">تمت إزالة الرقم السري</string>
+    <string name="PinInvalid">رقم سري غير صحيح</string>
+    <string name="PinTooShort">الرقم السري الجديد قصير جدا</string>
+    <string name="WriteDownRecoveryPhraseWarningUi2">تحذير: لم تكتب عبارات الاسترداد السرية لبعض الحسابات! لضمان عدم فقدان أموالك في حال ضياع هذا الجهاز أو تلفه، اكتب مفاتيح الاسترداد السرية على ورق أو على وسيط آخر غير إلكتروني.</string>
+    <string name="WroteRecoveryPhraseDown">كتبتها</string>
+    <string name="RecoveryPhraseKeepRemindingMe">استمر في تذكيري</string>
+    <string name="ViewRecoveryPhrase">عرض عبارة استرداد الحساب السرية</string>
+    <string name="localCurrency">العملة المحلية</string>
+    <string name="assessUnconfirmed">تقييم المعاملات غير المؤكدة</string>
+    <string name="rediscoverNotice">بدأت إعادة اكتشاف الحساب</string>
+    <string name="searchNotice">بدأ البحث في الحساب</string>
+    <string name="unconfAssessmentNotice">بدأ تقييم المعاملات غير المؤكدة</string>
+    <string name="accountDeleteNotice">تم حذف الحساب</string>
+    <string name="rediscoverConfirmation">ستؤدي إعادة اكتشاف الحساب إلى تصفير المحفظة والبحث في البلوكشين عن المدفوعات، كما لو أن الحساب أنشئ للتو. وقد تستغرق هذه العملية وقتا طويلا. لكن قد يظهر زر «تقديم سريع» يتيح لك خيار سؤال قاعدة بيانات عن نشاط محفظتك. إذا كان التاريخ أعلاه غير صحيح، فانتظر بضع ثوان حتى يتم تحديثه.</string>
+    <string name="searchConfirmation">تبحث هذه الوظيفة في البلوكشين عن المدفوعات المفقودة. وقد تستغرق هذه العملية وقتا طويلا. لكن قد يظهر زر «تقديم سريع» يتيح لك خيار سؤال قاعدة بيانات عن نشاط محفظتك.</string>
+    <string name="rediscoverBlockchainConfirmation">ستؤدي إعادة اكتشاف البلوكشين إلى حذف كل بيانات ترويسات البلوكشين من هذه المحفظة وإعادة تنزيلها من العقد الكاملة. وقد تستغرق هذه العملية وقتا طويلا. لا تستخدمها إلا إذا كنت متأكدا من وجود مشكلة في ترويسات البلوكشين.</string>
+    <string name="deleteConfirmation" formatted="false">سيؤدي حذف الحساب إلى جعل كل الأرصدة والهويات والسجل غير متاحة ما لم يتم استرداد الحساب عبر عبارة استرداد الحساب السرية! لا تفعل ذلك إلا إذا كنت متأكدا تماما!\n\nهل تريد حذف الحساب «%accountName» (على %blockchain)؟</string>
+    <string name="reassessConfirmation">ستتحقق هذه العملية من البلوكشين بحثا عن المعاملات التي أرسلتها مؤخرا. وبناء على وجودها أو غيابها، ستؤكدها أو تمحوها. وإذا تم محو معاملات، فسيبدو أن المال قد اختفى. وستحتاج إلى «إعادة الاكتشاف» لاستعادة الرصيد المنفق. لا تستخدم هذه العملية إذا كنت قد أرسلت معاملة مؤخرا، فقد تكون تلك المعاملة كامنة في الشبكة بانتظار التأكيد.</string>
+    <string name="recoveryPhrase">تستخدم هذه العبارة المكونة من 12 كلمة لاسترداد محفظتك. وكل من يملك هذه العبارة يستطيع إنفاق أموالك. اكتبها بالقلم على ورق (أو انقشها على معدن) واحفظها في مكان آمن!</string>
+    <string name="recoveryWarning">توقف! لا تحفظها رقميا أبدا!\nلا تنسخها إلى الحافظة، ولا تصورها، ولا تنسخها ورقيا، ولا تلتقط لها صورة شاشة.</string>
+    <string name="flickerReason">الوميض إجراء أمني</string>
+    <string name="PastingRecoveryPhraseIsBadIdea">تم النسخ إلى الحافظة. لكن نسخ عبارة الاسترداد هذه ولصقها في أي تطبيق فكرة سيئة جدا! فالبريد الإلكتروني ومعظم التطبيقات وخدمات النسخ الاحتياطي وغيرها ليست آمنة فعلا بالقدر اللازم لحفظ عبارة هي المال نفسه.</string>
+    <string name="primaryAccountConfirmation">حسابك الرئيسي هو الحساب المستخدم لهويتك ولإجراء المدفوعات التلقائية. وهو أيضا أول حساب يظهر في أماكن مختلفة داخل هذا التطبيق. ويجب أن يكون على بلوكشين Nexa.</string>
+    <string name="primaryAccountSuccess">الحساب الرئيسي: %name</string>
+    <string name="AccountActions">إجراءات الحساب</string>
+    <string name="GeneralSettings">الإعدادات العامة</string>
+    <string name="BlockchainSettings">مصادر البلوكشين</string>
+    <string name="AccessPriceData">جلب بيانات الأسعار</string>
+    <string name="oldUi">الواجهة القديمة</string>
+    <string name="SplitBillDescription">أنت تدفع الفاتورة (بالعملة الورقية)، ثم يدفع لك أصدقاؤك حصتهم عبر رمز QR أدناه. احسب نفسك ضمن عدد الحصص، إلا إذا كان أصدقاؤك هم من يدفعون!</string>
+    <string name="BillAmount">مبلغ الفاتورة</string>
+    <string name="TipAmount">مبلغ الإكرامية</string>
+    <string name="TipPercentage">نسبة الإكرامية</string>
+    <string name="Total">إجمالي المبلغ المراد تقسيمه</string>
+    <string name="OR">أو</string>
+    <string name="QRCodeFor">رمز QR لـ:</string>
+    <string name="Ways">عدد الحصص:</string>
+    <string name="Tip">الإكرامية:</string>
+    <string name="Amount">المبلغ:</string>
+    <string name="AmountWithValue" formatted="false">المبلغ: %amt</string>
+    <string name="QuantityWithValue" formatted="false">الكمية: %qty</string>
+    <string name="balanceOnTheDate" formatted="false">حتى تاريخ %date</string>
+    <string name="fastSync">مزامنة سريعة</string>
+    <string name="refresh">تحديث</string>
+    <string name="goodQR">رمز QR مقروء</string>
+    <string name="badQR">رمز QR غير مقروء</string>
+    <string name="badImageQR">صورة QR غير صالحة. المزيد...</string>
+    <string name="badImageQRhelp">جرب التقاط الصورة من مسافة أبعد إذا كنت قد صورت رمز QR عن قرب. فالإطار الأبيض جزء من رمز QR، وقد تظهر أنماط تداخل مربكة عند تصوير شاشة من مسافة قريبة.</string>
+    <string name="GoThere">الانتقال</string>
+    <string name="unlock">فتح القفل</string>
+    <string name="share">مشاركة</string>
+    <string name="Send">إرسال</string>
+    <string name="OpenSend">إرسال</string>
+    <string name="SendCancel">إلغاء</string>
+    <string name="ignoredInsecureRequest">تم تجاهل طلب غير آمن</string>
+    <string name="fromAccountColon">الإرسال من حساب:</string>
+    <string name="chooseAccountError">اختر حسابا</string>
+    <string name="toColon">إلى:</string>
+    <string name="To">إلى</string>
+    <string name="ByAuthor">بواسطة</string>
+    <string name="assetsColon">الأصول:</string>
+    <string name="assets">الأصول</string>
+    <string name="NoAssets">لا توجد أصول متاحة في الحساب %act</string>
+    <string name="NoAssetsAccount">لا توجد أصول متاحة حاليا في حسابك.</string>
+    <string name="fromColon">من:</string>
+    <string name="ReceiveIntoAccount">استلام في الحساب</string>
+    <string name="Receive">استلام</string>
+    <string name="YourAddress">عنوانك على %blockchain</string>
+    <string name="CopyAddress">نسخ العنوان</string>
+    <string name="AccountListHeader">الحسابات</string>
+    <string name="Address">العنوان</string>
+    <string name="clipboard">الحافظة</string>
+    <string name="settings">الإعدادات</string>
+    <string name="help">مساعدة</string>
+    <string name="invalidQuantity">كمية غير صحيحة</string>
+    <string name="needNonexistentAuthority">تلزم صلاحية التوكن</string>
+    <string name="invalidQuantityTooManyDecimalDigits">منازل عشرية كثيرة جدا</string>
+    <string name="roundedUpClickSendAgain">تم التقريب لأعلى، اضغط «إرسال» مرة أخرى للقبول</string>
+    <string name="emptyQuantityField"></string>
+    <string name="purchase">شراء</string>
+    <string name="scanPaymentQRcode">امسح رمز QR لعنوان الدفع</string>
+    <string name="ScanQRCodeButton">امسح رمز QR</string>
+    <string name="PasteDestinationAddressButton">لصق</string>
+    <string name="NewAccountButton">إعداد حساب جديد</string>
+    <string name="NewAccountSearchingForTransactions">...جارٍ البحث عن أول معاملة...</string>
+    <string name="NewAccountSearchingForAllTransactions">...جارٍ البحث عن كل المعاملات...</string>
+    <string name="NewAccountSearchFailure">فشل البحث عن المعاملات</string>
+    <string name="receiveAddressQRCode">رمز QR للاستلام</string>
+    <string name="paymentProposal">حسب اقتراح الدفع المستلم</string>
+    <string name="pasteIsEmpty">الحافظة فارغة</string>
+    <string name="pasteIgnored">تم تجاهل اللصق</string>
+    <string name="pasteUnintelligible">محتوى اللصق غير مفهوم</string>
+    <string name="chainIncompatibleWithAddress">العنوان غير متوافق مع الحساب</string>
+    <string name="chainIncompatibleWithAddressDetails" formatted="false">عملة الحساب هي %walletCrypto، والعنوان هو %addressCrypto. استخدم القائمة المنسدلة لتغيير حساب الإرسال إلى حساب يطابق بلوكشين العنوان.</string>
+    <string name="incoming" formatted="false">يشمل %delta %unit قيد الانتظار</string>
+    <string name="approximatelyT" formatted="false">تقريبا %qty %fiat</string>
+    <string name="fastForward" formatted="false">تقديم سريع</string>
+    <string name="fastforwardStatus" formatted="false">تحليل التقديم السريع: %info</string>
+    <string name="fastforwardStart" formatted="false">بدأ</string>
+    <string name="exchangeRate" formatted="false">(سعر الصرف: 1 %fiat يساوي %amt %crypto)</string>
+    <string name="moreThanAvailable">(أكثر من المتاح)</string>
+    <string name="moreThanConfirmedAvailable">(أكثر من المؤكد)</string>
+    <string name="actuallySendingT" formatted="false">سيتم إرسال %qty %crypto فعليا</string>
+    <string name="copiedToClipboard">تم النسخ\nإلى الحافظة</string>
+    <string name="copyId">نسخ المعرف</string>
+    <string name="openInBrowser">فتح في المتصفح</string>
+    <string name="cannotCopyToClipboard">تعذر النسخ إلى الحافظة</string>
+    <string name="tooLargeForClipboard">بيانات أكبر من سعة الحافظة</string>
+    <string name="scanFailed">فشل المسح</string>
+    <string name="scanSuccess">تم المسح بنجاح</string>
+    <string name="sendSuccess">تم الإرسال بنجاح</string>
+    <string name="sendQuantityHint">كمية الإرسال</string>
+    <string name="sendRequestNotification">طلب إرسال</string>
+    <string name="sendToAddressHint">عنوان الوجهة</string>
+    <string name="sendAll">الكل</string>
+    <string name="editSendNoteHint">ملاحظات شخصية عن هذا التحويل</string>
+    <string name="subSatoshiQuantities">منازل عشرية كثيرة جدا -- هذه العملة لا تتجزأ لهذا الحد</string>
+    <string name="retrievingExchangeRate">لا يزال جارٍ جلب سعر الصرف</string>
+    <string name="unavailableExchangeRate">سعر الصرف غير متاح</string>
+    <string name="SigningWithAccount" formatted="false">التوقيع بالحساب: %act</string>
+    <string name="commonIdentityForAccount" formatted="false">الهوية المشتركة للحساب: %act</string>
+    <string name="identityRequestNotification">طلب الهوية</string>
+    <string name="IdentityDataMissing">معلومات الهوية ناقصة</string>
+    <string name="newDomainRequestingIdentity">خدمة جديدة تطلب التسجيل</string>
+    <string name="domainRequestingAdditionalIdentityInfo">طلب معلومات إضافية</string>
+    <string name="useUniqueIdentityToolTip">فعل هذا الخيار لإبقاء هويتك هنا منفصلة عن المواقع الأخرى.</string>
+    <string name="provideAlias">هل تريد تقديم اسم المستخدم/المعرف/اللقب؟</string>
+    <string name="provideAliasToolTip">اختيار هذا الخيار سيقدم لقبك (كما هو مضبوط في الإعدادات، وليس اسمك الحقيقي) إلى هذا الموقع عند طلبه</string>
+    <string name="provideSocialMedia">هل تريد تقديم معلومات التواصل الاجتماعي؟</string>
+    <string name="provideSocialMediaToolTip">اختيار هذا الخيار سيقدم معلومات التواصل الاجتماعي (كما هي مضبوطة في الإعدادات) إلى هذا الموقع عند طلبها</string>
+    <string name="providePostalAddress">هل تريد تقديم عنوانك البريدي؟</string>
+    <string name="providePostalAddressToolTip">اختيار هذا الخيار سيقدم عنوانك (كما هو مضبوط في الإعدادات) إلى هذا الموقع عند طلبه</string>
+    <string name="provideBillingAddress">هل تريد تقديم عنوان الفوترة؟</string>
+    <string name="provideBillingAddressToolTip">اختيار هذا الخيار سيقدم عنوان الفوترة (كما هو مضبوط في الإعدادات) إلى هذا الموقع عند طلبه</string>
+    <string name="provideEmail">هل تريد تقديم بريدك الإلكتروني؟</string>
+    <string name="provideAvatar">هل تريد تقديم صورتك الرمزية؟</string>
+    <string name="provideRealName">هل تريد تقديم اسمك الحقيقي؟</string>
+    <string name="provideRealNameToolTip">اختيار هذا الخيار سيعطي اسمك الحقيقي (كما هو مضبوط في الإعدادات) إلى هذا الموقع</string>
+    <string name="provideBirthday">هل تريد تقديم تاريخ ميلادك؟</string>
+    <string name="providePhone">هل تريد تقديم رقم هاتفك؟</string>
+    <string name="provideAttestations">هل تريد تقديم التوثيقات؟</string>
+    <string name="provideAttestationsToolTip">التوثيقات هي توقيعات من جهات خارجية تؤكد صحة البيانات التي تقدمها</string>
+    <string name="primaryAccountRequired" formatted="false">يلزم حساب %primCurrency لاستخدام هذه الميزة</string>
+    <string name="primaryAccountRequiredDetails" formatted="false">بعض الميزات مرتبطة بعملات رقمية معينة. يجب إنشاء حساب على تلك العملة الرقمية أو فتح قفله قبل استخدام الميزة.</string>
+    <string name="UnknownDomainRegisterFirst">خدمة غير معروفة، سجل أولا</string>
+    <string name="Provider" formatted="false">المزود: %provider</string>
+    <string name="QrCode">رمز QR</string>
+    <string name="unknownOperation" formatted="false">العملية %op غير معروفة</string>
+    <string name="alreadyRegistered">مسجل بالفعل</string>
+    <string name="existingRegistration" formatted="false">الحساب المحدد حاليا «%act» مسجل بالفعل لدى هذه الخدمة.</string>
+    <string name="nonexistentRegistration" formatted="false">الحساب المحدد حاليا «%act» غير مسجل بعد لدى هذه الخدمة.</string>
+    <string name="provideLoginQuestion">تسجيل الدخول إلى هذا الموقع؟</string>
+    <string name="provideInfoQuestion">معلومات الهوية مطلوبة من</string>
+    <string name="signDataQuestion">التوقيع مطلوب من</string>
+    <string name="nothingToSign">لا توجد رسالة</string>
+    <string name="binaryToSign">هل تريد توقيع هذه البيانات الثنائية؟</string>
+    <string name="textToSign">هل تريد توقيع هذه الرسالة؟</string>
+    <string name="sigInClipboard">تم نسخ التوقيع إلى الحافظة</string>
+    <string name="SocialMediaText">التواصل الاجتماعي</string>
+    <string name="SocialMediaSummary">أدخلها كقائمة خدمة:معرف، مثل twitter:janeDoe و keybase:janieD</string>
+    <string name="UsernameOrAliasText">اسم المستخدم/المعرف/اللقب</string>
+    <string name="NameText">الاسم الكامل</string>
+    <string name="PostalAddressText">العنوان البريدي</string>
+    <string name="BillingAddressText">عنوان الفوترة</string>
+    <string name="PostalCodeText">الرمز البريدي</string>
+    <string name="EmailText">البريد الإلكتروني</string>
+    <string name="TwitterText">Twitter</string>
+    <string name="TelegramText">Telegram</string>
+    <string name="IdentityAssociatedWith">معلومات الهوية المرتبطة</string>
+    <string name="ServiceAssociatedWith">هذه الخدمة مرتبطة بالفعل بما يلي:</string>
+    <string name="IdentityInfoNote">إدخال هذه المعلومات اختياري ولن تقدم إلا للخدمات التي تختارها. الغرض منها هو تعبئة الحقول الشائعة في النماذج بمجرد مسح رمز QR في المواقع التي تدعم الهوية.</string>
+    <string name="areYouSure">هل أنت متأكد؟</string>
+    <string name="WhenAskSure">أكد ما سبق:</string>
+    <string name="SendConfirmSummary" formatted="false">أكد إرسال %amt %currency %inFiat%assets إلى العنوان %dest</string>
+    <string name="firstName">الاسم الأول</string>
+    <string name="lastName">اسم العائلة</string>
+    <string name="withholdingMandatoryInfo">الموقع يطلب معلومات ترفض تقديمها</string>
+    <string name="badLink">رابط غير صالح</string>
+    <string name="BadWebLink">رابط ويب غير صالح</string>
+    <string name="connectionAborted">ألغى الموقع تسجيل الدخول</string>
+    <string name="HintAdjustCostBasis">أساس أو ربح رأسمالي</string>
+    <string name="CostBasis">أساس التكلفة</string>
+    <string name="CapitalLoss">خسارة رأسمالية</string>
+    <string name="CapitalGain">ربح رأسمالي</string>
+    <string name="OverrideSalesPrice">أدخل سعر البيع</string>
+    <string name="AccountHistory">المعاملات</string>
+    <string name="NoAccountActivity">لا يوجد نشاط في الحساب</string>
+    <string name="AccountAddresses">العناوين</string>
+    <string name="ActiveAddresses">العناوين النشطة</string>
+    <string name="UsedAddresses">العناوين المستخدمة</string>
+    <string name="UnusedAddresses">العناوين غير المستخدمة</string>
+    <string name="txHistoryButton">عرض نشاط الحساب أو تصديره</string>
+    <string name="setAsPrimaryAccountButton">اجعله حسابك الرئيسي</string>
+    <string name="AccountStatistics">إحصائيات الحساب</string>
+    <string name="AccountBlockchainSync" formatted="false">حاليا %sync على بلوكشين %chain.</string>
+    <string name="AccountBlockchainDetails" formatted="false">في %actBlockDate، الكتلة %actBlock من %chainBlockCount.</string>
+    <string name="AccountEarliestActivity" formatted="false">أول استخدام: الكتلة %actPrehistoryBlock بتاريخ %actPrehistoryDate.</string>
+    <string name="AccountBlockchainConnectionDetails" formatted="false">متصل بـ %num عقدة: %names</string>
+    <string name="AccountNumAddresses" formatted="false">%num عنوان</string>
+    <string name="CurrentAddress" formatted="false">عند العنوان %num: %addr</string>
+    <string name="FirstLastReceive" formatted="false">أول إيداع في الكتلة %first، والأحدث في الكتلة %last.</string>
+    <string name="FirstLastSend" formatted="false">أول سحب في الكتلة %first، والأحدث في الكتلة %last.</string>
+    <string name="FirstWithdraw">أول سحب</string>
+    <string name="FirstDeposit">أول إيداع</string>
+    <string name="never">أبدا</string>
+    <string name="FirstUse" formatted="false">أول استخدام: %date</string>
+    <string name="LastUse" formatted="false">آخر استخدام: %date</string>
+    <string name="Block" formatted="false">الكتلة: %block</string>
+    <string name="AccountNumTx" formatted="false">%num معاملة</string>
+    <string name="AccountNumUtxos" formatted="false">%num قيد في السجل</string>
+    <string name="title_activity_assets">الأصول</string>
+    <string name="title_activity_scan">مسح</string>
+    <string name="title_activity_new_account">حساب جديد</string>
+    <string name="AccountName">اسم الحساب</string>
+    <string name="AccountNameHint">1-8 أحرف</string>
+    <string name="Blockchain">البلوكشين</string>
+    <string name="AccountRecoveryPhrase">عبارة الاسترداد</string>
+    <string name="LeaveEmptyNewWallet">اتركه فارغا لإنشاء حساب جديد</string>
+    <string name="PinSuggestions"><font size="15">هذا الرقم السري مطلوب للوصول إلى الحساب</font></string>
+    <string name="createNewAccount">إنشاء حساب جديد</string>
+    <string name="createSyncAccount">استرداد الحساب بمزامنة دقيقة (وطويلة)</string>
+    <string name="createDiscoveredAccount">استرداد الحساب فورا</string>
+    <string name="invalidRecoveryPhrase">عبارة استرداد غير صحيحة</string>
+    <string name="invalidAccountName">اسم غير صحيح</string>
+    <string name="PassPhrase">عبارة المرور (اختياري)</string>
+    <string name="Bip44ActivityNotice">تم العثور على نشاط في الحساب</string>
+    <string name="NoBip44ActivityNotice">تحذير، لم يتم العثور على معاملات!</string>
+    <string name="Bip44BtcActivityNotice">تم العثور على نشاط محفظة غير قياسي أو سابق للانقسام</string>
+    <string name="NoBip44BtcActivityNotice">لا توجد معاملات سابقة للانقسام</string>
+    <string name="FirstUseDateHeightInfo" formatted="false">بدءا من %date (الكتلة %height)</string>
+    <string name="NotEnoughRecoveryWords">يلزم مزيد من كلمات الاسترداد</string>
+    <string name="TooManyRecoveryWords">كلمات الاسترداد كثيرة جدا</string>
+    <string name="IncorrectRecoveryWords" formatted="false">كلمات غير صحيحة: %words</string>
+    <string name="ElectrumNetworkUnavailable">شبكة Electrum غير متاحة. سيكون استرداد المحفظة بطيئا، ولن يتم اكتشاف المعاملات السابقة لتاريخ 1 يناير 2020</string>
+    <string name="PinHidesAccount">إخفاء الحساب حتى إدخال الرقم السري؟</string>
+    <string name="HiddenAccountExplainer">إخفاء الحساب حتى يتم إدخال الرقم السري</string>
+    <string name="HiddenAccount">حساب مخفي</string>
+    <string name="AutomaticNewAddress">خصوصية العنوان</string>
+    <string name="AutomaticNewAddressToolTip">يظهر عنوان جديد تلقائيا كلما تم استخدام العنوان الحالي.</string>
+    <string name="CreatePIN">رقم سري (اختياري)</string>
+    <string name="PinSpendingUnprotected">الإنفاق بدون الرقم السري مفعل (لم يتم إدخال رقم سري)</string>
+    <string name="PinSpendingProtected">الإنفاق يتطلب الرقم السري</string>
+    <string name="InvalidPIN">رقم سري غير صحيح</string>
+    <string name="creatingNoHistoryAccountWarning">أنت تنشئ حسابا بعبارة استرداد محددة، لكن لم يتم العثور على أي نشاط على البلوكشين.\nهل هذا صحيح؟\nإذا كان كذلك، اضغط زر الإنشاء مرة أخرى وسيتم إنشاء حساب فارغ. أما إذا كان يفترض أن يكون لهذا الحساب نشاط، فتحقق جيدا من البلوكشين وعبارة الاسترداد اللذين اخترتهما. وإذا لم تكن هذه هي المشكلة، فإما أن شبكة البلوكشين غير متاحة حاليا (حاول لاحقا)، وإما أن الحساب تم إنشاؤه بتطبيق محفظة غير قياسي. لا تنشئ هذا الحساب الآن.</string>
+    <string name="accountLocked">الحساب مقفل</string>
+    <string name="unknownError">خطأ</string>
+    <string name="insufficentBalance">الرصيد غير كافٍ</string>
+    <string name="insufficentTokenBalance">رصيد التوكن غير كافٍ</string>
+    <string name="excessiveFee">رسوم مفرطة</string>
+    <string name="sendDustError">المبلغ أقل من الحد الأدنى</string>
+    <string name="sendingDustWarning">المبلغ أقل من الحد الأدنى للشبكة</string>
+    <string name="feeExceedsFlatMax">الرسوم تتجاوز الحد الأقصى المسموح به للرسوم الثابتة</string>
+    <string name="notSupported">غير مدعوم</string>
+    <string name="expired">انتهت صلاحية الدفعة</string>
+    <string name="PaymentDataMissing">بيانات الدفعة ناقصة</string>
+    <string name="headersNotForthcoming">لا يتم توفير الترويسات</string>
+    <string name="cantConvert">التحويل غير متاح مؤقتا</string>
+    <string name="walletDisconnectedFromBlockchain">المحفظة غير متصلة</string>
+    <string name="badTransaction">معاملة غير صالحة</string>
+    <string name="badAddress">عنوان غير صحيح</string>
+    <string name="unknownAddress">عنوان غير معروف</string>
+    <string name="badAmount">مبلغ غير صحيح</string>
+    <string name="NoAccounts">لا توجد حسابات متاحة</string>
+    <string name="badCryptoCode">لا يوجد حساب مفتوح لهذه العملة أو هذا البلوكشين</string>
+    <string name="badCryptoCodeDetails" formatted="false">عملة غير معروفة أو غير متاحة: %currency</string>
+    <string name="badCurrencyUnit">ليست عملة</string>
+    <string name="incompatibleAccount">عملة غير صحيحة</string>
+    <string name="incompatibleAccountDetails" formatted="false">اخترت الدفع من حساب يحتوي على %cryptoAct لكن المطلوب هو %cryptoPay</string>
+    <string name="detailsOfBadAmountFromIntent">قدم البرنامج المستدعي رقما بتنسيق غير صحيح عند تحديد الكمية المراد إرسالها. عليك إدخال الكمية بنفسك</string>
+    <string name="blankAddress">عنوان فارغ</string>
+    <string name="unavailable">غير متاح</string>
+    <string name="blockNotForthcoming">الكتلة غير متاحة</string>
+    <string name="receiveAddressUnavailable">جارٍ حساب عنوان استلام جديد. يرجى الانتظار...</string>
+    <string name="accountLimitReached">الحد الأقصى للحسابات</string>
+    <string name="accountUnavailableDetails">إما أنه لا يوجد حساب يطابق هذا البلوكشين، وإما أن الحساب لم يتم فتح قفله.</string>
+    <string name="accountUnavailable">لا يوجد حساب متوافق مفتوح</string>
+    <string name="sendMoreThanBalance">أنت تحاول إرسال عملات أكثر من المتاح لديك الآن.\n\nإذا كنت ترى أنك لا تنفق أكثر من رصيدك، فربما نسيت أن المعاملات عليها رسوم إضافية صغيرة، أو إذا كان رصيدك كله يظهر غير مؤكد فربما أجريت معاملات كثيرة متتالية.\n\nهناك حد لمدى ما يمكنك «التقدم» به على البلوكشين. انتظر حتى يتم تأكيد رصيدك غير المؤكد ثم حاول مرة أخرى.</string>
+    <string name="sendMoreTokensThanBalance">أنت تحاول إرسال توكنات أكثر من المتاح لديك الآن.</string>
+    <string name="deductedFeeLargerThanSendAmount">الرسوم المخصومة أكبر من المبلغ المرسل</string>
+    <string name="badWalletImplementation">تنفيذ محفظة غير صحيح. أبلغ عن هذا الخلل!</string>
+    <string name="CannotCompleteTransaction">خطأ: تعذر الإكمال</string>
+    <string name="title_split_bill">تقسيم فاتورة</string>
+    <string name="title_activity_settings">الإعدادات</string>
+    <string name="title_activity_exchange">التداول</string>
+    <string name="title_activity_shopping">الروابط</string>
+    <string name="ecosystem">المنظومة</string>
+    <string name="title_activity_trickle_pay">Trickle Pay</string>
+    <string name="title_home">الرئيسية</string>
+    <string name="title_dashboard">اختبار</string>
+    <string name="title_notifications">الإشعارات</string>
+    <string name="title_activity_invoices">الفواتير</string>
+    <string name="title_activity_identity">الهوية</string>
+    <string name="title_activity_identity_op">الهوية</string>
+    <string name="title_activity_domain_identity_settings">إعدادات هوية النطاق</string>
+    <string name="title_activity_tx_history" formatted="false">سجل المعاملات: %account</string>
+    <string name="title_activity_address_history" formatted="false">سجل العناوين: %account</string>
+    <string name="title_activity_account_details" formatted="false">الحساب: %account</string>
+    <string name="title_test">اختبار</string>
+    <string name="useUniqueIdentity">استخدام هوية تشفيرية فريدة</string>
+    <string name="title_activity_identity_settings">إعدادات الهوية</string>
+    <string name="IdentityRegistrations">الخدمات المسجلة</string>
+    <string name="NoIdentitiesRegistered">لا توجد هويات مسجلة</string>
+    <string name="title_activity_welcome">مرحبا</string>
+    <string name="next">التالي</string>
+    <string name="previous">السابق</string>
+    <string name="EnterPIN">أدخل الرقم السري</string>
+    <string name="EnterPINorBlankToRemove">رقم سري جديد (فارغ للإزالة)</string>
+    <string name="ButtonTextHere">حدد نص الزر</string>
+    <string name="ButtonLinkHere">أدخل رابط الويب</string>
+    <string name="ShoppingWarning">تنبيه: العناصر في هذه الصفحة روابط لخدمات ومواقع تابعة لجهات خارجية، وضعت هنا لتسهيل الوصول. لم تقم محفظة Wally بفحص هذه المواقع أو الخدمات.\n\nاستخدامها على مسؤوليتك الخاصة!</string>
+    <string name="NFTs">التوكنات غير القابلة للاستبدال (NFTs)</string>
+    <string name="ExplainNFTs">NiftyArt.cash: إنشاء وتداول صور فريدة وتمثيلات رقمية لعناصر فريدة</string>
+    <string name="NftUrl">http://niftyart.cash</string>
+    <string name="NftImproperConstruction">تحذير: مزيف أو منشأ بشكل غير صحيح!</string>
+    <string name="TokenSourceWebsite">مصدر التوكن:</string>
+    <string name="TokenBadSig">لم يتم توقيع معلومات هذا التوكن بشكل صحيح. قد يكون هذا التوكن مزيفا أو منتحلا. وقد يعني ذلك أيضا أن منشئ التوكن لم يوقعه بشكل صحيح.</string>
+    <string name="OpenWebsite" formatted="false">فتح %siteName</string>
+    <string name="WebsiteUnavailable" formatted="false">الموقع غير متاح</string>
+    <string name="ExplainBitmart">bitmart.com: تداول NEXA مقابل عملات رقمية أخرى</string>
+    <string name="ExplainMexc">mexc.com: تداول NEXA مقابل عملات رقمية أخرى</string>
+    <string name="ExplainBiconomy">biconomy.com: تداول NEXA مقابل عملات رقمية أخرى</string>
+    <string name="CexButton">تداول</string>
+    <string name="SharedNotification" formatted="false">تمت مشاركة %what</string>
+    <string name="AuthAutopayTitle">دفعة مفوضة</string>
+    <string name="AuthAutopayDeniedTitle">تم رفض الدفعة المفوضة</string>
+    <string name="AuthAutopay" formatted="false">%amt إلى %domain</string>
+    <string name="TpToBeDone">ستظهر هنا اتصالات Trickle Pay الخاصة بك</string>
+    <string name="TpHistoryTbd">سيظهر هنا سجل Trickle Pay الخاص بك</string>
+    <string name="AcceptTpRegistration">قبول التسجيل من:</string>
+    <string name="EditTpRegistration">إعدادات الجهة:</string>
+    <string name="AcceptTpRegistrationTopic">الغرض:</string>
+    <string name="TpMaxSpendHint">أقصى إنفاق تلقائي</string>
+    <string name="TpAssetInfoRequest">طلبات معلومات الأصول</string>
+    <string name="TpAssociatedAccount" formatted="false">مرتبط بالحساب: %act</string>
+    <string name="TpAssociatedAddress" formatted="false">%addr</string>
+    <string name="SpecialTxNotif">طلب تفويض معاملة</string>
+    <string name="AssetNotif">طلب معلومات الأصول</string>
+    <string name="PaymentRequest">طلب دفع</string>
+    <string name="IdentityNotif">طلب هوية/تسجيل دخول</string>
+    <string name="TpMaxHeading">حدود الدفع التلقائي</string>
+    <string name="TpMaxPer">الحد الأقصى لكل طلب</string>
+    <string name="TpMaxPerDay">الحد الأقصى اليومي</string>
+    <string name="TpMaxPerWeek">الحد الأقصى الأسبوعي</string>
+    <string name="TpMaxPerMonth">الحد الأقصى الشهري</string>
+    <string name="TpEnableAutopay">تفعيل الدفع التلقائي (إذا لم يتم تحديده، ستطلب كل الدفعات تفويض المستخدم وسيتم تجاهل الحدود أدناه)</string>
+    <string name="asciiArrow"><![CDATA[=>]]></string>
+    <string name="TpNoRegistrations">لا توجد تسجيلات Trickle Pay</string>
+    <string name="TpNoSession">لا يوجد طلب Trickle Pay</string>
+    <string name="TpRegistrations">التسجيلات</string>
+    <string name="TpRegDenied">تسجيل مرفوض</string>
+    <string name="TpRegAccepted">تسجيل مقبول</string>
+    <string name="TpRegUnchanged">لم يتغير التسجيل</string>
+    <string name="TpRequestAutoDeny">طلب مرفوض (تلقائيا)</string>
+    <string name="TpRequestAutoAccept">طلب مقبول (تلقائيا)</string>
+    <string name="TpTxDenied">معاملة مرفوضة</string>
+    <string name="TpTxAccepted">معاملة مقبولة</string>
+    <string name="TpNetworkTimeout">انتهت مهلة المعاملة</string>
+    <string name="TpPartialSubmitted">تم إرسال العرض</string>
+    <string name="TpAssetRequestDenied">تم حجب معلومات الأصل</string>
+    <string name="TpAssetRequestAccepted">جارٍ إرسال معلومات الأصل</string>
+    <string name="Actions">الإجراءات</string>
+    <string name="SpecialTpTransactionFrom">معاملة خاصة من</string>
+    <string name="IncompleteTpTransactionFrom">اقتراح عرض ملزم من</string>
+    <string name="TpEntails">يتضمن</string>
+    <string name="TpInAccount">باستخدام الحساب</string>
+    <string name="TpAssetRequestFrom">طلب معلومات الأصول من</string>
+    <string name="TpHandledByAccount">يمكن لحسابك تنفيذه</string>
+    <string name="TpAssetMatches" formatted="false">سيتم تزويد هذه الخدمة بمعلومات عن %num من الأصول التي تملكها.</string>
+    <string name="TpAssetInfoNotXfer">قبول هذا الطلب يمنح الخدمة معلومات عن ملكيتك فقط، ولا يفوض أي تحويلات.</string>
+    <string name="ForAFeeOf" formatted="false">بما في ذلك رسوم قدرها %fee %units</string>
+    <string name="TpExchangingTokens" formatted="false">وتبادل التوكنات (إرسال %tokSnd، استلام %tokRcv).</string>
+    <string name="TpShowingTokens" formatted="false">يتم كشف %tokReveal من أنواع التوكنات (بإنفاقها إلى نفسك لإثبات ملكيتك لها).</string>
+    <string name="TpSendingTokens" formatted="false">وإرسال %tokSnd من أنواع التوكنات.</string>
+    <string name="TpReceivingTokens" formatted="false">واستلام %tokRcv من أنواع التوكنات.</string>
+    <string name="TpHasNoPurpose">هذا الطلب لا يؤثر على هذا الحساب.</string>
+    <string name="TpSendToTitle">طلب الدفع من</string>
+    <string name="TpSpends">ينفق</string>
+    <string name="TpSendRequestDenied">تم رفض الدفع</string>
+    <string name="TpSendAutoReject">تم رفض الدفع تلقائيا</string>
+    <string name="TpSendRequestAccepted">تم قبول الدفع</string>
+    <string name="TpWhyNotAuto">لن يتم التوقيع تلقائيا بسبب</string>
+    <string name="TpAutomaticDisabled">الدفع التلقائي معطل</string>
+    <string name="TpExceededMaxPer">يتجاوز الحد الأقصى لكل طلب</string>
+    <string name="TpExceededMaxDaily">يتجاوز الحد الأقصى اليومي</string>
+    <string name="TpExceededMaxWeekly">يتجاوز الحد الأقصى الأسبوعي</string>
+    <string name="TpExceededMaxMonthly">يتجاوز الحد الأقصى الشهري</string>
+    <string name="title_activity_alert_history">الرسائل الأخيرة</string>
+    <string name="IssueReportInstructions">قدم هذه المعلومات إلى المطورين:</string>
+    <string name="AssetApplication">تشغيل</string>
+    <string name="AssetMarketplace">تداول</string>
+    <string name="AssetAddedToTransferList">أضيف إلى «إرسال» في التبويب الرئيسي</string>
+    <string name="NftCardFront">الأمام</string>
+    <string name="NftCardBack">الخلف</string>
+    <string name="NftPublicMedia">المحتويات</string>
+    <string name="NftOwnerMedia">محتوى المالك</string>
+    <string name="Content">المحتوى</string>
+    <string name="Private">خاص</string>
+    <string name="NftPrivateDescription">هذا المحتوى يخص مالك الأصل</string>
+    <string name="NftInfo">معلومات</string>
+    <string name="NftLegal">الترخيص</string>
+    <string name="NftSeries" formatted="false">السلسلة: %series</string>
+    <string name="NftAuthor" formatted="false">المؤلف: %author</string>
+    <string name="NftNoInfoProvided">...لا توجد معلومات...</string>
+    <string name="IssuedToConnection">تم التشغيل في الموقع المتصل</string>
+    <string name ="demonstratingOwnership">إثبات الملكية</string>
+    <string name="AndSomeAssets"> وبعض الأصول</string>
+    <string name="AssetTypes" formatted="false">%assetTypes من أنواع الأصول</string>
+    <string name="ExplainRestaurant">قد تقبل خدمات طلب الطعام عبر الإنترنت (للتوصيل أو الاستلام) العملة الرقمية حتى لو كان الفرع نفسه لا يقبلها.</string>
+    <string name="RestaurantButton">طلب الطعام عبر Menufy</string>
+    <string name="RestaurantUrl">https://www.menufy.com</string>
+    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
+    <string name="ExplainStoreMap">اعثر على أماكن قريبة منك تقبل العملة الرقمية.</string>
+    <string name="StoreMapButton">خريطة المتاجر</string>
+    <string name="StoreMapUrl">https://map.bitcoin.com</string>
+    <string name="StoreMapAppPackage"></string>
+    <string name="ExplainTxBit">txbit.io: تداول NEXA مقابل عملات رقمية أخرى</string>
+    <string name="welcome1Label">مرحبا</string>
+    <string name="welcome1">مرحبا بك في Wally، محفظة العملات الرقمية!\n\nفي الشاشات التالية، ستنشئ أول حساب لك على بلوكشين Nexa (NEX) وتضبط خدمات أخرى مثل إدارة كلمات المرور.\n\nأو يمكنك الضغط على سهم الرجوع لتخطي هذا الإعداد الموجه.</string>
+    <string name="welcome2_title">إعدادات حساب NEXA</string>
+    <string name="welcome2">في الصفحة التالية، ستنشئ أول حساب Nexa لك.\n\nيحتوي هذا الحساب على أموالك من Nexa وعلى هوياتك. الهويات ميزة جديدة في محفظة Wally تتيح لك تسجيل الدخول تلقائيا إلى المواقع المدعومة.\n\nيمكنك حماية حساباتك برقم سري، لكننا ننصح المستخدمين الجدد بعدم استخدام رقم سري (مع الاحتفاظ برصيد منخفض) في حسابهم الأول. لحماية المستخدم، لا تظهر الحسابات المحمية بالرقم السري إلا بعد إدخال الرقم السري الصحيح (ولا يظهر أي تنبيه عند إدخال رقم سري خاطئ).\n\nإذا أردت استرداد حساب NEXA موجود، فأدخل عبارة الاسترداد. وإذا ترك هذا السطر فارغا، فسيتم إنشاء حساب جديد.</string>
+    <string name="welcome3_title" formatted="false">عبارة استرداد حساب Nexa</string>
+    <string name="welcome3">مرحبا 3 ! (يمكن تحسين نص الترحيب هذا)</string>
+    <string name="welcome4_title">الهوية</string>
+    <string name="welcome4">بعد ذلك، ستنتقل إلى شاشة معلومات الهوية. تستخدم هذه المعلومات عندما تستعمل Wally كمدير للهوية وتسجيل الدخول (لتسجيل الدخول تلقائيا إلى المواقع المختلفة أو تقديم معلوماتك عند الشراء). Wally يهتم بالخصوصية إلى أقصى حد!
+لن تتم مشاركة هذه المعلومات مع أي موقع دون إذنك الصريح، ولا ترسل أي معلومات من هذه المحفظة إلى مؤلفي هذا التطبيق إطلاقا. ويمكنك أيضا ترك كل الحقول فارغة.
+عند الانتهاء، اضغط على سهم الرجوع (في أعلى الشاشة).</string>
+    <string name="welcomeComplete">بهذا يكتمل الإعداد. وإذا لم تكمل أي خطوة من خطوات الترحيب، فكل الحقول متاحة داخل التطبيق نفسه.
+شكرا لك، ونتمنى لك تجربة ممتعة مع محفظتك الجديدة!</string>
+    <string name="ExplainGiftCards">شراء بطاقات الهدايا يتيح لك التسوق من مئات المتاجر التي لا تقبل العملة الرقمية مباشرة.</string>
+    <string name="GiftCardButton">بطاقة هدايا eGifter</string>
+    <string name="GiftCardUrl">https://www.egifter.com</string>
+    <string name="GiftCardAppPackage">com.groupgifting.android</string>
+    <string name="Pinförslag">
+    <font size="15">هذا الرقم السري مطلوب للوصول إلى الحساب</font>
+</string>
+    <string name="sync_title">مزامنة البريد على فترات منتظمة</string>
+    <string name="attachment_title">تنزيل المرفقات الواردة</string>
+    <string name="attachment_summary_on">تنزيل مرفقات البريد تلقائيا</string>
+    <string name="attachment_summary_off">تنزيل المرفقات عند الطلب فقط</string>
+    <string name="signature_title">توقيعك</string>
+    <string name="reply_title">الإجراء الافتراضي عند الرد</string>
+    <string name="discoveredAccountDetails" formatted="false">تم اكتشاف رصيد قدره %bal %units\nفي %addr من العناوين وفي %tx من المعاملات</string>
+    <string name="discoveredWarning">إذا بدا هذا صحيحا، يمكنك إنشاء هذا الحساب فورا</string>
+    <string name="backgroundSync">المزامنة في الخلفية</string>
+    <string name="scanQr">مسح رمز QR</string>
+    <string name="imageQr">QR من صورة</string>
+    <string name="paste">لصق</string>
+    <string name="recentTransactions">المعاملات الأخيرة</string>
+    <string name="sendingFrom">الإرسال من</string>
+    <string name="enterAddress">أدخل العنوان...</string>
+    <string name="noteOptional">ملاحظة (اختياري)</string>
+    <string name="clearNote">محو الملاحظة</string>
+    <string name="clearAddress">محو العنوان</string>
+    <string name="clearAmount">محو المبلغ</string>
+    <string name="available">المتاح</string>
+    <string name="amountPlain">المبلغ</string>
+    <string name="enterNEXAmount">أدخل مبلغ NEX...</string>
+    <string name="note">ملاحظة</string>
+    <string name="confirmSend">تأكيد الإرسال</string>
+    <string name="syncing">جارٍ المزامنة...</string>
+    <string name="enterAmount" formatted="false">أدخل كمية %assetName</string>
+    <string name="fee">الرسوم</string>
+    <string name="connectionWarning">تحذير: لا يتوفر اتصال بالبلوكشين أو بالشبكة. إذا أرسلت الآن، فلن يرى المستلم هذا التحويل فورا. وسيتم تنفيذ الإرسال بمجرد عودة الاتصال.</string>
+    <string name="NetworkUnstable">الشبكة غير مستقرة</string>
+    <string name="TokenMissing">التوكن ليس على البلوكشين </string>
+    <string name="Sell">بيع</string>
+    <string name="CreateAnOffer">إنشاء عرض</string>
+    <string name="Price">السعر</string>
+    <string name="NexaPrice">أدخل سعر Nexa</string>
+    <string name="AssetAmountName" formatted="false">لديك %amount %assetName</string>
+    <string name="scanToBuyOne">امسح لشراء %name</string>
+    <string name="scanToBuySeveral">امسح لشراء %amount %name</string>
+    <string name="nexaOfferAmount" formatted="false">مقابل %amount NEXA</string>
+    <string name="purchaseComplete">اكتمل الشراء</string>
+    <string name="setTheNexaPrice">حدد سعر Nexa</string>
+    <string name="setTheAssetAmount">حدد كمية الأصل</string>
+    <string name="publishOnline">نشر العرض على الإنترنت</string>
+    <string name="offerCreated">تم إنشاء العرض!</string>
+    <string name="ConfigureService">إعداد الخدمة</string>
+    <string name="AcceptOrRejectService">قبول الخدمة أو رفضها</string>
+    <string name="Domain">النطاق</string>
+    <string name="Services">الخدمات</string>
+    <string name="Purpose">الغرض</string>
+    <string name="AutoPay">الدفع التلقائي</string>
+    <string name="AutoPayInstructions">إذا كان المربع التالي معطلا، فستطلب منك كل طلبات الدفع من هذه الخدمة تفويضا، ويتم تجاهل الحدود أدناه.</string>
+    <string name="LimitedAutoApproval">السماح بموافقة تلقائية محدودة</string>
+    <string name="AutoPayMaxPerRequest">الحد الأقصى لكل طلب</string>
+    <string name="AutoPayMaxPerDay">الحد الأقصى اليومي</string>
+    <string name="AutoPayMaxPerWeek">الحد الأقصى الأسبوعي</string>
+    <string name="AutoPayMaxPerMonth">الحد الأقصى الشهري</string>
+    <string name="EnableServices">تفعيل شاشة الخدمات</string>
+    <string name="NoServicesRegistered">لا توجد خدمات مسجلة.</string>
+    <string name="Start">ابدأ</string>
+    <string name="Meditation">التأمل</string>
+    <string name="Meditate">تأمل</string>
+    <string name="Sound">الصوت</string>
+    <string name="OneMinuteIntervalSound">صوت كل دقيقة</string>
+    <string name="MeditationVersion">الإصدار: 1.0.3 (بناء 156)</string>
+    <string name="Meditating">جارٍ التأمل...</string>
+    <string name="MediationComplete">اكتمل التأمل!</string>
+    <string name="Okay">حسنا</string>
+    <string name="Minutes">دقائق</string>
+    <string name="Camouflage">تمويه</string>
+    <string name="CamouflageAsMeditationTimer">تمويه التطبيق كمؤقت للتأمل.</string>
+    <string name="CamouflageDescriptionAndroid">تفعيل التمويه يغلق التطبيق ويموهه كتطبيق باسم Meditate. لإلغاء تمويه تطبيق Meditate، افتح قائمة التطبيق واضغط على رقم الإصدار خمس مرات.</string>
+    <string name="CamouflageDescriptionOther">لإلغاء تمويه تطبيق Meditate، افتح قائمة التطبيق واضغط على رقم الإصدار خمس مرات.</string>
+    <string name="CamouflageAsMeditateAppAndroid">التمويه كتطبيق Meditate</string>
+</resources>

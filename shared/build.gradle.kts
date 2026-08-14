@@ -734,7 +734,7 @@ tasks.register("clean", Delete::class) {
  *
  */
 
-val i18nLangs   = listOf("ca", "de", "es", "et", "fr", "ha", "hi", "in", "it", "ko", "nb", "no", "round", "sl", "sv", "sw", "tr")
+val i18nLangs   = listOf("am", "ar", "as", "bn", "ca", "de", "es", "et", "fa", "fil", "fr", "gu", "ha", "hi", "in", "it", "ja", "jv", "kn", "ko", "ml", "mr", "nb", "ne", "no", "or", "pa", "pl", "pt", "round", "ru", "sl", "sv", "sw", "ta", "te", "th", "tr", "uk", "ur", "vi", "yo", "zh")
 val i18nPackage = "info.bitcoinunlimited.www.wally"
 val i18nXmlDir  = file("../i18n/res")
 val i18nRawDir  = layout.buildDirectory.dir("generated/i18n/androidMain/res/raw")

@@ -1,0 +1,637 @@
+<resources>
+    <string name="app_name" translatable="false">Wally</string>
+    <string-array name="CurrencyTypes">
+        <item>NEX</item>
+        <item>USD</item>
+    </string-array>
+    <string-array name="FiatCurrencyTypes">
+        <item>BRL</item>
+        <item>CAD</item>
+        <item>CNY</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>JPY</item>
+        <item>RUB</item>
+        <item>USD</item>
+        <item>XAU</item>
+    </string-array>
+    <string name="uBCH" translatable="false">uBCH</string>
+    <string-array name="OneToTen">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="tipPercentage">
+        <item>--</item>
+        <item>0%</item>
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+        <item>50%</item>
+    </string-array>
+    <string name="yes">Bẹ́ẹ̀ ni</string>
+    <string name="no">Rárá</string>
+    <string name="at">ní</string>
+    <string name="of">ti</string>
+    <string name="choose">yàn</string>
+    <string name="accept">Fara mọ́</string>
+    <string name="reject">Kọ̀</string>
+    <string name="remove">Yọ kúrò</string>
+    <string name="confirm">Fọwọ́ sí</string>
+    <string name="cancel">Fagilé</string>
+    <string name="Back">Padà</string>
+    <string name="removeAll">Yọ gbogbo kúrò</string>
+    <string name="done">Parí</string>
+    <string name="dismiss">Fi sílẹ̀</string>
+    <string name="deny">Dí lọ́wọ́</string>
+    <string name="ask">Béèrè</string>
+    <string name="badSignature">ìfọwọ́sí kò tọ́</string>
+    <string name="unknownCurrency">owó àìmọ̀</string>
+    <string name="unknownCryptoCurrency">owó krípítò tàbí blockchain àìmọ̀</string>
+    <string name="Processing">ń ṣiṣẹ́...</string>
+    <string name="receiving">ń gbà</string>
+    <string name="sending">ń fi ránṣẹ́</string>
+    <string name="noAdditionalDetails">kò sí àlàyé mìíràn</string>
+    <string name="unspecified">aláìsọ pàtó</string>
+    <string name="removed">ti yọ kúrò</string>
+    <string name="synced">Ti dọ́gba</string>
+    <string name="unsynced">Ń mú dọ́gba</string>
+    <string name="connected">ti so pọ̀</string>
+    <string name="connectionEstablished">ìsopọ̀ ti wáyé</string>
+    <string name="connectionClosed">ìsopọ̀ ti tì</string>
+    <string name="connectionException">kò lè so pọ̀ mọ́ ojú-òpó</string>
+    <string name="balance">báláǹsì lọ́wọ́lọ́wọ́</string>
+    <string name="totalReceived">Àpapọ̀ tí a gbà</string>
+    <string name="inProgress">ń lọ lọ́wọ́</string>
+    <string name="staleTransaction">Ìdúnàdúrà tí ó gbó</string>
+    <string name="staleTransactionDetails">Nọ́ọ̀dù kíkún kan kọ̀ ìdúnàdúrà yìí. Ó ṣeé ṣe kí ó ti gbó (ẹlòmíràn ti lò ó tẹ́lẹ̀), ṣùgbọ́n ó tún ṣeé ṣe kí ìdúnàdúrà náà má wúlò rí, tàbí kí ó dára ṣùgbọ́n kí àwọn nọ́ọ̀dù tí a béèrè lọ́wọ́ wọn má ṣòótọ́. Àpamọ́wọ́ yóò fojú fo ìdúnàdúrà yìí àyàfi bí ó bá fìdí múlẹ̀.</string>
+    <string name="NoPermission">Kò sí àṣẹ</string>
+    <string name="NoPermissionDetails" formatted="false">Ẹ gbọ́dọ̀ ṣí àṣẹ %perm kí ẹ tó lè lo ẹ̀yà yìí. Ẹ lè ṣe é ní Android Settings -> Apps -> Wally -> Permissions</string>
+    <string name="WebLoadingPage"><![CDATA[<body><h1><center>...ń gbé wọlé...</h1></center></body>]]></string>
+    <string name="loading">ń gbé wọlé</string>
+    <string name="Untitled">Aláìlórúkọ</string>
+    <string name="nothing">kò sí nǹkan</string>
+    <string name="breakIt">fọ́</string>
+    <string name="or">tàbí</string>
+    <string name="onBlockchain">lórí</string>
+    <string name="NotImplemented">Ń bọ̀ láìpẹ́</string>
+    <string name="NoNodes">Kò sí àyè sí blockchain</string>
+    <string name="cancelled">ti fagilé</string>
+    <string name="refreshQR">Ìsopọ̀ sí sáfà ti já</string>
+    <string name="pleaseWait">ẹ jọ̀wọ́ dúró</string>
+    <string name="trying">ń gbìyànjú</string>
+    <string name="clear">Nù</string>
+    <string name="thousand">* ẹgbẹ̀rún</string>
+    <string name="million">* mílíọ̀nù</string>
+    <string name="required">a nílò rẹ̀</string>
+    <string name="account">Àkáǹtì</string>
+    <string name="addAccountPlus">+ Fi àkáǹtì kún</string>
+    <string name="receivingTokens">Ń gba tọ́kìnì</string>
+    <string name="spendingTokens">Ń ná tọ́kìnì</string>
+    <string name="version" formatted="false">Ẹ̀yà: %ver (%date)</string>
+    <string name="enableDeveloperView">Ipò gíga/ìdàgbàsókè</string>
+    <string name="enableRecompositionCounts">Ka àtúnyàwòrán ojú-ìwé</string>
+    <string name="enableExperimentalUx">Ìrísí ìdánwò</string>
+    <string name="enableDarkMode">Ipò òkùnkùn</string>
+    <string name="enableSound">Ṣí ìró</string>
+    <string name="enableIdentityMenu">Ṣí ojú-ìwé ìdánimọ̀</string>
+    <string name="enableTricklePayMenu">Ṣí ojú-ìwé Trickle Pay</string>
+    <string name="enableAssetsMenu">Ṣí ojú-ìwé dúkìá</string>
+    <string name="only">nìkan</string>
+    <string name="prefer">fẹ́ràn jù</string>
+    <string name="rediscoverWalletTx">Ṣàwárí gbogbo ìdúnàdúrà padà</string>
+    <string name="searchWalletTx">Wá àwọn ìdúnàdúrà tí ó sọnù</string>
+    <string name="rediscoverBlockchain">Ṣàwárí àkọlé blockchain padà</string>
+    <string name="logDebugData">Ṣàkọsílẹ̀ dátà àṣìṣe</string>
+    <string name="clearIdentityDomains">Nù àwọn dòméènì ìdánimọ̀</string>
+    <string name="rediscoverTooltip">Pa ipò blockchain rẹ́ kí ẹ sì tún wá gbogbo ìdúnàdúrà tí ó kan àpamọ́wọ́</string>
+    <string name="wordSeed">Ọ̀rọ̀ àṣírí ìgbàpadà àkáǹtì</string>
+    <string name="deleteWalletAccount">Pa àkáǹtì rẹ́</string>
+    <string name="more">Mìíràn</string>
+    <string name="darkMode">Ipò òkùnkùn</string>
+    <string name="ConsolidationNeeded">Ẹ kọ́kọ́ ṣàkópọ̀ àkáǹtì</string>
+    <string name="SetChangePin">Ṣètò tàbí yí PIN ìṣílẹ̀ padà</string>
+    <string name="CurrentPin">PIN lọ́wọ́lọ́wọ́</string>
+    <string name="NewPin">PIN tuntun</string>
+    <string name="PinChanged">PIN ti yí padà</string>
+    <string name="PinRemoved">PIN ti yọ kúrò</string>
+    <string name="PinInvalid">PIN kò tọ́</string>
+    <string name="PinTooShort">PIN tuntun kúrú jù</string>
+    <string name="WriteDownRecoveryPhraseWarningUi2">Ìkìlọ̀: ẹ kò tí ì kọ ọ̀rọ̀ àṣírí ìgbàpadà sílẹ̀ fún àwọn àkáǹtì kan! Kí owó yín má bàa sọnù bí ẹ̀rọ yìí bá sọnù tàbí bàjẹ́, ẹ kọ àwọn ọ̀rọ̀ àṣírí ìgbàpadà sílẹ̀ sórí bébà tàbí ohun mìíràn tí kìí ṣe ẹ̀rọ.</string>
+    <string name="WroteRecoveryPhraseDown">Mo ti kọ ọ́ sílẹ̀</string>
+    <string name="RecoveryPhraseKeepRemindingMe">Ẹ máa rán mi létí</string>
+    <string name="ViewRecoveryPhrase">Wo ọ̀rọ̀ àṣírí ìgbàpadà àkáǹtì</string>
+    <string name="localCurrency">Owó orílẹ̀-èdè</string>
+    <string name="assessUnconfirmed">Ṣàyẹ̀wò ìdúnàdúrà tí kò tíì fìdí múlẹ̀</string>
+    <string name="rediscoverNotice">Ìṣàwárí àkáǹtì padà ti bẹ̀rẹ̀</string>
+    <string name="searchNotice">Ìwá àkáǹtì ti bẹ̀rẹ̀</string>
+    <string name="unconfAssessmentNotice">Àyẹ̀wò àwọn tí kò tíì fìdí múlẹ̀ ti bẹ̀rẹ̀</string>
+    <string name="accountDeleteNotice">Àkáǹtì ti parẹ́</string>
+    <string name="rediscoverConfirmation">Ṣíṣàwárí àkáǹtì padà yóò mú àpamọ́wọ́ padà sí òdo, yóò sì wá àwọn ìsanwó lórí blockchain, bí ẹni pé a ṣẹ̀ṣẹ̀ ṣẹ̀dá àkáǹtì náà. Ìlànà yìí lè gba àkókò gígùn. Ṣùgbọ́n, bọ́tìnì “Tì síwájú” lè fara hàn, tí yóò fún yín ní àyè láti béèrè ìtàn àpamọ́wọ́ yín lọ́wọ́ ilé-ìtọ́jú dátà. Bí ọjọ́ tí ó wà lókè kò bá tọ̀nà, ẹ dúró fún ìṣẹ́jú-àáyá díẹ̀ kí ó lè yí padà.</string>
+    <string name="searchConfirmation">Iṣẹ́ yìí ń wá àwọn ìsanwó tí ó sọnù lórí blockchain. Ìlànà yìí lè gba àkókò gígùn. Ṣùgbọ́n, bọ́tìnì “Tì síwájú” lè fara hàn, tí yóò fún yín ní àyè láti béèrè ìtàn àpamọ́wọ́ yín lọ́wọ́ ilé-ìtọ́jú dátà.</string>
+    <string name="rediscoverBlockchainConfirmation">Ṣíṣàwárí blockchain padà yóò pa gbogbo dátà àkọlé blockchain rẹ́ kúrò nínú àpamọ́wọ́ yìí, yóò sì tún gbà á wọlé láti ọ̀dọ̀ àwọn nọ́ọ̀dù kíkún. Ìlànà yìí lè gba àkókò gígùn. Ẹ lò ó nìkan bí ó bá dá yín lójú pé ìṣòro wà pẹ̀lú àkọlé blockchain.</string>
+    <string name="deleteConfirmation" formatted="false">Pípa àkáǹtì rẹ́ yóò mú kí gbogbo báláǹsì, ìdánimọ̀ àti ìtàn di èyí tí ẹ kò lè rí mọ́, àyàfi bí ẹ bá gba àkáǹtì náà padà pẹ̀lú ọ̀rọ̀ àṣírí ìgbàpadà àkáǹtì! Ẹ ṣe èyí nìkan bí ó bá DÁ YÍN LÓJÚ PÁTÁPÁTÀ!\n\nṢé kí a pa àkáǹtì “%accountName” (lórí %blockchain) rẹ́?</string>
+    <string name="reassessConfirmation">Iṣẹ́ yìí yóò yẹ blockchain wò fún àwọn ìdúnàdúrà tí ẹ ṣẹ̀ṣẹ̀ fi ránṣẹ́. Bí wọ́n bá wà níbẹ̀ tàbí bí wọn kò bá sí, yóò fìdí wọn múlẹ̀ tàbí yóò pa wọ́n rẹ́. Bí a bá pa àwọn ìdúnàdúrà rẹ́, ó máa dàbí ẹni pé owó náà ti sọnù. Ẹ ó nílò láti “ṣàwárí padà” kí ẹ tó lè rí báláǹsì tí ẹ ná padà. Ẹ má ṣe lò ó bí ẹ bá ṣẹ̀ṣẹ̀ ṣe ìdúnàdúrà kan, nítorí ìdúnàdúrà náà lè máa dúró nínú nẹ́tíwọ́kì, tí ó ń dúró de ìfìdímúlẹ̀.</string>
+    <string name="recoveryPhrase">Àwọn ọ̀rọ̀ méjìlá yìí ni a fi ń gba àpamọ́wọ́ yín padà. Ẹnikẹ́ni tí ó bá ní àwọn ọ̀rọ̀ yìí lè ná owó yín. Ẹ fi kálámù kọ wọ́n sórí bébà (tàbí kí ẹ gbẹ́ wọn sára irin) kí ẹ sì tọ́jú wọn dáadáa!</string>
+    <string name="recoveryWarning">DÚRÓ! Ẹ MÁ ṢE TỌ́JÚ RẸ̀ NÍ DÍJÍTÀ!\nẸ KÒ GBỌ́DỌ̀ ṣe ẹ̀dà rẹ̀ sí àpótí ẹ̀dà, ya fọ́tò rẹ̀, ṣe ẹ̀dà ẹ̀rọ rẹ̀, tàbí ya àwòrán ojú-ìwé.</string>
+    <string name="flickerReason">Ìtàn-nàná ojú-ìwé jẹ́ ọ̀nà ààbò</string>
+    <string name="PastingRecoveryPhraseIsBadIdea">A ti ṣe ẹ̀dà rẹ̀ sí àpótí ẹ̀dà. Ṣùgbọ́n, ṣíṣe ẹ̀dà ọ̀rọ̀ àṣírí ìgbàpadà yìí kí ẹ sì lẹ̀ ẹ́ mọ́ ohun-èlò kankan jẹ́ ÈRÒ BÚBURÚ! Ímeèlì, ọ̀pọ̀ ohun-èlò, iṣẹ́ ẹ̀dà ìpamọ́ àti bẹ́ẹ̀ bẹ́ẹ̀ lọ kò ní ààbò tó fún ọ̀rọ̀ tí ó jẹ́ owó gan-an.</string>
+    <string name="primaryAccountConfirmation">Àkáǹtì àkọ́kọ́ yín ni àkáǹtì tí a ń lò fún ìdánimọ̀ yín àti fún ìsanwó aládàáṣe. Òun ni àkáǹtì àkọ́kọ́ tí ó ń hàn ní oríṣiríṣi ibi nínú ohun-èlò yìí. Ó gbọ́dọ̀ wà lórí blockchain Nexa.</string>
+    <string name="primaryAccountSuccess">Àkáǹtì àkọ́kọ́: %name</string>
+    <string name="AccountActions">Ìṣe àkáǹtì</string>
+    <string name="GeneralSettings">Ètò gbogbogbò</string>
+    <string name="BlockchainSettings">Orísun blockchain</string>
+    <string name="AccessPriceData">Àyè sí dátà ìdíyelé</string>
+    <string name="oldUi">Ìrísí àtijọ́</string>
+    <string name="SplitBillDescription">Ẹ san owó náà (ní owó orílẹ̀-èdè), lẹ́yìn náà àwọn ọ̀rẹ́ yín yóò san ìpín tiwọn fún yín nípasẹ̀ kóòdù QR tí ó wà nísàlẹ̀. Ẹ ka ara yín mọ́ iye ẹni tí ẹ máa pín ín sí, àyàfi bí àwọn ọ̀rẹ́ yín bá ń rà á!</string>
+    <string name="BillAmount">Iye owó náà</string>
+    <string name="TipAmount">Iye ẹ̀bùn</string>
+    <string name="TipPercentage">Ìdá ọgọ́rùn-ún ẹ̀bùn</string>
+    <string name="Total">Àpapọ̀ iye láti pín</string>
+    <string name="OR">TÀBÍ</string>
+    <string name="QRCodeFor">Kóòdù QR fún:</string>
+    <string name="Ways">Ìpín:</string>
+    <string name="Tip">Ẹ̀bùn:</string>
+    <string name="Amount">Iye:</string>
+    <string name="AmountWithValue" formatted="false">Iye: %amt</string>
+    <string name="QuantityWithValue" formatted="false">Iye: %qty</string>
+    <string name="balanceOnTheDate" formatted="false">ní %date</string>
+    <string name="fastSync">Ìmúdọ́gba kíákíá</string>
+    <string name="refresh">Sọ dọ̀tun</string>
+    <string name="goodQR">A lè ka QR</string>
+    <string name="badQR">A kò lè ka QR</string>
+    <string name="badImageQR">àwòrán QR kò dára. sí i...</string>
+    <string name="badImageQRhelp">Bí ẹ bá ya àwòrán kóòdù QR náà ní ibi tí ó súnmọ́ jù, ẹ gbìyànjú láti ya á láti ọ̀nà jíjìn. Ẹ̀gbẹ́ funfun náà jẹ́ apá kan kóòdù QR, ẹ sì lè rí àwọn àwòrán moire tí ń da ni rú bí ẹ bá ya àwòrán ojú-ìwé ní ibi tí ó súnmọ́.</string>
+    <string name="GoThere">Lọ síbẹ̀</string>
+    <string name="unlock">ṣí</string>
+    <string name="share">pín</string>
+    <string name="Send">Ránṣẹ́</string>
+    <string name="OpenSend">Ránṣẹ́</string>
+    <string name="SendCancel">Fagilé</string>
+    <string name="ignoredInsecureRequest">A fojú fo ìbéèrè aláìní ààbò</string>
+    <string name="fromAccountColon">Fi ránṣẹ́ láti àkáǹtì:</string>
+    <string name="chooseAccountError">ẹ yan àkáǹtì kan</string>
+    <string name="toColon">Sí:</string>
+    <string name="To">Sí</string>
+    <string name="ByAuthor">Láti ọwọ́</string>
+    <string name="assetsColon">Dúkìá:</string>
+    <string name="assets">Dúkìá</string>
+    <string name="NoAssets">Kò sí dúkìá nínú àkáǹtì %act</string>
+    <string name="NoAssetsAccount">Kò sí dúkìá kankan nínú àkáǹtì yín lọ́wọ́lọ́wọ́.</string>
+    <string name="fromColon">Láti:</string>
+    <string name="ReceiveIntoAccount">Gbà sínú àkáǹtì</string>
+    <string name="Receive">Gbà owó</string>
+    <string name="YourAddress">Àdírẹ́sì %blockchain yín</string>
+    <string name="CopyAddress">Ṣe ẹ̀dà àdírẹ́sì</string>
+    <string name="AccountListHeader">Àwọn àkáǹtì</string>
+    <string name="Address">Àdírẹ́sì</string>
+    <string name="clipboard">àpótí ẹ̀dà</string>
+    <string name="settings">Ètò</string>
+    <string name="help">Ìrànlọ́wọ́</string>
+    <string name="invalidQuantity">iye kò tọ́</string>
+    <string name="needNonexistentAuthority">nílò àṣẹ tọ́kìnì</string>
+    <string name="invalidQuantityTooManyDecimalDigits">ààyè dẹ́sìmà pọ̀ jù</string>
+    <string name="roundedUpClickSendAgain">a sún un sókè, ẹ tẹ Ránṣẹ́ lẹ́ẹ̀kan sí i láti fara mọ́</string>
+    <string name="emptyQuantityField"></string>
+    <string name="purchase">ìràjà</string>
+    <string name="scanPaymentQRcode">Ṣàyẹ̀wò kóòdù QR àdírẹ́sì ìsanwó</string>
+    <string name="ScanQRCodeButton">Ṣàyẹ̀wò kóòdù QR</string>
+    <string name="PasteDestinationAddressButton">Lẹ̀ mọ́</string>
+    <string name="NewAccountButton">Ṣètò àkáǹtì tuntun</string>
+    <string name="NewAccountSearchingForTransactions">...ń wá ìdúnàdúrà àkọ́kọ́...</string>
+    <string name="NewAccountSearchingForAllTransactions">...ń wá gbogbo ìdúnàdúrà...</string>
+    <string name="NewAccountSearchFailure">ìwádìí ìdúnàdúrà kùnà</string>
+    <string name="receiveAddressQRCode">kóòdù QR ìgbà owó</string>
+    <string name="paymentProposal">gẹ́gẹ́ bí àbá ìsanwó tí a gbà</string>
+    <string name="pasteIsEmpty">àpótí ẹ̀dà ṣófo</string>
+    <string name="pasteIgnored">a fojú fo ẹ̀dà náà</string>
+    <string name="pasteUnintelligible">ẹ̀dà náà kò yé wa</string>
+    <string name="chainIncompatibleWithAddress">àdírẹ́sì kò bá àkáǹtì mu</string>
+    <string name="chainIncompatibleWithAddressDetails" formatted="false">Owó àkáǹtì ni %walletCrypto, àdírẹ́sì sì jẹ́ %addressCrypto.  Ẹ lo àpótí àṣàyàn láti yí àkáǹtì tí ẹ ó fi ránṣẹ́ padà sí èyí tí ó bá blockchain àdírẹ́sì náà mu.</string>
+    <string name="incoming" formatted="false">ó ní %delta %unit tí ń dúró</string>
+    <string name="approximatelyT" formatted="false">ó tó %qty %fiat</string>
+    <string name="fastForward" formatted="false">Tì síwájú</string>
+    <string name="fastforwardStatus" formatted="false">ìtúpalẹ̀ tì síwájú: %info</string>
+    <string name="fastforwardStart" formatted="false">ti bẹ̀rẹ̀</string>
+    <string name="exchangeRate" formatted="false">(ìwọ̀n pàṣípààrọ̀: 1 %fiat tó %amt %crypto)</string>
+    <string name="moreThanAvailable">(ó ju èyí tí ó wà lọ)</string>
+    <string name="moreThanConfirmedAvailable">(ó ju èyí tí ó fìdí múlẹ̀ lọ)</string>
+    <string name="actuallySendingT" formatted="false">%qty %crypto ni à ń fi ránṣẹ́ gan-an</string>
+    <string name="copiedToClipboard">a ti ṣe ẹ̀dà sí\nàpótí ẹ̀dà</string>
+    <string name="copyId">Ṣe ẹ̀dà ID</string>
+    <string name="openInBrowser">Ṣí nínú aṣàwákiri</string>
+    <string name="cannotCopyToClipboard">Kò lè ṣe ẹ̀dà sí àpótí ẹ̀dà</string>
+    <string name="tooLargeForClipboard">Dátà pọ̀ jù fún àpótí ẹ̀dà</string>
+    <string name="scanFailed">ìṣàyẹ̀wò kùnà</string>
+    <string name="scanSuccess">ìṣàyẹ̀wò ṣàṣeyọrí</string>
+    <string name="sendSuccess">ìfiránṣẹ́ ṣàṣeyọrí</string>
+    <string name="sendQuantityHint">iye ìfiránṣẹ́</string>
+    <string name="sendRequestNotification">A béèrè ìfiránṣẹ́</string>
+    <string name="sendToAddressHint">àdírẹ́sì olùgbà</string>
+    <string name="sendAll">gbogbo</string>
+    <string name="editSendNoteHint">àkíyèsí ara yín nípa ìfiránṣẹ́ yìí</string>
+    <string name="subSatoshiQuantities">Ààyè dẹ́sìmà pọ̀ jù -- owó yìí kò pín dé ibẹ̀</string>
+    <string name="retrievingExchangeRate">ṣì ń gba ìwọ̀n pàṣípààrọ̀</string>
+    <string name="unavailableExchangeRate">ìwọ̀n pàṣípààrọ̀ kò sí</string>
+    <string name="SigningWithAccount" formatted="false">Fífọwọ́sí pẹ̀lú àkáǹtì: %act</string>
+    <string name="commonIdentityForAccount" formatted="false">Ìdánimọ̀ gbogbogbò fún àkáǹtì: %act</string>
+    <string name="identityRequestNotification">a béèrè ìdánimọ̀</string>
+    <string name="IdentityDataMissing">Ìsọfúnni ìdánimọ̀ kò pé</string>
+    <string name="newDomainRequestingIdentity">Iṣẹ́ tuntun ń béèrè ìforúkọsílẹ̀</string>
+    <string name="domainRequestingAdditionalIdentityInfo">A béèrè ìsọfúnni àfikún</string>
+    <string name="useUniqueIdentityToolTip">Ẹ tàn án láti jẹ́ kí ìdánimọ̀ yín níbí yàtọ̀ sí ti àwọn ojú-òpó mìíràn.</string>
+    <string name="provideAlias">Pèsè orúkọ ìṣàmúlò/àpèlé yín?</string>
+    <string name="provideAliasToolTip">Yíyan àṣàyàn yìí yóò fún ojú-òpó wẹ́ẹ̀bù yìí ní àpèlé yín (gẹ́gẹ́ bí ó ṣe wà nínú Ètò, KÌ Í ṢE orúkọ gidi yín), bí wọ́n bá béèrè</string>
+    <string name="provideSocialMedia">Pèsè ìsọfúnni mídíà àwùjọ yín?</string>
+    <string name="provideSocialMediaToolTip">Yíyan àṣàyàn yìí yóò fún ojú-òpó wẹ́ẹ̀bù yìí ní ìsọfúnni mídíà àwùjọ yín (gẹ́gẹ́ bí ó ṣe wà nínú Ètò), bí wọ́n bá béèrè</string>
+    <string name="providePostalAddress">Pèsè àdírẹ́sì ilé yín?</string>
+    <string name="providePostalAddressToolTip">Yíyan àṣàyàn yìí yóò fún ojú-òpó wẹ́ẹ̀bù yìí ní àdírẹ́sì yín (gẹ́gẹ́ bí ó ṣe wà nínú Ètò), bí wọ́n bá béèrè</string>
+    <string name="provideBillingAddress">Pèsè àdírẹ́sì ìsanwó yín?</string>
+    <string name="provideBillingAddressToolTip">Yíyan àṣàyàn yìí yóò fún ojú-òpó wẹ́ẹ̀bù yìí ní àdírẹ́sì ìsanwó yín (gẹ́gẹ́ bí ó ṣe wà nínú Ètò), bí wọ́n bá béèrè</string>
+    <string name="provideEmail">Pèsè àdírẹ́sì ímeèlì yín?</string>
+    <string name="provideAvatar">Pèsè àwòrán ìdánimọ̀ yín?</string>
+    <string name="provideRealName">Pèsè orúkọ gidi yín?</string>
+    <string name="provideRealNameToolTip">Yíyan àṣàyàn yìí yóò fún ojú-òpó wẹ́ẹ̀bù yìí ní orúkọ gidi yín (gẹ́gẹ́ bí ó ṣe wà nínú Ètò)</string>
+    <string name="provideBirthday">Pèsè ọjọ́ ìbí yín?</string>
+    <string name="providePhone">Pèsè nọ́ḿbà fóònù yín?</string>
+    <string name="provideAttestations">Pèsè àwọn ìjẹ́rìí?</string>
+    <string name="provideAttestationsToolTip">Ìjẹ́rìí jẹ́ ìfọwọ́sí ẹnìkẹta tí ó fìdí dátà tí ẹ pèsè múlẹ̀</string>
+    <string name="primaryAccountRequired" formatted="false">Ẹ nílò àkáǹtì %primCurrency láti lo ẹ̀yà yìí</string>
+    <string name="primaryAccountRequiredDetails" formatted="false">Àwọn ẹ̀yà kan ní ìsopọ̀ pẹ̀lú àwọn owó krípítò kan.  Ẹ gbọ́dọ̀ ṣẹ̀dá tàbí ṣí àkáǹtì lórí owó krípítò yẹn kí ẹ tó lo ẹ̀yà náà.</string>
+    <string name="UnknownDomainRegisterFirst">Iṣẹ́ tí a kò mọ̀, ẹ kọ́kọ́ forúkọsílẹ̀</string>
+    <string name="Provider" formatted="false">Olùpèsè: %provider</string>
+    <string name="QrCode">Kóòdù QR</string>
+    <string name="unknownOperation" formatted="false">a kò mọ iṣẹ́ %op</string>
+    <string name="alreadyRegistered">ti forúkọsílẹ̀ tẹ́lẹ̀</string>
+    <string name="existingRegistration" formatted="false">Àkáǹtì \'%act\' tí ẹ yàn TI forúkọsílẹ̀ pẹ̀lú iṣẹ́ yìí.</string>
+    <string name="nonexistentRegistration" formatted="false">Àkáǹtì \'%act\' tí ẹ yàn KÒ TÍÌ forúkọsílẹ̀ pẹ̀lú iṣẹ́ yìí.</string>
+    <string name="provideLoginQuestion">Wọlé sí ojú-òpó yìí?</string>
+    <string name="provideInfoQuestion">Ìsọfúnni ìdánimọ̀ tí a béèrè láti ọwọ́</string>
+    <string name="signDataQuestion">Ìfọwọ́sí tí a béèrè lọ́wọ́</string>
+    <string name="nothingToSign">A kò pèsè ìhìn kankan</string>
+    <string name="binaryToSign">Fọwọ́ sí dátà bàínárì yìí?</string>
+    <string name="textToSign">Fọwọ́ sí ìhìn yìí?</string>
+    <string name="sigInClipboard">A ti ṣe ẹ̀dà ìfọwọ́sí sí àpótí ẹ̀dà</string>
+    <string name="SocialMediaText">Mídíà àwùjọ</string>
+    <string name="SocialMediaSummary">Ẹ kọ ọ́ gẹ́gẹ́ bí àkójọ iṣẹ́:àpèlé, Àpẹẹrẹ twitter:janeDoe, keybase:janieD</string>
+    <string name="UsernameOrAliasText">Orúkọ ìṣàmúlò/àpèlé</string>
+    <string name="NameText">Orúkọ kíkún</string>
+    <string name="PostalAddressText">Àdírẹ́sì ilé</string>
+    <string name="BillingAddressText">Àdírẹ́sì ìsanwó</string>
+    <string name="PostalCodeText">Kóòdù ìfìwéránṣẹ́</string>
+    <string name="EmailText">Àdírẹ́sì ímeèlì</string>
+    <string name="TwitterText">Twitter</string>
+    <string name="TelegramText">Telegram</string>
+    <string name="IdentityAssociatedWith">Ìsọfúnni ìdánimọ̀ tó so mọ́ ọn</string>
+    <string name="ServiceAssociatedWith">Iṣẹ́ yìí ti so mọ́:</string>
+    <string name="IdentityInfoNote">Kíkọ ìsọfúnni yìí kì í ṣe dandan, àwọn iṣẹ́ tí ẹ bá yàn nìkan ni a ó sì fún un.  Èròngbà rẹ̀ ni láti jẹ́ kí àwọn àyè tí a sábà máa ń kún nínú fọ́ọ̀mù kún nípa ṣíṣàyẹ̀wò kóòdù QR ní àwọn ojú-òpó wẹ́ẹ̀bù tí ó ní ìdánimọ̀.</string>
+    <string name="areYouSure">Ṣé ó dá yín lójú?</string>
+    <string name="WhenAskSure">Fọwọ́ sí èyí lókè:</string>
+    <string name="SendConfirmSummary" formatted="false">Ẹ fọwọ́ sí ìfiránṣẹ́ %amt %currency %inFiat%assets sí àdírẹ́sì %dest</string>
+    <string name="firstName">orúkọ àkọ́kọ́</string>
+    <string name="lastName">orúkọ ìdílé</string>
+    <string name="withholdingMandatoryInfo">ojú-òpó nílò ìsọfúnni tí ẹ kọ̀ láti pèsè</string>
+    <string name="badLink">líǹkì burúkú</string>
+    <string name="BadWebLink">Líǹkì wẹ́ẹ̀bù kò tọ́</string>
+    <string name="connectionAborted">ojú-òpó dá ìwọlé dúró</string>
+    <string name="HintAdjustCostBasis">ìpìlẹ̀ tàbí èrè olú-owó</string>
+    <string name="CostBasis">ìpìlẹ̀ ìnáwó</string>
+    <string name="CapitalLoss">àdánù olú-owó</string>
+    <string name="CapitalGain">èrè olú-owó</string>
+    <string name="OverrideSalesPrice">ìdíyelé nígbà títà</string>
+    <string name="AccountHistory">Ìdúnàdúrà</string>
+    <string name="NoAccountActivity">Kò sí ìgbòkègbodò àkáǹtì</string>
+    <string name="AccountAddresses">Àwọn àdírẹ́sì</string>
+    <string name="ActiveAddresses">Àdírẹ́sì tí ń ṣiṣẹ́</string>
+    <string name="UsedAddresses">Àdírẹ́sì tí a ti lò</string>
+    <string name="UnusedAddresses">Àdírẹ́sì tí a kò lò</string>
+    <string name="txHistoryButton">Wo tàbí kó ìgbòkègbodò àkáǹtì jáde</string>
+    <string name="setAsPrimaryAccountButton">Sọ èyí di àkáǹtì àkọ́kọ́ yín</string>
+    <string name="AccountStatistics">Ìṣirò àkáǹtì</string>
+    <string name="AccountBlockchainSync" formatted="false">%sync lọ́wọ́lọ́wọ́ lórí blockchain %chain.</string>
+    <string name="AccountBlockchainDetails" formatted="false">Ní %actBlockDate, blọ́ọ̀kù %actBlock nínú %chainBlockCount.</string>
+    <string name="AccountEarliestActivity" formatted="false">Ìlò àkọ́kọ́: blọ́ọ̀kù %actPrehistoryBlock ní %actPrehistoryDate.</string>
+    <string name="AccountBlockchainConnectionDetails" formatted="false">Ti so pọ̀ mọ́ nọ́ọ̀dù %num: %names</string>
+    <string name="AccountNumAddresses" formatted="false">àdírẹ́sì %num</string>
+    <string name="CurrentAddress" formatted="false">Ní àdírẹ́sì nọ́ḿbà %num: %addr</string>
+    <string name="FirstLastReceive" formatted="false">Owó àkọ́kọ́ tí a gbà: blọ́ọ̀kù %first, èyí tuntun jùlọ: blọ́ọ̀kù %last.</string>
+    <string name="FirstLastSend" formatted="false">Owó àkọ́kọ́ tí a yọ: blọ́ọ̀kù %first, èyí tuntun jùlọ: blọ́ọ̀kù %last.</string>
+    <string name="FirstWithdraw">Ìyọ owó àkọ́kọ́</string>
+    <string name="FirstDeposit">Ìgbà owó àkọ́kọ́</string>
+    <string name="never">kò tíì ṣẹlẹ̀</string>
+    <string name="FirstUse" formatted="false">Ìlò àkọ́kọ́: %date</string>
+    <string name="LastUse" formatted="false">Ìlò ìkẹyìn: %date</string>
+    <string name="Block" formatted="false">Blọ́ọ̀kù: %block</string>
+    <string name="AccountNumTx" formatted="false">ìdúnàdúrà %num</string>
+    <string name="AccountNumUtxos" formatted="false">àkọsílẹ̀ ìwé %num</string>
+    <string name="title_activity_assets">Dúkìá</string>
+    <string name="title_activity_scan">Ṣàyẹ̀wò</string>
+    <string name="title_activity_new_account">Àkáǹtì tuntun</string>
+    <string name="AccountName">Orúkọ àkáǹtì</string>
+    <string name="AccountNameHint">Lẹ́tà 1-8</string>
+    <string name="Blockchain">Blockchain</string>
+    <string name="AccountRecoveryPhrase">Ọ̀rọ̀ àṣírí ìgbàpadà</string>
+    <string name="LeaveEmptyNewWallet">Ẹ fi sílẹ̀ ní òfìfo fún àkáǹtì tuntun</string>
+    <string name="PinSuggestions"><font size="15">A nílò nọ́ḿbà àṣírí yìí láti wọ àkáǹtì</font></string>
+    <string name="createNewAccount">Ṣẹ̀dá àkáǹtì tuntun</string>
+    <string name="createSyncAccount">Gba àkáǹtì padà pẹ̀lú ìmúdọ́gba kíkún (tó gùn)</string>
+    <string name="createDiscoveredAccount">Gba àkáǹtì padà lẹ́sẹ̀kẹsẹ̀</string>
+    <string name="invalidRecoveryPhrase">ọ̀rọ̀ àṣírí ìgbàpadà kò tọ́</string>
+    <string name="invalidAccountName">orúkọ kò tọ́</string>
+    <string name="PassPhrase">Ọ̀rọ̀ ìgbaniwọlé (àṣàyàn)</string>
+    <string name="Bip44ActivityNotice">A rí ìgbòkègbodò àkáǹtì</string>
+    <string name="NoBip44ActivityNotice">Ìkìlọ̀, a kò rí ìdúnàdúrà kankan!</string>
+    <string name="Bip44BtcActivityNotice">A rí ìdúnàdúrà àpamọ́wọ́ tí kò dédé tàbí tí ó ṣáájú fork</string>
+    <string name="NoBip44BtcActivityNotice">A kò rí ìdúnàdúrà ṣáájú fork</string>
+    <string name="FirstUseDateHeightInfo" formatted="false">bẹ̀rẹ̀ ní %date (blọ́ọ̀kù %height)</string>
+    <string name="NotEnoughRecoveryWords">Ọ̀rọ̀ ìgbàpadà kò tó</string>
+    <string name="TooManyRecoveryWords">Ọ̀rọ̀ ìgbàpadà pọ̀ jù</string>
+    <string name="IncorrectRecoveryWords" formatted="false">Ọ̀rọ̀ tí kò tọ́: %words</string>
+    <string name="ElectrumNetworkUnavailable">Nẹ́tíwọ́kì Electrum kò sí. Ìgbàpadà àpamọ́wọ́ yóò lọ́ra, kò sì ní ṣàwárí ìdúnàdúrà tó ṣáájú Jan 1, 2020</string>
+    <string name="PinHidesAccount">Fi àkáǹtì pamọ́ títí a ó fi tẹ PIN?</string>
+    <string name="HiddenAccountExplainer">Fi àkáǹtì pamọ́ títí a ó fi tẹ PIN</string>
+    <string name="HiddenAccount">Àkáǹtì tí a pamọ́</string>
+    <string name="AutomaticNewAddress">Ìkọ̀kọ̀ àdírẹ́sì</string>
+    <string name="AutomaticNewAddressToolTip">Àdírẹ́sì tuntun máa ń hàn fúnra rẹ̀ nígbàkúgbà tí a bá lo èyí tó wà lọ́wọ́.</string>
+    <string name="CreatePIN">PIN (àṣàyàn)</string>
+    <string name="PinSpendingUnprotected">Ìnáwó láìsí PIN ti ṣí (a kò tẹ PIN kankan)</string>
+    <string name="PinSpendingProtected">Ìnáwó nílò PIN</string>
+    <string name="InvalidPIN">PIN kò tọ́</string>
+    <string name="creatingNoHistoryAccountWarning">Ẹ ń ṣẹ̀dá àkáǹtì pẹ̀lú ọ̀rọ̀ àṣírí ìgbàpadà pàtó kan, ṣùgbọ́n a kò rí ìdúnàdúrà kankan lórí blockchain.\nṢé bẹ́ẹ̀ ni?\nTí ó bá rí bẹ́ẹ̀, ẹ tún tẹ bọ́tìnì ìṣẹ̀dá lẹ́ẹ̀kan sí i, a ó sì ṣẹ̀dá àkáǹtì òfìfo. Ṣùgbọ́n tí àkáǹtì yìí bá yẹ kí ó ní ìdúnàdúrà, ẹ tún wo blockchain tí ẹ yàn àti ọ̀rọ̀ àṣírí ìgbàpadà yín dáadáa. Tí ìyẹn kò bá jẹ́ ìṣòro náà, bóyá nẹ́tíwọ́kì blockchain kò ṣeé wọlé lọ́wọ́lọ́wọ́ (ẹ gbìyànjú lẹ́yìn ìgbà díẹ̀), tàbí àpamọ́wọ́ tí kò dédé ni a fi ṣẹ̀dá rẹ̀. Ẹ má ṣe ṣẹ̀dá àkáǹtì yìí báyìí.</string>
+    <string name="accountLocked">àkáǹtì ti tì</string>
+    <string name="unknownError">àṣìṣe</string>
+    <string name="insufficentBalance">báláǹsì kò tó</string>
+    <string name="insufficentTokenBalance">báláǹsì tọ́kìnì kò tó</string>
+    <string name="excessiveFee">owó iṣẹ́ pọ̀ jù</string>
+    <string name="sendDustError">iye kéré ju ààlà lọ</string>
+    <string name="sendingDustWarning">iye kéré ju ààlà nẹ́tíwọ́kì lọ</string>
+    <string name="feeExceedsFlatMax">owó iṣẹ́ ju ààlà owó iṣẹ́ tí a gbé kalẹ̀ lọ</string>
+    <string name="notSupported">kò ní àtìlẹ́yìn</string>
+    <string name="expired">ìsanwó ti kọjá àkókò</string>
+    <string name="PaymentDataMissing">ìsanwó kò ní dátà</string>
+    <string name="headersNotForthcoming">a kò ń pèsè àwọn àkọlé</string>
+    <string name="cantConvert">ìyípadà owó kò sí fún ìgbà díẹ̀</string>
+    <string name="walletDisconnectedFromBlockchain">àpamọ́wọ́ kò so pọ̀</string>
+    <string name="badTransaction">ìdúnàdúrà kò tọ́</string>
+    <string name="badAddress">àdírẹ́sì kò tọ́</string>
+    <string name="unknownAddress">àdírẹ́sì àìmọ̀</string>
+    <string name="badAmount">iye kò tọ́</string>
+    <string name="NoAccounts">Kò sí àkáǹtì tó ṣí</string>
+    <string name="badCryptoCode">kò sí àkáǹtì tó ṣí fún owó tàbí blockchain yìí</string>
+    <string name="badCryptoCodeDetails" formatted="false">Owó àìmọ̀ tàbí tí kò sí: %currency</string>
+    <string name="badCurrencyUnit">kì í ṣe owó</string>
+    <string name="incompatibleAccount">owó kò tọ́</string>
+    <string name="incompatibleAccountDetails" formatted="false">Ẹ yàn láti san láti àkáǹtì tí ó ní %cryptoAct ṣùgbọ́n %cryptoPay ni a nílò</string>
+    <string name="detailsOfBadAmountFromIntent">Ètò tó pè é fi nọ́ḿbà tí kò bá ọ̀nà mu ránṣẹ́ nígbà tí ó ń pèsè
+        iye tí a fẹ́ fi ránṣẹ́. Ẹ ó ní láti tẹ iye náà fúnra yín
+    </string>
+    <string name="blankAddress">àdírẹ́sì òfìfo</string>
+    <string name="unavailable">kò sí</string>
+    <string name="blockNotForthcoming">blọ́ọ̀kù kò sí</string>
+    <string name="receiveAddressUnavailable">À ń ṣírò àdírẹ́sì gbígbà owó tuntun. Ẹ jọ̀wọ́ ẹ dúró...
+    </string>
+    <string name="accountLimitReached">àkáǹtì ti kún</string>
+    <string name="accountUnavailableDetails">Bóyá kò sí àkáǹtì tí ó bá blockchain yìí mu, tàbí a kò tíì ṣí àkáǹtì náà.</string>
+    <string name="accountUnavailable">Kò sí àkáǹtì tó ṣí tó bá mu</string>
+    <string name="sendMoreThanBalance">Ẹ ń gbìyànjú láti fi owó tí ó ju èyí tí ẹ ní lọ́wọ́ ránṣẹ́.\n\nTí ẹ bá rò pé ẹ kò ná ju báláǹsì yín lọ, ó ṣeé ṣe kí ẹ gbàgbé pé ìdúnàdúrà ní owó iṣẹ́ kékeré kan lórí; tàbí tí ẹ bá rí gbogbo báláǹsì yín bí èyí tí kò tíì fìdí múlẹ̀, ó ṣeé ṣe kí ẹ ti ṣe ìdúnàdúrà púpọ̀ lẹ́sẹẹsẹ.\n\nÀàlà wà fún bí ẹ ṣe lè “sáré ju” blockchain lọ. Ẹ jẹ́ kí báláǹsì tí kò tíì fìdí múlẹ̀ fìdí múlẹ̀, kí ẹ sì tún gbìyànjú.</string>
+    <string name="sendMoreTokensThanBalance">Ẹ ń gbìyànjú láti fi tọ́kìnì tí ó ju èyí tí ẹ ní lọ́wọ́ ránṣẹ́.</string>
+    <string name="deductedFeeLargerThanSendAmount">Owó iṣẹ́ tí a yọ pọ̀ ju iye tí à ń fi ránṣẹ́ lọ</string>
+    <string name="badWalletImplementation">Ìṣàgbékalẹ̀ àpamọ́wọ́ kò tọ́. Ẹ jábọ̀ àṣìṣe yìí!</string>
+    <string name="CannotCompleteTransaction">Àṣìṣe: Kò ṣeé parí</string>
+    <string name="title_split_bill">Pín owó</string>
+    <string name="title_activity_settings">Ètò</string>
+    <string name="title_activity_exchange">Pàṣípààrọ̀</string>
+    <string name="title_activity_shopping">Líǹkì</string>
+    <string name="ecosystem">Àyíká</string>
+    <string name="title_activity_trickle_pay">Trickle Pay</string>
+    <string name="title_home">Ilé</string>
+    <string name="title_dashboard">Ìdánwò</string>
+    <string name="title_notifications">Ìfitónilétí</string>
+    <string name="title_activity_invoices">Ìwé owó</string>
+    <string name="title_activity_identity">Ìdánimọ̀</string>
+    <string name="title_activity_identity_op">Ìdánimọ̀</string>
+    <string name="title_activity_domain_identity_settings">Ètò ìdánimọ̀ dòméènì</string>
+    <string name="title_activity_tx_history" formatted="false">Ìtàn ìdúnàdúrà: %account</string>
+    <string name="title_activity_address_history" formatted="false">Ìtàn àdírẹ́sì: %account</string>
+    <string name="title_activity_account_details" formatted="false">Àkáǹtì: %account</string>
+    <string name="title_test">Ìdánwò</string>
+    <string name="useUniqueIdentity">Lo ìdánimọ̀ àṣírí àrà ọ̀tọ̀</string>
+    <string name="title_activity_identity_settings">Ètò ìdánimọ̀</string>
+    <string name="IdentityRegistrations">Iṣẹ́ tí a forúkọsílẹ̀</string>
+    <string name="NoIdentitiesRegistered">Kò sí ìdánimọ̀ tí a forúkọsílẹ̀</string>
+    <string name="title_activity_welcome">Káàbọ̀</string>
+    <string name="next">Tókàn</string>
+    <string name="previous">Ṣáájú</string>
+    <string name="EnterPIN">Tẹ PIN</string>
+    <string name="EnterPINorBlankToRemove">PIN tuntun (òfìfo yọ ọ́ kúrò)</string>
+    <string name="ButtonTextHere">Kọ ọ̀rọ̀ bọ́tìnì</string>
+    <string name="ButtonLinkHere">Tẹ líǹkì wẹ́ẹ̀bù</string>
+    <string name="ShoppingWarning">ÌKÌLỌ̀: Àwọn nǹkan tó wà lójú-ìwé yìí jẹ́ líǹkì sí iṣẹ́ àti ojú-òpó wẹ́ẹ̀bù ẹnikẹta, tí a gbé sí ibí fún ìrọ̀rùn yín. Wally Wallet kò ṣàyẹ̀wò àwọn ojú-òpó/iṣẹ́ wọ̀nyí.\n\nẸ lò wọ́n lórí ewu ara yín!</string>
+    <string name="NFTs">Tọ́kìnì tí kò ṣeé pààrọ̀ (NFT)</string>
+    <string name="ExplainNFTs">NiftyArt.cash: Ṣẹ̀dá kí ẹ sì ṣòwò àwòrán àti àfihàn oní-díjítà nǹkan àrà ọ̀tọ̀</string>
+    <string name="NftUrl">http://niftyart.cash</string>
+    <string name="NftImproperConstruction">Ìkìlọ̀: Èké ni tàbí a kò kọ́ ọ dáadáa!</string>
+    <string name="TokenSourceWebsite">Orísun tọ́kìnì:</string>
+    <string name="TokenBadSig">A kò fọwọ́ sí ìsọfúnni tọ́kìnì yìí dáadáa. Ó ṣeé ṣe kí tọ́kìnì yìí jẹ́ èké tàbí ẹ̀tàn. Ó tún lè jẹ́ pé ẹni tó ṣẹ̀dá tọ́kìnì náà kò kàn fọwọ́ sí i dáadáa.</string>
+    <string name="OpenWebsite" formatted="false">Wọlé sí %siteName</string>
+    <string name="WebsiteUnavailable" formatted="false">Ojú-òpó wẹ́ẹ̀bù kò sí</string>
+    <string name="ExplainBitmart">bitmart.com: Pààrọ̀ NEXA fún owó krípítò mìíràn</string>
+    <string name="ExplainMexc">mexc.com: Pààrọ̀ NEXA fún owó krípítò mìíràn</string>
+    <string name="ExplainBiconomy">biconomy.com: Pààrọ̀ NEXA fún owó krípítò mìíràn</string>
+    <string name="CexButton">pàṣípààrọ̀</string>
+    <string name="SharedNotification" formatted="false">pín %what</string>
+    <string name="AuthAutopayTitle">Ìsanwó aláṣẹ</string>
+    <string name="AuthAutopayDeniedTitle">A kọ̀ ìsanwó aláṣẹ</string>
+    <string name="AuthAutopay" formatted="false">%amt sí %domain</string>
+    <string name="TpToBeDone">Àwọn ìsopọ̀ Trickle Pay yín yóò hàn níbí</string>
+    <string name="TpHistoryTbd">Ìtàn Trickle Pay yín yóò hàn níbí</string>
+    <string name="AcceptTpRegistration">Fara mọ́ ìforúkọsílẹ̀ láti ọ̀dọ̀:</string>
+    <string name="EditTpRegistration">Ètò fún ilé-iṣẹ́:</string>
+    <string name="AcceptTpRegistrationTopic">Ìdí:</string>
+    <string name="TpMaxSpendHint">tẹ ààlà ìnáwó aládàáṣe</string>
+    <string name="TpAssetInfoRequest">Ìbéèrè ìsọfúnni dúkìá</string>
+    <string name="TpAssociatedAccount" formatted="false">Ní ìsopọ̀ pẹ̀lú: %act</string>
+    <string name="TpAssociatedAddress" formatted="false">%addr</string>
+    <string name="SpecialTxNotif">Ìbéèrè àṣẹ ìdúnàdúrà</string>
+    <string name="AssetNotif">Ìbéèrè ìsọfúnni dúkìá</string>
+    <string name="PaymentRequest">Ìbéèrè ìsanwó</string>
+    <string name="IdentityNotif">Ìbéèrè ìdánimọ̀/ìwọlé</string>
+    <string name="TpMaxHeading">Ààlà ìsanwó aládàáṣe</string>
+    <string name="TpMaxPer">Ààlà fún ìbéèrè kan</string>
+    <string name="TpMaxPerDay">Ààlà lójúmọ́</string>
+    <string name="TpMaxPerWeek">Ààlà lọ́sẹ̀</string>
+    <string name="TpMaxPerMonth">Ààlà lóṣù</string>
+    <string name="TpEnableAutopay">Ṣí ìsanwó aládàáṣe (tí kò bá sí àmì, gbogbo ìsanwó yóò béèrè àṣẹ yín, a ó sì fojú fo àwọn ààlà tó wà nísàlẹ̀)</string>
+    <string name="asciiArrow"><![CDATA[=>]]></string>
+    <string name="TpNoRegistrations">Kò sí ìforúkọsílẹ̀ Trickle Pay</string>
+    <string name="TpNoSession">Kò sí ìbéèrè Trickle Pay</string>
+    <string name="TpRegistrations">Ìforúkọsílẹ̀</string>
+    <string name="TpRegDenied">A kọ̀ ìforúkọsílẹ̀</string>
+    <string name="TpRegAccepted">A fara mọ́ ìforúkọsílẹ̀</string>
+    <string name="TpRegUnchanged">Ìforúkọsílẹ̀ kò yípadà</string>
+    <string name="TpRequestAutoDeny">A kọ̀ ìbéèrè (aládàáṣe)</string>
+    <string name="TpRequestAutoAccept">A fara mọ́ ìbéèrè (aládàáṣe)</string>
+    <string name="TpTxDenied">A kọ̀ ìdúnàdúrà</string>
+    <string name="TpTxAccepted">A fara mọ́ ìdúnàdúrà</string>
+    <string name="TpNetworkTimeout">Àkókò ìdúnàdúrà tán</string>
+    <string name="TpPartialSubmitted">Ìfilọ̀ ti lọ</string>
+    <string name="TpAssetRequestDenied">A fa ìsọfúnni dúkìá sẹ́yìn</string>
+    <string name="TpAssetRequestAccepted">Ń fi ìsọfúnni dúkìá ránṣẹ́</string>
+    <string name="Actions">Ìṣe</string>
+    <string name="SpecialTpTransactionFrom">Ìdúnàdúrà pàtàkì láti ọ̀dọ̀</string>
+    <string name="IncompleteTpTransactionFrom">Ìfilọ̀ tí ó dájú láti ọ̀dọ̀</string>
+    <string name="TpEntails">Ó ní nínú</string>
+    <string name="TpInAccount">Lílo àkáǹtì</string>
+    <string name="TpAssetRequestFrom">Ìbéèrè ìsọfúnni dúkìá láti ọ̀dọ̀</string>
+    <string name="TpHandledByAccount">àkáǹtì yín lè ṣe é</string>
+    <string name="TpAssetMatches" formatted="false">A ó fún iṣẹ́ yìí ní ìsọfúnni nípa dúkìá %num tí ẹ ní.</string>
+    <string name="TpAssetInfoNotXfer">Fífara mọ́ ìbéèrè yìí kàn fún iṣẹ́ náà ní ìsọfúnni nípa ohun ìní yín.  Kò fún ní àṣẹ fún ìfiránṣẹ́ owó kankan.</string>
+    <string name="ForAFeeOf" formatted="false">pẹ̀lú owó iṣẹ́ %fee %units</string>
+    <string name="TpExchangingTokens" formatted="false">àti pípàṣípààrọ̀ tọ́kìnì (ń fi %tokSnd ránṣẹ́, ń gba %tokRcv).</string>
+    <string name="TpShowingTokens" formatted="false">A ṣàfihàn oríṣi tọ́kìnì %tokReveal (a ná wọn sí ara yín, tí ó fi hàn pé ẹ ni wọ́n).</string>
+    <string name="TpSendingTokens" formatted="false">àti fífi oríṣi tọ́kìnì %tokSnd ránṣẹ́.</string>
+    <string name="TpReceivingTokens" formatted="false">àti gbígba oríṣi tọ́kìnì %tokRcv.</string>
+    <string name="TpHasNoPurpose">Ìbéèrè yìí kò ní ipa lórí àkáǹtì yìí.</string>
+    <string name="TpSendToTitle">Ẹni tó béèrè ìsanwó</string>
+    <string name="TpSpends">Ó ná</string>
+    <string name="TpSendRequestDenied">A kọ̀ ìsanwó</string>
+    <string name="TpSendAutoReject">A kọ̀ ìsanwó ní aládàáṣe</string>
+    <string name="TpSendRequestAccepted">A fara mọ́ ìsanwó</string>
+    <string name="TpWhyNotAuto">Kò ní fọwọ́ sí ní aládàáṣe nítorí</string>
+    <string name="TpAutomaticDisabled">A ti pa ìsanwó aládàáṣe</string>
+    <string name="TpExceededMaxPer">Ó ju ààlà ìbéèrè kọ̀ọ̀kan lọ</string>
+    <string name="TpExceededMaxDaily">Ó ju ààlà ojoojúmọ́ lọ</string>
+    <string name="TpExceededMaxWeekly">Ó ju ààlà ọ̀sọ̀ọ̀sẹ̀ lọ</string>
+    <string name="TpExceededMaxMonthly">Ó ju ààlà oṣooṣù lọ</string>
+    <string name="title_activity_alert_history">Ìhìn tuntun</string>
+    <string name="IssueReportInstructions">Ẹ fi ìsọfúnni yìí fún àwọn tó ṣe ohun-èlò náà:</string>
+    <string name="AssetApplication">Pè</string>
+    <string name="AssetMarketplace">Ṣòwò</string>
+    <string name="AssetAddedToTransferList">A fi kún \'Ránṣẹ́\' nínú táàbù àkọ́kọ́</string>
+    <string name="NftCardFront">Iwájú</string>
+    <string name="NftCardBack">Ẹ̀yìn</string>
+    <string name="NftPublicMedia">Àkóónú</string>
+    <string name="NftOwnerMedia">Àkóónú olóhun</string>
+    <string name="Content">Àkóónú</string>
+    <string name="Private">Ìkọ̀kọ̀</string>
+    <string name="NftPrivateDescription">Àkóónú yìí jẹ́ ti ẹni tó ni dúkìá náà</string>
+    <string name="NftInfo">Àlàyé</string>
+    <string name="NftLegal">Ìwé àṣẹ</string>
+    <string name="NftSeries" formatted="false">Ìtẹ̀lera: %series</string>
+    <string name="NftAuthor" formatted="false">Olùṣẹ̀dá: %author</string>
+    <string name="NftNoInfoProvided">...Kò sí ìsọfúnni kankan...</string>
+    <string name="IssuedToConnection">A ṣí i ní ojú-òpó tó so pọ̀</string>
+    <string name ="demonstratingOwnership">Ń fi ohun ìní hàn</string>
+    <string name="AndSomeAssets"> àti àwọn dúkìá kan</string>
+    <string name="AssetTypes" formatted="false">oríṣi dúkìá %assetTypes</string>
+    <string name="ExplainRestaurant">Àwọn iṣẹ́ tí a fi ń paṣẹ oúnjẹ lórí ayélujára (fún ìfijíṣẹ́ tàbí ìgbàwá) lè gba owó krípítò bí ilé oúnjẹ fúnra rẹ̀ kò tilẹ̀ gbà.</string>
+    <string name="RestaurantButton">Ìpàṣẹ oúnjẹ Menufy</string>
+    <string name="RestaurantUrl">https://www.menufy.com</string>
+    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
+    <string name="ExplainStoreMap">Ẹ wá àwọn ibi tó wà nítòsí yín tí wọ́n ń gba owó krípítò.</string>
+    <string name="StoreMapButton">màápù ṣọ́ọ̀bù</string>
+    <string name="StoreMapUrl">https://map.bitcoin.com</string>
+    <string name="StoreMapAppPackage"></string>
+    <string name="ExplainTxBit">txbit.io: Ẹ pàṣípààrọ̀ NEXA fún àwọn owó krípítò mìíràn</string>
+    <string name="welcome1Label">Káàbọ̀</string>
+    <string name="welcome1">Ẹ káàbọ̀ sí Wally, àpamọ́wọ́ owó krípítò!\n\nNínú àwọn ojú-ìwé tó ń bọ̀, ẹ ó ṣètò àkáǹtì blockchain Nexa àkọ́kọ́ yín (NEX), ẹ ó sì ṣètò àwọn iṣẹ́ mìíràn bíi ìtọ́jú ọ̀rọ̀ ìgbaniwọlé.\n\nTàbí ẹ lè tẹ ọfà ẹ̀yìn láti fo ìtọ́sọ́nà ìṣètò yìí.</string>
+    <string name="welcome2_title">Ètò àkáǹtì NEXA</string>
+    <string name="welcome2">Ní ojú-ìwé tó tẹ̀lé, ẹ ó ṣètò àkáǹtì Nexa àkọ́kọ́ yín.\n\nÀkáǹtì yìí ní owó Nexa yín àti àwọn ìdánimọ̀ yín nínú. Ìdánimọ̀ jẹ́ ohun tuntun nínú Àpamọ́wọ́ Wally, tí ó ń jẹ́ kí ẹ wọlé sí àwọn ojú-òpó wẹ́ẹ̀bù tí ó gbà á ní aládàáṣe.\n\nẸ lè yàn láti fi Nọ́ḿbà Ìdánimọ̀ Ara-ẹni (PIN) dáàbò bo àwọn àkáǹtì yín, ṣùgbọ́n a gba àwọn olùmúlò tuntun níyànjú láti má ṣe lo PIN (kí wọ́n sì fi báláǹsì kékeré sí i) fún àkáǹtì àkọ́kọ́ wọn. Fún ààbò olùmúlò, àwọn àkáǹtì tí PIN dáàbò bò kì í hàn títí tí a ó fi tẹ PIN tí ó tọ́ (kò ní sọ bí a bá tẹ PIN tí kò tọ́).\n\nBí ẹ bá fẹ́ gba àkáǹtì NEXA tí ó ti wà tẹ́lẹ̀ padà, ẹ fi ọ̀rọ̀ àṣírí ìgbàpadà sí i. Bí ìlà yìí bá ṣófo, àkáǹtì tuntun ni a ó ṣẹ̀dá.</string>
+    <string name="welcome3_title" formatted="false">Ọ̀rọ̀ àṣírí ìgbàpadà àkáǹtì Nexa</string>
+    <string name="welcome3">Ẹ káàbọ̀ 3 ! (A lè mú ọ̀rọ̀ ìkíni yìí dára sí i)</string>
+    <string name="welcome4_title">Ìdánimọ̀</string>
+    <string name="welcome4">Lẹ́yìn èyí, a ó mú yín lọ sí ojú-ìwé ìsọfúnni ìdánimọ̀.  A ń lo ìsọfúnni yìí nígbà tí ẹ bá fi Wally ṣe olùtọ́jú ìdánimọ̀ àti ìwọlé (láti wọlé sí oríṣiríṣi ojú-òpó wẹ́ẹ̀bù ní aládàáṣe tàbí láti fún wọn ní ìsọfúnni nígbà rírà). Wally kọjú sí ìkọ̀kọ̀ gidigidi!
+A kò ní pín ìsọfúnni yìí fún ojú-òpó wẹ́ẹ̀bù kankan láìsí àṣẹ pàtó yín, a kò sì ní fi ìsọfúnni KANKAN láti inú àpamọ́wọ́ yìí ránṣẹ́ sí àwọn tó kọ ohun-èlò yìí.  Ẹ tún lè yàn láti fi gbogbo àyè sílẹ̀ ní òfìfo.
+Nígbà tí ẹ bá parí, ẹ tẹ ọfà ẹ̀yìn (òkè òsì).</string>
+    <string name="welcomeComplete">Èyí parí ìṣètò náà.  Bí ẹ kò bá parí èyíkéyìí nínú àwọn ìgbésẹ̀ ìkíni yìí, gbogbo àwọn àyè náà wà nínú ohun-èlò náà fúnra rẹ̀.
+Ẹ ṣé, kí ẹ sì gbádùn àpamọ́wọ́ tuntun yín!</string>
+    <string name="ExplainGiftCards">Rírà káàdì ẹ̀bùn ń fún yín ní àyè sí ọgọ́rọ̀ọ̀rún ṣọ́ọ̀bù tí kò gba owó krípítò tààrà.</string>
+    <string name="GiftCardButton">Káàdì ẹ̀bùn eGifter</string>
+    <string name="GiftCardUrl">https://www.egifter.com</string>
+    <string name="GiftCardAppPackage">com.groupgifting.android</string>
+    <string name="Pinförslag">
+    <font size="15">A nílò nọ́ḿbà àṣírí yìí láti wọ àkáǹtì</font>
+</string>
+    <string name="sync_title">Mú ímeèlì dọ́gba lóòrèkóòrè</string>
+    <string name="attachment_title">Gba àwọn àfikún tó ń wọlé sílẹ̀</string>
+    <string name="attachment_summary_on">Gba àwọn àfikún ímeèlì sílẹ̀ ní aládàáṣe</string>
+    <string name="attachment_summary_off">Gba àfikún sílẹ̀ nígbà tí a bá béèrè nìkan</string>
+    <string name="signature_title">Ìbùwọ́lù yín</string>
+    <string name="reply_title">Ìṣe tí a yàn tẹ́lẹ̀ fún ìdáhùn</string>
+    <string name="discoveredAccountDetails" formatted="false">A ṣàwárí báláǹsì %bal %units\nní àdírẹ́sì %addr àti ìdúnàdúrà %tx</string>
+    <string name="discoveredWarning">Bí èyí bá tọ́, ẹ lè ṣẹ̀dá àkáǹtì yìí lẹ́sẹ̀kẹsẹ̀</string>
+    <string name="backgroundSync">Ìmúdọ́gba ẹ̀yìn</string>
+    <string name="scanQr">Ṣàyẹ̀wò QR</string>
+    <string name="imageQr">QR àwòrán</string>
+    <string name="paste">Lẹ̀ mọ́</string>
+    <string name="recentTransactions">Ìdúnàdúrà tuntun</string>
+    <string name="sendingFrom">Fífiránṣẹ́ láti</string>
+    <string name="enterAddress">Ẹ tẹ àdírẹ́sì...</string>
+    <string name="noteOptional">Àkíyèsí (Àṣàyàn)</string>
+    <string name="clearNote">Nù àkíyèsí</string>
+    <string name="clearAddress">Nù àdírẹ́sì</string>
+    <string name="clearAmount">Nù iye</string>
+    <string name="available">Ní àrọ́wọ́tó</string>
+    <string name="amountPlain">Iye</string>
+    <string name="enterNEXAmount">Ẹ tẹ iye NEX...</string>
+    <string name="note">Àkíyèsí</string>
+    <string name="confirmSend">Fọwọ́ sí ìfiránṣẹ́</string>
+    <string name="syncing">Ń mú dọ́gba...</string>
+    <string name="enterAmount" formatted="false">Ẹ tẹ iye %assetName</string>
+    <string name="fee">Owó iṣẹ́</string>
+    <string name="connectionWarning">Ìkìlọ̀: Kò sí ìsopọ̀ blockchain/nẹ́tíwọ́kì kankan. Bí ẹ bá fi ránṣẹ́ nísinsìnyí, ẹni tó ń gbà á kò ní rí ìfiránṣẹ́ yìí lẹ́sẹ̀kẹsẹ̀. A ó fi ránṣẹ́ nígbà tí ìsopọ̀ bá padà.</string>
+    <string name="NetworkUnstable">Nẹ́tíwọ́kì kò dúró</string>
+    <string name="TokenMissing">Tọ́kìnì kò sí lórí blockchain </string>
+    <string name="Sell">Tà</string>
+    <string name="CreateAnOffer">Ṣẹ̀dá ìfilọ̀</string>
+    <string name="Price">Ìdíyelé</string>
+    <string name="NexaPrice">Ẹ tẹ ìdíyelé Nexa</string>
+    <string name="AssetAmountName" formatted="false">Ẹ ní %amount %assetName</string>
+    <string name="scanToBuyOne">Ẹ ṣàyẹ̀wò láti ra %name</string>
+    <string name="scanToBuySeveral">Ẹ ṣàyẹ̀wò láti ra %amount %name</string>
+    <string name="nexaOfferAmount" formatted="false">Fún %amount NEXA</string>
+    <string name="purchaseComplete">Rírà ti parí</string>
+    <string name="setTheNexaPrice">Ṣètò ìdíyelé Nexa</string>
+    <string name="setTheAssetAmount">Ṣètò iye dúkìá</string>
+    <string name="publishOnline">Fi ìfilọ̀ sórí ayélujára</string>
+    <string name="offerCreated">A ti ṣẹ̀dá ìfilọ̀!</string>
+    <string name="ConfigureService">Ṣètò iṣẹ́</string>
+    <string name="AcceptOrRejectService">Fara mọ́ tàbí kọ̀ iṣẹ́</string>
+    <string name="Domain">Dòméènì</string>
+    <string name="Services">Àwọn iṣẹ́</string>
+    <string name="Purpose">Ìdí</string>
+    <string name="AutoPay">Ìsanwó aládàáṣe</string>
+    <string name="AutoPayInstructions">Bí a kò bá ṣí àpótí àyẹ̀wò tó tẹ̀lé yìí, gbogbo ìbéèrè ìsanwó láti ọ̀dọ̀ iṣẹ́ yìí ni yóò béèrè àṣẹ lọ́wọ́ yín, a ó sì fojú fo àwọn ààlà tó wà nísàlẹ̀.</string>
+    <string name="LimitedAutoApproval">Gbà láàyè ìfọwọ́sí aládàáṣe tó lópin</string>
+    <string name="AutoPayMaxPerRequest">Ààlà fún ìbéèrè kan</string>
+    <string name="AutoPayMaxPerDay">Ààlà lójúmọ́</string>
+    <string name="AutoPayMaxPerWeek">Ààlà lọ́sẹ̀</string>
+    <string name="AutoPayMaxPerMonth">Ààlà lóṣù</string>
+    <string name="EnableServices">Ṣí ojú-ìwé àwọn iṣẹ́</string>
+    <string name="NoServicesRegistered">Kò sí iṣẹ́ tí a forúkọsílẹ̀.</string>
+    <string name="Start">Bẹ̀rẹ̀</string>
+    <string name="Meditation">Ìṣàrò</string>
+    <string name="Meditate">Ṣàrò</string>
+    <string name="Sound">Ìró</string>
+    <string name="OneMinuteIntervalSound">Ìró ní àárín ìṣẹ́jú 1</string>
+    <string name="MeditationVersion">Ẹ̀yà: 1.0.3 (build 156)</string>
+    <string name="Meditating">Ń ṣàrò...</string>
+    <string name="MediationComplete">Ìṣàrò ti parí!</string>
+    <string name="Okay">Ó dáa</string>
+    <string name="Minutes">Ìṣẹ́jú</string>
+    <string name="Camouflage">Ìpàrádà</string>
+    <string name="CamouflageAsMeditationTimer">Fi ìpàrádà bo ohun-èlò náà gẹ́gẹ́ bí aago ìṣàrò.</string>
+    <string name="CamouflageDescriptionAndroid">Ṣíṣí ìpàrádà yóò pa ohun-èlò náà, yóò sì fi ìpàrádà bò ó gẹ́gẹ́ bí ohun-èlò tí orúkọ rẹ̀ ń jẹ́ Meditate. Láti yọ ìpàrádà ohun-èlò Meditate kúrò, ẹ ṣí àkójọ àṣàyàn ohun-èlò náà, kí ẹ sì tẹ nọ́ḿbà ẹ̀yà náà ní ìgbà márùn-ún.</string>
+    <string name="CamouflageDescriptionOther">Láti yọ ìpàrádà ohun-èlò Meditate kúrò, ẹ ṣí àkójọ àṣàyàn ohun-èlò náà, kí ẹ sì tẹ nọ́ḿbà ẹ̀yà náà ní ìgbà márùn-ún.</string>
+    <string name="CamouflageAsMeditateAppAndroid">Ìpàrádà bí ohun-èlò Meditate</string>
+</resources>

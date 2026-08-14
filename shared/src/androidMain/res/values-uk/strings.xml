@@ -1,0 +1,637 @@
+<resources>
+    <string name="app_name" translatable="false">Wally</string>
+    <string-array name="CurrencyTypes">
+        <item>NEX</item>
+        <item>USD</item>
+    </string-array>
+    <string-array name="FiatCurrencyTypes">
+        <item>BRL</item>
+        <item>CAD</item>
+        <item>CNY</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>JPY</item>
+        <item>RUB</item>
+        <item>USD</item>
+        <item>XAU</item>
+    </string-array>
+    <string name="uBCH" translatable="false">uBCH</string>
+    <string-array name="OneToTen">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="tipPercentage">
+        <item>--</item>
+        <item>0%</item>
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+        <item>50%</item>
+    </string-array>
+    <string name="yes">так</string>
+    <string name="no">ні</string>
+    <string name="at">на</string>
+    <string name="of">з</string>
+    <string name="choose">вибрати</string>
+    <string name="accept">прийняти</string>
+    <string name="reject">відхилити</string>
+    <string name="remove">видалити</string>
+    <string name="confirm">підтвердити</string>
+    <string name="cancel">скасувати</string>
+    <string name="Back">Назад</string>
+    <string name="removeAll">видалити все</string>
+    <string name="done">готово</string>
+    <string name="dismiss">Закрити</string>
+    <string name="deny">заборонити</string>
+    <string name="ask">запитувати</string>
+    <string name="badSignature">хибний підпис</string>
+    <string name="unknownCurrency">невідома валюта</string>
+    <string name="unknownCryptoCurrency">невідома криптовалюта або блокчейн</string>
+    <string name="Processing">обробка...</string>
+    <string name="receiving">отримання</string>
+    <string name="sending">надсилання</string>
+    <string name="noAdditionalDetails">немає додаткових деталей</string>
+    <string name="unspecified">не вказано</string>
+    <string name="removed">видалено</string>
+    <string name="synced">Синхронізовано</string>
+    <string name="unsynced">Синхронізація</string>
+    <string name="connected">підключено</string>
+    <string name="connectionEstablished">з’єднання встановлено</string>
+    <string name="connectionClosed">з’єднання закрито</string>
+    <string name="connectionException">не вдалося підключитися до сайту</string>
+    <string name="balance">поточний баланс</string>
+    <string name="totalReceived">Усього отримано</string>
+    <string name="inProgress">виконується</string>
+    <string name="staleTransaction">Застаріла транзакція</string>
+    <string name="staleTransactionDetails">Цю транзакцію відхилив повний вузол. Найімовірніше, вона застаріла (кошти вже витратив хтось інший), проте можливо також, що транзакція ніколи не була дійсною або що з нею все гаразд, а вузли, які ми опитали, нечесні. Гаманець ігноруватиме цю транзакцію, доки її не буде підтверджено.</string>
+    <string name="NoPermission">Немає дозволу</string>
+    <string name="NoPermissionDetails" formatted="false">Щоб скористатися цією функцією, потрібно надати дозвіл %perm. Це можна зробити в Android: Налаштування -> Застосунки -> Wally -> Дозволи</string>
+    <string name="WebLoadingPage"><![CDATA[<body><h1><center>...завантаження...</h1></center></body>]]></string>
+    <string name="loading">завантаження</string>
+    <string name="Untitled">Без назви</string>
+    <string name="nothing">нічого</string>
+    <string name="breakIt">зламати</string>
+    <string name="or">або</string>
+    <string name="onBlockchain">у</string>
+    <string name="NotImplemented">Незабаром</string>
+    <string name="NoNodes">Немає доступу до блокчейну</string>
+    <string name="cancelled">скасовано</string>
+    <string name="refreshQR">З’єднання із сервером втрачено</string>
+    <string name="pleaseWait">зачекайте</string>
+    <string name="trying">спроба</string>
+    <string name="clear">очистити</string>
+    <string name="thousand">* тисяча</string>
+    <string name="million">* мільйон</string>
+    <string name="required">обов’язково</string>
+    <string name="account">Рахунок</string>
+    <string name="addAccountPlus">+ Додати рахунок</string>
+    <string name="receivingTokens">Отримання токенів</string>
+    <string name="spendingTokens">Витрачання токенів</string>
+    <string name="version" formatted="false">Версія: %ver (%date)</string>
+    <string name="enableDeveloperView">Режим розробника</string>
+    <string name="enableRecompositionCounts">Лічильник перемалювань</string>
+    <string name="enableExperimentalUx">Експериментальний інтерфейс</string>
+    <string name="enableDarkMode">Темна тема</string>
+    <string name="enableSound">Увімкнути звук</string>
+    <string name="enableIdentityMenu">Увімкнути екран ідентичності</string>
+    <string name="enableTricklePayMenu">Увімкнути екран Trickle Pay</string>
+    <string name="enableAssetsMenu">Увімкнути екран активів</string>
+    <string name="only">лише</string>
+    <string name="prefer">переважно</string>
+    <string name="rediscoverWalletTx">Пересканувати всі транзакції</string>
+    <string name="searchWalletTx">Пошук відсутніх транзакцій</string>
+    <string name="rediscoverBlockchain">Пересканувати заголовки блокчейну</string>
+    <string name="logDebugData">Журнал налагодження</string>
+    <string name="clearIdentityDomains">Очистити домени ідентичності</string>
+    <string name="rediscoverTooltip">Видалити стан блокчейну та заново знайти всі транзакції, пов’язані з гаманцем</string>
+    <string name="wordSeed">Секретна фраза відновлення</string>
+    <string name="deleteWalletAccount">Видалити рахунок</string>
+    <string name="more">Ще</string>
+    <string name="darkMode">Темна тема</string>
+    <string name="ConsolidationNeeded">Спершу консолідуйте рахунок</string>
+    <string name="SetChangePin">Задати або змінити ПІН-код</string>
+    <string name="CurrentPin">Поточний ПІН-код</string>
+    <string name="NewPin">Новий ПІН-код</string>
+    <string name="PinChanged">ПІН-код змінено</string>
+    <string name="PinRemoved">ПІН-код видалено</string>
+    <string name="PinInvalid">Неправильний ПІН-код</string>
+    <string name="PinTooShort">новий ПІН-код закороткий</string>
+    <string name="WriteDownRecoveryPhraseWarningUi2">Увага: ви не записали секретні фрази відновлення для деяких рахунків! Щоб не втратити кошти, якщо цей пристрій загубиться або зламається, запишіть секретні фрази відновлення на папері чи в іншому неелектронному вигляді.</string>
+    <string name="WroteRecoveryPhraseDown">Записано</string>
+    <string name="RecoveryPhraseKeepRemindingMe">Нагадувати далі</string>
+    <string name="ViewRecoveryPhrase">Показати фразу відновлення</string>
+    <string name="localCurrency">Місцева валюта</string>
+    <string name="assessUnconfirmed">Перевірити непідтверджені транзакції</string>
+    <string name="rediscoverNotice">Пересканування рахунку розпочато</string>
+    <string name="searchNotice">Пошук транзакцій розпочато</string>
+    <string name="unconfAssessmentNotice">Перевірку непідтверджених розпочато</string>
+    <string name="accountDeleteNotice">Рахунок видалено</string>
+    <string name="rediscoverConfirmation">Пересканування рахунку обнулить гаманець і виконає пошук платежів у блокчейні так, ніби рахунок створюється заново. Це може тривати довго. Проте може з’явитися кнопка «Прискорити», яка дає змогу запитати вашу історію в базі даних. Якщо дата вище неправильна, зачекайте кілька секунд, доки її буде оновлено.</string>
+    <string name="searchConfirmation">Ця функція шукає в блокчейні відсутні платежі. Це може тривати довго. Проте може з’явитися кнопка «Прискорити», яка дає змогу запитати вашу історію в базі даних.</string>
+    <string name="rediscoverBlockchainConfirmation">Пересканування блокчейну видалить із цього гаманця всі дані заголовків блокчейну та завантажить їх заново з повних вузлів. Це може тривати довго. Використовуйте, лише якщо ви впевнені, що є проблема із заголовками блокчейну.</string>
+    <string name="deleteConfirmation" formatted="false">Видалення рахунку зробить усі баланси, ідентичності та історію недоступними, якщо не відновити рахунок за секретною фразою відновлення! Робіть це, лише якщо ви АБСОЛЮТНО ВПЕВНЕНІ!\n\nВидалити рахунок «%accountName» (у %blockchain)?</string>
+    <string name="reassessConfirmation">Ця операція перевірить у блокчейні нещодавні транзакції, які ви надіслали. Залежно від їх наявності чи відсутності вона або підтвердить, або зітре їх. Якщо транзакції буде стерто, кошти наче зникнуть. Щоб повернути витрачений баланс, доведеться виконати «пересканування». Не використовуйте, якщо ви нещодавно надіслали транзакцію, адже вона може ще перебувати в мережі й очікувати на підтвердження.</string>
+    <string name="recoveryPhrase">Ця фраза з 12 слів використовується для відновлення вашого гаманця. Будь-хто, хто має цю фразу, може витратити ваші гроші. Запишіть її ручкою на папері (або викарбуйте на сталі) та зберігайте в надійному місці!</string>
+    <string name="recoveryWarning">СТОП! НЕ ЗБЕРІГАЙТЕ В ЕЛЕКТРОННОМУ ВИГЛЯДІ!\nНЕ копіюйте в буфер обміну, не фотографуйте, не ксерокопіюйте та не робіть знімків екрана.</string>
+    <string name="flickerReason">Мерехтіння — це захід безпеки</string>
+    <string name="PastingRecoveryPhraseIsBadIdea">Скопійовано в буфер обміну. Проте копіювати та вставляти цю фразу відновлення в будь-який застосунок — ДУЖЕ ПОГАНА ІДЕЯ! Пошта, більшість застосунків, сервіси резервного копіювання тощо не є достатньо захищеними, щоб зберігати фразу, яка буквально є грошима.</string>
+    <string name="primaryAccountConfirmation">Основний рахунок — це рахунок, який використовується для вашої ідентичності та для автоматичних платежів. Він також показується першим у різних місцях цього застосунку. Він має бути в блокчейні Nexa.</string>
+    <string name="primaryAccountSuccess">Основний рахунок: %name</string>
+    <string name="AccountActions">Дії з рахунком</string>
+    <string name="GeneralSettings">Загальні налаштування</string>
+    <string name="BlockchainSettings">Джерела блокчейну</string>
+    <string name="AccessPriceData">Доступ до цін</string>
+    <string name="oldUi">Старий інтерфейс</string>
+    <string name="SplitBillDescription">Ви оплачуєте рахунок (у фіаті), а друзі повертають вам свою частку за QR-кодом нижче. Враховуйте й себе в кількості часток, якщо тільки друзі не пригощають!</string>
+    <string name="BillAmount">Сума рахунку</string>
+    <string name="TipAmount">Сума чайових</string>
+    <string name="TipPercentage">Відсоток чайових</string>
+    <string name="Total">Загальна сума до поділу</string>
+    <string name="OR">АБО</string>
+    <string name="QRCodeFor">QR-код для:</string>
+    <string name="Ways">Часток:</string>
+    <string name="Tip">Чайові:</string>
+    <string name="Amount">Сума:</string>
+    <string name="AmountWithValue" formatted="false">Сума: %amt</string>
+    <string name="QuantityWithValue" formatted="false">Кількість: %qty</string>
+    <string name="balanceOnTheDate" formatted="false">станом на %date</string>
+    <string name="fastSync">Швидка синхронізація</string>
+    <string name="refresh">Оновити</string>
+    <string name="goodQR">QR-код прочитано</string>
+    <string name="badQR">QR-код не прочитано</string>
+    <string name="badImageQR">погане зображення QR. далі...</string>
+    <string name="badImageQRhelp">Спробуйте сфотографувати з більшої відстані, якщо ви знімали QR-код зблизька. Біла рамка є частиною QR-коду, а під час зйомки екрана зблизька можуть виникати муарові візерунки.</string>
+    <string name="GoThere">Перейти</string>
+    <string name="unlock">розблокувати</string>
+    <string name="share">поділитися</string>
+    <string name="Send">Надіслати</string>
+    <string name="OpenSend">Надіслати</string>
+    <string name="SendCancel">Скасувати</string>
+    <string name="ignoredInsecureRequest">Небезпечний запит проігноровано</string>
+    <string name="fromAccountColon">Надіслати з рахунку:</string>
+    <string name="chooseAccountError">виберіть рахунок</string>
+    <string name="toColon">Кому:</string>
+    <string name="To">Кому</string>
+    <string name="ByAuthor">від</string>
+    <string name="assetsColon">Активи:</string>
+    <string name="assets">Активи</string>
+    <string name="NoAssets">Немає доступних активів на рахунку %act</string>
+    <string name="NoAssetsAccount">Наразі на вашому рахунку немає доступних активів.</string>
+    <string name="fromColon">Від:</string>
+    <string name="ReceiveIntoAccount">Отримати на рахунок</string>
+    <string name="Receive">Отримати</string>
+    <string name="YourAddress">Ваша адреса %blockchain</string>
+    <string name="CopyAddress">Копіювати адресу</string>
+    <string name="AccountListHeader">Рахунки</string>
+    <string name="Address">Адреса</string>
+    <string name="clipboard">буфер обміну</string>
+    <string name="settings">Налаштування</string>
+    <string name="help">Довідка</string>
+    <string name="invalidQuantity">неправильна кількість</string>
+    <string name="needNonexistentAuthority">потрібні повноваження токена</string>
+    <string name="invalidQuantityTooManyDecimalDigits">забагато знаків після коми</string>
+    <string name="roundedUpClickSendAgain">округлено вгору, натисніть «Надіслати» ще раз</string>
+    <string name="emptyQuantityField"></string>
+    <string name="purchase">купівля</string>
+    <string name="scanPaymentQRcode">Сканувати QR-код адреси платежу</string>
+    <string name="ScanQRCodeButton">Сканувати QR-код</string>
+    <string name="PasteDestinationAddressButton">Вставити</string>
+    <string name="NewAccountButton">Створити рахунок</string>
+    <string name="NewAccountSearchingForTransactions">...пошук першої транзакції...</string>
+    <string name="NewAccountSearchingForAllTransactions">...пошук усіх транзакцій...</string>
+    <string name="NewAccountSearchFailure">пошук транзакцій не вдався</string>
+    <string name="receiveAddressQRCode">QR-код для отримання</string>
+    <string name="paymentProposal">згідно з отриманою пропозицією платежу</string>
+    <string name="pasteIsEmpty">буфер порожній</string>
+    <string name="pasteIgnored">вставку проігноровано</string>
+    <string name="pasteUnintelligible">вставку не розпізнано</string>
+    <string name="chainIncompatibleWithAddress">адреса несумісна з рахунком</string>
+    <string name="chainIncompatibleWithAddressDetails" formatted="false">Валюта рахунку — %walletCrypto, а адреса — %addressCrypto. У списку виберіть для надсилання інший рахунок, який відповідає блокчейну адреси.</string>
+    <string name="incoming" formatted="false">включно з %delta %unit в очікуванні</string>
+    <string name="approximatelyT" formatted="false">приблизно %qty %fiat</string>
+    <string name="fastForward" formatted="false">Прискорити</string>
+    <string name="fastforwardStatus" formatted="false">аналіз прискорення: %info</string>
+    <string name="fastforwardStart" formatted="false">розпочато</string>
+    <string name="exchangeRate" formatted="false">(курс: 1 %fiat дорівнює %amt %crypto)</string>
+    <string name="moreThanAvailable">(більше, ніж доступно)</string>
+    <string name="moreThanConfirmedAvailable">(більше, ніж підтверджено)</string>
+    <string name="actuallySendingT" formatted="false">фактично надсилається %qty %crypto</string>
+    <string name="copiedToClipboard">скопійовано в\nбуфер обміну</string>
+    <string name="copyId">Копіювати ID</string>
+    <string name="openInBrowser">Відкрити у браузері</string>
+    <string name="cannotCopyToClipboard">Не вдалося скопіювати в буфер обміну</string>
+    <string name="tooLargeForClipboard">Забагато даних для буфера обміну</string>
+    <string name="scanFailed">сканування не вдалося</string>
+    <string name="scanSuccess">сканування успішне</string>
+    <string name="sendSuccess">надсилання успішне</string>
+    <string name="sendQuantityHint">кількість</string>
+    <string name="sendRequestNotification">Запит на надсилання</string>
+    <string name="sendToAddressHint">адреса отримувача</string>
+    <string name="sendAll">усе</string>
+    <string name="editSendNoteHint">особисті нотатки про цей переказ</string>
+    <string name="subSatoshiQuantities">Забагато знаків після коми — ця валюта не ділиться так дрібно</string>
+    <string name="retrievingExchangeRate">курс ще завантажується</string>
+    <string name="unavailableExchangeRate">курс недоступний</string>
+    <string name="SigningWithAccount" formatted="false">Підписування рахунком: %act</string>
+    <string name="commonIdentityForAccount" formatted="false">Спільна ідентичність для рахунку: %act</string>
+    <string name="identityRequestNotification">запит ідентичності</string>
+    <string name="IdentityDataMissing">Бракує особистих даних</string>
+    <string name="newDomainRequestingIdentity">Новий сервіс запитує реєстрацію</string>
+    <string name="domainRequestingAdditionalIdentityInfo">Запит додаткової інформації</string>
+    <string name="useUniqueIdentityToolTip">Увімкніть, щоб ваша ідентичність тут була окремою від інших сайтів.</string>
+    <string name="provideAlias">Надати логін/нік/псевдонім?</string>
+    <string name="provideAliasToolTip">Цей параметр надасть цьому сайту ваш псевдонім (вказаний у налаштуваннях, НЕ ваше справжнє ім’я), якщо сайт його запросить</string>
+    <string name="provideSocialMedia">Надати дані ваших соцмереж?</string>
+    <string name="provideSocialMediaToolTip">Цей параметр надасть цьому сайту дані ваших соцмереж (вказані в налаштуваннях), якщо сайт їх запросить</string>
+    <string name="providePostalAddress">Надати вашу поштову адресу?</string>
+    <string name="providePostalAddressToolTip">Цей параметр надасть цьому сайту вашу адресу (вказану в налаштуваннях), якщо сайт її запросить</string>
+    <string name="provideBillingAddress">Надати вашу платіжну адресу?</string>
+    <string name="provideBillingAddressToolTip">Цей параметр надасть цьому сайту вашу платіжну адресу (вказану в налаштуваннях), якщо сайт її запросить</string>
+    <string name="provideEmail">Надати вашу електронну пошту?</string>
+    <string name="provideAvatar">Надати ваш аватар?</string>
+    <string name="provideRealName">Надати ваше справжнє ім’я?</string>
+    <string name="provideRealNameToolTip">Цей параметр надасть цьому сайту ваше справжнє ім’я (вказане в налаштуваннях)</string>
+    <string name="provideBirthday">Надати вашу дату народження?</string>
+    <string name="providePhone">Надати ваш номер телефону?</string>
+    <string name="provideAttestations">Надати засвідчення?</string>
+    <string name="provideAttestationsToolTip">Засвідчення — це підписи третіх сторін, які підтверджують надані вами дані</string>
+    <string name="primaryAccountRequired" formatted="false">Для цієї функції потрібен рахунок %primCurrency</string>
+    <string name="primaryAccountRequiredDetails" formatted="false">Деякі функції пов’язані з певними криптовалютами. Перш ніж користуватися функцією, створіть або розблокуйте рахунок у цій криптовалюті.</string>
+    <string name="UnknownDomainRegisterFirst">Невідомий сервіс, спершу зареєструйтеся</string>
+    <string name="Provider" formatted="false">Постачальник: %provider</string>
+    <string name="QrCode">QR-код</string>
+    <string name="unknownOperation" formatted="false">невідома операція %op</string>
+    <string name="alreadyRegistered">уже зареєстровано</string>
+    <string name="existingRegistration" formatted="false">Вибраний рахунок «%act» ЗАРЕЄСТРОВАНИЙ у цьому сервісі.</string>
+    <string name="nonexistentRegistration" formatted="false">Вибраний рахунок «%act» ЩЕ НЕ зареєстрований у цьому сервісі.</string>
+    <string name="provideLoginQuestion">Увійти на цей сайт?</string>
+    <string name="provideInfoQuestion">Особисті дані запитує</string>
+    <string name="signDataQuestion">Підпис запитує</string>
+    <string name="nothingToSign">Повідомлення не надано</string>
+    <string name="binaryToSign">Підписати ці двійкові дані?</string>
+    <string name="textToSign">Підписати це повідомлення?</string>
+    <string name="sigInClipboard">Підпис скопійовано в буфер обміну</string>
+    <string name="SocialMediaText">Соцмережі</string>
+    <string name="SocialMediaSummary">Вводьте списком сервіс:нік, напр. twitter:janeDoe, keybase:janieD</string>
+    <string name="UsernameOrAliasText">Логін/нік/псевдонім</string>
+    <string name="NameText">Повне ім’я</string>
+    <string name="PostalAddressText">Поштова адреса</string>
+    <string name="BillingAddressText">Платіжна адреса</string>
+    <string name="PostalCodeText">Індекс</string>
+    <string name="EmailText">Електронна пошта</string>
+    <string name="TwitterText">Twitter</string>
+    <string name="TelegramText">Telegram</string>
+    <string name="IdentityAssociatedWith">Пов’язані особисті дані</string>
+    <string name="ServiceAssociatedWith">Цей сервіс уже пов’язано з:</string>
+    <string name="IdentityInfoNote">Вводити ці дані необов’язково, і вони надаватимуться лише тим сервісам, які ви оберете. Мета — щоб типові поля у формах заповнювалися простим скануванням QR-коду на сайтах із підтримкою ідентичності.</string>
+    <string name="areYouSure">Ви впевнені?</string>
+    <string name="WhenAskSure">Підтвердьте вище:</string>
+    <string name="SendConfirmSummary" formatted="false">Підтвердьте надсилання %amt %currency %inFiat%assets на адресу %dest</string>
+    <string name="firstName">ім’я</string>
+    <string name="lastName">прізвище</string>
+    <string name="withholdingMandatoryInfo">сайт вимагає дані, які ви відмовляєтеся надати</string>
+    <string name="badLink">хибне посилання</string>
+    <string name="BadWebLink">Хибне вебпосилання</string>
+    <string name="connectionAborted">сайт перервав вхід</string>
+    <string name="HintAdjustCostBasis">собівартість або приріст</string>
+    <string name="CostBasis">собівартість</string>
+    <string name="CapitalLoss">втрата капіталу</string>
+    <string name="CapitalGain">приріст капіталу</string>
+    <string name="OverrideSalesPrice">введіть ціну продажу</string>
+    <string name="AccountHistory">Транзакції</string>
+    <string name="NoAccountActivity">Немає активності</string>
+    <string name="AccountAddresses">Адреси</string>
+    <string name="ActiveAddresses">Активні адреси</string>
+    <string name="UsedAddresses">Використані адреси</string>
+    <string name="UnusedAddresses">Невикористані адреси</string>
+    <string name="txHistoryButton">Переглянути або експортувати історію</string>
+    <string name="setAsPrimaryAccountButton">Зробити основним рахунком</string>
+    <string name="AccountStatistics">Статистика рахунку</string>
+    <string name="AccountBlockchainSync" formatted="false">Зараз %sync у блокчейні %chain.</string>
+    <string name="AccountBlockchainDetails" formatted="false">На %actBlockDate, блок %actBlock з %chainBlockCount.</string>
+    <string name="AccountEarliestActivity" formatted="false">Перше використання: блок %actPrehistoryBlock, %actPrehistoryDate.</string>
+    <string name="AccountBlockchainConnectionDetails" formatted="false">Підключено до %num вузлів: %names</string>
+    <string name="AccountNumAddresses" formatted="false">%num адрес</string>
+    <string name="CurrentAddress" formatted="false">На адресі %num: %addr</string>
+    <string name="FirstLastReceive" formatted="false">Перше надходження у блоці %first, останнє — у блоці %last.</string>
+    <string name="FirstLastSend" formatted="false">Перше зняття у блоці %first, останнє — у блоці %last.</string>
+    <string name="FirstWithdraw">Перше зняття</string>
+    <string name="FirstDeposit">Перше надходження</string>
+    <string name="never">ніколи</string>
+    <string name="FirstUse" formatted="false">Перше використання: %date</string>
+    <string name="LastUse" formatted="false">Останнє використання: %date</string>
+    <string name="Block" formatted="false">Блок: %block</string>
+    <string name="AccountNumTx" formatted="false">%num транзакцій</string>
+    <string name="AccountNumUtxos" formatted="false">%num записів реєстру</string>
+    <string name="title_activity_assets">Активи</string>
+    <string name="title_activity_scan">Сканування</string>
+    <string name="title_activity_new_account">Новий рахунок</string>
+    <string name="AccountName">Назва рахунку</string>
+    <string name="AccountNameHint">1-8 літер</string>
+    <string name="Blockchain">Блокчейн</string>
+    <string name="AccountRecoveryPhrase">Фраза відновлення</string>
+    <string name="LeaveEmptyNewWallet">Залиште порожнім, щоб створити новий рахунок</string>
+    <string name="PinSuggestions"><font size="15">Цей секретний номер потрібен для доступу до рахунку</font></string>
+    <string name="createNewAccount">Створити новий рахунок</string>
+    <string name="createSyncAccount">Відновити з ретельною (тривалою) синхронізацією</string>
+    <string name="createDiscoveredAccount">Відновити рахунок одразу</string>
+    <string name="invalidRecoveryPhrase">хибна фраза відновлення</string>
+    <string name="invalidAccountName">неправильна назва</string>
+    <string name="PassPhrase">Парольна фраза (необов’язково)</string>
+    <string name="Bip44ActivityNotice">Знайдено активність рахунку</string>
+    <string name="NoBip44ActivityNotice">Увага, транзакцій не знайдено!</string>
+    <string name="Bip44BtcActivityNotice">Знайдено нестандартну активність або активність до форку</string>
+    <string name="NoBip44BtcActivityNotice">Транзакцій до форку не знайдено</string>
+    <string name="FirstUseDateHeightInfo" formatted="false">починаючи з %date (блок %height)</string>
+    <string name="NotEnoughRecoveryWords">Потрібно більше слів відновлення</string>
+    <string name="TooManyRecoveryWords">Забагато слів відновлення</string>
+    <string name="IncorrectRecoveryWords" formatted="false">Неправильні слова: %words</string>
+    <string name="ElectrumNetworkUnavailable">Мережа Electrum недоступна. Відновлення гаманця буде повільним і не виявить транзакцій, здійснених до 1 січня 2020 року</string>
+    <string name="PinHidesAccount">Приховати рахунок до введення ПІН-коду?</string>
+    <string name="HiddenAccountExplainer">Приховати рахунок, доки не введено ПІН-код</string>
+    <string name="HiddenAccount">Прихований рахунок</string>
+    <string name="AutomaticNewAddress">Приватність адреси</string>
+    <string name="AutomaticNewAddressToolTip">Нова адреса показується автоматично щоразу, коли використано поточну.</string>
+    <string name="CreatePIN">ПІН-код (необов’язково)</string>
+    <string name="PinSpendingUnprotected">Витрачання без ПІН-коду увімкнено (ПІН-код не введено)</string>
+    <string name="PinSpendingProtected">Витрачання потребує ПІН-коду</string>
+    <string name="InvalidPIN">Неправильний ПІН-код</string>
+    <string name="creatingNoHistoryAccountWarning">Ви створюєте рахунок із конкретною фразою відновлення, але в блокчейні не знайдено жодної активності.\nЦе правильно?\nЯкщо так, натисніть кнопку створення ще раз — і буде створено порожній рахунок. Але якщо на цьому рахунку має бути активність, ще раз перевірте вибраний блокчейн і фразу відновлення. Якщо проблема не в цьому, то або мережа блокчейну зараз недоступна (спробуйте пізніше), або рахунок було створено нестандартним гаманцем. Не створюйте цей рахунок зараз.</string>
+    <string name="accountLocked">рахунок заблоковано</string>
+    <string name="unknownError">помилка</string>
+    <string name="insufficentBalance">недостатньо коштів</string>
+    <string name="insufficentTokenBalance">недостатньо токенів</string>
+    <string name="excessiveFee">надмірна комісія</string>
+    <string name="sendDustError">сума менша за мінімальну</string>
+    <string name="sendingDustWarning">сума менша за мінімум мережі</string>
+    <string name="feeExceedsFlatMax">комісія перевищує встановлений максимум фіксованої комісії</string>
+    <string name="notSupported">не підтримується</string>
+    <string name="expired">термін платежу минув</string>
+    <string name="PaymentDataMissing">у платежі бракує даних</string>
+    <string name="headersNotForthcoming">заголовки не надходять</string>
+    <string name="cantConvert">конвертація тимчасово недоступна</string>
+    <string name="walletDisconnectedFromBlockchain">гаманець від’єднано</string>
+    <string name="badTransaction">хибна транзакція</string>
+    <string name="badAddress">неправильна адреса</string>
+    <string name="unknownAddress">невідома адреса</string>
+    <string name="badAmount">неправильна сума</string>
+    <string name="NoAccounts">Немає доступних рахунків</string>
+    <string name="badCryptoCode">немає розблокованого рахунку для цієї валюти або блокчейну</string>
+    <string name="badCryptoCodeDetails" formatted="false">Невідома або недоступна валюта: %currency</string>
+    <string name="badCurrencyUnit">не валюта</string>
+    <string name="incompatibleAccount">неправильна валюта</string>
+    <string name="incompatibleAccountDetails" formatted="false">Ви обрали оплату з рахунку, що містить %cryptoAct, але потрібна %cryptoPay</string>
+    <string name="detailsOfBadAmountFromIntent">Зовнішня програма надала неправильно відформатоване число як
+        кількість для надсилання. Вам потрібно ввести кількість самостійно
+    </string>
+    <string name="blankAddress">порожня адреса</string>
+    <string name="unavailable">недоступно</string>
+    <string name="blockNotForthcoming">блок недоступний</string>
+    <string name="receiveAddressUnavailable">Нова адреса для отримання зараз обчислюється. Зачекайте...
+    </string>
+    <string name="accountLimitReached">максимум рахунків</string>
+    <string name="accountUnavailableDetails">Або жоден наявний рахунок не відповідає цьому блокчейну, або рахунок не розблоковано.</string>
+    <string name="accountUnavailable">Немає розблокованого сумісного рахунку</string>
+    <string name="sendMoreThanBalance">Ви намагаєтеся надіслати більше монет, ніж у вас зараз доступно.\n\nЯкщо вам здається, що ви витрачаєте не більше за свій баланс, ви могли забути, що транзакції мають невелику додаткову комісію; а якщо весь ваш баланс показано як непідтверджений, ви могли зробити забагато транзакцій поспіль.\n\nІснує межа того, наскільки далеко ви можете «випередити» блокчейн. Дочекайтеся підтвердження балансу і спробуйте ще раз.</string>
+    <string name="sendMoreTokensThanBalance">Ви намагаєтеся надіслати більше токенів, ніж у вас зараз доступно.</string>
+    <string name="deductedFeeLargerThanSendAmount">Утримана комісія більша за суму надсилання</string>
+    <string name="badWalletImplementation">Неправильна реалізація гаманця. Повідомте про цю помилку!</string>
+    <string name="CannotCompleteTransaction">Помилка: не вдалося завершити</string>
+    <string name="title_split_bill">Розділити рахунок</string>
+    <string name="title_activity_settings">Налаштування</string>
+    <string name="title_activity_exchange">Біржа</string>
+    <string name="title_activity_shopping">Посилання</string>
+    <string name="ecosystem">Екосистема</string>
+    <string name="title_activity_trickle_pay">Trickle Pay</string>
+    <string name="title_home">Головна</string>
+    <string name="title_dashboard">Тест</string>
+    <string name="title_notifications">Сповіщення</string>
+    <string name="title_activity_invoices">Інвойси</string>
+    <string name="title_activity_identity">Ідентичність</string>
+    <string name="title_activity_identity_op">Ідентичність</string>
+    <string name="title_activity_domain_identity_settings">Ідентичність для домену</string>
+    <string name="title_activity_tx_history" formatted="false">Історія транзакцій: %account</string>
+    <string name="title_activity_address_history" formatted="false">Історія адрес: %account</string>
+    <string name="title_activity_account_details" formatted="false">Рахунок: %account</string>
+    <string name="title_test">Тест</string>
+    <string name="useUniqueIdentity">Унікальна криптографічна ідентичність</string>
+    <string name="title_activity_identity_settings">Налаштування ідентичності</string>
+    <string name="IdentityRegistrations">Зареєстровані сервіси</string>
+    <string name="NoIdentitiesRegistered">Ідентичностей не зареєстровано</string>
+    <string name="title_activity_welcome">Вітаємо</string>
+    <string name="next">Далі</string>
+    <string name="previous">Назад</string>
+    <string name="EnterPIN">Введіть ПІН-код</string>
+    <string name="EnterPINorBlankToRemove">Новий ПІН-код (порожнє — видалити)</string>
+    <string name="ButtonTextHere">Задайте текст кнопки</string>
+    <string name="ButtonLinkHere">Введіть вебпосилання</string>
+    <string name="ShoppingWarning">УВАГА: елементи на цій сторінці — це посилання на сторонні сервіси та сайти, розміщені тут для вашої зручності. Ці сайти й сервіси не перевірено Wally Wallet.\n\nВикористовуйте на власний ризик!</string>
+    <string name="NFTs">Невзаємозамінні токени (NFT)</string>
+    <string name="ExplainNFTs">NiftyArt.cash: створюйте та обмінюйте унікальні зображення й цифрові представлення унікальних речей</string>
+    <string name="NftUrl">http://niftyart.cash</string>
+    <string name="NftImproperConstruction">Увага: підробка або неправильно сформовано!</string>
+    <string name="TokenSourceWebsite">Джерело токена:</string>
+    <string name="TokenBadSig">Інформацію про цей токен не було належно підписано. Цей токен може бути підробкою або фальшивкою. Це також може означати, що творець токена просто не підписав токен належним чином.</string>
+    <string name="OpenWebsite" formatted="false">Відкрити %siteName</string>
+    <string name="WebsiteUnavailable" formatted="false">Сайт недоступний</string>
+    <string name="ExplainBitmart">bitmart.com: обміняти NEXA на інші криптовалюти</string>
+    <string name="ExplainMexc">mexc.com: обміняти NEXA на інші криптовалюти</string>
+    <string name="ExplainBiconomy">biconomy.com: обміняти NEXA на інші криптовалюти</string>
+    <string name="CexButton">На біржу</string>
+    <string name="SharedNotification" formatted="false">поділилися %what</string>
+    <string name="AuthAutopayTitle">Авторизований платіж</string>
+    <string name="AuthAutopayDeniedTitle">Авторизований платіж відхилено</string>
+    <string name="AuthAutopay" formatted="false">%amt для %domain</string>
+    <string name="TpToBeDone">Тут відображатимуться ваші підключення Trickle Pay</string>
+    <string name="TpHistoryTbd">Тут відображатиметься ваша історія Trickle Pay</string>
+    <string name="AcceptTpRegistration">Прийняти реєстрацію від:</string>
+    <string name="EditTpRegistration">Налаштування для суб’єкта:</string>
+    <string name="AcceptTpRegistrationTopic">Призначення:</string>
+    <string name="TpMaxSpendHint">введіть макс. автовитрату</string>
+    <string name="TpAssetInfoRequest">Запити даних про активи</string>
+    <string name="TpAssociatedAccount" formatted="false">Пов’язано з: %act</string>
+    <string name="TpAssociatedAddress" formatted="false">%addr</string>
+    <string name="SpecialTxNotif">Запит на авторизацію транзакції</string>
+    <string name="AssetNotif">Запит даних про актив</string>
+    <string name="PaymentRequest">Запит на оплату</string>
+    <string name="IdentityNotif">Запит ідентичності/входу</string>
+    <string name="TpMaxHeading">Ліміти автоплатежу</string>
+    <string name="TpMaxPer">Макс. за запит</string>
+    <string name="TpMaxPerDay">Макс. за день</string>
+    <string name="TpMaxPerWeek">Макс. за тиждень</string>
+    <string name="TpMaxPerMonth">Макс. за місяць</string>
+    <string name="TpEnableAutopay">Увімкнути автоплатіж (якщо вимкнено, усі платежі потребуватимуть вашої авторизації, а ліміти нижче ігноруються)</string>
+    <string name="asciiArrow"><![CDATA[=>]]></string>
+    <string name="TpNoRegistrations">Немає реєстрацій Trickle Pay</string>
+    <string name="TpNoSession">Немає запиту Trickle Pay</string>
+    <string name="TpRegistrations">Реєстрації</string>
+    <string name="TpRegDenied">Реєстрацію відхилено</string>
+    <string name="TpRegAccepted">Реєстрацію прийнято</string>
+    <string name="TpRegUnchanged">Реєстрацію не змінено</string>
+    <string name="TpRequestAutoDeny">Запит відхилено (автоматично)</string>
+    <string name="TpRequestAutoAccept">Запит прийнято (автоматично)</string>
+    <string name="TpTxDenied">Транзакцію відхилено</string>
+    <string name="TpTxAccepted">Транзакцію прийнято</string>
+    <string name="TpNetworkTimeout">Тайм-аут транзакції</string>
+    <string name="TpPartialSubmitted">Пропозицію надіслано</string>
+    <string name="TpAssetRequestDenied">Дані про активи не надано</string>
+    <string name="TpAssetRequestAccepted">Надсилання даних про активи</string>
+    <string name="Actions">Дії</string>
+    <string name="SpecialTpTransactionFrom">Спеціальна транзакція від</string>
+    <string name="IncompleteTpTransactionFrom">Тверда пропозиція від</string>
+    <string name="TpEntails">Передбачає</string>
+    <string name="TpInAccount">З рахунку</string>
+    <string name="TpAssetRequestFrom">Запит даних про активи від</string>
+    <string name="TpHandledByAccount">ваш рахунок може це опрацювати</string>
+    <string name="TpAssetMatches" formatted="false">Цьому сервісу буде надано інформацію про %num ваших активів.</string>
+    <string name="TpAssetInfoNotXfer">Прийнявши цей запит, ви лише надаєте сервісу інформацію про ваше право власності. Це не дозволяє жодних переказів.</string>
+    <string name="ForAFeeOf" formatted="false">включно з комісією %fee %units</string>
+    <string name="TpExchangingTokens" formatted="false">та обмін токенів (надсилання %tokSnd, отримання %tokRcv).</string>
+    <string name="TpShowingTokens" formatted="false">Розкрито %tokReveal типів токенів (витрачено на себе — це доводить, що вони ваші).</string>
+    <string name="TpSendingTokens" formatted="false">та надсилання %tokSnd типів токенів.</string>
+    <string name="TpReceivingTokens" formatted="false">та отримання %tokRcv типів токенів.</string>
+    <string name="TpHasNoPurpose">Цей запит не впливає на цей рахунок.</string>
+    <string name="TpSendToTitle">Платіж запитує</string>
+    <string name="TpSpends">Витрати</string>
+    <string name="TpSendRequestDenied">Платіж відхилено</string>
+    <string name="TpSendAutoReject">Платіж автоматично відхилено</string>
+    <string name="TpSendRequestAccepted">Платіж прийнято</string>
+    <string name="TpWhyNotAuto">Не буде підписано автоматично, бо</string>
+    <string name="TpAutomaticDisabled">Автоплатежі вимкнено</string>
+    <string name="TpExceededMaxPer">Перевищено ліміт за запит</string>
+    <string name="TpExceededMaxDaily">Перевищено ліміт за день</string>
+    <string name="TpExceededMaxWeekly">Перевищено ліміт за тиждень</string>
+    <string name="TpExceededMaxMonthly">Перевищено ліміт за місяць</string>
+    <string name="title_activity_alert_history">Останні повідомлення</string>
+    <string name="IssueReportInstructions">Надайте цю інформацію розробникам:</string>
+    <string name="AssetApplication">Запустити</string>
+    <string name="AssetMarketplace">Торгувати</string>
+    <string name="AssetAddedToTransferList">Додано до «Надіслати» на головній вкладці</string>
+    <string name="NftCardFront">Лице</string>
+    <string name="NftCardBack">Зворот</string>
+    <string name="NftPublicMedia">Вміст</string>
+    <string name="NftOwnerMedia">Вміст власника</string>
+    <string name="Content">Вміст</string>
+    <string name="Private">Приватний</string>
+    <string name="NftPrivateDescription">Цей вміст належить власнику активу</string>
+    <string name="NftInfo">Інфо</string>
+    <string name="NftLegal">Ліцензія</string>
+    <string name="NftSeries" formatted="false">Серія: %series</string>
+    <string name="NftAuthor" formatted="false">Автор: %author</string>
+    <string name="NftNoInfoProvided">...Інформації не надано...</string>
+    <string name="IssuedToConnection">Відкрито на підключеному сайті</string>
+    <string name ="demonstratingOwnership">Підтвердження власності</string>
+    <string name="AndSomeAssets"> та деякі активи</string>
+    <string name="AssetTypes" formatted="false">%assetTypes типів активів</string>
+    <string name="ExplainRestaurant">Онлайн-сервіси замовлення їжі (з доставкою або самовивозом) можуть приймати криптовалюту, навіть якщо сам заклад її не приймає.</string>
+    <string name="RestaurantButton">Замовлення їжі Menufy</string>
+    <string name="RestaurantUrl">https://www.menufy.com</string>
+    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
+    <string name="ExplainStoreMap">Знайдіть поблизу заклади, які приймають криптовалюту.</string>
+    <string name="StoreMapButton">карта магазинів</string>
+    <string name="StoreMapUrl">https://map.bitcoin.com</string>
+    <string name="StoreMapAppPackage"></string>
+    <string name="ExplainTxBit">txbit.io: обміняти NEXA на інші криптовалюти</string>
+    <string name="welcome1Label">Вітаємо</string>
+    <string name="welcome1">Вітаємо у Wally — гаманці для криптовалюти!\n\nНа наступних екранах ви створите свій перший рахунок у блокчейні Nexa (NEX) і налаштуєте інші сервіси, як-от керування паролями.\n\nАбо натисніть стрілку назад, щоб пропустити це покрокове налаштування.</string>
+    <string name="welcome2_title">Налаштування рахунку NEXA</string>
+    <string name="welcome2">На наступній сторінці ви створите свій перший рахунок Nexa.\n\nНа цьому рахунку зберігаються ваші кошти Nexa та ваші ідентичності. Ідентичності — це нова можливість гаманця Wally, яка дає змогу автоматично входити на підтримувані сайти.\n\nВи можете захистити свої рахунки ПІН-кодом (персональним ідентифікаційним номером), проте новим користувачам ми радимо не встановлювати ПІН-код для першого рахунку (і тримати на ньому невеликий баланс). Задля вашого захисту рахунки з ПІН-кодом не видно, доки не введено правильний ПІН-код (про введення хибного ПІН-коду жодних підказок не буде).\n\nЯкщо ви хочете відновити наявний рахунок NEXA, введіть фразу відновлення. Якщо цей рядок залишити порожнім, буде створено новий рахунок.</string>
+    <string name="welcome3_title" formatted="false">Фраза відновлення рахунку Nexa</string>
+    <string name="welcome3">Вітаємо 3! (Цей текст привітання можна покращити)</string>
+    <string name="welcome4_title">Ідентичність</string>
+    <string name="welcome4">Далі ви перейдете до екрана особистих даних. Ці дані використовуються, коли ви користуєтеся Wally як менеджером ідентичності та входу (для автоматичного входу на різні сайти або заповнення даних під час покупки). Wally надзвичайно дбає про вашу приватність!
+Ці дані не буде передано жодному сайту без вашого явного дозволу, і ЖОДНА інформація з цього гаманця ніколи не надсилається авторам застосунку. Ви також можете залишити всі поля порожніми.
+Коли завершите, натисніть стрілку назад (угорі ліворуч).</string>
+    <string name="welcomeComplete">На цьому налаштування завершено. Якщо ви пропустили якісь кроки, усі ці поля доступні в самому застосунку.
+Дякуємо — користуйтеся своїм новим гаманцем!</string>
+    <string name="ExplainGiftCards">Купівля подарункових карток відкриває доступ до сотень магазинів, які не приймають криптовалюту напряму.</string>
+    <string name="GiftCardButton">Картки eGifter</string>
+    <string name="GiftCardUrl">https://www.egifter.com</string>
+    <string name="GiftCardAppPackage">com.groupgifting.android</string>
+    <string name="Pinförslag">
+    <font size="15">Цей секретний номер потрібен для доступу до рахунку</font>
+</string>
+    <string name="sync_title">Регулярно синхронізувати пошту</string>
+    <string name="attachment_title">Завантажувати вхідні вкладення</string>
+    <string name="attachment_summary_on">Завантажувати вкладення автоматично</string>
+    <string name="attachment_summary_off">Завантажувати вкладення лише на запит</string>
+    <string name="signature_title">Ваш підпис</string>
+    <string name="reply_title">Типова дія при відповіді</string>
+    <string name="discoveredAccountDetails" formatted="false">Виявлено баланс %bal %units\nна %addr адресах і в %tx транзакціях</string>
+    <string name="discoveredWarning">Якщо все правильно, ви можете створити цей рахунок одразу</string>
+    <string name="backgroundSync">Фонова синхронізація</string>
+    <string name="scanQr">Сканувати QR</string>
+    <string name="imageQr">QR з фото</string>
+    <string name="paste">Вставити</string>
+    <string name="recentTransactions">Останні транзакції</string>
+    <string name="sendingFrom">Надсилання з</string>
+    <string name="enterAddress">Введіть адресу...</string>
+    <string name="noteOptional">Нотатка (необов’язково)</string>
+    <string name="clearNote">Очистити нотатку</string>
+    <string name="clearAddress">Очистити адресу</string>
+    <string name="clearAmount">Очистити суму</string>
+    <string name="available">Доступно</string>
+    <string name="amountPlain">Сума</string>
+    <string name="enterNEXAmount">Введіть суму в NEX...</string>
+    <string name="note">Нотатка</string>
+    <string name="confirmSend">Підтвердити</string>
+    <string name="syncing">Синхронізація...</string>
+    <string name="enterAmount" formatted="false">Введіть суму %assetName</string>
+    <string name="fee">Комісія</string>
+    <string name="connectionWarning">Увага: немає з’єднання з блокчейном/мережею. Якщо надіслати зараз, отримувач не побачить цей переказ одразу. Надсилання відбудеться, щойно з’єднання відновиться.</string>
+    <string name="NetworkUnstable">Мережа нестабільна</string>
+    <string name="TokenMissing">Токена немає в блокчейні </string>
+    <string name="Sell">Продати</string>
+    <string name="CreateAnOffer">Створити пропозицію</string>
+    <string name="Price">Ціна</string>
+    <string name="NexaPrice">Введіть ціну в Nexa</string>
+    <string name="AssetAmountName" formatted="false">У вас є %amount %assetName</string>
+    <string name="scanToBuyOne">Скануйте, щоб купити %name</string>
+    <string name="scanToBuySeveral">Скануйте, щоб купити %amount %name</string>
+    <string name="nexaOfferAmount" formatted="false">За %amount NEXA</string>
+    <string name="purchaseComplete">Купівлю завершено</string>
+    <string name="setTheNexaPrice">Задайте ціну в Nexa</string>
+    <string name="setTheAssetAmount">Задайте кількість активу</string>
+    <string name="publishOnline">Опублікувати онлайн</string>
+    <string name="offerCreated">Пропозицію створено!</string>
+    <string name="ConfigureService">Налаштувати сервіс</string>
+    <string name="AcceptOrRejectService">Прийняти або відхилити сервіс</string>
+    <string name="Domain">Домен</string>
+    <string name="Services">Сервіси</string>
+    <string name="Purpose">Призначення</string>
+    <string name="AutoPay">Автоплатіж</string>
+    <string name="AutoPayInstructions">Якщо прапорець нижче вимкнено, усі запити на оплату від цього сервісу потребуватимуть вашої авторизації, а ліміти нижче ігноруються.</string>
+    <string name="LimitedAutoApproval">Дозволити обмежене автосхвалення</string>
+    <string name="AutoPayMaxPerRequest">Максимум за запит</string>
+    <string name="AutoPayMaxPerDay">Максимум за день</string>
+    <string name="AutoPayMaxPerWeek">Максимум за тиждень</string>
+    <string name="AutoPayMaxPerMonth">Максимум за місяць</string>
+    <string name="EnableServices">Увімкнути екран сервісів</string>
+    <string name="NoServicesRegistered">Немає зареєстрованих сервісів.</string>
+    <string name="Start">Почати</string>
+    <string name="Meditation">Медитація</string>
+    <string name="Meditate">Медитувати</string>
+    <string name="Sound">Звук</string>
+    <string name="OneMinuteIntervalSound">Звук щохвилини</string>
+    <string name="MeditationVersion">Версія: 1.0.3 (збірка 156)</string>
+    <string name="Meditating">Медитація...</string>
+    <string name="MediationComplete">Медитацію завершено!</string>
+    <string name="Okay">Гаразд</string>
+    <string name="Minutes">Хвилини</string>
+    <string name="Camouflage">Маскування</string>
+    <string name="CamouflageAsMeditationTimer">Замаскувати застосунок під таймер медитації.</string>
+    <string name="CamouflageDescriptionAndroid">Після ввімкнення маскування застосунок закриється і буде замаскований під застосунок Meditate. Щоб вимкнути маскування, відкрийте меню застосунку Meditate і п’ять разів торкніться номера версії.</string>
+    <string name="CamouflageDescriptionOther">Щоб вимкнути маскування під застосунок Meditate, відкрийте меню застосунку і п’ять разів торкніться номера версії.</string>
+    <string name="CamouflageAsMeditateAppAndroid">Замаскувати під застосунок Meditate</string>
+</resources>

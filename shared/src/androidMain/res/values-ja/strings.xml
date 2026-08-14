@@ -1,0 +1,637 @@
+<resources>
+    <string name="app_name" translatable="false">Wally</string>
+    <string-array name="CurrencyTypes">
+        <item>NEX</item>
+        <item>USD</item>
+    </string-array>
+    <string-array name="FiatCurrencyTypes">
+        <item>BRL</item>
+        <item>CAD</item>
+        <item>CNY</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>JPY</item>
+        <item>RUB</item>
+        <item>USD</item>
+        <item>XAU</item>
+    </string-array>
+    <string name="uBCH" translatable="false">uBCH</string>
+    <string-array name="OneToTen">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="tipPercentage">
+        <item>--</item>
+        <item>0%</item>
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+        <item>50%</item>
+    </string-array>
+    <string name="yes">はい</string>
+    <string name="no">いいえ</string>
+    <string name="at">＠</string>
+    <string name="of">/</string>
+    <string name="choose">選択</string>
+    <string name="accept">承諾</string>
+    <string name="reject">拒否</string>
+    <string name="remove">削除</string>
+    <string name="confirm">確認</string>
+    <string name="cancel">キャンセル</string>
+    <string name="Back">戻る</string>
+    <string name="removeAll">すべて削除</string>
+    <string name="done">完了</string>
+    <string name="dismiss">閉じる</string>
+    <string name="deny">許可しない</string>
+    <string name="ask">毎回確認</string>
+    <string name="badSignature">不正な署名</string>
+    <string name="unknownCurrency">不明な通貨</string>
+    <string name="unknownCryptoCurrency">不明な暗号資産またはブロックチェーン</string>
+    <string name="Processing">処理中...</string>
+    <string name="receiving">受取中</string>
+    <string name="sending">送金中</string>
+    <string name="noAdditionalDetails">詳細情報なし</string>
+    <string name="unspecified">未指定</string>
+    <string name="removed">削除しました</string>
+    <string name="synced">同期済み</string>
+    <string name="unsynced">同期中</string>
+    <string name="connected">接続済み</string>
+    <string name="connectionEstablished">接続しました</string>
+    <string name="connectionClosed">接続終了</string>
+    <string name="connectionException">サイトに接続できません</string>
+    <string name="balance">現在の残高</string>
+    <string name="totalReceived">受取合計</string>
+    <string name="inProgress">進行中</string>
+    <string name="staleTransaction">失効した取引</string>
+    <string name="staleTransactionDetails">この取引はフルノードに拒否されました。すでに他の誰かに使用されて失効している可能性が高いですが、そもそも取引が無効だった、または取引自体は正常で問い合わせたノードが不正である可能性もあります。ウォレットは、承認されない限りこの取引を無視します。</string>
+    <string name="NoPermission">権限がありません</string>
+    <string name="NoPermissionDetails" formatted="false">この機能を使うには %perm 権限を有効にする必要があります。Android の「設定」→「アプリ」→「Wally」→「権限」から設定できます。</string>
+    <string name="WebLoadingPage"><![CDATA[<body><h1><center>...読み込み中...</h1></center></body>]]></string>
+    <string name="loading">読み込み中</string>
+    <string name="Untitled">無題</string>
+    <string name="nothing">なし</string>
+    <string name="breakIt">分割</string>
+    <string name="or">または</string>
+    <string name="onBlockchain">＠</string>
+    <string name="NotImplemented">近日公開</string>
+    <string name="NoNodes">ブロックチェーン未接続</string>
+    <string name="cancelled">キャンセル済み</string>
+    <string name="refreshQR">サーバーとの接続が切れました</string>
+    <string name="pleaseWait">お待ちください</string>
+    <string name="trying">試行中</string>
+    <string name="clear">クリア</string>
+    <string name="thousand">×千</string>
+    <string name="million">×百万</string>
+    <string name="required">必須</string>
+    <string name="account">アカウント</string>
+    <string name="addAccountPlus">+ アカウント追加</string>
+    <string name="receivingTokens">受取トークン</string>
+    <string name="spendingTokens">使用トークン</string>
+    <string name="version" formatted="false">バージョン: %ver (%date)</string>
+    <string name="enableDeveloperView">詳細/開発者モード</string>
+    <string name="enableRecompositionCounts">画面の再描画をカウント</string>
+    <string name="enableExperimentalUx">実験的インターフェース</string>
+    <string name="enableDarkMode">ダークモード</string>
+    <string name="enableSound">サウンド</string>
+    <string name="enableIdentityMenu">アイデンティティ画面</string>
+    <string name="enableTricklePayMenu">Trickle Pay画面</string>
+    <string name="enableAssetsMenu">アセット画面</string>
+    <string name="only">のみ</string>
+    <string name="prefer">優先</string>
+    <string name="rediscoverWalletTx">すべての取引を再スキャン</string>
+    <string name="searchWalletTx">不足している取引を検索</string>
+    <string name="rediscoverBlockchain">ブロックヘッダーを再スキャン</string>
+    <string name="logDebugData">デバッグデータを記録</string>
+    <string name="clearIdentityDomains">アイデンティティドメインをクリア</string>
+    <string name="rediscoverTooltip">ブロックチェーンの状態を削除し、ウォレットに関連するすべての取引を新たに検索します</string>
+    <string name="wordSeed">秘密のリカバリーフレーズ</string>
+    <string name="deleteWalletAccount">アカウントを削除</string>
+    <string name="more">その他</string>
+    <string name="darkMode">ダークモード</string>
+    <string name="ConsolidationNeeded">先にアカウントを統合してください</string>
+    <string name="SetChangePin">ロック解除PINの設定・変更</string>
+    <string name="CurrentPin">現在のPIN</string>
+    <string name="NewPin">新しいPIN</string>
+    <string name="PinChanged">PINを変更しました</string>
+    <string name="PinRemoved">PINを削除しました</string>
+    <string name="PinInvalid">無効なPIN</string>
+    <string name="PinTooShort">新しいPINが短すぎます</string>
+    <string name="WriteDownRecoveryPhraseWarningUi2">警告: 一部のアカウントの秘密のリカバリーフレーズがまだ書き留められていません。このデバイスを紛失したり故障したりしても資金を失わないよう、秘密のリカバリーフレーズを必ず紙など電子的でない形で書き留めてください。</string>
+    <string name="WroteRecoveryPhraseDown">書き留めました</string>
+    <string name="RecoveryPhraseKeepRemindingMe">引き続き通知する</string>
+    <string name="ViewRecoveryPhrase">秘密のリカバリーフレーズを表示</string>
+    <string name="localCurrency">表示通貨</string>
+    <string name="assessUnconfirmed">未承認の取引を検証</string>
+    <string name="rediscoverNotice">アカウントの再スキャンを開始しました</string>
+    <string name="searchNotice">アカウントの検索を開始しました</string>
+    <string name="unconfAssessmentNotice">未承認取引の検証を開始しました</string>
+    <string name="accountDeleteNotice">アカウントを削除しました</string>
+    <string name="rediscoverConfirmation">アカウントを再スキャンすると、ウォレットの残高がゼロになり、アカウントを新しく作成したときと同じようにブロックチェーンから支払いを検索します。この処理には長い時間がかかることがあります。ただし「高速同期」ボタンが表示され、データベースにウォレットの履歴を問い合わせることもできます。上の日付が正しくない場合は、更新されるまで数秒お待ちください。</string>
+    <string name="searchConfirmation">この機能はブロックチェーンから不足している支払いを検索します。この処理には長い時間がかかることがあります。ただし「高速同期」ボタンが表示され、データベースにウォレットの履歴を問い合わせることもできます。</string>
+    <string name="rediscoverBlockchainConfirmation">ブロックチェーンを再スキャンすると、このウォレットからすべてのブロックヘッダーのデータを削除し、フルノードから再ダウンロードします。この処理には長い時間がかかることがあります。ブロックヘッダーに問題があると確信できる場合のみ実行してください。</string>
+    <string name="deleteConfirmation" formatted="false">アカウントを削除すると、アカウントの秘密のリカバリーフレーズで復元しない限り、すべての残高、アイデンティティ、履歴が利用できなくなります。絶対に確実な場合のみ実行してください。\n\nアカウント「%accountName」（%blockchain）を削除しますか？</string>
+    <string name="reassessConfirmation">この操作では、最近送金した取引がブロックチェーンにあるかどうかを確認します。その有無に応じて、取引を承認済みにするか消去します。取引が消去されると、お金が消えたように見えます。使った分の残高を取り戻すには「再スキャン」が必要です。最近取引を送信した場合は、その取引がネットワーク上で承認を待っている可能性があるため、実行しないでください。</string>
+    <string name="recoveryPhrase">この12単語のフレーズはウォレットの復元に使用します。このフレーズを持つ人は誰でも資金を使えます。必ずペンで紙に書き留めるか金属に刻み、安全に保管してください。</string>
+    <string name="recoveryWarning">危険！デジタルで保存しないでください！\nクリップボードへのコピー、写真撮影、複写、スクリーンショットは絶対に行わないでください。</string>
+    <string name="flickerReason">画面のちらつきはセキュリティ対策です</string>
+    <string name="PastingRecoveryPhraseIsBadIdea">クリップボードにコピーしました。ただし、このリカバリーフレーズをアプリにコピーして貼り付けるのは絶対にやめてください。メールやほとんどのアプリ、バックアップサービスなどは、お金そのものであるフレーズを預けられるほど安全ではありません。</string>
+    <string name="primaryAccountConfirmation">メインアカウントは、アイデンティティと自動支払いに使用するアカウントです。このアプリの各所で最初に表示されるアカウントでもあります。Nexaブロックチェーン上のアカウントである必要があります。</string>
+    <string name="primaryAccountSuccess">メインアカウント: %name</string>
+    <string name="AccountActions">アカウント操作</string>
+    <string name="GeneralSettings">一般設定</string>
+    <string name="BlockchainSettings">ブロックチェーン接続先</string>
+    <string name="AccessPriceData">価格データを取得</string>
+    <string name="oldUi">旧インターフェース</string>
+    <string name="SplitBillDescription">法定通貨で会計を支払い、下のQRコードで友人から各自の分を受け取ります。友人のおごりでない限り、分割する人数には自分も含めてください。</string>
+    <string name="BillAmount">会計金額</string>
+    <string name="TipAmount">チップ金額</string>
+    <string name="TipPercentage">チップの割合</string>
+    <string name="Total">分割する合計金額</string>
+    <string name="OR">または</string>
+    <string name="QRCodeFor">QRコード:</string>
+    <string name="Ways">人数:</string>
+    <string name="Tip">チップ:</string>
+    <string name="Amount">金額:</string>
+    <string name="AmountWithValue" formatted="false">金額: %amt</string>
+    <string name="QuantityWithValue" formatted="false">数量: %qty</string>
+    <string name="balanceOnTheDate" formatted="false">%date 時点</string>
+    <string name="fastSync">高速同期</string>
+    <string name="refresh">更新</string>
+    <string name="goodQR">QR読み取り可能</string>
+    <string name="badQR">QR読み取り不可</string>
+    <string name="badImageQR">QR画像を読み取れません。詳細...</string>
+    <string name="badImageQRhelp">QRコードに近づいて撮影した場合は、少し離れて撮り直してみてください。白い余白もQRコードの一部です。また、画面を近くから撮影するとモアレが出て読み取れないことがあります。</string>
+    <string name="GoThere">移動</string>
+    <string name="unlock">ロック解除</string>
+    <string name="share">共有</string>
+    <string name="Send">送金</string>
+    <string name="OpenSend">送金</string>
+    <string name="SendCancel">キャンセル</string>
+    <string name="ignoredInsecureRequest">安全でないリクエストを無視</string>
+    <string name="fromAccountColon">送金元アカウント:</string>
+    <string name="chooseAccountError">アカウントを選択</string>
+    <string name="toColon">送金先:</string>
+    <string name="To">送金先</string>
+    <string name="ByAuthor">作者</string>
+    <string name="assetsColon">アセット:</string>
+    <string name="assets">アセット</string>
+    <string name="NoAssets">アカウント%actにアセットはありません</string>
+    <string name="NoAssetsAccount">現在、このアカウントに利用可能なアセットはありません。</string>
+    <string name="fromColon">送金元:</string>
+    <string name="ReceiveIntoAccount">受取先アカウント</string>
+    <string name="Receive">受取</string>
+    <string name="YourAddress">%blockchainのアドレス</string>
+    <string name="CopyAddress">アドレスをコピー</string>
+    <string name="AccountListHeader">アカウント</string>
+    <string name="Address">アドレス</string>
+    <string name="clipboard">クリップボード</string>
+    <string name="settings">設定</string>
+    <string name="help">ヘルプ</string>
+    <string name="invalidQuantity">無効な数量</string>
+    <string name="needNonexistentAuthority">トークン権限が必要です</string>
+    <string name="invalidQuantityTooManyDecimalDigits">小数点以下が多すぎます</string>
+    <string name="roundedUpClickSendAgain">切り上げました。再度「送金」を押すと確定します</string>
+    <string name="emptyQuantityField"></string>
+    <string name="purchase">購入</string>
+    <string name="scanPaymentQRcode">支払いアドレスのQRコードをスキャン</string>
+    <string name="ScanQRCodeButton">QRコードをスキャン</string>
+    <string name="PasteDestinationAddressButton">貼り付け</string>
+    <string name="NewAccountButton">新規アカウント作成</string>
+    <string name="NewAccountSearchingForTransactions">...最初の取引を検索中...</string>
+    <string name="NewAccountSearchingForAllTransactions">...すべての取引を検索中...</string>
+    <string name="NewAccountSearchFailure">取引の検索に失敗しました</string>
+    <string name="receiveAddressQRCode">受取QRコード</string>
+    <string name="paymentProposal">受信した支払い提案に基づく</string>
+    <string name="pasteIsEmpty">貼り付け内容が空</string>
+    <string name="pasteIgnored">貼り付けを無視</string>
+    <string name="pasteUnintelligible">貼り付け内容が不明</string>
+    <string name="chainIncompatibleWithAddress">アドレスがアカウントに対応していません</string>
+    <string name="chainIncompatibleWithAddressDetails" formatted="false">アカウントの通貨は%walletCrypto、アドレスは%addressCryptoです。コンボボックスで、アドレスのブロックチェーンに合うアカウントを送金元に選び直してください。</string>
+    <string name="incoming" formatted="false">未承認の%delta %unitを含みます</string>
+    <string name="approximatelyT" formatted="false">約%qty %fiat</string>
+    <string name="fastForward" formatted="false">高速同期</string>
+    <string name="fastforwardStatus" formatted="false">高速同期の解析: %info</string>
+    <string name="fastforwardStart" formatted="false">開始しました</string>
+    <string name="exchangeRate" formatted="false">（為替レート: 1 %fiat = %amt %crypto）</string>
+    <string name="moreThanAvailable">（利用可能額を超えています）</string>
+    <string name="moreThanConfirmedAvailable">（承認済み額を超えています）</string>
+    <string name="actuallySendingT" formatted="false">実際の送金額: %qty %crypto</string>
+    <string name="copiedToClipboard">クリップボードに\nコピーしました</string>
+    <string name="copyId">IDをコピー</string>
+    <string name="openInBrowser">ブラウザで開く</string>
+    <string name="cannotCopyToClipboard">クリップボードにコピーできません</string>
+    <string name="tooLargeForClipboard">クリップボードにはデータが大きすぎます</string>
+    <string name="scanFailed">スキャン失敗</string>
+    <string name="scanSuccess">スキャン成功</string>
+    <string name="sendSuccess">送金に成功しました</string>
+    <string name="sendQuantityHint">送金する数量</string>
+    <string name="sendRequestNotification">送金リクエスト</string>
+    <string name="sendToAddressHint">送金先アドレス</string>
+    <string name="sendAll">全額</string>
+    <string name="editSendNoteHint">この送金に関するメモ</string>
+    <string name="subSatoshiQuantities">小数点以下が多すぎます。この通貨はそこまで細かく分割できません</string>
+    <string name="retrievingExchangeRate">為替レートを取得中です</string>
+    <string name="unavailableExchangeRate">為替レートを取得できません</string>
+    <string name="SigningWithAccount" formatted="false">署名するアカウント: %act</string>
+    <string name="commonIdentityForAccount" formatted="false">アカウント%actの共通アイデンティティ</string>
+    <string name="identityRequestNotification">アイデンティティのリクエスト</string>
+    <string name="IdentityDataMissing">アイデンティティ情報が未入力</string>
+    <string name="newDomainRequestingIdentity">新しいサービスが登録をリクエストしています</string>
+    <string name="domainRequestingAdditionalIdentityInfo">追加情報のリクエスト</string>
+    <string name="useUniqueIdentityToolTip">オンにすると、このサイトのアイデンティティを他のサイトと分けられます。</string>
+    <string name="provideAlias">ユーザー名/ハンドル/エイリアスを提供しますか？</string>
+    <string name="provideAliasToolTip">この項目を選ぶと、リクエストされた場合にエイリアス（設定で登録したもので、本名ではありません）をこのサイトに送信します</string>
+    <string name="provideSocialMedia">ソーシャルメディア情報を提供しますか？</string>
+    <string name="provideSocialMediaToolTip">この項目を選ぶと、リクエストされた場合にソーシャルメディア情報（設定で登録したもの）をこのサイトに送信します</string>
+    <string name="providePostalAddress">住所を提供しますか？</string>
+    <string name="providePostalAddressToolTip">この項目を選ぶと、リクエストされた場合に住所（設定で登録したもの）をこのサイトに送信します</string>
+    <string name="provideBillingAddress">請求先住所を提供しますか？</string>
+    <string name="provideBillingAddressToolTip">この項目を選ぶと、リクエストされた場合に請求先住所（設定で登録したもの）をこのサイトに送信します</string>
+    <string name="provideEmail">メールアドレスを提供しますか？</string>
+    <string name="provideAvatar">アバター画像を提供しますか？</string>
+    <string name="provideRealName">本名を提供しますか？</string>
+    <string name="provideRealNameToolTip">この項目を選ぶと、本名（設定で登録したもの）をこのサイトに送信します</string>
+    <string name="provideBirthday">生年月日を提供しますか？</string>
+    <string name="providePhone">電話番号を提供しますか？</string>
+    <string name="provideAttestations">証明情報を提供しますか？</string>
+    <string name="provideAttestationsToolTip">証明情報とは、提供するデータが正しいことを第三者が確認した署名です</string>
+    <string name="primaryAccountRequired" formatted="false">この機能の利用には%primCurrencyのアカウントが必要です</string>
+    <string name="primaryAccountRequiredDetails" formatted="false">一部の機能は特定の暗号資産に紐付いています。利用する前に、その暗号資産のアカウントを作成するかロック解除してください。</string>
+    <string name="UnknownDomainRegisterFirst">未知のサービスです。先に登録してください</string>
+    <string name="Provider" formatted="false">提供元: %provider</string>
+    <string name="QrCode">QRコード</string>
+    <string name="unknownOperation" formatted="false">操作%opは不明です</string>
+    <string name="alreadyRegistered">登録済み</string>
+    <string name="existingRegistration" formatted="false">現在選択中のアカウント「%act」は、このサービスに登録済みです。</string>
+    <string name="nonexistentRegistration" formatted="false">現在選択中のアカウント「%act」は、このサービスにまだ登録していません。</string>
+    <string name="provideLoginQuestion">このサイトにログインしますか？</string>
+    <string name="provideInfoQuestion">アイデンティティ情報のリクエスト元</string>
+    <string name="signDataQuestion">署名のリクエスト元</string>
+    <string name="nothingToSign">メッセージがありません</string>
+    <string name="binaryToSign">このバイナリデータに署名しますか？</string>
+    <string name="textToSign">このメッセージに署名しますか？</string>
+    <string name="sigInClipboard">署名をクリップボードにコピーしました</string>
+    <string name="SocialMediaText">ソーシャルメディア</string>
+    <string name="SocialMediaSummary">サービス:ハンドル の形式で入力してください。例: twitter:janeDoe, keybase:janieD</string>
+    <string name="UsernameOrAliasText">ユーザー名/ハンドル/エイリアス</string>
+    <string name="NameText">氏名</string>
+    <string name="PostalAddressText">住所</string>
+    <string name="BillingAddressText">請求先住所</string>
+    <string name="PostalCodeText">郵便番号</string>
+    <string name="EmailText">メールアドレス</string>
+    <string name="TwitterText">Twitter</string>
+    <string name="TelegramText">Telegram</string>
+    <string name="IdentityAssociatedWith">関連付けられたアイデンティティ情報</string>
+    <string name="ServiceAssociatedWith">このサービスはすでに次と関連付けられています:</string>
+    <string name="IdentityInfoNote">この情報の入力は任意で、選んだサービスにのみ送信されます。アイデンティティ対応サイトでQRコードをスキャンするだけで、フォームのよくある項目を入力できるようにするためのものです。</string>
+    <string name="areYouSure">よろしいですか？</string>
+    <string name="WhenAskSure">上記を確認:</string>
+    <string name="SendConfirmSummary" formatted="false">%amt %currency %inFiat%assetsをアドレス%destへ送金します。よろしいですか？</string>
+    <string name="firstName">名</string>
+    <string name="lastName">姓</string>
+    <string name="withholdingMandatoryInfo">サイトが必須とする情報の提供を拒否しています</string>
+    <string name="badLink">無効なリンク</string>
+    <string name="BadWebLink">無効なWebリンク</string>
+    <string name="connectionAborted">サイトがログインを中止</string>
+    <string name="HintAdjustCostBasis">取得価額/譲渡益</string>
+    <string name="CostBasis">取得価額</string>
+    <string name="CapitalLoss">譲渡損</string>
+    <string name="CapitalGain">譲渡益</string>
+    <string name="OverrideSalesPrice">売却時の価格を入力</string>
+    <string name="AccountHistory">取引履歴</string>
+    <string name="NoAccountActivity">アカウント履歴なし</string>
+    <string name="AccountAddresses">アドレス一覧</string>
+    <string name="ActiveAddresses">使用中のアドレス</string>
+    <string name="UsedAddresses">使用済みアドレス</string>
+    <string name="UnusedAddresses">未使用アドレス</string>
+    <string name="txHistoryButton">アカウント履歴の表示・書き出し</string>
+    <string name="setAsPrimaryAccountButton">メインアカウントに設定</string>
+    <string name="AccountStatistics">アカウント統計</string>
+    <string name="AccountBlockchainSync" formatted="false">ブロックチェーン%chain上で現在%syncです。</string>
+    <string name="AccountBlockchainDetails" formatted="false">%actBlockDate時点、ブロック%actBlock/%chainBlockCount。</string>
+    <string name="AccountEarliestActivity" formatted="false">初回利用: %actPrehistoryDateのブロック%actPrehistoryBlock。</string>
+    <string name="AccountBlockchainConnectionDetails" formatted="false">%num件のノードに接続中: %names</string>
+    <string name="AccountNumAddresses" formatted="false">%num件のアドレス</string>
+    <string name="CurrentAddress" formatted="false">アドレス%num番目: %addr</string>
+    <string name="FirstLastReceive" formatted="false">初回の入金はブロック%first、直近はブロック%last。</string>
+    <string name="FirstLastSend" formatted="false">初回の出金はブロック%first、直近はブロック%last。</string>
+    <string name="FirstWithdraw">初回の出金</string>
+    <string name="FirstDeposit">初回の入金</string>
+    <string name="never">なし</string>
+    <string name="FirstUse" formatted="false">初回利用: %date</string>
+    <string name="LastUse" formatted="false">最終利用: %date</string>
+    <string name="Block" formatted="false">ブロック: %block</string>
+    <string name="AccountNumTx" formatted="false">%num件の取引</string>
+    <string name="AccountNumUtxos" formatted="false">%num件の台帳エントリ</string>
+    <string name="title_activity_assets">アセット</string>
+    <string name="title_activity_scan">スキャン</string>
+    <string name="title_activity_new_account">新規アカウント</string>
+    <string name="AccountName">アカウント名</string>
+    <string name="AccountNameHint">1〜8文字</string>
+    <string name="Blockchain">ブロックチェーン</string>
+    <string name="AccountRecoveryPhrase">リカバリーフレーズ</string>
+    <string name="LeaveEmptyNewWallet">空欄にすると新規アカウントを作成します</string>
+    <string name="PinSuggestions"><font size="15">この秘密の番号はアカウントへのアクセスに必要です</font></string>
+    <string name="createNewAccount">新規アカウントを作成</string>
+    <string name="createSyncAccount">入念な同期でアカウントを復元（時間がかかります）</string>
+    <string name="createDiscoveredAccount">アカウントをすぐに復元</string>
+    <string name="invalidRecoveryPhrase">無効なリカバリーフレーズ</string>
+    <string name="invalidAccountName">無効な名前</string>
+    <string name="PassPhrase">パスフレーズ（任意）</string>
+    <string name="Bip44ActivityNotice">アカウントの履歴が見つかりました</string>
+    <string name="NoBip44ActivityNotice">警告: 取引が見つかりません！</string>
+    <string name="Bip44BtcActivityNotice">非標準またはフォーク前のウォレット履歴が見つかりました</string>
+    <string name="NoBip44BtcActivityNotice">フォーク前の取引は見つかりません</string>
+    <string name="FirstUseDateHeightInfo" formatted="false">%date（ブロック %height）から開始</string>
+    <string name="NotEnoughRecoveryWords">単語が足りません</string>
+    <string name="TooManyRecoveryWords">単語が多すぎます</string>
+    <string name="IncorrectRecoveryWords" formatted="false">無効な単語: %words</string>
+    <string name="ElectrumNetworkUnavailable">Electrumネットワークを利用できません。ウォレットの復元に時間がかかり、2020年1月1日より前の取引は検出されません。</string>
+    <string name="PinHidesAccount">PIN入力までアカウントを非表示にしますか？</string>
+    <string name="HiddenAccountExplainer">PIN入力までアカウントを非表示にします</string>
+    <string name="HiddenAccount">非表示のアカウント</string>
+    <string name="AutomaticNewAddress">アドレスのプライバシー</string>
+    <string name="AutomaticNewAddressToolTip">現在のアドレスが使われるたびに、新しいアドレスが自動的に表示されます。</string>
+    <string name="CreatePIN">PIN（任意）</string>
+    <string name="PinSpendingUnprotected">PINなしでの送金が有効です（PIN未入力）</string>
+    <string name="PinSpendingProtected">送金にはPINが必要です</string>
+    <string name="InvalidPIN">無効なPIN</string>
+    <string name="creatingNoHistoryAccountWarning">特定のリカバリーフレーズでアカウントを作成しようとしていますが、ブロックチェーン上に履歴が見つかりませんでした。\nこれで間違いありませんか？\n間違いなければ、もう一度作成ボタンを押すと空のアカウントが作成されます。ただし、このアカウントに履歴があるはずなら、選択したブロックチェーンとリカバリーフレーズをもう一度ご確認ください。それが原因でない場合は、ブロックチェーンネットワークに現在接続できない（時間をおいて再試行してください）か、非標準のウォレットアプリで作成された可能性があります。その場合は今このアカウントを作成しないでください。</string>
+    <string name="accountLocked">アカウントはロック中</string>
+    <string name="unknownError">エラー</string>
+    <string name="insufficentBalance">残高不足</string>
+    <string name="insufficentTokenBalance">トークン残高不足</string>
+    <string name="excessiveFee">手数料が高すぎます</string>
+    <string name="sendDustError">金額が最小額未満</string>
+    <string name="sendingDustWarning">金額がネットワーク最小額を下回っています</string>
+    <string name="feeExceedsFlatMax">手数料が設定された固定手数料の上限を超えています</string>
+    <string name="notSupported">非対応</string>
+    <string name="expired">支払いの期限切れ</string>
+    <string name="PaymentDataMissing">支払いのデータが不足</string>
+    <string name="headersNotForthcoming">ブロックヘッダーが提供されていません</string>
+    <string name="cantConvert">変換は一時的に利用できません</string>
+    <string name="walletDisconnectedFromBlockchain">ウォレット切断</string>
+    <string name="badTransaction">無効な取引</string>
+    <string name="badAddress">無効なアドレス</string>
+    <string name="unknownAddress">不明なアドレス</string>
+    <string name="badAmount">無効な金額</string>
+    <string name="NoAccounts">利用できるアカウントなし</string>
+    <string name="badCryptoCode">この通貨またはブロックチェーンにロック解除済みのアカウントがありません</string>
+    <string name="badCryptoCodeDetails" formatted="false">不明または利用できない通貨: %currency</string>
+    <string name="badCurrencyUnit">通貨ではありません</string>
+    <string name="incompatibleAccount">通貨が不一致</string>
+    <string name="incompatibleAccountDetails" formatted="false">%cryptoActを保有するアカウントから支払うよう選択されていますが、%cryptoPayが必要です</string>
+    <string name="detailsOfBadAmountFromIntent">呼び出し元のプログラムが、送金する数量として不正な形式の数値を渡しました。
+        数量はご自身で入力してください
+    </string>
+    <string name="blankAddress">アドレスが空欄</string>
+    <string name="unavailable">利用不可</string>
+    <string name="blockNotForthcoming">ブロック取得不可</string>
+    <string name="receiveAddressUnavailable">新しい受取アドレスを計算しています。お待ちください...
+    </string>
+    <string name="accountLimitReached">アカウント数の上限</string>
+    <string name="accountUnavailableDetails">このブロックチェーンに一致するアカウントがないか、アカウントがロック解除されていません。</string>
+    <string name="accountUnavailable">対応するロック解除済みアカウントなし</string>
+    <string name="sendMoreThanBalance">現在利用可能なコインより多く送金しようとしています。\n\n残高を超えて使っていないはずだとお考えの場合、取引にわずかな手数料がかかることをお忘れかもしれません。また、残高がすべて未承認と表示されている場合は、続けて取引を行いすぎた可能性があります。\n\nブロックチェーンより先に「進める」範囲には限りがあります。未承認の残高が承認されるまで待ってから、もう一度お試しください。</string>
+    <string name="sendMoreTokensThanBalance">現在利用可能なトークンより多く送金しようとしています。</string>
+    <string name="deductedFeeLargerThanSendAmount">差し引かれる手数料が送金額を上回っています</string>
+    <string name="badWalletImplementation">ウォレットの実装が正しくありません。このバグを報告してください！</string>
+    <string name="CannotCompleteTransaction">エラー: 完了できません</string>
+    <string name="title_split_bill">割り勘</string>
+    <string name="title_activity_settings">設定</string>
+    <string name="title_activity_exchange">取引所</string>
+    <string name="title_activity_shopping">リンク</string>
+    <string name="ecosystem">エコシステム</string>
+    <string name="title_activity_trickle_pay">Trickle Pay</string>
+    <string name="title_home">ホーム</string>
+    <string name="title_dashboard">テスト</string>
+    <string name="title_notifications">通知</string>
+    <string name="title_activity_invoices">請求書</string>
+    <string name="title_activity_identity">アイデンティティ</string>
+    <string name="title_activity_identity_op">アイデンティティ</string>
+    <string name="title_activity_domain_identity_settings">ドメイン別アイデンティティ設定</string>
+    <string name="title_activity_tx_history" formatted="false">取引履歴: %account</string>
+    <string name="title_activity_address_history" formatted="false">アドレス履歴: %account</string>
+    <string name="title_activity_account_details" formatted="false">アカウント: %account</string>
+    <string name="title_test">テスト</string>
+    <string name="useUniqueIdentity">固有の暗号アイデンティティを使用</string>
+    <string name="title_activity_identity_settings">アイデンティティ設定</string>
+    <string name="IdentityRegistrations">登録済みサービス</string>
+    <string name="NoIdentitiesRegistered">登録済みのアイデンティティなし</string>
+    <string name="title_activity_welcome">ようこそ</string>
+    <string name="next">次へ</string>
+    <string name="previous">戻る</string>
+    <string name="EnterPIN">PINを入力</string>
+    <string name="EnterPINorBlankToRemove">新しいPIN（空欄で削除）</string>
+    <string name="ButtonTextHere">ボタンの文字を設定</string>
+    <string name="ButtonLinkHere">リンクを入力</string>
+    <string name="ShoppingWarning">注意: このページの項目は、便宜のために掲載された第三者のサービスやサイトへのリンクです。これらのサイトやサービスはWally Walletが審査したものではありません。\n\n自己責任でご利用ください！</string>
+    <string name="NFTs">非代替性トークン（NFT）</string>
+    <string name="ExplainNFTs">NiftyArt.cash: 唯一無二の画像やデジタル表現を作成・売買できます</string>
+    <string name="NftUrl">http://niftyart.cash</string>
+    <string name="NftImproperConstruction">警告: 偽物または不正に作成されています！</string>
+    <string name="TokenSourceWebsite">トークンの提供元:</string>
+    <string name="TokenBadSig">このトークンの情報は正しく署名されていません。このトークンは偽物やなりすましの可能性があります。また、トークンの作成者が正しく署名していないだけの場合もあります。</string>
+    <string name="OpenWebsite" formatted="false">%siteNameにアクセス</string>
+    <string name="WebsiteUnavailable" formatted="false">サイトを利用できません</string>
+    <string name="ExplainBitmart">bitmart.com: NEXAと他の暗号資産を売買できます</string>
+    <string name="ExplainMexc">mexc.com: NEXAと他の暗号資産を売買できます</string>
+    <string name="ExplainBiconomy">biconomy.com: NEXAと他の暗号資産を売買できます</string>
+    <string name="CexButton">取引所</string>
+    <string name="SharedNotification" formatted="false">%whatを共有しました</string>
+    <string name="AuthAutopayTitle">許可済みの支払い</string>
+    <string name="AuthAutopayDeniedTitle">許可済みの支払いを拒否</string>
+    <string name="AuthAutopay" formatted="false">%domainへ%amt</string>
+    <string name="TpToBeDone">Trickle Payの接続はここに表示されます</string>
+    <string name="TpHistoryTbd">Trickle Payの履歴はここに表示されます</string>
+    <string name="AcceptTpRegistration">登録を承諾する相手:</string>
+    <string name="EditTpRegistration">登録先の設定:</string>
+    <string name="AcceptTpRegistrationTopic">目的:</string>
+    <string name="TpMaxSpendHint">自動支払いの上限を入力</string>
+    <string name="TpAssetInfoRequest">アセット情報のリクエスト</string>
+    <string name="TpAssociatedAccount" formatted="false">関連付け: %act</string>
+    <string name="TpAssociatedAddress" formatted="false">%addr</string>
+    <string name="SpecialTxNotif">取引の許可リクエスト</string>
+    <string name="AssetNotif">アセット情報リクエスト</string>
+    <string name="PaymentRequest">支払いリクエスト</string>
+    <string name="IdentityNotif">アイデンティティ/ログインリクエスト</string>
+    <string name="TpMaxHeading">自動支払いの上限</string>
+    <string name="TpMaxPer">1回あたりの上限</string>
+    <string name="TpMaxPerDay">1日あたりの上限</string>
+    <string name="TpMaxPerWeek">1週間あたりの上限</string>
+    <string name="TpMaxPerMonth">1か月あたりの上限</string>
+    <string name="TpEnableAutopay">自動支払いを有効にする（オフの場合、すべての支払いで許可を求め、下記の上限は無視されます）</string>
+    <string name="asciiArrow"><![CDATA[=>]]></string>
+    <string name="TpNoRegistrations">Trickle Payの登録なし</string>
+    <string name="TpNoSession">Trickle Payのリクエストなし</string>
+    <string name="TpRegistrations">登録</string>
+    <string name="TpRegDenied">登録を拒否</string>
+    <string name="TpRegAccepted">登録を承諾</string>
+    <string name="TpRegUnchanged">登録は変更なし</string>
+    <string name="TpRequestAutoDeny">リクエストを拒否（自動）</string>
+    <string name="TpRequestAutoAccept">リクエストを承諾（自動）</string>
+    <string name="TpTxDenied">取引を拒否</string>
+    <string name="TpTxAccepted">取引を承諾</string>
+    <string name="TpNetworkTimeout">取引がタイムアウト</string>
+    <string name="TpPartialSubmitted">オファーを送信</string>
+    <string name="TpAssetRequestDenied">アセット情報の提供を拒否</string>
+    <string name="TpAssetRequestAccepted">アセット情報を送信中</string>
+    <string name="Actions">操作</string>
+    <string name="SpecialTpTransactionFrom">特別な取引の送信元</string>
+    <string name="IncompleteTpTransactionFrom">確定オファーの提案元</string>
+    <string name="TpEntails">内容</string>
+    <string name="TpInAccount">使用アカウント</string>
+    <string name="TpAssetRequestFrom">アセット情報のリクエスト元</string>
+    <string name="TpHandledByAccount">はこのアカウントで処理できます</string>
+    <string name="TpAssetMatches" formatted="false">保有する%num件のアセットの情報がこのサービスに提供されます。</string>
+    <string name="TpAssetInfoNotXfer">このリクエストを承諾しても、所有権に関する情報がサービスに提供されるだけです。送金を許可するものではありません。</string>
+    <string name="ForAFeeOf" formatted="false">手数料 %fee %units を含みます</string>
+    <string name="TpExchangingTokens" formatted="false">トークンを交換します（送金 %tokSnd、受取 %tokRcv）。</string>
+    <string name="TpShowingTokens" formatted="false">%tokReveal種類のトークンが開示されます（自分宛てに送金し、所有を証明します）。</string>
+    <string name="TpSendingTokens" formatted="false">%tokSnd種類のトークンを送金します。</string>
+    <string name="TpReceivingTokens" formatted="false">%tokRcv種類のトークンを受け取ります。</string>
+    <string name="TpHasNoPurpose">このリクエストはこのアカウントに影響しません。</string>
+    <string name="TpSendToTitle">支払いのリクエスト元</string>
+    <string name="TpSpends">支出</string>
+    <string name="TpSendRequestDenied">支払いを拒否</string>
+    <string name="TpSendAutoReject">支払いを拒否（自動）</string>
+    <string name="TpSendRequestAccepted">支払いを承諾</string>
+    <string name="TpWhyNotAuto">自動署名しない理由</string>
+    <string name="TpAutomaticDisabled">自動支払いが無効です</string>
+    <string name="TpExceededMaxPer">1回あたりの上限を超過</string>
+    <string name="TpExceededMaxDaily">1日あたりの上限を超過</string>
+    <string name="TpExceededMaxWeekly">1週間あたりの上限を超過</string>
+    <string name="TpExceededMaxMonthly">1か月あたりの上限を超過</string>
+    <string name="title_activity_alert_history">最近のメッセージ</string>
+    <string name="IssueReportInstructions">この情報を開発者に提供してください:</string>
+    <string name="AssetApplication">起動</string>
+    <string name="AssetMarketplace">売買</string>
+    <string name="AssetAddedToTransferList">メインタブの「送金」に追加しました</string>
+    <string name="NftCardFront">表</string>
+    <string name="NftCardBack">裏</string>
+    <string name="NftPublicMedia">コンテンツ</string>
+    <string name="NftOwnerMedia">所有者のコンテンツ</string>
+    <string name="Content">コンテンツ</string>
+    <string name="Private">非公開</string>
+    <string name="NftPrivateDescription">このコンテンツはアセットの所有者のものです</string>
+    <string name="NftInfo">情報</string>
+    <string name="NftLegal">ライセンス</string>
+    <string name="NftSeries" formatted="false">シリーズ: %series</string>
+    <string name="NftAuthor" formatted="false">作者: %author</string>
+    <string name="NftNoInfoProvided">...情報がありません...</string>
+    <string name="IssuedToConnection">接続中のサイトで起動しました</string>
+    <string name ="demonstratingOwnership">所有権の証明</string>
+    <string name="AndSomeAssets">と一部のアセット</string>
+    <string name="AssetTypes" formatted="false">%assetTypes種類のアセット</string>
+    <string name="ExplainRestaurant">オンラインの飲食店注文サービス（配達・持ち帰り）は、実店舗が対応していなくても暗号資産を利用できる場合があります。</string>
+    <string name="RestaurantButton">Menufyで飲食店に注文</string>
+    <string name="RestaurantUrl">https://www.menufy.com</string>
+    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
+    <string name="ExplainStoreMap">暗号資産が使える近くのお店を探せます。</string>
+    <string name="StoreMapButton">店舗マップ</string>
+    <string name="StoreMapUrl">https://map.bitcoin.com</string>
+    <string name="StoreMapAppPackage"></string>
+    <string name="ExplainTxBit">txbit.io: NEXAを他の暗号資産と交換できます</string>
+    <string name="welcome1Label">ようこそ</string>
+    <string name="welcome1">暗号資産ウォレット「Wally」へようこそ！\n\nこの後の画面で、最初のNexaブロックチェーンのアカウント（NEX）を作成し、パスワード管理などのサービスを設定します。\n\n戻る矢印を押すと、このガイド付き設定をスキップできます。</string>
+    <string name="welcome2_title">NEXAアカウント設定</string>
+    <string name="welcome2">次のページで、最初のNexaアカウントを作成します。\n\nこのアカウントには、Nexaの資金とアイデンティティが保存されます。アイデンティティはWallyウォレットの新機能で、対応するサイトに自動でログインできます。\n\nアカウントはPINで保護できますが、初めての方は最初のアカウントにPINを設定せず、残高を少なめに保つことをおすすめします。保護のため、PINで保護されたアカウントは正しいPINを入力するまで表示されません（誤ったPINを入力しても、その旨は表示されません）。\n\n既存のNEXAアカウントを復元する場合は、リカバリーフレーズを入力してください。空欄のままにすると、新しいアカウントが作成されます。</string>
+    <string name="welcome3_title" formatted="false">Nexaアカウントのリカバリーフレーズ</string>
+    <string name="welcome3">ようこそ3！（この案内文は改善の余地があります）</string>
+    <string name="welcome4_title">アイデンティティ</string>
+    <string name="welcome4">次に、アイデンティティ情報の画面に移動します。この情報は、Wallyをアイデンティティとログインの管理に使うとき（各種サイトへの自動ログインや、購入時の情報入力）に利用されます。Wallyはプライバシーを最重視しています！
+この情報は、明示的な許可なくどのサイトにも共有されません。また、このウォレットの情報がこのアプリの作者に送信されることは一切ありません。すべての項目を空欄のままにすることもできます。
+入力が終わったら、左上の戻る矢印を押してください。</string>
+    <string name="welcomeComplete">これで設定は完了です。この案内で行わなかった手順があっても、すべての項目はアプリ内から設定できます。
+ありがとうございました。新しいウォレットをお楽しみください！</string>
+    <string name="ExplainGiftCards">ギフトカードを購入すると、暗号資産に直接対応していない数百の店舗を利用できます。</string>
+    <string name="GiftCardButton">eGifterのギフトカード</string>
+    <string name="GiftCardUrl">https://www.egifter.com</string>
+    <string name="GiftCardAppPackage">com.groupgifting.android</string>
+    <string name="Pinförslag">
+    <font size="15">この秘密の番号はアカウントへのアクセスに必要です</font>
+</string>
+    <string name="sync_title">メールを定期的に同期</string>
+    <string name="attachment_title">受信した添付ファイルをダウンロード</string>
+    <string name="attachment_summary_on">添付ファイルを自動的にダウンロードします</string>
+    <string name="attachment_summary_off">添付ファイルはリクエスト時のみダウンロードします</string>
+    <string name="signature_title">署名</string>
+    <string name="reply_title">返信時の既定の操作</string>
+    <string name="discoveredAccountDetails" formatted="false">%bal %units の残高を\n%addr件のアドレスと%tx件の取引で検出しました</string>
+    <string name="discoveredWarning">内容が正しければ、このアカウントをすぐに作成できます</string>
+    <string name="backgroundSync">バックグラウンド同期</string>
+    <string name="scanQr">QRスキャン</string>
+    <string name="imageQr">画像QR</string>
+    <string name="paste">貼り付け</string>
+    <string name="recentTransactions">最近の取引</string>
+    <string name="sendingFrom">送金元</string>
+    <string name="enterAddress">アドレスを入力...</string>
+    <string name="noteOptional">メモ（任意）</string>
+    <string name="clearNote">メモをクリア</string>
+    <string name="clearAddress">アドレスをクリア</string>
+    <string name="clearAmount">金額をクリア</string>
+    <string name="available">利用可能額</string>
+    <string name="amountPlain">金額</string>
+    <string name="enterNEXAmount">NEXの金額を入力...</string>
+    <string name="note">メモ</string>
+    <string name="confirmSend">送金を確認</string>
+    <string name="syncing">同期中...</string>
+    <string name="enterAmount" formatted="false">%assetNameの数量を入力</string>
+    <string name="fee">手数料</string>
+    <string name="connectionWarning">警告: ブロックチェーン/ネットワークに接続できません。今すぐ送金しても、受取人はこの送金をすぐには確認できません。接続が回復した時点で送金されます。</string>
+    <string name="NetworkUnstable">ネットワークが不安定</string>
+    <string name="TokenMissing">チェーン上にトークンなし </string>
+    <string name="Sell">売却</string>
+    <string name="CreateAnOffer">オファーを作成</string>
+    <string name="Price">価格</string>
+    <string name="NexaPrice">Nexa価格を入力</string>
+    <string name="AssetAmountName" formatted="false">%amount %assetNameを保有しています</string>
+    <string name="scanToBuyOne">スキャンして%nameを購入</string>
+    <string name="scanToBuySeveral">スキャンして%amount %nameを購入</string>
+    <string name="nexaOfferAmount" formatted="false">%amount NEXAで</string>
+    <string name="purchaseComplete">購入完了</string>
+    <string name="setTheNexaPrice">Nexa価格を設定</string>
+    <string name="setTheAssetAmount">アセットの数量を設定</string>
+    <string name="publishOnline">オファーを公開</string>
+    <string name="offerCreated">オファーを作成しました！</string>
+    <string name="ConfigureService">サービスを設定</string>
+    <string name="AcceptOrRejectService">サービスを承諾または拒否</string>
+    <string name="Domain">ドメイン</string>
+    <string name="Services">サービス</string>
+    <string name="Purpose">目的</string>
+    <string name="AutoPay">自動支払い</string>
+    <string name="AutoPayInstructions">下のチェックボックスが無効の場合、このサービスからの支払いリクエストはすべて許可を求め、以下の上限は無視されます。</string>
+    <string name="LimitedAutoApproval">制限付きの自動許可を有効にする</string>
+    <string name="AutoPayMaxPerRequest">1回あたりの上限</string>
+    <string name="AutoPayMaxPerDay">1日あたりの上限</string>
+    <string name="AutoPayMaxPerWeek">1週間あたりの上限</string>
+    <string name="AutoPayMaxPerMonth">1か月あたりの上限</string>
+    <string name="EnableServices">サービス画面</string>
+    <string name="NoServicesRegistered">登録済みのサービスはありません。</string>
+    <string name="Start">開始</string>
+    <string name="Meditation">瞑想</string>
+    <string name="Meditate">瞑想する</string>
+    <string name="Sound">サウンド</string>
+    <string name="OneMinuteIntervalSound">1分ごとのサウンド</string>
+    <string name="MeditationVersion">バージョン: 1.0.3（ビルド156）</string>
+    <string name="Meditating">瞑想中...</string>
+    <string name="MediationComplete">瞑想が終わりました！</string>
+    <string name="Okay">OK</string>
+    <string name="Minutes">分</string>
+    <string name="Camouflage">カモフラージュ</string>
+    <string name="CamouflageAsMeditationTimer">アプリを瞑想タイマーとしてカモフラージュします。</string>
+    <string name="CamouflageDescriptionAndroid">カモフラージュを有効にするとアプリが終了し、「Meditate」という名前のアプリとしてカモフラージュされます。カモフラージュを解除するには、アプリのメニューを開き、バージョン番号を5回タップします。</string>
+    <string name="CamouflageDescriptionOther">「Meditate」アプリのカモフラージュを解除するには、アプリのメニューを開き、バージョン番号を5回タップします。</string>
+    <string name="CamouflageAsMeditateAppAndroid">「Meditate」アプリとしてカモフラージュ</string>
+</resources>

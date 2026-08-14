@@ -1,0 +1,634 @@
+<resources>
+    <string name="app_name" translatable="false">Wally</string>
+    <string-array name="CurrencyTypes">
+        <item>NEX</item>
+        <item>USD</item>
+    </string-array>
+    <string-array name="FiatCurrencyTypes">
+        <item>BRL</item>
+        <item>CAD</item>
+        <item>CNY</item>
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>JPY</item>
+        <item>RUB</item>
+        <item>USD</item>
+        <item>XAU</item>
+    </string-array>
+    <string name="uBCH" translatable="false">uBCH</string>
+    <string-array name="OneToTen">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="tipPercentage">
+        <item>--</item>
+        <item>0%</item>
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+        <item>25%</item>
+        <item>30%</item>
+        <item>50%</item>
+    </string-array>
+    <string name="yes">có</string>
+    <string name="no">không</string>
+    <string name="at">lúc</string>
+    <string name="of">của</string>
+    <string name="choose">chọn</string>
+    <string name="accept">chấp nhận</string>
+    <string name="reject">từ chối</string>
+    <string name="remove">xóa</string>
+    <string name="confirm">xác nhận</string>
+    <string name="cancel">hủy</string>
+    <string name="Back">Quay lại</string>
+    <string name="removeAll">xóa tất cả</string>
+    <string name="done">xong</string>
+    <string name="dismiss">Bỏ qua</string>
+    <string name="deny">từ chối</string>
+    <string name="ask">hỏi</string>
+    <string name="badSignature">chữ ký không hợp lệ</string>
+    <string name="unknownCurrency">tiền tệ không xác định</string>
+    <string name="unknownCryptoCurrency">tiền mã hóa hoặc blockchain không xác định</string>
+    <string name="Processing">đang xử lý...</string>
+    <string name="receiving">đang nhận</string>
+    <string name="sending">đang gửi</string>
+    <string name="noAdditionalDetails">không có thêm chi tiết</string>
+    <string name="unspecified">chưa xác định</string>
+    <string name="removed">đã xóa</string>
+    <string name="synced">Đã đồng bộ</string>
+    <string name="unsynced">Đang đồng bộ</string>
+    <string name="connected">đã kết nối</string>
+    <string name="connectionEstablished">đã thiết lập kết nối</string>
+    <string name="connectionClosed">kết nối đã đóng</string>
+    <string name="connectionException">không kết nối được tới trang web</string>
+    <string name="balance">số dư hiện tại</string>
+    <string name="totalReceived">Tổng đã nhận</string>
+    <string name="inProgress">đang thực hiện</string>
+    <string name="staleTransaction">Giao dịch lỗi thời</string>
+    <string name="staleTransactionDetails">Giao dịch này đã bị một node đầy đủ từ chối. Nhiều khả năng nó đã lỗi thời (người khác đã dùng trước), nhưng cũng có thể giao dịch chưa bao giờ hợp lệ, hoặc nó vẫn ổn và các node chúng tôi hỏi không trung thực. Ví sẽ bỏ qua giao dịch này trừ khi nó được xác nhận.</string>
+    <string name="NoPermission">Không có quyền</string>
+    <string name="NoPermissionDetails" formatted="false">Bạn phải bật quyền %perm để dùng tính năng này. Bạn có thể bật trong Cài đặt Android -> Ứng dụng -> Wally -> Quyền</string>
+    <string name="WebLoadingPage"><![CDATA[<body><h1><center>...đang tải...</h1></center></body>]]></string>
+    <string name="loading">đang tải</string>
+    <string name="Untitled">Không tên</string>
+    <string name="nothing">không có gì</string>
+    <string name="breakIt">chia nhỏ</string>
+    <string name="or">hoặc</string>
+    <string name="onBlockchain">trên</string>
+    <string name="NotImplemented">Sắp ra mắt</string>
+    <string name="NoNodes">Không truy cập được blockchain</string>
+    <string name="cancelled">đã hủy</string>
+    <string name="refreshQR">Mất kết nối máy chủ</string>
+    <string name="pleaseWait">vui lòng đợi</string>
+    <string name="trying">đang thử</string>
+    <string name="clear">xóa</string>
+    <string name="thousand">* nghìn</string>
+    <string name="million">* triệu</string>
+    <string name="required">bắt buộc</string>
+    <string name="account">Tài khoản</string>
+    <string name="addAccountPlus">+ Thêm tài khoản</string>
+    <string name="receivingTokens">Nhận token</string>
+    <string name="spendingTokens">Chi tiêu token</string>
+    <string name="version" formatted="false">Phiên bản: %ver (%date)</string>
+    <string name="enableDeveloperView">Nâng cao/nhà phát triển</string>
+    <string name="enableRecompositionCounts">Đếm lần vẽ lại màn hình</string>
+    <string name="enableExperimentalUx">Giao diện thử nghiệm</string>
+    <string name="enableDarkMode">Chế độ tối</string>
+    <string name="enableSound">Bật âm thanh</string>
+    <string name="enableIdentityMenu">Bật màn hình danh tính</string>
+    <string name="enableTricklePayMenu">Bật màn hình Trickle Pay</string>
+    <string name="enableAssetsMenu">Bật màn hình tài sản</string>
+    <string name="only">chỉ</string>
+    <string name="prefer">ưu tiên</string>
+    <string name="rediscoverWalletTx">Quét lại tất cả giao dịch</string>
+    <string name="searchWalletTx">Tìm giao dịch bị thiếu</string>
+    <string name="rediscoverBlockchain">Quét lại header blockchain</string>
+    <string name="logDebugData">Ghi dữ liệu gỡ lỗi</string>
+    <string name="clearIdentityDomains">Xóa tên miền danh tính</string>
+    <string name="rediscoverTooltip">Xóa trạng thái blockchain và tìm lại từ đầu mọi giao dịch liên quan đến ví</string>
+    <string name="wordSeed">Cụm từ khôi phục bí mật</string>
+    <string name="deleteWalletAccount">Xóa tài khoản</string>
+    <string name="more">Thêm</string>
+    <string name="darkMode">Chế độ tối</string>
+    <string name="ConsolidationNeeded">Cần hợp nhất tài khoản trước</string>
+    <string name="SetChangePin">Đặt hoặc đổi mã PIN mở khóa</string>
+    <string name="CurrentPin">Mã PIN hiện tại</string>
+    <string name="NewPin">Mã PIN mới</string>
+    <string name="PinChanged">Đã đổi mã PIN</string>
+    <string name="PinRemoved">Đã xóa mã PIN</string>
+    <string name="PinInvalid">Mã PIN không hợp lệ</string>
+    <string name="PinTooShort">mã PIN mới quá ngắn</string>
+    <string name="WriteDownRecoveryPhraseWarningUi2">Cảnh báo: bạn chưa ghi lại cụm từ khôi phục bí mật của một số tài khoản! Để không mất tiền nếu thiết bị này bị mất hoặc hỏng, hãy ghi các khóa khôi phục bí mật ra giấy hoặc một dạng phi điện tử khác.</string>
+    <string name="WroteRecoveryPhraseDown">Tôi đã ghi lại</string>
+    <string name="RecoveryPhraseKeepRemindingMe">Tiếp tục nhắc tôi</string>
+    <string name="ViewRecoveryPhrase">Xem cụm từ khôi phục bí mật</string>
+    <string name="localCurrency">Đơn vị tiền tệ</string>
+    <string name="assessUnconfirmed">Đánh giá giao dịch chưa xác nhận</string>
+    <string name="rediscoverNotice">Đã bắt đầu quét lại tài khoản</string>
+    <string name="searchNotice">Đã bắt đầu tìm trong tài khoản</string>
+    <string name="unconfAssessmentNotice">Đã bắt đầu đánh giá giao dịch chưa xác nhận</string>
+    <string name="accountDeleteNotice">Đã xóa tài khoản</string>
+    <string name="rediscoverConfirmation">Quét lại một tài khoản sẽ đưa ví về 0 và tìm các khoản thanh toán trên blockchain, như thể tài khoản vừa được tạo mới. Quá trình này có thể mất nhiều thời gian. Tuy nhiên, nút “Tua nhanh” có thể xuất hiện, cho bạn lựa chọn hỏi một cơ sở dữ liệu về hoạt động của ví. Nếu ngày ở trên không đúng, hãy đợi vài giây để nó được cập nhật.</string>
+    <string name="searchConfirmation">Chức năng này tìm các khoản thanh toán bị thiếu trên blockchain. Quá trình này có thể mất nhiều thời gian. Tuy nhiên, nút “Tua nhanh” có thể xuất hiện, cho bạn lựa chọn hỏi một cơ sở dữ liệu về hoạt động của ví.</string>
+    <string name="rediscoverBlockchainConfirmation">Quét lại một blockchain sẽ xóa toàn bộ dữ liệu header blockchain khỏi ví này và tải lại từ các node đầy đủ. Quá trình này có thể mất nhiều thời gian. Chỉ dùng nếu bạn chắc chắn rằng header blockchain có vấn đề.</string>
+    <string name="deleteConfirmation" formatted="false">Xóa một tài khoản sẽ làm mọi số dư, danh tính và lịch sử không còn truy cập được, trừ khi tài khoản được khôi phục bằng cụm từ khôi phục bí mật! Chỉ làm điều này nếu bạn HOÀN TOÀN CHẮC CHẮN!\n\nXóa tài khoản “%accountName” (trên %blockchain)?</string>
+    <string name="reassessConfirmation">Thao tác này sẽ kiểm tra blockchain để tìm các giao dịch bạn vừa gửi. Dựa trên việc chúng có hay không, nó sẽ xác nhận hoặc xóa chúng. Nếu giao dịch bị xóa, số tiền sẽ như biến mất. Bạn sẽ cần “quét lại” để lấy lại số dư đã chi. Đừng dùng nếu bạn vừa phát một giao dịch, vì giao dịch đó có thể còn nằm trong mạng lưới, chờ xác nhận.</string>
+    <string name="recoveryPhrase">Cụm 12 từ này dùng để khôi phục ví. Ai giữ cụm từ này đều có thể tiêu tiền của bạn. Hãy viết ra giấy bằng bút mực (hoặc khắc lên thép) và cất giữ thật an toàn!</string>
+    <string name="recoveryWarning">DỪNG LẠI! KHÔNG LƯU DƯỚI DẠNG SỐ!\nKHÔNG sao chép vào bảng nhớ tạm, chụp ảnh, photocopy hay chụp màn hình.</string>
+    <string name="flickerReason">Nhấp nháy là một biện pháp bảo mật</string>
+    <string name="PastingRecoveryPhraseIsBadIdea">Đã sao chép vào bảng nhớ tạm. Tuy nhiên, sao chép và dán cụm từ khôi phục này vào bất kỳ ứng dụng nào là một Ý TƯỞNG TỒI! Email, hầu hết ứng dụng, dịch vụ sao lưu, v.v. đều không đủ an toàn để giữ một cụm từ vốn chính là tiền.</string>
+    <string name="primaryAccountConfirmation">Tài khoản chính là tài khoản dùng cho danh tính và để thực hiện thanh toán tự động. Đây cũng là tài khoản hiển thị đầu tiên ở nhiều nơi trong ứng dụng. Tài khoản này phải nằm trên blockchain Nexa.</string>
+    <string name="primaryAccountSuccess">Tài khoản chính: %name</string>
+    <string name="AccountActions">Thao tác tài khoản</string>
+    <string name="GeneralSettings">Cài đặt chung</string>
+    <string name="BlockchainSettings">Nguồn blockchain</string>
+    <string name="AccessPriceData">Truy cập dữ liệu giá</string>
+    <string name="oldUi">Giao diện cũ</string>
+    <string name="SplitBillDescription">Bạn thanh toán hóa đơn (bằng tiền pháp định), rồi bạn bè trả lại phần của họ qua mã QR bên dưới. Nhớ tính cả bạn vào số phần chia, trừ khi bạn bè mời!</string>
+    <string name="BillAmount">Số tiền hóa đơn</string>
+    <string name="TipAmount">Số tiền boa</string>
+    <string name="TipPercentage">Phần trăm tiền boa</string>
+    <string name="Total">Tổng số tiền cần chia</string>
+    <string name="OR">HOẶC</string>
+    <string name="QRCodeFor">Mã QR cho:</string>
+    <string name="Ways">Số phần:</string>
+    <string name="Tip">Tiền boa:</string>
+    <string name="Amount">Số tiền:</string>
+    <string name="AmountWithValue" formatted="false">Số tiền: %amt</string>
+    <string name="QuantityWithValue" formatted="false">Số lượng: %qty</string>
+    <string name="balanceOnTheDate" formatted="false">tính đến %date</string>
+    <string name="fastSync">Đồng bộ nhanh</string>
+    <string name="refresh">Làm mới</string>
+    <string name="goodQR">QR đọc được</string>
+    <string name="badQR">QR không đọc được</string>
+    <string name="badImageQR">ảnh QR lỗi. thêm...</string>
+    <string name="badImageQRhelp">Hãy thử chụp từ xa hơn nếu bạn đã chụp cận cảnh mã QR. Viền trắng là một phần của mã QR, và chụp màn hình ở cự ly gần có thể tạo ra vân moiré gây nhiễu.</string>
+    <string name="GoThere">Đến đó</string>
+    <string name="unlock">mở khóa</string>
+    <string name="share">chia sẻ</string>
+    <string name="Send">Gửi</string>
+    <string name="OpenSend">Gửi</string>
+    <string name="SendCancel">Hủy</string>
+    <string name="ignoredInsecureRequest">Đã bỏ qua yêu cầu không an toàn</string>
+    <string name="fromAccountColon">Gửi từ tài khoản:</string>
+    <string name="chooseAccountError">chọn một tài khoản</string>
+    <string name="toColon">Đến:</string>
+    <string name="To">Đến</string>
+    <string name="ByAuthor">Tác giả</string>
+    <string name="assetsColon">Tài sản:</string>
+    <string name="assets">Tài sản</string>
+    <string name="NoAssets">Không có tài sản nào trong tài khoản %act</string>
+    <string name="NoAssetsAccount">Hiện không có tài sản nào trong tài khoản.</string>
+    <string name="fromColon">Từ:</string>
+    <string name="ReceiveIntoAccount">Nhận vào tài khoản</string>
+    <string name="Receive">Nhận</string>
+    <string name="YourAddress">Địa chỉ %blockchain của bạn</string>
+    <string name="CopyAddress">Sao chép địa chỉ</string>
+    <string name="AccountListHeader">Tài khoản</string>
+    <string name="Address">Địa chỉ</string>
+    <string name="clipboard">bảng nhớ tạm</string>
+    <string name="settings">Cài đặt</string>
+    <string name="help">Trợ giúp</string>
+    <string name="invalidQuantity">số lượng không hợp lệ</string>
+    <string name="needNonexistentAuthority">cần quyền token</string>
+    <string name="invalidQuantityTooManyDecimalDigits">quá nhiều chữ số thập phân</string>
+    <string name="roundedUpClickSendAgain">đã làm tròn lên, nhấn Gửi lần nữa để chấp nhận</string>
+    <string name="emptyQuantityField"></string>
+    <string name="purchase">mua</string>
+    <string name="scanPaymentQRcode">Quét mã QR địa chỉ thanh toán</string>
+    <string name="ScanQRCodeButton">Quét mã QR</string>
+    <string name="PasteDestinationAddressButton">Dán</string>
+    <string name="NewAccountButton">Tạo tài khoản mới</string>
+    <string name="NewAccountSearchingForTransactions">...đang tìm giao dịch đầu tiên...</string>
+    <string name="NewAccountSearchingForAllTransactions">...đang tìm tất cả giao dịch...</string>
+    <string name="NewAccountSearchFailure">tìm giao dịch thất bại</string>
+    <string name="receiveAddressQRCode">mã QR nhận</string>
+    <string name="paymentProposal">theo đề nghị thanh toán đã nhận</string>
+    <string name="pasteIsEmpty">nội dung dán trống</string>
+    <string name="pasteIgnored">đã bỏ qua nội dung dán</string>
+    <string name="pasteUnintelligible">không hiểu nội dung dán</string>
+    <string name="chainIncompatibleWithAddress">địa chỉ không tương thích với tài khoản</string>
+    <string name="chainIncompatibleWithAddressDetails" formatted="false">Tiền tệ của tài khoản là %walletCrypto, còn địa chỉ là %addressCrypto.  Dùng hộp chọn để đổi tài khoản gửi sang tài khoản khớp với blockchain của địa chỉ.</string>
+    <string name="incoming" formatted="false">gồm %delta %unit đang chờ</string>
+    <string name="approximatelyT" formatted="false">khoảng %qty %fiat</string>
+    <string name="fastForward" formatted="false">Tua nhanh</string>
+    <string name="fastforwardStatus" formatted="false">phân tích tua nhanh: %info</string>
+    <string name="fastforwardStart" formatted="false">đã bắt đầu</string>
+    <string name="exchangeRate" formatted="false">(tỷ giá: 1 %fiat bằng %amt %crypto)</string>
+    <string name="moreThanAvailable">(vượt quá số khả dụng)</string>
+    <string name="moreThanConfirmedAvailable">(vượt quá số đã xác nhận)</string>
+    <string name="actuallySendingT" formatted="false">thực gửi %qty %crypto</string>
+    <string name="copiedToClipboard">đã sao chép vào\nbảng nhớ tạm</string>
+    <string name="copyId">Sao chép ID</string>
+    <string name="openInBrowser">Mở trong trình duyệt</string>
+    <string name="cannotCopyToClipboard">Không sao chép được vào bảng nhớ tạm</string>
+    <string name="tooLargeForClipboard">Dữ liệu quá lớn cho bảng nhớ tạm</string>
+    <string name="scanFailed">quét thất bại</string>
+    <string name="scanSuccess">quét thành công</string>
+    <string name="sendSuccess">gửi thành công</string>
+    <string name="sendQuantityHint">số lượng gửi</string>
+    <string name="sendRequestNotification">Có yêu cầu gửi</string>
+    <string name="sendToAddressHint">địa chỉ người nhận</string>
+    <string name="sendAll">tất cả</string>
+    <string name="editSendNoteHint">ghi chú cá nhân về giao dịch này</string>
+    <string name="subSatoshiQuantities">Quá nhiều chữ số thập phân -- tiền tệ này không chia nhỏ đến mức đó</string>
+    <string name="retrievingExchangeRate">đang lấy tỷ giá</string>
+    <string name="unavailableExchangeRate">không có tỷ giá</string>
+    <string name="SigningWithAccount" formatted="false">Ký bằng tài khoản: %act</string>
+    <string name="commonIdentityForAccount" formatted="false">Danh tính chung cho tài khoản: %act</string>
+    <string name="identityRequestNotification">có yêu cầu danh tính</string>
+    <string name="IdentityDataMissing">Thiếu thông tin danh tính</string>
+    <string name="newDomainRequestingIdentity">Dịch vụ mới yêu cầu đăng ký</string>
+    <string name="domainRequestingAdditionalIdentityInfo">Yêu cầu thêm thông tin</string>
+    <string name="useUniqueIdentityToolTip">Bật để tách danh tính ở đây khỏi các trang web khác.</string>
+    <string name="provideAlias">Cung cấp tên người dùng/handle/biệt danh?</string>
+    <string name="provideAliasToolTip">Chọn mục này sẽ cung cấp biệt danh (đã đặt trong Cài đặt, KHÔNG phải tên thật) cho trang web này, nếu được yêu cầu</string>
+    <string name="provideSocialMedia">Cung cấp thông tin mạng xã hội?</string>
+    <string name="provideSocialMediaToolTip">Chọn mục này sẽ cung cấp thông tin mạng xã hội (đã đặt trong Cài đặt) cho trang web này, nếu được yêu cầu</string>
+    <string name="providePostalAddress">Cung cấp địa chỉ nhận thư?</string>
+    <string name="providePostalAddressToolTip">Chọn mục này sẽ cung cấp địa chỉ (đã đặt trong Cài đặt) cho trang web này, nếu được yêu cầu</string>
+    <string name="provideBillingAddress">Cung cấp địa chỉ thanh toán?</string>
+    <string name="provideBillingAddressToolTip">Chọn mục này sẽ cung cấp địa chỉ thanh toán (đã đặt trong Cài đặt) cho trang web này, nếu được yêu cầu</string>
+    <string name="provideEmail">Cung cấp địa chỉ email?</string>
+    <string name="provideAvatar">Cung cấp ảnh đại diện?</string>
+    <string name="provideRealName">Cung cấp tên thật?</string>
+    <string name="provideRealNameToolTip">Chọn mục này sẽ cung cấp tên thật (đã đặt trong Cài đặt) cho trang web này</string>
+    <string name="provideBirthday">Cung cấp ngày sinh?</string>
+    <string name="providePhone">Cung cấp số điện thoại?</string>
+    <string name="provideAttestations">Cung cấp chứng thực?</string>
+    <string name="provideAttestationsToolTip">Chứng thực là chữ ký của bên thứ ba xác nhận dữ liệu bạn cung cấp</string>
+    <string name="primaryAccountRequired" formatted="false">Cần một tài khoản %primCurrency để dùng tính năng này</string>
+    <string name="primaryAccountRequiredDetails" formatted="false">Một số tính năng gắn với những loại tiền mã hóa nhất định.  Bạn phải tạo hoặc mở khóa một tài khoản trên tiền mã hóa đó trước khi dùng tính năng này.</string>
+    <string name="UnknownDomainRegisterFirst">Dịch vụ không xác định, hãy đăng ký trước</string>
+    <string name="Provider" formatted="false">Nhà cung cấp: %provider</string>
+    <string name="QrCode">Mã QR</string>
+    <string name="unknownOperation" formatted="false">thao tác %op không xác định</string>
+    <string name="alreadyRegistered">đã đăng ký</string>
+    <string name="existingRegistration" formatted="false">Tài khoản đang chọn “%act” ĐÃ đăng ký với dịch vụ này.</string>
+    <string name="nonexistentRegistration" formatted="false">Tài khoản đang chọn “%act” CHƯA đăng ký với dịch vụ này.</string>
+    <string name="provideLoginQuestion">Đăng nhập vào trang này?</string>
+    <string name="provideInfoQuestion">Yêu cầu thông tin danh tính từ</string>
+    <string name="signDataQuestion">Yêu cầu chữ ký từ</string>
+    <string name="nothingToSign">Không có thông điệp nào</string>
+    <string name="binaryToSign">Ký dữ liệu nhị phân này?</string>
+    <string name="textToSign">Ký thông điệp này?</string>
+    <string name="sigInClipboard">Đã sao chép chữ ký vào bảng nhớ tạm</string>
+    <string name="SocialMediaText">Mạng xã hội</string>
+    <string name="SocialMediaSummary">Nhập dạng danh sách dịch vụ:handle, ví dụ twitter:janeDoe, keybase:janieD</string>
+    <string name="UsernameOrAliasText">Tên người dùng/handle/biệt danh</string>
+    <string name="NameText">Họ và tên</string>
+    <string name="PostalAddressText">Địa chỉ nhận thư</string>
+    <string name="BillingAddressText">Địa chỉ thanh toán</string>
+    <string name="PostalCodeText">Mã bưu chính</string>
+    <string name="EmailText">Địa chỉ email</string>
+    <string name="TwitterText">Twitter</string>
+    <string name="TelegramText">Telegram</string>
+    <string name="IdentityAssociatedWith">Thông tin danh tính liên kết</string>
+    <string name="ServiceAssociatedWith">Dịch vụ này đã liên kết với:</string>
+    <string name="IdentityInfoNote">Việc nhập thông tin này là tùy chọn và chỉ được cung cấp cho những dịch vụ bạn chọn.  Mục đích là để các trường thường gặp trong biểu mẫu được điền sẵn chỉ bằng cách quét mã QR trên các trang web có hỗ trợ danh tính.</string>
+    <string name="areYouSure">Bạn chắc chắn chứ?</string>
+    <string name="WhenAskSure">Xác nhận ở trên:</string>
+    <string name="SendConfirmSummary" formatted="false">Xác nhận gửi %amt %currency %inFiat%assets đến địa chỉ %dest</string>
+    <string name="firstName">tên</string>
+    <string name="lastName">họ</string>
+    <string name="withholdingMandatoryInfo">trang web cần thông tin mà bạn từ chối cung cấp</string>
+    <string name="badLink">liên kết không hợp lệ</string>
+    <string name="BadWebLink">Liên kết web không hợp lệ</string>
+    <string name="connectionAborted">trang web đã hủy đăng nhập</string>
+    <string name="HintAdjustCostBasis">giá vốn hoặc lãi vốn</string>
+    <string name="CostBasis">giá vốn</string>
+    <string name="CapitalLoss">lỗ vốn</string>
+    <string name="CapitalGain">lãi vốn</string>
+    <string name="OverrideSalesPrice">nhập giá khi bán</string>
+    <string name="AccountHistory">Giao dịch</string>
+    <string name="NoAccountActivity">Chưa có hoạt động nào</string>
+    <string name="AccountAddresses">Địa chỉ</string>
+    <string name="ActiveAddresses">Địa chỉ đang hoạt động</string>
+    <string name="UsedAddresses">Địa chỉ đã dùng</string>
+    <string name="UnusedAddresses">Địa chỉ chưa dùng</string>
+    <string name="txHistoryButton">Xem hoặc xuất hoạt động tài khoản</string>
+    <string name="setAsPrimaryAccountButton">Đặt làm tài khoản chính</string>
+    <string name="AccountStatistics">Thống kê tài khoản</string>
+    <string name="AccountBlockchainSync" formatted="false">Hiện %sync trên blockchain %chain.</string>
+    <string name="AccountBlockchainDetails" formatted="false">Tại %actBlockDate, khối %actBlock trên %chainBlockCount.</string>
+    <string name="AccountEarliestActivity" formatted="false">Lần đầu dùng: khối %actPrehistoryBlock vào %actPrehistoryDate.</string>
+    <string name="AccountBlockchainConnectionDetails" formatted="false">Đã kết nối %num node: %names</string>
+    <string name="AccountNumAddresses" formatted="false">%num địa chỉ</string>
+    <string name="CurrentAddress" formatted="false">Tại địa chỉ %num: %addr</string>
+    <string name="FirstLastReceive" formatted="false">Nạp đầu tiên ở khối %first, gần nhất ở khối %last.</string>
+    <string name="FirstLastSend" formatted="false">Rút đầu tiên ở khối %first, gần nhất ở khối %last.</string>
+    <string name="FirstWithdraw">Rút đầu tiên</string>
+    <string name="FirstDeposit">Nạp đầu tiên</string>
+    <string name="never">chưa từng</string>
+    <string name="FirstUse" formatted="false">Lần đầu dùng: %date</string>
+    <string name="LastUse" formatted="false">Lần cuối dùng: %date</string>
+    <string name="Block" formatted="false">Khối: %block</string>
+    <string name="AccountNumTx" formatted="false">%num giao dịch</string>
+    <string name="AccountNumUtxos" formatted="false">%num mục sổ cái</string>
+    <string name="title_activity_assets">Tài sản</string>
+    <string name="title_activity_scan">Quét</string>
+    <string name="title_activity_new_account">Tài khoản mới</string>
+    <string name="AccountName">Tên tài khoản</string>
+    <string name="AccountNameHint">1-8 chữ cái</string>
+    <string name="Blockchain">Blockchain</string>
+    <string name="AccountRecoveryPhrase">Cụm từ khôi phục</string>
+    <string name="LeaveEmptyNewWallet">Để trống để tạo tài khoản mới</string>
+    <string name="PinSuggestions"><font size="15">Cần số bí mật này để truy cập tài khoản</font></string>
+    <string name="createNewAccount">Tạo tài khoản mới</string>
+    <string name="createSyncAccount">Khôi phục tài khoản bằng cách đồng bộ kỹ (và lâu)</string>
+    <string name="createDiscoveredAccount">Khôi phục tài khoản ngay</string>
+    <string name="invalidRecoveryPhrase">cụm từ khôi phục không hợp lệ</string>
+    <string name="invalidAccountName">tên không hợp lệ</string>
+    <string name="PassPhrase">Cụm mật khẩu (tùy chọn)</string>
+    <string name="Bip44ActivityNotice">Đã tìm thấy hoạt động tài khoản</string>
+    <string name="NoBip44ActivityNotice">Cảnh báo: không tìm thấy giao dịch nào!</string>
+    <string name="Bip44BtcActivityNotice">Đã tìm thấy hoạt động ví phi chuẩn hoặc trước fork</string>
+    <string name="NoBip44BtcActivityNotice">Không tìm thấy giao dịch trước fork</string>
+    <string name="FirstUseDateHeightInfo" formatted="false">bắt đầu từ %date (khối %height)</string>
+    <string name="NotEnoughRecoveryWords">Cần thêm từ khôi phục</string>
+    <string name="TooManyRecoveryWords">Quá nhiều từ khôi phục</string>
+    <string name="IncorrectRecoveryWords" formatted="false">Từ không hợp lệ: %words</string>
+    <string name="ElectrumNetworkUnavailable">Không kết nối được mạng Electrum. Việc khôi phục ví sẽ chậm và sẽ không tìm được các giao dịch trước ngày 1/1/2020</string>
+    <string name="PinHidesAccount">Ẩn tài khoản cho đến khi nhập mã PIN?</string>
+    <string name="HiddenAccountExplainer">Ẩn tài khoản cho đến khi nhập mã PIN</string>
+    <string name="HiddenAccount">Tài khoản ẩn</string>
+    <string name="AutomaticNewAddress">Quyền riêng tư địa chỉ</string>
+    <string name="AutomaticNewAddressToolTip">Tự động hiển thị địa chỉ mới mỗi khi địa chỉ hiện tại đã được dùng.</string>
+    <string name="CreatePIN">Mã PIN (tùy chọn)</string>
+    <string name="PinSpendingUnprotected">Cho phép chi tiêu không cần mã PIN (chưa nhập PIN)</string>
+    <string name="PinSpendingProtected">Chi tiêu cần mã PIN</string>
+    <string name="InvalidPIN">Mã PIN không hợp lệ</string>
+    <string name="creatingNoHistoryAccountWarning">Bạn đang tạo một tài khoản với cụm từ khôi phục cụ thể, nhưng không tìm thấy hoạt động nào trên blockchain.\nĐiều này có đúng không?\nNếu đúng, hãy bấm nút tạo lần nữa và một tài khoản trống sẽ được tạo. Nhưng nếu tài khoản này lẽ ra phải có hoạt động, hãy kiểm tra lại blockchain và cụm từ khôi phục đã chọn. Nếu đó không phải là vấn đề thì hoặc mạng blockchain hiện không truy cập được (thử lại sau), hoặc tài khoản được tạo bằng một ứng dụng ví phi chuẩn. Đừng tạo tài khoản này lúc này.</string>
+    <string name="accountLocked">tài khoản bị khóa</string>
+    <string name="unknownError">lỗi</string>
+    <string name="insufficentBalance">số dư không đủ</string>
+    <string name="insufficentTokenBalance">số dư token không đủ</string>
+    <string name="excessiveFee">phí quá cao</string>
+    <string name="sendDustError">số tiền dưới mức tối thiểu</string>
+    <string name="sendingDustWarning">số tiền dưới mức tối thiểu của mạng</string>
+    <string name="feeExceedsFlatMax">phí vượt mức phí cố định tối đa đã cấu hình</string>
+    <string name="notSupported">không hỗ trợ</string>
+    <string name="expired">thanh toán đã hết hạn</string>
+    <string name="PaymentDataMissing">thanh toán thiếu dữ liệu</string>
+    <string name="headersNotForthcoming">không nhận được header khối</string>
+    <string name="cantConvert">tạm thời không quy đổi được</string>
+    <string name="walletDisconnectedFromBlockchain">ví đã ngắt kết nối</string>
+    <string name="badTransaction">giao dịch không hợp lệ</string>
+    <string name="badAddress">địa chỉ không hợp lệ</string>
+    <string name="unknownAddress">địa chỉ không xác định</string>
+    <string name="badAmount">số tiền không hợp lệ</string>
+    <string name="NoAccounts">Không có tài khoản khả dụng</string>
+    <string name="badCryptoCode">không có tài khoản đã mở khóa cho tiền tệ hoặc blockchain này</string>
+    <string name="badCryptoCodeDetails" formatted="false">Tiền tệ không xác định hoặc không khả dụng: %currency</string>
+    <string name="badCurrencyUnit">không phải tiền tệ</string>
+    <string name="incompatibleAccount">sai tiền tệ</string>
+    <string name="incompatibleAccountDetails" formatted="false">Bạn chọn thanh toán từ tài khoản chứa %cryptoAct nhưng cần %cryptoPay</string>
+    <string name="detailsOfBadAmountFromIntent">Chương trình gọi đã cung cấp số sai định dạng cho số lượng cần gửi. Bạn sẽ phải tự nhập số lượng.</string>
+    <string name="blankAddress">địa chỉ trống</string>
+    <string name="unavailable">không khả dụng</string>
+    <string name="blockNotForthcoming">khối không khả dụng</string>
+    <string name="receiveAddressUnavailable">Đang tạo địa chỉ nhận mới. Vui lòng đợi...</string>
+    <string name="accountLimitReached">số tài khoản tối đa</string>
+    <string name="accountUnavailableDetails">Không có tài khoản nào khớp với blockchain này, hoặc tài khoản chưa được mở khóa.</string>
+    <string name="accountUnavailable">Không có tài khoản tương thích đã mở khóa</string>
+    <string name="sendMoreThanBalance">Bạn đang cố gửi nhiều coin hơn số bạn đang có lúc này.\n\nNếu bạn nghĩ mình không chi quá số dư, có thể bạn quên rằng mỗi giao dịch có thêm một khoản phí nhỏ; hoặc nếu toàn bộ số dư đang hiện là chưa xác nhận thì có thể bạn đã tạo quá nhiều giao dịch liên tiếp.\n\nCó giới hạn cho mức bạn có thể “đi trước” blockchain. Hãy đợi số dư chưa xác nhận được xác nhận rồi thử lại.</string>
+    <string name="sendMoreTokensThanBalance">Bạn đang cố gửi nhiều token hơn số bạn đang có lúc này.</string>
+    <string name="deductedFeeLargerThanSendAmount">Phí bị trừ lớn hơn số tiền đang gửi</string>
+    <string name="badWalletImplementation">Ví được triển khai không đúng. Hãy báo lỗi này!</string>
+    <string name="CannotCompleteTransaction">Lỗi: không hoàn tất được</string>
+    <string name="title_split_bill">Chia hóa đơn</string>
+    <string name="title_activity_settings">Cài đặt</string>
+    <string name="title_activity_exchange">Sàn giao dịch</string>
+    <string name="title_activity_shopping">Liên kết</string>
+    <string name="ecosystem">Hệ sinh thái</string>
+    <string name="title_activity_trickle_pay">Trickle Pay</string>
+    <string name="title_home">Trang chủ</string>
+    <string name="title_dashboard">Kiểm tra</string>
+    <string name="title_notifications">Thông báo</string>
+    <string name="title_activity_invoices">Hóa đơn</string>
+    <string name="title_activity_identity">Danh tính</string>
+    <string name="title_activity_identity_op">Danh tính</string>
+    <string name="title_activity_domain_identity_settings">Cài đặt danh tính tên miền</string>
+    <string name="title_activity_tx_history" formatted="false">Lịch sử giao dịch: %account</string>
+    <string name="title_activity_address_history" formatted="false">Lịch sử địa chỉ: %account</string>
+    <string name="title_activity_account_details" formatted="false">Tài khoản: %account</string>
+    <string name="title_test">Kiểm tra</string>
+    <string name="useUniqueIdentity">Dùng danh tính mật mã riêng</string>
+    <string name="title_activity_identity_settings">Cài đặt danh tính</string>
+    <string name="IdentityRegistrations">Dịch vụ đã đăng ký</string>
+    <string name="NoIdentitiesRegistered">Chưa đăng ký danh tính nào</string>
+    <string name="title_activity_welcome">Chào mừng</string>
+    <string name="next">Tiếp</string>
+    <string name="previous">Trước</string>
+    <string name="EnterPIN">Nhập mã PIN</string>
+    <string name="EnterPINorBlankToRemove">Mã PIN mới (trống = xóa)</string>
+    <string name="ButtonTextHere">Đặt chữ trên nút</string>
+    <string name="ButtonLinkHere">Nhập liên kết web</string>
+    <string name="ShoppingWarning">CẢNH BÁO: Các mục trên trang này là liên kết đến dịch vụ và trang web của bên thứ ba, được đặt ở đây để bạn tiện sử dụng. Wally Wallet chưa thẩm định các trang/dịch vụ này.\n\nBạn tự chịu rủi ro khi sử dụng!</string>
+    <string name="NFTs">Token không thể thay thế (NFT)</string>
+    <string name="ExplainNFTs">NiftyArt.cash: Tạo và mua bán hình ảnh độc bản và vật phẩm số độc nhất</string>
+    <string name="NftUrl">http://niftyart.cash</string>
+    <string name="NftImproperConstruction">Cảnh báo: giả mạo hoặc tạo sai chuẩn!</string>
+    <string name="TokenSourceWebsite">Nguồn token:</string>
+    <string name="TokenBadSig">Thông tin của token này chưa được ký đúng cách. Token này có thể là hàng giả hoặc mạo danh. Cũng có thể người tạo token đơn giản là chưa ký token đúng cách.</string>
+    <string name="OpenWebsite" formatted="false">Truy cập %siteName</string>
+    <string name="WebsiteUnavailable" formatted="false">Trang web không khả dụng</string>
+    <string name="ExplainBitmart">bitmart.com: Mua bán NEXA lấy tiền mã hóa khác</string>
+    <string name="ExplainMexc">mexc.com: Mua bán NEXA lấy tiền mã hóa khác</string>
+    <string name="ExplainBiconomy">biconomy.com: Mua bán NEXA lấy tiền mã hóa khác</string>
+    <string name="CexButton">mua bán</string>
+    <string name="SharedNotification" formatted="false">đã chia sẻ %what</string>
+    <string name="AuthAutopayTitle">Thanh toán đã ủy quyền</string>
+    <string name="AuthAutopayDeniedTitle">Đã từ chối thanh toán ủy quyền</string>
+    <string name="AuthAutopay" formatted="false">%amt đến %domain</string>
+    <string name="TpToBeDone">Các kết nối Trickle Pay sẽ hiển thị ở đây</string>
+    <string name="TpHistoryTbd">Lịch sử Trickle Pay sẽ hiển thị ở đây</string>
+    <string name="AcceptTpRegistration">Chấp nhận đăng ký từ:</string>
+    <string name="EditTpRegistration">Cài đặt cho đơn vị:</string>
+    <string name="AcceptTpRegistrationTopic">Mục đích:</string>
+    <string name="TpMaxSpendHint">nhập mức tự chi tối đa</string>
+    <string name="TpAssetInfoRequest">Yêu cầu thông tin tài sản</string>
+    <string name="TpAssociatedAccount" formatted="false">Liên kết với: %act</string>
+    <string name="TpAssociatedAddress" formatted="false">%addr</string>
+    <string name="SpecialTxNotif">Yêu cầu ủy quyền giao dịch</string>
+    <string name="AssetNotif">Yêu cầu thông tin tài sản</string>
+    <string name="PaymentRequest">Yêu cầu thanh toán</string>
+    <string name="IdentityNotif">Yêu cầu danh tính/đăng nhập</string>
+    <string name="TpMaxHeading">Hạn mức tự động</string>
+    <string name="TpMaxPer">Tối đa mỗi yêu cầu</string>
+    <string name="TpMaxPerDay">Tối đa mỗi ngày</string>
+    <string name="TpMaxPerWeek">Tối đa mỗi tuần</string>
+    <string name="TpMaxPerMonth">Tối đa mỗi tháng</string>
+    <string name="TpEnableAutopay">Bật thanh toán tự động (nếu không chọn, mọi thanh toán đều hỏi ủy quyền và các giới hạn bên dưới bị bỏ qua)</string>
+    <string name="asciiArrow"><![CDATA[=>]]></string>
+    <string name="TpNoRegistrations">Chưa có đăng ký Trickle Pay</string>
+    <string name="TpNoSession">Không có yêu cầu Trickle Pay</string>
+    <string name="TpRegistrations">Đăng ký</string>
+    <string name="TpRegDenied">Đã từ chối đăng ký</string>
+    <string name="TpRegAccepted">Đã chấp nhận đăng ký</string>
+    <string name="TpRegUnchanged">Đăng ký không đổi</string>
+    <string name="TpRequestAutoDeny">Đã từ chối yêu cầu (tự động)</string>
+    <string name="TpRequestAutoAccept">Đã chấp nhận yêu cầu (tự động)</string>
+    <string name="TpTxDenied">Đã từ chối giao dịch</string>
+    <string name="TpTxAccepted">Đã chấp nhận giao dịch</string>
+    <string name="TpNetworkTimeout">Giao dịch hết thời gian chờ</string>
+    <string name="TpPartialSubmitted">Đã gửi lệnh bán</string>
+    <string name="TpAssetRequestDenied">Không chia sẻ thông tin tài sản</string>
+    <string name="TpAssetRequestAccepted">Đang gửi thông tin tài sản</string>
+    <string name="Actions">Thao tác</string>
+    <string name="SpecialTpTransactionFrom">Giao dịch đặc biệt từ</string>
+    <string name="IncompleteTpTransactionFrom">Đề nghị giao dịch ràng buộc từ</string>
+    <string name="TpEntails">Bao gồm</string>
+    <string name="TpInAccount">Dùng tài khoản</string>
+    <string name="TpAssetRequestFrom">Yêu cầu thông tin tài sản từ</string>
+    <string name="TpHandledByAccount">có thể xử lý bằng tài khoản của bạn</string>
+    <string name="TpAssetMatches" formatted="false">Thông tin về %num tài sản bạn đang sở hữu sẽ được cung cấp cho dịch vụ này.</string>
+    <string name="TpAssetInfoNotXfer">Chấp nhận yêu cầu này chỉ cho dịch vụ biết thông tin về quyền sở hữu của bạn.  Nó không ủy quyền chuyển bất kỳ tài sản nào.</string>
+    <string name="ForAFeeOf" formatted="false">gồm phí %fee %units</string>
+    <string name="TpExchangingTokens" formatted="false">và quy đổi token (gửi %tokSnd, nhận %tokRcv).</string>
+    <string name="TpShowingTokens" formatted="false">%tokReveal loại token được tiết lộ (chi cho chính bạn, chứng minh bạn sở hữu chúng).</string>
+    <string name="TpSendingTokens" formatted="false">và gửi %tokSnd loại token.</string>
+    <string name="TpReceivingTokens" formatted="false">và nhận %tokRcv loại token.</string>
+    <string name="TpHasNoPurpose">Yêu cầu này không ảnh hưởng đến tài khoản này.</string>
+    <string name="TpSendToTitle">Yêu cầu thanh toán từ</string>
+    <string name="TpSpends">Chi tiêu</string>
+    <string name="TpSendRequestDenied">Đã từ chối thanh toán</string>
+    <string name="TpSendAutoReject">Đã tự động từ chối thanh toán</string>
+    <string name="TpSendRequestAccepted">Đã chấp nhận thanh toán</string>
+    <string name="TpWhyNotAuto">Không tự động ký vì</string>
+    <string name="TpAutomaticDisabled">Đã tắt thanh toán tự động</string>
+    <string name="TpExceededMaxPer">Vượt giới hạn mỗi yêu cầu</string>
+    <string name="TpExceededMaxDaily">Vượt giới hạn mỗi ngày</string>
+    <string name="TpExceededMaxWeekly">Vượt giới hạn mỗi tuần</string>
+    <string name="TpExceededMaxMonthly">Vượt giới hạn mỗi tháng</string>
+    <string name="title_activity_alert_history">Thông báo gần đây</string>
+    <string name="IssueReportInstructions">Cung cấp thông tin này cho nhà phát triển:</string>
+    <string name="AssetApplication">Mở</string>
+    <string name="AssetMarketplace">Mua bán</string>
+    <string name="AssetAddedToTransferList">Đã thêm vào “Gửi” ở tab chính</string>
+    <string name="NftCardFront">Mặt trước</string>
+    <string name="NftCardBack">Mặt sau</string>
+    <string name="NftPublicMedia">Nội dung</string>
+    <string name="NftOwnerMedia">Nội dung chủ sở hữu</string>
+    <string name="Content">Nội dung</string>
+    <string name="Private">Riêng tư</string>
+    <string name="NftPrivateDescription">Nội dung này thuộc về chủ sở hữu tài sản</string>
+    <string name="NftInfo">Thông tin</string>
+    <string name="NftLegal">Giấy phép</string>
+    <string name="NftSeries" formatted="false">Sê-ri: %series</string>
+    <string name="NftAuthor" formatted="false">Tác giả: %author</string>
+    <string name="NftNoInfoProvided">...Không có thông tin...</string>
+    <string name="IssuedToConnection">Đã mở trong trang web kết nối</string>
+    <string name ="demonstratingOwnership">Chứng minh quyền sở hữu</string>
+    <string name="AndSomeAssets"> và một số tài sản</string>
+    <string name="AssetTypes" formatted="false">%assetTypes loại tài sản</string>
+    <string name="ExplainRestaurant">Dịch vụ đặt món trực tuyến (giao hàng hoặc tự đến lấy) có thể chấp nhận tiền mã hóa ngay cả khi cửa hàng thực tế thì không.</string>
+    <string name="RestaurantButton">Đặt món nhà hàng Menufy</string>
+    <string name="RestaurantUrl">https://www.menufy.com</string>
+    <string name="RestaurantAppPackage">com.menufy.menufyportal</string>
+    <string name="ExplainStoreMap">Tìm địa điểm gần bạn có chấp nhận tiền mã hóa.</string>
+    <string name="StoreMapButton">bản đồ cửa hàng</string>
+    <string name="StoreMapUrl">https://map.bitcoin.com</string>
+    <string name="StoreMapAppPackage"></string>
+    <string name="ExplainTxBit">txbit.io: Quy đổi NEXA sang tiền mã hóa khác</string>
+    <string name="welcome1Label">Chào mừng</string>
+    <string name="welcome1">Chào mừng bạn đến với Wally, một ví tiền mã hóa!\n\nỞ các màn hình tiếp theo, bạn sẽ thiết lập tài khoản blockchain Nexa đầu tiên (NEX) và cấu hình các dịch vụ khác như quản lý mật khẩu.\n\nHoặc bạn có thể nhấn mũi tên quay lại để bỏ qua phần hướng dẫn này.</string>
+    <string name="welcome2_title">Cài đặt tài khoản NEXA</string>
+    <string name="welcome2">Ở trang tiếp theo, bạn sẽ thiết lập tài khoản Nexa đầu tiên.\n\nTài khoản này chứa tiền Nexa và các danh tính của bạn. Danh tính là tính năng mới của ví Wally, cho phép bạn tự động đăng nhập vào những trang web được hỗ trợ.\n\nBạn có thể chọn bảo vệ tài khoản bằng mã PIN (số nhận dạng cá nhân), tuy nhiên chúng tôi khuyên người dùng mới không nên dùng mã PIN (và giữ số dư thấp) cho tài khoản đầu tiên. Để bảo vệ người dùng, tài khoản có mã PIN sẽ không hiện ra cho đến khi nhập đúng mã PIN (ứng dụng không báo khi bạn nhập sai mã PIN).\n\nNếu muốn khôi phục một tài khoản NEXA đã có, hãy nhập cụm từ khôi phục. Nếu để trống dòng này, một tài khoản mới sẽ được tạo.</string>
+    <string name="welcome3_title" formatted="false">Cụm từ khôi phục tài khoản Nexa</string>
+    <string name="welcome3">Chào mừng 3 ! (Có thể cải thiện đoạn chào mừng này)</string>
+    <string name="welcome4_title">Danh tính</string>
+    <string name="welcome4">Tiếp theo, bạn sẽ được đưa tới màn hình thông tin danh tính.  Thông tin này được dùng khi bạn dùng Wally làm trình quản lý danh tính và đăng nhập (để tự động đăng nhập vào các trang web hoặc điền thông tin khi mua hàng). Wally cực kỳ chú trọng quyền riêng tư!
+Thông tin này sẽ không được chia sẻ  với bất kỳ trang web nào nếu bạn không cho phép rõ ràng, và KHÔNG có thông tin nào từ ví này được gửi cho tác giả của ứng dụng.  Bạn cũng có thể để trống tất cả các mục.
+Khi xong, hãy nhấn mũi tên quay lại (góc trên bên trái).</string>
+    <string name="welcomeComplete">Vậy là hoàn tất thiết lập.  Nếu bạn chưa làm xong bước nào trong phần chào mừng này, mọi mục đều có sẵn ngay trong ứng dụng.
+Cảm ơn bạn và chúc bạn dùng ví mới thật vui!</string>
+    <string name="ExplainGiftCards">Mua thẻ quà tặng giúp bạn mua sắm tại hàng trăm cửa hàng không trực tiếp chấp nhận tiền mã hóa.</string>
+    <string name="GiftCardButton">Thẻ quà tặng eGifter</string>
+    <string name="GiftCardUrl">https://www.egifter.com</string>
+    <string name="GiftCardAppPackage">com.groupgifting.android</string>
+    <string name="Pinförslag">
+    <font size="15">Cần số bí mật này để truy cập tài khoản</font>
+</string>
+    <string name="sync_title">Đồng bộ email theo định kỳ</string>
+    <string name="attachment_title">Tải tệp đính kèm đến</string>
+    <string name="attachment_summary_on">Tự động tải tệp đính kèm email</string>
+    <string name="attachment_summary_off">Chỉ tải tệp đính kèm khi có yêu cầu</string>
+    <string name="signature_title">Chữ ký của bạn</string>
+    <string name="reply_title">Hành động mặc định khi trả lời</string>
+    <string name="discoveredAccountDetails" formatted="false">Đã tìm thấy số dư %bal %units\ntrong %addr địa chỉ và %tx giao dịch</string>
+    <string name="discoveredWarning">Nếu thông tin này đúng, bạn có thể tạo tài khoản ngay</string>
+    <string name="backgroundSync">Đồng bộ nền</string>
+    <string name="scanQr">Quét QR</string>
+    <string name="imageQr">QR từ ảnh</string>
+    <string name="paste">Dán</string>
+    <string name="recentTransactions">Giao dịch gần đây</string>
+    <string name="sendingFrom">Gửi từ</string>
+    <string name="enterAddress">Nhập địa chỉ...</string>
+    <string name="noteOptional">Ghi chú (tùy chọn)</string>
+    <string name="clearNote">Xóa ghi chú</string>
+    <string name="clearAddress">Xóa địa chỉ</string>
+    <string name="clearAmount">Xóa số tiền</string>
+    <string name="available">Khả dụng</string>
+    <string name="amountPlain">Số tiền</string>
+    <string name="enterNEXAmount">Nhập số tiền NEX...</string>
+    <string name="note">Ghi chú</string>
+    <string name="confirmSend">Xác nhận gửi</string>
+    <string name="syncing">Đang đồng bộ...</string>
+    <string name="enterAmount" formatted="false">Nhập số lượng %assetName</string>
+    <string name="fee">Phí</string>
+    <string name="connectionWarning">Cảnh báo: Không có kết nối blockchain/mạng. Nếu gửi bây giờ, người nhận sẽ không thấy giao dịch này ngay. Lệnh gửi sẽ được thực hiện khi có kết nối trở lại.</string>
+    <string name="NetworkUnstable">Mạng không ổn định</string>
+    <string name="TokenMissing">Token không có trên blockchain </string>
+    <string name="Sell">Bán</string>
+    <string name="CreateAnOffer">Tạo lệnh bán</string>
+    <string name="Price">Giá</string>
+    <string name="NexaPrice">Nhập giá Nexa</string>
+    <string name="AssetAmountName" formatted="false">Bạn có %amount %assetName</string>
+    <string name="scanToBuyOne">Quét để mua %name</string>
+    <string name="scanToBuySeveral">Quét để mua %amount %name</string>
+    <string name="nexaOfferAmount" formatted="false">Giá %amount NEXA</string>
+    <string name="purchaseComplete">Mua thành công</string>
+    <string name="setTheNexaPrice">Đặt giá Nexa</string>
+    <string name="setTheAssetAmount">Đặt số lượng tài sản</string>
+    <string name="publishOnline">Đăng lệnh bán trực tuyến</string>
+    <string name="offerCreated">Đã tạo lệnh bán!</string>
+    <string name="ConfigureService">Cấu hình dịch vụ</string>
+    <string name="AcceptOrRejectService">Chấp nhận hoặc từ chối dịch vụ</string>
+    <string name="Domain">Tên miền</string>
+    <string name="Services">Dịch vụ</string>
+    <string name="Purpose">Mục đích</string>
+    <string name="AutoPay">Thanh toán tự động</string>
+    <string name="AutoPayInstructions">Nếu ô chọn sau bị tắt, mọi yêu cầu thanh toán từ dịch vụ này đều hỏi bạn ủy quyền và các giới hạn bên dưới bị bỏ qua.</string>
+    <string name="LimitedAutoApproval">Cho phép duyệt tự động có giới hạn</string>
+    <string name="AutoPayMaxPerRequest">Tối đa mỗi yêu cầu</string>
+    <string name="AutoPayMaxPerDay">Tối đa mỗi ngày</string>
+    <string name="AutoPayMaxPerWeek">Tối đa mỗi tuần</string>
+    <string name="AutoPayMaxPerMonth">Tối đa mỗi tháng</string>
+    <string name="EnableServices">Bật màn hình dịch vụ</string>
+    <string name="NoServicesRegistered">Chưa đăng ký dịch vụ nào.</string>
+    <string name="Start">Bắt đầu</string>
+    <string name="Meditation">Thiền</string>
+    <string name="Meditate">Thiền</string>
+    <string name="Sound">Âm thanh</string>
+    <string name="OneMinuteIntervalSound">Âm báo mỗi 1 phút</string>
+    <string name="MeditationVersion">Phiên bản: 1.0.3 (build 156)</string>
+    <string name="Meditating">Đang thiền...</string>
+    <string name="MediationComplete">Đã thiền xong!</string>
+    <string name="Okay">OK</string>
+    <string name="Minutes">Phút</string>
+    <string name="Camouflage">Ngụy trang</string>
+    <string name="CamouflageAsMeditationTimer">Ngụy trang ứng dụng thành đồng hồ thiền.</string>
+    <string name="CamouflageDescriptionAndroid">Bật ngụy trang sẽ đóng ứng dụng và ngụy trang nó thành ứng dụng tên Meditate. Để tắt ngụy trang ứng dụng Meditate, hãy mở menu ứng dụng và nhấn vào số phiên bản năm lần.</string>
+    <string name="CamouflageDescriptionOther">Để tắt ngụy trang ứng dụng Meditate, hãy mở menu ứng dụng và nhấn vào số phiên bản năm lần.</string>
+    <string name="CamouflageAsMeditateAppAndroid">Ngụy trang thành ứng dụng Meditate</string>
+</resources>
