@@ -387,7 +387,7 @@ fun ConfirmAbove(preferenceDB: SharedPreferences)
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(i18n(S.WhenAskSure))
+        Text(i18n(S.WhenAskSure), Modifier.weight(1f))
         WallyDecimalEntry(
           value = textState,
           bkgCol = Color.White,
@@ -414,7 +414,7 @@ fun ConfirmAbove(preferenceDB: SharedPreferences)
           //colors = TextFieldDefaults.colors(focusedContainerColor = Color.Transparent,
           //  unfocusedContainerColor = Color.Transparent
           ,
-          modifier = Modifier.weight(1f).padding(4.dp,0.dp,0.dp,0.dp).testTag("ConfirmAboveEntry")
+          modifier = Modifier.width(120.dp).padding(4.dp,0.dp,0.dp,0.dp).testTag("ConfirmAboveEntry")
         )
         Text(chainToCurrencyCode[ChainSelector.NEXA]!!)
     }
