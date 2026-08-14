@@ -400,6 +400,7 @@
     <string name="accountLimitReached">maks antall kontoer</string>
     <string name="accountUnavailableDetails">Enten finnes det ingen eksisterende konto for denne blockchain, eller så er kontoen ikke låst opp.</string>
     <string name="accountUnavailable">Ingen opplåst kompatibel konto</string>
+    <string name="accountCouldNotBeOpened">Kunne ikke åpne kontoen</string>
     <string name="sendMoreThanBalance">Du forsøker å sende et større beløp enn det du har tilgjengelig akkurat nå. Hvis du mener dette ikke er tilfellet, må du huske at transaksjoner har en liten avgift, eller at beløpet kan være låst i en for lang lenke med ubekreftede transaksjoner. Det er en begrensning på hvor lang lenken med ubekreftede transaksjoner kan være. Vent på at din ubekreftede balanse bekreftes og prøv igjen.</string>
     <string name="sendMoreTokensThanBalance">Du forsøker å sende flere tokener enn du har tilgjengelig akkurat nå.</string>
     <string name="deductedFeeLargerThanSendAmount">Fratrukket avgift er større enn beløpet som sendes</string>

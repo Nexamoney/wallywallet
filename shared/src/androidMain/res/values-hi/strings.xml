@@ -400,6 +400,7 @@
     <string name="accountLimitReached">अधिकतम खाते</string>
     <string name="accountUnavailableDetails">या तो कोई मौजूदा खाता इस ब्लॉकचेन से मेल नहीं खाता, या खाता अनलॉक नहीं हुआ है।</string>
     <string name="accountUnavailable">कोई अनलॉक उपयुक्त खाता नहीं</string>
+    <string name="accountCouldNotBeOpened">खाता नहीं खोला जा सका</string>
     <string name="sendMoreThanBalance">आप अभी उपलब्ध सिक्कों से ज़्यादा सिक्के भेजने की कोशिश कर रहे हैं।\n\nअगर आपको लगता है कि आप अपनी शेष राशि से ज़्यादा खर्च नहीं कर रहे हैं, तो शायद आप भूल गए हों कि हर लेन-देन पर एक छोटा अतिरिक्त शुल्क लगता है, या अगर आपकी पूरी शेष राशि अपुष्ट दिख रही है तो आपने एक के बाद एक बहुत सारे लेन-देन कर लिए हैं।\n\nआप ब्लॉकचेन से कितना आगे निकल सकते हैं, इसकी एक सीमा है। अपनी अपुष्ट शेष राशि के पुष्ट होने का इंतज़ार करें और फिर कोशिश करें।</string>
     <string name="sendMoreTokensThanBalance">आप अभी उपलब्ध टोकन से ज़्यादा टोकन भेजने की कोशिश कर रहे हैं।</string>
     <string name="deductedFeeLargerThanSendAmount">काटा गया शुल्क भेजी जाने वाली राशि से अधिक है</string>

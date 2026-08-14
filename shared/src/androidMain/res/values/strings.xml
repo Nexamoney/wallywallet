@@ -580,6 +580,8 @@ Good luck!
     <string name="accountLimitReached">max accounts</string>
     <string name="accountUnavailableDetails">Either no existing account matches this blockchain, or the account has not been unlocked.</string>
     <string name="accountUnavailable">No unlocked compatible account</string>
+    <!-- An account exists on this device but its files could not be opened, so it is not shown -->
+    <string name="accountCouldNotBeOpened">Could not open account</string>
 
     <!-- Error long strings -->
     <string name="sendMoreThanBalance">You are attempting to send more coins than you have available right now.\n\nIf you think you are not spending more than your balance, you may have forgotten that transactions have a small additional fee, or if you see all of your balance as unconfirmed you may have made too many transactions in a row.\n\nThere is a limit to how far you can "get ahead" of the blockchain. Let your unconfirmed balance confirm and try again.</string>

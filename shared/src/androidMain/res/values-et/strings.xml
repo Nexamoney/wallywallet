@@ -400,6 +400,7 @@
     <string name="accountLimitReached">Kontode piirarv täis</string>
     <string name="accountUnavailableDetails">Ükski olemasolev konto ei sobi selle plokiahelaga või ei ole konto avatud.</string>
     <string name="accountUnavailable">Sobivat avatud kontot pole</string>
+    <string name="accountCouldNotBeOpened">Kontot ei õnnestunud avada</string>
     <string name="sendMoreThanBalance">Te üritate saata rohkem münte, kui teil praegu saadaval on.\n\nKui teie arvates te ei kuluta rohkem kui teie saldo, olete võib-olla unustanud, et tehingutel on väike lisatasu, või kui kogu teie saldo on kinnitamata, olete võib-olla teinud liiga mitu tehingut järjest.\n\nSellel, kui palju te saate plokiahelast „ette jõuda“, on piir. Laske oma kinnitamata saldol kinnituda ja proovige uuesti.</string>
     <string name="sendMoreTokensThanBalance">Te üritate saata rohkem tokeneid, kui teil praegu saadaval on.</string>
     <string name="deductedFeeLargerThanSendAmount">Mahaarvatud tasu on suurem kui saadetav summa</string>

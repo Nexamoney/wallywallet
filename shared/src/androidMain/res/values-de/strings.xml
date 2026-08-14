@@ -400,6 +400,7 @@
     <string name="accountLimitReached">Account-Limit erreicht</string>
     <string name="accountUnavailableDetails">Entweder passt kein existierender Account zu dieser Blockchain, oder der Account ist nicht entsperrt.</string>
     <string name="accountUnavailable">Kein entsperrter kompatibler Account</string>
+    <string name="accountCouldNotBeOpened">Account konnte nicht geöffnet werden</string>
     <string name="sendMoreThanBalance">Sie versuchen, mehr Coins zu senden, als Ihnen derzeit zur Verfügung stehen.\n\nWenn Sie meinen, nicht mehr als Ihr Guthaben auszugeben, haben Sie vielleicht vergessen, dass für Transaktionen eine kleine zusätzliche Gebühr anfällt. Oder Ihr gesamtes Guthaben ist unbestätigt, weil Sie zu viele Transaktionen hintereinander gemacht haben.\n\nEs gibt eine Grenze, wie weit Sie der Blockchain „vorauseilen“ können. Lassen Sie Ihr unbestätigtes Guthaben bestätigen und versuchen Sie es erneut.</string>
     <string name="sendMoreTokensThanBalance">Sie versuchen, mehr Tokens zu senden, als Ihnen derzeit zur Verfügung stehen.</string>
     <string name="deductedFeeLargerThanSendAmount">Abgezogene Gebühr ist höher als der Sendebetrag</string>

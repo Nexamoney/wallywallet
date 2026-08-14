@@ -403,6 +403,7 @@
     <string name="accountLimitReached">max konton</string>
     <string name="accountUnavailableDetails">Antingen matchar inget befintligt konto denna blockkedja eller så har kontot inte låsts upp.</string>
     <string name="accountUnavailable">Inget upplåst kompatibelt konto</string>
+    <string name="accountCouldNotBeOpened">Kunde inte öppna kontot</string>
     <string name="sendMoreThanBalance">Du försöker skicka fler mynt än vad du har tillgängligt just nu.\n\nOm du tror att du inte spenderar mer än ditt saldo kan du ha glömt att transaktioner har en liten extra avgift, eller om du ser hela ditt saldo som obekräftat kan du ha gjort för många transaktioner i rad.\n\nDet finns en gräns för hur långt du kan ”komma före” blockkedjan. Låt ditt obekräftade saldo bli bekräftat och försök igen.</string>
     <string name="sendMoreTokensThanBalance">Du försöker skicka fler tokens än vad du har tillgängligt just nu.</string>
     <string name="deductedFeeLargerThanSendAmount">Avdragen avgift är större än beloppet som skickas</string>

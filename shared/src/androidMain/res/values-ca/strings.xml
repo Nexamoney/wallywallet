@@ -400,6 +400,7 @@
     <string name="accountLimitReached">comptes màxims</string>
     <string name="accountUnavailableDetails">O cap compte existent coincideix amb aquesta cadena de blocs o el compte no s\'ha desbloquejat.</string>
     <string name="accountUnavailable">No hi ha cap compte compatible desbloquejat</string>
+    <string name="accountCouldNotBeOpened">No s\'ha pogut obrir el compte</string>
     <string name="sendMoreThanBalance">Esteu intentant enviar més monedes de les que teniu disponibles ara mateix.\n\nSi creieu que no gasteu més del vostre saldo, potser heu oblidat que les transaccions tenen una petita comissió addicional; i si veieu tot el saldo com a no confirmat, potser heu fet massa transaccions seguides.\n\nHi ha un límit a fins a quin punt us podeu «avançar» a la cadena de blocs. Deixeu que el saldo no confirmat es confirmi i torneu-ho a provar.</string>
     <string name="sendMoreTokensThanBalance">Esteu intentant enviar més tokens dels que teniu disponibles ara mateix.</string>
     <string name="deductedFeeLargerThanSendAmount">La comissió deduïda és més gran que l\'import enviat</string>
