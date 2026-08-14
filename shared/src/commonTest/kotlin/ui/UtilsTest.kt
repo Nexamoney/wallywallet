@@ -50,7 +50,10 @@ import org.nexa.libnexakotlin.Pay2PubKeyTemplateDestination
 import org.nexa.libnexakotlin.PayAddress
 import org.nexa.libnexakotlin.PayDestination
 import org.nexa.libnexakotlin.UnsecuredSecret
+import org.nexa.libnexakotlin.Spendable
+import org.nexa.libnexakotlin.TxoDatabase
 import org.nexa.libnexakotlin.WalletDatabase
+import org.nexa.threads.Mutex
 import org.nexa.threads.iMutex
 import org.nexa.libnexakotlin.iTransaction
 import org.nexa.libnexakotlin.txFor
@@ -311,8 +314,9 @@ fun deleteMockAccountDbs()
 * The account is a dev.mokkery [mock] of the [Account] interface.
 *
 *   * Properties whose types are interfaces / abstract classes ([SharedPreferences],
-*     [iMutex], [CnxnMgr], [WalletDatabase]) are stubbed with mokkery mocks or
-*     in-memory fakes.
+*     [CnxnMgr], [WalletDatabase]) are stubbed with mokkery mocks or
+*     in-memory fakes.  `access` is a real [iMutex] because production code runs
+*     real work inside it.
 *   * Properties whose types are libnexakotlin `final` classes ([Blockchain],
 *     [Bip44Wallet]) — which mokkery cannot mock directly — are constructed via
 *     their public Kotlin constructors with the dependencies above wired in. This is
@@ -328,7 +332,8 @@ fun deleteMockAccountDbs()
 fun mockAccount(
   initialBalance: BigDecimal = BigDecimal.ZERO,
   initialAssets: Map<GroupId, AssetPerAccount> = emptyMap(),
-  chainSelector: ChainSelector = ChainSelector.NEXA
+  chainSelector: ChainSelector = ChainSelector.NEXA,
+  walletBalance: Long = 0L
 ): Account
 {
     // Real PayDestination — just a value object, not linked to an account. Provides a non-null address
@@ -344,7 +349,7 @@ fun mockAccount(
     // unstubbed call made by the Blockchain / Bip44Wallet constructors below
     // returns a sensible default (null / 0 / empty) instead of throwing.
     val prefs = InMemoryPrefs()
-    val mutex = mock<iMutex>()
+    val mutex = Mutex("mockAccountAccess")
     val cnxnMgr = mock<CnxnMgr>(MockMode.autofill) {
         every { p2pCnxns } returns emptyList()
         // Blockchain's constructor (via RequestMgr) installs handlers on these
@@ -357,10 +362,19 @@ fun mockAccount(
         every { headersHandler } returns Callbacker()
         every { invHandler } returns Callbacker()
     }
+    // The wallet's own balance is computed by CommonWallet from the TXOs the database hands back,
+    // so a non-zero walletBalance is provided as a single unspent, ungrouped TXO of that amount.
+    val txoDb = mock<TxoDatabase>(MockMode.autofill) {
+        if (walletBalance > 0L)
+            every { forEach(any()) } calls { (doit: (Spendable) -> Boolean) ->
+                doit(Spendable(chainSelector).apply { amount = walletBalance })
+                Unit
+            }
+    }
     val walletDb = mock<WalletDatabase>(MockMode.autofill) {
         every { kvp } returns mock(MockMode.autofill)
         every { tx } returns mock(MockMode.autofill)
-        every { txo } returns mock(MockMode.autofill)
+        every { txo } returns txoDb
     }
 
     val randomNumber = Random.nextInt(1, 1333333337).toString()
