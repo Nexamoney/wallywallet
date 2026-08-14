@@ -403,6 +403,7 @@
     <string name="accountLimitReached">limite de comptes</string>
     <string name="accountUnavailableDetails">Aucun compte existant ne correspond à cette blockchain, ou le compte n\'a pas été déverrouillé.</string>
     <string name="accountUnavailable">Aucun compte compatible déverrouillé</string>
+    <string name="accountCouldNotBeOpened">Impossible d\'ouvrir le compte</string>
     <string name="sendMoreThanBalance">Vous essayez d\'envoyer plus de fonds que vous n\'en possédez actuellement.\n\nSi vous pensez ne pas dépenser plus que votre solde, vous avez peut-être oublié que les transactions comportent de petits frais supplémentaires ; ou, si tout votre solde apparaît comme non confirmé, vous avez peut-être fait trop de transactions d\'affilée.\n\nIl existe une limite à l\'avance que vous pouvez prendre sur la blockchain. Laissez votre solde non confirmé se confirmer, puis réessayez.</string>
     <string name="sendMoreTokensThanBalance">Vous essayez d\'envoyer plus de jetons que vous n\'en possédez actuellement.</string>
     <string name="deductedFeeLargerThanSendAmount">Les frais déduits dépassent le montant envoyé</string>

@@ -403,6 +403,7 @@
     <string name="accountLimitReached">max account</string>
     <string name="accountUnavailableDetails">Nessun account esistente corrisponde a questa blockchain, oppure l\'account non è stato sbloccato.</string>
     <string name="accountUnavailable">Nessun account compatibile sbloccato</string>
+    <string name="accountCouldNotBeOpened">Impossibile aprire l\'account</string>
     <string name="sendMoreThanBalance">Stai tentando di inviare più monete di quelle disponibili al momento.\n\nSe pensi di non spendere più del tuo saldo, potresti aver dimenticato che le transazioni hanno una piccola commissione aggiuntiva, oppure, se vedi tutto il tuo saldo come non confermato, potresti aver effettuato troppe transazioni di fila.\n\nC\'è un limite a quanto puoi «anticipare» la blockchain. Lascia che il tuo saldo non confermato venga confermato e riprova.</string>
     <string name="sendMoreTokensThanBalance">Stai tentando di inviare più token di quelli disponibili al momento.</string>
     <string name="deductedFeeLargerThanSendAmount">La commissione detratta è maggiore dell\'importo inviato</string>

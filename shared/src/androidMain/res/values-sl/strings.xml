@@ -400,6 +400,7 @@
     <string name="accountLimitReached">največje število računov</string>
     <string name="accountUnavailableDetails">Noben obstoječi račun se ne ujema s to verigo blokov ali pa račun ni bil odklenjen.</string>
     <string name="accountUnavailable">Ni odklenjenega združljivega računa</string>
+    <string name="accountCouldNotBeOpened">Računa ni bilo mogoče odpreti</string>
     <string name="sendMoreThanBalance">Poskušate poslati več kovancev, kot jih imate trenutno na voljo.\n\nČe menite, da ne porabljate več, kot znaša vaše stanje, ste morda pozabili, da imajo transakcije majhno dodatno provizijo, ali pa ste, če je vse vaše stanje prikazano kot nepotrjeno, opravili preveč transakcij zapored.\n\nObstaja omejitev, kako daleč lahko »prehitite« verigo blokov. Počakajte, da se vaše nepotrjeno stanje potrdi, in poskusite znova.</string>
     <string name="sendMoreTokensThanBalance">Poskušate poslati več žetonov, kot jih imate trenutno na voljo.</string>
     <string name="deductedFeeLargerThanSendAmount">Odtegnjena provizija je višja od poslanega zneska</string>

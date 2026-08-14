@@ -402,6 +402,7 @@
     <string name="accountLimitReached">maks. hesap sayısı</string>
     <string name="accountUnavailableDetails">Bu blok zinciri için mevcut hiçbir hesap eşleşmiyor veya hesap kilidi açılmamıştır.</string>
     <string name="accountUnavailable">Kilidi açılmamış uyumlu hesap yok</string>
+    <string name="accountCouldNotBeOpened">Hesap açılamadı</string>
     <string name="sendMoreThanBalance">Şu anda kullanılabilir olandan daha fazla coin göndermeye çalışıyorsunuz.\n\nBakiyenizden fazla harcamadığınızı düşünüyorsanız, işlemlerin küçük bir ek ücreti olduğunu unutmuş olabilirsiniz ya da bakiyenizin tamamı onaylanmamış görünüyorsa arka arkaya çok fazla işlem yapmış olabilirsiniz.\n\nBlok zincirinin ne kadar ilerisine geçebileceğinizin bir sınırı vardır. Onaylanmamış bakiyenizin onaylanmasını bekleyin ve tekrar deneyin.</string>
     <string name="sendMoreTokensThanBalance">Şu anda kullanılabilir olandan daha fazla token göndermeye çalışıyorsunuz.</string>
     <string name="deductedFeeLargerThanSendAmount">Kesilen ücret gönderilecek tutardan daha fazladır</string>

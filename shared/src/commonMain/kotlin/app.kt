@@ -1474,7 +1474,8 @@ open class CommonApp(val runningTests: Boolean)
                     }
                     catch (e: Exception)
                     {
-                        LogIt.warning(sourceLoc() + " " + name + ": Unknown exception attempting to open file.  Error $e")
+                        LogIt.error(sourceLoc() + " " + name + ": Unknown exception attempting to open file.  Error $e")
+                        displayError(S.accountCouldNotBeOpened, name)
                     }
                 }
             }

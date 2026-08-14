@@ -400,6 +400,7 @@
     <string name="accountLimitReached">maks akun</string>
     <string name="accountUnavailableDetails">Entah tidak ada akun yang cocok dengan blockchain ini, atau akun belum dibuka kuncinya.</string>
     <string name="accountUnavailable">Tidak ada akun kompatibel yang terbuka</string>
+    <string name="accountCouldNotBeOpened">Tidak dapat membuka akun</string>
     <string name="sendMoreThanBalance">Anda mencoba mengirim koin lebih banyak daripada yang tersedia saat ini.\n\nJika Anda merasa tidak membelanjakan lebih dari saldo Anda, mungkin Anda lupa bahwa setiap transaksi dikenakan biaya tambahan kecil, atau jika seluruh saldo Anda terlihat belum dikonfirmasi, mungkin Anda melakukan terlalu banyak transaksi berturut-turut.\n\nAda batas seberapa jauh Anda dapat mendahului blockchain. Tunggu hingga saldo Anda yang belum dikonfirmasi selesai dikonfirmasi, lalu coba lagi.</string>
     <string name="sendMoreTokensThanBalance">Anda mencoba mengirim token lebih banyak daripada yang tersedia saat ini.</string>
     <string name="deductedFeeLargerThanSendAmount">Biaya yang dipotong lebih besar dari jumlah yang dikirim</string>
